@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Review: [`./adversarial-review.md`
 Prerequisite: [`../267-FEATURE-openapi-external-services/`](../267-FEATURE-openapi-external-services/) ✅
 Working branch: `281-FEATURE-api-call-report-section`
 
-**Resume note:** Slices not started.
+**Resume note:** Slices not started. Plan revised after [`./plan-adversarial-review.md`](./plan-adversarial-review.md) (P1–P21 applied).
 
 ---
 
@@ -34,8 +34,8 @@ This plan does **not** add HTTP instance cache, Entity `mlSchema` schemaReferenc
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize current Spotify + sync + section contracts | ⬜ | `apiCallReport.281.phase0.unit.test.ts` |
-| 1 | Tracer: typed playlist UI from Endpoint schema, no `parentUuid` | ⬜ | `apiCallReport.281.phase1.integ.test.tsx` + `spotifyApp` |
+| 0 | Characterize current Spotify + sync + section contracts | ⬜ | `apiCallReport.281.phase0.unit.test.ts` (stable asserts only) |
+| 1 | **First behavioral slice (tracer):** typed playlist UI from Endpoint schema, no `parentUuid` | ⬜ | cloned report + `apiCallReport.281.phase1.integ.test.tsx`; GREEN updates committed asset + `spotifyApp` |
 | 2 | Binding / schema lookup hard fail | ⬜ | `apiCallReport.281.phase2.integ.test.tsx` |
 | 3 | Sync: `operationSync`, no Spotify defaults, Entity opt-in | ⬜ | `externalServiceSync` + `apiCallReport.281.phase3.unit.test.ts` |
 | 4 | Delete example Entity; rewrite blast radius; HTTP Entity fixture | ⬜ | `spotifyApp` + `externalServiceHttpStoreSkip` + modelValidation spotify |
@@ -80,8 +80,10 @@ Copied from [`analysis.md`](./analysis.md) D1–D16 (post-review). Binding. Devi
 | Query `spotifyGetPlaylist` (parallel asset; not the report runner) | `371aed0c-05bb-4b77-8cf1-2c82407555c1` |
 | Example Entity `SpotifyPlaylist` (deleted Slice 4) | `56166585-b6fd-42c6-95d3-32a80c3304f7` |
 | TransformerDefinition `syncExternalServiceSchema` | `c615ff0e-140a-4d16-b3d4-d7e04081d65b` |
-| Report Entity / EntityVersion (schema dual-write) | `3f2baa83-…` / `952d2c65-…` |
-| Endpoint Entity / EntityVersion (`operationSync`) | `3d8da4d4-…` / `e3c1cc69-…` |
+| Report Entity (schema dual-write) | `3f2baa83-3ef7-45ce-82ea-6a43f7a8c916` |
+| Report EntityVersion | `952d2c65-4da2-45c2-9394-a0920ceedfb6` |
+| Endpoint Entity (`operationSync`) | `3d8da4d4-8f76-4bb4-9212-14869d81c00c` |
+| Endpoint EntityVersion | `e3c1cc69-066d-4f52-beeb-b659dc7a88b9` |
 | MiroirTest `externalServiceSync` (extend) | `f4e5dde0-3dba-493b-a208-04494dbbb2f5` |
 | MiroirTest `externalServiceSyncExecute` (extend) | `394242e7-6443-41b8-b061-9bf2bcf06f17` |
 | HTTP Entity **test fixture** (Slice 4; same uuid, not the example package) | `56166585-b6fd-42c6-95d3-32a80c3304f7` copied under `packages/miroir-core/tests/4_services/fixtures/` (or keep inline in `externalServiceHttpStoreSkip`) |
@@ -132,21 +134,25 @@ Vitest: JSON inventory is not a MiroirTest.
 Behavior locked:
 
 - `spotify_model` has **7** JSON files; names/uuids match analysis D14 table.
-- Report `10ce3252-…` section types are exactly `inputReportSection`, `objectInstanceReportSection`, `jsonReportSection`; `objectInstance` `parentUuid` is `56166585-…`; inline `extractorTemplates.playlist` is `extractorTemplateForExternalService` / `0e5cb172-…` / `get-playlist`.
-- `SpotifyPlaylist.mlSchema` deep-equals Endpoint `operations[0].responseSchema`.
-- Report Entity + EntityVersion `reportSection` unions are identical, **15** members, **no** `apiCallReportSection`.
-- `syncExternalServiceSchema.ts` source contains `DEFAULT_GET_PLAYLIST_ENTITY_UUID`, `DEFAULT_SPOTIFY_ENDPOINT_UUID`, `DEFAULT_BOUNDED_PATHS`, `createdEntities[0]`.
-- `getReportsAndEntitiesForDeploymentUuid` return type/shape has no `endpoints` key (analysis R1).
-- `reportSectionsFormSchema` throws for `jsonReportSection` and `inputReportSection`.
-- Query `371aed0c-…` extractor JSON equals the report embed (document they can drift).
+- `SpotifyPlaylist.mlSchema` deep-equals Endpoint `operations[0].responseSchema` (until Slice 4).
+- Report `10ce3252-…` section types / `parentUuid` / union “no apiCallReportSection” live only in `describe("pre-281 inventory")` — **Slice 1 deletes that block** (P4). Do not re-run phase0’s pre-281 describe after tracer GREEN.
+- Inline `extractorTemplates.playlist` on the report is `extractorTemplateForExternalService` / `0e5cb172-…` / `get-playlist` (keep: still true after tracer).
+- `syncExternalServiceSchema.ts` source contains `DEFAULT_GET_PLAYLIST_ENTITY_UUID`, `DEFAULT_SPOTIFY_ENDPOINT_UUID`, `DEFAULT_BOUNDED_PATHS`, `createdEntities[0]` (until Slice 3).
+- `getReportsAndEntitiesForDeploymentUuid` return shape has no `endpoints` key (keep).
+- Query `371aed0c-…` extractor JSON equals the report embed (keep; can drift).
 
-Do **not** assert line numbers.
+Move `reportSectionsFormSchema` throw-asserts for `jsonReportSection` / `inputReportSection` into Slice 1 unit RED (P12) so phase0 stays runnable after the new arm exists.
+
+### 0.2 Refactor checkpoint
+
+None. Characterization only.
 
 ### Validation
 
 ```bash
 RUN_TEST=apiCallReport.281.phase0 npm run testByFile -w miroir-standalone-app -- apiCallReport.281.phase0
 npm run testByFile -w miroir-test-app_deployment-spotify -- tests/modelValidation.unit.test.ts
+npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts
 ```
 
 ### Realization
@@ -171,43 +177,43 @@ A report viewer can open `SpotifyPlaylistReport` and see playlist **name** (and 
 
 Vitest `.tsx` + fake server + `MemoryRouter`: not MiroirTest-reachable.
 
-Reuse the sanctioned harness from `spotifyApp.integ.test.tsx` (extract a shared helper in the refactor checkpoint if the file does not export one — do not fork a second fake-server stack).
+**Fixture contract (P2):** same boot as `spotifyApp.integ.test.tsx` (`resetAndInitApplicationDeployment` + `SeedSpotifyDeploymentMapping`, fake server, `allowInsecureBaseUrlsForTests`, `registerSecrets`). Extract a shared helper in 1.3 if the file does not export one. Endpoints must land in the Redux Endpoint instance index (`useEndpointsOfApplications`).
 
-Behavior asserted (WHAT, not “Redux was not called”):
+**Report under test (P1):** do **not** import committed `reportSpotifyPlaylist` for the tracer RED. Pass an **in-test structural clone** of `10ce3252-…` with `apiCallReportSection` (`endpointUuid: 0e5cb172-…`, `operationId: "get-playlist"`, `fetchedDataReference: "playlist"`), same inline extractors, `inputReportSection` kept, no `objectInstance` / no tracks `jsonReportSection`. GREEN later writes that shape to the committed asset.
 
-- Render `reportSpotifyPlaylist` with `playlistId` of the fake-server fixture.
-- Playlist name from the fixture is visible (e.g. `"Rock Classics"` / whatever `spotifyApp` already asserts).
+**Primary failure mode (P13):** fixture playlist **name** is missing (whatever `spotifyApp` already asserts, e.g. `"Rock Classics"`). Do not treat Jzod union parse as the main RED.
+
+Also:
+
 - No text `report target entity not found`.
-- No `<pre>` JSON dump of the whole playlist as the only UI (the old tracks `jsonReportSection` is gone; nested tracks appear as object/array fields).
-- Report JSON `section.definition` has an `apiCallReportSection` with `endpointUuid: 0e5cb172-…`, `operationId: "get-playlist"`, `fetchedDataReference: "playlist"`.
-- **HTTP not cached:** after render, local cache instance map for Entity `56166585-…` is empty / undefined (query stash only). If the test process still has the Entity in `defaultSpotifyAppModel` this slice, assert **no** `loadNewInstancesInLocalCache` for that uuid (spy on DomainController **only if** an existing test already does; otherwise assert `getInstances` for that entity from the client cache is empty). Prefer: `ReportQueryLoadService.getResult` is the source of `reportData`, matching #267.
-
-This RED fails today because the union rejects `apiCallReportSection` and the view has no arm.
+- Nested track names from the fixture appear as object/array fields, not as the only UI being a `<pre>` dump of the playlist.
+- `reportSectionsFormSchema(clone)` does **not** throw (P12). Today `default` throws (`ReportTools.ts` L111–116).
+- **HTTP not cached (P5 WHAT):** same as `spotifyApp.integ.test.tsx` L556–581 — Entity may still exist in the **model**, but there is **no** filesystem data directory / instance files for `56166585-…`. Do **not** spy `loadNewInstancesInLocalCache`.
 
 ### 1.2 GREEN
 
 Schema rebuild **first**:
 
-- Dual-write `apiCallReportSection` on Report Entity `3f2baa83-…` and EntityVersion `952d2c65-…` (`label?`, required `fetchedDataReference`, `endpointUuid`, `operationId`).
+- Dual-write `apiCallReportSection` on Report Entity `3f2baa83-3ef7-45ce-82ea-6a43f7a8c916` and EntityVersion `952d2c65-4da2-45c2-9394-a0920ceedfb6` (`label?`, required `fetchedDataReference`, `endpointUuid`, `operationId`).
 - Add union member; add `"apiCallReportSection"` to `getMiroirFundamentalJzodSchema.ts` filter list (~L1582–1601).
 - `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core`.
 
-View:
+View (**child** `ReportSectionViewWithEditor`, not `ReportViewWithEditor`):
 
-- `ReportSectionViewWithEditor` arm: resolve Endpoint via `useCurrentModelEnvironment(props.application, props.applicationDeploymentMap).endpointsByUuid` (R1). **Forbidden:** `deploymentUuidToReportsEntitiesMapping`.
+- `useCurrentModelEnvironment(props.application, props.applicationDeploymentMap).endpointsByUuid[endpointUuid]` (R1). Fallback `currentModel.endpoints.find` if the index is empty (same pattern as `objectListReportSection` ~L201). **Forbidden:** `deploymentUuidToReportsEntitiesMapping`. Do **not** copy `ReportViewWithEditor`’s `defaultMiroirModelEnvironment` Formik seed for schema lookup.
 - `TypedValueObjectEditor` with `formValueMLSchema = operation.responseSchema`, `readonly={true}`.
 - Do **not** mount `ReportSectionEntityInstance`.
-- `reportSectionsFormValue`: seed from `reportData[fetchedDataReference]` (`objectInstance` analogue L179–226).
-- `reportSectionsFormSchema`: explicit arm returning `{}` (must not throw).
+- `reportSectionsFormValue`: seed from `reportData[fetchedDataReference]`.
+- `reportSectionsFormSchema`: explicit arm returning `{}`.
 
-Spotify report `10ce3252-…`: replace `objectInstance` + tracks `jsonReportSection` with one `apiCallReportSection`. Keep `inputReportSection`. Keep inline extractors. Drop Report-level `tracks` runtimeTransformer if unused.
+Then write the clone’s section shape into committed `10ce3252-…`. Keep `inputReportSection` and inline extractors. Drop Report-level `tracks` runtimeTransformer if unused.
 
-**Do not** delete Entity `56166585-…` in this slice (Slice 4). **Do not** change sync constants yet (Slice 3). Existing `responseSchema` on the Endpoint is enough for the tracer.
+**Do not** delete Entity `56166585-…` (Slice 4). **Do not** change sync constants (Slice 3). Tracer uses the **pre-sync** bounded `responseSchema` already on Endpoint JSON (P19). Delete phase0 `describe("pre-281 inventory")` in this slice (P4).
 
 ### 1.3 Refactor checkpoint
 
 - Extract shared Spotify report render helper from `spotifyApp.integ.test.tsx` if Slice 1 copied setup.
-- `openReportSection` still omitted from the bootstrap **filter** list — do not “fix” that here unless regen breaks; analysis already records the overlay.
+- `openReportSection` still omitted from the bootstrap **filter** list — do not “fix” that here unless regen breaks.
 
 ### Validation
 
@@ -223,7 +229,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 ```
 
-Update Slice 0 inventory if it asserted “no apiCallReportSection” / three section types — those characterization tests **flip** in this slice (edit phase0 or split “pre-281 shape” vs “post-tracer shape”). Prefer: phase0 keeps historical constants/sync asserts; section-type asserts move to phase1.
+Phase0 `pre-281 inventory` describe must already be gone (P4). Do not re-run deleted asserts.
 
 ### Realization
 
@@ -266,6 +272,12 @@ Implement analysis §5.3 in the Slice 1 arm. Compare to `reportDefinition.defini
 ```bash
 RUN_TEST=apiCallReport.281.phase2 npm run testByFile -w miroir-standalone-app -- apiCallReport.281.phase2 --profile emulatedServer-filesystem
 RUN_TEST=apiCallReport.281.phase1 npm run testByFile -w miroir-standalone-app -- apiCallReport.281.phase1 --profile emulatedServer-filesystem
+RUN_TEST=spotifyApp npm run testByFile -w miroir-standalone-app -- spotifyApp --profile emulatedServer-filesystem
+RUN_TEST=externalServiceReport npm run testByFile -w miroir-standalone-app -- externalServiceReport --profile emulatedServer-filesystem
+npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts
+npm run testByFile -w miroir-test-app_deployment-spotify -- tests/modelValidation.unit.test.ts
+npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 ```
 
 ### Realization
@@ -290,21 +302,24 @@ An application designer can run `syncExternalServiceSchema` so `operations[].res
 
 **Tests:**
 
-- Extend MiroirTest `externalServiceSync` (`f4e5dde0-…`): sync of `get-playlist` **without** `entity` in `operationSync` yields `compositeActionSequence` whose `actionSequence` has **no** `createEntity` (only Endpoint `updateInstance`).
-- Extend `externalServiceSyncExecute` (`394242e7-…`) if it currently asserts `createSpotifyPlaylist` — flip to operations-only **or** add a second case with `entity` set.
-- Vitest `packages/miroir-core/tests/2_domain/issues/281-api-call-report-section/syncExternalServiceSchema.281.phase3.unit.test.ts` (justified: fail-closed `oneOf` without boundPaths and “missing endpointUuid” are awkward as MiroirTest JSON; still call the **real** `handleTransformer_syncExternalServiceSchema` with the **real** OpenAPI excerpt string from the Spotify Endpoint asset — no cloned schema):
+- Extend MiroirTest `externalServiceSync` (`f4e5dde0-…`): the **inline** `appModel.endpoints[]` object must already include `operationSync.get-playlist.boundPaths` in the RED JSON **before** GREEN deletes `DEFAULT_BOUNDED_PATHS` (P6). Sync of `get-playlist` **without** `entity` yields `compositeActionSequence` with **no** `createEntity`.
+- D9 RED in the same suite **or** phase3 vitest: omit `scope`, `enabledOperations: ["get-playlist"]` on that param endpoint → operation is materialized (today this fails L459–461).
+- Extend `externalServiceSyncExecute` (`394242e7-…`):
+  1. Flip/remove `createSpotifyPlaylist` as the default path (operations-only).
+  2. **Mandatory re-sync (P3, filesystem):** a case with `operationSync.get-playlist.entity` set; execute the composite **twice**; second run succeeds; Entity `mlSchema` matches the materialized `responseSchema` (`createEntity` upsert, not `updateInstance`).
+  3. **Mandatory second store:** same re-sync case with `--profile emulatedServer-sql` (postgres). If postgres `createEntity` currently errors on an existing uuid, GREEN must make upsert-or-equivalent work there in this slice — not a leftover.
+- Vitest `packages/miroir-core/tests/2_domain/issues/281-api-call-report-section/syncExternalServiceSchema.281.phase3.unit.test.ts` (justified: fail-closed params awkward as MiroirTest JSON; real `handleTransformer_syncExternalServiceSchema` + real OpenAPI excerpt from the Spotify Endpoint asset; `appModel` in **transformerParams**, unit `defaultMetaModelEnvironment` is irrelevant):
 
-  1. Missing `endpointUuid` → TransformerFailure (no `DEFAULT_SPOTIFY_ENDPOINT_UUID`).
-  2. In-scope GET without `boundPaths` → fail (`oneOf` or explicit empty-bound error).
-  3. `operationSync.get-playlist.boundPaths` from the Endpoint instance (in `appModel`) produces `responseSchema` equal to today’s bounded Jzod (lock a **literal** subset: `id`, `name`, `owner.display_name` present).
+  1. Missing `endpointUuid` → TransformerFailure.
+  2. In-scope GET without `boundPaths` → fail.
+  3. Param endpoint carries `operationSync.get-playlist.boundPaths` → `responseSchema` has literal `id`, `name`, `owner.display_name`.
   4. Two `entity` keys → **two** `createEntity` actions, not `[0]`.
-  5. `scope` omitted + `enabledOperations: ["get-playlist"]` → syncs that operation (D9 **new** behavior).
-  6. `operationSync` extra key not in scope → ignored; `enabledOperations` unchanged on the upserted Endpoint.
-  7. Re-sync: `createEntity` for an existing uuid (filesystem upsert) — if this test cannot boot a filesystem store, prove upsert in `externalServiceSyncExecute` integ instead.
+  5. `scope` omitted + `enabledOperations: ["get-playlist"]` → syncs that operation.
+  6. Extra `operationSync` key not in scope → ignored; `enabledOperations` unchanged.
 
 ### 3.2 GREEN
 
-- Dual-write `operationSync` (optional record: `boundPaths: string[]`, optional `entity: { uuid, name }`) on Endpoint Entity `3d8da4d4-…` + EntityVersion `e3c1cc69-…`; `EndpointExternalService` in `endpointDefinition.ts`.
+- Dual-write `operationSync` on Endpoint Entity `3d8da4d4-8f76-4bb4-9212-14869d81c00c` + EntityVersion `e3c1cc69-066d-4f52-beeb-b659dc7a88b9`; `EndpointExternalService` in `endpointDefinition.ts`.
 - TransformerDefinition `c615ff0e-…`: add `endpointUuid` to `transformerParameterSchema`.
 - Rebuild miroir + `devBuild`.
 - Spotify Endpoint JSON: `operationSync.get-playlist.boundPaths` = today’s `DEFAULT_BOUNDED_PATHS` list; **no** `entity`.
@@ -324,11 +339,11 @@ npm run testByFile -w miroir-test-app_deployment-spotify -- tests/modelValidatio
 RUN_TEST=syncExternalServiceSchema.281.phase3 npm run testByFile -w miroir-core -- syncExternalServiceSchema.281.phase3
 npm run testMiroir -w miroir-core -- --suites externalServiceSync --mode unit
 npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites externalServiceSyncExecute --mode integ
+npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites externalServiceSyncExecute --mode integ
 RUN_TEST=apiCallReport.281.phase1 npm run testByFile -w miroir-standalone-app -- apiCallReport.281.phase1 --profile emulatedServer-filesystem
 npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 ```
-
-Prove postgres/indexedDb Entity `createEntity` upsert **or** document leftover: if those stores error on existing uuid, add a store-specific cycle here (analysis D15). At minimum filesystem + the execute integ profile used by `externalServiceSyncExecute`.
 
 ### Realization
 
@@ -348,20 +363,23 @@ The Spotify **example package** no longer ships Entity `56166585-…`. Menu/home
 
 ### 4.1 RED
 
-**Tests:**
+Write tests that **fail while the Entity file still exists** (P7). Do not list post-delete regressions under RED.
 
-- `spotifyApp.integ.test.tsx` still renders the playlist (will fail if it still imports `entitySpotifyPlaylist` for boot/schema).
-- New/extended: `packages/miroir-core/tests/4_services/externalServiceHttpStoreSkip.unit.test.ts` still passes **after** the example file is gone (must not import from `miroir-test-app_deployment-spotify` Entity asset).
-- `apiCallReport.281.phase4.integ.test.tsx`: inline `objectInstanceReportSection` + fixture HTTP Entity + same fake playlist → still shows typed instance UI (no regression D4/D14).
-- `dogfood-sync-spotify-schema.ts` does not write `56166585-….json` unless `operationSync.entity` is passed.
+- `defaultSpotifyAppModel.entities` is `[]` (fails today: `[entitySpotifyPlaylist]`).
+- `spotify_model` JSON count is **6** (fails today: 7).
+- `packages/miroir-test-app_deployment-spotify/index.ts` does not export `entitySpotifyPlaylist` (fails today).
+- `spotifyApp.integ.test.tsx` does not import `entitySpotifyPlaylist` (fails today).
+- `dogfood-sync-spotify-schema.ts` does not write `56166585-….json` unless `operationSync.entity` is set (fails if it still hardcodes the path).
 
-Characterization: `spotify_model` JSON count is **6**.
+`externalServiceHttpStoreSkip` already uses an inline `httpEntity` (not the package file) — keep it as **Validation** after GREEN, not RED.
+
+`apiCallReport.281.phase4.integ.test.tsx` (Entity-backed `objectInstance` fixture) is a **GREEN companion** / Validation test, not the RED that forces deletion.
 
 ### 4.2 GREEN
 
 - Delete `packages/miroir-test-app_deployment-spotify/assets/spotify_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/56166585-b6fd-42c6-95d3-32a80c3304f7.json`.
 - `defaultSpotifyAppModel.entities = []`; drop export.
-- Move HTTP Entity JSON into `miroir-core` test fixture (same uuid) for store-skip.
+- Keep HTTP Entity as **inline / tests fixture** for `externalServiceHttpStoreSkip` (already inline) and write `apiCallReport.281.phase4.integ.test.tsx` (`objectInstanceReportSection` + fixture Entity) as the no-regression proof.
 - Rewrite `spotifyApp` asserts that used `entitySpotifyPlaylist.mlSchema` to read **Endpoint** `responseSchema` instead.
 - Align Query `371aed0c-…` extractors with the report embed (drop `tracks` if unused).
 - Update MiroirTest expected composites that `createSpotifyPlaylist`.
@@ -395,14 +413,16 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-test-app_deployment-spotify/t
 
 ### 5.1 Nonreg
 
-- Add `apiCallReport.281.phase1` (and phase2/4 if still issue-scoped) **or** the feature-named successors to the existing `externalServices-spotify` command in `scripts/nonreg-manifest.json`.
+- Add `apiCallReport.281.phase1` (and phase2/4 if still issue-scoped) to `externalServices-spotify` in `scripts/nonreg-manifest.json`. If the command string is unwieldy, add a sibling step `apiCallReport-281` rather than overflowing one line (P17).
 - Do not drop `spotifyApp` / `externalServiceReport` / `externalServiceHttpStoreSkip`.
+- **Issue AC #8 is stale** vs D15 (GitHub still says `updateInstance` / update mlSchema). Slice 5 **must** edit https://github.com/miroir-framework/miroir/issues/281 so re-sync is `createEntity` upsert, matching the plan AC table (P9).
 
 ### 5.2 Docs
 
 - `analysis.md` status → implemented when slices 1–4 are DONE.
 - Document HTTP report data = query stash, not Entity instance cache: `docs/reference/data-architecture-deployments.md` (already mentions `kind: "http"` skip) plus a short note in `docs/guides/core-concepts.md` Report section **or** `docs/reference/api/entity.md` HTTP paragraph — pick the file that already discusses #267 HTTP entities; do not create a new guide.
 - `docs/contributing/testing.md` / `docs/reference/testing.md`: mention `apiCallReport` / updated `spotifyApp` if suite keys change.
+- Rewrite issue #281 AC #8 to D15 (`createEntity` upsert). Add analysis + plan links on the issue if missing.
 
 ### 5.3 Issue-directory cleanup
 
@@ -422,17 +442,19 @@ Automated equivalent: phase1 + phase2 + `externalServiceSync` + `spotifyApp`.
 
 | Criterion | Proven by | Status |
 |---|---|---|
-| Typed `get-playlist` UI without Entity `56166585-…` | Slice 1 phase1 + Slice 4 `spotifyApp` | ⬜ |
+| Typed playlist UI **without** `objectInstanceReportSection` / `parentUuid` (Entity file may still exist in the package) | Slice 1 phase1 | ⬜ |
+| Example package no longer ships Entity `56166585-…`; typed UI still works | Slice 4 `spotifyApp` | ⬜ |
 | `objectInstanceReportSection` + HTTP Entity still works | Slice 4 phase4 fixture | ⬜ |
 | Section vs extractor mismatch hard fail | Slice 2 | ⬜ |
 | Unknown Endpoint / missing operation / missing extractor hard fail | Slice 2 | ⬜ |
-| HTTP payload not in instance cache | Slice 1 cache assert + Slice 0 lock | ⬜ |
+| HTTP payload not persisted as Entity instances (no data-section files) | Slice 1 P5 assert (`spotifyApp` L556–581 pattern) | ⬜ |
 | Sync without `operationSync.entity` emits no `createEntity`; no Spotify constants | Slice 3 | ⬜ |
 | Missing `boundPaths` fail closed | Slice 3 | ⬜ |
-| Re-sync / several entity keys | Slice 3 | ⬜ |
+| Re-sync via `createEntity` upsert (filesystem **and** postgres); several entity keys | Slice 3 execute integ (both profiles) + unit two-`createEntity` | ⬜ |
 | `operationSync` survives Endpoint upsert | Slice 3 | ⬜ |
-| Example package no longer ships the Entity; menu/home still the report | Slice 4 | ⬜ |
+| Menu/home still the playlist report | Slice 4 `spotifyApp` | ⬜ |
 | `modelValidation` miroir + spotify | Slices 1, 3, 4 | ⬜ |
+| GitHub issue AC #8 rewritten to D15 (`createEntity` upsert, not `updateInstance`) | Slice 5 | ⬜ |
 
 ### Realization
 
