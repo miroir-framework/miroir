@@ -72,6 +72,24 @@
           }
         }
       },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 10,
+            "defaultLabel": "Description",
+            "description": "Optional introductory text shown on multistep reports.",
+            "display": {
+              "editable": true,
+              "string": {
+                "multiline": true,
+                "rows": 4
+              }
+            }
+          }
+        }
+      },
       "selfApplication": {
         "type": "uuid",
         "optional": true,

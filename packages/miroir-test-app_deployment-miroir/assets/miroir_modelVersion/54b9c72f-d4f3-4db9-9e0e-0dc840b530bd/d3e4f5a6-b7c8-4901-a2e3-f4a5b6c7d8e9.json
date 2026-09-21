@@ -74,6 +74,15 @@
           }
         }
       },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Description"
+          }
+        }
+      },
       "definition": {
         "type": "any",
         "tag": {
