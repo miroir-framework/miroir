@@ -577,6 +577,28 @@ describe.skipIf(!shouldRun).sequential("apiCallReport #281 phase1 — typed play
     ).toBe(false);
   });
 
+  it("without playlistId does not typecheck-fail an empty apiCall section", async () => {
+    const clone = cloneApiCallPlaylistReport();
+    renderApiCallPlaylistReport(clone);
+
+    await waitFor(
+      () => {
+        expect(screen.getAllByText("Playlist ID", { exact: false }).length).toBeGreaterThan(0);
+      },
+      { timeout: 15000 },
+    );
+
+    expect(screen.queryByText(TYPED_VALUE_OBJECT_EDITOR_TYPE_ERROR)).toBeNull();
+    expect(screen.queryByText(/jzodTypeCheck expected a value but got undefined/i)).toBeNull();
+
+    const playlistIdInput = document.querySelector<HTMLInputElement>(
+      'input[data-testid="miroirInput"][id$="playlistId"]',
+    );
+    expect(playlistIdInput, "playlistId input field must be rendered").not.toBeNull();
+    expect(playlistIdInput?.value).toBe("");
+    expect(screen.getByText(/No API response yet/i)).toBeTruthy();
+  });
+
   it("reportSectionsFormSchema does not throw for apiCallReportSection", () => {
     const clone = cloneApiCallPlaylistReport();
     const listSection = clone.definition.section as { type: "list"; definition: ReportSection[] };

@@ -223,6 +223,9 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
     apiCallSchemaOrError?.ok === true ? apiCallSchemaOrError.schema : undefined;
   const apiCallBindingError =
     apiCallSchemaOrError?.ok === false ? apiCallSchemaOrError.error : undefined;
+  const apiCallPayload = apiCallSectionDefinition
+    ? formik.values?.[props.reportSectionPath.join("_")]
+    : undefined;
 
   /**
    * Entities to render in a modelDiagramReportSection.
@@ -542,7 +545,9 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
           </>
         )}
         {reportSectionDefinitionFromFormik?.type == "apiCallReportSection" && (
-          apiCallResponseSchema ? (
+          apiCallBindingError ? (
+            <div>{apiCallBindingError}</div>
+          ) : apiCallResponseSchema && apiCallPayload != null ? (
             <TypedValueObjectEditor
               labelElement={
                 reportSectionDefinitionFromFormik.definition.label ? (
@@ -563,10 +568,15 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
               valueObjectEditMode={valueObjectEditMode}
               readonly={true}
             />
+          ) : apiCallResponseSchema ? (
+            <ThemedText>
+              {reportSectionDefinitionFromFormik.definition.label
+                ? `${reportSectionDefinitionFromFormik.definition.label}: no API response yet.`
+                : "No API response yet."}
+            </ThemedText>
           ) : (
             <div>
-              {apiCallBindingError ??
-                `Could not resolve Endpoint operation responseSchema for endpoint ${reportSectionDefinitionFromFormik.definition.endpointUuid} operation ${reportSectionDefinitionFromFormik.definition.operationId}`}
+              {`Could not resolve Endpoint operation responseSchema for endpoint ${reportSectionDefinitionFromFormik.definition.endpointUuid} operation ${reportSectionDefinitionFromFormik.definition.operationId}`}
             </div>
           )
         )}

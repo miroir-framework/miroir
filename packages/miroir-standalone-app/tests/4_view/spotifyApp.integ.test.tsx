@@ -637,6 +637,9 @@ describe.skipIf(!shouldRun).sequential("spotifyApp — Spotify deployment boot +
     );
     expect(playlistIdInput, "playlistId input field must be rendered").not.toBeNull();
     expect(playlistIdInput?.value).toBe("");
+    expect(screen.queryByText(TYPED_VALUE_OBJECT_EDITOR_TYPE_ERROR)).toBeNull();
+    expect(screen.queryByText(/jzodTypeCheck expected a value but got undefined/i)).toBeNull();
+    expect(screen.getByText(/No API response yet/i)).toBeTruthy();
 
     fireEvent.change(playlistIdInput as HTMLInputElement, { target: { value: PLAYLIST_ID_OK } });
     fireEvent.click(screen.getByRole("button", { name: "OK" }));
