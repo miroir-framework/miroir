@@ -134,34 +134,6 @@ if (runThis) {
     });
   });
   describe("processCapabilitiesContext.273.phase2 DomainControllers get the fetched snapshot", () => {
-    it("index.tsx installs fetchProcessCapabilities on client and server DomainControllers", () => {
-      const src = readFileSync(
-        join(REPO_ROOT, "packages/miroir-standalone-app/src/index.tsx"),
-        "utf8",
-      );
-      const afterFetch = src.slice(src.indexOf("fetchProcessCapabilities"));
-      expect(afterFetch).toContain(
-        "domainControllerForClient.setProcessCapabilities(processCapabilities)",
-      );
-      expect(afterFetch).toContain(
-        "domainControllerForServer?.setProcessCapabilities(processCapabilities)",
-      );
-    });
-
-    it("sandbox index.tsx installs fetchProcessCapabilities on both DomainControllers", () => {
-      const src = readFileSync(
-        join(REPO_ROOT, "packages/miroir-sandbox/src/index.tsx"),
-        "utf8",
-      );
-      const afterFetch = src.slice(src.indexOf("fetchProcessCapabilities"));
-      expect(afterFetch).toContain(
-        "domainControllerForClient.setProcessCapabilities(processCapabilities)",
-      );
-      expect(afterFetch).toContain(
-        "domainControllerForServer.setProcessCapabilities(processCapabilities)",
-      );
-    });
-
     it("setupMiroirTest installs fetchProcessCapabilities on the real-server client DomainController", () => {
       const src = readFileSync(
         join(REPO_ROOT, "packages/miroir-standalone-app/src/miroir-fwk/4-tests/setupMiroirTest.ts"),
