@@ -38,7 +38,10 @@ import { deployment_Admin } from "miroir-test-app_deployment-admin";
 // driver and crashes with "Class extends value undefined is not a constructor".
 // They are loaded via dynamic import in registerStoreSectionStartups when needed.
 
-import { buildTeardownTestApplicationStoresAction } from "./testApplicationStoreTeardown.js";
+import {
+  buildTeardownTestApplicationStoresAction,
+  runTeardownTestApplicationStores,
+} from "./testApplicationStoreTeardown.js";
 import { buildTestSessionModelEnvironment } from "./testSessionModelEnvironment.js";
 import {
   Action2Error,
@@ -727,18 +730,16 @@ export class IntegrationTestSession implements RunnerTestSessionInterface {
 
     const identity = this.getApplicationIdentity();
     const storeConfig = this.testStoreConfig ?? this.getTestStoreConfig();
-    await this.domainController.handleCompositeAction(
-      buildTeardownTestApplicationStoresAction(
-        identity.deploymentUuid,
-        identity.applicationUuid,
-        storeConfig,
-        // Transformer sessions do not create AdminApplication / Deployment instances.
-        { deleteAdminInstances: false },
-      ),
-      this.applicationDeploymentMap,
-      buildIntegrationTestModelEnvironment(identity.deploymentUuid),
-      {},
-    );
+    await runTeardownTestApplicationStores({
+      domainController: this.domainController,
+      applicationDeploymentMap: this.applicationDeploymentMap,
+      modelEnvironment: buildIntegrationTestModelEnvironment(identity.deploymentUuid),
+      deploymentUuid: identity.deploymentUuid,
+      applicationUuid: identity.applicationUuid,
+      storeConfig,
+      // Transformer sessions do not create AdminApplication / Deployment instances.
+      options: { deleteAdminInstances: false },
+    });
 
     this.domainController = undefined;
     this.persistenceStoreControllerManager = undefined;

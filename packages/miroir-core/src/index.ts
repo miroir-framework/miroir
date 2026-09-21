@@ -749,6 +749,7 @@ export {
   FAIL_CLOSED_PROCESS_CAPABILITIES,
   fetchProcessCapabilities,
   handleProcessCapabilitiesHttpRoute,
+  resolveProcessCapabilitiesUrl,
 } from "./4_services/ProcessCapabilitiesHttp";
 export {
   ELECTRON_LOOPBACK_ROOT_API_URL,

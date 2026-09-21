@@ -6,7 +6,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { RestClientStub } from "miroir-core";
+import { RestClientStub, fetchProcessCapabilities, resolveProcessCapabilitiesUrl } from "miroir-core";
 import type { IdentityDirectory, ProcessCapabilities } from "miroir-core";
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../../../..");
@@ -71,15 +71,23 @@ if (runThis) {
         status: 401,
       });
     });
-  });
 
-  describe("processCapabilitiesHttp.273.phase2 server DomainController snapshot", () => {
-    it("server.ts installs getProcessCapabilities on the DomainController", () => {
-      const src = readFileSync(
-        join(REPO_ROOT, "packages/miroir-server/src/server.ts"),
-        "utf8",
+    it("resolveProcessCapabilitiesUrl joins rootApiUrl so Node fetch is absolute", () => {
+      expect(resolveProcessCapabilitiesUrl()).toBe("/capabilities");
+      expect(resolveProcessCapabilitiesUrl("https://localhost:3080")).toBe(
+        "https://localhost:3080/capabilities",
       );
-      expect(src).toContain("domainController.setProcessCapabilities(capabilities)");
+      expect(resolveProcessCapabilitiesUrl("https://localhost:3080/")).toBe(
+        "https://localhost:3080/capabilities",
+      );
+    });
+
+    it("fetchProcessCapabilities accepts an absolute capabilities URL", async () => {
+      const stub = new RestClientStub("https://localhost:3080");
+      stub.setProcessCapabilities(snapshot);
+      await expect(
+        fetchProcessCapabilities(stub, "https://localhost:3080/capabilities"),
+      ).resolves.toEqual(snapshot);
     });
   });
 }

@@ -27,7 +27,7 @@ import {
 
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { runRealServerClientBootstrap } from "./runRealServerClientBootstrap.js";
-import { buildTeardownTestApplicationStoresAction } from "./testApplicationStoreTeardown.js";
+import { runTeardownTestApplicationStores } from "./testApplicationStoreTeardown.js";
 import { testbedAccessGrantFromAuthSession } from "./testbedAccessGrantFromAuthSession.js";
 import {
   buildTransformerApplicationDeploymentMap,
@@ -204,21 +204,19 @@ export class RealServerTransformerTestSession implements RunnerTestSessionInterf
       return;
     }
 
-    await this.domainController.handleCompositeAction(
-      buildTeardownTestApplicationStoresAction(
-        this.identity.deploymentUuid,
-        this.identity.applicationUuid,
-        this.testDeploymentStorageConfiguration,
-        // createDeployment via ensureLibraryPlayfield registers Admin Deployment/Application rows.
-        {
-          deleteAdminInstances: this.createdPlayfield,
-          accessGrantUuid: this.createdPlayfield ? this.testbedAccessGrantUuid : undefined,
-        },
-      ),
-      this.applicationDeploymentMap,
-      buildIntegrationTestModelEnvironment(this.identity.deploymentUuid),
-      {},
-    );
+    await runTeardownTestApplicationStores({
+      domainController: this.domainController,
+      applicationDeploymentMap: this.applicationDeploymentMap,
+      modelEnvironment: buildIntegrationTestModelEnvironment(this.identity.deploymentUuid),
+      deploymentUuid: this.identity.deploymentUuid,
+      applicationUuid: this.identity.applicationUuid,
+      storeConfig: this.testDeploymentStorageConfiguration,
+      // createDeployment via ensureLibraryPlayfield registers Admin Deployment/Application rows.
+      options: {
+        deleteAdminInstances: this.createdPlayfield,
+        accessGrantUuid: this.createdPlayfield ? this.testbedAccessGrantUuid : undefined,
+      },
+    });
 
     this.domainController = undefined;
     this.applicationDeploymentMap = undefined;
