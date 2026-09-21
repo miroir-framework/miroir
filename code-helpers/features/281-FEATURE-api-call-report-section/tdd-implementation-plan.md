@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Review: [`./adversarial-review.md`
 Prerequisite: [`../267-FEATURE-openapi-external-services/`](../267-FEATURE-openapi-external-services/) ✅
 Working branch: `281-FEATURE-api-call-report-section`
 
-**Resume note:** Slice 4 ✅ DONE. Slice 5 (docs/nonreg/GitHub AC) not started.
+**Resume note:** Slices 0–5 ✅ DONE. Implementation complete on this branch. Full nonreg 62/63; remaining fail is pre-existing `default-admin-modelValidation` on leftover untracked `aiCursorKey`.
 
 ---
 
@@ -39,7 +39,7 @@ This plan does **not** add HTTP instance cache, Entity `mlSchema` schemaReferenc
 | 2 | Binding / schema lookup hard fail | ✅ | `apiCallReport.281.phase2.integ.test.tsx` |
 | 3 | Sync: `operationSync`, no Spotify defaults, Entity opt-in | ✅ | `externalServiceSync` + `syncExternalServiceSchema.281.phase3.unit.test.ts` + `externalServiceSyncExecute` (filesystem **and** sql) |
 | 4 | Delete example Entity; rewrite blast radius; HTTP Entity fixture | ✅ | `spotifyApp` + phase4 unit/integ + `externalServiceHttpStoreSkip` + modelValidation spotify |
-| 5 | Docs, nonreg, cleanup, AC | ⬜ | nonreg step + tracer narrative |
+| 5 | Docs, nonreg, cleanup, AC | ✅ | nonreg step `apiCallReport-281` + tracer narrative |
 
 ---
 
@@ -505,7 +505,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-test-app_deployment-spotify/t
 
 ## Slice 5 — Nonreg, docs, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### 5.1 Nonreg
 
@@ -550,8 +550,22 @@ Automated equivalent: phase1 + phase2 + `externalServiceSync` + `spotifyApp`.
 | `operationSync` survives Endpoint upsert | Slice 3 | ✅ |
 | Menu/home still the playlist report | Slice 4 `spotifyApp` | ✅ |
 | `modelValidation` miroir + spotify | Slices 1, 3, 4 | ✅ |
-| GitHub issue AC #8 rewritten to D15 (`createEntity` upsert, not `updateInstance`) | Slice 5 | ⬜ |
+| GitHub issue AC #8 rewritten to D15 (`createEntity` upsert, not `updateInstance`) | Slice 5 | ✅ |
 
 ### Realization
 
-<Appended on completion.>
+- **Files created:** none.
+- **Files modified:** `scripts/nonreg-manifest.json` (sibling step `apiCallReport-281`, tier default, requires none; `externalServices-spotify` unchanged); `analysis.md` status → implemented (slices 1–4 DONE); `docs/reference/data-architecture-deployments.md` (HTTP report data = query stash, not Entity instance cache); this plan.
+- **Files not modified:** `docs/contributing/testing.md` / `docs/reference/testing.md` — MiroirTest suite keys unchanged (`externalServiceSync` / `externalServiceSyncExecute`); #281 coverage is PLATFORM `testByFile` via `apiCallReport-281`. `docs/guides/core-concepts.md` / `docs/reference/api/entity.md` — no existing #267 HTTP-entity paragraph; note went in `data-architecture-deployments.md`.
+- **GitHub:** https://github.com/miroir-framework/miroir/issues/281 — AC #8 rewritten to `createEntity` upsert (not `updateInstance` / “update mlSchema if present”); Design §4 aligned; analysis + plan links added to the body. Title unchanged.
+- **Issue-directory leftover (5.3, follow-up — do not half-move):** tests stay under `tests/**/issues/281-*` and are in nonreg via `apiCallReport-281`. Fold later into `spotifyApp` / `externalServiceReport` / `syncExternalServiceSchema`:
+  - `packages/miroir-standalone-app/tests/4_view/issues/281-api-call-report-section/` (`apiCallReport.281.phase0/1/2/4`, `resolveApiCallReportSectionSchema`)
+  - `packages/miroir-core/tests/2_domain/issues/281-api-call-report-section/` (`syncExternalServiceSchema.281.phase3`)
+- **Compilation:** `build` miroir + `devBuild` core + `build` spotify **pass**. `tsc --noEmit` miroir-core, miroir-standalone-app, miroir-test-app_deployment-spotify **pass**. Reverted incidental `miroirFundamentalType.ts` timestamp from `devBuild`.
+- **Nonreg** (`npm run nonreg`, snapshot `test-results/nonreg/20260921T174217Z`, 2442s): **62 passed, 1 failed, 0 skipped**. #281 steps **pass**: `externalServices-spotify` (255s), `apiCallReport-281` (162s). Sole failure `default-admin-modelValidation` is **pre-existing / unrelated** (not fixed):
+  - Same step failed on latest prior snapshot `20260918T063843Z` (`default-admin-modelValidation` failed there too).
+  - Fail is `MiroirSecret > aiCursorKey` (`54a6fc4b-2d2d-5dbc-b396-81392be159a0`) — untracked admin secret JSON present at conversation start; #281 does not touch Admin `MiroirSecret`.
+  - Dirty admin JSON left untouched (same set as conversation start). Did not commit.
+- **graphify:** `graphify update .` run after Slice 5 edits (AST-only).
+- **Deviations:** 5.3 did not migrate issue-directory tests (user: do not half-move). Testing docs skipped (no suite-key change).
+
