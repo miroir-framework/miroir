@@ -483,25 +483,29 @@ describe("RunnerTestSession (Gap E R)", () => {
 
     await session.teardown();
 
-    expect(domainController.handleCompositeAction).toHaveBeenCalledTimes(2);
-    const [action, applicationDeploymentMapArg, modelEnvironmentArg, optionsArg] = vi.mocked(
+    expect(domainController.handleCompositeAction).toHaveBeenCalledTimes(3);
+    const [storeCleanup, applicationDeploymentMapArg, modelEnvironmentArg, optionsArg] = vi.mocked(
       domainController.handleCompositeAction,
     ).mock.calls[0]!;
-    expect(action.actionLabel).toBe("teardownTestApplicationStores");
-    expect(action.payload.actionSequence.map((step: { actionType: string }) => step.actionType)).toEqual([
+    expect(storeCleanup.actionLabel).toBe("teardownTestApplicationStores");
+    expect(storeCleanup.payload.actionSequence.map((step: { actionType: string }) => step.actionType)).toEqual([
       "storeManagementAction_deleteStore",
       "storeManagementAction_closeStore",
-      "deleteInstance",
-      "deleteInstance",
     ]);
-    expect(action.payload.actionSequence[0]?.payload).toMatchObject({
+    expect(storeCleanup.payload.actionSequence[0]?.payload).toMatchObject({
       deploymentUuid: runTarget.deploymentUuid,
       application: runTarget.applicationUuid,
     });
-    expect(action.payload.actionSequence[2]?.payload).toMatchObject({
+    const [adminCleanup] = vi.mocked(domainController.handleCompositeAction).mock.calls[1]!;
+    expect(adminCleanup.actionLabel).toBe("teardownTestApplicationAdminInstances");
+    expect(adminCleanup.payload.actionSequence.map((step: { actionType: string }) => step.actionType)).toEqual([
+      "deleteInstance",
+      "deleteInstance",
+    ]);
+    expect(adminCleanup.payload.actionSequence[0]?.payload).toMatchObject({
       objects: [{ uuid: runTarget.deploymentUuid }],
     });
-    expect(action.payload.actionSequence[3]?.payload).toMatchObject({
+    expect(adminCleanup.payload.actionSequence[1]?.payload).toMatchObject({
       objects: [{ uuid: runTarget.applicationUuid }],
     });
     expect(applicationDeploymentMapArg[runTarget.applicationUuid]).toBe(runTarget.deploymentUuid);
@@ -514,7 +518,7 @@ describe("RunnerTestSession (Gap E R)", () => {
     expect(optionsArg).toEqual({});
 
     const [miroirTeardownAction] = vi.mocked(domainController.handleCompositeAction).mock
-      .calls[1]!;
+      .calls[2]!;
     expect(miroirTeardownAction.actionLabel).toBe("teardownTestApplicationStores");
     expect(miroirTeardownAction.payload.actionSequence.map((step: { actionType: string }) => step.actionType)).toEqual([
       "storeManagementAction_deleteStore",
@@ -585,25 +589,24 @@ describe("RunnerTestSession (Gap E R)", () => {
 
     await session.teardown();
 
-    expect(domainController.handleCompositeAction).toHaveBeenCalled();
-    const [action] = vi.mocked(domainController.handleCompositeAction).mock.calls[0]!;
-    expect(action.actionLabel).toBe("teardownTestApplicationStores");
+    expect(domainController.handleCompositeAction).toHaveBeenCalledTimes(2);
+    const [storeCleanup] = vi.mocked(domainController.handleCompositeAction).mock.calls[0]!;
+    expect(storeCleanup.actionLabel).toBe("teardownTestApplicationStores");
     expect(
-      action.payload.actionSequence.map((step: { actionType: string }) => step.actionType),
-    ).toEqual([
-      "storeManagementAction_deleteStore",
-      "storeManagementAction_closeStore",
-      "deleteInstance",
-      "deleteInstance",
-      "deleteInstance",
-    ]);
-    expect(action.payload.actionSequence[2]?.payload).toMatchObject({
+      storeCleanup.payload.actionSequence.map((step: { actionType: string }) => step.actionType),
+    ).toEqual(["storeManagementAction_deleteStore", "storeManagementAction_closeStore"]);
+    const [adminCleanup] = vi.mocked(domainController.handleCompositeAction).mock.calls[1]!;
+    expect(adminCleanup.actionLabel).toBe("teardownTestApplicationAdminInstances");
+    expect(
+      adminCleanup.payload.actionSequence.map((step: { actionType: string }) => step.actionType),
+    ).toEqual(["deleteInstance", "deleteInstance", "deleteInstance"]);
+    expect(adminCleanup.payload.actionSequence[0]?.payload).toMatchObject({
       objects: [{ parentUuid: "a6136fc7-949b-4d64-9f13-dd3afce1ab3c" }],
     });
-    expect(action.payload.actionSequence[3]?.payload).toMatchObject({
+    expect(adminCleanup.payload.actionSequence[1]?.payload).toMatchObject({
       objects: [{ uuid: runTarget.deploymentUuid }],
     });
-    expect(action.payload.actionSequence[4]?.payload).toMatchObject({
+    expect(adminCleanup.payload.actionSequence[2]?.payload).toMatchObject({
       objects: [{ uuid: runTarget.applicationUuid }],
     });
   });

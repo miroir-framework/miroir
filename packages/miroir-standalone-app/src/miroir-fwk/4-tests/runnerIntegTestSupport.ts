@@ -89,19 +89,30 @@ function usesStandaloneAppTestsTmpLayout(
   return false;
 }
 
+const POSTGRES_IDENTIFIER_MAX = 63;
+const MODEL_VERSION_SUFFIX_LENGTH = "_modelVersion".length;
+
 /**
  * Postgres-safe identifier for an ephemeral testbed store. Isolation key is
  * typically the deployment UUID so concurrent / leftover "Library" schemas are
- * not reused or dropped.
+ * not reused or dropped. Truncates only the application-name prefix so the
+ * UUID and a reserved `_modelVersion` suffix still fit in 63 characters.
  */
 export function ephemeralStoreIdentifier(
   testApplicationName: string,
   isolationKey: string,
+  reservedSuffixLength: number = MODEL_VERSION_SUFFIX_LENGTH,
 ): string {
-  const base = testApplicationName.replace(/[^a-zA-Z0-9_]/g, "_");
-  const prefixed = /^[a-zA-Z_]/.test(base) ? base : `app_${base}`;
   const key = isolationKey.replace(/-/g, "");
-  return `${prefixed}_${key}`.slice(0, 63);
+  const isolationSuffix = `_${key}`;
+  const budget = POSTGRES_IDENTIFIER_MAX - reservedSuffixLength;
+  const maxPrefixLength = Math.max(1, budget - isolationSuffix.length);
+  const base = testApplicationName.replace(/[^a-zA-Z0-9_]/g, "_");
+  let prefixed = /^[a-zA-Z_]/.test(base) ? base : `app_${base}`;
+  if (prefixed.length > maxPrefixLength) {
+    prefixed = prefixed.slice(0, maxPrefixLength);
+  }
+  return `${prefixed}${isolationSuffix}`;
 }
 
 export function testApplicationStorageConfiguration(

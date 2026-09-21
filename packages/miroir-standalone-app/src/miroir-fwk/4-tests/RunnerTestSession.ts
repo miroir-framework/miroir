@@ -39,7 +39,7 @@ import {
 import { defaultMiroirMetaModel, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 import { browserMcpServerUrl, runMcpToolRunner } from "../4_view/components/Runners/runMcpToolRunner.js";
 import { runRealServerClientBootstrap } from "./runRealServerClientBootstrap.js";
-import { buildTeardownTestApplicationStoresAction } from "./testApplicationStoreTeardown.js";
+import { runTeardownTestApplicationStores } from "./testApplicationStoreTeardown.js";
 import { testbedAccessGrantFromAuthSession } from "./testbedAccessGrantFromAuthSession.js";
 import { resolveCanonicalTestDeploymentUuid } from "./resolveCanonicalTestDeploymentUuid.js";
 import {
@@ -525,34 +525,33 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       currentModel,
     );
 
-    await this.domainController.handleCompositeAction(
-      buildTeardownTestApplicationStoresAction(
-        runTarget.deploymentUuid,
-        runTarget.applicationUuid,
-        testDeploymentStorageConfiguration,
-        { accessGrantUuid: this.testbedAccessGrantUuid },
-      ),
-      this.applicationDeploymentMap,
+    await runTeardownTestApplicationStores({
+      domainController: this.domainController,
+      applicationDeploymentMap: this.applicationDeploymentMap,
       modelEnvironment,
-      {},
-    );
+      deploymentUuid: runTarget.deploymentUuid,
+      applicationUuid: runTarget.applicationUuid,
+      storeConfig: testDeploymentStorageConfiguration,
+      options: { accessGrantUuid: this.testbedAccessGrantUuid },
+    });
 
     if (this.runnerTestContext.internalMiroirConfig.client.emulateServer === true) {
       const { miroirDeploymentStorageConfiguration } = getTestSessionConfig(
         this.options.miroirConfig,
         runTarget,
       );
-      await this.domainController.handleCompositeAction(
-        buildTeardownTestApplicationStoresAction(
+      await runTeardownTestApplicationStores({
+        domainController: this.domainController,
+        applicationDeploymentMap: this.applicationDeploymentMap,
+        modelEnvironment: buildTestSessionModelEnvironment(
           deployment_Miroir.uuid,
-          selfApplicationMiroir.uuid,
-          miroirDeploymentStorageConfiguration,
-          { deleteAdminInstances: false },
+          defaultMiroirMetaModel,
         ),
-        this.applicationDeploymentMap,
-        buildTestSessionModelEnvironment(deployment_Miroir.uuid, defaultMiroirMetaModel),
-        {},
-      );
+        deploymentUuid: deployment_Miroir.uuid,
+        applicationUuid: selfApplicationMiroir.uuid,
+        storeConfig: miroirDeploymentStorageConfiguration,
+        options: { deleteAdminInstances: false },
+      });
     }
 
     // Release emulated-server persistence backends (Postgres pools, etc.) so the

@@ -140,6 +140,8 @@ if (runThis) {
         "utf8",
       );
       const afterFetch = src.slice(src.indexOf("fetchProcessCapabilities"));
+      expect(afterFetch).toContain("resolveProcessCapabilitiesUrl");
+      expect(afterFetch).toContain("serverConfig?.rootApiUrl");
       expect(afterFetch).toContain(
         "domainControllerForClient.setProcessCapabilities(processCapabilities)",
       );

@@ -2,6 +2,7 @@ import {
   fetchProcessCapabilities,
   MiroirActivityTracker,
   MiroirEventService,
+  resolveProcessCapabilitiesUrl,
   type DomainControllerInterface,
   type LocalCacheInterface,
   type MiroirConfigClient,
@@ -134,7 +135,10 @@ export async function setupMiroirTest(
   // Isolated UI / vitest real-server sessions create a new remote DomainController.
   // Without the server snapshot, creatableStoreTypes is the browser factory list
   // (indexedDb) and createStore sql fails with FeatureUnavailable availableStoreTypes.
-  const processCapabilities = await fetchProcessCapabilities(client);
+  const processCapabilities = await fetchProcessCapabilities(
+    client,
+    resolveProcessCapabilitiesUrl(miroirConfig.client.serverConfig?.rootApiUrl),
+  );
   domainControllerForClient.setProcessCapabilities(processCapabilities);
   return {
     domainControllerForClient,

@@ -47,10 +47,18 @@ export function handleProcessCapabilitiesHttpRoute(args: {
   };
 }
 
+export function resolveProcessCapabilitiesUrl(rootApiUrl?: string): string {
+  if (!rootApiUrl) {
+    return "/capabilities";
+  }
+  return `${rootApiUrl.replace(/\/+$/, "")}/capabilities`;
+}
+
 export async function fetchProcessCapabilities(
   client: RestClientInterface,
+  capabilitiesUrl = "/capabilities",
 ): Promise<ProcessCapabilities> {
-  const result: RestClientCallReturnType = await client.get("/capabilities", "/capabilities");
+  const result: RestClientCallReturnType = await client.get(capabilitiesUrl, capabilitiesUrl);
   if (result instanceof Action2Error) {
     throw new Error(
       `fetchProcessCapabilities failed: ${result.errorMessage ?? result.errorType}`,
