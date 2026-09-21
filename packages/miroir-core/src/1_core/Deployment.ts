@@ -31,8 +31,9 @@ import {
   deployment_Admin,
   deployment_Miroir,
   entityApplicationForAdmin,
-  entityDeployment
+  entityDeployment,
 } from "miroir-test-app_deployment-admin";
+import { buildTestbedApplicationAccessGrantInstance } from "./authentication/TestbedAccessGrant.js";
 import {
   applicationEndpointV1,
   domainEndpointVersionV1,
@@ -119,6 +120,13 @@ export type CreateDeploymentCompositeActionOptions = {
    * already open on the shared miroir-server (`emulateServer: false`).
    */
   skipOpenAdminStore?: boolean;
+  /**
+   * When set, register a MiroirRight on the new application for this user after
+   * the Admin Application and Deployment rows, before open/create of the new
+   * store. Required when authentication is on: unknown deployments 403, and
+   * seeded grants do not cover ephemeral testbed UUIDs.
+   */
+  grantAccessTo?: { miroirUserUuid: string };
 };
 
 export function createDeploymentCompositeAction(
@@ -129,9 +137,10 @@ export function createDeploymentCompositeAction(
   newDeploymentConfiguration: StoreUnitConfiguration,
   options?: CreateDeploymentCompositeActionOptions,
 ): CompositeActionSequence {
-  // Order matches Create Application / Deploy Existing Application runners
-  // (reportMiroirRunners): register AdminApplication in Admin *before* open/create
-  // of the new deployment stores, then register the Deployment instance.
+  // Hatch-on access gate: unknown deployments 403. Register AdminApplication and
+  // Deployment in Admin *before* open/create of the new stores. Optional grant
+  // (ephemeral testbed UUIDs are not in seed MiroirRight rows) lands after those
+  // rows and before open/create.
   const actionSequence: CompositeActionSequence["payload"]["actionSequence"] = [];
 
   if (!options?.skipOpenAdminStore) {
@@ -150,27 +159,69 @@ export function createDeploymentCompositeAction(
     });
   }
 
-  actionSequence.push(
-    {
+  actionSequence.push({
+    actionType: "createInstance",
+    actionLabel: "CreateAdminApplicationInstance for " + applicationName,
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    payload: {
+      application: adminSelfApplication.uuid,
+      applicationSection: "data",
+      objects: [
+        {
+          uuid: applicationUuid,
+          parentName: entityApplicationForAdmin.name,
+          parentUuid: entityApplicationForAdmin.uuid,
+          name: applicationName,
+          defaultLabel: `The ${applicationName} Application.`,
+          description: `This Application contains the ${applicationName} model and data.`,
+          selfApplication: applicationUuid,
+        } as AdminApplication,
+      ],
+    },
+  });
+
+  actionSequence.push({
+    actionType: "createInstance",
+    actionLabel: "CreateDeploymentInstance for " + applicationName,
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    payload: {
+      application: adminSelfApplication.uuid,
+      applicationSection: "data",
+      objects: [
+        {
+          uuid: newDeploymentUuid,
+          parentName: "Deployment",
+          parentUuid: entityDeployment.uuid,
+          name: `Deployment of application ${applicationName}`,
+          defaultLabel: `The deployment of application ${applicationName}`,
+          description: `The description of deployment of application ${applicationName}`,
+          selfApplication: applicationUuid,
+          configuration: newDeploymentConfiguration,
+        } as Deployment,
+      ],
+    },
+  });
+
+  if (options?.grantAccessTo?.miroirUserUuid) {
+    actionSequence.push({
       actionType: "createInstance",
-      actionLabel: "CreateAdminApplicationInstance for " + applicationName,
+      actionLabel: "CreateTestbedApplicationAccessGrant for " + applicationName,
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: adminSelfApplication.uuid,
         applicationSection: "data",
         objects: [
-          {
-            uuid: applicationUuid,
-            parentName: entityApplicationForAdmin.name,
-            parentUuid: entityApplicationForAdmin.uuid,
-            name: applicationName,
-            defaultLabel: `The ${applicationName} Application.`,
-            description: `This Application contains the ${applicationName} model and data.`,
-            selfApplication: applicationUuid,
-          } as AdminApplication,
+          buildTestbedApplicationAccessGrantInstance({
+            miroirUserUuid: options.grantAccessTo.miroirUserUuid,
+            applicationUuid,
+            applicationName,
+          }),
         ],
       },
-    },
+    });
+  }
+
+  actionSequence.push(
     {
       actionType: "storeManagementAction_openStore",
       actionLabel: "storeManagementAction_openStore for " + applicationName,
@@ -191,27 +242,6 @@ export function createDeploymentCompositeAction(
         application: applicationUuid,
         deploymentUuid: newDeploymentUuid,
         configuration: newDeploymentConfiguration,
-      },
-    },
-    {
-      actionType: "createInstance",
-      actionLabel: "CreateDeploymentInstance for " + applicationName,
-      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-      payload: {
-        application: adminSelfApplication.uuid,
-        applicationSection: "data",
-        objects: [
-          {
-            uuid: newDeploymentUuid,
-            parentName: "Deployment",
-            parentUuid: entityDeployment.uuid,
-            name: `Deployment of application ${applicationName}`,
-            defaultLabel: `The deployment of application ${applicationName}`,
-            description: `The description of deployment of application ${applicationName}`,
-            selfApplication: applicationUuid,
-            configuration: newDeploymentConfiguration,
-          } as Deployment,
-        ],
       },
     },
   );

@@ -9,11 +9,19 @@ import {
   createDeploymentCompositeAction,
   testUtils_deleteApplicationDeployment,
 } from "../../src/1_core/Deployment";
-import { adminSelfApplication, entityApplicationForAdmin, entityDeployment } from "miroir-test-app_deployment-admin";
+import {
+  adminSelfApplication,
+  entityApplicationForAdmin,
+  entityDeployment,
+  entityMiroirRight,
+} from "miroir-test-app_deployment-admin";
 
 const ADMIN_DEPLOYMENT_UUID = "18db21bf-f8d3-4f6a-8296-84b69f6dc48b";
 const APP_UUID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 const DEPLOYMENT_UUID = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
+const ALICE_UUID = "1c39328c-7de4-44ae-bcf1-5bbc38d8e267";
+/** uuid v5(`${alice}\napplication\n${app}`, ENTITY_MIROIR_RIGHT_UUID) */
+const EXPECTED_GRANT_UUID = "20b0b4ce-1d09-54c5-93be-59886264356f";
 
 const adminDeployment = {
   uuid: ADMIN_DEPLOYMENT_UUID,
@@ -32,7 +40,7 @@ const newDeploymentConfiguration = {
 } as StoreUnitConfiguration;
 
 describe("createDeploymentCompositeAction", () => {
-  it("matches Create Application / Deploy Existing order (AdminApplication before open/create store)", () => {
+  it("registers AdminApplication and Deployment before open/create store (hatch-on access gate)", () => {
     const sequence = createDeploymentCompositeAction(
       "Library",
       DEPLOYMENT_UUID,
@@ -45,9 +53,9 @@ describe("createDeploymentCompositeAction", () => {
     const actions = sequence.payload.actionSequence;
     expect(actions.map((a) => a.actionType)).toEqual([
       "createInstance",
+      "createInstance",
       "storeManagementAction_openStore",
       "storeManagementAction_createStore",
-      "createInstance",
     ]);
 
     expect(actions[0]).toMatchObject({
@@ -68,20 +76,6 @@ describe("createDeploymentCompositeAction", () => {
     expect((actions[0] as { payload: { objects: unknown[] } }).payload.objects).toHaveLength(1);
 
     expect(actions[1]).toMatchObject({
-      actionType: "storeManagementAction_openStore",
-      actionLabel: "storeManagementAction_openStore for Library",
-      payload: {
-        application: APP_UUID,
-        deploymentUuid: DEPLOYMENT_UUID,
-      },
-    });
-
-    expect(actions[2]).toMatchObject({
-      actionType: "storeManagementAction_createStore",
-      actionLabel: "storeManagementAction_createStore for Library",
-    });
-
-    expect(actions[3]).toMatchObject({
       actionType: "createInstance",
       actionLabel: "CreateDeploymentInstance for Library",
       payload: {
@@ -95,7 +89,61 @@ describe("createDeploymentCompositeAction", () => {
         ],
       },
     });
-    expect((actions[3] as { payload: { objects: unknown[] } }).payload.objects).toHaveLength(1);
+    expect((actions[1] as { payload: { objects: unknown[] } }).payload.objects).toHaveLength(1);
+
+    expect(actions[2]).toMatchObject({
+      actionType: "storeManagementAction_openStore",
+      actionLabel: "storeManagementAction_openStore for Library",
+      payload: {
+        application: APP_UUID,
+        deploymentUuid: DEPLOYMENT_UUID,
+      },
+    });
+
+    expect(actions[3]).toMatchObject({
+      actionType: "storeManagementAction_createStore",
+      actionLabel: "storeManagementAction_createStore for Library",
+    });
+  });
+
+  it("inserts an application MiroirRight after Deployment and before openStore when grantAccessTo is set", () => {
+    const sequence = createDeploymentCompositeAction(
+      "Library",
+      DEPLOYMENT_UUID,
+      APP_UUID,
+      adminDeployment,
+      newDeploymentConfiguration,
+      { skipOpenAdminStore: true, grantAccessTo: { miroirUserUuid: ALICE_UUID } },
+    );
+
+    const actions = sequence.payload.actionSequence;
+    expect(actions.map((a) => a.actionType)).toEqual([
+      "createInstance",
+      "createInstance",
+      "createInstance",
+      "storeManagementAction_openStore",
+      "storeManagementAction_createStore",
+    ]);
+
+    expect(actions[2]).toMatchObject({
+      actionType: "createInstance",
+      actionLabel: "CreateTestbedApplicationAccessGrant for Library",
+      payload: {
+        application: adminSelfApplication.uuid,
+        applicationSection: "data",
+        objects: [
+          {
+            uuid: EXPECTED_GRANT_UUID,
+            parentName: "MiroirRight",
+            parentUuid: entityMiroirRight.uuid,
+            miroirUser: ALICE_UUID,
+            targetType: "application",
+            targetUuid: APP_UUID,
+            capability: "admin",
+          },
+        ],
+      },
+    });
   });
 
   it("includes Admin openStore as the first action by default (emulated)", () => {
@@ -119,9 +167,9 @@ describe("createDeploymentCompositeAction", () => {
     expect(actions.map((a) => a.actionType)).toEqual([
       "storeManagementAction_openStore",
       "createInstance",
+      "createInstance",
       "storeManagementAction_openStore",
       "storeManagementAction_createStore",
-      "createInstance",
     ]);
   });
 

@@ -15,6 +15,7 @@ import {
   createDeploymentCompositeAction,
   resetAndinitializeDeploymentCompositeAction,
 } from "../1_core/Deployment";
+import { testbedApplicationAccessGrantUuid } from "../1_core/authentication/TestbedAccessGrant.js";
 import { defaultMiroirModelEnvironment } from "../1_core/Model";
 import { resetAndInitApplicationDeployment } from "../3_controllers/DomainController";
 
@@ -37,6 +38,16 @@ export type EnsureLibraryPlayfieldParams = {
    * already open on shared miroir-server).
    */
   skipOpenAdminStore?: boolean;
+  /**
+   * When set (auth on and principal known), create a MiroirRight on the new
+   * application before open/create store. Callers must apply that gate.
+   */
+  grantAccessTo?: { miroirUserUuid: string };
+};
+
+export type EnsureLibraryPlayfieldResult = {
+  created: boolean;
+  accessGrantUuid?: string;
 };
 
 export type ResetIntegTestbedParams = {
@@ -79,7 +90,7 @@ function asDeployment(uuid: Uuid, selfApplication: Uuid): Deployment {
  */
 export async function ensureLibraryPlayfield(
   params: EnsureLibraryPlayfieldParams,
-): Promise<{ created: boolean }> {
+): Promise<EnsureLibraryPlayfieldResult> {
   const { mode, domainController, applicationDeploymentMap } = params;
 
   if (mode === "skip") {
@@ -107,7 +118,10 @@ export async function ensureLibraryPlayfield(
     params.librarySelfApplicationUuid,
     params.adminDeployment,
     params.libraryDeploymentStorageConfiguration,
-    { skipOpenAdminStore: params.skipOpenAdminStore },
+    {
+      skipOpenAdminStore: params.skipOpenAdminStore,
+      grantAccessTo: params.grantAccessTo,
+    },
   );
   const createLibraryResult = await domainController.handleCompositeAction(
     createLibraryDeploymentAction,
@@ -122,7 +136,15 @@ export async function ensureLibraryPlayfield(
     );
   }
 
-  return { created: true };
+  return {
+    created: true,
+    accessGrantUuid: params.grantAccessTo
+      ? testbedApplicationAccessGrantUuid(
+          params.grantAccessTo.miroirUserUuid,
+          params.librarySelfApplicationUuid,
+        )
+      : undefined,
+  };
 }
 
 // ################################################################################################

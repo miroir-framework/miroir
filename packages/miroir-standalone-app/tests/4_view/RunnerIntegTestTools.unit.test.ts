@@ -100,4 +100,42 @@ describe("testApplicationStorageConfiguration", () => {
       },
     });
   });
+
+  it("suffixes sql schemas with the isolation key so ephemeral runs do not share Library", () => {
+    const isolationKey = "0e776954-723b-4718-b320-49a83a1d2b08";
+    const configuration = testApplicationStorageConfiguration(
+      {
+        admin: {
+          emulatedServerType: "sql",
+          connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+          schema: "miroirAdmin",
+        },
+        model: {
+          emulatedServerType: "sql",
+          connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+          schema: "Library",
+        },
+        data: {
+          emulatedServerType: "sql",
+          connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+          schema: "Library",
+        },
+      },
+      "Library",
+      isolationKey,
+    );
+
+    expect(configuration.model).toMatchObject({
+      emulatedServerType: "sql",
+      schema: "Library_0e776954723b4718b32049a83a1d2b08",
+    });
+    expect(configuration.data).toMatchObject({
+      emulatedServerType: "sql",
+      schema: "Library_0e776954723b4718b32049a83a1d2b08",
+    });
+    expect(configuration.modelVersion).toMatchObject({
+      emulatedServerType: "sql",
+      schema: "Library_0e776954723b4718b32049a83a1d2b08_modelVersion",
+    });
+  });
 });

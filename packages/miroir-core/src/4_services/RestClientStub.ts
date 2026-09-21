@@ -17,12 +17,14 @@ import {
   extractPrincipalFromAuthorizationHeader,
   getProcessTokenSecret,
   resolveAuthenticationEnabled,
+  type AuthPrincipal,
 } from "../1_core/authentication/AuthenticationPolicy.js";
 import { handleAuthHttpRoute } from "../1_core/authentication/AuthenticationHttp.js";
 import type { ProcessCapabilities } from "../1_core/processCapabilities.js";
 import { handleProcessCapabilitiesHttpRoute } from "./ProcessCapabilitiesHttp.js";
 import { packageName } from "../constants";
 import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
+import { getRestClientAuthorizationToken } from "./RestClient.js";
 import { restServerDefaultHandlers } from "./RestServer";
 import { cleanLevel } from "./constants";
 
@@ -76,8 +78,12 @@ export class RestClientStub implements RestClientInterface {
   ): Promise<RestClientCallReturnType> {
     // log.info("RestClient call", method, endpoint, args)
     const { body, ...customConfig } = args;
+    const tokenFromGetter =
+      this.identityDirectory !== undefined ? getRestClientAuthorizationToken() : undefined;
     const authorizationHeader =
-      customConfig?.headers?.Authorization ?? customConfig?.headers?.authorization;
+      customConfig?.headers?.Authorization ??
+      customConfig?.headers?.authorization ??
+      (tokenFromGetter ? `Bearer ${tokenFromGetter}` : undefined);
     const authHttp = await handleAuthHttpRoute({
       url: rawUrl,
       endpoint,
@@ -111,15 +117,27 @@ export class RestClientStub implements RestClientInterface {
       };
     }
 
-    const authEnabled = resolveAuthenticationEnabled({ env: process.env });
-    const extracted = await extractPrincipalFromAuthorizationHeader(
-      authorizationHeader,
-      getProcessTokenSecret(),
-    );
-    const principal =
-      extracted && this.identityDirectory
-        ? bindPrincipalToDirectory(extracted, this.identityDirectory)
-        : extracted;
+    // Isolated emulated sessions (setupMiroirTest) never install an identity
+    // directory. In the browser, process.env.MIROIR_AUTH_ENABLED is often
+    // unset so resolveAuthenticationEnabled defaults ON — every action 401s.
+    // Enforce auth only when a directory is present (the live host stub).
+    const authEnabled =
+      this.identityDirectory !== undefined &&
+      resolveAuthenticationEnabled({ env: process.env });
+    // Isolated stubs have no directory: skip token verify. The SPA Bearer is
+    // issued by the real server; verifying it here used Buffer "base64url",
+    // which the browser polyfill rejects (`Unknown encoding: base64url`).
+    let principal: AuthPrincipal | undefined;
+    if (authEnabled) {
+      const extracted = await extractPrincipalFromAuthorizationHeader(
+        authorizationHeader,
+        getProcessTokenSecret(),
+      );
+      principal =
+        extracted && this.identityDirectory
+          ? bindPrincipalToDirectory(extracted, this.identityDirectory)
+          : extracted;
+    }
     const gate = assertRequestAllowed({
       enabled: authEnabled,
       principal,

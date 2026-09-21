@@ -170,9 +170,17 @@ export function getProcessTokenSecret(env: Record<string, string | undefined> = 
   return processTokenSecret;
 }
 
-function bytesToBase64Url(bytes: Uint8Array): string {
+/**
+ * Browser Buffer polyfills (vite-plugin-node-polyfills) throw
+ * `Unknown encoding: base64url`. Always encode via standard base64 + rewrite.
+ */
+export function bytesToBase64Url(bytes: Uint8Array): string {
   if (typeof Buffer !== "undefined") {
-    return Buffer.from(bytes).toString("base64url");
+    return Buffer.from(bytes)
+      .toString("base64")
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
   }
   let binary = "";
   for (const byte of bytes) {
@@ -181,7 +189,7 @@ function bytesToBase64Url(bytes: Uint8Array): string {
   return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
-function base64UrlToBytes(value: string): Uint8Array {
+export function base64UrlToBytes(value: string): Uint8Array {
   const padded = value.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((value.length + 3) % 4);
   const binary = globalThis.atob(padded);
   const bytes = new Uint8Array(binary.length);
@@ -189,6 +197,10 @@ function base64UrlToBytes(value: string): Uint8Array {
     bytes[index] = binary.charCodeAt(index);
   }
   return bytes;
+}
+
+export function bufferFromBase64Url(value: string): Buffer {
+  return Buffer.from(base64UrlToBytes(value));
 }
 
 async function hmacSha256Base64Url(secret: string, data: string): Promise<string> {
@@ -229,7 +241,7 @@ export async function hashPassword(password: string): Promise<string> {
     r: SCRYPT_R,
     p: SCRYPT_P,
   });
-  return `scrypt$${SCRYPT_N}$${SCRYPT_R}$${SCRYPT_P}$${salt.toString("base64url")}$${derived.toString("base64url")}`;
+  return `scrypt$${SCRYPT_N}$${SCRYPT_R}$${SCRYPT_P}$${bytesToBase64Url(salt)}$${bytesToBase64Url(derived)}`;
 }
 
 export async function verifyPassword(password: string, storedHash: string): Promise<boolean> {
@@ -240,8 +252,8 @@ export async function verifyPassword(password: string, storedHash: string): Prom
   const n = Number(parts[1]);
   const r = Number(parts[2]);
   const p = Number(parts[3]);
-  const salt = Buffer.from(parts[4], "base64url");
-  const expected = Buffer.from(parts[5], "base64url");
+  const salt = bufferFromBase64Url(parts[4]);
+  const expected = bufferFromBase64Url(parts[5]);
   if (!n || !r || !p || salt.length === 0 || expected.length === 0) {
     return false;
   }

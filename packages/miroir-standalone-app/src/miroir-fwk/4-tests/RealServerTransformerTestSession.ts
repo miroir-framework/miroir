@@ -11,6 +11,7 @@ import {
   ensureLibraryPlayfield,
   extendMiroirConfigWithExtraDeploymentConfiguration,
   isRealServerTransformerSessionOptions,
+  testbedApplicationAccessGrantUuid,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type IntegrationTestApplicationIdentity,
@@ -27,6 +28,7 @@ import {
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { runRealServerClientBootstrap } from "./runRealServerClientBootstrap.js";
 import { buildTeardownTestApplicationStoresAction } from "./testApplicationStoreTeardown.js";
+import { testbedAccessGrantFromAuthSession } from "./testbedAccessGrantFromAuthSession.js";
 import {
   buildTransformerApplicationDeploymentMap,
   deriveEphemeralTestApplicationStorageConfiguration,
@@ -75,8 +77,16 @@ export class RealServerTransformerTestSession implements RunnerTestSessionInterf
   private identity: IntegrationTestApplicationIdentity | undefined;
   private testDeploymentStorageConfiguration: StoreUnitConfiguration | undefined;
   private createdPlayfield = false;
+  private testbedAccessGrantUuid: string | undefined;
 
   constructor(private readonly options: RealServerTransformerTestSessionOptions) {}
+
+  private isPinnedIdentity(identity: IntegrationTestApplicationIdentity): boolean {
+    return (
+      identity.applicationUuid === PINNED_INTEG_TEST_APPLICATION_IDENTITY.applicationUuid &&
+      identity.deploymentUuid === PINNED_INTEG_TEST_APPLICATION_IDENTITY.deploymentUuid
+    );
+  }
 
   async initSession(): Promise<MiroirTestExecutionEnvironment> {
     const identity =
@@ -92,6 +102,7 @@ export class RealServerTransformerTestSession implements RunnerTestSessionInterf
       deriveEphemeralTestApplicationStorageConfiguration(
         libraryTemplate,
         identity.applicationName,
+        this.isPinnedIdentity(identity) ? undefined : identity.deploymentUuid,
       );
     this.testDeploymentStorageConfiguration = testDeploymentStorageConfiguration;
 
@@ -128,6 +139,17 @@ export class RealServerTransformerTestSession implements RunnerTestSessionInterf
 
     this.domainController = domainController;
 
+    const grantAccessTo = testbedAccessGrantFromAuthSession();
+    this.testbedAccessGrantUuid = grantAccessTo
+      ? testbedApplicationAccessGrantUuid(
+          grantAccessTo.miroirUserUuid,
+          identity.applicationUuid,
+        )
+      : undefined;
+    // Ephemeral identities always own their Admin rows. Mark created before
+    // playfield so a mid-create failure still teardowns Application/Deployment/Right.
+    this.createdPlayfield = !this.isPinnedIdentity(identity);
+
     const playfield = await ensureLibraryPlayfield({
       domainController,
       applicationDeploymentMap,
@@ -137,8 +159,9 @@ export class RealServerTransformerTestSession implements RunnerTestSessionInterf
       librarySelfApplicationUuid: identity.applicationUuid,
       mode: "createIfAbsent",
       skipOpenAdminStore: true,
+      grantAccessTo,
     });
-    this.createdPlayfield = playfield.created;
+    this.createdPlayfield = this.createdPlayfield || playfield.created;
 
     await seedTransformerTestApplicationData(
       domainController,
@@ -177,6 +200,7 @@ export class RealServerTransformerTestSession implements RunnerTestSessionInterf
       this.identity = undefined;
       this.testDeploymentStorageConfiguration = undefined;
       this.createdPlayfield = false;
+      this.testbedAccessGrantUuid = undefined;
       return;
     }
 
@@ -186,7 +210,10 @@ export class RealServerTransformerTestSession implements RunnerTestSessionInterf
         this.identity.applicationUuid,
         this.testDeploymentStorageConfiguration,
         // createDeployment via ensureLibraryPlayfield registers Admin Deployment/Application rows.
-        { deleteAdminInstances: this.createdPlayfield },
+        {
+          deleteAdminInstances: this.createdPlayfield,
+          accessGrantUuid: this.createdPlayfield ? this.testbedAccessGrantUuid : undefined,
+        },
       ),
       this.applicationDeploymentMap,
       buildIntegrationTestModelEnvironment(this.identity.deploymentUuid),
@@ -198,6 +225,7 @@ export class RealServerTransformerTestSession implements RunnerTestSessionInterf
     this.identity = undefined;
     this.testDeploymentStorageConfiguration = undefined;
     this.createdPlayfield = false;
+    this.testbedAccessGrantUuid = undefined;
   }
 }
 

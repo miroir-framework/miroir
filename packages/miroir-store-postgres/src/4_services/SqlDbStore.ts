@@ -10,6 +10,7 @@ import { Sequelize } from "sequelize";
 import { packageName } from "../constants";
 import { EntityUuidIndexedSequelizeModel } from "../utils";
 import { cleanLevel } from "./constants";
+import { sqlCreateSchemaIfNotExists } from "./sqlCreateSchemaIfNotExists.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbStore");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -64,8 +65,8 @@ export class SqlDbStore implements PersistenceStoreAbstractInterface {
   // ##############################################################################################
   public async open(): Promise<Action2VoidReturnType> {
     try {
-      await this.sequelize.authenticate();
-      await this.sequelize.query(`CREATE SCHEMA IF NOT EXISTS "${this.schema}"`);
+    await this.sequelize.authenticate();
+    await this.sequelize.query(sqlCreateSchemaIfNotExists(this.schema));
       log.info(
         this.logHeader,
         "data Connection to postgres data schema",

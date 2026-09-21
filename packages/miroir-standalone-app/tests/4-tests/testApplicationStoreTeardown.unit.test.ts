@@ -3,6 +3,7 @@ import {
   adminSelfApplication,
   entityApplicationForAdmin,
   entityDeployment,
+  entityMiroirRight,
 } from "miroir-test-app_deployment-admin";
 
 import { buildTeardownTestApplicationStoresAction } from "../../src/miroir-fwk/4-tests/testApplicationStoreTeardown.js";
@@ -78,6 +79,55 @@ describe("buildTeardownTestApplicationStoresAction", () => {
         data: { emulatedServerType: "indexedDb", indexedDbName: "x" },
       },
       { deleteAdminInstances: false },
+    );
+
+    expect(action.payload.actionSequence.map((step) => step.actionType)).toEqual([
+      "storeManagementAction_deleteStore",
+      "storeManagementAction_closeStore",
+    ]);
+  });
+
+  it("deletes the testbed MiroirRight before Admin Deployment and Application when accessGrantUuid is set", () => {
+    const grantUuid = "20b0b4ce-1d09-54c5-93be-59886264356f";
+    const action = buildTeardownTestApplicationStoresAction(
+      "11111111-1111-4111-8111-111111111111",
+      "22222222-2222-4222-8222-222222222222",
+      {
+        model: { emulatedServerType: "indexedDb", indexedDbName: "x" },
+        data: { emulatedServerType: "indexedDb", indexedDbName: "x" },
+      },
+      { accessGrantUuid: grantUuid },
+    );
+
+    expect(action.payload.actionSequence.map((step) => step.actionType)).toEqual([
+      "storeManagementAction_deleteStore",
+      "storeManagementAction_closeStore",
+      "deleteInstance",
+      "deleteInstance",
+      "deleteInstance",
+    ]);
+    expect(action.payload.actionSequence[2]).toMatchObject({
+      actionType: "deleteInstance",
+      actionLabel: "DeleteTestbedApplicationAccessGrant for 22222222-2222-4222-8222-222222222222",
+      payload: {
+        application: adminSelfApplication.uuid,
+        objects: [{ uuid: grantUuid, parentUuid: entityMiroirRight.uuid }],
+      },
+    });
+  });
+
+  it("does not delete the grant when Admin instances are kept", () => {
+    const action = buildTeardownTestApplicationStoresAction(
+      "11111111-1111-4111-8111-111111111111",
+      "22222222-2222-4222-8222-222222222222",
+      {
+        model: { emulatedServerType: "indexedDb", indexedDbName: "x" },
+        data: { emulatedServerType: "indexedDb", indexedDbName: "x" },
+      },
+      {
+        deleteAdminInstances: false,
+        accessGrantUuid: "20b0b4ce-1d09-54c5-93be-59886264356f",
+      },
     );
 
     expect(action.payload.actionSequence.map((step) => step.actionType)).toEqual([

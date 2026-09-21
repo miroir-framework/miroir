@@ -3,7 +3,11 @@
  */
 import { describe, expect, it } from "vitest";
 
-import { isUsableBearerToken, issueBearerToken } from "../../../../src/1_core/authentication/AuthenticationPolicy.js";
+import {
+  isUsableBearerToken,
+  issueBearerToken,
+  verifyBearerToken,
+} from "../../../../src/1_core/authentication/AuthenticationPolicy.js";
 import {
   authorizationHeaders,
   nextPageWhenAuthGate,
@@ -50,6 +54,35 @@ if (runThis) {
     it("authorizationHeaders is empty without a token and Bearer with one", () => {
       expect(authorizationHeaders(undefined)).toEqual({});
       expect(authorizationHeaders("tok")).toEqual({ Authorization: "Bearer tok" });
+    });
+
+    it("issues and verifies a token when Buffer has no base64url (browser polyfill)", async () => {
+      const originalToString = Buffer.prototype.toString;
+      const originalFrom = Buffer.from;
+      Buffer.prototype.toString = function (encoding?: string) {
+        if (encoding === "base64url") {
+          throw new Error("Unknown encoding: base64url");
+        }
+        return originalToString.call(this, encoding);
+      };
+      Buffer.from = ((value: unknown, encoding?: unknown) => {
+        if (encoding === "base64url") {
+          throw new Error("Unknown encoding: base64url");
+        }
+        return originalFrom.call(Buffer, value as string, encoding as BufferEncoding);
+      }) as typeof Buffer.from;
+      try {
+        const token = await issueBearerToken(
+          { miroirUserUuid: "1c39328c-7de4-44ae-bcf1-5bbc38d8e267", username: "alice" },
+          "test-secret-71",
+        );
+        await expect(verifyBearerToken(token, "test-secret-71")).resolves.toMatchObject({
+          username: "alice",
+        });
+      } finally {
+        Buffer.prototype.toString = originalToString;
+        Buffer.from = originalFrom;
+      }
     });
 
     it("treats a server-issued token as usable even when Buffer has no base64url (browser polyfill)", async () => {

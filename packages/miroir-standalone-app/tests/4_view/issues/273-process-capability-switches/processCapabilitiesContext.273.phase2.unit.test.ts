@@ -162,5 +162,16 @@ if (runThis) {
         "domainControllerForServer.setProcessCapabilities(processCapabilities)",
       );
     });
+
+    it("setupMiroirTest installs fetchProcessCapabilities on the real-server client DomainController", () => {
+      const src = readFileSync(
+        join(REPO_ROOT, "packages/miroir-standalone-app/src/miroir-fwk/4-tests/setupMiroirTest.ts"),
+        "utf8",
+      );
+      const afterFetch = src.slice(src.indexOf("fetchProcessCapabilities"));
+      expect(afterFetch).toContain(
+        "domainControllerForClient.setProcessCapabilities(processCapabilities)",
+      );
+    });
   });
 }

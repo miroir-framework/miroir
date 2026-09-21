@@ -15,6 +15,8 @@ import { defaultMetaModelEnvironment } from "../1_core/Model.js";
 import {
   ENTITY_MIROIR_SECRET_UUID,
   SECRETS_SET_ACTION_LABEL,
+  bufferFromBase64Url,
+  bytesToBase64Url,
 } from "../1_core/authentication/AuthenticationPolicy.js";
 import { registerHydratedProcessSecret, registerHydratedUserSecret } from "./SecretStore.js";
 
@@ -154,9 +156,9 @@ export function encryptSecret(algorithm: string, wrappingKey: string, plaintext:
   const tag = cipher.getAuthTag();
   return [
     AES_256_GCM,
-    iv.toString("base64url"),
-    encrypted.toString("base64url"),
-    tag.toString("base64url"),
+    bytesToBase64Url(iv),
+    bytesToBase64Url(encrypted),
+    bytesToBase64Url(tag),
   ].join("$");
 }
 
@@ -172,9 +174,9 @@ export function decryptSecret(algorithm: string, wrappingKey: string, ciphertext
     throw new Error("Invalid secret ciphertext");
   }
   try {
-    const iv = Buffer.from(parts[1], "base64url");
-    const data = Buffer.from(parts[2], "base64url");
-    const tag = Buffer.from(parts[3], "base64url");
+    const iv = bufferFromBase64Url(parts[1]);
+    const data = bufferFromBase64Url(parts[2]);
+    const tag = bufferFromBase64Url(parts[3]);
     const decipher = createDecipheriv(AES_256_GCM, wrappingKeyBytes(wrappingKey), iv);
     decipher.setAuthTag(tag);
     return Buffer.concat([decipher.update(data), decipher.final()]).toString("utf8");

@@ -1396,7 +1396,10 @@ export {
   assertSecretInstanceMutationAllowed,
   assertRequestAllowed,
   bindPrincipalToDirectory,
+  base64UrlToBytes,
   bearerTokenFromAuthorizationHeader,
+  bufferFromBase64Url,
+  bytesToBase64Url,
   buildAuthStatusBody,
   changePassword,
   extractPrincipalFromAuthorizationHeader,
@@ -1452,6 +1455,12 @@ export {
   type AccessTarget,
 } from "./1_core/authentication/AccessPolicy.js";
 export {
+  buildTestbedApplicationAccessGrantInstance,
+  resolveTestbedAccessGrantPrincipal,
+  testbedApplicationAccessGrantUuid,
+  type TestbedAccessGrantPrincipal,
+} from "./1_core/authentication/TestbedAccessGrant.js";
+export {
   deploymentUuidFromHttpRequest,
 } from "./1_core/authentication/deploymentUuidFromHttpRequest.js";
 export {
@@ -1467,6 +1476,7 @@ export {
 } from "./1_core/authentication/AuthenticationUi.js";
 export {
   RestClient,
+  getRestClientAuthorizationToken,
   setRestClientAuthorizationInvalidationHandler,
   setRestClientAuthorizationTokenGetter,
 } from "./4_services/RestClient.js";
@@ -1566,6 +1576,7 @@ export {
   ensureLibraryPlayfield,
   resetIntegTestbed,
   type EnsureLibraryPlayfieldParams,
+  type EnsureLibraryPlayfieldResult,
   type LibraryPlayfieldEnsureMode,
   type ResetIntegTestbedParams,
 } from "./5_tests/LibraryPlayfield.js";
