@@ -89,6 +89,43 @@ describe.skipIf(!shouldRun)("resolveApiCallReportSectionSchema — real Spotify 
     }
   });
 
+  it("missing operations[] entry is a hard fail naming the operation and endpoint", () => {
+    const endpointMissingGetPlaylist = structuredClone(spotifyServiceEndpoint);
+    const external = endpointMissingGetPlaylist.definition.externalService;
+    expect(external, "SpotifyService must be an externalService endpoint").toBeDefined();
+    // Endpoint exists and operations[] is present, but get-playlist is absent.
+    external!.operations = [
+      {
+        operationId: "change-playlist-details",
+        method: "PUT",
+        path: "/playlists/{playlist_id}",
+        parameterMappings: [],
+        responseSchema: { type: "object", definition: {} },
+      },
+    ];
+
+    const result = resolveApiCallReportSectionSchema({
+      section: {
+        fetchedDataReference: "playlist",
+        endpointUuid: SPOTIFY_ENDPOINT_UUID,
+        operationId: "get-playlist",
+      },
+      extractorTemplates: reportSpotifyPlaylist.definition.extractorTemplates as Record<
+        string,
+        unknown
+      >,
+      endpointsByUuid: { [SPOTIFY_ENDPOINT_UUID]: endpointMissingGetPlaylist },
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toContain("get-playlist");
+      expect(result.error).toContain(SPOTIFY_ENDPOINT_UUID);
+      expect(result.error).toMatch(/operation/i);
+      expect(result.error).not.toContain("binding mismatch");
+      expect(result.error.toLowerCase()).not.toContain("report target entity not found");
+    }
+  });
+
   it("missing fetchedDataReference names the key tracks", () => {
     const result = resolveApiCallReportSectionSchema({
       section: {
