@@ -2,7 +2,6 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { entityReport, entityVersionReport } from "miroir-test-app_deployment-miroir";
 import {
   entitySpotifyPlaylist,
   querySpotifyGetPlaylist,
@@ -76,32 +75,6 @@ const EXPECTED_SPOTIFY_MODEL_FILES: {
   },
 ];
 
-type ReportSectionList = {
-  type: "list";
-  definition: Array<{ type: string; definition?: Record<string, unknown> }>;
-};
-
-type ReportSectionUnion = {
-  type: "union";
-  discriminator: string;
-  definition: Array<{
-    type: string;
-    definition?: { relativePath?: string };
-  }>;
-};
-
-type EntityLike = {
-  mlSchema: {
-    definition?: {
-      definition?: {
-        context?: {
-          reportSection?: ReportSectionUnion;
-        };
-      };
-    };
-  };
-};
-
 function collectJsonFilesUnder(root: string): string[] {
   const found: string[] = [];
   const walk = (dir: string) => {
@@ -121,15 +94,6 @@ function collectJsonFilesUnder(root: string): string[] {
   };
   walk(root);
   return found.sort();
-}
-
-function reportSectionUnionMemberNames(entity: EntityLike): string[] {
-  const union = entity.mlSchema.definition?.definition?.context?.reportSection;
-  expect(union?.type).toBe("union");
-  expect(union?.discriminator).toBe("type");
-  return (union?.definition ?? []).map(
-    (arm) => arm.definition?.relativePath ?? "<missing-relativePath>",
-  );
 }
 
 function extractExportTypeBlock(source: string, typeName: string): string {
@@ -224,39 +188,5 @@ describe.skipIf(!shouldRun)("apiCallReport #281 phase0 — current contracts", (
     expect(querySpotifyGetPlaylist.definition?.extractorTemplates).toEqual(
       reportSpotifyPlaylist.definition?.extractorTemplates,
     );
-  });
-
-  describe("pre-281 inventory", () => {
-    it("SpotifyPlaylistReport sections are input + objectInstance + json (no apiCallReportSection)", () => {
-      const section = reportSpotifyPlaylist.definition?.section as ReportSectionList | undefined;
-      expect(section?.type).toBe("list");
-      expect(section?.definition.map((entry) => entry.type)).toEqual([
-        "inputReportSection",
-        "objectInstanceReportSection",
-        "jsonReportSection",
-      ]);
-      expect(section?.definition[1]?.definition?.parentUuid).toBe(
-        "56166585-b6fd-42c6-95d3-32a80c3304f7",
-      );
-      expect(section?.definition[1]?.definition?.fetchedDataReference).toBe("playlist");
-      expect(section?.definition.map((entry) => entry.type)).not.toContain("apiCallReportSection");
-    });
-
-    it("Report Entity and EntityVersion reportSection unions have 15 members without apiCallReportSection", () => {
-      const presentMembers = reportSectionUnionMemberNames(entityReport as EntityLike);
-      const versionMembers = reportSectionUnionMemberNames(entityVersionReport as EntityLike);
-
-      expect(presentMembers).toHaveLength(15);
-      expect(versionMembers).toHaveLength(15);
-      expect(presentMembers).toEqual(versionMembers);
-      expect(presentMembers).not.toContain("apiCallReportSection");
-      expect(presentMembers).toEqual(
-        expect.arrayContaining([
-          "inputReportSection",
-          "objectInstanceReportSection",
-          "jsonReportSection",
-        ]),
-      );
-    });
   });
 });

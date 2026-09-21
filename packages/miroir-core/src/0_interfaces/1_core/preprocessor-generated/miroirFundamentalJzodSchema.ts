@@ -12384,6 +12384,61 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "apiCallReportSection": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "display": {
+              "displayedAttributeValueWhenFolded": "definition.label"
+            }
+          }
+        },
+        "definition": {
+          "type": {
+            "type": "literal",
+            "definition": "apiCallReportSection"
+          },
+          "definition": {
+            "type": "object",
+            "definition": {
+              "label": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Label"
+                  }
+                }
+              },
+              "fetchedDataReference": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Fetched Data Reference"
+                  }
+                }
+              },
+              "endpointUuid": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Endpoint UUID"
+                  }
+                }
+              },
+              "operationId": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Operation ID"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "miroirTestReportSection": {
         "type": "object",
         "tag": {
@@ -13111,6 +13166,14 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "jsonReportSection"
+            },
+            "context": {}
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "apiCallReportSection"
             },
             "context": {}
           },

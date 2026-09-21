@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Review: [`./adversarial-review.md`
 Prerequisite: [`../267-FEATURE-openapi-external-services/`](../267-FEATURE-openapi-external-services/) ✅
 Working branch: `281-FEATURE-api-call-report-section`
 
-**Resume note:** Slice 0 ✅ DONE. Slice 1 (tracer integ) not started.
+**Resume note:** Slice 1 ✅ DONE. Slice 2 (binding / schema lookup hard fail) not started.
 
 ---
 
@@ -35,7 +35,7 @@ This plan does **not** add HTTP instance cache, Entity `mlSchema` schemaReferenc
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize current Spotify + sync + section contracts | ✅ | `apiCallReport.281.phase0.unit.test.ts` (stable asserts only) |
-| 1 | **First behavioral slice (tracer):** typed playlist UI from Endpoint schema, no `parentUuid` | ⬜ | cloned report + `apiCallReport.281.phase1.integ.test.tsx`; GREEN updates committed asset + `spotifyApp` |
+| 1 | **First behavioral slice (tracer):** typed playlist UI from Endpoint schema, no `parentUuid` | ✅ | cloned report + `apiCallReport.281.phase1.integ.test.tsx`; GREEN updates committed asset + `spotifyApp` |
 | 2 | Binding / schema lookup hard fail | ⬜ | `apiCallReport.281.phase2.integ.test.tsx` |
 | 3 | Sync: `operationSync`, no Spotify defaults, Entity opt-in | ⬜ | `externalServiceSync` + `apiCallReport.281.phase3.unit.test.ts` |
 | 4 | Delete example Entity; rewrite blast radius; HTTP Entity fixture | ⬜ | `spotifyApp` + `externalServiceHttpStoreSkip` + modelValidation spotify |
@@ -166,7 +166,7 @@ npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation
 
 ## Slice 1 — Tracer: typed playlist from Endpoint schema without Entity `parentUuid`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -236,7 +236,28 @@ Phase0 `pre-281 inventory` describe must already be gone (P4). Do not re-run del
 
 ### Realization
 
-<Appended on completion.>
+- **Files created:** `packages/miroir-standalone-app/tests/4_view/issues/281-api-call-report-section/apiCallReport.281.phase1.integ.test.tsx` (Spotify boot copied from `spotifyApp`; in-test `structuredClone` of `10ce3252-…` with `apiCallReportSection`; no shared helper extracted).
+- **Files modified:** Report Entity `3f2baa83-…` + EntityVersion `952d2c65-…` (`miroir_modelVersion/…`, not `miroir_model/…`); `getMiroirFundamentalJzodSchema.ts` filter list; generated `miroirFundamentalType.ts` / `miroirFundamentalJzodSchema.ts`; `ReportSectionViewWithEditor.tsx`; `ReportTools.ts`; committed Spotify report `10ce3252-…`; `spotifyApp.integ.test.tsx`; phase0 (deleted `describe("pre-281 inventory")`); `playlist-ok.json` (4_view + 3_controllers copies).
+- **RED failure observed:** after boot + render, waitFor 15s: `expected playlist name Rock Classics in typed UI (display value or text): expected false to be true`. Harness was healthy: `playlistId` input showed `test-playlist-001`; second list slot was an empty `<div>` (no `apiCallReportSection` arm). `--bail=1` stopped before the form-schema `it`; `default` in `reportSectionsFormSchema` still threw for the new type.
+- **GREEN:** dual-write `apiCallReportSection` (`label?`, required `fetchedDataReference` / `endpointUuid` / `operationId` strings) + union member; filter list; `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core`. View arm on **child** `ReportSectionViewWithEditor`: `useCurrentModelEnvironment(…).endpointsByUuid` then `getExternalService` → `operations[].responseSchema`, fallback `currentModel.endpoints.find`; `TypedValueObjectEditor` `readonly={true}`, `displaySubmitButton="noDisplay"`, `useActionButton={false}`. `reportSectionsFormValue` seeds `reportData[fetchedDataReference]` at `reportSectionPath.join("_")`; `reportSectionsFormSchema` returns `{}`. Committed report: `inputReportSection` + `apiCallReportSection`; dropped `objectInstance` / `json` / `runtimeTransformers.tracks`.
+- **Validation:**
+  - `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core` → **pass** (before GREEN tests)
+  - miroir `modelValidation` (`modelValidation.unit.test.ts`, vitest root `./tests`) → **152/152 pass**
+  - spotify `modelValidation` → **7/7 pass** (report JSON accepted in the union)
+  - `RUN_TEST=apiCallReport.281.phase0` → **6/6 pass** (pre-281 inventory gone)
+  - `RUN_TEST=apiCallReport.281.phase1 --profile emulatedServer-filesystem` → **3/3 pass**
+  - `RUN_TEST=spotifyApp --profile emulatedServer-filesystem` → **7/7 pass**
+  - `RUN_TEST=externalServiceReport --profile emulatedServer-filesystem` → **5/5 pass**
+  - `tsc` miroir-core → **pass**
+  - `tsc` miroir-standalone-app → **pass** after re-exporting generated `ReportLink` from `miroir-core/src/index.ts` (AppBar already imported it; latent gap, not Slice 1 behavior).
+- **Deviations:**
+  - EntityVersion dual-write path is `packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion/54b9c72f-…/952d2c65-….json` (plan’s `miroir_model/` path does not exist).
+  - No shared Spotify render helper (1.3 optional; copy is acceptable).
+  - `openReportSection` not added to the bootstrap filter; regen did not break.
+  - `playlist-ok.json`: added `images: []` and artist `id` so editor `jzodTypeCheck` matches the bounded `responseSchema`. Fetch `lenientValidateJzod` already stripped extras (`href`, unknown root keys) but **does not** fill missing required fields (`images`, `artists[].id`). Without that, the readonly editor showed `typeError:` instead of fields. Same two keys added on the 3_controllers fixture copy.
+  - `spotifyApp`: playlist name/owner/tracks asserted via **display value or text** because `readonly` `TypedValueObjectEditor` uses `ThemedDisplayValue` (not inputs). Metadata-only: no query failure / no `FailedTransformer`; **dropped** `jsonReportSection` `<pre> "[]"`. New-shape still forbids typeError dump. HTTP-no-data-directory and `entitySpotifyPlaylist.mlSchema` jzodTypeCheck kept.
+  - Did **not** extract a shared helper; did **not** commit until parent slice commit.
+  - Re-exported generated `ReportLink` from `miroir-core/src/index.ts` so standalone-app `tsc` passes (`AppBar` already imported it).
 
 ---
 
@@ -445,7 +466,7 @@ Automated equivalent: phase1 + phase2 + `externalServiceSync` + `spotifyApp`.
 
 | Criterion | Proven by | Status |
 |---|---|---|
-| Typed playlist UI **without** `objectInstanceReportSection` / `parentUuid` (Entity file may still exist in the package) | Slice 1 phase1 | ⬜ |
+| Typed playlist UI **without** `objectInstanceReportSection` / `parentUuid` (Entity file may still exist in the package) | Slice 1 phase1 | ✅ |
 | Example package no longer ships Entity `56166585-…`; typed UI still works | Slice 4 `spotifyApp` | ⬜ |
 | `objectInstanceReportSection` + HTTP Entity still works | Slice 4 phase4 fixture | ⬜ |
 | Section vs extractor mismatch hard fail | Slice 2 | ⬜ |

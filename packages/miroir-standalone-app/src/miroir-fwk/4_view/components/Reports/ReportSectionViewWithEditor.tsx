@@ -7,6 +7,7 @@ import {
   Domain2QueryReturnType,
   Entity,
   getApplicationSection,
+  getExternalService,
   LoggerInterface,
   MiroirLoggerFactory,
   ReportSection,
@@ -15,6 +16,7 @@ import {
   TransformerFailure,
   Uuid,
   type ApplicationDeploymentMap,
+  type JzodElement,
   type JzodObject,
 } from "miroir-core";
 
@@ -24,7 +26,7 @@ import type { Params } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { packageName, type ReportUrlParamKeys } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
-import { useCurrentModel } from '../../ReduxHooks.js';
+import { useCurrentModel, useCurrentModelEnvironment } from '../../ReduxHooks.js';
 import { reportUrl } from '../../navigation.js';
 import { ReportDisplay } from '../../routes/ReportDisplay';
 import {
@@ -183,6 +185,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   const { navigationCount, totalCount } = useRenderTracker("ReportSectionViewWithEditor", currentNavigationKey);
 
   const currentModel = useCurrentModel(props.application, props.applicationDeploymentMap);
+  const env = useCurrentModelEnvironment(props.application, props.applicationDeploymentMap);
 
   const entities = useMemo(() => {
     const result = props.deploymentUuid &&
@@ -200,6 +203,21 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
       ? entities?.find((e:Entity) => e?.uuid === (reportSectionDefinitionFromFormik?.definition as any)["parentUuid"])
         ?? currentModel.entities?.find((e:Entity) => e?.uuid === (reportSectionDefinitionFromFormik?.definition as any)["parentUuid"])
       : undefined;
+
+  const apiCallSectionDefinition =
+    reportSectionDefinitionFromFormik?.type === "apiCallReportSection"
+      ? reportSectionDefinitionFromFormik.definition
+      : undefined;
+  const apiCallEndpoint = apiCallSectionDefinition
+    ? env.endpointsByUuid?.[apiCallSectionDefinition.endpointUuid] ??
+      currentModel.endpoints?.find((endpoint) => endpoint.uuid === apiCallSectionDefinition.endpointUuid)
+    : undefined;
+  const apiCallOperation = apiCallSectionDefinition
+    ? getExternalService(apiCallEndpoint)?.operations?.find(
+        (operation) => operation.operationId === apiCallSectionDefinition.operationId,
+      )
+    : undefined;
+  const apiCallResponseSchema = apiCallOperation?.responseSchema as JzodElement | undefined;
 
   /**
    * Entities to render in a modelDiagramReportSection.
@@ -517,6 +535,36 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
               setAddObjectdialogFormIsOpen={props.setAddObjectdialogFormIsOpen}
             />
           </>
+        )}
+        {reportSectionDefinitionFromFormik?.type == "apiCallReportSection" && (
+          apiCallResponseSchema ? (
+            <TypedValueObjectEditor
+              labelElement={
+                reportSectionDefinitionFromFormik.definition.label ? (
+                  <h2>{reportSectionDefinitionFromFormik.definition.label}</h2>
+                ) : undefined
+              }
+              formValueMLSchema={apiCallResponseSchema}
+              formikValuePathAsString={props.reportSectionPath.join("_")}
+              application={props.application}
+              applicationDeploymentMap={props.applicationDeploymentMap}
+              deploymentUuid={props.deploymentUuid}
+              applicationSection={props.applicationSection}
+              formLabel={reportSectionDefinitionFromFormik.definition.label ?? "API call"}
+              zoomInPath=""
+              maxRenderDepth={Infinity}
+              displaySubmitButton="noDisplay"
+              useActionButton={false}
+              valueObjectEditMode={valueObjectEditMode}
+              readonly={true}
+            />
+          ) : (
+            <div>
+              Could not resolve Endpoint operation responseSchema for endpoint{" "}
+              {reportSectionDefinitionFromFormik.definition.endpointUuid} operation{" "}
+              {reportSectionDefinitionFromFormik.definition.operationId}
+            </div>
+          )
         )}
         {reportSectionDefinitionFromFormik?.type == "storedReportDisplay" && (
           <div>
