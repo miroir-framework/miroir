@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Review: [`./adversarial-review.md`
 Prerequisite: [`../267-FEATURE-openapi-external-services/`](../267-FEATURE-openapi-external-services/) ✅
 Working branch: `281-FEATURE-api-call-report-section`
 
-**Resume note:** Slice 2 ✅ DONE. Slice 3 (`operationSync` / drop Spotify constants) not started.
+**Resume note:** Slice 3 ✅ DONE. Slice 4 (delete example Entity `56166585-…`) not started.
 
 ---
 
@@ -37,7 +37,7 @@ This plan does **not** add HTTP instance cache, Entity `mlSchema` schemaReferenc
 | 0 | Characterize current Spotify + sync + section contracts | ✅ | `apiCallReport.281.phase0.unit.test.ts` (stable asserts only) |
 | 1 | **First behavioral slice (tracer):** typed playlist UI from Endpoint schema, no `parentUuid` | ✅ | cloned report + `apiCallReport.281.phase1.integ.test.tsx`; GREEN updates committed asset + `spotifyApp` |
 | 2 | Binding / schema lookup hard fail | ✅ | `apiCallReport.281.phase2.integ.test.tsx` |
-| 3 | Sync: `operationSync`, no Spotify defaults, Entity opt-in | ⬜ | `externalServiceSync` + `apiCallReport.281.phase3.unit.test.ts` |
+| 3 | Sync: `operationSync`, no Spotify defaults, Entity opt-in | ✅ | `externalServiceSync` + `syncExternalServiceSchema.281.phase3.unit.test.ts` + `externalServiceSyncExecute` (filesystem **and** sql) |
 | 4 | Delete example Entity; rewrite blast radius; HTTP Entity fixture | ⬜ | `spotifyApp` + `externalServiceHttpStoreSkip` + modelValidation spotify |
 | 5 | Docs, nonreg, cleanup, AC | ⬜ | nonreg step + tracer narrative |
 
@@ -331,7 +331,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ## Slice 3 — Sync: `operationSync`, drop Spotify defaults, Entity opt-in
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -390,7 +390,33 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+- **Files created:** `packages/miroir-core/tests/2_domain/issues/281-api-call-report-section/syncExternalServiceSchema.281.phase3.unit.test.ts`.
+- **Files modified:** `syncExternalServiceSchema.ts` (drop `DEFAULT_*` / `entityDefaultsForOperation` / `createdEntities[0]`; required `endpointUuid`; `operationSync.boundPaths` fail-closed; Entity opt-in; D9 scope default; `buildCompositeAction` takes an entities array); `endpointDefinition.ts` (`operationSync?`); Endpoint Entity `3d8da4d4-…` + EntityVersion `e3c1cc69-…` (dual-write); TransformerDefinition `c615ff0e-…` (`endpointUuid`); Spotify Endpoint `0e5cb172-…` (`operationSync.get-playlist.boundPaths`, no `entity`); `spotifyServiceEndpoint.sync-input.json` (loop-closure boundPaths); MiroirTest `f4e5dde0-…` / `394242e7-…`; phase0 constants assert inverted; this plan.
+- **RED failure observed:**
+  - phase3 vitest (6/6 fail for the right reason): missing `endpointUuid` → `expected { …(4) } to be an instance of TransformerFailure` (today defaulted to the Spotify uuid); in-scope GET without `boundPaths` (`get-album`, not in `DEFAULT_BOUNDED_PATHS`) → same success instead of fail-closed; reduced boundPaths still materialized `tracks` from `DEFAULT_BOUNDED_PATHS` (`expected { Object (type, definition) } to be undefined`); two `entity` keys → `expected [] to have a length of 2 but got +0`; omitted `scope` → `syncExternalServiceSchema requires transformerParams.scope (operationIds)`; extra `operationSync` key → leftover `createEntity` (`expected [ Array(1) ] to have a length of +0 but got 1`).
+  - `externalServiceSync` unit: operations-only `[payload.actionSequence.1]: expected { actionType: 'createEntity', … createSpotifyPlaylist … uuid 56166585-… } to deeply equal undefined`; entity opt-in `expected '56166585-…' to deeply equal '7c8a1e20-…'`.
+- **GREEN:** R6 order: dual-write `operationSync` + Spotify `boundPaths` **then** delete constants. Handler requires `endpointUuid`; reads `boundPaths` / `entity` from Endpoint `operationSync` (`transformerParams.operationSync` override); D9 defaults empty `scope` to non-empty `enabledOperations`; one `createEntity` action per opted-in key; `externalService` spread keeps `operationSync` on Endpoint upsert. Deleted `entityDefaultsForOperation`. Kept `convertSchema` / `responseSchemaForOperation`.
+- **Postgres finding:** second `createEntity` on the HTTP Entity uuid **already succeeds** on `emulatedServer-sql` (data-section `createStorageSpaceForInstancesOfEntity` skips `kind: "http"`; Entity row `sequelizeModel.upsert`). **No store mixin change in this slice.** Filesystem re-sync also passed (`createEntity` upsert).
+- **Validation:**
+  - `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core` → **pass**
+  - miroir `modelValidation.unit.test.ts` (filter without `tests/` prefix) → **152/152 pass**
+  - spotify `tests/modelValidation.unit.test.ts` → **7/7 pass**
+  - `RUN_TEST=syncExternalServiceSchema.281.phase3` → **6/6 pass**
+  - `testMiroir --suites externalServiceSync --mode unit` → **4/4 pass**
+  - `testMiroir --profile emulatedServer-filesystem --suites externalServiceSyncExecute --mode integ` → **2/2 pass**
+  - `testMiroir --profile emulatedServer-sql --suites externalServiceSyncExecute --mode integ` → **2/2 pass**
+  - `RUN_TEST=apiCallReport.281.phase1 --profile emulatedServer-filesystem` → **3/3 pass**
+  - `RUN_TEST=apiCallReport.281.phase0` (constants gone) → **6/6 pass**
+  - `tsc` miroir-core → **pass**
+  - `tsc` miroir-standalone-app → **pass**
+- **Deviations:**
+  - D9 lives in phase3 vitest case 5 (plan allowed MiroirTest **or** vitest) rather than duplicating the full OpenAPI excerpt in `f4e5dde0-…`.
+  - oneOf/anyOf MiroirTests now carry `operationSync.get-thing.boundPaths: ["id"]` so D8 fail-closed does not shadow the convertSchema `oneOf`/`anyOf` message.
+  - Entity opt-in MiroirTest uses uuid `7c8a1e20-…` (not the Spotify default `56166585-…`) so RED disagreed with `entityDefaultsForOperation`.
+  - `spotifyServiceEndpoint.sync-input.json` got the same `boundPaths` so `externalServiceQuery` loop-closure still materializes `get-playlist` after constants are gone.
+  - Did **not** change postgres/filesystem `createEntity` mixins (already upsert / HTTP-skip).
+  - Did **not** rewrite `dogfood-sync-spotify-schema.ts` (still expects `createEntity`; Slice 4).
+  - Did **not** delete SpotifyPlaylist Entity; did **not** touch dirty admin JSON; did **not** commit.
 
 ---
 
@@ -491,10 +517,10 @@ Automated equivalent: phase1 + phase2 + `externalServiceSync` + `spotifyApp`.
 | Section vs extractor mismatch hard fail | Slice 2 | ✅ |
 | Unknown Endpoint / missing operation / missing extractor hard fail | Slice 2 | ✅ |
 | HTTP payload not persisted as Entity instances (no data-section files) | Slice 1 P5 assert (`spotifyApp` L556–581 pattern) | ⬜ |
-| Sync without `operationSync.entity` emits no `createEntity`; no Spotify constants | Slice 3 | ⬜ |
-| Missing `boundPaths` fail closed | Slice 3 | ⬜ |
-| Re-sync via `createEntity` upsert (filesystem **and** postgres); several entity keys | Slice 3 execute integ (both profiles) + unit two-`createEntity` | ⬜ |
-| `operationSync` survives Endpoint upsert | Slice 3 | ⬜ |
+| Sync without `operationSync.entity` emits no `createEntity`; no Spotify constants | Slice 3 | ✅ |
+| Missing `boundPaths` fail closed | Slice 3 | ✅ |
+| Re-sync via `createEntity` upsert (filesystem **and** postgres); several entity keys | Slice 3 execute integ (both profiles) + unit two-`createEntity` | ✅ |
+| `operationSync` survives Endpoint upsert | Slice 3 | ✅ |
 | Menu/home still the playlist report | Slice 4 `spotifyApp` | ⬜ |
 | `modelValidation` miroir + spotify | Slices 1, 3, 4 | ⬜ |
 | GitHub issue AC #8 rewritten to D15 (`createEntity` upsert, not `updateInstance`) | Slice 5 | ⬜ |

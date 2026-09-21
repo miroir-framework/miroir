@@ -147,15 +147,16 @@ describe.skipIf(!shouldRun)("apiCallReport #281 phase0 — current contracts", (
     });
   });
 
-  it("syncExternalServiceSchema.ts still contains Spotify sync defaults (until Slice 3)", () => {
+  it("syncExternalServiceSchema.ts no longer contains Spotify sync defaults", () => {
     const source = readFileSync(
       join(REPO_ROOT, "packages/miroir-core/src/2_domain/syncExternalServiceSchema.ts"),
       "utf8",
     );
-    expect(source).toContain("DEFAULT_GET_PLAYLIST_ENTITY_UUID");
-    expect(source).toContain("DEFAULT_SPOTIFY_ENDPOINT_UUID");
-    expect(source).toContain("DEFAULT_BOUNDED_PATHS");
-    expect(source).toContain("createdEntities[0]");
+    expect(source).not.toContain("DEFAULT_GET_PLAYLIST_ENTITY_UUID");
+    expect(source).not.toContain("DEFAULT_SPOTIFY_ENDPOINT_UUID");
+    expect(source).not.toContain("DEFAULT_BOUNDED_PATHS");
+    expect(source).not.toContain("createdEntities[0]");
+    expect(source).not.toContain("entityDefaultsForOperation");
   });
 
   it("getReportsAndEntitiesForDeploymentUuid return shape has no endpoints key", () => {

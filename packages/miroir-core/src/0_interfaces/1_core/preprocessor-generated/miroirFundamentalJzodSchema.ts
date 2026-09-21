@@ -4776,7 +4776,12 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "type": "string"
             },
-            "description": "operationId values to sync. Non-GET operations in scope are skipped."
+            "description": "operationId values to sync. Non-GET operations in scope are skipped. When omitted, defaults to the Endpoint enabledOperations list if it is non-empty."
+          },
+          "endpointUuid": {
+            "type": "uuid",
+            "optional": true,
+            "description": "Uuid of the externalService Endpoint to sync. Required at runtime via transformerParams.endpointUuid."
           }
         }
       },
@@ -22974,6 +22979,68 @@ export const miroirFundamentalJzodSchema = {
                             }
                           }
                         }
+                      },
+                      "operationSync": {
+                        "type": "record",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Operation Sync"
+                          }
+                        },
+                        "definition": {
+                          "type": "object",
+                          "definition": {
+                            "boundPaths": {
+                              "type": "array",
+                              "tag": {
+                                "value": {
+                                  "defaultLabel": "Bound Paths"
+                                }
+                              },
+                              "definition": {
+                                "type": "string"
+                              }
+                            },
+                            "entity": {
+                              "type": "object",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "defaultLabel": "Entity"
+                                }
+                              },
+                              "definition": {
+                                "uuid": {
+                                  "type": "uuid",
+                                  "tag": {
+                                    "value": {
+                                      "defaultLabel": "Uuid"
+                                    }
+                                  }
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "optional": true,
+                                  "tag": {
+                                    "value": {
+                                      "defaultLabel": "Name"
+                                    }
+                                  }
+                                },
+                                "entityVersionUuid": {
+                                  "type": "uuid",
+                                  "optional": true,
+                                  "tag": {
+                                    "value": {
+                                      "defaultLabel": "Entity Version Uuid"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
                       }
                     }
                   }
@@ -33823,7 +33890,12 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "type": "string"
             },
-            "description": "operationId values to sync. Non-GET operations in scope are skipped."
+            "description": "operationId values to sync. Non-GET operations in scope are skipped. When omitted, defaults to the Endpoint enabledOperations list if it is non-empty."
+          },
+          "endpointUuid": {
+            "type": "uuid",
+            "optional": true,
+            "description": "Uuid of the externalService Endpoint to sync. Required at runtime via transformerParams.endpointUuid."
           }
         }
       },
