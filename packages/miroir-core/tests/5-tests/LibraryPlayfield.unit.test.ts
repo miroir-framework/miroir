@@ -98,16 +98,50 @@ describe("LibraryPlayfield (Gap B L1/L2)", () => {
       const types = action.payload.actionSequence.map((a: { actionType: string }) => a.actionType);
       expect(types).toEqual([
         "createInstance",
+        "createInstance",
         "storeManagementAction_openStore",
         "storeManagementAction_createStore",
-        "createInstance",
       ]);
       expect(action.payload.actionSequence[0].actionLabel).toBe(
         "CreateAdminApplicationInstance for Library",
       );
       expect(action.payload.actionSequence[1].actionLabel).toBe(
+        "CreateDeploymentInstance for Library",
+      );
+      expect(action.payload.actionSequence[2].actionLabel).toBe(
         "storeManagementAction_openStore for Library",
       );
+    });
+
+    it("createIfAbsent forwards grantAccessTo into createDeployment before openStore", async () => {
+      const ALICE_UUID = "1c39328c-7de4-44ae-bcf1-5bbc38d8e267";
+      const handleCompositeAction = vi.fn().mockResolvedValue({ status: "ok" });
+      const result = await ensureLibraryPlayfield(
+        baseEnsureParams({
+          domainController: { handleCompositeAction } as unknown as DomainControllerInterface,
+          skipOpenAdminStore: true,
+          grantAccessTo: { miroirUserUuid: ALICE_UUID },
+        }),
+      );
+
+      const action = handleCompositeAction.mock.calls[0][0];
+      const types = action.payload.actionSequence.map((a: { actionType: string }) => a.actionType);
+      expect(types).toEqual([
+        "createInstance",
+        "createInstance",
+        "createInstance",
+        "storeManagementAction_openStore",
+        "storeManagementAction_createStore",
+      ]);
+      const grantAction = action.payload.actionSequence[2];
+      expect(grantAction.actionLabel).toBe("CreateTestbedApplicationAccessGrant for Library");
+      expect(grantAction.payload.objects[0]).toMatchObject({
+        miroirUser: ALICE_UUID,
+        targetType: "application",
+        targetUuid: LIBRARY_APP_UUID,
+      });
+      expect(result.created).toBe(true);
+      expect(result.accessGrantUuid).toBe(grantAction.payload.objects[0].uuid);
     });
   });
 

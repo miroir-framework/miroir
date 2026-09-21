@@ -43,6 +43,30 @@ if (runThis) {
       expect(decryptSecret("aes-256-gcm", WRAPPING_KEY, ciphertext)).toBe(PLAINTEXT);
     });
 
+    it("encrypt/decrypt round-trips when Buffer has no base64url (browser polyfill)", () => {
+      const originalToString = Buffer.prototype.toString;
+      const originalFrom = Buffer.from;
+      Buffer.prototype.toString = function (encoding?: string) {
+        if (encoding === "base64url") {
+          throw new Error("Unknown encoding: base64url");
+        }
+        return originalToString.call(this, encoding);
+      };
+      Buffer.from = ((value: unknown, encoding?: unknown) => {
+        if (encoding === "base64url") {
+          throw new Error("Unknown encoding: base64url");
+        }
+        return originalFrom.call(Buffer, value as string, encoding as BufferEncoding);
+      }) as typeof Buffer.from;
+      try {
+        const ciphertext = encryptSecret("aes-256-gcm", WRAPPING_KEY, PLAINTEXT);
+        expect(decryptSecret("aes-256-gcm", WRAPPING_KEY, ciphertext)).toBe(PLAINTEXT);
+      } finally {
+        Buffer.prototype.toString = originalToString;
+        Buffer.from = originalFrom;
+      }
+    });
+
     it("wrong wrapping key fails closed without leaking plaintext", () => {
       const ciphertext = encryptSecret("aes-256-gcm", WRAPPING_KEY, PLAINTEXT);
       expect(() => decryptSecret("aes-256-gcm", "wrong-wrapping-key", ciphertext)).toThrow();

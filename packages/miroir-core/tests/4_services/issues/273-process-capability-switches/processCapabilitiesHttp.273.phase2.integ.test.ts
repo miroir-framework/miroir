@@ -4,7 +4,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 
 import { RestClientStub } from "miroir-core";
-import type { ProcessCapabilities } from "miroir-core";
+import type { IdentityDirectory, ProcessCapabilities } from "miroir-core";
 
 const RUN_TEST = process.env.RUN_TEST;
 const runThis =
@@ -56,10 +56,11 @@ if (runThis) {
       });
     });
 
-    it("returns 401 for an unknown path when auth is on (gate, not a throw)", async () => {
+    it("returns 401 for an unknown path when auth is on and an identity directory is set", async () => {
       process.env.MIROIR_AUTH_ENABLED = "1";
       const stub = new RestClientStub("http://test");
       stub.setProcessCapabilities(snapshot);
+      stub.setIdentityDirectory({ users: [], credentials: [] } satisfies IdentityDirectory);
       const result = await stub.get("/no-such-route", "/no-such-route");
       expect(result).toMatchObject({
         status: 401,

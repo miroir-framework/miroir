@@ -8,6 +8,7 @@ import {
   adminSelfApplication,
   entityApplicationForAdmin,
   entityDeployment,
+  entityMiroirRight,
 } from "miroir-test-app_deployment-admin";
 
 /**
@@ -15,13 +16,14 @@ import {
  *
  * Drops the ephemeral run-target store (model, data, and modelVersion when configured),
  * then optionally removes the Admin Deployment and AdminApplication instances created for
- * `deleteAdminInstances: false` there.
+ * the playfield. When `accessGrantUuid` is set, the matching MiroirRight is deleted with
+ * those Admin rows.
  */
 export function buildTeardownTestApplicationStoresAction(
   deploymentUuid: Uuid,
   applicationUuid: Uuid,
   storeConfig: StoreUnitConfiguration,
-  options: { deleteAdminInstances?: boolean } = {},
+  options: { deleteAdminInstances?: boolean; accessGrantUuid?: string } = {},
 ): CompositeActionSequence {
   const deleteAdminInstances = options.deleteAdminInstances !== false;
   const actionSequence: CompositeActionSequence["payload"]["actionSequence"] = [
@@ -46,6 +48,23 @@ export function buildTeardownTestApplicationStoresAction(
   ];
 
   if (deleteAdminInstances) {
+    if (options.accessGrantUuid) {
+      actionSequence.push({
+        actionType: "deleteInstance",
+        actionLabel: "DeleteTestbedApplicationAccessGrant for " + applicationUuid,
+        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+        payload: {
+          application: adminSelfApplication.uuid,
+          applicationSection: "data",
+          objects: [
+            {
+              uuid: options.accessGrantUuid,
+              parentUuid: entityMiroirRight.uuid,
+            } as EntityInstance,
+          ],
+        },
+      });
+    }
     actionSequence.push(
       {
         actionType: "deleteInstance",

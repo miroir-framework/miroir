@@ -89,16 +89,35 @@ function usesStandaloneAppTestsTmpLayout(
   return false;
 }
 
+/**
+ * Postgres-safe identifier for an ephemeral testbed store. Isolation key is
+ * typically the deployment UUID so concurrent / leftover "Library" schemas are
+ * not reused or dropped.
+ */
+export function ephemeralStoreIdentifier(
+  testApplicationName: string,
+  isolationKey: string,
+): string {
+  const base = testApplicationName.replace(/[^a-zA-Z0-9_]/g, "_");
+  const prefixed = /^[a-zA-Z_]/.test(base) ? base : `app_${base}`;
+  const key = isolationKey.replace(/-/g, "");
+  return `${prefixed}_${key}`.slice(0, 63);
+}
+
 export function testApplicationStorageConfiguration(
   libraryDeploymentStorageConfiguration: StoreUnitConfiguration,
   testApplicationName: string,
+  isolationKey?: string,
 ): StoreUnitConfiguration {
+  const storeName = isolationKey
+    ? ephemeralStoreIdentifier(testApplicationName, isolationKey)
+    : testApplicationName;
   let testDeploymentStorageConfiguration: StoreUnitConfiguration;
   switch (libraryDeploymentStorageConfiguration.model.emulatedServerType) {
     case "indexedDb": {
       const indexedDbBaseName = resolveEphemeralIndexedDbBaseName(
         libraryDeploymentStorageConfiguration,
-        testApplicationName,
+        storeName,
       );
       testDeploymentStorageConfiguration = {
         admin: libraryDeploymentStorageConfiguration.admin,
@@ -123,15 +142,15 @@ export function testApplicationStorageConfiguration(
           admin: libraryDeploymentStorageConfiguration.admin,
           model: {
             emulatedServerType: "filesystem",
-            directory: `${STANDALONE_APP_TESTS_TMP}/${testApplicationName}_model`,
+            directory: `${STANDALONE_APP_TESTS_TMP}/${storeName}_model`,
           },
           data: {
             emulatedServerType: "filesystem",
-            directory: `${STANDALONE_APP_TESTS_TMP}/${testApplicationName}_data`,
+            directory: `${STANDALONE_APP_TESTS_TMP}/${storeName}_data`,
           },
           modelVersion: {
             emulatedServerType: "filesystem",
-            directory: `${STANDALONE_APP_TESTS_TMP}/${testApplicationName}_modelVersion`,
+            directory: `${STANDALONE_APP_TESTS_TMP}/${storeName}_modelVersion`,
           },
         };
         break;
@@ -140,15 +159,15 @@ export function testApplicationStorageConfiguration(
         admin: libraryDeploymentStorageConfiguration.admin,
         model: {
           emulatedServerType: "filesystem",
-          directory: "./test_data/" + testApplicationName,
+          directory: "./test_data/" + storeName,
         },
         data: {
           emulatedServerType: "filesystem",
-          directory: "./test_data/" + testApplicationName,
+          directory: "./test_data/" + storeName,
         },
         modelVersion: {
           emulatedServerType: "filesystem",
-          directory: `./test_data/${testApplicationName}_modelVersion`,
+          directory: `./test_data/${storeName}_modelVersion`,
         },
       };
       break;
@@ -159,17 +178,17 @@ export function testApplicationStorageConfiguration(
         model: {
           emulatedServerType: "sql",
           connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-          schema: testApplicationName,
+          schema: storeName,
         },
         data: {
           emulatedServerType: "sql",
           connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-          schema: testApplicationName,
+          schema: storeName,
         },
         modelVersion: {
           emulatedServerType: "sql",
           connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-          schema: `${testApplicationName}_modelVersion`,
+          schema: `${storeName}_modelVersion`,
         },
       };
       break;
@@ -180,17 +199,17 @@ export function testApplicationStorageConfiguration(
         model: {
           emulatedServerType: "mongodb",
           connectionString: "mongodb://localhost:27017",
-          database: testApplicationName,
+          database: storeName,
         },
         data: {
           emulatedServerType: "mongodb",
           connectionString: "mongodb://localhost:27017",
-          database: testApplicationName,
+          database: storeName,
         },
         modelVersion: {
           emulatedServerType: "mongodb",
           connectionString: "mongodb://localhost:27017",
-          database: `${testApplicationName}_modelVersion`,
+          database: `${storeName}_modelVersion`,
         },
       };
       break;

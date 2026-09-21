@@ -11,6 +11,7 @@ import { Sequelize } from "sequelize";
 import { packageName } from "../constants";
 import { SqlDbStore } from "./SqlDbStore";
 import { cleanLevel } from "./constants";
+import { sqlCreateSchemaIfNotExists } from "./sqlCreateSchemaIfNotExists.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbAdminStore");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -33,10 +34,10 @@ export class SqlDbAdminStore extends SqlDbStore implements PersistenceStoreAdmin
       if (config.emulatedServerType !== "sql") {
         throw new Error( "SqlDbAdminStore createStore failed for serverType " + config.emulatedServerType);
       }
-      await this.sequelize.createSchema(config.schema, {});
+      await this.sequelize.query(sqlCreateSchemaIfNotExists(config.schema));
       log.info("createStore DONE!");
     } catch (error) {
-      return Promise.resolve(new Action2Error("FailedToCreateStore", error as string));
+      return Promise.resolve(new Action2Error("FailedToCreateStore", String(error)));
     }
     return Promise.resolve(ACTION_OK);
   }
