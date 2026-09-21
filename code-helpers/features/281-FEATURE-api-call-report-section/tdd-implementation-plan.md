@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Review: [`./adversarial-review.md`
 Prerequisite: [`../267-FEATURE-openapi-external-services/`](../267-FEATURE-openapi-external-services/) ✅
 Working branch: `281-FEATURE-api-call-report-section`
 
-**Resume note:** Slice 1 ✅ DONE. Slice 2 (binding / schema lookup hard fail) not started.
+**Resume note:** Slice 2 ✅ DONE. Slice 3 (`operationSync` / drop Spotify constants) not started.
 
 ---
 
@@ -36,7 +36,7 @@ This plan does **not** add HTTP instance cache, Entity `mlSchema` schemaReferenc
 |---|---|---|---|
 | 0 | Characterize current Spotify + sync + section contracts | ✅ | `apiCallReport.281.phase0.unit.test.ts` (stable asserts only) |
 | 1 | **First behavioral slice (tracer):** typed playlist UI from Endpoint schema, no `parentUuid` | ✅ | cloned report + `apiCallReport.281.phase1.integ.test.tsx`; GREEN updates committed asset + `spotifyApp` |
-| 2 | Binding / schema lookup hard fail | ⬜ | `apiCallReport.281.phase2.integ.test.tsx` |
+| 2 | Binding / schema lookup hard fail | ✅ | `apiCallReport.281.phase2.integ.test.tsx` |
 | 3 | Sync: `operationSync`, no Spotify defaults, Entity opt-in | ⬜ | `externalServiceSync` + `apiCallReport.281.phase3.unit.test.ts` |
 | 4 | Delete example Entity; rewrite blast radius; HTTP Entity fixture | ⬜ | `spotifyApp` + `externalServiceHttpStoreSkip` + modelValidation spotify |
 | 5 | Docs, nonreg, cleanup, AC | ⬜ | nonreg step + tracer narrative |
@@ -263,7 +263,7 @@ Phase0 `pre-281 inventory` describe must already be gone (P4). Do not re-run del
 
 ## Slice 2 — Binding / schema lookup hard fail
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -306,7 +306,26 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+- **Files created:** `packages/miroir-standalone-app/tests/4_view/issues/281-api-call-report-section/apiCallReport.281.phase2.integ.test.tsx`; `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/resolveApiCallReportSectionSchema.ts`; `packages/miroir-standalone-app/tests/4_view/issues/281-api-call-report-section/resolveApiCallReportSectionSchema.unit.test.ts`.
+- **Files modified:** `ReportSectionViewWithEditor.tsx` (Slice 1 `apiCallReportSection` arm deepened); this plan.
+- **RED failure observed:** harness healthy (`not-get-playlist` already in Slice 1 “Could not resolve Endpoint operation responseSchema…” copy). After asserting **standalone** ids (so `get-playlist` is not satisfied as a substring of `not-get-playlist`): `AssertionError: mismatch message must include the extractor actionType get-playlist as its own id: expected false to be true`. Earlier `--bail=1` run also failed case 3: `AssertionError: error message must name the missing extractor key tracks: expected false to be true` (typed editor + `typeError:` for undefined `tracks` payload). Case 2 already named `c0ffee00-0000-4000-8000-000000000001` from Slice 1; R14 did not run on that bail.
+- **GREEN:** extracted `resolveApiCallReportSectionSchema` next to the view (no public package export). §5.3 vs **inline** `extractorTemplates` then `extractors` (not Query `371aed0c-…`, not `deploymentUuidToReportsEntitiesMapping`). Accepts #272 aliases. Mismatch message includes both `endpointUuid` / `operationId` vs extractor `endpointUuid` / `actionType`. View arm shows that string instead of `TypedValueObjectEditor`.
+- **Validation:**
+  - `RUN_TEST=apiCallReport.281.phase2 … --profile emulatedServer-filesystem` → **4/4 pass** (incl. R14)
+  - `RUN_TEST=resolveApiCallReportSectionSchema` (helper unit, real `reportSpotifyPlaylist`) → **5/5 pass**
+  - `RUN_TEST=apiCallReport.281.phase1 --profile emulatedServer-filesystem` → **3/3 pass**
+  - `RUN_TEST=spotifyApp --profile emulatedServer-filesystem` → **7/7 pass**
+  - `RUN_TEST=externalServiceReport --profile emulatedServer-filesystem` → **5/5 pass**
+  - miroir `modelValidation.unit.test.ts` (vitest root `./tests`, filter without `tests/`) → **152/152 pass**
+  - spotify `tests/modelValidation.unit.test.ts` → **7/7 pass**
+  - `tsc` miroir-core → **pass**
+  - `tsc` miroir-standalone-app → **pass**
+- **Deviations:**
+  - Helper extracted (view already ~750 lines); unit-tested with imported Spotify report JSON, not only an inline clone.
+  - Phase1 helpers were not exported; phase2 copied the fake-server / Spotify boot / `SeedSpotifyDeploymentMapping` / `MemoryRouter` harness.
+  - `enabledOperations` omit: `updateInstance` + `commit` on the **booted** Endpoint (preserves fake-server `baseUrl` from `overrideEndpointBaseUrl`), `enabledOperations: []`. Fetch error: `External service operation is not enabled: get-playlist` (not the binding-mismatch banner). No new store API.
+  - Plan’s miroir `testByFile -- tests/modelValidation.unit.test.ts` does not match files when vitest `root` is `./tests`; used `modelValidation.unit.test.ts` as Slice 1.
+  - Did **not** touch dirty admin JSON; did **not** change the committed Spotify report; did **not** commit.
 
 ---
 
@@ -469,8 +488,8 @@ Automated equivalent: phase1 + phase2 + `externalServiceSync` + `spotifyApp`.
 | Typed playlist UI **without** `objectInstanceReportSection` / `parentUuid` (Entity file may still exist in the package) | Slice 1 phase1 | ✅ |
 | Example package no longer ships Entity `56166585-…`; typed UI still works | Slice 4 `spotifyApp` | ⬜ |
 | `objectInstanceReportSection` + HTTP Entity still works | Slice 4 phase4 fixture | ⬜ |
-| Section vs extractor mismatch hard fail | Slice 2 | ⬜ |
-| Unknown Endpoint / missing operation / missing extractor hard fail | Slice 2 | ⬜ |
+| Section vs extractor mismatch hard fail | Slice 2 | ✅ |
+| Unknown Endpoint / missing operation / missing extractor hard fail | Slice 2 | ✅ |
 | HTTP payload not persisted as Entity instances (no data-section files) | Slice 1 P5 assert (`spotifyApp` L556–581 pattern) | ⬜ |
 | Sync without `operationSync.entity` emits no `createEntity`; no Spotify constants | Slice 3 | ⬜ |
 | Missing `boundPaths` fail closed | Slice 3 | ⬜ |

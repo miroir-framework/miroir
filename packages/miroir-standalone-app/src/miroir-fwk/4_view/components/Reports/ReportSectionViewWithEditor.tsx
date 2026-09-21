@@ -7,7 +7,6 @@ import {
   Domain2QueryReturnType,
   Entity,
   getApplicationSection,
-  getExternalService,
   LoggerInterface,
   MiroirLoggerFactory,
   ReportSection,
@@ -16,7 +15,6 @@ import {
   TransformerFailure,
   Uuid,
   type ApplicationDeploymentMap,
-  type JzodElement,
   type JzodObject,
 } from "miroir-core";
 
@@ -48,6 +46,7 @@ import { ReportSectionMiroirTest } from './ReportSectionMiroirTest.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 import { TransformerRunnerReportSectionView } from './TransformerRunner.js';
 import { ReportInputSection } from './ReportInputSection.js';
+import { resolveApiCallReportSectionSchema } from './resolveApiCallReportSectionSchema.js';
 
 import {
   entityEntity,
@@ -204,20 +203,26 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         ?? currentModel.entities?.find((e:Entity) => e?.uuid === (reportSectionDefinitionFromFormik?.definition as any)["parentUuid"])
       : undefined;
 
+  const reportDefinitionForBinding = props.formikReportDefinitionPathString
+    ? formik.values?.[props.formikReportDefinitionPathString]
+    : undefined;
   const apiCallSectionDefinition =
     reportSectionDefinitionFromFormik?.type === "apiCallReportSection"
       ? reportSectionDefinitionFromFormik.definition
       : undefined;
-  const apiCallEndpoint = apiCallSectionDefinition
-    ? env.endpointsByUuid?.[apiCallSectionDefinition.endpointUuid] ??
-      currentModel.endpoints?.find((endpoint) => endpoint.uuid === apiCallSectionDefinition.endpointUuid)
+  const apiCallSchemaOrError = apiCallSectionDefinition
+    ? resolveApiCallReportSectionSchema({
+        section: apiCallSectionDefinition,
+        extractorTemplates: reportDefinitionForBinding?.definition?.extractorTemplates,
+        extractors: reportDefinitionForBinding?.definition?.extractors,
+        endpointsByUuid: env.endpointsByUuid,
+        endpointsFallback: currentModel.endpoints,
+      })
     : undefined;
-  const apiCallOperation = apiCallSectionDefinition
-    ? getExternalService(apiCallEndpoint)?.operations?.find(
-        (operation) => operation.operationId === apiCallSectionDefinition.operationId,
-      )
-    : undefined;
-  const apiCallResponseSchema = apiCallOperation?.responseSchema as JzodElement | undefined;
+  const apiCallResponseSchema =
+    apiCallSchemaOrError?.ok === true ? apiCallSchemaOrError.schema : undefined;
+  const apiCallBindingError =
+    apiCallSchemaOrError?.ok === false ? apiCallSchemaOrError.error : undefined;
 
   /**
    * Entities to render in a modelDiagramReportSection.
@@ -560,9 +565,8 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
             />
           ) : (
             <div>
-              Could not resolve Endpoint operation responseSchema for endpoint{" "}
-              {reportSectionDefinitionFromFormik.definition.endpointUuid} operation{" "}
-              {reportSectionDefinitionFromFormik.definition.operationId}
+              {apiCallBindingError ??
+                `Could not resolve Endpoint operation responseSchema for endpoint ${reportSectionDefinitionFromFormik.definition.endpointUuid} operation ${reportSectionDefinitionFromFormik.definition.operationId}`}
             </div>
           )
         )}
