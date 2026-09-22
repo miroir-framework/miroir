@@ -528,7 +528,6 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     await runTeardownTestApplicationStores({
       domainController: this.domainController,
       applicationDeploymentMap: this.applicationDeploymentMap,
-        { accessGrantUuid: this.testbedAccessGrantUuid },
       modelEnvironment,
       deploymentUuid: runTarget.deploymentUuid,
       applicationUuid: runTarget.applicationUuid,
