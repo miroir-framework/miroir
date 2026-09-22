@@ -136,6 +136,20 @@ function deref(
   return deref(doc, resolved, [...stack, ref]);
 }
 
+function requiredPropertyNames(schema: Record<string, unknown>): Set<string> {
+  if (!Array.isArray(schema.required)) {
+    return new Set();
+  }
+  return new Set(schema.required.filter((name): name is string => typeof name === "string"));
+}
+
+function withOptionalFlag(element: JzodElementLike, optional: boolean): JzodElementLike {
+  if (!optional) {
+    return element;
+  }
+  return { ...element, optional: true };
+}
+
 function flattenAllOf(
   doc: Record<string, unknown>,
   schema: Record<string, unknown>,
@@ -145,6 +159,8 @@ function flattenAllOf(
     return schema;
   }
   const mergedProperties: Record<string, unknown> = {};
+  const mergedRequired = new Set<string>();
+  let sawRequired = false;
   let nullable = schema.nullable === true;
   let type = schema.type;
   for (const part of allOf) {
@@ -159,10 +175,22 @@ function flattenAllOf(
     if (props !== null && typeof props === "object" && !Array.isArray(props)) {
       Object.assign(mergedProperties, props);
     }
+    if (Array.isArray(flattened.required)) {
+      sawRequired = true;
+      for (const name of requiredPropertyNames(flattened)) {
+        mergedRequired.add(name);
+      }
+    }
   }
   const ownProps = schema.properties;
   if (ownProps !== null && typeof ownProps === "object" && !Array.isArray(ownProps)) {
     Object.assign(mergedProperties, ownProps);
+  }
+  if (Array.isArray(schema.required)) {
+    sawRequired = true;
+    for (const name of requiredPropertyNames(schema)) {
+      mergedRequired.add(name);
+    }
   }
   return {
     ...schema,
@@ -170,6 +198,7 @@ function flattenAllOf(
     nullable: nullable || undefined,
     properties: mergedProperties,
     allOf: undefined,
+    ...(sawRequired ? { required: [...mergedRequired] } : {}),
   };
 }
 
@@ -246,16 +275,23 @@ function convertSchema(
         ? (derefed.properties as Record<string, unknown>)
         : {};
     const definition: Record<string, JzodElementLike> = {};
+    const requiredNames = requiredPropertyNames(derefed);
     if (!isEmptyBound(bound)) {
       for (const [key, childBound] of Object.entries(bound!.children)) {
         if (props[key] === undefined) {
           continue;
         }
-        definition[key] = convertSchema(doc, props[key], childBound, transformerPath);
+        definition[key] = withOptionalFlag(
+          convertSchema(doc, props[key], childBound, transformerPath),
+          !requiredNames.has(key),
+        );
       }
     } else {
       for (const [key, prop] of Object.entries(props)) {
-        definition[key] = convertSchema(doc, prop, undefined, transformerPath);
+        definition[key] = withOptionalFlag(
+          convertSchema(doc, prop, undefined, transformerPath),
+          !requiredNames.has(key),
+        );
       }
     }
     return {
@@ -405,6 +441,7 @@ function buildCompositeAction(params: {
     actionLabel: "syncExternalServiceSchema",
     endpoint: COMPOSITE_ACTION_ENDPOINT,
     payload: {
+      application,
       actionSequence,
     },
   };

@@ -124,6 +124,7 @@ import {
 } from "../1_core/authentication/AuthenticationPolicy.js";
 import { findPresentModelEntityFromDomainState } from "../2_domain/ExtractorVirtualAttributes.js";
 import { stripVirtualAttributesFromInstance } from "../2_domain/VirtualAttributes.js";
+import { isEvolutionTraceEnabled } from "../2_domain/evolutionTracePolicy.js";
 import {
   buildEvolutionTracePersistenceActions,
   collectEvolutionTraceStateFromDomainState,
@@ -1289,6 +1290,9 @@ export class DomainController implements DomainControllerInterface {
       actionType === "updateInstance" ||
       actionType === "deleteInstance";
 
+    if (!isEvolutionTraceEnabled()) {
+      return;
+    }
     if (!isModelReplayable && !isInstanceCud) {
       return;
     }

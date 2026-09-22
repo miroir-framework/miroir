@@ -518,8 +518,10 @@ export {
 } from "./0_interfaces/1_core/EntityVersion.js";
 export { HttpMethod, HttpMethodsArray, HttpMethodsObject } from "./0_interfaces/1_core/Http.js";
 export {
+  asOpenApiSyncEndpoint,
   getEndpointActions,
   getExternalService,
+  isOpenApiExternalServiceEndpoint,
 } from "./0_interfaces/1_core/endpointDefinition.js";
 export type {
   EndpointActionsBranch,
@@ -1046,7 +1048,11 @@ export {
   validateMimeType
 } from "./1_core/tools.js";
 export { zodErrorDeepestIssueLeaves, zodErrorFirstIssueLeaf } from "./1_core/jzod/zodParseErrorHandler";
-export { shouldTraceEvolutionEvent, MIROIR_APPLICATION_UUID } from "./2_domain/evolutionTracePolicy.js";
+export {
+  isEvolutionTraceEnabled,
+  shouldTraceEvolutionEvent,
+  MIROIR_APPLICATION_UUID,
+} from "./2_domain/evolutionTracePolicy.js";
 export {
   createTraceEventFromModelAction,
   createTraceEventFromInstanceAction,
@@ -1233,6 +1239,10 @@ export {
   transformer_mustacheStringTemplate_apply,
   transformer_resolveReference
 } from "./2_domain/TransformersForRuntime";
+export {
+  buildOpenApiEndpointSyncComposite,
+  extractSyncedEndpointFromComposite,
+} from "./2_domain/buildOpenApiEndpointSyncComposite.js";
 export {
   isFailedTransformerInterfaceFromDefinition,
   resolveTransformerResultSchema,

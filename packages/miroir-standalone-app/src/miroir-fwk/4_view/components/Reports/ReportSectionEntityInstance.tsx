@@ -57,6 +57,7 @@ import {
   ThemedTitle
 } from "../Themes/index";
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
+import { OpenApiEndpointSyncButton } from './OpenApiEndpointSyncButton.js';
 import { useReportPageContext } from './ReportPageContext.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 
@@ -476,6 +477,14 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                 : undefined) ??
               currentReportTargetEntity?.name + " details: " + instance.name}
           </ThemedTitle>
+          <OpenApiEndpointSyncButton
+            endpoint={instance}
+            formikValuePathAsString={formikValuePathAsString}
+            applicationDeploymentMap={
+              props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
+            }
+            modelEnvironment={currentMiroirModelEnvironment}
+          />
           {/* <ThemedTooltip
             title={outlineContext.isOutlineOpen ? "Hide Document Outline" : "Show Document Outline"}
           >

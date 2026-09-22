@@ -5,7 +5,7 @@
   "name": "externalServiceSyncExecute",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Slice 3 actionTest: operations-only landing plus createEntity re-sync (filesystem and postgres). Proves landing only — no HTTP.",
+  "description": "Slice 3 actionTest: operations-only landing plus createEntity re-sync (filesystem and postgres). Proves landing only \u2014 no HTTP.",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "externalServiceSyncExecute",
@@ -150,25 +150,31 @@
                                 "type": "object",
                                 "definition": {
                                   "id": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "optional": true
                                   },
                                   "name": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "optional": true
                                   },
                                   "owner": {
                                     "type": "object",
+                                    "optional": true,
                                     "definition": {
                                       "id": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "optional": true
                                       },
                                       "display_name": {
                                         "type": "string",
-                                        "nullable": true
+                                        "nullable": true,
+                                        "optional": true
                                       }
                                     }
                                   },
                                   "images": {
                                     "type": "array",
+                                    "optional": true,
                                     "definition": {
                                       "type": "object",
                                       "definition": {
@@ -188,6 +194,7 @@
                                   },
                                   "tracks": {
                                     "type": "object",
+                                    "optional": true,
                                     "definition": {
                                       "total": {
                                         "type": "number"
@@ -199,29 +206,36 @@
                                           "definition": {
                                             "track": {
                                               "type": "object",
+                                              "optional": true,
                                               "definition": {
                                                 "id": {
-                                                  "type": "string"
+                                                  "type": "string",
+                                                  "optional": true
                                                 },
                                                 "name": {
-                                                  "type": "string"
+                                                  "type": "string",
+                                                  "optional": true
                                                 },
                                                 "artists": {
                                                   "type": "array",
+                                                  "optional": true,
                                                   "definition": {
                                                     "type": "object",
                                                     "definition": {
                                                       "id": {
-                                                        "type": "string"
+                                                        "type": "string",
+                                                        "optional": true
                                                       },
                                                       "name": {
-                                                        "type": "string"
+                                                        "type": "string",
+                                                        "optional": true
                                                       }
                                                     }
                                                   }
                                                 },
                                                 "duration_ms": {
-                                                  "type": "number"
+                                                  "type": "number",
+                                                  "optional": true
                                                 }
                                               }
                                             }
@@ -503,25 +517,31 @@
                                 "type": "object",
                                 "definition": {
                                   "id": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "optional": true
                                   },
                                   "name": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "optional": true
                                   },
                                   "owner": {
                                     "type": "object",
+                                    "optional": true,
                                     "definition": {
                                       "id": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "optional": true
                                       },
                                       "display_name": {
                                         "type": "string",
-                                        "nullable": true
+                                        "nullable": true,
+                                        "optional": true
                                       }
                                     }
                                   },
                                   "images": {
                                     "type": "array",
+                                    "optional": true,
                                     "definition": {
                                       "type": "object",
                                       "definition": {
@@ -541,6 +561,7 @@
                                   },
                                   "tracks": {
                                     "type": "object",
+                                    "optional": true,
                                     "definition": {
                                       "total": {
                                         "type": "number"
@@ -552,29 +573,36 @@
                                           "definition": {
                                             "track": {
                                               "type": "object",
+                                              "optional": true,
                                               "definition": {
                                                 "id": {
-                                                  "type": "string"
+                                                  "type": "string",
+                                                  "optional": true
                                                 },
                                                 "name": {
-                                                  "type": "string"
+                                                  "type": "string",
+                                                  "optional": true
                                                 },
                                                 "artists": {
                                                   "type": "array",
+                                                  "optional": true,
                                                   "definition": {
                                                     "type": "object",
                                                     "definition": {
                                                       "id": {
-                                                        "type": "string"
+                                                        "type": "string",
+                                                        "optional": true
                                                       },
                                                       "name": {
-                                                        "type": "string"
+                                                        "type": "string",
+                                                        "optional": true
                                                       }
                                                     }
                                                   }
                                                 },
                                                 "duration_ms": {
-                                                  "type": "number"
+                                                  "type": "number",
+                                                  "optional": true
                                                 }
                                               }
                                             }
@@ -706,25 +734,31 @@
                                 "type": "object",
                                 "definition": {
                                   "id": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "optional": true
                                   },
                                   "name": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "optional": true
                                   },
                                   "owner": {
                                     "type": "object",
+                                    "optional": true,
                                     "definition": {
                                       "id": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "optional": true
                                       },
                                       "display_name": {
                                         "type": "string",
-                                        "nullable": true
+                                        "nullable": true,
+                                        "optional": true
                                       }
                                     }
                                   },
                                   "images": {
                                     "type": "array",
+                                    "optional": true,
                                     "definition": {
                                       "type": "object",
                                       "definition": {
@@ -744,6 +778,7 @@
                                   },
                                   "tracks": {
                                     "type": "object",
+                                    "optional": true,
                                     "definition": {
                                       "total": {
                                         "type": "number"
@@ -755,29 +790,36 @@
                                           "definition": {
                                             "track": {
                                               "type": "object",
+                                              "optional": true,
                                               "definition": {
                                                 "id": {
-                                                  "type": "string"
+                                                  "type": "string",
+                                                  "optional": true
                                                 },
                                                 "name": {
-                                                  "type": "string"
+                                                  "type": "string",
+                                                  "optional": true
                                                 },
                                                 "artists": {
                                                   "type": "array",
+                                                  "optional": true,
                                                   "definition": {
                                                     "type": "object",
                                                     "definition": {
                                                       "id": {
-                                                        "type": "string"
+                                                        "type": "string",
+                                                        "optional": true
                                                       },
                                                       "name": {
-                                                        "type": "string"
+                                                        "type": "string",
+                                                        "optional": true
                                                       }
                                                     }
                                                   }
                                                 },
                                                 "duration_ms": {
-                                                  "type": "number"
+                                                  "type": "number",
+                                                  "optional": true
                                                 }
                                               }
                                             }
@@ -844,25 +886,31 @@
                         "type": "object",
                         "definition": {
                           "id": {
-                            "type": "string"
+                            "type": "string",
+                            "optional": true
                           },
                           "name": {
-                            "type": "string"
+                            "type": "string",
+                            "optional": true
                           },
                           "owner": {
                             "type": "object",
+                            "optional": true,
                             "definition": {
                               "id": {
-                                "type": "string"
+                                "type": "string",
+                                "optional": true
                               },
                               "display_name": {
                                 "type": "string",
-                                "nullable": true
+                                "nullable": true,
+                                "optional": true
                               }
                             }
                           },
                           "images": {
                             "type": "array",
+                            "optional": true,
                             "definition": {
                               "type": "object",
                               "definition": {
@@ -882,6 +930,7 @@
                           },
                           "tracks": {
                             "type": "object",
+                            "optional": true,
                             "definition": {
                               "total": {
                                 "type": "number"
@@ -893,29 +942,36 @@
                                   "definition": {
                                     "track": {
                                       "type": "object",
+                                      "optional": true,
                                       "definition": {
                                         "id": {
-                                          "type": "string"
+                                          "type": "string",
+                                          "optional": true
                                         },
                                         "name": {
-                                          "type": "string"
+                                          "type": "string",
+                                          "optional": true
                                         },
                                         "artists": {
                                           "type": "array",
+                                          "optional": true,
                                           "definition": {
                                             "type": "object",
                                             "definition": {
                                               "id": {
-                                                "type": "string"
+                                                "type": "string",
+                                                "optional": true
                                               },
                                               "name": {
-                                                "type": "string"
+                                                "type": "string",
+                                                "optional": true
                                               }
                                             }
                                           }
                                         },
                                         "duration_ms": {
-                                          "type": "number"
+                                          "type": "number",
+                                          "optional": true
                                         }
                                       }
                                     }

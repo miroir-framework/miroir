@@ -3,7 +3,7 @@
   "info": {
     "title": "Spotify Web API excerpt — get-playlist",
     "version": "0.0.1",
-    "description": "Faithful subset of https://developer.spotify.com/reference/web-api/open-api-schema.yaml for GET /playlists/{playlist_id} (operationId get-playlist) plus PUT change-playlist-details. Includes PlaylistObject, TrackObject, SimplifiedArtistObject, ImageObject, paging/owner allOf, ImageObject nullable height/width, and PlaylistTrackObject.track oneOf."
+    "description": "Faithful subset of https://developer.spotify.com/reference/web-api/open-api-schema.yaml for GET /playlists/{playlist_id} (operationId get-playlist) plus PUT change-playlist-details. Includes PlaylistObject, TrackObject, SimplifiedArtistObject, ImageObject, paging/owner allOf, ImageObject nullable height/width, and PlaylistTrackObject.track oneOf. Also documents the Feb-2026 live sibling `items` / `item` (official schema still names this `tracks` / `track`)."
   },
   "paths": {
     "/playlists/{playlist_id}": {
@@ -231,6 +231,39 @@
           }
         ]
       },
+      "PlaylistItemObject": {
+        "type": "object",
+        "properties": {
+          "item": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/TrackObject"
+              },
+              {
+                "$ref": "#/components/schemas/EpisodeObject"
+              }
+            ]
+          }
+        }
+      },
+      "PagingPlaylistItemObject": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PagingObject"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PlaylistItemObject"
+                }
+              }
+            }
+          }
+        ]
+      },
       "PlaylistObject": {
         "type": "object",
         "properties": {
@@ -274,6 +307,14 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/PagingPlaylistTrackObject"
+              }
+            ]
+          },
+          "items": {
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PagingPlaylistItemObject"
               }
             ]
           },

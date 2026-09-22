@@ -1,11 +1,29 @@
 import { describe, expect, it } from "vitest";
 
-import { shouldTraceEvolutionEvent } from "../../src/2_domain/evolutionTracePolicy.js";
+import {
+  isEvolutionTraceEnabled,
+  shouldTraceEvolutionEvent,
+} from "../../src/2_domain/evolutionTracePolicy.js";
 import type { ApplicationSection } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 // UUID of the Miroir selfApplication — matches the deployed asset.
 const MIROIR_UUID = "360fcf1f-f0d4-4f8a-9262-07886e70fa15";
 const LIBRARY_UUID = "dd986507-6b28-4aac-a27a-f2dfba2aa0e4"; // any non-Miroir app
+
+describe("isEvolutionTraceEnabled", () => {
+  it("is off by default", () => {
+    expect(isEvolutionTraceEnabled({})).toBe(false);
+    expect(isEvolutionTraceEnabled({ MIROIR_EVOLUTION_TRACE: "" })).toBe(false);
+    expect(isEvolutionTraceEnabled({ MIROIR_EVOLUTION_TRACE: "0" })).toBe(false);
+  });
+
+  it("turns on for 1/true/yes/on", () => {
+    expect(isEvolutionTraceEnabled({ MIROIR_EVOLUTION_TRACE: "1" })).toBe(true);
+    expect(isEvolutionTraceEnabled({ MIROIR_EVOLUTION_TRACE: "true" })).toBe(true);
+    expect(isEvolutionTraceEnabled({ VITE_MIROIR_EVOLUTION_TRACE: "yes" })).toBe(true);
+    expect(isEvolutionTraceEnabled({ MIROIR_EVOLUTION_TRACE: "on" })).toBe(true);
+  });
+});
 
 describe("shouldTraceEvolutionEvent", () => {
   describe("non-Miroir application", () => {

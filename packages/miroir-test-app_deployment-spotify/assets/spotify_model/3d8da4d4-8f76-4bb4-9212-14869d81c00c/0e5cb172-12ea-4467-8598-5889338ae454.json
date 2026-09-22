@@ -8,7 +8,7 @@
   "description": "Spotify Web API external service. operations[] and responseSchema are produced by syncExternalServiceSchema (do not hand-write).",
   "definition": {
     "externalService": {
-      "openApiDocument": "{\"openapi\":\"3.0.0\",\"info\":{\"title\":\"Spotify Web API excerpt — get-playlist\",\"version\":\"0.0.1\",\"description\":\"Faithful subset of https://developer.spotify.com/reference/web-api/open-api-schema.yaml for GET /playlists/{playlist_id} (operationId get-playlist) plus PUT change-playlist-details. Includes PlaylistObject, TrackObject, SimplifiedArtistObject, ImageObject, paging/owner allOf, ImageObject nullable height/width, and PlaylistTrackObject.track oneOf.\"},\"paths\":{\"/playlists/{playlist_id}\":{\"parameters\":[{\"$ref\":\"#/components/parameters/PathPlaylistId\"}],\"get\":{\"operationId\":\"get-playlist\",\"summary\":\"Get Playlist\",\"parameters\":[{\"name\":\"fields\",\"in\":\"query\",\"required\":false,\"schema\":{\"type\":\"string\"}}],\"responses\":{\"200\":{\"description\":\"A playlist\",\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/PlaylistObject\"}}}}}},\"put\":{\"operationId\":\"change-playlist-details\",\"summary\":\"Change Playlist Details\",\"responses\":{\"200\":{\"description\":\"Playlist updated\"}}}}},\"components\":{\"parameters\":{\"PathPlaylistId\":{\"name\":\"playlist_id\",\"in\":\"path\",\"required\":true,\"schema\":{\"type\":\"string\"}}},\"schemas\":{\"ImageObject\":{\"type\":\"object\",\"required\":[\"url\",\"height\",\"width\"],\"properties\":{\"url\":{\"type\":\"string\"},\"height\":{\"type\":\"integer\",\"nullable\":true},\"width\":{\"type\":\"integer\",\"nullable\":true}}},\"PlaylistUserObject\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"},\"href\":{\"type\":\"string\"},\"type\":{\"type\":\"string\"},\"uri\":{\"type\":\"string\"}}},\"PlaylistOwnerObject\":{\"allOf\":[{\"$ref\":\"#/components/schemas/PlaylistUserObject\"},{\"type\":\"object\",\"properties\":{\"display_name\":{\"type\":\"string\",\"nullable\":true}}}]},\"PagingObject\":{\"type\":\"object\",\"required\":[\"href\",\"items\",\"limit\",\"next\",\"offset\",\"previous\",\"total\"],\"properties\":{\"href\":{\"type\":\"string\"},\"limit\":{\"type\":\"integer\"},\"next\":{\"type\":\"string\",\"nullable\":true},\"offset\":{\"type\":\"integer\"},\"previous\":{\"type\":\"string\",\"nullable\":true},\"total\":{\"type\":\"integer\"},\"items\":{\"type\":\"array\",\"items\":{}}}},\"SimplifiedArtistObject\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"},\"name\":{\"type\":\"string\"},\"type\":{\"type\":\"string\",\"enum\":[\"artist\"]}}},\"TrackObject\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"},\"name\":{\"type\":\"string\"},\"artists\":{\"type\":\"array\",\"items\":{\"$ref\":\"#/components/schemas/SimplifiedArtistObject\"}},\"duration_ms\":{\"type\":\"integer\"},\"href\":{\"type\":\"string\"},\"type\":{\"type\":\"string\",\"enum\":[\"track\"]}}},\"EpisodeObject\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"},\"name\":{\"type\":\"string\"},\"type\":{\"type\":\"string\",\"enum\":[\"episode\"]}}},\"PlaylistTrackObject\":{\"type\":\"object\",\"properties\":{\"track\":{\"oneOf\":[{\"$ref\":\"#/components/schemas/TrackObject\"},{\"$ref\":\"#/components/schemas/EpisodeObject\"}]}}},\"PagingPlaylistTrackObject\":{\"allOf\":[{\"$ref\":\"#/components/schemas/PagingObject\"},{\"type\":\"object\",\"properties\":{\"items\":{\"type\":\"array\",\"items\":{\"$ref\":\"#/components/schemas/PlaylistTrackObject\"}}}}]},\"PlaylistObject\":{\"type\":\"object\",\"properties\":{\"collaborative\":{\"type\":\"boolean\"},\"description\":{\"type\":\"string\",\"nullable\":true},\"href\":{\"type\":\"string\"},\"id\":{\"type\":\"string\"},\"images\":{\"type\":\"array\",\"items\":{\"$ref\":\"#/components/schemas/ImageObject\"}},\"name\":{\"type\":\"string\"},\"owner\":{\"allOf\":[{\"$ref\":\"#/components/schemas/PlaylistOwnerObject\"}]},\"public\":{\"type\":\"boolean\"},\"snapshot_id\":{\"type\":\"string\"},\"tracks\":{\"type\":\"object\",\"allOf\":[{\"$ref\":\"#/components/schemas/PagingPlaylistTrackObject\"}]},\"type\":{\"type\":\"string\"},\"uri\":{\"type\":\"string\"}}}}}}",
+      "openApiDocument": "{\"openapi\":\"3.0.0\",\"info\":{\"title\":\"Spotify Web API excerpt — get-playlist\",\"version\":\"0.0.1\",\"description\":\"Faithful subset of https://developer.spotify.com/reference/web-api/open-api-schema.yaml for GET /playlists/{playlist_id} (operationId get-playlist) plus PUT change-playlist-details. Includes PlaylistObject, TrackObject, SimplifiedArtistObject, ImageObject, paging/owner allOf, ImageObject nullable height/width, and PlaylistTrackObject.track oneOf. Also documents the Feb-2026 live sibling `items` / `item` (official schema still names this `tracks` / `track`).\"},\"paths\":{\"/playlists/{playlist_id}\":{\"parameters\":[{\"$ref\":\"#/components/parameters/PathPlaylistId\"}],\"get\":{\"operationId\":\"get-playlist\",\"summary\":\"Get Playlist\",\"parameters\":[{\"name\":\"fields\",\"in\":\"query\",\"required\":false,\"schema\":{\"type\":\"string\"}}],\"responses\":{\"200\":{\"description\":\"A playlist\",\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/PlaylistObject\"}}}}}},\"put\":{\"operationId\":\"change-playlist-details\",\"summary\":\"Change Playlist Details\",\"responses\":{\"200\":{\"description\":\"Playlist updated\"}}}}},\"components\":{\"parameters\":{\"PathPlaylistId\":{\"name\":\"playlist_id\",\"in\":\"path\",\"required\":true,\"schema\":{\"type\":\"string\"}}},\"schemas\":{\"ImageObject\":{\"type\":\"object\",\"required\":[\"url\",\"height\",\"width\"],\"properties\":{\"url\":{\"type\":\"string\"},\"height\":{\"type\":\"integer\",\"nullable\":true},\"width\":{\"type\":\"integer\",\"nullable\":true}}},\"PlaylistUserObject\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"},\"href\":{\"type\":\"string\"},\"type\":{\"type\":\"string\"},\"uri\":{\"type\":\"string\"}}},\"PlaylistOwnerObject\":{\"allOf\":[{\"$ref\":\"#/components/schemas/PlaylistUserObject\"},{\"type\":\"object\",\"properties\":{\"display_name\":{\"type\":\"string\",\"nullable\":true}}}]},\"PagingObject\":{\"type\":\"object\",\"required\":[\"href\",\"items\",\"limit\",\"next\",\"offset\",\"previous\",\"total\"],\"properties\":{\"href\":{\"type\":\"string\"},\"limit\":{\"type\":\"integer\"},\"next\":{\"type\":\"string\",\"nullable\":true},\"offset\":{\"type\":\"integer\"},\"previous\":{\"type\":\"string\",\"nullable\":true},\"total\":{\"type\":\"integer\"},\"items\":{\"type\":\"array\",\"items\":{}}}},\"SimplifiedArtistObject\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"},\"name\":{\"type\":\"string\"},\"type\":{\"type\":\"string\",\"enum\":[\"artist\"]}}},\"TrackObject\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"},\"name\":{\"type\":\"string\"},\"artists\":{\"type\":\"array\",\"items\":{\"$ref\":\"#/components/schemas/SimplifiedArtistObject\"}},\"duration_ms\":{\"type\":\"integer\"},\"href\":{\"type\":\"string\"},\"type\":{\"type\":\"string\",\"enum\":[\"track\"]}}},\"EpisodeObject\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"},\"name\":{\"type\":\"string\"},\"type\":{\"type\":\"string\",\"enum\":[\"episode\"]}}},\"PlaylistTrackObject\":{\"type\":\"object\",\"properties\":{\"track\":{\"oneOf\":[{\"$ref\":\"#/components/schemas/TrackObject\"},{\"$ref\":\"#/components/schemas/EpisodeObject\"}]}}},\"PagingPlaylistTrackObject\":{\"allOf\":[{\"$ref\":\"#/components/schemas/PagingObject\"},{\"type\":\"object\",\"properties\":{\"items\":{\"type\":\"array\",\"items\":{\"$ref\":\"#/components/schemas/PlaylistTrackObject\"}}}}]},\"PlaylistItemObject\":{\"type\":\"object\",\"properties\":{\"item\":{\"oneOf\":[{\"$ref\":\"#/components/schemas/TrackObject\"},{\"$ref\":\"#/components/schemas/EpisodeObject\"}]}}},\"PagingPlaylistItemObject\":{\"allOf\":[{\"$ref\":\"#/components/schemas/PagingObject\"},{\"type\":\"object\",\"properties\":{\"items\":{\"type\":\"array\",\"items\":{\"$ref\":\"#/components/schemas/PlaylistItemObject\"}}}}]},\"PlaylistObject\":{\"type\":\"object\",\"properties\":{\"collaborative\":{\"type\":\"boolean\"},\"description\":{\"type\":\"string\",\"nullable\":true},\"href\":{\"type\":\"string\"},\"id\":{\"type\":\"string\"},\"images\":{\"type\":\"array\",\"items\":{\"$ref\":\"#/components/schemas/ImageObject\"}},\"name\":{\"type\":\"string\"},\"owner\":{\"allOf\":[{\"$ref\":\"#/components/schemas/PlaylistOwnerObject\"}]},\"public\":{\"type\":\"boolean\"},\"snapshot_id\":{\"type\":\"string\"},\"tracks\":{\"type\":\"object\",\"allOf\":[{\"$ref\":\"#/components/schemas/PagingPlaylistTrackObject\"}]},\"items\":{\"type\":\"object\",\"allOf\":[{\"$ref\":\"#/components/schemas/PagingPlaylistItemObject\"}]},\"type\":{\"type\":\"string\"},\"uri\":{\"type\":\"string\"}}}}}}",
       "baseUrl": "https://api.spotify.com/v1",
       "securityScheme": {
         "type": "oauth2AuthorizationCode",
@@ -41,22 +41,27 @@
             "type": "object",
             "definition": {
               "id": {
-                "type": "string"
+                "type": "string",
+                "optional": true
               },
               "name": {
-                "type": "string"
+                "type": "string",
+                "optional": true
               },
               "owner": {
                 "type": "object",
                 "definition": {
                   "id": {
-                    "type": "string"
+                    "type": "string",
+                    "optional": true
                   },
                   "display_name": {
                     "type": "string",
-                    "nullable": true
+                    "nullable": true,
+                    "optional": true
                   }
-                }
+                },
+                "optional": true
               },
               "images": {
                 "type": "array",
@@ -75,11 +80,11 @@
                       "nullable": true
                     }
                   }
-                }
+                },
+                "optional": true
               },
               "tracks": {
                 "type": "object",
-                "optional": true,
                 "definition": {
                   "total": {
                     "type": "number"
@@ -93,10 +98,12 @@
                           "type": "object",
                           "definition": {
                             "id": {
-                              "type": "string"
+                              "type": "string",
+                              "optional": true
                             },
                             "name": {
-                              "type": "string"
+                              "type": "string",
+                              "optional": true
                             },
                             "artists": {
                               "type": "array",
@@ -104,27 +111,32 @@
                                 "type": "object",
                                 "definition": {
                                   "id": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "optional": true
                                   },
                                   "name": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "optional": true
                                   }
                                 }
-                              }
+                              },
+                              "optional": true
                             },
                             "duration_ms": {
-                              "type": "number"
+                              "type": "number",
+                              "optional": true
                             }
-                          }
+                          },
+                          "optional": true
                         }
                       }
                     }
                   }
-                }
+                },
+                "optional": true
               },
               "items": {
                 "type": "object",
-                "optional": true,
                 "definition": {
                   "total": {
                     "type": "number"
@@ -138,10 +150,12 @@
                           "type": "object",
                           "definition": {
                             "id": {
-                              "type": "string"
+                              "type": "string",
+                              "optional": true
                             },
                             "name": {
-                              "type": "string"
+                              "type": "string",
+                              "optional": true
                             },
                             "artists": {
                               "type": "array",
@@ -149,23 +163,29 @@
                                 "type": "object",
                                 "definition": {
                                   "id": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "optional": true
                                   },
                                   "name": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "optional": true
                                   }
                                 }
-                              }
+                              },
+                              "optional": true
                             },
                             "duration_ms": {
-                              "type": "number"
+                              "type": "number",
+                              "optional": true
                             }
-                          }
+                          },
+                          "optional": true
                         }
                       }
                     }
                   }
-                }
+                },
+                "optional": true
               }
             }
           }
@@ -186,7 +206,13 @@
             "tracks.items.track.name",
             "tracks.items.track.artists.id",
             "tracks.items.track.artists.name",
-            "tracks.items.track.duration_ms"
+            "tracks.items.track.duration_ms",
+            "items.total",
+            "items.items.item.id",
+            "items.items.item.name",
+            "items.items.item.artists.id",
+            "items.items.item.artists.name",
+            "items.items.item.duration_ms"
           ]
         }
       }

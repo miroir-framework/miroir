@@ -15,7 +15,9 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
+import type { JzodObject } from "../../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { TransformerFailure } from "../../../../src/0_interfaces/2_domain/DomainElement.js";
+import { jzodTypeCheck } from "../../../../src/1_core/jzod/jzodTypeCheck.js";
 import { defaultMetaModelEnvironment } from "../../../../src/1_core/Model.js";
 import { handleTransformer_syncExternalServiceSchema } from "../../../../src/2_domain/syncExternalServiceSchema.js";
 
@@ -30,6 +32,11 @@ const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../../../
 const SPOTIFY_ENDPOINT_PATH = join(
   REPO_ROOT,
   "packages/miroir-test-app_deployment-spotify/assets/spotify_model/3d8da4d4-8f76-4bb4-9212-14869d81c00c/0e5cb172-12ea-4467-8598-5889338ae454.json",
+);
+
+const SPOTIFY_EXCERPT_PATH = join(
+  REPO_ROOT,
+  "packages/miroir-test-app_deployment-spotify/assets/test-resources/spotifyOpenApiExcerpt.get-playlist.json",
 );
 
 const ENDPOINT_UUID = "0e5cb172-12ea-4467-8598-5889338ae454";
@@ -51,6 +58,12 @@ const GET_PLAYLIST_BOUND_PATHS = [
   "tracks.items.track.artists.id",
   "tracks.items.track.artists.name",
   "tracks.items.track.duration_ms",
+  "items.total",
+  "items.items.item.id",
+  "items.items.item.name",
+  "items.items.item.artists.id",
+  "items.items.item.artists.name",
+  "items.items.item.duration_ms",
 ];
 
 const TRANSFORMER = {
@@ -70,6 +83,10 @@ function loadSpotifyOpenApiExcerpt(): Record<string, unknown> {
     throw new Error("Spotify Endpoint asset is missing openApiDocument");
   }
   return JSON.parse(raw) as Record<string, unknown>;
+}
+
+function loadSpotifyOpenApiExcerptFile(): Record<string, unknown> {
+  return JSON.parse(readFileSync(SPOTIFY_EXCERPT_PATH, "utf8")) as Record<string, unknown>;
 }
 
 function makeEndpoint(overrides: {
@@ -211,13 +228,157 @@ function simpleGetOpenApi(operationId: string, path: string): Record<string, unk
     const endpoint = upsertedEndpoint(result);
     const responseSchema =
       endpoint.definition.externalService.operations[0].responseSchema;
-    expect(responseSchema.definition.id).toEqual({ type: "string" });
-    expect(responseSchema.definition.name).toEqual({ type: "string" });
+    expect(responseSchema.definition.id).toEqual({ type: "string", optional: true });
+    expect(responseSchema.definition.name).toEqual({ type: "string", optional: true });
     expect(responseSchema.definition.owner.definition.display_name).toEqual({
       type: "string",
       nullable: true,
+      optional: true,
     });
+    expect(responseSchema.definition.owner.optional).toBe(true);
     expect(responseSchema.definition.tracks).toBeUndefined();
+  });
+
+  it("marks OpenAPI properties optional unless listed in required", () => {
+    const result = runSync({
+      openApiDocument: {
+        openapi: "3.0.0",
+        info: { title: "required-vs-optional", version: "0.0.1" },
+        paths: {
+          "/thing": {
+            get: {
+              operationId: "get-thing",
+              responses: {
+                "200": {
+                  description: "ok",
+                  content: {
+                    "application/json": {
+                      schema: {
+                        type: "object",
+                        required: ["id"],
+                        properties: {
+                          id: { type: "string" },
+                          name: { type: "string" },
+                          extra: { type: "string" },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      appModel: {
+        endpoints: [
+          makeEndpoint({
+            enabledOperations: ["get-thing"],
+            operationSync: {
+              "get-thing": { boundPaths: ["id", "name"] },
+            },
+          }),
+        ],
+      },
+      scope: ["get-thing"],
+      endpointUuid: ENDPOINT_UUID,
+    });
+    const definition = upsertedEndpoint(result).definition.externalService.operations[0]
+      .responseSchema.definition;
+    expect(definition.id).toEqual({ type: "string" });
+    expect(definition.name).toEqual({ type: "string", optional: true });
+    expect(definition.extra).toBeUndefined();
+  });
+
+  it("PlaylistObject tracks is optional; paging total stays required", () => {
+    const result = runSync({
+      openApiDocument: loadSpotifyOpenApiExcerptFile(),
+      appModel: {
+        endpoints: [
+          makeEndpoint({
+            operationSync: {
+              "get-playlist": { boundPaths: GET_PLAYLIST_BOUND_PATHS },
+            },
+          }),
+        ],
+      },
+      scope: ["get-playlist"],
+      endpointUuid: ENDPOINT_UUID,
+    });
+    const definition = upsertedEndpoint(result).definition.externalService.operations[0]
+      .responseSchema.definition;
+    expect(definition.tracks.optional).toBe(true);
+    expect(definition.tracks.definition.total).toEqual({ type: "number" });
+    expect(definition.tracks.definition.items.optional).toBeUndefined();
+    expect(definition.items.optional).toBe(true);
+    expect(definition.items.definition.total).toEqual({ type: "number" });
+    expect(definition.images.optional).toBe(true);
+    expect(definition.images.definition.definition.url).toEqual({ type: "string" });
+  });
+
+  it("metadata-only and Feb-2026 items playlists typecheck against the synced schema", () => {
+    const result = runSync({
+      openApiDocument: loadSpotifyOpenApiExcerptFile(),
+      appModel: {
+        endpoints: [
+          makeEndpoint({
+            operationSync: {
+              "get-playlist": { boundPaths: GET_PLAYLIST_BOUND_PATHS },
+            },
+          }),
+        ],
+      },
+      scope: ["get-playlist"],
+      endpointUuid: ENDPOINT_UUID,
+    });
+    const schema = upsertedEndpoint(result).definition.externalService.operations[0]
+      .responseSchema as JzodObject;
+    const metadataOnly = {
+      id: "5BQpOaeNsOzzq4l3PFUQMd",
+      name: "Ex-yu",
+      owner: { id: "donnykerabatsos", display_name: "donnykerabatsos" },
+      images: [
+        {
+          height: 640,
+          url: "https://mosaic.scdn.co/640/example",
+          width: 640,
+        },
+      ],
+    };
+    const newShape = {
+      ...metadataOnly,
+      items: {
+        total: 1,
+        items: [
+          {
+            item: {
+              id: "track-1",
+              name: "Example Track",
+              artists: [{ id: "artist-1", name: "Example Artist" }],
+              duration_ms: 180000,
+            },
+          },
+        ],
+      },
+    };
+    const metadataResult = jzodTypeCheck(
+      schema,
+      metadataOnly,
+      [],
+      [],
+      defaultMetaModelEnvironment,
+      {},
+    );
+    const newShapeResult = jzodTypeCheck(
+      schema,
+      newShape,
+      [],
+      [],
+      defaultMetaModelEnvironment,
+      {},
+    );
+    expect(metadataResult.status, JSON.stringify(metadataResult)).toBe("ok");
+    expect(newShapeResult.status, JSON.stringify(newShapeResult)).toBe("ok");
   });
 
   it("two operationSync entity keys emit two createEntity actions", () => {
@@ -310,6 +471,7 @@ function simpleGetOpenApi(operationId: string, path: string): Record<string, unk
     expect(endpoint.definition.externalService.operations[0].operationId).toBe("get-playlist");
     expect(endpoint.definition.externalService.operations[0].responseSchema.definition.id).toEqual({
       type: "string",
+      optional: true,
     });
   });
 

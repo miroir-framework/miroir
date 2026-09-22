@@ -138,3 +138,45 @@ export function getExternalService(
   }
   return undefined;
 }
+
+function hasOpenApiDocument(document: unknown): boolean {
+  if (typeof document === "string") {
+    return document.trim().length > 0;
+  }
+  return document !== null && typeof document === "object" && !Array.isArray(document);
+}
+
+/**
+ * True when the instance carries a non-empty OpenAPI document.
+ * Does not use the actions/externalService XOR: the details form can
+ * keep both union keys on the value, and the document is still the
+ * signal that this Endpoint is OpenAPI-based.
+ */
+export function isOpenApiExternalServiceEndpoint(
+  endpoint: EndpointDefinitionLike | undefined | null,
+): boolean {
+  const definition = definitionRecord(endpoint);
+  const externalService = definition?.externalService;
+  if (!externalService || typeof externalService !== "object") {
+    return false;
+  }
+  return hasOpenApiDocument((externalService as EndpointExternalService).openApiDocument);
+}
+
+/**
+ * Copy used for syncExternalServiceSchema: drop a stray `actions` key so
+ * getExternalService stays XOR-clean while keeping the OpenAPI document.
+ */
+export function asOpenApiSyncEndpoint<T extends EndpointDefinitionLike>(
+  endpoint: T,
+): T {
+  const definition = definitionRecord(endpoint);
+  if (!definition || !("actions" in definition)) {
+    return endpoint;
+  }
+  const { actions: _actions, ...restDefinition } = definition;
+  return {
+    ...endpoint,
+    definition: restDefinition,
+  };
+}

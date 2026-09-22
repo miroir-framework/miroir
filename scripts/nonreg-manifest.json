@@ -701,18 +701,9 @@
       "title": "MiroirTest integ — evolutionTraceWP1 (actionTest)",
       "requires": "postgres",
       "argv": [
-        "npm",
-        "run",
-        "testMiroir",
-        "-w",
-        "miroir-standalone-app",
-        "--",
-        "--profile",
-        "{profile}",
-        "--suites",
-        "evolutionTraceWP1",
-        "--mode",
-        "integ"
+        "bash",
+        "-c",
+        "MIROIR_EVOLUTION_TRACE=1 npm run testMiroir -w miroir-standalone-app -- --profile {profile} --suites evolutionTraceWP1 --mode integ"
       ]
     },
     {

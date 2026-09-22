@@ -23,7 +23,7 @@
           "openApiDocument": {
             "openapi": "3.0.0",
             "info": {
-              "title": "Spotify Web API excerpt — get-playlist",
+              "title": "Spotify Web API excerpt \u2014 get-playlist",
               "version": "0.0.1",
               "description": "Faithful subset of https://developer.spotify.com/reference/web-api/open-api-schema.yaml for GET /playlists/{playlist_id} (operationId get-playlist) plus PUT change-playlist-details. Includes PlaylistObject, TrackObject, SimplifiedArtistObject, ImageObject, paging/owner allOf, ImageObject nullable height/width, and PlaylistTrackObject.track oneOf."
             },
@@ -412,25 +412,31 @@
                 "type": "object",
                 "definition": {
                   "id": {
-                    "type": "string"
+                    "type": "string",
+                    "optional": true
                   },
                   "name": {
-                    "type": "string"
+                    "type": "string",
+                    "optional": true
                   },
                   "owner": {
                     "type": "object",
+                    "optional": true,
                     "definition": {
                       "id": {
-                        "type": "string"
+                        "type": "string",
+                        "optional": true
                       },
                       "display_name": {
                         "type": "string",
-                        "nullable": true
+                        "nullable": true,
+                        "optional": true
                       }
                     }
                   },
                   "images": {
                     "type": "array",
+                    "optional": true,
                     "definition": {
                       "type": "object",
                       "definition": {
@@ -450,6 +456,7 @@
                   },
                   "tracks": {
                     "type": "object",
+                    "optional": true,
                     "definition": {
                       "total": {
                         "type": "number"
@@ -461,29 +468,36 @@
                           "definition": {
                             "track": {
                               "type": "object",
+                              "optional": true,
                               "definition": {
                                 "id": {
-                                  "type": "string"
+                                  "type": "string",
+                                  "optional": true
                                 },
                                 "name": {
-                                  "type": "string"
+                                  "type": "string",
+                                  "optional": true
                                 },
                                 "artists": {
                                   "type": "array",
+                                  "optional": true,
                                   "definition": {
                                     "type": "object",
                                     "definition": {
                                       "id": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "optional": true
                                       },
                                       "name": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "optional": true
                                       }
                                     }
                                   }
                                 },
                                 "duration_ms": {
-                                  "type": "number"
+                                  "type": "number",
+                                  "optional": true
                                 }
                               }
                             }
@@ -518,25 +532,31 @@
                   "type": "object",
                   "definition": {
                     "id": {
-                      "type": "string"
+                      "type": "string",
+                      "optional": true
                     },
                     "name": {
-                      "type": "string"
+                      "type": "string",
+                      "optional": true
                     },
                     "owner": {
                       "type": "object",
+                      "optional": true,
                       "definition": {
                         "id": {
-                          "type": "string"
+                          "type": "string",
+                          "optional": true
                         },
                         "display_name": {
                           "type": "string",
-                          "nullable": true
+                          "nullable": true,
+                          "optional": true
                         }
                       }
                     },
                     "images": {
                       "type": "array",
+                      "optional": true,
                       "definition": {
                         "type": "object",
                         "definition": {
@@ -556,6 +576,7 @@
                     },
                     "tracks": {
                       "type": "object",
+                      "optional": true,
                       "definition": {
                         "total": {
                           "type": "number"
@@ -567,29 +588,36 @@
                             "definition": {
                               "track": {
                                 "type": "object",
+                                "optional": true,
                                 "definition": {
                                   "id": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "optional": true
                                   },
                                   "name": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "optional": true
                                   },
                                   "artists": {
                                     "type": "array",
+                                    "optional": true,
                                     "definition": {
                                       "type": "object",
                                       "definition": {
                                         "id": {
-                                          "type": "string"
+                                          "type": "string",
+                                          "optional": true
                                         },
                                         "name": {
-                                          "type": "string"
+                                          "type": "string",
+                                          "optional": true
                                         }
                                       }
                                     }
                                   },
                                   "duration_ms": {
-                                    "type": "number"
+                                    "type": "number",
+                                    "optional": true
                                   }
                                 }
                               }
@@ -610,20 +638,23 @@
           [
             "payload.actionSequence.0.payload.objects.0.definition.externalService.operations.0.responseSchema.definition.id",
             {
-              "type": "string"
+              "type": "string",
+              "optional": true
             }
           ],
           [
             "payload.actionSequence.0.payload.objects.0.definition.externalService.operations.0.responseSchema.definition.name",
             {
-              "type": "string"
+              "type": "string",
+              "optional": true
             }
           ],
           [
             "payload.actionSequence.0.payload.objects.0.definition.externalService.operations.0.responseSchema.definition.owner.definition.display_name",
             {
               "type": "string",
-              "nullable": true
+              "nullable": true,
+              "optional": true
             }
           ]
         ]
@@ -641,7 +672,7 @@
           "openApiDocument": {
             "openapi": "3.0.0",
             "info": {
-              "title": "Spotify Web API excerpt — get-playlist",
+              "title": "Spotify Web API excerpt \u2014 get-playlist",
               "version": "0.0.1",
               "description": "Faithful subset of https://developer.spotify.com/reference/web-api/open-api-schema.yaml for GET /playlists/{playlist_id} (operationId get-playlist) plus PUT change-playlist-details. Includes PlaylistObject, TrackObject, SimplifiedArtistObject, ImageObject, paging/owner allOf, ImageObject nullable height/width, and PlaylistTrackObject.track oneOf."
             },
@@ -1034,25 +1065,31 @@
                 "type": "object",
                 "definition": {
                   "id": {
-                    "type": "string"
+                    "type": "string",
+                    "optional": true
                   },
                   "name": {
-                    "type": "string"
+                    "type": "string",
+                    "optional": true
                   },
                   "owner": {
                     "type": "object",
+                    "optional": true,
                     "definition": {
                       "id": {
-                        "type": "string"
+                        "type": "string",
+                        "optional": true
                       },
                       "display_name": {
                         "type": "string",
-                        "nullable": true
+                        "nullable": true,
+                        "optional": true
                       }
                     }
                   },
                   "images": {
                     "type": "array",
+                    "optional": true,
                     "definition": {
                       "type": "object",
                       "definition": {
@@ -1072,6 +1109,7 @@
                   },
                   "tracks": {
                     "type": "object",
+                    "optional": true,
                     "definition": {
                       "total": {
                         "type": "number"
@@ -1083,29 +1121,36 @@
                           "definition": {
                             "track": {
                               "type": "object",
+                              "optional": true,
                               "definition": {
                                 "id": {
-                                  "type": "string"
+                                  "type": "string",
+                                  "optional": true
                                 },
                                 "name": {
-                                  "type": "string"
+                                  "type": "string",
+                                  "optional": true
                                 },
                                 "artists": {
                                   "type": "array",
+                                  "optional": true,
                                   "definition": {
                                     "type": "object",
                                     "definition": {
                                       "id": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "optional": true
                                       },
                                       "name": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "optional": true
                                       }
                                     }
                                   }
                                 },
                                 "duration_ms": {
-                                  "type": "number"
+                                  "type": "number",
+                                  "optional": true
                                 }
                               }
                             }
@@ -1140,25 +1185,31 @@
                   "type": "object",
                   "definition": {
                     "id": {
-                      "type": "string"
+                      "type": "string",
+                      "optional": true
                     },
                     "name": {
-                      "type": "string"
+                      "type": "string",
+                      "optional": true
                     },
                     "owner": {
                       "type": "object",
+                      "optional": true,
                       "definition": {
                         "id": {
-                          "type": "string"
+                          "type": "string",
+                          "optional": true
                         },
                         "display_name": {
                           "type": "string",
-                          "nullable": true
+                          "nullable": true,
+                          "optional": true
                         }
                       }
                     },
                     "images": {
                       "type": "array",
+                      "optional": true,
                       "definition": {
                         "type": "object",
                         "definition": {
@@ -1178,6 +1229,7 @@
                     },
                     "tracks": {
                       "type": "object",
+                      "optional": true,
                       "definition": {
                         "total": {
                           "type": "number"
@@ -1189,29 +1241,36 @@
                             "definition": {
                               "track": {
                                 "type": "object",
+                                "optional": true,
                                 "definition": {
                                   "id": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "optional": true
                                   },
                                   "name": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "optional": true
                                   },
                                   "artists": {
                                     "type": "array",
+                                    "optional": true,
                                     "definition": {
                                       "type": "object",
                                       "definition": {
                                         "id": {
-                                          "type": "string"
+                                          "type": "string",
+                                          "optional": true
                                         },
                                         "name": {
-                                          "type": "string"
+                                          "type": "string",
+                                          "optional": true
                                         }
                                       }
                                     }
                                   },
                                   "duration_ms": {
-                                    "type": "number"
+                                    "type": "number",
+                                    "optional": true
                                   }
                                 }
                               }
@@ -1228,20 +1287,23 @@
           [
             "payload.actionSequence.0.payload.objects.0.definition.externalService.operations.0.responseSchema.definition.id",
             {
-              "type": "string"
+              "type": "string",
+              "optional": true
             }
           ],
           [
             "payload.actionSequence.0.payload.objects.0.definition.externalService.operations.0.responseSchema.definition.name",
             {
-              "type": "string"
+              "type": "string",
+              "optional": true
             }
           ],
           [
             "payload.actionSequence.0.payload.objects.0.definition.externalService.operations.0.responseSchema.definition.owner.definition.display_name",
             {
               "type": "string",
-              "nullable": true
+              "nullable": true,
+              "optional": true
             }
           ],
           [
@@ -1270,14 +1332,16 @@
           [
             "payload.actionSequence.1.payload.entities.0.mlSchema.definition.name",
             {
-              "type": "string"
+              "type": "string",
+              "optional": true
             }
           ],
           [
             "payload.actionSequence.1.payload.entities.0.mlSchema.definition.owner.definition.display_name",
             {
               "type": "string",
-              "nullable": true
+              "nullable": true,
+              "optional": true
             }
           ]
         ]
