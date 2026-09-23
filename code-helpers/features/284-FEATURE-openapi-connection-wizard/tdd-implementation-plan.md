@@ -13,7 +13,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisites: [#267](https://github.com/miroir-framework/miroir/issues/267) ✅ · [#270](https://github.com/miroir-framework/miroir/issues/270) ✅ · [#274](https://github.com/miroir-framework/miroir/issues/274) ✅ · [#281](https://github.com/miroir-framework/miroir/issues/281) ✅
 Working branch: `284-FEATURE-openapi-connection-wizard`
 
-**Resume note:** Slice 2 done. Slice 3 not started.
+**Resume note:** Slice 3 done. Slice 4 not started.
 
 ---
 
@@ -37,7 +37,7 @@ This plan does **not** add a Discogs deployment package, rewrite Spotify endpoin
 | 0 | Characterize linear host, Bearer header, home report | ✅ | `connectExternalService.284.phase0` |
 | 1 | **Tracer.** Public Finish writes endpoint + report | ✅ | phase1 integ, fake server sees User-Agent and no Authorization |
 | 2 | Failed probe and name clash write nothing | ✅ | phase2 integ |
-| 3 | Second Finish updates the same rows | ⬜ | phase3 integ |
+| 3 | Second Finish updates the same rows | ✅ | phase3 integ |
 | 4 | Authenticated probes (token, client credentials, refresh grant) | ⬜ | phase4 integ |
 | 5 | Branching host: path, Back, on-Next failure | ⬜ | `multistepBranch.284` |
 | 6 | Wizard report, home button, document step | ⬜ | `wizardWalk.284` + `modelValidation` |
@@ -285,7 +285,7 @@ Validation: phase0 stable 4 passed, phase1 1 passed, phase2 4 passed. `tsc` miro
 
 ## Slice 3 — Second Finish updates the same rows
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -324,7 +324,9 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE.>
+No product change. Slice 1 already upserts by derived uuid, replaces `enabledOperations` / `operations` / `operationSync` with the checked set, and leaves other probe reports in place. `updateInstance` on the same probe uuid refreshes the input default.
+
+Test: `connectExternalService.284.phase3.integ.test.ts`. Validation: phase0 stable 4 passed, phase1 1, phase2 4, phase3 1. No `tsc` (no product TypeScript change).
 
 ---
 
