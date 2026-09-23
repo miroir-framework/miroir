@@ -10,7 +10,9 @@ Prerequisites: [#267 OpenAPI external services](https://github.com/miroir-framew
 Key sources: [`MultistepReportHost.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/MultistepReportHost.tsx) · [`ExternalServiceClient.ts`](../../../packages/miroir-core/src/4_services/ExternalServiceClient.ts) · [`syncExternalServiceSchema.ts`](../../../packages/miroir-core/src/2_domain/syncExternalServiceSchema.ts) · [`endpointDefinition.ts`](../../../packages/miroir-core/src/0_interfaces/1_core/endpointDefinition.ts) · [`OpenApiEndpointSyncButton.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/OpenApiEndpointSyncButton.tsx) · [`SecretStore.ts`](../../../packages/miroir-core/src/4_services/SecretStore.ts) · [`HomePage.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/HomePage.tsx) · [`MiroirWebAppOrDesktopHome`](../../../packages/miroir-test-app_deployment-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/29ef8018-43fc-4ee9-a736-6f9d625be7b7.json) · [`MultistepCountryCreate`](../../../packages/miroir-test-app_deployment-library/assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/d2b2fbbd-6844-4422-8412-4e3c303296bc.json) · [`SpotifyService`](../../../packages/miroir-test-app_deployment-spotify/assets/spotify_model/3d8da4d4-8f76-4bb4-9212-14869d81c00c/0e5cb172-12ea-4467-8598-5889338ae454.json)
 
 **Document role:** analysis and architectural decision record.
-**Status:** decisions confirmed with the user (2026-09-23 grilling). Implementation plan not written yet.
+**Status:** decisions confirmed with the user (2026-09-23 grilling). Revised after adversarial review ([`./adversarial-review.md`](./adversarial-review.md), R1–R17 applied). Implementation plan not written yet.
+
+**Document history:** first draft committed on `284-FEATURE-openapi-connection-wizard`. Review found the walk counted as ten steps while §5.1 lists twelve step ids, Finish gating every list child (including secret steps the user never opened), no registration path for `connectExternalService`, the validation report placed in `data` instead of `model`, and host mechanisms (on-Next action, dynamic input schema, upload, visited-step Back) named without call sites. Product choices D1–D23 are unchanged. Mechanisms below are tightened.
 
 ---
 
@@ -49,7 +51,7 @@ Confirmed with the user (2026-09-23). Defaults accepted except Q4 (all writes on
 | D11 | Header for a raw token | **Template with marker `{secret}`.** Default `Bearer {secret}`. Discogs acceptance uses `Discogs token={secret}`. |
 | D12 | Where the wizard lives | **Miroir application.** Button on `MiroirWebAppOrDesktopHome` opens it as its own page. Step 1 always picks the target. |
 | D13 | Secrets during the probe | **Register in the process map, call, persist rows after success.** On failure, remove values this action added and restore a previous map value. |
-| D14 | Walk | **Ten steps** below. User-Agent is on the base-URL step for every path. Blank omits the header. |
+| D14 | Walk | **Twelve step ids** in §5.1. One run visits a subset. The three secret steps are mutually exclusive. User-Agent is on the base-URL step for every path. Blank omits the header. |
 | D15 | What the host must grow | **Stable step id, on-Next server action, input schema from a bag transformer, boolean test after that action.** Failure stays on the step and shows that failure's own message. Back follows the path taken. |
 | D16 | Response fields | **Wizard-owned `boundPaths`.** User does not pick fields. Playlist `oneOf` tracks stay out until someone edits `boundPaths` on the endpoint. |
 | D17 | Names and the saved report | **Generated secret names, editable.** Report is input section + `apiCallReportSection`. No Entity. Probe parameter names are the OpenAPI names. Defaults are the values that just succeeded. Those fields are also URL parameters. |
@@ -68,13 +70,25 @@ Confirmed with the user (2026-09-23). Defaults accepted except Q4 (all writes on
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
-| **D5-a. Envelope beside the section** ★ | A list child is either a `ReportSection` (today) or `{ stepId, section, onNext?, branch?, inputSchemaFromBag? }` | `MultistepCountryCreate` (`d2b2fbbd-…`) stays a bare list. Flow fields are not added to all 16 section types | List schema union grows one member. The list renderer must unwrap an envelope when it is not inside the host |
+| **D5-a. Envelope beside the section** ★ | A list child is either a `ReportSection` (today) or `{ stepId, section, onNext?, branch?, inputSchemaFromBag? }` | `MultistepCountryCreate` (`d2b2fbbd-…`) stays a bare list. Flow fields are not added to all 16 section types | The list **child** schema (`listReportSection.definition` items, Report entity `3f2baa83-…` L161–169) becomes `reportSection` or `multistepStep`. Dual-write EntityVersion `952d2c65-…`. Non-host list renderers must unwrap or reject the envelope |
 | D5-b. `stepId` on every section type | Optional fields on all 16 `reportSection` arms | One object shape | Dual-write across every section schema for three optional fields |
 | D5-c. Private wizard state machine | React-only flow | No report-engine change | The next wizard copies it. User asked for report branching |
 
-**Decision:** D5-a. A child with no `stepId` keeps today's index walk (`handleNext` does `stepIndex + 1`, `handleBack` does `stepIndex - 1`, `MultistepReportHost.tsx` L360–381). A child with `stepId` is the envelope. `branch.test` is a pure transformer over the bag, run after `onNext` succeeds. `whenTrue` / `whenFalse` are step ids and may name the same later step. `onNext` is one server action whose returned object is merged into the bag under `stepId`. `inputSchemaFromBag` is a transformer evaluated when the step opens. Its result is the Jzod passed to the input section. It is **not** stored in `inputMLSchema` (that field is `jzodElement` only, Report entity `3f2baa83-…` L726–738).
+**Decision:** D5-a.
 
-`getMultistepChildSections` (`MultistepReportHost.tsx` L96–105) returns `section.definition` as `ReportSection[]`. It must accept the envelope and still return the inner section to the existing section view.
+A child with no `stepId` keeps today's index walk (`handleNext` / `handleBack`, `MultistepReportHost.tsx` L360–381). A child with `stepId` is the envelope. `getMultistepChildSections` (L96–105) must return the inner `section` to `ReportSectionViewWithEditor`, and keep the envelope for the host.
+
+**List schema.** `listReportSection.definition` items are a `reportSection` reference only (`3f2baa83-….json` L161–169). The item becomes a union `reportSection | multistepStep`, dual-written on EntityVersion `952d2c65-…`. That union is on every list, not only multistep reports. `ReportSectionListDisplay`, `ReportTools.reportSectionsFormSchema`, and `reportSectionsFormValue` must unwrap `multistepStep` to its `section` (or reject it with a named error). They must not fall through a closed switch.
+
+**Next.** Today `handleNext` (L365–381) only checks `currentStepAllowsNext` and adds 1 to `stepIndex`. There is no DomainController call. Target order, all on the host: client gate on the **resolved** schema, then optional `onNext` server action, then merge its returned object into the bag under `stepId`, then optional `branch.test`, then go to `whenTrue` or `whenFalse`. A failed action or a failed test stays on the current step. This is not the report-query failure banner in `ReportViewWithEditor.tsx` L541–544.
+
+**Back.** The host keeps `visitedStepIds: string[]`. Back pops that stack. `stepIndex - 1` remains only for a report whose children have no `stepId` (`MultistepCountryCreate`).
+
+**Finish gate.** `allGatedStepsAllowFinish` (L170–191, called at L403–405) runs `currentStepAllowsNext` on **every** list child. A static list that contains all three secret steps would fail Finish for the two the user never opened. Target: when the report uses step ids, the gate runs only on `visitedStepIds`. Non-taken secret steps stay in the list. They are not optional empty bags.
+
+**Dynamic schema.** `ReportSectionViewWithEditor.tsx` L738–747 passes the static `inputMLSchema` into `ReportInputSection`. The host, when `stepIndex` changes, evaluates `inputSchemaFromBag` against the bag and passes the resulting Jzod as the input schema for that step. `currentStepAllowsNext` and `collectStepBagKeys` use that resolved object, not the JSON field. The "at least one operation, and the probe is one of them" rule is required fields on that resolved schema. `inputMLSchema` on the stored section stays absent. It is `jzodElement` only (`3f2baa83-…` L726–738).
+
+**Upload.** Paste is an `inputReportSection` string. Upload is a file input on that same document step, read in the browser with `FileReader`, and the text is written into the bag under `document.text` before Next. There is no report section that does this today (`BlobEditorField` and `Importer` are unrelated). The document step's `onNext` sends either that text or the URL to the server. The server parses. The server fetches when the source is a URL. Bytes do not go to the server as a multipart body.
 
 ### D9 / D13 — probe, then rows
 
@@ -82,7 +96,7 @@ Confirmed with the user (2026-09-23). Defaults accepted except Q4 (all writes on
 
 `resolveSecret` (`SecretStore.ts` L44–61) reads the process map only. A probe that runs before `MiroirSecret` rows exist fails with an unknown secret, including the Spotify refresh-token grant (`ExternalServiceClient.ts` L590–600), which needs client id and client secret before the API call.
 
-The Finish action calls `registerHydratedProcessSecret` (`SecretStore.ts` L27–29) for each typed value, then `executeExternalServiceOperation` with an endpoint object built from the bag (not yet loaded from the store). On probe failure it deletes map entries it added, and writes back the previous value when the name was already registered. It does not write rows.
+The Finish action calls `registerHydratedProcessSecret` (`SecretStore.ts` L27–29) for each typed value, then `executeExternalServiceOperation` with an endpoint object built from the bag (not yet loaded from the store). That helper only overwrites. There is no unregister. `clearSecrets` (L64–67) wipes the whole map and must not be used. Before registering, the action snapshots each name with `resolveSecret` (miss means "was absent"). On probe failure it re-registers the snapshot, or deletes the key when the name was absent. Deleting a key is a new `unregisterProcessSecret` in `SecretStore.ts`. It does not write rows.
 
 On success the same action upserts secrets (`actionLabel: "secrets.set"`, Admin application `55af124e-…`), then the endpoint, then the report. `handleCompositeActionTemplate` returns on the first error and does not roll back (`DomainController.ts` L5000–5015). That window is accepted (D20).
 
@@ -101,6 +115,15 @@ Target on `externalService`:
 - optional `extraHeaders: Record<string, string>`. The wizard writes `User-Agent` only when the field is non-blank.
 
 OAuth2 schemes are unchanged and still send `Bearer` plus the granted token.
+
+| Wizard choice | `securityScheme` written | Header |
+|---|---|---|
+| Public | `{ type: "none" }`, no `credentialKey` | none. `extraHeaders["User-Agent"]` when filled |
+| Authorization code | existing `oauth2AuthorizationCode` plus the three secret **names** | `Bearer` plus the refresh grant, as today |
+| Client credentials | existing `oauth2ClientCredentials` plus the two secret names | `Bearer` plus the client-credentials grant, as today |
+| Custom token | `{ type: "http", scheme: "bearer", authorizationTemplate }` plus `credentialKey` | template with `{secret}` replaced. Discogs acceptance template is `Discogs token={secret}` |
+
+`scheme: "bearer"` on the custom-token row is the existing `http.scheme` string. The template, not that string, decides the header. An absent template on an old `http` endpoint still means `Bearer ${token}`.
 
 ### D10 / D18 — identity
 
@@ -165,7 +188,7 @@ The only committed multistep report is Library `MultistepCountryCreate` `d2b2fbb
 
 `handleNext` advances `stepIndex + 1` after `currentStepAllowsNext` (`MultistepReportHost.tsx` L365–381). `handleBack` does `stepIndex - 1` (L360–363). There is no step id, no branch test, no on-Next action. `currentStepAllowsNext` (L244–276) checks required input fields for `inputReportSection` and `objectInstanceReportSection`. Every other section type returns true.
 
-`runMultistepFinish` (L55–76) logs `Object.keys(stepBag)` and the **whole** `sequence`, then calls `handleCompositeActionTemplate` with the bag as `actionParamValues`. The hidden `<pre data-testid="multistep-step-bag">` JSON-stringifies the bag (L461–463). Secret values in the bag would be in the DOM and, once interpolated into the sequence, in `handleCompositeActionTemplate`'s `JSON.stringify(currentAction)` / `JSON.stringify(actionResult)` logs (`DomainController.ts` L4992–5005).
+`runMultistepFinish` (L55–76) logs `Object.keys(stepBag)` and the **whole** `sequence`, then calls `handleCompositeActionTemplate` with the bag as `actionParamValues`. The hidden `<pre data-testid="multistep-step-bag">` JSON-stringifies the bag (L461–463). `handleCompositeActionTemplate` also logs the full sequence and `localActionParams` at entry (L4795–4803), and on each sub-action logs the action object plus `localContext` (L4846–4855) and `JSON.stringify(actionResult)` (L4992–4998). `ReportViewWithEditor.tsx` L517–520 dumps Formik values in the debug panel, which includes the bag while the wizard is mounted. `redactRegisteredSecretValuesInString` (`SecretStore.ts` L69–84) exists and is not called on any of these paths. Secret values in the bag would show up in all of them.
 
 Finish failure displays `result.errorMessage` only (L420–422). A template sub-action failure is rewrapped as `"handleCompositeActionTemplate compositeInstanceAction error"` (L5007–5014). The inner message is the nested error, not `errorMessage`. The wizard's "show that failure's own message" (D15) is not what the host does today.
 
@@ -205,7 +228,7 @@ Report entity `3f2baa83-3ef7-45ce-82ea-6a43f7a8c916` `reportSection` union (L133
 
 EntityVersion of Report is `952d2c65-4da2-45c2-9394-a0920ceedfb6`. Endpoint entity is `3d8da4d4-8f76-4bb4-9212-14869d81c00c`. EntityVersion of Endpoint is `e3c1cc69-066d-4f52-beeb-b659dc7a88b9`. Schema additions (`none`, `authorizationTemplate`, `extraHeaders`, `multistepStep`) are dual-written on those pairs, then `devBuild`.
 
-Spotify validation report `10ce3252-7840-4041-a769-9a0e2d5ee10b` is the shape Finish copies: `extractorTemplates` entry `extractorTemplateForExternalService`, an `inputReportSection` whose `urlParamFields` match the probe, and `apiCallReportSection` with the same `endpointUuid` and `operationId`. The wizard's parameter field names are the OpenAPI parameter names (`playlist_id`, not a renamed `playlistId`).
+Spotify validation report `10ce3252-7840-4041-a769-9a0e2d5ee10b` lives under `spotify_model/` with `conceptLevel: "Model"`. It is a **structural** template only: `extractorTemplates` entry `extractorTemplateForExternalService`, an `inputReportSection`, and `apiCallReportSection` with the same `endpointUuid` and `operationId`. Its URL field is `playlistId`, and the extractor maps OpenAPI `playlist_id` through `referenceName: "playlistId"`. The wizard does not copy that alias. Wizard input fields and `urlParamFields` use the OpenAPI parameter name (`playlist_id`), and `parameterBindings` use that same name as `referenceName`. Generated reports are `conceptLevel: "Model"` in the target application's **model** section, same as `10ce3252-…` and `d2b2fbbd-…`. They are not data-section rows.
 
 ## 4. Key reuse
 
@@ -228,7 +251,7 @@ Spotify validation report `10ce3252-7840-4041-a769-9a0e2d5ee10b` is the shape Fi
 
 ### 5.1 Walk
 
-The wizard report is one `type: "multistep"` report on SelfApplication `360fcf1f-…`, section `data`. Finish's `compositeActionSequence` is a single action `connectExternalService` whose parameters are the step bag. The server action owns probe and upserts. The client does not assemble per-secret `createInstance` actions.
+The wizard report is one `type: "multistep"` report on SelfApplication `360fcf1f-…`. The report instance is model-section, `conceptLevel: "Model"`. The list has **twelve** step ids. A public run visits eight of them (`application`, `name`, `document`, `baseUrl`, `authenticated`, `operations`, `probeParams`, `review`). An authenticated run also visits `scheme` and exactly one of `secretsAuthCode`, `secretsClient`, `secretsCustom`. Finish's `compositeActionSequence` is a single sub-action `connectExternalService` whose parameters are the step bag. The server action owns probe and upserts. The client does not assemble per-secret `createInstance` actions. The host's `application` prop on that page is Miroir. Persistence uses the bag's target application uuid, not that prop.
 
 | Step id | Shown | Bag writes | Branch |
 |---|---|---|---|
@@ -251,24 +274,46 @@ Nested booleans, not a switch: `authenticated` is the first test. On the scheme 
 
 ### 5.2 `connectExternalService`
 
-One server action. Parameters are the bag. It does not log secret values. Order:
+New `actionType` on the domain-action union, handled in `DomainController.handleAction`. It is not an Endpoint `libraryImplementation`. `handleApplicationAction` still rejects every implementation type other than `compositeActionTemplate` (`DomainController.ts` L3194–3201).
 
-1. Build the unsaved endpoint object (derived uuid, document text, scheme, `extraHeaders`, `enabledOperations`, `operationSync.boundPaths` from the wizard's field walk, `operations` from `syncExternalServiceSchema` for that scope). No `entity` key.
-2. Register secret values in the process map (D13).
-3. Probe `executeExternalServiceOperation` for the probe id and probe parameters.
-4. On probe failure: restore the map (D13), return the probe's own error message, write nothing.
-5. On success: `secrets.set` for each name, upsert the endpoint on the **target** application's model, upsert the report on the target application's data section (input defaults = probe values, `urlParamFields` = parameter names, `apiCallReportSection`).
-6. If step 5 fails partway: return that step's own error. Do not delete the rows already written (D20).
+The wizard's Finish sequence is one sub-action of this type. `handleCompositeActionTemplate` already passes the bag as `localActionParams` into `handleAction` (L4984–4990). The handler reads that bag. It does not log it.
 
-Name clash (D18) is checked before step 2. Refusal writes nothing and does not register secrets.
+The page application is Miroir (`HomePage.tsx` L73–75, and `runMultistepFinish` forwards `props.application`). The handler ignores that for writes. It loads the target application's model through `applicationDeploymentMap[bag.application]` and reads that model's endpoints for the name-clash check (D18). Tests must put the fixture application on that map (D22). Secret writes use application `55af124e-…`. Endpoint and report writes use the bag's application uuid, section `model`.
+
+Scheme objects written on the endpoint are the table in D11. A custom token is `type: "http"` plus `authorizationTemplate` plus `credentialKey`. It is not `type: "none"`.
+
+Order:
+
+1. Name clash (D18) against the **target** model's endpoints. Refusal returns before any map register and before any write.
+2. Build the unsaved endpoint object (derived uuid, document text, scheme from the D11 table, `extraHeaders`, `enabledOperations`, `operationSync.boundPaths` from §5.3, `operations` from `syncExternalServiceSchema` for that scope). No `entity` key.
+3. Snapshot and register secret values in the process map (D13).
+4. Probe `executeExternalServiceOperation` for the probe id and probe parameters.
+5. On probe failure: restore the map (D13), return the probe's own error message, write nothing.
+6. On success: `secrets.set` for each name (Admin `55af124e-…`), upsert the endpoint on the target application's **model** section, upsert the report on that same model section (`conceptLevel: "Model"`, input defaults = probe values, `urlParamFields` = OpenAPI parameter names, `apiCallReportSection`).
+7. If step 6 fails partway: return that step's own error. Do not delete the rows already written (D20).
 
 ### 5.3 Bound paths
 
-For each GET operation, walk the response schema. Keep a dotted path when `convertSchema` accepts it. Do not descend into `oneOf` or `anyOf`. If the kept set is empty, the operation is absent from the checklist. Finish writes that set as `operationSync.<id>.boundPaths`. This is why a Spotify-shaped `get-playlist` sync from the wizard omits `tracks.items.track.*` even though file `0e5cb172-…` contains them.
+`syncExternalServiceSchema` does not list convertible operations. It converts only when `boundPaths` is already present (`syncExternalServiceSchema.ts` L539–545). New helpers, same module, sharing `deref` / `convertSchema`:
 
-### 5.4 Errors
+- `listConvertibleGetOperations(doc)` returns GET `operationId`s whose kept path set is non-empty.
+- `boundPathsForOperation(doc, operationId)` returns that set.
 
-Next-action failure and branch-test failure stay on the current step. Finish failure stays on `review`. The text is the innermost `errorMessage` (parser, HTTP status, validation, name clash, save), not the composite wrapper from `DomainController.ts` L5009. The hidden step-bag `<pre>` omits secret values. `runMultistepFinish` must not log the bag or a sequence that still contains those values.
+The document step's `onNext` and Finish both call these. They do not grow a second converter. For each GET, walk the response schema. Keep a dotted path when `convertSchema` accepts it. Do not descend into `oneOf` or `anyOf`. If the kept set is empty, the operation is absent from the checklist. Finish writes that set as `operationSync.<id>.boundPaths`. This is why a Spotify-shaped `get-playlist` sync from the wizard omits `tracks.items.track.*` even though file `0e5cb172-…` contains them.
+
+### 5.4 Errors and redaction
+
+Next-action failure and branch-test failure stay on the current step. They do not use the Finish-only `setFinishError` path, but they use the same unwrap. Finish failure stays on `review`. The text is the innermost `errorMessage` (`Action2Error.innerError`, `DomainElement.ts` L216), not the wrapper `"handleCompositeActionTemplate compositeInstanceAction error"` (`DomainController.ts` L5009). One `unwrapAction2ErrorMessage` used by the host for both Next and Finish.
+
+These sites must not show secret values. `redactRegisteredSecretValuesInString` (`SecretStore.ts` L69–84) is necessary and not sufficient, because the values are not registered yet while the user is still typing, and the logs fire with the raw bag:
+
+- `runMultistepFinish` sequence argument (`MultistepReportHost.tsx` L63–69)
+- hidden `<pre data-testid="multistep-step-bag">` (L461–463)
+- `handleCompositeActionTemplate` entry log of `localActionParams` (L4795–4803)
+- per sub-action log of `currentAction` and `localContext` (L4846–4855, L4992–4998)
+- Formik debug dump (`ReportViewWithEditor.tsx` L517–520) while a multistep report is mounted
+
+Target: those logs print keys only, or run the redactor after registration and a bag-key denylist (`clientSecret`, `refreshToken`, `token`, `secretValue`) before registration. The hidden `<pre>` omits those keys always.
 
 ### 5.5 Acceptance shapes
 
