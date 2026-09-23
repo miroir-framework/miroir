@@ -13,7 +13,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisites: [#267](https://github.com/miroir-framework/miroir/issues/267) ✅ · [#270](https://github.com/miroir-framework/miroir/issues/270) ✅ · [#274](https://github.com/miroir-framework/miroir/issues/274) ✅ · [#281](https://github.com/miroir-framework/miroir/issues/281) ✅
 Working branch: `284-FEATURE-openapi-connection-wizard`
 
-**Resume note:** plan revised after [`./plan-adversarial-review.md`](./plan-adversarial-review.md) (P1–P18). No slice started.
+**Resume note:** Slice 0 done. Slice 1 not started.
 
 ---
 
@@ -34,7 +34,7 @@ This plan does **not** add a Discogs deployment package, rewrite Spotify endpoin
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize linear host, Bearer header, home report | ⬜ | `connectExternalService.284.phase0` |
+| 0 | Characterize linear host, Bearer header, home report | ✅ | `connectExternalService.284.phase0` |
 | 1 | **Tracer.** Public Finish writes endpoint + report | ⬜ | phase1 integ, fake server sees User-Agent and no Authorization |
 | 2 | Failed probe and name clash write nothing | ⬜ | phase2 integ |
 | 3 | Second Finish updates the same rows | ⬜ | phase3 integ |
@@ -99,13 +99,15 @@ Endpoint and validation-report uuids are derived at runtime (analysis D10). They
 | Action integ | `RUN_TEST=connectExternalService.284 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284` |
 | Host integ | `RUN_TEST=multistepBranch.284 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepBranch.284` |
 | Wizard walk | `RUN_TEST=wizardWalk.284 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem wizardWalk.284` |
-| Deployment validation | `npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts` |
+| Deployment validation | `npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts` |
 | Schema rebuild | `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core` |
 | Type check | `npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json` and the same for `packages/miroir-standalone-app/tsconfig.json` |
 
 Vitest, not MiroirTest: a live HTTP server, the process secret map, and the React host are not expressible as a declarative MiroirTest. Same reason as #267's external-service integ tests and #274's `multistepProcess` host tests. No mocks. `RestClientStub` is the framework's own server stand-in when the test boots the app shell.
 
 `testByFile` accepts the profile flag before or after the file argument (`prepareTestByFileLaunch`). The commands below put `--profile` before the filter. Either order is valid.
+
+Deployment packages set Vitest `test.root` to `./tests`, so the modelValidation filter is `modelValidation.unit.test.ts` (a `tests/` prefix matches nothing).
 
 ### Test harness
 
@@ -121,7 +123,7 @@ Action tests and `wizardWalk.284` share one boot, copied from existing tests rat
 
 ## Slice 0 — Characterize current contracts
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -153,12 +155,18 @@ None. Inventory only.
 
 ```bash
 RUN_TEST=connectExternalService.284.phase0 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284.phase0
-npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts
+npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts
 ```
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE.>
+Characterization only. No product code. File: `packages/miroir-standalone-app/tests/3_controllers/issues/284-openapi-connection-wizard/connectExternalService.284.phase0.integ.test.ts`.
+
+`phase0 stable` locks the Spotify endpoint file `0e5cb172-12ea-4467-8598-5889338ae454.json` (`securityScheme.type` `oauth2AuthorizationCode`, sha256 `b40a7a61f9a45587342caaf1a46cd07a8cf3d9319c94535f9426f1513a511d02`), `allGatedStepsAllowFinish` on a synthetic two-step list, `Authorization: Bearer phase0-bearer-token` with the recorded `user-agent` still Node's `node`, and the existing `libraryImplementation` rejection (`not supported yet`).
+
+`pre-284 inventory` locks the home report's three section types and `listReportSection` items as a `schemaReference` to `reportSection`.
+
+Validation: `RUN_TEST=connectExternalService.284.phase0` — 6 passed. `modelValidation.unit.test.ts` — 152 passed. The plan's earlier `tests/modelValidation.unit.test.ts` filter does not match because Vitest `test.root` is `./tests`.
 
 ---
 
@@ -211,7 +219,7 @@ The bag's endpoint name is `discogsPublic`. RED fails because `handleAction`'s `
 npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core
 RUN_TEST=phase0 stable npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284.phase0
 RUN_TEST=connectExternalService.284.phase1 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284.phase1
-npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts
+npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts
 npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 ```
@@ -415,8 +423,8 @@ Behavior asserted:
 npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core
 RUN_TEST=multistepBranch.284 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepBranch.284
 RUN_TEST=multistepProcess.274 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepProcess.274
-npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts
-npm run testByFile -w miroir-test-app_deployment-library -- tests/modelValidation.unit.test.ts
+npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts
+npm run testByFile -w miroir-test-app_deployment-library -- modelValidation.unit.test.ts
 npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 ```
@@ -470,7 +478,7 @@ Delete the `pre-284 inventory` describe at the end of this slice. `phase0 stable
 RUN_TEST=phase0 stable npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284.phase0
 RUN_TEST=wizardWalk.284 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem wizardWalk.284
 RUN_TEST=connectExternalService.284.phase1 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284.phase1
-npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts
+npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts
 npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 ```
 
