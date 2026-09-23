@@ -47,7 +47,13 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger:
   log = logger;
 });
 
-const BAG_DUMP_OMIT_KEYS = new Set(["clientsecret", "refreshtoken", "token", "secretvalue"]);
+const BAG_DUMP_OMIT_KEYS = new Set([
+  "clientsecret",
+  "refreshtoken",
+  "token",
+  "secretvalue",
+  "processsecrets",
+]);
 
 export type MultistepListChild = ReportSection | MultistepStep;
 
@@ -143,6 +149,31 @@ export async function runMultistepFinish({
     "sequence actionType",
     (sequence as { actionType?: string })?.actionType,
   );
+  // Empty getFromParameters referencePath is intentionally a TransformerFailure
+  // (whole-bank dump froze list-transformer editors). For #284 Finish the step
+  // bag is the connectExternalService payload; pass it directly instead of
+  // resolving through getFromParameters [].
+  const actionSequence = (
+    sequence as { payload?: { actionSequence?: Array<Record<string, unknown>> } }
+  )?.payload?.actionSequence;
+  if (
+    Array.isArray(actionSequence) &&
+    actionSequence.length === 1 &&
+    actionSequence[0]?.actionType === "connectExternalService"
+  ) {
+    const sole = actionSequence[0];
+    return domainController.handleAction(
+      {
+        actionType: "connectExternalService",
+        actionLabel:
+          (sole.actionLabel as string | undefined) ?? "connectExternalServiceFromWizardBag",
+        endpoint:
+          (sole.endpoint as string | undefined) ?? "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+        payload: stepBag,
+      } as any,
+      applicationDeploymentMap,
+    );
+  }
   return domainController.handleCompositeActionTemplate(
     sequence,
     applicationDeploymentMap,
@@ -291,14 +322,42 @@ export function allGatedStepsAllowFinish(
 export function extractStepBagFromFormikValues(
   values: Record<string, any> | undefined,
   prefixes: string[],
+  previousBag: Record<string, any> = {},
 ): Record<string, any> {
-  const bag: Record<string, any> = {};
+  const bag: Record<string, any> = { ...previousBag };
   if (!values) {
     return bag;
   }
   for (const prefix of prefixes) {
-    if (values[prefix] !== undefined) {
-      bag[prefix] = values[prefix];
+    if (!Object.prototype.hasOwnProperty.call(values, prefix)) {
+      continue;
+    }
+    const fromFormik = values[prefix];
+    const previous = previousBag[prefix];
+    if (
+      fromFormik &&
+      typeof fromFormik === "object" &&
+      !Array.isArray(fromFormik) &&
+      previous &&
+      typeof previous === "object" &&
+      !Array.isArray(previous)
+    ) {
+      // Preserve onNext-enriched keys and non-empty previous values when Formik
+      // still has empty strings for untouched required fields.
+      const merged: Record<string, unknown> = { ...previous };
+      for (const [key, value] of Object.entries(fromFormik as Record<string, unknown>)) {
+        if (
+          (value === "" || value === undefined || value === null) &&
+          merged[key] !== undefined &&
+          merged[key] !== ""
+        ) {
+          continue;
+        }
+        merged[key] = value;
+      }
+      bag[prefix] = merged;
+    } else {
+      bag[prefix] = fromFormik;
     }
   }
   return bag;
@@ -309,28 +368,43 @@ function bagsEqual(left: Record<string, any>, right: Record<string, any>): boole
 }
 
 function requiredFieldIsEmpty(value: unknown): boolean {
-  return value === undefined || value === null || value === "";
+  if (value === undefined || value === null || value === "") {
+    return true;
+  }
+  if (Array.isArray(value) && value.length === 0) {
+    return true;
+  }
+  return false;
 }
 
 function objectSchemaAllowsNext(
   schema: JzodObject | undefined,
-  value: Record<string, unknown>,
+  value: Record<string, unknown> | undefined,
   modelEnvironment: MiroirModelEnvironment,
 ): boolean {
   if (!schema || schema.type !== "object" || !schema.definition) {
     return true;
   }
+  const safeValue = value ?? {};
   for (const [fieldName, fieldSchema] of Object.entries(schema.definition)) {
     if ((fieldSchema as { optional?: boolean })?.optional === true) {
       continue;
     }
-    if (requiredFieldIsEmpty(value[fieldName])) {
+    if (requiredFieldIsEmpty(safeValue[fieldName])) {
       return false;
     }
   }
+  // onNext may enrich the bag with keys outside the static inputMLSchema.
+  // Required-field emptiness is already checked above; skip full type-check when
+  // extras are present so Finish/Next are not blocked by enrichment keys.
+  const schemaKeys = new Set(Object.keys(schema.definition));
+  const hasExtras = Object.keys(safeValue).some((key) => !schemaKeys.has(key));
+  if (hasExtras) {
+    return true;
+  }
   const checked = jzodTypeCheck(
     schema,
-    value,
+    safeValue,
     [],
     [],
     modelEnvironment,
@@ -428,7 +502,11 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
 
   const captureStepBagFromFormikValues = useCallback(
     (values: Record<string, any>) => {
-      stepBagRef.current = extractStepBagFromFormikValues(values, stepBagKeys);
+      stepBagRef.current = extractStepBagFromFormikValues(
+        values,
+        stepBagKeys,
+        stepBagRef.current,
+      );
     },
     [stepBagKeys],
   );
@@ -492,20 +570,26 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
     if (stepBag[key] !== undefined) {
       return stepBag;
     }
-    const defaults = getDefaultValueForJzodSchemaWithResolutionNonHook(
-      "build",
-      resolvedInputSchema,
-      undefined,
-      "",
-      undefined,
-      [],
-      true,
-      props.application,
-      props.applicationDeploymentMap,
-      props.applicationDeploymentMap[props.application],
-      modelEnvironment,
-      {},
-    );
+    let defaults: Record<string, unknown> = {};
+    try {
+      defaults = getDefaultValueForJzodSchemaWithResolutionNonHook(
+        "build",
+        resolvedInputSchema,
+        undefined,
+        "",
+        undefined,
+        [],
+        true,
+        props.application,
+        props.applicationDeploymentMap,
+        props.applicationDeploymentMap[props.application],
+        modelEnvironment,
+        {},
+      ) as Record<string, unknown>;
+    } catch {
+      // FK default resolution may lack reduxDeploymentsState in some hosts; leave empty.
+      defaults = {};
+    }
     return { ...stepBag, [key]: defaults };
   }, [
     currentChild,
@@ -519,7 +603,11 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
 
   const mergeStepBagFromFormikValues = useCallback(
     (values: Record<string, any>) => {
-      const nextBag = extractStepBagFromFormikValues(values, stepBagKeys);
+      const nextBag = extractStepBagFromFormikValues(
+        values,
+        stepBagKeys,
+        stepBagRef.current,
+      );
       stepBagRef.current = nextBag;
       setStepBag((previous) => (bagsEqual(previous, nextBag) ? previous : nextBag));
     },
@@ -847,6 +935,7 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
                 type="button"
                 variant="contained"
                 disabled={nextInFlight}
+                data-testid="multistep-next"
                 onClick={handleNext}
               >
                 Next

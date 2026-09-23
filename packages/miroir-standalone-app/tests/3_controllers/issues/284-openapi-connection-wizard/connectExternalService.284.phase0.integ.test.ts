@@ -38,11 +38,6 @@ const shouldRunPhase0Stable =
   RUN_TEST === "connectExternalService.284.phase0" ||
   RUN_TEST === "phase0 stable";
 
-const shouldRunPre284Inventory =
-  !RUN_TEST ||
-  RUN_TEST === "connectExternalService.284.phase0" ||
-  RUN_TEST === "pre-284 inventory";
-
 const SPOTIFY_ENDPOINT_SHA256 =
   "b40a7a61f9a45587342caaf1a46cd07a8cf3d9319c94535f9426f1513a511d02";
 
@@ -51,16 +46,6 @@ const REPO_ROOT = resolveRepoRoot();
 const SPOTIFY_ENDPOINT_PATH = join(
   REPO_ROOT,
   "packages/miroir-test-app_deployment-spotify/assets/spotify_model/3d8da4d4-8f76-4bb4-9212-14869d81c00c/0e5cb172-12ea-4467-8598-5889338ae454.json",
-);
-
-const HOME_REPORT_PATH = join(
-  REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/29ef8018-43fc-4ee9-a736-6f9d625be7b7.json",
-);
-
-const REPORT_ENTITY_PATH = join(
-  REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json",
 );
 
 const PHASE0_BEARER_CREDENTIAL_KEY = "phase0Bearer";
@@ -223,55 +208,5 @@ describe.skipIf(!shouldRunPhase0Stable)("phase0 stable", () => {
     expect(result).toBeInstanceOf(Action2Error);
     expect((result as Action2Error).errorMessage).toContain("not supported yet");
     expect((result as Action2Error).errorMessage).toContain("libraryImplementation");
-  });
-});
-
-describe.skipIf(!shouldRunPre284Inventory)("pre-284 inventory", () => {
-  it("MiroirWebAppOrDesktopHome has three sections and no openReportSection", () => {
-    const homeReport = JSON.parse(readFileSync(HOME_REPORT_PATH, "utf8")) as {
-      definition: {
-        section: { definition: Array<{ type: string }> };
-      };
-    };
-    const sections = homeReport.definition.section.definition;
-    expect(sections).toHaveLength(3);
-    expect(sections.map((section) => section.type)).toEqual([
-      "markdownReportSection",
-      "inputReportSection",
-      "storedReportDisplay",
-    ]);
-    expect(sections.some((section) => section.type === "openReportSection")).toBe(false);
-  });
-
-  it("listReportSection array items reference reportSection only (no multistepStep union yet)", () => {
-    const reportEntity = JSON.parse(readFileSync(REPORT_ENTITY_PATH, "utf8")) as {
-      mlSchema: {
-        definition: {
-          definition: {
-            context: {
-              listReportSection: {
-                definition: {
-                  definition: {
-                    type: string;
-                    definition: {
-                      type: string;
-                      definition: { relativePath: string };
-                    };
-                  };
-                };
-              };
-            };
-          };
-        };
-      };
-    };
-    const itemsNode =
-      reportEntity.mlSchema.definition.definition.context.listReportSection.definition
-        .definition;
-    expect(itemsNode.type).toBe("array");
-    const itemSchema = itemsNode.definition;
-    expect(itemSchema.type).toBe("schemaReference");
-    expect(itemSchema.definition.relativePath).toBe("reportSection");
-    expect(JSON.stringify(itemSchema)).not.toContain("multistepStep");
   });
 });

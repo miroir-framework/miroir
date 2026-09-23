@@ -28,7 +28,10 @@ import { cleanLevel, lastSubmitButtonClicked } from '../../constants.js';
 import { ThemedSpan } from '../Themes/index.js';
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { InlineReportEditor, reportReportDetailsKey } from './InlineReportEditor.js';
-import { useOptionalMultistepReportHost } from './MultistepReportHost.js';
+import {
+  omitSecretKeysFromBagDump,
+  useOptionalMultistepReportHost,
+} from './MultistepReportHost.js';
 import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
 import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
 import { reportSectionsFormValue } from './ReportTools.js';
@@ -516,7 +519,10 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                         // },
                         {
                           label: "formik values",
-                          data: formik.values,
+                          data:
+                            props.reportDefinition?.type === "multistep"
+                              ? omitSecretKeysFromBagDump(formik.values)
+                              : formik.values,
                           useCodeBlock: true,
                         },
 

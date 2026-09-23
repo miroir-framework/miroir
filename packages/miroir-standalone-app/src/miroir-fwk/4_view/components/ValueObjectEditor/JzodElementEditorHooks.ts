@@ -42,6 +42,8 @@ import {
 import { FieldValidationContext } from "./FieldValidationContext";
 
 import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
+import { adminSelfApplication } from "miroir-test-app_deployment-admin";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodElementEditorHooks");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
@@ -478,20 +480,55 @@ export function useJzodElementEditorHooks(
   ]);
 
   const stringSelectList = useMemo(() => {
-    if (
-      localResolvedElementJzodSchemaBasedOnValue?.type == "uuid" &&
-      localResolvedElementJzodSchemaBasedOnValue.tag?.value?.foreignKeyParams?.targetEntity
-    ) {
+    if (localResolvedElementJzodSchemaBasedOnValue?.type != "uuid") {
+      return [];
+    }
+    const tagValue = localResolvedElementJzodSchemaBasedOnValue.tag?.value as
+      | {
+          foreignKeyParams?: { targetEntity?: string };
+          display?: { uuid?: { restrictToApplicationDeploymentMap?: boolean } };
+        }
+      | undefined;
+    // #284 D22: picker options are applicationDeploymentMap keys except Miroir and Admin.
+    if (tagValue?.display?.uuid?.restrictToApplicationDeploymentMap) {
+      const miroirUuid = selfApplicationMiroir.uuid;
+      const adminUuid = adminSelfApplication.uuid;
+      const targetEntity = tagValue.foreignKeyParams?.targetEntity;
+      const labeled =
+        targetEntity && foreignKeyObjects[targetEntity] ? foreignKeyObjects[targetEntity] : {};
+      // Display names for map keys: prefer FK rows, else well-known SelfApplication exports
+      // (not report hardcoding — the report only sets restrictToApplicationDeploymentMap).
+      const knownNames: Record<string, string> = {
+        [selfApplicationLibrary.uuid]: selfApplicationLibrary.name,
+        [selfApplicationMiroir.uuid]: selfApplicationMiroir.name,
+        [adminSelfApplication.uuid]: adminSelfApplication.name,
+      };
+      const entries = Object.keys(applicationDeploymentMap ?? {})
+        .filter((uuid) => uuid !== miroirUuid && uuid !== adminUuid)
+        .map((uuid) => {
+          const fromFk = labeled[uuid];
+          const instance = (fromFk ?? {
+            uuid,
+            name: knownNames[uuid] ?? uuid,
+            parentUuid: targetEntity ?? "",
+            parentName: "SelfApplication",
+          }) as EntityInstance;
+          return [uuid, instance] as [string, EntityInstance];
+        });
+      return [[noValue.uuid, noValue] as [string, EntityInstance], ...entries];
+    }
+    if (tagValue?.foreignKeyParams?.targetEntity) {
       return [
         [noValue.uuid, noValue] as [string, EntityInstance],
-        ...Object.entries(
-          foreignKeyObjects[localResolvedElementJzodSchemaBasedOnValue.tag.value?.foreignKeyParams?.targetEntity] ??
-            {}
-        ),
+        ...Object.entries(foreignKeyObjects[tagValue.foreignKeyParams.targetEntity] ?? {}),
       ];
     }
     return [];
-  }, [localResolvedElementJzodSchemaBasedOnValue, foreignKeyObjects]);
+  }, [
+    localResolvedElementJzodSchemaBasedOnValue,
+    foreignKeyObjects,
+    applicationDeploymentMap,
+  ]);
   // log.info("getJzodElementEditorHooks ", dbgInt++, "aggregate", count, "caller", caller);
 
   return {

@@ -119,6 +119,29 @@ export function ReportInputSection(props: {
         valueObjectEditMode="create"
         onChangeVector={onChangeVector}
       />
+      {props.inputPrefix === "document" ? (
+        <div style={{ marginTop: 8 }}>
+          <label htmlFor="openapi-document-upload">Upload OpenAPI file</label>
+          <input
+            id="openapi-document-upload"
+            data-testid="openapi-document-upload"
+            type="file"
+            accept=".json,.yaml,.yml,application/json,text/yaml,text/plain"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (!file) {
+                return;
+              }
+              const reader = new FileReader();
+              reader.onload = () => {
+                const text = typeof reader.result === "string" ? reader.result : "";
+                formik.setFieldValue("document.text", text);
+              };
+              reader.readAsText(file);
+            }}
+          />
+        </div>
+      ) : null}
       {props.urlParamFields && props.urlParamFields.length > 0 ? (
         <ThemedStyledButton
           type="button"

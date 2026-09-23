@@ -62,7 +62,7 @@ function fail(transformerPath: string[], message: string): TransformerFailure {
   });
 }
 
-function parseOpenApiDocument(input: unknown): Record<string, unknown> {
+export function parseOpenApiDocument(input: unknown): Record<string, unknown> {
   if (input !== null && typeof input === "object" && !Array.isArray(input)) {
     return input as Record<string, unknown>;
   }

@@ -13,7 +13,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisites: [#267](https://github.com/miroir-framework/miroir/issues/267) ✅ · [#270](https://github.com/miroir-framework/miroir/issues/270) ✅ · [#274](https://github.com/miroir-framework/miroir/issues/274) ✅ · [#281](https://github.com/miroir-framework/miroir/issues/281) ✅
 Working branch: `284-FEATURE-openapi-connection-wizard`
 
-**Resume note:** Slice 5 done. Slice 6 not started.
+**Resume note:** Slice 6 done. Slice 7 not started.
 
 ---
 
@@ -40,7 +40,7 @@ This plan does **not** add a Discogs deployment package, rewrite Spotify endpoin
 | 3 | Second Finish updates the same rows | ✅ | phase3 integ |
 | 4 | Authenticated probes (token, client credentials, refresh grant) | ✅ | phase4 integ |
 | 5 | Branching host: path, Back, on-Next failure | ✅ | `multistepBranch.284` |
-| 6 | Wizard report, home button, document step | ⬜ | `wizardWalk.284` + `modelValidation` |
+| 6 | Wizard report, home button, document step | ✅ | `wizardWalk.284` + `modelValidation` |
 | 7 | Nonreg, docs, cleanup, AC | ⬜ | nonreg steps |
 
 Slice 1 is the first behavioral slice. Slice 0 is the safety net only.
@@ -453,7 +453,7 @@ Validation: `multistepBranch.284` 6 passed. modelValidation miroir 152, library 
 
 ## Slice 6 — Wizard report and home button
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -500,7 +500,9 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE.>
+Home report `29ef8018-…` has an `openReportSection` labeled Connect an external service, opening wizard report `dbd94bfe-b803-4bfd-8bb2-70a5932d5d1a` (`conceptLevel: "Model"`, twelve step envelopes). Document Next is `prepareOpenApiDocument` (parse text, or fetch a URL under `assertBaseUrlAllowed`). `normalizeConnectExternalServicePayload` flattens the step bag into the flat payload phase 1–4 already send; a uuid `application` with no step keys is left unchanged. The picker reads `applicationDeploymentMap` except Miroir and Admin. The `pre-284 inventory` describe is deleted.
+
+The report JSON is stored under both `miroir_model` and `miroir_data` so the model-section copy and the test deployment loader agree. `wizardWalk.284` 10 passed. phase0 stable 4 passed. phase1 1 passed. modelValidation 152 passed.
 
 ---
 

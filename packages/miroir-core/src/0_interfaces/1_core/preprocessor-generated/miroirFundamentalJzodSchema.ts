@@ -22108,6 +22108,41 @@ export const miroirFundamentalJzodSchema = {
                 }
               }
             }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "prepareOpenApiDocument"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "text": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "url": {
+                    "type": "string",
+                    "optional": true
+                  }
+                }
+              }
+            }
           }
         ]
       },
@@ -36084,6 +36119,41 @@ export const miroirFundamentalJzodSchema = {
                 }
               }
             }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "prepareOpenApiDocument"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "text": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "url": {
+                    "type": "string",
+                    "optional": true
+                  }
+                }
+              }
+            }
           }
         ]
       },
@@ -42193,6 +42263,41 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "type": "any"
                     }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "prepareOpenApiDocument"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "text": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "url": {
+                    "type": "string",
+                    "optional": true
                   }
                 }
               }

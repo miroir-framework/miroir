@@ -141,7 +141,7 @@ function messageForHttpStatus(status: number): string {
   return `External service returned HTTP ${status}: upstream failure`;
 }
 
-function assertBaseUrlAllowed(baseUrl: string): Action2Error | undefined {
+export function assertBaseUrlAllowed(baseUrl: string): Action2Error | undefined {
   let parsed: URL;
   try {
     parsed = new URL(baseUrl);

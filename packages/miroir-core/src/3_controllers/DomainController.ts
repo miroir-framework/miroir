@@ -176,14 +176,20 @@ import {
   removeUndefinedProperties,
   unNullify,
 } from "../4_services/otherTools.js";
-import { ConfigurationService } from './ConfigurationService.js';
-import { executeExternalServiceOperation } from "../4_services/ExternalServiceClient.js";
 import {
   boundPathsForOperation,
+  listConvertibleGetOperations,
   materializeExternalServiceOperations,
   openApiParameterNamesForOperation,
+  parseOpenApiDocument,
 } from "../2_domain/syncExternalServiceSchema.js";
+import { normalizeConnectExternalServicePayload } from "./normalizeConnectExternalServicePayload.js";
 import { redactCredentialSecretsFromValue } from "../4_services/redactCredentialSecrets.js";
+import {
+  assertBaseUrlAllowed,
+  executeExternalServiceOperation,
+} from "../4_services/ExternalServiceClient.js";
+import { ConfigurationService } from './ConfigurationService.js';
 import {
   getSecretsMasterKey,
   importProcessSecrets,
@@ -3435,13 +3441,29 @@ export class DomainController implements DomainControllerInterface {
     applicationDeploymentMap: ApplicationDeploymentMap,
     principal?: AuthPrincipal,
   ): Promise<Action2VoidReturnType> {
-    const bag = domainAction.payload;
-    const applicationUuid = bag.application;
+    const rawBag = domainAction.payload as Record<string, unknown>;
+    const bag = normalizeConnectExternalServicePayload(rawBag);
+    // Keep mutations on domainAction.payload for downstream typing; replace with flat bag.
+    (domainAction as { payload: typeof bag }).payload = bag;
+    let applicationUuid = bag.application;
     if (!applicationDeploymentMap[applicationUuid]) {
-      return new Action2Error(
-        "InvalidAction",
-        `connectExternalService: application ${applicationUuid} is not on applicationDeploymentMap`,
+      // Wizard uuid pickers may leave a random default when the portal click guard
+      // drops the selection; if the map has exactly one non-Miroir/non-Admin app,
+      // treat that as the intended target (same exclusion as the D22 picker).
+      const MIROIR_APPLICATION_UUID = "360fcf1f-f0d4-4f8a-9262-07886e70fa15";
+      const ADMIN_APPLICATION_UUID = "55af124e-8c05-4bae-a3ef-0933d41daa92";
+      const eligible = Object.keys(applicationDeploymentMap).filter(
+        (uuid) => uuid !== MIROIR_APPLICATION_UUID && uuid !== ADMIN_APPLICATION_UUID,
       );
+      if (eligible.length === 1) {
+        applicationUuid = eligible[0];
+        bag.application = applicationUuid;
+      } else {
+        return new Action2Error(
+          "InvalidAction",
+          `connectExternalService: application ${applicationUuid} is not on applicationDeploymentMap`,
+        );
+      }
     }
     if (!Array.isArray(bag.checkedOperationIds) || bag.checkedOperationIds.length === 0) {
       return new Action2Error("InvalidAction", "connectExternalService: checkedOperationIds is required");
@@ -3775,6 +3797,119 @@ export class DomainController implements DomainControllerInterface {
   }
 
   // ##############################################################################################
+  /**
+   * #284 — document step onNext: parse pasted/uploaded text or fetch HTTPS URL.
+   * Returns openApiDocument text + convertible GET list (+ input schemas for later steps).
+   */
+  private async handlePrepareOpenApiDocument(
+    domainAction: {
+      actionType: "prepareOpenApiDocument";
+      endpoint: string;
+      payload: {
+        text?: string;
+        url?: string;
+      };
+    },
+  ): Promise<Action2ReturnType> {
+    const textRaw = domainAction.payload?.text;
+    const urlRaw = domainAction.payload?.url;
+    const url = typeof urlRaw === "string" ? urlRaw.trim() : "";
+    let documentText =
+      typeof textRaw === "string" ? textRaw : textRaw == null ? "" : String(textRaw);
+
+    if (url.length > 0) {
+      const baseUrlError = assertBaseUrlAllowed(url);
+      if (baseUrlError) {
+        return baseUrlError;
+      }
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          return new Action2Error(
+            "InvalidAction",
+            `prepareOpenApiDocument: failed to fetch URL (HTTP ${response.status})`,
+          );
+        }
+        documentText = await response.text();
+      } catch (error: any) {
+        return new Action2Error(
+          "InvalidAction",
+          `prepareOpenApiDocument: failed to fetch URL: ${error?.message ?? String(error)}`,
+        );
+      }
+    }
+
+    const trimmed = documentText.trim();
+    if (trimmed.length === 0) {
+      return new Action2Error("InvalidAction", "openApiDocument is empty");
+    }
+
+    try {
+      parseOpenApiDocument(trimmed);
+    } catch (error: any) {
+      return new Action2Error(
+        "InvalidAction",
+        error?.message ?? "openApiDocument must be a YAML/JSON string or an object",
+      );
+    }
+
+    const convertibleOperationIds = listConvertibleGetOperations(trimmed);
+
+    const operationsInputSchema = {
+      type: "object",
+      definition: {
+        checkedOperationIds: {
+          type: "string",
+          tag: {
+            value: {
+              defaultLabel: "Checked operation ids (comma-separated)",
+            },
+          },
+        },
+        probeOperationId: {
+          type: "string",
+          tag: {
+            value: {
+              defaultLabel: "Probe operation",
+            },
+          },
+        },
+      },
+      required: ["checkedOperationIds", "probeOperationId"],
+    };
+
+    const probeParamNames = new Set<string>();
+    for (const operationId of convertibleOperationIds) {
+      for (const name of openApiParameterNamesForOperation(trimmed, operationId)) {
+        probeParamNames.add(name);
+      }
+    }
+    const probeParamsInputSchema = {
+      type: "object",
+      definition: Object.fromEntries(
+        [...probeParamNames].map((name) => [
+          name,
+          {
+            type: "string",
+            tag: { value: { defaultLabel: name } },
+          },
+        ]),
+      ),
+    };
+
+    return {
+      status: "ok",
+      returnedDomainElement: {
+        text: trimmed,
+        openApiDocument: trimmed,
+        convertibleOperationIds,
+        operationsInputSchema,
+        probeParamsInputSchema,
+      },
+    };
+  }
+
+  // ##############################################################################################
   private async handleActionInternal(
     domainAction: DomainAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
@@ -4060,6 +4195,9 @@ export class DomainController implements DomainControllerInterface {
             applicationDeploymentMap,
             principal,
           );
+        }
+        case "prepareOpenApiDocument": {
+          return this.handlePrepareOpenApiDocument(domainAction as any);
         }
         default:
           log.error(
@@ -5194,7 +5332,7 @@ export class DomainController implements DomainControllerInterface {
     actionParamValues: Record<string, any>,
     actionContext: Record<string, any> = {},
     principal?: AuthPrincipal,
-  ): Promise<Action2VoidReturnType> {
+  ): Promise<Action2ReturnType> {
     const localActionParams = { ...templateEvaluationParams, ...actionParamValues };
     const actionLabel = (compositeActionSequence as any).actionLabel ?? "no action label";
     log.info(
@@ -5250,6 +5388,7 @@ export class DomainController implements DomainControllerInterface {
       ...actionContext,
       ...resolved.resolvedCompositeActionTemplates,
     };
+    let lastPayloadResult: Action2ReturnType = ACTION_OK;
 
     // TODO: replace with handleCompositeAction
     for (const currentAction of resolved.resolvedCompositeActionDefinition.payload.actionSequence) {
@@ -5426,6 +5565,7 @@ export class DomainController implements DomainControllerInterface {
             );
           }
           if (actionResult.returnedDomainElement !== undefined) {
+            lastPayloadResult = actionResult;
             const label = currentAction.actionLabel;
             if (typeof label === "string" && label.length > 0) {
               localContext[label] = actionResult.returnedDomainElement;
@@ -5435,7 +5575,7 @@ export class DomainController implements DomainControllerInterface {
         }
       }
     }
-    return Promise.resolve(ACTION_OK);
+    return lastPayloadResult;
   }
 
   // ##############################################################################################

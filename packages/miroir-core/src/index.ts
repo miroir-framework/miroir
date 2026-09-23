@@ -1390,6 +1390,7 @@ export {
 export { ParseServerArgsError, parseServerArgs } from "./4_services/parseServerArgs.js";
 export {
   allowInsecureBaseUrlsForTests,
+  assertBaseUrlAllowed,
   clearAllowedInsecureBaseUrlsForTests,
   clearExternalServiceTokenCacheForTests,
   clearPersistRotatedSecret,
@@ -1404,6 +1405,7 @@ export {
   listConvertibleGetOperations,
   materializeExternalServiceOperations,
   openApiParameterNamesForOperation,
+  parseOpenApiDocument,
 } from "./2_domain/syncExternalServiceSchema.js";
 export { redactCredentialSecretsFromValue } from "./4_services/redactCredentialSecrets.js";
 export {
