@@ -21974,6 +21974,73 @@ export const miroirFundamentalJzodSchema = {
                 }
               }
             }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "connectExternalService"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "Application"
+                      }
+                    }
+                  },
+                  "endpointName": {
+                    "type": "string"
+                  },
+                  "openApiDocument": {
+                    "type": "string"
+                  },
+                  "baseUrl": {
+                    "type": "string"
+                  },
+                  "userAgent": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "authenticated": {
+                    "type": "boolean"
+                  },
+                  "checkedOperationIds": {
+                    "type": "array",
+                    "definition": {
+                      "type": "string"
+                    }
+                  },
+                  "probeOperationId": {
+                    "type": "string"
+                  },
+                  "probeParameters": {
+                    "type": "record",
+                    "definition": {
+                      "type": "any"
+                    }
+                  }
+                }
+              }
+            }
           }
         ]
       },
@@ -22717,6 +22784,25 @@ export const miroirFundamentalJzodSchema = {
                             "type": "object",
                             "tag": {
                               "value": {
+                                "defaultLabel": "None (public)"
+                              }
+                            },
+                            "definition": {
+                              "type": {
+                                "type": "literal",
+                                "definition": "none",
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Type"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "tag": {
+                              "value": {
                                 "defaultLabel": "HTTP Bearer"
                               }
                             },
@@ -22870,6 +22956,18 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "defaultLabel": "Credential Key"
                           }
+                        }
+                      },
+                      "extraHeaders": {
+                        "type": "record",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Extra Headers"
+                          }
+                        },
+                        "definition": {
+                          "type": "string"
                         }
                       },
                       "enabledOperations": {
@@ -35820,6 +35918,96 @@ export const miroirFundamentalJzodSchema = {
                 }
               }
             }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "connectExternalService"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "Application",
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "uuid",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "defaultLabel": "Application"
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  },
+                  "endpointName": {
+                    "type": "string"
+                  },
+                  "openApiDocument": {
+                    "type": "string"
+                  },
+                  "baseUrl": {
+                    "type": "string"
+                  },
+                  "userAgent": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "authenticated": {
+                    "type": "boolean"
+                  },
+                  "checkedOperationIds": {
+                    "type": "array",
+                    "definition": {
+                      "type": "string"
+                    }
+                  },
+                  "probeOperationId": {
+                    "type": "string"
+                  },
+                  "probeParameters": {
+                    "type": "record",
+                    "definition": {
+                      "type": "any"
+                    }
+                  }
+                }
+              }
+            }
           }
         ]
       },
@@ -41840,6 +42028,96 @@ export const miroirFundamentalJzodSchema = {
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateAction"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "connectExternalService"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "Application",
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "uuid",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "defaultLabel": "Application"
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  },
+                  "endpointName": {
+                    "type": "string"
+                  },
+                  "openApiDocument": {
+                    "type": "string"
+                  },
+                  "baseUrl": {
+                    "type": "string"
+                  },
+                  "userAgent": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "authenticated": {
+                    "type": "boolean"
+                  },
+                  "checkedOperationIds": {
+                    "type": "array",
+                    "definition": {
+                      "type": "string"
+                    }
+                  },
+                  "probeOperationId": {
+                    "type": "string"
+                  },
+                  "probeParameters": {
+                    "type": "record",
+                    "definition": {
+                      "type": "any"
+                    }
+                  }
                 }
               }
             }

@@ -365,6 +365,208 @@ function responseSchemaForOperation(
   return json.schema;
 }
 
+/**
+ * Walk a response schema collecting dotted paths that convertSchema accepts.
+ * Does not descend into oneOf / anyOf (analysis D7 / §5.3).
+ */
+function collectConvertibleLeafPaths(
+  doc: Record<string, unknown>,
+  schema: unknown,
+  prefix: string,
+  out: string[],
+): void {
+  const derefed = flattenAllOf(doc, deref(doc, schema));
+  if (Array.isArray(derefed.oneOf) || Array.isArray(derefed.anyOf)) {
+    return;
+  }
+  const items = derefed.items;
+  if (derefed.type === "array" || items !== undefined) {
+    collectConvertibleLeafPaths(doc, items ?? {}, prefix, out);
+    return;
+  }
+  if (isObjectSchema(derefed)) {
+    const props =
+      derefed.properties !== null &&
+      typeof derefed.properties === "object" &&
+      !Array.isArray(derefed.properties)
+        ? (derefed.properties as Record<string, unknown>)
+        : {};
+    for (const [key, prop] of Object.entries(props)) {
+      const path = prefix ? `${prefix}.${key}` : key;
+      collectConvertibleLeafPaths(doc, prop, path, out);
+    }
+    return;
+  }
+  if (!prefix) {
+    return;
+  }
+  try {
+    convertSchema(doc, schema, undefined, []);
+    out.push(prefix);
+  } catch {
+    // convertSchema rejected this leaf — omit the path
+  }
+}
+
+function findGetOperation(
+  doc: Record<string, unknown>,
+  operationId: string,
+): { path: string; pathItem: Record<string, unknown>; operation: Record<string, unknown> } | undefined {
+  const paths =
+    doc.paths !== null && typeof doc.paths === "object"
+      ? (doc.paths as Record<string, unknown>)
+      : {};
+  for (const [path, pathItemRaw] of Object.entries(paths)) {
+    const pathItem = deref(doc, pathItemRaw);
+    const operationRaw = pathItem.get;
+    if (operationRaw === undefined) {
+      continue;
+    }
+    const operation = deref(doc, operationRaw);
+    if (operation.operationId === operationId) {
+      return { path, pathItem, operation };
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Bound paths for one GET operationId. Empty when missing, non-GET, or no convertible fields.
+ */
+export function boundPathsForOperation(openApiDocument: unknown, operationId: string): string[] {
+  let doc: Record<string, unknown>;
+  try {
+    doc = parseOpenApiDocument(openApiDocument);
+  } catch {
+    return [];
+  }
+  const found = findGetOperation(doc, operationId);
+  if (!found) {
+    return [];
+  }
+  let responseSchema: unknown;
+  try {
+    responseSchema = responseSchemaForOperation(doc, found.operation);
+  } catch {
+    return [];
+  }
+  const paths: string[] = [];
+  collectConvertibleLeafPaths(doc, responseSchema, "", paths);
+  return paths;
+}
+
+/**
+ * GET operationIds whose kept bound-path set is non-empty (checklist candidates).
+ */
+export function listConvertibleGetOperations(openApiDocument: unknown): string[] {
+  let doc: Record<string, unknown>;
+  try {
+    doc = parseOpenApiDocument(openApiDocument);
+  } catch {
+    return [];
+  }
+  const paths =
+    doc.paths !== null && typeof doc.paths === "object"
+      ? (doc.paths as Record<string, unknown>)
+      : {};
+  const result: string[] = [];
+  for (const pathItemRaw of Object.values(paths)) {
+    const pathItem = deref(doc, pathItemRaw);
+    const operationRaw = pathItem.get;
+    if (operationRaw === undefined) {
+      continue;
+    }
+    const operation = deref(doc, operationRaw);
+    const operationId =
+      typeof operation.operationId === "string" ? operation.operationId : undefined;
+    if (!operationId) {
+      continue;
+    }
+    if (boundPathsForOperation(doc, operationId).length > 0) {
+      result.push(operationId);
+    }
+  }
+  return result;
+}
+
+/**
+ * Materialize operations[] for a scope using the same convertSchema path as sync.
+ * No Entity rows (operationSync.entity omitted).
+ */
+export function materializeExternalServiceOperations(params: {
+  openApiDocument: unknown;
+  scope: string[];
+  operationSync: Record<string, { boundPaths: string[] }>;
+}):
+  | { ok: true; operations: EndpointExternalService["operations"] }
+  | { ok: false; message: string } {
+  let doc: Record<string, unknown>;
+  try {
+    doc = parseOpenApiDocument(params.openApiDocument);
+  } catch (error: any) {
+    return { ok: false, message: error?.message ?? String(error) };
+  }
+  const operations: EndpointExternalService["operations"] = [];
+  const paths =
+    doc.paths !== null && typeof doc.paths === "object"
+      ? (doc.paths as Record<string, unknown>)
+      : {};
+  try {
+    for (const [path, pathItemRaw] of Object.entries(paths)) {
+      const pathItem = deref(doc, pathItemRaw);
+      const operationRaw = pathItem.get;
+      if (operationRaw === undefined) {
+        continue;
+      }
+      const operation = deref(doc, operationRaw);
+      const operationId =
+        typeof operation.operationId === "string" ? operation.operationId : undefined;
+      if (!operationId || !params.scope.includes(operationId)) {
+        continue;
+      }
+      const boundPaths = params.operationSync[operationId]?.boundPaths;
+      if (!Array.isArray(boundPaths) || boundPaths.length === 0) {
+        return {
+          ok: false,
+          message: `syncExternalServiceSchema: operationSync.${operationId}.boundPaths is required`,
+        };
+      }
+      operations.push({
+        operationId,
+        method: "GET",
+        path,
+        parameterMappings: collectParameters(doc, pathItem, operation),
+        responseSchema: convertSchema(
+          doc,
+          responseSchemaForOperation(doc, operation),
+          pathsToTree(boundPaths),
+          [],
+        ),
+      });
+    }
+  } catch (error: any) {
+    return { ok: false, message: error?.message ?? String(error) };
+  }
+  return { ok: true, operations };
+}
+
+export function openApiParameterNamesForOperation(
+  openApiDocument: unknown,
+  operationId: string,
+): string[] {
+  let doc: Record<string, unknown>;
+  try {
+    doc = parseOpenApiDocument(openApiDocument);
+  } catch {
+    return [];
+  }
+  const found = findGetOperation(doc, operationId);
+  if (!found) {
+    return [];
+  }
+  return collectParameters(doc, found.pathItem, found.operation).map((p) => p.name);
+}
+
 function findEndpoints(appModel: unknown): any[] {
   if (appModel === null || typeof appModel !== "object") {
     return [];

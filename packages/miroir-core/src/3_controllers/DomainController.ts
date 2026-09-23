@@ -1,5 +1,5 @@
 
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
 
 import { getEndpointActions, getExternalService } from '../0_interfaces/1_core/endpointDefinition.js';
 import { Uuid } from '../0_interfaces/1_core/EntityVersion.js';
@@ -174,6 +174,11 @@ import {
 } from "../4_services/otherTools.js";
 import { ConfigurationService } from './ConfigurationService.js';
 import { executeExternalServiceOperation } from "../4_services/ExternalServiceClient.js";
+import {
+  boundPathsForOperation,
+  materializeExternalServiceOperations,
+  openApiParameterNamesForOperation,
+} from "../2_domain/syncExternalServiceSchema.js";
 import { redactCredentialSecretsFromValue } from "../4_services/redactCredentialSecrets.js";
 
 type ExtractorForExternalServiceResolved = {
@@ -3379,6 +3384,248 @@ export class DomainController implements DomainControllerInterface {
       },
     };
   }
+
+  // ##############################################################################################
+  /**
+   * #284 — probe then upsert endpoint + Model report on bag.application (never host props.application).
+   * Public scheme only in Slice 1; do not log the bag.
+   */
+  private async handleConnectExternalService(
+    domainAction: {
+      actionType: "connectExternalService";
+      endpoint: string;
+      payload: {
+        application: string;
+        endpointName: string;
+        openApiDocument: string;
+        baseUrl: string;
+        userAgent?: string;
+        authenticated: boolean;
+        checkedOperationIds: string[];
+        probeOperationId: string;
+        probeParameters: Record<string, unknown>;
+      };
+    },
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    principal?: AuthPrincipal,
+  ): Promise<Action2VoidReturnType> {
+    const bag = domainAction.payload;
+    const applicationUuid = bag.application;
+    if (!applicationDeploymentMap[applicationUuid]) {
+      return new Action2Error(
+        "InvalidAction",
+        `connectExternalService: application ${applicationUuid} is not on applicationDeploymentMap`,
+      );
+    }
+    if (!Array.isArray(bag.checkedOperationIds) || bag.checkedOperationIds.length === 0) {
+      return new Action2Error("InvalidAction", "connectExternalService: checkedOperationIds is required");
+    }
+    if (!bag.probeOperationId || !bag.checkedOperationIds.includes(bag.probeOperationId)) {
+      return new Action2Error(
+        "InvalidAction",
+        "connectExternalService: probeOperationId must be one of checkedOperationIds",
+      );
+    }
+
+    const ENDPOINT_ENTITY_UUID = "3d8da4d4-8f76-4bb4-9212-14869d81c00c";
+    const REPORT_ENTITY_UUID = "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916";
+    const INSTANCE_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";
+    const MODEL_ENDPOINT = "7947ae40-eb34-4149-887b-15a9021e714e";
+
+    const endpointUuid = uuidv5(`${applicationUuid}\n${bag.endpointName}`, ENDPOINT_ENTITY_UUID);
+    const reportUuid = uuidv5(
+      `${applicationUuid}\n${bag.endpointName}\n${bag.probeOperationId}`,
+      REPORT_ENTITY_UUID,
+    );
+
+    // Slice 1: public only. Authenticated schemes are Slice 4.
+    if (bag.authenticated === true) {
+      return new Action2Error(
+        "InvalidAction",
+        "connectExternalService: authenticated schemes are not implemented in this slice",
+      );
+    }
+    const securityScheme = { type: "none" as const };
+
+    const operationSync: Record<string, { boundPaths: string[] }> = {};
+    for (const operationId of bag.checkedOperationIds) {
+      const boundPaths = boundPathsForOperation(bag.openApiDocument, operationId);
+      if (boundPaths.length === 0) {
+        return new Action2Error(
+          "InvalidAction",
+          `connectExternalService: operation ${operationId} has no convertible GET fields`,
+        );
+      }
+      operationSync[operationId] = { boundPaths };
+    }
+
+    const materialized = materializeExternalServiceOperations({
+      openApiDocument: bag.openApiDocument,
+      scope: bag.checkedOperationIds,
+      operationSync,
+    });
+    if (!materialized.ok) {
+      return new Action2Error("InvalidAction", materialized.message);
+    }
+
+    const extraHeaders =
+      typeof bag.userAgent === "string" && bag.userAgent.trim().length > 0
+        ? { "User-Agent": bag.userAgent }
+        : undefined;
+
+    const unsavedEndpoint: EndpointDefinition = {
+      uuid: endpointUuid,
+      parentName: "Endpoint",
+      parentUuid: ENDPOINT_ENTITY_UUID,
+      application: applicationUuid,
+      name: bag.endpointName,
+      version: "1",
+      definition: {
+        externalService: {
+          openApiDocument: bag.openApiDocument,
+          baseUrl: bag.baseUrl,
+          securityScheme,
+          ...(extraHeaders ? { extraHeaders } : {}),
+          enabledOperations: [...bag.checkedOperationIds],
+          operations: materialized.operations,
+          operationSync,
+        },
+      },
+    } as EndpointDefinition;
+
+    const probeResult = await executeExternalServiceOperation(
+      unsavedEndpoint,
+      bag.probeOperationId,
+      bag.probeParameters ?? {},
+      principal,
+    );
+    if (probeResult instanceof Action2Error) {
+      return probeResult;
+    }
+
+    const paramNames = openApiParameterNamesForOperation(bag.openApiDocument, bag.probeOperationId);
+    const inputSchemaDefinition: Record<string, unknown> = {};
+    const parameterBindings: Record<string, unknown> = {};
+    for (const name of paramNames) {
+      inputSchemaDefinition[name] = {
+        type: "string",
+        tag: {
+          value: {
+            defaultLabel: name,
+            ...(bag.probeParameters?.[name] !== undefined
+              ? { default: bag.probeParameters[name] }
+              : {}),
+          },
+        },
+      };
+      parameterBindings[name] = {
+        transformerType: "getFromParameters",
+        referenceName: name,
+      };
+    }
+
+    const fetchedDataReference = bag.probeOperationId;
+    const reportInstance = {
+      uuid: reportUuid,
+      selfApplication: applicationUuid,
+      parentName: "Report",
+      parentUuid: REPORT_ENTITY_UUID,
+      conceptLevel: "Model",
+      name: `${bag.endpointName}_${bag.probeOperationId}`,
+      defaultLabel: `${bag.endpointName} ${bag.probeOperationId}`,
+      definition: {
+        extractorTemplates: {
+          [fetchedDataReference]: {
+            extractorOrCombinerType: "extractorTemplateForExternalService",
+            endpointUuid,
+            actionType: bag.probeOperationId,
+            parameterBindings,
+          },
+        },
+        section: {
+          type: "list",
+          definition: [
+            {
+              type: "inputReportSection",
+              definition: {
+                label: bag.probeOperationId,
+                inputPrefix: `${bag.probeOperationId}Input`,
+                urlParamFields: paramNames,
+                inputMLSchema: {
+                  type: "object",
+                  definition: inputSchemaDefinition,
+                },
+              },
+            },
+            {
+              type: "apiCallReportSection",
+              definition: {
+                label: bag.probeOperationId,
+                fetchedDataReference,
+                endpointUuid,
+                operationId: bag.probeOperationId,
+              },
+            },
+          ],
+        },
+      },
+    };
+
+    const targetModel = this.currentModel(applicationUuid, applicationDeploymentMap);
+    const endpointExists = targetModel.endpoints.some((row) => row.uuid === endpointUuid);
+    const reportExists = targetModel.reports.some((row) => row.uuid === reportUuid);
+    const modelEnvironment = this.currentModelEnvironment(applicationUuid, applicationDeploymentMap);
+
+    const upsertEndpointResult = await this.handleAction(
+      {
+        actionType: endpointExists ? "updateInstance" : "createInstance",
+        endpoint: INSTANCE_ENDPOINT,
+        payload: {
+          application: applicationUuid,
+          applicationSection: "model",
+          objects: [unsavedEndpoint as EntityInstance],
+        },
+      } as any,
+      applicationDeploymentMap,
+      modelEnvironment,
+    );
+    if (upsertEndpointResult instanceof Action2Error) {
+      return upsertEndpointResult;
+    }
+
+    const upsertReportResult = await this.handleAction(
+      {
+        actionType: reportExists ? "updateInstance" : "createInstance",
+        endpoint: INSTANCE_ENDPOINT,
+        payload: {
+          application: applicationUuid,
+          applicationSection: "model",
+          objects: [reportInstance as EntityInstance],
+        },
+      } as any,
+      applicationDeploymentMap,
+      modelEnvironment,
+    );
+    if (upsertReportResult instanceof Action2Error) {
+      return upsertReportResult;
+    }
+
+    const commitResult = await this.handleAction(
+      {
+        actionType: "commit",
+        endpoint: MODEL_ENDPOINT,
+        payload: { application: applicationUuid },
+      } as any,
+      applicationDeploymentMap,
+      modelEnvironment,
+    );
+    if (commitResult instanceof Action2Error) {
+      return commitResult;
+    }
+
+    return ACTION_OK;
+  }
+
   // ##############################################################################################
   private async handleActionInternal(
     domainAction: DomainAction,
@@ -3655,6 +3902,13 @@ export class DomainController implements DomainControllerInterface {
           //   "DomainController handleAction compositeActionSequence should not be used anymore",
           // );
           break;
+        }
+        case "connectExternalService": {
+          return this.handleConnectExternalService(
+            domainAction as any,
+            applicationDeploymentMap,
+            principal,
+          );
         }
         default:
           log.error(

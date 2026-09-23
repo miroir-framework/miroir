@@ -390,6 +390,25 @@
                         "type": "object",
                         "tag": {
                           "value": {
+                            "defaultLabel": "None (public)"
+                          }
+                        },
+                        "definition": {
+                          "type": {
+                            "type": "literal",
+                            "definition": "none",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Type"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "tag": {
+                          "value": {
                             "defaultLabel": "HTTP Bearer"
                           }
                         },
@@ -543,6 +562,18 @@
                       "value": {
                         "defaultLabel": "Credential Key"
                       }
+                    }
+                  },
+                  "extraHeaders": {
+                    "type": "record",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Extra Headers"
+                      }
+                    },
+                    "definition": {
+                      "type": "string"
                     }
                   },
                   "enabledOperations": {

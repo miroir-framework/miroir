@@ -575,6 +575,9 @@ async function resolveAuthorizationHeader(
   principal?: { miroirUserUuid?: string },
 ): Promise<string | Action2Error | undefined> {
   const scheme = externalService.securityScheme;
+  if (scheme?.type === "none") {
+    return undefined;
+  }
   if (scheme && scheme.type === "oauth2ClientCredentials") {
     const token = await resolveClientCredentialsToken(
       scheme,
@@ -706,7 +709,9 @@ async function fetchExternalServiceOperation(
   }
 
   const url = `${normalizeBaseUrl(externalService.baseUrl)}${pathOrError.startsWith("/") ? "" : "/"}${pathOrError}`;
-  const headers: Record<string, string> = {};
+  const headers: Record<string, string> = {
+    ...(externalService.extraHeaders ?? {}),
+  };
   const authorization = await resolveAuthorizationHeader(
     externalService,
     actionType,

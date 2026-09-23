@@ -190,6 +190,76 @@
           "type": "literal",
           "definition": "FailedToRunBoxedQueryTemplate"
         }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "connectExternalService"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Application"
+                  }
+                }
+              },
+              "endpointName": {
+                "type": "string"
+              },
+              "openApiDocument": {
+                "type": "string"
+              },
+              "baseUrl": {
+                "type": "string"
+              },
+              "userAgent": {
+                "type": "string",
+                "optional": true
+              },
+              "authenticated": {
+                "type": "boolean"
+              },
+              "checkedOperationIds": {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "probeOperationId": {
+                "type": "string"
+              },
+              "probeParameters": {
+                "type": "record",
+                "definition": {
+                  "type": "any"
+                }
+              }
+            }
+          }
+        },
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedToConnectExternalService"
+        }
       }
     ]
   }

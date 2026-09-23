@@ -13,7 +13,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisites: [#267](https://github.com/miroir-framework/miroir/issues/267) ✅ · [#270](https://github.com/miroir-framework/miroir/issues/270) ✅ · [#274](https://github.com/miroir-framework/miroir/issues/274) ✅ · [#281](https://github.com/miroir-framework/miroir/issues/281) ✅
 Working branch: `284-FEATURE-openapi-connection-wizard`
 
-**Resume note:** Slice 0 done. Slice 1 not started.
+**Resume note:** Slice 1 done. Slice 2 not started.
 
 ---
 
@@ -35,7 +35,7 @@ This plan does **not** add a Discogs deployment package, rewrite Spotify endpoin
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize linear host, Bearer header, home report | ✅ | `connectExternalService.284.phase0` |
-| 1 | **Tracer.** Public Finish writes endpoint + report | ⬜ | phase1 integ, fake server sees User-Agent and no Authorization |
+| 1 | **Tracer.** Public Finish writes endpoint + report | ✅ | phase1 integ, fake server sees User-Agent and no Authorization |
 | 2 | Failed probe and name clash write nothing | ⬜ | phase2 integ |
 | 3 | Second Finish updates the same rows | ⬜ | phase3 integ |
 | 4 | Authenticated probes (token, client credentials, refresh grant) | ⬜ | phase4 integ |
@@ -172,7 +172,7 @@ Validation: `RUN_TEST=connectExternalService.284.phase0` — 6 passed. `modelVal
 
 ## Slice 1 — Tracer: public Finish writes the endpoint and the report
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -226,7 +226,13 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE.>
+Public Finish is `connectExternalService` on the domain-action union (envelope `1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5`). `handleConnectExternalService` reads the flat bag (`application`, `endpointName`, `openApiDocument`, `baseUrl`, `userAgent`, `authenticated`, `checkedOperationIds`, `probeOperationId`, `probeParameters`), probes, then upserts the endpoint and the report on `bag.application` section `model` and commits. `securityScheme` `none` sends no Authorization. Non-blank `userAgent` is `extraHeaders["User-Agent"]`. `listConvertibleGetOperations` / `boundPathsForOperation` skip `oneOf` / `anyOf`.
+
+The fixture is the Library application `5af03c98-fe5e-490b-b08f-e1230971c57f` on `applicationDeploymentMap` (harness `connectExternalService.284.harness.ts`). For `discogsPublic` + `getRelease` the derived uuids are endpoint `6ad57293-c2f8-510e-8777-6620b4d9c6d7` and report `79df8602-cae7-5a6a-b964-62ecabf8d466`. Authenticated bags return `InvalidAction` until Slice 4. Name clash and secret restore are not in this handler.
+
+Before GREEN, `handleAction`'s default logged `unkown action` and still returned `ACTION_OK`. The red test failed because the endpoint row was absent.
+
+Validation: `phase0 stable` 4 passed. phase1 1 passed. `modelValidation.unit.test.ts` 152 passed. `tsc` miroir-core and miroir-standalone-app clean (subagent run, types load in the phase1 test).
 
 ---
 

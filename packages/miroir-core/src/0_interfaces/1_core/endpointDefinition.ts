@@ -10,6 +10,9 @@ import type { Action } from "./preprocessor-generated/miroirFundamentalType.js";
 
 export type EndpointSecurityScheme =
   | {
+      type: "none";
+    }
+  | {
       type: "http";
       scheme: string;
       bearerFormat?: string;
@@ -52,6 +55,7 @@ export type EndpointExternalService = {
   baseUrl: string;
   securityScheme: EndpointSecurityScheme;
   credentialKey?: string;
+  extraHeaders?: Record<string, string>;
   enabledOperations: string[];
   operations: Array<{
     operationId: string;

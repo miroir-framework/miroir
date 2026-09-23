@@ -1392,6 +1392,12 @@ export {
   setPersistRotatedSecret,
   type PersistRotatedSecret,
 } from "./4_services/ExternalServiceClient.js";
+export {
+  boundPathsForOperation,
+  listConvertibleGetOperations,
+  materializeExternalServiceOperations,
+  openApiParameterNamesForOperation,
+} from "./2_domain/syncExternalServiceSchema.js";
 export { redactCredentialSecretsFromValue } from "./4_services/redactCredentialSecrets.js";
 export {
   mountApplicationDeployment, startLocalPersistenceStoreControllers
