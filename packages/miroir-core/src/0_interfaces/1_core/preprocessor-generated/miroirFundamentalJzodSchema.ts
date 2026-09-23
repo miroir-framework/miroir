@@ -11954,12 +11954,25 @@ export const miroirFundamentalJzodSchema = {
           "definition": {
             "type": "array",
             "definition": {
-              "type": "schemaReference",
-              "definition": {
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "reportSection"
-              },
-              "context": {}
+              "type": "union",
+              "definition": [
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "reportSection"
+                  },
+                  "context": {}
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "multistepStep"
+                  },
+                  "context": {}
+                }
+              ]
             }
           }
         }
@@ -13550,6 +13563,60 @@ export const miroirFundamentalJzodSchema = {
                 }
               }
             }
+          }
+        }
+      },
+      "multistepStep": {
+        "type": "object",
+        "definition": {
+          "stepId": {
+            "type": "string"
+          },
+          "section": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "reportSection"
+            },
+            "context": {}
+          },
+          "onNext": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "compositeActionSequenceTemplate"
+            },
+            "context": {}
+          },
+          "branch": {
+            "type": "object",
+            "optional": true,
+            "definition": {
+              "test": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "coreTransformerForBuildPlusRuntime"
+                },
+                "context": {}
+              },
+              "whenTrue": {
+                "type": "string"
+              },
+              "whenFalse": {
+                "type": "string"
+              }
+            }
+          },
+          "inputSchemaFromBag": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "coreTransformerForBuildPlusRuntime"
+            },
+            "context": {}
           }
         }
       },

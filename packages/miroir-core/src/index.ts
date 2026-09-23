@@ -377,6 +377,8 @@ export {
   modelActionReplayableAction,
   ModelDiagramReportSection,
   modelDiagramReportSection,
+  MultistepStep,
+  multistepStep,
   ObjectInstanceReportSection,
   objectInstanceReportSection,
   ObjectListReportSection,

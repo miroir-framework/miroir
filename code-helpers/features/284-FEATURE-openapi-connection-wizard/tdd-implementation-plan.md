@@ -13,7 +13,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisites: [#267](https://github.com/miroir-framework/miroir/issues/267) ✅ · [#270](https://github.com/miroir-framework/miroir/issues/270) ✅ · [#274](https://github.com/miroir-framework/miroir/issues/274) ✅ · [#281](https://github.com/miroir-framework/miroir/issues/281) ✅
 Working branch: `284-FEATURE-openapi-connection-wizard`
 
-**Resume note:** Slice 4 done. Slice 5 not started.
+**Resume note:** Slice 5 done. Slice 6 not started.
 
 ---
 
@@ -39,7 +39,7 @@ This plan does **not** add a Discogs deployment package, rewrite Spotify endpoin
 | 2 | Failed probe and name clash write nothing | ✅ | phase2 integ |
 | 3 | Second Finish updates the same rows | ✅ | phase3 integ |
 | 4 | Authenticated probes (token, client credentials, refresh grant) | ✅ | phase4 integ |
-| 5 | Branching host: path, Back, on-Next failure | ⬜ | `multistepBranch.284` |
+| 5 | Branching host: path, Back, on-Next failure | ✅ | `multistepBranch.284` |
 | 6 | Wizard report, home button, document step | ⬜ | `wizardWalk.284` + `modelValidation` |
 | 7 | Nonreg, docs, cleanup, AC | ⬜ | nonreg steps |
 
@@ -395,7 +395,7 @@ Validation: phase0 stable 4 passed, phase4 4 passed, phase1 1 passed. `tsc` miro
 
 ## Slice 5 — Branching multistep host
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -445,7 +445,9 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE.>
+`listReportSection` items are `reportSection | multistepStep` on Report entity `3f2baa83-…` and EntityVersion `952d2c65-…`. The host tracks `visitedStepIds`. Next gates the resolved schema, runs optional `onNext`, merges under `stepId`, then the boolean branch. Finish gates visited steps only when a child has `stepId`. Bare reports still use index Back and the all-children Finish gate (`multistepProcess.274` 19 passed). `inputSchemaFromBag` is evaluated when the step opens. Errors shown in the alert are the inner `errorMessage`. Cancel copy is only "The values you entered will be discarded." The hidden step bag omits the secret denylist keys.
+
+Validation: `multistepBranch.284` 6 passed. modelValidation miroir 152, library 183. `tsc` both packages clean.
 
 ---
 

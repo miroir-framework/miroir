@@ -290,7 +290,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     log.info("reportSectionsFormValue initialReportSectionsFormValue", result);
     return result;
 
-  }, [props.reportDefinition, props.pageParams, props.storedQueryData, reportDataForForm, reportInterpreterPageParams, reportName, multistepHost?.stepBag]);
+  }, [props.reportDefinition, props.pageParams, props.storedQueryData, reportDataForForm, reportInterpreterPageParams, reportName, multistepHost?.stepBag, multistepHost?.resolvedInputSchema]);
 
   // ###############################################################################################
   // ###############################################################################################
