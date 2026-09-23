@@ -1,7 +1,11 @@
 
 import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
 
-import { getEndpointActions, getExternalService } from '../0_interfaces/1_core/endpointDefinition.js';
+import {
+  getEndpointActions,
+  getExternalService,
+  type EndpointSecurityScheme,
+} from '../0_interfaces/1_core/endpointDefinition.js';
 import { Uuid } from '../0_interfaces/1_core/EntityVersion.js';
 import type { StorageType } from "../0_interfaces/1_core/StorageConfiguration.js";
 import {
@@ -180,6 +184,11 @@ import {
   openApiParameterNamesForOperation,
 } from "../2_domain/syncExternalServiceSchema.js";
 import { redactCredentialSecretsFromValue } from "../4_services/redactCredentialSecrets.js";
+import {
+  getSecretsMasterKey,
+  importProcessSecrets,
+  persistImportedProcessSecrets,
+} from "../4_services/SecretsService.js";
 import {
   registerHydratedProcessSecret,
   resolveSecret,
@@ -3407,6 +3416,15 @@ export class DomainController implements DomainControllerInterface {
         baseUrl: string;
         userAgent?: string;
         authenticated: boolean;
+        /** Slice 4: customToken | clientCredentials | authorizationCode when authenticated. */
+        scheme?: string;
+        authorizationTemplate?: string;
+        credentialKey?: string;
+        tokenUrl?: string;
+        clientIdKey?: string;
+        clientSecretKey?: string;
+        refreshTokenKey?: string;
+        scopes?: string;
         checkedOperationIds: string[];
         probeOperationId: string;
         probeParameters: Record<string, unknown>;
@@ -3458,14 +3476,77 @@ export class DomainController implements DomainControllerInterface {
       );
     }
 
-    // Slice 1: public only. Authenticated schemes are Slice 4.
-    if (bag.authenticated === true) {
+    // Slice 4 / D11: scheme from bag when authenticated; public is type none.
+    let securityScheme: EndpointSecurityScheme;
+    let credentialKey: string | undefined;
+    if (bag.authenticated !== true) {
+      securityScheme = { type: "none" };
+    } else if (bag.scheme === "customToken") {
+      if (typeof bag.credentialKey !== "string" || bag.credentialKey.length === 0) {
+        return new Action2Error(
+          "InvalidAction",
+          "connectExternalService: customToken requires credentialKey",
+        );
+      }
+      securityScheme = {
+        type: "http",
+        scheme: "bearer",
+        ...(typeof bag.authorizationTemplate === "string" && bag.authorizationTemplate.length > 0
+          ? { authorizationTemplate: bag.authorizationTemplate }
+          : {}),
+      };
+      credentialKey = bag.credentialKey;
+    } else if (bag.scheme === "clientCredentials") {
+      if (
+        typeof bag.tokenUrl !== "string" ||
+        bag.tokenUrl.length === 0 ||
+        typeof bag.clientIdKey !== "string" ||
+        bag.clientIdKey.length === 0 ||
+        typeof bag.clientSecretKey !== "string" ||
+        bag.clientSecretKey.length === 0
+      ) {
+        return new Action2Error(
+          "InvalidAction",
+          "connectExternalService: clientCredentials requires tokenUrl, clientIdKey, and clientSecretKey",
+        );
+      }
+      securityScheme = {
+        type: "oauth2ClientCredentials",
+        tokenUrl: bag.tokenUrl,
+        clientIdKey: bag.clientIdKey,
+        clientSecretKey: bag.clientSecretKey,
+        ...(typeof bag.scopes === "string" && bag.scopes.length > 0 ? { scopes: bag.scopes } : {}),
+      };
+    } else if (bag.scheme === "authorizationCode") {
+      if (
+        typeof bag.tokenUrl !== "string" ||
+        bag.tokenUrl.length === 0 ||
+        typeof bag.clientIdKey !== "string" ||
+        bag.clientIdKey.length === 0 ||
+        typeof bag.clientSecretKey !== "string" ||
+        bag.clientSecretKey.length === 0 ||
+        typeof bag.refreshTokenKey !== "string" ||
+        bag.refreshTokenKey.length === 0
+      ) {
+        return new Action2Error(
+          "InvalidAction",
+          "connectExternalService: authorizationCode requires tokenUrl, clientIdKey, clientSecretKey, and refreshTokenKey",
+        );
+      }
+      securityScheme = {
+        type: "oauth2AuthorizationCode",
+        tokenUrl: bag.tokenUrl,
+        clientIdKey: bag.clientIdKey,
+        clientSecretKey: bag.clientSecretKey,
+        refreshTokenKey: bag.refreshTokenKey,
+        ...(typeof bag.scopes === "string" && bag.scopes.length > 0 ? { scopes: bag.scopes } : {}),
+      };
+    } else {
       return new Action2Error(
         "InvalidAction",
-        "connectExternalService: authenticated schemes are not implemented in this slice",
+        `connectExternalService: authenticated scheme "${bag.scheme ?? ""}" is not implemented in this slice`,
       );
     }
-    const securityScheme = { type: "none" as const };
 
     const operationSync: Record<string, { boundPaths: string[] }> = {};
     for (const operationId of bag.checkedOperationIds) {
@@ -3505,6 +3586,7 @@ export class DomainController implements DomainControllerInterface {
           openApiDocument: bag.openApiDocument,
           baseUrl: bag.baseUrl,
           securityScheme,
+          ...(credentialKey ? { credentialKey } : {}),
           ...(extraHeaders ? { extraHeaders } : {}),
           enabledOperations: [...bag.checkedOperationIds],
           operations: materialized.operations,
@@ -3542,6 +3624,31 @@ export class DomainController implements DomainControllerInterface {
         restoreProcessSecretsFromSnapshot(secretSnapshots);
       }
       return probeResult;
+    }
+
+    // Slice 4: persist processSecrets to Admin after a successful probe (analysis §5.2 step 6).
+    if (processSecretsBag && Object.keys(processSecretsBag).length > 0) {
+      const wrappingKey = getSecretsMasterKey();
+      if (!wrappingKey) {
+        return new Action2Error(
+          "InvalidAction",
+          "connectExternalService: wrapping key required to persist secrets",
+        );
+      }
+      const secretInstances = importProcessSecrets({
+        wrappingKey,
+        secrets: processSecretsBag,
+      });
+      try {
+        await persistImportedProcessSecrets(this, secretInstances, applicationDeploymentMap);
+      } catch (error) {
+        return new Action2Error(
+          "FailedToHandleAction",
+          error instanceof Error
+            ? error.message
+            : "connectExternalService: failed to persist secrets",
+        );
+      }
     }
 
     const paramNames = openApiParameterNamesForOperation(bag.openApiDocument, bag.probeOperationId);
@@ -3675,7 +3782,10 @@ export class DomainController implements DomainControllerInterface {
     currentModel?: MiroirModelEnvironment,
     principal?: AuthPrincipal,
   ): Promise<Action2VoidReturnType> {
-    log.debug("handleActionInternal START for action", domainAction);
+    log.debug(
+      "handleActionInternal START for action",
+      redactCredentialSecretsFromValue(domainAction),
+    );
     const application = (domainAction.payload as any).application ?? "APPLICATION_UUID_NOT_FOUND";
     const deploymentUuid = applicationDeploymentMap[application];
     const actionPhase = logPhaseForActionType(domainAction.actionType);
@@ -5090,12 +5200,14 @@ export class DomainController implements DomainControllerInterface {
     log.info(
       "handleCompositeActionTemplate called with compositeActionSequence",
       actionLabel,
-      "compositeActionSequence",
-      compositeActionSequence,
+      "compositeActionSequence actionType",
+      (compositeActionSequence as any).actionType,
+      "localActionParams keys",
+      Object.keys(localActionParams),
       "localActionParams",
-      localActionParams,
-      "actionContext",
-      actionContext,
+      redactCredentialSecretsFromValue(localActionParams),
+      "actionContext keys",
+      Object.keys(actionContext ?? {}),
     );
     const resolved: TransformerReturnType<{
       resolvedCompositeActionDefinition: CompositeActionSequence;
@@ -5118,16 +5230,19 @@ export class DomainController implements DomainControllerInterface {
 
     log.info("handleCompositeActionTemplate resolved Templates", {
       actionLabel,
-      localActionParams,
-      resolved,
+      localActionParamsKeys: Object.keys(localActionParams),
+      resolvedActionSequenceLength:
+        resolved.resolvedCompositeActionDefinition?.payload?.actionSequence?.length,
     });
     // log.info("handleCompositeActionTemplate", actionLabel, "localActionParams", localActionParams);
     log.info(
       "handleCompositeActionTemplate",
       actionLabel,
-      "resolvedCompositeActionDefinition",
-      resolved.resolvedCompositeActionDefinition
-      // JSON.stringify(resolved.resolvedCompositeActionDefinition, null, 2)
+      "resolvedCompositeActionDefinition action labels",
+      resolved.resolvedCompositeActionDefinition?.payload?.actionSequence?.map(
+        (step: { actionLabel?: string; actionType?: string }) =>
+          step.actionLabel ?? step.actionType,
+      ),
     );
 
     let localContext: Record<string, any> = {
@@ -5143,11 +5258,12 @@ export class DomainController implements DomainControllerInterface {
         actionLabel,
         "currentAction",
         currentAction.actionLabel,
-        currentAction,
+        "currentActionType",
+        currentAction.actionType,
+        "currentAction",
+        redactCredentialSecretsFromValue(currentAction),
         "localContext keys",
         Object.keys(localContext),
-        "localContext",
-        localContext,
       );
       const resolvedActionTemplate: any = transformer_extended_apply(
         "runtime",
@@ -5165,7 +5281,7 @@ export class DomainController implements DomainControllerInterface {
         "resolvedActionTemplate instanceof TransformerFailure",
         resolvedActionTemplate instanceof TransformerFailure,
         "resolved action Template",
-        JSON.stringify(resolvedActionTemplate, null, 2),
+        JSON.stringify(redactCredentialSecretsFromValue(resolvedActionTemplate), null, 2),
       );
       if (resolvedActionTemplate instanceof TransformerFailure) {
         return new Action2Error(
@@ -5288,16 +5404,16 @@ export class DomainController implements DomainControllerInterface {
             "handleCompositeActionTemplate",
             actionLabel,
             "received actionResult from compositeInstanceAction",
-            currentAction,
+            currentAction.actionLabel ?? currentAction.actionType,
             "actionResult",
-            JSON.stringify(actionResult, null, 2),
+            JSON.stringify(redactCredentialSecretsFromValue(actionResult), null, 2),
           );
           if (actionResult instanceof Action2Error) {
             log.error(
               "handleCompositeActionTemplate compositeInstanceAction error on running action",
-              JSON.stringify(currentAction, null, 2) +
+              JSON.stringify(redactCredentialSecretsFromValue(currentAction), null, 2) +
                 "actionResult" +
-                JSON.stringify(actionResult, null, 2),
+                JSON.stringify(redactCredentialSecretsFromValue(actionResult), null, 2),
             );
             return new Action2Error(
               "FailedToHandleAction",

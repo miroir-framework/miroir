@@ -16,6 +16,8 @@ export type EndpointSecurityScheme =
       type: "http";
       scheme: string;
       bearerFormat?: string;
+      /** When set, replaces the single `{secret}` marker; absent keeps `Bearer ${token}`. */
+      authorizationTemplate?: string;
     }
   | {
       type: "oauth2ClientCredentials";

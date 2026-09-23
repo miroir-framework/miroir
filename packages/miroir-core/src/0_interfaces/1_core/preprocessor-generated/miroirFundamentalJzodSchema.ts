@@ -22832,6 +22832,15 @@ export const miroirFundamentalJzodSchema = {
                                     "defaultLabel": "Bearer Format"
                                   }
                                 }
+                              },
+                              "authorizationTemplate": {
+                                "type": "string",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Authorization Template"
+                                  }
+                                }
                               }
                             }
                           },

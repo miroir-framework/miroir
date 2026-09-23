@@ -58,6 +58,8 @@ export const ADMIN_APPLICATION_UUID = "55af124e-8c05-4bae-a3ef-0933d41daa92";
 
 export type ConnectExternalService284Harness = {
   domainController: DomainControllerInterface;
+  /** Local/server controller — secret rows retain ciphertext (client query path redacts). */
+  domainControllerForServer: DomainControllerInterface;
   applicationDeploymentMap: ApplicationDeploymentMap;
   fakeServer: FakeExternalServiceServer;
   libraryModelEnvironment: ReturnType<typeof getDefaultLibraryModelEnvironmentDEFUNCT>;
@@ -152,6 +154,7 @@ export async function bootConnectExternalService284Harness(options?: {
       "connectExternalService.284 requires the emulated-server DomainController (persistenceStoreAccessMode === local).",
     );
   }
+  const domainControllerForServer = executionEnvironment.domainControllerForServer;
 
   await resetAndInitApplicationDeployment(domainController, applicationDeploymentMap, [
     deployment_Miroir as Deployment,
@@ -171,6 +174,7 @@ export async function bootConnectExternalService284Harness(options?: {
 
   return {
     domainController,
+    domainControllerForServer,
     applicationDeploymentMap,
     fakeServer,
     libraryModelEnvironment: defaultLibraryModelEnvironment,

@@ -1340,6 +1340,7 @@ export {
   summarizeRollbackInstanceCollections,
 } from "./4_services/rollbackLog.js";
 export { MiroirLoggerFactory, testLogger } from "./4_services/MiroirLoggerFactory.js";
+export { MiroirLogger } from "./4_services/MiroirLogger.js";
 export { summarizeQueryHopResult, trackQueryHop } from "./4_services/trackQueryHop.js";
 export {
   activitySpanDirection,

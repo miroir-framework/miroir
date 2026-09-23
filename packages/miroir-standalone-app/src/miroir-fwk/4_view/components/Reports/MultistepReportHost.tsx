@@ -65,8 +65,10 @@ export async function runMultistepFinish({
     application,
     "stepBag keys",
     Object.keys(stepBag),
-    "sequence",
-    sequence,
+    "sequence actionLabel",
+    (sequence as { actionLabel?: string })?.actionLabel,
+    "sequence actionType",
+    (sequence as { actionType?: string })?.actionType,
   );
   return domainController.handleCompositeActionTemplate(
     sequence,

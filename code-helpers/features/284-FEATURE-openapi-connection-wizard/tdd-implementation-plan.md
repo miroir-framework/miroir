@@ -13,7 +13,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisites: [#267](https://github.com/miroir-framework/miroir/issues/267) ✅ · [#270](https://github.com/miroir-framework/miroir/issues/270) ✅ · [#274](https://github.com/miroir-framework/miroir/issues/274) ✅ · [#281](https://github.com/miroir-framework/miroir/issues/281) ✅
 Working branch: `284-FEATURE-openapi-connection-wizard`
 
-**Resume note:** Slice 3 done. Slice 4 not started.
+**Resume note:** Slice 4 done. Slice 5 not started.
 
 ---
 
@@ -38,7 +38,7 @@ This plan does **not** add a Discogs deployment package, rewrite Spotify endpoin
 | 1 | **Tracer.** Public Finish writes endpoint + report | ✅ | phase1 integ, fake server sees User-Agent and no Authorization |
 | 2 | Failed probe and name clash write nothing | ✅ | phase2 integ |
 | 3 | Second Finish updates the same rows | ✅ | phase3 integ |
-| 4 | Authenticated probes (token, client credentials, refresh grant) | ⬜ | phase4 integ |
+| 4 | Authenticated probes (token, client credentials, refresh grant) | ✅ | phase4 integ |
 | 5 | Branching host: path, Back, on-Next failure | ⬜ | `multistepBranch.284` |
 | 6 | Wizard report, home button, document step | ⬜ | `wizardWalk.284` + `modelValidation` |
 | 7 | Nonreg, docs, cleanup, AC | ⬜ | nonreg steps |
@@ -332,7 +332,7 @@ Test: `connectExternalService.284.phase3.integ.test.ts`. Validation: phase0 stab
 
 ## Slice 4 — Authenticated probes
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -387,7 +387,9 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE.>
+Authenticated bags use `scheme`: `customToken` (`http` + `authorizationTemplate`, `{secret}` replaced once), `clientCredentials`, and `authorizationCode`. Existing OAuth grants are reused. `processSecrets` are persisted with `persistImportedProcessSecrets` (`secrets.set` on Admin) only after the probe succeeds. `discogsToken` coexists with `discogsPublic`. Spotify-shaped `get-playlist` omits `tracks.items.track` from `boundPaths`. Composite entry and per-step logs, and `runMultistepFinish`, do not print secret values (`redactCredentialSecretsFromValue`, denylist includes `processSecrets`).
+
+Validation: phase0 stable 4 passed, phase4 4 passed, phase1 1 passed. `tsc` miroir-core and miroir-standalone-app clean.
 
 ---
 

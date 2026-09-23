@@ -613,6 +613,13 @@ async function resolveAuthorizationHeader(
       );
       return externalServiceError("InvalidAction", "Unknown or empty secret");
     }
+    const authorizationTemplate =
+      scheme && scheme.type === "http" && typeof scheme.authorizationTemplate === "string"
+        ? scheme.authorizationTemplate
+        : undefined;
+    if (authorizationTemplate !== undefined && authorizationTemplate.length > 0) {
+      return authorizationTemplate.replace("{secret}", token);
+    }
     return `Bearer ${token}`;
   }
   return undefined;
