@@ -13,7 +13,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisites: [#267](https://github.com/miroir-framework/miroir/issues/267) ✅ · [#270](https://github.com/miroir-framework/miroir/issues/270) ✅ · [#274](https://github.com/miroir-framework/miroir/issues/274) ✅ · [#281](https://github.com/miroir-framework/miroir/issues/281) ✅
 Working branch: `284-FEATURE-openapi-connection-wizard`
 
-**Resume note:** plan reviewed, no slice started.
+**Resume note:** plan revised after [`./plan-adversarial-review.md`](./plan-adversarial-review.md) (P1–P18). No slice started.
 
 ---
 
@@ -74,12 +74,18 @@ Copied from [`analysis.md`](./analysis.md). Deviations go in the slice Realizati
 |---|---|
 | Wizard report `ConnectExternalService` | `dbd94bfe-b803-4bfd-8bb2-70a5932d5d1a` |
 | SelfApplication on that report | `360fcf1f-f0d4-4f8a-9262-07886e70fa15` |
+| Admin SelfApplication (secret writes) | `55af124e-8c05-4bae-a3ef-0933d41daa92` |
+| Home report `MiroirWebAppOrDesktopHome` | `29ef8018-43fc-4ee9-a736-6f9d625be7b7` |
+| Hand-built Spotify endpoint (do not edit) | `0e5cb172-12ea-4467-8598-5889338ae454` |
 | Domain envelope endpoint (existing composite endpoint) | `1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5` |
 | Endpoint uuid namespace | Endpoint entity `3d8da4d4-8f76-4bb4-9212-14869d81c00c` |
+| Endpoint EntityVersion | `e3c1cc69-066d-4f52-beeb-b659dc7a88b9` |
 | Report uuid namespace | Report entity `3f2baa83-3ef7-45ce-82ea-6a43f7a8c916` |
+| Report EntityVersion | `952d2c65-4da2-45c2-9394-a0920ceedfb6` |
 | Branch-host fixture report (test-local, not a deployment asset) | `4f7dab24-b3eb-4d59-9275-dcc8f912ecd2` |
-| Nonreg unit | `unit-284-openapi-connection-wizard` |
-| Nonreg integ | `integ-action-284-openapi-connection-wizard` |
+| Nonreg unit (stable phase0 only) | `unit-284-openapi-connection-wizard` |
+| Nonreg integ, phases 1–3 | `integ-action-284-openapi-connection-wizard` |
+| Nonreg integ, phase 4 | `integ-action-284-openapi-connection-wizard-auth` |
 | Nonreg app stack | `appstack-284-openapi-connection-wizard` |
 
 Endpoint and validation-report uuids are derived at runtime (analysis D10). They are not allocated here.
@@ -99,6 +105,18 @@ Endpoint and validation-report uuids are derived at runtime (analysis D10). They
 
 Vitest, not MiroirTest: a live HTTP server, the process secret map, and the React host are not expressible as a declarative MiroirTest. Same reason as #267's external-service integ tests and #274's `multistepProcess` host tests. No mocks. `RestClientStub` is the framework's own server stand-in when the test boots the app shell.
 
+`testByFile` accepts the profile flag before or after the file argument (`prepareTestByFileLaunch`). The commands below put `--profile` before the filter. Either order is valid.
+
+### Test harness
+
+Action tests and `wizardWalk.284` share one boot, copied from existing tests rather than a new framework:
+
+- Local server: `packages/miroir-standalone-app/tests/utils/fakeExternalServiceServer.ts`, registered with `allowInsecureBaseUrlsForTests` (same call as `apiCallReport.281.phase4.integ.test.tsx`).
+- DomainController plus deployment map entry for a fixture application that is neither Miroir nor Admin. Pattern: `externalServiceDispatch.integ.test.ts` and `multistepProcess.274.integ.test.tsx` (extend `applicationDeploymentMap`). `defaultSelfApplicationDeploymentMap` (`Deployment.ts` L79–82) is only Miroir and Admin, so the fixture entry is mandatory.
+- Secret rows: read them the way `secretsHydrate.270.phase1.integ.test.ts` does. Assert through the controller and the target application's model, not through the host's `props.application` (that is Miroir).
+- UI: mount `ReportPage` for report `29ef8018-…`, as `multistepLaunch.274` does. Do not mount `HomePage`. `HomePage` navigates away via `homePageUrl` (`HomePage.tsx` L132–149).
+- Session helpers already in the repo: `IntegrationTestSession`, `JzodElementEditorTestTools`. No new test-only server.
+
 ---
 
 ## Slice 0 — Characterize current contracts
@@ -113,19 +131,29 @@ Lock the behavior Slice 1–6 will change, so a regression is visible.
 
 **Test:** `packages/miroir-standalone-app/tests/3_controllers/issues/284-openapi-connection-wizard/connectExternalService.284.phase0.integ.test.ts`
 
-Behavior asserted (current, must pass before any product change):
+Two describes in that file.
 
-- `MiroirWebAppOrDesktopHome` (`29ef8018-…`) has exactly three sections: `markdownReportSection`, `inputReportSection`, `storedReportDisplay`. No `openReportSection`.
-- Spotify endpoint `0e5cb172-…` `securityScheme.type` is `oauth2AuthorizationCode`. File bytes are hashed in the test and that hash is the lock.
-- `listReportSection.definition` items are a single `reportSection` reference (`3f2baa83-….json`).
-- `handleApplicationAction` returns `actionImplementationType not supported yet` for `libraryImplementation` (analysis R3).
-- A multistep list with two required `inputReportSection`s fails `allGatedStepsAllowFinish` when only the first bag is filled (`MultistepReportHost.tsx` L170–191).
-- `executeExternalServiceOperation` on an endpoint with `credentialKey` and `securityScheme.type: "http"` sends `Authorization: Bearer <secret>` and no User-Agent. Use the existing insecure-baseUrl allowlist and a local server.
+**Stable** (`phase0 stable`). Still true after Slice 6. Later slices re-run only this describe.
+
+- Spotify endpoint `0e5cb172-12ea-4467-8598-5889338ae454` `securityScheme.type` is `oauth2AuthorizationCode`. The file hash is the lock.
+- A multistep list with two required `inputReportSection`s fails `allGatedStepsAllowFinish` when only the first bag is filled (`MultistepReportHost.tsx` L170–191). This uses a synthetic list, not the home report.
+- `executeExternalServiceOperation` on an endpoint with `credentialKey` and `securityScheme.type: "http"` and no template sends `Authorization: Bearer <secret>` and no User-Agent.
+- `handleApplicationAction` rejects `libraryImplementation` with `actionImplementationType not supported yet`. This is integ parity with `externalService.unit.test.ts` (the unit test already covers a synthetic endpoint). One integ assertion keeps the action suite self-contained. It stays green. It is not a product change.
+
+**Inventory** (`pre-284 inventory`). Deleted at the end of Slice 6, when the asserts become false.
+
+- `MiroirWebAppOrDesktopHome` (`29ef8018-43fc-4ee9-a736-6f9d625be7b7`) has exactly three sections: `markdownReportSection`, `inputReportSection`, `storedReportDisplay`. No `openReportSection`.
+- `listReportSection.definition` items are a single `reportSection` reference (`3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json` L161–169).
+
+### 0.2 Refactor checkpoint
+
+None. Inventory only.
 
 ### Validation
 
 ```bash
 RUN_TEST=connectExternalService.284.phase0 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284.phase0
+npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts
 ```
 
 ### Realization
@@ -161,16 +189,16 @@ Behavior asserted:
 - The target model's entity list did not gain a row.
 - Spotify file `0e5cb172-….json` hash is unchanged (phase0 lock still holds).
 
-RED fails because `actionType: "connectExternalService"` is not a domain action.
+The bag's endpoint name is `discogsPublic`. RED fails because `handleAction`'s `default` branch (`DomainController.ts` L3659–3664) does not know `connectExternalService`. The failure text is an unknown action type, not a payload-schema error. The invocation object is `{ actionType: "connectExternalService", endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5", payload: <bag> }`.
 
 ### 1.2 GREEN
 
-- Add `connectExternalService` to the domain-action union (Entity + EntityVersion for the action schema, then `devBuild`). Envelope `endpoint` is `1e2ef8e6-…`.
-- Branch in `handleAction`. Do not add a `libraryImplementation` (phase0 must stay red for that path, green for the new action type).
+- Add `connectExternalService` to the domain-action Jzod union and the generated `domainAction` type (`devBuild` after the asset edit). Envelope `endpoint` is `1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5`.
+- `case "connectExternalService":` in `handleAction`, before the `default` at L3659. Payload is the bag. Do not add a `libraryImplementation`. Phase0 stable stays green for that rejection.
 - `listConvertibleGetOperations` / `boundPathsForOperation` in `syncExternalServiceSchema.ts`, used by the handler. No second converter.
-- `securityScheme` `none` and `extraHeaders` on the Endpoint schema (dual-write `3d8da4d4-…` and `e3c1cc69-…`).
+- `securityScheme` `none` and `extraHeaders` on the Endpoint schema (dual-write `3d8da4d4-8f76-4bb4-9212-14869d81c00c` and `e3c1cc69-066d-4f52-beeb-b659dc7a88b9`).
 - Client: `none` sends no Authorization. Copy `extraHeaders` onto the fetch headers.
-- Upsert endpoint and report on the bag's application, section `model`.
+- Upsert endpoint and report on the bag's application, section `model`. Use the harness. Do not read `props.application`.
 
 ### 1.3 Refactor checkpoint
 
@@ -181,7 +209,7 @@ RED fails because `actionType: "connectExternalService"` is not a domain action.
 
 ```bash
 npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core
-RUN_TEST=connectExternalService.284.phase0 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284.phase0
+RUN_TEST=phase0 stable npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284.phase0
 RUN_TEST=connectExternalService.284.phase1 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284.phase1
 npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts
 npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
@@ -224,8 +252,11 @@ Snapshot via `resolveSecret` before `registerHydratedProcessSecret`. On failure,
 ### Validation
 
 ```bash
-RUN_TEST=connectExternalService.284.phase2 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284.phase2
+RUN_TEST=phase0 stable npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284.phase0
 RUN_TEST=connectExternalService.284.phase1 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284.phase1
+RUN_TEST=connectExternalService.284.phase2 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284.phase2
+npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 ```
 
 ### Realization
@@ -265,7 +296,12 @@ Upsert by derived uuid. Replace `operations` / `enabledOperations` / `operationS
 ### Validation
 
 ```bash
+RUN_TEST=phase0 stable npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284.phase0
+RUN_TEST=connectExternalService.284.phase1 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284.phase1
+RUN_TEST=connectExternalService.284.phase2 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284.phase2
 RUN_TEST=connectExternalService.284.phase3 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284.phase3
+npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 ```
 
 ### Realization
@@ -284,34 +320,46 @@ A maintainer can finish a custom-token connection, a client-credentials connecti
 
 **Layers cut:** client header template + OAuth grants (already present) + secret upsert + log redaction.
 
-Three RED → GREEN cycles in this slice. They share one fake server and one action. Splitting them would copy the fixture three times.
+Four RED → GREEN cycles in one file, shared fake server. Each cycle is red, then the minimum green for that case, before the next `it` is written. Do not write all four tests before any implementation.
 
-### 4.1 RED
+**Test file:** `connectExternalService.284.phase4.integ.test.ts`
 
-**Test:** `connectExternalService.284.phase4.integ.test.ts`
+Calls go through `handleCompositeActionTemplate` with a one-step sequence, so the wrapper logs are on the path the wizard will use.
 
-1. Custom token. Template `Discogs token={secret}`. Server records `Authorization: Discogs token=sekret`. Endpoint `securityScheme` is `http` with that template and `credentialKey`. A `MiroirSecret` row exists for the generated name, ciphertext not equal to the raw token. Process map holds the value after success.
-2. Client credentials. Fake token URL returns a bearer token. API server records `Authorization: Bearer <that token>`. Endpoint type is `oauth2ClientCredentials`.
-3. Authorization code. Fake token URL receives `grant_type=refresh_token`. API server records `Bearer`. Endpoint has `refreshTokenKey`.
-4. A memory log appender registered through the existing logger factory does not contain `sekret` (or the refresh token) after the call. The assertion is absence of the secret string, not a snapshot of log wording.
+### 4.1 Custom token
 
-### 4.2 GREEN
+RED: endpoint name `discogsToken` on the same fixture application that already has `discogsPublic` from the phase1 setup. Template `Discogs token={secret}`. Server records `Authorization: Discogs token=sekret`. Both derived uuids exist. Endpoint `securityScheme` is `http` with that template and `credentialKey`. A `MiroirSecret` row exists. Ciphertext is not the raw token.
 
-- `authorizationTemplate` on `http` (dual-write). Absent template keeps `Bearer ${token}` (phase0).
-- Replace `{secret}` once. Handler uses the D11 table.
-- `secrets.set` on Admin `55af124e-…` after the probe.
-- Keys-only logging on the new handler path. `handleCompositeActionTemplate` entry and per-step logs (L4795–4803, L4846–4855, L4992–4998) print key names, or pass bodies through `redactRegisteredSecretValuesInString` plus a denylist of bag fields `clientSecret`, `refreshToken`, `token`, `secretValue` **before** registration.
+GREEN: `authorizationTemplate` on `http` (dual-write). Replace `{secret}` once. `secrets.set` on Admin `55af124e-8c05-4bae-a3ef-0933d41daa92` after the probe. Absent template still means `Bearer ${token}` (phase0 stable).
 
-### 4.3 Refactor checkpoint
+### 4.2 Client credentials
 
-- Phase0 Bearer test still passes for an `http` scheme with no template.
-- Do not log the bag in `runMultistepFinish` (L63–69) even though the host slice is later. Change it here so the action tests that go through the composite see the same rule. Slice 4's RED calls `handleCompositeActionTemplate` with a one-step sequence, not only `handleAction`, so the wrapper path is what the wizard will use.
+RED: fake token URL returns a bearer token. API server records `Authorization: Bearer <that token>`. Endpoint type is `oauth2ClientCredentials`.
+
+GREEN: bag branch writes that scheme and the handler calls the existing client-credentials grant. No new grant code if the current client already does it.
+
+### 4.3 Authorization code, Spotify-shaped
+
+RED: document is a GET `get-playlist` whose response has `id` and `name` plus a `oneOf` track field. Probe parameter name is `playlist_id`. Fake token URL receives `grant_type=refresh_token`. API server records `Bearer`. Endpoint has `refreshTokenKey`. `boundPaths` does not contain `tracks.items.track`.
+
+GREEN: walker already from Slice 1. Handler writes `oauth2AuthorizationCode` from the D11 table and calls the existing refresh grant.
+
+### 4.4 Log redaction
+
+RED: a memory appender on the existing logger factory, after 4.1's call, does not contain `sekret`. The assertion is absence of that string.
+
+GREEN: `handleCompositeActionTemplate` entry and per-step logs (`DomainController.ts` L4795–4803, L4846–4855, L4992–4998) print key names, or pass bodies through `redactRegisteredSecretValuesInString` plus a denylist of bag fields `clientSecret`, `refreshToken`, `token`, `secretValue` before registration. `runMultistepFinish` (`MultistepReportHost.tsx` L63–69) logs keys only.
+
+### 4.5 Refactor checkpoint
+
+- Phase0 stable Bearer test still passes for an `http` scheme with no template.
+- `discogsPublic` and `discogsToken` both remain.
 
 ### Validation
 
 ```bash
 npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core
-RUN_TEST=connectExternalService.284.phase0 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284.phase0
+RUN_TEST=phase0 stable npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284.phase0
 RUN_TEST=connectExternalService.284.phase4 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284.phase4
 npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
@@ -354,6 +402,8 @@ Behavior asserted:
 - `unwrapAction2ErrorMessage` for Next and Finish.
 - Cancel dialog text is only "The values you entered will be discarded."
 - Hidden `<pre data-testid="multistep-step-bag">` omits keys `clientSecret`, `refreshToken`, `token`, `secretValue`.
+- When the step opens, evaluate `inputSchemaFromBag` and pass that Jzod into the input section (`ReportSectionViewWithEditor.tsx` L738–747 is the static path this replaces for envelope steps). `currentStepAllowsNext` and `collectStepBagKeys` use the resolved schema. `collectStepBagKeys` reads `multistepStep.section`, not the envelope itself.
+- The branch fixture includes one step whose static `inputMLSchema` is absent and whose resolved schema has a required field. Next stays until that field is filled. That is the RED for this bullet, in the same file, written before this GREEN.
 
 ### 5.3 Refactor checkpoint
 
@@ -387,29 +437,28 @@ A maintainer on the Miroir home page can open Connect an external service, pick 
 
 **Layers cut:** report asset → home report → host dynamic schema → document `onNext`.
 
-### 6.1 RED
+### 6.1 Cycles
 
-**Test:** `wizardWalk.284.integ.test.tsx`
+**Test:** `wizardWalk.284.integ.test.tsx`. Mount `ReportPage` for `29ef8018-43fc-4ee9-a736-6f9d625be7b7` (see Test harness). Not `HomePage`.
 
-Render `MiroirWebAppOrDesktopHome`. The button label is Connect an external service. Activating it shows the wizard (`openAs: "route"`).
+Each cycle is red, then green, before the next.
 
-- The application step lists the fixture application and does not list Miroir `360fcf1f-…` or Admin `55af124e-…`.
-- Paste a two-GET document, one of which is only an `oneOf`. Next stays on the document step only when the text is not YAML/JSON. A valid document shows the convertible GET and hides the `oneOf`-only operation.
-- A `file` input read via `FileReader` fills the same bag text.
-- URL `http://127.0.0.1/...` (not on the allowlist) stays on the document step. The alert names the private-host refusal.
-- Public path: Next from "authenticated = no" lands on operations, not on a secret step.
-- Secret step inputs are masked. After filling a token on the custom path, `multistep-step-bag` text does not contain the token.
-- Finish on the public path with the fixture server running performs the Slice 1 outcome (endpoint + report). This is the UI tracer for the same action.
+1. **Launcher.** The button Connect an external service is absent. GREEN adds `openReportSection` on that home report, `openAs: "route"`, `reportUuid` `dbd94bfe-b803-4bfd-8bb2-70a5932d5d1a`, `application` `360fcf1f-f0d4-4f8a-9262-07886e70fa15`. Activating it shows the wizard report.
+2. **Picker.** The application step lists the fixture application and does not list Miroir or Admin.
+3. **Document.** Invalid text stays on the document step. The alert includes the parser's own message (`openApiDocument must be a YAML/JSON string or an object`, or the empty-document message), not "Required fields are missing". A valid two-GET document shows the convertible GET and hides the `oneOf`-only operation. A file input via `FileReader` fills the same text. URL `http://127.0.0.1/` not on the allowlist stays on the step. The alert includes `Insecure or private external service baseUrl is not allowed` (`ExternalServiceClient.ts` L164).
+4. **Public path.** Next from authenticated = no lands on operations, not on a secret step.
+5. **Secrets stay out of the UI dumps.** On the custom path, after a token is typed, `multistep-step-bag` does not contain it, and the Formik debug block (`ReportViewWithEditor.tsx` L517–520) does not contain it. GREEN omits the denylist keys from that dump when the report `type` is `multistep`.
+6. **Finish.** Public path against the fixture server creates the Slice 1 endpoint and report for name `discogsPublic`.
 
-RED fails because the home report has no button and report `dbd94bfe-…` does not exist.
+Delete the `pre-284 inventory` describe at the end of this slice. `phase0 stable` still passes.
 
-### 6.2 GREEN
+### 6.2 What the cycles add
 
-- Commit report `dbd94bfe-b803-4bfd-8bb2-70a5932d5d1a` under `miroir_model`, `selfApplication` `360fcf1f-…`, `conceptLevel: "Model"`, twelve envelopes from analysis §5.1. Finish sequence is one `connectExternalService`.
-- `inputSchemaFromBag` on `operations` and `probeParams`, evaluated when the step opens (analysis D5).
-- Document `onNext` calls the same walker and, for a URL, `fetch` on the server under `assertBaseUrlAllowed`.
-- Add `openReportSection` to `29ef8018-…`, label Connect an external service, `openAs: "route"`, `reportUuid` `dbd94bfe-…`, `application` `360fcf1f-…`.
-- Do not edit `MiroirSandboxHome`.
+- Report asset `dbd94bfe-b803-4bfd-8bb2-70a5932d5d1a` under `miroir_model`, `selfApplication` `360fcf1f-f0d4-4f8a-9262-07886e70fa15`, `conceptLevel: "Model"`, twelve envelopes from analysis §5.1. Finish sequence is one `connectExternalService`. Added in the launcher cycle, once the button's `reportUuid` must resolve.
+- `inputSchemaFromBag` on `operations` and `probeParams`. The host evaluates it (Slice 5). This slice only supplies the transformers.
+- Document `onNext` calls the Slice 1 walker and, for a URL, `fetch` on the server under `assertBaseUrlAllowed`.
+- `openReportSection` on `29ef8018-43fc-4ee9-a736-6f9d625be7b7` in the launcher cycle.
+- Do not edit `MiroirSandboxHome` (`1c306453-7958-47e9-ba6c-9b79a7b37c92`).
 
 ### 6.3 Refactor checkpoint
 
@@ -418,6 +467,7 @@ RED fails because the home report has no button and report `dbd94bfe-…` does n
 ### Validation
 
 ```bash
+RUN_TEST=phase0 stable npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284.phase0
 RUN_TEST=wizardWalk.284 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem wizardWalk.284
 RUN_TEST=connectExternalService.284.phase1 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284.phase1
 npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts
@@ -438,11 +488,10 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 Add to `scripts/nonreg-manifest.json`:
 
-- `unit-284-openapi-connection-wizard` — phase0 (if it remains a pure inventory; otherwise fold into integ)
-- `integ-action-284-openapi-connection-wizard` — phase1 through phase4
-- `appstack-284-openapi-connection-wizard` — `multistepBranch.284` and `wizardWalk.284`
-
-If one step's command line exceeds the manifest's practical length, split the same way #281 did, and name the sibling step in this section when that happens.
+- `unit-284-openapi-connection-wizard` — `RUN_TEST=phase0 stable` only. The `pre-284 inventory` describe is gone after Slice 6.
+- `integ-action-284-openapi-connection-wizard` — phase1, phase2, phase3.
+- `integ-action-284-openapi-connection-wizard-auth` — phase4. Split now so the phase1–3 line does not also carry phase4.
+- `appstack-284-openapi-connection-wizard` — `multistepBranch.284` and `wizardWalk.284`.
 
 ### 7.2 Docs
 
