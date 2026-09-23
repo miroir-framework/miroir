@@ -13,7 +13,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisites: [#267](https://github.com/miroir-framework/miroir/issues/267) ✅ · [#270](https://github.com/miroir-framework/miroir/issues/270) ✅ · [#274](https://github.com/miroir-framework/miroir/issues/274) ✅ · [#281](https://github.com/miroir-framework/miroir/issues/281) ✅
 Working branch: `284-FEATURE-openapi-connection-wizard`
 
-**Resume note:** Slice 6 done. Slice 7 not started.
+**Resume note:** Slices 0–7 done. Default nonreg 67 passed, 0 failed (`20260923T155304Z`, `emulatedServer-sql`).
 
 ---
 
@@ -41,7 +41,7 @@ This plan does **not** add a Discogs deployment package, rewrite Spotify endpoin
 | 4 | Authenticated probes (token, client credentials, refresh grant) | ✅ | phase4 integ |
 | 5 | Branching host: path, Back, on-Next failure | ✅ | `multistepBranch.284` |
 | 6 | Wizard report, home button, document step | ✅ | `wizardWalk.284` + `modelValidation` |
-| 7 | Nonreg, docs, cleanup, AC | ⬜ | nonreg steps |
+| 7 | Nonreg, docs, cleanup, AC | ✅ | default nonreg 67 passed |
 
 Slice 1 is the first behavioral slice. Slice 0 is the safety net only.
 
@@ -500,15 +500,13 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-Home report `29ef8018-…` has an `openReportSection` labeled Connect an external service, opening wizard report `dbd94bfe-b803-4bfd-8bb2-70a5932d5d1a` (`conceptLevel: "Model"`, twelve step envelopes). Document Next is `prepareOpenApiDocument` (parse text, or fetch a URL under `assertBaseUrlAllowed`). `normalizeConnectExternalServicePayload` flattens the step bag into the flat payload phase 1–4 already send; a uuid `application` with no step keys is left unchanged. The picker reads `applicationDeploymentMap` except Miroir and Admin. The `pre-284 inventory` describe is deleted.
-
-The report JSON is stored under both `miroir_model` and `miroir_data` so the model-section copy and the test deployment loader agree. `wizardWalk.284` 10 passed. phase0 stable 4 passed. phase1 1 passed. modelValidation 152 passed.
+Home report `29ef8018-…` has an `openReportSection` labeled Connect an external service, opening wizard report `dbd94bfe-b803-4bfd-8bb2-70a5932d5d1a` (`conceptLevel: "Model"`, twelve step envelopes). The report JSON lives only under `miroir_model`. Document Next is `prepareOpenApiDocument` (parse text, or fetch a URL under `assertBaseUrlAllowed`). `normalizeConnectExternalServicePayload` flattens the step bag into the flat payload phase 1–4 already send; a uuid `application` with no step keys is left unchanged. The picker reads `applicationDeploymentMap` except Miroir and Admin. The `pre-284 inventory` describe is deleted. `wizardWalk.284` 10 passed. phase0 stable 4 passed. phase1 1 passed. modelValidation 152 passed.
 
 ---
 
 ## Slice 7 — Nonreg, docs, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### 7.1 Nonreg
 
@@ -542,19 +540,25 @@ Automated equivalent: `wizardWalk.284` Finish assertion, plus `connectExternalSe
 
 | Criterion | Proven by | Status |
 |---|---|---|
-| Home button opens the wizard. Picker excludes Miroir and Admin | `wizardWalk.284` | ⬜ |
-| Paste, upload, HTTPS URL. Private URL stays on the document step | `wizardWalk.284` | ⬜ |
-| Public, authorization-code, client-credentials, and custom-token connections finish | phase1, phase4 | ⬜ |
-| Operation list is convertible GETs. `oneOf` subtrees omitted. `boundPaths` written | phase1 | ⬜ |
-| Failed probe writes nothing and restores the process map | phase2 | ⬜ |
-| Success upserts secrets, endpoint, report. No Entity | phase1, phase4 | ⬜ |
-| Second Finish updates the endpoint. Unchecked operations removed. Same probe updates the report | phase3 | ⬜ |
-| Foreign name refuses | phase2 | ⬜ |
-| Back follows the path. Boolean test selects the next step. Failed Next stays | `multistepBranch.284` | ⬜ |
-| Secret values absent from logs and from the hidden bag dump | phase4, `multistepBranch.284`, `wizardWalk.284` | ⬜ |
-| Discogs-shaped public, Discogs-shaped token, Spotify-shaped refresh grant. `0e5cb172-…` unchanged | phase1, phase4, phase0 hash | ⬜ |
-| `modelValidation` after schema dual-write | Slice 1, 4, 5, 6 Validation | ⬜ |
+| Home button opens the wizard. Picker excludes Miroir and Admin | `wizardWalk.284` | ✅ |
+| Paste, upload, HTTPS URL. Private URL stays on the document step | `wizardWalk.284` | ✅ |
+| Public, authorization-code, client-credentials, and custom-token connections finish | phase1, phase4 | ✅ |
+| Operation list is convertible GETs. `oneOf` subtrees omitted. `boundPaths` written | phase1 | ✅ |
+| Failed probe writes nothing and restores the process map | phase2 | ✅ |
+| Success upserts secrets, endpoint, report. No Entity | phase1, phase4 | ✅ |
+| Second Finish updates the endpoint. Unchecked operations removed. Same probe updates the report | phase3 | ✅ |
+| Foreign name refuses | phase2 | ✅ |
+| Back follows the path. Boolean test selects the next step. Failed Next stays | `multistepBranch.284` | ✅ |
+| Secret values absent from logs and from the hidden bag dump | phase4, `multistepBranch.284`, `wizardWalk.284` | ✅ |
+| Discogs-shaped public, Discogs-shaped token, Spotify-shaped refresh grant. `0e5cb172-…` unchanged | phase1, phase4, phase0 hash | ✅ |
+| `modelValidation` after schema dual-write | Slice 1, 4, 5, 6 Validation | ✅ |
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE.>
+`scripts/nonreg-manifest.json` adds four steps after `appstack-274-multistep-reports`: `unit-284-openapi-connection-wizard` (phase0 stable), `integ-action-284-openapi-connection-wizard` (phase1–3), `integ-action-284-openapi-connection-wizard-auth` (phase4), `appstack-284-openapi-connection-wizard` (`multistepBranch.284` and `wizardWalk.284`). `docs/reference/api/reports.md` records the list-child envelope (`stepId`, `onNext`, `branch`, `inputSchemaFromBag`, visited Back and Finish). The issue-directory suites stay under `tests/**/issues/284-openapi-connection-wizard/` until #284 closes, per `docs/contributing/testing.md`.
+
+The wizard report had been stored in both `miroir_model` and `miroir_data`, so the #274 seed inventory counted 88 reports. The data copy is removed. The inventory expects 87 reports and 2 multistep reports, including `ConnectExternalServiceWizard`. `wizardWalk.284` loads the model file. `MiroirContextReactProvider` seeds `applicationDeploymentMap` with `testingApplication` so the picker lists the fixture application.
+
+`npx tsc --noEmit --skipLibCheck` passed for `miroir-core` and `miroir-standalone-app`. `npm run nonreg` (default tier, `emulatedServer-sql`) passed 67 and failed 0. Snapshot `test-results/nonreg/20260923T155304Z`. An earlier full run failed `integ-action-274-multistep-reports` with Windows `UNKNOWN` while writing `tests/assets/admin_data/.../10ff36f2-….json`. That step passed on retry, and the following full run passed.
+
+A local untracked Admin secret `aiCursorKey` (`54a6fc4b-2d2d-5dbc-b396-81392be159a0`) is a version-5 uuid. `isValidUUID` accepts version 4 only, so `default-admin-modelValidation` fails while that file sits in `admin_data`. It was set aside for the green run and put back. It is not part of this branch.

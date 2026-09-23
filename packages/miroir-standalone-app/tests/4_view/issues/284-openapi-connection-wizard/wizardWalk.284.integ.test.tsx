@@ -58,13 +58,18 @@ const PROBE_OPERATION_ID = "getRelease";
 const CONVERTIBLE_OP = "getRelease";
 const ONE_OF_ONLY_OP = "oneOfOnly";
 
-const assetsDir = join(
+const dataAssetsDir = join(
   dirname(fileURLToPath(import.meta.url)),
   "../../../../../miroir-test-app_deployment-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
 );
+const modelAssetsDir = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "../../../../../miroir-test-app_deployment-miroir/assets/miroir_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+);
 
 function loadReportAsset(uuid: string): EntityInstance {
-  return JSON.parse(readFileSync(join(assetsDir, `${uuid}.json`), "utf8")) as EntityInstance;
+  const dir = uuid === WIZARD_REPORT_UUID ? modelAssetsDir : dataAssetsDir;
+  return JSON.parse(readFileSync(join(dir, `${uuid}.json`), "utf8")) as EntityInstance;
 }
 
 const currentUseParams = {

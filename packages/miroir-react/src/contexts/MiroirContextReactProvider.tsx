@@ -19,6 +19,7 @@ import {
   FAIL_CLOSED_PROCESS_CAPABILITIES,
   MiroirLoggerFactory,
   ViewParams,
+  defaultSelfApplicationDeploymentMap,
   getClientEnvironment,
 } from "miroir-core";
 import type { 
@@ -245,9 +246,18 @@ export function MiroirContextReactProvider(props: {
   children: ReactNode;
 }) {
   const [application, setApplication] = useState(props.testingApplication ?? "");
+  // Test harness (e.g. #284 wizardWalk): seed the map with the testing application so pickers
+  // that read applicationDeploymentMap keys (D22) see the fixture app, not only Miroir/Admin.
   const [applicationDeploymentMap, setApplicationDeploymentMap] = useState<
     ApplicationDeploymentMap | undefined
-  >(undefined);
+  >(() =>
+    props.testingApplication && props.testingDeploymentUuid
+      ? {
+          ...defaultSelfApplicationDeploymentMap,
+          [props.testingApplication]: props.testingDeploymentUuid,
+        }
+      : undefined,
+  );
   const [deploymentUuid, setDeploymentUuid] = useState(props.testingDeploymentUuid ?? "");
   const [reportUuid, setReportUuid] = useState("");
   const [applicationSection, setApplicationSection] = useState<ApplicationSection>("data");

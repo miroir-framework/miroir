@@ -1021,6 +1021,50 @@
       ]
     },
     {
+      "id": "unit-284-openapi-connection-wizard",
+      "tier": "unit",
+      "title": "#284 — OpenAPI connection wizard (phase0 stable contracts)",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "RUN_TEST='phase0 stable' npm run testByFile -w miroir-standalone-app -- --profile {profile} connectExternalService.284.phase0"
+      ]
+    },
+    {
+      "id": "integ-action-284-openapi-connection-wizard",
+      "tier": "default",
+      "title": "#284 — OpenAPI connection wizard (public Finish, failed probe, second Finish)",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w miroir-standalone-app -- --profile {profile} connectExternalService.284.phase1 && npm run testByFile -w miroir-standalone-app -- --profile {profile} connectExternalService.284.phase2 && npm run testByFile -w miroir-standalone-app -- --profile {profile} connectExternalService.284.phase3"
+      ]
+    },
+    {
+      "id": "integ-action-284-openapi-connection-wizard-auth",
+      "tier": "default",
+      "title": "#284 — OpenAPI connection wizard (authenticated probes)",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "RUN_TEST=connectExternalService.284.phase4 npm run testByFile -w miroir-standalone-app -- --profile {profile} connectExternalService.284.phase4"
+      ]
+    },
+    {
+      "id": "appstack-284-openapi-connection-wizard",
+      "tier": "default",
+      "title": "#284 — OpenAPI connection wizard (branching host + home walk)",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w miroir-standalone-app -- --profile {profile} multistepBranch.284 && npm run testByFile -w miroir-standalone-app -- --profile {profile} wizardWalk.284"
+      ]
+    },
+    {
       "id": "full-postgres-modelValidation",
       "tier": "full",
       "title": "Deployment modelValidation \u2014 postgres",
