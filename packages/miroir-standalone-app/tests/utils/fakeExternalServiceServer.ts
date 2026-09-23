@@ -28,6 +28,11 @@ export type FakeExternalServiceServer = {
   baseUrl: string;
   port: number;
   receivedRequests: RecordedExternalServiceRequest[];
+  /**
+   * Optional hook invoked when a non-OPTIONS request is recorded (in-process; not a fetch mock).
+   * Assign or clear between tests as needed.
+   */
+  onRequest?: (request: RecordedExternalServiceRequest) => void;
   setFixture: (method: string, path: string, fixture: FakeExternalServiceFixture) => void;
   /** Fixture that only matches requests carrying this exact Authorization header value. */
   setFixtureForAuth: (
@@ -77,6 +82,34 @@ export async function startFakeExternalServiceServer(
     Object.entries(initialFixtures).map(([key, fixture]) => [key, { fixture, callCount: 0 }]),
   );
   const receivedRequests: RecordedExternalServiceRequest[] = [];
+  const serverApi: FakeExternalServiceServer = {
+    baseUrl: "",
+    port: 0,
+    receivedRequests,
+    onRequest: undefined,
+    setFixture(method: string, path: string, fixture: FakeExternalServiceFixture) {
+      fixtures.set(`${method.toUpperCase()} ${path}`, { fixture, callCount: 0 });
+    },
+    setFixtureForAuth(
+      method: string,
+      path: string,
+      authorization: string,
+      fixture: FakeExternalServiceFixture,
+    ) {
+      fixtures.set(`${method.toUpperCase()} ${path}\n${authorization}`, { fixture, callCount: 0 });
+    },
+    close() {
+      return new Promise<void>((resolve, reject) => {
+        server.close((error) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+          resolve();
+        });
+      });
+    },
+  };
 
   const server: Server = createServer((req: IncomingMessage, res: ServerResponse) => {
     const method = (req.method ?? "GET").toUpperCase();
@@ -92,12 +125,14 @@ export async function startFakeExternalServiceServer(
     req.on("data", (chunk: Buffer) => chunks.push(chunk));
     req.on("end", () => {
       const body = chunks.length > 0 ? Buffer.concat(chunks).toString("utf8") : undefined;
-      receivedRequests.push({
+      const recorded: RecordedExternalServiceRequest = {
         method,
         path,
         headers: headerRecord(req),
         body,
-      });
+      };
+      receivedRequests.push(recorded);
+      serverApi.onRequest?.(recorded);
       const authorization = req.headers.authorization;
       const routeKey = `${method} ${path}`;
       const entry =
@@ -137,32 +172,7 @@ export async function startFakeExternalServiceServer(
 
   const port = address.port;
   const baseUrl = `http://127.0.0.1:${port}`;
-
-  return {
-    baseUrl,
-    port,
-    receivedRequests,
-    setFixture(method: string, path: string, fixture: FakeExternalServiceFixture) {
-      fixtures.set(`${method.toUpperCase()} ${path}`, { fixture, callCount: 0 });
-    },
-    setFixtureForAuth(
-      method: string,
-      path: string,
-      authorization: string,
-      fixture: FakeExternalServiceFixture,
-    ) {
-      fixtures.set(`${method.toUpperCase()} ${path}\n${authorization}`, { fixture, callCount: 0 });
-    },
-    close() {
-      return new Promise<void>((resolve, reject) => {
-        server.close((error) => {
-          if (error) {
-            reject(error);
-            return;
-          }
-          resolve();
-        });
-      });
-    },
-  };
+  serverApi.baseUrl = baseUrl;
+  serverApi.port = port;
+  return serverApi;
 }

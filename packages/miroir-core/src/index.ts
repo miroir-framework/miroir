@@ -1359,8 +1359,12 @@ export {
 export { PersistenceStoreControllerManager } from "./4_services/PersistenceStoreControllerManager.js";
 export {
   clearSecrets,
+  registerHydratedProcessSecret,
   registerSecrets,
   resolveSecret,
+  restoreProcessSecretsFromSnapshot,
+  unregisterProcessSecret,
+  type ProcessSecretSnapshot,
   type ResolveSecretResult,
 } from "./4_services/SecretStore.js";
 export {

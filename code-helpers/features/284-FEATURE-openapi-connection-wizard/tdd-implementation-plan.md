@@ -13,7 +13,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisites: [#267](https://github.com/miroir-framework/miroir/issues/267) ✅ · [#270](https://github.com/miroir-framework/miroir/issues/270) ✅ · [#274](https://github.com/miroir-framework/miroir/issues/274) ✅ · [#281](https://github.com/miroir-framework/miroir/issues/281) ✅
 Working branch: `284-FEATURE-openapi-connection-wizard`
 
-**Resume note:** Slice 1 done. Slice 2 not started.
+**Resume note:** Slice 2 done. Slice 3 not started.
 
 ---
 
@@ -36,7 +36,7 @@ This plan does **not** add a Discogs deployment package, rewrite Spotify endpoin
 |---|---|---|---|
 | 0 | Characterize linear host, Bearer header, home report | ✅ | `connectExternalService.284.phase0` |
 | 1 | **Tracer.** Public Finish writes endpoint + report | ✅ | phase1 integ, fake server sees User-Agent and no Authorization |
-| 2 | Failed probe and name clash write nothing | ⬜ | phase2 integ |
+| 2 | Failed probe and name clash write nothing | ✅ | phase2 integ |
 | 3 | Second Finish updates the same rows | ⬜ | phase3 integ |
 | 4 | Authenticated probes (token, client credentials, refresh grant) | ⬜ | phase4 integ |
 | 5 | Branching host: path, Back, on-Next failure | ⬜ | `multistepBranch.284` |
@@ -238,7 +238,7 @@ Validation: `phase0 stable` 4 passed. phase1 1 passed. `modelValidation.unit.tes
 
 ## Slice 2 — Failed probe and name clash write nothing
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -275,7 +275,11 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE.>
+Failed probe returns the client's own error and writes no endpoint, report, or secret row. Optional bag field `processSecrets` is snapshotted with `resolveSecret`, registered with `registerHydratedProcessSecret` for the probe, and restored by `restoreProcessSecretsFromSnapshot` (`unregisterProcessSecret` when the name was absent, previous entry otherwise). `clearSecrets` is not used. Name clash (`same name`, uuid other than the derived one) returns before any register or write. The message includes the endpoint name.
+
+`fakeExternalServiceServer` gained an optional `onRequest` so the test can read the process map during the 401.
+
+Validation: phase0 stable 4 passed, phase1 1 passed, phase2 4 passed. `tsc` miroir-core and miroir-standalone-app clean.
 
 ---
 

@@ -180,6 +180,12 @@ import {
   openApiParameterNamesForOperation,
 } from "../2_domain/syncExternalServiceSchema.js";
 import { redactCredentialSecretsFromValue } from "../4_services/redactCredentialSecrets.js";
+import {
+  registerHydratedProcessSecret,
+  resolveSecret,
+  restoreProcessSecretsFromSnapshot,
+  type ProcessSecretSnapshot,
+} from "../4_services/SecretStore.js";
 
 type ExtractorForExternalServiceResolved = {
   extractorOrCombinerType: "extractorForExternalService";
@@ -3404,6 +3410,8 @@ export class DomainController implements DomainControllerInterface {
         checkedOperationIds: string[];
         probeOperationId: string;
         probeParameters: Record<string, unknown>;
+        /** Slice 2 / Slice 4: temporary process-map values for the probe. */
+        processSecrets?: Record<string, string>;
       };
     },
     applicationDeploymentMap: ApplicationDeploymentMap,
@@ -3437,6 +3445,18 @@ export class DomainController implements DomainControllerInterface {
       `${applicationUuid}\n${bag.endpointName}\n${bag.probeOperationId}`,
       REPORT_ENTITY_UUID,
     );
+
+    // Slice 2: name clash against the target model before any secret register or write (analysis §5.2 step 1).
+    const targetModelForClash = this.currentModel(applicationUuid, applicationDeploymentMap);
+    const clash = targetModelForClash.endpoints.find(
+      (row) => row.name === bag.endpointName && row.uuid !== endpointUuid,
+    );
+    if (clash) {
+      return new Action2Error(
+        "InvalidAction",
+        `connectExternalService: endpoint name "${bag.endpointName}" already exists with a different uuid`,
+      );
+    }
 
     // Slice 1: public only. Authenticated schemes are Slice 4.
     if (bag.authenticated === true) {
@@ -3493,6 +3513,24 @@ export class DomainController implements DomainControllerInterface {
       },
     } as EndpointDefinition;
 
+    // Slice 2 / D13: snapshot then register processSecrets for the probe. Absent/empty → leave the map alone.
+    const processSecretsBag = bag.processSecrets;
+    const secretSnapshots: ProcessSecretSnapshot[] = [];
+    if (processSecretsBag && Object.keys(processSecretsBag).length > 0) {
+      for (const name of Object.keys(processSecretsBag)) {
+        let previous: ProcessSecretSnapshot["previous"];
+        try {
+          previous = resolveSecret(name);
+        } catch {
+          previous = undefined;
+        }
+        secretSnapshots.push({ name, previous });
+      }
+      for (const [name, value] of Object.entries(processSecretsBag)) {
+        registerHydratedProcessSecret(name, value);
+      }
+    }
+
     const probeResult = await executeExternalServiceOperation(
       unsavedEndpoint,
       bag.probeOperationId,
@@ -3500,6 +3538,9 @@ export class DomainController implements DomainControllerInterface {
       principal,
     );
     if (probeResult instanceof Action2Error) {
+      if (secretSnapshots.length > 0) {
+        restoreProcessSecretsFromSnapshot(secretSnapshots);
+      }
       return probeResult;
     }
 
