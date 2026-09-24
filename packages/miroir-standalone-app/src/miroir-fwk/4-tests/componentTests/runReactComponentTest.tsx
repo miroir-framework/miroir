@@ -9,6 +9,10 @@ import {
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../../4_view/constants.js";
 import {
+  ComponentTestModeContext,
+  componentTestSandboxMode,
+} from "../../4_view/tools/ComponentTestModeContext.js";
+import {
   configureComponentTestDom,
   createComponentTestEnvironment,
   mountComponent,
@@ -33,9 +37,12 @@ export interface ComponentTestSandboxHost {
   registry?: ComponentTestRegistry;
 }
 
+/** The runner, and `close()`, which unmounts the current case and destroys the open wrappers. */
+export type ClosableReactComponentTestRunner = ReactComponentTestRunner & { close: () => void };
+
 // ################################################################################################
 /**
- * The `ReactComponentTestRunner` of `reactComponentTest` leaves (#286, analysis §5.6 steps 1-4):
+ * The `ReactComponentTestRunner` of `reactComponentTest` leaves (#286, analysis §5.6):
  *
  * 1. looks up the suite and case in the registry, an unknown reference being an `error` result;
  * 2. builds one wrapper (providers over its own `LocalCache`) per suite, on the suite's first
@@ -43,14 +50,20 @@ export interface ComponentTestSandboxHost {
  * 3. unmounts the previous case, creates a fresh container under `sandboxElement`, and mounts the
  *    wrapped component into it;
  * 4. runs the case body with a fresh `ComponentTestEnvironment`, a thrown error becoming an
- *    `error` result.
+ *    `error` result;
+ * 5. after the suite's last case (in registry order), destroys the suite wrapper's
+ *    `MiroirEventService`; `close()` does the same for any wrapper still open.
  *
- * The last case stays mounted.
+ * The component is rendered inside `ComponentTestModeContext` set to the sandbox mode, so that in
+ * the app it renders the same DOM as under vitest. The last case stays mounted until `close()`.
  */
-export function createReactComponentTestRunner(host: ComponentTestSandboxHost): ReactComponentTestRunner {
+export function createReactComponentTestRunner(
+  host: ComponentTestSandboxHost,
+): ClosableReactComponentTestRunner {
   configureComponentTestDom();
   const registry = host.registry ?? componentTestRegistry;
   const sandboxElement = host.sandboxElement;
+  const ownsPortalElement = !host.portalElement;
   const portalElement =
     host.portalElement ??
     (() => {
@@ -76,7 +89,16 @@ export function createReactComponentTestRunner(host: ComponentTestSandboxHost): 
     }
   };
 
-  return async ({ componentTestRef, testNamePath }) => {
+  const destroySuiteWrapper = (suiteName: string) => {
+    const wrapper = suiteWrappers.get(suiteName);
+    if (!wrapper) {
+      return;
+    }
+    suiteWrappers.delete(suiteName);
+    wrapper.miroirEventService.destroy();
+  };
+
+  const runner: ReactComponentTestRunner = async ({ componentTestRef, testNamePath }) => {
     const suite = registry[componentTestRef.suite];
     if (!suite) {
       return {
@@ -115,9 +137,11 @@ export function createReactComponentTestRunner(host: ComponentTestSandboxHost): 
       const Component = suite.component;
       currentCase = { container, unmount: () => undefined };
       currentCase.unmount = mountComponent(
-        <Wrapper>
-          <Component {...props} />
-        </Wrapper>,
+        <ComponentTestModeContext.Provider value={componentTestSandboxMode}>
+          <Wrapper>
+            <Component {...props} />
+          </Wrapper>
+        </ComponentTestModeContext.Provider>,
         container,
       ).unmount;
       await waitForProgressiveRendering(container);
@@ -136,6 +160,26 @@ export function createReactComponentTestRunner(host: ComponentTestSandboxHost): 
       const message = error instanceof Error ? error.message : String(error);
       log.info("component test failed", testName, message);
       return { status: "error", message };
+    } finally {
+      const caseLabels = Object.keys(suite.cases);
+      if (componentTestRef.case === caseLabels[caseLabels.length - 1]) {
+        destroySuiteWrapper(componentTestRef.suite);
+      }
     }
   };
+
+  const close = () => {
+    try {
+      unmountCurrentCase();
+    } finally {
+      if (ownsPortalElement) {
+        portalElement.remove();
+      }
+      for (const suiteName of [...suiteWrappers.keys()]) {
+        destroySuiteWrapper(suiteName);
+      }
+    }
+  };
+
+  return Object.assign(runner, { close });
 }

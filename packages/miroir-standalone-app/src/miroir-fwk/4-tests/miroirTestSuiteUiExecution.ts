@@ -127,3 +127,22 @@ export function uiExecutionModeBadgeColors(mode: MiroirTestSuiteUiExecutionMode)
     }
   }
 }
+
+/**
+ * True when the MiroirTest node holds a `reactComponentTest` leaf at any depth (#286): its unit
+ * run needs the component test sandbox (`beforeRun` of `RunMiroirTestSuiteButton`).
+ */
+export function miroirTestDefinitionHasReactComponentTest(
+  node: MiroirTestSuite | MiroirTestSuite['miroirTests'][number] | undefined,
+): boolean {
+  if (!node) {
+    return false;
+  }
+  if (node.miroirTestType === 'reactComponentTest') {
+    return true;
+  }
+  if (node.miroirTestType === 'miroirTestSuite') {
+    return node.miroirTests.some(miroirTestDefinitionHasReactComponentTest);
+  }
+  return false;
+}

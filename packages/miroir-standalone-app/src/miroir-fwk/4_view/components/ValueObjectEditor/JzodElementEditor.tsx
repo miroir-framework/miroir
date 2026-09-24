@@ -37,6 +37,8 @@ import {
 } from "../../contexts/MiroirThemeContext.js";
 import { useMiroirContextService } from "miroir-react";
 import { RenderPerformanceMetrics } from "../../tools/renderPerformanceMeasure.js";
+import { useComponentTestMode } from "../../tools/ComponentTestModeContext.js";
+import { isVitestTestMode } from "../../tools/progressiveRenderConfig.js";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent.js";
 import { JsonDisplayHelper } from "miroir-react";
 import { useReportPageContext } from "../Reports/ReportPageContext.js";
@@ -88,14 +90,8 @@ function safeStringify(obj: any, maxLength: number = 2000): string {
 }
 
 // #####################################################################################################
-// const isUnderTest = true;
-let isUnderTest = false;
-if ((import.meta as any).env?.VITE_TEST_MODE) {
-  isUnderTest = true;
-  log.info("############################### JzodElementEditor is under test mode #########################################");
-} else {
-  log.info("############################### JzodElementEditor is NOT under test mode #########################################");
-}
+// `isUnderTest` (the CodeMirror placeholder, issue #56) is read at render time: true under vitest
+// (`VITE_TEST_MODE`), or inside the component test sandbox of the app (#286, `ComponentTestModeContext`).
 
 export interface EditorAttribute {
   attribute: EntityAttribute;
@@ -427,6 +423,8 @@ let count = 0;
 // #####################################################################################################
 export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   count++;
+  const componentTestMode = useComponentTestMode();
+  const isUnderTest = isVitestTestMode() || componentTestMode.codeMirrorPlaceholder;
 
   const existingObject = props.existingObject ?? true;
   // Create a getUniqueValues key for this component instance

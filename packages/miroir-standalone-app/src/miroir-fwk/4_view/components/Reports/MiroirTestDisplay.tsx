@@ -6,6 +6,7 @@ import {
   MiroirLoggerFactory,
   type LoggerInterface,
   type MiroirTestDefinition,
+  type MiroirTestRunFilter,
   type ViewParams,
 } from "miroir-core";
 
@@ -22,6 +23,7 @@ import {
   RunMiroirTestSuiteButton,
   type MiroirTestResultData,
 } from "../Buttons/RunMiroirTestSuiteButton.js";
+import { ComponentTestSandboxProvider, useComponentTestSandbox } from "./ComponentTestSandbox.js";
 import { TestExecutionPanel } from "./TestExecutionPanel.js";
 import { UiIntegrationTestRunControls } from "./UiIntegrationTestRunControls.js";
 import { UiIntegrationTestRunInspectorSummary } from "./UiIntegrationTestRunInspectorSummary.js";
@@ -42,6 +44,8 @@ export interface MiroirTestSectionProps {
   gridType: ViewParams["gridType"];
   useSnackBar?: boolean;
   onTestComplete?: (testSuiteKey: string, structuredResults: TestResultDataAndSelect[]) => void;
+  /** Filter used while no result is selected in the results grid (e.g. one sub-suite). */
+  testFilter?: MiroirTestRunFilter;
 }
 
 const runButtonStyle: React.CSSProperties = {
@@ -54,8 +58,19 @@ const runButtonStyle: React.CSSProperties = {
   marginRight: "8px",
 };
 
-export const MiroirTestDisplay = (props: MiroirTestSectionProps) => {
+/**
+ * One MiroirTest suite with its Run buttons and results. It mounts a component test sandbox
+ * (#286), used by the unit run when the suite holds `reactComponentTest` leaves.
+ */
+export const MiroirTestDisplay = (props: MiroirTestSectionProps) => (
+  <ComponentTestSandboxProvider>
+    <MiroirTestDisplayContent {...props} />
+  </ComponentTestSandboxProvider>
+);
+
+const MiroirTestDisplayContent = (props: MiroirTestSectionProps) => {
   const { miroirTest: instance, testLabel, style, useSnackBar = true, onTestComplete } = props;
+  const componentTestSandbox = useComponentTestSandbox();
   const [miroirTestResultsData, setMiroirTestResultsData] = useState<TestResultDataAndSelect[]>([]);
   const [testSelectionState, setTestSelectionsState] = useState<TestSelectionState | undefined>(
     undefined,
@@ -83,8 +98,8 @@ export const MiroirTestDisplay = (props: MiroirTestSectionProps) => {
   );
 
   const currentTestFilter = useMemo(() => {
-    return buildTestFilter(testSelectionState, miroirTestResultsData);
-  }, [testSelectionState, miroirTestResultsData]);
+    return buildTestFilter(testSelectionState, miroirTestResultsData) ?? props.testFilter;
+  }, [testSelectionState, miroirTestResultsData, props.testFilter]);
 
   const handleTestComplete = (testSuiteKey: string, structuredResults: MiroirTestResultData[]) => {
     const withSelection: TestResultDataAndSelect[] = structuredResults.map((result) => ({
@@ -144,6 +159,7 @@ export const MiroirTestDisplay = (props: MiroirTestSectionProps) => {
           testFilter={currentTestFilter}
           onTestComplete={handleTestComplete}
           runMode="unit"
+          beforeRun={componentTestSandbox?.prepareComponentTests}
           label={`Run ${testLabel} Unit Tests`}
           style={runButtonStyle}
         />

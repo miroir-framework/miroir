@@ -17,6 +17,7 @@ import {
   isVitestTestMode,
 } from "./progressiveRenderConfig.js";
 import { scheduleProgressiveReveal } from "./progressiveRevealScheduler.js";
+import { useComponentTestMode } from "./ComponentTestModeContext.js";
 
 export interface UseViewportRevealOptions {
   /** Skip observation and reveal immediately (e.g. unit tests). */
@@ -60,7 +61,9 @@ function isRectVisibleInViewport(rect: DOMRectReadOnly): boolean {
 export function useViewportReveal(
   options: UseViewportRevealOptions = {}
 ): UseViewportRevealResult {
-  const isTestMode = isVitestTestMode();
+  // Under vitest, or inside the component test sandbox of the app (#286), reveal at once.
+  const { progressiveRenderDisabled } = useComponentTestMode();
+  const isTestMode = isVitestTestMode() || progressiveRenderDisabled;
   const disabled = options.disabled === true || isTestMode;
   const rootMargin = options.rootMargin ?? PROGRESSIVE_RENDER_ROOT_MARGIN;
   const ref = useRef<HTMLDivElement>(null);

@@ -23,6 +23,7 @@ import {
 } from "../../../4-tests/integrationTestProfileAssets.js";
 import type { UiIntegrationTestRunTargetMode } from "../../../4-tests/uiIntegrationTestLauncherTypes.js";
 import { setLastUiIntegrationTestRunResult } from "../../../4-tests/uiIntegrationTestRunState.js";
+import { miroirTestDefinitionHasReactComponentTest } from "../../../4-tests/miroirTestSuiteUiExecution.js";
 import { useIntegTestRunCoordinator } from "../../../4-tests/useIntegTestRunCoordinator.js";
 import { ActionButtonWithSnackbar } from "../../components/Page/ActionButtonWithSnackbar.js";
 import { cleanLevel } from "../../constants.js";
@@ -52,6 +53,11 @@ interface RunMiroirTestSuiteButtonProps {
   /** B6 — integration profile + run target (defaults from uiIntegrationTestRunPreferences). */
   integrationProfileName?: string;
   integrationRunTargetMode?: UiIntegrationTestRunTargetMode;
+  /**
+   * #286: awaited before a unit run of a suite that holds a `reactComponentTest` leaf (prepares
+   * the component test sandbox and registers the component test runner).
+   */
+  beforeRun?: () => Promise<void>;
   [key: string]: unknown;
 }
 
@@ -87,6 +93,7 @@ export const RunMiroirTestSuiteButton: React.FC<RunMiroirTestSuiteButtonProps> =
   runMode,
   integrationProfileName,
   integrationRunTargetMode,
+  beforeRun,
   ...buttonProps
 }) => {
   const { handleAsyncAction } = useSnackbar();
@@ -104,11 +111,15 @@ export const RunMiroirTestSuiteButton: React.FC<RunMiroirTestSuiteButtonProps> =
       isUiIntegrationLaunchableSuite(miroirTestSuite.definition));
 
   const onUnitAction = async (): Promise<Action2VoidReturnType> => {
-    miroirContextService.miroirContext.miroirActivityTracker.resetResults();
-
     if (!miroirTestSuite) {
       throw new Error(`No MiroirTest suite found for ${testSuiteKey}`);
     }
+
+    if (beforeRun && miroirTestDefinitionHasReactComponentTest(miroirTestSuite.definition)) {
+      await beforeRun();
+    }
+
+    miroirContextService.miroirContext.miroirActivityTracker.resetResults();
 
     await runMiroirTests._runMiroirTestSuite(
       TestFramework as any,
