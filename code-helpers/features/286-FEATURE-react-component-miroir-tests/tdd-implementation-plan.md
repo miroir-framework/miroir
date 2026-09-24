@@ -9,7 +9,7 @@ Working branch: `286-FEATURE-react-component-miroir-tests`, created from `284-FE
 
 **Review:** revised after [`./plan-adversarial-review.md`](./plan-adversarial-review.md), P1-P22 applied.
 
-**Resume note:** Slice 0 done (baselines recorded, phase0 test green, K9 answered). Next: Slice 1.
+**Resume note:** Slices 0 and 1 done (browser-safe tools in `src/miroir-fwk/4-tests/componentTests/componentTestTools.tsx`, every importer at its Slice 0 count). Next: Slice 2.
 
 ---
 
@@ -42,7 +42,7 @@ These come from the plan review and refine analysis §5 without changing a decis
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Rebase, baselines, characterize contracts, find how the app loads MiroirTests | ✅ DONE | `componentMiroirTests.286.phase0` + baseline tables |
-| 1 | Move the browser-safe tools under `src/` with the old tests green | ⬜ | old suite 68 passed, each importer equal to its baseline |
+| 1 | Move the browser-safe tools under `src/` with the old tests green | ✅ DONE | old suite 68 passed, each importer equal to its baseline |
 | 2 | **Tracer.** One Array case runs from MiroirTest JSON in vitest | ⬜ | `miroir-component-tests` 1 passed |
 | 3 | Array suite complete in vitest, DOM matchers, scoped value reader, consistency test | ⬜ | `miroir-component-tests` 12 passed |
 | 4 | Array suite runs in the app sandbox | ⬜ | `componentTestSandbox.286.phase4` + dev and production check |
@@ -230,7 +230,7 @@ The step that makes a new instance visible: write its JSON file into `packages/m
 
 ## Slice 1: move the browser-safe tools under `src/`
 
-**Status:** ⬜
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -263,7 +263,45 @@ Plus the 14 per-importer commands from Slice 0. Each gives its Slice 0 count. Th
 
 ### Realization
 
-(to fill)
+**Files created.**
+
+- `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/componentTestTools.tsx` (1842 lines). It holds `testSectionName`, `formikFieldName`, `testThemeParams`, the `JzodElementEditorProps_Test` prop type, `getJzodElementEditorForTest`, `extractValuesFromRenderedElements`, `formValuesToJSON`, `createRecordingFunction`, and `buildComponentTestWrapper(options)`. The options are `{ isPerformanceTest?, applicationDeploymentMap, wireLocalCacheCompositeAction? }`, and the result is `{ Wrapper, localCache, miroirEventService, applicationDeploymentMap }`. The `wireLocalCacheCompositeAction` branch moved with it: the Library entry added to the map, no second Library data load, `persistenceSaga.run(localCache)`, the real `DomainController` with the colliding-uuid check, and the `MemoryRouter`. The returned `applicationDeploymentMap` is the effective map, with the Library entry in wired mode. The file logs through a `MiroirLoggerFactory` logger named `componentTestTools`. The former `console.log` calls became `log.debug`, the `console.error` calls `log.error`, and the Profiler render line `log.info`. The two meta-model dumps that were guarded by `process.env.VITE_TEST_MODE !== "true"` are now unguarded `log.debug` calls. `vi.fn()` became `createRecordingFunction()`, which records each call's arguments in `.calls` and returns `undefined`, as `vi.fn()` did. There is one recording function per wrapper instead of one per module. Nothing reads it today. `extractValuesFromRenderedElements` keeps its signature. Its `expect` parameter is typed with the new structural type `ExtractValuesExpect` (`(actual, message?) => { toBeTruthy }`) instead of vitest's `ExpectStatic`, so vitest's `expect` still fits. The module imports nothing from `vitest`, `@testing-library/react`, `tests/`, or `routes/`, and has no `process.env` and no `registerTestImplementation`.
+- `packages/miroir-standalone-app/src/miroir-fwk/4_view/tools/emptyObject.ts`, a module with no imports that exports `emptyObject`.
+
+**Files changed.**
+
+- `packages/miroir-standalone-app/tests/4_view/JzodElementEditorTestTools.tsx` (2312 to 514 lines). It re-exports the moved functions and types from `componentTestTools.tsx`. It keeps `getWrapperLoadingLocalCache` with the same signature: it calls `registerTestImplementation({ expect })`, calls `buildComponentTestWrapper`, sets `jzodEditorTestLocalCache` and `jzodEditorTestApplicationDeploymentMap` from the result when `wireLocalCacheCompositeAction` is set, and returns `Wrapper`. It also keeps `waitForProgressiveRendering`, `waitAfterUserInteraction`, the `ReactComponentTest*` types, the deprecated `getLocalEditor`, `runJzodEditorTest`, `getJzodEditorTestSuites`, `prepareAndRunTestSuites`, and the Country, Report, and Query cache helpers. The `'component'` mode is gone: `TestMode`, `TestModeStar`, `allTestModes`, `ModesType`, the `componentProps` field of `ReactComponentTestCase`, the `renderAs` parameter of `runJzodEditorTest`, and the mode loop in `prepareAndRunTestSuites`. The vitest names keep the `- jzodElementEditor -` segment through a constant, so they still match `baseline-JzodElementEditor.txt`.
+- `packages/miroir-standalone-app/tests/4_view/JzodElementEditor.test.tsx`: the `ModesType` import, the `& { modes?: ModesType }` type, and the 7 `modes: "jzodElementEditor"` fields removed.
+- `packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/TransformerBuilderPage.tsx`: imports `emptyObject` from `tools/emptyObject.js` and re-exports it, instead of declaring it.
+- This plan.
+
+No importer of `JzodElementEditorTestTools.tsx` changed.
+
+**Validation.**
+
+- `npm run testByFile -w miroir-standalone-app -- JzodElementEditor.test`: 68 passed. The verbose case list, reduced as in Slice 0, is identical to `baseline-JzodElementEditor.txt` (68 lines, same names, all passed).
+- `npm run testByFile -w miroir-standalone-app -- componentMiroirTests.286.phase0`: 6 passed.
+- `python scripts/check_bare_console.py`: OK, no allowlist change.
+- `npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json`: 1 error, the baseline `JzodElementEditorHooks.ts(528,59)` TS2339.
+
+Importers, one command per file as in Slice 0:
+
+| Command (`npm run testByFile -w miroir-standalone-app -- ...`) | Slice 0 | Slice 1 |
+|---|---|---|
+| `--profile emulatedServer-filesystem wizardWalk.284.integ` | 11 passed | 11 passed |
+| `--profile emulatedServer-filesystem multistepBranch.284.integ` | 6 passed | 6 passed |
+| `--profile emulatedServer-filesystem multistepProcess.274.integ` | 19 passed | 19 passed |
+| `--profile emulatedServer-filesystem multistepLaunch.274.phase5.integ` | 7 passed | 7 passed |
+| `gridPagination.unit` | 28 passed | 28 passed |
+| `virtualAttributes.integ` | 3 passed | 3 passed |
+| `listDisplayByTransformer.integ` | 13 passed | 13 passed |
+| `listDisplayByTransformer.loopSafety.integ` | 2 passed | 2 passed |
+| `gridPagination.integ` | 13 passed | 13 passed |
+| `--profile emulatedServer-filesystem ReportPage.integ` | fails at collection | fails at collection, same `ReferenceError: exports is not defined` from `svg-toolbelt` |
+| `extractValuesFromRenderedElements` | 4 passed | 4 passed |
+| `formValuesToJSON` | 6 passed | 6 passed |
+
+No test failed or was skipped in these runs.
 
 ---
 

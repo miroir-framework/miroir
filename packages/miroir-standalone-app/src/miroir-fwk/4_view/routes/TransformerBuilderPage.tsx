@@ -26,6 +26,7 @@ import {
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
 import { usePageConfiguration } from "../services/index.js";
+import { emptyObject } from "../tools/emptyObject.js";
 
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
@@ -50,7 +51,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 export const emptyString = ""
 export const dataSection = "data"
 export const emptyList:any[] = []
-export const emptyObject = {}
+export { emptyObject };
 
 // const pageLabel = "Tools";
 
