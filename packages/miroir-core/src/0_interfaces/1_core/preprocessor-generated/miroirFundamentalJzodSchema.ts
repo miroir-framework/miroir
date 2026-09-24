@@ -6858,6 +6858,14 @@ export const miroirFundamentalJzodSchema = {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "miroirTestForReactComponent",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
           }
         ]
       },
@@ -7115,6 +7123,42 @@ export const miroirFundamentalJzodSchema = {
           "miroirTestType": {
             "type": "literal",
             "definition": "functionCallTest"
+          },
+          "miroirTestLabel": {
+            "type": "string"
+          }
+        }
+      },
+      "miroirTestForReactComponent": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "defaultLabel": "React component test",
+            "description": "Runs a registered React component test body, named by suite and case (#286)",
+            "display": {
+              "displayedAttributeValueWhenFolded": "miroirTestLabel"
+            }
+          }
+        },
+        "definition": {
+          "skip": {
+            "type": "boolean",
+            "optional": true
+          },
+          "componentTestRef": {
+            "type": "object",
+            "definition": {
+              "suite": {
+                "type": "string"
+              },
+              "case": {
+                "type": "string"
+              }
+            }
+          },
+          "miroirTestType": {
+            "type": "literal",
+            "definition": "reactComponentTest"
           },
           "miroirTestLabel": {
             "type": "string"
@@ -7632,6 +7676,12 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "relativePath": "miroirTestForAction"
                     }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "miroirTestForReactComponent"
+                    }
                   }
                 ]
               },
@@ -7884,6 +7934,42 @@ export const miroirFundamentalJzodSchema = {
                   "miroirTestType": {
                     "type": "literal",
                     "definition": "functionCallTest"
+                  },
+                  "miroirTestLabel": {
+                    "type": "string"
+                  }
+                }
+              },
+              "miroirTestForReactComponent": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "React component test",
+                    "description": "Runs a registered React component test body, named by suite and case (#286)",
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "miroirTestLabel"
+                    }
+                  }
+                },
+                "definition": {
+                  "skip": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "componentTestRef": {
+                    "type": "object",
+                    "definition": {
+                      "suite": {
+                        "type": "string"
+                      },
+                      "case": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "miroirTestType": {
+                    "type": "literal",
+                    "definition": "reactComponentTest"
                   },
                   "miroirTestLabel": {
                     "type": "string"

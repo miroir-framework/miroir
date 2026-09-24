@@ -281,6 +281,7 @@ export declare const miroirTest_runner_mcp_get_instances: any;
 export declare const miroirTest_unionArrayChoices: any;
 export declare const miroirTest_unionObjectChoices: any;
 export declare const miroirTest_virtualAttributes: any;
+export declare const miroirTest_JzodElementEditor_ComponentTestSuite: any;
 export declare const transformerMenuV1: any;
 export declare const transformer_spreadSheetToJzodSchema_json: any;
 export declare const transformer_ifThenElse_json: any;

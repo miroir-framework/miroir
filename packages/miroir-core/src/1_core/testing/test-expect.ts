@@ -295,3 +295,55 @@ export function expect(actual: any, testName?: string) {
   return { ...matchers, not };
 }
 
+// ################################################################################################
+/** Thrown by the matchers of `createThrowingExpect` when an assertion fails (#286). */
+export class MiroirAssertionError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "MiroirAssertionError";
+  }
+}
+
+type NonThrowingMatchers = ReturnType<typeof expect>;
+type MatcherName = Exclude<keyof NonThrowingMatchers, "not">;
+export type ThrowingMatchers = {
+  [K in MatcherName]: (...args: Parameters<NonThrowingMatchers[K]>) => void;
+} & {
+  not: { [K in MatcherName]: (...args: Parameters<NonThrowingMatchers[K]>) => void };
+};
+export type ThrowingExpect = (actual: any, message?: string) => ThrowingMatchers;
+
+/**
+ * An `expect` with vitest's `(actual, message)` signature whose matchers throw a
+ * `MiroirAssertionError` when the non-throwing `expect` above gives `result: false` (#286).
+ * Used by React component test bodies, in vitest and in the running app.
+ *
+ * `testName` names the running test in failure messages when no message is given.
+ */
+export function createThrowingExpect(testName: string): ThrowingExpect {
+  return (actual: any, message?: string): ThrowingMatchers => {
+    const label = message ?? testName;
+    const matchers = expect(actual, label) as any;
+    const toThrowing = (source: any, prefix: string) => {
+      const result: any = {};
+      for (const key of Object.keys(source)) {
+        if (key === "not") {
+          continue;
+        }
+        result[key] = (...args: any[]): void => {
+          const outcome: ExpectResult = source[key](...args);
+          if (!outcome.result) {
+            throw new MiroirAssertionError(
+              outcome.message ?? formatMessage(label, `${prefix}${key} failed`),
+            );
+          }
+        };
+      }
+      return result;
+    };
+    return {
+      ...toThrowing(matchers, ""),
+      not: toThrowing(matchers.not, "not."),
+    } as ThrowingMatchers;
+  };
+}

@@ -99,17 +99,8 @@ export function getJzodArrayEditorTests(
             expect(screen.getAllByText(/Test Label/).length).toBe(1); // There should be only one label, actually there are two, one for the array and one for the first item
           },
         },
-        "renders all array values, in the right order": {
-          tests: async (expect: ExpectStatic, container: Container) => {
-            const cells = screen
-              .getAllByRole("textbox")
-              .filter((input: HTMLElement) =>
-                (input as HTMLInputElement).name.startsWith(formikFieldName("testField."))
-              );
-            const values = cells.map((cell) => (cell as HTMLInputElement).value);
-            expect(values).toEqual(arrayValues);
-          },
-        },
+        // "renders all array values, in the right order": moved to
+        // src/miroir-fwk/4-tests/componentTests/jzodElementEditor/JzodArrayEditor.tsx (#286).
         "form state is changed when selection changes": {
           tests: async (expect: ExpectStatic, container: Container) => {
             screen.debug(undefined, Infinity); // Prints entire DOM with no size limit

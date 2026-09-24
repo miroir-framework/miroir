@@ -142,6 +142,7 @@ import {
   miroirTest_tools,
   miroirTest_transformerResultSchema,
   miroirTest_unfoldSchemaOnce,
+  miroirTest_JzodElementEditor_ComponentTestSuite,
   modelEndpointV1,
   queryVersionBundleProducerV1,
   persistenceEndpointVersionV1,
@@ -396,6 +397,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     miroirTest_runner_drop_entity as MiroirTestDefinition,
     miroirTest_runner_freeze_application_version as MiroirTestDefinition,
     miroirTest_runner_mcp_get_instances as MiroirTestDefinition,
+    miroirTest_JzodElementEditor_ComponentTestSuite as MiroirTestDefinition,
     // miroirTest_mustache as MiroirTestDefinition
   ],
   themes: [

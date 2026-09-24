@@ -5,6 +5,7 @@ import { StorageType } from "../0_interfaces/1_core/StorageConfiguration";
 import { TestImplementation } from "../0_interfaces/1_core/TestImplementation";
 import { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import type { ReactComponentTestRunner } from "../0_interfaces/5-tests/miroirTestTypes";
 import { AdminStoreFactoryRegister, PersistenceStoreAdminSectionFactory, PersistenceStoreSectionFactory, StoreSectionFactoryRegister } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
@@ -37,6 +38,8 @@ export class ConfigurationServiceInner {
   public StoreSectionFactoryRegister: StoreSectionFactoryRegister = new Map();
   public adminStoreFactoryRegister: AdminStoreFactoryRegister = new Map();
   public testImplementation: TestImplementation | undefined = undefined;
+  /** Runs `reactComponentTest` leaves; registered by the app or its component test entry (#286). */
+  public reactComponentTestRunner: ReactComponentTestRunner | undefined = undefined;
 
   constructor() {}
 
@@ -79,6 +82,14 @@ export class ConfigurationServiceInner {
     //   "ConfigurationService registered in registerTestImplementation",
     //   this.testImplementation,
     // );
+  }
+
+  /**
+   * Registers the runner of `reactComponentTest` leaves (#286), or removes it with `undefined`.
+   * With no runner, those leaves are recorded as skipped.
+   */
+  public registerReactComponentTestRunner(runner: ReactComponentTestRunner | undefined) {
+    this.reactComponentTestRunner = runner;
   }
 }
 

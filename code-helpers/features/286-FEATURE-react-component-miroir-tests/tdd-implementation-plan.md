@@ -9,7 +9,7 @@ Working branch: `286-FEATURE-react-component-miroir-tests`, created from `284-FE
 
 **Review:** revised after [`./plan-adversarial-review.md`](./plan-adversarial-review.md), P1-P22 applied.
 
-**Resume note:** Slices 0 and 1 done (browser-safe tools in `src/miroir-fwk/4-tests/componentTests/componentTestTools.tsx`, every importer at its Slice 0 count). Next: Slice 2.
+**Resume note:** Slices 0 to 2 done. The tracer case "JzodArrayEditor: renders all array values, in the right order" runs from the MiroirTest instance `761d4ed2-…` through the new vitest entry with the act-free driver (1 case passed plus 1 entry check), the old suite has 67 cases, and the miroir-core generic entry records the new leaf as skipped. Next: Slice 3.
 
 ---
 
@@ -43,7 +43,7 @@ These come from the plan review and refine analysis §5 without changing a decis
 |---|---|---|---|
 | 0 | Rebase, baselines, characterize contracts, find how the app loads MiroirTests | ✅ DONE | `componentMiroirTests.286.phase0` + baseline tables |
 | 1 | Move the browser-safe tools under `src/` with the old tests green | ✅ DONE | old suite 68 passed, each importer equal to its baseline |
-| 2 | **Tracer.** One Array case runs from MiroirTest JSON in vitest | ⬜ | `miroir-component-tests` 1 passed |
+| 2 | **Tracer.** One Array case runs from MiroirTest JSON in vitest | ✅ DONE | `miroir-component-tests` 1 passed |
 | 3 | Array suite complete in vitest, DOM matchers, scoped value reader, consistency test | ⬜ | `miroir-component-tests` 12 passed |
 | 4 | Array suite runs in the app sandbox | ⬜ | `componentTestSandbox.286.phase4` + dev and production check |
 | 5 | Enum suite with the portal dropdown (pilot complete, user stop point) | ⬜ | 15 passed in vitest and in the app |
@@ -307,7 +307,7 @@ No test failed or was skipped in these runs.
 
 ## Slice 2: tracer, one Array case from MiroirTest JSON in vitest
 
-**Status:** ⬜
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -375,7 +375,54 @@ New entry: 1 case passed plus 1 entry check. Old suite: 67 passed.
 
 ### Realization
 
-(to fill)
+**RED observed.**
+
+- Stubs first: `componentTestManifest.ts` (empty manifest, plus the instance uuid and name constants the entry imports), `componentTestRegistry.ts` (`{}`), and `runReactComponentTest.tsx` (a runner returning `error` "not implemented").
+- New entry, no JSON: the file fails at collection with `Error: suite JzodElementEditor_ComponentTestSuite not found in C:\Users\nono\...\miroir_data\a311f363-e238-4203-bdfc-29e8c160c26b`, no test run.
+- New entry, JSON present: the JSON was not written by hand but by the generator, because only the generator writes into `miroir_data`. It was run from the manifest with its one case. vitest then collected the 2 tests (entry check and leaf), and the file failed in its `beforeAll` with `TypeError: ConfigurationService.configurationService.registerReactComponentTestRunner is not a function`, both tests reported skipped. The runner registration sits in the `beforeAll`, so this TypeError comes before the planned `Unknown miroirTestType: reactComponentTest`. That message was observed in miroir-core instead (next point).
+- miroir-core `reactComponentLeaf.286.phase2`, first run: 4 failed with `TypeError: ConfigurationService.configurationService.registerReactComponentTestRunner is not a function`. After adding only `registerReactComponentTestRunner`, the 4 failed on behavior: `Error: Unknown miroirTestType: reactComponentTest` (the exhaustive default arm of `runMiroirTest`) for the skipped and error-recording tests, and `expected [Function] to throw error including 'case A failed on purpose' but got 'Unknown miroirTestType: reactComponen…'`, and the same for `'runMiroirTestInMemory: reactComponent…'`, for the rethrow and integration tests.
+
+**GREEN, miroir-core.**
+
+- Schema: `miroirTestForReactComponent` added to `miroirTestLeaf` (sixth member, after `miroirTestForAction`) and declared next to `miroirTestForFunctionCall` in Entity `a311f363-…` and EntityVersion `51c647fe-…`, with the same text in both files. Fields: `skip` (optional boolean), `componentTestRef` (`{ suite: string, case: string }`), `miroirTestType` (literal `reactComponentTest`), `miroirTestLabel` (string), and the same `tag` shape as the sibling leaves. `npm run build -w miroir-test-app_deployment-miroir` and `npm run devBuild -w miroir-core` regenerated `MiroirTestForReactComponent` and `miroirTestForReactComponent` in `preprocessor-generated/`, which was not edited by hand. Both are exported from `index.ts` next to `MiroirTestForAction`.
+- `src/0_interfaces/5-tests/miroirTestTypes.ts`: `ReactComponentTestRef`, `ReactComponentTestRunnerResult`, and `ReactComponentTestRunner` (analysis §5.2), exported from `index.ts`.
+- `ConfigurationService`: a `reactComponentTestRunner` field and `registerReactComponentTestRunner(runner | undefined)`.
+- New `src/5_tests/ReactComponentTestTools.ts` with `runMiroirReactComponentTest` and `REACT_COMPONENT_TEST_NO_RUNNER_MESSAGE`, both exported. A skipped leaf (`skip`, `parentSkip`, or excluded by an array `testList`) records `skipped`. With no runner, it records `skipped` with the message `reactComponentTest requires a registered component test runner` in `assertionActualValue`, because `TestAssertionResult` has no message field. Otherwise it records `ok`, or `error` with the runner's message in `assertionActualValue` (or `{ message, actual }` when the runner gives `actual`) and the runner's `expected` in `assertionExpectedValue`. A runner that throws gives an `error` result. The arm rethrows only when `rethrowComponentTestFailures` is set, as `reactComponentTest "<path>" failed: <message>`.
+- `MiroirTestTools.ts`: the `reactComponentTest` arm of `runMiroirTest`, refused in integration mode with `runMiroirTestInMemory: reactComponentTest leaves cannot run in integration mode`, and `rethrowComponentTestFailures?: boolean` on the `"unit"` arm of `MiroirTestExecutionOptions`.
+- `inferIntegrationSessionKind.ts`: `reactComponentTest` supports unit execution and does not require integration, as `functionCallTest`.
+- `test-expect.ts`: `MiroirAssertionError`, and `createThrowingExpect(testName)`. It returns an `expect(actual, message?)` whose matchers (every existing one, and their `.not` forms) call the non-throwing ones and throw `MiroirAssertionError` with the non-throwing message when `result` is false. The message argument replaces `testName` as the label in the failure message. No DOM matcher, no `getState`, and no rule for `undefined`-valued keys yet (Slice 3). Exported with the `ThrowingExpect` and `ThrowingMatchers` types.
+
+**GREEN, app.** All under `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/`:
+
+- `componentTestEnvironment.ts`: the act-free driver. `configureComponentTestDom()` calls `@testing-library/dom` `configure({ asyncUtilTimeout: 5000, testIdAttribute: "data-testid", eventWrapper: cb => cb(), asyncWrapper: cb => cb() })`. `mountComponent(element, target)` renders with `createRoot` inside `flushSync` and returns `unmount`. `componentTestAct` awaits the callback, then `setTimeout(0)`. The act-free `waitForProgressiveRendering(root)` waits with `@testing-library/dom` `waitFor` until `root` shows no `Loading …` placeholder, then one macrotask. `waitAfterUserInteraction(root)` does the same, then waits 300 ms. `createComponentTestEnvironment` builds `{ expect, view, container, fireEvent, userEvent, act, waitFor, sandboxElement, portalElement, log }`. The file also holds the `ComponentTestEnvironment`, `ComponentTestCase`, `ComponentTestSuite`, and `ComponentTestRegistry` types, so that the suite files do not import the registry.
+- Deviation from analysis §5.3: `view` is `within(sandboxElement)`, not a merge of `within(container)` and `within(portalElement)`. The runner keeps only the portal element and the current case's container under `sandboxElement`, so both give the same elements, and Testing Library has no way to merge two roots that keeps the `getBy` error semantics.
+- `componentTestManifest.ts`: `componentTestSuiteInstanceUuid`, `componentTestSuiteInstanceName`, `componentTestManifest` (`JzodArrayEditor` with its one case), and `componentTestLeafLabel(suite, case)`, which gives `<suite>: <case>`. The file has no import.
+- `componentTestRegistry.ts`: `{ JzodArrayEditor: jzodArrayEditorComponentTests }`.
+- `jzodElementEditor/JzodArrayEditor.tsx`: the suite props of `getJzodArrayEditorTests` and the case "renders all array values, in the right order", rewritten with the §5.3 rules (`screen` to `env.view`, `expect` to `env.expect`). The component is `getJzodElementEditorForTest("JzodElementEditor.test")`, the page label of the old file, so the DOM is the same.
+- `runReactComponentTest.tsx`: `createReactComponentTestRunner({ sandboxElement, portalElement?, registry? })` returns the `ReactComponentTestRunner`. It calls `configureComponentTestDom()` and creates the portal element under the sandbox when none is given. Then it runs §5.6 steps 1 to 4. An unknown suite or case is an `error` result that names it. There is one `buildComponentTestWrapper` per suite, built on its first case, with `defaultSelfApplicationDeploymentMap` unless the suite gives a map. The previous case is unmounted and its container removed, a fresh container is appended to the sandbox, the wrapped component is mounted into it, and `waitForProgressiveRendering(container)` runs. The body runs with a fresh environment whose `expect` is named by the leaf path, and any thrown error becomes an `error` result. The last case stays mounted. There is no `destroy()` yet. The runner logs through a `MiroirLoggerFactory` logger.
+
+**GREEN, generator and wiring.** `packages/miroir-standalone-app/scripts/generate-component-miroir-tests.ts` imports only the manifest. It writes `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/761d4ed2-1a5c-4901-a9d9-897dbec0b27f.json`. The instance has the same top-level keys as the other MiroirTest instances in that folder (`uuid`, `parentName`, `parentUuid`, `name`, `selfApplication`, `branch`, `description`, `definition`), one sub-suite `JzodArrayEditor`, and one `reactComponentTest` leaf labelled `JzodArrayEditor: renders all array values, in the right order`. It is 2-space JSON with CRLF line ends, like its neighbours. The script then adds, when missing, the export `miroirTest_JzodElementEditor_ComponentTestSuite` in `index.ts` (after the last `miroirTest_` JSON export), `export declare const miroirTest_JzodElementEditor_ComponentTestSuite: any;` in `index.d.ts`, and the import and `defaultMiroirMetaModel.tests` entry in `src/Model.ts`. It writes a file only when its content changes. A second run prints "no change", and the git diff of the wiring files is one added line in `index.ts`, one in `index.d.ts`, and two in `Model.ts`. `main()` runs only when the script is invoked directly, so a test can import `buildComponentTestSuiteInstance`. The Slice 0.3 step (reload the app page) needs no code.
+
+**GREEN, entry and old file.** `packages/miroir-standalone-app/tests/4_view/miroir-component-tests.unit.test.tsx` loads the instance by uuid from the `miroir_data` folder and throws "suite … not found" otherwise. It appends a sandbox element to `document.body`. Its `beforeAll` sets `IS_REACT_ACT_ENVIRONMENT = false` and registers `createReactComponentTestRunner({ sandboxElement })`, and its `afterAll` unregisters it. `describe("entry checks")` asserts that `IS_REACT_ACT_ENVIRONMENT` is `false` in a test body. Each sub-suite runs in an async `describe(<suite>)` through `runMiroirTests._runMiroirTestSuite(vitest, [instanceName, suite], …, true, runMiroirTests, { executionMode: "unit", rethrowComponentTestFailures: true })`, so the vitest name is `JzodArrayEditor > JzodArrayEditor: renders all array values, in the right order`. A check with a wrong expected value (`["value1", "value3", "value2"]`, then reverted) failed with `reactComponentTest "JzodElementEditor_ComponentTestSuite#JzodArrayEditor#JzodArrayEditor: renders all array values, in the right order" failed: [...] Expected ["value1","value2","value3"] to equal ["value1","value3","value2"]. First difference at path: ["1"]`, so the case is not vacuous. The run prints no React act warning. In `tests/4_view/JzodElementEditor.test.tsx`, the case is replaced by a comment in `getJzodArrayEditorTests`. "miroirTestLeaf has 5 members" is deleted from `pre-286 inventory`.
+
+**Refactor checkpoint.** `componentTestManifest.ts` has no import, and the generator runs under `tsx` importing only it. `npm run testMiroir -w miroir-core` loads the new suite, and vitest reports `JzodArrayEditor: renders all array values, in the right order` as passed. With `MIROIR_TEST_VERBOSE_TRACKING=1 MIROIR_TEST_SUITES=JzodElementEditor_ComponentTestSuite`, the tracker records `"assertionResult": "skipped"` with `"assertionActualValue": "reactComponentTest requires a registered component test runner"`.
+
+**Validation.**
+
+- `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core`: both succeed.
+- `npm run testByFile -w miroir-core -- reactComponentLeaf.286.phase2`: 4 passed.
+- `npm run testMiroir -w miroir-core`: 727 passed, the new leaf among them, skipped in the tracker.
+- `npm run testByFile -w miroir-standalone-app -- miroir-component-tests`: 2 passed (1 case, 1 entry check).
+- `npm run testByFile -w miroir-standalone-app -- JzodElementEditor.test`: 67 passed. Its case list, reduced as in Slice 0 and diffed against `baseline-JzodElementEditor.txt`, differs only by the missing line `JzodArrayEditor - jzodElementEditor - renders all array values, in the right order: passed`.
+- `npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts`: 153 passed.
+- `npm run testByFile -w miroir-standalone-app -- componentMiroirTests.286.phase0`: 5 passed.
+- `npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json`: 0 errors.
+- `npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json`: 1 error, the baseline `JzodElementEditorHooks.ts(528,59)` TS2339.
+- `python scripts/check_bare_console.py`: OK.
+
+**Files created.** `packages/miroir-core/src/5_tests/ReactComponentTestTools.ts`. `packages/miroir-core/tests/1_core/issues/286-react-component-miroir-tests/reactComponentLeaf.286.phase2.unit.test.ts`. In `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/`: `componentTestEnvironment.ts`, `componentTestManifest.ts`, `componentTestRegistry.ts`, `runReactComponentTest.tsx`, and `jzodElementEditor/JzodArrayEditor.tsx`. `packages/miroir-standalone-app/scripts/generate-component-miroir-tests.ts`. `packages/miroir-standalone-app/tests/4_view/miroir-component-tests.unit.test.tsx`. The instance `761d4ed2-….json`, written by the generator.
+
+**Files changed.** miroir-core: `src/0_interfaces/5-tests/miroirTestTypes.ts`, `src/1_core/testing/test-expect.ts`, `src/3_controllers/ConfigurationService.ts`, `src/5_tests/MiroirTestTools.ts`, `src/5_tests/inferIntegrationSessionKind.ts`, `src/index.ts`, and the regenerated `preprocessor-generated/miroirFundamentalJzodSchema.ts` and `miroirFundamentalType.ts`. Deployment miroir: the Entity and EntityVersion JSON, and, by the generator, `index.ts`, `index.d.ts`, and `src/Model.ts`. App: `tests/4_view/JzodElementEditor.test.tsx` and `tests/4_view/issues/286-react-component-miroir-tests/componentMiroirTests.286.phase0.unit.test.tsx`. This plan.
 
 ---
 

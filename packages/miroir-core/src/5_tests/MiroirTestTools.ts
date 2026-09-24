@@ -8,6 +8,7 @@ import type {
   MiroirConfigClient,
   MiroirTestForFunctionCall,
   MiroirTestForQuery,
+  MiroirTestForReactComponent,
   MiroirTestForRunner,
   MiroirTestLeaf,
   MiroirTestSuite,
@@ -29,6 +30,7 @@ import {
 } from "./MiroirTransformerTestTools";
 import { runMiroirQueryRunnerTestInMemory } from "./QueryRunnerTestTools";
 import { runMiroirRunnerTest } from "./RunnerTestTools";
+import { runMiroirReactComponentTest } from "./ReactComponentTestTools.js";
 import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 import { runMiroirTestSuiteWalk } from "./miroirTestSuiteWalk.js";
 import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
@@ -103,6 +105,12 @@ export type MiroirTestExecutionOptions = {
 } & (
   | {
       executionMode: "unit";
+      /**
+       * `reactComponentTest` leaves throw when their runner returns `error` (#286). Set by the
+       * component test vitest entry; the UI buttons leave it unset so one failing case does not
+       * end the run.
+       */
+      rethrowComponentTestFailures?: boolean;
     }
   | {
       executionMode: "integration";
@@ -150,7 +158,7 @@ export async function runMiroirTest(
   _parentTrackingId: string | undefined,
   _trackActionsBelow: boolean,
   _runMiroirTests: RunMiroirTests,
-  executionOptions?: MiroirTestExecutionOptions, // needed only for transformerTest, runnerTest, actionTest
+  executionOptions?: MiroirTestExecutionOptions, // needed only for transformerTest, runnerTest, actionTest, reactComponentTest
   testAssertionPath?: TestAssertionPath,
   parentSkip?: boolean,
 ): Promise<void> {
@@ -257,6 +265,22 @@ export async function runMiroirTest(
         testAssertionPath,
         parentSkip,
         modelEnvironment,
+      );
+    case "reactComponentTest":
+      if (executionMode === "integration") {
+        throw new Error(
+          "runMiroirTestInMemory: reactComponentTest leaves cannot run in integration mode",
+        );
+      }
+      return runMiroirReactComponentTest(
+        testNamePath,
+        filter,
+        leaf as MiroirTestForReactComponent,
+        miroirActivityTracker,
+        executionOptions?.executionMode === "unit" &&
+          executionOptions.rethrowComponentTestFailures === true,
+        testAssertionPath,
+        parentSkip,
       );
     case "runnerTest":
       if (executionOptions?.executionMode !== "integration") {

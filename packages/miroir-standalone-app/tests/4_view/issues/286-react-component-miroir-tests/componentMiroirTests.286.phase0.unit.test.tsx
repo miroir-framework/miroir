@@ -100,17 +100,6 @@ describe("phase0 stable", () => {
 
 // ################################################################################################
 describe("pre-286 inventory", () => {
-  // Deleted in Slice 2, when reactComponentTest becomes the sixth member.
-  it("miroirTestLeaf has 5 members", () => {
-    expect(miroirTestLeafMembers(readJson(MIROIR_TEST_ENTITY_PATH))).toEqual([
-      "miroirTestForTransformer",
-      "miroirTestForFunctionCall",
-      "miroirTestForQuery",
-      "miroirTestForRunner",
-      "miroirTestForAction",
-    ]);
-  });
-
   // Deleted in Slice 3, when extractValuesFromRenderedElements searches only its root.
   it("extractValuesFromRenderedElements returns a value from a named input outside the container", () => {
     const outside = document.createElement("input");
