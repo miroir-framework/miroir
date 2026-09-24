@@ -9,7 +9,7 @@ Working branch: `286-FEATURE-react-component-miroir-tests`, created from `284-FE
 
 **Review:** revised after [`./plan-adversarial-review.md`](./plan-adversarial-review.md), P1-P22 applied.
 
-**Resume note:** Slices 0 to 5 done, pilot clean. The 12 Array and 3 Enum cases run from the MiroirTest instance `761d4ed2-…` through the new vitest entry (15 cases plus 1 entry check) and in the app, where the unit Run button of `MiroirTestDisplay` runs them in the sandbox and records 15 `ok` (checked in a real browser on the Vite dev server and on the production build). `PortalContainerContext` sends the `ThemedSelectWithPortal` option lists, and the MUI popups (through a MUI `DefaultPropsProvider`), into the sandbox portal element. The old file keeps 53 cases. Next: Slice 6 (Run all with the "Include component tests" checkbox). See the Slice 5 finding on sub-suite filters at depth 1.
+**Resume note:** Slices 0 to 6 done, pilot clean. The 12 Array and 3 Enum cases run from the MiroirTest instance `761d4ed2-…` through the new vitest entry (15 cases plus 1 entry check) and in the app, where the unit Run button of `MiroirTestDisplay` runs them in the sandbox and records 15 `ok` (checked in a real browser on the Vite dev server and on the production build). `PortalContainerContext` sends the `ThemedSelectWithPortal` option lists, and the MUI popups (through a MUI `DefaultPropsProvider`), into the sandbox portal element. "Run All Unit Tests" of `MiroirTestListDisplay` has an "Include component tests" checkbox, checked by default. When checked, it runs the component leaves in the list's own sandbox. When unchecked, it passes `excludeMiroirTestTypes: ["reactComponentTest"]`, so those leaves are recorded as skipped. The old file keeps 53 cases. Next: Slice 7 (Literal suite). Open follow-up: a filter that names one sub-suite of a multi-sub-suite instance throws in miroir-core when run from `MiroirTestDisplay` (Slice 5 finding, re-evaluated in the Slice 6 Realization).
 
 ---
 
@@ -47,7 +47,7 @@ These come from the plan review and refine analysis §5 without changing a decis
 | 3 | Array suite complete in vitest, DOM matchers, scoped value reader, consistency test | ✅ DONE | `miroir-component-tests` 12 passed |
 | 4 | Array suite runs in the app sandbox | ✅ DONE | `componentTestSandbox.286.phase4` 2 passed, 12/12 in the dev and production browser checks |
 | 5 | Enum suite with the portal dropdown (pilot complete, user stop point) | ✅ DONE | `miroir-component-tests` 15 passed, `portalContainer.286.phase5` 3 passed, 15/15 in the dev and production browser checks |
-| 6 | Run all with the "Include component tests" checkbox | ⬜ | `runAllComponentTests.286.phase6` |
+| 6 | Run all with the "Include component tests" checkbox | ✅ DONE | `runAllComponentTests.286.phase6` 3 passed, `excludeMiroirTestTypes.286.phase6` 3 passed |
 | 7 | Literal suite | ⬜ | 18 passed |
 | 8 | Object suite | ⬜ | 32 passed |
 | 9 | SimpleType suite | ⬜ | 44 passed |
@@ -786,7 +786,7 @@ No case passed in vitest and failed in the browser, and K1 did not show up. **Pi
 
 ## Slice 6: Run all with the "Include component tests" checkbox
 
-**Status:** ⬜
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -825,7 +825,47 @@ npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-sql Miro
 
 ### Realization
 
-(to fill)
+**Transformer suite chosen for the UI test.** `resolveConditionalSchema` (instance `10bd8532-8d3e-40ca-a029-b43a38d11ea0` in the `miroir_data` MiroirTest folder), 5 `transformerTest` leaves, all run in unit mode with `defaultMetaModelEnvironment`.
+
+**RED observed.**
+
+- miroir-core `excludeMiroirTestTypes.286.phase6` (3 tests, a suite of 2 `reactComponentTest` leaves around one `returnValue` `transformerTest` leaf, with a counting runner registered): 2 failed, 1 passed. With `excludeMiroirTestTypes: ["reactComponentTest"]` the runner was still called (`expected [ 'case A', 'case B' ] to deeply equal []`). With `excludeMiroirTestTypes: ["transformerTest"]` the transformer leaf still ran (`expected 'ok' to be 'skipped'`). The control test without exclusion passed, as expected.
+- App `runAllComponentTests.286.phase6` (3 tests, run with `npx vitest run` without bail, `VITE_TEST_MODE=true`): 3 failed. The checkbox test and the "checkbox off" test failed with `Unable to find an accessible element with the role "checkbox" and name /include component tests/i`. The "checkbox on" test timed out at 180 s: `MiroirTestListDisplay` had no `onTestComplete` prop, so the test never got the results. After GREEN the two run tests got an explicit 300 s timeout, longer than their 250 s `waitFor`, so that a slow run fails with the wait message.
+
+**GREEN, miroir-core.** `src/5_tests/MiroirTestTools.ts`: `excludeMiroirTestTypes?: MiroirTestLeaf["miroirTestType"][]` on the `"unit"` arm of `MiroirTestExecutionOptions`. `_runMiroirTestWithTracking` keeps the `parentSkip` / `leaf.skip` early return. Then, inside the same `trackTest` and `trackTestAssertion` as a normal leaf, it records an excluded leaf with `assertionResult: "skipped"` and an `assertionActualValue` from the new exported `miroirTestTypeExcludedMessage(type)` (`"<type> leaves are excluded from this run (excludeMiroirTestTypes)"`), and returns without calling `_runMiroirTest`. The message makes an excluded leaf distinguishable from a component leaf skipped for lack of a runner. `miroirTestTypeExcludedMessage` is exported from `src/index.ts`. The untracked path (`trackActionsBelow` false) does not check the option, as the plan says. `npm run build -w miroir-core` was run before the app tests.
+
+**GREEN, app.**
+
+- `RunAllMiroirTestsButton.tsx`: a new optional `beforeRun` prop and an `includeComponentTests` state, `true` by default. In unit mode the button is followed by a `<label>` with the checkbox "Include component tests". In integration mode the component returns the button alone, with no checkbox. The unit action awaits `beforeRun()` once, before the first suite, when the box is checked and at least one instance has a `reactComponentTest` leaf (`miroirTestDefinitionHasReactComponentTest`). It passes `{ executionMode: "unit" }` when the box is checked (the same object as before, so the existing unit test still sees it), and `{ executionMode: "unit", excludeMiroirTestTypes: ["reactComponentTest"] }` when it is unchecked, in which case `beforeRun` is not called.
+- `MiroirTestListDisplay.tsx`: now `<ComponentTestSandboxProvider><MiroirTestListDisplayContent/></ComponentTestSandboxProvider>`, as in `MiroirTestDisplay`, so Run all has its own sandbox panel. The unit Run all button gets `beforeRun={componentTestSandbox?.prepareComponentTests}`. New optional prop `onTestComplete(resultsBySuiteKey)`, called after the list stores the results. The integ test reads the results from it.
+
+**Integ test.** `runAllComponentTests.286.phase6.integ.test.tsx` uses the Slice 4 harness (a real `LocalCache` seeded with the Miroir meta-model, `LocalCacheProvider`, `MiroirContextReactProvider`, `ReportPageContextProvider`, and the dom config saved and restored around the run). It mounts `MiroirTestListDisplay` with the component suite instance and `resolveConditionalSchema`, both read from the `miroir_data` JSON. `vi.mock` of `componentTests/index.ts` with `importOriginal` wraps `registerComponentTests` in `vi.fn(actual)`. The expected component leaves are every `<suite>: <case>` of `componentTestManifest` (15 today).
+
+- Test 1: the unit button "Run All Unit Tests" and exactly one "Include component tests" checkbox, checked. The narrowed list has no launchable integration suite, so the list shows no integration button. The test renders `RunAllMiroirTestsButton runMode="integration"` alone in the same providers and checks that it has no checkbox.
+- Test 2 (checked): the component suite gives one `ok` per manifest leaf (15), `resolveConditionalSchema` gives 5 `ok`, `registerComponentTests` was called once, and the sandbox panel is visible. The test takes about 8 s.
+- Test 3 (unchecked): the 15 component leaves are `skipped`, their results contain the exclusion message and not "requires a registered component test runner", `resolveConditionalSchema` gives 5 `ok`, `registerComponentTests` was not called, and the sandbox panel stays hidden.
+
+The run prints no React act warning.
+
+**Sub-suite filter finding (Slice 5), re-evaluated.** Run all passes an `undefined` filter to every suite, so `resolveSuiteInnerFilter` returns no list and never throws. This slice is not affected, and miroir-core was not changed for it. The throw remains for single-suite runs. `MiroirTestDisplay` passes `buildTestFilter(selection)` or its `testFilter` prop, and the walk starts from an empty path, so the sub-suites of a multi-sub-suite instance are at depth 1, where `throwOnUnmatched` is true (`miroirTestSuiteWalk.ts`, `testSuitePath.length === 1`). A filter that names only `JzodArrayEditor` then throws `MiroirTest filter matched no tests in suite "JzodEnumEditor"` when the walk reaches the Enum sub-suite. `buildTestFilter` builds that shape from a grid selection limited to one sub-suite, so a user who selects only Array rows and runs again should hit it. This was not checked in the browser here. It is a pre-existing miroir-core behavior. Follow-up, outside #286 unless a later slice needs it: either have `buildTestFilter` or `MiroirTestDisplay` fill the missing sibling sub-suites with an empty list (the workaround the phase4 test uses), or make `resolveSuiteInnerFilter` skip unnamed siblings at depth 1 instead of throwing.
+
+**Validation** (one command per file, from the repo root).
+
+- `npm run testByFile -w miroir-core -- excludeMiroirTestTypes.286.phase6`: 3 passed.
+- `npm run testByFile -w miroir-standalone-app -- runAllComponentTests.286.phase6`: 3 passed.
+- `npm run testByFile -w miroir-standalone-app -- RunAllMiroirTestsButton`: 4 passed.
+- `npm run testByFile -w miroir-standalone-app -- MiroirTestListDisplay`: 4 passed.
+- `npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-sql MiroirTestListIntegrationLaunch`: 1 passed (local Postgres 15 on 5432).
+- Re-runs: `miroir-component-tests` 16 passed (15 cases and the entry check). `JzodElementEditor.test` 53 passed. `componentMiroirTests.286.phase0` 4 passed. `componentTestSandbox.286.phase4` 2 passed. miroir-core `reactComponentLeaf.286.phase2` 4 passed.
+- `npm run testMiroir -w miroir-core`: 741 passed. Slice 2 gave 727. The 14 extra tests are the 11 Array and 3 Enum component leaves added in Slices 3 and 5. This entry reports them as passed, and the tracker records them as skipped because no runner is registered.
+- `npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json`: 0 errors. `npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json`: 1 error, the baseline `JzodElementEditorHooks.ts(528,59)` TS2339.
+- `python scripts/check_bare_console.py`: OK.
+
+No browser check was run for this slice.
+
+**Files created.** `packages/miroir-core/tests/1_core/issues/286-react-component-miroir-tests/excludeMiroirTestTypes.286.phase6.unit.test.ts`. `packages/miroir-standalone-app/tests/4_view/issues/286-react-component-miroir-tests/runAllComponentTests.286.phase6.integ.test.tsx`.
+
+**Files changed.** miroir-core: `src/5_tests/MiroirTestTools.ts` and `src/index.ts` (`dist/` rebuilt). App: `src/miroir-fwk/4_view/components/Buttons/RunAllMiroirTestsButton.tsx` and `src/miroir-fwk/4_view/components/Reports/MiroirTestListDisplay.tsx`. This plan.
 
 ---
 

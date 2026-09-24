@@ -1726,6 +1726,7 @@ export {
 export {
   effectiveMiroirTransformerSkip,
   miroirTransformerAssertionName,
+  miroirTestTypeExcludedMessage,
   runMiroirTest,
   runMiroirTests,
   runMiroirTestSuite,

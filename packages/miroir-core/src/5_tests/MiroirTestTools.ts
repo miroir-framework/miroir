@@ -111,6 +111,12 @@ export type MiroirTestExecutionOptions = {
        * end the run.
        */
       rethrowComponentTestFailures?: boolean;
+      /**
+       * Leaves of these types are recorded as skipped by `_runMiroirTestWithTracking` and their arm
+       * is not called (#286). Run all passes `["reactComponentTest"]` when its "Include component
+       * tests" checkbox is off.
+       */
+      excludeMiroirTestTypes?: MiroirTestLeaf["miroirTestType"][];
     }
   | {
       executionMode: "integration";
@@ -118,6 +124,11 @@ export type MiroirTestExecutionOptions = {
     }
 );
 
+
+/** Recorded as `assertionActualValue` of a leaf skipped by `excludeMiroirTestTypes` (#286). */
+export function miroirTestTypeExcludedMessage(miroirTestType: string): string {
+  return `${miroirTestType} leaves are excluded from this run (excludeMiroirTestTypes)`;
+}
 
 function miroirTestLeafLabel(leaf: MiroirTestLeafExecutable): string {
   return leaf.miroirTestLabel;
@@ -398,11 +409,29 @@ export const runMiroirTests: RunMiroirTests = {
       return;
     }
     const label = miroirTestLeafLabel(leaf);
+    const excluded =
+      executionOptions?.executionMode === "unit" &&
+      (executionOptions.excludeMiroirTestTypes ?? []).includes(leaf.miroirTestType);
     let runId: string | undefined;
     try {
       await miroirActivityTracker.trackTest(label, parentTrackingId, async (nestedId) => {
         runId = LoggerGlobalContext.getRunId();
         await miroirActivityTracker.trackTestAssertion(label, nestedId, async (assertionId) => {
+          if (excluded) {
+            const assertionPath =
+              testAssertionPath ?? miroirActivityTracker.getCurrentTestAssertionPath();
+            if (!assertionPath) {
+              throw new Error(
+                `_runMiroirTestWithTracking: no test assertion path to record excluded leaf "${label}"`,
+              );
+            }
+            miroirActivityTracker.setTestAssertionResult(assertionPath, {
+              assertionName: label,
+              assertionResult: "skipped",
+              assertionActualValue: miroirTestTypeExcludedMessage(leaf.miroirTestType),
+            });
+            return;
+          }
           await runMiroirTestsRef._runMiroirTest(
             localVitest,
             testNamePath,
