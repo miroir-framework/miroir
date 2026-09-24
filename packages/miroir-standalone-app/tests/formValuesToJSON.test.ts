@@ -48,18 +48,25 @@ describe("formValuesToJSON", () => {
       "2.e": "0",
     };
     const result = formValuesToJSON(input);
+    // formValuesToJSON keeps values as given: the former "e" to BigInt special case is disabled
+    // in JzodElementEditorTestTools.tsx, and every index present in the input yields an item.
     expect(result).toEqual([
       {
         a: "value1",
         b: { c: 1 },
         d: true,
-        e: 123n,
+        e: "123",
       },
       {
         a: "value2",
         b: { c: 2 },
         d: false,
-        e: 456n,
+        e: "456",
+      },
+      {
+        b: { c: 0 },
+        d: false,
+        e: "0",
       },
     ]);
   });

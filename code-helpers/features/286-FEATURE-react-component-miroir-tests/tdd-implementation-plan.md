@@ -9,7 +9,7 @@ Working branch: `286-FEATURE-react-component-miroir-tests`, created from `284-FE
 
 **Review:** revised after [`./plan-adversarial-review.md`](./plan-adversarial-review.md), P1-P22 applied.
 
-**Resume note:** no slice started.
+**Resume note:** Slice 0 done (baselines recorded, phase0 test green, K9 answered). Next: Slice 1.
 
 ---
 
@@ -41,7 +41,7 @@ These come from the plan review and refine analysis §5 without changing a decis
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Rebase, baselines, characterize contracts, find how the app loads MiroirTests | ⬜ | `componentMiroirTests.286.phase0` + baseline tables |
+| 0 | Rebase, baselines, characterize contracts, find how the app loads MiroirTests | ✅ DONE | `componentMiroirTests.286.phase0` + baseline tables |
 | 1 | Move the browser-safe tools under `src/` with the old tests green | ⬜ | old suite 68 passed, each importer equal to its baseline |
 | 2 | **Tracer.** One Array case runs from MiroirTest JSON in vitest | ⬜ | `miroir-component-tests` 1 passed |
 | 3 | Array suite complete in vitest, DOM matchers, scoped value reader, consistency test | ⬜ | `miroir-component-tests` 12 passed |
@@ -123,7 +123,7 @@ Rules:
 
 ## Slice 0: rebase, baselines, characterize contracts
 
-**Status:** ⬜
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -174,7 +174,57 @@ Plus one command per importer, as listed in the Realization.
 
 ### Realization
 
-(to fill)
+**0.0 Rebase: not needed.** `origin/aba` has one commit beyond this branch, the #285 merge commit `febcf876c`. Its second parent `e24c50c08` is an ancestor of the branch, and `git diff febcf876c^2 febcf876c` is empty, so the merge brings no new content. `git diff HEAD origin/aba -- packages` is empty. The branch was not rewritten.
+
+**0.1 Old suite.** `npm run testByFile -w miroir-standalone-app -- JzodElementEditor.test` gave 68 passed out of 68 (1 file, about 50 s). The case list, with ANSI codes stripped and one line per case in the form `<suite> - <mode> - <case>: <status>`, is saved as `packages/miroir-standalone-app/tests/4_view/issues/286-react-component-miroir-tests/baseline-JzodElementEditor.txt` (68 lines, all `passed`, no duplicate line).
+
+**0.1 Importers of `JzodElementEditorTestTools.tsx`.** Of the 14 importers (the tools file and `JzodElementEditor.test.tsx` excluded), 12 are test files and 2 are helper rigs with no test of their own: `tests/4_view/helpers/gridPaginationIntegRig.tsx` (run through `gridPagination.integ` and `gridPagination.unit`) and `tests/4_view/helpers/listTransformerIntegRig.tsx` (run through `listDisplayByTransformer.integ`, `listDisplayByTransformer.loopSafety.integ`, and `virtualAttributes.integ`). One command per file, from the repo root:
+
+| Command (`npm run testByFile -w miroir-standalone-app -- ...`) | Passed | Failed | Skipped |
+|---|---|---|---|
+| `--profile emulatedServer-filesystem wizardWalk.284.integ` | 11 | 0 | 0 |
+| `--profile emulatedServer-filesystem multistepBranch.284.integ` | 6 | 0 | 0 |
+| `--profile emulatedServer-filesystem multistepProcess.274.integ` | 19 | 0 | 0 |
+| `--profile emulatedServer-filesystem multistepLaunch.274.phase5.integ` | 7 | 0 | 0 |
+| `gridPagination.unit` | 28 | 0 | 0 |
+| `virtualAttributes.integ` | 3 | 0 | 0 |
+| `listDisplayByTransformer.integ` | 13 | 0 | 0 |
+| `listDisplayByTransformer.loopSafety.integ` | 2 | 0 | 0 |
+| `gridPagination.integ` | 13 | 0 | 0 |
+| `--profile emulatedServer-filesystem ReportPage.integ` | 0 | file fails at collection | 0 |
+| `extractValuesFromRenderedElements` | 4 | 0 | 0 (before the fix: 1 failed, 3 not run) |
+| `formValuesToJSON` | 6 | 0 | 0 (before the fix: 1 failed, 2 passed, 3 not run) |
+
+- `extractValuesFromRenderedElements.test.tsx` failed with `TypeError: Cannot read properties of undefined (reading 'querySelectorAll')` at tools L1691, because its 4 tests called `extractValuesFromRenderedElements(expect)` with no container. The tests were also wrong on a second point: they expect keys without the `testField.` prefix, which needs the `label` argument. Fix, test only: each test takes `container` from `render` and calls `extractValuesFromRenderedElements(expect, undefined, container, "testField")`. 4 passed.
+- `formValuesToJSON.test.ts` failed on "top-level array: example from JzodElementEditor tests". The test was stale: it expected `e` as a BigInt and only 2 items, while `formValuesToJSON` keeps values as given (its "e" to BigInt special case is commented out) and returns one item per index, so index 2 gives a third item. Fix, test only: the expected value is now `e: "123"`, `e: "456"`, and a third item `{ b: { c: 0 }, d: false, e: "0" }`. 6 passed.
+- `ReportPage.integ.test.tsx` is red before any #286 change and was not fixed here. vitest fails to collect it with `ReferenceError: exports is not defined in ES module scope` in `node_modules/svg-toolbelt/dist/index.js`, imported from `miroir-diagram-class/src/2_domain/entitiesToMermaidClassDiagram.ts` L117. It is not in `scripts/nonreg-manifest.json`. Its baseline for later slices is "fails at collection, 0 tests".
+
+**0.1 tsc.** `npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json`: 0 errors. `npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json`: 1 error, `JzodElementEditorHooks.ts(528,59)` TS2339 (`name` does not exist on `EntityInstance & { defaultLabel?: string }`). Both match the expected baseline.
+
+**0.2 Phase0 test.** Created `packages/miroir-standalone-app/tests/4_view/issues/286-react-component-miroir-tests/componentMiroirTests.286.phase0.unit.test.tsx` with 6 tests.
+
+- `phase0 stable` (3 tests): the `miroirTestLeaf` members at `mlSchema.definition.definition.context.miroirTestLeaf` are equal in Entity `a311f363-…` and EntityVersion `51c647fe-…`. miroir-core `expect(null).not.toBeNull().result` and `expect({a: 1, b: undefined}).toEqual({a: 1}).result` are both `false`. `extractValuesFromRenderedElements(expect, undefined, container, "testField")` on a text, a number, and a checkbox input returns `{ a: "foo", b: 42, c: true }`.
+- `pre-286 inventory` (3 tests): `miroirTestLeaf` has the 5 members transformer, function call, query, runner, and action (delete in Slice 2). A named input appended to `document.body` outside the container is returned next to the one inside (delete in Slice 3). The old file, read as text and not imported, declares the 7 active keys `JzodArrayEditor` to `JzodAnyEditor` in `jzodElementEditorTests`, with commented-out lines ignored (delete in Slice 12).
+
+These are characterization tests, so they passed at their first run: 6 passed.
+
+**0.3 How the app gets MiroirTest rows (K9).** The rows come from the store, through the `LocalCache`. They do not come from `defaultMiroirMetaModel.tests`.
+
+1. `ReportSectionMiroirTest` passes `useSelectedApplicationMiroirTests()` to `MiroirTestListDisplay`. It falls back to the report's fetched data only when that list is empty. The hook (`src/miroir-fwk/4-tests/useSelectedApplicationMiroirTestSuiteRegistries.ts`) reads `selectModelForDeploymentFromReduxState(...).tests`, which is `selectTestsFromReduxState` (`miroir-localcache-redux` `LocalCacheSliceModelSelector.ts` L298): the instances of entity `a311f363-…` in the `LocalCache`, section `data` for the Miroir application.
+2. The `LocalCache` is filled at page load by `fetchMiroirAndAppConfigurations` (`src/miroir-fwk/4_view/services/ConfigurationService.ts`, called from `usePageConfiguration.ts`): a rollback of Admin, a query of the Admin `Deployment` instances, `storeManagementAction_openStore` for each with its `configuration`, then one `rollback` per application.
+3. The Miroir `Deployment` instance `10ff36f2-…` (`miroir-test-app_deployment-admin/assets/admin_data/7959d814-…/10ff36f2-….json`, exported as `deployment_Miroir`, which `miroir-server/src/Server.ts` also opens at startup) declares a filesystem data section at `miroir-test-app_deployment-miroir/assets/miroir_data`. It is resolved against `filesystemDeploymentRootDirectory` (`..` from `miroir-server`, so `packages/`). This holds for the dev web app (default client config `miroirConfigRealServerFilesystemGit`) and for Electron. The filesystem store lists the entity folder with `readdirSync` on each call (`FileSystemInstanceStoreSectionMixin.ts` L175), so the server needs no restart.
+
+The step that makes a new instance visible: write its JSON file into `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/`, then reload the app page (or run a rollback of the Miroir application). The reload fills the `LocalCache` again from that folder. No package build is needed for the list. The named export in `miroir-test-app_deployment-miroir/index.ts` and the `defaultMiroirMetaModel.tests` entry in `src/Model.ts` are still needed for TypeScript imports, the test sessions' model environment, and `modelValidation`, so Slice 2's generator writes them and runs the package build, as planned. For a SQL-backed Miroir deployment (the `emulatedServer-sql` test profile, or a `Deployment` whose data section is `sql`), the rows are table rows in schema `miroir`, and a new instance appears only once it is inserted there. The dev app does not use that path by default.
+
+**Validation.**
+
+- `npm run testByFile -w miroir-standalone-app -- componentMiroirTests.286.phase0`: 6 passed.
+- `npm run testByFile -w miroir-standalone-app -- JzodElementEditor.test`: 68 passed.
+- `npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json`: 0 errors.
+- `npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json`: 1 error (the baseline above).
+- The 12 importer commands: counts in the table above.
+
+**Files created:** `componentMiroirTests.286.phase0.unit.test.tsx` and `baseline-JzodElementEditor.txt`, both in `packages/miroir-standalone-app/tests/4_view/issues/286-react-component-miroir-tests/`. **Files changed:** `packages/miroir-standalone-app/tests/extractValuesFromRenderedElements.test.tsx`, `packages/miroir-standalone-app/tests/formValuesToJSON.test.ts`, and this plan. No product code changed.
 
 ---
 
