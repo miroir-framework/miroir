@@ -141,6 +141,36 @@
             }
           }
         ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "JzodLiteralEditor",
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodLiteralEditor: renders Literal input with label when label prop is provided",
+            "componentTestRef": {
+              "suite": "JzodLiteralEditor",
+              "case": "renders Literal input with label when label prop is provided"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodLiteralEditor: renders Literal input without label when label prop is not provided",
+            "componentTestRef": {
+              "suite": "JzodLiteralEditor",
+              "case": "renders Literal input without label when label prop is not provided"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodLiteralEditor: setting new value",
+            "componentTestRef": {
+              "suite": "JzodLiteralEditor",
+              "case": "setting new value"
+            }
+          }
+        ]
       }
     ]
   }

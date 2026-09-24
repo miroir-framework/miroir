@@ -9,7 +9,7 @@ Working branch: `286-FEATURE-react-component-miroir-tests`, created from `284-FE
 
 **Review:** revised after [`./plan-adversarial-review.md`](./plan-adversarial-review.md), P1-P22 applied.
 
-**Resume note:** Slices 0 to 6 done, pilot clean. The 12 Array and 3 Enum cases run from the MiroirTest instance `761d4ed2-…` through the new vitest entry (15 cases plus 1 entry check) and in the app, where the unit Run button of `MiroirTestDisplay` runs them in the sandbox and records 15 `ok` (checked in a real browser on the Vite dev server and on the production build). `PortalContainerContext` sends the `ThemedSelectWithPortal` option lists, and the MUI popups (through a MUI `DefaultPropsProvider`), into the sandbox portal element. "Run All Unit Tests" of `MiroirTestListDisplay` has an "Include component tests" checkbox, checked by default. When checked, it runs the component leaves in the list's own sandbox. When unchecked, it passes `excludeMiroirTestTypes: ["reactComponentTest"]`, so those leaves are recorded as skipped. The old file keeps 53 cases. Next: Slice 7 (Literal suite). Open follow-up: a filter that names one sub-suite of a multi-sub-suite instance throws in miroir-core when run from `MiroirTestDisplay` (Slice 5 finding, re-evaluated in the Slice 6 Realization).
+**Resume note:** Slices 0 to 7 done, pilot clean. The 12 Array, 3 Enum, and 3 Literal cases run from the MiroirTest instance `761d4ed2-…` through the new vitest entry (18 cases plus 1 entry check) and in the app, where the unit Run button of `MiroirTestDisplay` runs them in the sandbox and records one `ok` per case (15/15 checked in a real browser on the Vite dev server and on the production build after Slice 5, 18/18 on the dev server after Slice 7). `PortalContainerContext` sends the `ThemedSelectWithPortal` option lists, and the MUI popups (through a MUI `DefaultPropsProvider`), into the sandbox portal element. "Run All Unit Tests" of `MiroirTestListDisplay` has an "Include component tests" checkbox, checked by default. When checked, it runs the component leaves in the list's own sandbox. When unchecked, it passes `excludeMiroirTestTypes: ["reactComponentTest"]`, so those leaves are recorded as skipped. The old file keeps 50 cases. Next: Slice 8 (Object suite). Open follow-up: a filter that names one sub-suite of a multi-sub-suite instance throws in miroir-core when run from `MiroirTestDisplay` (Slice 5 finding, re-evaluated in the Slice 6 Realization).
 
 ---
 
@@ -48,7 +48,7 @@ These come from the plan review and refine analysis §5 without changing a decis
 | 4 | Array suite runs in the app sandbox | ✅ DONE | `componentTestSandbox.286.phase4` 2 passed, 12/12 in the dev and production browser checks |
 | 5 | Enum suite with the portal dropdown (pilot complete, user stop point) | ✅ DONE | `miroir-component-tests` 15 passed, `portalContainer.286.phase5` 3 passed, 15/15 in the dev and production browser checks |
 | 6 | Run all with the "Include component tests" checkbox | ✅ DONE | `runAllComponentTests.286.phase6` 3 passed, `excludeMiroirTestTypes.286.phase6` 3 passed |
-| 7 | Literal suite | ⬜ | 18 passed |
+| 7 | Literal suite | ✅ DONE | `miroir-component-tests` 18 passed, 18/18 in the dev browser check |
 | 8 | Object suite | ⬜ | 32 passed |
 | 9 | SimpleType suite | ⬜ | 44 passed |
 | 10 | Union suite | ⬜ | 53 passed |
@@ -881,7 +881,7 @@ Each slice moves one suite and follows the same steps.
 | 10 | JzodUnionEditor | 9 | 53 | 15 |
 | 11 | JzodAnyEditor | 15 | 68 | 0 |
 
-**Status:** ⬜ for each.
+**Status:** Slice 7 ✅ DONE. Slices 8 to 11 ⬜.
 
 ### RED
 
@@ -911,6 +911,40 @@ The new entry's verbose list is diffed against `baseline-JzodElementEditor.txt` 
 ### Realization
 
 (to fill per slice)
+
+#### Slice 7 realization (JzodLiteralEditor)
+
+**RED observed.** The 3 Literal cases were added to `componentTestManifest.ts` (`JzodLiteralEditor`, after `JzodEnumEditor`) and to `componentTestRegistry.ts` through a new `jzodElementEditor/JzodLiteralEditor.tsx` whose 3 bodies threw "not migrated". The generator printed "3 suite(s), 18 case(s)" and wrote the instance once, then "no change" on a second run. `npm run build -w miroir-test-app_deployment-miroir` succeeded. The new entry, run with `npx vitest run` without bail (`VITE_TEST_MODE=true`): 3 failed, 16 passed (19). Each failure reads `reactComponentTest "JzodElementEditor_ComponentTestSuite#JzodLiteralEditor#JzodLiteralEditor: <case>" failed: not migrated`. The 15 Array and Enum cases and the entry check passed.
+
+**GREEN.**
+
+- `jzodElementEditor/JzodLiteralEditor.tsx`: the suite props of `getJzodLiteralEditorTests` and its 3 cases, with the §5.3 rules (`screen` to `env.view`, `expect` to `env.expect`, React `act` to `env.act`, `fireEvent` to `env.fireEvent`, and `waitAfterUserInteraction()` to the act-free `waitAfterUserInteraction(env.container)`). The one `console.log` became `env.log.info`. There was no `screen.debug`, no `userEvent`, and no `extractValuesFromRenderedElements` call, so no portal argument was needed.
+- The old cases set `rawJzodSchema` through `jzodElementEditorProps`, a function applied to the case props, or to the suite props when the case has none. `ComponentTestCase` has only `props`, so a local `withLiteralSchema(props)` adds the literal schema: the two cases without props use `props: withLiteralSchema` (a function of the suite props), and "renders Literal input without label…" uses `props: withLiteralSchema({ …its old props without label })`. The rendered props are the same as in the old run. The suite props are the old ones, without `rawJzodSchema`.
+- No assertion changed. "renders Literal input with label…" keeps `getAllByText(/Test Label/).length` `toBe(1)`, with its old comment. Non-vacuity check, then reverted: with `toBe(2)` and, in "setting new value", `queryByDisplayValue(/test-value/)` `.not.toBeInTheDocument()`, the Literal run gave 2 failed and 1 passed, with `Expected 1 to be 2` and `[not] Unexpected pass for toBeInTheDocument`.
+- No case needed anything new in the environment (no matcher, portal, or test-mode fork). The 3 cases passed at their first GREEN run, with no React act warning.
+- Old file: `getJzodLiteralEditorTests`, its two types (`JzodLiteralEditorTest`, `JzodLiteralEditorTestSuites`), and the `JzodLiteralEditor` entry of `jzodElementEditorTests` are deleted and replaced by a comment that points to the new file. Phase0: `JzodLiteralEditor` is removed from the expected suite list.
+
+**Case list.** The new entry's `JzodLiteralEditor` lines, reduced to `<suite> - jzodElementEditor - <case>: <status>`, are identical to the 3 `JzodLiteralEditor` lines of `baseline-JzodElementEditor.txt` (`diff` empty). The old suite's reduced list (sorted) is identical to the 50 baseline lines that are not Array, Enum, or Literal.
+
+**Browser check (§4.4), development build only.** Same script as Slice 5 (`playwright-core` in the session scratchpad, headless Microsoft Edge, seed user `alice`, the MiroirTestDetails report of instance `761d4ed2-…`), against the Vite dev server already running on `https://localhost:5173` (not restarted). The panel showed after about 0.9 s and the run ended after about 6.1 s: "Passed: 18/18", "PASSED", 18 rows "All 1 assertions passed" (12 Array, 3 Enum, 3 Literal), and the snackbar "JzodElementEditor_ComponentTestSuite Miroir tests completed successfully". The sandbox kept the last case ("setting new value", input value `test-value`), 0 console messages matched `act(`, and Close hid the panel and removed the container. The only console error was the known 403 on `/action/storeManagementAction_openStore` at page load. The Library navigation after the run was not checked this time. No production-build check was run for this slice.
+
+**Validation** (one command per file, from the repo root).
+
+- `npx tsx packages/miroir-standalone-app/scripts/generate-component-miroir-tests.ts`: "3 suite(s), 18 case(s)", "no change".
+- `npm run build -w miroir-test-app_deployment-miroir`: success.
+- `npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts`: 153 passed.
+- `npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency`: 6 passed.
+- `npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "JzodLiteralEditor"`: 3 passed, 16 skipped.
+- `npm run testByFile -w miroir-standalone-app -- miroir-component-tests`: 19 passed (18 cases and the entry check), no React act warning.
+- `npm run testByFile -w miroir-standalone-app -- JzodElementEditor.test`: 50 passed.
+- `npm run testByFile -w miroir-standalone-app -- componentMiroirTests.286.phase0`: 4 passed.
+- `npm run testByFile -w miroir-standalone-app -- runAllComponentTests.286.phase6`: 3 passed (the manifest now gives 18 component leaves).
+- `python scripts/check_bare_console.py`: OK.
+- `npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json`: 0 errors. `npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json`: 1 error, the baseline `JzodElementEditorHooks.ts(528,59)` TS2339.
+
+**Files created.** `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/jzodElementEditor/JzodLiteralEditor.tsx`.
+
+**Files changed.** In `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/`: `componentTestManifest.ts` and `componentTestRegistry.ts`. Tests: `tests/4_view/JzodElementEditor.test.tsx` and `componentMiroirTests.286.phase0.unit.test.tsx`. Deployment miroir: the instance `761d4ed2-….json`, written by the generator (18 leaves in 3 sub-suites). This plan.
 
 ---
 

@@ -79,99 +79,9 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 // ################################################################################################
 // LITERAL
 // ################################################################################################
-
-export type JzodLiteralEditorTest = ReactComponentTest<JzodElementEditorProps_Test>;
-export type JzodLiteralEditorTestSuites = ReactComponentTestSuites<JzodElementEditorProps_Test>;
-
-// ################################################################################################
-export function getJzodLiteralEditorTests(
-  componentUnderTest: React.FC<JzodElementEditorProps_Test>
-): JzodLiteralEditorTestSuites {
-  return {
-    JzodLiteralEditor: {
-      suiteRenderComponent: componentUnderTest,
-      suiteProps: {
-        name: "testField",
-        listKey: "root.testField",
-        rootLessListKey: "testField",
-        rootLessListKeyArray: ["testField"],
-        initialFormState: "test-value",
-        label: "Test Label",
-      } as JzodElementEditorProps_Test,
-      // } as LocalLiteralEditorProps,
-      tests: {
-        "renders Literal input with label when label prop is provided": {
-          jzodElementEditorProps: (props: JzodElementEditorProps_Test) =>
-            ({
-              ...props,
-              rawJzodSchema: {
-                type: "literal",
-                definition: "test-value",
-              },
-            } as JzodElementEditorProps_Test),
-          tests: async (expect, container) => {
-            // expect(screen.getByText(/Test Label/)).toBeInTheDocument();
-            expect(screen.getAllByText(/Test Label/).length).toBe(1); // There should be only one label, actually there are two, one for the literal and one for the input
-            expect(screen.getByRole("textbox")).toBeInTheDocument();
-          },
-          // tests: {
-          //   testAsComponent: async (expect) => {
-          //     expect(screen.getByText(/Test Label/)).toBeInTheDocument();
-          //     // expect(screen.getByRole("textbox")).toHaveAttribute("name", "testField"); // TODO: this is implementation detail, should be removed
-          //   },
-          //   testAsJzodElementEditor: async (expect) => {
-          //     expect(screen.getByText(/Test Label/)).toBeInTheDocument();
-          //   },
-          // },
-        },
-        "renders Literal input without label when label prop is not provided": {
-          props: {
-            name: "testField",
-            listKey: "root.testField",
-            rootLessListKey: "testField",
-            rootLessListKeyArray: ["testField"],
-            initialFormState: "test-value",
-            // label: "Test Label", // no label
-          } as JzodElementEditorProps_Test,
-          // jzodElementEditorProps: (props: LocalLiteralEditorProps) =>
-          jzodElementEditorProps: (props: JzodElementEditorProps_Test) =>
-            ({
-              ...props,
-              rawJzodSchema: {
-                type: "literal",
-                definition: "test-value",
-              },
-            } as JzodElementEditorProps_Test),
-          tests: async (expect, container) => {
-            expect(screen.queryByLabelText(/Test Label/)).not.toBeInTheDocument();
-            expect(screen.getByRole("textbox")).toBeInTheDocument();
-          },
-        },
-        "setting new value": {
-          // jzodElementEditorProps: (props: LocalLiteralEditorProps) =>
-          jzodElementEditorProps: (props: JzodElementEditorProps_Test) =>
-            ({
-              ...props,
-              rawJzodSchema: {
-                type: "literal",
-                definition: "test-value",
-              },
-            } as JzodElementEditorProps_Test),
-          tests: async (expect, container) => {
-            expect(screen.getByDisplayValue("test-value")).toBeInTheDocument();
-            const input = screen.getByDisplayValue("test-value");
-            await act(() => {
-              console.log("##################### ACTION");
-              fireEvent.change(input, { target: { value: "new value" } }); // React testing library does not throw error on editing disabled textbox, so we simulate it
-            });
-            await waitAfterUserInteraction();
-            expect(screen.getByDisplayValue(/test-value/)).toBeInTheDocument(); // value has not changed, because it is a literal
-          },
-        },
-      },
-    },
-  };
-}
+// The JzodLiteralEditor suite (getJzodLiteralEditorTests) moved to
+// src/miroir-fwk/4-tests/componentTests/jzodElementEditor/JzodLiteralEditor.tsx and runs through
+// tests/4_view/miroir-component-tests.unit.test.tsx (#286).
 
 // ################################################################################################
 // OBJECT
@@ -2931,10 +2841,6 @@ const jzodElementEditorTests: Record<
   string,
   ReactComponentTestSuitePrep<any>
 > = {
-  JzodLiteralEditor: {
-    editor: getJzodElementEditorForTest(pageLabel),
-    getJzodEditorTests: getJzodLiteralEditorTests,
-  },
   JzodObjectEditor: {
     editor: getJzodElementEditorForTest(pageLabel),
     getJzodEditorTests: getJzodObjectEditorTests,

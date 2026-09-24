@@ -33,6 +33,11 @@ export const componentTestManifest: Record<string, readonly string[]> = {
     "renders all enum options",
     "form state is changed when selection changes",
   ],
+  JzodLiteralEditor: [
+    "renders Literal input with label when label prop is provided",
+    "renders Literal input without label when label prop is not provided",
+    "setting new value",
+  ],
 };
 
 /** Leaf label: the suite name, a colon, and the case label, so labels are unique in the instance. */
