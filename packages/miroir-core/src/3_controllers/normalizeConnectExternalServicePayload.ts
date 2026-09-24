@@ -21,6 +21,12 @@ export type ConnectExternalServiceFlatPayload = {
   probeOperationId: string;
   probeParameters: Record<string, unknown>;
   processSecrets?: Record<string, string>;
+  /** Set when the review step already ran the probe. */
+  probeSucceeded?: boolean;
+  probeMessage?: string;
+  /** Present when the outcome step is in the bag. Absent means: create the report, do not touch the menu. */
+  createExampleReport?: boolean;
+  addReportToMenu?: boolean;
 };
 
 const STEP_IDS = new Set([
@@ -36,6 +42,7 @@ const STEP_IDS = new Set([
   "operations",
   "probeParams",
   "review",
+  "outcome",
 ]);
 
 function isUuidString(value: unknown): value is string {
@@ -55,6 +62,22 @@ function pickString(...candidates: unknown[]): string | undefined {
     }
   }
   return undefined;
+}
+
+/** Switches `{ operationId: true }`, a comma-separated string, or an array, into operation ids. */
+function checkedOperationIdsFromForm(checkedRaw: unknown): string[] {
+  if (Array.isArray(checkedRaw)) {
+    return checkedRaw.filter((id): id is string => typeof id === "string" && id.length > 0);
+  }
+  if (typeof checkedRaw === "string" && checkedRaw.trim().length > 0) {
+    return checkedRaw.split(",").map((part) => part.trim()).filter(Boolean);
+  }
+  if (checkedRaw && typeof checkedRaw === "object") {
+    return Object.entries(checkedRaw as Record<string, unknown>)
+      .filter(([, value]) => value === true)
+      .map(([operationId]) => operationId);
+  }
+  return [];
 }
 
 /**
@@ -89,6 +112,9 @@ export function normalizeConnectExternalServicePayload(
   const secretsCustom = asRecord(payload.secretsCustom);
   const operationsStep = asRecord(payload.operations);
   const probeParamsStep = asRecord(payload.probeParams);
+  const reviewStep = asRecord(payload.review);
+  const outcomeStep = asRecord(payload.outcome);
+  const hasOutcome = Object.prototype.hasOwnProperty.call(payload, "outcome");
 
   const application =
     pickString(applicationStep.application, payload.application) ?? "";
@@ -156,11 +182,7 @@ export function normalizeConnectExternalServicePayload(
   }
 
   const checkedRaw = operationsStep.checkedOperationIds ?? payload.checkedOperationIds;
-  const checkedOperationIds = Array.isArray(checkedRaw)
-    ? (checkedRaw as string[])
-    : typeof checkedRaw === "string" && checkedRaw.trim().length > 0
-      ? checkedRaw.split(",").map((s) => s.trim()).filter(Boolean)
-      : [];
+  const checkedOperationIds = checkedOperationIdsFromForm(checkedRaw);
   const probeOperationId =
     pickString(operationsStep.probeOperationId, payload.probeOperationId) ?? "";
 
@@ -215,5 +237,19 @@ export function normalizeConnectExternalServicePayload(
     probeOperationId,
     probeParameters,
     ...(Object.keys(processSecrets).length > 0 ? { processSecrets } : {}),
+    ...(reviewStep.probeSucceeded === true || reviewStep.probeSucceeded === false
+      ? {
+          probeSucceeded: reviewStep.probeSucceeded === true,
+          ...(typeof reviewStep.probeMessage === "string"
+            ? { probeMessage: reviewStep.probeMessage }
+            : {}),
+        }
+      : {}),
+    ...(hasOutcome
+      ? {
+          createExampleReport: outcomeStep.createExampleReport !== false,
+          addReportToMenu: outcomeStep.addReportToMenu !== false,
+        }
+      : {}),
   };
 }

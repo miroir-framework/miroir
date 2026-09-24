@@ -14,7 +14,6 @@ import { fileURLToPath } from "node:url";
 import React from "react";
 import { Container } from "react-dom";
 import * as RRDom from "react-router-dom";
-import { v5 as uuidv5 } from "uuid";
 
 import {
   allowInsecureBaseUrlsForTests,
@@ -62,14 +61,9 @@ const dataAssetsDir = join(
   dirname(fileURLToPath(import.meta.url)),
   "../../../../../miroir-test-app_deployment-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
 );
-const modelAssetsDir = join(
-  dirname(fileURLToPath(import.meta.url)),
-  "../../../../../miroir-test-app_deployment-miroir/assets/miroir_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-);
 
 function loadReportAsset(uuid: string): EntityInstance {
-  const dir = uuid === WIZARD_REPORT_UUID ? modelAssetsDir : dataAssetsDir;
-  return JSON.parse(readFileSync(join(dir, `${uuid}.json`), "utf8")) as EntityInstance;
+  return JSON.parse(readFileSync(join(dataAssetsDir, `${uuid}.json`), "utf8")) as EntityInstance;
 }
 
 const currentUseParams = {
@@ -519,6 +513,25 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                 });
               },
             },
+            "cleared-url-does-not-override-pasted-document": {
+              props: () => wizardReportProps(),
+              tests: async (expect: ExpectStatic, container: Container) => {
+                await advanceToDocument(container);
+                await setInputByNameOrLabel(/fetch from HTTPS URL|document\.url/i, "http://127.0.0.1/spec.yaml");
+                await clickNext();
+                await waitFor(() => {
+                  expect(stepLabelText()).toMatch(/OpenAPI document/i);
+                  expect(finishAlertText()).toMatch(/not allowed|failed to fetch URL/i);
+                });
+                await setInputByNameOrLabel(/fetch from HTTPS URL|document\.url/i, "");
+                await setInputByNameOrLabel(/Paste OpenAPI|document\.text/i, twoGetOpenApiDocument());
+                await clickNext();
+                await waitFor(() => {
+                  expect(stepLabelText()).toMatch(/Base URL/i);
+                  expect(finishAlertText()).not.toMatch(/failed to fetch URL|not allowed/i);
+                });
+              },
+            },
             "document-private-url-refused": {
               props: () => wizardReportProps(),
               tests: async (expect: ExpectStatic, container: Container) => {
@@ -632,20 +645,28 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                 await waitFor(() => expect(stepLabelText()).toMatch(/Authentication/i));
                 await clickNext();
                 await waitFor(() => expect(stepLabelText()).toMatch(/Operations/i));
-                await setInputByNameOrLabel(
-                  /operations\.checkedOperationIds|Checked operation/i,
-                  CONVERTIBLE_OP,
-                );
-                await setInputByNameOrLabel(
-                  /operations\.probeOperationId|Probe operation/i,
-                  CONVERTIBLE_OP,
-                );
-                await waitAfterUserInteraction();
+                await waitFor(() => {
+                  expect(screen.getByText(CONVERTIBLE_OP)).toBeTruthy();
+                });
                 await clickNext();
                 await waitFor(() => expect(stepLabelText()).toMatch(/Probe parameters/i));
                 await setInputByNameOrLabel(/^id$|probeParams\.id/i, "1");
                 await clickNext();
                 await waitFor(() => expect(stepLabelText()).toMatch(/Review/i));
+                await waitFor(() => {
+                  const probe = screen.getByTestId("probe-call-parameters").textContent ?? "";
+                  expect(probe).toContain("Check probe call parameters");
+                  expect(probe).toContain(CONVERTIBLE_OP);
+                  expect(probe).toContain(`${fakeServer!.baseUrl}/releases/1`);
+                });
+                await clickNext();
+                await waitFor(() => {
+                  expect(stepLabelText(), finishAlertText() || "no finish error").toMatch(/Probe result/i);
+                });
+                await waitFor(() => {
+                  const outcome = screen.getByTestId("probe-outcome").textContent ?? "";
+                  expect(outcome).toContain("Probe succeeded.");
+                });
                 const bagBeforeFinish = screen.getByTestId("multistep-step-bag").textContent ?? "";
                 fireEvent.click(screen.getByRole("button", { name: "Finish" }));
                 await waitAfterUserInteraction();
@@ -659,14 +680,6 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                   },
                   { timeout: 15000 },
                 );
-                const expectedEndpointUuid = uuidv5(
-                  `${LIBRARY_APPLICATION_UUID}\n${ENDPOINT_NAME}`,
-                  ENDPOINT_ENTITY_UUID,
-                );
-                const expectedReportUuid = uuidv5(
-                  `${LIBRARY_APPLICATION_UUID}\n${ENDPOINT_NAME}\n${PROBE_OPERATION_ID}`,
-                  REPORT_ENTITY_UUID,
-                );
                 const localCache = getJzodEditorTestLocalCache();
                 expect(localCache).toBeTruthy();
                 const domainState = localCache!.getDomainState();
@@ -676,9 +689,21 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                   domainState?.[libraryDeployment]?.model?.[ENDPOINT_ENTITY_UUID] ?? {};
                 const reports =
                   domainState?.[libraryDeployment]?.model?.[REPORT_ENTITY_UUID] ?? {};
-                expect(endpoints[expectedEndpointUuid]).toBeTruthy();
-                expect((endpoints[expectedEndpointUuid] as any).name).toBe(ENDPOINT_NAME);
-                expect(reports[expectedReportUuid]).toBeTruthy();
+                const endpoint = Object.values(endpoints).find((row: any) => row?.name === ENDPOINT_NAME);
+                const report = Object.values(reports).find(
+                  (row: any) => row?.name === `${ENDPOINT_NAME}_${PROBE_OPERATION_ID}`,
+                );
+                expect(endpoint).toBeTruthy();
+                expect((endpoint as any).uuid).toMatch(
+                  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+                );
+                expect(report).toBeTruthy();
+                const menus =
+                  domainState?.[libraryDeployment]?.model?.[
+                    "dde4c883-ae6d-47c3-b6df-26bc6e3c1842"
+                  ] ?? {};
+                const menuText = JSON.stringify(menus);
+                expect(menuText).toContain((report as any).uuid);
                 // No Entity row created for the probe
                 const entities =
                   domainState?.[libraryDeployment]?.model?.[
@@ -686,7 +711,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                   ] ?? {};
                 expect(
                   Object.values(entities).some(
-                    (e: any) => e?.name === ENDPOINT_NAME || e?.uuid === expectedEndpointUuid,
+                    (e: any) => e?.name === ENDPOINT_NAME,
                   ),
                 ).toBe(false);
               },

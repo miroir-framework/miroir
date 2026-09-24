@@ -789,6 +789,9 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         case "LocalPersistenceAction_update":
         case "LocalPersistenceAction_delete":
         default: {
+          if ((action.actionType as string) === "probeExternalService") {
+            return clientResult.data as Action2ReturnType;
+          }
           // log.debug(
           //   "innerHandlePersistenceActionForRemoteStore received result",
           //   clientResult.status

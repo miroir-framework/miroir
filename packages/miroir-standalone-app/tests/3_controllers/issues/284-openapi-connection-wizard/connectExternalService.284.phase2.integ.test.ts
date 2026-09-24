@@ -8,7 +8,6 @@
  * ```
  */
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { v5 as uuidv5 } from "uuid";
 
 import {
   Action2Error,
@@ -28,7 +27,6 @@ import {
   DOMAIN_ENDPOINT,
   ENDPOINT_ENTITY_UUID,
   FIXTURE_APPLICATION_UUID,
-  REPORT_ENTITY_UUID,
   type ConnectExternalService284Harness,
 } from "./connectExternalService.284.harness.js";
 
@@ -51,18 +49,6 @@ const QUERY_ENDPOINT = "9e404b3c-368c-40cb-be8b-e3c28550c25e";
 const HTTP_401_MESSAGE_SUBSTRING =
   "External service returned HTTP 401. Token may have expired; restart the server with a fresh token.";
 
-const EXPECTED_ENDPOINT_UUID = uuidv5(
-  `${FIXTURE_APPLICATION_UUID}\n${ENDPOINT_NAME}`,
-  ENDPOINT_ENTITY_UUID,
-);
-const EXPECTED_REPORT_UUID = uuidv5(
-  `${FIXTURE_APPLICATION_UUID}\n${ENDPOINT_NAME}\n${PROBE_OPERATION_ID}`,
-  REPORT_ENTITY_UUID,
-);
-const CLASH_DERIVED_UUID = uuidv5(
-  `${FIXTURE_APPLICATION_UUID}\n${CLASH_ENDPOINT_NAME}`,
-  ENDPOINT_ENTITY_UUID,
-);
 const CLASH_FOREIGN_UUID = "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee";
 
 function openApiDocumentText(): string {
@@ -218,8 +204,8 @@ describe.skipIf(!shouldRunPhase2).sequential(
         FIXTURE_APPLICATION_UUID,
         harness.applicationDeploymentMap,
       );
-      expect(model.endpoints.find((row) => row.uuid === EXPECTED_ENDPOINT_UUID)).toBeUndefined();
-      expect(model.reports.find((row) => row.uuid === EXPECTED_REPORT_UUID)).toBeUndefined();
+      expect(model.endpoints.find((row) => row.name === ENDPOINT_NAME)).toBeUndefined();
+      expect(model.reports.find((row) => row.name === `${ENDPOINT_NAME}_${PROBE_OPERATION_ID}`)).toBeUndefined();
       expect(await countMiroirSecretRows()).toBe(secretCountBefore);
     });
 
@@ -247,8 +233,8 @@ describe.skipIf(!shouldRunPhase2).sequential(
         FIXTURE_APPLICATION_UUID,
         harness.applicationDeploymentMap,
       );
-      expect(model.endpoints.find((row) => row.uuid === EXPECTED_ENDPOINT_UUID)).toBeUndefined();
-      expect(model.reports.find((row) => row.uuid === EXPECTED_REPORT_UUID)).toBeUndefined();
+      expect(model.endpoints.find((row) => row.name === ENDPOINT_NAME)).toBeUndefined();
+      expect(model.reports.find((row) => row.name === `${ENDPOINT_NAME}_${PROBE_OPERATION_ID}`)).toBeUndefined();
       expect(await countMiroirSecretRows()).toBe(secretCountBefore);
     });
 
@@ -277,13 +263,11 @@ describe.skipIf(!shouldRunPhase2).sequential(
         FIXTURE_APPLICATION_UUID,
         harness.applicationDeploymentMap,
       );
-      expect(model.endpoints.find((row) => row.uuid === EXPECTED_ENDPOINT_UUID)).toBeUndefined();
+      expect(model.endpoints.find((row) => row.name === ENDPOINT_NAME)).toBeUndefined();
       expect(await countMiroirSecretRows()).toBe(secretCountBefore);
     });
 
     it("name clash refuses before register and writes nothing", async () => {
-      expect(CLASH_FOREIGN_UUID).not.toBe(CLASH_DERIVED_UUID);
-
       const seedEndpoint: EndpointDefinition = {
         uuid: CLASH_FOREIGN_UUID,
         parentName: "Endpoint",
@@ -363,7 +347,6 @@ describe.skipIf(!shouldRunPhase2).sequential(
       const named = model.endpoints.filter((row) => row.name === CLASH_ENDPOINT_NAME);
       expect(named).toHaveLength(endpointsBefore);
       expect(named.every((row) => row.uuid === CLASH_FOREIGN_UUID)).toBe(true);
-      expect(model.endpoints.find((row) => row.uuid === CLASH_DERIVED_UUID)).toBeUndefined();
       expect(await countMiroirSecretRows()).toBe(secretCountBefore);
     });
   },

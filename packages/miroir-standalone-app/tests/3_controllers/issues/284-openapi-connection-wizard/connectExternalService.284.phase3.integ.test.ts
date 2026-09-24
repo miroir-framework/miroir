@@ -9,7 +9,6 @@
  * ```
  */
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { v5 as uuidv5 } from "uuid";
 
 import {
   Action2Error,
@@ -21,9 +20,7 @@ import {
 import {
   bootConnectExternalService284Harness,
   DOMAIN_ENDPOINT,
-  ENDPOINT_ENTITY_UUID,
   FIXTURE_APPLICATION_UUID,
-  REPORT_ENTITY_UUID,
   type ConnectExternalService284Harness,
 } from "./connectExternalService.284.harness.js";
 
@@ -41,18 +38,7 @@ const USER_AGENT = "MiroirTest/284";
 const RELEASE_PATH = "/releases/{id}";
 const ARTIST_PATH = "/artists/{artist_id}";
 
-const EXPECTED_ENDPOINT_UUID = uuidv5(
-  `${FIXTURE_APPLICATION_UUID}\n${ENDPOINT_NAME}`,
-  ENDPOINT_ENTITY_UUID,
-);
-const EXPECTED_REPORT_UUID_GET_RELEASE = uuidv5(
-  `${FIXTURE_APPLICATION_UUID}\n${ENDPOINT_NAME}\n${OP_GET_RELEASE}`,
-  REPORT_ENTITY_UUID,
-);
-const EXPECTED_REPORT_UUID_GET_ARTIST = uuidv5(
-  `${FIXTURE_APPLICATION_UUID}\n${ENDPOINT_NAME}\n${OP_GET_ARTIST}`,
-  REPORT_ENTITY_UUID,
-);
+const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function openApiDocumentText(): string {
   return JSON.stringify({
@@ -196,6 +182,16 @@ describe.skipIf(!shouldRunPhase3).sequential(
         harness.libraryModelEnvironment,
       );
       expect(first instanceof Action2Error, JSON.stringify(first)).toBe(false);
+      const modelAfterFirst = harness.domainController.currentModel(
+        FIXTURE_APPLICATION_UUID,
+        harness.applicationDeploymentMap,
+      );
+      const endpointUuidAfterFirst = modelAfterFirst.endpoints.find((row) => row.name === ENDPOINT_NAME)?.uuid;
+      const releaseReportUuidAfterFirst = modelAfterFirst.reports.find(
+        (row) => row.name === `${ENDPOINT_NAME}_${OP_GET_RELEASE}`,
+      )?.uuid;
+      expect(endpointUuidAfterFirst).toMatch(UUID_V4);
+      expect(releaseReportUuidAfterFirst).toMatch(UUID_V4);
 
       // 2. Second Finish: getArtist only (same endpoint name)
       const second = await harness.domainController.handleAction(
@@ -220,9 +216,9 @@ describe.skipIf(!shouldRunPhase3).sequential(
         harness.applicationDeploymentMap,
       );
 
-      const endpoint = modelAfterSecond.endpoints.find((row) => row.uuid === EXPECTED_ENDPOINT_UUID);
+      const endpoint = modelAfterSecond.endpoints.find((row) => row.name === ENDPOINT_NAME);
       expect(endpoint).toBeDefined();
-      expect(endpoint!.uuid).toBe(EXPECTED_ENDPOINT_UUID);
+      expect(endpoint!.uuid).toBe(endpointUuidAfterFirst);
 
       const external = getExternalService(endpoint);
       expect(external).toBeDefined();
@@ -235,13 +231,13 @@ describe.skipIf(!shouldRunPhase3).sequential(
       expect(external!.operationSync?.[OP_GET_RELEASE]).toBeUndefined();
 
       const getArtistReport = modelAfterSecond.reports.find(
-        (row) => row.uuid === EXPECTED_REPORT_UUID_GET_ARTIST,
+        (row) => row.name === `${ENDPOINT_NAME}_${OP_GET_ARTIST}`,
       );
       expect(getArtistReport).toBeDefined();
-      expect(getArtistReport!.uuid).toBe(EXPECTED_REPORT_UUID_GET_ARTIST);
+      expect(getArtistReport!.uuid).toMatch(UUID_V4);
 
       const getReleaseReport = modelAfterSecond.reports.find(
-        (row) => row.uuid === EXPECTED_REPORT_UUID_GET_RELEASE,
+        (row) => row.uuid === releaseReportUuidAfterFirst,
       );
       expect(
         getReleaseReport,
@@ -272,7 +268,7 @@ describe.skipIf(!shouldRunPhase3).sequential(
       );
 
       const reportsWithArtistUuid = modelAfterThird.reports.filter(
-        (row) => row.uuid === EXPECTED_REPORT_UUID_GET_ARTIST,
+        (row) => row.uuid === getArtistReport!.uuid,
       );
       expect(reportsWithArtistUuid).toHaveLength(1);
 

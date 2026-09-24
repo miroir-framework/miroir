@@ -745,7 +745,8 @@ async function fetchExternalServiceOperation(
       log.warn("external service request failed (network)", { actionType, url });
       return externalServiceError(
         "ExternalServiceUpstreamFailure",
-        "External service request failed",
+        `External service request failed (${url})`,
+        { url },
       );
     }
   };
@@ -788,8 +789,8 @@ async function fetchExternalServiceOperation(
     });
     return externalServiceError(
       errorTypeForHttpStatus(response.status),
-      messageForHttpStatus(response.status),
-      { httpStatus: response.status },
+      `${messageForHttpStatus(response.status)} (${url})`,
+      { httpStatus: response.status, url },
     );
   }
   log.debug("external service call succeeded", { actionType, httpStatus: response.status });

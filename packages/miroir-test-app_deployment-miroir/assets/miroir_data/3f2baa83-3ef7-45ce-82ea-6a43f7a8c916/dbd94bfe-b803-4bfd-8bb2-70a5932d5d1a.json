@@ -521,18 +521,19 @@
                 "type": "object",
                 "definition": {
                   "checkedOperationIds": {
-                    "type": "string",
+                    "type": "object",
                     "tag": {
                       "value": {
-                        "defaultLabel": "Checked operation ids (comma-separated)"
+                        "defaultLabel": "Operations to include (turn off any you do not want on the endpoint)"
                       }
-                    }
+                    },
+                    "definition": {}
                   },
                   "probeOperationId": {
                     "type": "string",
                     "tag": {
                       "value": {
-                        "defaultLabel": "Probe operation"
+                        "defaultLabel": "Probe operation — the id of one included operation. Finish calls it once to verify the connection."
                       }
                     }
                   }
@@ -562,26 +563,32 @@
               "inputPrefix": "probeParams",
               "inputMLSchema": {
                 "type": "object",
-                "definition": {
-                  "id": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "id"
-                      }
-                    }
-                  }
-                }
+                "definition": {}
               }
             }
           },
           "inputSchemaFromBag": {
-            "transformerType": "getFromParameters",
+            "transformerType": "accessDynamicPath",
             "interpolation": "runtime",
-            "referencePath": [
-              "document",
-              "probeParamsInputSchema"
+            "objectAccessPath": [
+              {
+                "transformerType": "getFromParameters",
+                "interpolation": "runtime",
+                "safe": true,
+                "referencePath": [
+                  "document",
+                  "probeParamsInputSchemaByOperationId"
+                ]
+              },
+              {
+                "transformerType": "getFromParameters",
+                "interpolation": "runtime",
+                "safe": true,
+                "referencePath": [
+                  "operations",
+                  "probeOperationId"
+                ]
+              }
             ]
           }
         },
@@ -591,7 +598,67 @@
             "type": "markdownReportSection",
             "definition": {
               "label": "Review",
-              "content": "Review the connection. Secret values are not shown. Finish probes then saves the Endpoint and Report."
+              "content": "Review the connection. Secret values are not shown. Next runs the probe."
+            }
+          },
+          "onNext": {
+            "actionType": "compositeActionSequence",
+            "actionLabel": "reviewOnNext",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "payload": {
+              "actionSequence": [
+                {
+                  "actionType": "connectExternalService",
+                  "actionLabel": "probeWizardConnection",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  "payload": {
+                    "transformerType": "getFromParameters",
+                    "interpolation": "runtime",
+                    "referencePath": []
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "stepId": "outcome",
+          "section": {
+            "type": "inputReportSection",
+            "definition": {
+              "label": "Probe result",
+              "inputPrefix": "outcome",
+              "inputMLSchema": {
+                "type": "object",
+                "definition": {
+                  "createExampleReport": {
+                    "type": "boolean",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Add an example Report displaying results of a call to the API",
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": true
+                        }
+                      }
+                    }
+                  },
+                  "addReportToMenu": {
+                    "type": "boolean",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Add this report to the application's menu",
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         }

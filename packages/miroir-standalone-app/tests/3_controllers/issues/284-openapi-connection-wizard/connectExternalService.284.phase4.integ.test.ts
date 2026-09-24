@@ -9,7 +9,6 @@
  * ```
  */
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
-import { v5 as uuidv5 } from "uuid";
 
 import {
   Action2Error,
@@ -28,7 +27,6 @@ import {
   ADMIN_APPLICATION_UUID,
   bootConnectExternalService284Harness,
   DOMAIN_ENDPOINT,
-  ENDPOINT_ENTITY_UUID,
   FIXTURE_APPLICATION_UUID,
   REPORT_ENTITY_UUID,
   type ConnectExternalService284Harness,
@@ -51,14 +49,7 @@ const CUSTOM_TOKEN_VALUE = "sekret";
 const CUSTOM_TOKEN_TEMPLATE = "Discogs token={secret}";
 const EXPECTED_AUTH_HEADER = "Discogs token=sekret";
 
-const EXPECTED_PUBLIC_ENDPOINT_UUID = uuidv5(
-  `${FIXTURE_APPLICATION_UUID}\n${PUBLIC_ENDPOINT_NAME}`,
-  ENDPOINT_ENTITY_UUID,
-);
-const EXPECTED_TOKEN_ENDPOINT_UUID = uuidv5(
-  `${FIXTURE_APPLICATION_UUID}\n${TOKEN_ENDPOINT_NAME}`,
-  ENDPOINT_ENTITY_UUID,
-);
+const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const EXPECTED_SECRET_UUID = miroirSecretInstanceUuid(CUSTOM_TOKEN_SECRET_NAME, "process");
 
 function openApiDocumentText(): string {
@@ -241,8 +232,10 @@ describe.skipIf(!shouldRunPhase4).sequential(
         harness.applicationDeploymentMap,
       );
 
-      const publicEndpoint = model.endpoints.find((row) => row.uuid === EXPECTED_PUBLIC_ENDPOINT_UUID);
-      const tokenEndpoint = model.endpoints.find((row) => row.uuid === EXPECTED_TOKEN_ENDPOINT_UUID);
+      const publicEndpoint = model.endpoints.find((row) => row.name === PUBLIC_ENDPOINT_NAME);
+      const tokenEndpoint = model.endpoints.find((row) => row.name === TOKEN_ENDPOINT_NAME);
+      expect(publicEndpoint?.uuid).toMatch(UUID_V4);
+      expect(tokenEndpoint?.uuid).toMatch(UUID_V4);
       expect(publicEndpoint, "discogsPublic endpoint uuid missing").toBeDefined();
       expect(tokenEndpoint, "discogsToken endpoint uuid missing").toBeDefined();
 
@@ -274,10 +267,6 @@ describe.skipIf(!shouldRunPhase4).sequential(
       const clientIdKey = "discogsCcClientId";
       const clientSecretKey = "discogsCcClientSecret";
       const endpointName = "discogsClientCredentials";
-      const expectedEndpointUuid = uuidv5(
-        `${FIXTURE_APPLICATION_UUID}\n${endpointName}`,
-        ENDPOINT_ENTITY_UUID,
-      );
       const tokenUrl = `${harness.fakeServer.baseUrl}/oauth/token`;
 
       harness.fakeServer.setFixture("POST", "/oauth/token", {
@@ -314,7 +303,8 @@ describe.skipIf(!shouldRunPhase4).sequential(
         FIXTURE_APPLICATION_UUID,
         harness.applicationDeploymentMap,
       );
-      const endpoint = model.endpoints.find((row) => row.uuid === expectedEndpointUuid);
+      const endpoint = model.endpoints.find((row) => row.name === endpointName);
+      expect(endpoint?.uuid).toMatch(UUID_V4);
       expect(endpoint).toBeDefined();
       const external = getExternalService(endpoint);
       expect(external!.securityScheme.type).toBe("oauth2ClientCredentials");
@@ -345,10 +335,6 @@ describe.skipIf(!shouldRunPhase4).sequential(
       const refreshTokenKey = "spotifyRefreshToken";
       const endpointName = "spotifyAuthCode";
       const probeOperationId = "get-playlist";
-      const expectedEndpointUuid = uuidv5(
-        `${FIXTURE_APPLICATION_UUID}\n${endpointName}`,
-        ENDPOINT_ENTITY_UUID,
-      );
       const tokenUrl = `${harness.fakeServer.baseUrl}/api/token`;
       const playlistPath = "/playlists/{playlist_id}";
       const openApiSpotify = JSON.stringify({
@@ -446,7 +432,8 @@ describe.skipIf(!shouldRunPhase4).sequential(
         FIXTURE_APPLICATION_UUID,
         harness.applicationDeploymentMap,
       );
-      const endpoint = model.endpoints.find((row) => row.uuid === expectedEndpointUuid);
+      const endpoint = model.endpoints.find((row) => row.name === endpointName);
+      expect(endpoint?.uuid).toMatch(UUID_V4);
       expect(endpoint).toBeDefined();
       const external = getExternalService(endpoint);
       expect(external!.securityScheme.type).toBe("oauth2AuthorizationCode");

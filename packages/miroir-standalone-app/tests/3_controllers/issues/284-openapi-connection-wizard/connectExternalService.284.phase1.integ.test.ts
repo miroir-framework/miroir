@@ -8,7 +8,6 @@
  * ```
  */
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { v5 as uuidv5 } from "uuid";
 
 import {
   Action2Error,
@@ -20,9 +19,7 @@ import {
 import {
   bootConnectExternalService284Harness,
   DOMAIN_ENDPOINT,
-  ENDPOINT_ENTITY_UUID,
   FIXTURE_APPLICATION_UUID,
-  REPORT_ENTITY_UUID,
   type ConnectExternalService284Harness,
 } from "./connectExternalService.284.harness.js";
 
@@ -39,15 +36,7 @@ const USER_AGENT = "MiroirTest/284";
 const RELEASE_PATH = "/releases/{id}";
 const ONE_OF_PROPERTY = "formatDetails";
 
-/** Independent expected uuids for Library application + discogsPublic (analysis D10). */
-const EXPECTED_ENDPOINT_UUID = uuidv5(
-  `${FIXTURE_APPLICATION_UUID}\n${ENDPOINT_NAME}`,
-  ENDPOINT_ENTITY_UUID,
-);
-const EXPECTED_REPORT_UUID = uuidv5(
-  `${FIXTURE_APPLICATION_UUID}\n${ENDPOINT_NAME}\n${PROBE_OPERATION_ID}`,
-  REPORT_ENTITY_UUID,
-);
+const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function openApiDocumentText(): string {
   return JSON.stringify({
@@ -155,7 +144,8 @@ describe.skipIf(!shouldRunPhase1).sequential("connectExternalService.284.phase1 
       harness.applicationDeploymentMap,
     );
 
-    const endpoint = model.endpoints.find((row) => row.uuid === EXPECTED_ENDPOINT_UUID);
+    const endpoint = model.endpoints.find((row) => row.name === ENDPOINT_NAME);
+    expect(endpoint?.uuid).toMatch(UUID_V4);
     expect(
       endpoint,
       "DomainController handleAction action could not be taken into account, unkown action",
@@ -173,7 +163,8 @@ describe.skipIf(!shouldRunPhase1).sequential("connectExternalService.284.phase1 
     expect(boundPaths.some((path) => path.includes(ONE_OF_PROPERTY))).toBe(false);
     expect(boundPaths.length).toBeGreaterThan(0);
 
-    const report = model.reports.find((row) => row.uuid === EXPECTED_REPORT_UUID);
+    const report = model.reports.find((row) => row.name === `${ENDPOINT_NAME}_${PROBE_OPERATION_ID}`);
+    expect(report?.uuid).toMatch(UUID_V4);
     expect(report).toBeDefined();
     expect(report!.conceptLevel).toBe("Model");
     const sections = (report!.definition as { section?: { definition?: Array<{ type: string; definition?: any }> } })

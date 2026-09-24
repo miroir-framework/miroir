@@ -478,7 +478,7 @@ Delete the `pre-284 inventory` describe at the end of this slice. `phase0 stable
 
 ### 6.2 What the cycles add
 
-- Report asset `dbd94bfe-b803-4bfd-8bb2-70a5932d5d1a` under `miroir_model`, `selfApplication` `360fcf1f-f0d4-4f8a-9262-07886e70fa15`, `conceptLevel: "Model"`, twelve envelopes from analysis §5.1. Finish sequence is one `connectExternalService`. Added in the launcher cycle, once the button's `reportUuid` must resolve.
+- Report asset `dbd94bfe-b803-4bfd-8bb2-70a5932d5d1a` under `miroir_data` (Miroir Report rows load from the data section), `selfApplication` `360fcf1f-f0d4-4f8a-9262-07886e70fa15`, `conceptLevel: "Model"`, twelve envelopes from analysis §5.1. Finish sequence is one `connectExternalService`. Added in the launcher cycle, once the button's `reportUuid` must resolve.
 - `inputSchemaFromBag` on `operations` and `probeParams`. The host evaluates it (Slice 5). This slice only supplies the transformers.
 - Document `onNext` calls the Slice 1 walker and, for a URL, `fetch` on the server under `assertBaseUrlAllowed`.
 - `openReportSection` on `29ef8018-43fc-4ee9-a736-6f9d625be7b7` in the launcher cycle.
@@ -500,7 +500,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-Home report `29ef8018-…` has an `openReportSection` labeled Connect an external service, opening wizard report `dbd94bfe-b803-4bfd-8bb2-70a5932d5d1a` (`conceptLevel: "Model"`, twelve step envelopes). The report JSON lives only under `miroir_model`. Document Next is `prepareOpenApiDocument` (parse text, or fetch a URL under `assertBaseUrlAllowed`). `normalizeConnectExternalServicePayload` flattens the step bag into the flat payload phase 1–4 already send; a uuid `application` with no step keys is left unchanged. The picker reads `applicationDeploymentMap` except Miroir and Admin. The `pre-284 inventory` describe is deleted. `wizardWalk.284` 10 passed. phase0 stable 4 passed. phase1 1 passed. modelValidation 152 passed.
+Home report `29ef8018-…` has an `openReportSection` labeled Connect an external service, opening wizard report `dbd94bfe-b803-4bfd-8bb2-70a5932d5d1a` (`conceptLevel: "Model"`, twelve step envelopes). The report JSON lives under `miroir_data`: for the Miroir application, Report rows are loaded from the data section (`getApplicationSection` returns `data` except for Entity). A `miroir_model` copy is not in that list, so the home-page link (`applicationSection=data`) renders a blank report. Document Next is `prepareOpenApiDocument` (parse text, or fetch a URL under `assertBaseUrlAllowed`). `normalizeConnectExternalServicePayload` flattens the step bag into the flat payload phase 1–4 already send; a uuid `application` with no step keys is left unchanged. The picker reads `applicationDeploymentMap` except Miroir and Admin. The `pre-284 inventory` describe is deleted. `wizardWalk.284` 10 passed. phase0 stable 4 passed. phase1 1 passed. modelValidation 152 passed.
 
 ---
 
@@ -557,7 +557,7 @@ Automated equivalent: `wizardWalk.284` Finish assertion, plus `connectExternalSe
 
 `scripts/nonreg-manifest.json` adds four steps after `appstack-274-multistep-reports`: `unit-284-openapi-connection-wizard` (phase0 stable), `integ-action-284-openapi-connection-wizard` (phase1–3), `integ-action-284-openapi-connection-wizard-auth` (phase4), `appstack-284-openapi-connection-wizard` (`multistepBranch.284` and `wizardWalk.284`). `docs/reference/api/reports.md` records the list-child envelope (`stepId`, `onNext`, `branch`, `inputSchemaFromBag`, visited Back and Finish). The issue-directory suites stay under `tests/**/issues/284-openapi-connection-wizard/` until #284 closes, per `docs/contributing/testing.md`.
 
-The wizard report had been stored in both `miroir_model` and `miroir_data`, so the #274 seed inventory counted 88 reports. The data copy is removed. The inventory expects 87 reports and 2 multistep reports, including `ConnectExternalServiceWizard`. `wizardWalk.284` loads the model file. `MiroirContextReactProvider` seeds `applicationDeploymentMap` with `testingApplication` so the picker lists the fixture application.
+The wizard report had been stored in both `miroir_model` and `miroir_data`, so the #274 seed inventory counted 88 reports. Keeping both copies is wrong, and keeping only the model copy is also wrong: Miroir loads Report instances from the data section, so a model-only file never appears on the home-page link. The single copy is `miroir_data`. The inventory expects 87 reports and 2 multistep reports, including `ConnectExternalServiceWizard`. `wizardWalk.284` loads that data file. `MiroirContextReactProvider` seeds `applicationDeploymentMap` with `testingApplication` so the picker lists the fixture application.
 
 `npx tsc --noEmit --skipLibCheck` passed for `miroir-core` and `miroir-standalone-app`. `npm run nonreg` (default tier, `emulatedServer-sql`) passed 67 and failed 0. Snapshot `test-results/nonreg/20260923T155304Z`. An earlier full run failed `integ-action-274-multistep-reports` with Windows `UNKNOWN` while writing `tests/assets/admin_data/.../10ff36f2-….json`. That step passed on retry, and the following full run passed.
 

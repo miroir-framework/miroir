@@ -63,6 +63,21 @@ export function redactCredentialSecretsFromValue(value: unknown): unknown {
       continue;
     }
     if (isSensitiveKey(key)) {
+      // String values are secret material. Object values are schema nodes (Report
+      // inputMLSchema attributes named clientSecret / token / refreshToken). Replacing
+      // those objects with "[REDACTED]" makes the wizard report fail to render.
+      if (Array.isArray(child)) {
+        next[key] = child.map((item) =>
+          item !== null && typeof item === "object"
+            ? redactCredentialSecretsFromValue(item)
+            : "[REDACTED]",
+        );
+        continue;
+      }
+      if (child !== null && typeof child === "object") {
+        next[key] = redactCredentialSecretsFromValue(child);
+        continue;
+      }
       next[key] = "[REDACTED]";
       continue;
     }

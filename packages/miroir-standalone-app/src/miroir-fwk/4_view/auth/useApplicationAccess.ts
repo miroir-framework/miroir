@@ -108,6 +108,7 @@ export function useApplicationAccess() {
     filterEnabled,
     visible,
     candidates: USER_SELECTABLE_APPLICATION_UUIDS,
+    applications,
     canAccessApplication(applicationUuid: string | undefined): boolean {
       if (!applicationUuid || !filterEnabled) {
         return true;

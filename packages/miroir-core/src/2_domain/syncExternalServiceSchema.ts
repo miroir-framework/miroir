@@ -550,6 +550,46 @@ export function materializeExternalServiceOperations(params: {
   return { ok: true, operations };
 }
 
+/**
+ * GET URL the probe will send, with path and query parameters filled in.
+ * Used by the wizard review step; it does not perform the request.
+ */
+export function previewOpenApiGetCall(
+  openApiDocument: unknown,
+  operationId: string,
+  baseUrl: string,
+  parameters: Record<string, unknown>,
+): { method: "GET"; path: string; url: string } | undefined {
+  let doc: Record<string, unknown>;
+  try {
+    doc = parseOpenApiDocument(openApiDocument);
+  } catch {
+    return undefined;
+  }
+  const found = findGetOperation(doc, operationId);
+  if (!found) {
+    return undefined;
+  }
+  let path = found.path;
+  const query: string[] = [];
+  for (const mapping of collectParameters(doc, found.pathItem, found.operation)) {
+    const raw = parameters[mapping.name];
+    if (raw === undefined || raw === null || raw === "") {
+      continue;
+    }
+    const encoded = encodeURIComponent(String(raw));
+    if (mapping.in === "path") {
+      path = path.replaceAll(`{${mapping.name}}`, encoded);
+    } else if (mapping.in === "query") {
+      query.push(`${encodeURIComponent(mapping.name)}=${encoded}`);
+    }
+  }
+  const base = baseUrl.replace(/\/+$/, "");
+  const pathPart = path.startsWith("/") ? path : `/${path}`;
+  const url = `${base}${pathPart}${query.length > 0 ? `?${query.join("&")}` : ""}`;
+  return { method: "GET", path, url };
+}
+
 export function openApiParameterNamesForOperation(
   openApiDocument: unknown,
   operationId: string,

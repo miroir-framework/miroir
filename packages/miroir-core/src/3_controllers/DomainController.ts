@@ -1,5 +1,5 @@
 
-import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 import {
   getEndpointActions,
@@ -340,6 +340,53 @@ function collectEmulatedServerTypes(configuration: unknown): StorageType[] {
   };
   visit(configuration);
   return types;
+}
+
+function appendReportLinkToMenu(
+  menu: { definition?: { menuType?: string; definition?: any } },
+  menuItem: {
+    miroirMenuItemType: "miroirMenuReportLink";
+    label: string;
+    section: "model";
+    selfApplication: string;
+    reportUuid: string;
+  },
+): typeof menu | undefined {
+  const cloned = structuredClone(menu);
+  const definition = cloned.definition;
+  if (!definition || !Array.isArray(definition.definition)) {
+    return undefined;
+  }
+  const alreadyLinked = (items: any[]) =>
+    items.some(
+      (item) =>
+        item?.miroirMenuItemType === "miroirMenuReportLink" &&
+        item?.reportUuid === menuItem.reportUuid,
+    );
+  if (definition.menuType === "simpleMenu") {
+    if (alreadyLinked(definition.definition)) {
+      return undefined;
+    }
+    definition.definition.push(menuItem);
+    return cloned;
+  }
+  if (definition.menuType === "complexMenu") {
+    if (definition.definition.length === 0) {
+      definition.definition.push({
+        title: "External services",
+        label: "externalServices",
+        items: [menuItem],
+      });
+      return cloned;
+    }
+    const items = definition.definition[0].items;
+    if (!Array.isArray(items) || alreadyLinked(items)) {
+      return undefined;
+    }
+    items.push(menuItem);
+    return cloned;
+  }
+  return undefined;
 }
 
 export class DomainController implements DomainControllerInterface {
@@ -3408,6 +3455,105 @@ export class DomainController implements DomainControllerInterface {
 
   // ##############################################################################################
   /**
+   * Browser controllers fetch through the server (same hop as Spotify report queries).
+   * The server process performs the GET so the browser is not subject to CORS.
+   */
+  private async runExternalServiceProbe(
+    endpoint: EndpointDefinition,
+    operationId: string,
+    parameters: Record<string, unknown>,
+    processSecrets: Record<string, string> | undefined,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    principal?: AuthPrincipal,
+  ): Promise<Action2ReturnType> {
+    if (this.persistenceStoreAccessMode === "local") {
+      return executeExternalServiceOperation(endpoint, operationId, parameters, principal);
+    }
+    const targetApplication = (endpoint as { application?: string }).application;
+    const deploymentUuid =
+      typeof targetApplication === "string"
+        ? applicationDeploymentMap[targetApplication]
+        : undefined;
+    const remoteResult = await this.persistenceStoreLocalOrRemote.handlePersistenceActionForRemoteStore(
+      {
+        actionType: "probeExternalService",
+        endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+        payload: {
+          endpoint,
+          operationId,
+          parameters,
+          ...(typeof targetApplication === "string" ? { application: targetApplication } : {}),
+          ...(typeof deploymentUuid === "string" ? { deploymentUuid } : {}),
+          ...(processSecrets && Object.keys(processSecrets).length > 0
+            ? { processSecrets }
+            : {}),
+        },
+      } as any,
+      applicationDeploymentMap,
+    );
+    // The HTTP hop JSON-parses the result, so a failed probe is a plain object.
+    if (
+      remoteResult &&
+      typeof remoteResult === "object" &&
+      !(remoteResult instanceof Action2Error) &&
+      (remoteResult as { status?: unknown }).status === "error"
+    ) {
+      const plain = remoteResult as {
+        errorType?: ConstructorParameters<typeof Action2Error>[0];
+        errorMessage?: string;
+        errorStack?: (string | undefined)[];
+        innerError?: Action2Error | Action2Error[];
+        errorContext?: Record<string, any>;
+      };
+      return new Action2Error(
+        plain.errorType ?? "ExternalServiceUpstreamFailure",
+        plain.errorMessage,
+        plain.errorStack,
+        plain.innerError,
+        plain.errorContext,
+      );
+    }
+    return remoteResult;
+  }
+
+  private async handleProbeExternalService(
+    domainAction: {
+      payload?: {
+        endpoint?: EndpointDefinition;
+        operationId?: string;
+        parameters?: Record<string, unknown>;
+        processSecrets?: Record<string, string>;
+      };
+    },
+    principal?: AuthPrincipal,
+  ): Promise<Action2ReturnType> {
+    const payload = domainAction.payload;
+    const endpoint = payload?.endpoint;
+    const operationId = payload?.operationId;
+    if (!endpoint || !operationId) {
+      return new Action2Error(
+        "InvalidAction",
+        "probeExternalService requires an endpoint and an operationId",
+      );
+    }
+    const processSecrets = payload?.processSecrets;
+    if (processSecrets) {
+      for (const [name, value] of Object.entries(processSecrets)) {
+        if (typeof value === "string" && value.length > 0) {
+          registerHydratedProcessSecret(name, value);
+        }
+      }
+    }
+    return executeExternalServiceOperation(
+      endpoint,
+      operationId,
+      payload?.parameters ?? {},
+      principal,
+    );
+  }
+
+  // ##############################################################################################
+  /**
    * #284 — probe then upsert endpoint + Model report on bag.application (never host props.application).
    * Public scheme only in Slice 1; do not log the bag.
    */
@@ -3442,6 +3588,9 @@ export class DomainController implements DomainControllerInterface {
     principal?: AuthPrincipal,
   ): Promise<Action2VoidReturnType> {
     const rawBag = domainAction.payload as Record<string, unknown>;
+    const probeOnly =
+      rawBag.probeOnly === true ||
+      (domainAction as { actionLabel?: string }).actionLabel === "probeWizardConnection";
     const bag = normalizeConnectExternalServicePayload(rawBag);
     // Keep mutations on domainAction.payload for downstream typing; replace with flat bag.
     (domainAction as { payload: typeof bag }).payload = bag;
@@ -3474,29 +3623,63 @@ export class DomainController implements DomainControllerInterface {
         "connectExternalService: probeOperationId must be one of checkedOperationIds",
       );
     }
+    if (!probeOnly && bag.probeSucceeded === false) {
+      return new Action2Error(
+        "InvalidAction",
+        bag.probeMessage && bag.probeMessage.length > 0
+          ? bag.probeMessage
+          : "connectExternalService: probe failed",
+      );
+    }
 
     const ENDPOINT_ENTITY_UUID = "3d8da4d4-8f76-4bb4-9212-14869d81c00c";
     const REPORT_ENTITY_UUID = "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916";
     const INSTANCE_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";
     const MODEL_ENDPOINT = "7947ae40-eb34-4149-887b-15a9021e714e";
 
-    const endpointUuid = uuidv5(`${applicationUuid}\n${bag.endpointName}`, ENDPOINT_ENTITY_UUID);
-    const reportUuid = uuidv5(
-      `${applicationUuid}\n${bag.endpointName}\n${bag.probeOperationId}`,
-      REPORT_ENTITY_UUID,
-    );
+    // Instance uuids are version 4. The editor's uuid schema rejects version 5.
+    // A later Finish updates the wizard's own row (same name, version-4 uuid, wizard
+    // description). A row with that name that this wizard did not create is refused,
+    // including a hand-built endpoint such as Spotify's.
+    const UUID_V4 =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const WIZARD_ROW_MARK = "OpenAPI connection wizard";
+    const wizardOwned = (row: { uuid?: string; description?: string } | undefined): boolean =>
+      !!row &&
+      typeof row.uuid === "string" &&
+      UUID_V4.test(row.uuid) &&
+      typeof row.description === "string" &&
+      row.description.startsWith(WIZARD_ROW_MARK);
 
-    // Slice 2: name clash against the target model before any secret register or write (analysis §5.2 step 1).
     const targetModelForClash = this.currentModel(applicationUuid, applicationDeploymentMap);
-    const clash = targetModelForClash.endpoints.find(
-      (row) => row.name === bag.endpointName && row.uuid !== endpointUuid,
-    );
-    if (clash) {
+    const namedEndpoint = targetModelForClash.endpoints.find((row) => row.name === bag.endpointName);
+    if (namedEndpoint && !wizardOwned(namedEndpoint)) {
+      const existingUuid = namedEndpoint.uuid;
       return new Action2Error(
         "InvalidAction",
-        `connectExternalService: endpoint name "${bag.endpointName}" already exists with a different uuid`,
+        typeof existingUuid === "string" && !UUID_V4.test(existingUuid)
+          ? `connectExternalService: endpoint name "${bag.endpointName}" already exists with uuid ${existingUuid}, which is not a version-4 uuid. Delete that endpoint and run the wizard again.`
+          : `connectExternalService: endpoint name "${bag.endpointName}" already exists with a different uuid`,
       );
     }
+    const endpointUuid = namedEndpoint?.uuid ?? uuidv4();
+
+    const createExampleReport = bag.createExampleReport !== false;
+    const addReportToMenu = bag.addReportToMenu === true && createExampleReport;
+    const reportName = `${bag.endpointName}_${bag.probeOperationId}`;
+    const namedReport = createExampleReport
+      ? targetModelForClash.reports.find((row) => row.name === reportName)
+      : undefined;
+    if (namedReport && !wizardOwned(namedReport)) {
+      const existingUuid = namedReport.uuid;
+      return new Action2Error(
+        "InvalidAction",
+        typeof existingUuid === "string" && !UUID_V4.test(existingUuid)
+          ? `connectExternalService: report name "${reportName}" already exists with uuid ${existingUuid}, which is not a version-4 uuid. Delete that report and run the wizard again.`
+          : `connectExternalService: report name "${reportName}" already exists with a different uuid`,
+      );
+    }
+    const reportUuid = namedReport?.uuid ?? uuidv4();
 
     // Slice 4 / D11: scheme from bag when authenticated; public is type none.
     let securityScheme: EndpointSecurityScheme;
@@ -3602,6 +3785,7 @@ export class DomainController implements DomainControllerInterface {
       parentUuid: ENDPOINT_ENTITY_UUID,
       application: applicationUuid,
       name: bag.endpointName,
+      description: WIZARD_ROW_MARK,
       version: "1",
       definition: {
         externalService: {
@@ -3635,17 +3819,55 @@ export class DomainController implements DomainControllerInterface {
       }
     }
 
-    const probeResult = await executeExternalServiceOperation(
-      unsavedEndpoint,
-      bag.probeOperationId,
-      bag.probeParameters ?? {},
-      principal,
-    );
+    const probeResult =
+      bag.probeSucceeded === true
+        ? ACTION_OK
+        : await this.runExternalServiceProbe(
+            unsavedEndpoint,
+            bag.probeOperationId,
+            bag.probeParameters ?? {},
+            processSecretsBag,
+            applicationDeploymentMap,
+            principal,
+          );
     if (probeResult instanceof Action2Error) {
       if (secretSnapshots.length > 0) {
         restoreProcessSecretsFromSnapshot(secretSnapshots);
       }
+      if (probeOnly) {
+        return {
+          status: "ok",
+          returnedDomainElement: {
+            probeSucceeded: false,
+            probeMessage: probeResult.errorMessage ?? "Probe failed.",
+          },
+        } as unknown as Action2VoidReturnType;
+      }
       return probeResult;
+    }
+    if (probeOnly) {
+      if (secretSnapshots.length > 0) {
+        restoreProcessSecretsFromSnapshot(secretSnapshots);
+      }
+      return {
+        status: "ok",
+        returnedDomainElement: {
+          probeSucceeded: true,
+          probeMessage: "Probe succeeded.",
+        },
+      } as unknown as Action2VoidReturnType;
+    }
+    if (addReportToMenu) {
+      const menus = this.currentModel(applicationUuid, applicationDeploymentMap).menus ?? [];
+      if (menus.length === 0) {
+        if (secretSnapshots.length > 0) {
+          restoreProcessSecretsFromSnapshot(secretSnapshots);
+        }
+        return new Action2Error(
+          "InvalidAction",
+          "connectExternalService: the selected application has no menu",
+        );
+      }
     }
 
     // Slice 4: persist processSecrets to Admin after a successful probe (analysis §5.2 step 6).
@@ -3701,7 +3923,8 @@ export class DomainController implements DomainControllerInterface {
       parentName: "Report",
       parentUuid: REPORT_ENTITY_UUID,
       conceptLevel: "Model",
-      name: `${bag.endpointName}_${bag.probeOperationId}`,
+      name: reportName,
+      description: WIZARD_ROW_MARK,
       defaultLabel: `${bag.endpointName} ${bag.probeOperationId}`,
       definition: {
         extractorTemplates: {
@@ -3763,21 +3986,53 @@ export class DomainController implements DomainControllerInterface {
       return upsertEndpointResult;
     }
 
-    const upsertReportResult = await this.handleAction(
-      {
-        actionType: reportExists ? "updateInstance" : "createInstance",
-        endpoint: INSTANCE_ENDPOINT,
-        payload: {
-          application: applicationUuid,
-          applicationSection: "model",
-          objects: [reportInstance as EntityInstance],
-        },
-      } as any,
-      applicationDeploymentMap,
-      modelEnvironment,
-    );
-    if (upsertReportResult instanceof Action2Error) {
-      return upsertReportResult;
+    if (createExampleReport) {
+      const upsertReportResult = await this.handleAction(
+        {
+          actionType: reportExists ? "updateInstance" : "createInstance",
+          endpoint: INSTANCE_ENDPOINT,
+          payload: {
+            application: applicationUuid,
+            applicationSection: "model",
+            objects: [reportInstance as EntityInstance],
+          },
+        } as any,
+        applicationDeploymentMap,
+        modelEnvironment,
+      );
+      if (upsertReportResult instanceof Action2Error) {
+        return upsertReportResult;
+      }
+    }
+
+    if (addReportToMenu) {
+      const menu = this.currentModel(applicationUuid, applicationDeploymentMap).menus[0];
+      const menuItem = {
+        miroirMenuItemType: "miroirMenuReportLink" as const,
+        label: `${bag.endpointName} ${bag.probeOperationId}`,
+        section: "model" as const,
+        selfApplication: applicationUuid,
+        reportUuid,
+      };
+      const updatedMenu = appendReportLinkToMenu(menu, menuItem);
+      if (updatedMenu) {
+        const menuResult = await this.handleAction(
+          {
+            actionType: "updateInstance",
+            endpoint: INSTANCE_ENDPOINT,
+            payload: {
+              application: applicationUuid,
+              applicationSection: "model",
+              objects: [updatedMenu as EntityInstance],
+            },
+          } as any,
+          applicationDeploymentMap,
+          modelEnvironment,
+        );
+        if (menuResult instanceof Action2Error) {
+          return menuResult;
+        }
+      }
     }
 
     const commitResult = await this.handleAction(
@@ -3859,43 +4114,77 @@ export class DomainController implements DomainControllerInterface {
       type: "object",
       definition: {
         checkedOperationIds: {
-          type: "string",
+          type: "object",
           tag: {
             value: {
-              defaultLabel: "Checked operation ids (comma-separated)",
+              defaultLabel: "Operations to include (turn off any you do not want on the endpoint)",
             },
           },
+          definition: Object.fromEntries(
+            convertibleOperationIds.map((operationId) => [
+              operationId,
+              {
+                type: "boolean",
+                optional: true,
+                tag: {
+                  value: {
+                    defaultLabel: operationId,
+                    initializeTo: { initializeToType: "value", value: true },
+                  },
+                },
+              },
+            ]),
+          ),
         },
-        probeOperationId: {
-          type: "string",
-          tag: {
-            value: {
-              defaultLabel: "Probe operation",
+        probeOperationId: convertibleOperationIds.length > 0
+          ? {
+              type: "enum",
+              definition: convertibleOperationIds,
+              tag: {
+                value: {
+                  defaultLabel:
+                    "Probe operation — the id of one included operation. Finish calls it once to verify the connection.",
+                },
+              },
+            }
+          : {
+              type: "string",
+              tag: {
+                value: {
+                  defaultLabel: "Probe operation — no convertible GET operation in this document",
+                },
+              },
             },
-          },
-        },
       },
       required: ["checkedOperationIds", "probeOperationId"],
     };
 
+    const probeParamsSchemaFor = (names: string[]) => ({
+      type: "object",
+      definition: Object.fromEntries(
+        names.map((name) => [
+          name,
+          {
+            type: "string",
+            optional: true,
+            tag: { value: { defaultLabel: name } },
+          },
+        ]),
+      ),
+    });
+    const probeParamsInputSchemaByOperationId = Object.fromEntries(
+      convertibleOperationIds.map((operationId) => [
+        operationId,
+        probeParamsSchemaFor(openApiParameterNamesForOperation(trimmed, operationId)),
+      ]),
+    );
     const probeParamNames = new Set<string>();
     for (const operationId of convertibleOperationIds) {
       for (const name of openApiParameterNamesForOperation(trimmed, operationId)) {
         probeParamNames.add(name);
       }
     }
-    const probeParamsInputSchema = {
-      type: "object",
-      definition: Object.fromEntries(
-        [...probeParamNames].map((name) => [
-          name,
-          {
-            type: "string",
-            tag: { value: { defaultLabel: name } },
-          },
-        ]),
-      ),
-    };
+    const probeParamsInputSchema = probeParamsSchemaFor([...probeParamNames]);
 
     return {
       status: "ok",
@@ -3905,6 +4194,7 @@ export class DomainController implements DomainControllerInterface {
         convertibleOperationIds,
         operationsInputSchema,
         probeParamsInputSchema,
+        probeParamsInputSchemaByOperationId,
       },
     };
   }
@@ -4195,6 +4485,9 @@ export class DomainController implements DomainControllerInterface {
             applicationDeploymentMap,
             principal,
           );
+        }
+        case "probeExternalService" as any: {
+          return this.handleProbeExternalService(domainAction as any, principal);
         }
         case "prepareOpenApiDocument": {
           return this.handlePrepareOpenApiDocument(domainAction as any);

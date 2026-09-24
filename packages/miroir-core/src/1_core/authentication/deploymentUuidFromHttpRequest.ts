@@ -4,7 +4,9 @@
  * Route params (`/CRUD/:deploymentUuid/...`) win; action bodies carry the deployment in
  * `payload.deploymentUuid`, or — for query actions (`/query`, `/queryTemplate`) — in
  * `payload.application` (legacy naming: query-action payloads put the deployment uuid in
- * `application`). Bodies may wrap the action as `{ action, applicationDeploymentMap }`.
+ * `application`). A probe body names the target application on `payload.endpoint.application`
+ * and resolves it through `applicationDeploymentMap`. Bodies may wrap the action as
+ * `{ action, applicationDeploymentMap }`.
  *
  * Used by the server's access gate (`assertAccessForDeployment`): returning `undefined`
  * means the request is denied when authentication is enabled.
@@ -34,18 +36,32 @@ export function deploymentUuidFromHttpRequest(request: {
     }
     const fromApplication = (payload as Record<string, unknown>).application;
     if (typeof fromApplication === "string" && fromApplication) {
+      const mapped = deploymentForApplication(body, fromApplication);
       // Query-action convention: payload.application is the APPLICATION uuid, resolved to
       // the deployment actually accessed via the body's applicationDeploymentMap.
-      const map = body?.applicationDeploymentMap;
-      if (map && typeof map === "object") {
-        const mapped = (map as Record<string, unknown>)[fromApplication];
-        if (typeof mapped === "string" && mapped) {
-          return mapped;
-        }
-      }
       // Fallback: some callers put the deployment uuid in `application` directly.
-      return fromApplication;
+      return mapped ?? fromApplication;
+    }
+    const endpoint = (payload as Record<string, unknown>).endpoint;
+    const endpointApplication =
+      endpoint && typeof endpoint === "object"
+        ? (endpoint as Record<string, unknown>).application
+        : undefined;
+    if (typeof endpointApplication === "string" && endpointApplication) {
+      const mapped = deploymentForApplication(body, endpointApplication);
+      if (mapped) {
+        return mapped;
+      }
     }
   }
   return undefined;
+}
+
+function deploymentForApplication(body: Record<string, unknown> | undefined, application: string): string | undefined {
+  const map = body?.applicationDeploymentMap;
+  if (!map || typeof map !== "object") {
+    return undefined;
+  }
+  const mapped = (map as Record<string, unknown>)[application];
+  return typeof mapped === "string" && mapped ? mapped : undefined;
 }

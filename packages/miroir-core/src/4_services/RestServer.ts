@@ -347,6 +347,19 @@ export async function restActionHandler(
   const action: PersistenceAction | DomainAction = body?.action?body.action:body as any;
   const applicationDeploymentMap: ApplicationDeploymentMap = body?.applicationDeploymentMap?body.applicationDeploymentMap:{};
 
+  if ((action as { actionType?: string }).actionType === "probeExternalService") {
+    log.info("restActionHandler probeExternalService");
+    const result = await domainController.handleAction(
+      action as any,
+      applicationDeploymentMap,
+      undefined,
+      undefined,
+      undefined,
+      urlParams?.authPrincipal,
+    );
+    return continuationFunction(response)(redactCredentialSecretsFromValue(result));
+  }
+
   if (action.actionType !== "initModel") {
     // log.info("restActionHandler called with", "body", JSON.stringify(body, undefined, 2));
     log.info(

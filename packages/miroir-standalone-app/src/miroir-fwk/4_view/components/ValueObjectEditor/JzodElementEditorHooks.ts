@@ -44,6 +44,7 @@ import { FieldValidationContext } from "./FieldValidationContext";
 import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
 import { adminSelfApplication } from "miroir-test-app_deployment-admin";
+import { useApplicationAccess } from "../../auth/useApplicationAccess.js";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodElementEditorHooks");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
@@ -187,6 +188,7 @@ export function useJzodElementEditorHooks(
   // general use
   count++;
   const context = useMiroirContextService();
+  const { visible, candidates, applications } = useApplicationAccess();
   const currentModel: MetaModel = useCurrentModel(currentApplication, applicationDeploymentMap);
   const miroirMetaModel: MetaModel = useCurrentModel(
     selfApplicationMiroir.uuid,
@@ -493,24 +495,42 @@ export function useJzodElementEditorHooks(
     if (tagValue?.display?.uuid?.restrictToApplicationDeploymentMap) {
       const miroirUuid = selfApplicationMiroir.uuid;
       const adminUuid = adminSelfApplication.uuid;
-      const targetEntity = tagValue.foreignKeyParams?.targetEntity;
-      const labeled =
-        targetEntity && foreignKeyObjects[targetEntity] ? foreignKeyObjects[targetEntity] : {};
-      // Display names for map keys: prefer FK rows, else well-known SelfApplication exports
-      // (not report hardcoding — the report only sets restrictToApplicationDeploymentMap).
+      const labeled: Record<string, EntityInstance & { defaultLabel?: string }> = {};
+      for (const row of applications ?? []) {
+        const uuid = (row as { uuid?: string }).uuid;
+        if (uuid) {
+          labeled[uuid] = row as EntityInstance & { defaultLabel?: string };
+        }
+      }
       const knownNames: Record<string, string> = {
-        [selfApplicationLibrary.uuid]: selfApplicationLibrary.name,
-        [selfApplicationMiroir.uuid]: selfApplicationMiroir.name,
-        [adminSelfApplication.uuid]: adminSelfApplication.name,
+        [selfApplicationLibrary.uuid]:
+          (selfApplicationLibrary as { defaultLabel?: string }).defaultLabel ??
+          selfApplicationLibrary.name,
+        [selfApplicationMiroir.uuid]:
+          (selfApplicationMiroir as { defaultLabel?: string }).defaultLabel ??
+          selfApplicationMiroir.name,
+        [adminSelfApplication.uuid]:
+          (adminSelfApplication as { defaultLabel?: string }).defaultLabel ??
+          adminSelfApplication.name,
       };
-      const entries = Object.keys(applicationDeploymentMap ?? {})
-        .filter((uuid) => uuid !== miroirUuid && uuid !== adminUuid)
+      // Same membership as the sidebar: Admin Application rows, excluding Miroir,
+      // Admin, and apps the current user cannot see. Map keys are the fallback
+      // before those rows are in the cache.
+      const hidden = new Set(candidates.filter((uuid) => !visible.includes(uuid)));
+      const excluded = new Set([miroirUuid, adminUuid, noValue.uuid, ...hidden]);
+      const applicationUuids = Object.keys(labeled);
+      const sourceUuids =
+        applicationUuids.length > 0 ? applicationUuids : Object.keys(applicationDeploymentMap ?? {});
+      const entries = sourceUuids
+        .filter((uuid) => !excluded.has(uuid))
         .map((uuid) => {
-          const fromFk = labeled[uuid];
-          const instance = (fromFk ?? {
+          const fromRow = labeled[uuid];
+          const label = fromRow?.defaultLabel || fromRow?.name || knownNames[uuid] || uuid;
+          const instance = (fromRow ?? {
             uuid,
-            name: knownNames[uuid] ?? uuid,
-            parentUuid: targetEntity ?? "",
+            name: label,
+            defaultLabel: label,
+            parentUuid: "",
             parentName: "SelfApplication",
           }) as EntityInstance;
           return [uuid, instance] as [string, EntityInstance];
@@ -528,6 +548,9 @@ export function useJzodElementEditorHooks(
     localResolvedElementJzodSchemaBasedOnValue,
     foreignKeyObjects,
     applicationDeploymentMap,
+    applications,
+    candidates,
+    visible,
   ]);
   // log.info("getJzodElementEditorHooks ", dbgInt++, "aggregate", count, "caller", caller);
 

@@ -19,6 +19,7 @@ import {
   type MultistepStep,
   type Report,
   type ReportSection,
+  previewOpenApiGetCall,
   type Uuid,
 } from "miroir-core";
 import { useDomainControllerService, useMiroirContextService } from "miroir-react";
@@ -342,17 +343,10 @@ export function extractStepBagFromFormikValues(
       typeof previous === "object" &&
       !Array.isArray(previous)
     ) {
-      // Preserve onNext-enriched keys and non-empty previous values when Formik
-      // still has empty strings for untouched required fields.
+      // Keep onNext-enriched keys that the form does not edit. Form keys, including
+      // a cleared string, replace the previous bag value.
       const merged: Record<string, unknown> = { ...previous };
       for (const [key, value] of Object.entries(fromFormik as Record<string, unknown>)) {
-        if (
-          (value === "" || value === undefined || value === null) &&
-          merged[key] !== undefined &&
-          merged[key] !== ""
-        ) {
-          continue;
-        }
         merged[key] = value;
       }
       bag[prefix] = merged;
@@ -361,6 +355,31 @@ export function extractStepBagFromFormikValues(
     }
   }
   return bag;
+}
+
+/** Fill blank step fields from a bag-resolved schema without replacing a value the user set. */
+function fillEmptyResolvedDefaults(
+  existing: unknown,
+  defaults: Record<string, unknown>,
+): Record<string, unknown> {
+  if (!existing || typeof existing !== "object" || Array.isArray(existing)) {
+    return defaults;
+  }
+  const current = existing as Record<string, unknown>;
+  const merged: Record<string, unknown> = {};
+  for (const [key, defaultValue] of Object.entries(defaults)) {
+    const value = current[key];
+    const blank =
+      value === undefined ||
+      value === null ||
+      value === "" ||
+      (typeof value === "object" &&
+        value !== null &&
+        !Array.isArray(value) &&
+        Object.keys(value as object).length === 0);
+    merged[key] = blank ? defaultValue : value;
+  }
+  return merged;
 }
 
 function bagsEqual(left: Record<string, any>, right: Record<string, any>): boolean {
@@ -462,6 +481,57 @@ export type MultistepReportHostProps = {
   children: ReactNode;
   onDismissed?: () => void;
 };
+
+function ProbeOutcome(props: { bag: Record<string, any> }) {
+  const review = props.bag?.review ?? {};
+  const succeeded = review.probeSucceeded === true;
+  const message = typeof review.probeMessage === "string" ? review.probeMessage : "";
+  return (
+    <div data-testid="probe-outcome">
+      <p>{succeeded ? "Probe succeeded." : "Probe failed."}</p>
+      {message ? <p>{message}</p> : null}
+    </div>
+  );
+}
+
+function ProbeCallParameterCheck(props: { bag: Record<string, any> }) {
+  const operationId = props.bag?.operations?.probeOperationId;
+  if (typeof operationId !== "string" || operationId.length === 0) {
+    return null;
+  }
+  const baseUrl = props.bag?.baseUrl?.baseUrl ?? "";
+  const params = (props.bag?.probeParams ?? {}) as Record<string, unknown>;
+  const documentText = props.bag?.document?.openApiDocument ?? props.bag?.document?.text;
+  const preview =
+    typeof documentText === "string" && documentText.length > 0
+      ? previewOpenApiGetCall(documentText, operationId, String(baseUrl), params)
+      : undefined;
+  const entries = Object.entries(params);
+  return (
+    <div data-testid="probe-call-parameters">
+      <p>Check probe call parameters. Next sends this GET through the server.</p>
+      <p>Operation: {operationId}</p>
+      {preview ? (
+        <p>
+          Request: {preview.method} {preview.url}
+        </p>
+      ) : baseUrl ? (
+        <p>Base URL: {String(baseUrl)}</p>
+      ) : null}
+      {entries.length > 0 ? (
+        <ul>
+          {entries.map(([name, value]) => (
+            <li key={name}>
+              {name}: {value === undefined || value === null ? "" : String(value)}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No parameters.</p>
+      )}
+    </div>
+  );
+}
 
 export function MultistepReportHost(props: MultistepReportHostProps) {
   const domainController = useDomainControllerService();
@@ -567,9 +637,6 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
       return stepBag;
     }
     const key = inputReportSectionBagKey(currentChild.section, reportSectionPath);
-    if (stepBag[key] !== undefined) {
-      return stepBag;
-    }
     let defaults: Record<string, unknown> = {};
     try {
       defaults = getDefaultValueForJzodSchemaWithResolutionNonHook(
@@ -590,7 +657,7 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
       // FK default resolution may lack reduxDeploymentsState in some hosts; leave empty.
       defaults = {};
     }
-    return { ...stepBag, [key]: defaults };
+    return { ...stepBag, [key]: fillEmptyResolvedDefaults(stepBag[key], defaults) };
   }, [
     currentChild,
     modelEnvironment,
@@ -702,12 +769,29 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
     if (isMultistepStepEnvelope(currentChild) && currentChild.onNext) {
       setNextInFlight(true);
       try {
-        const actionResult = await domainController.handleCompositeActionTemplate(
-          currentChild.onNext,
-          props.applicationDeploymentMap,
-          modelEnvironment,
-          liveBag,
-        );
+        const onNextSequence = (
+          currentChild.onNext as { payload?: { actionSequence?: Array<Record<string, unknown>> } }
+        )?.payload?.actionSequence;
+        const sole = Array.isArray(onNextSequence) ? onNextSequence[0] : undefined;
+        const actionResult =
+          Array.isArray(onNextSequence) &&
+          onNextSequence.length === 1 &&
+          sole?.actionType === "connectExternalService"
+            ? await domainController.handleAction(
+                {
+                  actionType: "connectExternalService",
+                  actionLabel: sole.actionLabel,
+                  endpoint: sole.endpoint ?? "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  payload: liveBag,
+                } as any,
+                props.applicationDeploymentMap,
+              )
+            : await domainController.handleCompositeActionTemplate(
+                currentChild.onNext,
+                props.applicationDeploymentMap,
+                modelEnvironment,
+                liveBag,
+              );
         if (actionResult instanceof Action2Error) {
           setFinishError(
             unwrapAction2ErrorMessage(
@@ -914,6 +998,12 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
             <ThemedSpan>{currentLabel}</ThemedSpan>
           </ThemedBox>
         ) : null}
+        {isMultistepStepEnvelope(currentChild) && currentChild.stepId === "review" ? (
+          <ProbeCallParameterCheck bag={stepBag} />
+        ) : null}
+        {isMultistepStepEnvelope(currentChild) && currentChild.stepId === "outcome" ? (
+          <ProbeOutcome bag={stepBag} />
+        ) : null}
         {props.children}
         {isViewerPaging ? (
           <ThemedBox>
@@ -944,7 +1034,12 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
               <ThemedStyledButton
                 type="button"
                 variant="contained"
-                disabled={finishInFlight}
+                disabled={
+                  finishInFlight ||
+                  (isMultistepStepEnvelope(currentChild) &&
+                    currentChild.stepId === "outcome" &&
+                    stepBag.review?.probeSucceeded === false)
+                }
                 onClick={handleFinish}
               >
                 Finish

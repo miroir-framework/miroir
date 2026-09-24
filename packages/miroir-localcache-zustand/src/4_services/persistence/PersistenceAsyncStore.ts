@@ -442,6 +442,9 @@ export class PersistenceAsyncStore implements PersistenceStoreLocalOrRemoteInter
         case "LocalPersistenceAction_update":
         case "LocalPersistenceAction_delete":
         default: {
+          if ((action.actionType as string) === "probeExternalService") {
+            return clientResult.data as Action2ReturnType;
+          }
           log.debug("handlePersistenceActionForRemoteStore received result", clientResult.status);
           return ACTION_OK;
         }
