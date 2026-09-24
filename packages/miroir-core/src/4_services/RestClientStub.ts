@@ -26,6 +26,7 @@ import { packageName } from "../constants";
 import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 import { getRestClientAuthorizationToken } from "./RestClient.js";
 import { restServerDefaultHandlers } from "./RestServer";
+import { redactCredentialSecretsFromValue } from "./redactCredentialSecrets.js";
 import { cleanLevel } from "./constants";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RestClientStub");
@@ -201,7 +202,7 @@ export class RestClientStub implements RestClientInterface {
         ", endpoint=",
         endpoint,
         ", body=",
-        body
+        redactCredentialSecretsFromValue(body)
       );
       // log.info("RestClientStub for header", method, "rawUrl=", rawUrl, "endpoint=", endpoint, "sending body=", body);
       const methodToCall = restServerDefaultHandlers.find(
@@ -229,7 +230,7 @@ export class RestClientStub implements RestClientInterface {
           parentUuid,
           section,
           authPrincipal: principal,
-          ...args,
+          ...customConfig,
         }
       );
 

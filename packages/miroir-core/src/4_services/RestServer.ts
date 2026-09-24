@@ -248,7 +248,15 @@ export async function restMethodsPostPutDeleteHandler(
 ) {
   // const foundParams = params ?? request.params;
   const foundParams = params;
-  log.info("restMethodsPostPutDeleteHandler", method, effectiveUrl, "foundParams", foundParams, "body", body);
+  log.info(
+    "restMethodsPostPutDeleteHandler",
+    method,
+    effectiveUrl,
+    "foundParams",
+    foundParams,
+    "body",
+    redactCredentialSecretsFromValue(body),
+  );
   // log.info("restMethodsPostPutDeleteHandler",method,url, "request",request,"foundParams",foundParams,"body",body);
   const deploymentUuid: string =
     body.deploymentUuid ?? body.applicationDeploymentMap[body.application];
@@ -342,7 +350,7 @@ export async function restActionHandler(
 ):Promise<void> {
   log.info("restActionHandler called with method", method);
   log.info("restActionHandler called with effectiveUrl", effectiveUrl);
-  log.info("restActionHandler called with params", urlParams);
+  log.info("restActionHandler called with params", redactCredentialSecretsFromValue(urlParams));
 
   const action: PersistenceAction | DomainAction = body?.action?body.action:body as any;
   const applicationDeploymentMap: ApplicationDeploymentMap = body?.applicationDeploymentMap?body.applicationDeploymentMap:{};
@@ -365,7 +373,7 @@ export async function restActionHandler(
     log.info(
       "restActionHandler called with",
       "action",
-      action,
+      redactCredentialSecretsFromValue(action),
       "applicationDeploymentMap",
       applicationDeploymentMap
     );
@@ -512,7 +520,7 @@ export async function queryActionHandler(
   return trackQueryHop(
     "REST.POST /query",
     async () => {
-      log.debug("RestServer queryActionHandler params", params, "body", body);
+      log.debug("RestServer queryActionHandler params", params, "body", redactCredentialSecretsFromValue(body));
       const runBoxedExtractorOrQueryAction: RunBoxedQueryAction =
         body.action? body.action as RunBoxedQueryAction: body as any as RunBoxedQueryAction;
       const applicationDeploymentMap: ApplicationDeploymentMap = body?.applicationDeploymentMap ?? {};
@@ -555,11 +563,14 @@ export async function queryTemplateActionHandler(
   log.info(
     "queryTemplateActionHandler called with",
     "body",
-    body,
+    redactCredentialSecretsFromValue(body),
     "useDomainControllerToHandleModelAndInstanceActions",
     useDomainControllerToHandleModelAndInstanceActions,
   );
-  log.info("queryTemplateActionHandler called with params", params);
+  log.info(
+    "queryTemplateActionHandler called with params",
+    redactCredentialSecretsFromValue(params),
+  );
   // log.info("queryTemplateActionHandler called with","body", JSON.stringify(body, undefined, 2));
   // log.info("queryTemplateActionHandler called with params", JSON.stringify(params,undefined,2));
 
