@@ -50,6 +50,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger:
 
 const BAG_DUMP_OMIT_KEYS = new Set([
   "clientsecret",
+  "clientid",
   "refreshtoken",
   "token",
   "secretvalue",
@@ -163,6 +164,8 @@ export async function runMultistepFinish({
     actionSequence[0]?.actionType === "connectExternalService"
   ) {
     const sole = actionSequence[0];
+    // PR #285 P1: never forward a client-supplied probe verdict — the server re-probes.
+    const { review: _droppedReview, ...bagWithoutReview } = stepBag;
     return domainController.handleAction(
       {
         actionType: "connectExternalService",
@@ -170,7 +173,7 @@ export async function runMultistepFinish({
           (sole.actionLabel as string | undefined) ?? "connectExternalServiceFromWizardBag",
         endpoint:
           (sole.endpoint as string | undefined) ?? "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-        payload: stepBag,
+        payload: bagWithoutReview,
       } as any,
       applicationDeploymentMap,
     );
@@ -675,6 +678,17 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
         stepBagKeys,
         stepBagRef.current,
       );
+      // PR #285 P1: editing any probe-relevant step invalidates an earlier probe verdict.
+      const nextReview = nextBag.review;
+      if (
+        nextReview &&
+        typeof nextReview === "object" &&
+        !Array.isArray(nextReview) &&
+        nextReview.probeSucceeded !== undefined
+      ) {
+        const { probeSucceeded: _droppedProbeSucceeded, ...restReview } = nextReview;
+        nextBag.review = restReview;
+      }
       stepBagRef.current = nextBag;
       setStepBag((previous) => (bagsEqual(previous, nextBag) ? previous : nextBag));
     },
@@ -712,6 +726,13 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
 
   const handleBack = useCallback(() => {
     setFinishError(undefined);
+    // PR #285 P1: going back invalidates an earlier probe verdict.
+    if (stepBagRef.current.review?.probeSucceeded !== undefined) {
+      const { probeSucceeded: _droppedProbeSucceeded, ...restReview } = stepBagRef.current.review;
+      const nextBag = { ...stepBagRef.current, review: restReview };
+      stepBagRef.current = nextBag;
+      setStepBag(nextBag);
+    }
     if (usesStepIds) {
       setVisitedStepIds((previous) => {
         if (previous.length <= 1) {

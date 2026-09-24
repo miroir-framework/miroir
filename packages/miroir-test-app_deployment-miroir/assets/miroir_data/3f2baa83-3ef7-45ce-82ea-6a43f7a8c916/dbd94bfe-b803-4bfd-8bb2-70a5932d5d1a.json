@@ -285,6 +285,15 @@
               "inputMLSchema": {
                 "type": "object",
                 "definition": {
+                  "clientId": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Client id"
+                      }
+                    },
+                    "optional": true
+                  },
                   "clientIdKey": {
                     "type": "string",
                     "tag": {
@@ -378,6 +387,15 @@
               "inputMLSchema": {
                 "type": "object",
                 "definition": {
+                  "clientId": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Client id"
+                      }
+                    },
+                    "optional": true
+                  },
                   "clientIdKey": {
                     "type": "string",
                     "tag": {

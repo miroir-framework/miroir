@@ -371,19 +371,23 @@ function appendReportLinkToMenu(
     return cloned;
   }
   if (definition.menuType === "complexMenu") {
-    if (definition.definition.length === 0) {
-      definition.definition.push({
+    // PR #285 P2: scan every section for an existing link; append to the first section with items.
+    const sections: any[] = definition.definition;
+    for (const section of sections) {
+      if (Array.isArray(section?.items) && alreadyLinked(section.items)) {
+        return undefined;
+      }
+    }
+    const target = sections.find((section) => Array.isArray(section?.items));
+    if (!target) {
+      sections.push({
         title: "External services",
         label: "externalServices",
         items: [menuItem],
       });
       return cloned;
     }
-    const items = definition.definition[0].items;
-    if (!Array.isArray(items) || alreadyLinked(items)) {
-      return undefined;
-    }
-    items.push(menuItem);
+    target.items.push(menuItem);
     return cloned;
   }
   return undefined;
@@ -3537,19 +3541,36 @@ export class DomainController implements DomainControllerInterface {
       );
     }
     const processSecrets = payload?.processSecrets;
+    // PR #285 P1: snapshot then restore — a probe must not leave secrets in the shared map.
+    const secretSnapshots: ProcessSecretSnapshot[] = [];
     if (processSecrets) {
+      for (const name of Object.keys(processSecrets)) {
+        let previous: ProcessSecretSnapshot["previous"];
+        try {
+          previous = resolveSecret(name);
+        } catch {
+          previous = undefined;
+        }
+        secretSnapshots.push({ name, previous });
+      }
       for (const [name, value] of Object.entries(processSecrets)) {
         if (typeof value === "string" && value.length > 0) {
           registerHydratedProcessSecret(name, value);
         }
       }
     }
-    return executeExternalServiceOperation(
-      endpoint,
-      operationId,
-      payload?.parameters ?? {},
-      principal,
-    );
+    try {
+      return await executeExternalServiceOperation(
+        endpoint,
+        operationId,
+        payload?.parameters ?? {},
+        principal,
+      );
+    } finally {
+      if (secretSnapshots.length > 0) {
+        restoreProcessSecretsFromSnapshot(secretSnapshots);
+      }
+    }
   }
 
   // ##############################################################################################
@@ -3592,6 +3613,12 @@ export class DomainController implements DomainControllerInterface {
       rawBag.probeOnly === true ||
       (domainAction as { actionLabel?: string }).actionLabel === "probeWizardConnection";
     const bag = normalizeConnectExternalServicePayload(rawBag);
+    // PR #285 P1: a client-supplied probe verdict is never trusted outside the wizard
+    // probe call itself — Finish always re-probes.
+    if (!probeOnly && bag.probeSucceeded !== undefined) {
+      bag.probeSucceeded = undefined;
+      bag.probeMessage = undefined;
+    }
     // Keep mutations on domainAction.payload for downstream typing; replace with flat bag.
     (domainAction as { payload: typeof bag }).payload = bag;
     let applicationUuid = bag.application;
@@ -4078,7 +4105,14 @@ export class DomainController implements DomainControllerInterface {
         return baseUrlError;
       }
       try {
-        const response = await fetch(url);
+        // PR #285 P1: never follow redirects — a 3xx could land on a private/loopback host.
+        const response = await fetch(url, { redirect: "manual" });
+        if (response.status >= 300 && response.status < 400) {
+          return new Action2Error(
+            "InvalidAction",
+            "prepareOpenApiDocument: redirects are not followed; paste the final document URL",
+          );
+        }
         if (!response.ok) {
           return new Action2Error(
             "InvalidAction",

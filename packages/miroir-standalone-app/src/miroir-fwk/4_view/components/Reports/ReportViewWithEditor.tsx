@@ -290,7 +290,11 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
       [reportName]: props.reportDefinition,
       ...(multistepHost?.stepBag ?? {}),
     };
-    log.info("reportSectionsFormValue initialReportSectionsFormValue", result);
+    // PR #285 P1: the multistep bag can hold plaintext secrets — log keys only, never values.
+    log.info(
+      "reportSectionsFormValue initialReportSectionsFormValue keys",
+      Object.keys(result),
+    );
     return result;
 
   }, [props.reportDefinition, props.pageParams, props.storedQueryData, reportDataForForm, reportInterpreterPageParams, reportName, multistepHost?.stepBag, multistepHost?.resolvedInputSchema]);
