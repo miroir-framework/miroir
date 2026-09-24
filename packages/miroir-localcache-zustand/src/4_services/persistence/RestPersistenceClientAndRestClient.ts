@@ -281,6 +281,13 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
       "applicationDeploymentMap",
       applicationDeploymentMap
     );
+    if ((persistenceAction as { actionType?: string }).actionType === "probeExternalService") {
+      return this.restClient.post(
+        "/action/:actionType",
+        this.rootApiUrl + "/action/probeExternalService",
+        { action: persistenceAction, applicationDeploymentMap },
+      );
+    }
     switch (persistenceAction.actionType) {
       // case "instanceAction":
       case "createInstance":

@@ -101,6 +101,26 @@ describe("deploymentUuidFromHttpRequest", () => {
     ).toBe(DEPLOYMENT);
   });
 
+  (runThis ? it : it.skip)("resolves a probe body from payload.endpoint.application", () => {
+    const APPLICATION = "00514586-bf72-4de3-beea-0a627c821404";
+    expect(
+      deploymentUuidFromHttpRequest({
+        params: {},
+        body: {
+          action: {
+            actionType: "probeExternalService",
+            payload: {
+              endpoint: { application: APPLICATION },
+              operationId: "getArtist",
+              parameters: { artist_id: "108713" },
+            },
+          },
+          applicationDeploymentMap: { [APPLICATION]: DEPLOYMENT },
+        },
+      }),
+    ).toBe(DEPLOYMENT);
+  });
+
   (runThis ? it : it.skip)("returns undefined when no deployment can be found", () => {
     expect(deploymentUuidFromHttpRequest({ params: {}, body: {} })).toBeUndefined();
     expect(

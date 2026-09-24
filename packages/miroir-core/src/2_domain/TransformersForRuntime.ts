@@ -359,6 +359,9 @@ export function getDefaultValueForJzodSchemaWithResolution(
       return 0;
     }
     case "boolean": {
+      if (effectiveSchema.tag?.value?.initializeTo?.initializeToType == "value") {
+        return !!effectiveSchema.tag.value.initializeTo.value;
+      }
       return false;
     }
     case "date": {

@@ -377,6 +377,8 @@ export {
   modelActionReplayableAction,
   ModelDiagramReportSection,
   modelDiagramReportSection,
+  MultistepStep,
+  multistepStep,
   ObjectInstanceReportSection,
   objectInstanceReportSection,
   ObjectListReportSection,
@@ -1340,6 +1342,7 @@ export {
   summarizeRollbackInstanceCollections,
 } from "./4_services/rollbackLog.js";
 export { MiroirLoggerFactory, testLogger } from "./4_services/MiroirLoggerFactory.js";
+export { MiroirLogger } from "./4_services/MiroirLogger.js";
 export { summarizeQueryHopResult, trackQueryHop } from "./4_services/trackQueryHop.js";
 export {
   activitySpanDirection,
@@ -1359,8 +1362,12 @@ export {
 export { PersistenceStoreControllerManager } from "./4_services/PersistenceStoreControllerManager.js";
 export {
   clearSecrets,
+  registerHydratedProcessSecret,
   registerSecrets,
   resolveSecret,
+  restoreProcessSecretsFromSnapshot,
+  unregisterProcessSecret,
+  type ProcessSecretSnapshot,
   type ResolveSecretResult,
 } from "./4_services/SecretStore.js";
 export {
@@ -1383,6 +1390,7 @@ export {
 export { ParseServerArgsError, parseServerArgs } from "./4_services/parseServerArgs.js";
 export {
   allowInsecureBaseUrlsForTests,
+  assertBaseUrlAllowed,
   clearAllowedInsecureBaseUrlsForTests,
   clearExternalServiceTokenCacheForTests,
   clearPersistRotatedSecret,
@@ -1392,6 +1400,14 @@ export {
   setPersistRotatedSecret,
   type PersistRotatedSecret,
 } from "./4_services/ExternalServiceClient.js";
+export {
+  boundPathsForOperation,
+  listConvertibleGetOperations,
+  materializeExternalServiceOperations,
+  openApiParameterNamesForOperation,
+  previewOpenApiGetCall,
+  parseOpenApiDocument,
+} from "./2_domain/syncExternalServiceSchema.js";
 export { redactCredentialSecretsFromValue } from "./4_services/redactCredentialSecrets.js";
 export {
   mountApplicationDeployment, startLocalPersistenceStoreControllers

@@ -18,6 +18,11 @@ import {
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { editedQueryParameterValueKey } from "./ReportSectionEntityInstance.js";
+import {
+  isMultistepStepEnvelope,
+  unwrapMultistepListChild,
+  type MultistepListChild,
+} from "./MultistepReportHost.js";
 
 import { entityQueryVersion } from "miroir-test-app_deployment-miroir";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportTools");
@@ -26,7 +31,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 export const reportSectionsFormSchema = (
-  reportSection: ReportSection,
+  reportSection: ReportSection | MultistepListChild,
   applicationUuid: Uuid,
   deploymentUuid: Uuid,
   currentDeploymentReportsEntitiesMapping: DeploymentUuidToReportsEntities,
@@ -34,21 +39,35 @@ export const reportSectionsFormSchema = (
   reportData: Record<string, any>,
   reportSectionPath: (string | number)[]
 ): Record<string, JzodElement> => {
+  if (isMultistepStepEnvelope(reportSection)) {
+    return reportSectionsFormSchema(
+      reportSection.section,
+      applicationUuid,
+      deploymentUuid,
+      currentDeploymentReportsEntitiesMapping,
+      currentModel,
+      reportData,
+      reportSectionPath.concat("section"),
+    );
+  }
   log.info("reportSectionsFormValue", reportSection, reportData, reportSectionPath);
   switch (reportSection.type) {
     case "list":
       return reportSection.definition.reduce(
-        (acc: Record<string, any>, curr: ReportSection, index: number): Record<string, any> => {
+        (acc: Record<string, any>, curr: MultistepListChild, index: number): Record<string, any> => {
+          const childPath = isMultistepStepEnvelope(curr)
+            ? reportSectionPath.concat("definition", index, "section")
+            : reportSectionPath.concat("definition", index);
           return {
             ...acc,
             ...reportSectionsFormSchema(
-              curr,
+              unwrapMultistepListChild(curr),
               applicationUuid,
               deploymentUuid,
               currentDeploymentReportsEntitiesMapping,
               currentModel,
               reportData,
-              reportSectionPath.concat("definition", index)
+              childPath,
             ),
           };
         },
@@ -126,7 +145,7 @@ export const reportSectionsFormSchema = (
 // ###############################################################################################
 export const reportSectionsFormValue = (
   reportData: Record<string, any>,
-  reportSection: ReportSection,
+  reportSection: ReportSection | MultistepListChild | undefined,
   reportSectionPath: (string | number)[],
   application: Uuid | undefined = undefined,
   applicationDeploymentMap: ApplicationDeploymentMap | undefined = undefined,
@@ -134,17 +153,35 @@ export const reportSectionsFormValue = (
   miroirEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any> = {},
 ): Record<string, any> => {
+  if (!reportSection) {
+    return {};
+  }
+  if (isMultistepStepEnvelope(reportSection)) {
+    return reportSectionsFormValue(
+      reportData,
+      reportSection.section,
+      reportSectionPath.concat("section"),
+      application,
+      applicationDeploymentMap,
+      deploymentUuid,
+      miroirEnvironment,
+      transformerParams,
+    );
+  }
   // log.info("reportSectionsFormValue", reportSection, reportData, reportSectionPath);
   switch (reportSection.type) {
     case "list":
       return reportSection.definition.reduce(
-        (acc: Record<string, any>, curr: ReportSection, index: number): Record<string, any> => {
+        (acc: Record<string, any>, curr: MultistepListChild, index: number): Record<string, any> => {
+          const childPath = isMultistepStepEnvelope(curr)
+            ? reportSectionPath.concat("definition", index, "section")
+            : reportSectionPath.concat("definition", index);
           return {
             ...acc,
             ...reportSectionsFormValue(
               reportData,
-              curr,
-              reportSectionPath.concat("definition", index),
+              unwrapMultistepListChild(curr),
+              childPath,
               application,
               applicationDeploymentMap,
               deploymentUuid,

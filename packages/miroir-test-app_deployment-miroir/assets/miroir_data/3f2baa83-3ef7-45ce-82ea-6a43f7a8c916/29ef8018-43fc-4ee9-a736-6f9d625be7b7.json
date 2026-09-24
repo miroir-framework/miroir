@@ -96,6 +96,15 @@
               "instanceUuid": "3d96f097-a0e4-47d8-aa6b-43fc13c3da68"
             }
           }
+        },
+        {
+          "type": "openReportSection",
+          "definition": {
+            "label": "Connect an external service",
+            "reportUuid": "dbd94bfe-b803-4bfd-8bb2-70a5932d5d1a",
+            "openAs": "route",
+            "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          }
         }
       ]
     }

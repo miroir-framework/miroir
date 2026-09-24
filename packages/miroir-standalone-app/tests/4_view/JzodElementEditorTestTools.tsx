@@ -199,7 +199,7 @@ export const testThemeParams = {
 // Helper function to wait for progressive rendering to complete
 export const waitForProgressiveRendering = async () => {
   // Progressive reveal is disabled under VITE_TEST_MODE (see useViewportReveal).
-  if (process.env.VITE_TEST_MODE === "true") {
+  if (process.env.VITE_TEST_MODE === "true" || process.env.VITEST) {
     return;
   }
 

@@ -363,6 +363,10 @@
                           }
                         ]
                       },
+                      "mask": {
+                        "type": "boolean",
+                        "optional": true
+                      },
                       "editable": {
                         "type": "boolean",
                         "tag": {
@@ -391,6 +395,10 @@
                             "type": "enum",
                             "optional": true,
                             "definition": ["portalSelector", "muiSelector"]
+                          },
+                          "restrictToApplicationDeploymentMap": {
+                            "type": "boolean",
+                            "optional": true
                           }
                         }
                       },

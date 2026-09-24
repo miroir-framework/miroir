@@ -1,7 +1,11 @@
 
 import { v4 as uuidv4 } from 'uuid';
 
-import { getEndpointActions, getExternalService } from '../0_interfaces/1_core/endpointDefinition.js';
+import {
+  getEndpointActions,
+  getExternalService,
+  type EndpointSecurityScheme,
+} from '../0_interfaces/1_core/endpointDefinition.js';
 import { Uuid } from '../0_interfaces/1_core/EntityVersion.js';
 import type { StorageType } from "../0_interfaces/1_core/StorageConfiguration.js";
 import {
@@ -172,9 +176,31 @@ import {
   removeUndefinedProperties,
   unNullify,
 } from "../4_services/otherTools.js";
-import { ConfigurationService } from './ConfigurationService.js';
-import { executeExternalServiceOperation } from "../4_services/ExternalServiceClient.js";
+import {
+  boundPathsForOperation,
+  listConvertibleGetOperations,
+  materializeExternalServiceOperations,
+  openApiParameterNamesForOperation,
+  parseOpenApiDocument,
+} from "../2_domain/syncExternalServiceSchema.js";
+import { normalizeConnectExternalServicePayload } from "./normalizeConnectExternalServicePayload.js";
 import { redactCredentialSecretsFromValue } from "../4_services/redactCredentialSecrets.js";
+import {
+  assertBaseUrlAllowed,
+  executeExternalServiceOperation,
+} from "../4_services/ExternalServiceClient.js";
+import { ConfigurationService } from './ConfigurationService.js';
+import {
+  getSecretsMasterKey,
+  importProcessSecrets,
+  persistImportedProcessSecrets,
+} from "../4_services/SecretsService.js";
+import {
+  registerHydratedProcessSecret,
+  resolveSecret,
+  restoreProcessSecretsFromSnapshot,
+  type ProcessSecretSnapshot,
+} from "../4_services/SecretStore.js";
 
 type ExtractorForExternalServiceResolved = {
   extractorOrCombinerType: "extractorForExternalService";
@@ -314,6 +340,57 @@ function collectEmulatedServerTypes(configuration: unknown): StorageType[] {
   };
   visit(configuration);
   return types;
+}
+
+function appendReportLinkToMenu(
+  menu: { definition?: { menuType?: string; definition?: any } },
+  menuItem: {
+    miroirMenuItemType: "miroirMenuReportLink";
+    label: string;
+    section: "model";
+    selfApplication: string;
+    reportUuid: string;
+  },
+): typeof menu | undefined {
+  const cloned = structuredClone(menu);
+  const definition = cloned.definition;
+  if (!definition || !Array.isArray(definition.definition)) {
+    return undefined;
+  }
+  const alreadyLinked = (items: any[]) =>
+    items.some(
+      (item) =>
+        item?.miroirMenuItemType === "miroirMenuReportLink" &&
+        item?.reportUuid === menuItem.reportUuid,
+    );
+  if (definition.menuType === "simpleMenu") {
+    if (alreadyLinked(definition.definition)) {
+      return undefined;
+    }
+    definition.definition.push(menuItem);
+    return cloned;
+  }
+  if (definition.menuType === "complexMenu") {
+    // PR #285 P2: scan every section for an existing link; append to the first section with items.
+    const sections: any[] = definition.definition;
+    for (const section of sections) {
+      if (Array.isArray(section?.items) && alreadyLinked(section.items)) {
+        return undefined;
+      }
+    }
+    const target = sections.find((section) => Array.isArray(section?.items));
+    if (!target) {
+      sections.push({
+        title: "External services",
+        label: "externalServices",
+        items: [menuItem],
+      });
+      return cloned;
+    }
+    target.items.push(menuItem);
+    return cloned;
+  }
+  return undefined;
 }
 
 export class DomainController implements DomainControllerInterface {
@@ -3379,6 +3456,789 @@ export class DomainController implements DomainControllerInterface {
       },
     };
   }
+
+  // ##############################################################################################
+  /**
+   * Browser controllers fetch through the server (same hop as Spotify report queries).
+   * The server process performs the GET so the browser is not subject to CORS.
+   */
+  private async runExternalServiceProbe(
+    endpoint: EndpointDefinition,
+    operationId: string,
+    parameters: Record<string, unknown>,
+    processSecrets: Record<string, string> | undefined,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    principal?: AuthPrincipal,
+  ): Promise<Action2ReturnType> {
+    if (this.persistenceStoreAccessMode === "local") {
+      return executeExternalServiceOperation(endpoint, operationId, parameters, principal);
+    }
+    const targetApplication = (endpoint as { application?: string }).application;
+    const deploymentUuid =
+      typeof targetApplication === "string"
+        ? applicationDeploymentMap[targetApplication]
+        : undefined;
+    const remoteResult = await this.persistenceStoreLocalOrRemote.handlePersistenceActionForRemoteStore(
+      {
+        actionType: "probeExternalService",
+        endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+        payload: {
+          endpoint,
+          operationId,
+          parameters,
+          ...(typeof targetApplication === "string" ? { application: targetApplication } : {}),
+          ...(typeof deploymentUuid === "string" ? { deploymentUuid } : {}),
+          ...(processSecrets && Object.keys(processSecrets).length > 0
+            ? { processSecrets }
+            : {}),
+        },
+      } as any,
+      applicationDeploymentMap,
+    );
+    // The HTTP hop JSON-parses the result, so a failed probe is a plain object.
+    if (
+      remoteResult &&
+      typeof remoteResult === "object" &&
+      !(remoteResult instanceof Action2Error) &&
+      (remoteResult as { status?: unknown }).status === "error"
+    ) {
+      const plain = remoteResult as {
+        errorType?: ConstructorParameters<typeof Action2Error>[0];
+        errorMessage?: string;
+        errorStack?: (string | undefined)[];
+        innerError?: Action2Error | Action2Error[];
+        errorContext?: Record<string, any>;
+      };
+      return new Action2Error(
+        plain.errorType ?? "ExternalServiceUpstreamFailure",
+        plain.errorMessage,
+        plain.errorStack,
+        plain.innerError,
+        plain.errorContext,
+      );
+    }
+    return remoteResult;
+  }
+
+  /**
+   * Runs probe from ConnectExternalServiceWizard
+   * @param domainAction 
+   * @param principal 
+   * @returns 
+   */
+  private async handleProbeExternalService(
+    domainAction: {
+      payload?: {
+        endpoint?: EndpointDefinition;
+        operationId?: string;
+        parameters?: Record<string, unknown>;
+        processSecrets?: Record<string, string>;
+      };
+    },
+    principal?: AuthPrincipal,
+  ): Promise<Action2ReturnType> {
+    const payload = domainAction.payload;
+    const endpoint = payload?.endpoint;
+    const operationId = payload?.operationId;
+    if (!endpoint || !operationId) {
+      return new Action2Error(
+        "InvalidAction",
+        "probeExternalService requires an endpoint and an operationId",
+      );
+    }
+    const processSecrets = payload?.processSecrets;
+    // PR #285 P1: snapshot then restore — a probe must not leave secrets in the shared map.
+    const secretSnapshots: ProcessSecretSnapshot[] = [];
+    if (processSecrets) {
+      for (const name of Object.keys(processSecrets)) {
+        let previous: ProcessSecretSnapshot["previous"];
+        try {
+          previous = resolveSecret(name);
+        } catch {
+          previous = undefined;
+        }
+        secretSnapshots.push({ name, previous });
+      }
+      for (const [name, value] of Object.entries(processSecrets)) {
+        if (typeof value === "string" && value.length > 0) {
+          registerHydratedProcessSecret(name, value);
+        }
+      }
+    }
+    try {
+      return await executeExternalServiceOperation(
+        endpoint,
+        operationId,
+        payload?.parameters ?? {},
+        principal,
+      );
+    } finally {
+      if (secretSnapshots.length > 0) {
+        restoreProcessSecretsFromSnapshot(secretSnapshots);
+      }
+    }
+  }
+
+  // ##############################################################################################
+  /**
+   * #284 — probe then upsert endpoint + Model report on bag.application (never host props.application).
+   * Public scheme only in Slice 1; do not log the bag.
+   */
+  private async handleConnectExternalService(
+    domainAction: {
+      actionType: "connectExternalService";
+      endpoint: string;
+      payload: {
+        application: string;
+        endpointName: string;
+        openApiDocument: string;
+        baseUrl: string;
+        userAgent?: string;
+        authenticated: boolean;
+        /** Slice 4: customToken | clientCredentials | authorizationCode when authenticated. */
+        scheme?: string;
+        authorizationTemplate?: string;
+        credentialKey?: string;
+        tokenUrl?: string;
+        clientIdKey?: string;
+        clientSecretKey?: string;
+        refreshTokenKey?: string;
+        scopes?: string;
+        checkedOperationIds: string[];
+        probeOperationId: string;
+        probeParameters: Record<string, unknown>;
+        /** Slice 2 / Slice 4: temporary process-map values for the probe. */
+        processSecrets?: Record<string, string>;
+      };
+    },
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    principal?: AuthPrincipal,
+  ): Promise<Action2VoidReturnType> {
+    const rawBag = domainAction.payload as Record<string, unknown>;
+    const probeOnly =
+      rawBag.probeOnly === true ||
+      (domainAction as { actionLabel?: string }).actionLabel === "probeWizardConnection";
+    const bag = normalizeConnectExternalServicePayload(rawBag);
+    // PR #285 P1: a client-supplied probe verdict is never trusted outside the wizard
+    // probe call itself — Finish always re-probes.
+    if (!probeOnly && bag.probeSucceeded !== undefined) {
+      bag.probeSucceeded = undefined;
+      bag.probeMessage = undefined;
+    }
+    // Keep mutations on domainAction.payload for downstream typing; replace with flat bag.
+    (domainAction as { payload: typeof bag }).payload = bag;
+    let applicationUuid = bag.application;
+    if (!applicationDeploymentMap[applicationUuid]) {
+      // Wizard uuid pickers may leave a random default when the portal click guard
+      // drops the selection; if the map has exactly one non-Miroir/non-Admin app,
+      // treat that as the intended target (same exclusion as the D22 picker).
+      const MIROIR_APPLICATION_UUID = "360fcf1f-f0d4-4f8a-9262-07886e70fa15";
+      const ADMIN_APPLICATION_UUID = "55af124e-8c05-4bae-a3ef-0933d41daa92";
+      const eligible = Object.keys(applicationDeploymentMap).filter(
+        (uuid) => uuid !== MIROIR_APPLICATION_UUID && uuid !== ADMIN_APPLICATION_UUID,
+      );
+      if (eligible.length === 1) {
+        applicationUuid = eligible[0];
+        bag.application = applicationUuid;
+      } else {
+        return new Action2Error(
+          "InvalidAction",
+          `connectExternalService: application ${applicationUuid} is not on applicationDeploymentMap`,
+        );
+      }
+    }
+    if (!Array.isArray(bag.checkedOperationIds) || bag.checkedOperationIds.length === 0) {
+      return new Action2Error("InvalidAction", "connectExternalService: checkedOperationIds is required");
+    }
+    if (!bag.probeOperationId || !bag.checkedOperationIds.includes(bag.probeOperationId)) {
+      return new Action2Error(
+        "InvalidAction",
+        "connectExternalService: probeOperationId must be one of checkedOperationIds",
+      );
+    }
+    if (!probeOnly && bag.probeSucceeded === false) {
+      return new Action2Error(
+        "InvalidAction",
+        bag.probeMessage && bag.probeMessage.length > 0
+          ? bag.probeMessage
+          : "connectExternalService: probe failed",
+      );
+    }
+
+    const ENDPOINT_ENTITY_UUID = "3d8da4d4-8f76-4bb4-9212-14869d81c00c";
+    const REPORT_ENTITY_UUID = "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916";
+    const INSTANCE_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";
+    const MODEL_ENDPOINT = "7947ae40-eb34-4149-887b-15a9021e714e";
+
+    // Instance uuids are version 4. The editor's uuid schema rejects version 5.
+    // A later Finish updates the wizard's own row (same name, version-4 uuid, wizard
+    // description). A row with that name that this wizard did not create is refused,
+    // including a hand-built endpoint such as Spotify's.
+    const UUID_V4 =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const WIZARD_ROW_MARK = "OpenAPI connection wizard";
+    const wizardOwned = (row: { uuid?: string; description?: string } | undefined): boolean =>
+      !!row &&
+      typeof row.uuid === "string" &&
+      UUID_V4.test(row.uuid) &&
+      typeof row.description === "string" &&
+      row.description.startsWith(WIZARD_ROW_MARK);
+
+    const targetModelForClash = this.currentModel(applicationUuid, applicationDeploymentMap);
+    const namedEndpoint = targetModelForClash.endpoints.find((row) => row.name === bag.endpointName);
+    if (namedEndpoint && !wizardOwned(namedEndpoint)) {
+      const existingUuid = namedEndpoint.uuid;
+      return new Action2Error(
+        "InvalidAction",
+        typeof existingUuid === "string" && !UUID_V4.test(existingUuid)
+          ? `connectExternalService: endpoint name "${bag.endpointName}" already exists with uuid ${existingUuid}, which is not a version-4 uuid. Delete that endpoint and run the wizard again.`
+          : `connectExternalService: endpoint name "${bag.endpointName}" already exists with a different uuid`,
+      );
+    }
+    const endpointUuid = namedEndpoint?.uuid ?? uuidv4();
+
+    const createExampleReport = bag.createExampleReport !== false;
+    const addReportToMenu = bag.addReportToMenu === true && createExampleReport;
+    const reportName = `${bag.endpointName}_${bag.probeOperationId}`;
+    const namedReport = createExampleReport
+      ? targetModelForClash.reports.find((row) => row.name === reportName)
+      : undefined;
+    if (namedReport && !wizardOwned(namedReport)) {
+      const existingUuid = namedReport.uuid;
+      return new Action2Error(
+        "InvalidAction",
+        typeof existingUuid === "string" && !UUID_V4.test(existingUuid)
+          ? `connectExternalService: report name "${reportName}" already exists with uuid ${existingUuid}, which is not a version-4 uuid. Delete that report and run the wizard again.`
+          : `connectExternalService: report name "${reportName}" already exists with a different uuid`,
+      );
+    }
+    const reportUuid = namedReport?.uuid ?? uuidv4();
+
+    // Slice 4 / D11: scheme from bag when authenticated; public is type none.
+    let securityScheme: EndpointSecurityScheme;
+    let credentialKey: string | undefined;
+    if (bag.authenticated !== true) {
+      securityScheme = { type: "none" };
+    } else if (bag.scheme === "customToken") {
+      if (typeof bag.credentialKey !== "string" || bag.credentialKey.length === 0) {
+        return new Action2Error(
+          "InvalidAction",
+          "connectExternalService: customToken requires credentialKey",
+        );
+      }
+      securityScheme = {
+        type: "http",
+        scheme: "bearer",
+        ...(typeof bag.authorizationTemplate === "string" && bag.authorizationTemplate.length > 0
+          ? { authorizationTemplate: bag.authorizationTemplate }
+          : {}),
+      };
+      credentialKey = bag.credentialKey;
+    } else if (bag.scheme === "clientCredentials") {
+      if (
+        typeof bag.tokenUrl !== "string" ||
+        bag.tokenUrl.length === 0 ||
+        typeof bag.clientIdKey !== "string" ||
+        bag.clientIdKey.length === 0 ||
+        typeof bag.clientSecretKey !== "string" ||
+        bag.clientSecretKey.length === 0
+      ) {
+        return new Action2Error(
+          "InvalidAction",
+          "connectExternalService: clientCredentials requires tokenUrl, clientIdKey, and clientSecretKey",
+        );
+      }
+      securityScheme = {
+        type: "oauth2ClientCredentials",
+        tokenUrl: bag.tokenUrl,
+        clientIdKey: bag.clientIdKey,
+        clientSecretKey: bag.clientSecretKey,
+        ...(typeof bag.scopes === "string" && bag.scopes.length > 0 ? { scopes: bag.scopes } : {}),
+      };
+    } else if (bag.scheme === "authorizationCode") {
+      if (
+        typeof bag.tokenUrl !== "string" ||
+        bag.tokenUrl.length === 0 ||
+        typeof bag.clientIdKey !== "string" ||
+        bag.clientIdKey.length === 0 ||
+        typeof bag.clientSecretKey !== "string" ||
+        bag.clientSecretKey.length === 0 ||
+        typeof bag.refreshTokenKey !== "string" ||
+        bag.refreshTokenKey.length === 0
+      ) {
+        return new Action2Error(
+          "InvalidAction",
+          "connectExternalService: authorizationCode requires tokenUrl, clientIdKey, clientSecretKey, and refreshTokenKey",
+        );
+      }
+      securityScheme = {
+        type: "oauth2AuthorizationCode",
+        tokenUrl: bag.tokenUrl,
+        clientIdKey: bag.clientIdKey,
+        clientSecretKey: bag.clientSecretKey,
+        refreshTokenKey: bag.refreshTokenKey,
+        ...(typeof bag.scopes === "string" && bag.scopes.length > 0 ? { scopes: bag.scopes } : {}),
+      };
+    } else {
+      return new Action2Error(
+        "InvalidAction",
+        `connectExternalService: authenticated scheme "${bag.scheme ?? ""}" is not implemented in this slice`,
+      );
+    }
+
+    const operationSync: Record<string, { boundPaths: string[] }> = {};
+    for (const operationId of bag.checkedOperationIds) {
+      const boundPaths = boundPathsForOperation(bag.openApiDocument, operationId);
+      if (boundPaths.length === 0) {
+        return new Action2Error(
+          "InvalidAction",
+          `connectExternalService: operation ${operationId} has no convertible GET fields`,
+        );
+      }
+      operationSync[operationId] = { boundPaths };
+    }
+
+    const materialized = materializeExternalServiceOperations({
+      openApiDocument: bag.openApiDocument,
+      scope: bag.checkedOperationIds,
+      operationSync,
+    });
+    if (!materialized.ok) {
+      return new Action2Error("InvalidAction", materialized.message);
+    }
+
+    const extraHeaders =
+      typeof bag.userAgent === "string" && bag.userAgent.trim().length > 0
+        ? { "User-Agent": bag.userAgent }
+        : undefined;
+
+    const unsavedEndpoint: EndpointDefinition = {
+      uuid: endpointUuid,
+      parentName: "Endpoint",
+      parentUuid: ENDPOINT_ENTITY_UUID,
+      application: applicationUuid,
+      name: bag.endpointName,
+      description: WIZARD_ROW_MARK,
+      version: "1",
+      definition: {
+        externalService: {
+          openApiDocument: bag.openApiDocument,
+          baseUrl: bag.baseUrl,
+          securityScheme,
+          ...(credentialKey ? { credentialKey } : {}),
+          ...(extraHeaders ? { extraHeaders } : {}),
+          enabledOperations: [...bag.checkedOperationIds],
+          operations: materialized.operations,
+          operationSync,
+        },
+      },
+    } as EndpointDefinition;
+
+    // Slice 2 / D13: snapshot then register processSecrets for the probe. Absent/empty → leave the map alone.
+    const processSecretsBag = bag.processSecrets;
+    const secretSnapshots: ProcessSecretSnapshot[] = [];
+    if (processSecretsBag && Object.keys(processSecretsBag).length > 0) {
+      for (const name of Object.keys(processSecretsBag)) {
+        let previous: ProcessSecretSnapshot["previous"];
+        try {
+          previous = resolveSecret(name);
+        } catch {
+          previous = undefined;
+        }
+        secretSnapshots.push({ name, previous });
+      }
+      for (const [name, value] of Object.entries(processSecretsBag)) {
+        registerHydratedProcessSecret(name, value);
+      }
+    }
+
+    const probeResult =
+      bag.probeSucceeded === true
+        ? ACTION_OK
+        : await this.runExternalServiceProbe(
+            unsavedEndpoint,
+            bag.probeOperationId,
+            bag.probeParameters ?? {},
+            processSecretsBag,
+            applicationDeploymentMap,
+            principal,
+          );
+    if (probeResult instanceof Action2Error) {
+      if (secretSnapshots.length > 0) {
+        restoreProcessSecretsFromSnapshot(secretSnapshots);
+      }
+      if (probeOnly) {
+        return {
+          status: "ok",
+          returnedDomainElement: {
+            probeSucceeded: false,
+            probeMessage: probeResult.errorMessage ?? "Probe failed.",
+          },
+        } as unknown as Action2VoidReturnType;
+      }
+      return probeResult;
+    }
+    if (probeOnly) {
+      if (secretSnapshots.length > 0) {
+        restoreProcessSecretsFromSnapshot(secretSnapshots);
+      }
+      return {
+        status: "ok",
+        returnedDomainElement: {
+          probeSucceeded: true,
+          probeMessage: "Probe succeeded.",
+        },
+      } as unknown as Action2VoidReturnType;
+    }
+    if (addReportToMenu) {
+      const menus = this.currentModel(applicationUuid, applicationDeploymentMap).menus ?? [];
+      if (menus.length === 0) {
+        if (secretSnapshots.length > 0) {
+          restoreProcessSecretsFromSnapshot(secretSnapshots);
+        }
+        return new Action2Error(
+          "InvalidAction",
+          "connectExternalService: the selected application has no menu",
+        );
+      }
+    }
+
+    // Slice 4: persist processSecrets to Admin after a successful probe (analysis §5.2 step 6).
+    if (processSecretsBag && Object.keys(processSecretsBag).length > 0) {
+      const wrappingKey = getSecretsMasterKey();
+      if (!wrappingKey) {
+        return new Action2Error(
+          "InvalidAction",
+          "connectExternalService: wrapping key required to persist secrets",
+        );
+      }
+      const secretInstances = importProcessSecrets({
+        wrappingKey,
+        secrets: processSecretsBag,
+      });
+      try {
+        await persistImportedProcessSecrets(this, secretInstances, applicationDeploymentMap);
+      } catch (error) {
+        return new Action2Error(
+          "FailedToHandleAction",
+          error instanceof Error
+            ? error.message
+            : "connectExternalService: failed to persist secrets",
+        );
+      }
+    }
+
+    const paramNames = openApiParameterNamesForOperation(bag.openApiDocument, bag.probeOperationId);
+    const inputSchemaDefinition: Record<string, unknown> = {};
+    const parameterBindings: Record<string, unknown> = {};
+    for (const name of paramNames) {
+      inputSchemaDefinition[name] = {
+        type: "string",
+        tag: {
+          value: {
+            defaultLabel: name,
+            ...(bag.probeParameters?.[name] !== undefined
+              ? { default: bag.probeParameters[name] }
+              : {}),
+          },
+        },
+      };
+      parameterBindings[name] = {
+        transformerType: "getFromParameters",
+        referenceName: name,
+      };
+    }
+
+    const fetchedDataReference = bag.probeOperationId;
+    const reportInstance = {
+      uuid: reportUuid,
+      selfApplication: applicationUuid,
+      parentName: "Report",
+      parentUuid: REPORT_ENTITY_UUID,
+      conceptLevel: "Model",
+      name: reportName,
+      description: WIZARD_ROW_MARK,
+      defaultLabel: `${bag.endpointName} ${bag.probeOperationId}`,
+      definition: {
+        extractorTemplates: {
+          [fetchedDataReference]: {
+            extractorOrCombinerType: "extractorTemplateForExternalService",
+            endpointUuid,
+            actionType: bag.probeOperationId,
+            parameterBindings,
+          },
+        },
+        section: {
+          type: "list",
+          definition: [
+            {
+              type: "inputReportSection",
+              definition: {
+                label: bag.probeOperationId,
+                inputPrefix: `${bag.probeOperationId}Input`,
+                urlParamFields: paramNames,
+                inputMLSchema: {
+                  type: "object",
+                  definition: inputSchemaDefinition,
+                },
+              },
+            },
+            {
+              type: "apiCallReportSection",
+              definition: {
+                label: bag.probeOperationId,
+                fetchedDataReference,
+                endpointUuid,
+                operationId: bag.probeOperationId,
+              },
+            },
+          ],
+        },
+      },
+    };
+
+    const targetModel = this.currentModel(applicationUuid, applicationDeploymentMap);
+    const endpointExists = targetModel.endpoints.some((row) => row.uuid === endpointUuid);
+    const reportExists = targetModel.reports.some((row) => row.uuid === reportUuid);
+    const modelEnvironment = this.currentModelEnvironment(applicationUuid, applicationDeploymentMap);
+
+    const upsertEndpointResult = await this.handleAction(
+      {
+        actionType: endpointExists ? "updateInstance" : "createInstance",
+        endpoint: INSTANCE_ENDPOINT,
+        payload: {
+          application: applicationUuid,
+          applicationSection: "model",
+          objects: [unsavedEndpoint as EntityInstance],
+        },
+      } as any,
+      applicationDeploymentMap,
+      modelEnvironment,
+    );
+    if (upsertEndpointResult instanceof Action2Error) {
+      return upsertEndpointResult;
+    }
+
+    if (createExampleReport) {
+      const upsertReportResult = await this.handleAction(
+        {
+          actionType: reportExists ? "updateInstance" : "createInstance",
+          endpoint: INSTANCE_ENDPOINT,
+          payload: {
+            application: applicationUuid,
+            applicationSection: "model",
+            objects: [reportInstance as EntityInstance],
+          },
+        } as any,
+        applicationDeploymentMap,
+        modelEnvironment,
+      );
+      if (upsertReportResult instanceof Action2Error) {
+        return upsertReportResult;
+      }
+    }
+
+    if (addReportToMenu) {
+      const menu = this.currentModel(applicationUuid, applicationDeploymentMap).menus[0];
+      const menuItem = {
+        miroirMenuItemType: "miroirMenuReportLink" as const,
+        label: `${bag.endpointName} ${bag.probeOperationId}`,
+        section: "model" as const,
+        selfApplication: applicationUuid,
+        reportUuid,
+      };
+      const updatedMenu = appendReportLinkToMenu(menu, menuItem);
+      if (updatedMenu) {
+        const menuResult = await this.handleAction(
+          {
+            actionType: "updateInstance",
+            endpoint: INSTANCE_ENDPOINT,
+            payload: {
+              application: applicationUuid,
+              applicationSection: "model",
+              objects: [updatedMenu as EntityInstance],
+            },
+          } as any,
+          applicationDeploymentMap,
+          modelEnvironment,
+        );
+        if (menuResult instanceof Action2Error) {
+          return menuResult;
+        }
+      }
+    }
+
+    const commitResult = await this.handleAction(
+      {
+        actionType: "commit",
+        endpoint: MODEL_ENDPOINT,
+        payload: { application: applicationUuid },
+      } as any,
+      applicationDeploymentMap,
+      modelEnvironment,
+    );
+    if (commitResult instanceof Action2Error) {
+      return commitResult;
+    }
+
+    return ACTION_OK;
+  }
+
+  // ##############################################################################################
+  /**
+   * #284 — document step onNext: parse pasted/uploaded text or fetch HTTPS URL.
+   * Returns openApiDocument text + convertible GET list (+ input schemas for later steps).
+   */
+  private async handlePrepareOpenApiDocument(
+    domainAction: {
+      actionType: "prepareOpenApiDocument";
+      endpoint: string;
+      payload: {
+        text?: string;
+        url?: string;
+      };
+    },
+  ): Promise<Action2ReturnType> {
+    const textRaw = domainAction.payload?.text;
+    const urlRaw = domainAction.payload?.url;
+    const url = typeof urlRaw === "string" ? urlRaw.trim() : "";
+    let documentText =
+      typeof textRaw === "string" ? textRaw : textRaw == null ? "" : String(textRaw);
+
+    if (url.length > 0) {
+      const baseUrlError = assertBaseUrlAllowed(url);
+      if (baseUrlError) {
+        return baseUrlError;
+      }
+      try {
+        // PR #285 P1: never follow redirects — a 3xx could land on a private/loopback host.
+        const response = await fetch(url, { redirect: "manual" });
+        if (response.status >= 300 && response.status < 400) {
+          return new Action2Error(
+            "InvalidAction",
+            "prepareOpenApiDocument: redirects are not followed; paste the final document URL",
+          );
+        }
+        if (!response.ok) {
+          return new Action2Error(
+            "InvalidAction",
+            `prepareOpenApiDocument: failed to fetch URL (HTTP ${response.status})`,
+          );
+        }
+        documentText = await response.text();
+      } catch (error: any) {
+        return new Action2Error(
+          "InvalidAction",
+          `prepareOpenApiDocument: failed to fetch URL: ${error?.message ?? String(error)}`,
+        );
+      }
+    }
+
+    const trimmed = documentText.trim();
+    if (trimmed.length === 0) {
+      return new Action2Error("InvalidAction", "openApiDocument is empty");
+    }
+
+    try {
+      parseOpenApiDocument(trimmed);
+    } catch (error: any) {
+      return new Action2Error(
+        "InvalidAction",
+        error?.message ?? "openApiDocument must be a YAML/JSON string or an object",
+      );
+    }
+
+    const convertibleOperationIds = listConvertibleGetOperations(trimmed);
+
+    const operationsInputSchema = {
+      type: "object",
+      definition: {
+        checkedOperationIds: {
+          type: "object",
+          tag: {
+            value: {
+              defaultLabel: "Operations to include (turn off any you do not want on the endpoint)",
+            },
+          },
+          definition: Object.fromEntries(
+            convertibleOperationIds.map((operationId) => [
+              operationId,
+              {
+                type: "boolean",
+                optional: true,
+                tag: {
+                  value: {
+                    defaultLabel: operationId,
+                    initializeTo: { initializeToType: "value", value: true },
+                  },
+                },
+              },
+            ]),
+          ),
+        },
+        probeOperationId: convertibleOperationIds.length > 0
+          ? {
+              type: "enum",
+              definition: convertibleOperationIds,
+              tag: {
+                value: {
+                  defaultLabel:
+                    "Probe operation — the id of one included operation. Finish calls it once to verify the connection.",
+                },
+              },
+            }
+          : {
+              type: "string",
+              tag: {
+                value: {
+                  defaultLabel: "Probe operation — no convertible GET operation in this document",
+                },
+              },
+            },
+      },
+      required: ["checkedOperationIds", "probeOperationId"],
+    };
+
+    const probeParamsSchemaFor = (names: string[]) => ({
+      type: "object",
+      definition: Object.fromEntries(
+        names.map((name) => [
+          name,
+          {
+            type: "string",
+            optional: true,
+            tag: { value: { defaultLabel: name } },
+          },
+        ]),
+      ),
+    });
+    const probeParamsInputSchemaByOperationId = Object.fromEntries(
+      convertibleOperationIds.map((operationId) => [
+        operationId,
+        probeParamsSchemaFor(openApiParameterNamesForOperation(trimmed, operationId)),
+      ]),
+    );
+    const probeParamNames = new Set<string>();
+    for (const operationId of convertibleOperationIds) {
+      for (const name of openApiParameterNamesForOperation(trimmed, operationId)) {
+        probeParamNames.add(name);
+      }
+    }
+    const probeParamsInputSchema = probeParamsSchemaFor([...probeParamNames]);
+
+    return {
+      status: "ok",
+      returnedDomainElement: {
+        text: trimmed,
+        openApiDocument: trimmed,
+        convertibleOperationIds,
+        operationsInputSchema,
+        probeParamsInputSchema,
+        probeParamsInputSchemaByOperationId,
+      },
+    };
+  }
+
   // ##############################################################################################
   private async handleActionInternal(
     domainAction: DomainAction,
@@ -3387,7 +4247,10 @@ export class DomainController implements DomainControllerInterface {
     currentModel?: MiroirModelEnvironment,
     principal?: AuthPrincipal,
   ): Promise<Action2VoidReturnType> {
-    log.debug("handleActionInternal START for action", domainAction);
+    log.debug(
+      "handleActionInternal START for action",
+      redactCredentialSecretsFromValue(domainAction),
+    );
     const application = (domainAction.payload as any).application ?? "APPLICATION_UUID_NOT_FOUND";
     const deploymentUuid = applicationDeploymentMap[application];
     const actionPhase = logPhaseForActionType(domainAction.actionType);
@@ -3655,6 +4518,19 @@ export class DomainController implements DomainControllerInterface {
           //   "DomainController handleAction compositeActionSequence should not be used anymore",
           // );
           break;
+        }
+        case "connectExternalService": {
+          return this.handleConnectExternalService(
+            domainAction as any,
+            applicationDeploymentMap,
+            principal,
+          );
+        }
+        case "probeExternalService" as any: {
+          return this.handleProbeExternalService(domainAction as any, principal);
+        }
+        case "prepareOpenApiDocument": {
+          return this.handlePrepareOpenApiDocument(domainAction as any);
         }
         default:
           log.error(
@@ -4789,18 +5665,20 @@ export class DomainController implements DomainControllerInterface {
     actionParamValues: Record<string, any>,
     actionContext: Record<string, any> = {},
     principal?: AuthPrincipal,
-  ): Promise<Action2VoidReturnType> {
+  ): Promise<Action2ReturnType> {
     const localActionParams = { ...templateEvaluationParams, ...actionParamValues };
     const actionLabel = (compositeActionSequence as any).actionLabel ?? "no action label";
     log.info(
       "handleCompositeActionTemplate called with compositeActionSequence",
       actionLabel,
-      "compositeActionSequence",
-      compositeActionSequence,
+      "compositeActionSequence actionType",
+      (compositeActionSequence as any).actionType,
+      "localActionParams keys",
+      Object.keys(localActionParams),
       "localActionParams",
-      localActionParams,
-      "actionContext",
-      actionContext,
+      redactCredentialSecretsFromValue(localActionParams),
+      "actionContext keys",
+      Object.keys(actionContext ?? {}),
     );
     const resolved: TransformerReturnType<{
       resolvedCompositeActionDefinition: CompositeActionSequence;
@@ -4823,16 +5701,19 @@ export class DomainController implements DomainControllerInterface {
 
     log.info("handleCompositeActionTemplate resolved Templates", {
       actionLabel,
-      localActionParams,
-      resolved,
+      localActionParamsKeys: Object.keys(localActionParams),
+      resolvedActionSequenceLength:
+        resolved.resolvedCompositeActionDefinition?.payload?.actionSequence?.length,
     });
     // log.info("handleCompositeActionTemplate", actionLabel, "localActionParams", localActionParams);
     log.info(
       "handleCompositeActionTemplate",
       actionLabel,
-      "resolvedCompositeActionDefinition",
-      resolved.resolvedCompositeActionDefinition
-      // JSON.stringify(resolved.resolvedCompositeActionDefinition, null, 2)
+      "resolvedCompositeActionDefinition action labels",
+      resolved.resolvedCompositeActionDefinition?.payload?.actionSequence?.map(
+        (step: { actionLabel?: string; actionType?: string }) =>
+          step.actionLabel ?? step.actionType,
+      ),
     );
 
     let localContext: Record<string, any> = {
@@ -4840,6 +5721,7 @@ export class DomainController implements DomainControllerInterface {
       ...actionContext,
       ...resolved.resolvedCompositeActionTemplates,
     };
+    let lastPayloadResult: Action2ReturnType = ACTION_OK;
 
     // TODO: replace with handleCompositeAction
     for (const currentAction of resolved.resolvedCompositeActionDefinition.payload.actionSequence) {
@@ -4848,11 +5730,12 @@ export class DomainController implements DomainControllerInterface {
         actionLabel,
         "currentAction",
         currentAction.actionLabel,
-        currentAction,
+        "currentActionType",
+        currentAction.actionType,
+        "currentAction",
+        redactCredentialSecretsFromValue(currentAction),
         "localContext keys",
         Object.keys(localContext),
-        "localContext",
-        localContext,
       );
       const resolvedActionTemplate: any = transformer_extended_apply(
         "runtime",
@@ -4870,7 +5753,7 @@ export class DomainController implements DomainControllerInterface {
         "resolvedActionTemplate instanceof TransformerFailure",
         resolvedActionTemplate instanceof TransformerFailure,
         "resolved action Template",
-        JSON.stringify(resolvedActionTemplate, null, 2),
+        JSON.stringify(redactCredentialSecretsFromValue(resolvedActionTemplate), null, 2),
       );
       if (resolvedActionTemplate instanceof TransformerFailure) {
         return new Action2Error(
@@ -4993,16 +5876,16 @@ export class DomainController implements DomainControllerInterface {
             "handleCompositeActionTemplate",
             actionLabel,
             "received actionResult from compositeInstanceAction",
-            currentAction,
+            currentAction.actionLabel ?? currentAction.actionType,
             "actionResult",
-            JSON.stringify(actionResult, null, 2),
+            JSON.stringify(redactCredentialSecretsFromValue(actionResult), null, 2),
           );
           if (actionResult instanceof Action2Error) {
             log.error(
               "handleCompositeActionTemplate compositeInstanceAction error on running action",
-              JSON.stringify(currentAction, null, 2) +
+              JSON.stringify(redactCredentialSecretsFromValue(currentAction), null, 2) +
                 "actionResult" +
-                JSON.stringify(actionResult, null, 2),
+                JSON.stringify(redactCredentialSecretsFromValue(actionResult), null, 2),
             );
             return new Action2Error(
               "FailedToHandleAction",
@@ -5015,6 +5898,7 @@ export class DomainController implements DomainControllerInterface {
             );
           }
           if (actionResult.returnedDomainElement !== undefined) {
+            lastPayloadResult = actionResult;
             const label = currentAction.actionLabel;
             if (typeof label === "string" && label.length > 0) {
               localContext[label] = actionResult.returnedDomainElement;
@@ -5024,7 +5908,7 @@ export class DomainController implements DomainControllerInterface {
         }
       }
     }
-    return Promise.resolve(ACTION_OK);
+    return lastPayloadResult;
   }
 
   // ##############################################################################################

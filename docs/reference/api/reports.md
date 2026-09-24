@@ -74,6 +74,8 @@ A Report with `"type": "multistep"` pages its `list` children one step at a time
 
 Finish on the last step runs `definition.compositeActionSequence` (`CompositeActionSequenceTemplate`) through `handleCompositeActionTemplate`. The payload is the **step bag** (`inputPrefix` buckets plus hoisted `objectInstanceReportSection` path keys), not the raw Formik tree. The walk is memory-only; the URL has no `step` key.
 
+A list child is either a bare section or an envelope `{ stepId, section, onNext?, branch?, inputSchemaFromBag? }`. Bare sections stay linear: Back is the previous index and Finish gates every child. When any child has a `stepId`, Back pops the steps actually visited and Finish gates only those steps. Next checks the resolved input schema, runs optional `onNext`, merges that result under `stepId`, then follows `branch.whenTrue` or `branch.whenFalse`. A failed `onNext` or branch test stays on the current step and shows that failure's own message. `inputSchemaFromBag` is evaluated when the step opens. It is not written into `inputMLSchema`.
+
 Optional Report `description` (multiline string on the Report entity) is shown on **step 0** above the step label in `MultistepReportHost` (`data-testid="multistep-report-description"`).
 
 ```json

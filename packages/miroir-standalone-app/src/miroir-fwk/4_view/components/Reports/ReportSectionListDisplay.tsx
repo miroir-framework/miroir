@@ -88,6 +88,7 @@ import {
   LIST_TRANSFORMER_PAGE_SIZE,
   sliceInstancesToPage,
 } from "./listDisplayByTransformer.js";
+import { isMultistepStepEnvelope, unwrapMultistepListChild } from "./MultistepReportHost.js";
 
 const ReportDisplay = lazy(async () => {
   const module = await import("../../routes/ReportDisplay.js");
@@ -162,7 +163,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       ? formikContext.values[props.formikReportDefinitionPathString]
       : undefined;
 
-  const reportSectionDefinitionFromFormik: ReportSection | undefined =
+  const reportSectionDefinitionRaw =
     reportDefinitionFromFormik &&
     props.reportSectionPath
       ? resolvePathOnObject(
@@ -170,6 +171,12 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           props.reportSectionPath ?? []
         )
       : undefined;
+  const reportSectionDefinitionFromFormik: ReportSection | undefined =
+    reportSectionDefinitionRaw == null
+      ? undefined
+      : isMultistepStepEnvelope(reportSectionDefinitionRaw)
+        ? unwrapMultistepListChild(reportSectionDefinitionRaw)
+        : (reportSectionDefinitionRaw as ReportSection);
 
   // Do not early-return before hooks below — section type can resolve after Formik init
   // (Rules of Hooks: same number of hooks every render).

@@ -28,7 +28,10 @@ import { cleanLevel, lastSubmitButtonClicked } from '../../constants.js';
 import { ThemedSpan } from '../Themes/index.js';
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { InlineReportEditor, reportReportDetailsKey } from './InlineReportEditor.js';
-import { useOptionalMultistepReportHost } from './MultistepReportHost.js';
+import {
+  omitSecretKeysFromBagDump,
+  useOptionalMultistepReportHost,
+} from './MultistepReportHost.js';
 import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
 import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
 import { reportSectionsFormValue } from './ReportTools.js';
@@ -287,10 +290,14 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
       [reportName]: props.reportDefinition,
       ...(multistepHost?.stepBag ?? {}),
     };
-    log.info("reportSectionsFormValue initialReportSectionsFormValue", result);
+    // PR #285 P1: the multistep bag can hold plaintext secrets — log keys only, never values.
+    log.info(
+      "reportSectionsFormValue initialReportSectionsFormValue keys",
+      Object.keys(result),
+    );
     return result;
 
-  }, [props.reportDefinition, props.pageParams, props.storedQueryData, reportDataForForm, reportInterpreterPageParams, reportName, multistepHost?.stepBag]);
+  }, [props.reportDefinition, props.pageParams, props.storedQueryData, reportDataForForm, reportInterpreterPageParams, reportName, multistepHost?.stepBag, multistepHost?.resolvedInputSchema]);
 
   // ###############################################################################################
   // ###############################################################################################
@@ -516,7 +523,10 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                         // },
                         {
                           label: "formik values",
-                          data: formik.values,
+                          data:
+                            props.reportDefinition?.type === "multistep"
+                              ? omitSecretKeysFromBagDump(formik.values)
+                              : formik.values,
                           useCodeBlock: true,
                         },
 

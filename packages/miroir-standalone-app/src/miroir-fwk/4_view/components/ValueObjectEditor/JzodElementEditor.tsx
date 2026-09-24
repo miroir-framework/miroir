@@ -1284,7 +1284,23 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           //     />
           //   );
           // }
-          if (localResolvedElementJzodSchemaBasedOnValue.tag?.value?.foreignKeyParams?.targetEntity) {
+          const uuidDisplayTag = (
+            localResolvedElementJzodSchemaBasedOnValue.tag?.value as
+              | {
+                  foreignKeyParams?: { targetEntity?: string };
+                  display?: {
+                    uuid?: {
+                      selector?: "muiSelector" | "portalSelector";
+                      restrictToApplicationDeploymentMap?: boolean;
+                    };
+                  };
+                }
+              | undefined
+          )?.display?.uuid;
+          if (
+            localResolvedElementJzodSchemaBasedOnValue.tag?.value?.foreignKeyParams?.targetEntity ||
+            uuidDisplayTag?.restrictToApplicationDeploymentMap
+          ) {
             // Convert stringSelectList to options for selectors
             const selectOptions = stringSelectList.map((e: [string, EntityInstance]) => ({
               value: e[1].uuid ?? "NO_UUID", // TODO: check e[1].uuid is always defined
@@ -1298,8 +1314,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             const editor = localReadOnly ? (
               // <ThemedDisplayValue value={currentValueObjectAtKey} type="uuid" />
               <ThemedDisplayValue value={currentOption?currentOption.label:currentValueObjectAtKey} type="string" />
-            ) : !localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.uuid?.selector ||
-              localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.uuid?.selector ==
+            ) : !uuidDisplayTag?.selector ||
+              uuidDisplayTag.selector ==
                 "portalSelector" ? (
               <ThemedSelectWithPortal
                 id={props.rootLessListKey}
@@ -1336,7 +1352,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 name={formikRootLessListKey}
                 // error={hasPathError}
               />
-            ) : localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.uuid?.selector ==
+            ) : uuidDisplayTag?.selector ==
               "muiSelector" ? (
                 <>
                   <JsonDisplayHelper debug={true}

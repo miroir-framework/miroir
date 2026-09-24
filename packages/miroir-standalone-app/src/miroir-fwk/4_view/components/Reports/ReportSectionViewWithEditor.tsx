@@ -47,6 +47,10 @@ import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 import { TransformerRunnerReportSectionView } from './TransformerRunner.js';
 import { ReportInputSection } from './ReportInputSection.js';
 import { resolveApiCallReportSectionSchema } from './resolveApiCallReportSectionSchema.js';
+import {
+  isMultistepStepEnvelope,
+  useOptionalMultistepReportHost,
+} from './MultistepReportHost.js';
 
 import {
   entityEntity,
@@ -161,6 +165,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   const context = useMiroirContextService();
   const showPerformanceDisplay = context.showPerformanceDisplay;
   const navigate = useNavigate();
+  const multistepHost = useOptionalMultistepReportHost();
 
   const formik = useFormikContext<Record<string, any>>();
   const valueObjectEditMode = props.valueObjectEditMode || "update";
@@ -442,14 +447,19 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         {/* <span>ReportSectionViewEditor list</span> */}
         <div style={{ position: "relative" }}>
           {/* {props.generalEditMode && <IconBar />} */}
-          {reportSectionDefinitionFromFormik?.definition.map((innerReportSection, index) => (
-            <div key={index} style={{ marginBottom: "2em", position: "relative" }}>
-              <ReportSectionViewWithEditor
-                {...props}
-                reportSectionPath={[...(props.reportSectionPath ?? []), "definition", index]}
-              />
-            </div>
-          ))}
+          {reportSectionDefinitionFromFormik?.definition.map((innerReportSection, index) => {
+            const childPath = isMultistepStepEnvelope(innerReportSection)
+              ? [...(props.reportSectionPath ?? []), "definition", index, "section"]
+              : [...(props.reportSectionPath ?? []), "definition", index];
+            return (
+              <div key={index} style={{ marginBottom: "2em", position: "relative" }}>
+                <ReportSectionViewWithEditor
+                  {...props}
+                  reportSectionPath={childPath}
+                />
+              </div>
+            );
+          })}
         </div>
       </>
     );
@@ -743,7 +753,8 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
               props.reportSectionPath.join("_") + "_inputMLSchema"
             }
             inputMLSchema={
-              reportSectionDefinitionFromFormik.definition.inputMLSchema as JzodObject
+              (multistepHost?.resolvedInputSchema ??
+                reportSectionDefinitionFromFormik.definition.inputMLSchema) as JzodObject
             }
             urlParamFields={reportSectionDefinitionFromFormik.definition.urlParamFields}
             application={props.application}

@@ -161,11 +161,80 @@
               "definition": {
                 "type": "array",
                 "definition": {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "reportSection"
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "reportSection"
+                      }
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "multistepStep"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "multistepStep": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "section.definition.label"
+                }
+              }
+            },
+            "definition": {
+              "stepId": {
+                "type": "string"
+              },
+              "section": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "reportSection"
+                }
+              },
+              "onNext": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeActionSequenceTemplate"
+                }
+              },
+              "branch": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "test": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "coreTransformerForBuildPlusRuntime"
+                    }
+                  },
+                  "whenTrue": {
+                    "type": "string"
+                  },
+                  "whenFalse": {
+                    "type": "string"
                   }
+                }
+              },
+              "inputSchemaFromBag": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "coreTransformerForBuildPlusRuntime"
                 }
               }
             }
@@ -174,6 +243,9 @@
             "type": "object",
             "tag": {
               "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "label"
+                },
                 "initializeTo": {
                   "initializeToType": "value",
                   "value": {
@@ -207,6 +279,13 @@
           },
           "graphReportSection": {
             "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "definition.label"
+                }
+              }
+            },
             "definition": {
               "type": {
                 "type": "literal",
@@ -1209,6 +1288,13 @@
           },
           "storedReportDisplay": {
             "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "label"
+                }
+              }
+            },
             "definition": {
               "type": {
                 "type": "literal",

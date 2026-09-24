@@ -10,9 +10,14 @@ import type { Action } from "./preprocessor-generated/miroirFundamentalType.js";
 
 export type EndpointSecurityScheme =
   | {
+      type: "none";
+    }
+  | {
       type: "http";
       scheme: string;
       bearerFormat?: string;
+      /** When set, replaces the single `{secret}` marker; absent keeps `Bearer ${token}`. */
+      authorizationTemplate?: string;
     }
   | {
       type: "oauth2ClientCredentials";
@@ -52,6 +57,7 @@ export type EndpointExternalService = {
   baseUrl: string;
   securityScheme: EndpointSecurityScheme;
   credentialKey?: string;
+  extraHeaders?: Record<string, string>;
   enabledOperations: string[];
   operations: Array<{
     operationId: string;

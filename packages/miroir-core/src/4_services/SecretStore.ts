@@ -10,6 +10,13 @@ export type ResolveSecretResult = {
   source: "row" | "hatch";
 };
 
+/** Snapshot of one process secret before a temporary register (issue #284 D13). */
+export type ProcessSecretSnapshot = {
+  name: string;
+  /** Undefined when resolveSecret threw / the name was absent. */
+  previous: ResolveSecretResult | undefined;
+};
+
 const processSecrets = new Map<string, ResolveSecretResult>();
 /** Keyed `userUuid:name`. */
 const userSecrets = new Map<string, ResolveSecretResult>();
@@ -59,6 +66,26 @@ export function resolveSecret(
     throw new Error("Unknown or empty secret");
   }
   return entry;
+}
+
+/** Remove one process-scoped secret. Does not call clearSecrets. */
+export function unregisterProcessSecret(name: string): void {
+  processSecrets.delete(name);
+}
+
+/**
+ * Restore process secrets after a failed probe (issue #284 D13).
+ * Re-registers the previous entry, or unregisters when the name was absent.
+ * Does not call clearSecrets.
+ */
+export function restoreProcessSecretsFromSnapshot(snapshots: ProcessSecretSnapshot[]): void {
+  for (const { name, previous } of snapshots) {
+    if (previous === undefined) {
+      unregisterProcessSecret(name);
+    } else {
+      processSecrets.set(name, previous);
+    }
+  }
 }
 
 export function clearSecrets(): void {

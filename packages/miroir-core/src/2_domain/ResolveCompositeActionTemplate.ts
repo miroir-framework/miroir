@@ -7,6 +7,7 @@ import { TransformerFailure, type ITransformerFailure, type TransformerReturnTyp
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { defaultMetaModelEnvironment } from "../1_core/Model";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
+import { redactCredentialSecretsFromValue } from "../4_services/redactCredentialSecrets.js";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { transformer_extended_apply_wrapper } from "./TransformersForRuntime";
@@ -30,13 +31,14 @@ export function resolveCompositeActionTemplate(
   const localActionParams = { ...actionParamValues };
   const compositeActionLabel = (compositeActionTemplate as any).actionLabel??"NO_ACTION_LABEL";
 
-  log.info(
-    "resolveCompositeActionTemplate called with compositeActionTemplate",
-    compositeActionLabel,
-    compositeActionTemplate,
-    "localActionParams",
-    localActionParams
-  );
+    log.info(
+      "resolveCompositeActionTemplate called with compositeActionTemplate",
+      compositeActionLabel,
+      "compositeActionTemplate actionType",
+      (compositeActionTemplate as any).actionType,
+      "localActionParams keys",
+      Object.keys(localActionParams),
+    );
   if ((compositeActionTemplate as any).transformerType) {
     throw new Error(
       "resolveCompositeActionTemplate can not deal with compositeActionTemplate " +
@@ -129,8 +131,8 @@ export function resolveCompositeActionTemplate(
   log.info(
     "resolveCompositeActionTemplate for action", compositeActionLabel,
     "got result resolvedCompositeActionDefinition",
-    JSON.stringify(resolvedCompositeActionDefinition, null, 2),
-    "using actionParamsAndTemplates",
+    JSON.stringify(redactCredentialSecretsFromValue(resolvedCompositeActionDefinition), null, 2),
+    "using actionParamsAndTemplates keys",
     JSON.stringify(Object.keys(actionParamsAndTemplates), null, 2),
   );
   if (resolvedCompositeActionDefinition instanceof TransformerFailure) {
@@ -157,7 +159,7 @@ export function resolveCompositeActionTemplate(
     "resolveCompositeActionTemplate",
     compositeActionLabel,
     "resolvedCompositeAction",
-    resolvedCompositeAction
+    redactCredentialSecretsFromValue(resolvedCompositeAction),
   );
 
   // log.info("resolveCompositeActionTemplate", compositeActionLabel, "localActionParams", Object.keys(localActionParams));

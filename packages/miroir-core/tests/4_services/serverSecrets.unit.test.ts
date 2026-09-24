@@ -114,6 +114,12 @@ describe.skipIf(!shouldRun)("serverSecrets — SecretStore + parseServerArgs + r
       note: "prefix test-token suffix",
       nested: { token: "inner", safe: "ok" },
       passwordHash: "should-remain-unless-credential-row",
+      clientSecret: "actual-secret",
+      schemaAttribute: {
+        clientSecret: { type: "string", tag: { value: { defaultLabel: "Client secret" } } },
+        refreshToken: { type: "string" },
+        token: { type: "string", optional: true },
+      },
     }) as Record<string, unknown>;
 
     expect(redacted.authorization).toBe("[REDACTED]");
@@ -125,6 +131,48 @@ describe.skipIf(!shouldRun)("serverSecrets — SecretStore + parseServerArgs + r
     expect(redacted.note).toBe("prefix [REDACTED] suffix");
     expect((redacted.nested as Record<string, unknown>).token).toBe("[REDACTED]");
     expect((redacted.nested as Record<string, unknown>).safe).toBe("ok");
+    expect(redacted.clientSecret).toBe("[REDACTED]");
+    const schemaAttribute = redacted.schemaAttribute as Record<string, { type: string }>;
+    expect(schemaAttribute.clientSecret.type).toBe("string");
+    expect(schemaAttribute.refreshToken.type).toBe("string");
+    expect(schemaAttribute.token.type).toBe("string");
+  });
+
+  it("redactCredentialSecretsFromValue keeps wizard input schemas whose attribute names are sensitive keys", () => {
+    const report = JSON.parse(
+      readFileSync(
+        join(
+          REPO_ROOT,
+          "packages/miroir-test-app_deployment-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/dbd94bfe-b803-4bfd-8bb2-70a5932d5d1a.json",
+        ),
+        "utf8",
+      ),
+    ) as {
+      definition: {
+        section: {
+          definition: Array<{
+            section?: {
+              definition?: {
+                inputMLSchema?: { definition?: Record<string, { type?: string }> };
+              };
+            };
+          }>;
+        };
+      };
+    };
+    const redacted = redactCredentialSecretsFromValue(report) as typeof report;
+    const schemas = redacted.definition.section.definition
+      .map((step) => step.section?.definition?.inputMLSchema?.definition)
+      .filter((definition): definition is Record<string, { type?: string }> => !!definition);
+    for (const fieldName of ["clientSecret", "refreshToken", "token"] as const) {
+      const field = schemas.flatMap((definition) =>
+        definition[fieldName] ? [definition[fieldName]] : [],
+      );
+      expect(field.length).toBeGreaterThan(0);
+      for (const schema of field) {
+        expect(schema.type).toBe("string");
+      }
+    }
   });
 
   it("server.ts source contains no live process.env dump", () => {

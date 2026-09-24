@@ -1,0 +1,682 @@
+{
+  "uuid": "dbd94bfe-b803-4bfd-8bb2-70a5932d5d1a",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "ConnectExternalServiceWizard",
+  "defaultLabel": "Connect an external service",
+  "type": "multistep",
+  "description": "Walk an OpenAPI document into an Endpoint and validation Report on a target application.",
+  "definition": {
+    "compositeActionSequence": {
+      "actionType": "compositeActionSequence",
+      "actionLabel": "ConnectExternalServiceWizardFinish",
+      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+      "payload": {
+        "actionSequence": [
+          {
+            "actionType": "connectExternalService",
+            "actionLabel": "connectExternalServiceFromWizardBag",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "payload": {
+              "transformerType": "getFromParameters",
+              "interpolation": "runtime",
+              "referencePath": []
+            }
+          }
+        ]
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "stepId": "application",
+          "section": {
+            "type": "inputReportSection",
+            "definition": {
+              "label": "Application",
+              "inputPrefix": "application",
+              "inputMLSchema": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Application",
+                        "display": {
+                          "uuid": {
+                            "selector": "portalSelector",
+                            "restrictToApplicationDeploymentMap": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "stepId": "name",
+          "section": {
+            "type": "inputReportSection",
+            "definition": {
+              "label": "Endpoint name",
+              "inputPrefix": "name",
+              "inputMLSchema": {
+                "type": "object",
+                "definition": {
+                  "endpointName": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Endpoint name"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "stepId": "document",
+          "section": {
+            "type": "inputReportSection",
+            "definition": {
+              "label": "OpenAPI document",
+              "inputPrefix": "document",
+              "inputMLSchema": {
+                "type": "object",
+                "definition": {
+                  "text": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Paste OpenAPI (YAML or JSON)"
+                      }
+                    }
+                  },
+                  "url": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Or fetch from HTTPS URL"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "onNext": {
+            "actionType": "compositeActionSequence",
+            "actionLabel": "documentOnNext",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "payload": {
+              "actionSequence": [
+                {
+                  "actionType": "prepareOpenApiDocument",
+                  "actionLabel": "prepareOpenApiDocument",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  "payload": {
+                    "text": {
+                      "transformerType": "getFromParameters",
+                      "interpolation": "runtime",
+                      "safe": true,
+                      "referencePath": [
+                        "document",
+                        "text"
+                      ]
+                    },
+                    "url": {
+                      "transformerType": "getFromParameters",
+                      "interpolation": "runtime",
+                      "safe": true,
+                      "referencePath": [
+                        "document",
+                        "url"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "stepId": "baseUrl",
+          "section": {
+            "type": "inputReportSection",
+            "definition": {
+              "label": "Base URL",
+              "inputPrefix": "baseUrl",
+              "inputMLSchema": {
+                "type": "object",
+                "definition": {
+                  "baseUrl": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Base URL"
+                      }
+                    }
+                  },
+                  "userAgent": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "User-Agent (optional)"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "stepId": "authenticated",
+          "section": {
+            "type": "inputReportSection",
+            "definition": {
+              "label": "Authentication",
+              "inputPrefix": "authenticated",
+              "inputMLSchema": {
+                "type": "object",
+                "definition": {
+                  "authenticated": {
+                    "type": "boolean",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Requires authentication",
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": false
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "branch": {
+            "test": {
+              "transformerType": "getFromParameters",
+              "interpolation": "runtime",
+              "referencePath": [
+                "authenticated",
+                "authenticated"
+              ]
+            },
+            "whenTrue": "scheme",
+            "whenFalse": "operations"
+          }
+        },
+        {
+          "stepId": "scheme",
+          "section": {
+            "type": "inputReportSection",
+            "definition": {
+              "label": "Scheme",
+              "inputPrefix": "scheme",
+              "inputMLSchema": {
+                "type": "object",
+                "definition": {
+                  "scheme": {
+                    "type": "enum",
+                    "definition": [
+                      "authorizationCode",
+                      "clientCredentials",
+                      "customToken"
+                    ],
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Scheme",
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": "customToken"
+                        }
+                      }
+                    },
+                    "optional": true
+                  }
+                }
+              }
+            }
+          },
+          "branch": {
+            "test": {
+              "transformerType": "equals",
+              "interpolation": "runtime",
+              "left": {
+                "transformerType": "getFromParameters",
+                "interpolation": "runtime",
+                "referencePath": [
+                  "scheme",
+                  "scheme"
+                ]
+              },
+              "right": {
+                "transformerType": "returnValue",
+                "interpolation": "runtime",
+                "value": "authorizationCode"
+              }
+            },
+            "whenTrue": "secretsAuthCode",
+            "whenFalse": "secretsClient"
+          }
+        },
+        {
+          "stepId": "secretsAuthCode",
+          "section": {
+            "type": "inputReportSection",
+            "definition": {
+              "label": "Authorization code secrets",
+              "inputPrefix": "secretsAuthCode",
+              "inputMLSchema": {
+                "type": "object",
+                "definition": {
+                  "clientId": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Client id"
+                      }
+                    },
+                    "optional": true
+                  },
+                  "clientIdKey": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Client id secret name"
+                      }
+                    },
+                    "optional": true
+                  },
+                  "clientSecret": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Client secret",
+                        "display": {
+                          "mask": true
+                        }
+                      }
+                    },
+                    "optional": true
+                  },
+                  "clientSecretKey": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Client secret name"
+                      }
+                    },
+                    "optional": true
+                  },
+                  "refreshToken": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Refresh token",
+                        "display": {
+                          "mask": true
+                        }
+                      }
+                    },
+                    "optional": true
+                  },
+                  "refreshTokenKey": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Refresh token secret name"
+                      }
+                    },
+                    "optional": true
+                  },
+                  "tokenUrl": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Token URL"
+                      }
+                    },
+                    "optional": true
+                  },
+                  "scopes": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Scopes"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "branch": {
+            "test": {
+              "transformerType": "returnValue",
+              "interpolation": "runtime",
+              "value": true
+            },
+            "whenTrue": "operations",
+            "whenFalse": "operations"
+          }
+        },
+        {
+          "stepId": "secretsClient",
+          "section": {
+            "type": "inputReportSection",
+            "definition": {
+              "label": "Client credentials secrets",
+              "inputPrefix": "secretsClient",
+              "inputMLSchema": {
+                "type": "object",
+                "definition": {
+                  "clientId": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Client id"
+                      }
+                    },
+                    "optional": true
+                  },
+                  "clientIdKey": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Client id secret name"
+                      }
+                    },
+                    "optional": true
+                  },
+                  "clientSecret": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Client secret",
+                        "display": {
+                          "mask": true
+                        }
+                      }
+                    },
+                    "optional": true
+                  },
+                  "clientSecretKey": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Client secret name"
+                      }
+                    },
+                    "optional": true
+                  },
+                  "tokenUrl": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Token URL"
+                      }
+                    },
+                    "optional": true
+                  },
+                  "scopes": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Scopes"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "branch": {
+            "test": {
+              "transformerType": "equals",
+              "interpolation": "runtime",
+              "left": {
+                "transformerType": "getFromParameters",
+                "interpolation": "runtime",
+                "referencePath": [
+                  "scheme",
+                  "scheme"
+                ]
+              },
+              "right": {
+                "transformerType": "returnValue",
+                "interpolation": "runtime",
+                "value": "clientCredentials"
+              }
+            },
+            "whenTrue": "operations",
+            "whenFalse": "secretsCustom"
+          }
+        },
+        {
+          "stepId": "secretsCustom",
+          "section": {
+            "type": "inputReportSection",
+            "definition": {
+              "label": "Custom token",
+              "inputPrefix": "secretsCustom",
+              "inputMLSchema": {
+                "type": "object",
+                "definition": {
+                  "credentialKey": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Secret name"
+                      }
+                    },
+                    "optional": true
+                  },
+                  "token": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Token",
+                        "display": {
+                          "mask": true
+                        }
+                      }
+                    },
+                    "optional": true
+                  },
+                  "authorizationTemplate": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Authorization template",
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": "Bearer {secret}"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "branch": {
+            "test": {
+              "transformerType": "returnValue",
+              "interpolation": "runtime",
+              "value": true
+            },
+            "whenTrue": "operations",
+            "whenFalse": "operations"
+          }
+        },
+        {
+          "stepId": "operations",
+          "section": {
+            "type": "inputReportSection",
+            "definition": {
+              "label": "Operations",
+              "inputPrefix": "operations",
+              "inputMLSchema": {
+                "type": "object",
+                "definition": {
+                  "checkedOperationIds": {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Operations to include (turn off any you do not want on the endpoint)"
+                      }
+                    },
+                    "definition": {}
+                  },
+                  "probeOperationId": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Probe operation — the id of one included operation. Finish calls it once to verify the connection."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "inputSchemaFromBag": {
+            "transformerType": "getFromParameters",
+            "interpolation": "runtime",
+            "referencePath": [
+              "document",
+              "operationsInputSchema"
+            ]
+          }
+        },
+        {
+          "stepId": "probeParams",
+          "section": {
+            "type": "inputReportSection",
+            "definition": {
+              "label": "Probe parameters",
+              "inputPrefix": "probeParams",
+              "inputMLSchema": {
+                "type": "object",
+                "definition": {}
+              }
+            }
+          },
+          "inputSchemaFromBag": {
+            "transformerType": "accessDynamicPath",
+            "interpolation": "runtime",
+            "objectAccessPath": [
+              {
+                "transformerType": "getFromContext",
+                "interpolation": "runtime",
+                "safe": true,
+                "referencePath": [
+                  "document",
+                  "probeParamsInputSchemaByOperationId"
+                ]
+              },
+              {
+                "transformerType": "getFromContext",
+                "interpolation": "runtime",
+                "safe": true,
+                "referencePath": [
+                  "operations",
+                  "probeOperationId"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "stepId": "review",
+          "section": {
+            "type": "markdownReportSection",
+            "definition": {
+              "label": "Review",
+              "content": "Review the connection. Secret values are not shown. Next runs the probe."
+            }
+          },
+          "onNext": {
+            "actionType": "compositeActionSequence",
+            "actionLabel": "reviewOnNext",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "payload": {
+              "actionSequence": [
+                {
+                  "actionType": "connectExternalService",
+                  "actionLabel": "probeWizardConnection",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  "payload": {
+                    "transformerType": "getFromParameters",
+                    "interpolation": "runtime",
+                    "referencePath": []
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "stepId": "outcome",
+          "section": {
+            "type": "inputReportSection",
+            "definition": {
+              "label": "Probe result",
+              "inputPrefix": "outcome",
+              "inputMLSchema": {
+                "type": "object",
+                "definition": {
+                  "createExampleReport": {
+                    "type": "boolean",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Add an example Report displaying results of a call to the API",
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": true
+                        }
+                      }
+                    }
+                  },
+                  "addReportToMenu": {
+                    "type": "boolean",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Add this report to the application's menu",
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   defaultMiroirModelEnvironment,
+  getApplicationSection,
   report,
   rootReport,
   type Report,
@@ -19,6 +20,7 @@ import {
   allGatedStepsAllowFinish,
   collectStepBagKeys,
   currentStepAllowsNext,
+  extractStepBagFromFormikValues,
   inputReportSectionBagKey,
   multistepViewerReportSectionPath,
 } from "../../../../src/miroir-fwk/4_view/components/Reports/MultistepReportHost.js";
@@ -27,6 +29,7 @@ import {
   resolveOpenReportPageParams,
 } from "../../../../src/miroir-fwk/4_view/components/Reports/OpenReportLaunch.js";
 import { reportMultistepCountryCreate } from "miroir-test-app_deployment-library";
+import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
 const RUN_TEST = process.env.RUN_TEST;
@@ -138,7 +141,7 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
     expect(report.safeParse(multistepReport).success).toBe(true);
   });
 
-  it("seed inventory: 86 Reports including MultistepCountryCreate and MultistepLaunchPad", () => {
+  it("seed inventory: 87 Reports including MultistepCountryCreate, MultistepLaunchPad, and ConnectExternalServiceWizard", () => {
     const reports = ASSET_TREES.flatMap((tree) =>
       collectReportInstances(join(REPO_ROOT, tree)),
     );
@@ -149,24 +152,71 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
     const omittedTypeReports = reports.filter((entry) => entry.type === undefined);
     const nullTypeReports = reports.filter((entry) => entry.type === null);
 
-    expect(reports).toHaveLength(86);
+    expect(reports).toHaveLength(87);
     expect(listReports).toHaveLength(12);
     expect(gridReports).toHaveLength(0);
-    expect(multistepReports).toHaveLength(1);
+    expect(multistepReports).toHaveLength(2);
     expect(omittedTypeReports).toHaveLength(71);
     expect(nullTypeReports).toHaveLength(2);
     expect(nullTypeReports.map((entry) => ({ name: entry.name, uuid: entry.uuid }))).toEqual([
       { name: "TableDetails", uuid: TABLE_DETAILS_UUID },
       { name: "SchemaDetails", uuid: SCHEMA_DETAILS_UUID },
     ]);
-    expect(multistepReports.map((entry) => ({ name: entry.name, uuid: entry.uuid }))).toEqual([
-      { name: "MultistepCountryCreate", uuid: MULTISTEP_COUNTRY_CREATE_UUID },
-    ]);
+    expect(multistepReports.map((entry) => ({ name: entry.name, uuid: entry.uuid }))).toEqual(
+      expect.arrayContaining([
+        { name: "MultistepCountryCreate", uuid: MULTISTEP_COUNTRY_CREATE_UUID },
+        {
+          name: "ConnectExternalServiceWizard",
+          uuid: "dbd94bfe-b803-4bfd-8bb2-70a5932d5d1a",
+        },
+      ]),
+    );
     expect(listReports.map((entry) => ({ name: entry.name, uuid: entry.uuid }))).toEqual(
       expect.arrayContaining([
         { name: "MultistepLaunchPad", uuid: MULTISTEP_LAUNCH_PAD_UUID },
       ]),
     );
+    // Miroir Report rows are loaded from the data section. A model-folder copy is invisible
+    // on the home-page link (applicationSection=data) and the wizard page stays blank.
+    expect(getApplicationSection(selfApplicationMiroir.uuid, REPORT_ENTITY_UUID)).toBe("data");
+    const wizardFile = "dbd94bfe-b803-4bfd-8bb2-70a5932d5d1a.json";
+    expect(
+      existsSync(
+        join(
+          REPO_ROOT,
+          "packages/miroir-test-app_deployment-miroir/assets/miroir_data",
+          REPORT_ENTITY_UUID,
+          wizardFile,
+        ),
+      ),
+    ).toBe(true);
+    expect(
+      existsSync(
+        join(
+          REPO_ROOT,
+          "packages/miroir-test-app_deployment-miroir/assets/miroir_model",
+          REPORT_ENTITY_UUID,
+          wizardFile,
+        ),
+      ),
+    ).toBe(false);
+  });
+
+  it("cleared form fields replace the previous step bag value and keep onNext extras", () => {
+    const next = extractStepBagFromFormikValues(
+      { document: { text: "openapi: 3.0.0", url: "" } },
+      ["document"],
+      {
+        document: {
+          text: "",
+          url: "https://bad.example/spec.yaml",
+          convertibleOperationIds: ["getRelease"],
+        },
+      },
+    );
+    expect(next.document.url).toBe("");
+    expect(next.document.text).toBe("openapi: 3.0.0");
+    expect(next.document.convertibleOperationIds).toEqual(["getRelease"]);
   });
 
   it("RootReport has optional compositeActionSequence in generated types and zod schema", () => {

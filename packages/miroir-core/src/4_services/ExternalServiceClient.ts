@@ -141,7 +141,7 @@ function messageForHttpStatus(status: number): string {
   return `External service returned HTTP ${status}: upstream failure`;
 }
 
-function assertBaseUrlAllowed(baseUrl: string): Action2Error | undefined {
+export function assertBaseUrlAllowed(baseUrl: string): Action2Error | undefined {
   let parsed: URL;
   try {
     parsed = new URL(baseUrl);
@@ -575,6 +575,9 @@ async function resolveAuthorizationHeader(
   principal?: { miroirUserUuid?: string },
 ): Promise<string | Action2Error | undefined> {
   const scheme = externalService.securityScheme;
+  if (scheme?.type === "none") {
+    return undefined;
+  }
   if (scheme && scheme.type === "oauth2ClientCredentials") {
     const token = await resolveClientCredentialsToken(
       scheme,
@@ -609,6 +612,13 @@ async function resolveAuthorizationHeader(
         { credentialKey: externalService.credentialKey, actionType },
       );
       return externalServiceError("InvalidAction", "Unknown or empty secret");
+    }
+    const authorizationTemplate =
+      scheme && scheme.type === "http" && typeof scheme.authorizationTemplate === "string"
+        ? scheme.authorizationTemplate
+        : undefined;
+    if (authorizationTemplate !== undefined && authorizationTemplate.length > 0) {
+      return authorizationTemplate.replace("{secret}", token);
     }
     return `Bearer ${token}`;
   }
@@ -706,7 +716,9 @@ async function fetchExternalServiceOperation(
   }
 
   const url = `${normalizeBaseUrl(externalService.baseUrl)}${pathOrError.startsWith("/") ? "" : "/"}${pathOrError}`;
-  const headers: Record<string, string> = {};
+  const headers: Record<string, string> = {
+    ...(externalService.extraHeaders ?? {}),
+  };
   const authorization = await resolveAuthorizationHeader(
     externalService,
     actionType,
@@ -733,7 +745,8 @@ async function fetchExternalServiceOperation(
       log.warn("external service request failed (network)", { actionType, url });
       return externalServiceError(
         "ExternalServiceUpstreamFailure",
-        "External service request failed",
+        `External service request failed (${url})`,
+        { url },
       );
     }
   };
@@ -776,8 +789,8 @@ async function fetchExternalServiceOperation(
     });
     return externalServiceError(
       errorTypeForHttpStatus(response.status),
-      messageForHttpStatus(response.status),
-      { httpStatus: response.status },
+      `${messageForHttpStatus(response.status)} (${url})`,
+      { httpStatus: response.status, url },
     );
   }
   log.debug("external service call succeeded", { actionType, httpStatus: response.status });
