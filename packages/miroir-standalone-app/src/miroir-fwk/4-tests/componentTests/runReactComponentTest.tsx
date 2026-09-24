@@ -12,6 +12,7 @@ import {
   ComponentTestModeContext,
   componentTestSandboxMode,
 } from "../../4_view/tools/ComponentTestModeContext.js";
+import { PortalContainerProvider } from "../../4_view/tools/PortalContainerContext.js";
 import {
   configureComponentTestDom,
   createComponentTestEnvironment,
@@ -55,7 +56,9 @@ export type ClosableReactComponentTestRunner = ReactComponentTestRunner & { clos
  *    `MiroirEventService`; `close()` does the same for any wrapper still open.
  *
  * The component is rendered inside `ComponentTestModeContext` set to the sandbox mode, so that in
- * the app it renders the same DOM as under vitest. The last case stays mounted until `close()`.
+ * the app it renders the same DOM as under vitest, and inside `PortalContainerProvider` set to
+ * the portal element, so that its option lists and MUI popups render inside the sandbox. The
+ * last case stays mounted until `close()`.
  */
 export function createReactComponentTestRunner(
   host: ComponentTestSandboxHost,
@@ -139,7 +142,9 @@ export function createReactComponentTestRunner(
       currentCase.unmount = mountComponent(
         <ComponentTestModeContext.Provider value={componentTestSandboxMode}>
           <Wrapper>
-            <Component {...props} />
+            <PortalContainerProvider portalElement={portalElement}>
+              <Component {...props} />
+            </PortalContainerProvider>
           </Wrapper>
         </ComponentTestModeContext.Provider>,
         container,

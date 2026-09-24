@@ -28,6 +28,11 @@ export const componentTestManifest: Record<string, readonly string[]> = {
     "add an element to an object array when button ROOT.testField.add is clicked",
     "duplicate an element in a string array when duplicate button for item 1 is clicked",
   ],
+  JzodEnumEditor: [
+    "renders select with correct value",
+    "renders all enum options",
+    "form state is changed when selection changes",
+  ],
 };
 
 /** Leaf label: the suite name, a colon, and the case label, so labels are unique in the instance. */

@@ -102,9 +102,18 @@ const arraySuite = "JzodArrayEditor";
 const arrayLeafLabels = componentTestManifest[arraySuite].map((caseLabel) =>
   componentTestLeafLabel(arraySuite, caseLabel),
 );
-/** Limits the run to the Array sub-suite, so that later slices do not change the counts. */
+/**
+ * Limits the run to the Array sub-suite, so that later slices do not change the counts. Every
+ * other sub-suite is listed with no leaf: the Run button walks from an empty suite path, so the
+ * sub-suites are at depth 1, where miroir-core `resolveSuiteInnerFilter` throws on a filter that
+ * does not name the sub-suite ("MiroirTest filter matched no tests in suite ...").
+ */
 const arraySuiteTestFilter = {
-  testList: { [componentTestSuiteInstanceName]: { [arraySuite]: arrayLeafLabels } },
+  testList: {
+    [componentTestSuiteInstanceName]: Object.fromEntries(
+      Object.keys(componentTestManifest).map((suite) => [suite, suite === arraySuite ? arrayLeafLabels : []]),
+    ),
+  },
 };
 
 // ################################################################################################

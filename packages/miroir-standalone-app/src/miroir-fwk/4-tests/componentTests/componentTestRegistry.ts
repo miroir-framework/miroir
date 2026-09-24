@@ -1,5 +1,6 @@
 import type { ComponentTestRegistry } from "./componentTestEnvironment.js";
 import { jzodArrayEditorComponentTests } from "./jzodElementEditor/JzodArrayEditor.js";
+import { jzodEnumEditorComponentTests } from "./jzodElementEditor/JzodEnumEditor.js";
 
 // ################################################################################################
 // Component test registry (#286): suite name to component, suite props, and case bodies.
@@ -7,4 +8,5 @@ import { jzodArrayEditorComponentTests } from "./jzodElementEditor/JzodArrayEdit
 // ################################################################################################
 export const componentTestRegistry: ComponentTestRegistry = {
   JzodArrayEditor: jzodArrayEditorComponentTests,
+  JzodEnumEditor: jzodEnumEditorComponentTests,
 };

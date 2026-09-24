@@ -111,6 +111,36 @@
             }
           }
         ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "JzodEnumEditor",
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodEnumEditor: renders select with correct value",
+            "componentTestRef": {
+              "suite": "JzodEnumEditor",
+              "case": "renders select with correct value"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodEnumEditor: renders all enum options",
+            "componentTestRef": {
+              "suite": "JzodEnumEditor",
+              "case": "renders all enum options"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodEnumEditor: form state is changed when selection changes",
+            "componentTestRef": {
+              "suite": "JzodEnumEditor",
+              "case": "form state is changed when selection changes"
+            }
+          }
+        ]
       }
     ]
   }

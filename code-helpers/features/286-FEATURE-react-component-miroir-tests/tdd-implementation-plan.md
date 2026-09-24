@@ -9,7 +9,7 @@ Working branch: `286-FEATURE-react-component-miroir-tests`, created from `284-FE
 
 **Review:** revised after [`./plan-adversarial-review.md`](./plan-adversarial-review.md), P1-P22 applied.
 
-**Resume note:** Slices 0 to 4 done. The 12 Array cases run from the MiroirTest instance `761d4ed2-…` through the new vitest entry (12 cases plus 1 entry check) and in the app: the unit Run button of `MiroirTestDisplay` loads the component test chunk through one `import()`, runs the cases in a visible sandbox (`ComponentTestSandboxProvider`), and records 12 `ok`, checked in a real browser on the Vite dev server and on the production build. `ComponentTestModeContext` makes the editors render the vitest DOM inside the sandbox. The bundle guard `componentTestChunk.286.phase4` reads the build manifest and sourcemaps. The old file keeps 56 cases. Next: Slice 5 (Enum, `PortalContainerContext`).
+**Resume note:** Slices 0 to 5 done, pilot clean. The 12 Array and 3 Enum cases run from the MiroirTest instance `761d4ed2-…` through the new vitest entry (15 cases plus 1 entry check) and in the app, where the unit Run button of `MiroirTestDisplay` runs them in the sandbox and records 15 `ok` (checked in a real browser on the Vite dev server and on the production build). `PortalContainerContext` sends the `ThemedSelectWithPortal` option lists, and the MUI popups (through a MUI `DefaultPropsProvider`), into the sandbox portal element. The old file keeps 53 cases. Next: Slice 6 (Run all with the "Include component tests" checkbox). See the Slice 5 finding on sub-suite filters at depth 1.
 
 ---
 
@@ -46,7 +46,7 @@ These come from the plan review and refine analysis §5 without changing a decis
 | 2 | **Tracer.** One Array case runs from MiroirTest JSON in vitest | ✅ DONE | `miroir-component-tests` 1 passed |
 | 3 | Array suite complete in vitest, DOM matchers, scoped value reader, consistency test | ✅ DONE | `miroir-component-tests` 12 passed |
 | 4 | Array suite runs in the app sandbox | ✅ DONE | `componentTestSandbox.286.phase4` 2 passed, 12/12 in the dev and production browser checks |
-| 5 | Enum suite with the portal dropdown (pilot complete, user stop point) | ⬜ | 15 passed in vitest and in the app |
+| 5 | Enum suite with the portal dropdown (pilot complete, user stop point) | ✅ DONE | `miroir-component-tests` 15 passed, `portalContainer.286.phase5` 3 passed, 15/15 in the dev and production browser checks |
 | 6 | Run all with the "Include component tests" checkbox | ⬜ | `runAllComponentTests.286.phase6` |
 | 7 | Literal suite | ⬜ | 18 passed |
 | 8 | Object suite | ⬜ | 32 passed |
@@ -692,7 +692,7 @@ No case passed in vitest and failed in the browser. K1 did not show up.
 
 ## Slice 5: Enum suite with the portal dropdown (pilot complete)
 
-**Status:** ⬜
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -738,7 +738,49 @@ New entry: 15 cases passed. Old suite: 53 passed.
 
 ### Realization
 
-(to fill)
+**RED observed.**
+
+- The 3 Enum cases were ported first (not as stubs, since §5.1 expects a behavioral failure) into the new `jzodElementEditor/JzodEnumEditor.tsx`, added to the manifest (`JzodEnumEditor`, 3 cases) and the registry, and the generator was re-run: "2 suite(s), 15 case(s)", one write of the instance, then "no change" on a second run. The new entry, run with `npx vitest run` without bail (`VITE_TEST_MODE=true`): 2 failed, 14 passed. "renders all enum options" failed with `Expected {"testField":"value2"} to equal {"testField":"value2","TESTSECTION.options":["value1","value2","value3"]}. First difference at path: ["TESTSECTION.options"]`, and "form state is changed when selection changes" with `Expected {"testField":"value3"} to equal {"testField":"value3","TESTSECTION.options":["value3"]}`: the option list was portaled to `document.body`, outside the root and the portal element that the value reader searches. "renders select with correct value" passed, since it reads no option list. The failure of the second case is not named in §5.1, but it has the same cause.
+- Stub before the unit test RED: `src/miroir-fwk/4_view/tools/PortalContainerContext.tsx` with the context, `usePortalContainer()`, and a `PortalContainerProvider` that set only the context, read by nobody. `portalContainer.286.phase5` (3 tests): 2 failed, 1 passed. "renders its options in the PortalContainerContext element" failed with `expected [] to deeply equal [ 'value1', 'value2', 'value3' ]` (no option in the portal element). The MUI test failed with `expected false to be true` (the listbox was not in the portal element). "without the context … document.body" passed, as it characterizes the current behavior.
+
+**GREEN.**
+
+- `PortalContainerContext.tsx`: `PortalContainerContext` (default `undefined`), `usePortalContainer()` (the context value, or `document.body`), `portalContainerMuiComponents(container)` (the `theme.components` entries `MuiPopover`, `MuiPopper`, `MuiModal`, `MuiMenu` with `defaultProps: { container }`), and `PortalContainerProvider({ portalElement })`, which sets the context and a MUI `DefaultPropsProvider` with those entries.
+- Deviation from analysis §5.4 ("MUI 5 `useThemeProps` reads the emotion theme"): in MUI 5.17.1, `Popover`, `Modal`, `Menu`, and `Popper` read their theme default props through `useDefaultProps`, whose context is the `DefaultPropsProvider` that only the MUI `ThemeProvider` sets. A probe with a nested emotion `ThemeProvider` showed the `MuiPopover` entry through `useTheme()`, while the `Popover` still rendered in `document.body`. The wrapper of `buildComponentTestWrapper` uses the emotion `ThemeProvider`, so a nested emotion theme has no effect. The MUI `ThemeProvider` with a function theme was not used either: with no outer MUI private theme, it logs "MUI: You are providing a theme function prop … However, no outer theme is present" in development. `PortalContainerProvider` therefore sets `DefaultPropsProvider` itself (`@mui/material/DefaultPropsProvider`), with the four popup entries only, and leaves the emotion theme unchanged. The sandbox renders in its own React root, so there is no outer `DefaultPropsProvider` to merge with, and the `testThemeParams` default props (`MuiContainer`, `MuiToolbar`) stay inactive, as before.
+- `FormComponents.tsx`, `ThemedSelectWithPortal`: reads `usePortalContainer()` once at the top of the component (before the `filterable` branch, so the hook order does not change). The option list is portaled to that element. The outside-click `mousedown` listener is registered on `portalContainer.ownerDocument`, and a click counts as a click on an option only when the target is inside the portal container and under `[data-dropdown-option]`. The effect depends on `[isOpen, portalContainer]`. With no context the behavior is the one before #286 (`document.body`, `document`).
+- `runReactComponentTest.tsx`: the component is mounted as `<Wrapper><PortalContainerProvider portalElement={portalElement}><Component/></PortalContainerProvider></Wrapper>`, inside `ComponentTestModeContext` as before. The runner is used by the vitest entry and by `registerComponentTests` in the app sandbox, so both paths set the context and the MUI defaults to the portal element, a child of the sandbox element.
+- `jzodElementEditor/JzodEnumEditor.tsx`: the suite props of `getJzodEnumEditorTests` and its 3 active cases, with the §5.3 rules (`screen` to `env.view`, `expect` to `env.expect`, `container` to `env.container`, `userEvent` to `env.userEvent`, React `act` to `env.act`, `waitFor` to `env.waitFor`, `fireEvent` to `env.fireEvent`). The 3 `screen.debug` calls are deleted, and the 2 `console.log` calls became `env.log.info`. Every `extractValuesFromRenderedElements` call passes `env.container` as root and `env.portalElement` as 7th argument (the Slice 3 note), with the old `detectOptions` values (`false`, `true`, and `false` where the old call gave none). The click and the wait for `data-test-is-open` are a local helper `openDropdown(env, select, stateTracker)`. In "form state is changed…", the old single `act` (open, wait, clear, type) became two `env.act` calls in the same order: open and wait, then clear and type. The 2 commented-out cases of the old factory were not ported. No assertion changed.
+- Old file: `getJzodEnumEditorTests`, its two types, and the `JzodEnumEditor` entry of `jzodElementEditorTests` are deleted and replaced by a comment that points to the new file. Phase0: `JzodEnumEditor` is removed from the expected suite list.
+- `componentTestSandbox.286.phase4.integ.test.tsx` (Slice 4 test, changed): it failed once the instance had a second sub-suite, with `onTestComplete was called: expected undefined to be defined` and the client error `MiroirTest filter matched no tests in suite "JzodEnumEditor"`. The Run button walks from an empty suite path, so the sub-suites are at depth 1, where miroir-core `resolveSuiteInnerFilter` sets `throwOnUnmatched` and throws on a filter that does not name the sub-suite. The test filter now lists every manifest sub-suite, the Array one with its 12 leaf labels and the others with an empty list, which records their leaves as skipped without calling the runner. No product code changed for this. Finding for later: in the app, a `testFilter` that names one sub-suite of a multi-sub-suite instance throws in the same way when run from `RunMiroirTestSuiteButton` (depth 1 from the empty path). Slice 6 (Run all) should keep this in mind.
+- K1: no case needed a change to the act-free driver. The 3 Enum cases passed at their first GREEN run, and no React act warning was printed.
+
+**Pilot checkpoint (§5.3).** The new entry's verbose case list, reduced to `<suite> - jzodElementEditor - <case>: <status>`, is identical to the 15 `JzodArrayEditor` and `JzodEnumEditor` lines of `baseline-JzodElementEditor.txt` (15 lines on each side, `diff` empty, all passed). The old suite's reduced list is identical to the 53 other lines of the baseline.
+
+**Browser checks (§4.4), same method as Slice 4** (`playwright-core` in the session scratchpad, headless Microsoft Edge, seed user `alice`, the MiroirTestDetails report of instance `761d4ed2-…`, then a client-side navigation to the Library Book list). The script also counted the `role="option"` elements outside the sandbox and read the sandbox portal element.
+
+- Development build (the Vite dev server on 5173, already running, not restarted): the panel showed after about 1.1 s and the run ended after about 6.4 s. The panel read "Passed: 15/15" and "PASSED", with 15 rows "All 1 assertions passed" (12 Array, 3 Enum), and the snackbar read "JzodElementEditor_ComponentTestSuite Miroir tests completed successfully". The sandbox kept the last case ("form state is changed when selection changes", input `TESTSECTION.testField=value3`), and its portal element held the open option list `["value3"]`, with 0 options outside the sandbox. 0 console messages matched `act(`. After Close, the panel was hidden and no container remained. The Library Book list then rendered its rows. The only console error was the same 403 on `/action/storeManagementAction_openStore` at page load as in Slice 4.
+- Production build: `npm run build -w miroir-standalone-app` (2 min 30 s), then `vite preview --port 3000 --strictPort`, started by this slice over that `dist`, with the API on the running server on 3080 (not restarted). The `vendor-react` chunk contains "act(...) is not supported in production builds of React.". Result: 15/15 passed in about 4.7 s, the same sandbox state (portal option `["value3"]`, 0 options outside the sandbox), 0 `act(` message, Close hid the panel and removed the container, and the Library Book list rendered. The `vite preview` process, the only server started here, was stopped afterwards, and port 3000 is free.
+
+No case passed in vitest and failed in the browser, and K1 did not show up. **Pilot clean.** Per the user's standing instruction, work continues with Slice 6 unless problems occur.
+
+**Validation** (one command per file, from the repo root).
+
+- `npx tsx packages/miroir-standalone-app/scripts/generate-component-miroir-tests.ts`: "2 suite(s), 15 case(s)", "no change".
+- `npm run build -w miroir-test-app_deployment-miroir`: success.
+- `npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts`: 153 passed.
+- `npm run testByFile -w miroir-standalone-app -- portalContainer.286.phase5`: 3 passed.
+- `npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency`: 6 passed.
+- `npm run testByFile -w miroir-standalone-app -- miroir-component-tests`: 16 passed (15 cases and the entry check), no React act warning.
+- `npm run testByFile -w miroir-standalone-app -- JzodElementEditor.test`: 53 passed.
+- `npm run testByFile -w miroir-standalone-app -- componentMiroirTests.286.phase0`: 4 passed.
+- `npm run testByFile -w miroir-standalone-app -- componentTestSandbox.286.phase4`: 2 passed after the filter change above (1 failed before it).
+- Extra: `npm run build -w miroir-standalone-app` succeeded, then `npm run testByFile -w miroir-standalone-app -- componentTestChunk.286.phase4`: 4 passed.
+- `python scripts/check_bare_console.py`: OK.
+- `npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json`: 0 errors. `npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json`: 1 error, the baseline `JzodElementEditorHooks.ts(528,59)` TS2339.
+
+**Files created.** `packages/miroir-standalone-app/src/miroir-fwk/4_view/tools/PortalContainerContext.tsx`, `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/jzodElementEditor/JzodEnumEditor.tsx`, and `packages/miroir-standalone-app/tests/4_view/issues/286-react-component-miroir-tests/portalContainer.286.phase5.unit.test.tsx`.
+
+**Files changed.** In `packages/miroir-standalone-app/`: `src/miroir-fwk/4_view/components/Themes/FormComponents.tsx`, and in `src/miroir-fwk/4-tests/componentTests/`: `componentTestManifest.ts`, `componentTestRegistry.ts`, and `runReactComponentTest.tsx`. Tests: `tests/4_view/JzodElementEditor.test.tsx`, `componentMiroirTests.286.phase0.unit.test.tsx`, and `componentTestSandbox.286.phase4.integ.test.tsx`. Deployment miroir: the instance `761d4ed2-….json`, written by the generator (15 leaves in 2 sub-suites). This plan. `dist/` is rebuilt and ignored by git. Nothing under `miroir-server/release` changed.
 
 ---
 
