@@ -9,7 +9,7 @@ Working branch: `286-FEATURE-react-component-miroir-tests`, created from `284-FE
 
 **Review:** revised after [`./plan-adversarial-review.md`](./plan-adversarial-review.md), P1-P22 applied.
 
-**Resume note:** Slices 0 to 2 done. The tracer case "JzodArrayEditor: renders all array values, in the right order" runs from the MiroirTest instance `761d4ed2-…` through the new vitest entry with the act-free driver (1 case passed plus 1 entry check), the old suite has 67 cases, and the miroir-core generic entry records the new leaf as skipped. Next: Slice 3.
+**Resume note:** Slices 0 to 3 done. The 12 Array cases run from the MiroirTest instance `761d4ed2-…` through the new vitest entry with the act-free driver and the throwing `expect` (12 cases passed plus 1 entry check). The Array suite is gone from the old file (56 cases left). `createThrowingExpect` has the DOM matchers, `getState`, and the `toEqual` rule for `undefined`-valued keys. The src `extractValuesFromRenderedElements` searches only its root and an optional portal element. `componentMiroirTests.consistency` guards the JSON. Next: Slice 4.
 
 ---
 
@@ -44,7 +44,7 @@ These come from the plan review and refine analysis §5 without changing a decis
 | 0 | Rebase, baselines, characterize contracts, find how the app loads MiroirTests | ✅ DONE | `componentMiroirTests.286.phase0` + baseline tables |
 | 1 | Move the browser-safe tools under `src/` with the old tests green | ✅ DONE | old suite 68 passed, each importer equal to its baseline |
 | 2 | **Tracer.** One Array case runs from MiroirTest JSON in vitest | ✅ DONE | `miroir-component-tests` 1 passed |
-| 3 | Array suite complete in vitest, DOM matchers, scoped value reader, consistency test | ⬜ | `miroir-component-tests` 12 passed |
+| 3 | Array suite complete in vitest, DOM matchers, scoped value reader, consistency test | ✅ DONE | `miroir-component-tests` 12 passed |
 | 4 | Array suite runs in the app sandbox | ⬜ | `componentTestSandbox.286.phase4` + dev and production check |
 | 5 | Enum suite with the portal dropdown (pilot complete, user stop point) | ⬜ | 15 passed in vitest and in the app |
 | 6 | Run all with the "Include component tests" checkbox | ⬜ | `runAllComponentTests.286.phase6` |
@@ -428,7 +428,7 @@ New entry: 1 case passed plus 1 entry check. Old suite: 67 passed.
 
 ## Slice 3: Array suite complete in vitest
 
-**Status:** ⬜
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -500,7 +500,57 @@ New entry: 12 cases passed. Old suite: 56 passed. `extractValuesFromRenderedElem
 
 ### Realization
 
-(to fill)
+**RED observed.**
+
+- Before the RED run, a pure refactor of the generator: `serializeComponentTestSuiteInstance(manifest)` (the 2-space CRLF JSON it writes) and `componentTestSuiteInstancePath` are exported from `scripts/generate-component-miroir-tests.ts`, and `main()` uses them, so the consistency test fails on behavior and not on an import.
+- miroir-core `throwingExpect.286.phase3` (9 tests): 7 failed, 2 passed. `toEqual` with an `undefined`-valued key threw `MiroirAssertionError: [throwingExpect.286.phase3] Expected {"a":1} to equal {"a":1}. First difference at path: ["b"]` (JSON drops the key, so the message shows two equal values). `getState` failed with `TypeError: throwingExpect.getState is not a function`. The 5 DOM matcher tests failed with `TypeError: throwingExpect(...).toBeInTheDocument is not a function`, and the same for `.not.toBeInTheDocument`, `toHaveValue`, `toBeChecked`, and `toContainHTML`. The 2 tests that passed already are "toEqual of different values throws with both values in the message" and "the second argument of expect appears in the failure", which Slice 2 already gave.
+- `domMatchersParity.286.phase3` (4 tests): 4 failed. The throwing `expect` had no DOM matcher, so each call threw a `TypeError`, counted as a fail, and the outcome list differed from jest-dom's (`expected [ …(6) ] to deeply equal [ …(6) ]`).
+- `extractValuesScoped.286.phase3` (2 tests): 2 failed. The outside input was read (`expected { outside: 'outsideValue', …(1) } to deeply equal { inside: 'insideValue' }`), and the option list outside the root and the portal element was read together with the one in the portal element.
+- `componentMiroirTests.consistency` with the comparison function stubbed to return `[]` (6 tests): 3 failed, 3 passed. The 3 fixture cases that must report a problem failed with `expected [] to deeply equal [ Array(1) ]`. The real-data check, the byte-identical check, and the consistent-fixtures check passed, as expected at that point.
+- New entry, after adding the 11 cases to the manifest and to `JzodArrayEditor.tsx` as stubs throwing "not migrated" and re-running the generator (one write, then "no change" on a second run): `testByFile` stops at the first failure because of `--bail=1`, so the file was also run with `npx vitest run` without bail (same env, `VITE_TEST_MODE=true`): 11 failed, 2 passed (the Slice 2 case and the entry check). Each failure reads `reactComponentTest "JzodElementEditor_ComponentTestSuite#JzodArrayEditor#JzodArrayEditor: <case>" failed: not migrated`.
+
+**GREEN, miroir-core.** `src/1_core/testing/test-expect.ts`, throwing `expect` only. The non-throwing `expect` is unchanged, so the phase0 stable assertions on it still hold.
+
+- `toEqual` compares copies of both values without the object keys whose value is `undefined` (plain objects, recursively; array entries are kept). `.not.toEqual` uses the same rule.
+- DOM matchers `toBeInTheDocument`, `toHaveValue(expected?)`, `toBeChecked`, and `toContainHTML(html)`, and their `.not` forms. They read properties only, with no `instanceof`. `toBeInTheDocument` checks `ownerDocument.contains(element)`. `toHaveValue` reads the value of an input, select, or textarea, with `type="number"` read as a number, or `null` when empty, and a multiple select read as the list of selected values. It compares with `fast-deep-equal`, or checks for a non-empty value when no argument is given. `toBeChecked` reads `checked`, or `aria-checked="true"` when there is no boolean `checked`. `toContainHTML` checks that `outerHTML` contains the HTML normalized through the element's document, as jest-dom does. A `null` or `undefined` actual fails the positive form with a message and passes the `.not` form.
+- `.not` of every matcher now inverts the positive matcher of the throwing `expect` (so it gets the `toEqual` rule and the DOM matchers), with the message `[<label>] [not] Unexpected pass for <matcher>`.
+- `createThrowingExpect(testName)` returns a function with `getState()` giving `{ currentTestName: testName }`. `ThrowingExpect` now includes `getState`, and `ThrowingMatchers` the new `ThrowingDomMatchers` interface, exported from `index.ts`.
+
+**GREEN, app.**
+
+- `componentTestTools.tsx`: `extractValuesFromRenderedElements(expect, filter, root, label, step, detectOptions, portalElement?)`. `root` is required, and `portalElement` is a new optional last argument. It searches `root` and `portalElement` only. A root contained in the other is dropped, so no element is read twice. The combobox option search looks in the search roots instead of `document.querySelector('[role="listbox"]')` and `document.body`, and the foreign key select and state tracker lookups use the search roots instead of `container`. The unused `Container` import is removed.
+- Deviation from the plan text: the tests-side `extractValuesFromRenderedElements` in `tests/4_view/JzodElementEditorTestTools.tsx` is now a wrapper with the old signature. It passes `container ?? document` as root and `document.body` as portal element. The plan says "passing `document` when no root is given". Passing only the container when one is given would have broken the old Enum and Any suites, which read option lists portaled to `document.body`, so the wrapper keeps searching the whole page for every caller, as before. The only difference: the foreign key `select[data-testid="miroirInput"]` lookup, which read only `container`, now reads the whole body through this wrapper. No importer's count changed.
+- `jzodElementEditor/JzodArrayEditor.tsx`: the 11 remaining bodies ported from `getJzodArrayEditorTests` with the §5.3 rules: `screen` to `env.view`, `expect` to `env.expect`, `container` to `env.container` (the root of every `extractValuesFromRenderedElements` call), `log` to `env.log`, `expect.getState()` to `env.expect.getState()`, React `act` to `env.act`, `fireEvent` to `env.fireEvent`, and `waitAfterUserInteraction()` to the act-free `waitAfterUserInteraction(env.container)` from `componentTestEnvironment.ts`. The 3 `screen.debug` calls are deleted. The case props are the old ones, without the commented-out `e` bigint lines. The textbox value reading, shared by 4 cases, is a local helper `arrayItemTextBoxValues(env)`. No assertion changed. Two assertions were already weak in the old file and are kept as they are. "renders array input with label when label prop is provided" asserts that `/Test Label/` matches exactly 1 element, while its old comment says two labels are shown: the count is 1 in both runs, so the comment is stale, not the assertion. "duplicate an element in a string array…" asserts `toBeTruthy()` on the result of `getByRole`, which already throws when the button is missing.
+- Non-vacuity check, then reverted: with `toContainHTML("new valueX")` and `toEqual([...arrayValues])` in two cases, the entry gave 2 failed and 11 passed, with `Expected <input name="TESTSECTION.testField.1"> to contain HTML "new valueX"` and `Expected ["value1","value2","value3",""] to equal ["value1","value2","value3"]. First difference at path: ["3"]`.
+- No case needed a change to the act-free driver: all 12 passed at their first run. K1 did not show up for the Array suite.
+- `tests/4_view/componentMiroirTests.consistency.unit.test.ts` exports `componentTestConsistencyProblems({ manifest, registry, instance })`, which returns one message per disagreement: a manifest case with no `reactComponentTest` leaf, a leaf not in the manifest, a leaf label other than `<suite>: <case>`, a manifest suite or case missing from the registry, a registry suite or case missing from the manifest, and a leaf label used more than once in the instance. The file checks the real manifest, registry, and JSON (no problem). It checks that `serializeComponentTestSuiteInstance(componentTestManifest)` equals the JSON file byte for byte. It runs the function on 4 fixtures (consistent, missing leaf, extra registry case, duplicate label), each with its exact expected message list.
+- Old file: `getJzodArrayEditorTests`, its two types, and the `JzodArrayEditor` entry of `jzodElementEditorTests` are deleted and replaced by a comment that points to the new file. Phase0: the outside-input assertion is deleted from `pre-286 inventory`, and `JzodArrayEditor` is removed from the expected suite list (the test is renamed "declares the active suite keys not yet migrated").
+
+**Refactor checkpoint.** No `screen` identifier outside comments, no `screen.debug`, and no bare `console.*` in `componentTests/`.
+
+**Validation** (one command per file, from the repo root).
+
+- `npx tsx packages/miroir-standalone-app/scripts/generate-component-miroir-tests.ts`: "1 suite(s), 12 case(s)", "no change".
+- `npm run build -w miroir-test-app_deployment-miroir`: success. `npm run build -w miroir-core` was also run, so that the app tests use the new `test-expect.ts`.
+- `npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts`: 153 passed.
+- `npm run testByFile -w miroir-core -- throwingExpect.286.phase3`: 9 passed.
+- `npm run testByFile -w miroir-standalone-app -- domMatchersParity.286.phase3`: 4 passed (27 matcher calls compared with jest-dom).
+- `npm run testByFile -w miroir-standalone-app -- extractValuesScoped.286.phase3`: 2 passed.
+- `npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency`: 6 passed.
+- `npm run testByFile -w miroir-standalone-app -- miroir-component-tests`: 13 passed (12 Array cases and the entry check), no React act warning. The Array case list, reduced to `<case>: passed`, is identical to the 12 `JzodArrayEditor` lines of `baseline-JzodElementEditor.txt`.
+- `npm run testByFile -w miroir-standalone-app -- JzodElementEditor.test`: 56 passed. Its reduced case list equals the 56 non-Array lines of the baseline.
+- `npm run testByFile -w miroir-standalone-app -- componentMiroirTests.286.phase0`: 4 passed.
+- `npm run testByFile -w miroir-standalone-app -- extractValuesFromRenderedElements`: 4 passed, the Slice 0 count.
+- `python scripts/check_bare_console.py`: OK.
+- `npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json`: 0 errors.
+- `npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json`: 1 error, the baseline `JzodElementEditorHooks.ts(528,59)` TS2339.
+- Extra check, since this importer calls the tests-side wrapper: `npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepProcess.274.integ`: 19 passed, the Slice 0 count.
+
+**Files created.** `packages/miroir-core/tests/1_core/issues/286-react-component-miroir-tests/throwingExpect.286.phase3.unit.test.ts`. In `packages/miroir-standalone-app/tests/4_view/issues/286-react-component-miroir-tests/`: `domMatchersParity.286.phase3.unit.test.tsx` and `extractValuesScoped.286.phase3.unit.test.tsx`. `packages/miroir-standalone-app/tests/4_view/componentMiroirTests.consistency.unit.test.ts`.
+
+**Files changed.** miroir-core: `src/1_core/testing/test-expect.ts` and `src/index.ts`. App: `scripts/generate-component-miroir-tests.ts`, and in `src/miroir-fwk/4-tests/componentTests/`: `componentTestManifest.ts`, `componentTestTools.tsx`, and `jzodElementEditor/JzodArrayEditor.tsx`. Tests: `tests/4_view/JzodElementEditorTestTools.tsx`, `tests/4_view/JzodElementEditor.test.tsx`, and `componentMiroirTests.286.phase0.unit.test.tsx`. Deployment miroir: the instance `761d4ed2-….json`, written by the generator (12 leaves). This plan.
+
+**Note for Slice 5.** The src `extractValuesFromRenderedElements` reads portaled option lists only from its `portalElement` argument. The Enum bodies that read the dropdown options must pass `env.portalElement` as its seventh argument, with `env.container` as root.
 
 ---
 

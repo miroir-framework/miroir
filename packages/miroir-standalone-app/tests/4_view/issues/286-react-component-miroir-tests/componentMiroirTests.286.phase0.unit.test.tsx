@@ -100,31 +100,9 @@ describe("phase0 stable", () => {
 
 // ################################################################################################
 describe("pre-286 inventory", () => {
-  // Deleted in Slice 3, when extractValuesFromRenderedElements searches only its root.
-  it("extractValuesFromRenderedElements returns a value from a named input outside the container", () => {
-    const outside = document.createElement("input");
-    outside.type = "text";
-    outside.name = "testField.outside";
-    outside.value = "outsideValue";
-    document.body.appendChild(outside);
-    try {
-      const { container } = render(
-        <div>
-          <input type="text" name="testField.inside" defaultValue="insideValue" readOnly />
-        </div>,
-      );
-      expect(container.contains(outside)).toBe(false);
-      const values = extractValuesFromRenderedElements(expect, undefined, container, "testField");
-      expect(values).toEqual({ inside: "insideValue", outside: "outsideValue" });
-    } finally {
-      outside.remove();
-    }
-  });
-
   // Each slice that moves a suite removes it from this list. Deleted in Slice 12.
-  it("the old JzodElementEditor.test.tsx declares the 7 active suite keys in jzodElementEditorTests", () => {
+  it("the old JzodElementEditor.test.tsx declares the active suite keys not yet migrated in jzodElementEditorTests", () => {
     expect(activeSuiteKeysOfOldTestFile()).toEqual([
-      "JzodArrayEditor",
       "JzodEnumEditor",
       "JzodLiteralEditor",
       "JzodObjectEditor",

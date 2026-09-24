@@ -3,7 +3,6 @@ import { createTheme, StyledEngineProvider } from "@mui/material";
 import { blue } from "@mui/material/colors";
 import { Formik, FormikProps } from "formik";
 import { Profiler, useCallback, useMemo } from "react";
-import type { Container } from "react-dom";
 import { MemoryRouter } from "react-router-dom";
 
 import {
@@ -831,15 +830,40 @@ export function buildComponentTestWrapper(
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
+/**
+ * Reads the values of the form fields rendered under `root`, and of the option lists rendered in
+ * `portalElement` (the target of the components' portals), keyed by field name without the
+ * `label` prefix (#286: it searches only these two elements, not the whole document, so that in
+ * the app it does not read the app's own fields).
+ */
 export function extractValuesFromRenderedElements(
   expect: ExtractValuesExpect,
   filter: ("select" | "input" | "option" |"cell" | "checkbox" | "combobox")[] | undefined = undefined,
-  container?: Container,
+  root: ParentNode,
   label: string = "",
   step?: string,
   detectOptions: boolean = false,
+  portalElement?: ParentNode,
 ): Record<string, any> {
   const values: Record<string, any> = {};
+
+  // The elements searched: root and the portal element, a root inside another one being dropped
+  // so that no element is found twice.
+  const searchRoots: ParentNode[] = [root, portalElement].filter(
+    (candidate): candidate is ParentNode => !!candidate,
+  );
+  const distinctSearchRoots = searchRoots.filter(
+    (candidate, index) =>
+      !searchRoots.some(
+        (other, otherIndex) =>
+          otherIndex !== index &&
+          (other as Node).contains?.(candidate as Node) &&
+          (otherIndex < index || !(candidate as Node).contains?.(other as Node)),
+      ),
+  );
+  const queryAll = (selector: string): Element[] =>
+    distinctSearchRoots.flatMap((searchRoot) => Array.from(searchRoot.querySelectorAll(selector)));
+  const query = (selector: string): Element | null => queryAll(selector)[0] ?? null;
 
   // Pre-compile regex patterns to avoid recreating them
   const labelRegex = label ? new RegExp(`^${label}\\.`) : null;
@@ -867,34 +891,34 @@ export function extractValuesFromRenderedElements(
     );
     log.debug(`checkForComboboxOptions: aria-expanded:`, combobox.getAttribute("aria-expanded"));
 
-    // Look for dropdown options in various possible locations, including document.body for portaled content
+    // Look for dropdown options in various possible locations, including the search roots for
+    // portaled content
     const searchAreas = [
       combobox.parentElement,
       combobox.closest('[role="combobox"]')?.parentElement,
       combobox.parentElement?.parentElement, // One level higher
-      document.querySelector('[role="listbox"]'), // Global dropdown
-      document.body, // Check entire document for portaled content
-    ].filter(Boolean);
+      query('[role="listbox"]'), // Global dropdown
+      ...distinctSearchRoots, // root and portal element, for portaled content
+    ].filter(Boolean) as ParentNode[];
 
     log.debug(`checkForComboboxOptions: searching ${searchAreas.length} areas`);
 
-    // Special logging for document.body when aria-expanded is true
+    // Special logging of the search roots when aria-expanded is true
     const isDropdownOpen = combobox.getAttribute("aria-expanded") === "true";
     if (isDropdownOpen) {
       log.debug(
-        `checkForComboboxOptions: DROPDOWN IS OPEN - Full document.body HTML:`,
-        document.body.outerHTML
+        `checkForComboboxOptions: DROPDOWN IS OPEN - search roots HTML:`,
+        distinctSearchRoots.map((searchRoot) => (searchRoot as Element).outerHTML)
       );
     }
 
     for (const [index, area] of searchAreas.entries()) {
       if (!area) continue;
 
-      const areaDescription =
-        index === searchAreas.length - 1 ? "document.body" : `area ${index + 1}`;
+      const areaDescription = `area ${index + 1}`;
       log.debug(
         `checkForComboboxOptions: checking ${areaDescription}:`,
-        area?.outerHTML?.substring(0, 300)
+        (area as Element)?.outerHTML?.substring(0, 300)
       );
 
       // Look for listbox and options
@@ -991,15 +1015,13 @@ export function extractValuesFromRenderedElements(
     log.debug(`checkForComboboxOptions: no options found for ${fieldName}`);
   };
 
-  // Use container if provided, otherwise fall back to document
-  // const searchRoot = container || document;
-  const searchRoot = document; // otherwise comboboxes options are not found
+  // root and the portal element: comboboxes options are portaled out of root
 
   // Single DOM query to get all relevant elements at once
   const allInputs =
     !filter || filter.includes("input")
-      // ? Array.from(searchRoot.querySelectorAll("input[name]:not([role='combobox']), input[id]:not([role='combobox'])")).filter(
-      ? Array.from(searchRoot.querySelectorAll("input[name], input[id]")).filter(
+      // ? Array.from(queryAll("input[name]:not([role='combobox']), input[id]:not([role='combobox'])")).filter(
+      ? Array.from(queryAll("input[name], input[id]")).filter(
           (el) =>
             !(el.id && el.id.startsWith("displayAsStructuredElementSwitch")) &&
             !(el.getAttribute("data-union-type-selector") === "true") &&
@@ -1011,28 +1033,28 @@ export function extractValuesFromRenderedElements(
         )
       : [];
   // checkboxes are inputs! redundant?
-  const allCheckboxes = Array.from(searchRoot.querySelectorAll('input[type="checkbox"]')).filter(
+  const allCheckboxes = Array.from(queryAll('input[type="checkbox"]')).filter(
     (el) => !(el.id && el.id.startsWith("displayAsStructuredElementSwitch"))
   );
-  const allTestIdElements = searchRoot.querySelectorAll('[data-testid="miroirInput"]');
+  const allTestIdElements = queryAll('[data-testid="miroirInput"]');
   const allComboboxes =
     !filter || filter.includes("combobox")
-      ? Array.from(searchRoot.querySelectorAll('[role="combobox"]'))
+      ? Array.from(queryAll('[role="combobox"]'))
       : [];
   // .filter((el) => !(el.id && el.id.startsWith("displayAsStructuredElementSwitch")));
   const allOptions =
-    !filter || filter.includes("option") ? searchRoot.querySelectorAll('[role="option"]') : [];
+    !filter || filter.includes("option") ? queryAll('[role="option"]') : [];
   const allSelectOptions =
-    !filter || filter.includes("option") ? searchRoot.querySelectorAll("option") : []; // Standard HTML option elements
+    !filter || filter.includes("option") ? queryAll("option") : []; // Standard HTML option elements
   const allSelects =
     !filter || filter.includes("select")
-      ? Array.from(searchRoot.querySelectorAll("select[name], select[id]")).filter(
+      ? Array.from(queryAll("select[name], select[id]")).filter(
           (el) => !(el.id && el.id.startsWith("displayAsStructuredElementSwitch"))
         )
       : [];
   const allGridCells =
     !filter || filter.includes("cell")
-      ? Array.from(searchRoot.querySelectorAll('[role="presentation"]')).filter(
+      ? Array.from(queryAll('[role="presentation"]')).filter(
           (el) => el.id && el.id.startsWith("cell-")
         )
       : [];
@@ -1219,7 +1241,7 @@ export function extractValuesFromRenderedElements(
 
   // Process HTML select elements (foreign key dropdowns)
   const allSelectElements: any[] = Array.from(
-    (container as any).querySelectorAll('select[data-testid="miroirInput"]')
+    queryAll('select[data-testid="miroirInput"]')
   );
   // log.debug(
   //   `extractValuesFromRenderedElements: found ${allSelectElements.length} select elements`
@@ -1233,7 +1255,7 @@ export function extractValuesFromRenderedElements(
       const stateTrackerSelector = `[data-testid="themed-select-state-${
         selectElement.getAttribute("name") || "unnamed"
       }"]`;
-      const stateTracker = container ? container.querySelector(stateTrackerSelector) : null;
+      const stateTracker = query(stateTrackerSelector);
 
       let selectedValue = "";
       if (stateTracker) {
@@ -1660,19 +1682,19 @@ export function extractValuesFromRenderedElements(
   // specific indicators that the dropdown is actually opened/expanded
 
   // Check for various dropdown open indicators
-  const hasListbox = !!searchRoot.querySelector('[role="listbox"]');
-  const hasPresentation = !!searchRoot.querySelector(
+  const hasListbox = !!query('[role="listbox"]');
+  const hasPresentation = !!query(
     '[role="presentation"]:not([aria-hidden="true"])'
   );
-  const hasAutocompletePopper = !!searchRoot.querySelector(
+  const hasAutocompletePopper = !!query(
     '.MuiAutocomplete-popper:not([style*="display: none"])'
   );
-  const hasPopperPlacement = !!searchRoot.querySelector("[data-popper-placement]");
-  const hasMuiPaper = !!searchRoot.querySelector(".MuiPaper-root");
-  const hasExpandedSelect = !!searchRoot.querySelector('.MuiSelect-select[aria-expanded="true"]');
-  const hasPopover = !!searchRoot.querySelector(".MuiPopover-root");
-  const hasMenuList = !!searchRoot.querySelector(".MuiMenuList-root");
-  const hasVisibleMenu = !!searchRoot.querySelector('[role="menu"]');
+  const hasPopperPlacement = !!query("[data-popper-placement]");
+  const hasMuiPaper = !!query(".MuiPaper-root");
+  const hasExpandedSelect = !!query('.MuiSelect-select[aria-expanded="true"]');
+  const hasPopover = !!query(".MuiPopover-root");
+  const hasMenuList = !!query(".MuiMenuList-root");
+  const hasVisibleMenu = !!query('[role="menu"]');
 
   // Special case: if step indicates dropdown opening interaction (like "after mouseDown"), be more permissive
   // But NOT for steps that indicate the dropdown should be closed (like "after selection change")

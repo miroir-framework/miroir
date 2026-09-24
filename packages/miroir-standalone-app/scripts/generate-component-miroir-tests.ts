@@ -66,6 +66,14 @@ export function buildComponentTestSuiteInstance(manifest: Record<string, readonl
   };
 }
 
+/** The instance file content the generator writes: 2-space JSON with CRLF line ends. */
+export function serializeComponentTestSuiteInstance(manifest: Record<string, readonly string[]>): string {
+  return JSON.stringify(buildComponentTestSuiteInstance(manifest), null, 2).replace(/\n/g, EOL) + EOL;
+}
+
+/** Path of the instance file the generator writes. */
+export const componentTestSuiteInstancePath = path.join(deploymentMiroirDir, instanceRelativePath);
+
 // ################################################################################################
 function readLines(filePath: string): string[] {
   return readFileSync(filePath, "utf-8").split(/\r?\n/);
@@ -119,9 +127,8 @@ function main() {
   const changed: string[] = [];
 
   // 1. instance JSON
-  const instancePath = path.join(deploymentMiroirDir, instanceRelativePath);
-  const instanceJson =
-    JSON.stringify(buildComponentTestSuiteInstance(componentTestManifest), null, 2).replace(/\n/g, EOL) + EOL;
+  const instancePath = componentTestSuiteInstancePath;
+  const instanceJson = serializeComponentTestSuiteInstance(componentTestManifest);
   if (writeIfChanged(instancePath, instanceJson)) {
     changed.push(instancePath);
   }

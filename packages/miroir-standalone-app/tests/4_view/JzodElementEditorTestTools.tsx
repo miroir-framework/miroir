@@ -21,7 +21,9 @@ import { Container } from "react-dom";
 import { JzodEditorPropsRoot } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditorInterface";
 import {
   buildComponentTestWrapper,
+  extractValuesFromRenderedElements as extractValuesFromRenderedElementsInRoot,
   JzodElementEditorProps_Test,
+  type ExtractValuesExpect,
 } from "../../src/miroir-fwk/4-tests/componentTests/componentTestTools";
 
 import {
@@ -33,7 +35,6 @@ import {
 export {
   buildComponentTestWrapper,
   createRecordingFunction,
-  extractValuesFromRenderedElements,
   formikFieldName,
   formValuesToJSON,
   getJzodElementEditorForTest,
@@ -45,6 +46,32 @@ export {
   type JzodElementEditorProps_Test,
   type RecordingFunction,
 } from "../../src/miroir-fwk/4-tests/componentTests/componentTestTools";
+
+// ################################################################################################
+/**
+ * The pre-#286 call shape of `extractValuesFromRenderedElements`, for the importers of this file.
+ * The src function searches only its root and the portal element. This one keeps searching the
+ * whole page, as before: its root is `container`, or `document` when no container is given, and
+ * `document.body` stands for the portal element, since portals mount there under vitest.
+ */
+export function extractValuesFromRenderedElements(
+  expect: ExtractValuesExpect,
+  filter: Parameters<typeof extractValuesFromRenderedElementsInRoot>[1] = undefined,
+  container?: Container,
+  label: string = "",
+  step?: string,
+  detectOptions: boolean = false,
+): Record<string, any> {
+  return extractValuesFromRenderedElementsInRoot(
+    expect,
+    filter,
+    container ?? document,
+    label,
+    step,
+    detectOptions,
+    document.body,
+  );
+}
 
 // vitest test names keep the former render mode segment, so that they stay comparable with
 // baseline-JzodElementEditor.txt (#286).

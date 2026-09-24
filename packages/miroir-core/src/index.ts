@@ -1043,6 +1043,7 @@ export {
   expect,
   MiroirAssertionError,
   TestFramework,
+  type ThrowingDomMatchers,
   type ThrowingExpect,
   type ThrowingMatchers,
 } from "./1_core/testing/test-expect";

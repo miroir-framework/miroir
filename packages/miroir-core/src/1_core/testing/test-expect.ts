@@ -306,35 +306,186 @@ export class MiroirAssertionError extends Error {
 
 type NonThrowingMatchers = ReturnType<typeof expect>;
 type MatcherName = Exclude<keyof NonThrowingMatchers, "not">;
-export type ThrowingMatchers = {
+
+/**
+ * DOM matchers of the throwing `expect`, following jest-dom. The actual value is an element or
+ * `null`. They read element properties only (no `instanceof HTMLElement`), so they work with any
+ * DOM implementation and with element fakes.
+ */
+export interface ThrowingDomMatchers {
+  toBeInTheDocument(): void;
+  toHaveValue(expected?: unknown): void;
+  toBeChecked(): void;
+  toContainHTML(html: string): void;
+}
+
+type ThrowingValueMatchers = {
   [K in MatcherName]: (...args: Parameters<NonThrowingMatchers[K]>) => void;
-} & {
-  not: { [K in MatcherName]: (...args: Parameters<NonThrowingMatchers[K]>) => void };
 };
-export type ThrowingExpect = (actual: any, message?: string) => ThrowingMatchers;
+export type ThrowingMatchers = ThrowingValueMatchers &
+  ThrowingDomMatchers & {
+    not: ThrowingValueMatchers & ThrowingDomMatchers;
+  };
+export type ThrowingExpect = ((actual: any, message?: string) => ThrowingMatchers) & {
+  /** As vitest's `expect.getState()`, restricted to `currentTestName`. */
+  getState(): { currentTestName: string };
+};
+
+/**
+ * Deep copy of `value` without the object keys whose value is `undefined`, since vitest's
+ * `toEqual` ignores them. Array entries are kept, `undefined` ones included. Only plain objects
+ * are copied.
+ */
+function withoutUndefinedKeys(value: any): any {
+  if (Array.isArray(value)) {
+    return value.map(withoutUndefinedKeys);
+  }
+  if (value && typeof value === "object" && Object.getPrototypeOf(value) === Object.prototype) {
+    const result: any = {};
+    for (const [key, entry] of Object.entries(value)) {
+      if (entry !== undefined) {
+        result[key] = withoutUndefinedKeys(entry);
+      }
+    }
+    return result;
+  }
+  return value;
+}
+
+function describeElement(element: any): string {
+  if (element === null || element === undefined) {
+    return String(element);
+  }
+  const tagName = typeof element.tagName === "string" ? element.tagName.toLowerCase() : "element";
+  const name = typeof element.getAttribute === "function" ? element.getAttribute("name") : element.name;
+  return name ? `<${tagName} name="${name}">` : `<${tagName}>`;
+}
+
+/** Value of an input, select, or textarea, read as jest-dom's `toHaveValue` reads it. */
+function elementValue(element: any): unknown {
+  const type = typeof element.type === "string" ? element.type.toLowerCase() : "";
+  const tagName = typeof element.tagName === "string" ? element.tagName.toUpperCase() : "";
+  if (type === "number") {
+    return element.value === "" || element.value === undefined || element.value === null
+      ? null
+      : Number(element.value);
+  }
+  if (tagName === "SELECT" && element.multiple) {
+    return Array.from(element.selectedOptions ?? []).map((option: any) => option.value);
+  }
+  return element.value;
+}
+
+function domMatchers(
+  actual: any,
+  label: string | undefined,
+): Record<keyof ThrowingDomMatchers, (...args: any[]) => ExpectResult> {
+  const nullResult = (matcher: string): ExpectResult => ({
+    result: false,
+    message: formatMessage(label, `${matcher}: expected an element, received ${describeElement(actual)}`),
+  });
+  return {
+    toBeInTheDocument(): ExpectResult {
+      if (actual === null || actual === undefined) {
+        return nullResult("toBeInTheDocument");
+      }
+      const pass = !!actual.ownerDocument && !!actual.ownerDocument.contains(actual);
+      return pass
+        ? { result: true }
+        : { result: false, message: formatMessage(label, `Expected ${describeElement(actual)} to be in the document`) };
+    },
+    toHaveValue(...args: unknown[]): ExpectResult {
+      if (actual === null || actual === undefined) {
+        return nullResult("toHaveValue");
+      }
+      const received = elementValue(actual);
+      const expectsValue = args.length > 0 && args[0] !== undefined;
+      const pass = expectsValue
+        ? equal(received, args[0])
+        : Array.isArray(received)
+          ? received.length > 0
+          : Boolean(received);
+      return pass
+        ? { result: true }
+        : {
+            result: false,
+            message: formatMessage(
+              label,
+              expectsValue
+                ? `Expected ${describeElement(actual)} to have value ${JSON.stringify(args[0])}, received ${JSON.stringify(received)}`
+                : `Expected ${describeElement(actual)} to have a value, received ${JSON.stringify(received)}`,
+            ),
+          };
+    },
+    toBeChecked(): ExpectResult {
+      if (actual === null || actual === undefined) {
+        return nullResult("toBeChecked");
+      }
+      const pass =
+        typeof actual.checked === "boolean"
+          ? actual.checked
+          : typeof actual.getAttribute === "function" && actual.getAttribute("aria-checked") === "true";
+      return pass
+        ? { result: true }
+        : { result: false, message: formatMessage(label, `Expected ${describeElement(actual)} to be checked`) };
+    },
+    toContainHTML(html: string): ExpectResult {
+      if (actual === null || actual === undefined) {
+        return nullResult("toContainHTML");
+      }
+      // As jest-dom, normalize the searched HTML by parsing it in the element's document.
+      let normalizedHtml = html;
+      if (typeof actual.ownerDocument?.createElement === "function") {
+        const parsed = actual.ownerDocument.createElement("div");
+        parsed.innerHTML = html;
+        normalizedHtml = parsed.innerHTML;
+      }
+      const outerHTML: string = typeof actual.outerHTML === "string" ? actual.outerHTML : "";
+      const pass = outerHTML.includes(normalizedHtml);
+      return pass
+        ? { result: true }
+        : {
+            result: false,
+            message: formatMessage(label, `Expected ${describeElement(actual)} to contain HTML ${JSON.stringify(html)}`),
+          };
+    },
+  };
+}
 
 /**
  * An `expect` with vitest's `(actual, message)` signature whose matchers throw a
- * `MiroirAssertionError` when the non-throwing `expect` above gives `result: false` (#286).
- * Used by React component test bodies, in vitest and in the running app.
+ * `MiroirAssertionError` when they fail (#286). Used by React component test bodies, in vitest
+ * and in the running app.
+ *
+ * - The value matchers are those of the non-throwing `expect` above, except `toEqual`, which
+ *   ignores object keys whose value is `undefined`, as vitest does. The non-throwing `expect`
+ *   keeps its own `toEqual`.
+ * - The DOM matchers `toBeInTheDocument`, `toHaveValue`, `toBeChecked`, and `toContainHTML`
+ *   follow jest-dom. A `null` actual fails their positive form and passes their `.not` form.
+ * - `getState().currentTestName` is `testName`.
  *
  * `testName` names the running test in failure messages when no message is given.
  */
 export function createThrowingExpect(testName: string): ThrowingExpect {
-  return (actual: any, message?: string): ThrowingMatchers => {
+  const throwingExpect = (actual: any, message?: string): ThrowingMatchers => {
     const label = message ?? testName;
-    const matchers = expect(actual, label) as any;
-    const toThrowing = (source: any, prefix: string) => {
+    const { not: _not, ...valueMatchers } = expect(actual, label);
+    const matchers: Record<string, (...args: any[]) => ExpectResult> = {
+      ...valueMatchers,
+      toEqual: (expected: any) =>
+        expect(withoutUndefinedKeys(actual), label).toEqual(withoutUndefinedKeys(expected)),
+      ...domMatchers(actual, label),
+    };
+    const toThrowing = (negate: boolean) => {
       const result: any = {};
-      for (const key of Object.keys(source)) {
-        if (key === "not") {
-          continue;
-        }
+      for (const [key, matcher] of Object.entries(matchers)) {
         result[key] = (...args: any[]): void => {
-          const outcome: ExpectResult = source[key](...args);
-          if (!outcome.result) {
+          const outcome: ExpectResult = matcher(...args);
+          if (outcome.result === negate) {
             throw new MiroirAssertionError(
-              outcome.message ?? formatMessage(label, `${prefix}${key} failed`),
+              negate
+                ? formatMessage(label, `[not] Unexpected pass for ${key}`)
+                : outcome.message ?? formatMessage(label, `${key} failed`),
             );
           }
         };
@@ -342,8 +493,11 @@ export function createThrowingExpect(testName: string): ThrowingExpect {
       return result;
     };
     return {
-      ...toThrowing(matchers, ""),
-      not: toThrowing(matchers.not, "not."),
+      ...toThrowing(false),
+      not: toThrowing(true),
     } as ThrowingMatchers;
   };
+  return Object.assign(throwingExpect, {
+    getState: () => ({ currentTestName: testName }),
+  });
 }
