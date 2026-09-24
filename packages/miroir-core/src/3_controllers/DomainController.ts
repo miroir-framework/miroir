@@ -3520,6 +3520,12 @@ export class DomainController implements DomainControllerInterface {
     return remoteResult;
   }
 
+  /**
+   * Runs probe from ConnectExternalServiceWizard
+   * @param domainAction 
+   * @param principal 
+   * @returns 
+   */
   private async handleProbeExternalService(
     domainAction: {
       payload?: {

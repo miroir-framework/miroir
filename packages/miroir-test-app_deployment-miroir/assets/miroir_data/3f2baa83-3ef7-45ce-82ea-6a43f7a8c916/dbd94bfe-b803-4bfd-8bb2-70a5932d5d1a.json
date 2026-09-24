@@ -555,11 +555,7 @@
                       }
                     }
                   }
-                },
-                "required": [
-                  "checkedOperationIds",
-                  "probeOperationId"
-                ]
+                }
               }
             }
           },
@@ -590,7 +586,7 @@
             "interpolation": "runtime",
             "objectAccessPath": [
               {
-                "transformerType": "getFromParameters",
+                "transformerType": "getFromContext",
                 "interpolation": "runtime",
                 "safe": true,
                 "referencePath": [
@@ -599,7 +595,7 @@
                 ]
               },
               {
-                "transformerType": "getFromParameters",
+                "transformerType": "getFromContext",
                 "interpolation": "runtime",
                 "safe": true,
                 "referencePath": [

@@ -212,6 +212,11 @@
           },
           "payload": {
             "type": "object",
+            "tag": {
+              "value": {
+                "canBeTemplate": true
+              }
+            },
             "definition": {
               "application": {
                 "type": "uuid",
@@ -223,32 +228,72 @@
                 }
               },
               "endpointName": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
               },
               "openApiDocument": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
               },
               "baseUrl": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
               },
               "userAgent": {
                 "type": "string",
-                "optional": true
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
               },
               "authenticated": {
-                "type": "boolean"
+                "type": "boolean",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
               },
               "checkedOperationIds": {
                 "type": "array",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
                 "definition": {
                   "type": "string"
                 }
               },
               "probeOperationId": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
               },
               "probeParameters": {
                 "type": "record",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
                 "definition": {
                   "type": "any"
                 }
@@ -282,14 +327,29 @@
           },
           "payload": {
             "type": "object",
+            "tag": {
+              "value": {
+                "canBeTemplate": true
+              }
+            },
             "definition": {
               "text": {
                 "type": "string",
-                "optional": true
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
               },
               "url": {
                 "type": "string",
-                "optional": true
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
               }
             }
           }

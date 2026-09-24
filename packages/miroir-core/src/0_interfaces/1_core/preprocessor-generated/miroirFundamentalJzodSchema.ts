@@ -374,6 +374,10 @@ export const miroirFundamentalJzodSchema = {
                           }
                         ]
                       },
+                      "mask": {
+                        "type": "boolean",
+                        "optional": true
+                      },
                       "editable": {
                         "type": "boolean",
                         "tag": {
@@ -405,6 +409,10 @@ export const miroirFundamentalJzodSchema = {
                               "portalSelector",
                               "muiSelector"
                             ]
+                          },
+                          "restrictToApplicationDeploymentMap": {
+                            "type": "boolean",
+                            "optional": true
                           }
                         }
                       },
@@ -11981,6 +11989,9 @@ export const miroirFundamentalJzodSchema = {
         "type": "object",
         "tag": {
           "value": {
+            "display": {
+              "displayedAttributeValueWhenFolded": "label"
+            },
             "initializeTo": {
               "initializeToType": "value",
               "value": {
@@ -12015,6 +12026,13 @@ export const miroirFundamentalJzodSchema = {
       },
       "graphReportSection": {
         "type": "object",
+        "tag": {
+          "value": {
+            "display": {
+              "displayedAttributeValueWhenFolded": "definition.label"
+            }
+          }
+        },
         "definition": {
           "type": {
             "type": "literal",
@@ -13024,6 +13042,13 @@ export const miroirFundamentalJzodSchema = {
       },
       "storedReportDisplay": {
         "type": "object",
+        "tag": {
+          "value": {
+            "display": {
+              "displayedAttributeValueWhenFolded": "label"
+            }
+          }
+        },
         "definition": {
           "type": {
             "type": "literal",
@@ -13568,6 +13593,13 @@ export const miroirFundamentalJzodSchema = {
       },
       "multistepStep": {
         "type": "object",
+        "tag": {
+          "value": {
+            "display": {
+              "displayedAttributeValueWhenFolded": "section.definition.label"
+            }
+          }
+        },
         "definition": {
           "stepId": {
             "type": "string"
@@ -22064,6 +22096,11 @@ export const miroirFundamentalJzodSchema = {
               },
               "payload": {
                 "type": "object",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
                 "definition": {
                   "application": {
                     "type": "uuid",
@@ -22075,32 +22112,72 @@ export const miroirFundamentalJzodSchema = {
                     }
                   },
                   "endpointName": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true
+                      }
+                    }
                   },
                   "openApiDocument": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true
+                      }
+                    }
                   },
                   "baseUrl": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true
+                      }
+                    }
                   },
                   "userAgent": {
                     "type": "string",
-                    "optional": true
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true
+                      }
+                    }
                   },
                   "authenticated": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true
+                      }
+                    }
                   },
                   "checkedOperationIds": {
                     "type": "array",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true
+                      }
+                    },
                     "definition": {
                       "type": "string"
                     }
                   },
                   "probeOperationId": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true
+                      }
+                    }
                   },
                   "probeParameters": {
                     "type": "record",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true
+                      }
+                    },
                     "definition": {
                       "type": "any"
                     }
@@ -22131,14 +22208,29 @@ export const miroirFundamentalJzodSchema = {
               },
               "payload": {
                 "type": "object",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
                 "definition": {
                   "text": {
                     "type": "string",
-                    "optional": true
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true
+                      }
+                    }
                   },
                   "url": {
                     "type": "string",
-                    "optional": true
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true
+                      }
+                    }
                   }
                 }
               }
@@ -29542,6 +29634,10 @@ export const miroirFundamentalJzodSchema = {
                           }
                         ]
                       },
+                      "mask": {
+                        "type": "boolean",
+                        "optional": true
+                      },
                       "editable": {
                         "type": "boolean",
                         "tag": {
@@ -29573,6 +29669,10 @@ export const miroirFundamentalJzodSchema = {
                               "portalSelector",
                               "muiSelector"
                             ]
+                          },
+                          "restrictToApplicationDeploymentMap": {
+                            "type": "boolean",
+                            "optional": true
                           }
                         }
                       },
@@ -35632,6 +35732,10 @@ export const miroirFundamentalJzodSchema = {
                           }
                         ]
                       },
+                      "mask": {
+                        "type": "boolean",
+                        "optional": true
+                      },
                       "editable": {
                         "type": "boolean",
                         "tag": {
@@ -35663,6 +35767,10 @@ export const miroirFundamentalJzodSchema = {
                               "portalSelector",
                               "muiSelector"
                             ]
+                          },
+                          "restrictToApplicationDeploymentMap": {
+                            "type": "boolean",
+                            "optional": true
                           }
                         }
                       },
@@ -36051,72 +36159,319 @@ export const miroirFundamentalJzodSchema = {
                 "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
               },
               "payload": {
-                "type": "object",
-                "definition": {
-                  "application": {
-                    "type": "union",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "isTemplate": true
+                  }
+                },
+                "type": "union",
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "coreTransformerForBuildPlusRuntime"
+                    }
+                  },
+                  {
+                    "type": "object",
                     "tag": {
                       "value": {
                         "canBeTemplate": true,
-                        "defaultLabel": "Application",
                         "isTemplate": true
                       }
                     },
-                    "discriminator": [
-                      "transformerType",
-                      "interpolation"
-                    ],
-                    "definition": [
-                      {
-                        "type": "uuid",
+                    "definition": {
+                      "application": {
+                        "type": "union",
                         "tag": {
                           "value": {
                             "canBeTemplate": true,
-                            "defaultLabel": "Application"
+                            "defaultLabel": "Application",
+                            "isTemplate": true
                           }
-                        }
+                        },
+                        "discriminator": [
+                          "transformerType",
+                          "interpolation"
+                        ],
+                        "definition": [
+                          {
+                            "type": "uuid",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true,
+                                "defaultLabel": "Application"
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "coreTransformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
                       },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "coreTransformerForBuildPlusRuntime"
-                        }
+                      "endpointName": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "discriminator": [
+                          "transformerType",
+                          "interpolation"
+                        ],
+                        "definition": [
+                          {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "coreTransformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      },
+                      "openApiDocument": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "discriminator": [
+                          "transformerType",
+                          "interpolation"
+                        ],
+                        "definition": [
+                          {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "coreTransformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      },
+                      "baseUrl": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "discriminator": [
+                          "transformerType",
+                          "interpolation"
+                        ],
+                        "definition": [
+                          {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "coreTransformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      },
+                      "userAgent": {
+                        "type": "union",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "discriminator": [
+                          "transformerType",
+                          "interpolation"
+                        ],
+                        "definition": [
+                          {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "coreTransformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      },
+                      "authenticated": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "discriminator": [
+                          "transformerType",
+                          "interpolation"
+                        ],
+                        "definition": [
+                          {
+                            "type": "boolean",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "coreTransformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      },
+                      "checkedOperationIds": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "array",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true,
+                                "isTemplate": true
+                              }
+                            },
+                            "definition": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "coreTransformerForBuildPlusRuntimeWithoutArray"
+                            }
+                          }
+                        ],
+                        "discriminator": [
+                          "transformerType",
+                          "interpolation"
+                        ]
+                      },
+                      "probeOperationId": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "discriminator": [
+                          "transformerType",
+                          "interpolation"
+                        ],
+                        "definition": [
+                          {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "coreTransformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      },
+                      "probeParameters": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "record",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true,
+                                "isTemplate": true
+                              }
+                            },
+                            "definition": {
+                              "type": "any"
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "coreTransformerForBuildPlusRuntime"
+                            }
+                          }
+                        ],
+                        "discriminator": [
+                          "transformerType",
+                          "interpolation"
+                        ]
                       }
-                    ]
-                  },
-                  "endpointName": {
-                    "type": "string"
-                  },
-                  "openApiDocument": {
-                    "type": "string"
-                  },
-                  "baseUrl": {
-                    "type": "string"
-                  },
-                  "userAgent": {
-                    "type": "string",
-                    "optional": true
-                  },
-                  "authenticated": {
-                    "type": "boolean"
-                  },
-                  "checkedOperationIds": {
-                    "type": "array",
-                    "definition": {
-                      "type": "string"
-                    }
-                  },
-                  "probeOperationId": {
-                    "type": "string"
-                  },
-                  "probeParameters": {
-                    "type": "record",
-                    "definition": {
-                      "type": "any"
                     }
                   }
-                }
+                ]
               }
             }
           },
@@ -36141,17 +36496,101 @@ export const miroirFundamentalJzodSchema = {
                 "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
               },
               "payload": {
-                "type": "object",
-                "definition": {
-                  "text": {
-                    "type": "string",
-                    "optional": true
-                  },
-                  "url": {
-                    "type": "string",
-                    "optional": true
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "isTemplate": true
                   }
-                }
+                },
+                "type": "union",
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "coreTransformerForBuildPlusRuntime"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "isTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "text": {
+                        "type": "union",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "discriminator": [
+                          "transformerType",
+                          "interpolation"
+                        ],
+                        "definition": [
+                          {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "coreTransformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      },
+                      "url": {
+                        "type": "union",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "discriminator": [
+                          "transformerType",
+                          "interpolation"
+                        ],
+                        "definition": [
+                          {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "coreTransformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
@@ -42199,72 +42638,319 @@ export const miroirFundamentalJzodSchema = {
                 "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
               },
               "payload": {
-                "type": "object",
-                "definition": {
-                  "application": {
-                    "type": "union",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "isTemplate": true
+                  }
+                },
+                "type": "union",
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "coreTransformerForBuildPlusRuntime"
+                    }
+                  },
+                  {
+                    "type": "object",
                     "tag": {
                       "value": {
                         "canBeTemplate": true,
-                        "defaultLabel": "Application",
                         "isTemplate": true
                       }
                     },
-                    "discriminator": [
-                      "transformerType",
-                      "interpolation"
-                    ],
-                    "definition": [
-                      {
-                        "type": "uuid",
+                    "definition": {
+                      "application": {
+                        "type": "union",
                         "tag": {
                           "value": {
                             "canBeTemplate": true,
-                            "defaultLabel": "Application"
+                            "defaultLabel": "Application",
+                            "isTemplate": true
                           }
-                        }
+                        },
+                        "discriminator": [
+                          "transformerType",
+                          "interpolation"
+                        ],
+                        "definition": [
+                          {
+                            "type": "uuid",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true,
+                                "defaultLabel": "Application"
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "coreTransformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
                       },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "coreTransformerForBuildPlusRuntime"
-                        }
+                      "endpointName": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "discriminator": [
+                          "transformerType",
+                          "interpolation"
+                        ],
+                        "definition": [
+                          {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "coreTransformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      },
+                      "openApiDocument": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "discriminator": [
+                          "transformerType",
+                          "interpolation"
+                        ],
+                        "definition": [
+                          {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "coreTransformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      },
+                      "baseUrl": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "discriminator": [
+                          "transformerType",
+                          "interpolation"
+                        ],
+                        "definition": [
+                          {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "coreTransformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      },
+                      "userAgent": {
+                        "type": "union",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "discriminator": [
+                          "transformerType",
+                          "interpolation"
+                        ],
+                        "definition": [
+                          {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "coreTransformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      },
+                      "authenticated": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "discriminator": [
+                          "transformerType",
+                          "interpolation"
+                        ],
+                        "definition": [
+                          {
+                            "type": "boolean",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "coreTransformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      },
+                      "checkedOperationIds": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "array",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true,
+                                "isTemplate": true
+                              }
+                            },
+                            "definition": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "coreTransformerForBuildPlusRuntimeWithoutArray"
+                            }
+                          }
+                        ],
+                        "discriminator": [
+                          "transformerType",
+                          "interpolation"
+                        ]
+                      },
+                      "probeOperationId": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "discriminator": [
+                          "transformerType",
+                          "interpolation"
+                        ],
+                        "definition": [
+                          {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "coreTransformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      },
+                      "probeParameters": {
+                        "type": "union",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "record",
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true,
+                                "isTemplate": true
+                              }
+                            },
+                            "definition": {
+                              "type": "any"
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "coreTransformerForBuildPlusRuntime"
+                            }
+                          }
+                        ],
+                        "discriminator": [
+                          "transformerType",
+                          "interpolation"
+                        ]
                       }
-                    ]
-                  },
-                  "endpointName": {
-                    "type": "string"
-                  },
-                  "openApiDocument": {
-                    "type": "string"
-                  },
-                  "baseUrl": {
-                    "type": "string"
-                  },
-                  "userAgent": {
-                    "type": "string",
-                    "optional": true
-                  },
-                  "authenticated": {
-                    "type": "boolean"
-                  },
-                  "checkedOperationIds": {
-                    "type": "array",
-                    "definition": {
-                      "type": "string"
-                    }
-                  },
-                  "probeOperationId": {
-                    "type": "string"
-                  },
-                  "probeParameters": {
-                    "type": "record",
-                    "definition": {
-                      "type": "any"
                     }
                   }
-                }
+                ]
               }
             }
           },
@@ -42289,17 +42975,101 @@ export const miroirFundamentalJzodSchema = {
                 "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
               },
               "payload": {
-                "type": "object",
-                "definition": {
-                  "text": {
-                    "type": "string",
-                    "optional": true
-                  },
-                  "url": {
-                    "type": "string",
-                    "optional": true
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "isTemplate": true
                   }
-                }
+                },
+                "type": "union",
+                "discriminator": [
+                  "transformerType",
+                  "interpolation"
+                ],
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "coreTransformerForBuildPlusRuntime"
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "isTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "text": {
+                        "type": "union",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "discriminator": [
+                          "transformerType",
+                          "interpolation"
+                        ],
+                        "definition": [
+                          {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "coreTransformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      },
+                      "url": {
+                        "type": "union",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "discriminator": [
+                          "transformerType",
+                          "interpolation"
+                        ],
+                        "definition": [
+                          {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "canBeTemplate": true
+                              }
+                            }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "coreTransformerForBuildPlusRuntime"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
               }
             }
           }
