@@ -1050,6 +1050,7 @@ export {
 export { toReduxSerializable } from "./1_core/reduxSerializable.js";
 export {
   base64ToBlob,
+  deterministicUuidV4,
   fileToBase64,
   formatFileSize, formatYYYYMMDD_HHMMSS, getBlobFileIcon,
   mergeIfUnique,

@@ -9,10 +9,9 @@
  * must apply the gate "auth on AND principal known".
  */
 
-import { v5 as uuidv5 } from "uuid";
-
 import type { EntityInstance } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { entityMiroirRight } from "miroir-test-app_deployment-admin";
+import { deterministicUuidV4 } from "../tools.js";
 import { ENTITY_MIROIR_RIGHT_UUID } from "./AccessPolicy.js";
 
 export type TestbedAccessGrantPrincipal = {
@@ -33,11 +32,18 @@ export function resolveTestbedAccessGrantPrincipal(args: {
   return { miroirUserUuid };
 }
 
+/**
+ * Version-4 shaped (see `deterministicUuidV4`): jzodTypeCheck's uuid schema accepts
+ * version 4 only.
+ */
 export function testbedApplicationAccessGrantUuid(
   miroirUserUuid: string,
   applicationUuid: string,
 ): string {
-  return uuidv5(`${miroirUserUuid}\napplication\n${applicationUuid}`, ENTITY_MIROIR_RIGHT_UUID);
+  return deterministicUuidV4(
+    `${miroirUserUuid}\napplication\n${applicationUuid}`,
+    ENTITY_MIROIR_RIGHT_UUID,
+  );
 }
 
 export function buildTestbedApplicationAccessGrantInstance(args: {

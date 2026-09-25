@@ -9,8 +9,8 @@ import {
 
 const ALICE_UUID = "1c39328c-7de4-44ae-bcf1-5bbc38d8e267";
 const APP_UUID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
-/** uuid v5(`${alice}\napplication\n${app}`, ENTITY_MIROIR_RIGHT_UUID) */
-const EXPECTED_GRANT_UUID = "20b0b4ce-1d09-54c5-93be-59886264356f";
+/** deterministicUuidV4(`${alice}\napplication\n${app}`, ENTITY_MIROIR_RIGHT_UUID) */
+const EXPECTED_GRANT_UUID = "20b0b4ce-1d09-44c5-93be-59886264356f";
 
 describe("resolveTestbedAccessGrantPrincipal", () => {
   it("returns the principal only when auth is on and a user uuid is known", () => {

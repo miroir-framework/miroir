@@ -1,4 +1,5 @@
 import equal from "fast-deep-equal"
+import { v5 as uuidv5 } from "uuid"
 
 export function pushIfUnique<T>(array: T[], item: T): void {
   // if (!array.includes(item)) {
@@ -157,6 +158,22 @@ export function formatFileSize(bytes: number): string {
   } else {
     return `${(bytes / MB).toFixed(1)} MB`;
   }
+}
+
+// ################################################################################################
+/**
+ * Deterministic uuid for (seed, namespace), shaped as a version-4 / variant-1 uuid so it
+ * passes jzodTypeCheck's uuid schema (version 4 only). Derived from a uuid v5 hash — the
+ * version/variant nibbles carry no entropy in RFC 4122, so overwriting them keeps the hash
+ * uniformly distributed while making the result indistinguishable from a random v4 uuid.
+ * Same seed + namespace always yields the same uuid, so rows can still be found by
+ * recomputing this function instead of persisting a lookup table.
+ */
+export function deterministicUuidV4(seed: string, namespace: string): string {
+  const hash = uuidv5(seed, namespace).split("");
+  hash[14] = "4";
+  hash[19] = ((parseInt(hash[19], 16) & 0x3) | 0x8).toString(16);
+  return hash.join("");
 }
 
 // ################################################################################################

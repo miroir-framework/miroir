@@ -4,7 +4,6 @@
  * import DomainController.
  */
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from "node:crypto";
-import { v5 as uuidv5 } from "uuid";
 
 import type { EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface.js";
@@ -12,6 +11,7 @@ import { Action2Error } from "../0_interfaces/2_domain/DomainElement.js";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment.js";
 import { defaultSelfApplicationDeploymentMap } from "../1_core/Deployment.js";
 import { defaultMetaModelEnvironment } from "../1_core/Model.js";
+import { deterministicUuidV4 } from "../1_core/tools.js";
 import {
   ENTITY_MIROIR_SECRET_UUID,
   SECRETS_SET_ACTION_LABEL,
@@ -24,14 +24,18 @@ const ADMIN_APPLICATION_UUID = "55af124e-8c05-4bae-a3ef-0933d41daa92";
 const INSTANCE_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";
 const QUERY_ENDPOINT = "9e404b3c-368c-40cb-be8b-e3c28550c25e";
 
-/** Stable instance identity for name + scope + owner (process owner is empty). */
+/**
+ * Stable instance identity for name + scope + owner (process owner is empty).
+ * Version-4 shaped (see `deterministicUuidV4`): jzodTypeCheck's uuid schema accepts
+ * version 4 only.
+ */
 export function miroirSecretInstanceUuid(
   name: string,
   scope: "process" | "user",
   miroirUserUuid?: string,
 ): string {
   const owner = scope === "user" ? (miroirUserUuid ?? "") : "";
-  return uuidv5(`${name}\n${scope}\n${owner}`, ENTITY_MIROIR_SECRET_UUID);
+  return deterministicUuidV4(`${name}\n${scope}\n${owner}`, ENTITY_MIROIR_SECRET_UUID);
 }
 
 let secretRowWriteChain: Promise<unknown> = Promise.resolve();
