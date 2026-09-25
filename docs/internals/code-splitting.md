@@ -105,6 +105,25 @@ The app entry (`src/index.tsx`) is **eager**: core startup, `RootComponent`, `Pa
 
 Server-side CopilotKit (`@copilotkit/runtime` in `miroir-server` / `miroir-ai`) is unrelated to client bundle splitting.
 
+### Component test chunk (`@testing-library/dom`, `@testing-library/user-event`, #286)
+
+| | |
+|---|---|
+| **Vendor chunk** | None. Rollup puts `componentTests/` and user-event in one async chunk, and `@testing-library/dom` in a chunk it shares with the integration launcher chunk |
+| **Dynamic import** | One `import("../../../4-tests/componentTests/index.js")` in `prepareComponentTests()` of `ComponentTestSandbox.tsx` |
+| **Reachability** | `ComponentTestSandbox.tsx` is in the lazy `ReportDisplay` chunk. The import runs when a unit Run button (`MiroirTestDisplay`, or "Run All Unit Tests" in `MiroirTestListDisplay` with "Include component tests" checked) starts a MiroirTest that has a `reactComponentTest` leaf |
+| **Initial load?** | No |
+| **On feature use?** | Yes, on the first component test run |
+
+The chunk holds the JzodElementEditor component test bodies, their registry, and the act-free driver. It does not import `@testing-library/react` and never calls React `act`, which throws in production builds of React. `@testing-library/react` is loaded only by the lazy browser integration launcher chunk (`standaloneAppBrowserIntegrationOrchestrator`, through `tests-utils.tsx`), which "Run Integration Tests" imports.
+
+The guard `tests/4_view/issues/286-react-component-miroir-tests/componentTestChunk.286.phase4.unit.test.ts` reads `dist/.vite/manifest.json` (`build.manifest: true` in `vite.config.js`) and the chunk sourcemaps. It fails when a chunk in the static import closure of `index.html` has a source under `node_modules/@testing-library/`, or when the chunks added by the component test import contain `@testing-library/react` or `routes/TransformerBuilderPage`. It needs a fresh build, so it is not in the nonreg manifest:
+
+```bash
+npm run build -w miroir-standalone-app
+npm run testByFile -w miroir-standalone-app -- componentTestChunk.286.phase4
+```
+
 ---
 
 ## Summary table
@@ -115,6 +134,7 @@ Server-side CopilotKit (`@copilotkit/runtime` in `miroir-server` / `miroir-ai`) 
 | glide-data-grid | — (route chunk) | Yes (report routes) | No |
 | CodeMirror | — (route chunk) | Yes (report / transformer builder) | No |
 | Mermaid | `vendor-d3` | Yes (model page / diagram section) | No |
+| Testing Library dom and user-event (component tests) | None (async chunk) | Yes | Yes (first component test run, #286) |
 | CopilotKit core | `vendor-copilotkit` | Yes | Yes (snapshot `ai` + AI AppBar action) |
 | CopilotKit UI | `vendor-copilotkit` | Yes | Yes (same gate + sidebar or dev console) |
 | MUI | `vendor-mui` | Partially (large shell dependency) | N/A |
@@ -145,6 +165,8 @@ Server-side CopilotKit (`@copilotkit/runtime` in `miroir-server` / `miroir-ai`) 
 | `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/RootComponent.tsx` | Lazy shell features (`AgentsCopilotKit`, outline, timeline) |
 | `packages/miroir-standalone-app/src/index.tsx` | Eager entry (no CopilotKit) |
 | `packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AgentsCopilotKit.tsx` | Lazy CopilotKit provider (#244) |
+| `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ComponentTestSandbox.tsx` | Dynamic import of the component test chunk (#286) |
+| `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/index.ts` | Component test chunk entry, `registerComponentTests` (#286) |
 | `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditorReactCodeMirror.tsx` | CodeMirror static import |
 | `packages/miroir-diagram-class/src/4_view/MermaidClassDiagram.tsx` | Mermaid static import |
 | `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Grids/ValueObjectGrid.tsx` | ag-grid static import |

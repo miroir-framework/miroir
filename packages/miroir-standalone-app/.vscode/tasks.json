@@ -2,9 +2,9 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Test JzodElementEditor (readOnly propagation)",
+			"label": "Test JzodElementEditor component tests (#286)",
 			"type": "shell",
-			"command": "npx vitest run tests/4_view/JzodElementEditor.test.tsx",
+			"command": "npx vitest run tests/4_view/miroir-component-tests.unit.test.tsx",
 			"args": [],
 			"problemMatcher": []
 		}

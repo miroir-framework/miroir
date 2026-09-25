@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { createPortal } from 'react-dom';
 
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
+import { usePortalContainer } from '../../tools/PortalContainerContext';
 import { ThemedComponentProps } from 'miroir-react';
 import { type LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
 import { packageName } from '../../../../constants';
@@ -107,6 +108,9 @@ export const ThemedSelectWithPortal: React.FC<ThemedComponentProps & {
   ...props 
 }) => {
   const { currentTheme } = useMiroirTheme();
+  // Target of the option list portal and root of the outside-click listener (#286):
+  // `document.body` by default, the sandbox portal element in the component test sandbox.
+  const portalContainer = usePortalContainer();
   
 
     // Fall back to standard select for non-filterable or legacy usage
@@ -275,15 +279,17 @@ export const ThemedSelectWithPortal: React.FC<ThemedComponentProps & {
 
     // Close dropdown when clicking outside
     useEffect(() => {
+      const clickOutsideRoot = portalContainer.ownerDocument;
       const handleClickOutside = (event: MouseEvent) => {
         // log.info('ThemedSelectWithPortal: handleClickOutside triggered, isOpen:', isOpen);
         // log.info('ThemedSelectWithPortal: containerRef.current:', !!containerRef.current);
         // log.info('ThemedSelectWithPortal: containerRef contains target:', containerRef.current?.contains(event.target as Node));
         
         if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-          // Check if the click was on a dropdown option (which is portaled to body)
+          // Check if the click was on a dropdown option (which is portaled to the portal container)
           const target = event.target as Element;
-          const isDropdownOption = target.closest('[data-dropdown-option]');
+          const isDropdownOption =
+            portalContainer.contains(target) && target.closest('[data-dropdown-option]');
           
           // log.info('ThemedSelectWithPortal: click outside detected, isDropdownOption:', !!isDropdownOption);
           
@@ -298,13 +304,13 @@ export const ThemedSelectWithPortal: React.FC<ThemedComponentProps & {
 
       if (isOpen) {
         // log.info('ThemedSelectWithPortal: adding mousedown listener');
-        document.addEventListener('mousedown', handleClickOutside);
+        clickOutsideRoot.addEventListener('mousedown', handleClickOutside);
         return () => {
           // log.info('ThemedSelectWithPortal: removing mousedown listener');
-          document.removeEventListener('mousedown', handleClickOutside);
+          clickOutsideRoot.removeEventListener('mousedown', handleClickOutside);
         };
       }
-    }, [isOpen]);
+    }, [isOpen, portalContainer]);
 
     // Update position when dropdown opens
     useEffect(() => {
@@ -734,7 +740,7 @@ export const ThemedSelectWithPortal: React.FC<ThemedComponentProps & {
               </div>
             )}
           </div>,
-          document.body
+          portalContainer
         )}
       </div>
     );

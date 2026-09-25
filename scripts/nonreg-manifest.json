@@ -809,20 +809,14 @@
       ]
     },
     {
-      "id": "appstack-JzodElementEditor.test",
+      "id": "appstack-miroir-component-tests",
       "tier": "default",
-      "title": "JzodElementEditor component suite",
+      "title": "#286 — JzodElementEditor component tests as MiroirTests (vitest entry + JSON consistency)",
       "requires": "none",
       "argv": [
-        "npm",
-        "run",
-        "testByFile",
-        "-w",
-        "miroir-standalone-app",
-        "--",
-        "--profile",
-        "{profile}",
-        "JzodElementEditor.test"
+        "bash",
+        "-c",
+        "npm run testByFile -w miroir-standalone-app -- miroir-component-tests && npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency"
       ]
     },
     {
@@ -1062,6 +1056,17 @@
         "bash",
         "-c",
         "npm run testByFile -w miroir-standalone-app -- --profile {profile} multistepBranch.284 && npm run testByFile -w miroir-standalone-app -- --profile {profile} wizardWalk.284"
+      ]
+    },
+    {
+      "id": "unit-286-react-component-miroir-tests",
+      "tier": "unit",
+      "title": "#286 — React component tests as MiroirTests (core leaf + app sandbox, portal, matchers)",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w miroir-core -- 286-react-component-miroir-tests && npm run testByFile -w miroir-standalone-app -- componentMiroirTests.286.phase0 && npm run testByFile -w miroir-standalone-app -- domMatchersParity.286.phase3 && npm run testByFile -w miroir-standalone-app -- extractValuesScoped.286.phase3 && npm run testByFile -w miroir-standalone-app -- componentTestMode.286.phase4 && npm run testByFile -w miroir-standalone-app -- componentTestSandbox.286.phase4 && npm run testByFile -w miroir-standalone-app -- componentTestRunLock.286.review && npm run testByFile -w miroir-standalone-app -- portalContainer.286.phase5 && npm run testByFile -w miroir-standalone-app -- runAllComponentTests.286.phase6 && npm run testByFile -w miroir-standalone-app -- componentTestFireEvent.286.phase8"
       ]
     },
     {

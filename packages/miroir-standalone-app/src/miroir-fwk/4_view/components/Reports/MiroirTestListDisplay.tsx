@@ -19,6 +19,7 @@ import {
 } from '../Buttons/RunAllMiroirTestsButton.js';
 import type { TestResultData } from '../Buttons/testResultReport.js';
 import { ThemedProgressiveAccordion } from '../Themes/BasicComponents.js';
+import { ComponentTestSandboxProvider, useComponentTestSandbox } from './ComponentTestSandbox.js';
 import { TestResultsGrid } from './TestResultsGrid.js';
 import { UnitTestExecutionSummary } from './UnitTestExecutionSummary.js';
 import { UiIntegrationTestRunControls } from './UiIntegrationTestRunControls.js';
@@ -39,6 +40,8 @@ export interface MiroirTestListDisplayProps {
   style?: React.CSSProperties;
   gridType: ViewParams['gridType'];
   useSnackBar?: boolean;
+  /** Called with the results of each Run all, keyed by suite. */
+  onTestComplete?: (resultsBySuiteKey: MiroirTestSuiteResultsMap) => void;
 }
 
 const unitRunButtonStyle: React.CSSProperties = {
@@ -94,8 +97,16 @@ function toSelectableResults(results: TestResultData[]): TestResultDataAndSelect
   return results.map((result) => ({ ...result, selected: false }));
 }
 
-export const MiroirTestListDisplay = (props: MiroirTestListDisplayProps) => {
-  const { miroirTests, style, useSnackBar = true } = props;
+// #286: the provider gives Run all its own component test sandbox (analysis §5.6).
+export const MiroirTestListDisplay = (props: MiroirTestListDisplayProps) => (
+  <ComponentTestSandboxProvider>
+    <MiroirTestListDisplayContent {...props} />
+  </ComponentTestSandboxProvider>
+);
+
+const MiroirTestListDisplayContent = (props: MiroirTestListDisplayProps) => {
+  const { miroirTests, style, useSnackBar = true, onTestComplete } = props;
+  const componentTestSandbox = useComponentTestSandbox();
   const [resultsBySuiteKey, setResultsBySuiteKey] = useState<MiroirTestSuiteResultsMap>({});
   const integrationPreferences = useUiIntegrationTestRunPreferences();
   const integrationProfileBrowserLaunchable = isUiIntegrationProfileLaunchableInBrowser(
@@ -132,6 +143,7 @@ export const MiroirTestListDisplay = (props: MiroirTestListDisplayProps) => {
   const handleTestComplete = (resultsMap: MiroirTestSuiteResultsMap) => {
     setResultsBySuiteKey(resultsMap);
     log.info('All MiroirTests completed:', resultsMap);
+    onTestComplete?.(resultsMap);
   };
 
   const defaultStyle: React.CSSProperties = {
@@ -172,6 +184,8 @@ export const MiroirTestListDisplay = (props: MiroirTestListDisplayProps) => {
           useSnackBar={useSnackBar}
           onTestComplete={handleTestComplete}
           runMode="unit"
+          beforeRun={componentTestSandbox?.prepareComponentTests}
+          afterRun={componentTestSandbox?.finishComponentTests}
           label="Run All Unit Tests"
           style={unitRunButtonStyle}
         />

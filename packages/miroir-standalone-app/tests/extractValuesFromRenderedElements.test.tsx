@@ -5,12 +5,12 @@ import { extractValuesFromRenderedElements } from "./4_view/JzodElementEditorTes
 describe("extractValuesFromRenderedElements", () => {
   const dummy = ()=>{}
   it("should convert number textbox values to numbers", () => {
-    render(
+    const { container } = render(
       <div>
         <input role="textbox" type="number" name="testField.g" defaultValue="123" readOnly />
       </div>
     );
-    const values = extractValuesFromRenderedElements(expect);
+    const values = extractValuesFromRenderedElements(expect, undefined, container, "testField");
     expect(values).toEqual({
       g: 123,
     });
@@ -19,14 +19,14 @@ describe("extractValuesFromRenderedElements", () => {
   it("should warn if number textbox value is not a number", () => {
     // Suppress console.warn for this test
     const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
-    render(
+    const { container } = render(
       <div>
         <input role="textbox" type="number" name="testField.h" value="notanumber" onChange={dummy}/>
       </div>
     );
     // The expect inside extractValuesFromRenderedElements will fail, but we want to check it doesn't throw
     try {
-      extractValuesFromRenderedElements(expect);
+      extractValuesFromRenderedElements(expect, undefined, container, "testField");
     } catch (e) {
       // ignore
     }
@@ -34,7 +34,7 @@ describe("extractValuesFromRenderedElements", () => {
   });
 
   it("should extract values from textboxes and checkboxes", () => {
-    render(
+    const { container } = render(
       <div>
         {/* <input type="text" name="testField.a" defaultValue="foo" /> */}
         <input role="textbox" type="text" name="testField.a" defaultValue="foo" readOnly />
@@ -43,7 +43,7 @@ describe("extractValuesFromRenderedElements", () => {
         <input role="checkbox" type="checkbox" name="testField.d" value="false" onChange={dummy}/>
       </div>
     );
-    const values = extractValuesFromRenderedElements(expect);
+    const values = extractValuesFromRenderedElements(expect, undefined, container, "testField");
     expect(values).toEqual({
       a: "foo",
       b: 42,
@@ -53,13 +53,13 @@ describe("extractValuesFromRenderedElements", () => {
   });
 
   it("should handle empty textboxes and unchecked checkboxes", () => {
-    render(
+    const { container } = render(
       <div>
         <input role="textbox" type="text" name="testField.e" value="" onChange={dummy}/>
         <input role="checkbox" type="checkbox" name="testField.f" defaultValue="false" readOnly/>
       </div>
     );
-    const values = extractValuesFromRenderedElements(expect);
+    const values = extractValuesFromRenderedElements(expect, undefined, container, "testField");
     expect(values).toEqual({
       e: "",
       f: false,

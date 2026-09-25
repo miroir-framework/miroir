@@ -469,6 +469,8 @@ export {
   miroirTestForRunner,
   MiroirTestForAction,
   miroirTestForAction,
+  MiroirTestForReactComponent,
+  miroirTestForReactComponent,
   MiroirTestLeaf,
   miroirTestLeaf,
   MiroirTestSuite,
@@ -1036,9 +1038,14 @@ export { defaultReport } from "./1_core/Report.js";
 export { queryContainsExternalExtractor } from "./1_core/queryContainsExternalExtractor.js";
 export { testBuildPlusRuntimeCompositeActionSuiteForRunner } from "./1_core/Runner.js";
 export {
+  createThrowingExpect,
   describe,
   expect,
-  TestFramework
+  MiroirAssertionError,
+  TestFramework,
+  type ThrowingDomMatchers,
+  type ThrowingExpect,
+  type ThrowingMatchers,
 } from "./1_core/testing/test-expect";
 export { toReduxSerializable } from "./1_core/reduxSerializable.js";
 export {
@@ -1719,6 +1726,7 @@ export {
 export {
   effectiveMiroirTransformerSkip,
   miroirTransformerAssertionName,
+  miroirTestTypeExcludedMessage,
   runMiroirTest,
   runMiroirTests,
   runMiroirTestSuite,
@@ -1733,12 +1741,21 @@ export {
   type RunnerTestContext,
 } from "./5_tests/MiroirTestTools.js";
 export {
+  REACT_COMPONENT_TEST_NO_RUNNER_MESSAGE,
+  runMiroirReactComponentTest,
+} from "./5_tests/ReactComponentTestTools.js";
+export {
   createInProcessVitestStub,
   runMiroirTestSuiteInProcess,
   type InProcessExpectFn,
   type RunMiroirTestSuiteInProcessParams,
 } from "./5_tests/runMiroirTestSuiteInProcess.js";
-export type { MiroirTestRunFilter } from "./0_interfaces/5-tests/miroirTestTypes";
+export type {
+  MiroirTestRunFilter,
+  ReactComponentTestRef,
+  ReactComponentTestRunner,
+  ReactComponentTestRunnerResult,
+} from "./0_interfaces/5-tests/miroirTestTypes";
 export {
   displayMiroirTestResults,
   miroirTestGlobalTimeOut,

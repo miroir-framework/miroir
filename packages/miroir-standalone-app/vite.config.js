@@ -43,6 +43,9 @@ export default defineConfig({
     outDir: '../dist',
     target: 'esnext',
     sourcemap: true,
+    // dist/.vite/manifest.json: read by the #286 bundle guard (componentTestChunk.286.phase4),
+    // which checks that @testing-library stays out of the chunks the entry loads statically.
+    manifest: true,
     rollupOptions: {
       output: {
         // Pin heavy vendor libraries to stable named chunks so the browser

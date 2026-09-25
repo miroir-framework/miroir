@@ -47,6 +47,7 @@ function miroirTestLeafSupportsUnitExecution(leaf: MiroirTestLeaf): boolean {
       return leaf.unitTestExpectedValue !== undefined;
     case "functionCallTest":
     case "queryTest":
+    case "reactComponentTest":
       return true;
     default: {
       const _exhaustive: never = leaf;
@@ -64,6 +65,7 @@ function miroirTestLeafRequiresIntegrationExecution(leaf: MiroirTestLeaf): boole
       return transformerTestLeafRequiresIntegration(leaf);
     case "functionCallTest":
     case "queryTest":
+    case "reactComponentTest":
       return false;
     default: {
       const _exhaustive: never = leaf;

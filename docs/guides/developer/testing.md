@@ -155,17 +155,15 @@ npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
 
 Swap the profile / config file to exercise filesystem, IndexedDB, or MongoDB backends. The final argument is a Vitest filename filter. Full catalogue: [reference/testing.md](../../reference/testing.md#running-app-stack-integration-tests-testbyfile).
 
-Common filters: `DomainController.integ`, `PersistenceStoreController.integ`, `ExtractorPersistenceStoreRunner.integ`, `ReportPage.integ`, `BlobEditorField.integ`, `JzodElementEditor.test`, `MiroirTestDisplayIntegrationLaunch.integ`.
+Common filters: `DomainController.integ`, `PersistenceStoreController.integ`, `ExtractorPersistenceStoreRunner.integ`, `ReportPage.integ`, `BlobEditorField.integ`, `miroir-component-tests`, `MiroirTestDisplayIntegrationLaunch.integ`.
 
-**JzodElementEditor component tests** — large RTL suite for the schema editor (`tests/4_view/JzodElementEditor.test.tsx`). Uses in-memory `LocalCache`; optional profile env for logging parity:
+**JzodElementEditor component tests.** Since #286 the schema editor cases are MiroirTests (`JzodElementEditor_ComponentTestSuite`, 68 `reactComponentTest` leaves). The vitest entry `tests/4_view/miroir-component-tests.unit.test.tsx` runs them over an in-memory `LocalCache`, with no profile:
 
 ```bash
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
-npm run testByFile -w miroir-standalone-app -- JzodElementEditor.test
+npm run testByFile -w miroir-standalone-app -- miroir-component-tests
 ```
 
-Filter one editor: `npm run testByFile -w miroir-standalone-app -- 4_view/JzodElementEditor.test.tsx -t "JzodObjectEditor"`. Full detail: [reference/testing.md](../../reference/testing.md#jzodelementeditortesttsx--component-integration-suite).
+Filter one editor: `npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "JzodObjectEditor"`. Full detail: [reference/testing.md](../../reference/testing.md#jzodelementeditor-component-tests).
 
 **MiroirTestDisplay integration launch (B6-d1)** — RTL proof for the **Run Integration Tests** button (`tests/4_view/MiroirTestDisplayIntegrationLaunch.integ.test.tsx`). Return Book leaf on `runner.returnDocument`; Postgres required (Node SQL mock env):
 

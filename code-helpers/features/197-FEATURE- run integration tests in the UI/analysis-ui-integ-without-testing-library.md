@@ -75,7 +75,7 @@ Already on the UI chain (related, not RTL):
 
 | Suite / area | Why |
 |--------------|-----|
-| `JzodElementEditor.test.tsx` | Component DOM |
+| ~~`JzodElementEditor.test.tsx`~~ | Component DOM. Superseded by [#286](https://github.com/miroir-framework/miroir/issues/286): the file is deleted, and its 68 cases are `reactComponentTest` MiroirTest leaves that run without RTL (see §8) |
 | `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` | B6-d1 **proof clicks UI** — RTL in the **test file**, not in the leaf |
 | `DomainController.React.*.test.tsx` | `renderWithProviders` |
 | Other `4_view` component integ | Classic RTL |
@@ -167,7 +167,7 @@ Duplicate/adapt bootstrap for IndexedDB-only / no `filesystemDeploymentRootDirec
 | **G-UI-2** | Rank 1 = tactical; Rank 3 = architectural |
 | **B6-c real-server** | Orthogonal; do not stick REST helpers in `tests-utils.tsx` |
 | **B7 transformer** | Must avoid `IntegrationTestSession` + `node:path` **and** RTL |
-| **JzodElementEditor** | Remains Vitest baseline; not UI-launcher |
+| **JzodElementEditor** | Remained a Vitest baseline, not in the UI launcher. Since [#286](https://github.com/miroir-framework/miroir/issues/286) its cases are MiroirTests (`JzodElementEditor_ComponentTestSuite`) that run under vitest and from the unit Run button of the app, in a sandbox panel. They use the unit run path, not the integration launcher |
 
 ---
 
@@ -184,6 +184,10 @@ Vitest
 ```
 
 Gate expansion of UI registry by `{ sessionKind, uiBootstrap, proofHarness }` — refuse suites with `proofHarness: "rtl"` or `uiBootstrap: "nodeStores"`.
+
+**Revised by [#286](https://github.com/miroir-framework/miroir/issues/286).** The rule above is narrowed. The app may now load `@testing-library/dom` and `@testing-library/user-event`, in one lazy chunk only: the component test chunk, reached by the one `import()` of `componentTests/index.ts` in `ComponentTestSandbox.tsx`, when a unit run starts a MiroirTest that has a `reactComponentTest` leaf. That chunk does not load `@testing-library/react` or `renderWithProviders`, and never calls React `act`, which throws in production builds of React. The guard `componentTestChunk.286.phase4.unit.test.ts` checks the production build: no chunk in the static closure of `index.html` has a `@testing-library/*` source, and the component test chunk has no `@testing-library/react` source.
+
+The integration launcher chunk was already outside the rule before #286: `standaloneAppBrowserIntegrationOrchestrator` imports `src/miroir-fwk/4-tests/tests-utils.tsx`, which imports `render` from `@testing-library/react` at its top (see §2). This is still the case. It is lazy, so the entry chunk stays free of Testing Library.
 
 ---
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   ACTION_OK,
@@ -26,6 +26,7 @@ import {
 } from '../../../4-tests/integTestRunCoordinator.js';
 import {
   classifyMiroirTestListExecutionCapabilities,
+  miroirTestDefinitionHasReactComponentTest,
   resolveUiIntegrationRunnerSuiteKey,
 } from '../../../4-tests/miroirTestSuiteUiExecution.js';
 import type { UiIntegrationTestLauncherEnvironment } from '../../../4-tests/uiIntegrationTestLauncher.js';
@@ -60,8 +61,27 @@ interface RunAllMiroirTestsButtonProps {
   runMode?: RunAllMiroirTestsRunMode;
   integrationProfileName?: string;
   integrationRunTargetMode?: UiIntegrationTestRunTargetMode;
+  /**
+   * #286: prepares the component test sandbox. Unit mode awaits it once, before the first suite,
+   * when "Include component tests" is checked and a suite has a `reactComponentTest` leaf.
+   */
+  beforeRun?: () => Promise<void>;
+  /**
+   * #286: called when a run prepared by `beforeRun` ends, success or error (ends the component
+   * test run: releases the suite wrappers and the run lock).
+   */
+  afterRun?: () => void;
   [key: string]: unknown;
 }
+
+const includeComponentTestsLabelStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '4px',
+  fontSize: '13px',
+  color: '#4527a0',
+  marginRight: '8px',
+};
 
 // ################################################################################################
 /** Nested launcher calls must not re-acquire the shared mutex while the list batch holds it. */
@@ -181,8 +201,12 @@ export const RunAllMiroirTestsButton: React.FC<RunAllMiroirTestsButtonProps> = (
   runMode = 'unit',
   integrationProfileName,
   integrationRunTargetMode,
+  beforeRun,
+  afterRun,
   ...buttonProps
 }) => {
+  // #286: unit mode only. When unchecked, `reactComponentTest` leaves are recorded as skipped.
+  const [includeComponentTests, setIncludeComponentTests] = useState(true);
   const { handleAsyncAction } = useSnackbar();
   const miroirContextService = useMiroirContextService();
   const { isRunning: integRunInProgress } = useIntegTestRunCoordinator();
@@ -193,26 +217,42 @@ export const RunAllMiroirTestsButton: React.FC<RunAllMiroirTestsButtonProps> = (
     const sortedInstances = sortMiroirTestInstances(miroirTests);
     const resultsBySuiteKey: MiroirTestSuiteResultsMap = {};
 
-    for (const instance of sortedInstances) {
-      const suiteKey = getMiroirTestSuiteKey(instance);
-      tracker.resetResults();
+    const componentTestsPrepared =
+      includeComponentTests &&
+      beforeRun !== undefined &&
+      sortedInstances.some((instance) => miroirTestDefinitionHasReactComponentTest(instance.definition));
+    if (componentTestsPrepared) {
+      await beforeRun();
+    }
 
-      await runMiroirTests._runMiroirTestSuite(
-        TestFramework as any,
-        [],
-        instance.definition,
-        undefined,
-        defaultMetaModelEnvironment,
-        tracker,
-        undefined,
-        true,
-        runMiroirTests,
-        { executionMode: 'unit' },
-      );
+    try {
+      for (const instance of sortedInstances) {
+        const suiteKey = getMiroirTestSuiteKey(instance);
+        tracker.resetResults();
 
-      const suiteResults = tracker.getTestAssertionsResults([]);
-      resultsBySuiteKey[suiteKey] = generateTestReport(suiteKey, suiteResults, () => {});
-      log.info(`MiroirTest results for ${suiteKey}:`, resultsBySuiteKey[suiteKey]);
+        await runMiroirTests._runMiroirTestSuite(
+          TestFramework as any,
+          [],
+          instance.definition,
+          undefined,
+          defaultMetaModelEnvironment,
+          tracker,
+          undefined,
+          true,
+          runMiroirTests,
+          includeComponentTests
+            ? { executionMode: 'unit' }
+            : { executionMode: 'unit', excludeMiroirTestTypes: ['reactComponentTest'] },
+        );
+
+        const suiteResults = tracker.getTestAssertionsResults([]);
+        resultsBySuiteKey[suiteKey] = generateTestReport(suiteKey, suiteResults, () => {});
+        log.info(`MiroirTest results for ${suiteKey}:`, resultsBySuiteKey[suiteKey]);
+      }
+    } finally {
+      if (componentTestsPrepared) {
+        afterRun?.();
+      }
     }
 
     if (onTestComplete) {
@@ -264,7 +304,7 @@ export const RunAllMiroirTestsButton: React.FC<RunAllMiroirTestsButtonProps> = (
     label ??
     (runMode === 'integration' ? 'Run All Integration Tests' : 'Run All Miroir Tests');
 
-  return (
+  const button = (
     <ActionButtonWithSnackbar
       onAction={onAction}
       successMessage={successMessage}
@@ -275,5 +315,23 @@ export const RunAllMiroirTestsButton: React.FC<RunAllMiroirTestsButtonProps> = (
       disabled={disabled}
       title={title}
     />
+  );
+
+  if (runMode === 'integration') {
+    return button;
+  }
+
+  return (
+    <>
+      {button}
+      <label style={includeComponentTestsLabelStyle}>
+        <input
+          type="checkbox"
+          checked={includeComponentTests}
+          onChange={(event) => setIncludeComponentTests(event.target.checked)}
+        />
+        Include component tests
+      </label>
+    </>
   );
 };
