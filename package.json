@@ -12,7 +12,8 @@
     "packages/*"
   ],
   "overrides": {
-    "yaml": "^2.4.2"
+    "yaml": "^2.4.2",
+    "rxjs": "^7.8.1"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",
