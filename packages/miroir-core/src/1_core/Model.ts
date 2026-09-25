@@ -34,14 +34,14 @@ import {
   reportEntityList,
   reportApplicationVersionList,
   reportApplicationVersionDetails,
-  selfApplicationMiroir
+  selfApplicationMiroir,
+  defaultMiroirMetaModel as defaultMiroirMetaModelRaw,
 } from "miroir-test-app_deployment-miroir";
 
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import type { DeploymentUuidToReportsEntities } from "../0_interfaces/1_core/Model";
 import { resolveFundamentalSchemaForDeployment } from "./jzod/schemaForDeployment";
-import { defaultMiroirMetaModel } from "./defaultMiroirMetaModel";
 
 import {
   Entity,
@@ -68,12 +68,18 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
-// import { Endpoint } from "../3_controllers/Endpoint";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Model");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => { log = logger; });
 
+/**
+ * miroir-test-app_deployment-miroir's stub .d.ts types this export as MetaModel, but that
+ * resolution can fall back to `any` during miroir-core's own declaration-emit build (circular
+ * DTS: the stub's MetaModel type is itself imported from miroir-core). Cast once at this
+ * boundary so declaration emission doesn't lose the type here.
+ */
+const defaultMiroirMetaModel = defaultMiroirMetaModelRaw as unknown as MetaModel;
 
 const genType = { // <X> -> X[]
   type: "schemaReference",

@@ -1323,7 +1323,6 @@ export {
   resetAndInitApplicationDeployment,
   templateEvaluationParams
 } from "./3_controllers/DomainController";
-// export { Endpoint } from "./3_controllers/Endpoint.js";
 export { CallUtils } from "./3_controllers/ErrorHandling/CallUtils.js";
 export { ErrorAdminStore } from "./3_controllers/ErrorHandling/ErrorAdminStore.js";
 export { ErrorDataStore } from "./3_controllers/ErrorHandling/ErrorDataStore.js";
