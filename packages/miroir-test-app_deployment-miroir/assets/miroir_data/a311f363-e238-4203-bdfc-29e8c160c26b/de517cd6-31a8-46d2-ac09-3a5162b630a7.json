@@ -11,80 +11,572 @@
     "miroirTestLabel": "JzodUnionEditor_ComponentTestSuite",
     "miroirTests": [
       {
-        "miroirTestType": "miroirTestSuite",
+        "miroirTestType": "reactComponentTestSuite",
         "miroirTestLabel": "JzodUnionEditor",
+        "component": "JzodElementEditor",
+        "componentProps": {
+          "label": "Test Label",
+          "name": "testField",
+          "listKey": "ROOT.testField",
+          "rootLessListKey": "testField",
+          "rootLessListKeyArray": [
+            "testField"
+          ]
+        },
         "miroirTests": [
           {
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodUnionEditor: union between simple types renders input with proper value",
-            "componentTestRef": {
-              "suite": "JzodUnionEditor",
-              "case": "union between simple types renders input with proper value"
-            }
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "initialFormState": 42
+            },
+            "steps": [
+              {
+                "step": "expectRenderedValues",
+                "label": "initial form state",
+                "filter": [],
+                "expectedValue": {
+                  "testField": 42
+                }
+              }
+            ]
           },
           {
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodUnionEditor: union between simple type and object for value of simple type renders input with proper value",
-            "componentTestRef": {
-              "suite": "JzodUnionEditor",
-              "case": "union between simple type and object for value of simple type renders input with proper value"
-            }
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "string"
+                      },
+                      "b": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                ]
+              },
+              "initialFormState": 42
+            },
+            "steps": [
+              {
+                "step": "expectRenderedValues",
+                "label": "initial form state",
+                "filter": [],
+                "expectedValue": {
+                  "testField": 42
+                }
+              }
+            ]
           },
           {
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodUnionEditor: union between simple type and object for value object renders input with proper value",
-            "componentTestRef": {
-              "suite": "JzodUnionEditor",
-              "case": "union between simple type and object for value object renders input with proper value"
-            }
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "string"
+                      },
+                      "b": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                ]
+              },
+              "initialFormState": {
+                "a": "test string",
+                "b": 42
+              }
+            },
+            "steps": [
+              {
+                "step": "expectRenderedValues",
+                "label": "initial form state",
+                "field": "testField",
+                "filter": [],
+                "expectedValue": {
+                  "a": "test string",
+                  "b": 42
+                }
+              }
+            ]
           },
           {
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodUnionEditor: union between 2 object types with a discriminator for value object renders input following the proper value type",
-            "componentTestRef": {
-              "suite": "JzodUnionEditor",
-              "case": "union between 2 object types with a discriminator for value object renders input following the proper value type"
-            }
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "union",
+                "discriminator": "testObjectType",
+                "definition": [
+                  {
+                    "type": "object",
+                    "definition": {
+                      "testObjectType": {
+                        "type": "literal",
+                        "definition": "type1"
+                      },
+                      "type1Attribute": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "testObjectType": {
+                        "type": "literal",
+                        "definition": "type2"
+                      },
+                      "type2Attribute": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                ]
+              },
+              "initialFormState": {
+                "testObjectType": "type1",
+                "type1Attribute": "test string"
+              }
+            },
+            "steps": [
+              {
+                "step": "expectRenderedValues",
+                "label": "initial form state",
+                "field": "testField",
+                "expectedValue": {
+                  "type1Attribute": "test string",
+                  "testObjectType": "type1"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "discriminator select",
+                "target": {
+                  "byDisplayValue": "type1"
+                },
+                "value": "type1"
+              },
+              {
+                "step": "expectElement",
+                "label": "selected value",
+                "target": {
+                  "widget": "selectState",
+                  "field": "testField.testObjectType"
+                },
+                "attribute": {
+                  "name": "data-test-selected-value",
+                  "value": "type1"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "closed",
+                "target": {
+                  "widget": "selectState",
+                  "field": "testField.testObjectType"
+                },
+                "attribute": {
+                  "name": "data-test-is-open",
+                  "value": "false"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "select type2",
+                "field": "testField.testObjectType",
+                "option": "type2"
+              },
+              {
+                "step": "expectElement",
+                "label": "type2 fields shown",
+                "target": {
+                  "byText": "type2Attribute",
+                  "index": 0
+                },
+                "timeout": 5000
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after change to type2",
+                "field": "testField",
+                "expectedValue": {
+                  "testObjectType": "type2",
+                  "type2Attribute": 0
+                }
+              }
+            ]
           },
           {
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodUnionEditor: non-discriminated union can switch type from number to string via union type selector",
-            "componentTestRef": {
-              "suite": "JzodUnionEditor",
-              "case": "non-discriminated union can switch type from number to string via union type selector"
-            }
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "initialFormState": 42
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "star",
+                "target": {
+                  "widget": "unionTypeStar",
+                  "field": "testField"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "selector hidden",
+                "target": {
+                  "widget": "unionTypeInput",
+                  "field": "testField"
+                },
+                "present": false
+              },
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "open",
+                "field": "testField"
+              },
+              {
+                "step": "expectElement",
+                "label": "current type",
+                "target": {
+                  "widget": "selectState",
+                  "field": "testField",
+                  "select": "unionType"
+                },
+                "attribute": {
+                  "name": "data-test-selected-value",
+                  "value": "number"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "select string",
+                "field": "testField",
+                "select": "unionType",
+                "option": "string"
+              },
+              {
+                "step": "expectElement",
+                "label": "selector closed",
+                "target": {
+                  "widget": "unionTypeInput",
+                  "field": "testField"
+                },
+                "present": false,
+                "timeout": 3000
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after change to string",
+                "filter": [],
+                "timeout": 3000,
+                "expectedValue": {
+                  "testField": ""
+                }
+              }
+            ]
           },
           {
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodUnionEditor: non-discriminated union can switch type from number to object via union type selector",
-            "componentTestRef": {
-              "suite": "JzodUnionEditor",
-              "case": "non-discriminated union can switch type from number to object via union type selector"
-            }
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "string"
+                      },
+                      "b": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                ]
+              },
+              "initialFormState": 42
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "star",
+                "target": {
+                  "widget": "unionTypeStar",
+                  "field": "testField"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "selector hidden",
+                "target": {
+                  "widget": "unionTypeInput",
+                  "field": "testField"
+                },
+                "present": false
+              },
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "open",
+                "field": "testField"
+              },
+              {
+                "step": "expectElement",
+                "label": "current type",
+                "target": {
+                  "widget": "selectState",
+                  "field": "testField",
+                  "select": "unionType"
+                },
+                "attribute": {
+                  "name": "data-test-selected-value",
+                  "value": "number"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "select object",
+                "field": "testField",
+                "select": "unionType",
+                "option": "object"
+              },
+              {
+                "step": "expectElement",
+                "label": "object fields shown",
+                "target": {
+                  "byText": "a",
+                  "index": 0
+                },
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "selector closed",
+                "target": {
+                  "widget": "unionTypeInput",
+                  "field": "testField"
+                },
+                "present": false,
+                "timeout": 3000
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after change to object",
+                "field": "testField",
+                "expectedValue": {
+                  "a": "",
+                  "b": 0
+                }
+              }
+            ]
           },
           {
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodUnionEditor: union type star button is visible but selector is initially hidden",
-            "componentTestRef": {
-              "suite": "JzodUnionEditor",
-              "case": "union type star button is visible but selector is initially hidden"
-            }
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "initialFormState": 42
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "star",
+                "target": {
+                  "widget": "unionTypeStar",
+                  "field": "testField"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "selector hidden",
+                "target": {
+                  "widget": "unionTypeInput",
+                  "field": "testField"
+                },
+                "present": false
+              }
+            ]
           },
           {
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodUnionEditor: union type star button toggle shows then hides selector",
-            "componentTestRef": {
-              "suite": "JzodUnionEditor",
-              "case": "union type star button toggle shows then hides selector"
-            }
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "initialFormState": 42
+            },
+            "steps": [
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "open",
+                "field": "testField"
+              },
+              {
+                "step": "expectElement",
+                "label": "selector shown",
+                "target": {
+                  "widget": "unionTypeInput",
+                  "field": "testField"
+                },
+                "timeout": 1000
+              },
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "close",
+                "field": "testField"
+              },
+              {
+                "step": "expectElement",
+                "label": "selector hidden",
+                "target": {
+                  "widget": "unionTypeInput",
+                  "field": "testField"
+                },
+                "present": false,
+                "timeout": 1000
+              }
+            ]
           },
           {
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodUnionEditor: union type selector for object value places star and selector above the value",
-            "componentTestRef": {
-              "suite": "JzodUnionEditor",
-              "case": "union type selector for object value places star and selector above the value"
-            }
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "a": {
+                        "type": "string"
+                      },
+                      "b": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                ]
+              },
+              "initialFormState": {
+                "a": "hello",
+                "b": 1
+              }
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "star",
+                "target": {
+                  "widget": "unionTypeStar",
+                  "field": "testField"
+                },
+                "saveAs": "star"
+              },
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "open",
+                "field": "testField"
+              },
+              {
+                "step": "expectElement",
+                "label": "selector shown",
+                "target": {
+                  "widget": "unionTypeInput",
+                  "field": "testField"
+                },
+                "timeout": 1000,
+                "saveAs": "selector"
+              },
+              {
+                "step": "expectElement",
+                "label": "star and selector in one row",
+                "target": {
+                  "ref": "star"
+                },
+                "parentContains": {
+                  "ref": "selector"
+                }
+              }
+            ]
           }
         ]
       }

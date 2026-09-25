@@ -65,10 +65,7 @@ export interface RunComponentTestStepsOptions {
 type StepOf<K extends ReactComponentTestStep["step"]> = Extract<ReactComponentTestStep, { step: K }>;
 
 const selectOpenTimeout = 1000;
-
-function notImplemented(what?: string): Error {
-  return new Error(what ? `${what}: not implemented` : "not implemented");
-}
+const selectCommitTimeout = 2000;
 
 function stepPrefix(step: ReactComponentTestStep, index: number): string {
   return `step ${index + 1} (${step.step}${step.label !== undefined ? ` "${step.label}"` : ""})`;
@@ -165,6 +162,106 @@ export async function runComponentTestSteps(
     }
   };
 
+  /** `expectRenderedValues` once: throws `RenderedValuesMismatch` when the values differ. */
+  const checkRenderedValues = (step: StepOf<"expectRenderedValues">): void => {
+    const extracted = extractValuesFromRenderedElements(
+      env.expect,
+      step.filter === undefined ? undefined : [...step.filter],
+      env.container,
+      step.field === undefined ? testSectionName : formikFieldName(step.field),
+      step.label,
+      step.detectOptions ?? false,
+      env.portalElement,
+    );
+    // array-valued entries are the extractor's option lists, replaced by `$options` (T8)
+    const fieldValues = Object.fromEntries(
+      Object.entries(extracted).filter(([, value]) => !Array.isArray(value)),
+    );
+    let actual: unknown = formValuesToJSON(fieldValues);
+    if (step.path !== undefined) {
+      actual = valueAtPath(actual, step.path);
+    }
+    const options = renderedOptions(env);
+    if (Object.keys(options).length > 0 && isPlainObject(actual)) {
+      actual = { ...actual, $options: options };
+    }
+    context.lastValues = actual;
+    env.log.info("expectRenderedValues", step.label, actual);
+    try {
+      env.expect(actual, "rendered values").toEqual(step.expectedValue);
+    } catch (error) {
+      throw new RenderedValuesMismatch(
+        error instanceof Error ? error.message : String(error),
+        step.expectedValue,
+        actual,
+      );
+    }
+  };
+
+  /** `expectElement` once. */
+  const checkElement = (step: StepOf<"expectElement">): void => {
+    if (step.present === false) {
+      const matches = queryAllTarget(env, step.target, context.elements);
+      if (matches.length > 0) {
+        throw new Error(`expected no element to match target ${describeTarget(step.target)}, found ${matches.length}`);
+      }
+      return;
+    }
+    if (step.count !== undefined) {
+      const matches = queryAllTarget(env, step.target, context.elements);
+      if (matches.length !== step.count) {
+        throw new Error(
+          `expected ${step.count} elements to match target ${describeTarget(step.target)}, found ${matches.length}`,
+        );
+      }
+    }
+    if (step.values !== undefined) {
+      const matches = queryAllTarget(env, step.target, context.elements);
+      env.expect(matches.map(elementValue), "element values").toEqual(step.values);
+    }
+    if (
+      (step.count !== undefined || step.values !== undefined) &&
+      step.value === undefined &&
+      step.checked === undefined &&
+      step.containsHtml === undefined &&
+      step.attribute === undefined &&
+      step.parentContains === undefined &&
+      step.saveAs === undefined
+    ) {
+      return;
+    }
+    const element = resolve(step.target);
+    save(element, step.saveAs);
+    // A `ref` designates an element saved earlier, which a re-render may have detached (e.g. a
+    // renamed record entry): the old cases asserted only its value, not its presence.
+    if (step.target.ref === undefined) {
+      env.expect(element, "element").toBeInTheDocument();
+    }
+    if (step.value !== undefined) {
+      env.expect(element, "element value").toHaveValue(step.value);
+    }
+    if (step.checked === true) {
+      env.expect(element, "element checked").toBeChecked();
+    }
+    if (step.checked === false) {
+      env.expect(element, "element checked").not.toBeChecked();
+    }
+    if (step.containsHtml !== undefined) {
+      env.expect(element, "element html").toContainHTML(step.containsHtml);
+    }
+    if (step.attribute !== undefined) {
+      checkAttribute(element, step.attribute.name, step.attribute.value);
+    }
+    if (step.parentContains !== undefined) {
+      const inner = resolve(step.parentContains);
+      if (!element.parentElement?.contains(inner)) {
+        throw new Error(
+          `the parent of target ${describeTarget(step.target)} does not contain target ${describeTarget(step.parentContains)}`,
+        );
+      }
+    }
+  };
+
   const handlers: {
     [K in ReactComponentTestStep["step"]]?: (step: StepOf<K>) => Promise<void>;
   } = {
@@ -242,102 +339,70 @@ export async function runComponentTestSteps(
         await waitForAttributeValue(env, state, "data-test-filter-text", step.text, selectOpenTimeout, context.elements);
       });
     },
-    expectRenderedValues: async (step) => {
-      for (const parameter of ["filter", "timeout"] as const) {
-        if (step[parameter] !== undefined) {
-          throw notImplemented(`expectRenderedValues.${parameter}`);
+    selectOption: async (step) => {
+      const combobox = resolve({ widget: "combobox", field: step.field, select: step.select });
+      // The state tracker is resolved once, as the old cases did: the union type selector unmounts
+      // when a type is chosen, and its detached tracker keeps the last state it rendered.
+      const state = resolve({ widget: "selectState", field: step.field, select: step.select });
+      const stateIs = (attribute: string, value: string) => () => checkAttribute(state, attribute, value);
+      await runAction(env, async () => {
+        if (state.getAttribute("data-test-is-open") !== "true") {
+          env.fireEvent.click(combobox);
+          await waitUntil(env, stateIs("data-test-is-open", "true"), selectOpenTimeout);
         }
-      }
-      const extracted = extractValuesFromRenderedElements(
-        env.expect,
-        undefined,
-        env.container,
-        step.field === undefined ? testSectionName : formikFieldName(step.field),
-        step.label,
-        step.detectOptions ?? false,
-        env.portalElement,
-      );
-      // array-valued entries are the extractor's option lists, replaced by `$options` (T8)
-      const fieldValues = Object.fromEntries(
-        Object.entries(extracted).filter(([, value]) => !Array.isArray(value)),
-      );
-      let actual: unknown = formValuesToJSON(fieldValues);
-      if (step.path !== undefined) {
-        actual = valueAtPath(actual, step.path);
-      }
-      const options = renderedOptions(env);
-      if (Object.keys(options).length > 0 && isPlainObject(actual)) {
-        actual = { ...actual, $options: options };
-      }
-      context.lastValues = actual;
-      env.log.info("expectRenderedValues", step.label, actual);
-      try {
-        env.expect(actual, "rendered values").toEqual(step.expectedValue);
-      } catch (error) {
-        throw new RenderedValuesMismatch(
-          error instanceof Error ? error.message : String(error),
-          step.expectedValue,
-          actual,
+        await userSession().clear(combobox);
+        await userSession().type(combobox, step.option);
+        await waitUntil(
+          env,
+          () => {
+            stateIs("data-test-filter-text", step.option)();
+            stateIs("data-test-filtered-options-count", "1")();
+          },
+          selectOpenTimeout,
         );
+        await userSession().keyboard("{Enter}");
+        await waitUntil(
+          env,
+          () => {
+            stateIs("data-test-is-open", "false")();
+            stateIs("data-test-selected-value", step.option)();
+          },
+          selectCommitTimeout,
+        );
+      });
+    },
+    toggleUnionTypeSelector: async (step) => {
+      const star = resolve({ widget: "unionTypeStar", field: step.field });
+      const input: ReactComponentTestTarget = { widget: "unionTypeInput", field: step.field };
+      const wasShown = queryAllTarget(env, input, context.elements).length > 0;
+      await runAction(env, async () => {
+        env.fireEvent.click(star);
+        await waitUntil(
+          env,
+          () => {
+            const shown = queryAllTarget(env, input, context.elements).length > 0;
+            if (shown === wasShown) {
+              throw new Error(`the union type selector of "${step.field}" is still ${shown ? "shown" : "hidden"}`);
+            }
+          },
+          selectOpenTimeout,
+        );
+      });
+    },
+    expectRenderedValues: async (step) => {
+      if (step.timeout === undefined) {
+        checkRenderedValues(step);
+        return;
       }
+      const timeout = step.timeout;
+      await waitUntil(env, () => checkRenderedValues(step), timeout);
     },
     expectElement: async (step) => {
-      for (const parameter of ["parentContains", "timeout"] as const) {
-        if (step[parameter] !== undefined) {
-          throw notImplemented(`expectElement.${parameter}`);
-        }
-      }
-      if (step.present === false) {
-        const matches = queryAllTarget(env, step.target, context.elements);
-        if (matches.length > 0) {
-          throw new Error(`expected no element to match target ${describeTarget(step.target)}, found ${matches.length}`);
-        }
+      if (step.timeout === undefined) {
+        checkElement(step);
         return;
       }
-      if (step.count !== undefined) {
-        const matches = queryAllTarget(env, step.target, context.elements);
-        if (matches.length !== step.count) {
-          throw new Error(
-            `expected ${step.count} elements to match target ${describeTarget(step.target)}, found ${matches.length}`,
-          );
-        }
-      }
-      if (step.values !== undefined) {
-        const matches = queryAllTarget(env, step.target, context.elements);
-        env.expect(matches.map(elementValue), "element values").toEqual(step.values);
-      }
-      if (
-        (step.count !== undefined || step.values !== undefined) &&
-        step.value === undefined &&
-        step.checked === undefined &&
-        step.containsHtml === undefined &&
-        step.attribute === undefined &&
-        step.saveAs === undefined
-      ) {
-        return;
-      }
-      const element = resolve(step.target);
-      save(element, step.saveAs);
-      // A `ref` designates an element saved earlier, which a re-render may have detached (e.g. a
-      // renamed record entry): the old cases asserted only its value, not its presence.
-      if (step.target.ref === undefined) {
-        env.expect(element, "element").toBeInTheDocument();
-      }
-      if (step.value !== undefined) {
-        env.expect(element, "element value").toHaveValue(step.value);
-      }
-      if (step.checked === true) {
-        env.expect(element, "element checked").toBeChecked();
-      }
-      if (step.checked === false) {
-        env.expect(element, "element checked").not.toBeChecked();
-      }
-      if (step.containsHtml !== undefined) {
-        env.expect(element, "element html").toContainHTML(step.containsHtml);
-      }
-      if (step.attribute !== undefined) {
-        checkAttribute(element, step.attribute.name, step.attribute.value);
-      }
+      await waitUntil(env, () => checkElement(step), step.timeout);
     },
     custom: async (step) => {
       const customStep = customSteps[step.function];
@@ -352,7 +417,8 @@ export async function runComponentTestSteps(
     try {
       const handler = handlers[step.step] as ((step: ReactComponentTestStep) => Promise<void>) | undefined;
       if (!handler) {
-        throw notImplemented();
+        // every kind of the schema has a handler: only JSON that bypassed the schema gets here
+        throw new Error("unknown step kind");
       }
       await handler(step);
     } catch (error) {

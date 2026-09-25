@@ -37,7 +37,7 @@ Out of scope: other UI_COMPONENT test files (#204), new component suites, change
 | 2 | Tracer: interpreter, extractor fix, `$options`, Enum from steps | L | ✅ DONE | `componentTestSteps.292.phase2` 11, `extractorOpenCombobox.292.phase2` 3, Enum 3/3 in vitest, in the dev app, and in the production build; entry 70 passed in 59.9 s |
 | 3 | Literal and SimpleType | M | ⏳ GREEN, SimpleType browser check pending | `componentTestTargets.292.phase3` 6, `-t "JzodLiteralEditor"` 3, `-t "JzodSimpleTypeEditor"` 12, entry 70 passed in 59.0 s, Literal 3/3 in the dev app |
 | 4 | Array and Object | L | ⏳ GREEN, browser check pending (API server down) | `componentTestWidgets.292.phase4` 9, `-t "JzodArrayEditor"` 12, `-t "JzodObjectEditor"` 14, entry 70 passed in 60.9 s; Array and Object app checks pending |
-| 5 | Union and Any | L | ⏳ TODO | `-t "JzodUnionEditor"` 9, `-t "JzodAnyEditor"` 15, app check 68/68 |
+| 5 | Union and Any | L | ⏳ GREEN, browser check pending (API server down) | `componentTestUnionWidgets.292.phase5` 6, `-t "JzodUnionEditor"` 9, `-t "JzodAnyEditor"` 15, entry 70 passed in 66.5 s; app check 68/68 pending |
 | 6 | M1: no `componentTestRef` | M | ⏳ TODO | `legacyRemoved.292.phase6`, grep empty |
 | 7 | M2: no `custom` step | S | ⏳ TODO | `legacyRemoved.292.phase6` M2 assertions |
 | 8 | Docs, nonreg, final type-check and full nonreg | M | ⏳ TODO | full nonreg = Slice 0 baseline failures only |
@@ -939,7 +939,7 @@ The reduced case list of the full entry (verbose reporter, ANSI stripped, `<Edit
 
 ## Slice 5: Union and Any
 
-**Status:** ⏳ TODO · **Complexity:** L
+**Status:** ⏳ GREEN, browser check pending (API server down) · **Complexity:** L
 
 ### Goal
 
@@ -993,7 +993,110 @@ Expected: Union 9 passed, Any 15 passed, full entry 70 passed with a case list e
 
 ### Realization
 
-(to fill)
+Every command was run alone, one per file, from the repo root. The user's unrelated uncommitted changes (`ci/claude-cloud-env-script.sh`, the `admin_data` files, the spotify model files, `generate_externalServiceSync_suites.py`) were not touched, staged, or stashed. No `custom` step is used.
+
+**RED observed** (`npx vitest run <file>` with `VITE_TEST_MODE=true`). First the new test, the two JSON suites, the new assertion of `componentTestInstances.292.phase1`, and the removal of Union and Any from the manifest and the registry:
+
+- `componentTestUnionWidgets.292.phase5`: **6 failed / 6**, each on the Slice 2-4 guard of a missing feature:
+  - `step 1 (expectElement): widget "unionTypeStar": not implemented` (toggle test and `parentContains` test);
+  - `step 1 (toggleUnionTypeSelector): not implemented` (union type `selectOption` test);
+  - `step 2 (selectOption): not implemented` (discriminator test);
+  - `step 1 (expectRenderedValues "retried"): expectRenderedValues.timeout: not implemented`;
+  - `step 2 (expectRenderedValues "empty filter"): expectRenderedValues.filter: not implemented`. Its step 1 (no filter) already passed, so the fixture reads as the test expects.
+- `miroir-component-tests -t "JzodUnionEditor|JzodAnyEditor"`: **17 failed, 7 passed**, 46 skipped. The failures were the `unionTypeStar` widget, `toggleUnionTypeSelector`, `selectOption`, and `expectRenderedValues.filter` (`not implemented`). The 7 passing cases are Any 5, 6, and 11-15: their steps (`fieldName` textboxes, array and object buttons, `field`) were implemented in Slices 3-4.
+- The new assertion of `componentTestInstances.292.phase1` (every child is a `reactComponentTestSuite`, no leaf has `componentTestRef` or a `custom` step) was written together with the Union and Any JSON, so it was not observed failing. Before this slice, the Union and Any children were plain `miroirTestSuite`s with `componentTestRef` leaves, which it rejects.
+
+**GREEN:**
+
+- **`componentTestTargets.ts`** (analysis §5.4 widget table):
+  - `unionTypeStar`: `[data-testid="union-type-star-F(field)"]`.
+  - `unionTypeInput`, and `combobox` with `select: "unionType"`: `[data-testid="union-type-input-F(field)"]`.
+  - `selectState` with `select: "unionType"`: `[data-testid="themed-select-state-union-type-F(field)"]` (the union type select is named `union-type-F(field)`).
+  - The last `not implemented` guard of the file is gone: an unknown widget (JSON that bypassed the schema) now gives `unknown widget "<w>", in <target>`.
+- **`runComponentTestSteps.ts`**:
+  - `selectOption` (analysis §5.4): inside one action, open the select if its state is not open (click, wait `data-test-is-open="true"`, 1000 ms), `clear`, `type` the option, wait `data-test-filter-text` = option and `data-test-filtered-options-count="1"` (1000 ms), `{Enter}`, wait `data-test-is-open="false"` and `data-test-selected-value` = option (2000 ms). Then the D9 post-action wait.
+  - `toggleUnionTypeSelector`: click the star, and wait until the presence of the union type input has flipped (1000 ms), then the D9 wait.
+  - `expectRenderedValues.filter` is passed to the extractor. `timeout` retries the whole read and comparison with `waitFor`; at timeout the last mismatch is reported in the T10 form with `expected` / `actual`.
+  - `expectElement.parentContains` checks `element.parentElement.contains(<resolved target>)`. `timeout` retries the whole `expectElement` check with `waitFor`.
+  - The bodies of `expectRenderedValues` and `expectElement` became the one-shot checks `checkRenderedValues` / `checkElement`, called directly or retried. The parameter guards and the `notImplemented` helper are gone. Every kind of the schema has a handler: a kind outside the schema gives `step <n> (<kind>): unknown step kind`.
+- **JSON** (2-space, CRLF, written by a script that checks that the child label and the 9 / 15 leaf labels are unchanged):
+  - `de517cd6-…` (Union): a `reactComponentTestSuite` with the common props as defaults. Each leaf adds `rawJzodSchema` and `initialFormState`.
+  - `ec601bcc-…` (Any): defaults are the common props plus `rawJzodSchema: {type: "any"}`. Each leaf adds `initialFormState`.
+- **Removed** Union and Any from `componentTestManifest.ts` and `componentTestRegistry.ts`, which are now empty (`{}`; the `componentTestSuiteInstances` table and `componentTestLeafLabel` stay for M1). Deleted `jzodElementEditor/JzodUnionEditor.tsx` and `JzodAnyEditor.tsx`; the `jzodElementEditor/` folder is gone.
+- **`componentTestSteps.292.phase2`**: its "kind not implemented yet" test (subject `toggleUnionTypeSelector` since Slice 4) now uses a kind outside the schema, `{"step": "fly"}`, and expects `step 1 (fly): unknown step kind`. No kind of the schema is left unimplemented, so the test guards the fallback for JSON that bypassed the schema. The file keeps 11 tests.
+- **`componentTestInstances.292.phase1`**: new test (refactor checkpoint 5.3) "every child is a reactComponentTestSuite and no leaf uses componentTestRef or a custom step". The file has 5 tests.
+
+**Case mapping** (every old assertion kept; `F` = `field: "testField"`, star = `{widget: "unionTypeStar", field: "testField"}`, input = `{widget: "unionTypeInput", field: "testField"}`):
+
+- Union 1, 2: `expectRenderedValues "initial form state"`, `filter: []`, no `field` = `{testField: 42}`. Union 3: the same with `F` = `{a: "test string", b: 42}`.
+- Union 4: `expectRenderedValues "initial form state"` F; `value: "type1"` on `{byDisplayValue: "type1"}`; `attribute` `data-test-selected-value` = `type1` and `data-test-is-open` = `false` on `{widget: "selectState", field: "testField.testObjectType"}`; `selectOption` `type2` on `testField.testObjectType`; `{byText: "type2Attribute", index: 0}` present with `timeout: 5000`; `expectRenderedValues "after change to type2"` F = `{testObjectType: "type2", type2Attribute: 0}`.
+- Union 5, 6: star present; input absent; `toggleUnionTypeSelector`; `attribute` `data-test-selected-value` = `number` on the `unionType` state; `selectOption` with `select: "unionType"`. Case 5: input absent with `timeout: 3000`, then `expectRenderedValues "after change to string"`, `filter: []`, `timeout: 3000` = `{testField: ""}`. Case 6: `{byText: "a", index: 0}` present with `timeout: 5000`, input absent with `timeout: 3000`, then `"after change to object"` F = `{a: "", b: 0}`.
+- Union 7, Any 1: star present, input absent.
+- Union 8, Any 2: `toggleUnionTypeSelector`, input present (`timeout: 1000`), `toggleUnionTypeSelector`, input absent (`timeout: 1000`).
+- Union 9, Any 4: star present (`saveAs: "star"`), `toggleUnionTypeSelector`, input present (`timeout: 1000`, `saveAs: "selector"`), then `{ref: "star"}` with `parentContains: {ref: "selector"}`.
+- Any 3, 7-10 (the old `switchAnyType`): star present, `toggleUnionTypeSelector`, the current type on the `unionType` state when the old case checked it (3, 7: `number`; 10: `array`), `selectOption` with `select: "unionType"`, then `expectRenderedValues` with `timeout: 3000` and the old label, filter, and field: 3, 8, 10 `"after change to string"`, `filter: []`, no field = `{testField: ""}`; 7 `"after change to record"` F = `{a: "enter attributes here..."}`; 9 `"after change to array"` F = `["enter elements here..."]`.
+- Any 5, 6: `value` on `{byRole: "textbox", fieldName: "testField.a"}` (`"hello"`) / `…b` (`1`).
+- Any 11-15: as the Array and Object cases of Slice 4: `clickArrayButton` `add` / `delete 1` / `duplicate 1` and `clickObjectButton` `addRecordEntry` / `remove a`, with the button asserted present first where the old case did (12, 13, 15), then `expectRenderedValues` F with the old labels.
+
+**Refactor checkpoint:**
+- No leaf of the 7 instances uses `custom` or `componentTestRef` (the new `componentTestInstances.292.phase1` test, green).
+- Non-vacuity check, then revert: `type2Attribute: 1` in Union case 4 and `["item1","item2"]` in Any case 12 gave **2 failed, 22 passed**:
+  - `step 7 (expectRenderedValues "after change to type2"): [rendered values] Expected {"type2Attribute":0,"testObjectType":"type2"} to equal {"testObjectType":"type2","type2Attribute":1}. First difference at path: ["type2Attribute"]`
+  - `step 3 (expectRenderedValues "after delete button click"): [rendered values] Expected ["item1","item3"] to equal ["item1","item2"]. First difference at path: ["1"]`
+- Both JSON files were restored from byte copies (`cmp` equal).
+- `runComponentTestSteps.ts` and `componentTestTargets.ts` have no bare `console.*`, import nothing from `@testing-library/react`, and contain no `not implemented` guard.
+
+**Deviations:**
+
+1. **`selectOption` resolves the state tracker once.** The union type selector unmounts as soon as a type is chosen, so a tracker resolved again after `{Enter}` is not found (first GREEN run: `step 3 (selectOption): no element matches target {"widget":"selectState",…,"select":"unionType"}`). The old cases kept the tracker in a variable and read its last attributes after the selector closed; `selectOption` does the same. The combobox is also resolved once, as in the old cases.
+2. **Union case 4: the raw extractor values are compared through `expectRenderedValues`.** The old case compared both `formValuesToJSON(values)` and the raw `values` with `{type1Attribute, testObjectType}`. `expectRenderedValues` compares the `formValuesToJSON` form only. With dot-free keys both forms are the same object, and any dotted raw key would make the nested form differ from the expected flat object, so the one comparison covers both. The one difference: `expectRenderedValues` drops array-valued extractor entries (T8), which the old raw comparison would have rejected; none is rendered in this case (no open select), and `$options` would appear if one were.
+3. **"At least one match" is written `index: 0`.** The old `getAllByText("type2Attribute").length > 0` and `getAllByText("a").length > 0` accept several matches. A target with no refinement and no `index` requires exactly one match, so these targets set `index: 0` (the first match must exist).
+4. **Waits are explicit postconditions.** `toggleUnionTypeSelector` waits until the input presence has flipped, where the old cases clicked the star in an `act` and read the tracker at once (Union 5, 6, Any 3, 7-10) or waited afterwards (Union 8, 9, Any 2, 4). Those later waits are kept as `expectElement … timeout: 1000` steps, so every old assertion is still made.
+5. **Any cases 11-15 read the portal element too.** The old `testFieldValues` did not pass `env.portalElement` to the extractor; `expectRenderedValues` always does (as in Slices 2-4). No option list is open in these cases.
+6. **The phase5 `timeout` and `filter` tests use small fixtures** (`mountComponent` + `runComponentTestSteps`, as `componentTestTargets.292.phase3`), not the real `JzodElementEditor`. A value that changes 200 ms after mounting makes the retry observable, and three plain inputs (a plain input, a `miroirInput`, a checkbox) make the effect of `filter: []` observable. The union widget tests use the runner and the real editor, as planned.
+7. **The phase2 "not implemented" test** now uses a kind outside the schema and expects `unknown step kind` (see GREEN).
+
+**Validation** (one command per file, sequential):
+
+| Command | Result | Expected |
+|---|---|---|
+| `npm run build -w miroir-test-app_deployment-miroir && … modelValidation.unit.test.ts` | 159 passed | 159 ✓ |
+| `componentTestUnionWidgets.292.phase5` | 6 passed | — |
+| `componentTestInstances.292.phase1` | 5 passed | 4 + 1 new ✓ |
+| `componentMiroirTests.consistency` | 8 passed | 8 ✓ |
+| `miroir-component-tests -t "JzodUnionEditor"` | 9 passed, 61 skipped | 9 ✓ |
+| `miroir-component-tests -t "JzodAnyEditor"` | 15 passed, 55 skipped | 15 ✓ |
+| `miroir-component-tests` | **70 passed** (real 66.5 s, vitest 59.7 s) | 70 ✓ |
+| `runAllComponentTests.286.phase6` | 3 passed | 3 ✓ |
+| `portalContainer.286.phase5` | 3 passed | 3 (Slice 0) ✓ |
+| `python scripts/check_bare_console.py` | OK | ✓ |
+| `tsc` miroir-standalone-app | 1 error, the known `JzodElementEditorHooks.ts(528,59)` TS2339 | baseline ✓ |
+| extra: `componentTestSteps.292.phase2` | 11 passed | 11 ✓ |
+| extra: `componentTestTargets.292.phase3` | 6 passed | 6 ✓ |
+| extra: `componentTestWidgets.292.phase4` | 9 passed | 9 ✓ |
+| extra: `componentTestSandbox.286.phase4` | 5 passed | 5 ✓ |
+
+The reduced case list of the full entry (verbose reporter, ANSI stripped, `<Editor> > <leaf label>: passed`, sorted, 68 lines) is byte-identical to `baseline-component-cases.txt`. All 68 cases now run from declarative steps.
+
+**K1 / P2 measurement.** The full entry took **66.5 s real** (vitest 59.7 s; a second timed run gave 66.9 s), against 56.6 s in Slice 0: ×1.17, below ×2. D9 stays. The switch cases add the explicit waits of the old cases plus one D9 wait per action.
+
+**Browser check: pending (API server down).** `curl` to `https://localhost:3080` and `http://localhost:3080` got no answer (exit 7, connection refused). The API server needs the user's secrets master key to start (Slice 3 Realization), so it was not started, and no server was started by this slice. Still to run: the 7 instances (68/68: Enum 3, Array 12, Literal 3, Object 14, SimpleType 12, Union 9, Any 15) and one "Run All Unit Tests" run with "Include component tests" checked. That also covers the pending checks of Slices 3 (SimpleType) and 4 (Array, Object). Per the test execution conventions, Slices 3, 4, and 5 stay ⏳ until then.
+
+**Impact on later slices:**
+- No `custom` step is used by any instance, and no `not implemented` guard is left in the interpreter or the targets. `customStepRegistry.ts` is empty, and only the `custom` test of `componentTestSteps.292.phase2` uses it (Slice 7 deletes both).
+- The manifest and the registry are empty; the legacy runner path is no longer reached by any instance. Slice 6 can delete them, the legacy path, and `componentTestRef` without touching an instance.
+- Clarified semantics: `selectOption` reads the state tracker resolved before the action (deviation 1); `toggleUnionTypeSelector` waits for the input presence to flip.
+
+**Files created:**
+- `packages/miroir-standalone-app/tests/4_view/issues/292-declarative-react-component-tests/componentTestUnionWidgets.292.phase5.unit.test.tsx`
+
+**Files changed:**
+- `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/componentTestTargets.ts`, `runComponentTestSteps.ts`, `componentTestManifest.ts`, `componentTestRegistry.ts`
+- `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-…/de517cd6-31a8-46d2-ac09-3a5162b630a7.json` and `ec601bcc-a27d-450d-9c37-bdd6a12a1575.json`
+- `packages/miroir-standalone-app/tests/4_view/issues/292-declarative-react-component-tests/componentTestInstances.292.phase1.unit.test.ts` and `componentTestSteps.292.phase2.unit.test.tsx`
+- this plan
+
+**Files deleted:** `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/jzodElementEditor/JzodUnionEditor.tsx` and `JzodAnyEditor.tsx` (the `jzodElementEditor/` folder is gone).
 
 ---
 

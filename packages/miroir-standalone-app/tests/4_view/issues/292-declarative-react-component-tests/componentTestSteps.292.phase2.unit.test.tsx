@@ -178,14 +178,15 @@ describe("componentTestSteps.292.phase2: Enum fixture on the real JzodElementEdi
     expect(result.message.startsWith("step 1 (click): ")).toBe(true);
   });
 
-  it("a kind not implemented yet gives step 1 (toggleUnionTypeSelector): not implemented", async () => {
+  it("a kind outside the schema gives step 1 (fly): unknown step kind", async () => {
     const result: any = await newRunner()({
       testNamePath: [...enumSuite.suitePath, enumCaseLabel],
-      // #292 Slice 4 implements clickArrayButton: a kind of Slice 5 stands in for it
-      leaf: stepLeaf([{ step: "toggleUnionTypeSelector", field: "testField" }]),
+      // #292 Slice 5 implements the last kinds of the schema: a kind that bypassed the schema
+      // stands in for the "not implemented" kind of Slices 2-4
+      leaf: stepLeaf([{ step: "fly" } as any]),
       suite: enumSuite,
     });
-    expect(result).toEqual({ status: "error", message: "step 1 (toggleUnionTypeSelector): not implemented" });
+    expect(result).toEqual({ status: "error", message: "step 1 (fly): unknown step kind" });
   });
 
   it("saveAs then {ref} resolves the same element, and an unknown ref fails", async () => {

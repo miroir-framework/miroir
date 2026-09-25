@@ -18,10 +18,6 @@ export function describeTarget(target: ReactComponentTestTarget): string {
   return JSON.stringify(target);
 }
 
-function notImplemented(what: string): Error {
-  return new Error(`${what}: not implemented`);
-}
-
 /** A Testing Library text matcher: a string or a number as is, `{regex, flags?}` as a `RegExp`. */
 function textMatch(match: ReactComponentTestTextMatch): string | number | RegExp {
   if (typeof match === "string" || typeof match === "number") {
@@ -52,18 +48,22 @@ function widgetElements(env: ComponentTestEnvironment, target: ReactComponentTes
   }
   const fieldName = formikFieldName(target.field);
   switch (target.widget) {
-    case "combobox": {
-      if (target.select !== undefined && target.select !== "value") {
-        throw notImplemented(`widget "combobox" with select "${target.select}"`);
-      }
-      return querySandbox(env, `input[role="combobox"][name=${cssString(fieldName)}]`);
-    }
+    case "combobox":
+      // the union type select of a field is its union type input (`JzodElementEditor.tsx`)
+      return target.select === "unionType"
+        ? unionTypeInputElements(env, fieldName)
+        : querySandbox(env, `input[role="combobox"][name=${cssString(fieldName)}]`);
+    case "unionTypeInput":
+      return unionTypeInputElements(env, fieldName);
     case "selectState": {
-      if (target.select !== undefined && target.select !== "value") {
-        throw notImplemented(`widget "selectState" with select "${target.select}"`);
-      }
-      return querySandbox(env, `[data-testid=${cssString(`themed-select-state-${fieldName}`)}]`);
+      // `ThemedSelectWithPortal` state tracker, named after the select's `name`; the union type
+      // select is named `union-type-F(field)` (`JzodElementEditor.tsx`)
+      const selectName = target.select === "unionType" ? `union-type-${fieldName}` : fieldName;
+      return querySandbox(env, `[data-testid=${cssString(`themed-select-state-${selectName}`)}]`);
     }
+    case "unionTypeStar":
+      // the star that toggles the union type selector (`JzodElementEditor.tsx`)
+      return querySandbox(env, `[data-testid=${cssString(`union-type-star-${fieldName}`)}]`);
     case "arrayButton":
       return arrayButtonElements(env, target, fieldName);
     case "objectButton":
@@ -76,8 +76,13 @@ function widgetElements(env: ComponentTestEnvironment, target: ReactComponentTes
       return env.view.queryAllByRole("textbox", { name: `${formikFieldName(`${target.field}.${target.entry}`)}-NAME` });
     }
     default:
-      throw notImplemented(`widget "${target.widget}"`);
+      throw new Error(`unknown widget ${JSON.stringify(target.widget)}, in ${describeTarget(target)}`);
   }
+}
+
+/** The union type selector input of a field, `[data-testid="union-type-input-F(field)"]`. */
+function unionTypeInputElements(env: ComponentTestEnvironment, fieldName: string): HTMLElement[] {
+  return querySandbox(env, `[data-testid=${cssString(`union-type-input-${fieldName}`)}]`);
 }
 
 /**

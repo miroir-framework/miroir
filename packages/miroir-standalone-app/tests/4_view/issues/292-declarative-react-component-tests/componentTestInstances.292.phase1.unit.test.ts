@@ -9,7 +9,9 @@
  * - `miroirTestDefinitionHasReactComponentTest` is true for each instance and for a fixture whose
  *   only component leaf is inside a `reactComponentTestSuite`;
  * - `miroir-test-app_deployment-miroir` exports `miroirTest_<name>` for the 7 names, and
- *   `defaultMiroirMetaModel.tests` holds the 7 uuids and not `JzodElementEditor_ComponentTestSuite`.
+ *   `defaultMiroirMetaModel.tests` holds the 7 uuids and not `JzodElementEditor_ComponentTestSuite`;
+ * - (Slice 5) every child is a `reactComponentTestSuite`, and no leaf uses `componentTestRef` or a
+ *   `custom` step.
  *
  * Run:
  * ```bash
@@ -114,6 +116,32 @@ describe("per-editor component test MiroirTest instances", () => {
       .sort();
     expect(baseline).toHaveLength(68);
     expect(current).toEqual(baseline);
+  });
+
+  it("every child is a reactComponentTestSuite and no leaf uses componentTestRef or a custom step (#292 Slice 5)", () => {
+    const offending: string[] = [];
+    for (const instance of componentInstances) {
+      for (const child of instance.definition?.miroirTests ?? []) {
+        if (child.miroirTestType !== "reactComponentTestSuite") {
+          offending.push(`${instance.name} > ${child.miroirTestLabel}: ${child.miroirTestType}`);
+        }
+        for (const leaf of child.miroirTests ?? []) {
+          if (leaf.componentTestRef !== undefined) {
+            offending.push(`${leaf.miroirTestLabel}: componentTestRef`);
+          }
+          if (!Array.isArray(leaf.steps)) {
+            offending.push(`${leaf.miroirTestLabel}: no steps`);
+          }
+          for (const step of leaf.steps ?? []) {
+            if (step.step === "custom") {
+              offending.push(`${leaf.miroirTestLabel}: custom step "${step.function}"`);
+            }
+          }
+        }
+      }
+    }
+    expect(componentInstances).toHaveLength(7);
+    expect(offending).toEqual([]);
   });
 
   it("miroirTestDefinitionHasReactComponentTest is true for each instance and inside a reactComponentTestSuite", () => {
