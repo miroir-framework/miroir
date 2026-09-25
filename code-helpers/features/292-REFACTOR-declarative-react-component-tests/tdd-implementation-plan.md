@@ -1,0 +1,730 @@
+# Issue #292 TDD implementation plan
+
+> Vertical TDD slices, RED then GREEN, integration-first per `docs/contributing/testing.md`. Tests render the real `JzodElementEditor` through the real MiroirTest walk (`runMiroirTests._runMiroirTestSuite`) and the real component test runner. The only stand-ins are the fake runners and fake component registries of the core and runner unit tests, as in #286. Slice 2 is the tracer: the Enum suite runs from declarative JSON.
+>
+> **Execution model:** slices are implemented one by one by subagents. Each slice ends with its Validation. Then its Realization is filled in, its Status becomes ✅ DONE, and one commit is made for the slice (message `#292 Slice <n>: <title>`, ending with the attribution lines of the session). The work is finished only when type-check (`tsc` per package, no new error against the Slice 0 baseline) and the full `npm run nonreg` pass, except the baseline failures recorded in Slice 0.
+
+Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/292
+Working branch: `292-REFACTOR-declarative-react-component-tests`, created from `aba` at `34a6c0c0b`.
+
+---
+
+## Scope
+
+- MiroirTest schema: `reactComponentTestSuite` node, `steps` and `componentProps` on `reactComponentTest`, the step and target schemas (Entity and EntityVersion), generated types.
+- miroir-core: walk of the new node, suite context to the runner, new runner signature, the leaf predicates.
+- App: component registry, step interpreter, target resolution, custom-step registry (removed at M2), runner changes, extractor fix, `$options`.
+- 7 per-editor MiroirTest instances, package wiring, vitest entry, consistency test, adapted #286 tests, bundle guard.
+- M1 and M2 deletions, docs, nonreg.
+
+Out of scope: other UI_COMPONENT test files (#204), new component suites, changes to the 14 importers of `JzodElementEditorTestTools.tsx` beyond what the extractor fix brings.
+
+### Deviations from analysis.md and the issue
+
+- **D3 slice (1) is split in two** (Slices 1 and 2). Slice 1 is the core and schema layer plus the instance split, a refactor under green with no behavior change for the 68 cases. Slice 2 is the interpreter, the extractor fix, and the Enum migration. Reason: the schema rebuild, the miroir-core walk, and the split of `761d4ed2-…` into 7 instances touch other packages and every #286 test. Validating them alone keeps a failure in Slice 2 attributable to the interpreter.
+- **The generator is deleted in Slice 1**, not at M1 (analysis T5). It can only write the combined instance.
+- **Each migration slice deletes the migrated editor's TS case file** and its manifest and registry entries. M1 deletes what is left: `componentTestManifest.ts`, `componentTestRegistry.ts`, the `jzodElementEditor/` folder, `componentTestRef` in the schema, and the legacy runner path.
+- **A miroir-core issue directory** `packages/miroir-core/tests/1_core/issues/292-declarative-react-component-tests/` holds the walk tests, as #286 did (`docs/contributing/testing.md` L34: one issue directory per layer).
+
+---
+
+## Progress summary
+
+| Slice | Title | Complexity | Status | Primary proof |
+|---|---|---|---|---|
+| 0 | Baselines | S | ✅ DONE | baseline tables, `baseline-component-cases.txt` |
+| 1 | Schema, walk, runner signature, 7 instances (legacy leaves), generator removed | L | ⏳ TODO | `reactComponentTestSuite.292.phase1` (core), `componentTestInstances.292.phase1`, `miroir-component-tests` 70 passed |
+| 2 | Tracer: interpreter, extractor fix, `$options`, Enum from steps | L | ⏳ TODO | `componentTestSteps.292.phase2`, `extractorOpenCombobox.292.phase2`, Enum 3/3 in vitest and in the app |
+| 3 | Literal and SimpleType | M | ⏳ TODO | `-t "JzodLiteralEditor"` 3, `-t "JzodSimpleTypeEditor"` 12, app check |
+| 4 | Array and Object | L | ⏳ TODO | `-t "JzodArrayEditor"` 12, `-t "JzodObjectEditor"` 14, app check |
+| 5 | Union and Any | L | ⏳ TODO | `-t "JzodUnionEditor"` 9, `-t "JzodAnyEditor"` 15, app check 68/68 |
+| 6 | M1: no `componentTestRef` | M | ⏳ TODO | `legacyRemoved.292.phase6`, grep empty |
+| 7 | M2: no `custom` step | S | ⏳ TODO | `legacyRemoved.292.phase6` M2 assertions |
+| 8 | Docs, nonreg, final type-check and full nonreg | M | ⏳ TODO | full nonreg = Slice 0 baseline failures only |
+
+Complexity: S = one focused change, M = several files in one package or a mechanical port, L = several packages or a new subsystem.
+
+---
+
+## Locked implementation defaults
+
+Copied from [`analysis.md`](./analysis.md) §2. Deviations go in the slice Realization.
+
+| Decision | Choice |
+|---|---|
+| D1, D2 | JSON is the source of truth. `custom` escape hatch until M2. M1 and M2 in this issue |
+| D5, T1, T2 | `reactComponentTestSuite` node, the only child of a `miroirTestSuite` root per instance |
+| D6, T7, T8 | `expectRenderedValues {label, field?, path?, filter?, detectOptions?, timeout?, expectedValue}`; `$options` built from `[role="option"]` aria-labels, array-valued extractor entries dropped |
+| D7, D8, T6 | targets: one locator (`byRole`+`name`, `byTestId`, `byText`, `byDisplayValue`, `byLabelText`, `widget`+`field`, `ref`) plus refinements `fieldName`, `fieldNamePrefix`, `id`, `index`; no `TESTSECTION.` literal in JSON |
+| D9 | `componentTestAct` + `waitAfterUserInteraction(container)` after every action step |
+| D10, T12 | full step union in the schema from Slice 1; unimplemented kinds fail with "not implemented" |
+| D11, T10 | `step <n> (<kind>[ "<label>"]): <message>`, `n` 1-based |
+| D12 | 7 instances, Enum keeps `761d4ed2-…`; leaf labels `<editor>: <case>` unchanged |
+| T3, T4 | runner params `{ testNamePath, leaf, suite? }`; wrapper keyed by `suite.suitePath`, destroyed after the last of `suite.caseLabels` |
+| T9 | `{"$bigint": "<digits>"}` revived in `componentProps` |
+| T11 | `saveAs` / `{"ref": …}` element aliases |
+| T13 | `componentRegistry = { JzodElementEditor: getJzodElementEditorForTest("JzodElementEditor.test") }` |
+| T14 | Literal suite defaults without `label` |
+| P1 (pending) | default (a): open combobox reads the committed value; Enum case 3 adds Enter and a `value3` assertion |
+
+---
+
+## Allocated UUIDs and keys
+
+| Artefact | Value |
+|---|---|
+| `JzodEnumEditor_ComponentTestSuite` | `761d4ed2-1a5c-4901-a9d9-897dbec0b27f` (reused) |
+| `JzodArrayEditor_ComponentTestSuite` | `1b71d68b-7dc9-468c-a251-4fa7889f20f4` |
+| `JzodLiteralEditor_ComponentTestSuite` | `3995a071-b8ae-48d3-a488-6d1fc828b725` |
+| `JzodObjectEditor_ComponentTestSuite` | `da353085-c62b-4aa6-bd54-8813d303dfe5` |
+| `JzodSimpleTypeEditor_ComponentTestSuite` | `590693b6-2125-43fc-89d7-1330ae8318db` |
+| `JzodUnionEditor_ComponentTestSuite` | `de517cd6-31a8-46d2-ac09-3a5162b630a7` |
+| `JzodAnyEditor_ComponentTestSuite` | `ec601bcc-a27d-450d-9c37-bdd6a12a1575` |
+| MiroirTest Entity (generator input) | `a311f363-e238-4203-bdfc-29e8c160c26b` in `miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/` |
+| MiroirTest EntityVersion (dual write, read by `modelValidation`) | `51c647fe-07ec-411c-89cc-02689dc66d6a` in `miroir_modelVersion/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/` |
+| MiroirTest data folder | `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/` |
+| Issue test directory (app) | `packages/miroir-standalone-app/tests/4_view/issues/292-declarative-react-component-tests/` |
+| Issue test directory (miroir-core) | `packages/miroir-core/tests/1_core/issues/292-declarative-react-component-tests/` |
+| New nonreg unit step | `unit-292-declarative-react-component-tests` |
+| Unchanged nonreg steps | `appstack-miroir-component-tests`, `unit-286-react-component-miroir-tests` |
+| Browser check URL (per instance) | `https://localhost:5173/?page=report&application=360fcf1f-f0d4-4f8a-9262-07886e70fa15&deploymentUuid=10ff36f2-50a3-48d8-b80f-e48e5d13af8e&applicationSection=data&reportUuid=0ad63f27-c4df-4fb8-9a79-cb257c7a2958&instanceUuid=<uuid>` |
+| Browser check user | `alice` / `alice-dev` (`docs/reference/authentication.md` L44) |
+
+---
+
+## Test execution conventions
+
+| Purpose | Command |
+|---|---|
+| Component entry | `npm run testByFile -w miroir-standalone-app -- miroir-component-tests` |
+| One editor | `npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "<Editor>"` |
+| Consistency test | `npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency` |
+| App issue test | `npm run testByFile -w miroir-standalone-app -- <name>` |
+| miroir-core issue tests | `npm run testByFile -w miroir-core -- 292-declarative-react-component-tests` |
+| miroir-core generic MiroirTests | `npm run testMiroir -w miroir-core` |
+| Schema rebuild | `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core` |
+| After a JSON instance change | `npm run build -w miroir-test-app_deployment-miroir && npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts` |
+| miroir-core change used by app tests | `npm run build -w miroir-core` |
+| Bare console guard | `python scripts/check_bare_console.py` |
+| Type check | `npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json` and `npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json`. Rule: no new error against Slice 0. The app tsconfig covers `src/` only |
+| Bundle guard (needs a fresh build, not in nonreg) | `npm run build -w miroir-standalone-app && npm run testByFile -w miroir-standalone-app -- componentTestChunk.286.phase4` |
+
+Rules:
+
+- `testByFile` passes `--bail=1`. Run one test file per command wherever a count is compared. To see every failure of a RED run, use `npx vitest run <file>` in the package with `VITE_TEST_MODE=true`, as #286 did.
+- No `RUN_TEST`. The filter argument selects the file.
+- The component entry takes no `--profile`.
+- The vitest names stay `<Editor> > <Editor>: <case>`. Case lists are compared with `baseline-component-cases.txt` (Slice 0) after removing ANSI codes, reduced to `<Editor> > <leaf label>: <status>`.
+- Browser check (D13), same method as #286 plan §4.4: `playwright-core` installed only in the session scratchpad, headless Microsoft Edge, log in as `alice`, open the browser check URL for each migrated instance, click `Run <instance name> Unit Tests`, wait for the snackbar, read "Passed: n/n" in the results panel, count console messages matching `act(` (expect 0), check the sandbox keeps the last case, click Close. Dev build only, unless the slice says otherwise.
+  - First check `https://localhost:5173` and `https://localhost:3080` (or `http://` when there are no certs). If the Vite dev server is down, start it in the background with `npm run dev -w miroir-standalone-app`. If the API server is down and `packages/miroir-server/release/index.js` exists, start it in the background with `NODE_ENV=development node packages/miroir-server/release/index.js`. Stop only what you started. Never restart a server you did not start.
+  - If a server cannot be started, record "browser check not run: <reason>" in the Realization. The slice then stays ⏳ (not ✅ DONE) and the orchestrator asks the user.
+- A new MiroirTest instance appears in the running app after a page reload (#286 plan Slice 0.3 Realization).
+
+---
+
+## Slice 0: baselines
+
+**Status:** ✅ DONE
+
+### Goal
+
+Record every count and error list that later slices compare against. No code change.
+
+### 0.1 Baselines
+
+Record in the Realization:
+
+- **Component entry, case by case.** `npm run testByFile -w miroir-standalone-app -- miroir-component-tests`. Expected: 69 passed (68 cases and 1 entry check). Save the reduced list (68 case lines, `<Editor> > <leaf label>: <status>`, sorted) as `packages/miroir-standalone-app/tests/4_view/issues/292-declarative-react-component-tests/baseline-component-cases.txt`. Record the wall time of the run (for K1 / P2).
+- **Consistency test.** `componentMiroirTests.consistency`: expected 6 passed.
+- **#286 issue tests**, one command per file:
+  - `npm run testByFile -w miroir-core -- 286-react-component-miroir-tests` (16 at the end of #286)
+  - app: `componentMiroirTests.286.phase0`, `domMatchersParity.286.phase3`, `extractValuesScoped.286.phase3`, `componentTestMode.286.phase4`, `componentTestSandbox.286.phase4`, `componentTestRunLock.286.review`, `portalContainer.286.phase5`, `runAllComponentTests.286.phase6`, `componentTestFireEvent.286.phase8`
+- **Extractor importers:** `extractValuesFromRenderedElements`, `--profile emulatedServer-filesystem multistepProcess.274.integ`, `--profile emulatedServer-filesystem wizardWalk.284.integ`.
+- **Model validation:** `npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts` count.
+- **Generic entry:** `npm run testMiroir -w miroir-core` count.
+- **tsc error lists** for `miroir-core`, `miroir-standalone-app`, and the packages checked in #286 Slice 12 (`miroir-store-bundled`, `miroir-store-filesystem`, `miroir-store-indexedDb`, `miroir-store-mongodb`, `miroir-store-postgres`, `miroir-localcache`, `miroir-localcache-redux`, `miroir-server`, `miroir-mcp`, `miroir-ai`, `miroir-cli`). At the end of #286: 0 errors, except 1 in the app (`JzodElementEditorHooks.ts(528,59)` TS2339).
+- **Full nonreg baseline:** run separately by the orchestrator (`npm run nonreg`). Record its snapshot folder, its step count, and each failing step with its cause. These are the "baseline failures" of the final criterion.
+
+### Validation
+
+The commands above, one per file. No RED/GREEN.
+
+### Realization
+
+Every command below was run alone (never two vitest runs in parallel), one per file, from the repo root, on `292-REFACTOR-declarative-react-component-tests`. The working tree has the uncommitted, unrelated changes the orchestrator described (`ci/claude-cloud-env-script.sh`, `admin_data` JSON files under `packages/miroir-standalone-app/tests/assets/admin_data/` and `packages/miroir-test-app_deployment-admin/assets/admin_data/`, a spotify model file, `generate_externalServiceSync_suites.py`); they were not touched, stashed, or reverted.
+
+**Component entry, case by case.** `npm run testByFile -w miroir-standalone-app -- miroir-component-tests`: **69 passed** (68 cases and 1 entry check), matching the plan's expectation. Wall time: real 56.6 s (vitest-reported test duration 49.78 s). The reduced case list (68 lines, `<Editor> > <leaf label>: passed`, ANSI stripped, sorted) is saved as `packages/miroir-standalone-app/tests/4_view/issues/292-declarative-react-component-tests/baseline-component-cases.txt`.
+
+**Consistency test.** `componentMiroirTests.consistency`: **6 passed** (real 23.4 s), matching the plan.
+
+**#286 issue tests**, one command per file:
+
+| Command (`npm run testByFile -w <pkg> -- ...`) | Passed | Wall time |
+|---|---|---|
+| `-w miroir-core -- 286-react-component-miroir-tests` (3 files) | 16 | 11.6 s |
+| `-w miroir-standalone-app -- componentMiroirTests.286.phase0` | 3 | 23.3 s |
+| `-w miroir-standalone-app -- domMatchersParity.286.phase3` | 4 | 16.6 s |
+| `-w miroir-standalone-app -- extractValuesScoped.286.phase3` | 2 | 23.5 s |
+| `-w miroir-standalone-app -- componentTestMode.286.phase4` | 2 | 25.0 s |
+| `-w miroir-standalone-app -- componentTestSandbox.286.phase4` | 5 | 62.1 s |
+| `-w miroir-standalone-app -- componentTestRunLock.286.review` | 5 | 23.9 s |
+| `-w miroir-standalone-app -- portalContainer.286.phase5` | 3 | 22.3 s |
+| `-w miroir-standalone-app -- runAllComponentTests.286.phase6` | 3 | 59.3 s |
+| `-w miroir-standalone-app -- componentTestFireEvent.286.phase8` | 4 | 16.6 s |
+
+`-w miroir-core -- 286-react-component-miroir-tests` matches the plan's "16 at the end of #286" exactly. `componentMiroirTests.286.phase0` is 3, not the 6 of the original #286 Slice 0 Realization: by the end of #286 Slice 12 the "pre-286 inventory" describe block (3 characterization tests over the now-deleted old suite) was removed, leaving only the "phase0 stable" describe block (3 tests). This is the #286-final state, not a #292 deviation. `componentTestSandbox.286.phase4` (5, not the Slice 4 "2 passed" milestone) and `runAllComponentTests.286.phase6` / `componentTestRunLock.286.review` reflect the file's final #286 test count, grown across #286 slices past their first-landing milestone in the Progress summary.
+
+**Extractor importers:**
+
+| Command | Passed | Wall time |
+|---|---|---|
+| `-w miroir-standalone-app -- extractValuesFromRenderedElements` | 4 | 23.5 s |
+| `-w miroir-standalone-app -- --profile emulatedServer-filesystem multistepProcess.274.integ` | 19 | 58.9 s |
+| `-w miroir-standalone-app -- --profile emulatedServer-filesystem wizardWalk.284.integ` | 11 | 39.2 s |
+
+All three match their #286 Slice 0 baselines.
+
+**Model validation.** `npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts`: **153 passed** (real 17.9 s).
+
+**Generic entry.** `npm run testMiroir -w miroir-core`: **794 passed** (real 17.9 s).
+
+**tsc error lists**, one command per package (`npx tsc --noEmit --skipLibCheck -p packages/<name>/tsconfig.json`):
+
+| Package | Errors | Wall time |
+|---|---|---|
+| `miroir-core` | 0 | 15.2 s |
+| `miroir-standalone-app` | 1 — `JzodElementEditorHooks.ts(528,59)` TS2339 (`Property 'name' does not exist on type 'EntityInstance & { defaultLabel?: string \| undefined; }'`) | 6.3 s |
+| `miroir-store-bundled` | 0 | 2.6 s |
+| `miroir-store-filesystem` | 0 | 2.6 s |
+| `miroir-store-indexedDb` | 0 | 2.6 s |
+| `miroir-store-mongodb` | 0 | 2.5 s |
+| `miroir-store-postgres` | 0 | 2.9 s |
+| `miroir-localcache` | 0 | 2.3 s |
+| `miroir-localcache-redux` | 0 | 2.6 s |
+| `miroir-server` | 0 | 2.9 s |
+| `miroir-mcp` | 0 | 2.9 s |
+| `miroir-ai` | 0 | 2.9 s |
+| `miroir-cli` | 0 | 2.7 s |
+
+Matches the plan's expectation exactly: 0 everywhere except the one known `miroir-standalone-app` error carried over from #286.
+
+**Full nonreg baseline.** Run separately by the orchestrator, not re-run here. Snapshot `test-results/nonreg/20260925T102332Z/` (`summary.md`, `summary.json`, `logs/`). Tier `default`, mode `run-all`, profile `emulatedServer-sql`. Started `2026-09-25T10:23:32Z`, finished `2026-09-25T11:09:47Z`, duration 2775.177 s (~46 min 15 s). **68 steps: 66 passed, 2 failed, 0 skipped, 0 not_run.**
+
+Failing steps and cause, from their logs in the snapshot:
+
+- **`apiCallReport-281`** (16.5 s) — `apiCallReport.281.phase0.unit.test.ts > spotify_model has exactly 6 JSON files with expected uuids and names`: `expected [ …(8) ] to have a length of 6 but got 8`. Cause: the working tree's uncommitted spotify-model changes add 2 untracked JSON files (`packages/miroir-test-app_deployment-spotify/assets/spotify_model/3d8da4d4-…/385eec5a-….json` and `…/3f2baa83-…/a47b6bad-….json`) on top of the 6 the test expects (one of the 6, `dde4c883-…/1b4b181d-….json`, is also modified but not added/removed) — 6 + 2 = 8, matching the actual count exactly. **Plausibly caused by the user's uncommitted changes: yes, confirmed by file count.**
+- **`unit-274-multistep-reports`** (23.4 s) — `multistep.274.phase0.unit.test.ts > seed inventory: 87 Reports including MultistepCountryCreate, MultistepLaunchPad, and ConnectExternalServiceWizard`: `expected […] to have a length of 87 but got 88`. Cause: the same untracked file `packages/miroir-test-app_deployment-spotify/assets/spotify_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/a47b6bad-7f33-4fb1-8071-904556e5ff43.json` sits in the folder named after `REPORT_ENTITY_UUID` (`3f2baa83-…`), so the test's `collectReportInstances` walk (over `packages/miroir-test-app_deployment-spotify/assets`, one of its `ASSET_TREES`) picks it up as an extra Report instance. **Plausibly caused by the user's uncommitted changes: yes**, confirmed — that one file is exactly the extra Report.
+
+Both failures are caused by the user's own uncommitted, #292-unrelated spotify-model asset changes, not by anything on this branch. They are the "baseline failures" of Slice 8's final criterion; later slices are expected to reproduce the same 2 failures with the same causes, nothing more.
+
+**Files created:** `packages/miroir-standalone-app/tests/4_view/issues/292-declarative-react-component-tests/baseline-component-cases.txt` (68 lines). **Files changed:** this plan (Status, Progress summary, this Realization). No product code changed.
+
+---
+
+## Slice 1: schema, walk, runner signature, 7 instances
+
+**Status:** ⏳ TODO · **Complexity:** L
+
+### Goal
+
+The schema has the `reactComponentTestSuite` node and the full step vocabulary. miroir-core walks the node and passes the suite context to the runner. The single instance is split into the 7 instances of analysis §5.6, all still with legacy `componentTestRef` leaves under plain sub-suites. The generator is gone. All 68 cases still pass, with the same labels.
+
+### 1.1 RED
+
+**Test:** `packages/miroir-core/tests/1_core/issues/292-declarative-react-component-tests/reactComponentTestSuite.292.phase1.unit.test.ts` (in-process with `TestFramework`, like `reactComponentLeaf.286.phase2`; each test restores the registered runner in `finally`). Fixture: root `miroirTestSuite` "Root" → `reactComponentTestSuite` "S" (`component: "C"`, `componentProps: {a: 1}`) → leaves "A" (`steps: []`) and "B" (`steps: []`, `componentProps: {b: 2}`). Fixtures are typed `as any` until the types are generated.
+
+- A counting runner receives, for "B", `{ testNamePath: ["Root","S","B"], leaf: <B>, suite: { suitePath: ["Root","S"], component: "C", componentProps: {a: 1}, caseLabels: ["A","B"] } }`.
+- The tracker records "A" and "B" under the suite path `Root > S`.
+- `walkMiroirTestLeaves(root)` returns A and B, and `classifyMiroirTestSuiteExecutionCapabilities(root).uiExecutionMode` is `"unit"`.
+- A filter `{ testList: { Root: { S: ["A"] } } }` runs A only and records B as skipped.
+- `excludeMiroirTestTypes: ["reactComponentTest"]` records both as skipped, and the runner is not called.
+- With no runner, both are recorded as skipped with `REACT_COMPONENT_TEST_NO_RUNNER_MESSAGE`.
+- A legacy leaf with `componentTestRef` under a plain `miroirTestSuite` reaches the runner as `{ testNamePath, leaf }` with no `suite`.
+
+Expected RED: `Unknown miroirTestType: reactComponentTestSuite` from the exhaustive default of `runMiroirTest`, and the old params shape in the legacy test.
+
+**Test:** `packages/miroir-standalone-app/tests/4_view/issues/292-declarative-react-component-tests/componentTestSchema.292.phase1.unit.test.ts`
+
+- The `mlSchema.definition.definition.context` of Entity `a311f363-…` and EntityVersion `51c647fe-…` are deep-equal.
+- The issue's example suite, wrapped in a MiroirTest instance with a `miroirTestSuite` root, passes `jzodTypeCheck` against both `mlSchema`s with `defaultMiroirModelEnvironment`.
+- The same instance with a step `{"step": "fly"}` fails, and so does a `reactComponentTestSuite` without `component`.
+
+**Test:** `packages/miroir-standalone-app/tests/4_view/issues/292-declarative-react-component-tests/componentTestInstances.292.phase1.unit.test.ts`
+
+- The data folder holds the 7 instances of the UUID table, with those names. Each root is a `miroirTestSuite` whose label is its name, with exactly one child labelled with the editor name.
+- The 68 leaf labels, sorted and prefixed by the child label, equal the 68 lines of `baseline-component-cases.txt`.
+- `miroirTestDefinitionHasReactComponentTest(instance.definition)` is true for each instance and for a fixture whose only component leaf is inside a `reactComponentTestSuite`.
+- `miroir-test-app_deployment-miroir` exports `miroirTest_<name>` for the 7 names, and `defaultMiroirMetaModel.tests` holds the 7 uuids and not `JzodElementEditor_ComponentTestSuite`.
+
+Expected RED: 1 instance found, the fixture returns false, 6 exports missing.
+
+### 1.2 GREEN
+
+- **Schema** (analysis §5.1), same text in the Entity and the EntityVersion: `reactComponentTestSuite`, third member of `miroirTestSuite.miroirTests`, `componentProps?` and `steps?` on `miroirTestForReactComponent` with `componentTestRef` optional, `reactComponentTestTextMatch`, `reactComponentTestTarget`, `reactComponentTestStep` with every kind of analysis §5.4 including `custom`. Schema rebuild. Export the new types and schemas from miroir-core `index.ts` next to L472-473.
+- **miroir-core** (analysis §5.2): `ReactComponentTestSuiteContext` and the new `ReactComponentTestRunner` params in `miroirTestTypes.ts`. The walk handles `reactComponentTestSuite`. The trailing parameter through `runMiroirTest`, `_runMiroirTest`, and `_runMiroirTestWithTracking`. `runMiroirReactComponentTest` calls `runner({ testNamePath, leaf, suite })`. `walkMiroirTestLeaves` and `testSuites` recurse into the node. `npm run build -w miroir-core`.
+- **App:**
+  - `miroirTestDefinitionHasReactComponentTest` recurses into the node.
+  - The runner reads `params.leaf.componentTestRef` on the legacy path, with no other change.
+  - `componentTestManifest.ts`: `componentTestSuiteInstanceUuid` and `componentTestSuiteInstanceName` are replaced by `componentTestSuiteInstances: Record<editor, { uuid, name }>`.
+- **Instances:**
+  - Rewrite `761d4ed2-….json` as `JzodEnumEditor_ComponentTestSuite`, with only the Enum sub-suite.
+  - Write the 6 other instances with their sub-suites, leaves copied unchanged, same top-level keys, 2-space JSON, CRLF.
+  - Wiring: 7 exports in `index.ts`, 7 declarations in `index.d.ts`, 7 imports and `tests` entries in `src/Model.ts`. Remove `miroirTest_JzodElementEditor_ComponentTestSuite`.
+- **Delete** `scripts/generate-component-miroir-tests.ts`.
+- **Rewrite `componentMiroirTests.consistency.unit.test.ts`.** For each component instance, it checks `jzodTypeCheck` against both `mlSchema`s, unique leaf labels starting with `<child label>: `, and exactly one of `steps` / `componentTestRef` per leaf. Legacy leaves must equal the manifest and the registry. It runs its comparison function on fixtures (missing leaf, extra registry case, duplicate label, leaf with both fields), each with its expected message.
+- **Rewrite `miroir-component-tests.unit.test.tsx`.** It loads every instance of the folder with a `reactComponentTest` leaf and runs each child in `describe(<child label>)` with the path `[<instance name>, <child label>]`. New entry check "loads 7 component test instances with 68 leaves". Expected: 70 passed.
+- **Adapt the #286 tests:**
+  - `componentTestSandbox.286.phase4`: the Array instance by its uuid, and a filter naming only `JzodArrayEditor` (no empty siblings).
+  - `runAllComponentTests.286.phase6`: the 7 instances and the transformer suite. Expected labels per instance come from its JSON.
+  - `componentTestRunLock.286.review`: runner calls with `{ testNamePath, leaf: { …, componentTestRef } }`.
+  - miroir-core `reactComponentLeaf.286.phase2` and `excludeMiroirTestTypes.286.phase6`: the new params.
+
+### 1.3 Refactor checkpoint
+
+- `grep -r "JzodElementEditor_ComponentTestSuite\|generate-component-miroir-tests" packages --include=*.ts --include=*.tsx --include=*.json` finds nothing outside `node_modules`, `dist`, and `tests/tmp`.
+- Every leaf label is byte-identical to the baseline.
+
+### Validation
+
+```bash
+npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core
+npm run testByFile -w miroir-core -- 292-declarative-react-component-tests
+npm run testByFile -w miroir-core -- 286-react-component-miroir-tests
+npm run testMiroir -w miroir-core
+npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts
+npm run testByFile -w miroir-standalone-app -- componentTestSchema.292.phase1
+npm run testByFile -w miroir-standalone-app -- componentTestInstances.292.phase1
+npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency
+npm run testByFile -w miroir-standalone-app -- miroir-component-tests
+npm run testByFile -w miroir-standalone-app -- componentMiroirTests.286.phase0
+npm run testByFile -w miroir-standalone-app -- componentTestSandbox.286.phase4
+npm run testByFile -w miroir-standalone-app -- componentTestRunLock.286.review
+npm run testByFile -w miroir-standalone-app -- runAllComponentTests.286.phase6
+python scripts/check_bare_console.py
+npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+```
+
+Expected:
+
+- `miroir-component-tests`: 70 passed. Its reduced case list equals the baseline.
+- `modelValidation`: the Slice 0 count + 6.
+- `testMiroir -w miroir-core`: the Slice 0 count.
+- The #286 tests: their Slice 0 counts.
+
+Browser check: the 7 instances appear in the MiroirTest list after a reload. Run all 7 instances (legacy path): Enum 3, Array 12, Literal 3, Object 14, SimpleType 12, Union 9, Any 15.
+
+### Realization
+
+(to fill)
+
+---
+
+## Slice 2: tracer, interpreter, extractor fix, Enum from steps
+
+**Status:** ⏳ TODO · **Complexity:** L
+
+### Goal
+
+The 3 Enum cases run from declarative steps with no `custom` step, in vitest and in the app. The extractor reads the committed value of an open combobox. `$options` holds the option lists by field.
+
+Kinds implemented in this slice: `expectRenderedValues`, `expectElement` (`present`, `value`, `attribute`), `openSelect`, `filterSelect`, `click`, `change`, `blur`, `type`, `clear`, `keyboard`, `waitForAttribute`, `custom`. Targets implemented: all locators except `widget` kinds other than `combobox` and `selectState`, plus `ref`/`saveAs`. The other kinds and widgets fail with "not implemented".
+
+### 2.1 RED
+
+First create stubs so that RED fails on behavior: `componentRegistry.ts` (`{}`), `componentTestTargets.ts` (functions throwing "not implemented"), `runComponentTestSteps.ts` (throws "not implemented"), and `customStepRegistry.ts` (`{}`).
+
+**Test:** `tests/4_view/issues/292-declarative-react-component-tests/extractorOpenCombobox.292.phase2.unit.test.tsx`
+
+- Fixture DOM (as `extractValuesScoped.286.phase3`): combobox input with value `""`, tracker `data-test-is-open="true"`, `data-test-selected-value="value2"`. The extractor returns `testField: "value2"`.
+- The same with `data-test-is-open="false"` and input value `"value2"` returns `"value2"`.
+- A real `ThemedSelectWithPortal` (filterable, 3 options) inside `PortalContainerProvider` is mounted with the act-free `mountComponent` and opened. The extractor with the portal element returns the selected value and the option list.
+
+**Test:** `tests/4_view/issues/292-declarative-react-component-tests/componentTestSteps.292.phase2.unit.test.tsx`. It uses `createReactComponentTestRunner` over a sandbox element and a fixture Enum suite context. The real `JzodElementEditor` comes from the component registry.
+
+- Steps of the analysis §5.4 Enum case 2 give `{ status: "ok" }`.
+- An `expectRenderedValues` whose `expectedValue` is wrong, as step 3 with label "after click", gives `status: "error"`. Its message starts with `step 3 (expectRenderedValues "after click"): `, and `expected` / `actual` are set.
+- `$options` is `{ testField: [3 values] }` while the list is open and absent when it is closed.
+- An unknown `component` gives an error that names it.
+- An implemented kind with a target that matches nothing gives `step 1 (click): …`.
+- A kind not implemented yet gives `step 1 (clickArrayButton): not implemented`.
+- `saveAs` then `{ref}` resolves the same element.
+- A `custom` step registered in the test receives `params` and `context.lastValues` from the previous `expectRenderedValues`.
+- `componentProps` of the leaf override the suite's (shallow), and `{"$bigint": "5"}` reaches the component as `5n`.
+- With 2 leaves in `caseLabels`, the suite wrapper's `MiroirEventService.destroy` is called once, after the second.
+
+**Enum JSON:** replace the Enum sub-suite of `761d4ed2-…` by the `reactComponentTestSuite` of analysis §5.4 (per P1 default (a)). Remove Enum from the manifest and the registry. `miroir-component-tests -t "JzodEnumEditor"` fails on the 3 cases through the stubs.
+
+### 2.2 GREEN
+
+- `componentRegistry.ts` (T13), `componentTestTargets.ts` (T6, T9), `runComponentTestSteps.ts` (analysis §5.3 rules, T10, T11, the kinds of this slice), `customStepRegistry.ts`.
+- `runReactComponentTest.tsx`: step path (analysis §5.3), wrapper keyed by `suite.suitePath` (T4). The legacy path is unchanged.
+- `componentTestTools.tsx`: `comboboxCommittedValue` (analysis §5.5).
+- Delete `componentTests/jzodElementEditor/JzodEnumEditor.tsx`.
+- Record the entry's wall time and compare it with Slice 0 (K1). If it is more than twice as slow, stop and ask the user (P2).
+
+### 2.3 Refactor checkpoint
+
+- `componentTests/` has no bare `console.*`, and `runComponentTestSteps.ts` imports nothing from `@testing-library/react`.
+- Non-vacuity check, then revert: change `value2` to `value9` in case 1 and the option list in case 2. The Enum run gives 2 failed with T10 messages.
+
+### Validation
+
+```bash
+npm run build -w miroir-test-app_deployment-miroir && npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts
+npm run testByFile -w miroir-standalone-app -- extractorOpenCombobox.292.phase2
+npm run testByFile -w miroir-standalone-app -- componentTestSteps.292.phase2
+npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency
+npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "JzodEnumEditor"
+npm run testByFile -w miroir-standalone-app -- miroir-component-tests
+npm run testByFile -w miroir-standalone-app -- extractValuesFromRenderedElements
+npm run testByFile -w miroir-standalone-app -- extractValuesScoped.286.phase3
+npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepProcess.274.integ
+npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem wizardWalk.284.integ
+npm run testByFile -w miroir-standalone-app -- componentTestSandbox.286.phase4
+npm run testByFile -w miroir-standalone-app -- runAllComponentTests.286.phase6
+python scripts/check_bare_console.py
+npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+```
+
+Expected:
+
+- `-t "JzodEnumEditor"`: 3 passed.
+- Full entry: 70 passed, with a case list equal to the baseline.
+- Importers: their Slice 0 counts.
+
+Browser check: `JzodEnumEditor_ComponentTestSuite` gives 3/3, and the sandbox portal holds the open list of case 3 until the Enter step. Also run the production-build check of #286 plan §4.4 once here (`npm run build -w miroir-standalone-app`, then `vite preview --port 3000 --strictPort` against the API on 3080), because the interpreter is new code in the lazy chunk.
+
+### Realization
+
+(to fill)
+
+---
+
+## Slice 3: Literal and SimpleType
+
+**Status:** ⏳ TODO · **Complexity:** M
+
+### Goal
+
+The 3 Literal and 12 SimpleType cases run from steps (analysis §3.6 tables). New kinds and targets: `submit`, `expectElement` `count` and `checked`, `byDisplayValue` with number and regex, `byText` and `byLabelText` with regex, refinements `fieldName` and `id`. `$bigint` is used by SimpleType cases 11 and 12.
+
+### 3.1 RED
+
+**Test:** `tests/4_view/issues/292-declarative-react-component-tests/componentTestTargets.292.phase3.unit.test.tsx`. It mounts small fixtures through the act-free `mountComponent` and runs steps through `runComponentTestSteps`.
+
+- `count` on a regex `byText`.
+- `present:false` on `byLabelText` (the Literal case 2 shape).
+- `byDisplayValue: 42` with `id: "testField"`.
+- `fieldName: "testField"` on `byRole: "checkbox"`, with `checked` true and false.
+- `submit` on `byRole: "form"` calls the form's `onSubmit`.
+- A regex that matches nothing gives `step <n> (expectElement): …`.
+
+**JSON:** replace the Literal and SimpleType sub-suites of their instances by `reactComponentTestSuite`s.
+
+- Literal (T14): defaults without `label`, `rawJzodSchema` literal `test-value`, `listKey` `root.testField`. Cases 1 and 3 add the label.
+- SimpleType: common props as defaults, each leaf adds `rawJzodSchema` and `initialFormState`. Cases 11 and 12 use `{"$bigint": "12345678901234567890"}`.
+- Remove both suites from the manifest and the registry. The new entry fails on these 15 cases ("not implemented" or target errors).
+
+### 3.2 GREEN
+
+The kinds and targets above. Delete `jzodElementEditor/JzodLiteralEditor.tsx` and `JzodSimpleTypeEditor.tsx`.
+
+### 3.3 Refactor checkpoint
+
+Non-vacuity check, then revert: `count: 2` in Literal case 1 and `value: 101` in SimpleType case 5 give 2 failures with T10 messages.
+
+### Validation
+
+```bash
+npm run build -w miroir-test-app_deployment-miroir && npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts
+npm run testByFile -w miroir-standalone-app -- componentTestTargets.292.phase3
+npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency
+npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "JzodLiteralEditor"
+npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "JzodSimpleTypeEditor"
+npm run testByFile -w miroir-standalone-app -- miroir-component-tests
+npm run testByFile -w miroir-standalone-app -- runAllComponentTests.286.phase6
+python scripts/check_bare_console.py
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+```
+
+Expected: Literal 3 passed, SimpleType 12 passed, full entry 70 passed with a case list equal to the baseline. Browser check: the Literal instance 3/3 and the SimpleType instance 12/12.
+
+### Realization
+
+(to fill)
+
+---
+
+## Slice 4: Array and Object
+
+**Status:** ⏳ TODO · **Complexity:** L
+
+### Goal
+
+The 12 Array and 14 Object cases run from steps. New kinds and targets: `clickArrayButton` (up, down, add, duplicate, delete), `clickObjectButton` (addOptionalAttribute, addRecordEntry, remove, duplicate), `renameRecordEntry`, `expectElement` `values` and `containsHtml`, refinement `fieldNamePrefix`, `expectRenderedValues` `field` and `path`. `$bigint` is used by Object case 2.
+
+### 4.1 RED
+
+**Test:** `tests/4_view/issues/292-declarative-react-component-tests/componentTestWidgets.292.phase4.unit.test.tsx`. It uses the runner with the real `JzodElementEditor` and fixture suites: a string array, a record of objects, and an object with optional attributes.
+
+- Each `clickArrayButton` action resolves the button named in analysis §5.4 and changes the values as the old case did.
+- `values` reads the item textboxes in DOM order after `up`.
+- `renameRecordEntry` renames and keeps the value, and a `ref` saved before the rename reads the new name.
+- `expectRenderedValues` with `field: "testField"` returns an array for the array fixture.
+- `path: ["definition"]` selects a sub-object.
+- A missing button gives `step <n> (clickObjectButton): …`.
+
+**JSON:** Array and Object `reactComponentTestSuite`s per analysis §3.6. Remove both from the manifest and the registry.
+
+**#286 phase4 test:** its failing-case test no longer replaces a registry case. It loads the Array instance, replaces the `expectElement` of leaf 2 with a `present:true` check on a target that matches nothing, and passes the edited instance to `MiroirTestDisplay`. Expected: 11 `ok` and 1 `error` whose message starts with `step 1 (expectElement)`.
+
+### 4.2 GREEN
+
+The kinds, targets, and parameters above. Delete `jzodElementEditor/JzodArrayEditor.tsx` and `JzodObjectEditor.tsx`.
+
+### 4.3 Refactor checkpoint
+
+Non-vacuity check, then revert: a wrong order in Array case 4 `values` and `firstRecord_copy1.a: "X"` in Object case 13 give 2 failures with T10 messages.
+
+### Validation
+
+```bash
+npm run build -w miroir-test-app_deployment-miroir && npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts
+npm run testByFile -w miroir-standalone-app -- componentTestWidgets.292.phase4
+npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency
+npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "JzodArrayEditor"
+npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "JzodObjectEditor"
+npm run testByFile -w miroir-standalone-app -- miroir-component-tests
+npm run testByFile -w miroir-standalone-app -- componentTestSandbox.286.phase4
+npm run testByFile -w miroir-standalone-app -- runAllComponentTests.286.phase6
+npm run testByFile -w miroir-standalone-app -- componentTestFireEvent.286.phase8
+python scripts/check_bare_console.py
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+```
+
+Expected:
+
+- Array 12 passed, Object 14 passed.
+- Full entry 70 passed, with a case list equal to the baseline.
+- `componentTestSandbox.286.phase4`: its Slice 0 count.
+
+Browser check: the Array instance 12/12 and the Object instance 14/14.
+
+### Realization
+
+(to fill)
+
+---
+
+## Slice 5: Union and Any
+
+**Status:** ⏳ TODO · **Complexity:** L
+
+### Goal
+
+The 9 Union and 15 Any cases run from steps. All 68 cases are declarative. New kinds and targets:
+
+- `selectOption`, for `select` `value` and `unionType`
+- `toggleUnionTypeSelector`
+- the widget targets `unionTypeStar`, `unionTypeInput`, and `selectState` with `unionType`
+- `expectElement` `parentContains` and `timeout`
+- `expectRenderedValues` `filter` and `timeout`
+
+### 5.1 RED
+
+**Test:** `tests/4_view/issues/292-declarative-react-component-tests/componentTestUnionWidgets.292.phase5.unit.test.tsx`. It uses the runner with the real `JzodElementEditor`.
+
+- `toggleUnionTypeSelector` twice shows then hides the union type input.
+- `selectOption` with `select: "unionType"` switches a `string|number` value from `number` to `string`, and the state's selected value becomes `string`.
+- `selectOption` on a discriminator field switches `type1` to `type2`.
+- `parentContains` passes for the star and the selector input and fails for two unrelated elements.
+- `expectRenderedValues` with `timeout` retries until equal, and gives a T10 message at timeout.
+- `filter: []` reads only the `miroirInput` elements and checkboxes.
+
+**JSON:** Union and Any `reactComponentTestSuite`s per analysis §3.6. Any defaults include `rawJzodSchema: {type: "any"}`. Remove both from the manifest and the registry. The manifest and the registry are then empty.
+
+### 5.2 GREEN
+
+The kinds and targets above. Delete `jzodElementEditor/JzodUnionEditor.tsx` and `JzodAnyEditor.tsx`. The `jzodElementEditor/` folder is empty and is deleted.
+
+### 5.3 Refactor checkpoint
+
+- No leaf in the 7 instances uses `custom` or `componentTestRef` (checked by a new assertion in `componentTestInstances.292.phase1`).
+- Non-vacuity check, then revert: `type2Attribute: 1` in Union case 4 and `["item1","item2"]` in Any case 12 give 2 failures with T10 messages.
+
+### Validation
+
+```bash
+npm run build -w miroir-test-app_deployment-miroir && npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts
+npm run testByFile -w miroir-standalone-app -- componentTestUnionWidgets.292.phase5
+npm run testByFile -w miroir-standalone-app -- componentTestInstances.292.phase1
+npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency
+npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "JzodUnionEditor"
+npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "JzodAnyEditor"
+npm run testByFile -w miroir-standalone-app -- miroir-component-tests
+npm run testByFile -w miroir-standalone-app -- runAllComponentTests.286.phase6
+npm run testByFile -w miroir-standalone-app -- portalContainer.286.phase5
+python scripts/check_bare_console.py
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+```
+
+Expected: Union 9 passed, Any 15 passed, full entry 70 passed with a case list equal to the baseline. Record the wall time against Slice 0. Browser check: all 7 instances, 68/68 in total, and one "Run All Unit Tests" run with "Include component tests" checked, in which the 68 component results are `ok`.
+
+### Realization
+
+(to fill)
+
+---
+
+## Slice 6: M1, no `componentTestRef`
+
+**Status:** ⏳ TODO · **Complexity:** M
+
+### Goal
+
+Remove every trace of the legacy path.
+
+### 6.1 RED
+
+**Test:** `tests/4_view/issues/292-declarative-react-component-tests/legacyRemoved.292.phase6.unit.test.ts`
+
+- `miroirTestForReactComponent` in the Entity and the EntityVersion has no `componentTestRef`, and `steps` is not optional.
+- The files `componentTestManifest.ts`, `componentTestRegistry.ts`, and `jzodElementEditor/` do not exist under `src/miroir-fwk/4-tests/componentTests/`.
+- A runner call without `suite` gives an `error` result.
+
+### 6.2 GREEN
+
+- **Schema:** remove `componentTestRef`, make `steps` required. Schema rebuild.
+- **miroir-core:** remove `ReactComponentTestRef`, make `suite` required in the runner params, drop its export.
+- **App:**
+  - Delete `componentTestManifest.ts`, `componentTestRegistry.ts`, the legacy path of `runReactComponentTest.tsx`, and the `ComponentTestCase` / `ComponentTestSuite` / `ComponentTestRegistry` types of `componentTestEnvironment.ts`.
+  - `ComponentTestSandboxHost.registry` becomes a `componentRegistry` override.
+- **Tests:**
+  - The consistency test loses its manifest part.
+  - `componentTestRunLock.286.review` uses a fake component registry and step leaves.
+  - miroir-core `reactComponentLeaf.286.phase2` and `excludeMiroirTestTypes.286.phase6` use step leaves.
+  - Bundle guard `componentTestChunk.286.phase4` L145 looks for `componentTests/runComponentTestSteps`.
+
+### 6.3 Refactor checkpoint
+
+`grep -rn "componentTestRef\|componentTestManifest\|componentTestRegistry\|ReactComponentTestRef" packages --include=*.ts --include=*.tsx --include=*.json` finds nothing outside `node_modules`, `dist`, and `tests/tmp`.
+
+### Validation
+
+```bash
+npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core
+npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts
+npm run testByFile -w miroir-core -- 292-declarative-react-component-tests
+npm run testByFile -w miroir-core -- 286-react-component-miroir-tests
+npm run testMiroir -w miroir-core
+npm run testByFile -w miroir-standalone-app -- legacyRemoved.292.phase6
+npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency
+npm run testByFile -w miroir-standalone-app -- miroir-component-tests
+npm run testByFile -w miroir-standalone-app -- componentTestRunLock.286.review
+npm run testByFile -w miroir-standalone-app -- componentTestSandbox.286.phase4
+npm run testByFile -w miroir-standalone-app -- runAllComponentTests.286.phase6
+npm run build -w miroir-standalone-app
+npm run testByFile -w miroir-standalone-app -- componentTestChunk.286.phase4
+python scripts/check_bare_console.py
+npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+```
+
+Expected: entry 70 passed. The #286 tests keep their counts. The bundle guard: its Slice 0 count. Browser check: all 7 instances, 68/68.
+
+### Realization
+
+(to fill)
+
+---
+
+## Slice 7: M2, no `custom` step
+
+**Status:** ⏳ TODO · **Complexity:** S
+
+### Goal
+
+Remove the escape hatch.
+
+### 7.1 RED
+
+`legacyRemoved.292.phase6` gains two checks: the step union of the Entity and the EntityVersion has no `custom` member, and `customStepRegistry.ts` does not exist.
+
+### 7.2 GREEN
+
+- Remove `custom` from the schema (schema rebuild), from `runComponentTestSteps.ts`, and from the `context` plumbing if nothing else uses it.
+- Delete `customStepRegistry.ts`.
+- Delete the `custom` test of `componentTestSteps.292.phase2`.
+
+### Validation
+
+```bash
+npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core
+npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts
+npm run testByFile -w miroir-standalone-app -- legacyRemoved.292.phase6
+npm run testByFile -w miroir-standalone-app -- componentTestSteps.292.phase2
+npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency
+npm run testByFile -w miroir-standalone-app -- miroir-component-tests
+python scripts/check_bare_console.py
+npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+```
+
+Expected: entry 70 passed. `grep -rn "\"custom\"\|customStepRegistry" packages/miroir-standalone-app/src packages/miroir-test-app_deployment-miroir/assets/miroir_model packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion` finds no step kind.
+
+### Realization
+
+(to fill)
+
+---
+
+## Slice 8: docs, nonreg, final type-check and full nonreg
+
+**Status:** ⏳ TODO · **Complexity:** M
+
+### Goal
+
+The documents describe the declarative component tests, nonreg runs the #292 issue tests, and the final criterion holds.
+
+### 8.1 Changes
+
+- **`docs/reference/testing.md`:**
+  - L116: the `reactComponentTest` row describes `steps` and `componentProps`.
+  - New `reactComponentTestSuite` row.
+  - L144 and L760: the 7 instance names.
+  - The section at L771-808 becomes "Declarative component tests": the 7 instances and their uuids, the suite node, the step vocabulary table (analysis §5.4), `$options`, `$bigint`, the error form, how to add a case (edit the JSON, rebuild the deployment package, run `modelValidation`, the consistency test, and the entry), and running in the app. The "known limit" paragraph is deleted: each instance has one sub-suite.
+- **`docs/contributing/testing.md` L176-193:** the entry, `-t "<Editor>"`, editing JSON instead of the generator.
+- **`docs/guides/developer/testing.md` L160.**
+- **#286 `analysis.md` §1:** the row "Declarative JSON steps and assertions for component tests" points to #292.
+- **`scripts/nonreg-manifest.json`:** new `unit-292-declarative-react-component-tests` (tier `unit`, after `unit-286-…`). It runs `testByFile -w miroir-core -- 292-declarative-react-component-tests`, then one app command per file: `componentTestSchema.292.phase1`, `componentTestInstances.292.phase1`, `extractorOpenCombobox.292.phase2`, `componentTestSteps.292.phase2`, `componentTestTargets.292.phase3`, `componentTestWidgets.292.phase4`, `componentTestUnionWidgets.292.phase5`, `legacyRemoved.292.phase6`, chained with `&&` in `bash -c` as the #286 steps. `appstack-miroir-component-tests` and `unit-286-…` keep their commands. Check with `npm run nonreg -- --dry-run --tier full`.
+- Delete `baseline-component-cases.txt`, or keep it and assert it from `componentTestInstances.292.phase1` (record which in the Realization).
+
+### Validation
+
+```bash
+npm run nonreg -- --dry-run --tier full
+python scripts/check_bare_console.py
+npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+npm run build -w miroir-standalone-app
+npm run testByFile -w miroir-standalone-app -- componentTestChunk.286.phase4
+npm run nonreg
+```
+
+Also `npx tsc --noEmit --skipLibCheck -p packages/<name>/tsconfig.json` for each package in the Slice 0 tsc list.
+
+Expected:
+
+- tsc: no error beyond the Slice 0 lists.
+- Full nonreg: every step passes except the Slice 0 baseline failures, with the same causes.
+- `appstack-miroir-component-tests`: `miroir-component-tests` 70 passed and the consistency test.
+- `unit-292-…` and `unit-286-…` pass.
+
+Browser check: the 7 instances, 68/68, and one production-build run of one instance (#286 plan §4.4 method).
+
+### Realization
+
+(to fill)
+
