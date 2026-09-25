@@ -1,6 +1,7 @@
 import type {
   MiroirTestLeaf,
   MiroirTestSuite,
+  ReactComponentTestSuite,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import type {
@@ -12,7 +13,11 @@ import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
 import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "../3_controllers/constants.js";
-import type { MiroirTestRunFilter, TestSuiteListFilter } from "../0_interfaces/5-tests/miroirTestTypes";
+import type {
+  MiroirTestRunFilter,
+  ReactComponentTestSuiteContext,
+  TestSuiteListFilter,
+} from "../0_interfaces/5-tests/miroirTestTypes";
 import { miroirTestGlobalTimeOut } from "./MiroirTransformerTestTools.js";
 import { isMiroirTestLeafSelected, resolveSuiteInnerFilter } from "./miroirTestFilter.js";
 import type {
@@ -29,17 +34,39 @@ function miroirTestLeafLabel(leaf: MiroirTestLeaf): string {
   return leaf.miroirTestLabel;
 }
 
-function miroirTestNodeLabel(node: MiroirTestLeaf | MiroirTestSuite): string {
-  if (node.miroirTestType === "miroirTestSuite") {
+type MiroirTestNode = MiroirTestLeaf | MiroirTestSuite | ReactComponentTestSuite;
+
+function miroirTestNodeLabel(node: MiroirTestNode): string {
+  if (node.miroirTestType === "miroirTestSuite" || node.miroirTestType === "reactComponentTestSuite") {
     return node.miroirTestLabel;
   }
   return miroirTestLeafLabel(node);
 }
 
+/**
+ * The context passed to the component test runner with each leaf of a `reactComponentTestSuite`
+ * (#292, analysis T3). `caseLabels` lists every leaf, whatever the filter.
+ */
+function reactComponentTestSuiteContext(
+  suite: MiroirTestSuite | ReactComponentTestSuite,
+  suitePath: string[],
+): ReactComponentTestSuiteContext | undefined {
+  if (suite.miroirTestType !== "reactComponentTestSuite") {
+    return undefined;
+  }
+  return {
+    suitePath,
+    component: suite.component,
+    componentProps: suite.componentProps ?? {},
+    caseLabels: suite.miroirTests.map((leaf) => leaf.miroirTestLabel),
+  };
+}
+
 export type RunMiroirTestSuiteWalkParams = {
   localVitest: VitestNamespace;
   testSuitePath: string[];
-  miroirTestSuite: MiroirTestSuite;
+  /** A `reactComponentTestSuite` is walked like a nested suite (#292). */
+  miroirTestSuite: MiroirTestSuite | ReactComponentTestSuite;
   filter: MiroirTestRunFilter | undefined;
   modelEnvironment: MiroirModelEnvironment;
   miroirActivityTracker: MiroirActivityTrackerInterface;
@@ -86,7 +113,8 @@ export async function runMiroirTestSuiteWalk(
 
   const shouldSkipSuite = miroirTestSuite.skip || parentSkip;
 
-  const allTests = miroirTestSuite.miroirTests;
+  const allTests: MiroirTestNode[] = miroirTestSuite.miroirTests;
+  const suiteContext = reactComponentTestSuiteContext(miroirTestSuite, testSuitePath);
   const availableLeafLabels = allTests.map(miroirTestNodeLabel);
   const { testList: innerTestList } = resolveSuiteInnerFilter(
     filter,
@@ -119,7 +147,7 @@ export async function runMiroirTestSuiteWalk(
     const label = miroirTestNodeLabel(node);
     const isSkipped = !selectedTests.includes(node) || !!shouldSkipSuite;
 
-    if (node.miroirTestType === "miroirTestSuite") {
+    if (node.miroirTestType === "miroirTestSuite" || node.miroirTestType === "reactComponentTestSuite") {
       const nestedParams: RunMiroirTestSuiteWalkParams = {
         ...params,
         testSuitePath: [...testSuitePath, node.miroirTestLabel],
@@ -200,6 +228,7 @@ export async function runMiroirTestSuiteWalk(
         executionOptions,
         assertionPath,
         isSkipped || shouldSkipSuite,
+        suiteContext,
       );
       continue;
     }
@@ -228,6 +257,7 @@ export async function runMiroirTestSuiteWalk(
             executionOptions,
             assertionPath,
             isSkipped || shouldSkipSuite,
+            suiteContext,
           );
         } finally {
           miroirActivityTracker.endTestSuiteLogContext();

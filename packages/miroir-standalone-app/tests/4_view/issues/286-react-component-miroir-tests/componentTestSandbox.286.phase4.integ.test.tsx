@@ -75,8 +75,7 @@ import { componentTestRunInProgressMessage } from "../../../../src/miroir-fwk/4-
 import {
   componentTestLeafLabel,
   componentTestManifest,
-  componentTestSuiteInstanceName,
-  componentTestSuiteInstanceUuid,
+  componentTestSuiteInstances,
 } from "../../../../src/miroir-fwk/4-tests/componentTests/componentTestManifest";
 import { componentTestRegistry } from "../../../../src/miroir-fwk/4-tests/componentTests/componentTestRegistry";
 import type { MiroirTestResultData } from "../../../../src/miroir-fwk/4_view/components/Buttons/RunMiroirTestSuiteButton";
@@ -89,6 +88,11 @@ const MIROIR_TEST_DATA_FOLDER = join(
   resolveRepoRoot(),
   "packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b",
 );
+
+const arraySuite = "JzodArrayEditor";
+/** #292: the Array cases have their own MiroirTest instance, `JzodArrayEditor_ComponentTestSuite`. */
+const { uuid: componentTestSuiteInstanceUuid, name: componentTestSuiteInstanceName } =
+  componentTestSuiteInstances[arraySuite];
 
 function loadComponentTestSuiteInstance(): MiroirTestDefinition {
   for (const fileName of readdirSync(MIROIR_TEST_DATA_FOLDER)) {
@@ -104,21 +108,16 @@ function loadComponentTestSuiteInstance(): MiroirTestDefinition {
 }
 
 const componentTestSuiteInstance = loadComponentTestSuiteInstance();
-const arraySuite = "JzodArrayEditor";
 const arrayLeafLabels = componentTestManifest[arraySuite].map((caseLabel) =>
   componentTestLeafLabel(arraySuite, caseLabel),
 );
 /**
- * Limits the run to the Array sub-suite, so that later slices do not change the counts. Every
- * other sub-suite is listed with no leaf: the Run button walks from an empty suite path, so the
- * sub-suites are at depth 1, where miroir-core `resolveSuiteInnerFilter` throws on a filter that
- * does not name the sub-suite ("MiroirTest filter matched no tests in suite ...").
+ * Names the Array leaves of the Array instance. The instance has one child, the Array sub-suite
+ * (#292), so the filter names no empty sibling.
  */
 const arraySuiteTestFilter = {
   testList: {
-    [componentTestSuiteInstanceName]: Object.fromEntries(
-      Object.keys(componentTestManifest).map((suite) => [suite, suite === arraySuite ? arrayLeafLabels : []]),
-    ),
+    [componentTestSuiteInstanceName]: { [arraySuite]: arrayLeafLabels },
   },
 };
 
@@ -372,9 +371,7 @@ describe("Array component suite in the MiroirTestDisplay sandbox", () => {
     const filteredLabels = arrayLeafLabels.slice(0, 2);
     const filteredTestFilter = {
       testList: {
-        [componentTestSuiteInstanceName]: Object.fromEntries(
-          Object.keys(componentTestManifest).map((suite) => [suite, suite === arraySuite ? filteredLabels : []]),
-        ),
+        [componentTestSuiteInstanceName]: { [arraySuite]: filteredLabels },
       },
     };
     const harness = buildAppHarness();

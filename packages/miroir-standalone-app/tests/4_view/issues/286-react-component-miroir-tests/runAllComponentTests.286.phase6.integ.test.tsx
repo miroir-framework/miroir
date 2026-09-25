@@ -5,10 +5,11 @@
  *
  * Harness: the Slice 4 one. `MiroirContextReactProvider` and `LocalCacheProvider` over a real
  * `LocalCache` seeded with the Miroir meta-model. No launch mocks, no Postgres, no `--profile`.
- * The list is narrowed to `JzodElementEditor_ComponentTestSuite` and the small transformer suite
- * `resolveConditionalSchema` (5 `transformerTest` leaves). Results are read from the list's
- * `onTestComplete`. `registerComponentTests` (the entry of the component test chunk) is wrapped in
- * a `vi.fn` to count its calls. The expected component leaves come from `componentTestManifest.ts`.
+ * The list is narrowed to the 7 per-editor component test instances (#292, e.g.
+ * `JzodEnumEditor_ComponentTestSuite`) and the small transformer suite `resolveConditionalSchema`
+ * (5 `transformerTest` leaves). Results are read from the list's `onTestComplete`.
+ * `registerComponentTests` (the entry of the component test chunk) is wrapped in a `vi.fn` to count
+ * its calls. The expected component leaves of each instance come from its JSON.
  *
  * Re-run only after a GREEN, never while a suite has "not migrated" stubs.
  *
@@ -64,12 +65,7 @@ vi.mock("../../../../src/miroir-fwk/4-tests/componentTests/index", async (import
 });
 
 import * as componentTestsEntry from "../../../../src/miroir-fwk/4-tests/componentTests/index";
-import {
-  componentTestLeafLabel,
-  componentTestManifest,
-  componentTestSuiteInstanceName,
-  componentTestSuiteInstanceUuid,
-} from "../../../../src/miroir-fwk/4-tests/componentTests/componentTestManifest";
+import { componentTestSuiteInstances } from "../../../../src/miroir-fwk/4-tests/componentTests/componentTestManifest";
 import {
   RunAllMiroirTestsButton,
   type MiroirTestSuiteResultsMap,
@@ -104,14 +100,29 @@ function loadMiroirTestInstance(uuid: string): MiroirTestDefinition {
   throw new Error(`MiroirTest ${uuid} not found in ${MIROIR_TEST_DATA_FOLDER}`);
 }
 
-const componentTestSuiteInstance = loadMiroirTestInstance(componentTestSuiteInstanceUuid);
-const transformerSuiteInstance = loadMiroirTestInstance(TRANSFORMER_SUITE_UUID);
-const narrowedMiroirTests = [componentTestSuiteInstance, transformerSuiteInstance];
+/** Every `reactComponentTest` leaf label under `node`, at any depth. */
+function reactComponentLeafLabels(node: any): string[] {
+  if (!node || typeof node !== "object") {
+    return [];
+  }
+  if (node.miroirTestType === "miroirTestSuite" || node.miroirTestType === "reactComponentTestSuite") {
+    return (node.miroirTests ?? []).flatMap(reactComponentLeafLabels);
+  }
+  return node.miroirTestType === "reactComponentTest" ? [node.miroirTestLabel] : [];
+}
 
-/** Every component leaf label, from the manifest. */
-const componentLeafLabels = Object.entries(componentTestManifest).flatMap(([suite, cases]) =>
-  cases.map((caseLabel) => componentTestLeafLabel(suite, caseLabel)),
+/** The 7 per-editor component test instances (#292). */
+const componentTestSuiteInstanceList = Object.values(componentTestSuiteInstances).map(({ uuid }) =>
+  loadMiroirTestInstance(uuid),
 );
+const transformerSuiteInstance = loadMiroirTestInstance(TRANSFORMER_SUITE_UUID);
+const narrowedMiroirTests = [...componentTestSuiteInstanceList, transformerSuiteInstance];
+
+/** Instance name to its component leaf labels, from its JSON. */
+const componentLeafLabelsByInstance: Record<string, string[]> = Object.fromEntries(
+  componentTestSuiteInstanceList.map((instance) => [instance.name, reactComponentLeafLabels(instance.definition)]),
+);
+const COMPONENT_LEAF_COUNT = 68;
 
 // ################################################################################################
 /** The app side of the harness: its own tracker, event service, context, and `LocalCache`. */
@@ -253,19 +264,22 @@ describe("Run All Unit Tests with the Include component tests checkbox", () => {
     expect(container.querySelector('input[type="checkbox"]')).toBeNull();
   });
 
-  it("checkbox on: Run all records one ok per manifest case and the transformer suite's results, and registers the component tests once", async () => {
+  it("checkbox on: Run all records one ok per component case and the transformer suite's results, and registers the component tests once", async () => {
     let results: MiroirTestSuiteResultsMap | undefined;
     renderList((resultsMap) => {
       results = resultsMap;
     });
     const resultsMap = await runAll(() => results);
 
-    const component = leafResults(resultsMap[componentTestSuiteInstanceName]);
-    expect(component.map((result) => result.testName).sort()).toEqual([...componentLeafLabels].sort());
-    expect(
-      component.filter((result) => result.testResult === "ok"),
-      describeNotOk(component),
-    ).toHaveLength(componentLeafLabels.length);
+    expect(Object.values(componentLeafLabelsByInstance).flat()).toHaveLength(COMPONENT_LEAF_COUNT);
+    for (const [instanceName, componentLeafLabels] of Object.entries(componentLeafLabelsByInstance)) {
+      const component = leafResults(resultsMap[instanceName]);
+      expect(component.map((result) => result.testName).sort(), instanceName).toEqual([...componentLeafLabels].sort());
+      expect(
+        component.filter((result) => result.testResult === "ok"),
+        `${instanceName}: ${describeNotOk(component)}`,
+      ).toHaveLength(componentLeafLabels.length);
+    }
 
     const transformer = leafResults(resultsMap[TRANSFORMER_SUITE_NAME]);
     expect(transformer).toHaveLength(TRANSFORMER_SUITE_LEAF_COUNT);
@@ -293,13 +307,15 @@ describe("Run All Unit Tests with the Include component tests checkbox", () => {
 
     const resultsMap = await runAll(() => results);
 
-    const component = leafResults(resultsMap[componentTestSuiteInstanceName]);
-    expect(component.map((result) => result.testName).sort()).toEqual([...componentLeafLabels].sort());
-    expect(component.every((result) => result.testResult === "skipped")).toBe(true);
-    // Skipped by the exclusion, not for lack of a registered runner.
-    const componentJson = JSON.stringify(component);
-    expect(componentJson).toContain("reactComponentTest leaves are excluded from this run");
-    expect(componentJson).not.toContain("requires a registered component test runner");
+    for (const [instanceName, componentLeafLabels] of Object.entries(componentLeafLabelsByInstance)) {
+      const component = leafResults(resultsMap[instanceName]);
+      expect(component.map((result) => result.testName).sort(), instanceName).toEqual([...componentLeafLabels].sort());
+      expect(component.every((result) => result.testResult === "skipped"), instanceName).toBe(true);
+      // Skipped by the exclusion, not for lack of a registered runner.
+      const componentJson = JSON.stringify(component);
+      expect(componentJson).toContain("reactComponentTest leaves are excluded from this run");
+      expect(componentJson).not.toContain("requires a registered component test runner");
+    }
 
     const transformer = leafResults(resultsMap[TRANSFORMER_SUITE_NAME]);
     expect(transformer.filter((result) => result.testResult === "ok"), describeNotOk(transformer)).toHaveLength(

@@ -9,7 +9,7 @@ import { jzodUnionEditorComponentTests } from "./jzodElementEditor/JzodUnionEdit
 
 // ################################################################################################
 // Component test registry (#286): suite name to component, suite props, and case bodies.
-// Its suites and cases must equal `componentTestManifest.ts`, which the generator reads.
+// Its suites and cases must equal `componentTestManifest.ts` (checked by the consistency test).
 // ################################################################################################
 export const componentTestRegistry: ComponentTestRegistry = {
   JzodArrayEditor: jzodArrayEditorComponentTests,

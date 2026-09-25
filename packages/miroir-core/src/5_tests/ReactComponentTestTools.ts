@@ -9,6 +9,7 @@ import type {
 import type {
   MiroirTestRunFilter,
   ReactComponentTestRunnerResult,
+  ReactComponentTestSuiteContext,
 } from "../0_interfaces/5-tests/miroirTestTypes";
 import { ConfigurationService } from "../3_controllers/ConfigurationService";
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
@@ -23,7 +24,8 @@ export const REACT_COMPONENT_TEST_NO_RUNNER_MESSAGE =
  *
  * - No runner registered: the leaf is recorded as skipped and nothing is thrown (miroir-core
  *   generic entry, where vitest then reports the leaf as passed).
- * - Otherwise the runner's `ok` / `error` is recorded. An `error` is rethrown only when
+ * - Otherwise the runner is called with the leaf and, for a leaf of a `reactComponentTestSuite`,
+ *   the suite context built by the walk (#292), and its `ok` / `error` is recorded. An `error` is rethrown only when
  *   `rethrowComponentTestFailures` is set, so that one failing case does not end a UI run.
  */
 export async function runMiroirReactComponentTest(
@@ -34,6 +36,7 @@ export async function runMiroirReactComponentTest(
   rethrowComponentTestFailures: boolean,
   testAssertionPath?: TestAssertionPath,
   parentSkip?: boolean,
+  reactComponentTestSuite?: ReactComponentTestSuiteContext,
 ): Promise<void> {
   const assertionName = miroirTest.miroirTestLabel;
   const currentTestAssertionPath =
@@ -66,10 +69,11 @@ export async function runMiroirReactComponentTest(
 
   let runnerResult: ReactComponentTestRunnerResult;
   try {
-    runnerResult = await runner({
-      componentTestRef: miroirTest.componentTestRef,
-      testNamePath,
-    });
+    runnerResult = await runner(
+      reactComponentTestSuite
+        ? { testNamePath, leaf: miroirTest, suite: reactComponentTestSuite }
+        : { testNamePath, leaf: miroirTest },
+    );
   } catch (error) {
     runnerResult = {
       status: "error",

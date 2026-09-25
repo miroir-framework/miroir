@@ -108,7 +108,16 @@ export function createReactComponentTestRunner(
     wrapper.miroirEventService.destroy();
   };
 
-  const runner: ReactComponentTestRunner = async ({ componentTestRef, testNamePath }) => {
+  const runner: ReactComponentTestRunner = async ({ testNamePath, leaf }) => {
+    // #292 Slice 1: only the legacy path (a leaf with `componentTestRef`) is implemented; the step
+    // path (a leaf of a `reactComponentTestSuite`, with `steps`) comes with the step interpreter.
+    const componentTestRef = leaf.componentTestRef;
+    if (!componentTestRef) {
+      return {
+        status: "error",
+        message: `reactComponentTest "${leaf.miroirTestLabel}" has no componentTestRef: declarative steps are not implemented yet`,
+      };
+    }
     const suite = registry[componentTestRef.suite];
     if (!suite) {
       return {

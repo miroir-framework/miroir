@@ -1,0 +1,45 @@
+{
+  "uuid": "3995a071-b8ae-48d3-a488-6d1fc828b725",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "JzodLiteralEditor_ComponentTestSuite",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Issues #286, #292: JzodLiteralEditor React component tests (JzodElementEditor), one MiroirTest instance per editor. Edited by hand.",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "JzodLiteralEditor_ComponentTestSuite",
+    "miroirTests": [
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "JzodLiteralEditor",
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodLiteralEditor: renders Literal input with label when label prop is provided",
+            "componentTestRef": {
+              "suite": "JzodLiteralEditor",
+              "case": "renders Literal input with label when label prop is provided"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodLiteralEditor: renders Literal input without label when label prop is not provided",
+            "componentTestRef": {
+              "suite": "JzodLiteralEditor",
+              "case": "renders Literal input without label when label prop is not provided"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodLiteralEditor: setting new value",
+            "componentTestRef": {
+              "suite": "JzodLiteralEditor",
+              "case": "setting new value"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

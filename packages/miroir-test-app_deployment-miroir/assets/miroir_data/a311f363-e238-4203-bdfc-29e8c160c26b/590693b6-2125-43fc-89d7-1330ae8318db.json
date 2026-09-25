@@ -1,0 +1,117 @@
+{
+  "uuid": "590693b6-2125-43fc-89d7-1330ae8318db",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "JzodSimpleTypeEditor_ComponentTestSuite",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Issues #286, #292: JzodSimpleTypeEditor React component tests (JzodElementEditor), one MiroirTest instance per editor. Edited by hand.",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "JzodSimpleTypeEditor_ComponentTestSuite",
+    "miroirTests": [
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "JzodSimpleTypeEditor",
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodSimpleTypeEditor: string renders input with proper value",
+            "componentTestRef": {
+              "suite": "JzodSimpleTypeEditor",
+              "case": "string renders input with proper value"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodSimpleTypeEditor: string allows to modify input value with consistent update",
+            "componentTestRef": {
+              "suite": "JzodSimpleTypeEditor",
+              "case": "string allows to modify input value with consistent update"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodSimpleTypeEditor: string allows to modify input value with consistent update then submit form",
+            "componentTestRef": {
+              "suite": "JzodSimpleTypeEditor",
+              "case": "string allows to modify input value with consistent update then submit form"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodSimpleTypeEditor: number renders input with proper value",
+            "componentTestRef": {
+              "suite": "JzodSimpleTypeEditor",
+              "case": "number renders input with proper value"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodSimpleTypeEditor: number allows to modify input value with consistent update",
+            "componentTestRef": {
+              "suite": "JzodSimpleTypeEditor",
+              "case": "number allows to modify input value with consistent update"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodSimpleTypeEditor: uuid renders input with proper value",
+            "componentTestRef": {
+              "suite": "JzodSimpleTypeEditor",
+              "case": "uuid renders input with proper value"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodSimpleTypeEditor: uuid allows to modify input value with consistent update",
+            "componentTestRef": {
+              "suite": "JzodSimpleTypeEditor",
+              "case": "uuid allows to modify input value with consistent update"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodSimpleTypeEditor: boolean renders checkbox with proper value true",
+            "componentTestRef": {
+              "suite": "JzodSimpleTypeEditor",
+              "case": "boolean renders checkbox with proper value true"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodSimpleTypeEditor: boolean renders checkbox with proper value false",
+            "componentTestRef": {
+              "suite": "JzodSimpleTypeEditor",
+              "case": "boolean renders checkbox with proper value false"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodSimpleTypeEditor: boolean allows to modify checkbox value with consistent update",
+            "componentTestRef": {
+              "suite": "JzodSimpleTypeEditor",
+              "case": "boolean allows to modify checkbox value with consistent update"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodSimpleTypeEditor: bigint renders input with proper bigint value",
+            "componentTestRef": {
+              "suite": "JzodSimpleTypeEditor",
+              "case": "bigint renders input with proper bigint value"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodSimpleTypeEditor: bigint allows to modify input value with consistent update",
+            "componentTestRef": {
+              "suite": "JzodSimpleTypeEditor",
+              "case": "bigint allows to modify input value with consistent update"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

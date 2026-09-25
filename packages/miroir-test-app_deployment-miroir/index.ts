@@ -329,7 +329,13 @@ export { default as miroirTest_runner_mcp_get_instances } from "./assets/miroir_
 export { default as miroirTest_unionArrayChoices } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/9e4db067-27ab-48c1-91f7-2a739824e674.json" with { type: "json" };
 export { default as miroirTest_unionObjectChoices } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/14319c8e-8ece-4853-9004-f095fbd16d1a.json" with { type: "json" };
 export { default as miroirTest_virtualAttributes } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/c4dffd69-2594-482c-b680-295c30eafe30.json" with { type: "json" };
-export { default as miroirTest_JzodElementEditor_ComponentTestSuite } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/761d4ed2-1a5c-4901-a9d9-897dbec0b27f.json" with { type: "json" };
+export { default as miroirTest_JzodEnumEditor_ComponentTestSuite } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/761d4ed2-1a5c-4901-a9d9-897dbec0b27f.json" with { type: "json" };
+export { default as miroirTest_JzodArrayEditor_ComponentTestSuite } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/1b71d68b-7dc9-468c-a251-4fa7889f20f4.json" with { type: "json" };
+export { default as miroirTest_JzodLiteralEditor_ComponentTestSuite } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/3995a071-b8ae-48d3-a488-6d1fc828b725.json" with { type: "json" };
+export { default as miroirTest_JzodObjectEditor_ComponentTestSuite } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/da353085-c62b-4aa6-bd54-8813d303dfe5.json" with { type: "json" };
+export { default as miroirTest_JzodSimpleTypeEditor_ComponentTestSuite } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/590693b6-2125-43fc-89d7-1330ae8318db.json" with { type: "json" };
+export { default as miroirTest_JzodUnionEditor_ComponentTestSuite } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/de517cd6-31a8-46d2-ac09-3a5162b630a7.json" with { type: "json" };
+export { default as miroirTest_JzodAnyEditor_ComponentTestSuite } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/ec601bcc-a27d-450d-9c37-bdd6a12a1575.json" with { type: "json" };
 
 // ################################################################################################
 // Miroir Data - TestConfiguration (parentUuid = entityTestConfiguration = 675ccd46)

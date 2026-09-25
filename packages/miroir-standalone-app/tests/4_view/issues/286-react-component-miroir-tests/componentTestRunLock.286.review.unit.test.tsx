@@ -19,7 +19,7 @@
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { ConfigurationService, MiroirEventService } from "miroir-core";
+import { ConfigurationService, MiroirEventService, type MiroirTestForReactComponent } from "miroir-core";
 
 import type { ComponentTestRegistry } from "../../../../src/miroir-fwk/4-tests/componentTests/componentTestEnvironment";
 import {
@@ -104,15 +104,21 @@ describe("component test run lock", () => {
   });
 });
 
+/** A legacy `reactComponentTest` leaf naming a case of `fakeRegistry` (#292: runner params). */
+function fakeLeaf(caseLabel: string): MiroirTestForReactComponent {
+  return {
+    miroirTestType: "reactComponentTest",
+    miroirTestLabel: `FakeSuite: ${caseLabel}`,
+    componentTestRef: { suite: "FakeSuite", case: caseLabel },
+  };
+}
+
 describe("runner.endRun()", () => {
   it("after a filtered run, destroys the open suite wrapper once and keeps the last case mounted; close() unmounts it", async () => {
     const runner = createReactComponentTestRunner({ sandboxElement: sandboxes[0], registry: fakeRegistry });
 
     // Filtered run: only the suite's first case, so the "after the last case" release never fires.
-    const result = await runner({
-      componentTestRef: { suite: "FakeSuite", case: "first" },
-      testNamePath: ["FakeSuite", "first"],
-    });
+    const result = await runner({ testNamePath: ["FakeSuite", "first"], leaf: fakeLeaf("first") });
     expect(result).toEqual({ status: "ok" });
     expect(destroySpy).toHaveBeenCalledTimes(0);
 
@@ -128,12 +134,9 @@ describe("runner.endRun()", () => {
 
   it("the next run after endRun() builds a new wrapper", async () => {
     const runner = createReactComponentTestRunner({ sandboxElement: sandboxes[0], registry: fakeRegistry });
-    await runner({ componentTestRef: { suite: "FakeSuite", case: "first" }, testNamePath: ["FakeSuite", "first"] });
+    await runner({ testNamePath: ["FakeSuite", "first"], leaf: fakeLeaf("first") });
     runner.endRun();
-    const result = await runner({
-      componentTestRef: { suite: "FakeSuite", case: "first" },
-      testNamePath: ["FakeSuite", "first"],
-    });
+    const result = await runner({ testNamePath: ["FakeSuite", "first"], leaf: fakeLeaf("first") });
     expect(result).toEqual({ status: "ok" });
     runner.endRun();
     expect(destroySpy).toHaveBeenCalledTimes(2);

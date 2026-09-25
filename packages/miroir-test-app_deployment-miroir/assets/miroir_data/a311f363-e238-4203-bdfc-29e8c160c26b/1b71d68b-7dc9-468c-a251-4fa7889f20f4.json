@@ -1,0 +1,117 @@
+{
+  "uuid": "1b71d68b-7dc9-468c-a251-4fa7889f20f4",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "JzodArrayEditor_ComponentTestSuite",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Issues #286, #292: JzodArrayEditor React component tests (JzodElementEditor), one MiroirTest instance per editor. Edited by hand.",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "JzodArrayEditor_ComponentTestSuite",
+    "miroirTests": [
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "JzodArrayEditor",
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodArrayEditor: renders array input with label when label prop is provided",
+            "componentTestRef": {
+              "suite": "JzodArrayEditor",
+              "case": "renders array input with label when label prop is provided"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodArrayEditor: renders all array values, in the right order",
+            "componentTestRef": {
+              "suite": "JzodArrayEditor",
+              "case": "renders all array values, in the right order"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodArrayEditor: form state is changed when selection changes",
+            "componentTestRef": {
+              "suite": "JzodArrayEditor",
+              "case": "form state is changed when selection changes"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodArrayEditor: changing order of array items when button ROOT.testField.1.up is clicked",
+            "componentTestRef": {
+              "suite": "JzodArrayEditor",
+              "case": "changing order of array items when button ROOT.testField.1.up is clicked"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodArrayEditor: changing order of array items when button ROOT.testField.2.up is clicked",
+            "componentTestRef": {
+              "suite": "JzodArrayEditor",
+              "case": "changing order of array items when button ROOT.testField.2.up is clicked"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodArrayEditor: changing order of array items when button ROOT.testField.0.down is clicked",
+            "componentTestRef": {
+              "suite": "JzodArrayEditor",
+              "case": "changing order of array items when button ROOT.testField.0.down is clicked"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodArrayEditor: changing order of heteronomous object array items from union when button ROOT.testField.0.down is clicked",
+            "componentTestRef": {
+              "suite": "JzodArrayEditor",
+              "case": "changing order of heteronomous object array items from union when button ROOT.testField.0.down is clicked"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodArrayEditor: renders all array values of a plain 2-items tuple with a string and a number, in the right order",
+            "componentTestRef": {
+              "suite": "JzodArrayEditor",
+              "case": "renders all array values of a plain 2-items tuple with a string and a number, in the right order"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodArrayEditor: renders all array values of a tuple inside an array, in the right order",
+            "componentTestRef": {
+              "suite": "JzodArrayEditor",
+              "case": "renders all array values of a tuple inside an array, in the right order"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodArrayEditor: add an element to a string array when button ROOT.testField.add is clicked",
+            "componentTestRef": {
+              "suite": "JzodArrayEditor",
+              "case": "add an element to a string array when button ROOT.testField.add is clicked"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodArrayEditor: add an element to an object array when button ROOT.testField.add is clicked",
+            "componentTestRef": {
+              "suite": "JzodArrayEditor",
+              "case": "add an element to an object array when button ROOT.testField.add is clicked"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodArrayEditor: duplicate an element in a string array when duplicate button for item 1 is clicked",
+            "componentTestRef": {
+              "suite": "JzodArrayEditor",
+              "case": "duplicate an element in a string array when duplicate button for item 1 is clicked"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

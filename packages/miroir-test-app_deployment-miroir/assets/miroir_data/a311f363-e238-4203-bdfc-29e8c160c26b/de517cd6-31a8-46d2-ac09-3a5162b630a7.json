@@ -1,0 +1,93 @@
+{
+  "uuid": "de517cd6-31a8-46d2-ac09-3a5162b630a7",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "JzodUnionEditor_ComponentTestSuite",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Issues #286, #292: JzodUnionEditor React component tests (JzodElementEditor), one MiroirTest instance per editor. Edited by hand.",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "JzodUnionEditor_ComponentTestSuite",
+    "miroirTests": [
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "JzodUnionEditor",
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodUnionEditor: union between simple types renders input with proper value",
+            "componentTestRef": {
+              "suite": "JzodUnionEditor",
+              "case": "union between simple types renders input with proper value"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodUnionEditor: union between simple type and object for value of simple type renders input with proper value",
+            "componentTestRef": {
+              "suite": "JzodUnionEditor",
+              "case": "union between simple type and object for value of simple type renders input with proper value"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodUnionEditor: union between simple type and object for value object renders input with proper value",
+            "componentTestRef": {
+              "suite": "JzodUnionEditor",
+              "case": "union between simple type and object for value object renders input with proper value"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodUnionEditor: union between 2 object types with a discriminator for value object renders input following the proper value type",
+            "componentTestRef": {
+              "suite": "JzodUnionEditor",
+              "case": "union between 2 object types with a discriminator for value object renders input following the proper value type"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodUnionEditor: non-discriminated union can switch type from number to string via union type selector",
+            "componentTestRef": {
+              "suite": "JzodUnionEditor",
+              "case": "non-discriminated union can switch type from number to string via union type selector"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodUnionEditor: non-discriminated union can switch type from number to object via union type selector",
+            "componentTestRef": {
+              "suite": "JzodUnionEditor",
+              "case": "non-discriminated union can switch type from number to object via union type selector"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodUnionEditor: union type star button is visible but selector is initially hidden",
+            "componentTestRef": {
+              "suite": "JzodUnionEditor",
+              "case": "union type star button is visible but selector is initially hidden"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodUnionEditor: union type star button toggle shows then hides selector",
+            "componentTestRef": {
+              "suite": "JzodUnionEditor",
+              "case": "union type star button toggle shows then hides selector"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodUnionEditor: union type selector for object value places star and selector above the value",
+            "componentTestRef": {
+              "suite": "JzodUnionEditor",
+              "case": "union type selector for object value places star and selector above the value"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

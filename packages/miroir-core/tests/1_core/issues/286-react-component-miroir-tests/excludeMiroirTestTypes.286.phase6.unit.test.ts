@@ -106,8 +106,9 @@ function recordedAssertions(tracker: MiroirActivityTracker): Record<string, Test
 async function withCountingRunner(body: (calls: string[]) => Promise<void>): Promise<void> {
   const previous = ConfigurationService.configurationService.reactComponentTestRunner;
   const calls: string[] = [];
-  const runner: ReactComponentTestRunner = async ({ componentTestRef }) => {
-    calls.push(componentTestRef.case);
+  // #292: the runner receives the leaf; a legacy leaf holds its componentTestRef.
+  const runner: ReactComponentTestRunner = async ({ leaf }) => {
+    calls.push(leaf.componentTestRef?.case ?? "");
     return { status: "ok" };
   };
   ConfigurationService.configurationService.registerReactComponentTestRunner(runner);

@@ -33,7 +33,7 @@ Out of scope: other UI_COMPONENT test files (#204), new component suites, change
 | Slice | Title | Complexity | Status | Primary proof |
 |---|---|---|---|---|
 | 0 | Baselines | S | ✅ DONE | baseline tables, `baseline-component-cases.txt` |
-| 1 | Schema, walk, runner signature, 7 instances (legacy leaves), generator removed | L | ⏳ TODO | `reactComponentTestSuite.292.phase1` (core), `componentTestInstances.292.phase1`, `miroir-component-tests` 70 passed |
+| 1 | Schema, walk, runner signature, 7 instances (legacy leaves), generator removed | L | ✅ DONE | `reactComponentTestSuite.292.phase1` (core), `componentTestInstances.292.phase1`, `miroir-component-tests` 70 passed |
 | 2 | Tracer: interpreter, extractor fix, `$options`, Enum from steps | L | ⏳ TODO | `componentTestSteps.292.phase2`, `extractorOpenCombobox.292.phase2`, Enum 3/3 in vitest and in the app |
 | 3 | Literal and SimpleType | M | ⏳ TODO | `-t "JzodLiteralEditor"` 3, `-t "JzodSimpleTypeEditor"` 12, app check |
 | 4 | Array and Object | L | ⏳ TODO | `-t "JzodArrayEditor"` 12, `-t "JzodObjectEditor"` 14, app check |
@@ -223,7 +223,7 @@ Both failures are caused by the user's own uncommitted, #292-unrelated spotify-m
 
 ## Slice 1: schema, walk, runner signature, 7 instances
 
-**Status:** ⏳ TODO · **Complexity:** L
+**Status:** ✅ DONE · **Complexity:** L
 
 ### Goal
 
@@ -316,7 +316,115 @@ Browser check: the 7 instances appear in the MiroirTest list after a reload. Run
 
 ### Realization
 
-(to fill)
+Every command was run alone, one per file, from the repo root. The user's unrelated uncommitted changes (`ci/claude-cloud-env-script.sh`, the `admin_data` files, the spotify model files, `generate_externalServiceSync_suites.py`) were not touched, staged, or stashed.
+
+**RED observed** (before any product change, `npx vitest run <file>` with `VITE_TEST_MODE=true`):
+
+- miroir-core `reactComponentTestSuite.292.phase1`: **7 failed / 7**. Five tests failed with `Unknown miroirTestType: reactComponentTestSuite` (the exhaustive default of `runMiroirTest`). `walkMiroirTestLeaves` gave `expected [ 'S' ] to deeply equal [ 'A', 'B' ]`. The legacy test gave `expected [ Array(1) ] to deeply equal [ { …(2) } ]`: the runner got the old `{ componentTestRef, testNamePath }` params.
+- app `componentTestSchema.292.phase1`: **2 failed, 5 passed**. The two `jzodTypeCheck` tests of the example suite failed with `selectUnionBranchFromDiscriminator … found no match … discriminatorValues: ["reactComponentTestSuite"]`. The Entity/EntityVersion equality test already passed (the contexts were equal before the change). The 4 "fails" tests passed vacuously at RED, because the whole node was unknown. After GREEN they fail for the intended reason only: the same suite without the change passes.
+- app `componentTestInstances.292.phase1`: **3 failed, 1 passed**. The results were `expected { …(1) } to deeply equal { …(7) }` (1 instance found), `expected [ { …(8) } ] to have a length of 7 but got 1`, and `expected [ 'JzodEnumEditor', …(6) ] to deeply equal []` (the 7 exports were missing). The baseline-label test already passed at RED: the combined instance held the same 68 labels under the same child labels. It is the guard that the split keeps every label.
+
+**GREEN:**
+
+- **Schema** (Entity `a311f363-…` and EntityVersion `51c647fe-…`, same text, written by one script, 2-space JSON): new context entries `reactComponentTestSuite` (after `miroirTestSuite`), then `reactComponentTestTextMatch`, `reactComponentTestTarget`, and `reactComponentTestStep` (after `miroirTestForReactComponent`). `reactComponentTestSuite` is the third member of `miroirTestSuite.miroirTests`. `miroirTestForReactComponent` gains `componentProps?` and `steps?`, and `componentTestRef` becomes optional. The step union is discriminated by `step` and has the 19 kinds of analysis §5.4, `custom` included. Rebuild with `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core`: the generated `ReactComponentTestSuite`, `ReactComponentTestStep`, `ReactComponentTestTarget`, and `ReactComponentTestTextMatch` (types and Zod schemas) are exported from miroir-core `index.ts` next to `MiroirTestForReactComponent`. jzod 0.8.5 from npm handled everything; no sibling link was needed.
+- **miroir-core:**
+  - `miroirTestTypes.ts`: `ReactComponentTestSuiteContext { suitePath, component, componentProps, caseLabels }` (exported), and runner params `{ testNamePath, leaf, suite? }`.
+  - `miroirTestSuiteWalk.ts`: a `reactComponentTestSuite` child is walked like a nested suite (same tracking, filter, skip, and vitest paths). Walking the node builds the context (`componentProps` defaults to `{}`, `caseLabels` = every leaf label, whatever the filter) and passes it as the new trailing parameter of `_runMiroirTest` / `_runMiroirTestWithTracking` (`RunMiroirTest` type, `runMiroirTest`, the tracking wrapper) down to `runMiroirReactComponentTest`. That function calls `runner({ testNamePath, leaf, suite })`, or `runner({ testNamePath, leaf })` with no `suite` key for a legacy leaf.
+  - `runMiroirTestSuite` accepts `MiroirTestSuite | ReactComponentTestSuite`. `walkMiroirTestLeaves` recurses into the node.
+- **App:**
+  - `miroirTestDefinitionHasReactComponentTest` recurses into the node.
+  - The runner reads `leaf.componentTestRef` on the legacy path. A leaf without it gets an `error` result ("declarative steps are not implemented yet"); Slice 2 replaces this.
+  - `componentTestManifest.ts`: `componentTestSuiteInstances: Record<editor, { uuid, name }>` replaces `componentTestSuiteInstanceUuid` / `componentTestSuiteInstanceName`. The registry comment no longer names the generator.
+- **Instances:** `761d4ed2-….json` rewritten as `JzodEnumEditor_ComponentTestSuite`, with only the Enum sub-suite. 6 new files carry the other sub-suites. The leaves are copied unchanged, the top-level keys and their order are kept, and the JSON is 2-space with CRLF. The description now reads "Issues #286, #292: <Editor> React component tests (JzodElementEditor), one MiroirTest instance per editor. Edited by hand." Wiring: 7 exports in `index.ts`, 7 declarations in `index.d.ts`, and 7 imports plus `tests` entries in `src/Model.ts`, each at the place of the removed `miroirTest_JzodElementEditor_ComponentTestSuite` line.
+- **Deleted** `scripts/generate-component-miroir-tests.ts`.
+- **Tests rewritten or adapted:**
+  - The consistency test: every component instance is checked with `jzodTypeCheck` against both `mlSchema`s. Leaf labels must be unique across all instances and start with `<child label>: `. Each leaf needs exactly one of `steps` / `componentTestRef`. Legacy leaves must equal the manifest, and the manifest must equal the registry. Fixtures cover: missing leaf, extra registry case, duplicate label, missing prefix, and both fields.
+  - The vitest entry: every instance with a component leaf, a `describe(<child label>)` per child, path `[<instance name>, <child label>]`, and a new check "loads 7 component test instances with 68 leaves".
+  - `componentTestSandbox.286.phase4`: the Array instance by uuid, and filter `{ [name]: { JzodArrayEditor: labels } }`.
+  - `runAllComponentTests.286.phase6`: the 7 instances plus the transformer suite, with the expected labels of each instance read from its JSON.
+  - `componentTestRunLock.286.review`: `{ testNamePath, leaf: fakeLeaf(…) }`.
+  - miroir-core `reactComponentLeaf.286.phase2` / `excludeMiroirTestTypes.286.phase6`: runners read `leaf.componentTestRef`.
+
+**Deviations:**
+
+1. **Filter test.** The filter test of `reactComponentTestSuite.292.phase1` asserts that the runner is called for A only and that B is `skipped` **or absent**, not "recorded as skipped". The walk registers a filtered-out leaf with `test.skip`, and `TestFramework.test.skip` never runs the body, so no result is recorded for B. That is the existing behavior for every leaf type, and changing it is out of scope.
+2. **Event service in the core test.** The core test creates a `MiroirEventService` on its tracker. Nested suites are tracked through `trackTestSuite`, which throws `miroirEventService is not set` without one. The #286 core tests only had flat suites.
+3. **`testSuites`** (`TestTools.ts`) is unchanged. Its logic already treats any child that is not a `miroirTestSuite` like a leaf, so a `reactComponentTestSuite` is handled as a leaf-holding suite without an edit. It has no live caller.
+4. **Schema details not fixed by analysis §5.1 / §5.4:**
+   - `expectRenderedValues.label` is required (it is the extractor's `step` argument).
+   - `path` items are `string | number`.
+   - `filter` items are the extractor's filter enum (`select`, `input`, `option`, `cell`, `checkbox`, `combobox`).
+   - `change.value`, `expectElement.value`, and the items of `expectElement.values` are `string | number | boolean`.
+   - `expectElement.attribute` is `{ name, value: string }`.
+   - Every step member has a `tag` with `defaultLabel` = its kind.
+5. **Vitest entry order.** The vitest entry sorts the instances by name, so the `describe` order changed (Any first, not Array). Case lists are compared sorted, so this has no effect.
+6. **Refactor checkpoint grep.** The grep finds one hit: `componentTestInstances.292.phase1` names `JzodElementEditor_ComponentTestSuite` to assert that it is absent from the exports and from `defaultMiroirMetaModel.tests`.
+7. **Renamed vitest test.** One vitest name of `runAllComponentTests.286.phase6` changed from "…one ok per manifest case…" to "…one ok per component case…".
+
+**Validation** (one command per file, sequential):
+
+| Command | Result | Expected |
+|---|---|---|
+| `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core` | exit 0 | — |
+| `testByFile -w miroir-core -- 292-declarative-react-component-tests` | 7 passed | — |
+| `testByFile -w miroir-core -- 286-react-component-miroir-tests` | 16 passed (3 files) | 16 ✓ |
+| `testMiroir -w miroir-core` | 794 passed | 794 ✓ |
+| `testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts` | 159 passed | 153 + 6 ✓ |
+| `componentTestSchema.292.phase1` | 7 passed | — |
+| `componentTestInstances.292.phase1` | 4 passed | — |
+| `componentMiroirTests.consistency` | 8 passed | — |
+| `miroir-component-tests` | **70 passed** (real 58 s, vitest 50.8 s; Slice 0: 56.6 s) | 70 ✓ |
+| `componentMiroirTests.286.phase0` | 3 passed | 3 ✓ |
+| `componentTestSandbox.286.phase4` | 5 passed (63 s) | 5 ✓ |
+| `componentTestRunLock.286.review` | 5 passed | 5 ✓ |
+| `runAllComponentTests.286.phase6` | 3 passed (61 s) | 3 ✓ |
+| `python scripts/check_bare_console.py` | OK | ✓ |
+| `tsc` miroir-core | 0 errors | 0 ✓ |
+| `tsc` miroir-standalone-app | 1 error, the known `JzodElementEditorHooks.ts(528,59)` TS2339 | baseline ✓ |
+
+The reduced case list of `miroir-component-tests` (ANSI stripped, `<Editor> > <leaf label>: passed`, sorted) is byte-identical to `baseline-component-cases.txt` (`diff` empty, 68 lines). The other packages of the Slice 0 tsc list (`miroir-store-*`, `miroir-localcache*`, `miroir-server`, `miroir-mcp`, `miroir-ai`, `miroir-cli`) plus `miroir-react` were also type-checked: 0 errors each.
+
+**Browser check (dev build).** The Vite dev server (`https://localhost:5173`) and the API server (`https://localhost:3080`) were already running and were not restarted. The method is the one in the plan: `playwright-core` in the session scratchpad, headless Microsoft Edge, log in as `alice`. For each instance, the script opened the browser check URL, clicked `Run <name> Unit Tests`, waited for the snackbar, read the panel, and clicked Close. Each of the 7 new instances loaded in its MiroirTestDetails report without a server restart, so the LocalCache holds them.
+
+| Instance | Passed | Run time |
+|---|---|---|
+| Enum | 3/3 | 2.2 s |
+| Array | 12/12 | 5.9 s |
+| Literal | 3/3 | 1.7 s |
+| Object | 14/14 | 7.7 s |
+| SimpleType | 12/12 | 4.9 s |
+| Union | 9/9 | 3.5 s |
+| Any | 15/15 | 5.8 s |
+
+For each instance:
+- The panel read "PASSED", and the snackbar read "<name> Miroir tests completed successfully".
+- No console message matched `act(`.
+- After the run, the sandbox kept one case container, and Close removed it.
+- The console errors were the known 403 at page load and two React "unique key" warnings from `Sidebar` / `AppBar`. None of them comes from the sandbox.
+
+**Impact on later slices:**
+- The runner's step path is still missing: a leaf with `steps` gives an `error` result until Slice 2.
+- The legacy wrappers stay keyed by `componentTestRef.suite`.
+- The `ReactComponentTestSuiteContext` passed by the walk is ready for T4 (the wrapper keyed by `suitePath`).
+
+**Files created:**
+- `packages/miroir-core/tests/1_core/issues/292-declarative-react-component-tests/reactComponentTestSuite.292.phase1.unit.test.ts`
+- `packages/miroir-standalone-app/tests/4_view/issues/292-declarative-react-component-tests/componentTestSchema.292.phase1.unit.test.ts` and `componentTestInstances.292.phase1.unit.test.ts`
+- 6 instances in `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-…/`: `1b71d68b-…`, `3995a071-…`, `da353085-…`, `590693b6-…`, `de517cd6-…`, `ec601bcc-….json`
+
+**Files changed:**
+- The Entity `a311f363-….json` and the EntityVersion `51c647fe-….json`, the instance `761d4ed2-….json`, and the deployment package's `index.ts`, `index.d.ts`, and `src/Model.ts`
+- miroir-core:
+  - `preprocessor-generated/miroirFundamentalJzodSchema.ts` and `miroirFundamentalType.ts` (generated)
+  - `miroirTestTypes.ts`, `MiroirTestTools.ts`, `ReactComponentTestTools.ts`, `miroirTestSuiteWalk.ts`, `inferIntegrationSessionKind.ts`, `index.ts`
+  - the 2 #286 core tests
+- app:
+  - `componentTestManifest.ts`, `componentTestRegistry.ts` (comment), `runReactComponentTest.tsx`, `miroirTestSuiteUiExecution.ts`
+  - `miroir-component-tests.unit.test.tsx`, `componentMiroirTests.consistency.unit.test.ts`
+  - `componentTestSandbox.286.phase4`, `runAllComponentTests.286.phase6`, `componentTestRunLock.286.review`
+- this plan
+
+**File deleted:** `packages/miroir-standalone-app/scripts/generate-component-miroir-tests.ts`.
 
 ---
 

@@ -114,9 +114,11 @@ describe("reactComponentTest leaf", () => {
   it("with a runner returning error, the walk records error with the runner's message and runs the next leaf", async () => {
     const calls: string[] = [];
     await withRegisteredRunner(
-      async ({ componentTestRef }) => {
-        calls.push(componentTestRef.case);
-        return componentTestRef.case === "case A"
+      // #292: the runner receives the leaf; a legacy leaf holds its componentTestRef.
+      async ({ leaf }) => {
+        const caseLabel = leaf.componentTestRef?.case;
+        calls.push(caseLabel ?? "");
+        return caseLabel === "case A"
           ? { status: "error", message: "case A failed on purpose" }
           : { status: "ok" };
       },

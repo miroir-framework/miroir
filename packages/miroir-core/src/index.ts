@@ -471,6 +471,14 @@ export {
   miroirTestForAction,
   MiroirTestForReactComponent,
   miroirTestForReactComponent,
+  ReactComponentTestSuite,
+  reactComponentTestSuite,
+  ReactComponentTestStep,
+  reactComponentTestStep,
+  ReactComponentTestTarget,
+  reactComponentTestTarget,
+  ReactComponentTestTextMatch,
+  reactComponentTestTextMatch,
   MiroirTestLeaf,
   miroirTestLeaf,
   MiroirTestSuite,
@@ -1756,6 +1764,7 @@ export type {
   ReactComponentTestRef,
   ReactComponentTestRunner,
   ReactComponentTestRunnerResult,
+  ReactComponentTestSuiteContext,
 } from "./0_interfaces/5-tests/miroirTestTypes";
 export {
   displayMiroirTestResults,
