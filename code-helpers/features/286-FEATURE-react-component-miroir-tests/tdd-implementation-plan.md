@@ -9,7 +9,7 @@ Working branch: `286-FEATURE-react-component-miroir-tests`, created from `284-FE
 
 **Review:** revised after [`./plan-adversarial-review.md`](./plan-adversarial-review.md), P1-P22 applied.
 
-**Resume note:** Slices 0 to 9 done, pilot clean. The 12 Array, 3 Enum, 3 Literal, 14 Object, and 12 SimpleType cases run from the MiroirTest instance `761d4ed2-…` through the new vitest entry (44 cases plus 1 entry check) and in the app, where the unit Run button of `MiroirTestDisplay` runs them in the sandbox and records one `ok` per case (15/15 checked in a real browser on the Vite dev server and on the production build after Slice 5, 18/18 on the dev server after Slice 7, 32/32 on the dev server after Slice 8, 44/44 on the dev server after Slice 9). Since Slice 8, `env.fireEvent` is `componentTestFireEvent`, which adds the React-specific events of `@testing-library/react`'s `fireEvent` (`blur` also fires `focusout`, and so on) without importing it. `PortalContainerContext` sends the `ThemedSelectWithPortal` option lists, and the MUI popups (through a MUI `DefaultPropsProvider`), into the sandbox portal element. "Run All Unit Tests" of `MiroirTestListDisplay` has an "Include component tests" checkbox, checked by default. When checked, it runs the component leaves in the list's own sandbox. When unchecked, it passes `excludeMiroirTestTypes: ["reactComponentTest"]`, so those leaves are recorded as skipped. The old file keeps 24 cases (Union and Any). Next: Slice 10 (Union suite). Tests that Slice 12 must add to the `unit-286-react-component-miroir-tests` nonreg unit beyond its §12.1 list: `componentTestFireEvent.286.phase8` (Slice 8). Slice 9 added no issue test. Open follow-up: a filter that names one sub-suite of a multi-sub-suite instance throws in miroir-core when run from `MiroirTestDisplay` (Slice 5 finding, re-evaluated in the Slice 6 Realization).
+**Resume note:** Slices 0 to 10 done, pilot clean. The 12 Array, 3 Enum, 3 Literal, 14 Object, 12 SimpleType, and 9 Union cases run from the MiroirTest instance `761d4ed2-…` through the new vitest entry (53 cases plus 1 entry check) and in the app, where the unit Run button of `MiroirTestDisplay` runs them in the sandbox and records one `ok` per case (15/15 checked in a real browser on the Vite dev server and on the production build after Slice 5, 18/18 on the dev server after Slice 7, 32/32 on the dev server after Slice 8, 44/44 on the dev server after Slice 9, 53/53 on the dev server after Slice 10). Since Slice 8, `env.fireEvent` is `componentTestFireEvent`, which adds the React-specific events of `@testing-library/react`'s `fireEvent` (`blur` also fires `focusout`, and so on) without importing it. `PortalContainerContext` sends the `ThemedSelectWithPortal` option lists, and the MUI popups (through a MUI `DefaultPropsProvider`), into the sandbox portal element. "Run All Unit Tests" of `MiroirTestListDisplay` has an "Include component tests" checkbox, checked by default. When checked, it runs the component leaves in the list's own sandbox. When unchecked, it passes `excludeMiroirTestTypes: ["reactComponentTest"]`, so those leaves are recorded as skipped. The old file keeps 15 cases (Any). Next: Slice 11 (Any suite). Tests that Slice 12 must add to the `unit-286-react-component-miroir-tests` nonreg unit beyond its §12.1 list: `componentTestFireEvent.286.phase8` (Slice 8). Slices 9 and 10 added no issue test. Open follow-up: a filter that names one sub-suite of a multi-sub-suite instance throws in miroir-core when run from `MiroirTestDisplay` (Slice 5 finding, re-evaluated in the Slice 6 Realization).
 
 ---
 
@@ -51,7 +51,7 @@ These come from the plan review and refine analysis §5 without changing a decis
 | 7 | Literal suite | ✅ DONE | `miroir-component-tests` 18 passed, 18/18 in the dev browser check |
 | 8 | Object suite | ✅ DONE | `miroir-component-tests` 32 passed, `componentTestFireEvent.286.phase8` 4 passed, 32/32 in the dev browser check |
 | 9 | SimpleType suite | ✅ DONE | `miroir-component-tests` 44 passed, 44/44 in the dev browser check |
-| 10 | Union suite | ⬜ | 53 passed |
+| 10 | Union suite | ✅ DONE | `miroir-component-tests` 53 passed, 53/53 in the dev browser check |
 | 11 | Any suite | ⬜ | 68 passed |
 | 12 | Delete the old file, nonreg switch, docs, acceptance criteria | ⬜ | default nonreg green |
 
@@ -881,7 +881,7 @@ Each slice moves one suite and follows the same steps.
 | 10 | JzodUnionEditor | 9 | 53 | 15 |
 | 11 | JzodAnyEditor | 15 | 68 | 0 |
 
-**Status:** Slices 7, 8, and 9 ✅ DONE. Slices 10 and 11 ⬜.
+**Status:** Slices 7, 8, 9, and 10 ✅ DONE. Slice 11 ⬜.
 
 ### RED
 
@@ -1016,6 +1016,50 @@ The new entry's verbose list is diffed against `baseline-JzodElementEditor.txt` 
 **Files created.** `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/jzodElementEditor/JzodSimpleTypeEditor.tsx`.
 
 **Files changed.** In `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/`: `componentTestManifest.ts` and `componentTestRegistry.ts`. Tests: `tests/4_view/JzodElementEditor.test.tsx` and `componentMiroirTests.286.phase0.unit.test.tsx`. Deployment miroir: the instance `761d4ed2-….json`, written by the generator (44 leaves in 5 sub-suites). This plan.
+
+**Note for Slice 12.** No new issue test in this slice. The tests to add to the nonreg unit beyond the §12.1 list stay as in the Slice 8 note (`componentTestFireEvent.286.phase8`).
+
+#### Slice 10 realization (JzodUnionEditor)
+
+**RED observed.** The 9 Union cases were added to `componentTestManifest.ts` (`JzodUnionEditor`, after `JzodSimpleTypeEditor`) and to `componentTestRegistry.ts` through a new `jzodElementEditor/JzodUnionEditor.tsx` whose 9 bodies threw "not migrated". The generator printed "6 suite(s), 53 case(s)" and wrote the instance once, then "no change" on a second run. `npm run build -w miroir-test-app_deployment-miroir` succeeded. The new entry, run with `npx vitest run` without bail (`VITE_TEST_MODE=true`): 9 failed, 45 passed (54). Each failure reads `reactComponentTest "JzodElementEditor_ComponentTestSuite#JzodUnionEditor#JzodUnionEditor: <case>" failed: not migrated`. The 44 Array, Enum, Literal, Object, and SimpleType cases and the entry check passed.
+
+**GREEN.**
+
+- `jzodElementEditor/JzodUnionEditor.tsx`: the 9 cases of `getJzodUnionEditorTests`, with the §5.3 rules (`screen` to `env.view`, `expect` to `env.expect`, `container` to `env.container`, `userEvent` to `env.userEvent`, React `act` to `env.act`, `waitFor` to `env.waitFor`, and `fireEvent` to `env.fireEvent`). `env.container` is the root of every `extractValuesFromRenderedElements` call and the target of the `querySelector` checks on the union type selector input. The one `console.log` became `env.log.info`, and the commented-out `screen.debug` lines were dropped.
+- Three cases open a `ThemedSelectWithPortal` dropdown: the discriminator select, and the union type selector in the two "non-discriminated union can switch type…" cases. Their value reads pass `env.portalElement` as 7th argument, where the old wrapper searched `document.body`. The other value reads pass no portal element, as in Slices 8 and 9. In each dropdown case, the old single `act` (open, wait, clear, type, wait, Enter, wait) stays one `env.act` with the same steps in the same order.
+- As in Slices 8 and 9, the old suite had no suite props, so each case keeps its full props. Three local constants hold the repeated parts: `testFieldProps` (label, name, and list keys), the two union schemas `stringOrNumberSchema` and `stringNumberOrObjectSchema`, and `unionTypeInputSelector` (`[data-testid="union-type-input-TESTSECTION.testField"]`). `suiteProps`, required by `ComponentTestSuite`, repeats the first case's props, and no case uses it. The unused `arrayValues` constant of the old factory was not ported. No assertion changed.
+- All 9 cases passed at their first GREEN run, with no React act warning. No case needed anything new in the environment (no matcher, portal, event behavior, or test-mode fork). `toBeNull` and `.not.toBeNull` were already in the throwing `expect`. `env.waitFor` returns the callback's value as RTL's `waitFor` did, which the "places star and selector above the value" case uses. The user-event `clear`, `type`, and `keyboard("{Enter}")` sequence on the portaled selects behaves as in the old run.
+- Non-vacuity check, then reverted (the file was restored from a copy, `diff` empty): with `type2Attribute: 1` in the discriminator case and `toBe(false)` for `starParent.contains(selectorInput)`, the Union run without bail gave 2 failed and 7 passed. The messages were `Expected {"type2Attribute":0,"testObjectType":"type2"} to equal {"testObjectType":"type2","type2Attribute":1}. First difference at path: ["type2Attribute"]` and `Expected true to be false`.
+- Old file: `getJzodUnionEditorTests`, `LocalUnionEditorProps`, its two types (`JzodUnionEditorTest`, `JzodUnionEditorTestSuites`), and the `JzodUnionEditor` entry of `jzodElementEditorTests` are deleted and replaced by a comment that points to the new file. The now unused miroir-core import `JzodUnion` is removed. The other imports are still used by the Any suite or the commented-out suites. Phase0: `JzodUnionEditor` is removed from the expected suite list, which is now `JzodAnyEditor` alone.
+
+**Case list.** The new entry's `JzodUnionEditor` lines, reduced to `<suite> - jzodElementEditor - <case>: <status>`, are identical to the 9 `JzodUnionEditor` lines of `baseline-JzodElementEditor.txt` (`diff` empty). The old suite's reduced list (sorted) is identical to the 15 `JzodAnyEditor` lines of the baseline.
+
+**Browser check (§4.4), development build only.** Same method as Slice 9: the Slice 9 script with `JzodUnionEditor` added to its result filter, `playwright-core` in the session scratchpad, headless Microsoft Edge, seed user `alice`, and the MiroirTestDetails report of instance `761d4ed2-…`. It ran against the Vite dev server already running on `https://localhost:5173`, which was not restarted.
+
+- The panel showed after about 0.9 s and the run ended after about 16.6 s, with "Passed: 53/53" and "PASSED".
+- The sandbox kept the last case ("union type selector for object value places star and selector above the value"): the union type input `object {a, b}`, and the inputs `TESTSECTION.testField.a=hello` and `TESTSECTION.testField.b=1`. Its portal element was empty, and no option was outside the sandbox.
+- 0 console messages matched `act(`. Close hid the panel and removed the container.
+- The only console error was the known 403 on `/action/storeManagementAction_openStore` at page load.
+
+The Library navigation and the production build were not checked.
+
+**Validation** (one command per file, from the repo root).
+
+- `npx tsx packages/miroir-standalone-app/scripts/generate-component-miroir-tests.ts`: "6 suite(s), 53 case(s)", "no change".
+- `npm run build -w miroir-test-app_deployment-miroir`: success.
+- `npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts`: 153 passed.
+- `npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency`: 6 passed.
+- `npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "JzodUnionEditor"`: 9 passed, 45 skipped.
+- `npm run testByFile -w miroir-standalone-app -- miroir-component-tests`: 54 passed (53 cases and the entry check), no React act warning.
+- `npm run testByFile -w miroir-standalone-app -- JzodElementEditor.test`: 15 passed.
+- `npm run testByFile -w miroir-standalone-app -- componentMiroirTests.286.phase0`: 4 passed.
+- `npm run testByFile -w miroir-standalone-app -- runAllComponentTests.286.phase6`: 3 passed (the manifest now gives 53 component leaves).
+- `python scripts/check_bare_console.py`: OK.
+- `npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json`: 0 errors. `npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json`: 1 error, the baseline `JzodElementEditorHooks.ts(528,59)` TS2339.
+
+**Files created.** `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/jzodElementEditor/JzodUnionEditor.tsx`.
+
+**Files changed.** In `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/`: `componentTestManifest.ts` and `componentTestRegistry.ts`. Tests: `tests/4_view/JzodElementEditor.test.tsx` and `componentMiroirTests.286.phase0.unit.test.tsx`. Deployment miroir: the instance `761d4ed2-….json`, written by the generator (53 leaves in 6 sub-suites). This plan.
 
 **Note for Slice 12.** No new issue test in this slice. The tests to add to the nonreg unit beyond the §12.1 list stay as in the Slice 8 note (`componentTestFireEvent.286.phase8`).
 

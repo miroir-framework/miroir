@@ -103,7 +103,6 @@ describe("pre-286 inventory", () => {
   // Each slice that moves a suite removes it from this list. Deleted in Slice 12.
   it("the old JzodElementEditor.test.tsx declares the active suite keys not yet migrated in jzodElementEditorTests", () => {
     expect(activeSuiteKeysOfOldTestFile()).toEqual([
-      "JzodUnionEditor",
       "JzodAnyEditor",
     ]);
   });

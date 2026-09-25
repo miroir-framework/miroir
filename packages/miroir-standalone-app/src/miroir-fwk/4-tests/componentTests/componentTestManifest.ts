@@ -68,6 +68,17 @@ export const componentTestManifest: Record<string, readonly string[]> = {
     "bigint renders input with proper bigint value",
     "bigint allows to modify input value with consistent update",
   ],
+  JzodUnionEditor: [
+    "union between simple types renders input with proper value",
+    "union between simple type and object for value of simple type renders input with proper value",
+    "union between simple type and object for value object renders input with proper value",
+    "union between 2 object types with a discriminator for value object renders input following the proper value type",
+    "non-discriminated union can switch type from number to string via union type selector",
+    "non-discriminated union can switch type from number to object via union type selector",
+    "union type star button is visible but selector is initially hidden",
+    "union type star button toggle shows then hides selector",
+    "union type selector for object value places star and selector above the value",
+  ],
 };
 
 /** Leaf label: the suite name, a colon, and the case label, so labels are unique in the instance. */
