@@ -160,6 +160,10 @@ export async function runComponentTestSteps(
       save(element, step.saveAs);
       await runAction(env, () => env.fireEvent.change(element, { target: { value: step.value } }));
     },
+    submit: async (step) => {
+      const element = resolve(step.target);
+      await runAction(env, () => env.fireEvent.submit(element));
+    },
     blur: async (step) => {
       const element = resolve(step.target);
       await runAction(env, () => env.fireEvent.blur(element));
@@ -239,7 +243,7 @@ export async function runComponentTestSteps(
       }
     },
     expectElement: async (step) => {
-      for (const parameter of ["count", "values", "checked", "containsHtml", "parentContains", "timeout"] as const) {
+      for (const parameter of ["values", "containsHtml", "parentContains", "timeout"] as const) {
         if (step[parameter] !== undefined) {
           throw notImplemented(`expectElement.${parameter}`);
         }
@@ -251,10 +255,33 @@ export async function runComponentTestSteps(
         }
         return;
       }
+      if (step.count !== undefined) {
+        const matches = queryAllTarget(env, step.target, context.elements);
+        if (matches.length !== step.count) {
+          throw new Error(
+            `expected ${step.count} elements to match target ${describeTarget(step.target)}, found ${matches.length}`,
+          );
+        }
+        if (
+          step.value === undefined &&
+          step.checked === undefined &&
+          step.attribute === undefined &&
+          step.saveAs === undefined
+        ) {
+          return;
+        }
+      }
       const element = resolve(step.target);
       save(element, step.saveAs);
+      env.expect(element, "element").toBeInTheDocument();
       if (step.value !== undefined) {
         env.expect(element, "element value").toHaveValue(step.value);
+      }
+      if (step.checked === true) {
+        env.expect(element, "element checked").toBeChecked();
+      }
+      if (step.checked === false) {
+        env.expect(element, "element checked").not.toBeChecked();
       }
       if (step.attribute !== undefined) {
         checkAttribute(element, step.attribute.name, step.attribute.value);

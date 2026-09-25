@@ -22,11 +22,18 @@ function notImplemented(what: string): Error {
   return new Error(`${what}: not implemented`);
 }
 
-function textMatch(match: ReactComponentTestTextMatch, locator: string): string {
-  if (typeof match === "string") {
+/** A Testing Library text matcher: a string or a number as is, `{regex, flags?}` as a `RegExp`. */
+function textMatch(match: ReactComponentTestTextMatch): string | number | RegExp {
+  if (typeof match === "string" || typeof match === "number") {
     return match;
   }
-  throw notImplemented(`${locator} with a ${typeof match === "number" ? "number" : "regex"}`);
+  return new RegExp(match.regex, match.flags);
+}
+
+/** The `name` option of a `byRole` query, which takes no number: a number is compared as text. */
+function accessibleNameMatch(match: ReactComponentTestTextMatch): string | RegExp {
+  const matcher = textMatch(match);
+  return typeof matcher === "number" ? String(matcher) : matcher;
 }
 
 /** A CSS attribute value, quoted. */
@@ -74,28 +81,49 @@ export function queryAllTarget(
       `a target needs exactly one locator among ${locatorKeys.join(", ")}, found ${locators.length} in ${describeTarget(target)}`,
     );
   }
-  for (const key of refinementKeys) {
-    if (target[key] !== undefined) {
-      throw notImplemented(`target refinement "${key}"`);
-    }
+  if (target.fieldNamePrefix !== undefined) {
+    throw notImplemented(`target refinement "fieldNamePrefix"`);
   }
   if (target.name !== undefined && target.byRole === undefined) {
     throw new Error(`"name" refines "byRole" only, in ${describeTarget(target)}`);
   }
-  switch (locators[0]) {
+  return refine(locatorMatches(env, target, locators[0], elements), target);
+}
+
+function hasRefinement(target: ReactComponentTestTarget): boolean {
+  return refinementKeys.some((key) => target[key] !== undefined);
+}
+
+/** Keeps the matches whose `name` is `F(fieldName)` and whose `id` is `id`, when given. */
+function refine(matches: HTMLElement[], target: ReactComponentTestTarget): HTMLElement[] {
+  return matches.filter(
+    (element) =>
+      (target.fieldName === undefined ||
+        (element as HTMLInputElement).name === formikFieldName(target.fieldName)) &&
+      (target.id === undefined || element.id === target.id),
+  );
+}
+
+function locatorMatches(
+  env: ComponentTestEnvironment,
+  target: ReactComponentTestTarget,
+  locator: (typeof locatorKeys)[number],
+  elements: Record<string, HTMLElement>,
+): HTMLElement[] {
+  switch (locator) {
     case "byRole":
       return env.view.queryAllByRole(
         target.byRole!,
-        target.name === undefined ? undefined : { name: textMatch(target.name, "name") },
+        target.name === undefined ? undefined : { name: accessibleNameMatch(target.name) },
       );
     case "byTestId":
       return env.view.queryAllByTestId(target.byTestId!);
     case "byText":
-      return env.view.queryAllByText(textMatch(target.byText!, "byText"));
+      return env.view.queryAllByText(textMatch(target.byText!));
     case "byDisplayValue":
-      return env.view.queryAllByDisplayValue(textMatch(target.byDisplayValue!, "byDisplayValue"));
+      return env.view.queryAllByDisplayValue(textMatch(target.byDisplayValue!));
     case "byLabelText":
-      return env.view.queryAllByLabelText(textMatch(target.byLabelText!, "byLabelText"));
+      return env.view.queryAllByLabelText(textMatch(target.byLabelText!));
     case "widget":
       return widgetElements(env, target);
     case "ref": {
@@ -109,8 +137,8 @@ export function queryAllTarget(
 }
 
 /**
- * The one element designated by `target`: exactly one match when `index` is not given (`getBy`
- * semantics), the match at `index` otherwise.
+ * The one element designated by `target`: exactly one match when there is neither a refinement
+ * nor an `index` (`getBy` semantics); otherwise the match at `index`, 0 by default (T6).
  */
 export function resolveTarget(
   env: ComponentTestEnvironment,
@@ -118,7 +146,7 @@ export function resolveTarget(
   elements: Record<string, HTMLElement>,
 ): HTMLElement {
   const matches = queryAllTarget(env, target, elements);
-  if (target.index === undefined) {
+  if (target.index === undefined && !hasRefinement(target)) {
     if (matches.length !== 1) {
       throw new Error(
         matches.length === 0
@@ -128,9 +156,14 @@ export function resolveTarget(
     }
     return matches[0];
   }
-  const element = matches[target.index];
+  const index = target.index ?? 0;
+  const element = matches[index];
   if (!element) {
-    throw new Error(`target ${describeTarget(target)} has ${matches.length} matches, none at index ${target.index}`);
+    throw new Error(
+      matches.length === 0
+        ? `no element matches target ${describeTarget(target)}`
+        : `target ${describeTarget(target)} has ${matches.length} matches, none at index ${index}`,
+    );
   }
   return element;
 }

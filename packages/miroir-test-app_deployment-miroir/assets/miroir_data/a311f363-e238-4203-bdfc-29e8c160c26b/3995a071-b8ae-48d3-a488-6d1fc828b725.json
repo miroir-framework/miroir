@@ -11,32 +11,105 @@
     "miroirTestLabel": "JzodLiteralEditor_ComponentTestSuite",
     "miroirTests": [
       {
-        "miroirTestType": "miroirTestSuite",
+        "miroirTestType": "reactComponentTestSuite",
         "miroirTestLabel": "JzodLiteralEditor",
+        "component": "JzodElementEditor",
+        "componentProps": {
+          "name": "testField",
+          "listKey": "root.testField",
+          "rootLessListKey": "testField",
+          "rootLessListKeyArray": [
+            "testField"
+          ],
+          "initialFormState": "test-value",
+          "rawJzodSchema": {
+            "type": "literal",
+            "definition": "test-value"
+          }
+        },
         "miroirTests": [
           {
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodLiteralEditor: renders Literal input with label when label prop is provided",
-            "componentTestRef": {
-              "suite": "JzodLiteralEditor",
-              "case": "renders Literal input with label when label prop is provided"
-            }
+            "componentProps": {
+              "label": "Test Label"
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "only one label",
+                "target": {
+                  "byText": {
+                    "regex": "Test Label"
+                  }
+                },
+                "count": 1
+              },
+              {
+                "step": "expectElement",
+                "label": "textbox",
+                "target": {
+                  "byRole": "textbox"
+                }
+              }
+            ]
           },
           {
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodLiteralEditor: renders Literal input without label when label prop is not provided",
-            "componentTestRef": {
-              "suite": "JzodLiteralEditor",
-              "case": "renders Literal input without label when label prop is not provided"
-            }
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "no label",
+                "target": {
+                  "byLabelText": {
+                    "regex": "Test Label"
+                  }
+                },
+                "present": false
+              },
+              {
+                "step": "expectElement",
+                "label": "textbox",
+                "target": {
+                  "byRole": "textbox"
+                }
+              }
+            ]
           },
           {
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodLiteralEditor: setting new value",
-            "componentTestRef": {
-              "suite": "JzodLiteralEditor",
-              "case": "setting new value"
-            }
+            "componentProps": {
+              "label": "Test Label"
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "initial value",
+                "target": {
+                  "byDisplayValue": "test-value"
+                },
+                "saveAs": "input"
+              },
+              {
+                "step": "change",
+                "label": "literal input is not editable",
+                "target": {
+                  "ref": "input"
+                },
+                "value": "new value"
+              },
+              {
+                "step": "expectElement",
+                "label": "value has not changed",
+                "target": {
+                  "byDisplayValue": {
+                    "regex": "test-value"
+                  }
+                }
+              }
+            ]
           }
         ]
       }

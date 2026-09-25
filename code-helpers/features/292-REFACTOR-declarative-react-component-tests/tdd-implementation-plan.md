@@ -35,7 +35,7 @@ Out of scope: other UI_COMPONENT test files (#204), new component suites, change
 | 0 | Baselines | S | ✅ DONE | baseline tables, `baseline-component-cases.txt` |
 | 1 | Schema, walk, runner signature, 7 instances (legacy leaves), generator removed | L | ✅ DONE | `reactComponentTestSuite.292.phase1` (core), `componentTestInstances.292.phase1`, `miroir-component-tests` 70 passed |
 | 2 | Tracer: interpreter, extractor fix, `$options`, Enum from steps | L | ✅ DONE | `componentTestSteps.292.phase2` 11, `extractorOpenCombobox.292.phase2` 3, Enum 3/3 in vitest, in the dev app, and in the production build; entry 70 passed in 59.9 s |
-| 3 | Literal and SimpleType | M | ⏳ TODO | `-t "JzodLiteralEditor"` 3, `-t "JzodSimpleTypeEditor"` 12, app check |
+| 3 | Literal and SimpleType | M | ⏳ GREEN, SimpleType browser check pending | `componentTestTargets.292.phase3` 6, `-t "JzodLiteralEditor"` 3, `-t "JzodSimpleTypeEditor"` 12, entry 70 passed in 59.0 s, Literal 3/3 in the dev app |
 | 4 | Array and Object | L | ⏳ TODO | `-t "JzodArrayEditor"` 12, `-t "JzodObjectEditor"` 14, app check |
 | 5 | Union and Any | L | ⏳ TODO | `-t "JzodUnionEditor"` 9, `-t "JzodAnyEditor"` 15, app check 68/68 |
 | 6 | M1: no `componentTestRef` | M | ⏳ TODO | `legacyRemoved.292.phase6`, grep empty |
@@ -620,7 +620,7 @@ The reduced case list of the full entry (ANSI stripped, `<Editor> > <leaf label>
 
 ## Slice 3: Literal and SimpleType
 
-**Status:** ⏳ TODO · **Complexity:** M
+**Status:** ⏳ GREEN, browser check of SimpleType pending (API server down) · **Complexity:** M
 
 ### Goal
 
@@ -669,7 +669,103 @@ Expected: Literal 3 passed, SimpleType 12 passed, full entry 70 passed with a ca
 
 ### Realization
 
-(to fill)
+Every command was run alone, one per file, from the repo root. The user's unrelated uncommitted changes (`ci/claude-cloud-env-script.sh`, the `admin_data` files, the spotify model files, `generate_externalServiceSync_suites.py`) were not touched, staged, or stashed. No `custom` step is used.
+
+**RED observed** (`npx vitest run <file>` with `VITE_TEST_MODE=true`, after writing the test, the two JSON suites, and removing both suites from the manifest and the registry):
+
+- `componentTestTargets.292.phase3`: **6 failed / 6**, each on the Slice 2 guard of the missing feature: `step 1 (expectElement): expectElement.count: not implemented`, `byLabelText with a regex: not implemented`, `target refinement "id": not implemented`, `expectElement.checked: not implemented`, `step 1 (submit): not implemented`, and (regex that matches nothing) `expected 'step 1 (expectElement): byText with a…' to match /^step 2 \(expectElement\): no element…/`.
+- `miroir-component-tests -t "JzodLiteralEditor|JzodSimpleTypeEditor"`: **13 failed, 2 passed**, 55 skipped. The failures were `count`, `byLabelText` / `byDisplayValue` with a regex, and the `fieldName` / `id` refinements, `checked` (`not implemented`). The 2 passing cases are SimpleType "boolean renders checkbox with proper value true / false": their only step is `expectRenderedValues` with no `field`, already implemented in Slice 2.
+
+**GREEN:**
+
+- **`componentTestTargets.ts`**:
+  - Text matches: a string or a number is passed as is, and `{regex, flags?}` becomes a `RegExp`, for `byText`, `byDisplayValue`, `byLabelText`, and the `name` of `byRole`. `byRole.name` takes no number, so a number is compared as text there.
+  - Refinements `fieldName` (`name === F(x)`) and `id` filter the `queryAll` result.
+  - `resolveTarget`: with no refinement and no `index`, exactly one match is required, as before. With a refinement, `index` defaults to 0 (analysis §5.4 "Target resolution"). An empty filtered list gives `no element matches target …`.
+  - `fieldNamePrefix` and the widgets other than `combobox` / `selectState` still fail with `not implemented` (Slice 4).
+- **`runComponentTestSteps.ts`**:
+  - New `submit` handler: `fireEvent.submit`, followed by the D9 post-action wait.
+  - `expectElement.count` compares the number of matches of the full filtered list.
+  - `expectElement.checked` uses `toBeChecked` / `.not.toBeChecked`.
+  - A positive `expectElement` now also asserts `toBeInTheDocument` on the resolved element, as the old cases did.
+  - `values`, `containsHtml`, `parentContains`, and `timeout` still fail with `not implemented` (Slices 4-5).
+- **JSON** (2-space, CRLF, written by a script that checks the labels are unchanged):
+  - `3995a071-…` (Literal): a `reactComponentTestSuite` with defaults `name`, `listKey: "root.testField"`, the list keys, `initialFormState: "test-value"`, and the literal schema, with no `label` (T14). Cases 1 and 3 add `"label": "Test Label"`.
+  - `590693b6-…` (SimpleType): the common props (label, name, `ROOT.testField` keys) as defaults. Each leaf adds `rawJzodSchema` and `initialFormState`, and cases 11 and 12 use `{"$bigint": "12345678901234567890"}`.
+  - The textbox is `{byRole: "textbox", fieldName: "testField"}`, the number input `{byDisplayValue: 42, id: "testField"}`, and the checkbox `{byRole: "checkbox", fieldName: "testField"}`. Each is saved with `saveAs` and asserted again through `{ref}` after the action, like the old cases, which kept the element in a variable.
+  - Boolean cases use `expectRenderedValues` with no `field` (label `TESTSECTION`, analysis §3.7).
+- **Removed** Literal and SimpleType from `componentTestManifest.ts` and `componentTestRegistry.ts`. Deleted `jzodElementEditor/JzodLiteralEditor.tsx` and `JzodSimpleTypeEditor.tsx`.
+
+**Case mapping** (every old assertion kept):
+- Literal 1: `count: 1` on `byText /Test Label/`, and the textbox is present.
+- Literal 2: `present: false` on `byLabelText /Test Label/`, and the textbox is present.
+- Literal 3: `byDisplayValue "test-value"` (saved), `change` to "new value", then `byDisplayValue /test-value/`.
+- SimpleType 1-7, 11-12: `value` before the change, `change`, then `value` after it on the same element. Case 3 then does `submit` on `{byRole: "form"}`.
+- SimpleType 8-10: `checked` true, `click`, `checked` false, then `expectRenderedValues "after change"` = `{testField: false}`.
+
+**Refactor checkpoint:**
+- Non-vacuity check, then revert: `count: 2` in Literal case 1 and `value: 101` in SimpleType case 5 gave **2 failed, 13 passed**:
+  - `step 1 (expectElement "only one label"): expected 2 elements to match target {"byText":{"regex":"Test Label"}}, found 1`
+  - `step 3 (expectElement "after change"): [element value] Expected <input name="TESTSECTION.testField"> to have value 101, received 100`
+- Both JSON files were restored from byte copies (`cmp` equal).
+- `componentTests/` has no bare `console.*`, and `runComponentTestSteps.ts` / `componentTestTargets.ts` import nothing from `@testing-library/react`.
+
+**Deviations:**
+
+1. **SimpleType case 12 `change` value.** The old case passed the bigint `98765432109876543210n` to `fireEvent.change`. JSON has no bigint, and `change.value` is `string | number | boolean`, so the step passes the string `"98765432109876543210"`. The DOM `value` setter turns both into the same string, and the assertion (`toHaveValue("98765432109876543210")`) is unchanged.
+2. **`toBeInTheDocument` in `expectElement`.** A positive `expectElement` now asserts `toBeInTheDocument` on the resolved element. The old cases asserted it explicitly, and the check is cheap. It also applies to the Enum case, which still passes.
+3. **A refinement defaults `index` to 0**, following analysis §5.4. It mirrors the old `getAllBy…().filter(…)[0]`. Without a refinement, `getBy` semantics stay.
+4. **Step labels.** The new JSON steps have labels ("initial", "after change", "only one label", …) so that failure messages name them. The leaf labels are unchanged.
+
+**Validation** (one command per file, sequential):
+
+| Command | Result | Expected |
+|---|---|---|
+| `npm run build -w miroir-test-app_deployment-miroir && … modelValidation.unit.test.ts` | 159 passed | 159 ✓ |
+| `componentTestTargets.292.phase3` | 6 passed | — |
+| `componentMiroirTests.consistency` | 8 passed | 8 ✓ |
+| `miroir-component-tests -t "JzodLiteralEditor"` | 3 passed, 67 skipped | 3 ✓ |
+| `miroir-component-tests -t "JzodSimpleTypeEditor"` | 12 passed, 58 skipped | 12 ✓ |
+| `miroir-component-tests` | **70 passed** (real 59.0 s, vitest 52.1 s) | 70 ✓ |
+| `runAllComponentTests.286.phase6` | 3 passed | 3 ✓ |
+| `python scripts/check_bare_console.py` | OK | ✓ |
+| `tsc` miroir-standalone-app | 1 error, the known `JzodElementEditorHooks.ts(528,59)` TS2339 | baseline ✓ |
+| extra: `componentTestSteps.292.phase2` | 11 passed | 11 ✓ |
+
+The reduced case list of the full entry (ANSI stripped, `<Editor> > <leaf label>: passed`, sorted, 68 lines) is byte-identical to `baseline-component-cases.txt`.
+
+**K1 / P2 measurement.** The full entry took **59.0 s real**, against 56.6 s in Slice 0: ×1.04, far below ×2. D9 stays.
+
+**Browser check (dev build): partial.**
+- Setup: at the start of the check, the API server (`https://localhost:3080`) was running and the Vite dev server was down. This slice started Vite (`npm run dev -w miroir-standalone-app`).
+- Method: the Slice 1 script (`playwright-core` in the session scratchpad, headless Microsoft Edge, user `alice`).
+- **Literal: 3/3.** The panel read "PASSED", and the snackbar "JzodLiteralEditor_ComponentTestSuite Miroir tests completed successfully", in 2.7 s. No console message matched `act(`. The sandbox kept 1 case container, and Close removed it. The console errors were the known 403 and the `Sidebar` / `AppBar` "unique key" warnings.
+- **SimpleType: not run.** Right after the Literal check, the API server on 3080 stopped. It was not started by this slice, and nothing in this slice touched it. Vite then logged `ECONNREFUSED` proxy errors, and the login form never rendered. Two attempts to start the API server failed:
+  - `NODE_ENV=development node packages/miroir-server/release/index.js` from the repo root started, but read 0 deployments (`filesystemDeploymentRootDirectory: ".."` resolved from the repo root), so login failed with `AuthenticationDirectoryMissing`. It was stopped.
+  - The same command from `packages/miroir-server` exited with `MiroirSecret rows exist but no wrapping key was provided`. No `MIROIR_SECRETS_MASTER_KEY` is available to this session.
+- The Vite server started by this slice was stopped afterwards (port 5173 is free). Ports 3080 and 4080 are free: the user's API server is down and needs a restart with its secrets master key.
+- **browser check not run for `JzodSimpleTypeEditor_ComponentTestSuite`: the API server went down and cannot be restarted without the secrets master key.** Per the test execution conventions, the slice stays ⏳ until this check is run.
+
+**Impact on later slices:**
+- The vocabulary is unchanged from analysis §5.4.
+- Slice 4 still has to implement:
+  - the refinement `fieldNamePrefix` (its guard is in `queryAllTarget`);
+  - `expectElement.values` and `containsHtml`;
+  - `expectRenderedValues` `field` and `path`;
+  - the widgets `arrayButton`, `objectButton`, and `recordEntryName`, and the steps `clickArrayButton`, `clickObjectButton`, and `renameRecordEntry`.
+- Slice 5 still has to implement `parentContains`, the `timeout` of `expectElement` / `expectRenderedValues`, `expectRenderedValues.filter`, `select: "unionType"`, the `unionTypeStar` / `unionTypeInput` widgets, and `toggleUnionTypeSelector` / `selectOption`.
+- With a refinement, a target picks the first filtered match unless `index` is given (deviation 3).
+- The legacy path and the manifest now hold 4 editors (50 cases).
+
+**Files created:**
+- `packages/miroir-standalone-app/tests/4_view/issues/292-declarative-react-component-tests/componentTestTargets.292.phase3.unit.test.tsx`
+
+**Files changed:**
+- `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/componentTestTargets.ts`, `runComponentTestSteps.ts`, `componentTestManifest.ts`, `componentTestRegistry.ts`
+- `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-…/3995a071-b8ae-48d3-a488-6d1fc828b725.json` and `590693b6-2125-43fc-89d7-1330ae8318db.json`
+- this plan
+
+**Files deleted:** `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/jzodElementEditor/JzodLiteralEditor.tsx` and `JzodSimpleTypeEditor.tsx`.
 
 ---
 
