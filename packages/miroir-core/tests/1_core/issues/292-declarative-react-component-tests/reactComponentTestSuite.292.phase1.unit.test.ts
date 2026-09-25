@@ -3,8 +3,9 @@
  *
  * The walk treats the node as a nested suite (tracking, filters, skip) and passes its context
  * (`suitePath`, `component`, `componentProps`, `caseLabels`) to the component test runner, whose
- * params become `{ testNamePath, leaf, suite? }`. A legacy `componentTestRef` leaf under a plain
- * `miroirTestSuite` reaches the runner with no `suite`.
+ * params become `{ testNamePath, leaf, suite }`. Since #292 M1 (Slice 6) `suite` is required: a
+ * `reactComponentTest` leaf under a plain `miroirTestSuite` is recorded as an error and does not
+ * reach the runner.
  *
  * Runs in-process with `TestFramework` (the Miroir Tests UI path), like
  * `reactComponentLeaf.286.phase2`. Each test restores the registered runner in `finally`.
@@ -34,7 +35,10 @@ import {
   type MiroirTestExecutionOptions,
   type VitestNamespace,
 } from "../../../../src/5_tests/MiroirTestTools";
-import { REACT_COMPONENT_TEST_NO_RUNNER_MESSAGE } from "../../../../src/5_tests/ReactComponentTestTools";
+import {
+  REACT_COMPONENT_TEST_NO_RUNNER_MESSAGE,
+  REACT_COMPONENT_TEST_NO_SUITE_MESSAGE,
+} from "../../../../src/5_tests/ReactComponentTestTools";
 import {
   classifyMiroirTestSuiteExecutionCapabilities,
   walkMiroirTestLeaves,
@@ -63,20 +67,21 @@ const componentSuiteFixture: MiroirTestSuite = {
   ],
 } as any;
 
-const legacyLeaf = {
+const orphanLeaf = {
   miroirTestType: "reactComponentTest",
   miroirTestLabel: "L",
-  componentTestRef: { suite: "LegacySuite", case: "L" },
+  steps: [],
 };
 
-const legacySuiteFixture: MiroirTestSuite = {
+/** A `reactComponentTest` leaf under a plain `miroirTestSuite`: no suite context reaches it. */
+const orphanSuiteFixture: MiroirTestSuite = {
   miroirTestType: "miroirTestSuite",
   miroirTestLabel: "Root",
   miroirTests: [
     {
       miroirTestType: "miroirTestSuite",
-      miroirTestLabel: "LegacySuite",
-      miroirTests: [legacyLeaf],
+      miroirTestLabel: "PlainSuite",
+      miroirTests: [orphanLeaf],
     },
   ],
 } as any;
@@ -228,11 +233,13 @@ describe("reactComponentTestSuite in the MiroirTest walk", () => {
     });
   });
 
-  it("a legacy componentTestRef leaf under a plain miroirTestSuite reaches the runner with no suite", async () => {
+  it("a reactComponentTest leaf under a plain miroirTestSuite is recorded as error and does not reach the runner (#292 M1)", async () => {
     const calls: RunnerCall[] = [];
     await withRunner(countingRunner(calls), async () => {
-      await runSuiteInProcess(legacySuiteFixture);
+      const results = recordedAssertions(await runSuiteInProcess(orphanSuiteFixture));
+      expect(calls).toEqual([]);
+      expect(results["L"]?.assertionResult).toBe("error");
+      expect(JSON.stringify(results["L"])).toContain(REACT_COMPONENT_TEST_NO_SUITE_MESSAGE);
     });
-    expect(calls).toEqual([{ testNamePath: ["Root", "LegacySuite", "L"], leaf: legacyLeaf }]);
   });
 });

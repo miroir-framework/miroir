@@ -9,7 +9,8 @@
  *   filtered run that does not reach the suite's last case) and keeps the last case mounted;
  *   `close()` then unmounts it without destroying the wrapper twice.
  *
- * The registry is a one-suite fake (a `<div>` component), so no editor is rendered.
+ * The component registry is a one-component fake (a `<div>`), and the leaves have no steps, so no
+ * editor is rendered (#292 M1: step leaves of a `reactComponentTestSuite`).
  *
  * Run:
  * ```bash
@@ -19,9 +20,13 @@
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { ConfigurationService, MiroirEventService, type MiroirTestForReactComponent } from "miroir-core";
+import {
+  ConfigurationService,
+  MiroirEventService,
+  type MiroirTestForReactComponent,
+  type ReactComponentTestSuiteContext,
+} from "miroir-core";
 
-import type { ComponentTestRegistry } from "../../../../src/miroir-fwk/4-tests/componentTests/componentTestEnvironment";
 import {
   componentTestRunInProgressMessage,
   registerComponentTests,
@@ -29,15 +34,16 @@ import {
 } from "../../../../src/miroir-fwk/4-tests/componentTests/index";
 import { createReactComponentTestRunner } from "../../../../src/miroir-fwk/4-tests/componentTests/runReactComponentTest";
 
-const fakeRegistry: ComponentTestRegistry = {
-  FakeSuite: {
-    component: (props: { text: string }) => <div data-testid="fake-component">{props.text}</div>,
-    suiteProps: { text: "fake" },
-    cases: {
-      first: { tests: async () => {} },
-      last: { tests: async () => {} },
-    },
-  },
+const fakeComponentRegistry = {
+  FakeComponent: (props: { text: string }) => <div data-testid="fake-component">{props.text}</div>,
+};
+
+/** The context of a two-case `reactComponentTestSuite` rendering `FakeComponent`. */
+const fakeSuite: ReactComponentTestSuiteContext = {
+  suitePath: ["FakeSuite_ComponentTestSuite", "FakeSuite"],
+  component: "FakeComponent",
+  componentProps: { text: "fake" },
+  caseLabels: ["FakeSuite: first", "FakeSuite: last"],
 };
 
 function newSandbox(): HTMLElement {
@@ -72,12 +78,12 @@ afterEach(() => {
 
 describe("component test run lock", () => {
   it("a second registration during an active run is refused with the message, and the first runner stays registered", () => {
-    const first = registerComponentTests({ sandboxElement: sandboxes[0], registry: fakeRegistry });
+    const first = registerComponentTests({ sandboxElement: sandboxes[0], componentRegistry: fakeComponentRegistry });
     registrations.push(first);
     const firstRunner = ConfigurationService.configurationService.reactComponentTestRunner;
 
     expect(() =>
-      registrations.push(registerComponentTests({ sandboxElement: sandboxes[1], registry: fakeRegistry })),
+      registrations.push(registerComponentTests({ sandboxElement: sandboxes[1], componentRegistry: fakeComponentRegistry })),
     ).toThrow(componentTestRunInProgressMessage);
     expect(ConfigurationService.configurationService.reactComponentTestRunner).toBe(firstRunner);
     // The refused registration added nothing to the second sandbox.
@@ -85,40 +91,44 @@ describe("component test run lock", () => {
   });
 
   it("endRun() releases the lock: the next registration succeeds", () => {
-    const first = registerComponentTests({ sandboxElement: sandboxes[0], registry: fakeRegistry });
+    const first = registerComponentTests({ sandboxElement: sandboxes[0], componentRegistry: fakeComponentRegistry });
     registrations.push(first);
     first.endRun();
 
-    const second = registerComponentTests({ sandboxElement: sandboxes[1], registry: fakeRegistry });
+    const second = registerComponentTests({ sandboxElement: sandboxes[1], componentRegistry: fakeComponentRegistry });
     registrations.push(second);
     expect(ConfigurationService.configurationService.reactComponentTestRunner).not.toBeUndefined();
   });
 
   it("close() during a run releases the lock", () => {
-    const first = registerComponentTests({ sandboxElement: sandboxes[0], registry: fakeRegistry });
+    const first = registerComponentTests({ sandboxElement: sandboxes[0], componentRegistry: fakeComponentRegistry });
     first.close();
 
-    const second = registerComponentTests({ sandboxElement: sandboxes[1], registry: fakeRegistry });
+    const second = registerComponentTests({ sandboxElement: sandboxes[1], componentRegistry: fakeComponentRegistry });
     registrations.push(second);
     expect(ConfigurationService.configurationService.reactComponentTestRunner).not.toBeUndefined();
   });
 });
 
-/** A legacy `reactComponentTest` leaf naming a case of `fakeRegistry` (#292: runner params). */
+/** A `reactComponentTest` leaf of `fakeSuite`, with no steps (#292 M1). */
 function fakeLeaf(caseLabel: string): MiroirTestForReactComponent {
   return {
     miroirTestType: "reactComponentTest",
     miroirTestLabel: `FakeSuite: ${caseLabel}`,
-    componentTestRef: { suite: "FakeSuite", case: caseLabel },
+    steps: [],
   };
 }
 
 describe("runner.endRun()", () => {
   it("after a filtered run, destroys the open suite wrapper once and keeps the last case mounted; close() unmounts it", async () => {
-    const runner = createReactComponentTestRunner({ sandboxElement: sandboxes[0], registry: fakeRegistry });
+    const runner = createReactComponentTestRunner({ sandboxElement: sandboxes[0], componentRegistry: fakeComponentRegistry });
 
     // Filtered run: only the suite's first case, so the "after the last case" release never fires.
-    const result = await runner({ testNamePath: ["FakeSuite", "first"], leaf: fakeLeaf("first") });
+    const result = await runner({
+      testNamePath: [...fakeSuite.suitePath, "FakeSuite: first"],
+      leaf: fakeLeaf("first"),
+      suite: fakeSuite,
+    });
     expect(result).toEqual({ status: "ok" });
     expect(destroySpy).toHaveBeenCalledTimes(0);
 
@@ -133,10 +143,18 @@ describe("runner.endRun()", () => {
   });
 
   it("the next run after endRun() builds a new wrapper", async () => {
-    const runner = createReactComponentTestRunner({ sandboxElement: sandboxes[0], registry: fakeRegistry });
-    await runner({ testNamePath: ["FakeSuite", "first"], leaf: fakeLeaf("first") });
+    const runner = createReactComponentTestRunner({ sandboxElement: sandboxes[0], componentRegistry: fakeComponentRegistry });
+    await runner({
+      testNamePath: [...fakeSuite.suitePath, "FakeSuite: first"],
+      leaf: fakeLeaf("first"),
+      suite: fakeSuite,
+    });
     runner.endRun();
-    const result = await runner({ testNamePath: ["FakeSuite", "first"], leaf: fakeLeaf("first") });
+    const result = await runner({
+      testNamePath: [...fakeSuite.suitePath, "FakeSuite: first"],
+      leaf: fakeLeaf("first"),
+      suite: fakeSuite,
+    });
     expect(result).toEqual({ status: "ok" });
     runner.endRun();
     expect(destroySpy).toHaveBeenCalledTimes(2);

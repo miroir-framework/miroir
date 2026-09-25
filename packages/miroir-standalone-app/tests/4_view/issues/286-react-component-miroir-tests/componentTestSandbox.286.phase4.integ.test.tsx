@@ -72,7 +72,6 @@ vi.mock(
 
 import * as componentTestTools from "../../../../src/miroir-fwk/4-tests/componentTests/componentTestTools";
 import { componentTestRunInProgressMessage } from "../../../../src/miroir-fwk/4-tests/componentTests/index";
-import { componentTestSuiteInstances } from "../../../../src/miroir-fwk/4-tests/componentTests/componentTestManifest";
 import type { MiroirTestResultData } from "../../../../src/miroir-fwk/4_view/components/Buttons/RunMiroirTestSuiteButton";
 import { MiroirTestDisplay } from "../../../../src/miroir-fwk/4_view/components/Reports/MiroirTestDisplay";
 import { ReportPageContextProvider } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportPageContext";
@@ -86,8 +85,8 @@ const MIROIR_TEST_DATA_FOLDER = join(
 
 const arraySuite = "JzodArrayEditor";
 /** #292: the Array cases have their own MiroirTest instance, `JzodArrayEditor_ComponentTestSuite`. */
-const { uuid: componentTestSuiteInstanceUuid, name: componentTestSuiteInstanceName } =
-  componentTestSuiteInstances[arraySuite];
+const componentTestSuiteInstanceUuid = "1b71d68b-7dc9-468c-a251-4fa7889f20f4";
+const componentTestSuiteInstanceName = "JzodArrayEditor_ComponentTestSuite";
 
 function loadComponentTestSuiteInstance(): MiroirTestDefinition {
   for (const fileName of readdirSync(MIROIR_TEST_DATA_FOLDER)) {

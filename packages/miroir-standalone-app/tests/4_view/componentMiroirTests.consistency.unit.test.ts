@@ -1,20 +1,16 @@
 /**
- * Issues #286, #292: the component test MiroirTest instances are valid and agree with the
- * component test manifest and registry (#292 analysis §5.7).
+ * Issues #286, #292: the component test MiroirTest instances are valid and consistent (#292
+ * analysis §5.7).
  *
  * For every instance of the Miroir deployment folder that holds a `reactComponentTest` leaf (the
  * 7 per-editor instances of #292):
  * - it passes `jzodTypeCheck` against the MiroirTest Entity `mlSchema` and the EntityVersion
  *   `mlSchema`;
  * - its leaf labels are unique over all the instances and start with `<child label>: `, the child
- *   being the `reactComponentTestSuite` (or legacy sub-suite) under the instance root;
- * - each leaf has exactly one of `steps` and `componentTestRef`.
+ *   being the `reactComponentTestSuite` under the instance root;
+ * - each leaf has `steps` (#292 M1: the legacy TypeScript case bodies are gone).
  *
- * Until #292 M1, the legacy (`componentTestRef`) leaves must equal the manifest, and the manifest
- * must equal the registry.
- *
- * The comparison function is also run on fixtures, so that each kind of disagreement is shown to
- * fail.
+ * The comparison function is also run on fixtures, so that each kind of problem is shown to fail.
  *
  * Run:
  * ```bash
@@ -28,15 +24,7 @@ import { describe, expect, it } from "vitest";
 
 import { defaultMiroirModelEnvironment, jzodTypeCheck, type JzodElement } from "miroir-core";
 
-import {
-  componentTestLeafLabel,
-  componentTestManifest,
-} from "../../src/miroir-fwk/4-tests/componentTests/componentTestManifest";
-import { componentTestRegistry } from "../../src/miroir-fwk/4-tests/componentTests/componentTestRegistry";
 import { resolveRepoRoot } from "../helpers/integrationTestProfiles.js";
-
-type ComponentTestManifest = Record<string, readonly string[]>;
-type RegistryShape = Record<string, { cases: Record<string, unknown> }>;
 
 const REPO_ROOT = resolveRepoRoot();
 const DEPLOYMENT_MIROIR = join(REPO_ROOT, "packages/miroir-test-app_deployment-miroir/assets");
@@ -75,18 +63,10 @@ function loadComponentTestInstances(): any[] {
 }
 
 // ################################################################################################
-/**
- * Returns one message per problem in the component test instances, or between their legacy leaves,
- * the manifest, and the registry. An empty list means they agree.
- */
-export function componentTestConsistencyProblems(params: {
-  manifest: ComponentTestManifest;
-  registry: RegistryShape;
-  instances: any[];
-}): string[] {
-  const { manifest, registry, instances } = params;
+/** Returns one message per problem in the component test instances. An empty list means none. */
+export function componentTestConsistencyProblems(params: { instances: any[] }): string[] {
+  const { instances } = params;
   const problems: string[] = [];
-  const key = (suite: string, caseLabel: string) => JSON.stringify([suite, caseLabel]);
 
   // every leaf, with the label of the child of its instance root
   const leaves = instances.flatMap((instance) =>
@@ -108,123 +88,43 @@ export function componentTestConsistencyProblems(params: {
     }
   }
 
-  // exactly one of steps and componentTestRef
+  // every leaf has steps
   for (const { leaf } of leaves) {
-    const hasSteps = leaf.steps !== undefined;
-    const hasRef = leaf.componentTestRef !== undefined;
-    if (hasSteps === hasRef) {
-      problems.push(`leaf "${leaf.miroirTestLabel}" must have exactly one of steps and componentTestRef`);
-    }
-  }
-
-  // legacy leaves and manifest
-  const legacyLeaves = leaves.filter(({ leaf }) => leaf.componentTestRef !== undefined && leaf.steps === undefined);
-  const leafRefs = new Set(
-    legacyLeaves.map(({ leaf }) => key(leaf.componentTestRef.suite, leaf.componentTestRef.case)),
-  );
-  const manifestRefs = new Set<string>();
-  for (const [suite, cases] of Object.entries(manifest)) {
-    for (const caseLabel of cases) {
-      manifestRefs.add(key(suite, caseLabel));
-      if (!leafRefs.has(key(suite, caseLabel))) {
-        problems.push(`manifest case "${suite}" / "${caseLabel}" has no reactComponentTest leaf in the JSON`);
-      }
-    }
-  }
-  for (const { instanceName, childLabel, leaf } of legacyLeaves) {
-    const ref = leaf.componentTestRef;
-    if (!manifestRefs.has(key(ref.suite, ref.case))) {
-      problems.push(
-        `JSON leaf "${leaf.miroirTestLabel}" (${instanceName} > ${childLabel}) refers to "${ref.suite}" / "${ref.case}", which is not in the manifest`,
-      );
-    }
-    const expectedLabel = componentTestLeafLabel(ref.suite, ref.case);
-    if (leaf.miroirTestLabel !== expectedLabel) {
-      problems.push(`JSON leaf "${leaf.miroirTestLabel}" should be labelled "${expectedLabel}"`);
-    }
-  }
-
-  // manifest and registry
-  for (const [suite, cases] of Object.entries(manifest)) {
-    const registrySuite = registry[suite];
-    if (!registrySuite) {
-      problems.push(`manifest suite "${suite}" is not in the registry`);
-      continue;
-    }
-    for (const caseLabel of cases) {
-      if (!(caseLabel in registrySuite.cases)) {
-        problems.push(`manifest case "${suite}" / "${caseLabel}" is not in the registry`);
-      }
-    }
-  }
-  for (const [suite, registrySuite] of Object.entries(registry)) {
-    const manifestCases = manifest[suite];
-    if (!manifestCases) {
-      problems.push(`registry suite "${suite}" is not in the manifest`);
-      continue;
-    }
-    for (const caseLabel of Object.keys(registrySuite.cases)) {
-      if (!manifestCases.includes(caseLabel)) {
-        problems.push(`registry case "${suite}" / "${caseLabel}" is not in the manifest`);
-      }
+    if (!Array.isArray(leaf.steps)) {
+      problems.push(`leaf "${leaf.miroirTestLabel}" has no steps`);
     }
   }
   return problems;
 }
 
 // ################################################################################################
-const fixtureManifest: ComponentTestManifest = {
+/** One instance per suite, each with a `reactComponentTestSuite` child holding step leaves. */
+function fixtureInstances(suites: Record<string, readonly string[]>): any[] {
+  return Object.entries(suites).map(([suite, cases]) => ({
+    name: `${suite}_ComponentTestSuite`,
+    definition: {
+      miroirTestType: "miroirTestSuite",
+      miroirTestLabel: `${suite}_ComponentTestSuite`,
+      miroirTests: [
+        {
+          miroirTestType: "reactComponentTestSuite",
+          miroirTestLabel: suite,
+          component: "C",
+          miroirTests: cases.map((caseLabel) => ({
+            miroirTestType: "reactComponentTest",
+            miroirTestLabel: `${suite}: ${caseLabel}`,
+            steps: [],
+          })),
+        },
+      ],
+    },
+  }));
+}
+
+const fixtureSuites = {
   SuiteA: ["case 1", "case 2"],
   SuiteB: ["case 3"],
 };
-
-function fixtureRegistry(manifest: ComponentTestManifest): RegistryShape {
-  return Object.fromEntries(
-    Object.entries(manifest).map(([suite, cases]) => [
-      suite,
-      { cases: Object.fromEntries(cases.map((caseLabel) => [caseLabel, {}])) },
-    ]),
-  );
-}
-
-/** One instance per suite, with a legacy sub-suite, plus one instance with a step suite. */
-function fixtureInstances(manifest: ComponentTestManifest): any[] {
-  return [
-    ...Object.entries(manifest).map(([suite, cases]) => ({
-      name: `${suite}_ComponentTestSuite`,
-      definition: {
-        miroirTestType: "miroirTestSuite",
-        miroirTestLabel: `${suite}_ComponentTestSuite`,
-        miroirTests: [
-          {
-            miroirTestType: "miroirTestSuite",
-            miroirTestLabel: suite,
-            miroirTests: cases.map((caseLabel) => ({
-              miroirTestType: "reactComponentTest",
-              miroirTestLabel: componentTestLeafLabel(suite, caseLabel),
-              componentTestRef: { suite, case: caseLabel },
-            })),
-          },
-        ],
-      },
-    })),
-    {
-      name: "SuiteC_ComponentTestSuite",
-      definition: {
-        miroirTestType: "miroirTestSuite",
-        miroirTestLabel: "SuiteC_ComponentTestSuite",
-        miroirTests: [
-          {
-            miroirTestType: "reactComponentTestSuite",
-            miroirTestLabel: "SuiteC",
-            component: "C",
-            miroirTests: [{ miroirTestType: "reactComponentTest", miroirTestLabel: "SuiteC: case 4", steps: [] }],
-          },
-        ],
-      },
-    },
-  ];
-}
 
 const componentTestInstances = loadComponentTestInstances();
 const schemas: [string, JzodElement][] = [
@@ -248,80 +148,35 @@ describe("componentMiroirTests consistency", () => {
     expect(failures).toEqual([]);
   });
 
-  it("the real instances, manifest, and registry agree", () => {
-    expect(
-      componentTestConsistencyProblems({
-        manifest: componentTestManifest,
-        registry: componentTestRegistry,
-        instances: componentTestInstances,
-      }),
-    ).toEqual([]);
+  it("the real instances are consistent", () => {
+    expect(componentTestConsistencyProblems({ instances: componentTestInstances })).toEqual([]);
   });
 
   it("fixtures: consistent fixtures give no problem", () => {
-    expect(
-      componentTestConsistencyProblems({
-        manifest: fixtureManifest,
-        registry: fixtureRegistry(fixtureManifest),
-        instances: fixtureInstances(fixtureManifest),
-      }),
-    ).toEqual([]);
-  });
-
-  it("fixtures: a manifest case with no JSON leaf fails", () => {
-    const problems = componentTestConsistencyProblems({
-      manifest: fixtureManifest,
-      registry: fixtureRegistry(fixtureManifest),
-      instances: fixtureInstances({ SuiteA: ["case 1"], SuiteB: ["case 3"] }),
-    });
-    expect(problems).toEqual([
-      'manifest case "SuiteA" / "case 2" has no reactComponentTest leaf in the JSON',
-    ]);
-  });
-
-  it("fixtures: a registry case missing from the manifest fails", () => {
-    const problems = componentTestConsistencyProblems({
-      manifest: fixtureManifest,
-      registry: fixtureRegistry({ ...fixtureManifest, SuiteB: ["case 3", "case 4"] }),
-      instances: fixtureInstances(fixtureManifest),
-    });
-    expect(problems).toEqual(['registry case "SuiteB" / "case 4" is not in the manifest']);
+    expect(componentTestConsistencyProblems({ instances: fixtureInstances(fixtureSuites) })).toEqual([]);
   });
 
   it("fixtures: a leaf label used twice fails", () => {
-    const instances = fixtureInstances(fixtureManifest);
-    // SuiteC's step leaf reuses its own label.
-    const stepSuite = instances[2].definition.miroirTests[0];
+    const instances = fixtureInstances(fixtureSuites);
+    // SuiteB's leaf reuses its own label.
+    const stepSuite = instances[1].definition.miroirTests[0];
     stepSuite.miroirTests.push({ ...stepSuite.miroirTests[0] });
-    const problems = componentTestConsistencyProblems({
-      manifest: fixtureManifest,
-      registry: fixtureRegistry(fixtureManifest),
-      instances,
-    });
-    expect(problems).toEqual(['leaf label "SuiteC: case 4" is used more than once']);
+    expect(componentTestConsistencyProblems({ instances })).toEqual([
+      'leaf label "SuiteB: case 3" is used more than once',
+    ]);
   });
 
   it("fixtures: a leaf label without its child label prefix fails", () => {
-    const instances = fixtureInstances(fixtureManifest);
-    instances[2].definition.miroirTests[0].miroirTests[0].miroirTestLabel = "case 4";
-    const problems = componentTestConsistencyProblems({
-      manifest: fixtureManifest,
-      registry: fixtureRegistry(fixtureManifest),
-      instances,
-    });
-    expect(problems).toEqual(['leaf "case 4" of SuiteC_ComponentTestSuite should start with "SuiteC: "']);
+    const instances = fixtureInstances(fixtureSuites);
+    instances[1].definition.miroirTests[0].miroirTests[0].miroirTestLabel = "case 3";
+    expect(componentTestConsistencyProblems({ instances })).toEqual([
+      'leaf "case 3" of SuiteB_ComponentTestSuite should start with "SuiteB: "',
+    ]);
   });
 
-  it("fixtures: a leaf with both steps and componentTestRef fails", () => {
-    const instances = fixtureInstances(fixtureManifest);
-    instances[2].definition.miroirTests[0].miroirTests[0].componentTestRef = { suite: "SuiteC", case: "case 4" };
-    const problems = componentTestConsistencyProblems({
-      manifest: fixtureManifest,
-      registry: fixtureRegistry(fixtureManifest),
-      instances,
-    });
-    expect(problems).toEqual([
-      'leaf "SuiteC: case 4" must have exactly one of steps and componentTestRef',
-    ]);
+  it("fixtures: a leaf without steps fails", () => {
+    const instances = fixtureInstances(fixtureSuites);
+    delete instances[1].definition.miroirTests[0].miroirTests[0].steps;
+    expect(componentTestConsistencyProblems({ instances })).toEqual(['leaf "SuiteB: case 3" has no steps']);
   });
 });

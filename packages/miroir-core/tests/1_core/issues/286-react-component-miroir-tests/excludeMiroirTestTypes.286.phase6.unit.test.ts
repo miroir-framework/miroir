@@ -25,6 +25,7 @@ import { defaultMetaModelEnvironment } from "../../../../src/1_core/Model";
 import { TestFramework } from "../../../../src/1_core/testing/test-expect";
 import { ConfigurationService } from "../../../../src/3_controllers/ConfigurationService";
 import { MiroirActivityTracker } from "../../../../src/3_controllers/MiroirActivityTracker";
+import { MiroirEventService } from "../../../../src/3_controllers/MiroirEventService";
 import {
   runMiroirTests,
   type MiroirTestExecutionOptions,
@@ -36,11 +37,12 @@ const componentLeafA = "JzodArrayEditor: case A";
 const componentLeafB = "JzodArrayEditor: case B";
 const transformerLeaf = "returnValue gives 42";
 
-function reactComponentLeaf(label: string, caseLabel: string): MiroirTestLeaf {
+/** A `reactComponentTest` leaf with an empty step list (#292 M1). */
+function reactComponentLeaf(label: string): MiroirTestLeaf {
   return {
     miroirTestType: "reactComponentTest",
     miroirTestLabel: label,
-    componentTestRef: { suite: "JzodArrayEditor", case: caseLabel },
+    steps: [],
   } as unknown as MiroirTestLeaf;
 }
 
@@ -60,16 +62,23 @@ const mixedSuite: MiroirTestSuite = {
   miroirTestType: "miroirTestSuite",
   miroirTestLabel: suiteLabel,
   miroirTests: [
-    reactComponentLeaf(componentLeafA, "case A"),
+    // #292: component leaves live under a `reactComponentTestSuite` node.
+    {
+      miroirTestType: "reactComponentTestSuite",
+      miroirTestLabel: "JzodArrayEditor",
+      component: "JzodElementEditor",
+      miroirTests: [reactComponentLeaf(componentLeafA), reactComponentLeaf(componentLeafB)],
+    },
     returnValueTransformerLeaf(transformerLeaf),
-    reactComponentLeaf(componentLeafB, "case B"),
   ],
-} as MiroirTestSuite;
+} as unknown as MiroirTestSuite;
 
 async function runSuiteInProcess(
   executionOptions: MiroirTestExecutionOptions,
 ): Promise<MiroirActivityTracker> {
   const tracker = new MiroirActivityTracker();
+  // Nested suites are tracked through `trackTestSuite`, which needs an event service.
+  new MiroirEventService(tracker);
   await runMiroirTests._runMiroirTestSuite(
     TestFramework as unknown as VitestNamespace,
     [suiteLabel],
@@ -106,9 +115,9 @@ function recordedAssertions(tracker: MiroirActivityTracker): Record<string, Test
 async function withCountingRunner(body: (calls: string[]) => Promise<void>): Promise<void> {
   const previous = ConfigurationService.configurationService.reactComponentTestRunner;
   const calls: string[] = [];
-  // #292: the runner receives the leaf; a legacy leaf holds its componentTestRef.
+  // #292: the runner receives the leaf and its suite context.
   const runner: ReactComponentTestRunner = async ({ leaf }) => {
-    calls.push(leaf.componentTestRef?.case ?? "");
+    calls.push(leaf.miroirTestLabel.replace("JzodArrayEditor: ", ""));
     return { status: "ok" };
   };
   ConfigurationService.configurationService.registerReactComponentTestRunner(runner);

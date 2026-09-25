@@ -1751,6 +1751,7 @@ export {
 } from "./5_tests/MiroirTestTools.js";
 export {
   REACT_COMPONENT_TEST_NO_RUNNER_MESSAGE,
+  REACT_COMPONENT_TEST_NO_SUITE_MESSAGE,
   runMiroirReactComponentTest,
 } from "./5_tests/ReactComponentTestTools.js";
 export {
@@ -1761,7 +1762,6 @@ export {
 } from "./5_tests/runMiroirTestSuiteInProcess.js";
 export type {
   MiroirTestRunFilter,
-  ReactComponentTestRef,
   ReactComponentTestRunner,
   ReactComponentTestRunnerResult,
   ReactComponentTestSuiteContext,

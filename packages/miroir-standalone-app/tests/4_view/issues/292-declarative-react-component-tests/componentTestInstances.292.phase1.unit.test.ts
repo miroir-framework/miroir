@@ -10,7 +10,8 @@
  *   only component leaf is inside a `reactComponentTestSuite`;
  * - `miroir-test-app_deployment-miroir` exports `miroirTest_<name>` for the 7 names, and
  *   `defaultMiroirMetaModel.tests` holds the 7 uuids and not `JzodElementEditor_ComponentTestSuite`;
- * - (Slice 5) every child is a `reactComponentTestSuite`, and no leaf uses `componentTestRef` or a
+ * - (Slice 5, Slice 6) every child is a `reactComponentTestSuite`, and every leaf has `steps`,
+ *   only the attributes of the leaf schema (no legacy reference to a TypeScript case), and no
  *   `custom` step.
  *
  * Run:
@@ -50,6 +51,9 @@ const expectedInstances: Record<string, string> = {
   JzodAnyEditor: "ec601bcc-a27d-450d-9c37-bdd6a12a1575",
 };
 const instanceName = (editor: string) => `${editor}_ComponentTestSuite`;
+
+/** The attributes of `miroirTestForReactComponent` since #292 M1. */
+const REACT_COMPONENT_LEAF_ATTRIBUTES = ["miroirTestType", "miroirTestLabel", "skip", "componentProps", "steps"];
 
 // ################################################################################################
 function loadInstances(): any[] {
@@ -118,7 +122,7 @@ describe("per-editor component test MiroirTest instances", () => {
     expect(current).toEqual(baseline);
   });
 
-  it("every child is a reactComponentTestSuite and no leaf uses componentTestRef or a custom step (#292 Slice 5)", () => {
+  it("every child is a reactComponentTestSuite and every leaf has steps, only leaf-schema attributes, and no custom step (#292 Slices 5-6)", () => {
     const offending: string[] = [];
     for (const instance of componentInstances) {
       for (const child of instance.definition?.miroirTests ?? []) {
@@ -126,8 +130,10 @@ describe("per-editor component test MiroirTest instances", () => {
           offending.push(`${instance.name} > ${child.miroirTestLabel}: ${child.miroirTestType}`);
         }
         for (const leaf of child.miroirTests ?? []) {
-          if (leaf.componentTestRef !== undefined) {
-            offending.push(`${leaf.miroirTestLabel}: componentTestRef`);
+          for (const attribute of Object.keys(leaf)) {
+            if (!REACT_COMPONENT_LEAF_ATTRIBUTES.includes(attribute)) {
+              offending.push(`${leaf.miroirTestLabel}: attribute "${attribute}"`);
+            }
           }
           if (!Array.isArray(leaf.steps)) {
             offending.push(`${leaf.miroirTestLabel}: no steps`);

@@ -296,14 +296,15 @@ describe("componentTestSteps.292.phase2: props and suite wrapper lifetime", () =
     expect(destroySpy).toHaveBeenCalledTimes(1);
   });
 
-  it("a leaf with both steps and componentTestRef gives an error", async () => {
+  it("a leaf without steps gives an error (#292 M1)", async () => {
+    const leaf: any = { miroirTestType: "reactComponentTest", miroirTestLabel: "Probe: first" };
     const result: any = await newRunner(fakeComponentRegistry)({
       testNamePath: [...probeSuite.suitePath, "Probe: first"],
-      leaf: stepLeaf([], { componentTestRef: { suite: "Probe", case: "first" } }, "Probe: first"),
+      leaf,
       suite: probeSuite,
     });
     expect(result.status).toBe("error");
-    expect(result.message).toContain("exactly one of steps and componentTestRef");
+    expect(result.message).toContain('reactComponentTest "Probe: first" has no steps');
   });
 });
 

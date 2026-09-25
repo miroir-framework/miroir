@@ -38,7 +38,7 @@ Out of scope: other UI_COMPONENT test files (#204), new component suites, change
 | 3 | Literal and SimpleType | M | ⏳ GREEN, SimpleType browser check pending | `componentTestTargets.292.phase3` 6, `-t "JzodLiteralEditor"` 3, `-t "JzodSimpleTypeEditor"` 12, entry 70 passed in 59.0 s, Literal 3/3 in the dev app |
 | 4 | Array and Object | L | ⏳ GREEN, browser check pending (API server down) | `componentTestWidgets.292.phase4` 9, `-t "JzodArrayEditor"` 12, `-t "JzodObjectEditor"` 14, entry 70 passed in 60.9 s; Array and Object app checks pending |
 | 5 | Union and Any | L | ⏳ GREEN, browser check pending (API server down) | `componentTestUnionWidgets.292.phase5` 6, `-t "JzodUnionEditor"` 9, `-t "JzodAnyEditor"` 15, entry 70 passed in 66.5 s; app check 68/68 pending |
-| 6 | M1: no `componentTestRef` | M | ⏳ TODO | `legacyRemoved.292.phase6`, grep empty |
+| 6 | M1: no `componentTestRef` | M | ⏳ GREEN, browser check pending (API server down) | `legacyRemoved.292.phase6` 6, core `292-…` 7, grep hits only the absence guard, entry 70 passed in 62.4 s; app check 68/68 pending |
 | 7 | M2: no `custom` step | S | ⏳ TODO | `legacyRemoved.292.phase6` M2 assertions |
 | 8 | Docs, nonreg, final type-check and full nonreg | M | ⏳ TODO | full nonreg = Slice 0 baseline failures only |
 
@@ -1102,7 +1102,7 @@ The reduced case list of the full entry (verbose reporter, ANSI stripped, `<Edit
 
 ## Slice 6: M1, no `componentTestRef`
 
-**Status:** ⏳ TODO · **Complexity:** M
+**Status:** ⏳ GREEN, browser check pending (API server down) · **Complexity:** M
 
 ### Goal
 
@@ -1158,7 +1158,118 @@ Expected: entry 70 passed. The #286 tests keep their counts. The bundle guard: i
 
 ### Realization
 
-(to fill)
+Every command was run alone, one per file, from the repo root (never two vitest runs in parallel). The user's unrelated uncommitted changes (`ci/claude-cloud-env-script.sh`, the `admin_data` files, the spotify model files, `generate_externalServiceSync_suites.py`) were not touched, staged, or stashed. Nothing was committed.
+
+**RED observed** (`npx vitest run <file>` with `VITE_TEST_MODE=true`, before any product change):
+
+- app `legacyRemoved.292.phase6` (new): **4 failed, 2 passed**. The two schema tests failed with `expected [ 'skip', 'componentTestRef', …(4) ] to not include 'componentTestRef'` (Entity and EntityVersion). The `componentTestManifest.ts` and `componentTestRegistry.ts` tests failed with `expected true to be false`. Two tests passed at RED and stay as guards: the `jzodElementEditor/` test (the folder was deleted in Slice 5), and "a runner call without suite gives an error result" (the Slice 2 runner already refused a step leaf without `suite`).
+- miroir-core `reactComponentTestSuite.292.phase1`: its legacy test ("a legacy componentTestRef leaf under a plain miroirTestSuite reaches the runner with no suite") was replaced by "a reactComponentTest leaf under a plain miroirTestSuite is recorded as error and does not reach the runner (#292 M1)". Result: **1 failed, 6 passed**, `expected [ { …(2) } ] to deeply equal []` (the runner was still called, with no `suite`).
+
+**GREEN:**
+
+- **Schema** (Entity `a311f363-…` and EntityVersion `51c647fe-…`, same edit by one script, 2-space JSON):
+  - `miroirTestForReactComponent` loses `componentTestRef`, and `steps` loses `optional`.
+  - Its description becomes "Renders the component of its reactComponentTestSuite and runs declarative steps (#292)".
+  - Rebuild with `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core` (exit 0). The generated `MiroirTestForReactComponent` has `steps: ReactComponentTestStep[]` and no `componentTestRef`.
+- **miroir-core:**
+  - `miroirTestTypes.ts`: `ReactComponentTestRef` is removed, and `suite` is required in the `ReactComponentTestRunner` params.
+  - `ReactComponentTestTools.ts`: new `REACT_COMPONENT_TEST_NO_SUITE_MESSAGE` ("reactComponentTest must be a leaf of a reactComponentTestSuite"). A leaf can reach `runMiroirReactComponentTest` without a suite context: this happens for a `reactComponentTest` leaf under a plain `miroirTestSuite`. Such a leaf is recorded as `error` with that message, and the runner is not called. With `rethrowComponentTestFailures` it throws. The skip and no-runner checks come first, unchanged.
+  - `index.ts`: the `ReactComponentTestRef` export is dropped, and `REACT_COMPONENT_TEST_NO_SUITE_MESSAGE` is exported.
+- **App:**
+  - Deleted `componentTests/componentTestManifest.ts` and `componentTests/componentTestRegistry.ts`.
+  - `runReactComponentTest.tsx`:
+    - The legacy path (`runLegacyLeaf`), the `registry` host option, and the per-suite deployment map are gone.
+    - The runner returns `error` in three cases: a call without `suite` (`… is not in a reactComponentTestSuite`), a leaf without `steps` (`… has no steps`), or an unknown component. Otherwise it runs the steps as in Slices 2-5.
+    - The wrapper key is the JSON of `suite.suitePath`. The `suite:` / `legacy:` prefixes of Slice 2 deviation 8 are no longer needed.
+    - `ComponentTestSandboxHost` keeps only `sandboxElement`, `portalElement`, and the `componentRegistry` override (added in Slice 2).
+  - `componentTestEnvironment.ts`: `ComponentTestCase`, `ComponentTestSuite`, and `ComponentTestRegistry` are removed, with the imports only they used.
+  - `componentTests/index.ts`: the chunk comment names the component registry and the step interpreter instead of "the registry, and the case bodies".
+- **Tests:**
+  - `componentMiroirTests.consistency`: the manifest and registry part is gone.
+    - `componentTestConsistencyProblems({ instances })` checks unique labels, the child-label prefix, and that each leaf has `steps`.
+    - Fixtures: consistent, duplicate label, missing prefix, and leaf without steps.
+    - 6 tests (was 8): the two manifest / registry fixtures are gone, and "both steps and componentTestRef" became "without steps".
+  - `componentTestRunLock.286.review`:
+    - It uses a fake component registry (`FakeComponent`, a `<div>`) and a `ReactComponentTestSuiteContext` with 2 case labels.
+    - The leaves have `steps: []`, and the runner calls pass `suite`.
+    - Hosts pass `componentRegistry` instead of `registry`.
+  - `componentTestSandbox.286.phase4` and `runAllComponentTests.286.phase6`: the `componentTestSuiteInstances` table of the deleted manifest is replaced by local constants. These are the Array instance uuid and name, and the 7 instance uuids in the former order.
+  - miroir-core `reactComponentLeaf.286.phase2` and `excludeMiroirTestTypes.286.phase6`:
+    - The leaves have `steps: []` and sit inside a `reactComponentTestSuite` child.
+    - The tracker gets a `MiroirEventService`, as in Slice 1 deviation 2.
+    - The runners read `leaf.miroirTestLabel`.
+  - `componentTestSteps.292.phase2`: "a leaf with both steps and componentTestRef gives an error" became "a leaf without steps gives an error (#292 M1)". The file still has 11 tests.
+  - `componentTestInstances.292.phase1`: the Slice 5 check no longer names the removed attribute. Each leaf may now have only the attributes of the leaf schema (`miroirTestType`, `miroirTestLabel`, `skip`, `componentProps`, `steps`), which is stricter.
+  - The bundle guard `componentTestChunk.286.phase4` has looked for `componentTests/runComponentTestSteps` since Slice 4. It is unchanged.
+
+**Refactor checkpoint.**
+- The grep `grep -rn "componentTestRef\|componentTestManifest\|componentTestRegistry\|ReactComponentTestRef" packages --include=*.ts --include=*.tsx --include=*.json` was run outside `node_modules`, `dist`, and `tests/tmp`.
+- It finds only `legacyRemoved.292.phase6.unit.test.ts`, the test that asserts their absence (deviation 3).
+- `tests/4_view/JzodElementEditorTestTools.tsx` still has `ReactComponentTestCase` / `ReactComponentTestSuite` types. They are the pre-#286 helpers of the other UI_COMPONENT test files (#204, out of scope) and are unrelated.
+
+**Deviations:**
+
+1. **miroir-core records a leaf without a suite context as `error`.**
+   - The gap: the plan makes `suite` required in the runner params. It does not say what the walk does with a `reactComponentTest` leaf directly under a plain `miroirTestSuite`, which the schema still allows (`miroirTestLeaf` keeps its 6 members).
+   - Such a leaf can no longer be passed to the runner. So `runMiroirReactComponentTest` records it as `error` with `REACT_COMPONENT_TEST_NO_SUITE_MESSAGE` instead of calling the runner.
+   - The core phase1 legacy test was rewritten for this (the RED above).
+   - Removing `miroirTestForReactComponent` from `miroirTestLeaf` would make this placement a schema error, but that is a schema change outside this slice.
+2. **The runner keeps two runtime guards** (no `suite`, no `steps`), although the types now forbid both. JSON that bypasses the schema, or a caller cast to `any`, gets an `error` result instead of a crash. The app RED test "a runner call without suite gives an error result" uses the first guard.
+3. **Grep checkpoint:** the only hits are in `legacyRemoved.292.phase6`, the test that asserts the absence of `componentTestRef`, the manifest, and the registry (as Slice 1 deviation 6).
+4. **The #286 sandbox and Run-all tests keep the instance uuids as local constants**, because the manifest table they imported is deleted. The uuids are those of the plan's UUID table.
+
+**Validation** (one command per file, sequential):
+
+| Command | Result | Expected |
+|---|---|---|
+| `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core` | exit 0 | — |
+| `testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts` | 159 passed | 159 ✓ |
+| `testByFile -w miroir-core -- 292-declarative-react-component-tests` | 7 passed | 7 ✓ |
+| `testByFile -w miroir-core -- 286-react-component-miroir-tests` | 16 passed (3 files) | 16 ✓ |
+| `testMiroir -w miroir-core` | 794 passed | 794 ✓ |
+| `legacyRemoved.292.phase6` | 6 passed | — |
+| `componentMiroirTests.consistency` | 6 passed | 8 − 2 removed manifest / registry fixtures |
+| `miroir-component-tests` | **70 passed** (vitest duration 62.4 s) | 70 ✓ |
+| `componentTestRunLock.286.review` | 5 passed | 5 ✓ |
+| `componentTestSandbox.286.phase4` | 5 passed | 5 ✓ |
+| `runAllComponentTests.286.phase6` | 3 passed | 3 ✓ |
+| `npm run build -w miroir-standalone-app` | exit 0 | — |
+| `componentTestChunk.286.phase4` | 4 passed | 4 (Slice 0) ✓ |
+| `python scripts/check_bare_console.py` | OK | ✓ |
+| `tsc` miroir-core | 0 errors | 0 ✓ |
+| `tsc` miroir-standalone-app | 1 error, the known `JzodElementEditorHooks.ts(528,59)` TS2339 | baseline ✓ |
+| extra: `componentTestSteps.292.phase2` | 11 passed | 11 ✓ |
+| extra: `componentTestInstances.292.phase1` | 5 passed | 5 ✓ |
+| extra: `componentTestSchema.292.phase1` | 7 passed | 7 ✓ |
+
+A second run of the full entry used `--reporter=verbose`. Its reduced case list (ANSI stripped, `<Editor> > <leaf label>: passed`, sorted, 68 lines) is byte-identical to `baseline-component-cases.txt`.
+
+**Browser check: pending (API server down).**
+- `curl` to `https://localhost:3080` and `http://localhost:3080` got no answer (exit 7, connection refused).
+- The API server needs the user's secrets master key to start (Slice 3 Realization), so it was not started. This slice started no server.
+- Still to run, together with the pending checks of Slices 3-5: the 7 instances (68/68), and one "Run All Unit Tests" run with "Include component tests" checked.
+- Per the test execution conventions, the slice stays ⏳ until then.
+
+**Impact on later slices:**
+- Slice 7 (M2): `customStepRegistry.ts` and the `custom` step are the only escape hatch left. `ComponentTestStepContext` (`lastValues`, `elements`) is still used by the `custom` handler and by the saveAs / ref test of `componentTestSteps.292.phase2`. The M2 checks can be added to `legacyRemoved.292.phase6`.
+- Slice 8 (docs): the docs still name `componentTestRef`, the manifest, and the registry (`docs/reference/testing.md`, `docs/contributing/testing.md`, `docs/guides/developer/testing.md`). The new nonreg step must list `legacyRemoved.292.phase6`.
+- A `reactComponentTest` leaf outside a `reactComponentTestSuite` now gives an `error` result (deviation 1).
+
+**Files created:**
+- `packages/miroir-standalone-app/tests/4_view/issues/292-declarative-react-component-tests/legacyRemoved.292.phase6.unit.test.ts`
+
+**Files changed:**
+- The Entity `a311f363-….json` and the EntityVersion `51c647fe-….json`
+- miroir-core:
+  - `preprocessor-generated/miroirFundamentalJzodSchema.ts` and `miroirFundamentalType.ts` (generated)
+  - `miroirTestTypes.ts`, `ReactComponentTestTools.ts`, `index.ts`
+  - the tests `reactComponentLeaf.286.phase2`, `excludeMiroirTestTypes.286.phase6`, and `reactComponentTestSuite.292.phase1`
+- app:
+  - `componentTests/runReactComponentTest.tsx`, `componentTestEnvironment.ts`, `index.ts`
+  - the tests `componentMiroirTests.consistency.unit.test.ts`, `componentTestRunLock.286.review`, `componentTestSandbox.286.phase4`, `runAllComponentTests.286.phase6`, `componentTestSteps.292.phase2`, and `componentTestInstances.292.phase1`
+- this plan
+
+**Files deleted:** `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/componentTestManifest.ts` and `componentTestRegistry.ts`.
 
 ---
 

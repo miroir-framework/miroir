@@ -7,9 +7,6 @@ export type MiroirTestRunFilter = {
   match?: RegExp;
 };
 
-/** `componentTestRef` of a `reactComponentTest` leaf: a registered TypeScript test body (#286). */
-export type ReactComponentTestRef = { suite: string; case: string };
-
 export type ReactComponentTestRunnerResult =
   | { status: "ok" }
   | { status: "error"; message: string; expected?: unknown; actual?: unknown };
@@ -33,11 +30,11 @@ export type ReactComponentTestSuiteContext = {
  * Runs one `reactComponentTest` leaf. miroir-core cannot render React components, so the app
  * registers this runner through `ConfigurationService.registerReactComponentTestRunner` (#286).
  *
- * `suite` is set for a leaf of a `reactComponentTestSuite` node (#292), and absent for a legacy
- * `componentTestRef` leaf under a plain `miroirTestSuite`.
+ * `suite` is the context of the leaf's `reactComponentTestSuite` node (#292). A leaf outside such a
+ * node never reaches the runner (#292 M1).
  */
 export type ReactComponentTestRunner = (params: {
   testNamePath: string[];
   leaf: MiroirTestForReactComponent;
-  suite?: ReactComponentTestSuiteContext;
+  suite: ReactComponentTestSuiteContext;
 }) => Promise<ReactComponentTestRunnerResult>;

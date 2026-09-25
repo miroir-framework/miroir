@@ -7188,7 +7188,7 @@ export const miroirFundamentalJzodSchema = {
         "tag": {
           "value": {
             "defaultLabel": "React component test",
-            "description": "Renders a component and runs declarative steps (#292), or a registered TypeScript test body named by componentTestRef (#286, legacy)",
+            "description": "Renders the component of its reactComponentTestSuite and runs declarative steps (#292)",
             "display": {
               "displayedAttributeValueWhenFolded": "miroirTestLabel"
             }
@@ -7199,18 +7199,6 @@ export const miroirFundamentalJzodSchema = {
             "type": "boolean",
             "optional": true
           },
-          "componentTestRef": {
-            "type": "object",
-            "optional": true,
-            "definition": {
-              "suite": {
-                "type": "string"
-              },
-              "case": {
-                "type": "string"
-              }
-            }
-          },
           "componentProps": {
             "type": "record",
             "optional": true,
@@ -7220,7 +7208,6 @@ export const miroirFundamentalJzodSchema = {
           },
           "steps": {
             "type": "array",
-            "optional": true,
             "definition": {
               "type": "schemaReference",
               "definition": {
@@ -8882,7 +8869,7 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "defaultLabel": "React component test",
-                    "description": "Renders a component and runs declarative steps (#292), or a registered TypeScript test body named by componentTestRef (#286, legacy)",
+                    "description": "Renders the component of its reactComponentTestSuite and runs declarative steps (#292)",
                     "display": {
                       "displayedAttributeValueWhenFolded": "miroirTestLabel"
                     }
@@ -8893,18 +8880,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "boolean",
                     "optional": true
                   },
-                  "componentTestRef": {
-                    "type": "object",
-                    "optional": true,
-                    "definition": {
-                      "suite": {
-                        "type": "string"
-                      },
-                      "case": {
-                        "type": "string"
-                      }
-                    }
-                  },
                   "componentProps": {
                     "type": "record",
                     "optional": true,
@@ -8914,7 +8889,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "steps": {
                     "type": "array",
-                    "optional": true,
                     "definition": {
                       "type": "schemaReference",
                       "definition": {

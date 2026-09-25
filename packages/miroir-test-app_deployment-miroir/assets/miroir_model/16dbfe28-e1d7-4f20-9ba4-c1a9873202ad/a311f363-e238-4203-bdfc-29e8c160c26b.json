@@ -571,7 +571,7 @@
             "tag": {
               "value": {
                 "defaultLabel": "React component test",
-                "description": "Renders a component and runs declarative steps (#292), or a registered TypeScript test body named by componentTestRef (#286, legacy)",
+                "description": "Renders the component of its reactComponentTestSuite and runs declarative steps (#292)",
                 "display": {
                   "displayedAttributeValueWhenFolded": "miroirTestLabel"
                 }
@@ -582,18 +582,6 @@
                 "type": "boolean",
                 "optional": true
               },
-              "componentTestRef": {
-                "type": "object",
-                "optional": true,
-                "definition": {
-                  "suite": {
-                    "type": "string"
-                  },
-                  "case": {
-                    "type": "string"
-                  }
-                }
-              },
               "componentProps": {
                 "type": "record",
                 "optional": true,
@@ -603,7 +591,6 @@
               },
               "steps": {
                 "type": "array",
-                "optional": true,
                 "definition": {
                   "type": "schemaReference",
                   "definition": {

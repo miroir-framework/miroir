@@ -65,7 +65,6 @@ vi.mock("../../../../src/miroir-fwk/4-tests/componentTests/index", async (import
 });
 
 import * as componentTestsEntry from "../../../../src/miroir-fwk/4-tests/componentTests/index";
-import { componentTestSuiteInstances } from "../../../../src/miroir-fwk/4-tests/componentTests/componentTestManifest";
 import {
   RunAllMiroirTestsButton,
   type MiroirTestSuiteResultsMap,
@@ -111,10 +110,18 @@ function reactComponentLeafLabels(node: any): string[] {
   return node.miroirTestType === "reactComponentTest" ? [node.miroirTestLabel] : [];
 }
 
+/** The uuids of the 7 per-editor component test instances (#292, analysis §5.6). */
+const COMPONENT_TEST_SUITE_INSTANCE_UUIDS = [
+  "761d4ed2-1a5c-4901-a9d9-897dbec0b27f", // JzodEnumEditor_ComponentTestSuite
+  "1b71d68b-7dc9-468c-a251-4fa7889f20f4", // JzodArrayEditor_ComponentTestSuite
+  "3995a071-b8ae-48d3-a488-6d1fc828b725", // JzodLiteralEditor_ComponentTestSuite
+  "da353085-c62b-4aa6-bd54-8813d303dfe5", // JzodObjectEditor_ComponentTestSuite
+  "590693b6-2125-43fc-89d7-1330ae8318db", // JzodSimpleTypeEditor_ComponentTestSuite
+  "de517cd6-31a8-46d2-ac09-3a5162b630a7", // JzodUnionEditor_ComponentTestSuite
+  "ec601bcc-a27d-450d-9c37-bdd6a12a1575", // JzodAnyEditor_ComponentTestSuite
+];
 /** The 7 per-editor component test instances (#292). */
-const componentTestSuiteInstanceList = Object.values(componentTestSuiteInstances).map(({ uuid }) =>
-  loadMiroirTestInstance(uuid),
-);
+const componentTestSuiteInstanceList = COMPONENT_TEST_SUITE_INSTANCE_UUIDS.map(loadMiroirTestInstance);
 const transformerSuiteInstance = loadMiroirTestInstance(TRANSFORMER_SUITE_UUID);
 const narrowedMiroirTests = [...componentTestSuiteInstanceList, transformerSuiteInstance];
 
