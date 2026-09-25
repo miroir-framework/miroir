@@ -7,7 +7,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/292
 Working branch: `292-REFACTOR-declarative-react-component-tests`, created from `aba` at `34a6c0c0b`.
 
-**Resume note (2026-09-25, end of Slice 8 work):** the code is complete: Slices 0-7 are committed, and Slice 8 (docs, nonreg manifest, final tsc) is done but not committed. Two things remain before the work is finished: (1) the full `npm run nonreg`, run by the orchestrator, whose result goes in the Slice 8 Realization placeholder; (2) the browser checks of Slices 3-6 and 8 (7 instances 68/68, one "Run All Unit Tests" with component tests, one production-build run), which need the API server on 3080. That server needs the user's secrets master key, so it is started only by the user. Slices 3-6 and 8 stay ⏳ until then.
+**Resume note (2026-09-26):** all slices 0-8 are ✅ DONE and committed. All 68 JzodElementEditor cases run from declarative steps in 7 per-editor MiroirTest instances; `componentTestRef`, the manifest, the registry, the generator, the per-editor TS files and the `custom` step are removed (M1, M2). tsc matches the Slice 0 baseline; the full nonreg (`test-results/nonreg/20260925T150724Z`) has only the 2 Slice 0 baseline failures; the browser checks were confirmed by the user. Open follow-up, not in this issue: make a `reactComponentTest` leaf outside a `reactComponentTestSuite` a schema error (today a runtime error, Slice 6 deviation 1).
 
 ---
 
@@ -37,12 +37,12 @@ Out of scope: other UI_COMPONENT test files (#204), new component suites, change
 | 0 | Baselines | S | ✅ DONE | baseline tables, `baseline-component-cases.txt` |
 | 1 | Schema, walk, runner signature, 7 instances (legacy leaves), generator removed | L | ✅ DONE | `reactComponentTestSuite.292.phase1` (core), `componentTestInstances.292.phase1`, `miroir-component-tests` 70 passed |
 | 2 | Tracer: interpreter, extractor fix, `$options`, Enum from steps | L | ✅ DONE | `componentTestSteps.292.phase2` 11, `extractorOpenCombobox.292.phase2` 3, Enum 3/3 in vitest, in the dev app, and in the production build; entry 70 passed in 59.9 s |
-| 3 | Literal and SimpleType | M | ⏳ GREEN, SimpleType browser check pending | `componentTestTargets.292.phase3` 6, `-t "JzodLiteralEditor"` 3, `-t "JzodSimpleTypeEditor"` 12, entry 70 passed in 59.0 s, Literal 3/3 in the dev app |
-| 4 | Array and Object | L | ⏳ GREEN, browser check pending (API server down) | `componentTestWidgets.292.phase4` 9, `-t "JzodArrayEditor"` 12, `-t "JzodObjectEditor"` 14, entry 70 passed in 60.9 s; Array and Object app checks pending |
-| 5 | Union and Any | L | ⏳ GREEN, browser check pending (API server down) | `componentTestUnionWidgets.292.phase5` 6, `-t "JzodUnionEditor"` 9, `-t "JzodAnyEditor"` 15, entry 70 passed in 66.5 s; app check 68/68 pending |
-| 6 | M1: no `componentTestRef` | M | ⏳ GREEN, browser check pending (API server down) | `legacyRemoved.292.phase6` 6, core `292-…` 7, grep hits only the absence guard, entry 70 passed in 62.4 s; app check 68/68 pending |
+| 3 | Literal and SimpleType | M | ✅ DONE | `componentTestTargets.292.phase3` 6, `-t "JzodLiteralEditor"` 3, `-t "JzodSimpleTypeEditor"` 12, entry 70 passed in 59.0 s, Literal 3/3 in the dev app |
+| 4 | Array and Object | L | ✅ DONE | `componentTestWidgets.292.phase4` 9, `-t "JzodArrayEditor"` 12, `-t "JzodObjectEditor"` 14, entry 70 passed in 60.9 s; Array and Object app checks passed (user, 2026-09-26) |
+| 5 | Union and Any | L | ✅ DONE | `componentTestUnionWidgets.292.phase5` 6, `-t "JzodUnionEditor"` 9, `-t "JzodAnyEditor"` 15, entry 70 passed in 66.5 s; app check 68/68 passed (user, 2026-09-26) |
+| 6 | M1: no `componentTestRef` | M | ✅ DONE | `legacyRemoved.292.phase6` 6, core `292-…` 7, grep hits only the absence guard, entry 70 passed in 62.4 s; app check 68/68 passed (user, 2026-09-26) |
 | 7 | M2: no `custom` step | S | ✅ DONE | `legacyRemoved.292.phase6` 9 (M2 assertions), entry 70 passed |
-| 8 | Docs, nonreg, final type-check and full nonreg | M | ✅ DONE (browser checks of Slices 3-6 pending) | `unit-292-…` and `appstack-miroir-component-tests` pass via `--only`; tsc = Slice 0 lists; full nonreg = Slice 0 baseline failures only |
+| 8 | Docs, nonreg, final type-check and full nonreg | M | ✅ DONE | `unit-292-…` and `appstack-miroir-component-tests` pass via `--only`; tsc = Slice 0 lists; full nonreg = Slice 0 baseline failures only |
 
 Complexity: S = one focused change, M = several files in one package or a mechanical port, L = several packages or a new subsystem.
 
@@ -622,7 +622,7 @@ The reduced case list of the full entry (ANSI stripped, `<Editor> > <leaf label>
 
 ## Slice 3: Literal and SimpleType
 
-**Status:** ⏳ GREEN, browser check of SimpleType pending (API server down) · **Complexity:** M
+**Status:** ✅ DONE · **Complexity:** M
 
 ### Goal
 
@@ -773,7 +773,7 @@ The reduced case list of the full entry (ANSI stripped, `<Editor> > <leaf label>
 
 ## Slice 4: Array and Object
 
-**Status:** ⏳ GREEN, browser check pending (API server down) · **Complexity:** L
+**Status:** ✅ DONE · **Complexity:** L
 
 ### Goal
 
@@ -941,7 +941,7 @@ The reduced case list of the full entry (verbose reporter, ANSI stripped, `<Edit
 
 ## Slice 5: Union and Any
 
-**Status:** ⏳ GREEN, browser check pending (API server down) · **Complexity:** L
+**Status:** ✅ DONE · **Complexity:** L
 
 ### Goal
 
@@ -1104,7 +1104,7 @@ The reduced case list of the full entry (verbose reporter, ANSI stripped, `<Edit
 
 ## Slice 6: M1, no `componentTestRef`
 
-**Status:** ⏳ GREEN, browser check pending (API server down) · **Complexity:** M
+**Status:** ✅ DONE · **Complexity:** M
 
 ### Goal
 
@@ -1375,7 +1375,7 @@ Final grep: `grep -rn "\"custom\"\|customStepRegistry" packages/miroir-standalon
 
 ## Slice 8: docs, nonreg, final type-check and full nonreg
 
-**Status:** ✅ DONE (browser checks of Slices 3-6 pending: API server down) · **Complexity:** M
+**Status:** ✅ DONE · **Complexity:** M
 
 ### Goal
 
@@ -1474,6 +1474,9 @@ No hit in `docs/`, in `packages/*/src`, or in the deployment assets. `grep -rn '
 **Browser check: not run (API server down).** `curl` to `https://localhost:3080` and `http://localhost:3080` got no answer (exit 7, connection refused). The API server needs the user's secrets master key, so it was not started, and no server was started by this slice. Still to run: the pending checks of Slices 3-6 (the 7 instances 68/68, one "Run All Unit Tests" with "Include component tests" checked) and the production-build run of one instance of this slice. Slices 3-6 and this slice stay ⏳ until then.
 
 **Full nonreg:** `npm run nonreg` (run by the orchestrator), snapshot `test-results/nonreg/20260925T150724Z`, 69 steps: 67 passed, 2 failed, 0 skipped, 0 not_run, duration 3103 s (~51 min 43 s). The 2 failures are the Slice 0 baseline failures with the same messages: `apiCallReport-281` (`expected [ …(8) ] to have a length of 6 but got 8`) and `unit-274-multistep-reports` (`to have a length of 87 but got 88`), both caused by the user's untracked asset files, not by #292. The new step `unit-292-declarative-react-component-tests` passed (218 s) and `appstack-miroir-component-tests` passed (86 s). Against the baseline (68 steps, 66 passed), the extra step is the new 292 unit step, and no step changed status.
+
+**Browser checks (2026-09-26).** The pending browser checks of Slices 3-6 and 8 were run by the user after restarting the API server with its secrets master key, and reported OK. Slices 3-8 are ✅ DONE.
+
 
 **Deviations:**
 
