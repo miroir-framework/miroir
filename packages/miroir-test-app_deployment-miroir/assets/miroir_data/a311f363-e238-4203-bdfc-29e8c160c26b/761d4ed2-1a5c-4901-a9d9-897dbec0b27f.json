@@ -11,32 +11,127 @@
     "miroirTestLabel": "JzodEnumEditor_ComponentTestSuite",
     "miroirTests": [
       {
-        "miroirTestType": "miroirTestSuite",
+        "miroirTestType": "reactComponentTestSuite",
         "miroirTestLabel": "JzodEnumEditor",
+        "component": "JzodElementEditor",
+        "componentProps": {
+          "label": "Test Label",
+          "name": "testField",
+          "listKey": "ROOT.testField",
+          "rootLessListKey": "testField",
+          "rootLessListKeyArray": [
+            "testField"
+          ],
+          "rawJzodSchema": {
+            "type": "enum",
+            "definition": [
+              "value1",
+              "value2",
+              "value3"
+            ]
+          },
+          "initialFormState": "value2"
+        },
         "miroirTests": [
           {
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodEnumEditor: renders select with correct value",
-            "componentTestRef": {
-              "suite": "JzodEnumEditor",
-              "case": "renders select with correct value"
-            }
+            "steps": [
+              {
+                "step": "expectRenderedValues",
+                "label": "initial",
+                "expectedValue": {
+                  "testField": "value2"
+                }
+              }
+            ]
           },
           {
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodEnumEditor: renders all enum options",
-            "componentTestRef": {
-              "suite": "JzodEnumEditor",
-              "case": "renders all enum options"
-            }
+            "steps": [
+              {
+                "step": "expectRenderedValues",
+                "label": "initial",
+                "expectedValue": {
+                  "testField": "value2"
+                }
+              },
+              {
+                "step": "openSelect",
+                "field": "testField"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after click",
+                "detectOptions": true,
+                "expectedValue": {
+                  "testField": "value2",
+                  "$options": {
+                    "testField": [
+                      "value1",
+                      "value2",
+                      "value3"
+                    ]
+                  }
+                }
+              }
+            ]
           },
           {
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodEnumEditor: form state is changed when selection changes",
-            "componentTestRef": {
-              "suite": "JzodEnumEditor",
-              "case": "form state is changed when selection changes"
-            }
+            "steps": [
+              {
+                "step": "expectElement",
+                "target": {
+                  "widget": "combobox",
+                  "field": "testField"
+                },
+                "value": "value2"
+              },
+              {
+                "step": "openSelect",
+                "field": "testField"
+              },
+              {
+                "step": "filterSelect",
+                "field": "testField",
+                "text": "value3"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after selection change",
+                "expectedValue": {
+                  "testField": "value2",
+                  "$options": {
+                    "testField": [
+                      "value3"
+                    ]
+                  }
+                }
+              },
+              {
+                "step": "keyboard",
+                "keys": "{Enter}"
+              },
+              {
+                "step": "waitForAttribute",
+                "target": {
+                  "widget": "selectState",
+                  "field": "testField"
+                },
+                "attribute": "data-test-selected-value",
+                "value": "value3"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after selection commit",
+                "expectedValue": {
+                  "testField": "value3"
+                }
+              }
+            ]
           }
         ]
       }

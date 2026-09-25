@@ -42,11 +42,6 @@ export const componentTestManifest: Record<string, readonly string[]> = {
     "add an element to an object array when button ROOT.testField.add is clicked",
     "duplicate an element in a string array when duplicate button for item 1 is clicked",
   ],
-  JzodEnumEditor: [
-    "renders select with correct value",
-    "renders all enum options",
-    "form state is changed when selection changes",
-  ],
   JzodLiteralEditor: [
     "renders Literal input with label when label prop is provided",
     "renders Literal input without label when label prop is not provided",

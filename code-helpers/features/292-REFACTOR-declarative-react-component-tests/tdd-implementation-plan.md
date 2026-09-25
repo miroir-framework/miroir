@@ -34,7 +34,7 @@ Out of scope: other UI_COMPONENT test files (#204), new component suites, change
 |---|---|---|---|---|
 | 0 | Baselines | S | ✅ DONE | baseline tables, `baseline-component-cases.txt` |
 | 1 | Schema, walk, runner signature, 7 instances (legacy leaves), generator removed | L | ✅ DONE | `reactComponentTestSuite.292.phase1` (core), `componentTestInstances.292.phase1`, `miroir-component-tests` 70 passed |
-| 2 | Tracer: interpreter, extractor fix, `$options`, Enum from steps | L | ⏳ TODO | `componentTestSteps.292.phase2`, `extractorOpenCombobox.292.phase2`, Enum 3/3 in vitest and in the app |
+| 2 | Tracer: interpreter, extractor fix, `$options`, Enum from steps | L | ✅ DONE | `componentTestSteps.292.phase2` 11, `extractorOpenCombobox.292.phase2` 3, Enum 3/3 in vitest, in the dev app, and in the production build; entry 70 passed in 59.9 s |
 | 3 | Literal and SimpleType | M | ⏳ TODO | `-t "JzodLiteralEditor"` 3, `-t "JzodSimpleTypeEditor"` 12, app check |
 | 4 | Array and Object | L | ⏳ TODO | `-t "JzodArrayEditor"` 12, `-t "JzodObjectEditor"` 14, app check |
 | 5 | Union and Any | L | ⏳ TODO | `-t "JzodUnionEditor"` 9, `-t "JzodAnyEditor"` 15, app check 68/68 |
@@ -430,7 +430,7 @@ For each instance:
 
 ## Slice 2: tracer, interpreter, extractor fix, Enum from steps
 
-**Status:** ⏳ TODO · **Complexity:** L
+**Status:** ✅ DONE · **Complexity:** L
 
 ### Goal
 
@@ -506,7 +506,115 @@ Browser check: `JzodEnumEditor_ComponentTestSuite` gives 3/3, and the sandbox po
 
 ### Realization
 
-(to fill)
+Every command was run alone, one per file, from the repo root. The user's unrelated uncommitted changes (`ci/claude-cloud-env-script.sh`, the `admin_data` files, the spotify model files, `generate_externalServiceSync_suites.py`) were not touched, staged, or stashed. P1 is option (a) and P2 is default (a), as resolved in analysis §8.
+
+**RED observed.** The stubs came first: `componentRegistry.ts` (`{}`), `customStepRegistry.ts` (`{}`), `componentTestTargets.ts` and `runComponentTestSteps.ts` (functions throwing "not implemented"). Then the two tests, the Enum JSON, and the removal of Enum from the manifest and the registry. Runs used `npx vitest run <file>` with `VITE_TEST_MODE=true`:
+
+- `extractorOpenCombobox.292.phase2`: **2 failed, 1 passed**. The fixture test and the real `ThemedSelectWithPortal` test failed with `expected { testField: '' } to deeply equal { testField: 'value2' }` and `expected { testField: '', …(1) } to deeply equal { testField: 'value2', …(1) }`: the open combobox was read as its empty filter text. The closed-combobox test passed at RED. It guards that the fix does not change the closed read.
+- `componentTestSteps.292.phase2`: **11 failed / 11**. The runner still had its Slice 1 step path, which returns `reactComponentTest "…" has no componentTestRef: declarative steps are not implemented yet`. So:
+  - the `ok` tests failed with `expected { status: 'error', …(1) } to deeply equal { status: 'ok' }`;
+  - the message tests failed with `expected false to be true` (no `step <n> (…)` prefix);
+  - the unknown-component test failed with `expected 'reactComponentTest "FixtureEnum: case…' to contain '"NoSuchComponent"'`;
+  - the both-fields test failed with `expected 'component test suite "Probe" is not i…' to contain 'exactly one of steps and componentTes…'`.
+- `miroir-component-tests -t "JzodEnumEditor"`: **3 failed, 67 skipped**. Each Enum leaf got the same Slice 1 error result.
+
+**GREEN:**
+
+- **`componentRegistry.ts`** (T13): `{ JzodElementEditor: getJzodElementEditorForTest("JzodElementEditor.test") }` and the `ComponentRegistry` type.
+- **`customStepRegistry.ts`** holds the `CustomStep` type `(env, params, context) => Promise<void>` and `ComponentTestStepContext { lastValues?, elements }`. `elements` holds the `saveAs` elements. It is deleted at M2.
+- **`componentTestTargets.ts`** (T6, T9):
+  - `queryAllTarget` requires exactly one locator. The locators `byRole` (+ `name`), `byTestId`, `byText`, `byDisplayValue`, and `byLabelText` query `env.view`. `widget` supports `combobox` and `selectState`, with `select` absent or `"value"`. `ref` reads the saved elements.
+  - `resolveTarget` requires exactly one match when there is no `index`, and picks the match at `index` otherwise.
+  - `reviveComponentProps` replaces every `{"$bigint": "<digits>"}` at any depth.
+- **`runComponentTestSteps.ts`** (analysis §5.3):
+  - One handler per implemented kind: `click`, `change`, `blur`, `type`, `clear`, `keyboard`, `waitForAttribute`, `openSelect`, `filterSelect`, `expectRenderedValues`, `expectElement` (`present`, `value`, `attribute`, `saveAs`), and `custom`. One `userEvent.setup()` session per case.
+  - After each action step: `componentTestAct`, then `waitAfterUserInteraction(container)`. `openSelect` and `filterSelect` wait inside the act for `data-test-is-open="true"` and for `data-test-filter-text`, with a 1000 ms timeout.
+  - `expectRenderedValues` calls the extractor with label `TESTSECTION` and step `label`, drops the array-valued entries, applies `formValuesToJSON`, and adds `$options` (T8). `$options` is built from the sandbox's `[role="option"]` elements whose `aria-label` is `<formik name>-option-<value>`, grouped by the name without `TESTSECTION.`. It then logs the value, keeps it as `context.lastValues`, and compares with the throwing `toEqual`.
+  - A failure throws `ComponentTestStepError` with the message `step <n> (<kind>[ "<label>"]): <message>` (T10). For `expectRenderedValues` it also carries `expected` and `actual`.
+  - A kind with no handler gives `step <n> (<kind>): not implemented`.
+- **`runReactComponentTest.tsx`:**
+  - A leaf needs exactly one of `steps` and `componentTestRef`; otherwise the result is `error`.
+  - Step path: the result is `error` when there is no `suite` or the component is unknown. The message names the component. Otherwise the props are `reviveComponentProps({ ...suite.componentProps, ...leaf.componentProps })`. The wrapper is keyed by `suite.suitePath` and destroyed after the leaf labelled `suite.caseLabels.at(-1)` (T4). The steps run through `runComponentTestSteps`, and a failed `expectRenderedValues` returns `expected` / `actual` in the result.
+  - The legacy path behaves as before. It now shares the mount code (`mountCase`) and the wrapper cache with the step path.
+  - `ComponentTestSandboxHost` gains an optional `componentRegistry`.
+- **`componentTestTools.tsx`** (analysis §5.5): `comboboxCommittedValue` reads an `input[role="combobox"]` whose state tracker `themed-select-state-<name>` (in the search roots) has `data-test-is-open="true"`. It returns the tracker's `data-test-selected-value`. It is used through `inputValue` in the 4 input reads: `miroirInput` self and child, `input[name]`, and the combobox branch. A closed combobox is read as before.
+- **Enum JSON** (`761d4ed2-….json`, 2-space JSON, CRLF): the child is the `reactComponentTestSuite` of analysis §5.4, with P1 (a). Case 3 asserts `value2` plus `$options ["value3"]` while filtering, then presses `{Enter}`, waits for `data-test-selected-value` = `value3`, and asserts `value3`. No `custom` step. The labels are unchanged.
+- **Enum is removed** from `componentTestManifest.ts` (the `componentTestSuiteInstances` entry stays) and from `componentTestRegistry.ts`. `componentTests/jzodElementEditor/JzodEnumEditor.tsx` is deleted.
+
+**Refactor checkpoint:**
+- `componentTests/` has no bare `console.*`, and `runComponentTestSteps.ts` imports nothing from `@testing-library/react` (grep).
+- Non-vacuity check, then revert: `value9` in case 1 and the option list `["value1","value3","value2"]` in case 2 gave **2 failed, 1 passed**:
+  - `step 1 (expectRenderedValues "initial"): [rendered values] Expected {"testField":"value2"} to equal {"testField":"value9"}. First difference at path: ["testField"]`
+  - `step 3 (expectRenderedValues "after click"): [rendered values] Expected {…"$options":{"testField":["value1","value2","value3"]}} to equal {…["value1","value3","value2"]}}. First difference at path: ["$options", …]`
+- The JSON was restored from a byte copy (`cmp` equal).
+
+**Deviations:**
+
+1. **Kinds and parameters of later slices fail with "not implemented".** Slice 2 implements the kinds and targets listed in its Goal. The following fail with `<what>: not implemented` inside the T10 message, so the RED tests of Slices 3-5 fail on behavior:
+   - the parameters of later slices: text matches given as a number or regex, the refinements `fieldName`, `fieldNamePrefix`, and `id`, `expectRenderedValues.field`, `path`, `filter`, and `timeout`, and `expectElement.count`, `values`, `checked`, `containsHtml`, `parentContains`, and `timeout`;
+   - the widgets other than `combobox` / `selectState`, and `select: "unionType"`.
+
+   `index` is implemented now, since it is part of the core resolution rule.
+2. **`ComponentTestSandboxHost.componentRegistry`** (optional) is added now, not at M1. The props / `$bigint` test and the wrapper-lifetime test need a fake component. M1 still removes `registry`.
+3. **`context.elements`** is exposed to `custom` steps next to `lastValues`. The `saveAs` / `ref` test uses a custom step to check that two saved elements are the same node. The test also checks that an unknown `ref` fails as `step 1 (click): no element saved as "nope"`.
+4. **One extra interpreter test:** a leaf with both `steps` and `componentTestRef` gives an error (K7). `componentTestSteps.292.phase2` therefore has 11 tests.
+5. **The `$bigint` probe** converts bigint props before `JSON.stringify`. A `BigInt.prototype.toJSON` defined elsewhere in the app turned `5n` into `5` in the first GREEN run.
+6. **Short timeout messages.** `waitFor` gets `onTimeout: (error) => error`, so a timed-out wait reports its last check without Testing Library's DOM dump.
+7. **`$options` is added only when the compared value is a plain object**, not an array root. No current case reads options with an array root.
+8. **Wrapper keys** are `suite:<JSON suitePath>` and `legacy:<suite name>`, so a step suite and a legacy suite can never share a wrapper.
+
+**Validation** (one command per file, sequential):
+
+| Command | Result | Expected |
+|---|---|---|
+| `npm run build -w miroir-test-app_deployment-miroir && … modelValidation.unit.test.ts` | 159 passed | 159 (Slice 1) ✓ |
+| `extractorOpenCombobox.292.phase2` | 3 passed | — |
+| `componentTestSteps.292.phase2` | 11 passed | — |
+| `componentMiroirTests.consistency` | 8 passed | 8 ✓ |
+| `miroir-component-tests -t "JzodEnumEditor"` | 3 passed, 67 skipped | 3 ✓ |
+| `miroir-component-tests` | **70 passed** (real 59.9 s, vitest 52.7 s) | 70 ✓ |
+| `extractValuesFromRenderedElements` | 4 passed | 4 ✓ |
+| `extractValuesScoped.286.phase3` | 2 passed | 2 ✓ |
+| `--profile emulatedServer-filesystem multistepProcess.274.integ` | 19 passed | 19 ✓ |
+| `--profile emulatedServer-filesystem wizardWalk.284.integ` | 11 passed | 11 ✓ |
+| `componentTestSandbox.286.phase4` | 5 passed | 5 ✓ |
+| `runAllComponentTests.286.phase6` | 3 passed | 3 ✓ |
+| `python scripts/check_bare_console.py` | OK | ✓ |
+| `tsc` miroir-core | 0 errors | 0 ✓ |
+| `tsc` miroir-standalone-app | 1 error, the known `JzodElementEditorHooks.ts(528,59)` TS2339 | baseline ✓ |
+
+The reduced case list of the full entry (ANSI stripped, `<Editor> > <leaf label>: passed`, sorted, 68 lines) is byte-identical to `baseline-component-cases.txt`. After the production build, the bundle guard `componentTestChunk.286.phase4` also passed (4), as an extra check.
+
+**K1 / P2 measurement.** The full entry took **59.9 s real** (vitest 52.7 s), against 56.6 s in Slice 0 and 58 s in Slice 1: ×1.06, far below the ×2 threshold. D9 (300 ms after every action) stays. Only the 3 Enum cases use it so far, so each migration slice measures again.
+
+**Browser check.**
+- Setup: the API server (`https://localhost:3080`) was running and was not restarted. The Vite dev server was down. This slice started it (`npm run dev -w miroir-standalone-app`) and stopped it after the check.
+- Method: the Slice 1 script (`playwright-core` in the session scratchpad, headless Microsoft Edge, user `alice`), plus a `MutationObserver` that records every change of the `[role="option"]` list in the sandbox.
+- **Development build:** `JzodEnumEditor_ComponentTestSuite` **3/3**, "PASSED", and the snackbar "…completed successfully", in 3.9 s.
+  - The option snapshots were `[]` → 3 options (case 2) → `[]` → 3 options (case 3, open) → `["value3"]` (filtered) → `[]` (after Enter). Every option was inside the sandbox portal. So the portal held the open list of case 3 until the Enter step.
+  - No console message matched `act(`. The sandbox kept 1 case container, and Close removed it.
+  - Console errors: the known 403 at page load and the `Sidebar` / `AppBar` "unique key" warnings.
+- **Production build:** `npm run build -w miroir-standalone-app` (3 min 4 s). The `vendor-react` chunk contains "act(...) is not supported in production builds of React.". Then `vite preview --port 3000 --strictPort`, started by this slice and stopped after the check, with the API on 3080.
+  - The same result: 3/3, "PASSED", 3.1 s, the same option snapshots, no `act(` message, 1 container kept, and Close removed it.
+  - Only console error: the 403.
+- Ports 5173 and 3000 are free again. The 3080 server is still running.
+
+**Impact on later slices:**
+- The vocabulary is as in analysis §5.4. The one addition is `context.elements` for `custom` steps, which goes away at M2.
+- Each later slice replaces a `not implemented` guard with the implementation (deviation 1): for example, the `textMatch` guard in `componentTestTargets.ts`, the refinement guard, and the parameter guards in the `expectRenderedValues` / `expectElement` handlers.
+- `expectRenderedValues` reads label `TESTSECTION` until Slice 4 adds `field`.
+- The legacy path and the manifest now hold 6 editors (65 cases).
+
+**Files created:**
+- `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/componentRegistry.ts`, `componentTestTargets.ts`, `runComponentTestSteps.ts`, `customStepRegistry.ts`
+- `packages/miroir-standalone-app/tests/4_view/issues/292-declarative-react-component-tests/extractorOpenCombobox.292.phase2.unit.test.tsx` and `componentTestSteps.292.phase2.unit.test.tsx`
+
+**Files changed:**
+- `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/runReactComponentTest.tsx`, `componentTestTools.tsx`, `componentTestManifest.ts`, `componentTestRegistry.ts`
+- `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-…/761d4ed2-1a5c-4901-a9d9-897dbec0b27f.json`
+- this plan
+
+**File deleted:** `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/jzodElementEditor/JzodEnumEditor.tsx`.
 
 ---
 
