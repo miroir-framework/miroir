@@ -12,7 +12,7 @@
 
 ## Schema Location
 
-`packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e4320b9e-ab45-4abe-85d8-359604b3c62f.json` (the `mlSchema` of the `Query` Entity; a historical snapshot `359f1f9b-…` exists in `miroir_modelVersion/`)
+`packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e4320b9e-ab45-4abe-85d8-359604b3c62f.json` (the `mlSchema` of the `Query` Entity)
 
 ---
 

@@ -170,7 +170,7 @@ The 'report editor' is now shown on the top of the current view and the 'model' 
 
 click on the `Entities` item of the `Model Scope` menu.
 
-<!-- TODO: the screenshots of this section predate #217/#234 (Entity is now the authoritative present model, and the Library has no EntityVersions); they still show an "Entity Version" list and need to be retaken. -->
+<!-- TODO: the screenshots of this section predate #217/#234 (the Entity now carries its mlSchema directly); they still show the old per-version list and need to be retaken. -->
 
 ### Editing the Book Entity
 

@@ -85,7 +85,7 @@ Operations on application model (entities, reports, etc.).
 }
 ```
 
-No EntityVersion is passed or created; see [Entity API — CRUD Operations](entity.md#crud-operations).
+See [Entity API — CRUD Operations](entity.md#crud-operations).
 
 ### 3. Composite Actions
 

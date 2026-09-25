@@ -1,6 +1,6 @@
-# Entity & EntityVersion API Reference
+# Entity API Reference
 
-**Status: 🚧 Hand-written reference.** When this page disagrees with the sources, the sources win: the generated types in `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` (`Entity`, `EntityVersion`, `EntityInstance`) and the Entity `mlSchema` in the bootstrap asset listed below.
+**Status: 🚧 Hand-written reference.** When this page disagrees with the sources, the sources win: the generated types in `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` (`Entity`, `EntityInstance`) and the Entity `mlSchema` in the bootstrap asset listed below.
 
 ---
 
@@ -8,8 +8,7 @@
 
 **Entity** is the bootstrapped meta-model concept in Miroir: every domain concept (Book, Author, Query, Report, … and Entity itself) is an instance of Entity.
 
-- **Entity** - Represents a concept in your domain (e.g., "Book", "Author", "Customer"). It is the **authoritative present-model** definition: it carries `mlSchema`, primary key (`idAttribute`), view / cache fields and display metadata. This is the only thing you need to define a new concept.
-- **EntityVersion** - Historical snapshot of an Entity's definition, written by `freezeApplicationVersion` into the optional `modelVersion` store section of **versioned-internal** applications. Application authors do not create EntityVersions by hand. Formerly named **EntityDefinition**; TypeScript still exports a deprecated `EntityDefinition` alias.
+- **Entity** - Represents a concept in your domain (e.g., "Book", "Author", "Customer"). It is the **authoritative present-model** definition: it carries `mlSchema`, primary key (`idAttribute`), view / cache fields and display metadata. This is the only thing you need to define a new concept. (Model history is optional; see the [Versioning reference](../versioning.md).)
 
 ---
 
@@ -32,7 +31,7 @@ interface Entity {
   uuid: string;                    // Unique identifier (UUID v4)
   parentName?: string;             // "Entity"
   parentUuid: string;              // Always the Entity meta-entity 16dbfe28-e1d7-4f20-9ba4-c1a9873202ad
-  parentDefinitionVersionUuid?: string; // Informational: 381ab1be-… (historical EntityVersion of Entity)
+  parentDefinitionVersionUuid?: string; // Informational only, see Versioning reference
   conceptLevel?: "MetaModel" | "Model" | "Data" | "External";
   name: string;                    // Human-readable name
   selfApplication?: string;        // SelfApplication owning this Entity
@@ -45,8 +44,8 @@ interface Entity {
   externalDataSource?: {           // Only for conceptLevel "External"
     kind?: "sql" | "http"; endpoint?: string; schema?: string; tableName?: string;
   };
-  scope?: "versioning" | "modeling";          // Meta-model classification — see below
-  logicalDataModel?: "entity" | "manyToMany"; // Logical persistence shape — see below
+  scope?: "versioning" | "modeling";          // Meta-model only, see Versioning reference
+  logicalDataModel?: "entity" | "manyToMany"; // Meta-model only, see Versioning reference
   mlSchema: JzodObject;            // Present-model structure of instances (authoritative, required)
 }
 ```
@@ -68,31 +67,8 @@ interface Entity {
 | `defaultInstanceDetailsReportUuid` | string (UUID) | No | Default Report used to display an instance |
 | `cache` | object | No | `cacheAllInstancesOnRefresh` |
 | `icon` | MiroirIcon | No | Optional icon for UI display |
-| `scope` | `"versioning"` \| `"modeling"` | No | **Meta-model only.** Classifies this Entity row as part of application version history vs ordinary live modeling. **Absent means `modeling`.** See [Meta-model classification](#meta-model-classification-scope--logicaldatamodel). |
-| `logicalDataModel` | `"entity"` \| `"manyToMany"` | No | **Meta-model only.** Declares the logical persistence shape (ordinary entity table vs cross/link table). **Absent means `entity`.** Often paired with `scope: "versioning"` on `ApplicationVersionCross*` entities. |
-
-### Meta-model classification (`scope` & `logicalDataModel`)
-
-These optional fields appear on **Entity** rows in the Miroir meta-model (and on bootstrap meta-entities such as `EntityVersion`, `QueryVersion`, `SelfApplicationVersion`). They document **what role that Entity concept plays**, not a property of domain instances like Library `Book`.
-
-| Field | Values | Default when absent | Meaning |
-|-------|--------|---------------------|---------|
-| `scope` | `versioning`, `modeling` | `modeling` | `versioning` marks infrastructure for **freeze / application version history** (historical `*Version` rows, `SelfApplicationVersion`, `ApplicationVersionCross*`). `modeling` is a normal live-model concept (`Query`, `Report`, `Book`, …). |
-| `logicalDataModel` | `entity`, `manyToMany` | `entity` | `manyToMany` marks link/cross tables (e.g. `ApplicationVersionCrossEntityVersion`). Ordinary version snapshot types use the default `entity` shape. |
-
-**Examples (Miroir bootstrap model):**
-
-```json
-{ "name": "EntityVersion", "scope": "versioning" }
-{ "name": "ApplicationVersionCrossEntityVersion", "scope": "versioning", "logicalDataModel": "manyToMany" }
-{ "name": "Query", "scope": undefined }
-```
-
-**Runtime behavior today:** persistence section routing (`model` vs `modelVersion` vs `data`) and freeze planning use the explicit `versionHistoryEntityUuids` registry in `Model.ts` / `getApplicationSection()` — **not** a dynamic read of `Entity.scope`. The field is authoritative for **model documentation, validation, and tests** (`entityMetaScope.unit.test.ts`); future work may derive routing from it.
-
-**Do not confuse** with `schemaChangeKind`’s unrelated `scope` (`"meta"` vs `"app"`) used for schema-revision fingerprints.
-
-See also: [Defining Entities — versioning infrastructure](../../guides/developer/defining-entities.md#versioning-infrastructure-entities-scope), [Data Architecture — `modelVersion` section](../data-architecture-deployments.md#modelversion-version-history-optional).
+| `scope` | `"versioning"` \| `"modeling"` | No | **Meta-model only**, absent means `modeling`. Not set by application authors. See [Versioning — meta-model classification](../versioning.md#meta-model-classification-scope-and-logicaldatamodel) |
+| `logicalDataModel` | `"entity"` \| `"manyToMany"` | No | **Meta-model only**, absent means `entity`; `manyToMany` marks cross / link tables. See [Versioning — meta-model classification](../versioning.md#meta-model-classification-scope-and-logicaldatamodel) |
 
 ### Example
 
@@ -167,62 +143,9 @@ Report-local `runtimeTransformers` remain the tool for cluster/JOIN display.
 
 ---
 
-## EntityVersion
-
-### Schema Location
-
-EntityVersion is itself an Entity (`54b9c72f-d4f3-4db9-9e0e-0dc840b530bd`, `scope: "versioning"`) whose `mlSchema` is in:
-
-`packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json`
-
-EntityVersion **instances** are version-history rows. They live in the `modelVersion` section, never in `model` or `data`. Only the Miroir deployment ships some as assets, under `packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/` (e.g. `381ab1be-…` = historical version of Entity, `bdd7ad43-…` = self-describing version of EntityVersion). The Library, Admin, Postgres and Designer deployments are `unversioned` and ship **no** EntityVersion files. See [Data Architecture — `modelVersion`](../data-architecture-deployments.md#modelversion-version-history-optional).
-
-### When are EntityVersions written?
-
-Only by the `freezeApplicationVersion` model action, for applications with `versioningMode: "versioned-internal"`. `createEntity`, `renameEntity`, `alterEntityAttribute` and `dropEntity` operate on the **Entity** only and never create or update an EntityVersion.
-
-### TypeScript Interface
-
-Abridged from the generated `EntityVersion` type:
-
-```typescript
-interface EntityVersion {
-  // Deprecated alias: type EntityDefinition = EntityVersion
-  uuid: string;                    // Unique identifier (UUID v4)
-  parentUuid: string;              // Always the EntityVersion meta-entity 54b9c72f-d4f3-4db9-9e0e-0dc840b530bd
-  name: string;                    // Version name
-  entityUuid: string;              // The Entity this is a snapshot of
-  conceptLevel?: "MetaModel" | "Model" | "Data" | "External";
-  description?: string;
-  idAttribute?: string | string[];
-  externalDataSource?: { kind?: "sql" | "http"; endpoint?: string; schema?: string; tableName?: string };
-  defaultInstanceDetailsReportUuid?: string;
-  viewAttributes?: string[];
-  mlSchema: JzodObject;            // Snapshot of the Entity's mlSchema
-}
-```
-
-The fields mirror the present-model fields of Entity at freeze time, minus the Entity-only classification fields (`scope`, `logicalDataModel`, `selfApplication`, …).
-
-### Properties
-
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-| `uuid` | string (UUID) | ✅ Yes | Unique identifier for this snapshot |
-| `parentUuid` | string (UUID) | ✅ Yes | The EntityVersion meta-entity (`54b9c72f-d4f3-4db9-9e0e-0dc840b530bd`) |
-| `name` | string | ✅ Yes | Version name |
-| `entityUuid` | string (UUID) | ✅ Yes | The Entity this snapshot describes |
-| `mlSchema` | JzodObject | ✅ Yes | Structure of the Entity's instances at freeze time |
-| `idAttribute` | string \| string[] | No | Primary key attribute(s) at freeze time. Absent ⇒ `"uuid"` |
-| `conceptLevel` | enum | No | `MetaModel` \| `Model` \| `Data` \| `External` |
-| `description` | string | No | Optional documentation |
-| `defaultInstanceDetailsReportUuid` | string (UUID) | No | Default report for displaying instances |
-
----
-
 ## Jzod / ML Schema of an Entity
 
-The **`mlSchema`** property of an Entity (older docs called it `jzodSchema`; that name is gone) defines the structure of its instances. It is a Jzod `object`. See [Jzod documentation](../../../../jzod/README.md) for complete schema syntax.
+The **`mlSchema`** property of an Entity defines the structure of its instances. It is a Jzod `object`. See [Jzod documentation](../../../../jzod/README.md) for complete schema syntax.
 
 ### Common Patterns
 
@@ -314,11 +237,9 @@ Entities with a non-UUID or composite `idAttribute` (e.g. External catalogue Ent
 
 ---
 
-## Entity Evolution and Versioning
+## Entity Evolution
 
-To evolve a concept, edit the **Entity** itself: add or alter attributes in its `mlSchema` (e.g. an optional `isbn` on Book), directly in the UI / JSON asset or through `alterEntityAttribute`. There is no need, and no way, to "add a new EntityVersion" by hand.
-
-For a **versioned-internal** application, `freezeApplicationVersion` then records the current state of every Entity as EntityVersion rows (plus `SelfApplicationVersion` and `ApplicationVersionCross*` link rows) in the `modelVersion` section. See [Bundles and Versioning](../../getting-started/bundles-and-versioning.md) and the [migrations guide](../../guides/developer/migrations.md).
+To evolve a concept, edit the **Entity** itself: add or alter attributes in its `mlSchema` (e.g. an optional `isbn` on Book), directly in the UI / JSON asset or through `alterEntityAttribute`. Keeping a history of model states is optional and covered in the [Versioning reference](../versioning.md).
 
 ---
 
@@ -348,7 +269,7 @@ const createEntityAction: ModelActionCreateEntity = {
 };
 ```
 
-`createEntity` takes complete Entity rows (present model included). There is no `entityDefinition` / EntityVersion part in the payload anymore.
+`createEntity` takes complete Entity rows, `mlSchema` included.
 
 ### Read Entity
 
@@ -385,7 +306,7 @@ const dropEntityAction: ModelActionDropEntity = {
 };
 ```
 
-`dropEntity` removes the Entity and its storage; it does not touch historical EntityVersions.
+`dropEntity` removes the Entity and its storage.
 
 ---
 

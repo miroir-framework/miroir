@@ -25,7 +25,7 @@ Every Miroir application consists of:
 
 ### 2. Define Entities
 
-See [Defining Entities](defining-entities.md): an Entity row, with its `mlSchema`, is all that is needed to define a concept. There is no separate "Entity Version" step: EntityVersions are history snapshots written by `freezeApplicationVersion` for versioned-internal applications.
+See [Defining Entities](defining-entities.md): an Entity row, with its `mlSchema`, is all that is needed to define a concept. Keeping a history of the model is optional, see the [Versioning reference](../../reference/versioning.md).
 
 ### 3. Build Queries
 

@@ -176,42 +176,42 @@ The Miroir Framework allows to create applications by defining data structures a
 
 The whole approach to the framework is based on a meta-language, named "ML", "MML" (for Miroir Meta-Language), "MMLS" (for Miroir Meta-Language Schema) or Jzod. The meta-schema is given in `packages/miroir-test-app_deployment-miroir/assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json`. It defines the structure of all data in Miroir, and it is bootstrapped, defining its own structure (it is itself a Jzod Schema). It corresponds to a subset of Typescript types.
 
-Each core concept in Miroir (Entity, EntityVersion, Query, Transformer, Report, Endpoint, etc.) is defined as an Entity. The live **Entity** holds the authoritative present-model definition (`mlSchema`, PK, view/cache fields). Optional **EntityVersion** instances (formerly EntityDefinition; deprecated TypeScript alias still exported) are historical / compatibility snapshots. They are all defined using the Meta-language (Jzod schemas).
+Each core concept in Miroir (Entity, Query, Transformer, Report, Endpoint, etc.) is defined as an Entity. The live **Entity** holds the authoritative definition (`mlSchema`, PK, view/cache fields), expressed in the Meta-language (Jzod schemas). Model history (EntityVersion and other `*Version` concepts, freeze, `modelVersion` section) is documented only in `docs/reference/versioning.md`.
 
 ### Application / Deployment Structure: (Meta-)Model + Data
 The Deployment of every Application is stored in two parts (here filesystem storage is used as an example, but it can be any persistence backend):
-- **Model**: JSON files defining Entities, EntityVersions, Queries, Transformers, Reports, any logic or model-related information of an Application. For the Miroir application itself (in `packages/miroir-test-app_deployment-miroir/assets/miroir_model/`) this contains the Meta-Model (Entity and EntityVersion) plus other model-level concepts. For any other Application, this contains the actual application model.
+- **Model**: JSON files defining Entities, Queries, Transformers, Reports, any logic or model-related information of an Application. For the Miroir application itself (in `packages/miroir-test-app_deployment-miroir/assets/miroir_model/`) this contains the Meta-Model (Entity rows) plus other model-level concepts. For any other Application, this contains the actual application model.
 - **Data**: JSON files defining the actual data instances of an application Model. For the Miroir application itself (in `packages/miroir-test-app_deployment-miroir/assets/miroir_data/`) this contains instances for non-bootstrapped concepts that belong to the Model of the Miroir Application but not only to its Meta-Model: `Query`, `Transformer`, `Report`, etc. For any other application, this contains the actual application data.
 
 Canonical layout reference: `docs/reference/data-architecture-deployments.md`.
 
 ### Miroir Core Concepts: Meta-Model
 
-- The bootstrapped Entity `Entity` is defined in file `packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json` (a historical EntityVersion snapshot of it, `381ab1be-…`, lives in `miroir_modelVersion/54b9c72f-…/`).
-- An **EntityVersion** is a versioned snapshot of an Entity's definition. EntityVersions are only written by `freezeApplicationVersion` into the optional `modelVersion` section; `createEntity` & co. never write them. The EntityVersion Entity is `packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json`; the self-describing EntityVersion-of-EntityVersion snapshot is in `packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json`.
+- The bootstrapped Entity `Entity` is defined in file `packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json`.
+- Model history (EntityVersion snapshots written by `freezeApplicationVersion`) is optional and never needed to define or use an Entity; see `docs/reference/versioning.md`.
 - The Jzod schemas are used to generate TypeScript types and Zod validation schemas.
 - Application / deployment Jzod assets live under `packages/miroir-test-app_deployment-*/assets/` (not under `miroir-core/src/assets/`, which only holds leftover fixtures such as `miroirAdmin/` and `test1_model/`).
 - Generated TypeScript types from Jzod schemas are written to `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/` (mainly `miroirFundamentalType.ts`). Generator helpers live in `packages/miroir-core/src/0_interfaces/1_core/bootstrapJzodSchemas/`.
 - Run `npm run devBuild -w miroir-core` to produce TS types (and then build)
 - TS Types from miroir-core are exported through a large `index.ts` (1200+ lines)
 
-The Entities are bootstrapped to themselves as meta-classes (there is an Entity named "Entity"). EntityVersion is also bootstrapped (there is an Entity named EntityVersion and a self-describing EntityVersion instance whose `mlSchema` describes EntityVersion rows, including itself). Deprecated TypeScript name: `EntityDefinition`.
+The Entities are bootstrapped to themselves as meta-classes (there is an Entity named "Entity", whose `parentUuid` is its own uuid).
 
 ### Primary Key Support
 
-Entities (present model) and EntityVersions support three kinds of primary keys via the `idAttribute` field:
+Entities support three kinds of primary keys via the `idAttribute` field:
 - **UUID PK** (default): `idAttribute` is absent or `"uuid"` — standard UUID-based identity.
 - **Non-UUID single PK**: `idAttribute` is a single string naming any attribute (e.g. `"code"`).
 - **Composite PK**: `idAttribute` is a `string[]` array (e.g. `["region", "code"]`).
 
-**Entity `scope` (meta-model classification):** optional on meta-model **Entity** rows only — `"versioning"` marks freeze / application-version-history concepts (`EntityVersion`, `SelfApplicationVersion`, `ApplicationVersionCross*`, …); absent = `"modeling"`. Companion `logicalDataModel`: `"manyToMany"` for cross tables. **Runtime routing** (`model` vs `modelVersion`) uses `versionHistoryEntityUuids` in `Model.ts`, not a dynamic read of `scope` yet. See `docs/reference/api/entity.md#meta-model-classification-scope--logicaldatamodel`.
+**Entity `scope` / `logicalDataModel`:** optional meta-model classification fields (versioning infrastructure vs modeling, cross tables); see `docs/reference/versioning.md`.
 
 Helper functions for PK handling are in `packages/miroir-core/src/1_core/Entity/EntityPrimaryKey.ts`:
-- `getEntityPrimaryKeyAttribute(entityDefinition)` — returns `string | string[]`
-- `getEntityPrimaryKeyAttributes(entityDefinition)` — always returns `string[]`
-- `entityHasCompositePrimaryKey(entityDefinition)` / `entityHasUuidPrimaryKey(entityDefinition)`
+- `getEntityPrimaryKeyAttribute(entity)` — returns `string | string[]`
+- `getEntityPrimaryKeyAttributes(entity)` — always returns `string[]`
+- `entityHasCompositePrimaryKey(entity)` / `entityHasUuidPrimaryKey(entity)`
 - `serializeCompositeKeyValue(attributes, instance)` / `parseCompositeKeyValue(serialized)` — composite key serialization using `|` separator with `\` escaping
-- `getInstancePrimaryKeyValue(entityDefinition, instance)` — returns the PK value as a string (serialized for composite)
+- `getInstancePrimaryKeyValue(entity, instance)` — returns the PK value as a string (serialized for composite)
 - `getForeignKeyValue(fkAttribute, referenceObject)` — resolves FK value from a reference object; `fkAttribute` can be `string | string[]`
 - `instanceMatchesForeignKey(fkAttribute, instance, referenceValue)` — tests FK match for both single and composite keys
 
@@ -304,7 +304,7 @@ Model and data for the example Library application live in the deployment packag
 - Model: `packages/miroir-test-app_deployment-library/assets/library_model/`
 - Data: `packages/miroir-test-app_deployment-library/assets/library_data/`
 
-The library application model includes Entities `Author`, `Book`, `Country`, `Publisher`, `User`, and `LendingHistoryItem`. Their definitions (`mlSchema`, …) are the Entity rows under `packages/miroir-test-app_deployment-library/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/`; the Library is unversioned and has no EntityVersions.
+The library application model includes Entities `Author`, `Book`, `Country`, `Publisher`, `User`, and `LendingHistoryItem`. Their definitions (`mlSchema`, …) are the Entity rows under `packages/miroir-test-app_deployment-library/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/`.
 
 Library application data directories (entity uuid → folder):
 - authors: `packages/miroir-test-app_deployment-library/assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/`

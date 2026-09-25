@@ -19,7 +19,7 @@
 
 ## Schema Location
 
-`packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a557419d-a288-4fb8-8a1e-971c86c113b8.json` (the `mlSchema` of the `TransformerDefinition` Entity; a historical snapshot `54a16d69-…` exists in `miroir_modelVersion/`)
+`packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a557419d-a288-4fb8-8a1e-971c86c113b8.json` (the `mlSchema` of the `TransformerDefinition` Entity)
 
 ---
 

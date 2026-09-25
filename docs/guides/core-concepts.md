@@ -10,7 +10,7 @@ This guide introduces the fundamental concepts of the Miroir Framework. Understa
 
 1. [Overview](#overview)
 2. [Meta-Model vs Model vs Data](#meta-model-vs-model-vs-data)
-3. [Entity & EntityVersion](#entity--entityversion)
+3. [Entity](#entity)
 4. [Jzod: The Meta-Language](#jzod-the-meta-language)
 5. [Query](#query)
 6. [Transformer](#transformer)
@@ -46,7 +46,7 @@ This approach enables:
 ```
 ┌─────────────────────────────────────────┐
 │          META-MODEL                     │  Defines structure of Models
-│  (Entity, EntityVersion, Query...)      │  Bootstrap: describes itself
+│  (Entity, Query, Report...)             │  Bootstrap: describes itself
 │  Located: miroir_model/                 │
 └─────────────────────────────────────────┘
                   ↓ instances of
@@ -105,9 +105,7 @@ This approach enables:
 
 ---
 
-## Entity & EntityVersion
-
-### Entity
+## Entity
 
 An **Entity** represents a concept in your domain model (like "Book", "Author", "Customer").
 It is the **authoritative present-model** definition: it carries `mlSchema`, primary-key
@@ -120,47 +118,11 @@ settings (`idAttribute`), view/cache fields, and related display metadata.
 - `mlSchema` - Structure definition in Jzod / ML format (present model, required)
 - `conceptLevel` - `MetaModel` | `Model` | `Data` | `External` (`External` for Entities whose instances live in another system, see [Defining Entities](developer/defining-entities.md))
 - `idAttribute` - Primary key attribute(s); absent ⇒ `uuid`
-- `scope` - *(meta-model Entity rows only)* `versioning` vs `modeling`; absent = modeling. Labels version-history concepts (`EntityVersion`, `SelfApplicationVersion`, …) vs ordinary model concepts. **Not read by runtime routing today** — see [Entity API — scope](../reference/api/entity.md#meta-model-classification-scope--logicaldatamodel).
-- `logicalDataModel` - *(meta-model Entity rows only)* `entity` vs `manyToMany` for cross/link tables; absent = entity.
+- `scope`, `logicalDataModel` - *(meta-model Entity rows only, not set by application authors)* see the [Versioning reference](../reference/versioning.md#meta-model-classification-scope-and-logicaldatamodel)
 
 **File Location**: `<app>_model/16dbfe28-…/<entityUuid>.json` (under the Entity meta-entity folder)
 
-### EntityVersion
-
-An **EntityVersion** is a historical snapshot of an Entity's definition
-(formerly named **EntityDefinition** in older docs and TypeScript aliases). It is **not**
-the live present-model authority — the Entity is — and you never need one to define or
-use an Entity. EntityVersions are only written by `freezeApplicationVersion`, for
-**versioned-internal** applications, into the optional `modelVersion` store section
-(`<app>_modelVersion/` assets). Model actions such as `createEntity` or
-`alterEntityAttribute` do not write EntityVersions.
-
-**Key Properties:**
-- `uuid` - Unique identifier for this version snapshot
-- `parentUuid` - References the EntityVersion meta-entity (`54b9c72f-…`)
-- `name` - Version name
-- `entityUuid` - The Entity this version describes
-- `mlSchema` - The Entity's `mlSchema` at freeze time (plus `idAttribute`, `viewAttributes`, … snapshots)
-
-**Example: an EntityVersion snapshot of Book** (as written by a freeze)
-```json
-{
-  "uuid": "<snapshot uuid>",
-  "parentName": "EntityVersion",
-  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-  "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  "name": "Book",
-  "mlSchema": { "...": "copy of Book's mlSchema at freeze time" }
-}
-```
-
-### Versioning
-
-- Evolve a concept by editing the live **Entity** (`mlSchema`, `idAttribute`, …).
-- For versioned-internal applications, freeze the application to keep EntityVersion snapshots of every Entity (with `SelfApplicationVersion` and `ApplicationVersionCross*` link rows) in `modelVersion`.
-- Migration transformers convert between versions when needed.
-
-See [Bundles and Versioning](../getting-started/bundles-and-versioning.md) and [Data Architecture — `modelVersion`](../reference/data-architecture-deployments.md#modelversion-version-history-optional).
+Evolving a concept means editing its Entity. Keeping a history of model states is optional (versioned applications only); see the [Versioning reference](../reference/versioning.md).
 
 ---
 
@@ -537,7 +499,7 @@ Modify the application model (entities, queries, reports):
 }
 ```
 
-`createEntity` takes complete Entity rows, `mlSchema` included; no EntityVersion is created.
+`createEntity` takes complete Entity rows, `mlSchema` included.
 
 #### 3. Composite Actions
 
@@ -740,7 +702,7 @@ An **Endpoint** defines a service interface exposing Actions to clients.
 An **Application** defines the logical grouping of entities, queries, reports, and endpoints.
 
 **Structure:**
-- **Model** (`<app>_model/`) - Entity definitions, queries, reports, endpoints
+- **Model** (`<app>_model/`) - Entities, queries, reports, endpoints
 - **Data** (`<app>_data/`) - Entity instances
 
 ### Deployment
@@ -776,10 +738,10 @@ A **Deployment** is a running instance of an Application with specific configura
 
 ### Application Sections
 
-Every application has three sections:
+Every application has three sections (plus an optional `modelVersion` section for versioned applications, see the [Versioning reference](../reference/versioning.md#the-modelversion-store-section)):
 
 1. **admin** - Miroir framework metadata (deployments, menus, etc.)
-2. **model** - Application model (entities, entity versions, queries, reports, endpoints)
+2. **model** - Application model (entities, queries, reports, endpoints)
 3. **data** - Application data (entity instances)
 
 ---
@@ -790,8 +752,7 @@ Every application has three sections:
 
 ```
 1. Define Entities (Model)
-   └─> Create Entity with present-model mlSchema
-   └─> (versioned-internal apps) freeze to snapshot EntityVersions
+   └─> Create Entity with its mlSchema
 
 2. Create Data (Instances)
    └─> Use Actions to create/update/delete instances
@@ -810,7 +771,7 @@ Every application has three sections:
 
 ### Example: Complete Book Feature (⚠️DUPLICATE OF HOME PAGE, USED JSON SCHEMA-LIKE SYNTAX ⚠️)
 
-**1. Entity** (the Entity carries its own `mlSchema`; no separate EntityVersion is needed)
+**1. Entity** (the Entity carries its own `mlSchema`)
 ```json
 {
   "uuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
