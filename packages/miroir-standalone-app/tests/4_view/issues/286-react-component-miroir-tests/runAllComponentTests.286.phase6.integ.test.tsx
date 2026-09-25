@@ -275,6 +275,11 @@ describe("Run All Unit Tests with the Include component tests checkbox", () => {
 
     expect(vi.mocked(componentTestsEntry.registerComponentTests)).toHaveBeenCalledTimes(1);
     expect(screen.getByTestId("component-test-sandbox-panel")).toBeVisible();
+    // PR #290 review: the end of the run releases the run lock and enables the close button.
+    expect(componentTestsEntry.isComponentTestRunActive()).toBe(false);
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /close component test sandbox/i })).toBeEnabled(),
+    );
    }, RUN_ALL_TEST_TIMEOUT);
 
   it("checkbox off: the component leaves are recorded as skipped, the component tests are not registered, and the transformer suite still runs", async () => {

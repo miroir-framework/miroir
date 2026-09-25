@@ -68,15 +68,25 @@ const sandboxElement = document.createElement("div");
 sandboxElement.setAttribute("data-testid", "component-test-sandbox");
 document.body.appendChild(sandboxElement);
 
+let runner: ReturnType<typeof createReactComponentTestRunner> | undefined;
+
 beforeAll(() => {
   (globalThis as any).IS_REACT_ACT_ENVIRONMENT = false;
-  ConfigurationService.configurationService.registerReactComponentTestRunner(
-    createReactComponentTestRunner({ sandboxElement }),
-  );
+  runner = createReactComponentTestRunner({ sandboxElement });
+  ConfigurationService.configurationService.registerReactComponentTestRunner(runner);
 });
 
 afterAll(() => {
-  ConfigurationService.configurationService.registerReactComponentTestRunner(undefined);
+  try {
+    // Unmounts the last case's React root and destroys the suite wrappers still open.
+    runner?.close();
+  } finally {
+    ConfigurationService.configurationService.registerReactComponentTestRunner(undefined);
+    sandboxElement.remove();
+  }
+  // The last case's React root is unmounted and the sandbox element is removed.
+  expect(sandboxElement.querySelectorAll('[data-testid="component-test-container"]')).toHaveLength(0);
+  expect(document.body.contains(sandboxElement)).toBe(false);
 });
 
 // ################################################################################################

@@ -160,6 +160,7 @@ const MiroirTestDisplayContent = (props: MiroirTestSectionProps) => {
           onTestComplete={handleTestComplete}
           runMode="unit"
           beforeRun={componentTestSandbox?.prepareComponentTests}
+          afterRun={componentTestSandbox?.finishComponentTests}
           label={`Run ${testLabel} Unit Tests`}
           style={runButtonStyle}
         />

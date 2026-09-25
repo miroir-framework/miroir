@@ -11,6 +11,11 @@
  * `buildComponentTestWrapper` is wrapped in a `vi.fn` (the module is mocked with its own
  * implementation), and `MiroirEventService.prototype.destroy` is spied on.
  *
+ * PR #290 review fixes: the Close button is disabled during a run; a filtered run (not reaching
+ * the suite's last case) still destroys the suite wrapper when the run ends; a second display's
+ * Run during an active run is refused with `componentTestRunInProgressMessage`, and the first
+ * run's cases all render in the first display's sandbox.
+ *
  * Run:
  * ```bash
  * npm run testByFile -w miroir-standalone-app -- componentTestSandbox.286.phase4
@@ -66,6 +71,7 @@ vi.mock(
 );
 
 import * as componentTestTools from "../../../../src/miroir-fwk/4-tests/componentTests/componentTestTools";
+import { componentTestRunInProgressMessage } from "../../../../src/miroir-fwk/4-tests/componentTests/index";
 import {
   componentTestLeafLabel,
   componentTestManifest,
@@ -165,39 +171,61 @@ function buildAppHarness() {
 
 type AppHarness = ReturnType<typeof buildAppHarness>;
 
-function renderDisplay(harness: AppHarness, onTestComplete: (results: MiroirTestResultData[]) => void) {
+/**
+ * Renders one `MiroirTestDisplay` per `onTestComplete`, over one `LocalCache`. Each display has its
+ * own `MiroirContextReactProvider`: under a single provider, the shared `isActionRunning` flag of
+ * `handleAsyncAction` shows every Run button as loading (disabled) during a run, which hides the
+ * run lock; that flag is one boolean, cleared by whichever async action ends first.
+ */
+function renderDisplays(
+  harness: AppHarness,
+  onTestCompletes: ((results: MiroirTestResultData[]) => void)[],
+  testFilter: typeof arraySuiteTestFilter = arraySuiteTestFilter,
+) {
   return render(
     <LocalCacheProvider store={harness.localCache.getInnerStore()}>
-      <MiroirContextReactProvider
-        miroirContext={harness.miroirContext}
-        domainController={{} as DomainControllerInterface}
-      >
-        <ReportPageContextProvider>
-          <MiroirTestDisplay
-            miroirTest={componentTestSuiteInstance}
-            testLabel={componentTestSuiteInstanceName}
-            gridType="ag-grid"
-            useSnackBar={false}
-            testFilter={arraySuiteTestFilter}
-            onTestComplete={(_key: string, results: MiroirTestResultData[]) => onTestComplete(results)}
-          />
-        </ReportPageContextProvider>
-      </MiroirContextReactProvider>
+      {onTestCompletes.map((onTestComplete, index) => (
+        <MiroirContextReactProvider
+          key={index}
+          miroirContext={harness.miroirContext}
+          domainController={{} as DomainControllerInterface}
+        >
+          <ReportPageContextProvider>
+            <MiroirTestDisplay
+              miroirTest={componentTestSuiteInstance}
+              testLabel={componentTestSuiteInstanceName}
+              gridType="ag-grid"
+              useSnackBar={false}
+              testFilter={testFilter}
+              onTestComplete={(_key: string, results: MiroirTestResultData[]) => onTestComplete(results)}
+            />
+          </ReportPageContextProvider>
+        </MiroirContextReactProvider>
+      ))}
     </LocalCacheProvider>,
   );
 }
 
+const runButtonName = `Run ${componentTestSuiteInstanceName} Unit Tests`;
+
 /** Clicks the unit Run button and waits for `onTestComplete`. Restores the dom config after. */
-async function runArraySuite(harness: AppHarness): Promise<MiroirTestResultData[]> {
+async function runArraySuite(
+  harness: AppHarness,
+  testFilter: typeof arraySuiteTestFilter = arraySuiteTestFilter,
+): Promise<MiroirTestResultData[]> {
   let results: MiroirTestResultData[] | undefined;
-  renderDisplay(harness, (structuredResults) => {
-    results = structuredResults;
-  });
+  renderDisplays(
+    harness,
+    [
+      (structuredResults) => {
+        results = structuredResults;
+      },
+    ],
+    testFilter,
+  );
   const savedDomConfig = { ...getDomConfig() };
   try {
-    fireEvent.click(
-      screen.getByRole("button", { name: `Run ${componentTestSuiteInstanceName} Unit Tests` }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: runButtonName }));
     await waitFor(() => expect(results, "onTestComplete was called").toBeDefined(), {
       timeout: 170_000,
       interval: 200,
@@ -307,5 +335,131 @@ describe("Array component suite in the MiroirTestDisplay sandbox", () => {
     } finally {
       componentTestRegistry[arraySuite].cases[failingCase] = originalCase;
     }
+  });
+
+  it("the close button is disabled while a run is active, and enabled again when it ends", async () => {
+    const harness = buildAppHarness();
+    let results: MiroirTestResultData[] | undefined;
+    renderDisplays(harness, [
+      (structuredResults) => {
+        results = structuredResults;
+      },
+    ]);
+    const panel = screen.getByTestId("component-test-sandbox-panel");
+    const closeButton = within(panel).getByRole("button", { name: /close/i, hidden: true });
+    const savedDomConfig = { ...getDomConfig() };
+    try {
+      fireEvent.click(screen.getByRole("button", { name: runButtonName }));
+      await waitFor(() => expect(panel).toBeVisible(), { timeout: 30_000 });
+      expect(closeButton).toBeDisabled();
+      // A click during the run changes nothing.
+      fireEvent.click(closeButton);
+      expect(panel).toBeVisible();
+      await waitFor(() => expect(results, "onTestComplete was called").toBeDefined(), {
+        timeout: 170_000,
+        interval: 200,
+      });
+    } finally {
+      configureDom(savedDomConfig);
+    }
+    await waitFor(() => expect(closeButton).toBeEnabled());
+    expect(arrayResults(results!).filter((result) => result.testResult === "ok")).toHaveLength(12);
+    fireEvent.click(closeButton);
+    await waitFor(() => expect(panel).not.toBeVisible());
+  });
+
+  it("a filtered run that does not reach the suite's last case destroys the suite wrapper when the run ends, and keeps its last case mounted", async () => {
+    const filteredLabels = arrayLeafLabels.slice(0, 2);
+    const filteredTestFilter = {
+      testList: {
+        [componentTestSuiteInstanceName]: Object.fromEntries(
+          Object.keys(componentTestManifest).map((suite) => [suite, suite === arraySuite ? filteredLabels : []]),
+        ),
+      },
+    };
+    const harness = buildAppHarness();
+    const results = await runArraySuite(harness, filteredTestFilter);
+
+    const array = arrayResults(results);
+    expect(
+      array.filter((result) => result.testResult === "ok").map((result) => result.testName).sort(),
+    ).toEqual([...filteredLabels].sort());
+    expect(vi.mocked(componentTestTools.buildComponentTestWrapper)).toHaveBeenCalledTimes(1);
+    // The run end (right after onTestComplete) destroys the wrapper's MiroirEventService.
+    await waitFor(() => expect(destroySpy).toHaveBeenCalledTimes(1));
+
+    const panel = screen.getByTestId("component-test-sandbox-panel");
+    const sandbox = within(panel).getByTestId("component-test-sandbox");
+    const caseContainers = sandbox.querySelectorAll('[data-testid="component-test-container"]');
+    expect(caseContainers).toHaveLength(1);
+    expect(caseContainers[0].querySelector('input[name^="TESTSECTION.testField"]')).not.toBeNull();
+
+    await waitFor(() => expect(within(panel).getByRole("button", { name: /close/i })).toBeEnabled());
+    fireEvent.click(within(panel).getByRole("button", { name: /close/i }));
+    await waitFor(() => expect(panel).not.toBeVisible());
+    expect(sandbox.querySelectorAll('[data-testid="component-test-container"]')).toHaveLength(0);
+    expect(destroySpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("a second display's Run during an active run is refused with a message, and the first run's cases all render in the first sandbox", async () => {
+    const harness = buildAppHarness();
+    let firstResults: MiroirTestResultData[] | undefined;
+    let secondResults: MiroirTestResultData[] | undefined;
+    renderDisplays(harness, [
+      (structuredResults) => {
+        firstResults = structuredResults;
+      },
+      (structuredResults) => {
+        secondResults = structuredResults;
+      },
+    ]);
+    const [firstPanel, secondPanel] = screen.getAllByTestId("component-test-sandbox-panel");
+    const [firstRunButton, secondRunButton] = screen.getAllByRole("button", { name: runButtonName });
+    const firstSandbox = within(firstPanel).getByTestId("component-test-sandbox");
+    const secondSandbox = within(secondPanel).getByTestId("component-test-sandbox");
+
+    // For each case start, the sandbox that receives the new case container.
+    const containerParents: string[] = [];
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
+          if (node instanceof HTMLElement && node.getAttribute("data-testid") === "component-test-container") {
+            containerParents.push(
+              mutation.target === firstSandbox ? "first" : mutation.target === secondSandbox ? "second" : "other",
+            );
+          }
+        }
+      }
+    });
+    observer.observe(firstSandbox, { childList: true });
+    observer.observe(secondSandbox, { childList: true });
+
+    const savedDomConfig = { ...getDomConfig() };
+    try {
+      fireEvent.click(firstRunButton);
+      // The first run is active once its first case is mounted.
+      await waitFor(() => expect(containerParents.length).toBeGreaterThan(0), { timeout: 30_000 });
+      fireEvent.click(secondRunButton);
+      await waitFor(
+        () => expect(document.body.textContent).toContain(componentTestRunInProgressMessage),
+        { timeout: 30_000 },
+      );
+      await waitFor(() => expect(firstResults, "first onTestComplete was called").toBeDefined(), {
+        timeout: 170_000,
+        interval: 200,
+      });
+    } finally {
+      configureDom(savedDomConfig);
+      observer.disconnect();
+    }
+
+    expect(arrayResults(firstResults!).filter((result) => result.testResult === "ok")).toHaveLength(12);
+    expect(secondResults, "the refused run did not complete").toBeUndefined();
+    expect(containerParents).toEqual(arrayLeafLabels.map(() => "first"));
+    expect(secondPanel).not.toBeVisible();
+    expect(secondSandbox.querySelectorAll('[data-testid="component-test-container"]')).toHaveLength(0);
+    expect(firstSandbox.querySelectorAll('[data-testid="component-test-container"]')).toHaveLength(1);
+    // The first run's end releases its Close button.
+    await waitFor(() => expect(within(firstPanel).getByRole("button", { name: /close/i })).toBeEnabled());
   });
 });

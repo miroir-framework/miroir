@@ -58,6 +58,11 @@ interface RunMiroirTestSuiteButtonProps {
    * the component test sandbox and registers the component test runner).
    */
   beforeRun?: () => Promise<void>;
+  /**
+   * #286: called when a run prepared by `beforeRun` ends, success or error (ends the component
+   * test run: releases the suite wrappers and the run lock).
+   */
+  afterRun?: () => void;
   [key: string]: unknown;
 }
 
@@ -94,6 +99,7 @@ export const RunMiroirTestSuiteButton: React.FC<RunMiroirTestSuiteButtonProps> =
   integrationProfileName,
   integrationRunTargetMode,
   beforeRun,
+  afterRun,
   ...buttonProps
 }) => {
   const { handleAsyncAction } = useSnackbar();
@@ -115,24 +121,32 @@ export const RunMiroirTestSuiteButton: React.FC<RunMiroirTestSuiteButtonProps> =
       throw new Error(`No MiroirTest suite found for ${testSuiteKey}`);
     }
 
-    if (beforeRun && miroirTestDefinitionHasReactComponentTest(miroirTestSuite.definition)) {
+    const componentTestsPrepared =
+      beforeRun !== undefined && miroirTestDefinitionHasReactComponentTest(miroirTestSuite.definition);
+    if (componentTestsPrepared) {
       await beforeRun();
     }
 
-    miroirContextService.miroirContext.miroirActivityTracker.resetResults();
+    try {
+      miroirContextService.miroirContext.miroirActivityTracker.resetResults();
 
-    await runMiroirTests._runMiroirTestSuite(
-      TestFramework as any,
-      [],
-      miroirTestSuite.definition,
-      testFilter,
-      defaultMetaModelEnvironment,
-      miroirContextService.miroirContext.miroirActivityTracker,
-      undefined,
-      true,
-      runMiroirTests,
-      { executionMode: "unit" },
-    );
+      await runMiroirTests._runMiroirTestSuite(
+        TestFramework as any,
+        [],
+        miroirTestSuite.definition,
+        testFilter,
+        defaultMetaModelEnvironment,
+        miroirContextService.miroirContext.miroirActivityTracker,
+        undefined,
+        true,
+        runMiroirTests,
+        { executionMode: "unit" },
+      );
+    } finally {
+      if (componentTestsPrepared) {
+        afterRun?.();
+      }
+    }
 
     const allResults =
       miroirContextService.miroirContext.miroirActivityTracker.getTestAssertionsResults([]);

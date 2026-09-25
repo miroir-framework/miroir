@@ -66,6 +66,11 @@ interface RunAllMiroirTestsButtonProps {
    * when "Include component tests" is checked and a suite has a `reactComponentTest` leaf.
    */
   beforeRun?: () => Promise<void>;
+  /**
+   * #286: called when a run prepared by `beforeRun` ends, success or error (ends the component
+   * test run: releases the suite wrappers and the run lock).
+   */
+  afterRun?: () => void;
   [key: string]: unknown;
 }
 
@@ -197,6 +202,7 @@ export const RunAllMiroirTestsButton: React.FC<RunAllMiroirTestsButtonProps> = (
   integrationProfileName,
   integrationRunTargetMode,
   beforeRun,
+  afterRun,
   ...buttonProps
 }) => {
   // #286: unit mode only. When unchecked, `reactComponentTest` leaves are recorded as skipped.
@@ -211,36 +217,42 @@ export const RunAllMiroirTestsButton: React.FC<RunAllMiroirTestsButtonProps> = (
     const sortedInstances = sortMiroirTestInstances(miroirTests);
     const resultsBySuiteKey: MiroirTestSuiteResultsMap = {};
 
-    if (
+    const componentTestsPrepared =
       includeComponentTests &&
-      beforeRun &&
-      sortedInstances.some((instance) => miroirTestDefinitionHasReactComponentTest(instance.definition))
-    ) {
+      beforeRun !== undefined &&
+      sortedInstances.some((instance) => miroirTestDefinitionHasReactComponentTest(instance.definition));
+    if (componentTestsPrepared) {
       await beforeRun();
     }
 
-    for (const instance of sortedInstances) {
-      const suiteKey = getMiroirTestSuiteKey(instance);
-      tracker.resetResults();
+    try {
+      for (const instance of sortedInstances) {
+        const suiteKey = getMiroirTestSuiteKey(instance);
+        tracker.resetResults();
 
-      await runMiroirTests._runMiroirTestSuite(
-        TestFramework as any,
-        [],
-        instance.definition,
-        undefined,
-        defaultMetaModelEnvironment,
-        tracker,
-        undefined,
-        true,
-        runMiroirTests,
-        includeComponentTests
-          ? { executionMode: 'unit' }
-          : { executionMode: 'unit', excludeMiroirTestTypes: ['reactComponentTest'] },
-      );
+        await runMiroirTests._runMiroirTestSuite(
+          TestFramework as any,
+          [],
+          instance.definition,
+          undefined,
+          defaultMetaModelEnvironment,
+          tracker,
+          undefined,
+          true,
+          runMiroirTests,
+          includeComponentTests
+            ? { executionMode: 'unit' }
+            : { executionMode: 'unit', excludeMiroirTestTypes: ['reactComponentTest'] },
+        );
 
-      const suiteResults = tracker.getTestAssertionsResults([]);
-      resultsBySuiteKey[suiteKey] = generateTestReport(suiteKey, suiteResults, () => {});
-      log.info(`MiroirTest results for ${suiteKey}:`, resultsBySuiteKey[suiteKey]);
+        const suiteResults = tracker.getTestAssertionsResults([]);
+        resultsBySuiteKey[suiteKey] = generateTestReport(suiteKey, suiteResults, () => {});
+        log.info(`MiroirTest results for ${suiteKey}:`, resultsBySuiteKey[suiteKey]);
+      }
+    } finally {
+      if (componentTestsPrepared) {
+        afterRun?.();
+      }
     }
 
     if (onTestComplete) {

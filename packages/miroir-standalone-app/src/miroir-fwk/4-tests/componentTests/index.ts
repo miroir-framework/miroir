@@ -15,27 +15,63 @@ import {
 
 export type { ComponentTestSandboxHost } from "./runReactComponentTest.js";
 
+export const componentTestRunInProgressMessage =
+  "A component test run is already in progress in another test display: wait for it to finish, then run again.";
+
 export interface ComponentTestRegistration {
-  /** Unmounts the last case, destroys the open suite wrappers, and unregisters the runner. */
+  /**
+   * Ends the run: destroys the open suite wrappers (the last case stays mounted) and releases the
+   * run lock. Idempotent.
+   */
+  endRun: () => void;
+  /** Unmounts the last case, destroys the open suite wrappers, unregisters the runner, and releases the run lock. */
   close: () => void;
+}
+
+// `ConfigurationService` holds one component test runner for the whole app, and each test display
+// has its own sandbox: one run at a time, from its registration to its `endRun()` or `close()`.
+let activeRun: ComponentTestRegistration | undefined;
+
+/** True while a registered component test run has not ended. */
+export function isComponentTestRunActive(): boolean {
+  return activeRun !== undefined;
 }
 
 /**
  * Creates a component test runner over the sandbox element and registers it in
  * `ConfigurationService`, so that the `reactComponentTest` leaves of the next MiroirTest run use it.
+ * Throws `componentTestRunInProgressMessage` while another run is active.
  */
 export function registerComponentTests(host: ComponentTestSandboxHost): ComponentTestRegistration {
+  if (activeRun) {
+    throw new Error(componentTestRunInProgressMessage);
+  }
   const runner = createReactComponentTestRunner(host);
   ConfigurationService.configurationService.registerReactComponentTestRunner(runner);
-  return {
+  const releaseLock = () => {
+    if (activeRun === registration) {
+      activeRun = undefined;
+    }
+  };
+  const registration: ComponentTestRegistration = {
+    endRun: () => {
+      try {
+        runner.endRun();
+      } finally {
+        releaseLock();
+      }
+    },
     close: () => {
       try {
         runner.close();
       } finally {
+        releaseLock();
         if (ConfigurationService.configurationService.reactComponentTestRunner === runner) {
           ConfigurationService.configurationService.registerReactComponentTestRunner(undefined);
         }
       }
     },
   };
+  activeRun = registration;
+  return registration;
 }

@@ -21,11 +21,21 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger:
 // case renders under the sandbox with its own providers and `LocalCache`, so the app's store is not
 // touched. The last case stays mounted after the run; the close button unmounts it, destroys the
 // suite wrapper, and hides the panel.
+//
+// One component test run at a time across displays: `prepareComponentTests()` throws while another
+// display's run is active, and `finishComponentTests()` (called by the Run buttons when the run
+// ends, success or error) destroys the open suite wrappers and releases the run lock. The close
+// button is disabled during the run.
 // ################################################################################################
 
 export interface ComponentTestSandboxContextValue {
-  /** Loads the component test chunk, registers the runner over the sandbox, and shows the panel. */
+  /**
+   * Loads the component test chunk, registers the runner over the sandbox, and shows the panel.
+   * Throws when another display's component test run is active.
+   */
   prepareComponentTests: () => Promise<void>;
+  /** Ends the run started by `prepareComponentTests()`. The last case stays mounted. */
+  finishComponentTests: () => void;
 }
 
 const ComponentTestSandboxContext = createContext<ComponentTestSandboxContextValue | undefined>(
@@ -39,9 +49,11 @@ export function useComponentTestSandbox(): ComponentTestSandboxContextValue | un
 // ################################################################################################
 export const ComponentTestSandbox: React.FC<{
   open: boolean;
+  /** A run is active: the close button is disabled. */
+  running?: boolean;
   onClose: () => void;
   sandboxRef: React.RefObject<HTMLDivElement>;
-}> = ({ open, onClose, sandboxRef }) => (
+}> = ({ open, running = false, onClose, sandboxRef }) => (
   <div
     data-testid="component-test-sandbox-panel"
     style={{
@@ -55,7 +67,13 @@ export const ComponentTestSandbox: React.FC<{
   >
     <div style={{ display: "flex", alignItems: "center", marginBottom: "4px" }}>
       <span style={{ fontWeight: "bold", color: "#4527a0", flexGrow: 1 }}>Component test sandbox</span>
-      <button type="button" aria-label="Close component test sandbox" onClick={onClose}>
+      <button
+        type="button"
+        aria-label="Close component test sandbox"
+        title={running ? "A component test run is in progress" : undefined}
+        disabled={running}
+        onClick={onClose}
+      >
         Close
       </button>
     </div>
@@ -70,7 +88,9 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
 }) => {
   const sandboxRef = useRef<HTMLDivElement>(null);
   const registrationRef = useRef<ComponentTestRegistration | undefined>(undefined);
+  const runningRef = useRef(false);
   const [open, setOpen] = useState(false);
+  const [running, setRunning] = useState(false);
 
   const closeRegistration = useCallback(() => {
     const registration = registrationRef.current;
@@ -79,18 +99,35 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
   }, []);
 
   const prepareComponentTests = useCallback(async () => {
+    const { componentTestRunInProgressMessage, isComponentTestRunActive, registerComponentTests } =
+      await import("../../../4-tests/componentTests/index.js");
+    // Checked before closing this display's previous registration, so that a refused run leaves
+    // the last case of the previous run in place.
+    if (isComponentTestRunActive()) {
+      throw new Error(componentTestRunInProgressMessage);
+    }
     closeRegistration();
-    const { registerComponentTests } = await import("../../../4-tests/componentTests/index.js");
     const sandboxElement = sandboxRef.current;
     if (!sandboxElement) {
       throw new Error("component test sandbox element is not mounted");
     }
     registrationRef.current = registerComponentTests({ sandboxElement });
+    runningRef.current = true;
+    setRunning(true);
     setOpen(true);
     log.info("component test sandbox ready");
   }, [closeRegistration]);
 
+  const finishComponentTests = useCallback(() => {
+    runningRef.current = false;
+    setRunning(false);
+    registrationRef.current?.endRun();
+  }, []);
+
   const onClose = useCallback(() => {
+    if (runningRef.current) {
+      return;
+    }
     closeRegistration();
     setOpen(false);
   }, [closeRegistration]);
@@ -108,12 +145,15 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
     [],
   );
 
-  const contextValue = useMemo(() => ({ prepareComponentTests }), [prepareComponentTests]);
+  const contextValue = useMemo(
+    () => ({ prepareComponentTests, finishComponentTests }),
+    [prepareComponentTests, finishComponentTests],
+  );
 
   return (
     <ComponentTestSandboxContext.Provider value={contextValue}>
       {children}
-      <ComponentTestSandbox open={open} onClose={onClose} sandboxRef={sandboxRef} />
+      <ComponentTestSandbox open={open} running={running} onClose={onClose} sandboxRef={sandboxRef} />
     </ComponentTestSandboxContext.Provider>
   );
 };
