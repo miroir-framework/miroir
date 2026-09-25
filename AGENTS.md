@@ -187,8 +187,8 @@ Canonical layout reference: `docs/reference/data-architecture-deployments.md`.
 
 ### Miroir Core Concepts: Meta-Model
 
-- The bootstrapped Entity `Entity` is defined in file `packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json` (present-model fields also mirrored on its EntityVersion row under `54b9c72f-…/381ab1be-…`).
-- An **EntityVersion** is a versioned snapshot of an Entity's definition. The bootstrapped EntityVersion-of-EntityVersion is in `packages/miroir-test-app_deployment-miroir/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json` (parent Entity uuid `54b9c72f-…` is named EntityVersion).
+- The bootstrapped Entity `Entity` is defined in file `packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json` (a historical EntityVersion snapshot of it, `381ab1be-…`, lives in `miroir_modelVersion/54b9c72f-…/`).
+- An **EntityVersion** is a versioned snapshot of an Entity's definition. EntityVersions are only written by `freezeApplicationVersion` into the optional `modelVersion` section; `createEntity` & co. never write them. The EntityVersion Entity is `packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json`; the self-describing EntityVersion-of-EntityVersion snapshot is in `packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json`.
 - The Jzod schemas are used to generate TypeScript types and Zod validation schemas.
 - Application / deployment Jzod assets live under `packages/miroir-test-app_deployment-*/assets/` (not under `miroir-core/src/assets/`, which only holds leftover fixtures such as `miroirAdmin/` and `test1_model/`).
 - Generated TypeScript types from Jzod schemas are written to `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/` (mainly `miroirFundamentalType.ts`). Generator helpers live in `packages/miroir-core/src/0_interfaces/1_core/bootstrapJzodSchemas/`.
@@ -206,7 +206,7 @@ Entities (present model) and EntityVersions support three kinds of primary keys 
 
 **Entity `scope` (meta-model classification):** optional on meta-model **Entity** rows only — `"versioning"` marks freeze / application-version-history concepts (`EntityVersion`, `SelfApplicationVersion`, `ApplicationVersionCross*`, …); absent = `"modeling"`. Companion `logicalDataModel`: `"manyToMany"` for cross tables. **Runtime routing** (`model` vs `modelVersion`) uses `versionHistoryEntityUuids` in `Model.ts`, not a dynamic read of `scope` yet. See `docs/reference/api/entity.md#meta-model-classification-scope--logicaldatamodel`.
 
-Helper functions for PK handling are in `packages/miroir-core/src/1_core/EntityPrimaryKey.ts`:
+Helper functions for PK handling are in `packages/miroir-core/src/1_core/Entity/EntityPrimaryKey.ts`:
 - `getEntityPrimaryKeyAttribute(entityDefinition)` — returns `string | string[]`
 - `getEntityPrimaryKeyAttributes(entityDefinition)` — always returns `string[]`
 - `entityHasCompositePrimaryKey(entityDefinition)` / `entityHasUuidPrimaryKey(entityDefinition)`
@@ -219,11 +219,11 @@ Combiner FK attributes (`AttributeOfObjectToCompareToReferenceUuid`, `AttributeO
 
 ### Miroir Core Concepts: Model
 
-Other core concepts are defined as Entities / EntityVersions, for example:
-  - `Query`: allows to fetch data objects based on criteria, in file `packages/miroir-test-app_deployment-miroir/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/359f1f9b-7260-4d76-a864-72c839b9711b.json`. General Query combines Extractors, Combiners, and Transformers
-  - `Transformer`: a pure function, allow to transform data, can be run either on client or server side in-memory, or in the database (Postgres). In file `packages/miroir-test-app_deployment-miroir/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/54a16d69-c1f0-4dd7-aba4-a2cda883586c.json`
-  - `Report`: allows to display data in the UI, based on a Query and several display sections, in file `packages/miroir-test-app_deployment-miroir/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json`
-  - `Endpoint`: allows to define Actions, which can perform side-effects on Entity instances and on the Model of an Application. Actions can run on the client or the server. Definition in file `packages/miroir-test-app_deployment-miroir/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/e3c1cc69-066d-4f52-beeb-b659dc7a88b9.json`
+Other core concepts are defined as Entities (each carrying the `mlSchema` of its instances), for example:
+  - `Query`: allows to fetch data objects based on criteria, Entity `packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e4320b9e-ab45-4abe-85d8-359604b3c62f.json`. General Query combines Extractors, Combiners, and Transformers
+  - `Transformer`: a pure function, allow to transform data, can be run either on client or server side in-memory, or in the database (Postgres). Entity `TransformerDefinition` in `packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a557419d-a288-4fb8-8a1e-971c86c113b8.json`
+  - `Report`: allows to display data in the UI, based on a Query and several display sections, Entity `packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json`
+  - `Endpoint`: allows to define Actions, which can perform side-effects on Entity instances and on the Model of an Application. Actions can run on the client or the server. Entity `packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3d8da4d4-8f76-4bb4-9212-14869d81c00c.json`
 
 ### Logging
 each file has its own logger instance, named after the file, for example `DomainController.ts` has a logger named `DomainController`. Loggers are configured via environment variable `VITE_MIROIR_LOG_CONFIG_FILENAME`, see example config files in `packages/miroir-standalone-app/tests/`.
@@ -304,7 +304,7 @@ Model and data for the example Library application live in the deployment packag
 - Model: `packages/miroir-test-app_deployment-library/assets/library_model/`
 - Data: `packages/miroir-test-app_deployment-library/assets/library_data/`
 
-The library application model includes Entities `Author`, `Book`, `Country`, `Publisher`, `User`, and `LendingHistoryItem`. EntityVersions are under `packages/miroir-test-app_deployment-library/assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/`.
+The library application model includes Entities `Author`, `Book`, `Country`, `Publisher`, `User`, and `LendingHistoryItem`. Their definitions (`mlSchema`, …) are the Entity rows under `packages/miroir-test-app_deployment-library/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/`; the Library is unversioned and has no EntityVersions.
 
 Library application data directories (entity uuid → folder):
 - authors: `packages/miroir-test-app_deployment-library/assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/`

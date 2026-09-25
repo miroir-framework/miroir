@@ -76,16 +76,16 @@ Operations on application model (entities, reports, etc.).
 
 ```json
 {
-  "actionType": "modelAction",
-  "actionName": "createEntity",
-  "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcb02aabf9",
+  "actionType": "createEntity",
   "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
-  "entities": [{
-    "entity": { /* Entity */ },
-    "entityDefinition": { /* EntityDefinition */ }
-  }]
+  "payload": {
+    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+    "entities": [ { /* Entity, including its mlSchema */ } ]
+  }
 }
 ```
+
+No EntityVersion is passed or created; see [Entity API — CRUD Operations](entity.md#crud-operations).
 
 ### 3. Composite Actions
 

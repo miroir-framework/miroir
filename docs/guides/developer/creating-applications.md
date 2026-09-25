@@ -10,7 +10,7 @@ Learn how to create a complete Miroir application from scratch.
 
 Every Miroir application consists of:
 
-- **Model**: Entity present models (and optional EntityVersions), relationships, and business rules
+- **Model**: Entities (each carrying its own `mlSchema`), relationships, and business rules
 - **Data**: Actual instances of your entities
 - **Queries**: Data retrieval logic
 - **Transformers**: Data manipulation logic
@@ -25,25 +25,21 @@ Every Miroir application consists of:
 
 ### 2. Define Entities
 
-(Content to be added)
+See [Defining Entities](defining-entities.md): an Entity row, with its `mlSchema`, is all that is needed to define a concept. There is no separate "Entity Version" step: EntityVersions are history snapshots written by `freezeApplicationVersion` for versioned-internal applications.
 
-### 3. Create Entity Versions
-
-(Content to be added)
-
-### 4. Build Queries
+### 3. Build Queries
 
 (Content to be added)
 
-### 5. Design Reports
+### 4. Design Reports
 
 (Content to be added)
 
-### 6. Implement Actions
+### 5. Implement Actions
 
 (Content to be added)
 
-### 7. Test Your Application
+### 6. Test Your Application
 
 (Content to be added)
 

@@ -168,35 +168,36 @@ The 'report editor' is now shown on the top of the current view and the 'model' 
 
 <img src="./libraryTutorial/miroir-design_mode.png" alt="In Design Mode" width="95%"/>
 
-click on the `Library Entity Versions` menu item.
+click on the `Entities` item of the `Model Scope` menu.
 
-### Editing the Book Entity Version
+<!-- TODO: the screenshots of this section predate #217/#234 (Entity is now the authoritative present model, and the Library has no EntityVersions); they still show an "Entity Version" list and need to be retaken. -->
+
+### Editing the Book Entity
 
 In the lifetime of an application, the precise meaning of an identified concept often fluctuates. For example, we oversaw the necessity of knowing the ISBN of each book, extremely useful to communicate with book sellers.
 
-Adding the ISBN will thus alter the definition of the `Book` entity, without altering the `Book` Entity itself.
+Adding the ISBN will thus alter the structure of the `Book` Entity (its `mlSchema`), without altering its identity: existing books remain `Book` instances.
 <!-- Entities are versioned, enabling controlled evolution of the data model. -->
-<!-- Example: The User EntityVersion declares fields like `name`, `email`, `registrationDate`. -->
 
-Click on the `Book` Entity Version:
+Click on the `Book` Entity:
 
-<img src="./libraryTutorial/library-entityDefinitions_select_Book.png" alt="Select Book Entity Version" width="85%"/>
+<img src="./libraryTutorial/library-entityDefinitions_select_Book.png" alt="Select the Book Entity" width="85%"/>
 
 This displays the definition, in which the attributes of the Entity are shown:
 
-<img src="./libraryTutorial/library-model-Book_entity_definition.png" alt="The Book Entity Version" width="85%"/>
+<img src="./libraryTutorial/library-model-Book_entity_definition.png" alt="The Book Entity" width="85%"/>
 
 Of special interest is the `mlSchema` attribute, that describes the structure of a `Book`:
 
-<img src="./libraryTutorial/library-model-Book_entity_definition_mlSchema.png" alt="The Book Entity Version Attributes" width="85%"/>
+<img src="./libraryTutorial/library-model-Book_entity_definition_mlSchema.png" alt="The Book Entity Attributes" width="85%"/>
 
 
 A `Book` has the following attributes:
 
-- **uuid**: Unique, primary identifier for the book. Every entity instance must have one.
+- **uuid**: Unique, primary identifier for the book. Library Entities use the default `uuid` primary key; Entities may instead declare a non-UUID or composite key through `idAttribute` (see [Defining Entities](../guides/developer/defining-entities.md)).
 - **parentName**: Name of the parent Entity or type (optional).
-- **parentUuid**: Unique identifier of the parent Entity. Every Entity instance must point to its Entity through this attribute.
-- **conceptLevel**: Level or type of concept (optional, `model` or `data`, usal objects are implicitly `data`).
+- **parentUuid**: Unique identifier of the parent Entity (`Book` here). Library instances always point to their Entity through this attribute; it can be omitted only in specific integration cases (see [Defining Entities — Use case 5](../guides/developer/defining-entities.md#use-case-5--instances-without-parentuuid)).
+- **conceptLevel**: Level of concept (optional): `MetaModel`, `Model`, `Data` or `External`. Usual objects such as books omit it and are implicitly `Data`.
 - **name**: The name of the book (title).
 - **year**: The year associated with the book (year of first publication).
 - **author**: Reference to the author of the book.
@@ -204,13 +205,13 @@ A `Book` has the following attributes:
 
 The `name` is a simple `string`, that will be shown as `Book Title` in forms:
 
-<img src="./libraryTutorial/library-model-Book_entity_definition_mlSchema_name.png" alt="The Book Entity Version Attribute: 'name'" width="85%"/>
+<img src="./libraryTutorial/library-model-Book_entity_definition_mlSchema_name.png" alt="The Book Entity Attribute: 'name'" width="85%"/>
 
 The `author` is a `uuid`, that is a reference to an instance of the `Author` Entity, a relationship commonly called a [Foreign Key](https://en.wikipedia.org/wiki/Foreign_key) in database systems:
 
-<img src="./libraryTutorial/library-model-Book_entity_definition_mlSchema_author.png" alt="The Book Entity Version Attribute: 'author'" width="85%"/>
+<img src="./libraryTutorial/library-model-Book_entity_definition_mlSchema_author.png" alt="The Book Entity Attribute: 'author'" width="85%"/>
 
-The `foreignKeyParams` attribute in the `tag` informs the Miroir platform of the intended interpretation for the Foreign Key: in this case the given `uuid` shall be found as primary identifier for a `Book` instance. When selecting a book in the UI, the displayed list of books shall be sorted by the `name` attribute.
+The `foreignKeyParams` attribute in the `tag` informs the Miroir platform of the intended interpretation for the Foreign Key: in this case the given `uuid` shall be found as primary identifier for an `Author` instance. When selecting an author in the UI, the displayed list of authors shall be sorted by the `name` attribute.
 
 To add an attribute, click on the blue **+** icon:
 
@@ -610,7 +611,7 @@ TO BE PROVIDED
 
 You've seen how Miroir applications work from the outside and understand the core concepts. To go deeper:
 
-- Examine the Library EntityVersions in `library_model/`
+- Examine the Library Entities (and their `mlSchema`) in `library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/`
 - Study the Report definitions
 - Explore how Queries and Actions are declared
 - Learn about the Transformers that we used in the Action implementation

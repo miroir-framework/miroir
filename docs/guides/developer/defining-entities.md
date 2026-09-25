@@ -3,7 +3,7 @@
 **Audience:** application authors and tool builders who need to model domain concepts in Miroir.  
 **Related:** [Core Concepts](../core-concepts.md) · [Entity API reference](../../reference/api/entity.md) · [Library tutorial](../../tutorials/library-tutorial.md)
 
-This guide is **use-case centric**: pick the situation that matches what you are trying to do, then follow the Entity / EntityVersion shape that fits. It does not replace the meta-model tour in Core Concepts; it answers “which kind of Entity do I need?”
+This guide is **use-case centric**: pick the situation that matches what you are trying to do, then follow the Entity shape that fits. It does not replace the meta-model tour in Core Concepts; it answers “which kind of Entity do I need?”
 
 ---
 
@@ -11,19 +11,37 @@ This guide is **use-case centric**: pick the situation that matches what you are
 
 | Piece | Role | Library example |
 |-------|------|-----------------|
-| **Entity** | Named concept in your domain | `Book` (`e8ba151b-…`) |
-| **EntityVersion** | Structure of that concept (`mlSchema`, PK, cache, …) | Book definition (`797dd185-…`) |
+| **Entity** | Named concept in your domain **and** its present-model structure (`mlSchema`, PK, view / cache fields, …) | `Book` (`e8ba151b-…`) |
 | **Instance** | One row / value of that concept | A specific book in `library_data/` |
+| **EntityVersion** *(optional, history only)* | Snapshot of an Entity written by `freezeApplicationVersion` for versioned-internal apps | none: Library is `unversioned` |
 
-- Entities live under `<app>_model/` (with EntityVersions).
-- Instances live under `<app>_data/` (or an **external** store — see below).
+- Entities live under `<app>_model/16dbfe28-…/` (the Entity meta-entity folder). That single file is all you need to define a concept.
+- Instances live under `<app>_data/<entityUuid>/` (or an **external** store — see below).
+- EntityVersions, when they exist, live in the separate `modelVersion` section (`<app>_modelVersion/` assets). You never author them by hand.
 - Most Library / Admin / Miroir meta Entities use a **UUID** primary key and a **`parentUuid`** on each instance pointing at the Entity. Other shapes exist when you integrate external systems or non-UUID identity.
 
 ```
-Entity (Book, present-model mlSchema)  ←── EntityVersion (historical / dual-write snapshot)
+Entity (Book, present-model mlSchema)  ──freeze──▶ EntityVersion (history, modelVersion section)
       ↑
    instances (The Pragmatic Programmer, …)
 ```
+
+### Terminology and pitfalls
+
+Older pages, issues and feature notes may use outdated names. When they disagree with this guide, the live `*_model` JSON assets and the generated types (`miroirFundamentalType.ts`) win.
+
+| You may read… | Current reality |
+|---------------|-----------------|
+| **EntityDefinition** | Renamed **EntityVersion** (deprecated TypeScript alias still exported). It is now a history snapshot, not where an Entity's structure is defined. |
+| **`jzodSchema`** attribute | The attribute is **`mlSchema`**, and it is on the **Entity**. |
+| `createEntity` payload with `{ entity, entityDefinition }` pairs | `createEntity` takes `payload.entities: Entity[]`, each Entity carrying its `mlSchema`. |
+| "EntityVersion dual-write" | Removed. Model actions write the Entity only; only `freezeApplicationVersion` writes EntityVersions. |
+| Entity `parentUuid` = `381ab1be-…` | An Entity's `parentUuid` is the Entity meta-entity **`16dbfe28-…`**. `381ab1be-…` is a historical EntityVersion of Entity (in `miroir_modelVersion/`), only referenced informationally by `parentDefinitionVersionUuid`. |
+| `conceptLevel`: `MetaModel` \| `Model` \| `Data` | The enum also includes **`External`** (Use case 2). |
+| "No `idAttribute`" = "no primary key" | **Absent `idAttribute` ⇒ default `uuid` PK.** A PK-less Entity needs an explicit representation (Use case 6). |
+| "Every instance must have `uuid` and `parentUuid`" | True for the default UUID-PK path; non-UUID / composite PKs (Use cases 3–4) and optional `parentUuid` (Use case 5) relax it. |
+
+Issues [#172](https://github.com/miroir-framework/miroir/issues/172) and [#175](https://github.com/miroir-framework/miroir/issues/175) are still **open**; [#173](https://github.com/miroir-framework/miroir/issues/173), [#174](https://github.com/miroir-framework/miroir/issues/174) and [#176](https://github.com/miroir-framework/miroir/issues/176) are closed.
 
 ---
 
@@ -46,30 +64,21 @@ Entity (Book, present-model mlSchema)  ←── EntityVersion (historical / dua
 
 **What to define**
 
-1. An **Entity** with `conceptLevel: "Model"` (or omit; data instances are implicitly data-level).
-2. An **EntityVersion** whose `entityUuid` points at that Entity, with an `mlSchema` for attributes and relationships.
+1. An **Entity** with `parentUuid` = `16dbfe28-…` (the Entity meta-entity) and `conceptLevel: "Model"`.
+2. Its **`mlSchema`** for attributes and relationships, on the Entity itself.
 3. Default PK: leave `idAttribute` absent → **`uuid`**.
-4. Instances carry `uuid` and usually `parentUuid` = Entity uuid.
+4. Instances carry `uuid` and usually `parentUuid` = Entity uuid (`e8ba151b-…` for a Book).
 
-**Entity (Library Book)** — `packages/miroir-test-app_deployment-library/assets/library_model/16dbfe28-…/e8ba151b-….json`:
+**Entity (Library Book, excerpt)** — `packages/miroir-test-app_deployment-library/assets/library_model/16dbfe28-…/e8ba151b-….json`. The `mlSchema` adds domain fields; identity / parent fields come from the shared `entityDefinitionRoot` extension:
 
 ```json
 {
   "uuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+  "parentName": "Entity",
   "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   "name": "Book",
   "conceptLevel": "Model",
-  "description": "A book."
-}
-```
-
-**EntityVersion (excerpt)** — Book `mlSchema` adds domain fields; identity / parent fields come from the shared `entityDefinitionRoot` extension (schema path name; concept is EntityVersion):
-
-```json
-{
-  "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  "name": "Book",
-  "conceptLevel": "Model",
+  "description": "A book.",
   "viewAttributes": ["name", "author", "year", "publisher", "uuid"],
   "cache": { "cacheAllInstancesOnRefresh": true },
   "mlSchema": {
@@ -121,34 +130,25 @@ Entity (Book, present-model mlSchema)  ←── EntityVersion (historical / dua
 
 **When:** Instances are not owned by Miroir’s store. You need to **inspect** (and typically not CUD) rows that already live in another system. The motivating product case is the **Postgres manager** app reading `information_schema` / `pg_catalog`.
 
-**What to define**
+**What to define** — a single Entity with:
 
-1. Entity with **`conceptLevel: "External"`**.
-2. EntityVersion with:
-   - matching `conceptLevel: "External"`,
-   - **`externalDataSource`** (e.g. `{ "schema": "information_schema" }`),
-   - an **`idAttribute`** that matches the physical key (often composite),
-   - `mlSchema` attributes marked non-editable in the UI when read-only.
-3. Application / deployment constraints: apps that need external entities may restrict which storage backends can host them; deployment must supply access directives (schema, etc.). **CUD on external instances fails** by design.
+1. **`conceptLevel: "External"`**,
+2. **`externalDataSource`** (e.g. `{ "schema": "information_schema" }`; `kind: "http"` + `endpoint` for data served by an external HTTP Endpoint; `tableName` when it differs from the Entity name),
+3. an **`idAttribute`** that matches the physical key (often composite),
+4. `mlSchema` attributes marked non-editable in the UI when read-only (External Entities usually do **not** extend `entityDefinitionRoot`, since their rows have no `uuid` / `parentUuid`).
 
-**Entity** — Postgres `columns`:
+Application / deployment constraints: apps that need external entities may restrict which storage backends can host them; deployment must supply access directives (schema, etc.). **CUD on external instances fails** by design.
 
-```json
-{
-  "uuid": "…",
-  "name": "columns",
-  "conceptLevel": "External",
-  "description": "The columns of a PostgreSQL schema."
-}
-```
-
-**EntityVersion** — Postgres `tables` (composite PK + external source):
+**Entity** — Postgres `tables` (composite PK + external source), abridged from `packages/miroir-test-app_deployment-postgres/assets/postgres_model/16dbfe28-…/35961086-….json`:
 
 ```json
 {
-  "entityUuid": "35961086-f932-477a-aa77-ac8360ffbf61",
-  "conceptLevel": "External",
+  "uuid": "35961086-f932-477a-aa77-ac8360ffbf61",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   "name": "tables",
+  "conceptLevel": "External",
+  "description": "The tables of a PostgreSQL schema.",
   "idAttribute": ["table_catalog", "table_schema", "table_name"],
   "externalDataSource": { "schema": "information_schema" },
   "cache": { "cacheAllInstancesOnRefresh": true },
@@ -164,13 +164,15 @@ Entity (Book, present-model mlSchema)  ←── EntityVersion (historical / dua
 }
 ```
 
-**Also see:** test extract `simplified-library-model-with-external-entity.json` (Library + `pg_namespace` External Entity) and `Runner_ExternalEntity.integ.test.tsx`.
+The `columns` Entity (`39e5c7a1-…`) follows the same pattern with a four-attribute key.
+
+**Also see:** test extract `packages/miroir-standalone-app/tests/assets/library_extract/simplified-library-model-with-external-entity.json` (Library + `pg_namespace` External Entity) and `Runner_ExternalEntity.integ.test.tsx`.
 
 ---
 
 ## Use case 3 — Non-UUID primary key
 
-**When:** The natural identity is not a UUID (integer `oid`, business `code`, table name, …). Default Miroir Entities keep `uuid`; override with **`idAttribute`** on the Entity / EntityVersion.
+**When:** The natural identity is not a UUID (integer `oid`, business `code`, table name, …). Default Miroir Entities keep `uuid`; override with **`idAttribute`** on the Entity.
 
 | `idAttribute` | Meaning |
 |---------------|---------|
@@ -178,7 +180,7 @@ Entity (Book, present-model mlSchema)  ←── EntityVersion (historical / dua
 | `"code"` (string) | Single non-UUID PK |
 | `["a","b"]` | Composite PK — next section |
 
-Helpers live in `packages/miroir-core/src/1_core/EntityPrimaryKey.ts`:
+Helpers live in `packages/miroir-core/src/1_core/Entity/EntityPrimaryKey.ts`:
 
 - `getEntityPrimaryKeyAttribute` / `getEntityPrimaryKeyAttributes`
 - `getInstancePrimaryKeyValue`
@@ -192,7 +194,7 @@ Helpers live in `packages/miroir-core/src/1_core/EntityPrimaryKey.ts`:
 
 **When:** Uniqueness spans several columns (classic SQL catalogue keys).
 
-**What to set:** `idAttribute: string[]` on the Entity (present model) or dual-written EntityVersion.
+**What to set:** `idAttribute: string[]` on the Entity.
 
 **Examples (Postgres app)**
 
@@ -213,17 +215,19 @@ Helpers live in `packages/miroir-core/src/1_core/EntityPrimaryKey.ts`:
 
 ## Use case 5 — Instances without `parentUuid`
 
+**Status:** implemented for CRUD and covered by tests; tracking issue [#172](https://github.com/miroir-framework/miroir/issues/172) is still open.
+
 **When:** Integrating payloads or stores that do not stamp every row with Miroir’s Entity uuid.
 
-**Intent:** keep instances “self-sufficient” when `parentUuid` is present, but allow it to be **optional**. The platform must still know which Entity an instance belongs to (action payload / collection context). If that mapping is lost, surface the constraint explicitly.
+**Intent:** keep instances “self-sufficient” when `parentUuid` is present, but allow it to be **optional** (`EntityInstance.parentUuid` is optional in the generated types). The platform must still know which Entity an instance belongs to (action payload / collection context). If that mapping is lost, surface the constraint explicitly.
 
-**Resolution order** (see helpers in `EntityPrimaryKey.ts`):
+**Resolution order** (`resolveInstanceParentUuid` in `packages/miroir-core/src/1_core/Entity/EntityPrimaryKey.ts`):
 
 1. `instance.parentUuid` if present  
 2. Else parent from the surrounding action / collection context  
-3. Else fail with an explicit error  
+3. Else fail with an explicit error (`FailedToResolveParentUuid`)  
 
-**Regression:** MiroirTest suite `domain_controller_no_parent_uuid_crud` (legacy vitest: `DomainController.integ.noParentUuid.CRUD.test.tsx`).
+**Regression:** MiroirTest suite `domain_controller_no_parent_uuid_crud`.
 
 **Authoring tip:** for greenfield Library-style models, keep `parentUuid` on instances — it remains the simplest debugging story. Omit it only when an integration requires it.
 
@@ -231,11 +235,13 @@ Helpers live in `packages/miroir-core/src/1_core/EntityPrimaryKey.ts`:
 
 ## Use case 6 — Entities / tables without a primary key
 
+**Status:** not implemented yet — [#175](https://github.com/miroir-framework/miroir/issues/175) is open. There is currently no way to declare a PK-less Entity.
+
 **When:** External (or imported) tables have **no** reliable PK.
 
 **Target behavior**
 
-- Represent EntityVersions that are explicitly PK-less (absence of `idAttribute` alone is **not** enough — that still defaults to `uuid`).
+- Represent Entities that are explicitly PK-less (absence of `idAttribute` alone is **not** enough — that still defaults to `uuid`).
 - On refresh, **flush** in-memory contents for that Entity so incoming rows replace the previous set (avoids duplicate ghost rows).
 - Editing PK-less instances in Miroir UI is out of scope for now.
 
@@ -267,7 +273,7 @@ Companion field **`logicalDataModel`**: use **`manyToMany`** on cross/link Entit
 
 - Application authors defining Library `Book` / `Author` **do not set `scope`** — defaults to modeling.
 - Framework/bootstrap changes to versioning Entity rows should set `scope: "versioning"` (and `logicalDataModel: "manyToMany"` on cross tables) to match existing Miroir bootstrap assets.
-- See [Entity API — meta-model classification](../../reference/api/entity.md#meta-model-classification-scope--logicaldatamodel) and [Bundles and Versioning — versioned-internal](../getting-started/bundles-and-versioning.md#implementation-versioned-internal).
+- See [Entity API — meta-model classification](../../reference/api/entity.md#meta-model-classification-scope--logicaldatamodel) and [Bundles and Versioning — versioned-internal](../../getting-started/bundles-and-versioning.md#implementation-versioned-internal).
 
 ---
 
@@ -290,7 +296,7 @@ Companion field **`logicalDataModel`**: use **`manyToMany`** on cross/link Entit
 | Miroir | `…/miroir_model/` | `…/miroir_data/` |
 | Postgres manager | `…/postgres_model/` | external / cache |
 
-Entity files are keyed by the **Entity** uuid under the Entity’s parent Entity folder (`16dbfe28-…` for Entity). EntityVersion files live under the EntityVersion Entity folder (`54b9c72f-…`) and reference `entityUuid`.
+Entity files are keyed by the **Entity** uuid under the Entity’s parent Entity folder (`16dbfe28-…` for Entity). There is no per-app EntityVersion folder in `*_model/`: EntityVersion files (history) only exist in `…/<app>_modelVersion/54b9c72f-…/` for versioned-internal apps (today only `miroir_modelVersion/`), and reference their Entity through `entityUuid`.
 
 ---
 
@@ -299,6 +305,6 @@ Entity files are keyed by the **Entity** uuid under the Entity’s parent Entity
 - [Core Concepts — Entity & EntityVersion](../core-concepts.md#entity--entityversion)
 - [Entity & EntityVersion API](../../reference/api/entity.md) — includes `scope` / `logicalDataModel`
 - [Library tutorial — editing Book](../../tutorials/library-tutorial.md)
-- [Creating applications](creating-applications.md) (placeholder; links here)
+- [Creating applications](creating-applications.md) and [Integration](integration.md) (placeholders; until they are written, this guide is the narrative for defining Entities and for External Entities over external databases)
 - Feature notes: `code-helpers/features/173-FEATURE- enable non-uuid primary keys for Entities/plan.md`, `code-helpers/features/176-FEATURE- support tables & entities with composite PK/plan.md`
 - Agent summary of PK helpers: `AGENTS.md` (“Primary Key Support”)
