@@ -175,21 +175,22 @@ Full catalogue: [reference/testing.md](../reference/testing.md#running-app-stack
 
 ### JzodElementEditor component tests
 
-React Testing Library suite for the Jzod schema editor — prerequisite baseline before transformer UI work in the Miroir Tests report:
+The Jzod schema editor cases are MiroirTests since #286: the instance `JzodElementEditor_ComponentTestSuite` holds one `reactComponentTest` leaf per case (68 cases in 7 sub-suites). The vitest entry `tests/4_view/miroir-component-tests.unit.test.tsx` runs them:
 
 ```bash
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
-npm run testByFile -w miroir-standalone-app -- JzodElementEditor.test
+# All 68 cases, plus one entry check. No --profile and no Postgres (in-memory LocalCache).
+npm run testByFile -w miroir-standalone-app -- miroir-component-tests
 
-# Profile shorthand
-npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-sql JzodElementEditor.test
+# One editor sub-suite
+npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "JzodObjectEditor"
 
-# One editor sub-suite (67 tests total)
-npm run testByFile -w miroir-standalone-app -- 4_view/JzodElementEditor.test.tsx -t "JzodObjectEditor"
+# After a change to componentTestManifest.ts: regenerate the MiroirTest JSON, then check it
+npx tsx packages/miroir-standalone-app/scripts/generate-component-miroir-tests.ts
+npm run build -w miroir-test-app_deployment-miroir
+npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency
 ```
 
-No Postgres required (in-memory `LocalCache`). See [reference/testing.md § JzodElementEditor](../reference/testing.md#jzodelementeditortesttsx--component-integration-suite).
+The same cases run in the app: open `JzodElementEditor_ComponentTestSuite` in the Miroir Tests report and click the unit Run button. Each case renders in a sandbox panel with its own `LocalCache`. See [reference/testing.md § JzodElementEditor component tests](../reference/testing.md#jzodelementeditor-component-tests).
 
 ### MiroirTestDisplay UI integration launch (B6-d1)
 

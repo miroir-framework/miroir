@@ -1,9 +1,9 @@
 /**
  * Issue #286 Slice 0: characterize the contracts that later slices change.
  *
- * - `phase0 stable` stays true after Slice 12.
- * - `pre-286 inventory` records today's behavior. Each assertion is deleted by the slice named
- *   next to it.
+ * `phase0 stable` stays true after Slice 12. The `pre-286 inventory` describe, which recorded the
+ * behavior that Slices 2, 3, and 12 changed, was deleted in Slice 12 with the old
+ * `JzodElementEditor.test.tsx`.
  *
  * Run:
  * ```bash
@@ -31,11 +31,6 @@ const MIROIR_TEST_ENTITY_VERSION_PATH = join(
   REPO_ROOT,
   "packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/51c647fe-07ec-411c-89cc-02689dc66d6a.json",
 );
-const OLD_JZOD_ELEMENT_EDITOR_TEST_PATH = join(
-  REPO_ROOT,
-  "packages/miroir-standalone-app/tests/4_view/JzodElementEditor.test.tsx",
-);
-
 function readJson(path: string): any {
   return JSON.parse(readFileSync(path, { encoding: "utf-8" }));
 }
@@ -47,28 +42,6 @@ function miroirTestLeafMembers(entityOrEntityVersion: any): string[] {
     throw new Error("miroirTestLeaf union not found at mlSchema.definition.definition.context");
   }
   return leaf.definition.map((member: any) => member?.definition?.relativePath);
-}
-
-/**
- * Keys of the `jzodElementEditorTests` object literal in the old test file, read as text so that
- * importing does not register its tests. Commented-out entries are ignored.
- */
-function activeSuiteKeysOfOldTestFile(): string[] {
-  const source = readFileSync(OLD_JZOD_ELEMENT_EDITOR_TEST_PATH, { encoding: "utf-8" });
-  const start = source.indexOf("const jzodElementEditorTests");
-  if (start < 0) {
-    throw new Error("jzodElementEditorTests not found in JzodElementEditor.test.tsx");
-  }
-  const end = source.indexOf("\n};", start);
-  if (end < 0) {
-    throw new Error("end of jzodElementEditorTests not found in JzodElementEditor.test.tsx");
-  }
-  return source
-    .slice(start, end)
-    .split(/\r?\n/)
-    .filter((line) => !line.trim().startsWith("//"))
-    .map((line) => /^ {2}([A-Za-z0-9_]+): \{/.exec(line)?.[1])
-    .filter((key): key is string => key !== undefined);
 }
 
 // ################################################################################################
@@ -95,14 +68,5 @@ describe("phase0 stable", () => {
     );
     const values = extractValuesFromRenderedElements(expect, undefined, container, "testField");
     expect(values).toEqual({ a: "foo", b: 42, c: true });
-  });
-});
-
-// ################################################################################################
-describe("pre-286 inventory", () => {
-  // Each slice that moves a suite removes it from this list. Deleted in Slice 12.
-  it("the old JzodElementEditor.test.tsx declares the active suite keys not yet migrated in jzodElementEditorTests", () => {
-    // Slice 11 moved the last suite (JzodAnyEditor): no active suite is left.
-    expect(activeSuiteKeysOfOldTestFile()).toEqual([]);
   });
 });

@@ -9,7 +9,7 @@ Working branch: `286-FEATURE-react-component-miroir-tests`, created from `284-FE
 
 **Review:** revised after [`./plan-adversarial-review.md`](./plan-adversarial-review.md), P1-P22 applied.
 
-**Resume note:** Slices 0 to 11 done, pilot clean. All 68 cases (12 Array, 3 Enum, 3 Literal, 14 Object, 12 SimpleType, 9 Union, and 15 Any) run from the MiroirTest instance `761d4ed2-…` through the new vitest entry (68 cases plus 1 entry check) and in the app, where the unit Run button of `MiroirTestDisplay` runs them in the sandbox and records one `ok` per case (15/15 checked in a real browser on the Vite dev server and on the production build after Slice 5, 18/18 on the dev server after Slice 7, 32/32 on the dev server after Slice 8, 44/44 on the dev server after Slice 9, 53/53 on the dev server after Slice 10, 68/68 on the dev server after Slice 11). Since Slice 8, `env.fireEvent` is `componentTestFireEvent`, which adds the React-specific events of `@testing-library/react`'s `fireEvent` (`blur` also fires `focusout`, and so on) without importing it. `PortalContainerContext` sends the `ThemedSelectWithPortal` option lists, and the MUI popups (through a MUI `DefaultPropsProvider`), into the sandbox portal element. "Run All Unit Tests" of `MiroirTestListDisplay` has an "Include component tests" checkbox, checked by default. When checked, it runs the component leaves in the list's own sandbox. When unchecked, it passes `excludeMiroirTestTypes: ["reactComponentTest"]`, so those leaves are recorded as skipped. The old file has no active suite left: it keeps one placeholder test (`has no active suite left…`), because vitest fails a file with no test, and it is still in the nonreg default step until Slice 12 deletes it. Next: Slice 12. Tests that Slice 12 must add to the `unit-286-react-component-miroir-tests` nonreg unit beyond its §12.1 list: `componentTestFireEvent.286.phase8` (Slice 8). Slices 9, 10, and 11 added no issue test. Open follow-up: a filter that names one sub-suite of a multi-sub-suite instance throws in miroir-core when run from `MiroirTestDisplay` (Slice 5 finding, re-evaluated in the Slice 6 Realization).
+**Resume note:** Slices 0 to 12 done. All 68 cases (12 Array, 3 Enum, 3 Literal, 14 Object, 12 SimpleType, 9 Union, and 15 Any) run from the MiroirTest instance `761d4ed2-…` through `tests/4_view/miroir-component-tests.unit.test.tsx` (68 cases plus 1 entry check) and in the app, from the unit Run button of `MiroirTestDisplay` and from "Run All Unit Tests" of `MiroirTestListDisplay` (checkbox "Include component tests", checked by default). The old `JzodElementEditor.test.tsx` and `baseline-JzodElementEditor.txt` are deleted. The nonreg default step is `appstack-miroir-component-tests`, and the unit step `unit-286-react-component-miroir-tests` runs the miroir-core and app issue tests except the bundle guard, which needs a fresh build. The full nonreg tier passes except the 3 known steps that fail on the user's untracked or modified asset files (Slice 12 Realization). Left to the user: commit, and tick the issue #286 acceptance criteria (proposed in the Slice 12 Realization). Open follow-up, outside #286: from `MiroirTestDisplay`, a filter that names only some sub-suites of a multi-sub-suite instance throws "MiroirTest filter matched no tests" in miroir-core (Slice 5 finding, Slice 6 Realization, now documented in `docs/reference/testing.md`).
 
 ---
 
@@ -53,7 +53,7 @@ These come from the plan review and refine analysis §5 without changing a decis
 | 9 | SimpleType suite | ✅ DONE | `miroir-component-tests` 44 passed, 44/44 in the dev browser check |
 | 10 | Union suite | ✅ DONE | `miroir-component-tests` 53 passed, 53/53 in the dev browser check |
 | 11 | Any suite | ✅ DONE | `miroir-component-tests` 68 passed, 68/68 in the dev browser check |
-| 12 | Delete the old file, nonreg switch, docs, acceptance criteria | ⬜ | default nonreg green |
+| 12 | Delete the old file, nonreg switch, docs, acceptance criteria | ✅ DONE | full nonreg: 67 of 70 steps passed, the 3 failures are the known asset-file ones; `appstack-miroir-component-tests` 69 + 6 passed |
 
 Slice 2 is the first behavioral slice. Slices 0 and 1 build the safety net. The "passed" counts are the component cases of the new entry. The entry's own checks (§2.1) are counted separately.
 
@@ -1113,7 +1113,7 @@ The Library navigation and the production build were not checked.
 
 ## Slice 12: delete the old file, nonreg, docs, acceptance criteria
 
-**Status:** ⬜
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -1148,4 +1148,64 @@ The default nonreg tier is green. The new entry gives 68 cases passed. `tsc` has
 
 ### Realization
 
-(to fill)
+**Deletions.** `packages/miroir-standalone-app/tests/4_view/JzodElementEditor.test.tsx` (with its placeholder test) and `tests/4_view/issues/286-react-component-miroir-tests/baseline-JzodElementEditor.txt` are deleted from the working tree (not staged). `tests/4_view/JzodElementEditorTestTools.tsx` is kept for its 14 importers. In `componentMiroirTests.286.phase0.unit.test.tsx`, the `pre-286 inventory` describe is deleted, with the `OLD_JZOD_ELEMENT_EDITOR_TEST_PATH` constant and the `activeSuiteKeysOfOldTestFile` helper that only it used. The header comment says so. The file keeps the 3 `phase0 stable` tests.
+
+**Nonreg manifest** (`scripts/nonreg-manifest.json`).
+
+- `appstack-JzodElementEditor.test` is replaced, at the same place, by `appstack-miroir-component-tests` (tier `default`). It runs `testByFile -w miroir-standalone-app -- miroir-component-tests`, then `-- componentMiroirTests.consistency`, chained in `bash -c` with `&&`, one file per command because `testByFile` passes `--bail=1`. That is the argv style of the #273, #274, and #284 steps. There is no `--profile`, since the in-memory `LocalCache` reads no store.
+- New `unit-286-react-component-miroir-tests` (tier `unit`), after the #284 steps. It runs `testByFile -w miroir-core -- 286-react-component-miroir-tests` (the directory filter selects the 3 miroir-core issue tests: `reactComponentLeaf.286.phase2`, `throwingExpect.286.phase3`, `excludeMiroirTestTypes.286.phase6`), then one app command each for `componentMiroirTests.286.phase0`, `domMatchersParity.286.phase3`, `extractValuesScoped.286.phase3`, `componentTestMode.286.phase4`, `componentTestSandbox.286.phase4`, `portalContainer.286.phase5`, `runAllComponentTests.286.phase6`, and `componentTestFireEvent.286.phase8` (the Slice 8 note). The app issue directory is not used as a filter, because it also holds the bundle guard `componentTestChunk.286.phase4`, which stays out of nonreg.
+- `npm run nonreg -- --dry-run --tier full` lists both new steps and no longer lists `appstack-JzodElementEditor.test`.
+
+**Other live references to the old file.**
+
+- `ci/build/test_core.sh`: the last step runs `testByFile -w miroir-standalone-app -- 'miroir-component-tests'`.
+- `packages/miroir-standalone-app/.vscode/tasks.json`: the one task runs `npx vitest run tests/4_view/miroir-component-tests.unit.test.tsx`.
+- `docs/guides/developer/testing.md` L158-168: the filter list and the JzodElementEditor paragraph point to the new entry and to the new reference anchor.
+- Left as they are: the `// … ported from tests/4_view/JzodElementEditor.test.tsx` provenance comments and the `pageLabel = "JzodElementEditor.test"` constants in the 7 `componentTests/jzodElementEditor/*.tsx` files (the page label keeps the rendered DOM equal to the old run), the history documents of closed issues under `code-helpers/features/` (#198, #199, #274), and the generated `graphify-out/` files.
+
+**Documentation.**
+
+- `docs/reference/testing.md`: `reactComponentTest` row in the leaf type table (L110-118). L143: the PLATFORM sentence no longer names `JzodElementEditor.test.tsx` and points to the new section. The `default` tier row names the component tests through `miroir-component-tests`. The view table row (L759) is now `miroir-component-tests.unit.test.tsx`. The section at L770-784 is replaced by "JzodElementEditor component tests" (anchor `#jzodelementeditor-component-tests`): the instance, the registry, the act-free driver, the vitest entry and `-t "<suite>"`, how to add a case with the generator and the consistency test, how to run the cases in the app with the sandbox and the Run all checkbox, and the known limit of a filter that names only some sub-suites.
+- `docs/contributing/testing.md` L176-192: the new entry, `-t "JzodObjectEditor"`, the generator commands, and the app run. "(67 tests total)" is gone, the count is 68.
+- `docs/internals/code-splitting.md`: a "Component test chunk" section (the one `import()` in `ComponentTestSandbox.tsx`, reachability, no `@testing-library/react`, the guard and how to run it), a summary table row, and two related-file rows.
+- #197 `analysis-ui-integ-without-testing-library.md`: §4.1 row struck through with a pointer to #286, §7 JzodElementEditor row updated, and §8 gets a "Revised by #286" paragraph: the app may load `@testing-library/dom` and `@testing-library/user-event` in the lazy component test chunk only, without `@testing-library/react` or React `act`, and the integration launcher chunk already loaded RTL through `tests-utils.tsx` before #286.
+- #204 `plan.md` L201: `JzodElementEditor.test.tsx` done by #286, and L202 names `JzodElementEditorReactCodeMirror.test.tsx` as the next candidate.
+
+**Full nonreg** (`npm run nonreg -- --tier full --run-all`, profile `emulatedServer-sql`, local Postgres 15 on 5432, snapshot `test-results/nonreg/20260925T010417Z`): 70 steps, 67 passed, 3 failed. The 3 failures are the known ones, caused by the user's untracked or modified asset files, which this slice did not touch:
+
+- `default-admin-modelValidation`: 57 passed, 1 failed, `jzodTypeCheck failed for instance aiCursorKey (54a6fc4b-2d2d-5dbc-b396-81392be159a0)`, "failed to match value with uuid schema". The instance is the untracked file `miroir-test-app_deployment-admin/assets/admin_data/a96856df-…/54a6fc4b-….json`, whose uuid is a v5 uuid.
+- `apiCallReport-281`: `apiCallReport.281.phase0` "spotify_model has exactly 6 JSON files", `expected [ …(8) ] to have a length of 6 but got 8`. The 2 extra files are the untracked Discogs files under `miroir-test-app_deployment-spotify/assets/spotify_model/`.
+- `unit-274-multistep-reports`: `multistep.274.phase0` "seed inventory: 87 Reports", `to have a length of 87 but got 88`. The extra Report is the untracked Discogs report in `spotify_model/`.
+
+The #286 steps: `unit-286-react-component-miroir-tests` passed (miroir-core 16 passed in 3 files; app: phase0 3, domMatchersParity 4, extractValuesScoped 2, componentTestMode 2, componentTestSandbox 2, portalContainer 3, runAllComponentTests 3, componentTestFireEvent 4, all passed). `appstack-miroir-component-tests` passed (`miroir-component-tests` 69 passed, the 68 cases and the entry check; `componentMiroirTests.consistency` 6 passed). `unit-miroir-core` gave 794 passed (it loads the 68 component leaves, which the tracker records as skipped). `unit-check-bare-console`, the steps that run importers of `JzodElementEditorTestTools` (`gridPagination`, `listDisplayByTransformer`, `appstack-274`, `appstack-284`), and the two integration launch steps passed.
+
+**Validation** (from the repo root).
+
+- `npm run build -w miroir-standalone-app`: success (2 min 33 s). No `src/` file changed in this slice.
+- `npm run testByFile -w miroir-standalone-app -- componentTestChunk.286.phase4`: 4 passed.
+- `python scripts/check_bare_console.py`: OK.
+- `npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json`: 0 errors. `npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json`: 1 error, the baseline `JzodElementEditorHooks.ts(528,59)` TS2339.
+- Packages that use the changed miroir-core API (`ConfigurationServiceInner` in the store startups, the MiroirTest types): `npx tsc --noEmit --skipLibCheck -p packages/<name>/tsconfig.json` gave 0 errors for `miroir-store-bundled`, `miroir-store-filesystem`, `miroir-store-indexedDb`, `miroir-store-mongodb`, `miroir-store-postgres`, `miroir-localcache`, `miroir-localcache-redux`, `miroir-server`, `miroir-mcp`, `miroir-ai`, and `miroir-cli`. No package was rebuilt, since the nonreg run was using the `dist/` folders at the same time.
+- `npm run nonreg -- --dry-run --tier full`, then the full run above.
+
+**Issue #286 acceptance criteria, proposed ticks** (the issue was not edited).
+
+| Criterion | Holds | Evidence |
+|---|---|---|
+| `reactComponentTest` leaf, dispatched to a runner registered through `ConfigurationService` | Yes | Slice 2: `miroirTestForReactComponent` in Entity `a311f363-…` and EntityVersion `51c647fe-…`, `registerReactComponentTestRunner`, `reactComponentLeaf.286.phase2` 4 passed |
+| miroir-core generic entry reports the leaves as skipped and does not fail | Yes | `unit-miroir-core` 794 passed. Slice 2: tracker `"assertionResult": "skipped"` with "reactComponentTest requires a registered component test runner" |
+| Happy-dom entry runs all 68 cases from the JSON with the same results as the old file | Yes | `miroir-component-tests` 69 passed (68 cases). Slice 11: sorted case list identical to the 68 lines of the Slice 0 baseline (all passed) |
+| Unit Run button renders each case in a visible sandbox and shows per-case results | Yes | Browser checks, dev server: 68/68 rows after Slice 11. Production build: 12/12 (Slice 4) and 15/15 (Slice 5). `componentTestSandbox.286.phase4` test 1 |
+| A failing DOM assertion stops that case, records the message, later cases run | Yes | `componentTestSandbox.286.phase4` test 2: 11 `ok`, 1 `error` with "to be in the document", the 10 later cases `ok` |
+| Application store and local cache unchanged | Yes | `componentTestSandbox.286.phase4` test 1: `LocalCache` state JSON equal before and after, `testImplementation` the same object. Browser checks: the Library Book list renders after a run (Slices 4 and 5) |
+| Main bundle has no `@testing-library/*`, only the lazy test chunk | Yes | `componentTestChunk.286.phase4` 4 passed on this slice's build. Note: the issue's design item 3 planned `@testing-library/react` in the chunk. The chunk has only `@testing-library/dom` and user-event (analysis §5.3, D2) |
+| Generator and consistency check keep JSON and registry in step | Yes | `componentMiroirTests.consistency` 6 passed, generator "no change" (Slice 11) |
+| Run all runs component tests when the checkbox is on, skips them when off | Yes | `runAllComponentTests.286.phase6` 3 passed, `excludeMiroirTestTypes.286.phase6` 3 passed |
+| `JzodElementEditor.test.tsx` deleted, nonreg step runs the new entry | Yes, once committed | This slice: the file is deleted in the working tree, `appstack-miroir-component-tests` passed |
+| #197, #204, and `docs/reference/testing.md` point to #286 | Yes, once committed | This slice (above) |
+
+Two design points of the issue text differ from the result, with no acceptance criterion on them: design item 4 lists `toHaveAttribute`, which is not implemented because no ported case uses it, and design item 9 says 26 `screen.debug` calls, while the 7 active suites had 9 (analysis §3.1). All of them are gone.
+
+**Files deleted.** `packages/miroir-standalone-app/tests/4_view/JzodElementEditor.test.tsx`, `packages/miroir-standalone-app/tests/4_view/issues/286-react-component-miroir-tests/baseline-JzodElementEditor.txt`.
+
+**Files changed.** `scripts/nonreg-manifest.json`, `ci/build/test_core.sh`, `packages/miroir-standalone-app/.vscode/tasks.json`, `packages/miroir-standalone-app/tests/4_view/issues/286-react-component-miroir-tests/componentMiroirTests.286.phase0.unit.test.tsx`, `docs/reference/testing.md`, `docs/contributing/testing.md`, `docs/guides/developer/testing.md`, `docs/internals/code-splitting.md`, `code-helpers/features/197-FEATURE- run integration tests in the UI/analysis-ui-integ-without-testing-library.md`, `code-helpers/features/204-DOCUMENTATION-classify-tests-for-MiroirTest-migration/plan.md`, and this plan. `dist/` is rebuilt and ignored by git.

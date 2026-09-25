@@ -198,8 +198,8 @@ Source of truth: deployment exports + `miroirCoreTestSuiteRegistry` / UI integ r
 | `packages/miroir-standalone-app/tests/4_view/GraphReportSectionView.test.tsx` | Graph report section; RTL+mocks |
 | `packages/miroir-standalone-app/tests/4_view/isNodeFolded.unit.test.ts` | Fold state chrome |
 | `packages/miroir-standalone-app/tests/4_view/jzodEditorRenderInsight.unit.test.ts` | Editor RenderInsight wiring |
-| `packages/miroir-standalone-app/tests/4_view/JzodElementEditor.test.tsx` | JzodElementEditor — product UI; needs in-UI enactment path |
-| `packages/miroir-standalone-app/tests/4_view/JzodElementEditorReactCodeMirror.test.tsx` | CodeMirror path of JzodElementEditor; RTL |
+| ~~`packages/miroir-standalone-app/tests/4_view/JzodElementEditor.test.tsx`~~ | Done by [#286](https://github.com/miroir-framework/miroir/issues/286). The file is deleted. Its 68 cases are `reactComponentTest` leaves of the MiroirTest `JzodElementEditor_ComponentTestSuite`, run by `tests/4_view/miroir-component-tests.unit.test.tsx` and by the unit Run button in the app |
+| `packages/miroir-standalone-app/tests/4_view/JzodElementEditorReactCodeMirror.test.tsx` | CodeMirror path of JzodElementEditor; RTL. Next candidate for the #286 `reactComponentTest` path |
 | `packages/miroir-standalone-app/tests/4_view/JzodObjectEditor.BlobIntegration.integ.test.tsx` | JzodObjectEditor blob integ; RTL |
 | `packages/miroir-standalone-app/tests/4_view/MarkdownEditorModal.test.tsx` | Markdown editor modal; RTL |
 | `packages/miroir-standalone-app/tests/4_view/performanceDisplayGate.unit.test.ts` | Perf display gate chrome |

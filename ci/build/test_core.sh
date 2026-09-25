@@ -94,8 +94,8 @@ npm run testByFile -w miroir-standalone-app -- DomainController.integ.Model.CRUD
 
 step "################################################################################"
 step "################################################################################"
-step "Running JzodElementEditor tests with emulatedServerType=filesystem"
-npm run testByFile -w miroir-standalone-app -- 'JzodElementEditor.test'
+step "Running JzodElementEditor component tests (MiroirTest entry, #286)"
+npm run testByFile -w miroir-standalone-app -- 'miroir-component-tests'
 
 echo ""
 echo "========================================================================"
