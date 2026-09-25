@@ -22,7 +22,6 @@ import {
   type ReactComponentTestSuiteContext,
 } from "miroir-core";
 
-import { customStepRegistry } from "../../../../src/miroir-fwk/4-tests/componentTests/customStepRegistry";
 import { createReactComponentTestRunner } from "../../../../src/miroir-fwk/4-tests/componentTests/runReactComponentTest";
 
 const enumCaseLabel = "FixtureEnum: case";
@@ -189,7 +188,11 @@ describe("componentTestSteps.292.phase2: Enum fixture on the real JzodElementEdi
     expect(result).toEqual({ status: "error", message: "step 1 (fly): unknown step kind" });
   });
 
-  it("saveAs then {ref} resolves the same element, and an unknown ref fails", async () => {
+  it("saveAs then {ref} resolves a live element (both names), and an unknown ref fails", async () => {
+    // #292 M2: the `custom` step that compared two saved elements by identity is gone. This case
+    // instead checks that each saved name resolves, through {ref}, to a combobox-role element that
+    // reacts to the interaction driven through the other name: {ref: "select"} opens the list, and
+    // {ref: "combobox"} (saved afterwards by a widget target) is then found open.
     const ok = await newRunner()({
       testNamePath: [...enumSuite.suitePath, enumCaseLabel],
       leaf: stepLeaf([
@@ -203,7 +206,8 @@ describe("componentTestSteps.292.phase2: Enum fixture on the real JzodElementEdi
           value: "true",
         },
         { step: "expectElement", target: { widget: "combobox", field: "testField" }, saveAs: "combobox" },
-        { step: "custom", function: "sameSavedElements", params: { names: ["select", "combobox"] } },
+        { step: "expectElement", target: { ref: "select" }, attribute: { name: "role", value: "combobox" } },
+        { step: "expectElement", target: { ref: "combobox" }, attribute: { name: "role", value: "combobox" } },
       ]),
       suite: enumSuite,
     });
@@ -217,27 +221,6 @@ describe("componentTestSteps.292.phase2: Enum fixture on the real JzodElementEdi
     expect(unknown.status).toBe("error");
     expect(unknown.message.startsWith("step 1 (click): ")).toBe(true);
     expect(unknown.message).toContain('"nope"');
-  });
-
-  it("a custom step receives its params and the last expectRenderedValues value", async () => {
-    const calls: { params: any; lastValues: any }[] = [];
-    customStepRegistry.recordContext = async (_env, params, context) => {
-      calls.push({ params, lastValues: context.lastValues });
-    };
-    try {
-      const result = await newRunner()({
-        testNamePath: [...enumSuite.suitePath, enumCaseLabel],
-        leaf: stepLeaf([
-          { step: "expectRenderedValues", label: "initial", expectedValue: { testField: "value2" } },
-          { step: "custom", function: "recordContext", params: { p: 1 } },
-        ]),
-        suite: enumSuite,
-      });
-      expect(result).toEqual({ status: "ok" });
-      expect(calls).toEqual([{ params: { p: 1 }, lastValues: { testField: "value2" } }]);
-    } finally {
-      delete customStepRegistry.recordContext;
-    }
   });
 });
 
@@ -307,11 +290,3 @@ describe("componentTestSteps.292.phase2: props and suite wrapper lifetime", () =
     expect(result.message).toContain('reactComponentTest "Probe: first" has no steps');
   });
 });
-
-// A custom step used by the saveAs / ref test: the saved elements are the same element.
-customStepRegistry.sameSavedElements = async (_env, params, context) => {
-  const [first, ...others] = (params?.names ?? []).map((name: string) => context.elements[name]);
-  if (!first || others.some((element: HTMLElement) => element !== first)) {
-    throw new Error(`saved elements ${JSON.stringify(params?.names)} are not the same element`);
-  }
-};

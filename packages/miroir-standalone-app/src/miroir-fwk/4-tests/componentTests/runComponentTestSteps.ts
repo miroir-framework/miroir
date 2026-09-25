@@ -12,11 +12,6 @@ import {
   formValuesToJSON,
   testSectionName,
 } from "./componentTestTools.js";
-import {
-  customStepRegistry,
-  type ComponentTestStepContext,
-  type CustomStep,
-} from "./customStepRegistry.js";
 
 // ################################################################################################
 // Interpreter of the declarative component test steps (#292, analysis §5.3, §5.4).
@@ -57,12 +52,12 @@ class RenderedValuesMismatch extends Error {
   }
 }
 
-export interface RunComponentTestStepsOptions {
-  /** Defaults to `customStepRegistry`. */
-  customSteps?: Record<string, CustomStep>;
-}
-
 type StepOf<K extends ReactComponentTestStep["step"]> = Extract<ReactComponentTestStep, { step: K }>;
+
+/** The elements saved by `saveAs`, by name, kept across the steps of one case. */
+interface ComponentTestStepContext {
+  elements: Record<string, HTMLElement>;
+}
 
 const selectOpenTimeout = 1000;
 const selectCommitTimeout = 2000;
@@ -148,9 +143,7 @@ function elementValue(element: HTMLElement): unknown {
 export async function runComponentTestSteps(
   env: ComponentTestEnvironment,
   steps: readonly ReactComponentTestStep[],
-  options: RunComponentTestStepsOptions = {},
 ): Promise<void> {
-  const customSteps = options.customSteps ?? customStepRegistry;
   const context: ComponentTestStepContext = { elements: {} };
   let user: ReturnType<ComponentTestEnvironment["userEvent"]["setup"]> | undefined;
   const userSession = () => (user ??= env.userEvent.setup());
@@ -185,7 +178,6 @@ export async function runComponentTestSteps(
     if (Object.keys(options).length > 0 && isPlainObject(actual)) {
       actual = { ...actual, $options: options };
     }
-    context.lastValues = actual;
     env.log.info("expectRenderedValues", step.label, actual);
     try {
       env.expect(actual, "rendered values").toEqual(step.expectedValue);
@@ -403,13 +395,6 @@ export async function runComponentTestSteps(
         return;
       }
       await waitUntil(env, () => checkElement(step), step.timeout);
-    },
-    custom: async (step) => {
-      const customStep = customSteps[step.function];
-      if (!customStep) {
-        throw new Error(`custom step "${step.function}" is not in the custom step registry`);
-      }
-      await customStep(env, step.params, context);
     },
   };
 

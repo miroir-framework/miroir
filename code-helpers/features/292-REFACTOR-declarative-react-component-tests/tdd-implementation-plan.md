@@ -39,7 +39,7 @@ Out of scope: other UI_COMPONENT test files (#204), new component suites, change
 | 4 | Array and Object | L | ⏳ GREEN, browser check pending (API server down) | `componentTestWidgets.292.phase4` 9, `-t "JzodArrayEditor"` 12, `-t "JzodObjectEditor"` 14, entry 70 passed in 60.9 s; Array and Object app checks pending |
 | 5 | Union and Any | L | ⏳ GREEN, browser check pending (API server down) | `componentTestUnionWidgets.292.phase5` 6, `-t "JzodUnionEditor"` 9, `-t "JzodAnyEditor"` 15, entry 70 passed in 66.5 s; app check 68/68 pending |
 | 6 | M1: no `componentTestRef` | M | ⏳ GREEN, browser check pending (API server down) | `legacyRemoved.292.phase6` 6, core `292-…` 7, grep hits only the absence guard, entry 70 passed in 62.4 s; app check 68/68 pending |
-| 7 | M2: no `custom` step | S | ⏳ TODO | `legacyRemoved.292.phase6` M2 assertions |
+| 7 | M2: no `custom` step | S | ✅ DONE | `legacyRemoved.292.phase6` 9 (M2 assertions), entry 70 passed |
 | 8 | Docs, nonreg, final type-check and full nonreg | M | ⏳ TODO | full nonreg = Slice 0 baseline failures only |
 
 Complexity: S = one focused change, M = several files in one package or a mechanical port, L = several packages or a new subsystem.
@@ -1275,7 +1275,7 @@ A second run of the full entry used `--reporter=verbose`. Its reduced case list 
 
 ## Slice 7: M2, no `custom` step
 
-**Status:** ⏳ TODO · **Complexity:** S
+**Status:** ✅ DONE · **Complexity:** S
 
 ### Goal
 
@@ -1309,7 +1309,65 @@ Expected: entry 70 passed. `grep -rn "\"custom\"\|customStepRegistry" packages/m
 
 ### Realization
 
-(to fill)
+Every command was run alone, one per file, from the repo root (never two vitest runs in parallel). The user's unrelated uncommitted changes (`ci/claude-cloud-env-script.sh`, the `admin_data` files, the spotify model files, `generate_externalServiceSync_suites.py`, `package.json`) were not touched, staged, or stashed. Nothing was committed.
+
+**RED observed.** The GREEN product edits (schema, `runComponentTestSteps.ts`, deletion of `customStepRegistry.ts`) were made first; to still observe a genuine RED for the two new `legacyRemoved.292.phase6` checks, the 6 GREEN product files were saved as a patch and reverted to their Slice 6 (`HEAD`) content with `git checkout HEAD -- <path>` (schema Entity and EntityVersion JSON, the two generated `preprocessor-generated` files, `runComponentTestSteps.ts`, and a restored `customStepRegistry.ts`), the two new tests were added to `legacyRemoved.292.phase6.unit.test.ts`, and the file was run:
+
+- `npx vitest run legacyRemoved.292.phase6` (via `testByFile`, `VITE_TEST_MODE=true`): **1 failed, 2 passed** (of the 3 that ran before `--bail=1` stopped it), `the Entity reactComponentTestStep union has no custom member (#292 M2)` failed with `expected [ 'click', 'change', 'blur', …(15) ] to not include 'custom'`. The EntityVersion twin and the `customStepRegistry.ts` absence check were not reached (bail), but exercise the same reverted state.
+
+The patch was then re-applied and `customStepRegistry.ts` deleted again, restoring the GREEN state.
+
+**GREEN:**
+
+- **Schema** (Entity `a311f363-…` and EntityVersion `51c647fe-…`, same edit in both, 2-space JSON): the `custom` member (`{step: "custom", function, params?}`) is removed from the `reactComponentTestStep` union definition array; the member before it (`expectElement`) keeps no trailing comma, becoming the last member.
+  - Rebuild with `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core` (exit 0). The generated `reactComponentTestStep` zod union and `ReactComponentTestStep` type no longer include a `custom` / `function` / `params` member.
+- **App:**
+  - Deleted `componentTests/customStepRegistry.ts` (the `CustomStep` type, `ComponentTestStepContext`, and the empty registry).
+  - `runComponentTestSteps.ts`: the `custom` import and handler are gone. `ComponentTestStepContext` is now a local, non-exported interface with only `elements` (its `lastValues` field had no reader outside the `custom` handler, so it is dropped, and the now-unused `context.lastValues = actual;` assignment in `checkRenderedValues` is removed too). `RunComponentTestStepsOptions` (`customSteps` override) is removed, and `runComponentTestSteps` drops its third parameter, since no caller passed it (`componentTestUnionWidgets.292.phase5`, `componentTestTargets.292.phase3`, and the runner all call it with 2 arguments).
+- **Tests:**
+  - `legacyRemoved.292.phase6.unit.test.ts` gains the two M2 checks (7.1): `reactComponentTestStepMembers(path)` reads `mlSchema.definition.definition.context.reactComponentTestStep.definition.map(m => m.definition.step.definition)` from the Entity and the EntityVersion and asserts it excludes `"custom"`; the legacy-files table gains `customStepRegistry.ts`. 9 tests (was 6).
+  - `componentTestSteps.292.phase2.unit.test.tsx`: the `customStepRegistry` import and the "a custom step receives its params and the last expectRenderedValues value" test are deleted (7.2), and the trailing `customStepRegistry.sameSavedElements = …` fixture is deleted with it. 10 tests (was 11).
+
+**Deviation:**
+
+1. **The "saveAs then {ref}" test's identity assertion changed shape.** It used to prove that `saveAs: "select"` (on a `byRole: "combobox"` target) and `saveAs: "combobox"` (on a `widget: "combobox"` target, saved afterwards) name the same DOM node, through a `custom` step (`sameSavedElements`) that compared `context.elements[name] === context.elements[other]` — the only DSL construct able to compare two saved elements by identity. With `custom` gone, no replacement step exists (the vocabulary of analysis §5.4 has none, and adding one is out of Slice 7's scope, which only removes the escape hatch). The test was renamed and its last step replaced by two `expectElement` steps checking `role: "combobox"` on `{ref: "select"}` and on `{ref: "combobox"}`: still exercises `{ref}` resolution for two different saved names, and (combined with the preceding `click` on `{ref: "select"}` opening the list that the `widget: "combobox"` target then finds open) it stays consistent with a single physical combobox, but it no longer asserts node identity directly. No open point for the user: the identity check was internal test plumbing for the now-removed escape hatch, not a product behavior.
+
+**Refactor checkpoint.** `grep -rn "\"custom\"\|customStepRegistry" packages/miroir-standalone-app/src packages/miroir-test-app_deployment-miroir/assets/miroir_model packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion` finds nothing. The only remaining textual mentions of `"custom"` under `packages/miroir-standalone-app/tests/4_view/issues/292-…` are the absence-guard string literals in `legacyRemoved.292.phase6` and `componentTestInstances.292.phase1` (its Slice 5-6 check `step.step === "custom"` over untyped JSON data, unreachable now that no instance can hold it, kept as a regression guard).
+
+**Validation** (one command per file, sequential):
+
+| Command | Result | Expected |
+|---|---|---|
+| `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core` | exit 0 | — |
+| `testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts` | 159 passed | 159 ✓ |
+| `legacyRemoved.292.phase6` | 9 passed | 6 + 3 new (2 union checks, 1 file check) ✓ |
+| `componentTestSteps.292.phase2` | 10 passed | 11 − 1 removed custom test ✓ |
+| `componentMiroirTests.consistency` | 6 passed | 6 (Slice 6) ✓ |
+| `miroir-component-tests` | **70 passed** (vitest duration 60.2 s) | 70 ✓ |
+| `python scripts/check_bare_console.py` | OK | ✓ |
+| `tsc` miroir-core | 0 errors | 0 ✓ |
+| `tsc` miroir-standalone-app | 1 error, the known `JzodElementEditorHooks.ts(528,59)` TS2339 | baseline ✓ |
+
+Final grep: `grep -rn "\"custom\"\|customStepRegistry" packages/miroir-standalone-app/src packages/miroir-test-app_deployment-miroir/assets/miroir_model packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion` — no hits.
+
+**K1 / P2.** The full entry took 60.2 s real against the Slice 0 baseline of 56.6 s (×1.06), well below ×2. No `custom` step was ever exercised by a real case (only by test plumbing), so removing it has no runtime-cost effect.
+
+**Browser check:** not required by this slice (its Validation lists no browser check, unlike Slices 3-6). None was run; the API server is still down (per Slices 3-6 Realizations), and this slice touches no app-visible behavior (`custom` was never used by an instance since Slice 5).
+
+**Impact on later slices:**
+- Slice 8 (docs, nonreg): no doc yet describes `custom` as removed; `docs/reference/testing.md` should not mention it as an available step. The nonreg step list (`unit-292-…`) can include `legacyRemoved.292.phase6` as already planned.
+- Nothing in the vocabulary, targets, or runner references `custom` or a custom-step registry anymore; `ComponentTestStepContext` is a private implementation detail of `runComponentTestSteps.ts` with a single field (`elements`).
+
+**Files created:** none.
+
+**Files changed:**
+- The Entity `a311f363-….json` and the EntityVersion `51c647fe-….json`
+- miroir-core: `preprocessor-generated/miroirFundamentalJzodSchema.ts` and `miroirFundamentalType.ts` (generated)
+- app: `componentTests/runComponentTestSteps.ts`
+- tests: `legacyRemoved.292.phase6.unit.test.ts`, `componentTestSteps.292.phase2.unit.test.tsx`
+- this plan
+
+**Files deleted:** `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/customStepRegistry.ts`.
 
 ---
 

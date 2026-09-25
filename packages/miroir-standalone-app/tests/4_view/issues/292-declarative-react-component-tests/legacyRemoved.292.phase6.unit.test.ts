@@ -1,10 +1,13 @@
 /**
  * Issue #292 Slice 6 (M1): no `componentTestRef` left (analysis D2, §7).
+ * Issue #292 Slice 7 (M2): no `custom` step left (analysis D2, §7).
  *
  * - `miroirTestForReactComponent` in the MiroirTest Entity `a311f363-…` and EntityVersion
  *   `51c647fe-…` has no `componentTestRef`, and its `steps` are required;
+ * - the `reactComponentTestStep` union of the Entity and the EntityVersion has no `custom` member;
  * - the legacy files `componentTestManifest.ts`, `componentTestRegistry.ts`, and the folder
  *   `jzodElementEditor/` are gone from `src/miroir-fwk/4-tests/componentTests/`;
+ * - `customStepRegistry.ts` does not exist;
  * - a runner call without `suite` gives an `error` result.
  *
  * Run:
@@ -37,9 +40,18 @@ const COMPONENT_TESTS_FOLDER = join(
   "packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests",
 );
 
-function reactComponentLeafSchema(path: string): any {
+function miroirTestContext(path: string): any {
   const miroirTestModel = JSON.parse(readFileSync(path, { encoding: "utf-8" }));
-  return miroirTestModel.mlSchema.definition.definition.context.miroirTestForReactComponent;
+  return miroirTestModel.mlSchema.definition.definition.context;
+}
+
+function reactComponentLeafSchema(path: string): any {
+  return miroirTestContext(path).miroirTestForReactComponent;
+}
+
+function reactComponentTestStepMembers(path: string): string[] {
+  const stepUnion = miroirTestContext(path).reactComponentTestStep;
+  return stepUnion.definition.map((member: any) => member.definition.step.definition);
 }
 
 // ################################################################################################
@@ -53,16 +65,25 @@ describe("legacyRemoved.292.phase6: schema", () => {
     expect(leafSchema.definition.steps).toBeDefined();
     expect(leafSchema.definition.steps.optional).not.toBe(true);
   });
+
+  it.each([
+    ["Entity", MIROIR_TEST_ENTITY_PATH],
+    ["EntityVersion", MIROIR_TEST_ENTITY_VERSION_PATH],
+  ])("the %s reactComponentTestStep union has no custom member (#292 M2)", (_name, path) => {
+    expect(reactComponentTestStepMembers(path)).not.toContain("custom");
+  });
 });
 
 // ################################################################################################
 describe("legacyRemoved.292.phase6: legacy files", () => {
-  it.each(["componentTestManifest.ts", "componentTestRegistry.ts", "jzodElementEditor"])(
-    "componentTests/%s does not exist",
-    (fileName) => {
-      expect(existsSync(join(COMPONENT_TESTS_FOLDER, fileName))).toBe(false);
-    },
-  );
+  it.each([
+    "componentTestManifest.ts",
+    "componentTestRegistry.ts",
+    "jzodElementEditor",
+    "customStepRegistry.ts",
+  ])("componentTests/%s does not exist", (fileName) => {
+    expect(existsSync(join(COMPONENT_TESTS_FOLDER, fileName))).toBe(false);
+  });
 });
 
 // ################################################################################################

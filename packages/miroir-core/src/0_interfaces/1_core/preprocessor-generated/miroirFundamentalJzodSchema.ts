@@ -8007,35 +8007,6 @@ export const miroirFundamentalJzodSchema = {
                 "optional": true
               }
             }
-          },
-          {
-            "type": "object",
-            "tag": {
-              "value": {
-                "defaultLabel": "custom",
-                "description": "Runs a function of the custom step registry (escape hatch, removed at M2)"
-              }
-            },
-            "definition": {
-              "step": {
-                "type": "literal",
-                "definition": "custom"
-              },
-              "label": {
-                "type": "string",
-                "optional": true
-              },
-              "function": {
-                "type": "string"
-              },
-              "params": {
-                "type": "record",
-                "optional": true,
-                "definition": {
-                  "type": "any"
-                }
-              }
-            }
           }
         ]
       },
@@ -9658,35 +9629,6 @@ export const miroirFundamentalJzodSchema = {
                       "saveAs": {
                         "type": "string",
                         "optional": true
-                      }
-                    }
-                  },
-                  {
-                    "type": "object",
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "custom",
-                        "description": "Runs a function of the custom step registry (escape hatch, removed at M2)"
-                      }
-                    },
-                    "definition": {
-                      "step": {
-                        "type": "literal",
-                        "definition": "custom"
-                      },
-                      "label": {
-                        "type": "string",
-                        "optional": true
-                      },
-                      "function": {
-                        "type": "string"
-                      },
-                      "params": {
-                        "type": "record",
-                        "optional": true,
-                        "definition": {
-                          "type": "any"
-                        }
                       }
                     }
                   }
