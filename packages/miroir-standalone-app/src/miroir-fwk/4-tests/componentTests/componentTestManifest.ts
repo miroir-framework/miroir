@@ -54,6 +54,20 @@ export const componentTestManifest: Record<string, readonly string[]> = {
     "record with 2 object entries can have the first entry duplicated without colliding with an existing _copy key",
     "createObject definition record entry name can be renamed",
   ],
+  JzodSimpleTypeEditor: [
+    "string renders input with proper value",
+    "string allows to modify input value with consistent update",
+    "string allows to modify input value with consistent update then submit form",
+    "number renders input with proper value",
+    "number allows to modify input value with consistent update",
+    "uuid renders input with proper value",
+    "uuid allows to modify input value with consistent update",
+    "boolean renders checkbox with proper value true",
+    "boolean renders checkbox with proper value false",
+    "boolean allows to modify checkbox value with consistent update",
+    "bigint renders input with proper bigint value",
+    "bigint allows to modify input value with consistent update",
+  ],
 };
 
 /** Leaf label: the suite name, a colon, and the case label, so labels are unique in the instance. */
