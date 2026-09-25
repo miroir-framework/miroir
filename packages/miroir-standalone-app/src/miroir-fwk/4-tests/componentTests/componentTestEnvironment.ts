@@ -41,6 +41,7 @@ export interface ComponentTestEnvironment {
   view: BoundFunctions<typeof queries>;
   /** The current case's render target, a child of `sandboxElement`. */
   container: HTMLElement;
+  /** `componentTestFireEvent`: `@testing-library/dom`'s `fireEvent` plus the React additions. */
   fireEvent: typeof fireEvent;
   userEvent: typeof userEvent;
   /** Awaits `callback`, then one macrotask so that React commits pending updates. No React `act`. */
@@ -97,6 +98,52 @@ export async function componentTestAct(callback: () => unknown): Promise<void> {
 }
 
 // ################################################################################################
+/**
+ * `@testing-library/dom`'s `fireEvent`, with the React-specific additions of
+ * `@testing-library/react`'s `fireEvent` (#286 Slice 8), without importing it and without `act`.
+ * React runs `onBlur` / `onFocus` from native `focusout` / `focusin`, `onMouseEnter` /
+ * `onMouseLeave` (and the pointer equivalents) from `mouseover` / `mouseout`, and builds `onSelect`
+ * from a `keyup` on a focused input, so those events are fired as well.
+ */
+export const componentTestFireEvent: typeof fireEvent = (() => {
+  const reactFireEvent = ((...args: Parameters<typeof fireEvent>) =>
+    fireEvent(...args)) as typeof fireEvent;
+  for (const key of Object.keys(fireEvent) as (keyof typeof fireEvent)[]) {
+    (reactFireEvent as any)[key] = (...args: any[]) => (fireEvent as any)[key](...args);
+  }
+  reactFireEvent.mouseEnter = (...args) => {
+    fireEvent.mouseEnter(...args);
+    return fireEvent.mouseOver(...args);
+  };
+  reactFireEvent.mouseLeave = (...args) => {
+    fireEvent.mouseLeave(...args);
+    return fireEvent.mouseOut(...args);
+  };
+  reactFireEvent.pointerEnter = (...args) => {
+    fireEvent.pointerEnter(...args);
+    return fireEvent.pointerOver(...args);
+  };
+  reactFireEvent.pointerLeave = (...args) => {
+    fireEvent.pointerLeave(...args);
+    return fireEvent.pointerOut(...args);
+  };
+  reactFireEvent.select = (node, init) => {
+    fireEvent.select(node, init);
+    (node as HTMLElement).focus?.();
+    return fireEvent.keyUp(node, init);
+  };
+  reactFireEvent.blur = (...args) => {
+    fireEvent.focusOut(...args);
+    return fireEvent.blur(...args);
+  };
+  reactFireEvent.focus = (...args) => {
+    fireEvent.focusIn(...args);
+    return fireEvent.focus(...args);
+  };
+  return reactFireEvent;
+})();
+
+// ################################################################################################
 export interface MountedComponent {
   unmount: () => void;
 }
@@ -151,7 +198,7 @@ export function createComponentTestEnvironment(params: {
     expect: createThrowingExpect(params.testName),
     view: within(params.sandboxElement),
     container: params.container,
-    fireEvent,
+    fireEvent: componentTestFireEvent,
     userEvent,
     act: componentTestAct,
     waitFor,

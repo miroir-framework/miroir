@@ -38,6 +38,22 @@ export const componentTestManifest: Record<string, readonly string[]> = {
     "renders Literal input without label when label prop is not provided",
     "setting new value",
   ],
+  JzodObjectEditor: [
+    "object renders as json-like input fields with proper value",
+    "object with bigint attribute renders as json-like input fields with proper value",
+    "object can be updated through displayed input fields",
+    "object with optional attributes can receive a value for an optional attribute by clicking on the add button for the attribute",
+    "object with 2 optional attributes can have the only attribute value deleted by clicking on the delete button",
+    "object with 3 optional attributes can have the value for the second attribute deleted by clicking on the delete button",
+    "record renders as json-like input fields with proper value",
+    "record can receive a new record attribute with the proper default value when clicking on the add button",
+    "record can rename a record attribute keeping the existing value when clicking on the attribute input field",
+    "record with 1 entry can have the entry deleted when clicking on the delete button",
+    "record with 3 items can have the second record item deleted when clicking on the second delete button",
+    "record with 1 object entry can have the entry duplicated when clicking the duplicate button",
+    "record with 2 object entries can have the first entry duplicated without colliding with an existing _copy key",
+    "createObject definition record entry name can be renamed",
+  ],
 };
 
 /** Leaf label: the suite name, a colon, and the case label, so labels are unique in the instance. */

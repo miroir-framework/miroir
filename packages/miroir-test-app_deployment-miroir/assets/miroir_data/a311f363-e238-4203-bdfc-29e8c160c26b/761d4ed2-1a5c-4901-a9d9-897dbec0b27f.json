@@ -171,6 +171,124 @@
             }
           }
         ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "JzodObjectEditor",
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: object renders as json-like input fields with proper value",
+            "componentTestRef": {
+              "suite": "JzodObjectEditor",
+              "case": "object renders as json-like input fields with proper value"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: object with bigint attribute renders as json-like input fields with proper value",
+            "componentTestRef": {
+              "suite": "JzodObjectEditor",
+              "case": "object with bigint attribute renders as json-like input fields with proper value"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: object can be updated through displayed input fields",
+            "componentTestRef": {
+              "suite": "JzodObjectEditor",
+              "case": "object can be updated through displayed input fields"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: object with optional attributes can receive a value for an optional attribute by clicking on the add button for the attribute",
+            "componentTestRef": {
+              "suite": "JzodObjectEditor",
+              "case": "object with optional attributes can receive a value for an optional attribute by clicking on the add button for the attribute"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: object with 2 optional attributes can have the only attribute value deleted by clicking on the delete button",
+            "componentTestRef": {
+              "suite": "JzodObjectEditor",
+              "case": "object with 2 optional attributes can have the only attribute value deleted by clicking on the delete button"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: object with 3 optional attributes can have the value for the second attribute deleted by clicking on the delete button",
+            "componentTestRef": {
+              "suite": "JzodObjectEditor",
+              "case": "object with 3 optional attributes can have the value for the second attribute deleted by clicking on the delete button"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: record renders as json-like input fields with proper value",
+            "componentTestRef": {
+              "suite": "JzodObjectEditor",
+              "case": "record renders as json-like input fields with proper value"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: record can receive a new record attribute with the proper default value when clicking on the add button",
+            "componentTestRef": {
+              "suite": "JzodObjectEditor",
+              "case": "record can receive a new record attribute with the proper default value when clicking on the add button"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: record can rename a record attribute keeping the existing value when clicking on the attribute input field",
+            "componentTestRef": {
+              "suite": "JzodObjectEditor",
+              "case": "record can rename a record attribute keeping the existing value when clicking on the attribute input field"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: record with 1 entry can have the entry deleted when clicking on the delete button",
+            "componentTestRef": {
+              "suite": "JzodObjectEditor",
+              "case": "record with 1 entry can have the entry deleted when clicking on the delete button"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: record with 3 items can have the second record item deleted when clicking on the second delete button",
+            "componentTestRef": {
+              "suite": "JzodObjectEditor",
+              "case": "record with 3 items can have the second record item deleted when clicking on the second delete button"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: record with 1 object entry can have the entry duplicated when clicking the duplicate button",
+            "componentTestRef": {
+              "suite": "JzodObjectEditor",
+              "case": "record with 1 object entry can have the entry duplicated when clicking the duplicate button"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: record with 2 object entries can have the first entry duplicated without colliding with an existing _copy key",
+            "componentTestRef": {
+              "suite": "JzodObjectEditor",
+              "case": "record with 2 object entries can have the first entry duplicated without colliding with an existing _copy key"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: createObject definition record entry name can be renamed",
+            "componentTestRef": {
+              "suite": "JzodObjectEditor",
+              "case": "createObject definition record entry name can be renamed"
+            }
+          }
+        ]
       }
     ]
   }
