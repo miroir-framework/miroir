@@ -1,5 +1,6 @@
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
-import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel as defaultMiroirMetaModelRaw } from "miroir-test-app_deployment-miroir";
+import type { MetaModel } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { resolveFundamentalSchemaForDeployment } from "../1_core/jzod/schemaForDeployment";
 import { defaultMetaModelEnvironment } from "../1_core/Model";
@@ -8,6 +9,9 @@ import {
   resolveQueryRunnerFixture,
   type QueryRunnerFixture,
 } from "./QueryRunnerTestTools";
+
+// See 1_core/Model.ts for why this cast is needed at the import boundary.
+const defaultMiroirMetaModel = defaultMiroirMetaModelRaw as unknown as MetaModel;
 
 export type FunctionCallOnlyFixture = Record<string, unknown>;
 

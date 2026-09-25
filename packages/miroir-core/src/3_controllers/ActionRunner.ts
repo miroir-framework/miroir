@@ -1,5 +1,6 @@
 import {
-  StoreOrBundleAction
+  StoreOrBundleAction,
+  type MetaModel,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
@@ -10,12 +11,15 @@ import { cleanLevel } from "./constants";
 
 import { Action2Error, Action2ReturnType } from "../0_interfaces/2_domain/DomainElement";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
-import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel as defaultMiroirMetaModelRaw } from "miroir-test-app_deployment-miroir";
 import { ACTION_OK } from "../1_core/constants";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ActionRunner");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
+
+// See 1_core/Model.ts for why this cast is needed at the import boundary.
+const defaultMiroirMetaModel = defaultMiroirMetaModelRaw as unknown as MetaModel;
 
 // ################################################################################################
 /**
