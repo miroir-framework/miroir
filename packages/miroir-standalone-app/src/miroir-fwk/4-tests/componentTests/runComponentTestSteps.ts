@@ -8,6 +8,7 @@ import {
 import { describeTarget, queryAllTarget, resolveTarget } from "./componentTestTargets.js";
 import {
   extractValuesFromRenderedElements,
+  formikFieldName,
   formValuesToJSON,
   testSectionName,
 } from "./componentTestTools.js";
@@ -128,6 +129,23 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }
 
+/** The sub-value of `value` at `path` (T7); `undefined` when a segment is missing. */
+function valueAtPath(value: unknown, path: readonly (string | number)[]): unknown {
+  let current: any = value;
+  for (const segment of path) {
+    if (current === null || typeof current !== "object") {
+      return undefined;
+    }
+    current = current[segment];
+  }
+  return current;
+}
+
+/** The `value` of a form element, as the old `(element as HTMLInputElement).value` reads. */
+function elementValue(element: HTMLElement): unknown {
+  return (element as HTMLInputElement).value;
+}
+
 // ################################################################################################
 /** Runs `steps` in order against the mounted case of `env`. */
 export async function runComponentTestSteps(
@@ -159,6 +177,24 @@ export async function runComponentTestSteps(
       const element = resolve(step.target);
       save(element, step.saveAs);
       await runAction(env, () => env.fireEvent.change(element, { target: { value: step.value } }));
+    },
+    clickArrayButton: async (step) => {
+      const element = resolve({ widget: "arrayButton", field: step.field, action: step.action, index: step.index });
+      await runAction(env, () => env.fireEvent.click(element));
+    },
+    clickObjectButton: async (step) => {
+      const element = resolve({
+        widget: "objectButton",
+        field: step.field,
+        action: step.action,
+        attribute: step.attribute,
+      });
+      await runAction(env, () => env.fireEvent.click(element));
+    },
+    renameRecordEntry: async (step) => {
+      const element = resolve({ widget: "recordEntryName", field: step.field, entry: step.entry });
+      await componentTestAct(() => env.fireEvent.change(element, { target: { value: step.newName } }));
+      await runAction(env, () => env.fireEvent.blur(element));
     },
     submit: async (step) => {
       const element = resolve(step.target);
@@ -207,7 +243,7 @@ export async function runComponentTestSteps(
       });
     },
     expectRenderedValues: async (step) => {
-      for (const parameter of ["field", "path", "filter", "timeout"] as const) {
+      for (const parameter of ["filter", "timeout"] as const) {
         if (step[parameter] !== undefined) {
           throw notImplemented(`expectRenderedValues.${parameter}`);
         }
@@ -216,7 +252,7 @@ export async function runComponentTestSteps(
         env.expect,
         undefined,
         env.container,
-        testSectionName,
+        step.field === undefined ? testSectionName : formikFieldName(step.field),
         step.label,
         step.detectOptions ?? false,
         env.portalElement,
@@ -226,6 +262,9 @@ export async function runComponentTestSteps(
         Object.entries(extracted).filter(([, value]) => !Array.isArray(value)),
       );
       let actual: unknown = formValuesToJSON(fieldValues);
+      if (step.path !== undefined) {
+        actual = valueAtPath(actual, step.path);
+      }
       const options = renderedOptions(env);
       if (Object.keys(options).length > 0 && isPlainObject(actual)) {
         actual = { ...actual, $options: options };
@@ -243,7 +282,7 @@ export async function runComponentTestSteps(
       }
     },
     expectElement: async (step) => {
-      for (const parameter of ["values", "containsHtml", "parentContains", "timeout"] as const) {
+      for (const parameter of ["parentContains", "timeout"] as const) {
         if (step[parameter] !== undefined) {
           throw notImplemented(`expectElement.${parameter}`);
         }
@@ -262,18 +301,28 @@ export async function runComponentTestSteps(
             `expected ${step.count} elements to match target ${describeTarget(step.target)}, found ${matches.length}`,
           );
         }
-        if (
-          step.value === undefined &&
-          step.checked === undefined &&
-          step.attribute === undefined &&
-          step.saveAs === undefined
-        ) {
-          return;
-        }
+      }
+      if (step.values !== undefined) {
+        const matches = queryAllTarget(env, step.target, context.elements);
+        env.expect(matches.map(elementValue), "element values").toEqual(step.values);
+      }
+      if (
+        (step.count !== undefined || step.values !== undefined) &&
+        step.value === undefined &&
+        step.checked === undefined &&
+        step.containsHtml === undefined &&
+        step.attribute === undefined &&
+        step.saveAs === undefined
+      ) {
+        return;
       }
       const element = resolve(step.target);
       save(element, step.saveAs);
-      env.expect(element, "element").toBeInTheDocument();
+      // A `ref` designates an element saved earlier, which a re-render may have detached (e.g. a
+      // renamed record entry): the old cases asserted only its value, not its presence.
+      if (step.target.ref === undefined) {
+        env.expect(element, "element").toBeInTheDocument();
+      }
       if (step.value !== undefined) {
         env.expect(element, "element value").toHaveValue(step.value);
       }
@@ -282,6 +331,9 @@ export async function runComponentTestSteps(
       }
       if (step.checked === false) {
         env.expect(element, "element checked").not.toBeChecked();
+      }
+      if (step.containsHtml !== undefined) {
+        env.expect(element, "element html").toContainHTML(step.containsHtml);
       }
       if (step.attribute !== undefined) {
         checkAttribute(element, step.attribute.name, step.attribute.value);

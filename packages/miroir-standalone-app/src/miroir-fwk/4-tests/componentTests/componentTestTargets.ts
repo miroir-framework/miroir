@@ -64,9 +64,96 @@ function widgetElements(env: ComponentTestEnvironment, target: ReactComponentTes
       }
       return querySandbox(env, `[data-testid=${cssString(`themed-select-state-${fieldName}`)}]`);
     }
+    case "arrayButton":
+      return arrayButtonElements(env, target, fieldName);
+    case "objectButton":
+      return objectButtonElements(env, target, fieldName);
+    case "recordEntryName": {
+      if (target.entry === undefined) {
+        throw new Error(`widget "recordEntryName" needs an entry, in ${describeTarget(target)}`);
+      }
+      // the name input of a record entry (`JzodObjectEditor.tsx`, `formikRootLessListKey + "-NAME"`)
+      return env.view.queryAllByRole("textbox", { name: `${formikFieldName(`${target.field}.${target.entry}`)}-NAME` });
+    }
     default:
       throw notImplemented(`widget "${target.widget}"`);
   }
+}
+
+/**
+ * The array buttons of `JzodArrayEditor.tsx`: `up` / `down` are the elements whose role is
+ * `F(field).button.<action>`, one per item (`index` picks one); `add` is the button named
+ * `<field>.add` (no `TESTSECTION.` prefix); `duplicate` / `delete` are the buttons named
+ * `F(field.<index>)-duplicateArrayItem` / `-removeArrayItem`, where `index` is the item index.
+ */
+function arrayButtonElements(
+  env: ComponentTestEnvironment,
+  target: ReactComponentTestTarget,
+  fieldName: string,
+): HTMLElement[] {
+  switch (target.action) {
+    case "up":
+    case "down":
+      return env.view.queryAllByRole(`${fieldName}.button.${target.action}`);
+    case "add":
+      return env.view.queryAllByRole("button", { name: `${target.field}.add` });
+    case "duplicate":
+    case "delete": {
+      if (target.index === undefined) {
+        throw new Error(`widget "arrayButton" with action "${target.action}" needs an index, in ${describeTarget(target)}`);
+      }
+      const suffix = target.action === "duplicate" ? "duplicateArrayItem" : "removeArrayItem";
+      return env.view.queryAllByRole("button", { name: `${formikFieldName(`${target.field}.${target.index}`)}-${suffix}` });
+    }
+    default:
+      throw new Error(
+        `widget "arrayButton" has no action ${JSON.stringify(target.action)} (up, down, add, duplicate, delete), in ${describeTarget(target)}`,
+      );
+  }
+}
+
+/**
+ * The object and record buttons of `JzodObjectEditor.tsx`: `addOptionalAttribute` is named
+ * `F(field).addObjectOptionalAttribute.<attribute>`, `addRecordEntry` `F(field).addRecordAttribute`,
+ * and `remove` / `duplicate` `F(field.<attribute>)-removeOptionalAttributeOrRecordEntry` /
+ * `-duplicateRecordEntry`.
+ */
+function objectButtonElements(
+  env: ComponentTestEnvironment,
+  target: ReactComponentTestTarget,
+  fieldName: string,
+): HTMLElement[] {
+  const needsAttribute = () => {
+    if (target.attribute === undefined) {
+      throw new Error(`widget "objectButton" with action "${target.action}" needs an attribute, in ${describeTarget(target)}`);
+    }
+    return target.attribute;
+  };
+  switch (target.action) {
+    case "addOptionalAttribute":
+      return env.view.queryAllByRole("button", { name: `${fieldName}.addObjectOptionalAttribute.${needsAttribute()}` });
+    case "addRecordEntry":
+      return env.view.queryAllByRole("button", { name: `${fieldName}.addRecordAttribute` });
+    case "remove":
+    case "duplicate": {
+      const suffix = target.action === "remove" ? "removeOptionalAttributeOrRecordEntry" : "duplicateRecordEntry";
+      return env.view.queryAllByRole("button", {
+        name: `${formikFieldName(`${target.field}.${needsAttribute()}`)}-${suffix}`,
+      });
+    }
+    default:
+      throw new Error(
+        `widget "objectButton" has no action ${JSON.stringify(target.action)} (addOptionalAttribute, addRecordEntry, remove, duplicate), in ${describeTarget(target)}`,
+      );
+  }
+}
+
+/**
+ * True when `target.index` is part of the widget address (the item of an array `duplicate` /
+ * `delete` button) rather than a pick among the matches.
+ */
+function indexIsWidgetAddress(target: ReactComponentTestTarget): boolean {
+  return target.widget === "arrayButton" && (target.action === "duplicate" || target.action === "delete");
 }
 
 /** Every element matching `target`, in DOM order. `elements` holds the elements saved by `saveAs`. */
@@ -81,9 +168,6 @@ export function queryAllTarget(
       `a target needs exactly one locator among ${locatorKeys.join(", ")}, found ${locators.length} in ${describeTarget(target)}`,
     );
   }
-  if (target.fieldNamePrefix !== undefined) {
-    throw notImplemented(`target refinement "fieldNamePrefix"`);
-  }
   if (target.name !== undefined && target.byRole === undefined) {
     throw new Error(`"name" refines "byRole" only, in ${describeTarget(target)}`);
   }
@@ -94,14 +178,19 @@ function hasRefinement(target: ReactComponentTestTarget): boolean {
   return refinementKeys.some((key) => target[key] !== undefined);
 }
 
-/** Keeps the matches whose `name` is `F(fieldName)` and whose `id` is `id`, when given. */
+/**
+ * Keeps the matches whose `name` is `F(fieldName)`, whose `name` starts with `F(fieldNamePrefix)`,
+ * and whose `id` is `id`, when given.
+ */
 function refine(matches: HTMLElement[], target: ReactComponentTestTarget): HTMLElement[] {
-  return matches.filter(
-    (element) =>
-      (target.fieldName === undefined ||
-        (element as HTMLInputElement).name === formikFieldName(target.fieldName)) &&
-      (target.id === undefined || element.id === target.id),
-  );
+  return matches.filter((element) => {
+    const name = (element as HTMLInputElement).name ?? "";
+    return (
+      (target.fieldName === undefined || name === formikFieldName(target.fieldName)) &&
+      (target.fieldNamePrefix === undefined || name.startsWith(formikFieldName(target.fieldNamePrefix))) &&
+      (target.id === undefined || element.id === target.id)
+    );
+  });
 }
 
 function locatorMatches(
@@ -138,7 +227,8 @@ function locatorMatches(
 
 /**
  * The one element designated by `target`: exactly one match when there is neither a refinement
- * nor an `index` (`getBy` semantics); otherwise the match at `index`, 0 by default (T6).
+ * nor an `index` (`getBy` semantics); otherwise the match at `index`, 0 by default (T6). The
+ * `index` of an array `duplicate` / `delete` button names the item, so it picks nothing.
  */
 export function resolveTarget(
   env: ComponentTestEnvironment,
@@ -146,7 +236,8 @@ export function resolveTarget(
   elements: Record<string, HTMLElement>,
 ): HTMLElement {
   const matches = queryAllTarget(env, target, elements);
-  if (target.index === undefined && !hasRefinement(target)) {
+  const pick = indexIsWidgetAddress(target) ? undefined : target.index;
+  if (pick === undefined && !hasRefinement(target)) {
     if (matches.length !== 1) {
       throw new Error(
         matches.length === 0
@@ -156,7 +247,7 @@ export function resolveTarget(
     }
     return matches[0];
   }
-  const index = target.index ?? 0;
+  const index = pick ?? 0;
   const element = matches[index];
   if (!element) {
     throw new Error(

@@ -36,7 +36,7 @@ Out of scope: other UI_COMPONENT test files (#204), new component suites, change
 | 1 | Schema, walk, runner signature, 7 instances (legacy leaves), generator removed | L | ✅ DONE | `reactComponentTestSuite.292.phase1` (core), `componentTestInstances.292.phase1`, `miroir-component-tests` 70 passed |
 | 2 | Tracer: interpreter, extractor fix, `$options`, Enum from steps | L | ✅ DONE | `componentTestSteps.292.phase2` 11, `extractorOpenCombobox.292.phase2` 3, Enum 3/3 in vitest, in the dev app, and in the production build; entry 70 passed in 59.9 s |
 | 3 | Literal and SimpleType | M | ⏳ GREEN, SimpleType browser check pending | `componentTestTargets.292.phase3` 6, `-t "JzodLiteralEditor"` 3, `-t "JzodSimpleTypeEditor"` 12, entry 70 passed in 59.0 s, Literal 3/3 in the dev app |
-| 4 | Array and Object | L | ⏳ TODO | `-t "JzodArrayEditor"` 12, `-t "JzodObjectEditor"` 14, app check |
+| 4 | Array and Object | L | ⏳ GREEN, browser check pending (API server down) | `componentTestWidgets.292.phase4` 9, `-t "JzodArrayEditor"` 12, `-t "JzodObjectEditor"` 14, entry 70 passed in 60.9 s; Array and Object app checks pending |
 | 5 | Union and Any | L | ⏳ TODO | `-t "JzodUnionEditor"` 9, `-t "JzodAnyEditor"` 15, app check 68/68 |
 | 6 | M1: no `componentTestRef` | M | ⏳ TODO | `legacyRemoved.292.phase6`, grep empty |
 | 7 | M2: no `custom` step | S | ⏳ TODO | `legacyRemoved.292.phase6` M2 assertions |
@@ -771,7 +771,7 @@ The reduced case list of the full entry (ANSI stripped, `<Editor> > <leaf label>
 
 ## Slice 4: Array and Object
 
-**Status:** ⏳ TODO · **Complexity:** L
+**Status:** ⏳ GREEN, browser check pending (API server down) · **Complexity:** L
 
 ### Goal
 
@@ -826,7 +826,114 @@ Browser check: the Array instance 12/12 and the Object instance 14/14.
 
 ### Realization
 
-(to fill)
+Every command was run alone, one per file, from the repo root. The user's unrelated uncommitted changes (`ci/claude-cloud-env-script.sh`, the `admin_data` files, the spotify model files, `generate_externalServiceSync_suites.py`) were not touched, staged, or stashed. No `custom` step is used.
+
+**RED observed** (`npx vitest run <file>` with `VITE_TEST_MODE=true`). First the new test, the two JSON suites, and the removal of Array and Object from the manifest and the registry:
+
+- `componentTestWidgets.292.phase4`: **9 failed / 9**, each on the Slice 2-3 guard of a missing feature:
+  - `step 1 (expectElement "initial"): expectElement.values: not implemented`;
+  - `step 1 (clickArrayButton): not implemented` (×2) and `step 1 (clickObjectButton): not implemented` (×2);
+  - `step 1 (expectElement): widget "arrayButton": not implemented` and `widget "recordEntryName": not implemented`;
+  - `step 1 (expectRenderedValues "initial"): expectRenderedValues.field: not implemented` (the `path` test);
+  - the missing-button test got `step 1 (expectRenderedValues "initial"): …field: not implemented` instead of `/^step 2 \(clickObjectButton\): no element matches target/`.
+- `miroir-component-tests -t "JzodArrayEditor|JzodObjectEditor"`: **25 failed, 1 passed**, 44 skipped. The failures were `clickArrayButton` / `clickObjectButton` `not implemented`, the `arrayButton` / `objectButton` / `recordEntryName` widgets, `expectElement.values`, `expectRenderedValues.field`, and `target refinement "fieldNamePrefix"`. The passing case is Array "renders array input with label…": its only step is `count` on a regex `byText`, implemented in Slice 3.
+
+**GREEN:**
+
+- **`componentTestTargets.ts`**:
+  - Refinement `fieldNamePrefix`: `name` starts with `F(x)`.
+  - Widget `arrayButton` (analysis §5.4): `up` / `down` are the elements with role `F(field).button.<action>` (`index` picks one); `add` is the button named `<field>.add`; `duplicate` / `delete` are the buttons named `F(field.<index>)-duplicateArrayItem` / `-removeArrayItem`. For these two, `index` is the item index, part of the address, so `resolveTarget` does not also pick with it.
+  - Widget `objectButton`: `addOptionalAttribute` (`F(field).addObjectOptionalAttribute.<attribute>`), `addRecordEntry` (`F(field).addRecordAttribute`), `remove` / `duplicate` (`F(field.<attribute>)-removeOptionalAttributeOrRecordEntry` / `-duplicateRecordEntry`).
+  - Widget `recordEntryName`: the textbox named `F(field.<entry>)-NAME`.
+  - A missing `attribute`, `entry`, or item `index`, or an unknown `action`, gives an error naming the target.
+- **`runComponentTestSteps.ts`**:
+  - `clickArrayButton` and `clickObjectButton` click their widget target, then the D9 post-action wait.
+  - `renameRecordEntry`: `change` to `newName` (in `componentTestAct`), then `blur`, then the D9 wait, as the old cases did.
+  - `expectElement.values` compares the `value` of every match of the full filtered list, in DOM order, with the throwing `toEqual`. `containsHtml` uses `toContainHTML`.
+  - `expectRenderedValues.field`: extractor label `F(field)` (absent: `TESTSECTION`). `path` selects the sub-value after `formValuesToJSON`; `$options` is added to the selected value when it is a plain object.
+  - `filter`, `timeout`, `parentContains`, and the union widgets still fail with `not implemented` (Slice 5).
+- **JSON** (2-space, CRLF, written by a script that checks that the child label and the 12 / 14 leaf labels are unchanged):
+  - `1b71d68b-…` (Array): a `reactComponentTestSuite` whose defaults are the common props, the string array schema, and `["value1","value2","value3"]`. Cases 7, 8, 9, and 11 override `rawJzodSchema` and `initialFormState`.
+  - `da353085-…` (Object): the common props as defaults. Each leaf adds `rawJzodSchema` and `initialFormState`; case 2 uses `{"e": {"$bigint": "123"}}`.
+- **Removed** Array and Object from `componentTestManifest.ts` (the `componentTestSuiteInstances` entries stay) and from `componentTestRegistry.ts`. Deleted `jzodElementEditor/JzodArrayEditor.tsx` and `JzodObjectEditor.tsx`.
+- **#286 tests adapted:**
+  - `componentTestSandbox.286.phase4`: the Array leaf labels come from the instance JSON. The failing-case test loads a copy of the Array instance, replaces the steps of leaf 2 with `{expectElement, target: {byTestId: "no-such-element-292"}, present: true}`, and passes the copy to `MiroirTestDisplay` (new optional `miroirTest` parameter of `renderDisplays` / `runArraySuite`). It expects 11 `ok`, 1 `error` on leaf 2, and `step 1 (expectElement): no element matches target` in the tracker results.
+  - `componentTestChunk.286.phase4` (bundle guard): it looked for `componentTests/jzodElementEditor/JzodArrayEditor`, deleted here. It now looks for `componentTests/runComponentTestSteps`, as planned for Slice 6.
+  - `componentTestSteps.292.phase2`: its "kind not implemented yet" test used `clickArrayButton`, implemented here. It now uses `toggleUnionTypeSelector` (Slice 5).
+
+**Case mapping** (every old assertion kept; `F` = `field: "testField"`):
+
+- Array 1: `count: 1` on `byText /Test Label/`.
+- Array 2, 4-6: `values` on `{byRole: "textbox", fieldNamePrefix: "testField."}` (the old `arrayItemTextBoxValues`), after `clickArrayButton` `up 1`, `up 2`, `down 0` for 4-6.
+- Array 3: `change` on the same target with `index: 1` (saved as `cell`), then `containsHtml: "new value"` on `{ref: "cell"}`.
+- Array 7: `expectRenderedValues "before up button click"` F, `clickArrayButton down 0`, `expectRenderedValues "after up button click"` F.
+- Array 8, 9: `expectRenderedValues "initial"` F. Array 10, 11: `clickArrayButton add`, then `"after add button click"` F.
+- Array 12: `expectElement` on the `arrayButton` `duplicate` target of item 1 (the old `toBeTruthy` on `getByRole`), `clickArrayButton duplicate 1`, `"after duplicate button click"` F.
+- Object 1, 2: `expectRenderedValues` F with the old labels (`"after delete button click"`, `"initial"`).
+- Object 3: `value` on `{byTestId: "miroirInput", fieldName: "testField.a"}` / `…b` (saved), `change` ×2 through the refs, `"after change"` F.
+- Object 4-6, 8: `clickObjectButton` (`addOptionalAttribute a`, `remove a`, `remove b`, `addRecordEntry`), then `expectRenderedValues` F.
+- Object 7: `expectRenderedValues "initial"` F = `{firstRecord: {a, b}}` (deviation 3).
+- Object 9, 14: `value` on the `recordEntryName` target (saved), `renameRecordEntry`, `value` on the ref, then `expectRenderedValues` F; case 14 with `field: "testField.definition"` for the name and `path: ["definition"]` for the values.
+- Object 10-13: `expectElement` on the `objectButton` target (the old `toBeInTheDocument`), `clickObjectButton remove` / `duplicate`, then `expectRenderedValues` F.
+
+**Refactor checkpoint:**
+- Non-vacuity check, then revert: the order `["value1","value2","value3"]` in Array case 4 `values` and `firstRecord_copy1.a: "X"` in Object case 13 gave **2 failed, 24 passed**:
+  - `step 2 (expectElement "after up button click"): [element values] Expected ["value2","value1","value3"] to equal ["value1","value2","value3"]. First difference at path: ["0"]`
+  - `step 3 (expectRenderedValues "after duplicate button click"): [rendered values] Expected {…"firstRecord_copy1":{"a":"test string","b":42}} to equal {…"firstRecord_copy1":{"a":"X",…}}…`
+- Both JSON files were restored from byte copies (`cmp` equal).
+- `runComponentTestSteps.ts` and `componentTestTargets.ts` have no bare `console.*` and import nothing from `@testing-library/react`.
+
+**Deviations:**
+
+1. **No `toBeInTheDocument` on a `ref` target.** A positive `expectElement` asserts `toBeInTheDocument` only when its target is found by a query (Slice 3 deviation 2). A `ref` designates an element saved earlier, which a re-render may detach: the record entry name input is replaced after `renameRecordEntry` (Object cases 9 and 14; the phase4 test failed with `Expected <input name="TESTSECTION.testField.firstRecord-NAME"> to be in the document`). The old cases asserted only `toHaveValue` on the saved element after an action, never its presence (checked for Object 9 and 14, Array 3, and the SimpleType cases of Slice 3), so no old assertion is dropped. As in the old cases, the value read after a rename is the value of the detached input; the `expectRenderedValues` that follows checks the rendered state.
+2. **Object case 3: two `change` steps instead of one act.** The old case changed `a` and `b` inside one `act`. Each `change` step is its own action with the D9 wait. The assertions are the same.
+3. **Object case 7 compares the nested form.** The old case compared the raw extractor values `{"firstRecord.a", "firstRecord.b"}`. `expectRenderedValues` always applies `formValuesToJSON`, so it compares `{firstRecord: {a: "test string", b: 42}}`, the same information (analysis §3.6, §3.7).
+4. **Uniform post-action wait** (K2). Array cases 4-6 and Object cases 10-11 asserted without a wait after the click. The D9 wait now follows every action; all cases still pass.
+5. **The `index` of an array `duplicate` / `delete` button is the item index**, not a pick among matches (analysis §5.4 widget table). `resolveTarget` requires exactly one match for these targets.
+6. **The bundle guard and the phase2 "not implemented" test** were updated in this slice (see "#286 tests adapted"), because the files and the kind they named are gone or implemented now.
+
+**Validation** (one command per file, sequential):
+
+| Command | Result | Expected |
+|---|---|---|
+| `npm run build -w miroir-test-app_deployment-miroir && … modelValidation.unit.test.ts` | 159 passed | 159 ✓ |
+| `componentTestWidgets.292.phase4` | 9 passed | — |
+| `componentMiroirTests.consistency` | 8 passed | 8 ✓ |
+| `miroir-component-tests -t "JzodArrayEditor"` | 12 passed, 58 skipped | 12 ✓ |
+| `miroir-component-tests -t "JzodObjectEditor"` | 14 passed, 56 skipped | 14 ✓ |
+| `miroir-component-tests` | **70 passed** (real 60.9 s, vitest 54.1 s) | 70 ✓ |
+| `componentTestSandbox.286.phase4` | 5 passed | 5 (Slice 0) ✓ |
+| `runAllComponentTests.286.phase6` | 3 passed | 3 ✓ |
+| `componentTestFireEvent.286.phase8` | 4 passed | 4 ✓ |
+| `python scripts/check_bare_console.py` | OK | ✓ |
+| `tsc` miroir-standalone-app | 1 error, the known `JzodElementEditorHooks.ts(528,59)` TS2339 | baseline ✓ |
+| extra: `componentTestSteps.292.phase2` | 11 passed | 11 ✓ |
+| extra: `componentTestTargets.292.phase3` | 6 passed | 6 ✓ |
+| extra: `npm run build -w miroir-standalone-app`, then `componentTestChunk.286.phase4` | 4 passed | 4 ✓ |
+
+The reduced case list of the full entry (verbose reporter, ANSI stripped, `<Editor> > <leaf label>: passed`, sorted, 68 lines) is byte-identical to `baseline-component-cases.txt`.
+
+**K1 / P2 measurement.** The full entry took **60.9 s real** (vitest 54.1 s), against 56.6 s in Slice 0: ×1.08, far below ×2. D9 stays.
+
+**Browser check: pending (API server down).** `curl` to `https://localhost:3080` and `http://localhost:3080` got no answer (exit 7, connection refused). The API server needs the user's secrets master key to start (Slice 3 Realization), so it was not started, and no server was started by this slice. The browser checks of the Array instance (12/12) and the Object instance (14/14), and the SimpleType check pending from Slice 3, remain to be run. Per the test execution conventions, the slice stays ⏳ until then.
+
+**Impact on later slices:**
+- The vocabulary is unchanged from analysis §5.4. Clarified semantics: a positive `expectElement` on a `ref` target does not assert presence (deviation 1), and the `index` of an array `duplicate` / `delete` target is the item index (deviation 5).
+- Slice 5 still has to implement `parentContains`, the `timeout` of `expectElement` / `expectRenderedValues`, `expectRenderedValues.filter`, `select: "unionType"`, the `unionTypeStar` / `unionTypeInput` widgets, and `toggleUnionTypeSelector` / `selectOption`. When it implements `toggleUnionTypeSelector`, the "kind not implemented yet" test of `componentTestSteps.292.phase2` needs another subject (no kind will be left unimplemented; e.g. a kind absent from the handler table, or delete the test).
+- `$options` is added to the value selected by `path`, when it is a plain object.
+- The legacy path and the manifest now hold 2 editors (Union, Any: 24 cases). The bundle guard already names `componentTests/runComponentTestSteps` (planned for Slice 6).
+
+**Files created:**
+- `packages/miroir-standalone-app/tests/4_view/issues/292-declarative-react-component-tests/componentTestWidgets.292.phase4.unit.test.tsx`
+
+**Files changed:**
+- `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/componentTestTargets.ts`, `runComponentTestSteps.ts`, `componentTestManifest.ts`, `componentTestRegistry.ts`
+- `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-…/1b71d68b-7dc9-468c-a251-4fa7889f20f4.json` and `da353085-c62b-4aa6-bd54-8813d303dfe5.json`
+- `packages/miroir-standalone-app/tests/4_view/issues/286-react-component-miroir-tests/componentTestSandbox.286.phase4.integ.test.tsx` and `componentTestChunk.286.phase4.unit.test.ts`
+- `packages/miroir-standalone-app/tests/4_view/issues/292-declarative-react-component-tests/componentTestSteps.292.phase2.unit.test.tsx`
+- this plan
+
+**Files deleted:** `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/jzodElementEditor/JzodArrayEditor.tsx` and `JzodObjectEditor.tsx`.
 
 ---
 

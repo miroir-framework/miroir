@@ -28,36 +28,6 @@ export const componentTestSuiteInstances: Record<string, { uuid: string; name: s
  * suite's instance of `componentTestSuiteInstances`.
  */
 export const componentTestManifest: Record<string, readonly string[]> = {
-  JzodArrayEditor: [
-    "renders array input with label when label prop is provided",
-    "renders all array values, in the right order",
-    "form state is changed when selection changes",
-    "changing order of array items when button ROOT.testField.1.up is clicked",
-    "changing order of array items when button ROOT.testField.2.up is clicked",
-    "changing order of array items when button ROOT.testField.0.down is clicked",
-    "changing order of heteronomous object array items from union when button ROOT.testField.0.down is clicked",
-    "renders all array values of a plain 2-items tuple with a string and a number, in the right order",
-    "renders all array values of a tuple inside an array, in the right order",
-    "add an element to a string array when button ROOT.testField.add is clicked",
-    "add an element to an object array when button ROOT.testField.add is clicked",
-    "duplicate an element in a string array when duplicate button for item 1 is clicked",
-  ],
-  JzodObjectEditor: [
-    "object renders as json-like input fields with proper value",
-    "object with bigint attribute renders as json-like input fields with proper value",
-    "object can be updated through displayed input fields",
-    "object with optional attributes can receive a value for an optional attribute by clicking on the add button for the attribute",
-    "object with 2 optional attributes can have the only attribute value deleted by clicking on the delete button",
-    "object with 3 optional attributes can have the value for the second attribute deleted by clicking on the delete button",
-    "record renders as json-like input fields with proper value",
-    "record can receive a new record attribute with the proper default value when clicking on the add button",
-    "record can rename a record attribute keeping the existing value when clicking on the attribute input field",
-    "record with 1 entry can have the entry deleted when clicking on the delete button",
-    "record with 3 items can have the second record item deleted when clicking on the second delete button",
-    "record with 1 object entry can have the entry duplicated when clicking the duplicate button",
-    "record with 2 object entries can have the first entry duplicated without colliding with an existing _copy key",
-    "createObject definition record entry name can be renamed",
-  ],
   JzodUnionEditor: [
     "union between simple types renders input with proper value",
     "union between simple type and object for value of simple type renders input with proper value",
