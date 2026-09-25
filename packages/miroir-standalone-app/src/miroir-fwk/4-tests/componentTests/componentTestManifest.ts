@@ -79,6 +79,23 @@ export const componentTestManifest: Record<string, readonly string[]> = {
     "union type star button toggle shows then hides selector",
     "union type selector for object value places star and selector above the value",
   ],
+  JzodAnyEditor: [
+    "any type star button is visible for a string value",
+    "any type star button toggle shows then hides selector",
+    "any type can switch from number to string via selector",
+    "any type star button for object value places star and selector in header",
+    "any type with object value shows text input for string attribute",
+    "any type with object value shows text input for number attribute",
+    "any type can switch from number to object via selector",
+    "any type can switch from object to string via selector",
+    "any type can switch from object to array via selector",
+    "any type can switch from array to string via selector",
+    "any-typed array can be added an item",
+    "any-typed array can have an item removed",
+    "any-typed array can have an item duplicated",
+    "any-typed object can be added an attribute (it is a record)",
+    "any-typed array can have an attribute removed (it is a record)",
+  ],
 };
 
 /** Leaf label: the suite name, a colon, and the case label, so labels are unique in the instance. */

@@ -1,4 +1,5 @@
 import type { ComponentTestRegistry } from "./componentTestEnvironment.js";
+import { jzodAnyEditorComponentTests } from "./jzodElementEditor/JzodAnyEditor.js";
 import { jzodArrayEditorComponentTests } from "./jzodElementEditor/JzodArrayEditor.js";
 import { jzodEnumEditorComponentTests } from "./jzodElementEditor/JzodEnumEditor.js";
 import { jzodLiteralEditorComponentTests } from "./jzodElementEditor/JzodLiteralEditor.js";
@@ -17,4 +18,5 @@ export const componentTestRegistry: ComponentTestRegistry = {
   JzodObjectEditor: jzodObjectEditorComponentTests,
   JzodSimpleTypeEditor: jzodSimpleTypeEditorComponentTests,
   JzodUnionEditor: jzodUnionEditorComponentTests,
+  JzodAnyEditor: jzodAnyEditorComponentTests,
 };

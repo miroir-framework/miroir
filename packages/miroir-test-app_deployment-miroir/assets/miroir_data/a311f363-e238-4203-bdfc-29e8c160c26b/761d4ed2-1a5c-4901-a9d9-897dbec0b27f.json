@@ -469,6 +469,132 @@
             }
           }
         ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "JzodAnyEditor",
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any type star button is visible for a string value",
+            "componentTestRef": {
+              "suite": "JzodAnyEditor",
+              "case": "any type star button is visible for a string value"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any type star button toggle shows then hides selector",
+            "componentTestRef": {
+              "suite": "JzodAnyEditor",
+              "case": "any type star button toggle shows then hides selector"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any type can switch from number to string via selector",
+            "componentTestRef": {
+              "suite": "JzodAnyEditor",
+              "case": "any type can switch from number to string via selector"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any type star button for object value places star and selector in header",
+            "componentTestRef": {
+              "suite": "JzodAnyEditor",
+              "case": "any type star button for object value places star and selector in header"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any type with object value shows text input for string attribute",
+            "componentTestRef": {
+              "suite": "JzodAnyEditor",
+              "case": "any type with object value shows text input for string attribute"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any type with object value shows text input for number attribute",
+            "componentTestRef": {
+              "suite": "JzodAnyEditor",
+              "case": "any type with object value shows text input for number attribute"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any type can switch from number to object via selector",
+            "componentTestRef": {
+              "suite": "JzodAnyEditor",
+              "case": "any type can switch from number to object via selector"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any type can switch from object to string via selector",
+            "componentTestRef": {
+              "suite": "JzodAnyEditor",
+              "case": "any type can switch from object to string via selector"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any type can switch from object to array via selector",
+            "componentTestRef": {
+              "suite": "JzodAnyEditor",
+              "case": "any type can switch from object to array via selector"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any type can switch from array to string via selector",
+            "componentTestRef": {
+              "suite": "JzodAnyEditor",
+              "case": "any type can switch from array to string via selector"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any-typed array can be added an item",
+            "componentTestRef": {
+              "suite": "JzodAnyEditor",
+              "case": "any-typed array can be added an item"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any-typed array can have an item removed",
+            "componentTestRef": {
+              "suite": "JzodAnyEditor",
+              "case": "any-typed array can have an item removed"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any-typed array can have an item duplicated",
+            "componentTestRef": {
+              "suite": "JzodAnyEditor",
+              "case": "any-typed array can have an item duplicated"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any-typed object can be added an attribute (it is a record)",
+            "componentTestRef": {
+              "suite": "JzodAnyEditor",
+              "case": "any-typed object can be added an attribute (it is a record)"
+            }
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any-typed array can have an attribute removed (it is a record)",
+            "componentTestRef": {
+              "suite": "JzodAnyEditor",
+              "case": "any-typed array can have an attribute removed (it is a record)"
+            }
+          }
+        ]
       }
     ]
   }
