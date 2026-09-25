@@ -811,7 +811,7 @@
     {
       "id": "appstack-miroir-component-tests",
       "tier": "default",
-      "title": "#286 — JzodElementEditor component tests as MiroirTests (vitest entry + JSON consistency)",
+      "title": "#286, #292 — JzodElementEditor component tests as MiroirTests (vitest entry + JSON consistency)",
       "requires": "none",
       "argv": [
         "bash",
@@ -1067,6 +1067,17 @@
         "bash",
         "-c",
         "npm run testByFile -w miroir-core -- 286-react-component-miroir-tests && npm run testByFile -w miroir-standalone-app -- componentMiroirTests.286.phase0 && npm run testByFile -w miroir-standalone-app -- domMatchersParity.286.phase3 && npm run testByFile -w miroir-standalone-app -- extractValuesScoped.286.phase3 && npm run testByFile -w miroir-standalone-app -- componentTestMode.286.phase4 && npm run testByFile -w miroir-standalone-app -- componentTestSandbox.286.phase4 && npm run testByFile -w miroir-standalone-app -- componentTestRunLock.286.review && npm run testByFile -w miroir-standalone-app -- portalContainer.286.phase5 && npm run testByFile -w miroir-standalone-app -- runAllComponentTests.286.phase6 && npm run testByFile -w miroir-standalone-app -- componentTestFireEvent.286.phase8"
+      ]
+    },
+    {
+      "id": "unit-292-declarative-react-component-tests",
+      "tier": "unit",
+      "title": "#292 — declarative React component tests (core walk + schema, instances, step interpreter, targets, widgets, legacy removed)",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w miroir-core -- 292-declarative-react-component-tests && npm run testByFile -w miroir-standalone-app -- componentTestSchema.292.phase1 && npm run testByFile -w miroir-standalone-app -- componentTestInstances.292.phase1 && npm run testByFile -w miroir-standalone-app -- extractorOpenCombobox.292.phase2 && npm run testByFile -w miroir-standalone-app -- componentTestSteps.292.phase2 && npm run testByFile -w miroir-standalone-app -- componentTestTargets.292.phase3 && npm run testByFile -w miroir-standalone-app -- componentTestWidgets.292.phase4 && npm run testByFile -w miroir-standalone-app -- componentTestUnionWidgets.292.phase5 && npm run testByFile -w miroir-standalone-app -- legacyRemoved.292.phase6"
       ]
     },
     {

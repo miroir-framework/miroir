@@ -7,6 +7,8 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/292
 Working branch: `292-REFACTOR-declarative-react-component-tests`, created from `aba` at `34a6c0c0b`.
 
+**Resume note (2026-09-25, end of Slice 8 work):** the code is complete: Slices 0-7 are committed, and Slice 8 (docs, nonreg manifest, final tsc) is done but not committed. Two things remain before the work is finished: (1) the full `npm run nonreg`, run by the orchestrator, whose result goes in the Slice 8 Realization placeholder; (2) the browser checks of Slices 3-6 and 8 (7 instances 68/68, one "Run All Unit Tests" with component tests, one production-build run), which need the API server on 3080. That server needs the user's secrets master key, so it is started only by the user. Slices 3-6 and 8 stay ⏳ until then.
+
 ---
 
 ## Scope
@@ -40,7 +42,7 @@ Out of scope: other UI_COMPONENT test files (#204), new component suites, change
 | 5 | Union and Any | L | ⏳ GREEN, browser check pending (API server down) | `componentTestUnionWidgets.292.phase5` 6, `-t "JzodUnionEditor"` 9, `-t "JzodAnyEditor"` 15, entry 70 passed in 66.5 s; app check 68/68 pending |
 | 6 | M1: no `componentTestRef` | M | ⏳ GREEN, browser check pending (API server down) | `legacyRemoved.292.phase6` 6, core `292-…` 7, grep hits only the absence guard, entry 70 passed in 62.4 s; app check 68/68 pending |
 | 7 | M2: no `custom` step | S | ✅ DONE | `legacyRemoved.292.phase6` 9 (M2 assertions), entry 70 passed |
-| 8 | Docs, nonreg, final type-check and full nonreg | M | ⏳ TODO | full nonreg = Slice 0 baseline failures only |
+| 8 | Docs, nonreg, final type-check and full nonreg | M | ✅ DONE (browser checks of Slices 3-6 pending) | `unit-292-…` and `appstack-miroir-component-tests` pass via `--only`; tsc = Slice 0 lists; full nonreg = Slice 0 baseline failures only |
 
 Complexity: S = one focused change, M = several files in one package or a mechanical port, L = several packages or a new subsystem.
 
@@ -1373,7 +1375,7 @@ Final grep: `grep -rn "\"custom\"\|customStepRegistry" packages/miroir-standalon
 
 ## Slice 8: docs, nonreg, final type-check and full nonreg
 
-**Status:** ⏳ TODO · **Complexity:** M
+**Status:** ✅ DONE (browser checks of Slices 3-6 pending: API server down) · **Complexity:** M
 
 ### Goal
 
@@ -1417,5 +1419,75 @@ Browser check: the 7 instances, 68/68, and one production-build run of one insta
 
 ### Realization
 
-(to fill)
+Every command was run alone, from the repo root (never two vitest runs in parallel). The user's unrelated uncommitted changes (`ci/claude-cloud-env-script.sh`, the `admin_data` files, the spotify model files, `generate_externalServiceSync_suites.py`, `package.json`) were not touched, staged, or stashed. Nothing was committed.
+
+**Docs.**
+
+- `docs/reference/testing.md`:
+  - Leaf table: the `reactComponentTest` row describes `steps` and `componentProps` merged over the suite's; new `reactComponentTestSuite` row (`component`, `componentProps`).
+  - "MiroirTest vs PLATFORM" paragraph (former L144): the 7 instance names.
+  - View / React table (former L760): the 7 per-editor instances.
+  - The section "JzodElementEditor component tests" is rewritten: the 7 instances with uuids and case counts, the package wiring, the instance format (example JSON, attribute table, shallow merge and the Literal `label` consequence, `$bigint`, leaf labels, what the consistency test checks, a leaf outside a `reactComponentTestSuite` is an error), how a case runs (component registry, one wrapper per suite node, the runner's `error` results), the waiting rule (the 14 action steps, widget postconditions, `timeout` retry on the two expect steps, `waitForAttribute`), targets (the 7 locators, text match, refinements, the one-match rule, `index`, the widget table with the element each resolves to), the 17 step kinds with one example each, the `expectElement` checks, `saveAs` / `ref`, `expectRenderedValues` in 5 steps (label, open combobox committed value, array entries dropped, `formValuesToJSON`, `path`, `$options`, `toEqual`), the error format with 3 example messages (the `expectRenderedValues` one uses the real `[rendered values] Expected … to equal …. First difference at path: …` text of the throwing `expect`), running the vitest entry, adding or changing a case (JSON, `baseline-component-cases.txt`, `EXPECTED_LEAF_COUNT`, rebuild, `modelValidation`, consistency, entry; what a new instance, component, or step kind needs), and running in the app. The "known limit" paragraph is deleted.
+- `docs/contributing/testing.md` § JzodElementEditor component tests: the 7 instances, the suite node and steps in one paragraph, the entry and `-t` commands, the commands after a JSON change instead of the generator, how to add a case, the error form, a pointer to the reference.
+- `docs/guides/developer/testing.md` (former L160): the 7 instances and declarative steps.
+- `docs/internals/code-splitting.md` (not named by the plan, see deviation 2): the chunk description names the component registry and the step interpreter instead of "the test bodies, their registry".
+- #286 `analysis.md` §1: the row "Declarative JSON steps and assertions for component tests" links to the #292 analysis, status "done in #292".
+
+**Nonreg manifest** (`scripts/nonreg-manifest.json`):
+
+- New step `unit-292-declarative-react-component-tests`, tier `unit`, right after `unit-286-react-component-miroir-tests`, `bash -c` with `&&` as the #286 steps: `testByFile -w miroir-core -- 292-declarative-react-component-tests`, then one app command per file: `componentTestSchema.292.phase1`, `componentTestInstances.292.phase1`, `extractorOpenCombobox.292.phase2`, `componentTestSteps.292.phase2`, `componentTestTargets.292.phase3`, `componentTestWidgets.292.phase4`, `componentTestUnionWidgets.292.phase5`, `legacyRemoved.292.phase6`.
+- `appstack-miroir-component-tests`: title "#286, #292 — …"; its commands are unchanged. `unit-286-…` is unchanged.
+- The bundle guard `componentTestChunk.286.phase4` stays out of the manifest (it needs a fresh build), as in #286.
+
+| Command | Result |
+|---|---|
+| `npm run nonreg -- --dry-run --tier full` (as `python scripts/run-nonreg.py --dry-run --tier full`) | lists `appstack-miroir-component-tests`, `unit-286-…`, `unit-292-…` |
+| `PYTHONIOENCODING=utf-8 python scripts/run-nonreg.py --tier default --only unit-292-declarative-react-component-tests,appstack-miroir-component-tests` | **passed=2 failed=0**, snapshot `test-results/nonreg/20260925T145118Z/` |
+| └ `appstack-miroir-component-tests` (96.3 s) | `miroir-component-tests` 70 passed, `componentMiroirTests.consistency` 6 passed |
+| └ `unit-292-…` (235.4 s) | core `292-…` 7, `componentTestSchema.292.phase1` 7, `componentTestInstances.292.phase1` 5, `extractorOpenCombobox.292.phase2` 3, `componentTestSteps.292.phase2` 10, `componentTestTargets.292.phase3` 6, `componentTestWidgets.292.phase4` 9, `componentTestUnionWidgets.292.phase5` 6, `legacyRemoved.292.phase6` 9 |
+
+**`baseline-component-cases.txt`:** kept. `componentTestInstances.292.phase1` already asserts it (since Slice 1): the sorted, prefixed leaf labels of the 7 instances must equal its 68 lines. The reference doc says to update it when a case is added, removed, or renamed.
+
+**Type check** (`npx tsc --noEmit --skipLibCheck -p packages/<name>/tsconfig.json`):
+
+| Package | Errors | Slice 0 |
+|---|---|---|
+| `miroir-core` | 0 | 0 ✓ |
+| `miroir-standalone-app` | 1, `JzodElementEditorHooks.ts(528,59)` TS2339 | same ✓ |
+| `miroir-store-bundled`, `miroir-store-filesystem`, `miroir-store-indexedDb`, `miroir-store-mongodb`, `miroir-store-postgres`, `miroir-localcache`, `miroir-localcache-redux`, `miroir-server`, `miroir-mcp`, `miroir-ai`, `miroir-cli` | 0 each | 0 ✓ |
+
+No new error, so no #292 fix was needed.
+
+**Other checks:**
+
+- `python scripts/check_bare_console.py`: OK.
+- `npm run build -w miroir-standalone-app` then `componentTestChunk.286.phase4`: build exit 0, **4 passed** (Slice 0 count) ✓.
+
+**Final grep.** `grep -rln "componentTestRef\|componentTestManifest\|componentTestRegistry\|ReactComponentTestRef\|generate-component-miroir-tests\|customStepRegistry\|JzodElementEditor_ComponentTestSuite" .` (excluding `node_modules`, `dist`, `tmp`, `graphify-out`, `test-results`, `.git`) finds:
+
+- the #292 `analysis.md` and this plan;
+- the absence guards `legacyRemoved.292.phase6` and `componentTestInstances.292.phase1` (which asserts that `defaultMiroirMetaModel.tests` does not hold `JzodElementEditor_ComponentTestSuite`);
+- historical documents: #286 `analysis.md`, `tdd-implementation-plan.md`, `plan-adversarial-review.md`, #197 `analysis-ui-integ-without-testing-library.md` L170, and #204 `plan.md` L201 (see deviation 3).
+
+No hit in `docs/`, in `packages/*/src`, or in the deployment assets. `grep -rn '"step": *"custom"\|step.*custom'` over `docs`, `packages/miroir-standalone-app/src`, `packages/miroir-core/src`, and `packages/miroir-test-app_deployment-miroir/assets` finds nothing.
+
+**Browser check: not run (API server down).** `curl` to `https://localhost:3080` and `http://localhost:3080` got no answer (exit 7, connection refused). The API server needs the user's secrets master key, so it was not started, and no server was started by this slice. Still to run: the pending checks of Slices 3-6 (the 7 instances 68/68, one "Run All Unit Tests" with "Include component tests" checked) and the production-build run of one instance of this slice. Slices 3-6 and this slice stay ⏳ until then.
+
+**Full nonreg:** `npm run nonreg` (run by the orchestrator), snapshot `test-results/nonreg/20260925T150724Z`, 69 steps: 67 passed, 2 failed, 0 skipped, 0 not_run, duration 3103 s (~51 min 43 s). The 2 failures are the Slice 0 baseline failures with the same messages: `apiCallReport-281` (`expected [ …(8) ] to have a length of 6 but got 8`) and `unit-274-multistep-reports` (`to have a length of 87 but got 88`), both caused by the user's untracked asset files, not by #292. The new step `unit-292-declarative-react-component-tests` passed (218 s) and `appstack-miroir-component-tests` passed (86 s). Against the baseline (68 steps, 66 passed), the extra step is the new 292 unit step, and no step changed status.
+
+**Deviations:**
+
+1. **The reference section keeps its heading "JzodElementEditor component tests"** instead of "Declarative component tests". Its anchor `#jzodelementeditor-component-tests` is linked from `docs/contributing/testing.md`, `docs/guides/developer/testing.md`, the leaf table, and the #286 plan. The section's content is the declarative format the plan asks for.
+2. **`docs/internals/code-splitting.md` was also updated.** It described the chunk as holding "the JzodElementEditor component test bodies, their registry", which no longer exist.
+3. **The #197 and #204 documents keep their mention of `JzodElementEditor_ComponentTestSuite`.** They are historical records of finished issues, like the #286 documents, and are left as they are (analysis §3.2 "history").
+4. **The nonreg step was validated with `--only`** on the two changed steps, not with `npm run nonreg -- --dry-run` alone, as the orchestrator asked. The dry-run also listed the new step.
+
+**Files changed:**
+
+- `docs/reference/testing.md`, `docs/contributing/testing.md`, `docs/guides/developer/testing.md`, `docs/internals/code-splitting.md`
+- `code-helpers/features/286-FEATURE-react-component-miroir-tests/analysis.md`
+- `scripts/nonreg-manifest.json`
+- this plan (header resume note, Progress summary, Slice 8 Status and Realization)
+
+**Files created / deleted:** none.
 

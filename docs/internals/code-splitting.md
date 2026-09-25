@@ -115,7 +115,7 @@ Server-side CopilotKit (`@copilotkit/runtime` in `miroir-server` / `miroir-ai`) 
 | **Initial load?** | No |
 | **On feature use?** | Yes, on the first component test run |
 
-The chunk holds the JzodElementEditor component test bodies, their registry, and the act-free driver. It does not import `@testing-library/react` and never calls React `act`, which throws in production builds of React. `@testing-library/react` is loaded only by the lazy browser integration launcher chunk (`standaloneAppBrowserIntegrationOrchestrator`, through `tests-utils.tsx`), which "Run Integration Tests" imports.
+The chunk holds the component registry, the interpreter of the declarative component test steps (#292), and the act-free driver. The cases themselves are MiroirTest JSON, read from the `LocalCache`. It does not import `@testing-library/react` and never calls React `act`, which throws in production builds of React. `@testing-library/react` is loaded only by the lazy browser integration launcher chunk (`standaloneAppBrowserIntegrationOrchestrator`, through `tests-utils.tsx`), which "Run Integration Tests" imports.
 
 The guard `tests/4_view/issues/286-react-component-miroir-tests/componentTestChunk.286.phase4.unit.test.ts` reads `dist/.vite/manifest.json` (`build.manifest: true` in `vite.config.js`) and the chunk sourcemaps. It fails when a chunk in the static import closure of `index.html` has a source under `node_modules/@testing-library/`, or when the chunks added by the component test import contain `@testing-library/react` or `routes/TransformerBuilderPage`. It needs a fresh build, so it is not in the nonreg manifest:
 

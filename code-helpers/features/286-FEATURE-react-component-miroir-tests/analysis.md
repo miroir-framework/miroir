@@ -21,7 +21,7 @@ Key sources: [`JzodElementEditor.test.tsx`](../../../packages/miroir-standalone-
 | Runner and action leaves, UI integration launcher | #197 | ✅ |
 | Classification of the remaining vitest files | #204 | open |
 | `reactComponentTest` leaf, JzodElementEditor suites | **#286 (this document)** | this issue |
-| Declarative JSON steps and assertions for component tests | later, unscheduled | later |
+| Declarative JSON steps and assertions for component tests | [#292](../292-REFACTOR-declarative-react-component-tests/analysis.md) | done in #292 |
 | `JzodElementEditorReactCodeMirror.test.tsx` and other UI_COMPONENT files from #204 | later, unscheduled | later |
 
 ---
