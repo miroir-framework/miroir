@@ -41,7 +41,7 @@ import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import type { DeploymentUuidToReportsEntities } from "../0_interfaces/1_core/Model";
 import { resolveFundamentalSchemaForDeployment } from "./jzod/schemaForDeployment";
-import { defaultMiroirMetaModel } from "./defaultMiroirMetaModel";
+import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 
 import {
   Entity,
@@ -68,7 +68,6 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
-// import { Endpoint } from "../3_controllers/Endpoint";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Model");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

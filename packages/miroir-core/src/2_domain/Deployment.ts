@@ -1,12 +1,11 @@
 // import { selfApplicationMiroir } from "..";
-import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 import { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import {
   GetBasicApplicationConfigurationParameters,
   StoreUnitConfiguration,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { InitApplicationParameters } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
-import { defaultMiroirMetaModel } from "../1_core/defaultMiroirMetaModel";
 
 export function getBasicStoreUnitConfiguration(
   applicationName: string,

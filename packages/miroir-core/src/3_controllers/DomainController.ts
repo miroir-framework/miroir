@@ -95,7 +95,7 @@ import {
   shouldCacheAllInstancesOnRefresh,
 } from "../1_core/localCache/cacheRefreshPolicy.js";
 import { ACTION_OK } from "../1_core/constants";
-import { defaultMiroirMetaModel } from "../1_core/defaultMiroirMetaModel";
+import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 import { expandResolvableResetAndinitializeDeploymentCompositeAction } from "../1_core/Deployment.js";
 import {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS

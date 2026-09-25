@@ -20,7 +20,7 @@ import {
   resetAndinitializeDeploymentCompositeAction,
   testUtils_resetApplicationDeployment
 } from "./Deployment";
-import { defaultMiroirMetaModel } from "./defaultMiroirMetaModel";
+import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";

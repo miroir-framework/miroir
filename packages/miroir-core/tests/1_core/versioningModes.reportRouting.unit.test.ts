@@ -14,7 +14,7 @@ import {
 } from "miroir-test-app_deployment-miroir";
 
 import { getReportsAndEntitiesForDeploymentUuid } from "../../src/1_core/Model.js";
-import { defaultMiroirMetaModel } from "../../src/1_core/defaultMiroirMetaModel.js";
+import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 import { REPO_ROOT } from "./versioningModes.testData.js";
 
 const MIROIR_MENU = join(
