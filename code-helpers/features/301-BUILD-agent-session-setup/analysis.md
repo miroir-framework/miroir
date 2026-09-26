@@ -1,8 +1,8 @@
-# NNN — Agent session setup for Miroir development
+# 301 — Agent session setup for Miroir development
 
-> Draft analysis of how coding-agent sessions (cloud and local; Claude first, agent-neutral where possible) are set up in this repo, and a proposed target structure. Decisions are **Proposed** until confirmed with the maintainer; no files are moved yet.
+> Analysis of how coding-agent sessions (cloud and local; Claude first, agent-neutral where possible) are set up in this repo, and the target structure. Decisions D1–D5 confirmed with the maintainer on 2026-09-26.
 
-Document role: analysis **and** decision record (draft). Issue number: to be created.
+Document role: analysis **and** decision record. Issue: https://github.com/miroir-framework/miroir/issues/301
 
 ## Related
 
@@ -72,7 +72,7 @@ Observed consequences:
 - The in-app AI assistant (`docs/guides/using-ai.md`), which is a product feature, not dev tooling.
 - Reorganising `docs/` beyond adding the agent/dev-setup page and filling `development-setup.md`.
 
-## Decision record (Proposed, to confirm)
+## Decision record (confirmed 2026-09-26)
 
 ### D1 — Where Miroir skills live
 
@@ -83,7 +83,7 @@ Observed consequences:
 | C. Canonical in `.claude/skills/` only | One copy; Copilot and Cursor also read `.claude/skills` (to verify per agent) | Codex and `.agents`-only tools miss them |
 | D. Package as a Claude plugin / marketplace in the repo | Versioned, installable | Claude-only; extra install step for each dev |
 
-**Proposed: A.** Names keep the `miroir-` prefix, which is the ownership marker (`assess-evolution-quality` → `miroir-assess-evolution-quality`, `query-editor` merged into `miroir-edit-queries` or removed).
+**Accepted: A.** Names keep the `miroir-` prefix, which is the ownership marker (`assess-evolution-quality` → `miroir-assess-evolution-quality`, `query-editor` merged into `miroir-edit-queries` or removed).
 
 ### D2 — Third-party skills
 
@@ -93,13 +93,15 @@ Observed consequences:
 | B. Nothing third-party tracked | Cleanest ownership; each dev installs even the fundamentals |
 | C. Status quo | — |
 
-**Proposed: A.** `skills-lock.json` is either reduced to the core set or removed (see Q3). CopilotKit skills become optional (only useful when touching the in-app assistant). `graphify` becomes optional.
+**Accepted: A.** `skills-lock.json` is kept, reduced to the core set. CopilotKit skills become optional (only useful when touching the in-app assistant). `graphify` becomes optional.
 
 ### D3 — graphify
 
-**Proposed:** move the graphify section out of the top of `AGENTS.md` into a short conditional paragraph ("if `graphify-out/graph.json` exists and `graphify` is on PATH, prefer `graphify query`…"), and drop the "run `graphify update .` after every change" rule for sessions without it. The skill becomes an optional per-developer install.
+**Accepted:** move the graphify section out of the top of `AGENTS.md` into a short conditional paragraph ("if `graphify-out/graph.json` exists and `graphify` is on PATH, prefer `graphify query`…"), and drop the "run `graphify update .` after every change" rule for sessions without it. The skill becomes an optional per-developer install.
 
-### D4 — Instruction files
+Measured in a cloud session (2026-09-26): `pip install graphifyy` works through the proxy; `graphify update .` (AST only, no LLM) takes ~60 s on 4 cores, extracts 3006 files into 31 158 nodes / 65 005 edges and writes 83 MB to `graphify-out/`; `graphify query` answers in ~3 s. Without a `.graphifyignore` the graph also indexes the vendored `.agents/skills/graphify/` package and `dist/` output, which pollutes query results (e.g. `dispatch_command()` from graphify's own CLI surfaced for a DomainController question). Useful as a symbol/neighbourhood index for broad questions; for focused tasks `rg` is as fast. Cloud availability is decided separately (D6).
+
+### D4 — Instruction files (Accepted)
 
 - `AGENTS.md` stays the single source of truth, slimmed to what every session needs (target ≲ 12 KB); reference material moves to `docs/` with one-line pointers.
 - Add `CLAUDE.md` containing only `@AGENTS.md` (same pattern as `copilot-instructions.md`), so local Claude Code loads it regardless of version.
@@ -113,7 +115,7 @@ Observed consequences:
 | A. Agent-neutral `scripts/agent-session-setup.py` (idempotent: `npm ci` if needed, rollup Linux binary fix, build the `pr-checks.yml` package set if `dist` is missing, print a 5-line status), wired to a Claude **SessionStart hook** in `.claude/settings.json`; other agents call the same script from their own hooks | In-repo, versioned, same steps as CI; agents know what is built | Hook adds startup time on cold containers |
 | B. Keep setup only in the claude.ai environment config | No repo change | Invisible to agents and to other contributors; drifts from CI |
 
-**Proposed: A**, hook enabled for cloud sessions only by default (local devs opt in), so local sessions are not slowed.
+**Accepted: A**, hook enabled for cloud sessions only by default (local devs opt in), so local sessions are not slowed.
 
 ## Proposed target layout
 
@@ -136,6 +138,12 @@ docs/contributing/
 
 `.gitignore` gains rules so that personally installed skills in `.agents/skills/` and `.claude/skills/` are not committed by accident (allow-list of tracked names).
 
-## Open questions for the maintainer
+### D6 — graphify in cloud sessions (confirmed 2026-09-26: **Accepted: A, on demand**)
 
-See the thread; answers will be folded into the decision record before a `tdd-implementation-plan.md` is written.
+| Option | Effect |
+|---|---|
+| A. On demand | `scripts/agent-session-setup.py --graphify` installs `graphifyy` and builds the graph; agents run it when a task needs a broad architecture view |
+| B. Background at session start | SessionStart hook launches the build in the background (~60 s CPU, no wait); graph ready for most of the session |
+| C. Not in cloud | Local only |
+
+All options add a `.graphifyignore` (exclude `.agents/`, `.claude/`, `dist/`, `node_modules/`, generated files).
