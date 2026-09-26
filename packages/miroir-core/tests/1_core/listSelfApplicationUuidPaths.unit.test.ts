@@ -12,7 +12,7 @@ import {
   listSelfApplicationUuidPaths,
   RELATIVE_PATH_JOKER,
   type RelativePath,
-} from "../../src/1_core/listSelfApplicationUuidPaths";
+} from "../../src/1_core/model/cloneApplication/listSelfApplicationUuidPaths";
 
 /** Canonical Library SelfApplication — primary T1/T2 design corpus. */
 const LIBRARY_APP_UUID = selfApplicationLibrary.uuid as string;
@@ -127,10 +127,12 @@ describe("listSelfApplicationUuidPaths (T1)", () => {
     });
 
     it("does not match Library uuid when scanning Miroir meta model", () => {
+      // Miroir's MiroirTest suites legitimately target the Library testbed; only the
+      // other model sections must stay free of Library references.
       const libraryHitsOnMiroir = listSelfApplicationUuidPaths(
         defaultMiroirMetaModel as MetaModel,
         LIBRARY_APP_UUID,
-      );
+      ).filter((path) => path[0] !== "tests");
       expect(libraryHitsOnMiroir).toEqual([]);
     });
   });

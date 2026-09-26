@@ -5,7 +5,7 @@ import {
   effectiveMiroirTransformerSkip,
   miroirTransformerAssertionName,
   defaultMetaModelEnvironment,
-  runMiroirFunctionCallTestInMemory,
+  runMiroirTest,
 } from "../../src";
 import type { MiroirTestForTransformer } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
@@ -31,13 +31,13 @@ describe("Miroir transformer leaf helpers", () => {
   });
 });
 
-describe("runMiroirTestInMemory (Phase 1)", () => {
+describe("runMiroirTest (Phase 1)", () => {
   it("executes functionCallTest leaf in unit mode", async () => {
     const tracker = {
       getCurrentTestAssertionPath: () => [{ test: "t" }, { testAssertion: "t" }],
       setTestAssertionResult: vi.fn(),
     };
-    await runMiroirFunctionCallTestInMemory(
+    await runMiroirTest(
       vitest,
       ["mustache"],
       undefined,
@@ -67,7 +67,7 @@ describe("runMiroirTestInMemory (Phase 1)", () => {
 
   it("rejects functionCallTest in integration mode", async () => {
     await expect(
-      runMiroirTestInMemory(
+      runMiroirTest(
         vitest,
         ["mustache"],
         undefined,
@@ -93,7 +93,7 @@ describe("runMiroirTestInMemory (Phase 1)", () => {
       getCurrentTestAssertionPath: () => [{ test: "t" }, { testAssertion: "t" }],
       setTestAssertionResult: vi.fn(),
     };
-    await runMiroirTestInMemory(
+    await runMiroirTest(
       vitest,
       ["plus"],
       undefined,
@@ -141,7 +141,7 @@ describe("runMiroirTestInMemory (Phase 1)", () => {
       expectedValue: 3,
     };
     await expect(
-      runMiroirTestInMemory(
+      runMiroirTest(
         vitest,
         ["t"],
         undefined,

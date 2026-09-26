@@ -72,6 +72,6 @@ describe("Miroir modelVersion assets layout", () => {
   it("filesystem bootstrap can resolve modelVersion path relative to packages root", () => {
     const assetsDir = join(REPO_ROOT, "packages", MIROIR_MODEL_VERSION_PACKAGES_RELATIVE);
     expect(existsSync(assetsDir)).toBe(true);
-    expect(countJsonInDir(join(assetsDir, "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd"))).toBe(34);
+    expect(countJsonInDir(join(assetsDir, "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd"))).toBe(35);
   });
 });

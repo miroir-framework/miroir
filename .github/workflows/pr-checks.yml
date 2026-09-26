@@ -1,0 +1,37 @@
+name: PR checks
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: pr-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  core:
+    name: miroir-core typecheck + unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Linux rollup binary
+        # package-lock.json omits @rollup/rollup-linux-x64-gnu (npm/cli#4828), so tsup/vite fail on Linux.
+        run: npm install --no-save "@rollup/rollup-linux-x64-gnu@$(node -p 'require("rollup/package.json").version')"
+      - name: Build packages needed by miroir-core tests
+        run: |
+          npm run build -w miroir-test-app_deployment-miroir -w miroir-test-app_deployment-admin
+          npm run build -w miroir-core
+          npm run build -w miroir-store-bundled -w miroir-store-postgres -w miroir-test-app_deployment-library
+      - name: Typecheck miroir-core
+        run: npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
+      - name: miroir-core unit tests
+        run: npm run test -w miroir-core -- ''

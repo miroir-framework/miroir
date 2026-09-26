@@ -11,7 +11,7 @@ import {
 import {
   extractorVirtualAttributeNeed,
   findPresentModelEntityFromReduxState,
-  indexInstancesByUuid,
+  indexInstancesByPrimaryKey,
   overlayAndFilterExtractorInstances,
 } from "./ExtractorVirtualAttributes";
 import { requiredVirtualAttributeNames } from "./VirtualAttributes";
@@ -458,13 +458,15 @@ export const selectEntityInstanceUuidIndexFromReduxDeploymentsState: SyncBoxedEx
   if (!localSelect.filter && !localSelect.orderBy && needed.length === 0) {
     return entityInstances;
   }
-  return indexInstancesByUuid(
+  return indexInstancesByPrimaryKey(
+    entity,
     overlayAndFilterExtractorInstances(
       entity,
       Object.values(entityInstances),
       localSelect,
       modelEnvironment,
     ),
+    entityInstances,
   );
 };
 

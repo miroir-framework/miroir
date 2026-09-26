@@ -8,7 +8,7 @@ import {
   resolveCacheSegmentKind,
   resolveLoadCacheSegment,
   stripLocalCacheSegmentSuffix,
-} from "../../src/1_core/localCacheSegment.js";
+} from "../../src/1_core/localCache/localCacheSegment.js";
 import {
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexEntityUuid,
