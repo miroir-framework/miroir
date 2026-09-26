@@ -1,0 +1,18 @@
+{
+  "transformerTestType": "transformerTest",
+  "transformerTestLabel": "{{testLabel}}",
+  "transformerName": "{{transformerName}}",
+  "runTestStep": "runtime",
+  "skip": false,
+  "transformer": {
+    "transformerType": "{{transformerType}}",
+    "interpolation": "runtime"
+  },
+  "transformerParams": {},
+  "transformerRuntimeContext": {},
+  "expectedValue": null,
+  "unitTestExpectedValue": null,
+  "integrationTestExpectedValue": null,
+  "ignoreAttributes": [],
+  "retainAttributes": []
+}

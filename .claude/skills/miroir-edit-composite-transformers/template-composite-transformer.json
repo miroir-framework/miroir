@@ -1,0 +1,55 @@
+{
+  "uuid": "{{uuid}}",
+  "name": "{{name}}",
+  "defaultLabel": "{{name}}",
+  "description": "{{description}}",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "classification": "composite",
+  "transformerInterface": {
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "{{name}}"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "{{parameterName}}": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformer"
+            }
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "returns": "mlSchema",
+      "definition": {
+        "type": "{{resultType}}"
+      }
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "transformer",
+    "definition": {
+      "transformerType": "dataflowObject",
+      "interpolation": "runtime",
+      "target": "{{targetEntry}}",
+      "definition": {
+        "step1": {
+          "transformerType": "getFromContext",
+          "interpolation": "runtime",
+          "referenceName": "{{parameterName}}"
+        },
+        "{{targetEntry}}": {
+          "transformerType": "returnValue",
+          "value": "{{placeholder}}"
+        }
+      }
+    }
+  }
+}

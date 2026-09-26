@@ -32,5 +32,5 @@ def test_every_locked_skill_has_a_directory() -> None:
     assert _lock_keys() <= present
 
 
-def test_claude_folder_has_no_miroir_skill_yet() -> None:
-    assert not [p.name for p in CLAUDE_SKILLS.iterdir() if p.name.startswith("miroir-")]
+def test_claude_folder_has_every_miroir_skill() -> None:
+    assert MIROIR_OWNED <= {p.name for p in CLAUDE_SKILLS.iterdir() if p.is_dir()}
