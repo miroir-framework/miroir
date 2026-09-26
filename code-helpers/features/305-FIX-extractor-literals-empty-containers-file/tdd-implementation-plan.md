@@ -1,0 +1,111 @@
+# Issue #305 — TDD Implementation Plan
+
+> Integration-first, no mocks. Every slice is proven through the public MiroirTest step `expectRenderedValues` of `MlTestPattern_ComponentTestSuite`, run by the real component runner (component entry `miroir-component-tests`), and guarded by the 68 per-editor cases that share the extractor.
+
+**Resume note:** see the progress table.
+
+## Scope
+
+- In: literal input name and prefix filter (D2, D3); empty-container markers (D4); file `any` hidden input (D5); removal of the matching `ignorePaths` entries and `expectElement` stand-ins in the 4 pattern leaves.
+- Out: `aReference` (#304, stays under `ignorePaths`), typed literals, #306, #307.
+
+Related: [analysis](./analysis.md) · issue https://github.com/miroir-framework/miroir/issues/305 · branch `claude/project-thread-lfvhbu` (from `_integration`, #303 merged in) · PR into `_integration`.
+
+## Progress summary
+
+| Slice | Title | Status | Primary proof |
+|---|---|---|---|
+| 0 | Baseline | ✅ DONE | component entry 74 passed / 15 skipped (45 s) |
+| 1 | Literal in place, no stray keys | ⬜ pending | pattern leaves without `aLiteral`, `testField` in `ignorePaths` |
+| 2 | Empty containers read as `[]` / `{}` | ⬜ pending | pattern leaves without `anEmptyArray`, `anEmptyRecord`, `items.1.tags` |
+| 3 | File `any` field read | ⬜ pending | pattern leaves without `anAnyFile` |
+| 4 | Docs, nonreg, AC | ⬜ pending | nonreg filesystem profile |
+
+## Locked implementation defaults
+
+Decision record D1–D7 of the analysis, unchanged.
+
+## Allocated UUIDs / keys
+
+None: no new model element. Markup keys: `data-ml-empty-container` (`"array"` | `"object"`), `data-ml-name`, `data-ml-json`.
+
+## Test execution conventions
+
+| Purpose | Command |
+|---|---|
+| Pattern suite | `npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "MlTestPattern"` |
+| Component entry (68 cases + pattern) | `npm run testByFile -w miroir-standalone-app -- miroir-component-tests` |
+| Rebuild the deployment after JSON edits | `npm run build -w miroir-test-app_deployment-miroir` |
+| Consistency | `npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency` |
+| Type-check | `npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json` |
+| Safety net | `npm run nonreg:filesystem` (Slice 4) |
+
+---
+
+## Slice 0 — Baseline
+
+**Status:** ✅ DONE
+
+### Realization
+
+The package `dist/` folders of the cloud container were built from an older commit (before the Jzod → ML rename): the pattern leaf failed with `Cannot read properties of undefined (reading 'name')`. After rebuilding `miroir-test-app_deployment-miroir`, `-admin`, `miroir-core`, the local caches, the bundled / filesystem / indexedDb stores and `miroir-react`, the component entry gives 74 passed / 15 skipped (the perf suite), 45.4 s. The #303 suite is named `MlTestPattern` since the rename.
+
+---
+
+## Slice 1 — Literal in place, no stray keys
+
+**Status:** ⬜ pending
+
+**RED.** Remove `aLiteral` and `testField` from `ignorePaths` in the 4 leaves, and the `aLiteral` `expectElement` of leaf 1. The pattern fails at `aLiteral` (absent) with a stray `testField` key.
+
+**GREEN.** `MlLiteralEditor`: `name={formikRootLessListKey}` on the read-only input. Extractor: the generic input pass skips names outside the `label.` prefix (D3).
+
+**Refactor checkpoint.** The prefix test is repeated inline in the checkbox, combobox and select passes: one helper.
+
+### Validation
+
+Pattern suite; component entry; tsc.
+
+---
+
+## Slice 2 — Empty containers read as `[]` / `{}`
+
+**Status:** ⬜ pending
+
+**RED.** Remove `anEmptyArray`, `anEmptyRecord`, `aNestedObject.level1.level2.items.1.tags` from `ignorePaths` and their 3 `expectElement` stand-ins.
+
+**GREEN.** `MlArrayEditor` and `MlObjectEditor` roots: `data-ml-empty-container` + `data-ml-name` when the value at the key is an empty array / object. Extractor: seed `[]` / `{}` for each marked element under the prefix that has no extracted key below it.
+
+**Refactor checkpoint.** none planned.
+
+### Validation
+
+Pattern suite; component entry; tsc.
+
+---
+
+## Slice 3 — File `any` field read
+
+**Status:** ⬜ pending
+
+**RED.** Remove `anAnyFile` from `ignorePaths` and the "Select File" `expectElement`.
+
+**GREEN.** `MlAnyEditor` file branch: hidden input with the formik name; string values as is, others as JSON with `data-ml-json="true"`. Extractor: parse inputs flagged `data-ml-json`.
+
+### Validation
+
+Pattern suite; component entry; tsc.
+
+---
+
+## Slice 4 — Docs, nonreg, AC
+
+**Status:** ⬜ pending
+
+- `docs/reference/testing.md`: the extractor reads literals, empty containers and file fields; `ignorePaths` holds only `aReference` in the pattern.
+- `npm run nonreg:filesystem`; compare failures with the known list (memory `jzod-to-ml-rename`).
+
+| AC | Proof |
+|---|---|
+| `ignorePaths` empty or only `aReference` | enumeration of `26ef2886-….json` |
+| 68 per-editor cases pass | component entry |
