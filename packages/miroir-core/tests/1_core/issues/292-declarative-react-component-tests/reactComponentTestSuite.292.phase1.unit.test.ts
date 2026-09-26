@@ -73,7 +73,11 @@ const orphanLeaf = {
   steps: [],
 };
 
-/** A `reactComponentTest` leaf under a plain `miroirTestSuite`: no suite context reaches it. */
+/**
+ * A `reactComponentTest` leaf under a plain `miroirTestSuite`: no suite context reaches it.
+ * Since #294 the schema rejects this placement (`MiroirTestSuite` does not type it either), so
+ * `as any` builds this invalid fixture to exercise the runtime guard kept for unvalidated input.
+ */
 const orphanSuiteFixture: MiroirTestSuite = {
   miroirTestType: "miroirTestSuite",
   miroirTestLabel: "Root",

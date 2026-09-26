@@ -16,6 +16,7 @@
 import { describe, expect, it } from "vitest";
 
 import type {
+  MiroirTestForReactComponent,
   MiroirTestLeaf,
   MiroirTestSuite,
   TestAssertionResult,
@@ -38,12 +39,12 @@ const componentLeafB = "JzodArrayEditor: case B";
 const transformerLeaf = "returnValue gives 42";
 
 /** A `reactComponentTest` leaf with an empty step list (#292 M1). */
-function reactComponentLeaf(label: string): MiroirTestLeaf {
+function reactComponentLeaf(label: string): MiroirTestForReactComponent {
   return {
     miroirTestType: "reactComponentTest",
     miroirTestLabel: label,
     steps: [],
-  } as unknown as MiroirTestLeaf;
+  };
 }
 
 function returnValueTransformerLeaf(label: string): MiroirTestLeaf {

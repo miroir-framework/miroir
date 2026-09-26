@@ -7,6 +7,11 @@
  *   with a `miroirTestSuite` root, passes `jzodTypeCheck` against both `mlSchema`s;
  * - a step of an unknown kind and a `reactComponentTestSuite` without `component` both fail.
  *
+ * Issue #294: a `reactComponentTest` leaf is accepted only in `reactComponentTestSuite.miroirTests`.
+ * The same leaf placed directly in a plain `miroirTestSuite.miroirTests` fails against both
+ * `mlSchema`s (before #294 it passed and only failed at run time, with
+ * `REACT_COMPONENT_TEST_NO_SUITE_MESSAGE`).
+ *
  * Run:
  * ```bash
  * npm run testByFile -w miroir-standalone-app -- componentTestSchema.292.phase1
@@ -164,5 +169,25 @@ describe("MiroirTest schema for declarative component tests", () => {
     const suite = exampleEnumSuite();
     delete suite.component;
     expect(typeCheckStatus(schema, miroirTestInstanceOf(suite))).toBe("error");
+  });
+
+  // ##############################################################################################
+  describe("#294: a reactComponentTest leaf is accepted only inside a reactComponentTestSuite", () => {
+    it.each(schemas)(
+      "a reactComponentTest leaf directly in a plain miroirTestSuite fails against the %s mlSchema",
+      (_name, schema) => {
+        const leaf = exampleEnumSuite().miroirTests[0];
+        expect(typeCheckStatus(schema, miroirTestInstanceOf(leaf))).toBe("error");
+      },
+    );
+
+    it.each(schemas)(
+      "the same reactComponentTest leaf inside a reactComponentTestSuite passes against the %s mlSchema",
+      (_name, schema) => {
+        const suite = exampleEnumSuite();
+        suite.miroirTests = [suite.miroirTests[0]];
+        expect(typeCheckStatus(schema, miroirTestInstanceOf(suite))).toBe("ok");
+      },
+    );
   });
 });

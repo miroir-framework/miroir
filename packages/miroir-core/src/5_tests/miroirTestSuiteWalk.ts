@@ -1,5 +1,4 @@
 import type {
-  MiroirTestLeaf,
   MiroirTestSuite,
   ReactComponentTestSuite,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -14,6 +13,7 @@ import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface
 import { packageName } from "../constants.js";
 import { cleanLevel } from "../3_controllers/constants.js";
 import type {
+  MiroirTestAnyLeaf,
   MiroirTestRunFilter,
   ReactComponentTestSuiteContext,
   TestSuiteListFilter,
@@ -30,11 +30,12 @@ const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLe
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "test").then((logger: LoggerInterface) => { log = logger; });
 
-function miroirTestLeafLabel(leaf: MiroirTestLeaf): string {
+function miroirTestLeafLabel(leaf: MiroirTestAnyLeaf): string {
   return leaf.miroirTestLabel;
 }
 
-type MiroirTestNode = MiroirTestLeaf | MiroirTestSuite | ReactComponentTestSuite;
+/** A child of a `miroirTestSuite`, or a `reactComponentTest` leaf of a `reactComponentTestSuite` (#294). */
+type MiroirTestNode = MiroirTestAnyLeaf | MiroirTestSuite | ReactComponentTestSuite;
 
 function miroirTestNodeLabel(node: MiroirTestNode): string {
   if (node.miroirTestType === "miroirTestSuite" || node.miroirTestType === "reactComponentTestSuite") {
@@ -196,7 +197,7 @@ export async function runMiroirTestSuiteWalk(
       continue;
     }
 
-    const effectiveLeaf: MiroirTestLeaf = isSkipped ? { ...node, skip: true } : node;
+    const effectiveLeaf: MiroirTestAnyLeaf = isSkipped ? { ...node, skip: true } : node;
     const runMiroirTestFn = trackActionsBelow
       ? runMiroirTests._runMiroirTestWithTracking
       : runMiroirTests._runMiroirTest;

@@ -12,7 +12,7 @@
 import { describe, expect, it } from "vitest";
 
 import type {
-  MiroirTestLeaf,
+  MiroirTestForReactComponent,
   MiroirTestSuite,
   TestAssertionResult,
 } from "../../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -31,16 +31,16 @@ import {
 const suiteLabel = "reactComponentLeaf.286.phase2";
 
 /** A `reactComponentTest` leaf with an empty step list (#292 M1). */
-function reactComponentLeaf(label: string): MiroirTestLeaf {
+function reactComponentLeaf(label: string): MiroirTestForReactComponent {
   return {
     miroirTestType: "reactComponentTest",
     miroirTestLabel: label,
     steps: [],
-  } as unknown as MiroirTestLeaf;
+  };
 }
 
 /** The leaves under a `reactComponentTestSuite` child of a `miroirTestSuite` root (#292). */
-function suiteOf(...leaves: MiroirTestLeaf[]): MiroirTestSuite {
+function suiteOf(...leaves: MiroirTestForReactComponent[]): MiroirTestSuite {
   return {
     miroirTestType: "miroirTestSuite",
     miroirTestLabel: suiteLabel,
