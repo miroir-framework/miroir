@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -46,3 +47,26 @@ def test_miroir_skill_name_matches_folder() -> None:
     for d in AGENTS_SKILLS.glob("miroir-*"):
         front = (d / "SKILL.md").read_text(encoding="utf-8").split("---")[1]
         assert f"name: {d.name}\n" in front, d.name
+
+
+def _ignored(path: str) -> bool:
+    result = subprocess.run(["git", "check-ignore", "-q", "--no-index", path], cwd=REPO_ROOT)
+    return result.returncode == 0
+
+
+def test_tracked_skills_are_exactly_miroir_and_locked() -> None:
+    out = subprocess.run(
+        ["git", "ls-files", ".agents/skills", ".claude/skills"],
+        cwd=REPO_ROOT, capture_output=True, text=True, check=True,
+    ).stdout.split()
+    names = {Path(p).parts[2] for p in out}
+    expected = {p.name for p in AGENTS_SKILLS.glob("miroir-*")} | _lock_keys()
+    assert names == expected
+
+
+def test_personal_installs_are_ignored_by_git() -> None:
+    for base in (".agents/skills", ".claude/skills"):
+        assert _ignored(f"{base}/some-personal-skill/SKILL.md")
+        assert not _ignored(f"{base}/miroir-new-skill/SKILL.md")
+        for name in _lock_keys():
+            assert not _ignored(f"{base}/{name}/SKILL.md"), name
