@@ -12,6 +12,7 @@ import type {
   MiroirTestForRunner,
   MiroirTestLeaf,
   MiroirTestSuite,
+  ReactComponentTestSuite,
   Runner,
   StoreUnitConfiguration,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -31,7 +32,10 @@ import {
 import { runMiroirQueryRunnerTestInMemory } from "./QueryRunnerTestTools";
 import { runMiroirRunnerTest } from "./RunnerTestTools";
 import { runMiroirReactComponentTest } from "./ReactComponentTestTools.js";
-import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
+import type {
+  MiroirTestRunFilter,
+  ReactComponentTestSuiteContext,
+} from "../0_interfaces/5-tests/miroirTestTypes";
 import { runMiroirTestSuiteWalk } from "./miroirTestSuiteWalk.js";
 import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
 import type { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
@@ -148,6 +152,8 @@ export type RunMiroirTest = (
   executionOptions?: MiroirTestExecutionOptions,
   testAssertionPath?: TestAssertionPath,
   parentSkip?: boolean,
+  /** Set by the walk for a leaf of a `reactComponentTestSuite` node (#292). */
+  reactComponentTestSuite?: ReactComponentTestSuiteContext,
 ) => Promise<void>;
 
 // ################################################################################################
@@ -172,6 +178,7 @@ export async function runMiroirTest(
   executionOptions?: MiroirTestExecutionOptions, // needed only for transformerTest, runnerTest, actionTest, reactComponentTest
   testAssertionPath?: TestAssertionPath,
   parentSkip?: boolean,
+  reactComponentTestSuite?: ReactComponentTestSuiteContext,
 ): Promise<void> {
   const executionMode = executionOptions?.executionMode ?? "unit";
 
@@ -292,6 +299,7 @@ export async function runMiroirTest(
           executionOptions.rethrowComponentTestFailures === true,
         testAssertionPath,
         parentSkip,
+        reactComponentTestSuite,
       );
     case "runnerTest":
       if (executionOptions?.executionMode !== "integration") {
@@ -325,7 +333,7 @@ export async function runMiroirTest(
 export async function runMiroirTestSuite(
   localVitest: VitestNamespace,
   testSuitePath: string[],
-  miroirTestSuite: MiroirTestSuite,
+  miroirTestSuite: MiroirTestSuite | ReactComponentTestSuite,
   filter: MiroirTestRunFilter | undefined,
   modelEnvironment: MiroirModelEnvironment,
   miroirActivityTracker: MiroirActivityTrackerInterface,
@@ -404,6 +412,7 @@ export const runMiroirTests: RunMiroirTests = {
     executionOptions,
     testAssertionPath?,
     parentSkip?,
+    reactComponentTestSuite?,
   ) => {
     if (parentSkip || leaf.skip) {
       return;
@@ -445,6 +454,7 @@ export const runMiroirTests: RunMiroirTests = {
             executionOptions,
             testAssertionPath,
             parentSkip,
+            reactComponentTestSuite,
           );
         });
       });

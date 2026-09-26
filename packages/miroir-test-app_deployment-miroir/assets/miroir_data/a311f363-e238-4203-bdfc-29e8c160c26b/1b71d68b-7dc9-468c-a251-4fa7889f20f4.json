@@ -1,0 +1,496 @@
+{
+  "uuid": "1b71d68b-7dc9-468c-a251-4fa7889f20f4",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "JzodArrayEditor_ComponentTestSuite",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Issues #286, #292: JzodArrayEditor React component tests (JzodElementEditor), one MiroirTest instance per editor. Edited by hand.",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "JzodArrayEditor_ComponentTestSuite",
+    "miroirTests": [
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "JzodArrayEditor",
+        "component": "JzodElementEditor",
+        "componentProps": {
+          "label": "Test Label",
+          "name": "testField",
+          "listKey": "ROOT.testField",
+          "rootLessListKey": "testField",
+          "rootLessListKeyArray": [
+            "testField"
+          ],
+          "rawJzodSchema": {
+            "type": "array",
+            "definition": {
+              "type": "string"
+            }
+          },
+          "initialFormState": [
+            "value1",
+            "value2",
+            "value3"
+          ]
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodArrayEditor: renders array input with label when label prop is provided",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "only one label",
+                "target": {
+                  "byText": {
+                    "regex": "Test Label"
+                  }
+                },
+                "count": 1
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodArrayEditor: renders all array values, in the right order",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "initial",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldNamePrefix": "testField."
+                },
+                "values": [
+                  "value1",
+                  "value2",
+                  "value3"
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodArrayEditor: form state is changed when selection changes",
+            "steps": [
+              {
+                "step": "change",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldNamePrefix": "testField.",
+                  "index": 1
+                },
+                "value": "new value",
+                "saveAs": "cell"
+              },
+              {
+                "step": "expectElement",
+                "label": "after change",
+                "target": {
+                  "ref": "cell"
+                },
+                "containsHtml": "new value"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodArrayEditor: changing order of array items when button ROOT.testField.1.up is clicked",
+            "steps": [
+              {
+                "step": "clickArrayButton",
+                "field": "testField",
+                "action": "up",
+                "index": 1
+              },
+              {
+                "step": "expectElement",
+                "label": "after up button click",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldNamePrefix": "testField."
+                },
+                "values": [
+                  "value2",
+                  "value1",
+                  "value3"
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodArrayEditor: changing order of array items when button ROOT.testField.2.up is clicked",
+            "steps": [
+              {
+                "step": "clickArrayButton",
+                "field": "testField",
+                "action": "up",
+                "index": 2
+              },
+              {
+                "step": "expectElement",
+                "label": "after up button click",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldNamePrefix": "testField."
+                },
+                "values": [
+                  "value1",
+                  "value3",
+                  "value2"
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodArrayEditor: changing order of array items when button ROOT.testField.0.down is clicked",
+            "steps": [
+              {
+                "step": "clickArrayButton",
+                "field": "testField",
+                "action": "down",
+                "index": 0
+              },
+              {
+                "step": "expectElement",
+                "label": "after down button click",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldNamePrefix": "testField."
+                },
+                "values": [
+                  "value2",
+                  "value1",
+                  "value3"
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodArrayEditor: changing order of heteronomous object array items from union when button ROOT.testField.0.down is clicked",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "array",
+                "definition": {
+                  "type": "union",
+                  "discriminator": "objectType",
+                  "definition": [
+                    {
+                      "type": "object",
+                      "definition": {
+                        "objectType": {
+                          "type": "literal",
+                          "definition": "A"
+                        },
+                        "a": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "objectType": {
+                          "type": "literal",
+                          "definition": "B"
+                        },
+                        "b": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "initialFormState": [
+                {
+                  "objectType": "A",
+                  "a": "value1"
+                },
+                {
+                  "objectType": "B",
+                  "b": 2
+                },
+                {
+                  "objectType": "A",
+                  "a": "value3"
+                }
+              ]
+            },
+            "steps": [
+              {
+                "step": "expectRenderedValues",
+                "label": "before up button click",
+                "field": "testField",
+                "expectedValue": [
+                  {
+                    "objectType": "A",
+                    "a": "value1"
+                  },
+                  {
+                    "objectType": "B",
+                    "b": 2
+                  },
+                  {
+                    "objectType": "A",
+                    "a": "value3"
+                  }
+                ]
+              },
+              {
+                "step": "clickArrayButton",
+                "field": "testField",
+                "action": "down",
+                "index": 0
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after up button click",
+                "field": "testField",
+                "expectedValue": [
+                  {
+                    "objectType": "B",
+                    "b": 2
+                  },
+                  {
+                    "objectType": "A",
+                    "a": "value1"
+                  },
+                  {
+                    "objectType": "A",
+                    "a": "value3"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodArrayEditor: renders all array values of a plain 2-items tuple with a string and a number, in the right order",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "tuple",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "initialFormState": [
+                "value1",
+                2
+              ]
+            },
+            "steps": [
+              {
+                "step": "expectRenderedValues",
+                "label": "initial",
+                "field": "testField",
+                "expectedValue": [
+                  "value1",
+                  2
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodArrayEditor: renders all array values of a tuple inside an array, in the right order",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "array",
+                "definition": {
+                  "type": "tuple",
+                  "definition": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ]
+                }
+              },
+              "initialFormState": [
+                [
+                  "value1",
+                  1
+                ],
+                [
+                  "value2",
+                  2
+                ],
+                [
+                  "value3",
+                  3
+                ]
+              ]
+            },
+            "steps": [
+              {
+                "step": "expectRenderedValues",
+                "label": "initial",
+                "field": "testField",
+                "expectedValue": [
+                  [
+                    "value1",
+                    1
+                  ],
+                  [
+                    "value2",
+                    2
+                  ],
+                  [
+                    "value3",
+                    3
+                  ]
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodArrayEditor: add an element to a string array when button ROOT.testField.add is clicked",
+            "steps": [
+              {
+                "step": "clickArrayButton",
+                "field": "testField",
+                "action": "add"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after add button click",
+                "field": "testField",
+                "expectedValue": [
+                  "value1",
+                  "value2",
+                  "value3",
+                  ""
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodArrayEditor: add an element to an object array when button ROOT.testField.add is clicked",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "array",
+                "definition": {
+                  "type": "object",
+                  "definition": {
+                    "a": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "b": {
+                      "type": "object",
+                      "definition": {
+                        "c": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "d": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              },
+              "initialFormState": [
+                {
+                  "a": "value1",
+                  "b": {
+                    "c": 1
+                  },
+                  "d": true
+                },
+                {
+                  "a": "value2",
+                  "b": {
+                    "c": 2
+                  },
+                  "d": false
+                }
+              ]
+            },
+            "steps": [
+              {
+                "step": "clickArrayButton",
+                "field": "testField",
+                "action": "add"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after add button click",
+                "field": "testField",
+                "expectedValue": [
+                  {
+                    "a": "value1",
+                    "b": {
+                      "c": 1
+                    },
+                    "d": true
+                  },
+                  {
+                    "a": "value2",
+                    "b": {
+                      "c": 2
+                    },
+                    "d": false
+                  },
+                  {
+                    "b": {
+                      "c": 0
+                    },
+                    "d": false
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodArrayEditor: duplicate an element in a string array when duplicate button for item 1 is clicked",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "duplicate button",
+                "target": {
+                  "widget": "arrayButton",
+                  "field": "testField",
+                  "action": "duplicate",
+                  "index": 1
+                }
+              },
+              {
+                "step": "clickArrayButton",
+                "field": "testField",
+                "action": "duplicate",
+                "index": 1
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after duplicate button click",
+                "field": "testField",
+                "expectedValue": [
+                  "value1",
+                  "value2",
+                  "value2",
+                  "value3"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

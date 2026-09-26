@@ -1,0 +1,394 @@
+{
+  "uuid": "590693b6-2125-43fc-89d7-1330ae8318db",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "JzodSimpleTypeEditor_ComponentTestSuite",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Issues #286, #292: JzodSimpleTypeEditor React component tests (JzodElementEditor), one MiroirTest instance per editor. Edited by hand.",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "JzodSimpleTypeEditor_ComponentTestSuite",
+    "miroirTests": [
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "JzodSimpleTypeEditor",
+        "component": "JzodElementEditor",
+        "componentProps": {
+          "label": "Test Label",
+          "name": "testField",
+          "listKey": "ROOT.testField",
+          "rootLessListKey": "testField",
+          "rootLessListKeyArray": [
+            "testField"
+          ]
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodSimpleTypeEditor: string renders input with proper value",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "string"
+              },
+              "initialFormState": "placeholder text"
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "initial",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "testField"
+                },
+                "value": "placeholder text",
+                "saveAs": "input"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodSimpleTypeEditor: string allows to modify input value with consistent update",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "string"
+              },
+              "initialFormState": "placeholder text"
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "initial",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "testField"
+                },
+                "value": "placeholder text",
+                "saveAs": "input"
+              },
+              {
+                "step": "change",
+                "target": {
+                  "ref": "input"
+                },
+                "value": "new text"
+              },
+              {
+                "step": "expectElement",
+                "label": "after change",
+                "target": {
+                  "ref": "input"
+                },
+                "value": "new text"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodSimpleTypeEditor: string allows to modify input value with consistent update then submit form",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "string"
+              },
+              "initialFormState": "placeholder text"
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "initial",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "testField"
+                },
+                "value": "placeholder text",
+                "saveAs": "input"
+              },
+              {
+                "step": "change",
+                "target": {
+                  "ref": "input"
+                },
+                "value": "new text"
+              },
+              {
+                "step": "expectElement",
+                "label": "after change",
+                "target": {
+                  "ref": "input"
+                },
+                "value": "new text"
+              },
+              {
+                "step": "submit",
+                "target": {
+                  "byRole": "form"
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodSimpleTypeEditor: number renders input with proper value",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "number"
+              },
+              "initialFormState": 42
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "initial",
+                "target": {
+                  "byDisplayValue": 42,
+                  "id": "testField"
+                },
+                "value": 42
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodSimpleTypeEditor: number allows to modify input value with consistent update",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "number"
+              },
+              "initialFormState": 42
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "initial",
+                "target": {
+                  "byDisplayValue": 42,
+                  "id": "testField"
+                },
+                "value": 42,
+                "saveAs": "input"
+              },
+              {
+                "step": "change",
+                "target": {
+                  "ref": "input"
+                },
+                "value": 100
+              },
+              {
+                "step": "expectElement",
+                "label": "after change",
+                "target": {
+                  "ref": "input"
+                },
+                "value": 100
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodSimpleTypeEditor: uuid renders input with proper value",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "uuid"
+              },
+              "initialFormState": "c8e2cc98-b0ec-426a-8be0-2d526039f85a"
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "initial",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "testField"
+                },
+                "value": "c8e2cc98-b0ec-426a-8be0-2d526039f85a",
+                "saveAs": "input"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodSimpleTypeEditor: uuid allows to modify input value with consistent update",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "uuid"
+              },
+              "initialFormState": "c8e2cc98-b0ec-426a-8be0-2d526039f85a"
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "initial",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "testField"
+                },
+                "value": "c8e2cc98-b0ec-426a-8be0-2d526039f85a",
+                "saveAs": "input"
+              },
+              {
+                "step": "change",
+                "target": {
+                  "ref": "input"
+                },
+                "value": "3c659c65-35f4-40e5-acf3-28115f35affa"
+              },
+              {
+                "step": "expectElement",
+                "label": "after change",
+                "target": {
+                  "ref": "input"
+                },
+                "value": "3c659c65-35f4-40e5-acf3-28115f35affa"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodSimpleTypeEditor: boolean renders checkbox with proper value true",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "boolean"
+              },
+              "initialFormState": true
+            },
+            "steps": [
+              {
+                "step": "expectRenderedValues",
+                "label": "initial",
+                "expectedValue": {
+                  "testField": true
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodSimpleTypeEditor: boolean renders checkbox with proper value false",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "boolean"
+              },
+              "initialFormState": false
+            },
+            "steps": [
+              {
+                "step": "expectRenderedValues",
+                "label": "initial",
+                "expectedValue": {
+                  "testField": false
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodSimpleTypeEditor: boolean allows to modify checkbox value with consistent update",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "boolean"
+              },
+              "initialFormState": true
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "initial",
+                "target": {
+                  "byRole": "checkbox",
+                  "fieldName": "testField"
+                },
+                "checked": true,
+                "saveAs": "checkbox"
+              },
+              {
+                "step": "click",
+                "target": {
+                  "ref": "checkbox"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "after click",
+                "target": {
+                  "ref": "checkbox"
+                },
+                "checked": false
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after change",
+                "expectedValue": {
+                  "testField": false
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodSimpleTypeEditor: bigint renders input with proper bigint value",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "bigint"
+              },
+              "initialFormState": {
+                "$bigint": "12345678901234567890"
+              }
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "initial",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "testField"
+                },
+                "value": "12345678901234567890",
+                "saveAs": "input"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodSimpleTypeEditor: bigint allows to modify input value with consistent update",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "bigint"
+              },
+              "initialFormState": {
+                "$bigint": "12345678901234567890"
+              }
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "initial",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "testField"
+                },
+                "value": "12345678901234567890",
+                "saveAs": "input"
+              },
+              {
+                "step": "change",
+                "target": {
+                  "ref": "input"
+                },
+                "value": "98765432109876543210"
+              },
+              {
+                "step": "expectElement",
+                "label": "after change",
+                "target": {
+                  "ref": "input"
+                },
+                "value": "98765432109876543210"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

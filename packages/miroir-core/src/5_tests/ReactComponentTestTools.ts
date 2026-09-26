@@ -9,12 +9,16 @@ import type {
 import type {
   MiroirTestRunFilter,
   ReactComponentTestRunnerResult,
+  ReactComponentTestSuiteContext,
 } from "../0_interfaces/5-tests/miroirTestTypes";
 import { ConfigurationService } from "../3_controllers/ConfigurationService";
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
 
 export const REACT_COMPONENT_TEST_NO_RUNNER_MESSAGE =
   "reactComponentTest requires a registered component test runner";
+
+export const REACT_COMPONENT_TEST_NO_SUITE_MESSAGE =
+  "reactComponentTest must be a leaf of a reactComponentTestSuite";
 
 // ################################################################################################
 /**
@@ -23,8 +27,13 @@ export const REACT_COMPONENT_TEST_NO_RUNNER_MESSAGE =
  *
  * - No runner registered: the leaf is recorded as skipped and nothing is thrown (miroir-core
  *   generic entry, where vitest then reports the leaf as passed).
- * - Otherwise the runner's `ok` / `error` is recorded. An `error` is rethrown only when
- *   `rethrowComponentTestFailures` is set, so that one failing case does not end a UI run.
+ * - A leaf outside a `reactComponentTestSuite` (no suite context from the walk) is recorded as an
+ *   `error` and does not reach the runner (#292 M1).
+ * - Otherwise the runner is called with the leaf and the suite context built by the walk (#292),
+ *   and its `ok` / `error` is recorded.
+ *
+ * An `error` is rethrown only when `rethrowComponentTestFailures` is set, so that one failing case
+ * does not end a UI run.
  */
 export async function runMiroirReactComponentTest(
   testNamePath: string[],
@@ -34,6 +43,7 @@ export async function runMiroirReactComponentTest(
   rethrowComponentTestFailures: boolean,
   testAssertionPath?: TestAssertionPath,
   parentSkip?: boolean,
+  reactComponentTestSuite?: ReactComponentTestSuiteContext,
 ): Promise<void> {
   const assertionName = miroirTest.miroirTestLabel;
   const currentTestAssertionPath =
@@ -65,16 +75,20 @@ export async function runMiroirReactComponentTest(
   }
 
   let runnerResult: ReactComponentTestRunnerResult;
-  try {
-    runnerResult = await runner({
-      componentTestRef: miroirTest.componentTestRef,
-      testNamePath,
-    });
-  } catch (error) {
+  if (!reactComponentTestSuite) {
     runnerResult = {
       status: "error",
-      message: error instanceof Error ? error.message : String(error),
+      message: `${REACT_COMPONENT_TEST_NO_SUITE_MESSAGE} ("${assertionName}" is not)`,
     };
+  } else {
+    try {
+      runnerResult = await runner({ testNamePath, leaf: miroirTest, suite: reactComponentTestSuite });
+    } catch (error) {
+      runnerResult = {
+        status: "error",
+        message: error instanceof Error ? error.message : String(error),
+      };
+    }
   }
 
   const testAssertionResult: TestAssertionResult =

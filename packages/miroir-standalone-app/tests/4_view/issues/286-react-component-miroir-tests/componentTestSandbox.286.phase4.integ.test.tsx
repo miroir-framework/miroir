@@ -72,13 +72,6 @@ vi.mock(
 
 import * as componentTestTools from "../../../../src/miroir-fwk/4-tests/componentTests/componentTestTools";
 import { componentTestRunInProgressMessage } from "../../../../src/miroir-fwk/4-tests/componentTests/index";
-import {
-  componentTestLeafLabel,
-  componentTestManifest,
-  componentTestSuiteInstanceName,
-  componentTestSuiteInstanceUuid,
-} from "../../../../src/miroir-fwk/4-tests/componentTests/componentTestManifest";
-import { componentTestRegistry } from "../../../../src/miroir-fwk/4-tests/componentTests/componentTestRegistry";
 import type { MiroirTestResultData } from "../../../../src/miroir-fwk/4_view/components/Buttons/RunMiroirTestSuiteButton";
 import { MiroirTestDisplay } from "../../../../src/miroir-fwk/4_view/components/Reports/MiroirTestDisplay";
 import { ReportPageContextProvider } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportPageContext";
@@ -89,6 +82,11 @@ const MIROIR_TEST_DATA_FOLDER = join(
   resolveRepoRoot(),
   "packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b",
 );
+
+const arraySuite = "JzodArrayEditor";
+/** #292: the Array cases have their own MiroirTest instance, `JzodArrayEditor_ComponentTestSuite`. */
+const componentTestSuiteInstanceUuid = "1b71d68b-7dc9-468c-a251-4fa7889f20f4";
+const componentTestSuiteInstanceName = "JzodArrayEditor_ComponentTestSuite";
 
 function loadComponentTestSuiteInstance(): MiroirTestDefinition {
   for (const fileName of readdirSync(MIROIR_TEST_DATA_FOLDER)) {
@@ -104,21 +102,17 @@ function loadComponentTestSuiteInstance(): MiroirTestDefinition {
 }
 
 const componentTestSuiteInstance = loadComponentTestSuiteInstance();
-const arraySuite = "JzodArrayEditor";
-const arrayLeafLabels = componentTestManifest[arraySuite].map((caseLabel) =>
-  componentTestLeafLabel(arraySuite, caseLabel),
+/** #292 Slice 4: the Array leaves are declarative; their labels come from the instance JSON. */
+const arrayLeafLabels: string[] = (componentTestSuiteInstance.definition.miroirTests[0] as any).miroirTests.map(
+  (leaf: { miroirTestLabel: string }) => leaf.miroirTestLabel,
 );
 /**
- * Limits the run to the Array sub-suite, so that later slices do not change the counts. Every
- * other sub-suite is listed with no leaf: the Run button walks from an empty suite path, so the
- * sub-suites are at depth 1, where miroir-core `resolveSuiteInnerFilter` throws on a filter that
- * does not name the sub-suite ("MiroirTest filter matched no tests in suite ...").
+ * Names the Array leaves of the Array instance. The instance has one child, the Array sub-suite
+ * (#292), so the filter names no empty sibling.
  */
 const arraySuiteTestFilter = {
   testList: {
-    [componentTestSuiteInstanceName]: Object.fromEntries(
-      Object.keys(componentTestManifest).map((suite) => [suite, suite === arraySuite ? arrayLeafLabels : []]),
-    ),
+    [componentTestSuiteInstanceName]: { [arraySuite]: arrayLeafLabels },
   },
 };
 
@@ -181,6 +175,7 @@ function renderDisplays(
   harness: AppHarness,
   onTestCompletes: ((results: MiroirTestResultData[]) => void)[],
   testFilter: typeof arraySuiteTestFilter = arraySuiteTestFilter,
+  miroirTest: MiroirTestDefinition = componentTestSuiteInstance,
 ) {
   return render(
     <LocalCacheProvider store={harness.localCache.getInnerStore()}>
@@ -192,7 +187,7 @@ function renderDisplays(
         >
           <ReportPageContextProvider>
             <MiroirTestDisplay
-              miroirTest={componentTestSuiteInstance}
+              miroirTest={miroirTest}
               testLabel={componentTestSuiteInstanceName}
               gridType="ag-grid"
               useSnackBar={false}
@@ -212,6 +207,7 @@ const runButtonName = `Run ${componentTestSuiteInstanceName} Unit Tests`;
 async function runArraySuite(
   harness: AppHarness,
   testFilter: typeof arraySuiteTestFilter = arraySuiteTestFilter,
+  miroirTest: MiroirTestDefinition = componentTestSuiteInstance,
 ): Promise<MiroirTestResultData[]> {
   let results: MiroirTestResultData[] | undefined;
   renderDisplays(
@@ -222,6 +218,7 @@ async function runArraySuite(
       },
     ],
     testFilter,
+    miroirTest,
   );
   const savedDomConfig = { ...getDomConfig() };
   try {
@@ -303,38 +300,31 @@ describe("Array component suite in the MiroirTestDisplay sandbox", () => {
     expect(destroySpy).toHaveBeenCalledTimes(1);
   });
 
-  it("a failing case records an error with the matcher's message, and the cases after it still run", async () => {
-    const failingCase = componentTestManifest[arraySuite][1];
-    const originalCase = componentTestRegistry[arraySuite].cases[failingCase];
-    componentTestRegistry[arraySuite].cases[failingCase] = {
-      tests: async (env) => {
-        const detached = env.container.ownerDocument.createElement("div");
-        env.expect(detached).toBeInTheDocument();
-      },
-    };
-    try {
-      const harness = buildAppHarness();
-      const results = await runArraySuite(harness);
+  it("a failing case records an error with the step's message, and the cases after it still run", async () => {
+    // #292 Slice 4: leaf 2 of a copy of the Array instance gets a present:true expectElement on a
+    // target that matches nothing, instead of replacing a registry case.
+    const failingInstance: MiroirTestDefinition = JSON.parse(JSON.stringify(componentTestSuiteInstance));
+    const failingLeaf = (failingInstance.definition.miroirTests[0] as any).miroirTests[1];
+    failingLeaf.steps = [
+      { step: "expectElement", target: { byTestId: "no-such-element-292" }, present: true },
+    ];
+    const harness = buildAppHarness();
+    const results = await runArraySuite(harness, arraySuiteTestFilter, failingInstance);
 
-      const array = arrayResults(results);
-      expect(array.filter((result) => result.testResult === "ok")).toHaveLength(11);
-      const errors = array.filter((result) => result.testResult === "error");
-      expect(errors.map((result) => result.testName)).toEqual([
-        componentTestLeafLabel(arraySuite, failingCase),
-      ]);
-      expect(JSON.stringify(harness.miroirActivityTracker.getTestAssertionsResults([]))).toContain(
-        "to be in the document",
-      );
-      // The cases after the failing one ran.
-      const laterLabels = arrayLeafLabels.slice(2);
-      expect(
-        array
-          .filter((result) => laterLabels.includes(result.testName))
-          .every((result) => result.testResult === "ok"),
-      ).toBe(true);
-    } finally {
-      componentTestRegistry[arraySuite].cases[failingCase] = originalCase;
-    }
+    const array = arrayResults(results);
+    expect(array.filter((result) => result.testResult === "ok")).toHaveLength(11);
+    const errors = array.filter((result) => result.testResult === "error");
+    expect(errors.map((result) => result.testName)).toEqual([failingLeaf.miroirTestLabel]);
+    expect(JSON.stringify(harness.miroirActivityTracker.getTestAssertionsResults([]))).toContain(
+      "step 1 (expectElement): no element matches target",
+    );
+    // The cases after the failing one ran.
+    const laterLabels = arrayLeafLabels.slice(2);
+    expect(
+      array
+        .filter((result) => laterLabels.includes(result.testName))
+        .every((result) => result.testResult === "ok"),
+    ).toBe(true);
   });
 
   it("the close button is disabled while a run is active, and enabled again when it ends", async () => {
@@ -372,9 +362,7 @@ describe("Array component suite in the MiroirTestDisplay sandbox", () => {
     const filteredLabels = arrayLeafLabels.slice(0, 2);
     const filteredTestFilter = {
       testList: {
-        [componentTestSuiteInstanceName]: Object.fromEntries(
-          Object.keys(componentTestManifest).map((suite) => [suite, suite === arraySuite ? filteredLabels : []]),
-        ),
+        [componentTestSuiteInstanceName]: { [arraySuite]: filteredLabels },
       },
     };
     const harness = buildAppHarness();

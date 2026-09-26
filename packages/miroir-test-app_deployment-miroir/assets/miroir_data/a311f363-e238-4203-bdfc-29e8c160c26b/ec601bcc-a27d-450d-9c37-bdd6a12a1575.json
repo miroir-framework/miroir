@@ -1,0 +1,587 @@
+{
+  "uuid": "ec601bcc-a27d-450d-9c37-bdd6a12a1575",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "JzodAnyEditor_ComponentTestSuite",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Issues #286, #292: JzodAnyEditor React component tests (JzodElementEditor), one MiroirTest instance per editor. Edited by hand.",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "JzodAnyEditor_ComponentTestSuite",
+    "miroirTests": [
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "JzodAnyEditor",
+        "component": "JzodElementEditor",
+        "componentProps": {
+          "label": "Test Label",
+          "name": "testField",
+          "listKey": "ROOT.testField",
+          "rootLessListKey": "testField",
+          "rootLessListKeyArray": [
+            "testField"
+          ],
+          "rawJzodSchema": {
+            "type": "any"
+          }
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any type star button is visible for a string value",
+            "componentProps": {
+              "initialFormState": "hello"
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "star",
+                "target": {
+                  "widget": "unionTypeStar",
+                  "field": "testField"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "selector hidden",
+                "target": {
+                  "widget": "unionTypeInput",
+                  "field": "testField"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any type star button toggle shows then hides selector",
+            "componentProps": {
+              "initialFormState": 42
+            },
+            "steps": [
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "open",
+                "field": "testField"
+              },
+              {
+                "step": "expectElement",
+                "label": "selector shown",
+                "target": {
+                  "widget": "unionTypeInput",
+                  "field": "testField"
+                },
+                "timeout": 1000
+              },
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "close",
+                "field": "testField"
+              },
+              {
+                "step": "expectElement",
+                "label": "selector hidden",
+                "target": {
+                  "widget": "unionTypeInput",
+                  "field": "testField"
+                },
+                "present": false,
+                "timeout": 1000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any type can switch from number to string via selector",
+            "componentProps": {
+              "initialFormState": 42
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "star",
+                "target": {
+                  "widget": "unionTypeStar",
+                  "field": "testField"
+                }
+              },
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "open",
+                "field": "testField"
+              },
+              {
+                "step": "expectElement",
+                "label": "initial type",
+                "target": {
+                  "widget": "selectState",
+                  "field": "testField",
+                  "select": "unionType"
+                },
+                "attribute": {
+                  "name": "data-test-selected-value",
+                  "value": "number"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "select string",
+                "field": "testField",
+                "select": "unionType",
+                "option": "string"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after change to string",
+                "filter": [],
+                "timeout": 3000,
+                "expectedValue": {
+                  "testField": ""
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any type star button for object value places star and selector in header",
+            "componentProps": {
+              "initialFormState": {
+                "a": "hello",
+                "b": 1
+              }
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "star",
+                "target": {
+                  "widget": "unionTypeStar",
+                  "field": "testField"
+                },
+                "saveAs": "star"
+              },
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "open",
+                "field": "testField"
+              },
+              {
+                "step": "expectElement",
+                "label": "selector shown",
+                "target": {
+                  "widget": "unionTypeInput",
+                  "field": "testField"
+                },
+                "timeout": 1000,
+                "saveAs": "selector"
+              },
+              {
+                "step": "expectElement",
+                "label": "star and selector in one row",
+                "target": {
+                  "ref": "star"
+                },
+                "parentContains": {
+                  "ref": "selector"
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any type with object value shows text input for string attribute",
+            "componentProps": {
+              "initialFormState": {
+                "a": "hello"
+              }
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "attribute a",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "testField.a"
+                },
+                "value": "hello"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any type with object value shows text input for number attribute",
+            "componentProps": {
+              "initialFormState": {
+                "b": 1
+              }
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "attribute b",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "testField.b"
+                },
+                "value": 1
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any type can switch from number to object via selector",
+            "componentProps": {
+              "initialFormState": 42
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "star",
+                "target": {
+                  "widget": "unionTypeStar",
+                  "field": "testField"
+                }
+              },
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "open",
+                "field": "testField"
+              },
+              {
+                "step": "expectElement",
+                "label": "initial type",
+                "target": {
+                  "widget": "selectState",
+                  "field": "testField",
+                  "select": "unionType"
+                },
+                "attribute": {
+                  "name": "data-test-selected-value",
+                  "value": "number"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "select record",
+                "field": "testField",
+                "select": "unionType",
+                "option": "record"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after change to record",
+                "field": "testField",
+                "timeout": 3000,
+                "expectedValue": {
+                  "a": "enter attributes here..."
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any type can switch from object to string via selector",
+            "componentProps": {
+              "initialFormState": {
+                "a": "hello",
+                "b": "world"
+              }
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "star",
+                "target": {
+                  "widget": "unionTypeStar",
+                  "field": "testField"
+                }
+              },
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "open",
+                "field": "testField"
+              },
+              {
+                "step": "selectOption",
+                "label": "select string",
+                "field": "testField",
+                "select": "unionType",
+                "option": "string"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after change to string",
+                "filter": [],
+                "timeout": 3000,
+                "expectedValue": {
+                  "testField": ""
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any type can switch from object to array via selector",
+            "componentProps": {
+              "initialFormState": {
+                "a": "hello"
+              }
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "star",
+                "target": {
+                  "widget": "unionTypeStar",
+                  "field": "testField"
+                }
+              },
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "open",
+                "field": "testField"
+              },
+              {
+                "step": "selectOption",
+                "label": "select array",
+                "field": "testField",
+                "select": "unionType",
+                "option": "array"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after change to array",
+                "field": "testField",
+                "timeout": 3000,
+                "expectedValue": [
+                  "enter elements here..."
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any type can switch from array to string via selector",
+            "componentProps": {
+              "initialFormState": [
+                "item1",
+                "item2"
+              ]
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "star",
+                "target": {
+                  "widget": "unionTypeStar",
+                  "field": "testField"
+                }
+              },
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "open",
+                "field": "testField"
+              },
+              {
+                "step": "expectElement",
+                "label": "initial type",
+                "target": {
+                  "widget": "selectState",
+                  "field": "testField",
+                  "select": "unionType"
+                },
+                "attribute": {
+                  "name": "data-test-selected-value",
+                  "value": "array"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "select string",
+                "field": "testField",
+                "select": "unionType",
+                "option": "string"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after change to string",
+                "filter": [],
+                "timeout": 3000,
+                "expectedValue": {
+                  "testField": ""
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any-typed array can be added an item",
+            "componentProps": {
+              "initialFormState": [
+                "item1",
+                "item2"
+              ]
+            },
+            "steps": [
+              {
+                "step": "clickArrayButton",
+                "field": "testField",
+                "action": "add"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after add button click",
+                "field": "testField",
+                "expectedValue": [
+                  "item1",
+                  "item2",
+                  ""
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any-typed array can have an item removed",
+            "componentProps": {
+              "initialFormState": [
+                "item1",
+                "item2",
+                "item3"
+              ]
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "delete button",
+                "target": {
+                  "widget": "arrayButton",
+                  "field": "testField",
+                  "action": "delete",
+                  "index": 1
+                }
+              },
+              {
+                "step": "clickArrayButton",
+                "field": "testField",
+                "action": "delete",
+                "index": 1
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after delete button click",
+                "field": "testField",
+                "expectedValue": [
+                  "item1",
+                  "item3"
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any-typed array can have an item duplicated",
+            "componentProps": {
+              "initialFormState": [
+                "item1",
+                "item2",
+                "item3"
+              ]
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "duplicate button",
+                "target": {
+                  "widget": "arrayButton",
+                  "field": "testField",
+                  "action": "duplicate",
+                  "index": 1
+                }
+              },
+              {
+                "step": "clickArrayButton",
+                "field": "testField",
+                "action": "duplicate",
+                "index": 1
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after duplicate button click",
+                "field": "testField",
+                "expectedValue": [
+                  "item1",
+                  "item2",
+                  "item2",
+                  "item3"
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any-typed object can be added an attribute (it is a record)",
+            "componentProps": {
+              "initialFormState": {
+                "a": "hello"
+              }
+            },
+            "steps": [
+              {
+                "step": "clickObjectButton",
+                "field": "testField",
+                "action": "addRecordEntry"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after add button click",
+                "field": "testField",
+                "expectedValue": {
+                  "newRecordEntry": "",
+                  "a": "hello"
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodAnyEditor: any-typed array can have an attribute removed (it is a record)",
+            "componentProps": {
+              "initialFormState": {
+                "a": "hello",
+                "b": "world"
+              }
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "delete button",
+                "target": {
+                  "widget": "objectButton",
+                  "field": "testField",
+                  "action": "remove",
+                  "attribute": "a"
+                }
+              },
+              {
+                "step": "clickObjectButton",
+                "field": "testField",
+                "action": "remove",
+                "attribute": "a"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after delete button click",
+                "field": "testField",
+                "expectedValue": {
+                  "b": "world"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

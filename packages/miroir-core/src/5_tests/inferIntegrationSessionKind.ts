@@ -2,6 +2,7 @@ import type {
   MiroirTestForTransformer,
   MiroirTestLeaf,
   MiroirTestSuite,
+  ReactComponentTestSuite,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { IntegrationTestSessionKind } from "./IntegrationTestBootstrap.js";
 
@@ -17,8 +18,9 @@ export type MiroirTestSuiteExecutionCapabilities = {
 export function walkMiroirTestLeaves(suite: MiroirTestSuite): MiroirTestLeaf[] {
   const leaves: MiroirTestLeaf[] = [];
 
-  function visit(node: MiroirTestLeaf | MiroirTestSuite): void {
-    if (node.miroirTestType === "miroirTestSuite") {
+  function visit(node: MiroirTestLeaf | MiroirTestSuite | ReactComponentTestSuite): void {
+    // A `reactComponentTestSuite` holds `reactComponentTest` leaves (#292).
+    if (node.miroirTestType === "miroirTestSuite" || node.miroirTestType === "reactComponentTestSuite") {
       for (const child of node.miroirTests) {
         visit(child);
       }

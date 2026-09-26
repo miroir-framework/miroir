@@ -20,6 +20,7 @@ import { defaultMetaModelEnvironment } from "../../../../src/1_core/Model";
 import { TestFramework } from "../../../../src/1_core/testing/test-expect";
 import { ConfigurationService } from "../../../../src/3_controllers/ConfigurationService";
 import { MiroirActivityTracker } from "../../../../src/3_controllers/MiroirActivityTracker";
+import { MiroirEventService } from "../../../../src/3_controllers/MiroirEventService";
 import {
   runMiroirTest,
   runMiroirTests,
@@ -29,20 +30,29 @@ import {
 
 const suiteLabel = "reactComponentLeaf.286.phase2";
 
-function reactComponentLeaf(label: string, caseLabel: string): MiroirTestLeaf {
+/** A `reactComponentTest` leaf with an empty step list (#292 M1). */
+function reactComponentLeaf(label: string): MiroirTestLeaf {
   return {
     miroirTestType: "reactComponentTest",
     miroirTestLabel: label,
-    componentTestRef: { suite: "JzodArrayEditor", case: caseLabel },
+    steps: [],
   } as unknown as MiroirTestLeaf;
 }
 
+/** The leaves under a `reactComponentTestSuite` child of a `miroirTestSuite` root (#292). */
 function suiteOf(...leaves: MiroirTestLeaf[]): MiroirTestSuite {
   return {
     miroirTestType: "miroirTestSuite",
     miroirTestLabel: suiteLabel,
-    miroirTests: leaves,
-  } as MiroirTestSuite;
+    miroirTests: [
+      {
+        miroirTestType: "reactComponentTestSuite",
+        miroirTestLabel: "JzodArrayEditor",
+        component: "JzodElementEditor",
+        miroirTests: leaves,
+      },
+    ],
+  } as unknown as MiroirTestSuite;
 }
 
 async function runSuiteInProcess(
@@ -50,6 +60,8 @@ async function runSuiteInProcess(
   executionOptions: MiroirTestExecutionOptions = { executionMode: "unit" },
 ): Promise<MiroirActivityTracker> {
   const tracker = new MiroirActivityTracker();
+  // Nested suites are tracked through `trackTestSuite`, which needs an event service.
+  new MiroirEventService(tracker);
   await runMiroirTests._runMiroirTestSuite(
     TestFramework as unknown as VitestNamespace,
     [suiteLabel],
@@ -101,7 +113,7 @@ describe("reactComponentTest leaf", () => {
   it("with no runner registered, a one-leaf suite records skipped with a message and does not throw", async () => {
     await withRegisteredRunner(undefined, async () => {
       const tracker = await runSuiteInProcess(
-        suiteOf(reactComponentLeaf("JzodArrayEditor: case A", "case A")),
+        suiteOf(reactComponentLeaf("JzodArrayEditor: case A")),
       );
       const results = recordedAssertions(tracker);
       expect(results["JzodArrayEditor: case A"]?.assertionResult).toBe("skipped");
@@ -114,17 +126,19 @@ describe("reactComponentTest leaf", () => {
   it("with a runner returning error, the walk records error with the runner's message and runs the next leaf", async () => {
     const calls: string[] = [];
     await withRegisteredRunner(
-      async ({ componentTestRef }) => {
-        calls.push(componentTestRef.case);
-        return componentTestRef.case === "case A"
+      // #292: the runner receives the leaf and its suite context.
+      async ({ leaf }) => {
+        const caseLabel = leaf.miroirTestLabel.replace("JzodArrayEditor: ", "");
+        calls.push(caseLabel);
+        return caseLabel === "case A"
           ? { status: "error", message: "case A failed on purpose" }
           : { status: "ok" };
       },
       async () => {
         const tracker = await runSuiteInProcess(
           suiteOf(
-            reactComponentLeaf("JzodArrayEditor: case A", "case A"),
-            reactComponentLeaf("JzodArrayEditor: case B", "case B"),
+            reactComponentLeaf("JzodArrayEditor: case A"),
+            reactComponentLeaf("JzodArrayEditor: case B"),
           ),
         );
         const results = recordedAssertions(tracker);
@@ -143,7 +157,7 @@ describe("reactComponentTest leaf", () => {
       async () => ({ status: "error", message: "case A failed on purpose" }),
       async () => {
         await expect(
-          runSuiteInProcess(suiteOf(reactComponentLeaf("JzodArrayEditor: case A", "case A")), {
+          runSuiteInProcess(suiteOf(reactComponentLeaf("JzodArrayEditor: case A")), {
             executionMode: "unit",
             rethrowComponentTestFailures: true,
           }),
@@ -156,7 +170,7 @@ describe("reactComponentTest leaf", () => {
     await withRegisteredRunner(
       async () => ({ status: "ok" }),
       async () => {
-        const leaf = reactComponentLeaf("JzodArrayEditor: case A", "case A");
+        const leaf = reactComponentLeaf("JzodArrayEditor: case A");
         await expect(
           runMiroirTest(
             TestFramework as unknown as VitestNamespace,

@@ -1,9 +1,12 @@
+import type React from "react";
+
 import {
   defaultSelfApplicationDeploymentMap,
   MiroirActivityTracker,
   MiroirLoggerFactory,
   type LoggerInterface,
   type ReactComponentTestRunner,
+  type ReactComponentTestRunnerResult,
 } from "miroir-core";
 
 import { packageName } from "../../../constants.js";
@@ -18,10 +21,11 @@ import {
   createComponentTestEnvironment,
   mountComponent,
   waitForProgressiveRendering,
-  type ComponentTestRegistry,
 } from "./componentTestEnvironment.js";
-import { componentTestRegistry } from "./componentTestRegistry.js";
+import { componentRegistry as defaultComponentRegistry, type ComponentRegistry } from "./componentRegistry.js";
+import { reviveComponentProps } from "./componentTestTargets.js";
 import { buildComponentTestWrapper, type ComponentTestWrapper } from "./componentTestTools.js";
+import { ComponentTestStepError, runComponentTestSteps } from "./runComponentTestSteps.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "runReactComponentTest");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -34,8 +38,8 @@ export interface ComponentTestSandboxHost {
   sandboxElement: HTMLElement;
   /** Target of the components' portals. Created as a child of `sandboxElement` when absent. */
   portalElement?: HTMLElement;
-  /** Defaults to `componentTestRegistry`. */
-  registry?: ComponentTestRegistry;
+  /** Components of the `reactComponentTestSuite` nodes (#292). Defaults to `componentRegistry`. */
+  componentRegistry?: ComponentRegistry;
 }
 
 /**
@@ -49,18 +53,23 @@ export type ClosableReactComponentTestRunner = ReactComponentTestRunner & {
 
 // ################################################################################################
 /**
- * The `ReactComponentTestRunner` of `reactComponentTest` leaves (#286, analysis §5.6):
+ * The `ReactComponentTestRunner` of `reactComponentTest` leaves (#286 analysis §5.6, #292 analysis
+ * §5.3). Every leaf belongs to a `reactComponentTestSuite` and has declarative `steps` (#292 M1).
  *
- * 1. looks up the suite and case in the registry, an unknown reference being an `error` result;
- * 2. builds one wrapper (providers over its own `LocalCache`) per suite, on the suite's first
- *    case, and reuses it for the later cases;
- * 3. unmounts the previous case, creates a fresh container under `sandboxElement`, and mounts the
- *    wrapped component into it;
- * 4. runs the case body with a fresh `ComponentTestEnvironment`, a thrown error becoming an
- *    `error` result;
- * 5. after the suite's last case (in registry order), destroys the suite wrapper's
- *    `MiroirEventService`; `endRun()` does the same for any wrapper still open when the run ends
- *    (a filtered run need not reach the suite's last case), and so does `close()`.
+ * 1. The component is `componentRegistry[suite.component]` and its props are the suite's
+ *    `componentProps` shallow-merged under the leaf's, with `{"$bigint": …}` revived. A call
+ *    without `suite`, a leaf without `steps`, or an unknown component is an `error` result.
+ * 2. It builds one wrapper (providers over its own `LocalCache`) per suite, keyed by the
+ *    `reactComponentTestSuite` path, on the suite's first case, and reuses it for the later cases.
+ * 3. It unmounts the previous case, creates a fresh container under `sandboxElement`, and mounts
+ *    the wrapped component into it.
+ * 4. It runs the steps (`runComponentTestSteps`) with a fresh `ComponentTestEnvironment`, a thrown
+ *    error becoming an `error` result (with the expected and actual values of a failed
+ *    `expectRenderedValues`).
+ * 5. After the suite's last case (the last of `suite.caseLabels`), it destroys the suite
+ *    wrapper's `MiroirEventService`; `endRun()` does the same for
+ *    any wrapper still open when the run ends (a filtered run need not reach the suite's last
+ *    case), and so does `close()`.
  *
  * The component is rendered inside `ComponentTestModeContext` set to the sandbox mode, so that in
  * the app it renders the same DOM as under vitest, and inside `PortalContainerProvider` set to
@@ -71,7 +80,7 @@ export function createReactComponentTestRunner(
   host: ComponentTestSandboxHost,
 ): ClosableReactComponentTestRunner {
   configureComponentTestDom();
-  const registry = host.registry ?? componentTestRegistry;
+  const componentRegistry = host.componentRegistry ?? defaultComponentRegistry;
   const sandboxElement = host.sandboxElement;
   const ownsPortalElement = !host.portalElement;
   const portalElement =
@@ -99,90 +108,112 @@ export function createReactComponentTestRunner(
     }
   };
 
-  const destroySuiteWrapper = (suiteName: string) => {
-    const wrapper = suiteWrappers.get(suiteName);
+  const destroySuiteWrapper = (key: string) => {
+    const wrapper = suiteWrappers.get(key);
     if (!wrapper) {
       return;
     }
-    suiteWrappers.delete(suiteName);
+    suiteWrappers.delete(key);
     wrapper.miroirEventService.destroy();
   };
 
-  const runner: ReactComponentTestRunner = async ({ componentTestRef, testNamePath }) => {
-    const suite = registry[componentTestRef.suite];
+  /** Mounts `component` with `props` in a fresh case container, the previous case being unmounted. */
+  const mountCase = async (
+    wrapper: ComponentTestWrapper,
+    Component: React.FC<any>,
+    props: Record<string, any>,
+  ): Promise<HTMLElement> => {
+    unmountCurrentCase();
+    const container = sandboxElement.ownerDocument.createElement("div");
+    container.setAttribute("data-testid", "component-test-container");
+    sandboxElement.appendChild(container);
+
+    const { Wrapper } = wrapper;
+    currentCase = { container, unmount: () => undefined };
+    currentCase.unmount = mountComponent(
+      <ComponentTestModeContext.Provider value={componentTestSandboxMode}>
+        <Wrapper>
+          <PortalContainerProvider portalElement={portalElement}>
+            <Component {...props} />
+          </PortalContainerProvider>
+        </Wrapper>
+      </ComponentTestModeContext.Provider>,
+      container,
+    ).unmount;
+    await waitForProgressiveRendering(container);
+    return container;
+  };
+
+  const suiteWrapper = (key: string) => {
+    let wrapper = suiteWrappers.get(key);
+    if (!wrapper) {
+      // no suite sets a deployment map (analysis T13)
+      wrapper = buildComponentTestWrapper({
+        applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+      });
+      suiteWrappers.set(key, wrapper);
+    }
+    return wrapper;
+  };
+
+  const failure = (testName: string, error: unknown): ReactComponentTestRunnerResult => {
+    const message = error instanceof Error ? error.message : String(error);
+    log.info("component test failed", testName, message);
+    if (error instanceof ComponentTestStepError && error.hasComparedValues) {
+      return { status: "error", message, expected: error.expected, actual: error.actual };
+    }
+    return { status: "error", message };
+  };
+
+  // ##############################################################################################
+  /** A leaf of a `reactComponentTestSuite`, with declarative `steps` (#292, analysis §5.3). */
+  const runner: ReactComponentTestRunner = async ({ testNamePath, leaf, suite }) => {
+    // `suite` and `steps` are required by the types; a caller or a JSON that bypasses them gets an error result.
     if (!suite) {
       return {
         status: "error",
-        message: `component test suite "${componentTestRef.suite}" is not in the component test registry`,
+        message: `reactComponentTest "${leaf.miroirTestLabel}" is not in a reactComponentTestSuite`,
       };
     }
-    const testCase = suite.cases[componentTestRef.case];
-    if (!testCase) {
+    if (!Array.isArray(leaf.steps)) {
       return {
         status: "error",
-        message: `component test case "${componentTestRef.case}" is not in suite "${componentTestRef.suite}" of the component test registry`,
+        message: `reactComponentTest "${leaf.miroirTestLabel}" has no steps`,
       };
     }
-
+    const Component = componentRegistry[suite.component];
+    if (!Component) {
+      return {
+        status: "error",
+        message: `component "${suite.component}" of suite "${suite.suitePath.join(" > ")}" is not in the component registry`,
+      };
+    }
+    // one wrapper per reactComponentTestSuite node, keyed by its path (T4)
+    const wrapperKey = JSON.stringify(suite.suitePath);
     const testName = MiroirActivityTracker.testPathName(testNamePath);
     try {
-      let wrapper = suiteWrappers.get(componentTestRef.suite);
-      if (!wrapper) {
-        wrapper = buildComponentTestWrapper({
-          applicationDeploymentMap: suite.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
-        });
-        suiteWrappers.set(componentTestRef.suite, wrapper);
-      }
-
-      unmountCurrentCase();
-      const container = sandboxElement.ownerDocument.createElement("div");
-      container.setAttribute("data-testid", "component-test-container");
-      sandboxElement.appendChild(container);
-
-      const props =
-        typeof testCase.props === "function"
-          ? testCase.props(suite.suiteProps)
-          : testCase.props ?? suite.suiteProps;
-      const { Wrapper } = wrapper;
-      const Component = suite.component;
-      currentCase = { container, unmount: () => undefined };
-      currentCase.unmount = mountComponent(
-        <ComponentTestModeContext.Provider value={componentTestSandboxMode}>
-          <Wrapper>
-            <PortalContainerProvider portalElement={portalElement}>
-              <Component {...props} />
-            </PortalContainerProvider>
-          </Wrapper>
-        </ComponentTestModeContext.Provider>,
-        container,
-      ).unmount;
-      await waitForProgressiveRendering(container);
-
-      await testCase.tests(
-        createComponentTestEnvironment({
-          testName,
-          container,
-          sandboxElement,
-          portalElement,
-          log,
-        }),
+      const container = await mountCase(
+        suiteWrapper(wrapperKey),
+        Component,
+        reviveComponentProps({ ...suite.componentProps, ...(leaf.componentProps ?? {}) }),
+      );
+      await runComponentTestSteps(
+        createComponentTestEnvironment({ testName, container, sandboxElement, portalElement, log }),
+        leaf.steps,
       );
       return { status: "ok" };
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      log.info("component test failed", testName, message);
-      return { status: "error", message };
+      return failure(testName, error);
     } finally {
-      const caseLabels = Object.keys(suite.cases);
-      if (componentTestRef.case === caseLabels[caseLabels.length - 1]) {
-        destroySuiteWrapper(componentTestRef.suite);
+      if (leaf.miroirTestLabel === suite.caseLabels[suite.caseLabels.length - 1]) {
+        destroySuiteWrapper(wrapperKey);
       }
     }
   };
 
   const endRun = () => {
-    for (const suiteName of [...suiteWrappers.keys()]) {
-      destroySuiteWrapper(suiteName);
+    for (const key of [...suiteWrappers.keys()]) {
+      destroySuiteWrapper(key);
     }
   };
 

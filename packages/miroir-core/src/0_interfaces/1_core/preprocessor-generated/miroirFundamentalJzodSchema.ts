@@ -6999,8 +6999,62 @@ export const miroirFundamentalJzodSchema = {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
                   },
                   "context": {}
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "reactComponentTestSuite",
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                  },
+                  "context": {}
                 }
               ]
+            }
+          }
+        }
+      },
+      "reactComponentTestSuite": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "defaultLabel": "React component test suite",
+            "description": "A suite of reactComponentTest leaves that render the same component, named in the component registry of the app, with default props shallow-merged under each leaf's componentProps (#292)",
+            "display": {
+              "displayedAttributeValueWhenFolded": "miroirTestLabel"
+            }
+          }
+        },
+        "definition": {
+          "miroirTestType": {
+            "type": "literal",
+            "definition": "reactComponentTestSuite"
+          },
+          "miroirTestLabel": {
+            "type": "string"
+          },
+          "skip": {
+            "type": "boolean",
+            "optional": true
+          },
+          "component": {
+            "type": "string"
+          },
+          "componentProps": {
+            "type": "record",
+            "optional": true,
+            "definition": {
+              "type": "any"
+            }
+          },
+          "miroirTests": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "miroirTestForReactComponent",
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+              },
+              "context": {}
             }
           }
         }
@@ -7134,7 +7188,7 @@ export const miroirFundamentalJzodSchema = {
         "tag": {
           "value": {
             "defaultLabel": "React component test",
-            "description": "Runs a registered React component test body, named by suite and case (#286)",
+            "description": "Renders the component of its reactComponentTestSuite and runs declarative steps (#292)",
             "display": {
               "displayedAttributeValueWhenFolded": "miroirTestLabel"
             }
@@ -7145,15 +7199,22 @@ export const miroirFundamentalJzodSchema = {
             "type": "boolean",
             "optional": true
           },
-          "componentTestRef": {
-            "type": "object",
+          "componentProps": {
+            "type": "record",
+            "optional": true,
             "definition": {
-              "suite": {
-                "type": "string"
+              "type": "any"
+            }
+          },
+          "steps": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "reactComponentTestStep",
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
               },
-              "case": {
-                "type": "string"
-              }
+              "context": {}
             }
           },
           "miroirTestType": {
@@ -7164,6 +7225,790 @@ export const miroirFundamentalJzodSchema = {
             "type": "string"
           }
         }
+      },
+      "reactComponentTestTextMatch": {
+        "type": "union",
+        "tag": {
+          "value": {
+            "defaultLabel": "Text match",
+            "description": "A string, a number, or a regular expression given as { regex, flags? } (#292)"
+          }
+        },
+        "definition": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "object",
+            "definition": {
+              "regex": {
+                "type": "string"
+              },
+              "flags": {
+                "type": "string",
+                "optional": true
+              }
+            }
+          }
+        ]
+      },
+      "reactComponentTestTarget": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "defaultLabel": "Component test target",
+            "description": "One element of the rendered component: exactly one locator (byRole with name, byTestId, byText, byDisplayValue, byLabelText, widget with field, or ref), plus the refinements fieldName, fieldNamePrefix, id, and index (#292)"
+          }
+        },
+        "definition": {
+          "byRole": {
+            "type": "string",
+            "optional": true
+          },
+          "name": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "relativePath": "reactComponentTestTextMatch",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          "byTestId": {
+            "type": "string",
+            "optional": true
+          },
+          "byText": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "relativePath": "reactComponentTestTextMatch",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          "byDisplayValue": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "relativePath": "reactComponentTestTextMatch",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          "byLabelText": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "relativePath": "reactComponentTestTextMatch",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          "widget": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "combobox",
+              "selectState",
+              "unionTypeStar",
+              "unionTypeInput",
+              "recordEntryName",
+              "arrayButton",
+              "objectButton"
+            ]
+          },
+          "field": {
+            "type": "string",
+            "optional": true
+          },
+          "select": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "value",
+              "unionType"
+            ]
+          },
+          "entry": {
+            "type": "string",
+            "optional": true
+          },
+          "action": {
+            "type": "string",
+            "optional": true
+          },
+          "attribute": {
+            "type": "string",
+            "optional": true
+          },
+          "ref": {
+            "type": "string",
+            "optional": true
+          },
+          "fieldName": {
+            "type": "string",
+            "optional": true
+          },
+          "fieldNamePrefix": {
+            "type": "string",
+            "optional": true
+          },
+          "id": {
+            "type": "string",
+            "optional": true
+          },
+          "index": {
+            "type": "number",
+            "optional": true
+          }
+        }
+      },
+      "reactComponentTestStep": {
+        "type": "union",
+        "discriminator": "step",
+        "tag": {
+          "value": {
+            "defaultLabel": "Component test step",
+            "description": "One declarative step of a reactComponentTest leaf, discriminated by step (#292)"
+          }
+        },
+        "definition": [
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "click",
+                "description": "Clicks the target"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "click"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "target": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "reactComponentTestTarget",
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                },
+                "context": {}
+              },
+              "saveAs": {
+                "type": "string",
+                "optional": true
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "change",
+                "description": "Fires a change event with the given value on the target"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "change"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "target": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "reactComponentTestTarget",
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                },
+                "context": {}
+              },
+              "value": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              },
+              "saveAs": {
+                "type": "string",
+                "optional": true
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "blur",
+                "description": "Fires focusout and blur on the target"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "blur"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "target": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "reactComponentTestTarget",
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                },
+                "context": {}
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "submit",
+                "description": "Fires submit on the target"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "submit"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "target": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "reactComponentTestTarget",
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                },
+                "context": {}
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "type",
+                "description": "Types text into the target (user-event)"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "type"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "target": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "reactComponentTestTarget",
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                },
+                "context": {}
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "clear",
+                "description": "Clears the target (user-event)"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "clear"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "target": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "reactComponentTestTarget",
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                },
+                "context": {}
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "keyboard",
+                "description": "Types keys (user-event keyboard syntax)"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "keyboard"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "keys": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "waitForAttribute",
+                "description": "Waits until an attribute of the target equals value"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "waitForAttribute"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "target": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "reactComponentTestTarget",
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                },
+                "context": {}
+              },
+              "attribute": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              },
+              "timeout": {
+                "type": "number",
+                "optional": true
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "openSelect",
+                "description": "Opens the select of a field and waits until it is open"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "openSelect"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "field": {
+                "type": "string"
+              },
+              "select": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "value",
+                  "unionType"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "filterSelect",
+                "description": "Types a filter text into the open select of a field"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "filterSelect"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "field": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              },
+              "select": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "value",
+                  "unionType"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "selectOption",
+                "description": "Selects an option of the select of a field"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "selectOption"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "field": {
+                "type": "string"
+              },
+              "option": {
+                "type": "string"
+              },
+              "select": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "value",
+                  "unionType"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "toggleUnionTypeSelector",
+                "description": "Clicks the union type star of a field"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "toggleUnionTypeSelector"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "field": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "clickArrayButton",
+                "description": "Clicks an array item button of a field"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "clickArrayButton"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "field": {
+                "type": "string"
+              },
+              "action": {
+                "type": "enum",
+                "definition": [
+                  "up",
+                  "down",
+                  "add",
+                  "duplicate",
+                  "delete"
+                ]
+              },
+              "index": {
+                "type": "number",
+                "optional": true
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "clickObjectButton",
+                "description": "Clicks an object or record button of a field"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "clickObjectButton"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "field": {
+                "type": "string"
+              },
+              "action": {
+                "type": "enum",
+                "definition": [
+                  "addOptionalAttribute",
+                  "addRecordEntry",
+                  "remove",
+                  "duplicate"
+                ]
+              },
+              "attribute": {
+                "type": "string",
+                "optional": true
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "renameRecordEntry",
+                "description": "Renames a record entry of a field"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "renameRecordEntry"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "field": {
+                "type": "string"
+              },
+              "entry": {
+                "type": "string"
+              },
+              "newName": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "expectRenderedValues",
+                "description": "Extracts the rendered form values (nested, with $options for open option lists) and compares them with expectedValue"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "expectRenderedValues"
+              },
+              "label": {
+                "type": "string"
+              },
+              "field": {
+                "type": "string",
+                "optional": true
+              },
+              "path": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ]
+                }
+              },
+              "filter": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "enum",
+                  "definition": [
+                    "select",
+                    "input",
+                    "option",
+                    "cell",
+                    "checkbox",
+                    "combobox"
+                  ]
+                }
+              },
+              "detectOptions": {
+                "type": "boolean",
+                "optional": true
+              },
+              "timeout": {
+                "type": "number",
+                "optional": true
+              },
+              "expectedValue": {
+                "type": "any"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "expectElement",
+                "description": "Asserts on the elements matched by the target"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "expectElement"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "target": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "reactComponentTestTarget",
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                },
+                "context": {}
+              },
+              "present": {
+                "type": "boolean",
+                "optional": true
+              },
+              "count": {
+                "type": "number",
+                "optional": true
+              },
+              "value": {
+                "type": "union",
+                "optional": true,
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              },
+              "values": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "boolean"
+                    }
+                  ]
+                }
+              },
+              "checked": {
+                "type": "boolean",
+                "optional": true
+              },
+              "containsHtml": {
+                "type": "string",
+                "optional": true
+              },
+              "attribute": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                }
+              },
+              "parentContains": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "relativePath": "reactComponentTestTarget",
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                },
+                "context": {}
+              },
+              "timeout": {
+                "type": "number",
+                "optional": true
+              },
+              "saveAs": {
+                "type": "string",
+                "optional": true
+              }
+            }
+          }
+        ]
       },
       "miroirTestForQuery": {
         "type": "object",
@@ -7810,8 +8655,58 @@ export const miroirFundamentalJzodSchema = {
                           "definition": {
                             "relativePath": "miroirTestSuite"
                           }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "reactComponentTestSuite"
+                          }
                         }
                       ]
+                    }
+                  }
+                }
+              },
+              "reactComponentTestSuite": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "React component test suite",
+                    "description": "A suite of reactComponentTest leaves that render the same component, named in the component registry of the app, with default props shallow-merged under each leaf's componentProps (#292)",
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "miroirTestLabel"
+                    }
+                  }
+                },
+                "definition": {
+                  "miroirTestType": {
+                    "type": "literal",
+                    "definition": "reactComponentTestSuite"
+                  },
+                  "miroirTestLabel": {
+                    "type": "string"
+                  },
+                  "skip": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "component": {
+                    "type": "string"
+                  },
+                  "componentProps": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
+                    }
+                  },
+                  "miroirTests": {
+                    "type": "array",
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "miroirTestForReactComponent"
+                      }
                     }
                   }
                 }
@@ -7945,7 +8840,7 @@ export const miroirFundamentalJzodSchema = {
                 "tag": {
                   "value": {
                     "defaultLabel": "React component test",
-                    "description": "Runs a registered React component test body, named by suite and case (#286)",
+                    "description": "Renders the component of its reactComponentTestSuite and runs declarative steps (#292)",
                     "display": {
                       "displayedAttributeValueWhenFolded": "miroirTestLabel"
                     }
@@ -7956,14 +8851,19 @@ export const miroirFundamentalJzodSchema = {
                     "type": "boolean",
                     "optional": true
                   },
-                  "componentTestRef": {
-                    "type": "object",
+                  "componentProps": {
+                    "type": "record",
+                    "optional": true,
                     "definition": {
-                      "suite": {
-                        "type": "string"
-                      },
-                      "case": {
-                        "type": "string"
+                      "type": "any"
+                    }
+                  },
+                  "steps": {
+                    "type": "array",
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "reactComponentTestStep"
                       }
                     }
                   },
@@ -7975,6 +8875,764 @@ export const miroirFundamentalJzodSchema = {
                     "type": "string"
                   }
                 }
+              },
+              "reactComponentTestTextMatch": {
+                "type": "union",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Text match",
+                    "description": "A string, a number, or a regular expression given as { regex, flags? } (#292)"
+                  }
+                },
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "regex": {
+                        "type": "string"
+                      },
+                      "flags": {
+                        "type": "string",
+                        "optional": true
+                      }
+                    }
+                  }
+                ]
+              },
+              "reactComponentTestTarget": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Component test target",
+                    "description": "One element of the rendered component: exactly one locator (byRole with name, byTestId, byText, byDisplayValue, byLabelText, widget with field, or ref), plus the refinements fieldName, fieldNamePrefix, id, and index (#292)"
+                  }
+                },
+                "definition": {
+                  "byRole": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "name": {
+                    "type": "schemaReference",
+                    "optional": true,
+                    "definition": {
+                      "relativePath": "reactComponentTestTextMatch"
+                    }
+                  },
+                  "byTestId": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "byText": {
+                    "type": "schemaReference",
+                    "optional": true,
+                    "definition": {
+                      "relativePath": "reactComponentTestTextMatch"
+                    }
+                  },
+                  "byDisplayValue": {
+                    "type": "schemaReference",
+                    "optional": true,
+                    "definition": {
+                      "relativePath": "reactComponentTestTextMatch"
+                    }
+                  },
+                  "byLabelText": {
+                    "type": "schemaReference",
+                    "optional": true,
+                    "definition": {
+                      "relativePath": "reactComponentTestTextMatch"
+                    }
+                  },
+                  "widget": {
+                    "type": "enum",
+                    "optional": true,
+                    "definition": [
+                      "combobox",
+                      "selectState",
+                      "unionTypeStar",
+                      "unionTypeInput",
+                      "recordEntryName",
+                      "arrayButton",
+                      "objectButton"
+                    ]
+                  },
+                  "field": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "select": {
+                    "type": "enum",
+                    "optional": true,
+                    "definition": [
+                      "value",
+                      "unionType"
+                    ]
+                  },
+                  "entry": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "action": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "attribute": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "ref": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "fieldName": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "fieldNamePrefix": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "id": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "index": {
+                    "type": "number",
+                    "optional": true
+                  }
+                }
+              },
+              "reactComponentTestStep": {
+                "type": "union",
+                "discriminator": "step",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Component test step",
+                    "description": "One declarative step of a reactComponentTest leaf, discriminated by step (#292)"
+                  }
+                },
+                "definition": [
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "click",
+                        "description": "Clicks the target"
+                      }
+                    },
+                    "definition": {
+                      "step": {
+                        "type": "literal",
+                        "definition": "click"
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "target": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "reactComponentTestTarget"
+                        }
+                      },
+                      "saveAs": {
+                        "type": "string",
+                        "optional": true
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "change",
+                        "description": "Fires a change event with the given value on the target"
+                      }
+                    },
+                    "definition": {
+                      "step": {
+                        "type": "literal",
+                        "definition": "change"
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "target": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "reactComponentTestTarget"
+                        }
+                      },
+                      "value": {
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "boolean"
+                          }
+                        ]
+                      },
+                      "saveAs": {
+                        "type": "string",
+                        "optional": true
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "blur",
+                        "description": "Fires focusout and blur on the target"
+                      }
+                    },
+                    "definition": {
+                      "step": {
+                        "type": "literal",
+                        "definition": "blur"
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "target": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "reactComponentTestTarget"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "submit",
+                        "description": "Fires submit on the target"
+                      }
+                    },
+                    "definition": {
+                      "step": {
+                        "type": "literal",
+                        "definition": "submit"
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "target": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "reactComponentTestTarget"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "type",
+                        "description": "Types text into the target (user-event)"
+                      }
+                    },
+                    "definition": {
+                      "step": {
+                        "type": "literal",
+                        "definition": "type"
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "target": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "reactComponentTestTarget"
+                        }
+                      },
+                      "text": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "clear",
+                        "description": "Clears the target (user-event)"
+                      }
+                    },
+                    "definition": {
+                      "step": {
+                        "type": "literal",
+                        "definition": "clear"
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "target": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "reactComponentTestTarget"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "keyboard",
+                        "description": "Types keys (user-event keyboard syntax)"
+                      }
+                    },
+                    "definition": {
+                      "step": {
+                        "type": "literal",
+                        "definition": "keyboard"
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "keys": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "waitForAttribute",
+                        "description": "Waits until an attribute of the target equals value"
+                      }
+                    },
+                    "definition": {
+                      "step": {
+                        "type": "literal",
+                        "definition": "waitForAttribute"
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "target": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "reactComponentTestTarget"
+                        }
+                      },
+                      "attribute": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "type": "string"
+                      },
+                      "timeout": {
+                        "type": "number",
+                        "optional": true
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "openSelect",
+                        "description": "Opens the select of a field and waits until it is open"
+                      }
+                    },
+                    "definition": {
+                      "step": {
+                        "type": "literal",
+                        "definition": "openSelect"
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "field": {
+                        "type": "string"
+                      },
+                      "select": {
+                        "type": "enum",
+                        "optional": true,
+                        "definition": [
+                          "value",
+                          "unionType"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "filterSelect",
+                        "description": "Types a filter text into the open select of a field"
+                      }
+                    },
+                    "definition": {
+                      "step": {
+                        "type": "literal",
+                        "definition": "filterSelect"
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "field": {
+                        "type": "string"
+                      },
+                      "text": {
+                        "type": "string"
+                      },
+                      "select": {
+                        "type": "enum",
+                        "optional": true,
+                        "definition": [
+                          "value",
+                          "unionType"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "selectOption",
+                        "description": "Selects an option of the select of a field"
+                      }
+                    },
+                    "definition": {
+                      "step": {
+                        "type": "literal",
+                        "definition": "selectOption"
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "field": {
+                        "type": "string"
+                      },
+                      "option": {
+                        "type": "string"
+                      },
+                      "select": {
+                        "type": "enum",
+                        "optional": true,
+                        "definition": [
+                          "value",
+                          "unionType"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "toggleUnionTypeSelector",
+                        "description": "Clicks the union type star of a field"
+                      }
+                    },
+                    "definition": {
+                      "step": {
+                        "type": "literal",
+                        "definition": "toggleUnionTypeSelector"
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "field": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "clickArrayButton",
+                        "description": "Clicks an array item button of a field"
+                      }
+                    },
+                    "definition": {
+                      "step": {
+                        "type": "literal",
+                        "definition": "clickArrayButton"
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "field": {
+                        "type": "string"
+                      },
+                      "action": {
+                        "type": "enum",
+                        "definition": [
+                          "up",
+                          "down",
+                          "add",
+                          "duplicate",
+                          "delete"
+                        ]
+                      },
+                      "index": {
+                        "type": "number",
+                        "optional": true
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "clickObjectButton",
+                        "description": "Clicks an object or record button of a field"
+                      }
+                    },
+                    "definition": {
+                      "step": {
+                        "type": "literal",
+                        "definition": "clickObjectButton"
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "field": {
+                        "type": "string"
+                      },
+                      "action": {
+                        "type": "enum",
+                        "definition": [
+                          "addOptionalAttribute",
+                          "addRecordEntry",
+                          "remove",
+                          "duplicate"
+                        ]
+                      },
+                      "attribute": {
+                        "type": "string",
+                        "optional": true
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "renameRecordEntry",
+                        "description": "Renames a record entry of a field"
+                      }
+                    },
+                    "definition": {
+                      "step": {
+                        "type": "literal",
+                        "definition": "renameRecordEntry"
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "field": {
+                        "type": "string"
+                      },
+                      "entry": {
+                        "type": "string"
+                      },
+                      "newName": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "expectRenderedValues",
+                        "description": "Extracts the rendered form values (nested, with $options for open option lists) and compares them with expectedValue"
+                      }
+                    },
+                    "definition": {
+                      "step": {
+                        "type": "literal",
+                        "definition": "expectRenderedValues"
+                      },
+                      "label": {
+                        "type": "string"
+                      },
+                      "field": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "path": {
+                        "type": "array",
+                        "optional": true,
+                        "definition": {
+                          "type": "union",
+                          "definition": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "number"
+                            }
+                          ]
+                        }
+                      },
+                      "filter": {
+                        "type": "array",
+                        "optional": true,
+                        "definition": {
+                          "type": "enum",
+                          "definition": [
+                            "select",
+                            "input",
+                            "option",
+                            "cell",
+                            "checkbox",
+                            "combobox"
+                          ]
+                        }
+                      },
+                      "detectOptions": {
+                        "type": "boolean",
+                        "optional": true
+                      },
+                      "timeout": {
+                        "type": "number",
+                        "optional": true
+                      },
+                      "expectedValue": {
+                        "type": "any"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "expectElement",
+                        "description": "Asserts on the elements matched by the target"
+                      }
+                    },
+                    "definition": {
+                      "step": {
+                        "type": "literal",
+                        "definition": "expectElement"
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "target": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "reactComponentTestTarget"
+                        }
+                      },
+                      "present": {
+                        "type": "boolean",
+                        "optional": true
+                      },
+                      "count": {
+                        "type": "number",
+                        "optional": true
+                      },
+                      "value": {
+                        "type": "union",
+                        "optional": true,
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "boolean"
+                          }
+                        ]
+                      },
+                      "values": {
+                        "type": "array",
+                        "optional": true,
+                        "definition": {
+                          "type": "union",
+                          "definition": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "boolean"
+                            }
+                          ]
+                        }
+                      },
+                      "checked": {
+                        "type": "boolean",
+                        "optional": true
+                      },
+                      "containsHtml": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "attribute": {
+                        "type": "object",
+                        "optional": true,
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "parentContains": {
+                        "type": "schemaReference",
+                        "optional": true,
+                        "definition": {
+                          "relativePath": "reactComponentTestTarget"
+                        }
+                      },
+                      "timeout": {
+                        "type": "number",
+                        "optional": true
+                      },
+                      "saveAs": {
+                        "type": "string",
+                        "optional": true
+                      }
+                    }
+                  }
+                ]
               },
               "miroirTestForQuery": {
                 "type": "object",

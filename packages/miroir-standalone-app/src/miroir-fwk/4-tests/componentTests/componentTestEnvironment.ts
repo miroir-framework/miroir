@@ -7,14 +7,12 @@ import {
   type BoundFunctions,
 } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
-import type React from "react";
 import type { ReactElement } from "react";
 import { flushSync } from "react-dom";
 import { createRoot } from "react-dom/client";
 
 import {
   createThrowingExpect,
-  type ApplicationDeploymentMap,
   type LoggerInterface,
   type ThrowingExpect,
 } from "miroir-core";
@@ -51,23 +49,6 @@ export interface ComponentTestEnvironment {
   portalElement: HTMLElement;
   log: LoggerInterface;
 }
-
-export interface ComponentTestCase<Props extends Record<string, any>> {
-  /** Case props, or a function of the suite props. Defaults to the suite props. */
-  props?: Props | ((suiteProps: Props) => Props);
-  tests: (env: ComponentTestEnvironment) => Promise<void>;
-}
-
-export interface ComponentTestSuite<Props extends Record<string, any>> {
-  component: React.FC<Props>;
-  suiteProps: Props;
-  /** Deployment map of the suite's wrapper. Defaults to `defaultSelfApplicationDeploymentMap`. */
-  applicationDeploymentMap?: ApplicationDeploymentMap;
-  /** Case label to case, in execution order. */
-  cases: Record<string, ComponentTestCase<Props>>;
-}
-
-export type ComponentTestRegistry = Record<string, ComponentTestSuite<any>>;
 
 // ################################################################################################
 /**

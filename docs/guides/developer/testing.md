@@ -157,7 +157,7 @@ Swap the profile / config file to exercise filesystem, IndexedDB, or MongoDB bac
 
 Common filters: `DomainController.integ`, `PersistenceStoreController.integ`, `ExtractorPersistenceStoreRunner.integ`, `ReportPage.integ`, `BlobEditorField.integ`, `miroir-component-tests`, `MiroirTestDisplayIntegrationLaunch.integ`.
 
-**JzodElementEditor component tests.** Since #286 the schema editor cases are MiroirTests (`JzodElementEditor_ComponentTestSuite`, 68 `reactComponentTest` leaves). The vitest entry `tests/4_view/miroir-component-tests.unit.test.tsx` runs them over an in-memory `LocalCache`, with no profile:
+**JzodElementEditor component tests.** The schema editor cases are MiroirTests (#286) written as declarative JSON steps (#292): one instance per editor (`JzodEnumEditor_ComponentTestSuite`, `JzodObjectEditor_ComponentTestSuite`, …), 68 `reactComponentTest` leaves in all. The vitest entry `tests/4_view/miroir-component-tests.unit.test.tsx` runs them over an in-memory `LocalCache`, with no profile:
 
 ```bash
 npm run testByFile -w miroir-standalone-app -- miroir-component-tests

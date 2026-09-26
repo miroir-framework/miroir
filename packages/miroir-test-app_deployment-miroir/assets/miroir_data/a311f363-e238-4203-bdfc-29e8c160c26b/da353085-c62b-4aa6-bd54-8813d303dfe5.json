@@ -1,0 +1,741 @@
+{
+  "uuid": "da353085-c62b-4aa6-bd54-8813d303dfe5",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "JzodObjectEditor_ComponentTestSuite",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Issues #286, #292: JzodObjectEditor React component tests (JzodElementEditor), one MiroirTest instance per editor. Edited by hand.",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "JzodObjectEditor_ComponentTestSuite",
+    "miroirTests": [
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "JzodObjectEditor",
+        "component": "JzodElementEditor",
+        "componentProps": {
+          "label": "Test Label",
+          "name": "testField",
+          "listKey": "ROOT.testField",
+          "rootLessListKey": "testField",
+          "rootLessListKeyArray": [
+            "testField"
+          ]
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: object renders as json-like input fields with proper value",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "string"
+                  },
+                  "b": {
+                    "type": "number"
+                  }
+                }
+              },
+              "initialFormState": {
+                "a": "test string",
+                "b": 42
+              }
+            },
+            "steps": [
+              {
+                "step": "expectRenderedValues",
+                "label": "after delete button click",
+                "field": "testField",
+                "expectedValue": {
+                  "a": "test string",
+                  "b": 42
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: object with bigint attribute renders as json-like input fields with proper value",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "object",
+                "definition": {
+                  "e": {
+                    "type": "bigint"
+                  }
+                }
+              },
+              "initialFormState": {
+                "e": {
+                  "$bigint": "123"
+                }
+              }
+            },
+            "steps": [
+              {
+                "step": "expectRenderedValues",
+                "label": "initial",
+                "field": "testField",
+                "expectedValue": {
+                  "e": "123"
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: object can be updated through displayed input fields",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "string"
+                  },
+                  "b": {
+                    "type": "number"
+                  }
+                }
+              },
+              "initialFormState": {
+                "a": "test string",
+                "b": 42
+              }
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "initial a",
+                "target": {
+                  "byTestId": "miroirInput",
+                  "fieldName": "testField.a"
+                },
+                "value": "test string",
+                "saveAs": "inputA"
+              },
+              {
+                "step": "expectElement",
+                "label": "initial b",
+                "target": {
+                  "byTestId": "miroirInput",
+                  "fieldName": "testField.b"
+                },
+                "value": 42,
+                "saveAs": "inputB"
+              },
+              {
+                "step": "change",
+                "target": {
+                  "ref": "inputA"
+                },
+                "value": "new string value"
+              },
+              {
+                "step": "change",
+                "target": {
+                  "ref": "inputB"
+                },
+                "value": 100
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after change",
+                "field": "testField",
+                "expectedValue": {
+                  "a": "new string value",
+                  "b": 100
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: object with optional attributes can receive a value for an optional attribute by clicking on the add button for the attribute",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "b": {
+                    "type": "number"
+                  },
+                  "c": {
+                    "type": "boolean",
+                    "optional": true
+                  }
+                }
+              },
+              "initialFormState": {
+                "b": 42
+              }
+            },
+            "steps": [
+              {
+                "step": "clickObjectButton",
+                "field": "testField",
+                "action": "addOptionalAttribute",
+                "attribute": "a"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after add button click",
+                "field": "testField",
+                "expectedValue": {
+                  "a": "",
+                  "b": 42
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: object with 2 optional attributes can have the only attribute value deleted by clicking on the delete button",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "b": {
+                    "type": "number",
+                    "optional": true
+                  }
+                }
+              },
+              "initialFormState": {
+                "a": "test string"
+              }
+            },
+            "steps": [
+              {
+                "step": "clickObjectButton",
+                "field": "testField",
+                "action": "remove",
+                "attribute": "a"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after delete button click",
+                "field": "testField",
+                "expectedValue": {}
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: object with 3 optional attributes can have the value for the second attribute deleted by clicking on the delete button",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "object",
+                "definition": {
+                  "a": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "b": {
+                    "type": "number",
+                    "optional": true
+                  },
+                  "c": {
+                    "type": "boolean",
+                    "optional": true
+                  }
+                }
+              },
+              "initialFormState": {
+                "a": "test string",
+                "b": 42,
+                "c": true
+              }
+            },
+            "steps": [
+              {
+                "step": "clickObjectButton",
+                "field": "testField",
+                "action": "remove",
+                "attribute": "b"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after delete button click",
+                "field": "testField",
+                "expectedValue": {
+                  "a": "test string",
+                  "c": true
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: record renders as json-like input fields with proper value",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "record",
+                "definition": {
+                  "type": "object",
+                  "definition": {
+                    "a": {
+                      "type": "string"
+                    },
+                    "b": {
+                      "type": "number"
+                    }
+                  }
+                }
+              },
+              "initialFormState": {
+                "firstRecord": {
+                  "a": "test string",
+                  "b": 42
+                }
+              }
+            },
+            "steps": [
+              {
+                "step": "expectRenderedValues",
+                "label": "initial",
+                "field": "testField",
+                "expectedValue": {
+                  "firstRecord": {
+                    "a": "test string",
+                    "b": 42
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: record can receive a new record attribute with the proper default value when clicking on the add button",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "record",
+                "definition": {
+                  "type": "object",
+                  "definition": {
+                    "a": {
+                      "type": "string"
+                    },
+                    "b": {
+                      "type": "number"
+                    }
+                  }
+                }
+              },
+              "initialFormState": {
+                "firstRecord": {
+                  "a": "test string",
+                  "b": 42
+                }
+              }
+            },
+            "steps": [
+              {
+                "step": "clickObjectButton",
+                "field": "testField",
+                "action": "addRecordEntry"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after add button click",
+                "field": "testField",
+                "expectedValue": {
+                  "firstRecord": {
+                    "a": "test string",
+                    "b": 42
+                  },
+                  "newRecordEntry": {
+                    "a": "",
+                    "b": 0
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: record can rename a record attribute keeping the existing value when clicking on the attribute input field",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "record",
+                "definition": {
+                  "type": "object",
+                  "definition": {
+                    "a": {
+                      "type": "string"
+                    },
+                    "b": {
+                      "type": "number"
+                    }
+                  }
+                }
+              },
+              "initialFormState": {
+                "firstRecord": {
+                  "a": "test string",
+                  "b": 42
+                }
+              }
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "initial",
+                "target": {
+                  "widget": "recordEntryName",
+                  "field": "testField",
+                  "entry": "firstRecord"
+                },
+                "value": "firstRecord",
+                "saveAs": "nameInput"
+              },
+              {
+                "step": "renameRecordEntry",
+                "field": "testField",
+                "entry": "firstRecord",
+                "newName": "renamedRecord"
+              },
+              {
+                "step": "expectElement",
+                "label": "after rename",
+                "target": {
+                  "ref": "nameInput"
+                },
+                "value": "renamedRecord"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after rename",
+                "field": "testField",
+                "expectedValue": {
+                  "renamedRecord": {
+                    "a": "test string",
+                    "b": 42
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: record with 1 entry can have the entry deleted when clicking on the delete button",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "record",
+                "definition": {
+                  "type": "object",
+                  "definition": {
+                    "a": {
+                      "type": "string"
+                    },
+                    "b": {
+                      "type": "number"
+                    }
+                  }
+                }
+              },
+              "initialFormState": {
+                "firstRecord": {
+                  "a": "test string",
+                  "b": 42
+                }
+              }
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "delete button",
+                "target": {
+                  "widget": "objectButton",
+                  "field": "testField",
+                  "action": "remove",
+                  "attribute": "firstRecord"
+                }
+              },
+              {
+                "step": "clickObjectButton",
+                "field": "testField",
+                "action": "remove",
+                "attribute": "firstRecord"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after delete button click",
+                "field": "testField",
+                "expectedValue": {}
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: record with 3 items can have the second record item deleted when clicking on the second delete button",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "record",
+                "definition": {
+                  "type": "object",
+                  "definition": {
+                    "a": {
+                      "type": "string"
+                    },
+                    "b": {
+                      "type": "number"
+                    }
+                  }
+                }
+              },
+              "initialFormState": {
+                "firstRecord": {
+                  "a": "test string",
+                  "b": 42
+                },
+                "secondRecord": {
+                  "a": "test string2",
+                  "b": 423
+                },
+                "thirdRecord": {
+                  "a": "test string3",
+                  "b": 432
+                }
+              }
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "delete button",
+                "target": {
+                  "widget": "objectButton",
+                  "field": "testField",
+                  "action": "remove",
+                  "attribute": "secondRecord"
+                }
+              },
+              {
+                "step": "clickObjectButton",
+                "field": "testField",
+                "action": "remove",
+                "attribute": "secondRecord"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after delete button click",
+                "field": "testField",
+                "expectedValue": {
+                  "firstRecord": {
+                    "a": "test string",
+                    "b": 42
+                  },
+                  "thirdRecord": {
+                    "a": "test string3",
+                    "b": 432
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: record with 1 object entry can have the entry duplicated when clicking the duplicate button",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "record",
+                "definition": {
+                  "type": "object",
+                  "definition": {
+                    "a": {
+                      "type": "string"
+                    },
+                    "b": {
+                      "type": "number"
+                    }
+                  }
+                }
+              },
+              "initialFormState": {
+                "firstRecord": {
+                  "a": "test string",
+                  "b": 42
+                }
+              }
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "duplicate button",
+                "target": {
+                  "widget": "objectButton",
+                  "field": "testField",
+                  "action": "duplicate",
+                  "attribute": "firstRecord"
+                }
+              },
+              {
+                "step": "clickObjectButton",
+                "field": "testField",
+                "action": "duplicate",
+                "attribute": "firstRecord"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after duplicate button click",
+                "field": "testField",
+                "expectedValue": {
+                  "firstRecord": {
+                    "a": "test string",
+                    "b": 42
+                  },
+                  "firstRecord_copy": {
+                    "a": "test string",
+                    "b": 42
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: record with 2 object entries can have the first entry duplicated without colliding with an existing _copy key",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "record",
+                "definition": {
+                  "type": "object",
+                  "definition": {
+                    "a": {
+                      "type": "string"
+                    },
+                    "b": {
+                      "type": "number"
+                    }
+                  }
+                }
+              },
+              "initialFormState": {
+                "firstRecord": {
+                  "a": "test string",
+                  "b": 42
+                },
+                "firstRecord_copy": {
+                  "a": "already a copy",
+                  "b": 99
+                }
+              }
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "duplicate button",
+                "target": {
+                  "widget": "objectButton",
+                  "field": "testField",
+                  "action": "duplicate",
+                  "attribute": "firstRecord"
+                }
+              },
+              {
+                "step": "clickObjectButton",
+                "field": "testField",
+                "action": "duplicate",
+                "attribute": "firstRecord"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after duplicate button click",
+                "field": "testField",
+                "expectedValue": {
+                  "firstRecord": {
+                    "a": "test string",
+                    "b": 42
+                  },
+                  "firstRecord_copy": {
+                    "a": "already a copy",
+                    "b": 99
+                  },
+                  "firstRecord_copy1": {
+                    "a": "test string",
+                    "b": 42
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodObjectEditor: createObject definition record entry name can be renamed",
+            "componentProps": {
+              "rawJzodSchema": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "coreTransformerForBuildPlusRuntime"
+                }
+              },
+              "initialFormState": {
+                "interpolation": "runtime",
+                "transformerType": "createObject",
+                "definition": {
+                  "newRecordEntry": {
+                    "interpolation": "runtime",
+                    "transformerType": "returnValue",
+                    "value": 0
+                  }
+                }
+              }
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "initial",
+                "target": {
+                  "widget": "recordEntryName",
+                  "field": "testField.definition",
+                  "entry": "newRecordEntry"
+                },
+                "value": "newRecordEntry",
+                "saveAs": "nameInput"
+              },
+              {
+                "step": "renameRecordEntry",
+                "field": "testField.definition",
+                "entry": "newRecordEntry",
+                "newName": "firstName"
+              },
+              {
+                "step": "expectElement",
+                "label": "after rename",
+                "target": {
+                  "ref": "nameInput"
+                },
+                "value": "firstName"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after rename createObject record entry",
+                "field": "testField",
+                "path": [
+                  "definition"
+                ],
+                "expectedValue": {
+                  "firstName": {
+                    "interpolation": "runtime",
+                    "transformerType": "returnValue",
+                    "value": 0
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

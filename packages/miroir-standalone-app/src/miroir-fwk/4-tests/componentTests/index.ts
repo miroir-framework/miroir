@@ -9,8 +9,8 @@ import {
 // Entry point of the component test chunk (#286, analysis §5.3 and §5.9).
 //
 // The app reaches this module through one dynamic `import()` in `ComponentTestSandboxProvider`,
-// so that `@testing-library/dom`, `@testing-library/user-event`, the registry, and the case
-// bodies stay out of the main bundle. Nothing else in `src/` may import it statically.
+// so that `@testing-library/dom`, `@testing-library/user-event`, the component registry, and the
+// step interpreter stay out of the main bundle. Nothing else in `src/` may import it statically.
 // ################################################################################################
 
 export type { ComponentTestSandboxHost } from "./runReactComponentTest.js";

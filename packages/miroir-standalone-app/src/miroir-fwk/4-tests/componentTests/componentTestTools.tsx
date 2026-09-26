@@ -865,6 +865,33 @@ export function extractValuesFromRenderedElements(
     distinctSearchRoots.flatMap((searchRoot) => Array.from(searchRoot.querySelectorAll(selector)));
   const query = (selector: string): Element | null => queryAll(selector)[0] ?? null;
 
+  // #292 (analysis §5.5): while the option list of a `ThemedSelectWithPortal` is open, its combobox
+  // input shows the filter text, not the selected value. The committed value is then read from the
+  // select's state tracker. A closed combobox is read from its input, as before.
+  const comboboxCommittedValue = (input: HTMLInputElement): string | undefined => {
+    if (input.getAttribute("role") !== "combobox" || !input.name) {
+      return undefined;
+    }
+    // The name is compared as an attribute value, not put in the selector: a field name may contain
+    // characters (`"`, `\`) that some DOM selector parsers reject even when escaped.
+    const stateTrackerTestId = `themed-select-state-${input.name}`;
+    const stateTracker = queryAll('[data-testid^="themed-select-state-"]').find(
+      (element) => element.getAttribute("data-testid") === stateTrackerTestId,
+    );
+    if (stateTracker?.getAttribute("data-test-is-open") !== "true") {
+      return undefined;
+    }
+    return stateTracker.getAttribute("data-test-selected-value") ?? "";
+  };
+  /** The value of a form input: the committed value of an open combobox, else its value or default value. */
+  const inputValue = (input: HTMLInputElement): string => {
+    const committedValue = comboboxCommittedValue(input);
+    if (committedValue !== undefined) {
+      return committedValue;
+    }
+    return input.value === "" && input.defaultValue !== undefined ? input.defaultValue : input.value;
+  };
+
   // Pre-compile regex patterns to avoid recreating them
   const labelRegex = label ? new RegExp(`^${label}\\.`) : null;
   const removeLabelPrefix = (str: string) => (labelRegex ? str.replace(labelRegex, "") : str);
@@ -1170,10 +1197,7 @@ export function extractValuesFromRenderedElements(
         return;
       }
 
-      let value: any = input.value;
-      if (value === "" && input.defaultValue !== undefined) {
-        value = input.defaultValue;
-      }
+      let value: any = inputValue(input);
       if (input.type === "number") {
         if (!isNaN(Number(value)) && value !== "") {
           value = Number(value);
@@ -1224,10 +1248,7 @@ export function extractValuesFromRenderedElements(
       return;
     }
 
-    let value: any = input.value;
-    if (value === "" && input.defaultValue !== undefined) {
-      value = input.defaultValue;
-    }
+    let value: any = inputValue(input);
     if (input.type === "number") {
       if (!isNaN(Number(value)) && value !== "") {
         value = Number(value);
@@ -1340,10 +1361,7 @@ export function extractValuesFromRenderedElements(
       return
     };
 
-    let value: any = htmlInput.value;
-    if (value === "" && htmlInput.defaultValue !== undefined) {
-      value = htmlInput.defaultValue;
-    }
+    let value: any = inputValue(htmlInput);
     if (htmlInput.type === "number") {
       if (!isNaN(Number(value)) && value !== "") {
         value = Number(value);
@@ -1524,10 +1542,7 @@ export function extractValuesFromRenderedElements(
 
       const name = removeLabelPrefix(elementName);
       if (name && values[name] === undefined) {
-        let value = htmlElement.value;
-        if (value === "" && htmlElement.defaultValue !== undefined) {
-          value = htmlElement.defaultValue;
-        }
+        const value = inputValue(htmlElement);
         values[name] = value;
         log.debug(
           "extractValuesFromRenderedElements: processed combobox (self)",

@@ -3,6 +3,7 @@ import {
   isUiIntegrationLaunchableSuite,
   type MiroirTestDefinition,
   type MiroirTestSuite,
+  type ReactComponentTestSuite,
   type MiroirTestSuiteUiExecutionMode,
 } from 'miroir-core';
 
@@ -133,7 +134,7 @@ export function uiExecutionModeBadgeColors(mode: MiroirTestSuiteUiExecutionMode)
  * run needs the component test sandbox (`beforeRun` of `RunMiroirTestSuiteButton`).
  */
 export function miroirTestDefinitionHasReactComponentTest(
-  node: MiroirTestSuite | MiroirTestSuite['miroirTests'][number] | undefined,
+  node: MiroirTestSuite | MiroirTestSuite['miroirTests'][number] | ReactComponentTestSuite['miroirTests'][number] | undefined,
 ): boolean {
   if (!node) {
     return false;
@@ -141,7 +142,8 @@ export function miroirTestDefinitionHasReactComponentTest(
   if (node.miroirTestType === 'reactComponentTest') {
     return true;
   }
-  if (node.miroirTestType === 'miroirTestSuite') {
+  // A `reactComponentTestSuite` (#292) holds `reactComponentTest` leaves only.
+  if (node.miroirTestType === 'miroirTestSuite' || node.miroirTestType === 'reactComponentTestSuite') {
     return node.miroirTests.some(miroirTestDefinitionHasReactComponentTest);
   }
   return false;
