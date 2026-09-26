@@ -1,4 +1,6 @@
-# #303 follow-up issues (to open on GitHub)
+# #303 follow-up issues
+
+Opened on 2026-09-26: 1 → #305, 2 → #304, 3 → #306, 4 → #307.
 
 Written in Slice 7: the agent that implemented #303 had no access to open GitHub issues. Each section below is one issue: the heading is the title, the text under it the body. Evidence references point to [`tdd-implementation-plan.md`](./tdd-implementation-plan.md) (Realization of the named slice) and [`analysis.md`](./analysis.md).
 
