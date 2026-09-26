@@ -15,7 +15,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/312
 Working branch: `claude/project-thread-4gyfzk` (from `_integration`)
 
-**Resume note:** Slices 1–5 DONE.
+**Resume note:** all slices DONE; PR open against `_integration`.
 
 ---
 
@@ -40,7 +40,7 @@ This plan does **not** tag leaves, add all-of matching, tag other Entities, chan
 | 3 | Every MiroirTest tagged | ✅ | guard test over the folder catalog + `modelValidation` |
 | 4 | `--tags` in the standalone-app launcher | ✅ | `testMiroirLauncher.tags.unit.test.ts` |
 | 5 | Tags in the Miroir Tests page | ✅ | `MiroirTestListDisplay.unit.test.tsx` + grid column test |
-| 6 | Docs, nonreg, AC | ⬜ | `nonreg:unit` + tracer narrative |
+| 6 | Docs, nonreg, AC | ✅ | `nonreg:unit` + tracer narrative |
 
 ---
 
@@ -265,12 +265,12 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ## Slice 6 — Docs, nonreg, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** the feature is documented and the whole unit tier is green.
 
 - Docs: `docs/reference/testing.md` (Selection row, `--tags` examples, env table, the tag vocabulary and how to extend it), `docs/contributing/testing.md` (tag a new test).
-- Nonreg: no new step; `unit-miroir-core` / catalog sweep and `unit-MiroirTestListDisplay` already run the new tests. Run `npm run nonreg:unit`.
+- Nonreg: `unit-MiroirTestListDisplay` already runs the chip tests; see Realization for the new step. Run `npm run nonreg:unit`.
 - Tracer narrative: `testMiroir -w miroir-core -- --tags ml-union` runs 6 suites; in the app, Miroir Tests → click `editor` → "Run All Unit Tests" runs the 9 editor suites.
 - Cleanup: no `issues/312-*` directory was created.
 
@@ -295,4 +295,9 @@ npm run nonreg:unit
 
 ### Realization
 
-_(pending)_
+- Docs: `docs/reference/testing.md` (parameter table, new "Tags" section with the vocabulary, how to add a tag and the guard, Selection row, unit and integ `--tags` examples, `MIROIR_TEST_TAGS`, adding a suite, UI chips and column); `docs/contributing/testing.md` (`--tags` examples). The `miroir-analysis-to-tdd-plan` skill now says new MiroirTest assets carry `tags` (synced to `.claude/skills/`).
+- Gate: skills sync check OK; `tsc` miroir-core clean; `npm run test -w miroir-core -- ''` 2055 passed, 1 skipped; `pytest scripts/tests` 2 failed, 33 passed.
+- `npm run nonreg:unit`: every step passed except `unit-301-agent-tooling` (the same pytest run). Both failures come from `510413c` ("add improve codebase skill") on `_integration`, untouched by this branch: `.gitignore` line 79 un-ignores `.agents/skills/improve-codebase-architecture/` where the `.claude/skills/` block needs `.claude/skills/…`, and that skill references a `domain-modeling` skill that does not exist. Not fixed here.
+- Tracer narrative: `testMiroir -w miroir-core -- --tags ml-union --mode unit` runs the 6 `ml-union` suites (36 tests). In the app, Miroir Tests → click `editor (9)` → the header reads `Miroir Tests Available (9 of 66)` and Run All Unit Tests runs the 9 editor suites (covered by `MiroirTestListDisplay.unit`; not run in a browser).
+- Deviation: a nonreg step was needed after all. `unit-miroir-core` runs the MiroirTest catalog, not the miroir-core vitest files, so new step `unit-312-miroir-test-tags` runs `miroirTestTags.unit`, `testMiroirLauncher.tags` and `getColumnDefinitionsFromEntityAttributes` (PASS, 12.8 s); the chips run in the existing `unit-MiroirTestListDisplay`.
+- No `issues/312-*` test directory was created, nothing to migrate.
