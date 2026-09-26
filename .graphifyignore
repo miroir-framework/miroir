@@ -1,0 +1,7 @@
+# graphify code graph (#301): agent tooling and output folders are not Miroir code.
+# graphify already skips node_modules/, dist/, build/ and .gitignore'd paths.
+.agents/
+.claude/
+docs-OLD/
+test-results/
+tmp/

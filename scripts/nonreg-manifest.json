@@ -20,6 +20,19 @@
       ]
     },
     {
+      "id": "unit-301-agent-tooling",
+      "tier": "unit",
+      "title": "Repo scripts (scripts/tests): #301 agent tooling",
+      "requires": "none",
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "-q",
+        "scripts/tests"
+      ]
+    },
+    {
       "id": "unit-miroir-core",
       "tier": "unit",
       "title": "MiroirTest unit suites (miroir-core registry)",

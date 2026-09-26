@@ -1,0 +1,42 @@
+{
+  "uuid": "{{uuid}}",
+  "name": "{{name}}",
+  "defaultLabel": "{{name}}",
+  "description": "{{description}}",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "classification": "{{classification: basic | composite | spreadsheet | mls | admin}}",
+  "transformerInterface": {
+    "inputOutput": {
+      "input": "{{inputType: any | undefined | bigint | number | string | boolean | object | array}}",
+      "output": "{{outputType: any | undefined | bigint | number | string | boolean | object | array}}"
+    },
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "{{name}}"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "{{parameterName}}": {
+            "type": "{{parameterType}}",
+            "optional": false
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "returns": "mlSchema",
+      "definition": {
+        "type": "{{resultType}}"
+      }
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "handleTransformer_{{name}}",
+    "sqlImplementationFunctionName": "sqlStringFor{{Name}}Transformer"
+  }
+}
