@@ -2,7 +2,7 @@ import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { defaultMiroirMetaModel as defaultMiroirMetaModelRaw } from "miroir-test-app_deployment-miroir";
 import type { MetaModel } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
-import { resolveFundamentalSchemaForDeployment } from "../1_core/jzod/schemaForDeployment";
+import { resolveFundamentalSchemaForDeployment } from "../1_core/mls/schemaForDeployment";
 import { defaultMetaModelEnvironment } from "../1_core/Model";
 import {
   listQueryRunnerFixtureRefs,
@@ -27,7 +27,7 @@ const FUNCTION_CALL_META_MODEL_ENVIRONMENTS: Record<string, () => typeof default
 };
 
 const FUNCTION_CALL_ONLY_FIXTURES: Record<string, () => FunctionCallOnlyFixture> = {
-  miroirFundamentalJzodSchema: () =>
+  miroirFundamentalMlSchema: () =>
     resolveFundamentalSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel, "static"),
 };
 
@@ -75,7 +75,7 @@ export function resolveFixtureProperty(
   if (key in fixture) {
     return fixture[key as keyof FunctionCallFixture];
   }
-  // Bare function-call-only fixtures (e.g. miroirFundamentalJzodSchema) are the injected value itself.
+  // Bare function-call-only fixtures (e.g. miroirFundamentalMlSchema) are the injected value itself.
   if (key === "domainState" && !("domainState" in fixture)) {
     return fixture;
   }

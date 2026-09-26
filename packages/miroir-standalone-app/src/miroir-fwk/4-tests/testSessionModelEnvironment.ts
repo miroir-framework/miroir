@@ -15,7 +15,7 @@ export function buildTestSessionModelEnvironment(
   currentModel: MetaModel,
 ): MiroirModelEnvironment {
   return {
-    miroirFundamentalJzodSchema: getMiroirFundamentalSchemaForDeployment(deploymentUuid, currentModel),
+    miroirFundamentalMlSchema: getMiroirFundamentalSchemaForDeployment(deploymentUuid, currentModel),
     miroirMetaModel: defaultMiroirMetaModel,
     endpointsByUuid: Object.fromEntries(currentModel.endpoints.map((endpoint) => [endpoint.uuid, endpoint])),
     deploymentUuid,

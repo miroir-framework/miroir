@@ -68,19 +68,19 @@ describe("RenderInsightRegistry (Phase 1–2)", () => {
   describe("2.1 path identity via formik path", () => {
     it("distinguishes siblings that share a component name using formikPath", () => {
       registry.trackRender({
-        componentId: "JzodElementEditor",
+        componentId: "MlElementEditor",
         formikPath: "instance.name",
         navigationKey: "dep-data",
         enabled: true,
       });
       registry.trackRender({
-        componentId: "JzodElementEditor",
+        componentId: "MlElementEditor",
         formikPath: "instance.firstName",
         navigationKey: "dep-data",
         enabled: true,
       });
       registry.trackRender({
-        componentId: "JzodElementEditor",
+        componentId: "MlElementEditor",
         formikPath: "instance.name",
         navigationKey: "dep-data",
         enabled: true,
@@ -90,10 +90,10 @@ describe("RenderInsightRegistry (Phase 1–2)", () => {
       expect(snapshot).toHaveLength(2);
 
       const byPath = Object.fromEntries(snapshot.map((n) => [n.pathKey, n]));
-      expect(byPath["JzodElementEditor@instance.name"].navigationCount).toBe(2);
-      expect(byPath["JzodElementEditor@instance.firstName"].navigationCount).toBe(1);
-      expect(byPath["JzodElementEditor@instance.name"].depth).toBe(2);
-      expect(byPath["JzodElementEditor@instance.firstName"].formikPath).toBe(
+      expect(byPath["MlElementEditor@instance.name"].navigationCount).toBe(2);
+      expect(byPath["MlElementEditor@instance.firstName"].navigationCount).toBe(1);
+      expect(byPath["MlElementEditor@instance.name"].depth).toBe(2);
+      expect(byPath["MlElementEditor@instance.firstName"].formikPath).toBe(
         "instance.firstName"
       );
     });

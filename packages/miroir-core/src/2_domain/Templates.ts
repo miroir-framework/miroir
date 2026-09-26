@@ -385,7 +385,7 @@ export function resolveQueryTemplateWithExtractorCombinerTransformer(
 ): BoxedQueryWithExtractorCombinerTransformer {
 
   const params: Record<string, any> = {
-    // miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
+    // miroirFundamentalMlSchema: miroirFundamentalMlSchema as MlSchema,
     ...queryTemplate.pageParams,
     ...queryTemplate.queryParams,
   };

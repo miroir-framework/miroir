@@ -3,13 +3,13 @@
  *   npx vite-node scripts/measure-ref-schema-sizes.ts
  * from packages/miroir-mcp
  */
-import { jzodElementToJsonSchema } from "../src/tools/jzodElementToJsonSchema.ts";
+import { mlElementToJsonSchema } from "../src/tools/mlElementToJsonSchema.ts";
 
 const absolutePath = "fe9b7d99-f216-44de-bb6e-60e1a1ebb739";
 const refs = [
   "applicationSection",
   "entityInstance",
-  "jzodElement",
+  "mlElement",
   "compositeActionSequence",
   "compositeAction",
   "boxedQueryWithExtractorCombinerTransformer",
@@ -18,7 +18,7 @@ const refs = [
 
 for (const relativePath of refs) {
   try {
-    const result = jzodElementToJsonSchema({
+    const result = mlElementToJsonSchema({
       type: "schemaReference",
       definition: { absolutePath, relativePath },
     } as any);

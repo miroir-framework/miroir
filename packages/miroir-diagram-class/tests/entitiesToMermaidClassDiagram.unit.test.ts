@@ -9,7 +9,7 @@
 import { describe, it, expect } from "vitest";
 import type { Entity } from "miroir-core";
 import {
-  jzodTypeToUml,
+  mlTypeToUml,
   sanitiseMermaidId,
   buildEntityUuidToNameMap,
   extractClassInfo,
@@ -284,20 +284,20 @@ const allEntities: Entity[] = [
 // Tests
 // ############################################################################
 
-describe("jzodTypeToUml", () => {
-  it("maps known jzod types to UML types", () => {
-    expect(jzodTypeToUml("uuid")).toBe("UUID");
-    expect(jzodTypeToUml("string")).toBe("String");
-    expect(jzodTypeToUml("number")).toBe("Number");
-    expect(jzodTypeToUml("boolean")).toBe("Boolean");
-    expect(jzodTypeToUml("date")).toBe("Date");
-    expect(jzodTypeToUml("enum")).toBe("Enum");
-    expect(jzodTypeToUml("object")).toBe("Object");
-    expect(jzodTypeToUml("array")).toBe("Array");
+describe("mlTypeToUml", () => {
+  it("maps known ML types to UML types", () => {
+    expect(mlTypeToUml("uuid")).toBe("UUID");
+    expect(mlTypeToUml("string")).toBe("String");
+    expect(mlTypeToUml("number")).toBe("Number");
+    expect(mlTypeToUml("boolean")).toBe("Boolean");
+    expect(mlTypeToUml("date")).toBe("Date");
+    expect(mlTypeToUml("enum")).toBe("Enum");
+    expect(mlTypeToUml("object")).toBe("Object");
+    expect(mlTypeToUml("array")).toBe("Array");
   });
 
   it("returns the raw type for unknown types", () => {
-    expect(jzodTypeToUml("customType")).toBe("customType");
+    expect(mlTypeToUml("customType")).toBe("customType");
   });
 });
 

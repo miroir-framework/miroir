@@ -117,9 +117,9 @@ describe("RenderInsightHeader (Phase 3)", () => {
             descendantCount: 12,
             sumNavigationRenders: 38.4,
             avgNavigationRenders: 3.2,
-            min: { path: "JzodElementEditor@instance.name", navigationCount: 1 },
+            min: { path: "MlElementEditor@instance.name", navigationCount: 1 },
             max: {
-              path: "JzodElementEditor@instance.firstName",
+              path: "MlElementEditor@instance.firstName",
               navigationCount: 18,
             },
           }}

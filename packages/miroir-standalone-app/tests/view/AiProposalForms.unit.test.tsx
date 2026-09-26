@@ -39,7 +39,7 @@ const sampleEntityProposal = {
     name: "ProductDefinition",
     entityUuid: "aaaaaaaa-0001-0000-0000-000000000001",
     conceptLevel: "Model",
-    jzodSchema: {
+    mlSchema: {
       type: "object",
       definition: {
         uuid: { type: "uuid", tag: { value: { id: 1, defaultLabel: "UUID" } } },

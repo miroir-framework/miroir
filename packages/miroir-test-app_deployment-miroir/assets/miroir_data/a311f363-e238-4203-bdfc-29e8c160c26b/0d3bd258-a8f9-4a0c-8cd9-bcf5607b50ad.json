@@ -1006,7 +1006,7 @@
         "miroirTests": [
           {
             "miroirTestType": "functionCallTest",
-            "miroirTestLabel": "constantAsExtractor reads valueJzodSchema",
+            "miroirTestLabel": "constantAsExtractor reads valueMlSchema",
             "functionRef": {
               "module": "miroir-core/2_domain/Transformer_ResultSchema",
               "export": "resolveTransformerResultSchema"
@@ -1015,7 +1015,7 @@
               {
                 "transformerType": "constantAsExtractor",
                 "interpolation": "runtime",
-                "valueJzodSchema": { "type": "boolean" },
+                "valueMlSchema": { "type": "boolean" },
                 "value": true
               },
               {}

@@ -7,7 +7,7 @@
  *
  * The widget tests call the runner of `createReactComponentTestRunner` over their own sandbox
  * element with one `reactComponentTest` leaf and a fixture `reactComponentTestSuite` context, as the
- * MiroirTest walk does, rendering the real `JzodElementEditor` of the component registry. The
+ * MiroirTest walk does, rendering the real `MlElementEditor` of the component registry. The
  * `timeout` and `filter` tests need a value that changes after a delay, or inputs of each kind the
  * extractor filters: they mount small fixtures with the act-free `mountComponent` and run steps
  * through `runComponentTestSteps`, as `componentTestTargets.292.phase3` does.
@@ -49,19 +49,19 @@ const testFieldProps = {
 function fixtureSuite(name: string, componentProps: Record<string, any>): ReactComponentTestSuiteContext {
   return {
     suitePath: [`${name}_ComponentTestSuite`, name],
-    component: "JzodElementEditor",
+    component: "MlElementEditor",
     componentProps: { ...testFieldProps, ...componentProps },
     caseLabels: [caseLabel],
   };
 }
 
 const stringOrNumberSuite = fixtureSuite("StringOrNumber", {
-  rawJzodSchema: { type: "union", definition: [{ type: "string" }, { type: "number" }] },
+  rawMlSchema: { type: "union", definition: [{ type: "string" }, { type: "number" }] },
   initialFormState: 42,
 });
 
 const objectValueSuite = fixtureSuite("ObjectValue", {
-  rawJzodSchema: {
+  rawMlSchema: {
     type: "union",
     definition: [
       { type: "string" },
@@ -73,7 +73,7 @@ const objectValueSuite = fixtureSuite("ObjectValue", {
 });
 
 const discriminatedSuite = fixtureSuite("Discriminated", {
-  rawJzodSchema: {
+  rawMlSchema: {
     type: "union",
     discriminator: "testObjectType",
     definition: [

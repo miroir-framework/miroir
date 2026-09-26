@@ -34,8 +34,8 @@ import {
 } from "../../../../src/5_tests/MiroirTestTools";
 
 const suiteLabel = "excludeMiroirTestTypes.286.phase6";
-const componentLeafA = "JzodArrayEditor: case A";
-const componentLeafB = "JzodArrayEditor: case B";
+const componentLeafA = "MlArrayEditor: case A";
+const componentLeafB = "MlArrayEditor: case B";
 const transformerLeaf = "returnValue gives 42";
 
 /** A `reactComponentTest` leaf with an empty step list (#292 M1). */
@@ -66,8 +66,8 @@ const mixedSuite: MiroirTestSuite = {
     // #292: component leaves live under a `reactComponentTestSuite` node.
     {
       miroirTestType: "reactComponentTestSuite",
-      miroirTestLabel: "JzodArrayEditor",
-      component: "JzodElementEditor",
+      miroirTestLabel: "MlArrayEditor",
+      component: "MlElementEditor",
       miroirTests: [reactComponentLeaf(componentLeafA), reactComponentLeaf(componentLeafB)],
     },
     returnValueTransformerLeaf(transformerLeaf),
@@ -118,7 +118,7 @@ async function withCountingRunner(body: (calls: string[]) => Promise<void>): Pro
   const calls: string[] = [];
   // #292: the runner receives the leaf and its suite context.
   const runner: ReactComponentTestRunner = async ({ leaf }) => {
-    calls.push(leaf.miroirTestLabel.replace("JzodArrayEditor: ", ""));
+    calls.push(leaf.miroirTestLabel.replace("MlArrayEditor: ", ""));
     return { status: "ok" };
   };
   ConfigurationService.configurationService.registerReactComponentTestRunner(runner);

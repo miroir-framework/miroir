@@ -94,7 +94,7 @@ export function buildModelValidationRunnableSuites(
           name: label,
           run: () => {
             const check = checkModelValidationInstance(
-              group.jzodSchema,
+              group.mlSchema,
               instance,
               path,
               group.modelEnv ?? modelEnv,
@@ -175,7 +175,7 @@ export function runModelValidationSuitesWithVitest(
           const check = testCase.run();
           vitest.expect(
             check.status,
-            `jzodTypeCheck failed for instance ${check.label}`,
+            `mlsTypeCheck failed for instance ${check.label}`,
           ).toBe("ok");
         });
       }

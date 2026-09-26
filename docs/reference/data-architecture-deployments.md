@@ -168,7 +168,7 @@ The admin model includes reports, menus, selfApplication, etc., so more parentUu
 
 | Section | parentUuids |
 |---|---|
-| model | Entity (`16dbfe28…`), EntityVersion (`54b9c72f…`), Report (`3f2baa83…`), Menu (`dde4c883…`), SelfApplication (`a659d350…`), SelfApplicationVersion (`c3f0facf…`), SelfApplicationModelBranch (`cdb0aec6…`), StoreBasedConfiguration (`7990c0c9…`), Endpoint (`3d8da4d4…`), JzodSchema (`5e81e1b9…`), Query (`e4320b9e…`), Runner (`e54d7dc1…`) |
+| model | Entity (`16dbfe28…`), EntityVersion (`54b9c72f…`), Report (`3f2baa83…`), Menu (`dde4c883…`), SelfApplication (`a659d350…`), SelfApplicationVersion (`c3f0facf…`), SelfApplicationModelBranch (`cdb0aec6…`), StoreBasedConfiguration (`7990c0c9…`), Endpoint (`3d8da4d4…`), MlSchema (`5e81e1b9…`), Query (`e4320b9e…`), Runner (`e54d7dc1…`) |
 | data | Application, Deployment (with `configuration`), ViewParams, Import, … |
 
 The `bundledData.ts` file in `miroir-sandbox` uses two separate sets (`MIROIR_MODEL_PARENT_UUIDS` and `ADMIN_MODEL_PARENT_UUIDS`) to drive this classification.

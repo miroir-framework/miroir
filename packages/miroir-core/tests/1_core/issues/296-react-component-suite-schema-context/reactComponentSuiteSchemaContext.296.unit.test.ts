@@ -1,16 +1,16 @@
 /**
  * Issue #296: the MiroirTest instance editor could not type-check a `reactComponentTestSuite`.
  *
- * The editor (`TypedValueObjectEditor`) calls `jzodTypeCheck` on the displayed instance with the
+ * The editor (`TypedValueObjectEditor`) calls `mlsTypeCheck` on the displayed instance with the
  * flattened MiroirTest mlSchema (`entityWithResolvedMLSchema`) and an empty relative context, then
- * renders each node from the flat `keyMap`. `JzodObjectEditor` re-resolves a keyMap entry whose
- * `rawSchema` is a `schemaReference` with `resolveJzodSchemaReferenceInContext(rawSchema,
+ * renders each node from the flat `keyMap`. `MlObjectEditor` re-resolves a keyMap entry whose
+ * `rawSchema` is a `schemaReference` with `resolveMlSchemaReferenceInContext(rawSchema,
  * rawSchema.context ?? {}, ...)`. The MiroirTest context lives on an ancestor
  * (`mlSchema.definition.definition.context`), so a bare relative reference reached below it (the
  * `reactComponentTestSuite.miroirTests` items, `steps` items, `target`, `name`, ...) could not be
  * resolved from its keyMap entry:
- * `resolveJzodSchemaReferenceInContext could not resolve reference
- * {"relativePath":"miroirTestForReactComponent"} ... relativeReferenceJzodContext keys {}`.
+ * `resolveMlSchemaReferenceInContext could not resolve reference
+ * {"relativePath":"miroirTestForReactComponent"} ... relativeReferenceMlContext keys {}`.
  * References inside a union (e.g. `miroirTestSuite.miroirTests` items) were not affected: their
  * keyMap entry holds the union, not the reference.
  *
@@ -23,34 +23,34 @@ import { describe, expect, it } from "vitest";
 
 import {
   entityMiroirTest,
-  miroirTest_JzodAnyEditor_ComponentTestSuite,
+  miroirTest_MlAnyEditor_ComponentTestSuite,
 } from "miroir-test-app_deployment-miroir";
 
 import {
   defaultMiroirModelEnvironment,
   entityWithResolvedMLSchema,
   getInnermostTypeCheckError,
-  jzodTypeCheck,
-  resolveJzodSchemaReferenceInContext,
+  mlsTypeCheck,
+  resolveMlSchemaReferenceInContext,
   type Entity,
-  type JzodElement,
+  type MlElement,
   type MiroirModelEnvironment,
-  type ResolvedJzodSchemaReturnType,
+  type ResolvedMlSchemaReturnType,
 } from "miroir-core";
 
 // ################################################################################################
-const miroirTestMlSchema: JzodElement = entityWithResolvedMLSchema(entityMiroirTest as Entity)
-  .mlSchema as JzodElement;
+const miroirTestMlSchema: MlElement = entityWithResolvedMLSchema(entityMiroirTest as Entity)
+  .mlSchema as MlElement;
 
 /** Type-checks `instance` the way `TypedValueObjectEditor` does. */
-function typeCheckLikeTheEditor(instance: any): ResolvedJzodSchemaReturnType {
-  return jzodTypeCheck(
+function typeCheckLikeTheEditor(instance: any): ResolvedMlSchemaReturnType {
+  return mlsTypeCheck(
     miroirTestMlSchema,
     instance,
     [],
     [],
     defaultMiroirModelEnvironment as MiroirModelEnvironment,
-    {}, // relativeReferenceJzodContext
+    {}, // relativeReferenceMlContext
     instance, // currentDefaultValue
     {} as any, // reduxDeploymentsState: truthy, UI path
     undefined,
@@ -58,10 +58,10 @@ function typeCheckLikeTheEditor(instance: any): ResolvedJzodSchemaReturnType {
   );
 }
 
-function expectOk(result: ResolvedJzodSchemaReturnType) {
+function expectOk(result: ResolvedMlSchemaReturnType) {
   if (result.status !== "ok") {
     console.error(
-      "#296 jzodTypeCheck failed:",
+      "#296 mlsTypeCheck failed:",
       JSON.stringify(getInnermostTypeCheckError(result as any), null, 2),
     );
   }
@@ -69,16 +69,16 @@ function expectOk(result: ResolvedJzodSchemaReturnType) {
 }
 
 /**
- * The keyMap contract the editor relies on (`JzodObjectEditor`): a `schemaReference` rawSchema can
+ * The keyMap contract the editor relies on (`MlObjectEditor`): a `schemaReference` rawSchema can
  * be resolved from the entry alone. Returns the keys that cannot.
  */
-function unresolvableSchemaReferenceKeys(result: ResolvedJzodSchemaReturnType): string[] {
+function unresolvableSchemaReferenceKeys(result: ResolvedMlSchemaReturnType): string[] {
   if (result.status !== "ok") return ["<type check failed>"];
   const failures: string[] = [];
   for (const [key, entry] of Object.entries(result.keyMap ?? {})) {
     if (entry.rawSchema?.type !== "schemaReference") continue;
     try {
-      resolveJzodSchemaReferenceInContext(
+      resolveMlSchemaReferenceInContext(
         entry.rawSchema as any,
         (entry.rawSchema as any).context ?? {},
         defaultMiroirModelEnvironment as MiroirModelEnvironment,
@@ -113,20 +113,20 @@ const leafWithSteps = (label: string) => ({
 const reactComponentSuite = (label: string) => ({
   miroirTestType: "reactComponentTestSuite",
   miroirTestLabel: label,
-  component: "JzodElementEditor",
-  componentProps: { rawJzodSchema: { type: "any" } },
+  component: "MlElementEditor",
+  componentProps: { rawMlSchema: { type: "any" } },
   miroirTests: [leafWithSteps(label + " leaf 1"), leafWithSteps(label + " leaf 2")],
 });
 
 const instanceWith = (definition: any) => ({
-  ...(miroirTest_JzodAnyEditor_ComponentTestSuite as any),
+  ...(miroirTest_MlAnyEditor_ComponentTestSuite as any),
   definition,
 });
 
 // ################################################################################################
 describe("issue 296: MiroirTest editor type-check of a reactComponentTestSuite", () => {
-  it("type-checks the real JzodAnyEditor_ComponentTestSuite instance, leaves and steps resolved", () => {
-    const instance: any = miroirTest_JzodAnyEditor_ComponentTestSuite;
+  it("type-checks the real MlAnyEditor_ComponentTestSuite instance, leaves and steps resolved", () => {
+    const instance: any = miroirTest_MlAnyEditor_ComponentTestSuite;
     const result = typeCheckLikeTheEditor(instance);
     expectOk(result);
     if (result.status !== "ok") return;

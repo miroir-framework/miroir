@@ -1,4 +1,4 @@
-import { JzodReference, MiroirLoggerFactory, type LoggerInterface } from "miroir-core";
+import { MlReference, MiroirLoggerFactory, type LoggerInterface } from "miroir-core";
 import {
   SqlQueryDefineColumnSchema,
   SqlQueryHereTableDefinitionSchema,
@@ -319,7 +319,7 @@ export function sqlWith(
 }
 
 // #################################################################################################
-export const sqlQuerySelectSchema: JzodReference = {
+export const sqlQuerySelectSchema: MlReference = {
   type: "schemaReference",
   context: {
     sqlQueryByPass: {

@@ -1,0 +1,357 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+
+import {
+  LoggerInterface,
+  MiroirLoggerFactory,
+  mStringify,
+  transformer_extended_apply_wrapper,
+  type MetaModel,
+  type MiroirModelEnvironment
+} from "miroir-core";
+
+import { JsonDisplayHelper, useMiroirContextService } from "miroir-react";
+import { packageName } from "../../../../constants";
+import { cleanLevel } from "../../constants";
+import { useCurrentModelEnvironment } from "../../ReduxHooks";
+import { ThemedStatusText } from "../Themes/BasicComponents";
+import { FileSelector } from "../Themes/FileSelector.js";
+import { useMlElementEditorHooks } from "./MlElementEditorHooks";
+import { MlAnyEditorProps } from "./MlElementEditorInterface";
+import { MlElementEditor } from "./MlElementEditor";
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlAnyEditor");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
+).then((logger: LoggerInterface) => {
+  log = logger;
+});
+
+// ################################################################################################
+/**
+ * MlAnyEditor Component
+ * 
+ * Editor for ML schema elements of type "any".
+ * Supports dynamic type selection and rendering of appropriate sub-editors.
+ */
+let MlAnyEditorRenderCount: number = 0;
+export const MlAnyEditor: React.FC<MlAnyEditorProps> = (
+  props: MlAnyEditorProps
+) => {
+  MlAnyEditorRenderCount++;
+  const context = useMiroirContextService();
+  const {
+    // name,
+    // listKey,
+    rootLessListKey,
+    // rootLessListKeyArray,
+    reportSectionPathAsString,
+    // currentDeploymentUuid,
+    // currentApplicationSection,
+    // foreignKeyObjects,
+    // resolvedElementMlSchemaDEFUNCT, // handleSelectLiteralChange,
+    labelElement,
+    insideAny,
+    // readOnly,
+    // typeCheckKeyMap,
+  } = props;
+
+  const {
+    formik,
+    currentTypecheckKeyMap,
+    currentValueObject,
+    currentValueObjectAtKey,
+    formikRootLessListKey,
+    localResolvedElementMlSchemaBasedOnValue,
+    // currentModel,
+    // miroirMetaModel,
+    // // 
+    // displayAsStructuredElement,
+    // setDisplayAsStructuredElement,
+    // codeMirrorValue,
+    // setCodeMirrorValue,
+    // codeMirrorIsValidJson,
+    // setCodeMirrorIsValidJson,
+
+  } = useMlElementEditorHooks(
+    props.rootLessListKey,
+    props.rootLessListKeyArray,
+    reportSectionPathAsString,
+    props.typeCheckKeyMap,
+    props.insideAny,
+    props.currentApplication,
+    props.applicationDeploymentMap,
+    props.currentDeploymentUuid,
+    MlAnyEditorRenderCount,
+    "MlAnyEditor",
+  );
+
+  const [selectedFileName, setSelectedFileName] = useState<string | undefined>(undefined);
+  const [fileError, setFileError] = useState<string | undefined>(undefined);
+
+  // Compute the reset value from the schema's initializeTo tag (used for CLEAR and post-submit reset)
+  const initializeTo = currentTypecheckKeyMap?.rawSchema?.tag?.value?.initializeTo;
+
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
+    props.currentApplication,
+    props.applicationDeploymentMap,
+  );
+
+  // Resolve the reset value from the schema's initializeTo tag (used for CLEAR and post-submit reset)
+  const resetFieldValue = useMemo(() => {
+    if (!initializeTo) return undefined;
+    if (initializeTo.initializeToType === "value") {
+      return initializeTo.value;
+    }
+    if (initializeTo.initializeToType === "transformer" && initializeTo.transformer) {
+      return transformer_extended_apply_wrapper(
+        undefined, // activityTracker – not needed for build-time init
+        "build",
+        [formikRootLessListKey, "initializeTo"],
+        "initializeTo",
+        initializeTo.transformer,
+        "value",
+        currentMiroirModelEnvironment,
+        formik.values, // transformerParams
+        {}, // contextResults
+      );
+    }
+    return undefined;
+  }, [initializeTo, currentMiroirModelEnvironment]);
+
+  // Directly write file contents into formik (no intermediate state) to avoid race conditions on clear
+  const setSelectedFileContents = useCallback(
+    (contents: MetaModel | undefined) => {
+      log.info(
+        "MlAnyEditor - setSelectedFileContents for",
+        formikRootLessListKey,
+        "contents:",
+        mStringify(contents, null, 2)
+      );
+      formik.setFieldValue(formikRootLessListKey, contents !== undefined ? contents : resetFieldValue);
+    },
+    [formik, formikRootLessListKey, resetFieldValue],
+  );
+
+  // Sync selectedFileName from formik value: reset when cleared, show placeholder when a file object is loaded
+  // but selectedFileName hasn't been set (e.g. after a code-editor round-trip remounts this component)
+  useEffect(() => {
+    const isReset = currentValueObjectAtKey === undefined || currentValueObjectAtKey === resetFieldValue;
+    if (isReset) {
+      setSelectedFileName(undefined);
+      setFileError(undefined);
+    } else if (
+      typeof currentValueObjectAtKey === "object" &&
+      currentValueObjectAtKey !== null &&
+      selectedFileName === undefined
+    ) {
+      // File content is in formik but display name was lost (e.g. remount after code-editor round-trip)
+      const name = (currentValueObjectAtKey as any).applicationName;
+      setSelectedFileName(typeof name === "string" ? name : "(file loaded)");
+    }
+  }, [currentValueObjectAtKey, resetFieldValue]);
+
+  const handleClear = useCallback(() => {
+    formik.setFieldValue(formikRootLessListKey, resetFieldValue);
+    setSelectedFileName(undefined);
+    setFileError(undefined);
+  }, [formik, formikRootLessListKey, resetFieldValue]);
+
+  const format = currentTypecheckKeyMap?.rawSchema?.tag?.value?.display?.any?.format;
+  const label = currentTypecheckKeyMap?.rawSchema?.tag?.value?.defaultLabel?? formikRootLessListKey[formikRootLessListKey.length -1];
+
+  // // ##############################################################################################
+  // const handleDisplayAsStructuredElementSwitchChange = useCallback(
+  //   (event: React.ChangeEvent<HTMLInputElement>) => {
+  //     log.info(
+  //       "handleDisplayAsStructuredElementSwitchChange",
+  //       props.rootLessListKey,
+  //       "Switching display mode to:",
+  //       event.target.checked
+  //     );
+  //     if (event.target.checked) {
+  //       try {
+  //         const parsedCodeMirrorValue = JSON.parse(codeMirrorValue);
+  //         log.info(
+  //           "handleDisplayAsStructuredElementSwitchChange Parsed CodeMirror value for structured element display:",
+  //           mStringify(parsedCodeMirrorValue, null, 2)
+  //         );
+  //         // if (props.rootLessListKey && props.rootLessListKey.length > 0) {
+  //           // Invoke onChangeVector callback if registered for this field
+  //           const onChangeCallback = props.onChangeVector?.[props.rootLessListKey];
+  //           if (onChangeCallback) {
+  //             onChangeCallback(parsedCodeMirrorValue, props.rootLessListKey);
+  //           }
+  //           formik.setFieldValue(formikRootLessListKey, parsedCodeMirrorValue);
+  //         // } else {
+  //         //   formik.setValues(parsedCodeMirrorValue);
+  //         // }
+  //       } catch (e) {
+  //         log.error("Failed to parse JSON in switch handler:", e);
+  //         // Keep display mode as is in case of error
+  //         return;
+  //       }
+  //     } else {
+  //       // if switching to code editor, reset the codeMirrorValue to the current value
+  //       // setCodeMirrorValue(safeStringify(currentValue));
+  //       setCodeMirrorValue(JSON.stringify(currentValueObject, null, 2));
+  //     }
+  //     setDisplayAsStructuredElement(event.target.checked);
+  //   },
+  //   [
+  //     currentValueObject,
+  //     codeMirrorValue,
+  //     formik,
+  //     props.rootLessListKey,
+  //     setCodeMirrorValue,
+  //     setDisplayAsStructuredElement,
+  //   ]
+  // );
+
+  // const resolvedTypeIsObjectOrArrayOrAny = useMemo(() => 
+  //   !localResolvedElementMlSchemaBasedOnValue || ["any", "object", "record", "array", "tuple"].includes(
+  //     localResolvedElementMlSchemaBasedOnValue.type
+  //   ), [localResolvedElementMlSchemaBasedOnValue]
+  // );
+
+  //   // Switches for display mode
+  // const displayAsStructuredElementSwitch: JSX.Element = useMemo(
+  //   () => (
+  //     <>
+  //       {!props.readOnly && resolvedTypeIsObjectOrArrayOrAny ? (
+  //         <ThemedSwitch
+  //           checked={displayAsStructuredElement}
+  //           id={`displayAsStructuredElementSwitch-${props.rootLessListKey}`}
+  //           name={`displayAsStructuredElementSwitch-${props.rootLessListKey}`}
+  //           onChange={handleDisplayAsStructuredElementSwitchChange}
+  //           disabled={!codeMirrorIsValidJson}
+  //         />
+  //       ) : (
+  //         <></>
+  //       )}
+  //     </>
+  //   ),
+  //   [
+  //     props.readOnly,
+  //     resolvedTypeIsObjectOrArrayOrAny,
+  //     displayAsStructuredElement,
+  //     handleDisplayAsStructuredElementSwitchChange,
+  //     codeMirrorIsValidJson,
+  //   ]
+  // );
+  
+  // // const currentValue = resolvePathOnObject(formik.values[reportSectionPathAsString], rootLessListKeyArray);
+  // const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+  //   getMemoizedReduxDeploymentsStateSelectorMap();
+
+  // const deploymentEntityState: ReduxDeploymentsState = useSelector(
+  //   (state: ReduxStateWithUndoRedo) =>
+  //     deploymentEntityStateSelectorMap.extractState(
+  //       state.presentModelSnapshot.current,
+  //       props.applicationDeploymentMap,
+  //       () => ({}),
+  //       currentMiroirModelEnvironment,
+  //     ),
+  // );
+  // if (insideAny) {
+  //   log.info(`MlAnyEditor Rendered insideAny for ${rootLessListKey} ${MlAnyEditorRenderCount}`);
+  //   return (<ThemedStatusText style={{color: "red"}}>
+  //     MlAnyEditor rendered inside an "any" type is not supported yet.
+  //   </ThemedStatusText>)
+  // }
+  if (format === "file") {
+    return (
+      <div key={rootLessListKey}>
+        {/* fomat = "file" */}
+        <JsonDisplayHelper debug={true}
+          componentName="MlAnyEditor"
+          elements={[{
+            label: `MlAnyEditor Render ${MlAnyEditorRenderCount} for ${rootLessListKey} format=file`,
+            data: {
+              reportSectionPathAsString,
+              rootLessListKey,
+              currentValueObject,
+              currentValueObjectAtKey,
+              formik: formik.values,
+              currentTypecheckKeyMap,
+            },
+            useCodeBlock: true,
+          }]}
+        />
+        {/* <ThemedLabeledEditor
+          labelElement={labelElement ?? <>{name}</>}
+          editor={ */}
+        {label}
+        <FileSelector
+          title=""
+          buttonLabel={"Select File"}
+          accept={"*.json"}
+          // folder={false}
+          setSelectedFileContents={setSelectedFileContents}
+          setSelectedFileError={setFileError}
+          setSelectedFileName={setSelectedFileName}
+          selectedFileName={selectedFileName}
+          error={fileError}
+          showBorder={false}
+          compact={true}
+          style={{ marginBottom: 0 }}
+          onFileClear={handleClear}
+        />
+      </div>
+    );
+  }
+
+
+  return (
+    <div key={rootLessListKey}>
+      {/* <ThemedOnScreenHelper label="MlAnyEditor" data={rootLessListKey} /> */}
+      <JsonDisplayHelper
+        debug={true}
+        componentName={`MlAnyEditor ${localResolvedElementMlSchemaBasedOnValue?.type}`}
+        elements={[
+          {
+            label: `MlAnyEditor Render ${MlAnyEditorRenderCount} for ${rootLessListKey} general case`,
+            data: { currentValueObject, currentValueObjectAtKey, localResolvedElementMlSchemaBasedOnValue, currentTypecheckKeyMap },
+            useCodeBlock: true,
+          },
+        ]}
+      />
+      {localResolvedElementMlSchemaBasedOnValue &&
+        localResolvedElementMlSchemaBasedOnValue.type !== "any" && (
+          // NOT USED IN PRACTICE: the MlAnyEditor is used by MlElementEditor only when rawSchema type is "nay" and currentTypecheckKeyMap?.rawSchema?.tag?.value?.display?.any?.format is true
+          <MlElementEditor
+            valueObjectEditMode={props.valueObjectEditMode}
+            name={props.name}
+            labelElement={props.labelElement}
+            listKey={props.listKey}
+            rootLessListKey={props.rootLessListKey}
+            rootLessListKeyArray={props.rootLessListKeyArray}
+            reportSectionPathAsString={props.reportSectionPathAsString}
+            currentApplication={props.currentApplication}
+            applicationDeploymentMap={props.applicationDeploymentMap}
+            currentDeploymentUuid={props.currentDeploymentUuid}
+            currentApplicationSection={props.currentApplicationSection}
+            typeCheckKeyMap={props.typeCheckKeyMap}
+            foreignKeyObjects={props.foreignKeyObjects}
+            submitButton={props.submitButton}
+            readOnly={props.readOnly}
+            indentLevel={props.indentLevel}
+            insideAny={true} // important to avoid infinite recursion between MlAnyEditor and MlElementEditor when type is "any"
+            anyRootLessListKey={props.anyRootLessListKey}
+            displayError={props.displayError}
+            compatibilityWarnings={props.compatibilityWarnings}
+            showMlSchemaTypes={props.showMlSchemaTypes}
+            mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
+            environmentAnnotations={props.environmentAnnotations}
+            onChangeVector={props.onChangeVector}
+          />
+        )}
+      {!localResolvedElementMlSchemaBasedOnValue ||
+        (localResolvedElementMlSchemaBasedOnValue.type === "any" && (
+          <div style={{ display: "flex", flexFlow: "row nowrap", justifyContent: "flex-start" }}>
+            {labelElement ?? <>{label}</>}:{JSON.stringify(currentValueObjectAtKey, null, 2)}
+          </div>
+        ))}
+    </div>
+  );
+};

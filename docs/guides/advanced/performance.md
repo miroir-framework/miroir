@@ -47,7 +47,7 @@ const { navigationCount, totalCount, lastRenderTime } = useRenderInsight(
 />
 ```
 
-For timing as well as counts, call `renderInsightRegistry.trackRender({ …, enabled: true, durationMs })` once near the end of render when `showPerformanceDisplay` is true (see `JzodObjectEditor` / `JzodArrayEditor` / `ValueObjectGrid`). Do **not** call `performance.now` or write the registry when the timer is off.
+For timing as well as counts, call `renderInsightRegistry.trackRender({ …, enabled: true, durationMs })` once near the end of render when `showPerformanceDisplay` is true (see `MlObjectEditor` / `MlArrayEditor` / `ValueObjectGrid`). Do **not** call `performance.now` or write the registry when the timer is off.
 
 ## Related APIs
 

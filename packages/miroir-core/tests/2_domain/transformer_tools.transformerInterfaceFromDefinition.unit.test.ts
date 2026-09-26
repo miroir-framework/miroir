@@ -97,7 +97,7 @@ describe("transformerInterfaceFromDefinition", () => {
     },
   };
 
-  it("should return a valid JzodElement for runtime target", () => {
+  it("should return a valid MlElement for runtime target", () => {
     const result = transformerInterfaceFromDefinition(transformerDefinition, "coreBuildPlusRuntime", runtimeReferenceMap);
     // console.log("result", JSON.stringify(result, null, 2));
     expect(result).toEqual({

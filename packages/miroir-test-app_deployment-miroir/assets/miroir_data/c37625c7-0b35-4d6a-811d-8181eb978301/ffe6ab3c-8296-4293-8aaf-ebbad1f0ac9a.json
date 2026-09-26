@@ -49,7 +49,7 @@
                   },
                   "mlSchema": {
                     "transformerType": "getFromParameters",
-                    "referenceName": "newEntityJzodSchema"
+                    "referenceName": "newEntityMlSchema"
                   }
                 }
               },
@@ -86,7 +86,7 @@
                   },
                   "mlSchema": {
                     "transformerType": "getFromParameters",
-                    "referenceName": "newEntityJzodSchema"
+                    "referenceName": "newEntityMlSchema"
                   }
                 }
               },
@@ -776,7 +776,7 @@
                     },
                     "mlSchema": {
                       "transformerType": "getFromParameters",
-                      "referenceName": "newEntityJzodSchema"
+                      "referenceName": "newEntityMlSchema"
                     }
                   }
                 ]

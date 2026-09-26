@@ -2,20 +2,20 @@
   "uuid": "801a12a2-2a42-4cb4-aa0d-192deae99fd4",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "ansiColumnsToJzodSchema",
+  "name": "ansiColumnsToMlSchema",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Migrated from UnitTest 7c9e6679-7425-40de-944b-e07fc1f90ae7 (Feature #196 Phase 5)",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "ansiColumnsToJzodSchema",
+    "miroirTestLabel": "ansiColumnsToMlSchema",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "should map all supported postgres scalar and structured types",
         "functionRef": {
-          "module": "miroir-core/1_core/ansiColumnsToJzodSchema",
-          "export": "ansiColumnsToJzodSchema"
+          "module": "miroir-core/1_core/ansiColumnsToMlSchema",
+          "export": "ansiColumnsToMlSchema"
         },
         "arguments": [
           [
@@ -496,8 +496,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "should return an empty definition for an empty columns array",
         "functionRef": {
-          "module": "miroir-core/1_core/ansiColumnsToJzodSchema",
-          "export": "ansiColumnsToJzodSchema"
+          "module": "miroir-core/1_core/ansiColumnsToMlSchema",
+          "export": "ansiColumnsToMlSchema"
         },
         "arguments": [
           []
@@ -511,8 +511,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "should throw for an unsupported postgres data_type",
         "functionRef": {
-          "module": "miroir-core/1_core/ansiColumnsToJzodSchema",
-          "export": "ansiColumnsToJzodSchema"
+          "module": "miroir-core/1_core/ansiColumnsToMlSchema",
+          "export": "ansiColumnsToMlSchema"
         },
         "arguments": [
           [
@@ -536,8 +536,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "should sort definition keys by ordinal_position regardless of input order",
         "functionRef": {
-          "module": "miroir-core/1_core/ansiColumnsToJzodSchema",
-          "export": "ansiColumnsToJzodSchema"
+          "module": "miroir-core/1_core/ansiColumnsToMlSchema",
+          "export": "ansiColumnsToMlSchema"
         },
         "arguments": [
           [
@@ -634,8 +634,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "should not set optional on NOT NULL columns",
         "functionRef": {
-          "module": "miroir-core/1_core/ansiColumnsToJzodSchema",
-          "export": "ansiColumnsToJzodSchema"
+          "module": "miroir-core/1_core/ansiColumnsToMlSchema",
+          "export": "ansiColumnsToMlSchema"
         },
         "arguments": [
           [
@@ -676,8 +676,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "should set optional: true on nullable columns",
         "functionRef": {
-          "module": "miroir-core/1_core/ansiColumnsToJzodSchema",
-          "export": "ansiColumnsToJzodSchema"
+          "module": "miroir-core/1_core/ansiColumnsToMlSchema",
+          "export": "ansiColumnsToMlSchema"
         },
         "arguments": [
           [
@@ -711,8 +711,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "should resolve tag id from ordinal_position even when passed as a string",
         "functionRef": {
-          "module": "miroir-core/1_core/ansiColumnsToJzodSchema",
-          "export": "ansiColumnsToJzodSchema"
+          "module": "miroir-core/1_core/ansiColumnsToMlSchema",
+          "export": "ansiColumnsToMlSchema"
         },
         "arguments": [
           [
@@ -746,10 +746,10 @@
       },
       {
         "miroirTestType": "functionCallTest",
-        "miroirTestLabel": "round-trip: ansiColumnsToJzodSchema produces schema for getAttributeTypesFromJzodSchema",
+        "miroirTestLabel": "round-trip: ansiColumnsToMlSchema produces schema for getAttributeTypesFromMlSchema",
         "functionRef": {
-          "module": "miroir-core/1_core/ansiColumnsToJzodSchema",
-          "export": "ansiColumnsToJzodSchema"
+          "module": "miroir-core/1_core/ansiColumnsToMlSchema",
+          "export": "ansiColumnsToMlSchema"
         },
         "arguments": [
           [
@@ -849,10 +849,10 @@
       },
       {
         "miroirTestType": "functionCallTest",
-        "miroirTestLabel": "round-trip: getAttributeTypesFromJzodSchema inverts scalar schema",
+        "miroirTestLabel": "round-trip: getAttributeTypesFromMlSchema inverts scalar schema",
         "functionRef": {
           "module": "miroir-store-postgres/1_core/mlSchema",
-          "export": "getAttributeTypesFromJzodSchema"
+          "export": "getAttributeTypesFromMlSchema"
         },
         "arguments": [
           {
@@ -908,10 +908,10 @@
       },
       {
         "miroirTestType": "functionCallTest",
-        "miroirTestLabel": "should convert Author CSV columns to a JzodObject mlSchema",
+        "miroirTestLabel": "should convert Author CSV columns to a MlObject mlSchema",
         "functionRef": {
-          "module": "miroir-core/1_core/ansiColumnsToJzodSchema",
-          "export": "ansiColumnsToJzodSchema"
+          "module": "miroir-core/1_core/ansiColumnsToMlSchema",
+          "export": "ansiColumnsToMlSchema"
         },
         "arguments": [
           [

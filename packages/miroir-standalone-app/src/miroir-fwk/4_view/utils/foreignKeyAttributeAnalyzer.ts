@@ -1,4 +1,4 @@
-import type { Entity, JzodElement } from "miroir-core";
+import type { Entity, MlElement } from "miroir-core";
 
 /**
  * Result of foreign key attribute analysis, containing both direct and transitive foreign key references
@@ -6,8 +6,8 @@ import type { Entity, JzodElement } from "miroir-core";
 export interface ForeignKeyAttributeDefinition {
   /** The attribute name (real for direct FK, synthetic like "__fk_entityUuid" for transitive) */
   attributeName: string;
-  /** The Jzod schema element containing the foreign key definition */
-  schema: JzodElement;
+  /** The ML schema element containing the foreign key definition */
+  schema: MlElement;
   /** Whether this is a direct foreign key attribute of the main entity */
   isDirect: boolean;
   /** The UUID of the target entity being referenced */
@@ -117,6 +117,6 @@ export function analyzeForeignKeyAttributes(
  */
 export function convertToLegacyFormat(
   foreignKeyAttributes: ForeignKeyAttributeDefinition[],
-): [string, JzodElement][] {
+): [string, MlElement][] {
   return foreignKeyAttributes.map((fk) => [fk.attributeName, fk.schema]);
 }

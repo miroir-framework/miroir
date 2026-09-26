@@ -8,8 +8,8 @@ import {
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
   getEndpointActions,
-  getDefaultValueForJzodSchemaWithResolutionNonHook,
-  JzodObject,
+  getDefaultValueForMlSchemaWithResolutionNonHook,
+  MlObject,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
@@ -226,15 +226,15 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
             (action) => action.actionParameters.actionType.definition === selectedActionName
           );
 
-          const currentActionParametersMMLSchema:JzodObject = useMemo(() => {
+          const currentActionParametersMMLSchema:MlObject = useMemo(() => {
             return {
               type: 'object',
               definition: currentAction?.actionParameters || {}
-            } as JzodObject;
+            } as MlObject;
           }, [currentAction]);
 
           log.info('EndpointActionCaller: currentActionParametersMMLSchema', currentActionParametersMMLSchema);
-          const endpointActionCallerFormikSchema: JzodObject = useMemo(() => ({
+          const endpointActionCallerFormikSchema: MlObject = useMemo(() => ({
             type: "object",
             definition: {
               [formikPath_EndpointActionCaller]: {
@@ -361,10 +361,10 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
           useEffect(() => {
             const initialFormState: Record<string, any> =
               !currentAction?.actionParameters ||
-              !currentMiroirModelEnvironment.miroirFundamentalJzodSchema ||
+              !currentMiroirModelEnvironment.miroirFundamentalMlSchema ||
               !selectedApplicationUuid
                 ? {}
-                : getDefaultValueForJzodSchemaWithResolutionNonHook(
+                : getDefaultValueForMlSchemaWithResolutionNonHook(
                     "build",
                     currentActionParametersMMLSchema,
                     undefined, // rootObject
@@ -379,7 +379,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                     {}, // transformerParams
                     {}, // contextResults
                     deploymentEntityState,
-                    {} // relativeReferenceJzodContext
+                    {} // relativeReferenceMlContext
                   );
             log.info(
               "EndpointActionCaller useEffect: handleActionChange Initial form state",
@@ -411,7 +411,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                 Endpoint Action Caller
               </Typography>
               <Typography variant="body2" color="text.secondary" gutterBottom>
-                Use JzodElementEditor for dynamic form generation based on action parameters schema
+                Use MlElementEditor for dynamic form generation based on action parameters schema
               </Typography>
 
               {/* JsonDisplayHelper */}
@@ -479,7 +479,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                 {formikContext.values[formikPath_EndpointActionCaller] && (
                   <TypedValueObjectEditor
                     labelElement={<span>select Application</span>}
-                    formValueMLSchema={endpointActionCallerFormikSchema.definition[formikPath_EndpointActionCaller] as JzodObject}
+                    formValueMLSchema={endpointActionCallerFormikSchema.definition[formikPath_EndpointActionCaller] as MlObject}
                     formikValuePathAsString={formikPath_EndpointActionCaller}
                     deploymentUuid={deployment_Miroir.uuid} // dummy deployment for application selection
                     application={innerSelectedApplicationUuid}

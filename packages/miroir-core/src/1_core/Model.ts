@@ -2,7 +2,7 @@ import {
   entityEndpointVersion,
   entityEntity,
   entityEntityVersion,
-  entityJzodSchema,
+  entityMlSchema,
   entityMenu,
   entityMiroirTest,
   entityQueryVersion,
@@ -41,7 +41,7 @@ import {
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import type { DeploymentUuidToReportsEntities } from "../0_interfaces/1_core/Model";
-import { resolveFundamentalSchemaForDeployment } from "./jzod/schemaForDeployment";
+import { resolveFundamentalSchemaForDeployment } from "./mls/schemaForDeployment";
 
 import {
   Entity,
@@ -120,7 +120,7 @@ const defaultEndpointsByUuid: Record<Uuid, EndpointDefinition> = {
 };
 
 export const defaultMetaModelEnvironment: MiroirModelEnvironment = {
-  miroirFundamentalJzodSchema: resolveFundamentalSchemaForDeployment(
+  miroirFundamentalMlSchema: resolveFundamentalSchemaForDeployment(
     deployment_Miroir.uuid,
     defaultMiroirMetaModel,
     "static",
@@ -130,7 +130,7 @@ export const defaultMetaModelEnvironment: MiroirModelEnvironment = {
   currentModel: defaultMiroirMetaModel,
 };
 export const defaultMiroirModelEnvironment: MiroirModelEnvironment = {
-  miroirFundamentalJzodSchema: resolveFundamentalSchemaForDeployment(
+  miroirFundamentalMlSchema: resolveFundamentalSchemaForDeployment(
     deployment_Miroir.uuid,
     defaultMiroirMetaModel,
     "static",
@@ -305,7 +305,7 @@ export const emptyApplicationModel: MetaModel = {
   endpoints: [],
   entities: [],
   entityVersions: [],
-  jzodSchemas: [],
+  mlSchemas: [],
   menus: [],
   reports: [],
   runners: [],
@@ -341,7 +341,7 @@ const modelIcons: Record<string, string> = {
   // ApplicationModelBranch: "application-model-branch",
   EndpointVersion: "endpoint-version",
   RunnerVersion: "runner-version",
-  JzodSchema: "jzod-schema",
+  MlSchema: "ml-schema",
   SelfApplication: "self-application",
   SelfApplicationVersion: "self-application-version",
   SelfApplicationModelBranch: "self-application-model-branch",
@@ -404,7 +404,7 @@ export async function extractApplicationModel(
     const endpoints = await extractEntityInstances(storeController, sectionFor(entityEndpointVersion.uuid), entityEndpointVersion.uuid, "endpoints");
     const menus = await extractEntityInstances(storeController, sectionFor(entityMenu.uuid), entityMenu.uuid, "menus");
     const reports = await extractEntityInstances(storeController, sectionFor(entityReport.uuid), entityReport.uuid, "reports");
-    const jzodSchemas = await extractEntityInstances(storeController, sectionFor(entityJzodSchema.uuid), entityJzodSchema.uuid, "jzod schemas");
+    const mlSchemas = await extractEntityInstances(storeController, sectionFor(entityMlSchema.uuid), entityMlSchema.uuid, "ML schemas");
     const queries = await extractEntityInstances(storeController, sectionFor(entityQueryVersion.uuid), entityQueryVersion.uuid, "queries");
     const runners = await extractEntityInstances(storeController, sectionFor(entityRunner.uuid), entityRunner.uuid, "runners");
     const themes = await extractEntityInstances(storeController, sectionFor(entityTheme.uuid), entityTheme.uuid, "themes");
@@ -431,7 +431,7 @@ export async function extractApplicationModel(
       menus: menus as Menu[],
       reports: reports as Report[],
       storedQueries: queries as Query[],
-      jzodSchemas: jzodSchemas as MlSchema[],
+      mlSchemas: mlSchemas as MlSchema[],
       applicationVersions: applicationVersions as ApplicationVersion[],
       applicationVersionCrossEntityVersion: [],
       applicationVersionCrossQueryVersion: [],

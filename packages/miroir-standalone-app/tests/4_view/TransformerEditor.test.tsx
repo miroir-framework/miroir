@@ -5,7 +5,7 @@ import '@testing-library/jest-dom';
 
 import {
   deployment_Library_DO_NO_USE,
-  JzodElement,
+  MlElement,
   LoggerInterface,
   MiroirLoggerFactory,
   TransformerForBuild,
@@ -172,7 +172,7 @@ describe("TransformerEditor Component", () => {
         fireEvent.change(modeSelect, { target: { value: 'runtime' } });
       });
       
-      // The JzodElementEditor should update to show runtime transformer schema
+      // The MlElementEditor should update to show runtime transformer schema
       await waitFor(() => {
         expect(screen.getByDisplayValue('runtime')).toBeInTheDocument();
       });
@@ -270,19 +270,19 @@ describe("TransformerEditor Component", () => {
     });
   });
 
-  describe("Integration with JzodElementEditor", () => {
-    it("renders JzodElementEditor for transformer schema editing", () => {
+  describe("Integration with MlElementEditor", () => {
+    it("renders MlElementEditor for transformer schema editing", () => {
       renderTransformerEditor();
       
-      // The JzodElementEditor should be present for editing transformer schema
+      // The MlElementEditor should be present for editing transformer schema
       // This checks that the integration is working
       expect(screen.getByText(/Transformer Schema/)).toBeInTheDocument();
     });
 
-    it("updates transformer when JzodElementEditor value changes", async () => {
+    it("updates transformer when MlElementEditor value changes", async () => {
       renderTransformerEditor();
       
-      // This would test the actual integration with JzodElementEditor
+      // This would test the actual integration with MlElementEditor
       // The specific implementation depends on how changes are propagated
       expect(screen.getByText(/Transformer Schema/)).toBeInTheDocument();
     });

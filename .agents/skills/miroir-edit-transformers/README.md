@@ -67,7 +67,7 @@ A specialized skill for creating and updating **Library-Implemented** Miroir Tra
 | `a557419d-a288-4fb8-8a1e-971c86c113b8/<uuid>.json` | TransformerDefinition JSON |
 | `TransformersForRuntime.ts` | Handler function + 2 registrations |
 | `Transformers.ts` | Import + export + array entry |
-| `getMiroirFundamentalJzodSchema.ts` | 2 schema entries + 1 dependency |
+| `getMiroirFundamentalMlSchema.ts` | 2 schema entries + 1 dependency |
 | `generate-ts-types.ts` | 4 type generation entries |
 | `33f60ac8-6511-43b1-b153-6b86e3177532.json` | Test cases (`miroirTest_miroirCoreTransformers`) |
 
@@ -102,7 +102,7 @@ miroir-edit-transformers/
 | `miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/*.json` | Transformer definitions |
 | `2_domain/TransformersForRuntime.ts` | Handler implementations |
 | `2_domain/Transformers.ts` | Exports and registration |
-| `0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts` | Schema registration |
+| `0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchema.ts` | Schema registration |
 | `scripts/generate-ts-types.ts` | Type generation config |
 | `miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` | Test suite (`miroirTest_miroirCoreTransformers`) |
 

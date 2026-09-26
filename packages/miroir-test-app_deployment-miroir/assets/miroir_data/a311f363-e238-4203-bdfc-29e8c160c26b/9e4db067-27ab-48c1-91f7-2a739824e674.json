@@ -12,9 +12,9 @@
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",
-        "miroirTestLabel": "should return array and tuple schemas directly from concreteUnrolledJzodSchemas",
+        "miroirTestLabel": "should return array and tuple schemas directly from concreteUnrolledMlSchemas",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "unionArrayChoices"
         },
         "arguments": [
@@ -108,7 +108,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "should handle schema references within unions",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "unionArrayChoices"
         },
         "arguments": [

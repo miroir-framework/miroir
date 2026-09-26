@@ -58,7 +58,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
  * ## Purpose
  * 
  * This component provides a complete user interface for managing blob data (images, PDFs, documents, etc.)
- * within Miroir's JzodObjectEditor. It automatically renders different UI modes based on the blob's
+ * within Miroir's MlObjectEditor. It automatically renders different UI modes based on the blob's
  * MIME type and provides interactive upload capabilities via drag-and-drop or click-to-upload.
  * 
  * ## Key Features
@@ -74,13 +74,13 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
  * - **Metadata Display**: Shows filename and MIME type information
  * - **Download**: Provides download button for non-image files
  * 
- * ## Integration with JzodObjectEditor
+ * ## Integration with MlObjectEditor
  * 
- * This component is automatically used by `JzodObjectEditor` when:
+ * This component is automatically used by `MlObjectEditor` when:
  * 1. The schema has `tag.value.isBlob === true`
  * 2. The object structure matches: `{ filename: string, contents: { encoding, mimeType, data } }`
  * 
- * The JzodObjectEditor detects the isBlob tag and renders BlobEditorField instead of
+ * The MlObjectEditor detects the isBlob tag and renders BlobEditorField instead of
  * regular object attribute editors.
  * 
  * ## Blob Data Structure
@@ -241,7 +241,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
  * - getBlobFileIcon: Returns icon name for MIME type
  * - formatFileSize: Formats bytes to human-readable
  * 
- * @see JzodObjectEditor - Parent component that ifThenElsely renders this
+ * @see MlObjectEditor - Parent component that ifThenElsely renders this
  * @see packages/miroir-standalone-app/docs/BlobEditing.md - User-facing documentation
  */
 

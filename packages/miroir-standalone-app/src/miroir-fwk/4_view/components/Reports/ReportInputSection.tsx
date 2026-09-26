@@ -6,7 +6,7 @@ import {
   noValue,
   type ApplicationDeploymentMap,
   type ApplicationSection,
-  type JzodObject,
+  type MlObject,
   type Uuid,
 } from "miroir-core";
 
@@ -33,7 +33,7 @@ import { ThemedStyledButton } from "../Themes/index.js";
 export function ReportInputSection(props: {
   label: string;
   inputPrefix: string;
-  inputMLSchema: JzodObject;
+  inputMLSchema: MlObject;
   urlParamFields?: string[];
   application: Uuid;
   applicationDeploymentMap?: ApplicationDeploymentMap;

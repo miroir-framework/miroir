@@ -15,7 +15,7 @@ This guide compares Miroir Framework with over 30 similar platforms in the low-c
 | **Multi-Store** (SQL/NoSQL/Files) | ✅ | ❌ | Limited | ❌ | ❌ |
 | **AI/MCP Integration** | ✅ | ❌ | ❌ | ❌ | Partial |
 | **Portable Logic** (Client/Server/DB) | ✅ | ❌ | ❌ | ❌ | ❌ |
-| **Meta-Language** (Jzod) | ✅ | ❌ | ❌ | ❌ | ❌ |
+| **Meta-Language** (ML) | ✅ | ❌ | ❌ | ❌ | ❌ |
 | **Development-Runtime Integration** | ✅ | ❌ | Partial | ❌ | ❌ |
 | **General Purpose** | ✅ | ✅ | ✅ | ✅ | ❌ (CRM-focused) |
 | **No Vendor Lock-in** | ✅ | ✅ | Partial | ❌ | ❌ |
@@ -74,7 +74,7 @@ This guide compares Miroir Framework with over 30 similar platforms in the low-c
 - Real-time subscriptions
 
 **Key Differences**:
-- ❌ Traditional SQL schemas (not Jzod meta-language)
+- ❌ Traditional SQL schemas (not the ML meta-language)
 - ❌ No report/UI generation
 - ❌ PostgreSQL-only
 - ❌ Not designed for runtime-development integration
@@ -98,7 +98,7 @@ This guide compares Miroir Framework with over 30 similar platforms in the low-c
 **Key Differences**:
 - ❌ UI-focused (built model not reusable elsewhere)
 - ❌ No entity versioning
-- ❌ No Jzod-like meta-schemas
+- ❌ No ML-like meta-schemas
 - ❌ Limited client/server code reuse
 - ❌ No database-executable transformers
 
@@ -161,7 +161,7 @@ This guide compares Miroir Framework with over 30 similar platforms in the low-c
 
 **Key Differences**:
 - ❌ CMS-focused (not general development framework)
-- ❌ No Jzod-like bootstrapped meta-language
+- ❌ No ML-like bootstrapped meta-language
 - ❌ Admin UI (not end-user app UI)
 - ❌ No development-runtime integration
 - ❌ Workflow transformations (not pure functional)
@@ -182,7 +182,7 @@ This guide compares Miroir Framework with over 30 similar platforms in the low-c
 
 **Key Differences**:
 - ❌ CMS-focused
-- ❌ Content types less formal than Jzod
+- ❌ Content types less formal than ML schemas
 - ❌ No end-user UI generation
 - ❌ Primarily SQL databases
 - ❌ Logic not portable across contexts
@@ -292,7 +292,7 @@ This guide compares Miroir Framework with over 30 similar platforms in the low-c
 - ❌ Per-user licensing costs
 - ❌ Limited outside Microsoft stack
 - ❌ Not open source
-- ❌ Formula-based (not Jzod)
+- ❌ Formula-based (not ML schemas)
 
 **Best for**: Organizations heavily invested in Microsoft 365
 
@@ -329,7 +329,7 @@ Miroir is the **only platform** offering:
 3. ✅ **Multi-Store** - PostgreSQL, IndexedDB, Filesystem (swap without code changes)
 4. ✅ **Portable Logic** - Run business logic on client, server, OR in-database (SQL)
 5. ✅ **AI-Ready** - Native Model Context Protocol (MCP) support
-6. ✅ **Bootstrapped Meta-Model** - Self-describing schemas (Jzod)
+6. ✅ **Bootstrapped Meta-Model** - Self-describing schemas (ML)
 7. ✅ **Development-Runtime Integration** - Smalltalk-inspired immediate feedback
 8. ✅ **General Purpose** - Not limited to specific use case or industry
 

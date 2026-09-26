@@ -11,7 +11,7 @@ This guide introduces the fundamental concepts of the Miroir Framework. Understa
 1. [Overview](#overview)
 2. [Meta-Model vs Model vs Data](#meta-model-vs-model-vs-data)
 3. [Entity](#entity)
-4. [Jzod: The Meta-Language](#jzod-the-meta-language)
+4. [ML: The Meta-Language](#ml-the-meta-language)
 5. [Query](#query)
 6. [Transformer](#transformer)
 7. [Action](#action)
@@ -27,7 +27,7 @@ This guide introduces the fundamental concepts of the Miroir Framework. Understa
 Miroir is built on a **meta-model** approach where:
 
 1. **Everything is data** - Models, queries, transformations, and UI definitions are all stored as JSON
-2. **Schemas define structure** - Jzod schemas define the shape of all data
+2. **Schemas define structure** - ML schemas define the shape of all data
 3. **Interpreters execute logic** - Instead of compiling code, Miroir interprets declarative definitions
 4. **Bootstrapped design** - The meta-model describes itself
 
@@ -115,7 +115,7 @@ settings (`idAttribute`), view/cache fields, and related display metadata.
 - `uuid` - Unique identifier
 - `name` - Human-readable name
 - `description` - Documentation
-- `mlSchema` - Structure definition in Jzod / ML format (present model, required)
+- `mlSchema` - Structure definition in ML format (present model, required)
 - `conceptLevel` - `MetaModel` | `Model` | `Data` | `External` (`External` for Entities whose instances live in another system, see [Defining Entities](developer/defining-entities.md))
 - `idAttribute` - Primary key attribute(s); absent ⇒ `uuid`
 - `scope`, `logicalDataModel` - *(meta-model Entity rows only, not set by application authors)* see the [Versioning reference](../reference/versioning.md#meta-model-classification-scope-and-logicaldatamodel)
@@ -126,9 +126,9 @@ Evolving a concept means editing its Entity. Keeping a history of model states i
 
 ---
 
-## Jzod: The Meta-Language
+## ML: The Meta-Language
 
-**Jzod** (Miroir Meta-Language, or MML) is a JSON-based schema definition language that:
+**ML** (Miroir Meta-Language, or MML), derived from the Jzod project, is a JSON-based schema definition language that:
 
 1. Defines the structure of all data in Miroir
 2. Generates TypeScript types

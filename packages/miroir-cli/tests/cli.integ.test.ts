@@ -27,7 +27,7 @@ import {
   type MetaEntity,
   type MiroirConfigClient,
   type SpecificLoggerOptionsMap,
-  miroirFundamentalJzodSchema,
+  miroirFundamentalMlSchema,
   type MlSchema,
   type EndpointDefinition,
   type SelfApplication,

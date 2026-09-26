@@ -2,20 +2,20 @@
   "uuid": "d11082dd-1f9e-4b19-be2d-a973a4c5ffdc",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "jzodToJsonSchema",
+  "name": "mlsToJsonSchema",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Migrated from UnitTest 856426e9-85ce-4c40-a607-01029de24c1f (Feature #196 Phase 5)",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "jzodToJsonSchema",
+    "miroirTestLabel": "mlsToJsonSchema",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "converts string type",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
-          "export": "jzodToJsonSchema"
+          "module": "miroir-core/1_core/mls/MlsToJsonSchema",
+          "export": "mlsToJsonSchema"
         },
         "arguments": [
           {
@@ -30,8 +30,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "converts number type",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
-          "export": "jzodToJsonSchema"
+          "module": "miroir-core/1_core/mls/MlsToJsonSchema",
+          "export": "mlsToJsonSchema"
         },
         "arguments": [
           {
@@ -46,8 +46,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "converts boolean type",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
-          "export": "jzodToJsonSchema"
+          "module": "miroir-core/1_core/mls/MlsToJsonSchema",
+          "export": "mlsToJsonSchema"
         },
         "arguments": [
           {
@@ -62,8 +62,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "converts any type to empty schema",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
-          "export": "jzodToJsonSchema"
+          "module": "miroir-core/1_core/mls/MlsToJsonSchema",
+          "export": "mlsToJsonSchema"
         },
         "arguments": [
           {
@@ -76,8 +76,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "converts uuid type to string",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
-          "export": "jzodToJsonSchema"
+          "module": "miroir-core/1_core/mls/MlsToJsonSchema",
+          "export": "mlsToJsonSchema"
         },
         "arguments": [
           {
@@ -92,8 +92,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "includes description when present",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
-          "export": "jzodToJsonSchema"
+          "module": "miroir-core/1_core/mls/MlsToJsonSchema",
+          "export": "mlsToJsonSchema"
         },
         "arguments": [
           {
@@ -110,8 +110,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "converts literal type to JSON Schema const",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
-          "export": "jzodToJsonSchema"
+          "module": "miroir-core/1_core/mls/MlsToJsonSchema",
+          "export": "mlsToJsonSchema"
         },
         "arguments": [
           {
@@ -127,8 +127,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "converts enum type to JSON Schema enum array",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
-          "export": "jzodToJsonSchema"
+          "module": "miroir-core/1_core/mls/MlsToJsonSchema",
+          "export": "mlsToJsonSchema"
         },
         "arguments": [
           {
@@ -152,8 +152,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "converts array type to JSON Schema array with items",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
-          "export": "jzodToJsonSchema"
+          "module": "miroir-core/1_core/mls/MlsToJsonSchema",
+          "export": "mlsToJsonSchema"
         },
         "arguments": [
           {
@@ -174,8 +174,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "converts nested array type",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
-          "export": "jzodToJsonSchema"
+          "module": "miroir-core/1_core/mls/MlsToJsonSchema",
+          "export": "mlsToJsonSchema"
         },
         "arguments": [
           {
@@ -202,8 +202,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "converts object type with all required fields",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
-          "export": "jzodToJsonSchema"
+          "module": "miroir-core/1_core/mls/MlsToJsonSchema",
+          "export": "mlsToJsonSchema"
         },
         "arguments": [
           {
@@ -239,8 +239,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "excludes optional fields from required array",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
-          "export": "jzodToJsonSchema"
+          "module": "miroir-core/1_core/mls/MlsToJsonSchema",
+          "export": "mlsToJsonSchema"
         },
         "arguments": [
           {
@@ -276,8 +276,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "omits required when all fields are optional",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
-          "export": "jzodToJsonSchema"
+          "module": "miroir-core/1_core/mls/MlsToJsonSchema",
+          "export": "mlsToJsonSchema"
         },
         "arguments": [
           {
@@ -304,8 +304,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "converts union type to anyOf",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
-          "export": "jzodToJsonSchema"
+          "module": "miroir-core/1_core/mls/MlsToJsonSchema",
+          "export": "mlsToJsonSchema"
         },
         "arguments": [
           {
@@ -335,8 +335,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "resolves schemaReference from outer context",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
-          "export": "jzodToJsonSchema"
+          "module": "miroir-core/1_core/mls/MlsToJsonSchema",
+          "export": "mlsToJsonSchema"
         },
         "arguments": [
           {
@@ -359,8 +359,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "resolves schemaReference from inline context on the element",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
-          "export": "jzodToJsonSchema"
+          "module": "miroir-core/1_core/mls/MlsToJsonSchema",
+          "export": "mlsToJsonSchema"
         },
         "arguments": [
           {
@@ -404,8 +404,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "falls back to $ref for unresolvable schemaReference",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
-          "export": "jzodToJsonSchema"
+          "module": "miroir-core/1_core/mls/MlsToJsonSchema",
+          "export": "mlsToJsonSchema"
         },
         "arguments": [
           {
@@ -423,8 +423,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "converts record type to object with additionalProperties",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJsonSchema",
-          "export": "jzodToJsonSchema"
+          "module": "miroir-core/1_core/mls/MlsToJsonSchema",
+          "export": "mlsToJsonSchema"
         },
         "arguments": [
           {

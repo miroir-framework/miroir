@@ -125,7 +125,7 @@ The script performs ordered steps:
 | Step | Packages |
 |---|---|
 | 1 | `miroir-test-app_deployment-miroir`, `miroir-test-app_deployment-admin` |
-| 2 | `miroir-core` (plain build, or `devbuild` to regenerate TS types from Jzod schemas) |
+| 2 | `miroir-core` (plain build, or `devbuild` to regenerate TS types from ML schemas) |
 | 3 | All local-cache and store packages (built in parallel) |
 | 4 | `miroir-react`, `miroir-mcp`, `miroir-diagram-class` |
 | 5 | `miroir-server`, `miroir-standalone-app`, `miroir-cli` |

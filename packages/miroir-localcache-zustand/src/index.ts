@@ -57,12 +57,12 @@ export {
 // Memoized selectors
 export {
   getMemoizedReduxDeploymentsStateSelectorMap,
-  // getMemoizedReduxDeploymentsStateJzodSchemaSelectorMapDEFUNCT,
+  // getMemoizedReduxDeploymentsStateMlSchemaSelectorMapDEFUNCT,
 } from "./4_services/localCache/DomainStateMemoizedSelectors.js";
 
 export {
   getMemoizedReduxDeploymentsStateSelectorForTemplateMap,
-  // getMemoizedReduxDeploymentsStateJzodSchemaSelectorTemplateMap,
+  // getMemoizedReduxDeploymentsStateMlSchemaSelectorTemplateMap,
 } from "./4_services/localCache/DomainStateMemoizedSelectorsForTemplate.js";
 
 // Undo/Redo store

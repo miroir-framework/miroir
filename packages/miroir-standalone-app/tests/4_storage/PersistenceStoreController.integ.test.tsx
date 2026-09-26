@@ -679,7 +679,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
 
   //   expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK);
   //   // test starts
-  //   const iconsDefinition: JzodElement = {
+  //   const iconsDefinition: MlElement = {
   //     type: "number",
   //     optional: true,
   //     tag: { value: { id: 6, defaultLabel: "Gender (narrow-minded)" } },

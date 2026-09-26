@@ -9,7 +9,7 @@ const __dirname = dirname(__filename);
 /**
  * Generates a JSON file containing the complete MetaModel for the Library application.
  * The MetaModel includes entities, entity definitions, endpoints, menus, reports,
- * stored queries, jzod schemas, and application version cross references.
+ * stored queries, ML schemas, and application version cross references.
  */
 async function generateLibraryMetaModel() {
   try {

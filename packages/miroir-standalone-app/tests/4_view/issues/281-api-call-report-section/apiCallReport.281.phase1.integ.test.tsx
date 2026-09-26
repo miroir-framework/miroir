@@ -589,7 +589,7 @@ describe.skipIf(!shouldRun).sequential("apiCallReport #281 phase1 — typed play
     );
 
     expect(screen.queryByText(TYPED_VALUE_OBJECT_EDITOR_TYPE_ERROR)).toBeNull();
-    expect(screen.queryByText(/jzodTypeCheck expected a value but got undefined/i)).toBeNull();
+    expect(screen.queryByText(/mlsTypeCheck expected a value but got undefined/i)).toBeNull();
 
     const playlistIdInput = document.querySelector<HTMLInputElement>(
       'input[data-testid="miroirInput"][id$="playlistId"]',

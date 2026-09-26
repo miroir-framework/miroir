@@ -2,20 +2,20 @@
   "uuid": "32416312-fd7b-46ea-8cd5-fed70020061b",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "jzodTransitiveDependencySet",
+  "name": "mlsTransitiveDependencySet",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Migrated from UnitTest eca25c60-7dfb-4e1d-a718-1e639695404b (Feature #196 Phase 5)",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "jzod.jzodTransitiveDependencySet",
+    "miroirTestLabel": "mls.mlsTransitiveDependencySet",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "finds direct dependency",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
-          "export": "jzodTransitiveDependencySet"
+          "module": "miroir-core/1_core/mls/MlSchemaReferences",
+          "export": "mlsTransitiveDependencySet"
         },
         "arguments": [
           {
@@ -44,8 +44,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "finds single level dependencies",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
-          "export": "jzodTransitiveDependencySet"
+          "module": "miroir-core/1_core/mls/MlSchemaReferences",
+          "export": "mlsTransitiveDependencySet"
         },
         "arguments": [
           {
@@ -81,8 +81,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "finds transitive dependencies",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
-          "export": "jzodTransitiveDependencySet"
+          "module": "miroir-core/1_core/mls/MlSchemaReferences",
+          "export": "mlsTransitiveDependencySet"
         },
         "arguments": [
           {
@@ -130,8 +130,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "handles circular dependencies",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
-          "export": "jzodTransitiveDependencySet"
+          "module": "miroir-core/1_core/mls/MlSchemaReferences",
+          "export": "mlsTransitiveDependencySet"
         },
         "arguments": [
           {
@@ -175,8 +175,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "throws error when context is missing",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
-          "export": "jzodTransitiveDependencySet"
+          "module": "miroir-core/1_core/mls/MlSchemaReferences",
+          "export": "mlsTransitiveDependencySet"
         },
         "arguments": [
           {
@@ -187,14 +187,14 @@
           },
           "A"
         ],
-        "expectedError": "miroirFundamentalJzodSchema.context is not defined"
+        "expectedError": "miroirFundamentalMlSchema.context is not defined"
       },
       {
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "throws error when element not found in context",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
-          "export": "jzodTransitiveDependencySet"
+          "module": "miroir-core/1_core/mls/MlSchemaReferences",
+          "export": "mlsTransitiveDependencySet"
         },
         "arguments": [
           {

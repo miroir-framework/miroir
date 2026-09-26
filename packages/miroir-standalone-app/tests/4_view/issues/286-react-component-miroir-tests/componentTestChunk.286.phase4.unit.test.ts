@@ -142,7 +142,7 @@ describe("component test chunk bundle guard", () => {
     expect(
       sourcesMatching(manifest, addedKeys, "node_modules/@testing-library/user-event/").length,
     ).toBeGreaterThan(0);
-    // #292 Slice 4 deleted jzodElementEditor/JzodArrayEditor.tsx: the step interpreter stands for the
+    // #292 Slice 4 deleted mlElementEditor/MlArrayEditor.tsx: the step interpreter stands for the
     // component test code of the chunk.
     expect(sourcesMatching(manifest, addedKeys, "componentTests/runComponentTestSteps").length).toBe(1);
   });

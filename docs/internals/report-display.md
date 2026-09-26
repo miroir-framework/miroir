@@ -16,7 +16,7 @@ Internal reference for refactoring the report UI from `ReportViewWithEditor` dow
 | **RSVWE** | `ReportSectionViewWithEditor` — picks a leaf renderer from the section type. |
 | **TVOE** | `TypedValueObjectEditor` — schema-driven instance editor; expects an existing Formik above it. |
 | **TVOE+Formik** | `TypedValueObjectEditorWithFormik` — wraps TVOE in its own Formik. Used outside the report tree (e.g. transformer panels), not by RVWE. |
-| **typecheck / `jzodTypeCheck`** | Resolves the Jzod schema against the current value; yields `resolvedSchema` + `keyMap` (per-path metadata for editors). |
+| **typecheck / `mlsTypeCheck`** | Resolves the ML schema against the current value; yields `resolvedSchema` + `keyMap` (per-path metadata for editors). |
 | **typeCheckKeyMap** | Map from field path → schema metadata. In the report editor path it is **computed and passed as props**, not written back into Formik. |
 | **onChangeVector** | Optional map of `rootLessListKey` → callback. Fired by field editors alongside the Formik write, so a parent can react (e.g. navigate) without owning every keystroke. |
 | **rootLessListKey** | A field's path inside the edited value object (e.g. `application`, `definition.section`). Used to key `onChangeVector` and field-validation errors. |
@@ -37,7 +37,7 @@ RootComponent                 # provides DocumentOutline + ReportPage contexts (
           → [generalEditMode only] InlineReportEditor
           → ReportSectionViewWithEditor   # recursive for list/grid/accordion
             → leaf: EntityInstance | ListDisplay | Input | Markdown | …
-                  → TypedValueObjectEditor → JzodElementEditor → …
+                  → TypedValueObjectEditor → MlElementEditor → …
 ```
 
 `ReportDisplay` has **no** Formik. It only chooses the report, runs `runStoredQueries`, and passes props into RVWE. Besides `ReportPage`, `ReportDisplay` is also mounted by `HomePage` and `SettingsPage` — the stack above is the canonical "one report page" case.
@@ -64,7 +64,7 @@ Nested `storedReportDisplay` sections mount another `ReportDisplay` → another 
 Creation site in RVWE:
 
 - `enableReinitialize={true}` — when `initialReportSectionsFormValue` gets a new reference, Formik resets.
-- `validateOnChange={false}`, `validateOnBlur={false}` — Formik’s built-in validators do not run on every edit (schema work is done by `jzodTypeCheck` instead).
+- `validateOnChange={false}`, `validateOnBlur={false}` — Formik’s built-in validators do not run on every edit (schema work is done by `mlsTypeCheck` instead).
 
 ### What lives in the bag
 
@@ -142,7 +142,7 @@ Typecheck runs in a `useMemo` inside TVOE whenever `valueObject` / `formik.value
 So the intended cycle is one-way:
 
 ```
-user edits → setFieldValue → Formik values change → re-render → jzodTypeCheck → richer editor props
+user edits → setFieldValue → Formik values change → re-render → mlsTypeCheck → richer editor props
 ```
 
 not
@@ -179,13 +179,13 @@ Changing `application` in an input section navigates away. That remounts the pag
 
 ### When it runs
 
-On TVOE render, inside `useMemo`, when any of these change: current model / model environment (incl. the fundamental Jzod schema), deployment, `formik.values`, `valueObject`, `formValueMLSchema`, the Formik path string, zoom flags, and the redux deployment state (also used for FK resolution).
+On TVOE render, inside `useMemo`, when any of these change: current model / model environment (incl. the fundamental ML schema), deployment, `formik.values`, `valueObject`, `formValueMLSchema`, the Formik path string, zoom flags, and the redux deployment state (also used for FK resolution).
 
 It does **not** run on a timer. It is not Formik’s `validate`. It runs as often as those deps churn — typically once per meaningful edit that updates Formik.
 
 ### Why it is necessary
 
-Without a successful typecheck, TVOE cannot hand `JzodElementEditor` a reliable `typeCheckKeyMap` / resolved schema. That map drives:
+Without a successful typecheck, TVOE cannot hand `MlElementEditor` a reliable `typeCheckKeyMap` / resolved schema. That map drives:
 
 - which editor variant to show (union branch, object fields, …),
 - foreign-key target entity queries,
@@ -245,6 +245,6 @@ All under `packages/miroir-standalone-app/src/miroir-fwk/4_view/`:
 | `components/Reports/ReportInputSection.tsx` | Input leaf + `onChangeVector` navigation |
 | `components/Reports/TypedValueObjectEditor.tsx` | Typecheck + TVOE; consumes Formik |
 | `components/Reports/TypedValueObjectEditorWithFormik.tsx` | Standalone Formik wrapper (non-report) |
-| `components/ValueObjectEditor/JzodElementEditor*.tsx` | Field writes via `setFieldValue`; `onChangeVector` fan-out |
+| `components/ValueObjectEditor/MlElementEditor*.tsx` | Field writes via `setFieldValue`; `onChangeVector` fan-out |
 | `components/ValueObjectEditor/FieldValidationContext.tsx` | Aggregate field errors for submit (ref + version counter) |
 | `components/ValueObjectEditor/InstanceEditorOutlineContext.tsx` | Outline + unused-in-hot-path typeCheckKeyMap state |

@@ -6,11 +6,11 @@ import {
   deployment_Library_DO_NO_USE,
 } from "miroir-test-app_deployment-library";
 
-import * as schemaHelpers from "../../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchemaHelpers";
+import * as schemaHelpers from "../../src/0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchemaHelpers";
 import {
   clearSchemaCacheForTests,
   getMiroirFundamentalSchemaForDeployment,
-  miroirFundamentalJzodSchema,
+  miroirFundamentalMlSchema,
   resolveFundamentalSchemaForDeployment,
   type MetaModel,
 } from "miroir-core";
@@ -19,22 +19,22 @@ import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 describe("resolveFundamentalSchemaForDeployment — static mode", () => {
   const libraryDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
 
-  it("returns miroirFundamentalJzodSchema by reference for Miroir deployment", () => {
+  it("returns miroirFundamentalMlSchema by reference for Miroir deployment", () => {
     const result = resolveFundamentalSchemaForDeployment(
       deployment_Miroir.uuid,
       defaultMiroirMetaModel,
       "static",
     );
-    expect(result).toBe(miroirFundamentalJzodSchema);
+    expect(result).toBe(miroirFundamentalMlSchema);
   });
 
-  it("returns miroirFundamentalJzodSchema by reference for Library deployment (no carry-on)", () => {
+  it("returns miroirFundamentalMlSchema by reference for Library deployment (no carry-on)", () => {
     const result = resolveFundamentalSchemaForDeployment(
       libraryDeploymentUuid,
       defaultLibraryAppModel as MetaModel,
       "static",
     );
-    expect(result).toBe(miroirFundamentalJzodSchema);
+    expect(result).toBe(miroirFundamentalMlSchema);
   });
 
   it("domainAction union is unchanged from build artifact in static mode", () => {
@@ -44,7 +44,7 @@ describe("resolveFundamentalSchemaForDeployment — static mode", () => {
       "static",
     );
     expect((result as any).definition.context.domainAction).toBe(
-      (miroirFundamentalJzodSchema as any).definition.context.domainAction,
+      (miroirFundamentalMlSchema as any).definition.context.domainAction,
     );
   });
 
@@ -87,7 +87,7 @@ describe("resolveFundamentalSchemaForDeployment — extended mode", () => {
   }, 120_000);
 
   it("returns a distinct schema for Library model with lendDocument in domainAction", () => {
-    expect(libraryExtendedSchema).not.toBe(miroirFundamentalJzodSchema);
+    expect(libraryExtendedSchema).not.toBe(miroirFundamentalMlSchema);
 
     const domainAction = (libraryExtendedSchema as any).definition.context.domainAction;
     const lendBranch = domainAction.definition.find(
@@ -102,7 +102,7 @@ describe("resolveFundamentalSchemaForDeployment — extended mode", () => {
       defaultMiroirMetaModel,
       "extended",
     );
-    expect(result).toBe(miroirFundamentalJzodSchema);
+    expect(result).toBe(miroirFundamentalMlSchema);
   });
 
   it("extended mode invokes applyDeploymentDomainActionCarryOn for Library model", () => {
@@ -188,7 +188,7 @@ describe("MIROIR_SCHEMA_MODE policy (199 Phase 4)", () => {
       defaultLibraryAppModel as MetaModel,
     );
 
-    expect(schema).toBe(miroirFundamentalJzodSchema);
+    expect(schema).toBe(miroirFundamentalMlSchema);
   });
 
   it("MIROIR_SCHEMA_MODE=frozen forces static for Library model via resolve auto mode", () => {
@@ -200,7 +200,7 @@ describe("MIROIR_SCHEMA_MODE policy (199 Phase 4)", () => {
       "auto",
     );
 
-    expect(schema).toBe(miroirFundamentalJzodSchema);
+    expect(schema).toBe(miroirFundamentalMlSchema);
   });
 
   it("explicit extended mode still builds carry-on when MIROIR_SCHEMA_MODE=frozen", () => {
@@ -212,7 +212,7 @@ describe("MIROIR_SCHEMA_MODE policy (199 Phase 4)", () => {
       "extended",
     );
 
-    expect(schema).not.toBe(miroirFundamentalJzodSchema);
+    expect(schema).not.toBe(miroirFundamentalMlSchema);
     const lendBranch = (schema as any).definition.context.domainAction.definition.find(
       (branch: any) => branch.definition?.actionType?.definition === "lendDocument",
     );

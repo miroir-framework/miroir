@@ -30,12 +30,12 @@ import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
 import { ReportPage } from "../../../../src/miroir-fwk/4_view/routes/ReportPage";
 import type { ReportViewProps } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportHooks";
 import {
-  getJzodEditorTestLocalCache,
+  getMlEditorTestLocalCache,
   prepareAndRunTestSuites,
   waitAfterUserInteraction,
   type ReactComponentTestSuitePrep,
   type ReactComponentTestSuites,
-} from "../../JzodElementEditorTestTools";
+} from "../../MlElementEditorTestTools";
 import {
   startFakeExternalServiceServer,
   type FakeExternalServiceServer,
@@ -111,7 +111,7 @@ function testApplicationDeploymentMap(): ApplicationDeploymentMap {
 }
 
 function upsertMiroirReportInTestCache(report: EntityInstance): void {
-  const localCache = getJzodEditorTestLocalCache();
+  const localCache = getMlEditorTestLocalCache();
   if (!localCache) {
     throw new Error("upsertMiroirReportInTestCache: localCache is not initialized");
   }
@@ -173,7 +173,7 @@ function wizardReportProps(): ReportViewProps {
   currentUseParams.applicationSection = "data";
   const wizard = loadReportAsset(WIZARD_REPORT_UUID);
   upsertMiroirReportInTestCache(wizard);
-  const localCache = getJzodEditorTestLocalCache();
+  const localCache = getMlEditorTestLocalCache();
   if (localCache) {
     const map = testApplicationDeploymentMap();
     localCache.handleLocalCacheAction(
@@ -378,11 +378,11 @@ async function advanceToDocument(container: Container): Promise<void> {
 
 const pageLabel = "wizardWalk.284";
 
-const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> = {
+const mlElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> = {
   wizardWalk: {
     editor: ReportPage,
     wireLocalCacheCompositeAction: true,
-    getJzodEditorTests: (
+    getMlEditorTests: (
       componentUnderTest: React.FC<ReportViewProps>,
     ): ReactComponentTestSuites<ReportViewProps> => {
       return {
@@ -680,7 +680,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                   },
                   { timeout: 15000 },
                 );
-                const localCache = getJzodEditorTestLocalCache();
+                const localCache = getMlEditorTestLocalCache();
                 expect(localCache).toBeTruthy();
                 const domainState = localCache!.getDomainState();
                 const libraryDeployment =
@@ -744,5 +744,5 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
     navigateMock.mockClear();
     sessionStorage.removeItem("showDebugInfo");
   });
-  prepareAndRunTestSuites(pageLabel, jzodElementEditorTests, testApplicationDeploymentMap());
+  prepareAndRunTestSuites(pageLabel, mlElementEditorTests, testApplicationDeploymentMap());
 });

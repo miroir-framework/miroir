@@ -4,7 +4,7 @@
  *
  * - the `mlSchema` contexts of the Entity `a311f363-…` and the EntityVersion `51c647fe-…` are equal;
  * - the issue's example suite (analysis §5.4, the Enum suite), wrapped in a MiroirTest instance
- *   with a `miroirTestSuite` root, passes `jzodTypeCheck` against both `mlSchema`s;
+ *   with a `miroirTestSuite` root, passes `mlsTypeCheck` against both `mlSchema`s;
  * - a step of an unknown kind and a `reactComponentTestSuite` without `component` both fail.
  *
  * Issue #294: a `reactComponentTest` leaf is accepted only in `reactComponentTestSuite.miroirTests`.
@@ -22,7 +22,7 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { defaultMiroirModelEnvironment, jzodTypeCheck, type JzodElement } from "miroir-core";
+import { defaultMiroirModelEnvironment, mlsTypeCheck, type MlElement } from "miroir-core";
 
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
@@ -44,7 +44,7 @@ function readJson(path: string): any {
 const entity = readJson(MIROIR_TEST_ENTITY_PATH);
 const entityVersion = readJson(MIROIR_TEST_ENTITY_VERSION_PATH);
 
-const schemas: [string, JzodElement][] = [
+const schemas: [string, MlElement][] = [
   ["Entity", entity.mlSchema],
   ["EntityVersion", entityVersion.mlSchema],
 ];
@@ -54,26 +54,26 @@ const schemas: [string, JzodElement][] = [
 function exampleEnumSuite(): any {
   return {
     miroirTestType: "reactComponentTestSuite",
-    miroirTestLabel: "JzodEnumEditor",
-    component: "JzodElementEditor",
+    miroirTestLabel: "MlEnumEditor",
+    component: "MlElementEditor",
     componentProps: {
       label: "Test Label",
       name: "testField",
       listKey: "ROOT.testField",
       rootLessListKey: "testField",
       rootLessListKeyArray: ["testField"],
-      rawJzodSchema: { type: "enum", definition: ["value1", "value2", "value3"] },
+      rawMlSchema: { type: "enum", definition: ["value1", "value2", "value3"] },
       initialFormState: "value2",
     },
     miroirTests: [
       {
         miroirTestType: "reactComponentTest",
-        miroirTestLabel: "JzodEnumEditor: renders select with correct value",
+        miroirTestLabel: "MlEnumEditor: renders select with correct value",
         steps: [{ step: "expectRenderedValues", label: "initial", expectedValue: { testField: "value2" } }],
       },
       {
         miroirTestType: "reactComponentTest",
-        miroirTestLabel: "JzodEnumEditor: renders all enum options",
+        miroirTestLabel: "MlEnumEditor: renders all enum options",
         steps: [
           { step: "expectRenderedValues", label: "initial", expectedValue: { testField: "value2" } },
           { step: "openSelect", field: "testField" },
@@ -90,7 +90,7 @@ function exampleEnumSuite(): any {
       },
       {
         miroirTestType: "reactComponentTest",
-        miroirTestLabel: "JzodEnumEditor: form state is changed when selection changes",
+        miroirTestLabel: "MlEnumEditor: form state is changed when selection changes",
         steps: [
           { step: "expectElement", target: { widget: "combobox", field: "testField" }, value: "value2" },
           { step: "openSelect", field: "testField" },
@@ -123,20 +123,20 @@ function miroirTestInstanceOf(child: any): any {
     uuid: "761d4ed2-1a5c-4901-a9d9-897dbec0b27f",
     parentName: "MiroirTest",
     parentUuid: "a311f363-e238-4203-bdfc-29e8c160c26b",
-    name: "JzodEnumEditor_ComponentTestSuite",
+    name: "MlEnumEditor_ComponentTestSuite",
     selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     branch: "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
     description: "Issue #292 schema fixture",
     definition: {
       miroirTestType: "miroirTestSuite",
-      miroirTestLabel: "JzodEnumEditor_ComponentTestSuite",
+      miroirTestLabel: "MlEnumEditor_ComponentTestSuite",
       miroirTests: [child],
     },
   };
 }
 
-function typeCheckStatus(schema: JzodElement, instance: any): string {
-  return jzodTypeCheck(schema, instance, [], [], defaultMiroirModelEnvironment, {}).status;
+function typeCheckStatus(schema: MlElement, instance: any): string {
+  return mlsTypeCheck(schema, instance, [], [], defaultMiroirModelEnvironment, {}).status;
 }
 
 // ################################################################################################
@@ -147,8 +147,8 @@ describe("MiroirTest schema for declarative component tests", () => {
     );
   });
 
-  it.each(schemas)("the issue's example suite passes jzodTypeCheck against the %s mlSchema", (_name, schema) => {
-    const result = jzodTypeCheck(
+  it.each(schemas)("the issue's example suite passes mlsTypeCheck against the %s mlSchema", (_name, schema) => {
+    const result = mlsTypeCheck(
       schema,
       miroirTestInstanceOf(exampleEnumSuite()),
       [],

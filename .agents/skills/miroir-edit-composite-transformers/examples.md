@@ -199,9 +199,9 @@ export const miroirCoreTransformers: TransformerDefinition[] = [
 
 ---
 
-## Example 2: Complex Composite - spreadSheetToJzodSchema
+## Example 2: Complex Composite - spreadSheetToMlSchema
 
-This real transformer from Miroir converts spreadsheet data into a Jzod schema.
+This real transformer from Miroir converts spreadsheet data into a ML schema.
 
 ### TransformerDefinition JSON
 **File**: `packages/miroir-core/src/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/e44300e8-ed02-40fb-a9ee-d83d08cb1f25.json`
@@ -209,8 +209,8 @@ This real transformer from Miroir converts spreadsheet data into a Jzod schema.
 ```json
 {
   "uuid": "e44300e8-ed02-40fb-a9ee-d83d08cb1f25",
-  "name": "spreadSheetToJzodSchema",
-  "defaultLabel": "spreadSheetToJzodSchema",
+  "name": "spreadSheetToMlSchema",
+  "defaultLabel": "spreadSheetToMlSchema",
   "description": "Transform the contents of a spreadsheet into a ML schema",
   "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
@@ -220,7 +220,7 @@ This real transformer from Miroir converts spreadsheet data into a Jzod schema.
     "transformerParameterSchema": {
       "transformerType": {
         "type": "literal",
-        "definition": "spreadSheetToJzodSchema"
+        "definition": "spreadSheetToMlSchema"
       },
       "transformerDefinition": {
         "type": "object",
@@ -243,7 +243,7 @@ This real transformer from Miroir converts spreadsheet data into a Jzod schema.
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "jzodElement"
+          "relativePath": "mlElement"
         }
       }
     }
@@ -341,20 +341,20 @@ This real transformer from Miroir converts spreadsheet data into a Jzod schema.
 
 1. **firstLine**: Gets the first row (headers) from the spreadsheet
 2. **attributeNames**: Extracts column names as an array
-3. **splitAttributeDefinitions**: Maps each name to a Jzod field definition
+3. **splitAttributeDefinitions**: Maps each name to a ML field definition
 4. **mergedAttributeDefinitions**: Merges all field definitions into one object
-5. **schema**: Creates final Jzod schema with type "object"
+5. **schema**: Creates final ML schema with type "object"
 
 ### Test Case:
 
 ```json
 {
   "transformerTestType": "transformerTest",
-  "transformerTestLabel": "spreadSheetToJzodSchema converts spreadsheet to schema",
-  "transformerName": "spreadSheetToJzodSchema",
+  "transformerTestLabel": "spreadSheetToMlSchema converts spreadsheet to schema",
+  "transformerName": "spreadSheetToMlSchema",
   "runTestStep": "runtime",
   "transformer": {
-    "transformerType": "spreadSheetToJzodSchema",
+    "transformerType": "spreadSheetToMlSchema",
     "interpolation": "runtime",
     "spreadsheetContents": {
       "transformerType": "getFromContext",

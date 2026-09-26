@@ -1,0 +1,166 @@
+import equal from "fast-deep-equal";
+import {
+  MlElement,
+  MlObject,
+  MlReference,
+  type MlBaseObject
+} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
+import { resolveMlSchemaReferenceInContext } from "./mlsResolveSchemaReferenceInContext";
+
+  // Function to recursively get all properties from parent objects
+const getAllProperties = <T extends MiroirModelEnvironment>(
+  parent: MlObject | MlReference | (MlObject | MlReference | undefined)[],
+  referenceChain: MlReference[] = [],
+  modelEnvironment: T,
+  relativeReferenceMlContext?: { [k: string]: MlElement }
+): {properties: Record<string, MlElement>, tag?: MlBaseObject["tag"]} => {
+  // Handle array of extends
+  let resultTag: MlBaseObject["tag"] | undefined = undefined;
+  if (Array.isArray(parent)) {
+    const allProps: Record<string, MlElement> = {};
+    for (const p of parent) {
+      if (p) {
+        const props = getAllProperties(p, referenceChain, modelEnvironment, relativeReferenceMlContext);
+        Object.assign(allProps, props.properties);
+        if (!resultTag && p && (p as MlBaseObject).tag ) {
+          resultTag = (p as MlBaseObject).tag;
+        } else if (!resultTag && props.tag) {
+          resultTag = props.tag;
+        }
+      }
+    }
+    return resultTag?{properties: allProps, tag: resultTag}:{properties: allProps};
+  }
+
+  // Handle MlReference - resolve it using the provided context
+  if (parent.type === "schemaReference") {
+    // Check for circular reference
+    for (const ref of referenceChain) {
+      if (equal(ref, parent)) {
+        throw new Error(
+          "mlObjectFlatten: Circular reference detected. Reference chain: " +
+            JSON.stringify(referenceChain.map((r) => r.definition)) +
+            " -> " +
+            JSON.stringify(parent.definition)
+        );
+      }
+    }
+
+    if (!modelEnvironment.miroirFundamentalMlSchema) {
+      throw new Error(
+        "mlObjectFlatten: Cannot resolve schema reference without miroirFundamentalMlSchema"
+      );
+    }
+
+    const resolvedElement = resolveMlSchemaReferenceInContext(
+      parent,
+      relativeReferenceMlContext || {},
+      modelEnvironment
+    );
+
+    // Add current reference to the chain for circular detection
+    const newReferenceChain = [...referenceChain, parent];
+
+    // If resolved element is still a reference, continue resolving recursively
+    if (resolvedElement.type === "schemaReference") {
+      return getAllProperties(
+        resolvedElement as MlReference,
+        newReferenceChain,
+        modelEnvironment,
+        relativeReferenceMlContext
+      );
+    }
+
+    if (resolvedElement.type !== "object") {
+      throw new Error(
+        `mlObjectFlatten: Schema reference resolved to non-object type '${resolvedElement.type}'. ` +
+          `Only object types can be used in extend clauses.`
+      );
+    }
+
+    // Recursively get properties from the resolved object
+    return getAllProperties(
+      resolvedElement as MlObject,
+      newReferenceChain,
+      modelEnvironment,
+      relativeReferenceMlContext
+    );
+  }
+
+  // Handle MlObject
+  if (parent.type === "object") {
+    // Start with the parent's own definition
+    const properties = parent.definition ? { ...parent.definition } : {};
+
+    // If the parent has an extend property, merge its properties as well (parents first)
+    if (parent.extend) {
+      const parentProps = getAllProperties(
+        parent.extend,
+        referenceChain,
+        modelEnvironment,
+        relativeReferenceMlContext
+      );
+      return parent.tag
+        ? { properties: { ...parentProps.properties, ...properties }, tag: parent.tag }
+        : parentProps.tag
+        ? { properties: { ...parentProps.properties, ...properties }, tag: parentProps.tag }
+        : { properties: { ...parentProps.properties, ...properties } };
+    }
+
+    return parent.tag ? { properties, tag: parent.tag } : { properties };
+  }
+
+  return {properties: {}};
+};
+
+/**
+ * Flattens a MlObject by removing the "extend" clause and incorporating
+ * all parent attributes directly into the definition.
+ *
+ * @param obj The MlObject to flatten
+ * @param miroirFundamentalMlSchema Schema for resolving references
+ * @param currentModel Current model for context
+ * @param miroirMetaModel Miroir meta model for context
+ * @param relativeReferenceMlContext Relative reference context
+ * @returns A new MlObject with all inherited properties directly in the definition
+ * @throws Error if a schema reference resolves to a non-object type
+ */
+export function mlObjectFlatten<T extends MiroirModelEnvironment>(
+  obj: MlObject,
+  modelEnvironment: T,
+  relativeReferenceMlContext?: { [k: string]: MlElement }
+): MlObject {
+  // If there's no extend property, just return the object as is
+  if (!obj.extend) {
+    return obj;
+  }
+
+
+  // Get all parent properties
+  const parentProperties = getAllProperties(obj.extend, [], modelEnvironment, relativeReferenceMlContext);
+
+  // Create flattened object with extend removed
+  const flattened: MlObject = {
+    type: "object",
+    definition: {
+      ...parentProperties.properties,
+      ...obj.definition, // Current object properties override parent properties
+    },
+  };
+
+  // Copy other properties from original object (excluding extend)
+  if (obj.optional !== undefined) {
+    flattened.optional = obj.optional;
+  }
+  if (obj.nullable !== undefined) {
+    flattened.nullable = obj.nullable;
+  }
+  if (obj.tag !== undefined) {
+    flattened.tag = obj.tag;
+  } else if (parentProperties.tag !== undefined) {
+    flattened.tag = parentProperties.tag;
+  }
+
+  return flattened;
+}

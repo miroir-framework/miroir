@@ -51,7 +51,7 @@ export interface ReportViewWithEditorProps extends ReportViewProps {
   // No additional props needed initially
 }
 
-const fetchedDataJzodSchema = {};
+const fetchedDataMlSchema = {};
 const EMPTY_EXTERNAL_REPORT_DATA: Record<string, any> = {};
 let count = 0;
 // ###############################################################################################
@@ -530,8 +530,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                           useCodeBlock: true,
                         },
 
-                        // { label: "fetchedDataJzodSchemaParams", data: { fetchedDataJzodSchemaParams }, useCodeBlock: true },
-                        // { label: "fetchedDataJzodSchema", data: { fetchedDataJzodSchema }, useCodeBlock: true },
+                        // { label: "fetchedDataMlSchemaParams", data: { fetchedDataMlSchemaParams }, useCodeBlock: true },
+                        // { label: "fetchedDataMlSchema", data: { fetchedDataMlSchema }, useCodeBlock: true },
                       ]}
                     />
                     {generalEditMode && reportPresentEntity && (

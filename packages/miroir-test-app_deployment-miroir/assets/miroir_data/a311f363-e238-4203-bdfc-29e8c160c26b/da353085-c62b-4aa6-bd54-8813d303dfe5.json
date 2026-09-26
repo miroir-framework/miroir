@@ -2,18 +2,18 @@
   "uuid": "da353085-c62b-4aa6-bd54-8813d303dfe5",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "JzodObjectEditor_ComponentTestSuite",
+  "name": "MlObjectEditor_ComponentTestSuite",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Issues #286, #292: JzodObjectEditor React component tests (JzodElementEditor), one MiroirTest instance per editor. Edited by hand.",
+  "description": "Issues #286, #292: MlObjectEditor React component tests (MlElementEditor), one MiroirTest instance per editor. Edited by hand.",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "JzodObjectEditor_ComponentTestSuite",
+    "miroirTestLabel": "MlObjectEditor_ComponentTestSuite",
     "miroirTests": [
       {
         "miroirTestType": "reactComponentTestSuite",
-        "miroirTestLabel": "JzodObjectEditor",
-        "component": "JzodElementEditor",
+        "miroirTestLabel": "MlObjectEditor",
+        "component": "MlElementEditor",
         "componentProps": {
           "label": "Test Label",
           "name": "testField",
@@ -26,9 +26,9 @@
         "miroirTests": [
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodObjectEditor: object renders as json-like input fields with proper value",
+            "miroirTestLabel": "MlObjectEditor: object renders as json-like input fields with proper value",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "object",
                 "definition": {
                   "a": {
@@ -58,9 +58,9 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodObjectEditor: object with bigint attribute renders as json-like input fields with proper value",
+            "miroirTestLabel": "MlObjectEditor: object with bigint attribute renders as json-like input fields with proper value",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "object",
                 "definition": {
                   "e": {
@@ -87,9 +87,9 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodObjectEditor: object can be updated through displayed input fields",
+            "miroirTestLabel": "MlObjectEditor: object can be updated through displayed input fields",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "object",
                 "definition": {
                   "a": {
@@ -153,9 +153,9 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodObjectEditor: object with optional attributes can receive a value for an optional attribute by clicking on the add button for the attribute",
+            "miroirTestLabel": "MlObjectEditor: object with optional attributes can receive a value for an optional attribute by clicking on the add button for the attribute",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "object",
                 "definition": {
                   "a": {
@@ -195,9 +195,9 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodObjectEditor: object with 2 optional attributes can have the only attribute value deleted by clicking on the delete button",
+            "miroirTestLabel": "MlObjectEditor: object with 2 optional attributes can have the only attribute value deleted by clicking on the delete button",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "object",
                 "definition": {
                   "a": {
@@ -231,9 +231,9 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodObjectEditor: object with 3 optional attributes can have the value for the second attribute deleted by clicking on the delete button",
+            "miroirTestLabel": "MlObjectEditor: object with 3 optional attributes can have the value for the second attribute deleted by clicking on the delete button",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "object",
                 "definition": {
                   "a": {
@@ -276,9 +276,9 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodObjectEditor: record renders as json-like input fields with proper value",
+            "miroirTestLabel": "MlObjectEditor: record renders as json-like input fields with proper value",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "record",
                 "definition": {
                   "type": "object",
@@ -315,9 +315,9 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodObjectEditor: record can receive a new record attribute with the proper default value when clicking on the add button",
+            "miroirTestLabel": "MlObjectEditor: record can receive a new record attribute with the proper default value when clicking on the add button",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "record",
                 "definition": {
                   "type": "object",
@@ -363,9 +363,9 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodObjectEditor: record can rename a record attribute keeping the existing value when clicking on the attribute input field",
+            "miroirTestLabel": "MlObjectEditor: record can rename a record attribute keeping the existing value when clicking on the attribute input field",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "record",
                 "definition": {
                   "type": "object",
@@ -427,9 +427,9 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodObjectEditor: record with 1 entry can have the entry deleted when clicking on the delete button",
+            "miroirTestLabel": "MlObjectEditor: record with 1 entry can have the entry deleted when clicking on the delete button",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "record",
                 "definition": {
                   "type": "object",
@@ -477,9 +477,9 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodObjectEditor: record with 3 items can have the second record item deleted when clicking on the second delete button",
+            "miroirTestLabel": "MlObjectEditor: record with 3 items can have the second record item deleted when clicking on the second delete button",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "record",
                 "definition": {
                   "type": "object",
@@ -544,9 +544,9 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodObjectEditor: record with 1 object entry can have the entry duplicated when clicking the duplicate button",
+            "miroirTestLabel": "MlObjectEditor: record with 1 object entry can have the entry duplicated when clicking the duplicate button",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "record",
                 "definition": {
                   "type": "object",
@@ -603,9 +603,9 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodObjectEditor: record with 2 object entries can have the first entry duplicated without colliding with an existing _copy key",
+            "miroirTestLabel": "MlObjectEditor: record with 2 object entries can have the first entry duplicated without colliding with an existing _copy key",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "record",
                 "definition": {
                   "type": "object",
@@ -670,9 +670,9 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodObjectEditor: createObject definition record entry name can be renamed",
+            "miroirTestLabel": "MlObjectEditor: createObject definition record entry name can be renamed",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",

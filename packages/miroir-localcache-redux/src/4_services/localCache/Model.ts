@@ -36,7 +36,7 @@ import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
   defaultMiroirMetaModel, entityDefinitionTheme, entityEndpointVersion, entityEntity,
   entityEntityVersion,
-  entityJzodSchema,
+  entityMlSchema,
   entityMenu, entityMiroirTest, entityQueryVersion,
   entityReport,
   entityRunner,
@@ -275,9 +275,9 @@ export function currentModel(
       state.current[
         getReduxDeploymentsStateIndex(deploymentUuid, entityVersionSection, entityEntityVersion.uuid)
       ];
-    const jzodSchemas =
+    const mlSchemas =
       state.current[
-        getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityJzodSchema.uuid)
+        getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityMlSchema.uuid)
       ];
     const menus =
       state.current[getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityMenu.uuid)];
@@ -338,8 +338,8 @@ export function currentModel(
       entityVersions: (entityDefinitions && entityDefinitions.entities
         ? Object.values(entityDefinitions.entities)
         : []) as EntityVersion[],
-      jzodSchemas: (jzodSchemas && jzodSchemas.entities
-        ? Object.values(jzodSchemas.entities)
+      mlSchemas: (mlSchemas && mlSchemas.entities
+        ? Object.values(mlSchemas.entities)
         : []) as MlSchema[],
       menus: (menus && menus.entities ? Object.values(menus.entities) : []) as Menu[],
       reports: (reports && reports.entities ? Object.values(reports.entities) : []) as Report[],
@@ -412,7 +412,7 @@ export function currentModelEnvironment(
   const model = currentModel(application, appliationDeploymentMap, state);
   return {
     deploymentUuid: deploymentUuid,
-    miroirFundamentalJzodSchema: getMiroirFundamentalSchemaForDeployment(deploymentUuid, model),
+    miroirFundamentalMlSchema: getMiroirFundamentalSchemaForDeployment(deploymentUuid, model),
     miroirMetaModel: defaultMiroirMetaModel,
     currentModel: model,
     endpointsByUuid: model.endpoints.reduce((acc, endpoint) => {

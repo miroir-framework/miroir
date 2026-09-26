@@ -11,7 +11,7 @@ import type {
   Domain2QueryReturnType,
   DomainElementSuccess,
   EntityInstancesUuidIndex,
-  JzodObject,
+  MlObject,
   LoggerInterface,
   MetaModel,
   MiroirModelEnvironment,
@@ -28,7 +28,7 @@ import {
   defaultSelfApplicationDeploymentMap,
   defaultViewParamsFromAdminStorageFetchQueryParams,
   formatYYYYMMDD_HHMMSS,
-  getDefaultValueForJzodSchemaWithResolutionNonHook,
+  getDefaultValueForMlSchemaWithResolutionNonHook,
   MiroirLoggerFactory,
   noValue,
   transformer_extended_apply_wrapper,
@@ -1438,14 +1438,14 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
         },
         {
         },
-      ) as JzodObject}
+      ) as MlObject}
       : (runner.definition as any).formMLSchema;
 
   const initialFormValue = useMemo(
     () => ({
       createApplicationAndDeployment: {
         applicationStorage: {
-          ...getDefaultValueForJzodSchemaWithResolutionNonHook(
+          ...getDefaultValueForMlSchemaWithResolutionNonHook(
             "build",
             // (formMLSchema as any).mlSchema,
             formMLSchema.formMLSchemaType === "mlSchema"

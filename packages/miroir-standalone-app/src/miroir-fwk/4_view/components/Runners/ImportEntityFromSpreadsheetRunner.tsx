@@ -425,7 +425,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
     //   { a: "US", b: "USA", c: "United States" },
     //   { a: "DE", b: "DEU", c: "Germany" },
     // ];
-    // const newEntityJzodSchema: JzodObject = {
+    // const newEntityMlSchema: MlObject = {
     //   type: "object",
     //   definition: Object.assign(
     //     {},
@@ -488,7 +488,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
       } as any,
       // #217 Phase 9 — Entity is present-model authority; dual-write still copies to EntityVersion
       mlSchema: {
-        transformerType: "spreadSheetToJzodSchema",
+        transformerType: "spreadSheetToMlSchema",
         spreadsheetContents: fileData,
       } as any,
     };

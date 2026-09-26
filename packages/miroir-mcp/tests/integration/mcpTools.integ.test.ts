@@ -28,7 +28,7 @@ import {
   type SpecificLoggerOptionsMap,
   ConfigurationService,
   type SelfApplication,
-  miroirFundamentalJzodSchema,
+  miroirFundamentalMlSchema,
   type EndpointDefinition,
   type MlSchema,
   defaultSelfApplicationDeploymentMap,

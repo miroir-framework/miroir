@@ -191,14 +191,14 @@
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "jzodLiteral"
+                      "relativePath": "mlLiteral"
                     }
                   },
                   {
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "jzodEnum"
+                      "relativePath": "mlEnum"
                     }
                   }
                 ]
@@ -207,7 +207,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodObject"
+                  "relativePath": "mlObject"
                 }
               }
             }
@@ -227,7 +227,7 @@
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "jzodElement"
+                      "relativePath": "mlElement"
                     }
                   }
                 }
@@ -246,7 +246,7 @@
                       "type": "schemaReference",
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "jzodElement"
+                        "relativePath": "mlElement"
                       }
                     }
                   },

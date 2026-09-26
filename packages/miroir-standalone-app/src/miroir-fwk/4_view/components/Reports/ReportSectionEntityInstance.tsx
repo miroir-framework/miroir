@@ -21,7 +21,7 @@ import {
   requiredVirtualAttributeNames,
   type ApplicationDeploymentMap,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
-  type JzodObject,
+  type MlObject,
   type ObjectInstanceReportSection,
   type ReportSection,
   type SyncQueryTemplateRunnerParams,
@@ -265,9 +265,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     );
   }, [currentMiroirModelEnvironment, currentReportTargetEntity, instance]);
 
-  const currentFlattenedReportSectionTargetEntityMlSchema: JzodObject | undefined =
+  const currentFlattenedReportSectionTargetEntityMlSchema: MlObject | undefined =
     currentReportTargetEntity
-      ? (entityWithResolvedMLSchema(currentReportTargetEntity).mlSchema as JzodObject)
+      ? (entityWithResolvedMLSchema(currentReportTargetEntity).mlSchema as MlObject)
       : undefined;
 
   // ##############################################################################################
@@ -674,7 +674,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               target entity: {currentReportTargetEntity?.name ?? "report target entity not found!"}
             </div>
             {props.zoomInPath && <div>zoom path: {props.zoomInPath}</div>}
-            {/* <div>resolved schema: {JSON.stringify(resolvedJzodSchema)}</div> */}
+            {/* <div>resolved schema: {JSON.stringify(resolvedMlSchema)}</div> */}
             <ThemedOnScreenHelper
               label={`currentDeploymentMetaModel.entities`}
               data={currentDeploymentModel.entities.map((e) => ({ name: e.name, uuid: e.uuid }))}
@@ -713,7 +713,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             </ThemedPreformattedText>
             <div> ######################################## </div>
             <ThemedPreformattedText>
-              entity jzod schema: {JSON.stringify(instance?.mlSchema, null, 2)}
+              entity ML schema: {JSON.stringify(instance?.mlSchema, null, 2)}
             </ThemedPreformattedText>
           </div>
         )}

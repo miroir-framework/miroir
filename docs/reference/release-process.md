@@ -46,7 +46,7 @@ reference** that is intentional in normal development:
 - `miroir-core`'s `devBuild` (`generate-ts-types`) does a real value-level `import`
   from the *built* `miroir-test-app_deployment-miroir` and
   `miroir-test-app_deployment-admin` packages, to regenerate TypeScript types from
-  their Jzod schema assets.
+  their ML schema assets.
 - Conversely, `miroir-test-app_deployment-miroir`'s `src/Model.ts` /
   `runnerMiroirEntityTestRegistry.ts` `import type { ... } from "miroir-core"`.
 

@@ -24,7 +24,7 @@ import {
   AsyncBoxedExtractorRunner,
   AsyncBoxedExtractorRunnerParams,
   ExtractorOrQueryPersistenceStoreRunner,
-  // QueryRunnerMapForJzodSchemaDEFUNCT
+  // QueryRunnerMapForMlSchemaDEFUNCT
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { PersistenceStoreInstanceSectionAbstractInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
@@ -46,10 +46,10 @@ import {
 } from "./AsyncQuerySelectors";
 import { cleanLevel } from "./constants";
 // import {
-//   selectEntityJzodSchemaFromDomainStateNew,
-//   selectFetchQueryJzodSchemaFromDomainStateNew,
-//   selectJzodSchemaByDomainModelQueryFromDomainStateNew,
-//   selectJzodSchemaBySingleSelectQueryFromDomainStateNew,
+//   selectEntityMlSchemaFromDomainStateNew,
+//   selectFetchQueryMlSchemaFromDomainStateNew,
+//   selectMlSchemaByDomainModelQueryFromDomainStateNew,
+//   selectMlSchemaBySingleSelectQueryFromDomainStateNew,
 // } from "./DomainStateQuerySelectors";
 import { applyExtractorFilterAndOrderBy } from "./ExtractorByEntityReturningObjectListTools";
 import { handleBoxedQueryAction } from "./QuerySelectors";

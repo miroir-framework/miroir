@@ -14,7 +14,7 @@ import {
   setPanelElementTransformerType,
   setPanelInterpolation,
 } from "./helpers/listTransformerIntegRig.js";
-import { waitForProgressiveRendering } from "./JzodElementEditorTestTools.js";
+import { waitForProgressiveRendering } from "./MlElementEditorTestTools.js";
 
 vi.mock("../../src/miroir-fwk/4_view/components/JsonObjectEditFormDialog.js", () => ({
   JsonObjectEditFormDialog: () => null,

@@ -2,20 +2,20 @@
   "uuid": "2c08e0cc-a68c-4189-a1e2-f08ede23919a",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "jzodUnionResolvedTypeForObject",
+  "name": "mlUnionResolvedTypeForObject",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Migrated from UnitTest c6d1a004-0004-4000-8000-000000000004 (Feature #196 Phase 5)",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "jzodUnionResolvedTypeForObject",
+    "miroirTestLabel": "mlUnionResolvedTypeForObject",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "should return the single object choice when there is only one option",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
-          "export": "jzodUnionResolvedTypeForObject"
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
+          "export": "mlUnionResolvedTypeForObject"
         },
         "arguments": [
           [
@@ -73,9 +73,9 @@
             "expectedValue": "ok"
           },
           {
-            "label": "resolvedJzodObjectSchema",
+            "label": "resolvedMlObjectSchema",
             "resultAccessPath": [
-              "resolvedJzodObjectSchema"
+              "resolvedMlObjectSchema"
             ],
             "expectedValue": {
               "type": "object",
@@ -96,8 +96,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "should return error when no object choices are found",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
-          "export": "jzodUnionResolvedTypeForObject"
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
+          "export": "mlUnionResolvedTypeForObject"
         },
         "arguments": [
           [

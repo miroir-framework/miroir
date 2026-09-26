@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import { waitForProgressiveRendering } from "./JzodElementEditorTestTools.js";
+import { waitForProgressiveRendering } from "./MlElementEditorTestTools.js";
 import {
   GlideDataGridHarness,
   GridPaginationIntegShell,

@@ -8,8 +8,8 @@ import {
   DomainElementSuccess,
   EntityInstance,
   EntityInstancesUuidIndex,
-  JzodElement,
-  JzodObject,
+  MlElement,
+  MlObject,
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
   CoreTransformerForBuildPlusRuntime
@@ -18,8 +18,8 @@ import type { MiroirModelEnvironment } from "../1_core/Transformer";
 import { Action2ReturnType, Domain2QueryReturnType } from "./DomainElement";
 
 // ################################################################################################
-export type RecordOfJzodElement = Record<string, JzodElement | undefined>;
-export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
+export type RecordOfMlElement = Record<string, MlElement | undefined>;
+export type RecordOfMlObject = Record<string, MlObject | undefined>;
 
 
 // ################################################################################################
@@ -253,7 +253,7 @@ export type SyncBoxedExtractorOrQueryRunnerMap<StateType> = {
     >
   ): Domain2QueryReturnType<DomainElementSuccess>;
   // ################################################################################################
-  // TODO: has direct call in ReportView, ReportSectionListDisplay, JzodElementEditor
+  // TODO: has direct call in ReportView, ReportSectionListDisplay, MlElementEditor
   runQueryTemplateWithExtractorCombinerTransformer: SyncQueryTemplateRunner<
     StateType,
     Domain2QueryReturnType<any>

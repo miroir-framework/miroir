@@ -37,8 +37,8 @@ export function getModelUpdate(
   }
 
   // Analyze changes to mlSchema.definition
-  const jzodSchemaChanges = changes?.mlSchema?.definition;
-  if (!jzodSchemaChanges) {
+  const mlSchemaChanges = changes?.mlSchema?.definition;
+  if (!mlSchemaChanges) {
     throw new Error("getModelUpdate: Only mlSchema.definition changes are currently supported.");
   }
 
@@ -47,7 +47,7 @@ export function getModelUpdate(
   const removeColumns: string[] = [];
   let hasStructuralChanges = false;
 
-  for (const [key, value] of Object.entries(jzodSchemaChanges)) {
+  for (const [key, value] of Object.entries(mlSchemaChanges)) {
     if (key.endsWith("__added")) {
       const columnName = key.replace("__added", "");
       addColumns.push({

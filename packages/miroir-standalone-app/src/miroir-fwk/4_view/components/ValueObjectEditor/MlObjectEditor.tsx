@@ -1,0 +1,1525 @@
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import { Clear } from "../Themes/MaterialSymbolWrappers";
+
+import {
+  alterObjectAtPath2,
+  ApplicationSection,
+  defaultMetaModelEnvironment,
+  deleteObjectAtPath,
+  EntityInstancesUuidIndex,
+  foldableElementTypes,
+  getDefaultValueForMlSchemaWithResolutionNonHook,
+  MlElement,
+  MlObject,
+  MlRecord,
+  KeyMapEntry,
+  LoggerInterface,
+  MiroirLoggerFactory,
+  ReduxDeploymentsState,
+  resolveMlSchemaReferenceInContext,
+  resolvePathOnObject,
+  SyncBoxedExtractorOrQueryRunnerMap,
+  Uuid,
+  type ApplicationDeploymentMap,
+} from "miroir-core";
+
+import { BlobEditorField } from "./BlobEditorField";
+
+import { packageName } from "../../../../constants";
+import {
+  getMemoizedReduxDeploymentsStateSelectorMap,
+  ReduxStateWithUndoRedo,
+  useSelector,
+} from "miroir-react";
+import { cleanLevel } from "../../constants";
+import { useDefaultValueParams } from "../../ReduxHooks";
+import {
+  measuredUnfoldMlSchemaOnce
+} from "../../tools/hookPerformanceMeasure";
+import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
+import { JsonDisplayHelper } from "miroir-react";
+import { useReportPageContext } from "../Reports/ReportPageContext";
+import { RenderInsightHeader } from "../RenderInsightHeader.js";
+import {
+  NOOP_RENDER_COUNTS,
+  renderInsightRegistry,
+} from "../../tools/renderInsightRegistry.js";
+import { useViewportReveal } from "../../tools/useViewportReveal.js";
+import {
+  getUnitTestKind,
+  HIGHLIGHTED_UNIT_TEST_STYLE,
+  unitTestAnchorId,
+  UnitTestKindBadge,
+} from "../Reports/unitTestKindUi.js";
+import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
+import {
+  ThemedAddIcon,
+  ThemedAttributeLabel,
+  ThemedAttributeName,
+  ThemedDeleteButtonContainer,
+  ThemedEditableInput,
+  ThemedFlexRow,
+  ThemedFoldedValueDisplay,
+  ThemedLoadingCard,
+  ThemedOptionalAttributeContainer,
+  ThemedOptionalAttributeItem,
+  ThemedSizedButton,
+  ThemedSmallIconButton,
+  ThemedStyledButton,
+} from "../Themes/index";
+import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, MlElementEditor } from "./MlElementEditor";
+import { getFoldedDisplayValue, useMlElementEditorHooks } from "./MlElementEditorHooks";
+import { MlObjectEditorProps } from "./MlElementEditorInterface";
+import {
+  findPathAnnotation,
+  TransformerTitleRowAnnotations,
+} from "../Reports/TransformerTypeAnnotation.js";
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlElementEditor");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
+).then((logger: LoggerInterface) => {
+  log = logger;
+});
+
+// Performance tracking for unfoldMlSchemaOnce - legacy approach
+let totalUnfoldTime = 0;
+let unfoldCallCount = 0;
+
+// Editable attribute name component with local state management
+// const EditableAttributeName = React.memo(({
+const EditableAttributeName: FC<{
+  initialValue: string;
+  onCommit: (newValue: string) => void;
+  rootLessListKey: string;
+  formikRootLessListKey: string;
+}> = ({
+  initialValue,
+  onCommit,
+  rootLessListKey,
+  formikRootLessListKey,
+}: {
+  initialValue: string;
+  onCommit: (newValue: string) => void;
+  rootLessListKey: string;
+  formikRootLessListKey: string;
+}) => {
+  const [localValue, setLocalValue] = useState(initialValue);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleCommit = useCallback(() => {
+    if (localValue.trim() && localValue !== initialValue) {
+      onCommit(localValue.trim());
+    } else if (!localValue.trim()) {
+      // Reset to original if empty
+      setLocalValue(initialValue);
+    }
+    setIsEditing(false);
+  }, [localValue, initialValue, onCommit]);
+
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        handleCommit();
+      } else if (event.key === "Escape") {
+        setLocalValue(initialValue);
+        setIsEditing(false);
+      }
+    },
+    [handleCommit, initialValue]
+  );
+
+  // Update local value if the initial value changes (external update)
+  React.useEffect(() => {
+    if (!isEditing) {
+      setLocalValue(initialValue);
+    }
+  }, [initialValue, isEditing]);
+
+  return (
+    <ThemedEditableInput
+      value={localValue}
+      name={formikRootLessListKey + "-NAME"}
+      aria-label={formikRootLessListKey + "-NAME"}
+      title="Record entry name"
+      onChange={(e) => setLocalValue(e.target.value)}
+      onFocus={() => setIsEditing(true)}
+      onBlur={handleCommit}
+      onKeyDown={handleKeyDown}
+      minWidth={80}
+      dynamicWidth={true}
+    />
+  );
+};
+
+// ################################################################################################
+// Progressive Attribute Component for asynchronous rendering
+const ProgressiveAttribute: FC<{
+  valueObjectEditMode: ValueObjectEditMode;
+  attribute: [string, MlElement];
+  attributeNumber: number;
+  listKey: string;
+  rootLessListKey: string;
+  rootLessListKeyArray: (string | number)[];
+  formikRootLessListKey: string;
+  formikRootLessListKeyArray: (string | number)[];
+  reportSectionPathAsString: string;
+  localResolvedElementMlSchemaBasedOnValue: MlObject;
+  typeCheckKeyMap?: Record<string, KeyMapEntry>;
+  currentValue: any;
+  usedIndentLevel: number;
+  definedOptionalAttributes: Set<string>;
+  onChangeVector?: Record<string, (newValue: any, rootLessListKey: string) => void>;
+  handleAttributeNameChange: (newValue: string, attributeRootLessListKeyArray: (string | number)[]) => void;
+  deleteElement: (formikRootLessListKeyArray: (string | number)[]) => () => void;
+  duplicateRecordEntry: (attributeKey: string) => void;
+  handleMoveAttribute: (direction: "up" | "down", attributeKey: string) => void;
+  totalAttributes: number;
+  hideOptionalButton?: boolean;
+  formik: any;
+  currentMiroirFundamentalMlSchema: any;
+  currentModel: any;
+  miroirMetaModel: any;
+  measuredUnfoldMlSchemaOnce: any;
+  // Add direct props from MlObjectEditorProps that are used
+  currentApplication: Uuid;
+  applicationDeploymentMap: ApplicationDeploymentMap;
+  currentDeploymentUuid?: Uuid;
+  currentApplicationSection?: ApplicationSection;
+  foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;
+  insideAny: boolean;
+  anyRootLessListKey: string | undefined; // gives the rootLessListKey of the root element with type `any`, which typeCheckKeyMap contains the resolved schema for the value
+  maxRenderDepth?: number;
+  readOnly?: boolean;
+  existingObject?: boolean;
+  displayError?: {
+    errorPath: string[];
+    errorMessage: string;
+  };
+  compatibilityWarnings?: { path: (string | number)[]; title: string }[];
+  showMlSchemaTypes?: boolean;
+  mlSchemaTypeAnnotations?: { path: (string | number)[]; label: string }[];
+  environmentAnnotations?: { path: (string | number)[]; label: string }[];
+}> = ({
+  valueObjectEditMode,
+  attribute,
+  attributeNumber,
+  listKey,
+  rootLessListKey,
+  rootLessListKeyArray,
+  formikRootLessListKey,
+  formikRootLessListKeyArray,
+  reportSectionPathAsString,
+  localResolvedElementMlSchemaBasedOnValue,
+  // unfoldedRawSchema,
+  typeCheckKeyMap,
+  currentValue,
+  usedIndentLevel,
+  definedOptionalAttributes,
+  onChangeVector,
+  handleAttributeNameChange,
+  deleteElement,
+  duplicateRecordEntry,
+  handleMoveAttribute,
+  totalAttributes,
+  hideOptionalButton,
+  formik,
+  currentMiroirFundamentalMlSchema,
+  currentModel,
+  miroirMetaModel,
+  measuredUnfoldMlSchemaOnce,
+  maxRenderDepth,
+  readOnly,
+  existingObject,
+  // Direct props
+  currentApplication,
+  applicationDeploymentMap,
+  currentDeploymentUuid,
+  currentApplicationSection,
+  foreignKeyObjects,
+  insideAny,
+  anyRootLessListKey,
+  displayError,
+  compatibilityWarnings,
+  showMlSchemaTypes,
+  mlSchemaTypeAnnotations,
+  environmentAnnotations,
+}) => {
+  // Viewport-gated: cheap placeholder until this attribute intersects the
+  // scrollport. Unfolding a huge parent then only mounts editors that are
+  // actually (nearly) visible — avoids multi-second click freezes.
+  const { ref: viewportRef, revealed: isRendered } = useViewportReveal();
+
+  const currentAttributeDefinition =
+    localResolvedElementMlSchemaBasedOnValue.definition[attribute[0]];
+  const attributeListKey = listKey + "." + attribute[0];
+  const formikAttributeRootLessListKey =
+    formikRootLessListKey.length > 0 ? formikRootLessListKey + "." + attribute[0] : attribute[0];
+  const attributeRootLessListKey =
+    rootLessListKey.length > 0 ? rootLessListKey + "." + attribute[0] : attribute[0];
+  const attributeRootLessListKeyArray: (string | number)[] =
+    rootLessListKeyArray.length > 0 ? [...rootLessListKeyArray, attribute[0]] : [attribute[0]];
+  const formikAttributeRootLessListKeyArray: (string | number)[] =
+    formikRootLessListKeyArray.length > 0
+      ? [...formikRootLessListKeyArray, attribute[0]]
+      : [attribute[0]];
+
+  const currentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
+  const atttributeKeyMap = typeCheckKeyMap ? typeCheckKeyMap[attributeRootLessListKey] : undefined;
+
+  const currentRawSchema = insideAny
+    ? { type: "record", definition: { type: "any" } }
+    : currentKeyMap?.rawSchema;
+  // log.info(
+  //   "ProgressiveAttribute",
+  //   "attribute",
+  //   attribute,
+  //   "attributeRootLessListKey",
+  //   JSON.stringify(attributeRootLessListKey),
+  //   "attributeRootLessListKeyArray",
+  //   JSON.stringify(attributeRootLessListKeyArray),
+  //   "currentKeyMap", currentKeyMap,
+  //   "reportSectionPathAsString", reportSectionPathAsString
+  // )
+
+
+  if (!currentRawSchema) {
+    // Typecheck failed upstream (e.g. invalid union value like mlSchema={}).
+    // Render a raw-JSON fallback instead of throwing into the ErrorBoundary loop.
+    return (
+      <div key={attributeListKey} ref={viewportRef}>
+        <ThemedLoadingCard
+          message={`${attribute[0]}: type resolution failed (invalid value)`}
+        />
+        <JsonDisplayHelper
+          debug={true}
+          componentName={`ProgressiveAttribute fallback for ${attributeRootLessListKey}`}
+          elements={[
+            {
+              label: `ProgressiveAttribute fallback: ${attributeRootLessListKey}`,
+              data: {
+                rootLessListKey: attributeRootLessListKey,
+                currentValue,
+                typeCheckKeyMap,
+                currentKeyMap,
+                atttributeKeyMap,
+              },
+              copyButton: true,
+              useCodeBlock: true,
+            },
+          ]}
+        />
+      </div>
+    );
+  }
+
+  // Determine if this is a record type where attribute names should be editable
+  const isRecordType =
+    insideAny || // only records exist when inside an `any` element: the precise structure is unknown, one may freely adde / remove attributes
+    currentRawSchema?.type === "record" ||
+    currentKeyMap?.resolvedReferenceSchemaInContext?.type === "record";
+
+  // Move up/down buttons: visible when the attribute value carries a tag.value.id
+  const attributeTagValueId = currentValue?.[attribute[0]]?.tag?.value?.id;
+  const canMoveAttribute = !readOnly && typeof attributeTagValueId === "number";
+  const isFirst = attributeNumber === 0;
+  const isLast = attributeNumber === totalAttributes - 1;
+  const editableLabel = isRecordType ? (
+    <EditableAttributeName
+      initialValue={attribute[0]}
+      rootLessListKey={attributeRootLessListKey}
+      formikRootLessListKey={formikAttributeRootLessListKey}
+      onCommit={(newValue) => handleAttributeNameChange(newValue, formikAttributeRootLessListKeyArray)}
+    />
+  ) : (
+    <ThemedAttributeLabel
+      id={attributeRootLessListKey + ".label"}
+      key={attributeRootLessListKey + ".label"}
+      data-testid="miroirDisplayedValue"
+    >
+      {atttributeKeyMap?.rawSchema?.tag?.value?.defaultLabel || currentAttributeDefinition?.tag?.value?.defaultLabel || attribute[0]}
+    </ThemedAttributeLabel>
+  );
+
+  return (
+    <div key={attributeListKey} ref={viewportRef}>
+      {!isRendered ? (
+        <ThemedLoadingCard message={`Loading ${attribute[0]}...`} />
+      ) : (
+        <ErrorBoundary
+          FallbackComponent={({ error, resetErrorBoundary }) => (
+            <ErrorFallbackComponent
+              error={error}
+              resetErrorBoundary={resetErrorBoundary}
+              context={{
+                origin: "MlObjectEditor_ProgressiveAttribute",
+                objectType: "object",
+                rootLessListKey,
+                attributeRootLessListKeyArray,
+                attributeName: attribute[0],
+                attributeListKey,
+                currentValue,
+                formikValues: formik.values,
+                // rawMlSchema,
+                localResolvedElementMlSchemaBasedOnValue,
+              }}
+            />
+          )}
+        >
+          {/* <ThemedOnScreenHelper label="attribute" data={attributeRootLessListKey}/> */}
+          {/* <ThemedOnScreenHelper label="attribute" data={attribute[0]}/> */}
+          <JsonDisplayHelper debug={true}
+            componentName={`ProgressiveAttribute rootLessListKey=${attributeRootLessListKey}`}
+            elements={[{
+              label: `ProgressiveAttribute: rootLessListKey=${attributeRootLessListKey} isRecordType=${isRecordType} insideAny=${insideAny}`,
+              data: {
+                rootLessListKey: attributeRootLessListKey,
+                isRecordType,
+                currentValue,
+                typeCheckKeyMap,
+                currentKeyMap,
+                atttributeKeyMap 
+              },
+              copyButton: true,
+              useCodeBlock: true,
+            }]}
+          />
+          {/* BBBBB {attributeRootLessListKey} */}
+          <MlElementEditor
+            valueObjectEditMode={valueObjectEditMode}
+            name={attribute[0]}
+            existingObject={existingObject}
+            labelElement={editableLabel}
+            key={attribute[0]}
+            listKey={attributeListKey}
+            rootLessListKey={attributeRootLessListKey}
+            rootLessListKeyArray={[...rootLessListKeyArray, attribute[0]]}
+            reportSectionPathAsString={reportSectionPathAsString}
+            indentLevel={usedIndentLevel + 1}
+            currentApplication={currentApplication}
+            applicationDeploymentMap={applicationDeploymentMap}
+            currentApplicationSection={currentApplicationSection}
+            currentDeploymentUuid={currentDeploymentUuid}
+            typeCheckKeyMap={typeCheckKeyMap}
+            foreignKeyObjects={foreignKeyObjects}
+            insideAny={insideAny}
+            anyRootLessListKey={anyRootLessListKey}
+            optional={definedOptionalAttributes.has(attribute[0])}
+            onChangeVector={onChangeVector}
+            maxRenderDepth={maxRenderDepth}
+            readOnly={readOnly}
+            displayError={displayError}
+            compatibilityWarnings={compatibilityWarnings}
+            showMlSchemaTypes={showMlSchemaTypes}
+            mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
+            environmentAnnotations={environmentAnnotations}
+            deleteButtonElement={
+              !readOnly && !hideOptionalButton ? (
+                <>
+                  {canMoveAttribute && (
+                    <ThemedStyledButton
+                      variant="transparent"
+                      type="button"
+                      role={`${reportSectionPathAsString}.${attributeRootLessListKey}.button.up`}
+                      disabled={isFirst}
+                      onClick={() => handleMoveAttribute("up", attribute[0])}
+                      title="Move attribute up"
+                    >
+                      ^
+                    </ThemedStyledButton>
+                  )}
+                  {canMoveAttribute && (
+                    <ThemedStyledButton
+                      variant="transparent"
+                      type="button"
+                      role={`${reportSectionPathAsString}.${attributeRootLessListKey}.button.down`}
+                      disabled={isLast}
+                      onClick={() => handleMoveAttribute("down", attribute[0])}
+                      title="Move attribute down"
+                    >
+                      v
+                    </ThemedStyledButton>
+                  )}
+                  <ThemedSmallIconButton
+                    id={reportSectionPathAsString+ "." + attributeRootLessListKey + "-removeOptionalAttributeOrRecordEntry"}
+                    aria-label={reportSectionPathAsString+ "." + attributeRootLessListKey + "-removeOptionalAttributeOrRecordEntry"}
+                    onClick={deleteElement(attributeRootLessListKeyArray)}
+                    visible={isRecordType || definedOptionalAttributes.has(attribute[0])}
+                  >
+                    <Clear />
+                  </ThemedSmallIconButton>
+                  {isRecordType && (
+                    <ThemedStyledButton
+                      variant="transparent"
+                      type="button"
+                      aria-label={reportSectionPathAsString + "." + attributeRootLessListKey + "-duplicateRecordEntry"}
+                      onClick={() => duplicateRecordEntry(attribute[0])}
+                      title="Duplicate record entry"
+                    >
+                      ⧉
+                    </ThemedStyledButton>
+                  )}
+                </>
+              ) : (
+                <></>
+              )
+            }
+          />
+        </ErrorBoundary>
+      )}
+    </div>
+  );
+};
+
+// ##############################################################################################
+// Helper: compute the max tag.value.id across sibling object entries
+function getMaxTagValueId(siblingObject: Record<string, any>): number | undefined {
+  let maxId: number | undefined = undefined;
+  for (const value of Object.values(siblingObject)) {
+    const id = value?.tag?.value?.id;
+    if (typeof id === "number") {
+      maxId = maxId === undefined ? id : Math.max(maxId, id);
+    }
+  }
+  return maxId;
+}
+
+// ##############################################################################################
+// Helper: auto-assign tag.value.id to a new entry if sibling entries have tag.value.id values
+function assignNextTagValueId(newValue: any, siblingObject: Record<string, any>): any {
+  if (newValue == null || typeof newValue !== "object" || Array.isArray(newValue)) {
+    return newValue;
+  }
+  const maxId = getMaxTagValueId(siblingObject);
+  if (maxId === undefined) {
+    // No sibling has tag.value.id, don't assign one
+    return newValue;
+  }
+  const nextId = maxId + 1;
+  // Set tag.value.id on the new value, creating the tag/value structure if needed
+  return {
+    ...newValue,
+    tag: {
+      ...(newValue.tag ?? {}),
+      value: {
+        ...(newValue.tag?.value ?? {}),
+        id: nextId,
+      },
+    },
+  };
+}
+
+// ##############################################################################################
+// Helper: renumber tag.value.id values sequentially (starting from 1) based on the given key order,
+// only if at least one entry has a tag.value.id. Returns the updated object.
+function renumberTagValueIds(obj: Record<string, any>, keyOrder: string[]): Record<string, any> {
+  // Check if any entries have tag.value.id
+  const hasAnyId = Object.values(obj).some(
+    (v) => v != null && typeof v === "object" && typeof v?.tag?.value?.id === "number"
+  );
+  if (!hasAnyId) {
+    return obj;
+  }
+  const result: Record<string, any> = {};
+  let nextId = 1;
+  for (const key of keyOrder) {
+    if (key in obj) {
+      const entry = obj[key];
+      if (entry != null && typeof entry === "object" && !Array.isArray(entry)) {
+        result[key] = {
+          ...entry,
+          tag: {
+            ...(entry.tag ?? {}),
+            value: {
+              ...(entry.tag?.value ?? {}),
+              id: nextId,
+            },
+          },
+        };
+      } else {
+        result[key] = entry;
+      }
+      nextId++;
+    }
+  }
+  // Include any keys not in keyOrder (shouldn't happen, but be safe)
+  for (const key of Object.keys(obj)) {
+    if (!(key in result)) {
+      result[key] = obj[key];
+    }
+  }
+  return result;
+}
+
+// ##############################################################################################
+// ##############################################################################################
+// ##############################################################################################
+// ##############################################################################################
+// ##############################################################################################
+// ##############################################################################################
+// ##############################################################################################
+// ##############################################################################################
+// ##############################################################################################
+let count = 0;
+export function MlObjectEditor(props: MlObjectEditorProps) {
+
+  const {
+    name,
+    valueObjectEditMode,
+    listKey,
+    labelElement,
+    rootLessListKey,
+    rootLessListKeyArray,
+    reportSectionPathAsString,
+    typeCheckKeyMap,
+    currentApplication,
+    applicationDeploymentMap,
+    currentDeploymentUuid,
+    currentApplicationSection,
+    indentLevel,
+    insideAny,
+    displayAsStructuredElementSwitch,
+    deleteButtonElement,
+    displayError,
+    maxRenderDepth,
+    readOnly,
+    existingObject,
+    foreignKeyObjects = {}, // Add default empty object
+    onChangeVector,
+    compatibilityWarnings,
+    showMlSchemaTypes,
+    mlSchemaTypeAnnotations,
+    environmentAnnotations,
+  } = props;
+
+  // Memoize the onChangeVector callback for this field to avoid repeated lookups
+  const onChangeCallback = useMemo(
+    () => onChangeVector?.[rootLessListKey],
+    [onChangeVector, rootLessListKey]
+  );
+
+  // count++;
+  // log.info(
+  //   "MlObjectEditor render",
+  //   count,
+  //   "rootLessListKey",
+  //   rootLessListKey,
+  //   // "rawMlSchema",
+  //   // JSON.stringify(rawMlSchema, null, 2),
+  //   // "rootLessListKeyMapDEFUNCT",
+  //   // JSON.stringify(localRootLessListKeyMap, null, 2),
+  // );
+  const {
+    // general use
+    currentValueObjectAtKey,
+    context,
+    currentModel,
+    currentValueObject,
+    formik,
+    formikRootLessListKey,
+    formikRootLessListKeyArray,
+    localResolvedElementMlSchemaBasedOnValue,
+    miroirMetaModel,
+    currentApplicationModelEnvironment,
+    // Array / Object fold / unfold state
+    itemsOrder,
+    // object
+    definedOptionalAttributes,
+    // stringSelectList,
+    undefinedOptionalAttributes,
+    // } = useMlElementEditorHooks(props, count, "MlElementEditor");
+  } = useMlElementEditorHooks(
+    rootLessListKey,
+    rootLessListKeyArray,
+    reportSectionPathAsString,
+    typeCheckKeyMap,
+    props.insideAny,
+    currentApplication,
+    applicationDeploymentMap,
+    currentDeploymentUuid,
+    count,
+    "MlElementEditor"
+  );
+
+  const renderStartRef = useRef(0);
+  if (context.showPerformanceDisplay) {
+    renderStartRef.current = performance.now();
+  }
+
+  const reportContext = useReportPageContext();
+  const currentTypeCheckKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
+
+  // ##############################################################################################
+  // Blob detection logic - check if this object should be rendered as a blob editor
+  const isBlob = useMemo(() => {
+    return currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.isBlob === true;
+  }, [currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.isBlob]);
+
+  // Extract allowed MIME types from schema definition for blob fields
+  const allowedMimeTypes = useMemo(() => {
+    if (!isBlob || !currentTypeCheckKeyMap?.resolvedSchema) {
+      return undefined;
+    }
+    
+    // The blob structure has a mimeType field with an enum definition
+    const blobSchema = currentTypeCheckKeyMap.resolvedSchema as MlObject;
+    const mimeTypeField = blobSchema.definition?.mimeType;
+    
+    if (mimeTypeField && mimeTypeField.type === 'enum' && Array.isArray(mimeTypeField.definition)) {
+      return mimeTypeField.definition as string[];
+    }
+    
+    return undefined;
+  }, [isBlob, currentTypeCheckKeyMap?.resolvedSchema]);
+
+  // Construct blob value structure for BlobEditorField
+  // When isBlob is true, currentValue contains the blob contents {encoding, mimeType, data}
+  // but BlobEditorField needs the parent object with {filename, contents}
+  const blobValue = useMemo(() => {
+    if (!isBlob) {
+      return undefined;
+    }
+
+    // Get parent path by removing last element from rootLessListKeyArray
+    const parentPath = rootLessListKeyArray.slice(0, -1);
+    const parentKey = parentPath.join('.');
+
+    // Get parent object from Formik values
+    const parentObject = parentKey ? 
+      parentPath.reduce((obj, key) => obj?.[key], currentValueObjectAtKey) : 
+      currentValueObjectAtKey;
+
+    // Construct the blob object structure that BlobEditorField expects
+    return {
+      filename: parentObject?.filename,
+      contents: currentValueObjectAtKey, // This is the {encoding, mimeType, data} object
+    };
+  }, [isBlob, currentValueObjectAtKey, rootLessListKeyArray, currentValueObjectAtKey]);
+
+  const currentMiroirFundamentalMlSchema = currentApplicationModelEnvironment.miroirFundamentalMlSchema;
+  const usedIndentLevel: number = indentLevel ? indentLevel : 0;
+
+  // Early return if component can't be rendered properly
+  const canRenderObject = useMemo(() => {
+    if (
+      !localResolvedElementMlSchemaBasedOnValue ||
+      localResolvedElementMlSchemaBasedOnValue.type !== "object"
+    ) {
+      return false;
+    }
+    return true;
+  }, [localResolvedElementMlSchemaBasedOnValue]);
+
+
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+      getMemoizedReduxDeploymentsStateSelectorMap();
+
+  const deploymentEntityState: ReduxDeploymentsState = useSelector(
+    (state: ReduxStateWithUndoRedo) =>
+      deploymentEntityStateSelectorMap.extractState(
+        state.presentModelSnapshot.current,
+        applicationDeploymentMap,
+        () => ({}),
+        currentApplicationModelEnvironment??defaultMetaModelEnvironment,
+        // currentMiroirFundamentalMlSchema?{
+        //   miroirFundamentalMlSchema: currentMiroirFundamentalMlSchema,
+        //   currentModel,
+        //   miroirMetaModel,
+        // }: defaultMetaModelEnvironment
+      )
+  );
+
+  const defaultValueParams = useDefaultValueParams(currentApplication, currentDeploymentUuid);
+  
+  // ##############################################################################################
+  const foldableItemsCount = useMemo(() => {
+    return currentTypeCheckKeyMap?.resolvedSchema.type === "object" // for record / object type, the resolvedSchema is a MlObject
+      ? Object.values(currentTypeCheckKeyMap.resolvedSchema.definition).filter(
+        (item: MlElement) => foldableElementTypes.includes(item.type)
+      ).length : 0
+  }, [currentTypeCheckKeyMap?.resolvedSchema]);
+
+  // ##############################################################################################
+  // Get unfoldingDepth from schema tag or default to 1
+  const unfoldingDepth = useMemo(() => {
+    return (currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display as any)?.unfoldSubLevels ?? 1;
+  }, [currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display]);
+
+
+  const resolvedRawSchema = currentTypeCheckKeyMap?.rawSchema.type === "schemaReference" ? resolveMlSchemaReferenceInContext(
+    currentTypeCheckKeyMap?.rawSchema,
+    currentTypeCheckKeyMap?.rawSchema.context ?? {},
+    currentApplicationModelEnvironment
+  ) : currentTypeCheckKeyMap?.rawSchema;
+
+  // ##############################################################################################
+  // MlSchemaTooltip
+  //   const mlSchemaTooltip: JSX.Element = useMemo(
+  //     () => canRenderObject?(
+  //       <span
+  //         title={`
+  // ${parentType} / ${unfoldedRawSchema.type} / ${localResolvedElementMlSchemaBasedOnValue?.type}
+
+  // ${JSON.stringify(props.rawMlSchema, null, 2)}`}
+  //         style={{
+  //           display: "inline-flex",
+  //           alignItems: "center",
+  //           color: "#888",
+  //           background: "#fff",
+  //           borderRadius: "50%",
+  //           padding: "2px",
+  //           border: "1px solid #ddd",
+  //           fontSize: "18px",
+  //           width: "24px",
+  //           height: "24px",
+  //           justifyContent: "center",
+  //         }}
+  //       >
+  //         <span style={{ display: "flex", alignItems: "center" }}>
+  //           <InfoOutlined fontSize="small" sx={{ color: "#888" }} />
+  //         </span>
+  //       </span>
+  //       // </span>
+  //     ):<></>,
+  //     [props.rawMlSchema]
+  //   );
+
+  // ##############################################################################################
+  // Handle attribute name changes for Record objects
+  const handleAttributeNameChange = useCallback(
+    (newAttributeName: string, formikAttributeRootLessListKeyArray: (string | number)[]) => {
+      const localAttributeRootLessListKeyArray: (string | number)[] = formikAttributeRootLessListKeyArray.slice(1);
+      const oldAttributeName =
+        localAttributeRootLessListKeyArray[localAttributeRootLessListKeyArray.length - 1];
+
+      log.info(
+        "handleAttributeNameChange renaming attribute",
+        oldAttributeName,
+        "into",
+        newAttributeName,
+        "current Value",
+        formik.values,
+        "formikAttributeRootLessListKeyArray",
+        formikAttributeRootLessListKeyArray
+      );
+
+      // Get the value at the old attribute path
+      const subObject = resolvePathOnObject(currentValueObject, localAttributeRootLessListKeyArray);
+      // const subObject = resolvePathOnObject(formik.values, localAttributeRootLessListKeyArray);
+
+      // Delete the old attribute path
+      const newFormState1: any = deleteObjectAtPath(
+        currentValueObject,
+        localAttributeRootLessListKeyArray
+      );
+
+      // Create new path with the new attribute name
+      const newPath = localAttributeRootLessListKeyArray.slice(
+        0,
+        localAttributeRootLessListKeyArray.length - 1
+      );
+      newPath.push(newAttributeName);
+
+      // Set the value at the new attribute path
+      const newFormState2: any = alterObjectAtPath2(newFormState1, newPath, subObject);
+
+      log.info("handleAttributeNameChange newFormState2", newFormState2);
+
+      // Update formik values
+      // formik.setValues(newFormState2);
+      // Invoke onChangeVector callback if registered for this field
+      if (onChangeCallback) {
+        onChangeCallback(newFormState2, rootLessListKey);
+      }
+      formik.setFieldValue(reportSectionPathAsString, newFormState2);
+    },
+    [formik.values, formik.setValues, onChangeCallback, rootLessListKey]
+  );
+
+  // ##############################################################################################
+  const addExtraRecordEntry = useCallback(async () => {
+    if (localResolvedElementMlSchemaBasedOnValue?.type != "object") {
+      throw (
+        "addExtraRecordEntry called for non-object type: " +
+        localResolvedElementMlSchemaBasedOnValue
+      );
+    }
+
+    if (
+      !insideAny &&
+      currentTypeCheckKeyMap?.rawSchema?.type != "record" &&
+      resolvedRawSchema?.type != "record"
+    ) {
+      throw (
+        "addExtraRecordEntry called for non-record type: " + currentTypeCheckKeyMap?.rawSchema.type
+      );
+    }
+    const effectiveRawSchema: MlRecord = insideAny
+      ? { type: "record", definition: { type: "string" } }
+      : currentTypeCheckKeyMap?.rawSchema?.type === "record"
+        ? (currentTypeCheckKeyMap?.rawSchema as MlRecord)
+        : (resolvedRawSchema as MlRecord);
+
+    const newAttributeType: MlElement = (effectiveRawSchema as MlRecord)?.definition;
+    log.info("addExtraRecordEntry newAttributeType", JSON.stringify(newAttributeType, null, 2));
+    const newAttributeValue = currentMiroirFundamentalMlSchema
+      ? getDefaultValueForMlSchemaWithResolutionNonHook(
+          "build",
+          effectiveRawSchema.definition,
+          currentValueObject,//formik.values, // rootObject
+          rootLessListKey,
+          undefined, // currentDefaultValue is not known yet, this is what this call will determine
+          [], // currentPath on value is root
+          false, // force optional attributes to receive a default value
+          currentApplication,
+          applicationDeploymentMap,
+          currentDeploymentUuid,
+          currentApplicationModelEnvironment,
+          defaultValueParams, // transformerParams
+          {}, // contextResults
+          deploymentEntityState,
+          // Object.hasOwn(formik.values,"")?formik.values[""]:{}, // rootObject
+        )
+      : undefined;
+
+    // Auto-assign tag.value.id if sibling entries have tag.value.id values
+    const newAttributeValueWithId = assignNextTagValueId(newAttributeValue, currentValueObjectAtKey);
+
+    const newRecordValue: any = { ["newRecordEntry"]: newAttributeValueWithId, ...currentValueObjectAtKey };
+    log.info("addExtraRecordEntry", "newValue", newRecordValue);
+
+    // Invoke onChangeVector callback if registered for this field
+    if (onChangeVector?.[rootLessListKey]) {
+      onChangeVector[rootLessListKey](newRecordValue, rootLessListKey);
+    }
+    // formik.setFieldValue(formikRootLessListKey, newRecordValue);
+    // const targetRootLessListKey = [reportSectionPathAsString, ...formikRootLessListKeyArray].join(
+    //   ".",
+    // );
+    // formik.setFieldValue(targetRootLessListKey, newRecordValue);
+    formik.setFieldValue(formikRootLessListKey, newRecordValue);
+    log.info(
+      "addExtraRecordEntry clicked2!",
+      // "targetRootLessListKey",
+      // targetRootLessListKey,
+      "formikRootLessListKey",
+      '"' + formikRootLessListKey + '"',
+      ", reportSectionPathAsString",
+      '"' + reportSectionPathAsString + '"',
+      ", listKey",
+      '"' + listKey + '"',
+      ", itemsOrder",
+      itemsOrder,
+      Object.keys(localResolvedElementMlSchemaBasedOnValue.definition),
+      ", formik",
+      formik.values
+    );
+  }, [
+    props,
+    itemsOrder,
+    localResolvedElementMlSchemaBasedOnValue,
+    currentMiroirFundamentalMlSchema,
+    currentModel,
+    miroirMetaModel,
+    formik.values,
+    resolvedRawSchema
+  ]);
+
+  // ##############################################################################################
+  const duplicateRecordEntry = useCallback(
+    (attributeKey: string) => {
+      const valueToDuplicate = currentValueObjectAtKey[attributeKey];
+      const duplicate =
+        typeof valueToDuplicate === "object" && valueToDuplicate !== null
+          ? JSON.parse(JSON.stringify(valueToDuplicate))
+          : valueToDuplicate;
+      let newKey = attributeKey + "_copy";
+      let counter = 1;
+      while (Object.prototype.hasOwnProperty.call(currentValueObjectAtKey, newKey)) {
+        newKey = attributeKey + "_copy" + counter;
+        counter++;
+      }
+      const newObjectValue = { ...currentValueObjectAtKey, [newKey]: duplicate };
+      if (onChangeVector?.[rootLessListKey]) {
+        onChangeVector[rootLessListKey](newObjectValue, rootLessListKey);
+      }
+      formik.setFieldValue(formikRootLessListKey, newObjectValue, true);
+    },
+    [currentValueObjectAtKey, formik, formikRootLessListKey, onChangeVector, rootLessListKey]
+  );
+
+  // ##############################################################################################
+  const addObjectOptionalAttribute = useCallback(
+    async (attributeName: string) => {
+      if (localResolvedElementMlSchemaBasedOnValue?.type != "object") {
+        throw "addObjectOptionalAttribute called for non-object type: " + currentTypeCheckKeyMap?.rawSchema.type;
+      }
+      log.info(
+        "addObjectOptionalAttribute clicked!",
+        listKey,
+        "for",
+        "attributeName",
+        attributeName,
+        "itemsOrder",
+        itemsOrder,
+        "objectKeys",
+        Object.keys(localResolvedElementMlSchemaBasedOnValue.definition),
+        "formik",
+        formik.values,
+        "undefinedOptionalAttributes",
+        undefinedOptionalAttributes,
+      );
+      // const currentObjectValue = resolvePathOnObject(formik.values, rootLessListKeyArray);
+      const newAttributeType: MlElement = resolvePathOnObject(
+        currentTypeCheckKeyMap?.chosenUnionBranchRawSchema ??
+          currentTypeCheckKeyMap?.mlObjectFlattenedSchema ??
+          currentTypeCheckKeyMap?.rawSchema,
+        ["definition", attributeName]
+      );
+      const newAttributeValue = !!currentMiroirFundamentalMlSchema
+        ? getDefaultValueForMlSchemaWithResolutionNonHook(
+            "build",
+            newAttributeType,
+            currentValueObject,
+            rootLessListKey,
+            undefined, // currentDefaultValue is not known yet, this is what this call will determine
+            [], // currentPath on value is root
+            true, // force optional attributes to receive a default value
+            currentApplication,
+            applicationDeploymentMap,
+            currentDeploymentUuid,
+            currentApplicationModelEnvironment,
+            defaultValueParams, // transformerParams
+            {}, // contextResults
+            deploymentEntityState,
+          )
+        : undefined;
+
+      const newObjectValue = {
+        ...currentValueObjectAtKey,
+        [attributeName]: newAttributeValue,
+      };
+      log.info(
+        "addObjectOptionalAttribute",
+        "newAttributeType",
+        newAttributeType,
+        "newAttributeValue",
+        newAttributeValue,
+        "newObjectValue",
+        JSON.stringify(newObjectValue, null, 2),
+      );
+
+      // log.info(
+      //   "addObjectOptionalAttribute clicked2!",
+      //   listKey,
+      //   itemsOrder,
+      //   Object.keys(localResolvedElementMlSchemaBasedOnValue.definition),
+      //   "newAttributeType",
+      //   newAttributeType,
+      //   "newObjectValue",
+      //   newObjectValue,
+      //   "newItemsOrder",
+      //   newItemsOrder
+      // );
+      // if (rootLessListKey) {
+        // Invoke onChangeVector callback if registered for this field
+        if (onChangeVector?.[rootLessListKey]) {
+          onChangeVector[rootLessListKey](newObjectValue, rootLessListKey);
+        }
+        formik.setFieldValue(formikRootLessListKey, newObjectValue, false);
+      // } else {
+      //   formik.setValues(newObjectValue, false);
+      // }
+      // log.info("addObjectOptionalAttribute clicked3 DONE!");
+    },
+    [
+      props,
+      itemsOrder,
+      localResolvedElementMlSchemaBasedOnValue,
+      currentMiroirFundamentalMlSchema,
+      currentModel,
+      miroirMetaModel,
+      currentValueObjectAtKey,
+      formik.setFieldValue,
+      undefinedOptionalAttributes,
+    ]
+  );
+
+  // // ##############################################################################################
+  // // Get displayed value when object is folded using the shared utility function
+  const foldedDisplayValue = useMemo(() => {
+    return getFoldedDisplayValue(localResolvedElementMlSchemaBasedOnValue, currentValueObjectAtKey);
+  }, [localResolvedElementMlSchemaBasedOnValue, currentValueObjectAtKey]);
+
+  const unitTestKind = useMemo(
+    () => getUnitTestKind(currentValueObjectAtKey),
+    [currentValueObjectAtKey],
+  );
+  const unitTestLabel = useMemo(() => {
+    if (
+      currentValueObjectAtKey != null &&
+      typeof currentValueObjectAtKey === "object" &&
+      typeof (currentValueObjectAtKey as { unitTestLabel?: string }).unitTestLabel === "string"
+    ) {
+      return (currentValueObjectAtKey as { unitTestLabel: string }).unitTestLabel;
+    }
+    return undefined;
+  }, [currentValueObjectAtKey]);
+  const isHighlightedUnitTest =
+    unitTestLabel != null && reportContext.highlightedUnitTestLabel === unitTestLabel;
+
+  // ##############################################################################################
+  const deleteElement = (rootLessListKeyArray: (string | number)[]) => () => {
+    if (rootLessListKeyArray.length > 0) {
+      let newFormState: any = deleteObjectAtPath(currentValueObject, rootLessListKeyArray);
+      log.info(
+        "deleteElement called for",
+        "reportSectionPathAsString",
+        reportSectionPathAsString,
+        "rootLessListKeyArray",
+        rootLessListKeyArray.join("."),
+        "currentValueObject",
+        currentValueObject,
+        "formik.values",
+        formik.values,
+        "newFormState",
+        newFormState
+      );
+
+      // Renumber tag.value.id for sibling entries after deletion (for record-like objects)
+      if (rootLessListKeyArray.length >= 1) {
+        const parentPath = rootLessListKeyArray.slice(0, -1);
+        const parentObject = parentPath.length > 0
+          ? resolvePathOnObject(newFormState, parentPath)
+          : newFormState;
+        if (parentObject != null && typeof parentObject === "object" && !Array.isArray(parentObject)) {
+          const renumbered = renumberTagValueIds(parentObject, Object.keys(parentObject));
+          if (renumbered !== parentObject) {
+            if (parentPath.length > 0) {
+              newFormState = alterObjectAtPath2(newFormState, parentPath, renumbered);
+            } else {
+              newFormState = renumbered;
+            }
+          }
+        }
+      }
+
+      // Invoke onChangeVector callback if registered for this field
+      if (onChangeVector?.[rootLessListKey]) {
+        onChangeVector[rootLessListKey](newFormState, rootLessListKey);
+      }
+      formik.setFieldValue(reportSectionPathAsString, newFormState);
+      log.info("Removed optional attribute:", rootLessListKeyArray.join("."));
+    } else {
+      log.warn("deleteElement called with empty rootLessListKeyArray, cannot delete root object");
+    }
+  };
+
+  // ##############################################################################################
+  // Move an attribute up or down in display order by adjusting tag.value.id values.
+  // Works across the id/no-id boundary: the crossed-over entry receives an id so that
+  // repeated moves remain coherent.  All id-tracked entries are renumbered sequentially
+  // (1, 2, 3 …) in their new positions so the result is always gap-free.
+  const handleMoveAttribute = useCallback(
+    (direction: "up" | "down", attributeKey: string) => {
+      const currentIndex = itemsOrder.indexOf(attributeKey);
+      if (currentIndex === -1) return;
+      const neighborIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+      if (neighborIndex < 0 || neighborIndex >= itemsOrder.length) return;
+      const neighborKey = itemsOrder[neighborIndex];
+
+      const currentEntry = currentValueObjectAtKey[attributeKey];
+      // Only id-having entries can be moved (buttons are only rendered for those)
+      if (typeof currentEntry?.tag?.value?.id !== "number") return;
+
+      // Build new display order by swapping the two positions
+      const newOrder = itemsOrder.slice();
+      [newOrder[currentIndex], newOrder[neighborIndex]] = [newOrder[neighborIndex], newOrder[currentIndex]];
+
+      // Assign sequential ids to:
+      //   – every entry that had an id before the move, AND
+      //   – the crossed-over neighbor (so it participates in future moves)
+      const newObjectValue = { ...currentValueObjectAtKey };
+      let nextId = 1;
+      for (const key of newOrder) {
+        const entry = currentValueObjectAtKey[key];
+        const hadId = typeof entry?.tag?.value?.id === "number";
+        const isCrossedNeighbor = key === neighborKey;
+        if (hadId || isCrossedNeighbor) {
+          newObjectValue[key] = {
+            ...entry,
+            tag: {
+              ...(entry?.tag ?? {}),
+              value: {
+                ...(entry?.tag?.value ?? {}),
+                id: nextId,
+              },
+            },
+          };
+          nextId++;
+        }
+      }
+
+      log.info(
+        "handleMoveAttribute",
+        direction,
+        "attribute",
+        attributeKey,
+        "->",
+        neighborKey,
+        "newOrder",
+        newOrder,
+        "assigned ids up to",
+        nextId - 1
+      );
+
+      if (onChangeVector?.[rootLessListKey]) {
+        onChangeVector[rootLessListKey](newObjectValue, rootLessListKey);
+      }
+      formik.setFieldValue(formikRootLessListKey, newObjectValue);
+    },
+    [itemsOrder, currentValueObjectAtKey, formik, formikRootLessListKey, onChangeVector, rootLessListKey]
+  );
+
+  // ##############################################################################################
+  // Render error state if we can't properly render an object
+  if (!canRenderObject) {
+    log.error(
+      "MlObjectEditor cannot render object",
+      rootLessListKey,
+      "localResolvedElementMlSchemaBasedOnValue",
+      localResolvedElementMlSchemaBasedOnValue
+    );
+    return (
+      <div>
+        <span className="error">
+          MlObjectEditor: localResolvedElementMlSchemaBasedOnValue is not an object type:{" "}
+          {JSON.stringify(localResolvedElementMlSchemaBasedOnValue, null, 2)}
+        </span>
+      </div>
+    );
+  }
+
+  // ##############################################################################################
+  // Render blob editor if this object has isBlob tag
+  if (isBlob) {
+    return (
+      <ErrorBoundary
+        FallbackComponent={({ error, resetErrorBoundary }) => (
+          <ErrorFallbackComponent
+            error={error}
+            resetErrorBoundary={resetErrorBoundary}
+            context={{
+              origin: "MlObjectEditor-BlobEditorField",
+              objectType: "blob",
+              rootLessListKey,
+              rootLessListKeyArray,
+              currentValue: blobValue,
+              formikValues: formik.values,
+              localResolvedElementMlSchemaBasedOnValue,
+            }}
+          />
+        )}
+      >
+        <BlobEditorField
+          rootLessListKey={rootLessListKey}
+          rootLessListKeyArray={rootLessListKeyArray}
+          currentValue={blobValue}
+          formik={formik}
+          readOnly={readOnly}
+          allowedMimeTypes={allowedMimeTypes}
+          onError={(error) => {
+            log.error("BlobEditorField error:", error);
+          }}
+        />
+      </ErrorBoundary>
+    );
+  }
+
+  // ##############################################################################################
+  // Memoize the array of rendered attributes to prevent unnecessary re-renders
+  const attributeElements = useMemo(() => {
+    // log.info(
+    //   "MlObjectEditor rendering attributes for",
+    //   rootLessListKey,
+    //   "foldedObjectAttributeOrArrayItems",
+    //   reportContext.foldedObjectAttributeOrArrayItems
+    // );
+    return (
+      <div>
+        {/* <ThemedOnScreenHelper label="itemsOrder" data={itemsOrder} /> */}
+        {!reportContext.isNodeFolded(rootLessListKeyArray) &&
+          itemsOrder
+            .map((i): [string, MlElement] => [
+              i,
+              formik.values[rootLessListKey.length > 0 ? rootLessListKey + "." + i[0] : i[0]],
+              // currentValueObjectAtKey[rootLessListKey.length > 0 ? rootLessListKey + "." + i[0] : i[0]],
+            ])
+            .map((attribute: [string, MlElement], attributeNumber: number) => (
+              <ProgressiveAttribute
+                key={attribute[0]}
+                valueObjectEditMode={valueObjectEditMode}
+                listKey={listKey}
+                rootLessListKey={rootLessListKey}
+                formikRootLessListKey={formikRootLessListKey}
+                formikRootLessListKeyArray={formikRootLessListKeyArray}
+                rootLessListKeyArray={rootLessListKeyArray}
+                reportSectionPathAsString={reportSectionPathAsString}
+                attribute={attribute}
+                attributeNumber={attributeNumber}
+                currentApplication={currentApplication}
+                applicationDeploymentMap={applicationDeploymentMap}
+                currentDeploymentUuid={currentDeploymentUuid}
+                currentApplicationSection={currentApplicationSection}
+                foreignKeyObjects={foreignKeyObjects || {}}
+                insideAny={insideAny}
+                anyRootLessListKey={props.anyRootLessListKey}
+                localResolvedElementMlSchemaBasedOnValue={
+                  localResolvedElementMlSchemaBasedOnValue as MlObject
+                }
+                typeCheckKeyMap={typeCheckKeyMap}
+                currentValue={currentValueObjectAtKey}
+                usedIndentLevel={usedIndentLevel}
+                definedOptionalAttributes={definedOptionalAttributes}
+                onChangeVector={onChangeVector}
+                handleAttributeNameChange={handleAttributeNameChange}
+                deleteElement={deleteElement}
+                duplicateRecordEntry={duplicateRecordEntry}
+                handleMoveAttribute={handleMoveAttribute}
+                totalAttributes={itemsOrder.length}
+                hideOptionalButton={localResolvedElementMlSchemaBasedOnValue?.tag?.value?.display?.objectHideOptionalButton}
+                maxRenderDepth={maxRenderDepth}
+                readOnly={readOnly}
+                existingObject={existingObject}
+                formik={formik}
+                currentMiroirFundamentalMlSchema={currentMiroirFundamentalMlSchema}
+                currentModel={currentModel}
+                miroirMetaModel={miroirMetaModel}
+                measuredUnfoldMlSchemaOnce={measuredUnfoldMlSchemaOnce}
+                displayError={displayError}
+            compatibilityWarnings={compatibilityWarnings}
+            showMlSchemaTypes={showMlSchemaTypes}
+            mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
+            environmentAnnotations={environmentAnnotations}
+              />
+            ))}
+      </div>
+    );
+  }, [
+    itemsOrder,
+    formik.values,
+    rootLessListKey,
+    listKey,
+    rootLessListKeyArray,
+    localResolvedElementMlSchemaBasedOnValue,
+    typeCheckKeyMap,
+    currentDeploymentUuid,
+    currentApplicationSection,
+    foreignKeyObjects,
+    insideAny,
+    displayError,
+    currentValueObjectAtKey,
+    usedIndentLevel,
+    definedOptionalAttributes,
+    onChangeVector,
+    handleAttributeNameChange,
+    deleteElement,
+    duplicateRecordEntry,
+    handleMoveAttribute,
+    formik,
+    currentMiroirFundamentalMlSchema,
+    currentModel,
+    miroirMetaModel,
+    measuredUnfoldMlSchemaOnce,
+    reportContext.foldedObjectAttributeOrArrayItems, // This is the key addition!
+    compatibilityWarnings,
+    showMlSchemaTypes,
+    mlSchemaTypeAnnotations,
+    environmentAnnotations,
+  ]);
+
+  const schemaType =
+    currentTypeCheckKeyMap?.resolvedSchema?.type ??
+    currentTypeCheckKeyMap?.rawSchema?.type;
+  const insightRole = schemaType === "record" ? "record" : "object";
+  const insightComponentId =
+    insightRole === "record" ? "MlRecordEditor" : "MlObjectEditor";
+  const insightEnabled = !!context.showPerformanceDisplay;
+  // Sync accrual: chips need live counts; progressive mount limits fan-out.
+  const insightCounts = insightEnabled
+    ? renderInsightRegistry.trackRender({
+        componentId: insightComponentId,
+        navigationKey: `${currentDeploymentUuid ?? ""}-${currentApplicationSection ?? ""}`,
+        formikPath: formikRootLessListKey,
+        enabled: true,
+        durationMs: performance.now() - renderStartRef.current,
+      })
+    : NOOP_RENDER_COUNTS;
+
+  const titleRowWarning = findPathAnnotation(compatibilityWarnings, rootLessListKeyArray);
+
+  return (
+    <div
+      id={unitTestLabel ? unitTestAnchorId(unitTestLabel) : rootLessListKey}
+      key={rootLessListKey}
+      style={isHighlightedUnitTest ? HIGHLIGHTED_UNIT_TEST_STYLE : undefined}
+    >
+      <JsonDisplayHelper
+        debug={true}
+        componentName={`MlObjectEditor insideAny=${insideAny} rootLessListKey=${rootLessListKey}`}
+        elements={[
+          {
+            label: `MlObjectEditor: rootLessListKey=${rootLessListKey}`,
+            data: {
+              rootLessListKey,
+              itemsOrder,
+              formik: Object.keys(formik.values),
+              pageParams: formik.values.pageParams,
+              formikRootLessListKey,
+              rawSchema: currentTypeCheckKeyMap?.rawSchema,
+              resolvedSchema: currentTypeCheckKeyMap?.resolvedSchema,
+              mlObjectFlattenedSchema:
+                currentTypeCheckKeyMap?.mlObjectFlattenedSchema ?? "NO FLATTENED SCHEMA",
+              currentValueObjectAtKey,
+            },
+            copyButton: true,
+            useCodeBlock: true,
+          },
+        ]}
+      />
+      {context.showPerformanceDisplay && (
+        <RenderInsightHeader
+          componentName={insightRole}
+          navigationCount={insightCounts.navigationCount}
+          totalCount={insightCounts.totalCount}
+          formikPath={formikRootLessListKey}
+          lastRenderTime={insightCounts.lastRenderTime}
+        />
+      )}
+      {/* Performance statistics */}
+      {!currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display?.objectWithoutHeader && (
+        <ThemedFlexRow justify="start" align="center">
+          <span>
+            <ThemedFlexRow align="center">
+              {labelElement}
+              <TransformerTitleRowAnnotations
+                path={rootLessListKeyArray}
+                skipRoot
+                showMlSchemaTypes={showMlSchemaTypes}
+                mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
+                environmentAnnotations={environmentAnnotations}
+                inadequate={!!titleRowWarning}
+                inadequateTitle={titleRowWarning?.title}
+              />
+              {unitTestKind && <UnitTestKindBadge kind={unitTestKind} />}
+              {/* Show folded display value when object is folded and a value is available */}
+              {reportContext.isNodeFolded(rootLessListKeyArray) &&
+                (() => {
+                  return foldedDisplayValue !== null ? (
+                    <ThemedFoldedValueDisplay
+                      value={String(foldedDisplayValue)}
+                      title={`Folded value: ${foldedDisplayValue}`}
+                      maxLength={100}
+                    />
+                  ) : null;
+                })()}
+            </ThemedFlexRow>
+          </span>
+          {/* fold/unfold controls */}
+          <span id={rootLessListKey + "head"} key={rootLessListKey + "head"}>
+            <FoldUnfoldObjectOrArray
+              listKey={listKey}
+              rootLessListKeyArray={rootLessListKeyArray}
+              currentValue={currentValueObjectAtKey}
+              unfoldingDepth={unfoldingDepth}
+            ></FoldUnfoldObjectOrArray>
+            <FoldUnfoldObjectOrArray
+              listKey={listKey}
+              rootLessListKeyArray={rootLessListKeyArray}
+              currentValue={currentValueObjectAtKey}
+              unfoldingDepth={Infinity}
+            ></FoldUnfoldObjectOrArray>
+            {!reportContext.isNodeFolded(rootLessListKeyArray) &&
+              itemsOrder.length >= 2 &&
+              foldableItemsCount > 1 && (
+                <FoldUnfoldAllObjectAttributesOrArrayItems
+                  listKey={listKey}
+                  rootLessListKeyArray={rootLessListKeyArray}
+                  itemsOrder={itemsOrder}
+                  maxDepth={maxRenderDepth ?? 1}
+                ></FoldUnfoldAllObjectAttributesOrArrayItems>
+              )}
+          </span>
+          {/* add record attribute button for records */}
+          <span>
+            {!readOnly &&
+            (
+              insideAny ||
+              currentTypeCheckKeyMap?.rawSchema.type == "record" ||
+              resolvedRawSchema?.type == "record"
+            ) &&
+            !reportContext.isNodeFolded(rootLessListKeyArray) ? (
+              <ThemedSizedButton
+                id={formikRootLessListKey + ".addRecordAttribute"}
+                aria-label={formikRootLessListKey + ".addRecordAttribute"}
+                onClick={addExtraRecordEntry}
+                title="Add new record attribute"
+              >
+                <ThemedAddIcon />
+              </ThemedSizedButton>
+            ) : (
+              <></>
+            )}
+          </span>
+          {/* add optional attributes buttons */}
+          <span>
+            {!readOnly &&
+              currentTypeCheckKeyMap?.rawSchema.type != "record" &&
+              undefinedOptionalAttributes.length > 0 &&
+              !reportContext.isNodeFolded(rootLessListKeyArray) && (
+                <>
+                  <ThemedOptionalAttributeContainer>
+                    {undefinedOptionalAttributes.map((attributeName) => (
+                      <ThemedOptionalAttributeItem key={attributeName}>
+                        <ThemedSizedButton
+                          aria-label={
+                            formikRootLessListKey + ".addObjectOptionalAttribute." + attributeName
+                          }
+                          onClick={() => addObjectOptionalAttribute(attributeName)}
+                          title={`Add optional attribute: ${attributeName}`}
+                        >
+                          <ThemedAddIcon />
+                        </ThemedSizedButton>
+                        <ThemedAttributeName>{attributeName}</ThemedAttributeName>
+                      </ThemedOptionalAttributeItem>
+                    ))}
+                  </ThemedOptionalAttributeContainer>
+                </>
+              )}
+          </span>
+          {/* extra buttons */}
+          {props.extraToolsButtons && <span>{props.extraToolsButtons}</span>}
+          <ThemedDeleteButtonContainer>
+            {deleteButtonElement ?? <></>}
+            {displayAsStructuredElementSwitch ?? <></>}
+            {/* {mlSchemaTooltip ?? <></>} */}
+          </ThemedDeleteButtonContainer>
+        </ThemedFlexRow>
+      )}
+      {/* {!currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display?.objectAttributesNoIndent ? (
+          <ThemedIndentedContainer
+            id={listKey + ".inner"}
+            marginLeft={`calc(${indentShift})`}
+            isVisible={!reportContext.isNodeFolded(rootLessListKeyArray)}
+            key={`${rootLessListKey}|body`}
+          >
+            <div>{attributeElements}</div>
+          </ThemedIndentedContainer>
+        ) : ( */}
+      {attributeElements}
+      {/* )} */}
+    </div>
+  );
+}

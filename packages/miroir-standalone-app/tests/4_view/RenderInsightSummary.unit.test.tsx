@@ -87,13 +87,13 @@ describe("RenderInsightSummary (Phase 5)", () => {
       enabled: true,
     });
     renderInsightRegistry.trackRender({
-      componentId: "JzodElementEditor",
+      componentId: "MlElementEditor",
       formikPath: "instance.name",
       navigationKey: "nav",
       enabled: true,
     });
     renderInsightRegistry.trackRender({
-      componentId: "JzodElementEditor",
+      componentId: "MlElementEditor",
       formikPath: "instance.firstName",
       navigationKey: "nav",
       enabled: true,
