@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Clear } from "../Themes/MaterialSymbolWrappers";
 
@@ -9,15 +9,15 @@ import {
   deleteObjectAtPath,
   EntityInstancesUuidIndex,
   foldableElementTypes,
-  getDefaultValueForMlSchemaWithResolutionNonHook,
-  MlElement,
-  MlObject,
-  MlRecord,
+  getDefaultValueForJzodSchemaWithResolutionNonHook,
+  JzodElement,
+  JzodObject,
+  JzodRecord,
   KeyMapEntry,
   LoggerInterface,
   MiroirLoggerFactory,
   ReduxDeploymentsState,
-  resolveMlSchemaReferenceInContext,
+  resolveJzodSchemaReferenceInContext,
   resolvePathOnObject,
   SyncBoxedExtractorOrQueryRunnerMap,
   Uuid,
@@ -35,16 +35,13 @@ import {
 import { cleanLevel } from "../../constants";
 import { useDefaultValueParams } from "../../ReduxHooks";
 import {
-  measuredUnfoldMlSchemaOnce
+  measuredUnfoldJzodSchemaOnce
 } from "../../tools/hookPerformanceMeasure";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
 import { JsonDisplayHelper } from "miroir-react";
 import { useReportPageContext } from "../Reports/ReportPageContext";
 import { RenderInsightHeader } from "../RenderInsightHeader.js";
-import {
-  NOOP_RENDER_COUNTS,
-  renderInsightRegistry,
-} from "../../tools/renderInsightRegistry.js";
+import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
 import { useViewportReveal } from "../../tools/useViewportReveal.js";
 import {
   getUnitTestKind,
@@ -68,22 +65,22 @@ import {
   ThemedSmallIconButton,
   ThemedStyledButton,
 } from "../Themes/index";
-import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, MlElementEditor } from "./MlElementEditor";
-import { getFoldedDisplayValue, useMlElementEditorHooks } from "./MlElementEditorHooks";
-import { MlObjectEditorProps } from "./MlElementEditorInterface";
+import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, JzodElementEditor } from "./JzodElementEditor";
+import { getFoldedDisplayValue, useJzodElementEditorHooks } from "./JzodElementEditorHooks";
+import { JzodObjectEditorProps } from "./JzodElementEditorInterface";
 import {
   findPathAnnotation,
   TransformerTitleRowAnnotations,
 } from "../Reports/TransformerTypeAnnotation.js";
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlElementEditor");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodElementEditor");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
 
-// Performance tracking for unfoldMlSchemaOnce - legacy approach
+// Performance tracking for unfoldJzodSchemaOnce - legacy approach
 let totalUnfoldTime = 0;
 let unfoldCallCount = 0;
 
@@ -158,7 +155,7 @@ const EditableAttributeName: FC<{
 // Progressive Attribute Component for asynchronous rendering
 const ProgressiveAttribute: FC<{
   valueObjectEditMode: ValueObjectEditMode;
-  attribute: [string, MlElement];
+  attribute: [string, JzodElement];
   attributeNumber: number;
   listKey: string;
   rootLessListKey: string;
@@ -166,7 +163,7 @@ const ProgressiveAttribute: FC<{
   formikRootLessListKey: string;
   formikRootLessListKeyArray: (string | number)[];
   reportSectionPathAsString: string;
-  localResolvedElementMlSchemaBasedOnValue: MlObject;
+  localResolvedElementJzodSchemaBasedOnValue: JzodObject;
   typeCheckKeyMap?: Record<string, KeyMapEntry>;
   currentValue: any;
   usedIndentLevel: number;
@@ -179,11 +176,11 @@ const ProgressiveAttribute: FC<{
   totalAttributes: number;
   hideOptionalButton?: boolean;
   formik: any;
-  currentMiroirFundamentalMlSchema: any;
+  currentMiroirFundamentalJzodSchema: any;
   currentModel: any;
   miroirMetaModel: any;
-  measuredUnfoldMlSchemaOnce: any;
-  // Add direct props from MlObjectEditorProps that are used
+  measuredUnfoldJzodSchemaOnce: any;
+  // Add direct props from JzodObjectEditorProps that are used
   currentApplication: Uuid;
   applicationDeploymentMap: ApplicationDeploymentMap;
   currentDeploymentUuid?: Uuid;
@@ -212,7 +209,7 @@ const ProgressiveAttribute: FC<{
   formikRootLessListKey,
   formikRootLessListKeyArray,
   reportSectionPathAsString,
-  localResolvedElementMlSchemaBasedOnValue,
+  localResolvedElementJzodSchemaBasedOnValue,
   // unfoldedRawSchema,
   typeCheckKeyMap,
   currentValue,
@@ -226,10 +223,10 @@ const ProgressiveAttribute: FC<{
   totalAttributes,
   hideOptionalButton,
   formik,
-  currentMiroirFundamentalMlSchema,
+  currentMiroirFundamentalJzodSchema,
   currentModel,
   miroirMetaModel,
-  measuredUnfoldMlSchemaOnce,
+  measuredUnfoldJzodSchemaOnce,
   maxRenderDepth,
   readOnly,
   existingObject,
@@ -253,7 +250,7 @@ const ProgressiveAttribute: FC<{
   const { ref: viewportRef, revealed: isRendered } = useViewportReveal();
 
   const currentAttributeDefinition =
-    localResolvedElementMlSchemaBasedOnValue.definition[attribute[0]];
+    localResolvedElementJzodSchemaBasedOnValue.definition[attribute[0]];
   const attributeListKey = listKey + "." + attribute[0];
   const formikAttributeRootLessListKey =
     formikRootLessListKey.length > 0 ? formikRootLessListKey + "." + attribute[0] : attribute[0];
@@ -354,7 +351,7 @@ const ProgressiveAttribute: FC<{
               error={error}
               resetErrorBoundary={resetErrorBoundary}
               context={{
-                origin: "MlObjectEditor_ProgressiveAttribute",
+                origin: "JzodObjectEditor_ProgressiveAttribute",
                 objectType: "object",
                 rootLessListKey,
                 attributeRootLessListKeyArray,
@@ -362,8 +359,8 @@ const ProgressiveAttribute: FC<{
                 attributeListKey,
                 currentValue,
                 formikValues: formik.values,
-                // rawMlSchema,
-                localResolvedElementMlSchemaBasedOnValue,
+                // rawJzodSchema,
+                localResolvedElementJzodSchemaBasedOnValue,
               }}
             />
           )}
@@ -387,7 +384,7 @@ const ProgressiveAttribute: FC<{
             }]}
           />
           {/* BBBBB {attributeRootLessListKey} */}
-          <MlElementEditor
+          <JzodElementEditor
             valueObjectEditMode={valueObjectEditMode}
             name={attribute[0]}
             existingObject={existingObject}
@@ -563,7 +560,7 @@ function renumberTagValueIds(obj: Record<string, any>, keyOrder: string[]): Reco
 // ##############################################################################################
 // ##############################################################################################
 let count = 0;
-export function MlObjectEditor(props: MlObjectEditorProps) {
+export function JzodObjectEditor(props: JzodObjectEditorProps) {
 
   const {
     name,
@@ -602,12 +599,12 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
 
   // count++;
   // log.info(
-  //   "MlObjectEditor render",
+  //   "JzodObjectEditor render",
   //   count,
   //   "rootLessListKey",
   //   rootLessListKey,
-  //   // "rawMlSchema",
-  //   // JSON.stringify(rawMlSchema, null, 2),
+  //   // "rawJzodSchema",
+  //   // JSON.stringify(rawJzodSchema, null, 2),
   //   // "rootLessListKeyMapDEFUNCT",
   //   // JSON.stringify(localRootLessListKeyMap, null, 2),
   // );
@@ -620,7 +617,7 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
     formik,
     formikRootLessListKey,
     formikRootLessListKeyArray,
-    localResolvedElementMlSchemaBasedOnValue,
+    localResolvedElementJzodSchemaBasedOnValue,
     miroirMetaModel,
     currentApplicationModelEnvironment,
     // Array / Object fold / unfold state
@@ -629,8 +626,8 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
     definedOptionalAttributes,
     // stringSelectList,
     undefinedOptionalAttributes,
-    // } = useMlElementEditorHooks(props, count, "MlElementEditor");
-  } = useMlElementEditorHooks(
+    // } = useJzodElementEditorHooks(props, count, "JzodElementEditor");
+  } = useJzodElementEditorHooks(
     rootLessListKey,
     rootLessListKeyArray,
     reportSectionPathAsString,
@@ -640,13 +637,12 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
     applicationDeploymentMap,
     currentDeploymentUuid,
     count,
-    "MlElementEditor"
+    "JzodElementEditor"
   );
 
-  const renderStartRef = useRef(0);
-  if (context.showPerformanceDisplay) {
-    renderStartRef.current = performance.now();
-  }
+  const trackedRender = useTrackedRender(
+    editorNavigationKey(currentDeploymentUuid, currentApplicationSection),
+  );
 
   const reportContext = useReportPageContext();
   const currentTypeCheckKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
@@ -664,7 +660,7 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
     }
     
     // The blob structure has a mimeType field with an enum definition
-    const blobSchema = currentTypeCheckKeyMap.resolvedSchema as MlObject;
+    const blobSchema = currentTypeCheckKeyMap.resolvedSchema as JzodObject;
     const mimeTypeField = blobSchema.definition?.mimeType;
     
     if (mimeTypeField && mimeTypeField.type === 'enum' && Array.isArray(mimeTypeField.definition)) {
@@ -698,19 +694,19 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
     };
   }, [isBlob, currentValueObjectAtKey, rootLessListKeyArray, currentValueObjectAtKey]);
 
-  const currentMiroirFundamentalMlSchema = currentApplicationModelEnvironment.miroirFundamentalMlSchema;
+  const currentMiroirFundamentalJzodSchema = currentApplicationModelEnvironment.miroirFundamentalJzodSchema;
   const usedIndentLevel: number = indentLevel ? indentLevel : 0;
 
   // Early return if component can't be rendered properly
   const canRenderObject = useMemo(() => {
     if (
-      !localResolvedElementMlSchemaBasedOnValue ||
-      localResolvedElementMlSchemaBasedOnValue.type !== "object"
+      !localResolvedElementJzodSchemaBasedOnValue ||
+      localResolvedElementJzodSchemaBasedOnValue.type !== "object"
     ) {
       return false;
     }
     return true;
-  }, [localResolvedElementMlSchemaBasedOnValue]);
+  }, [localResolvedElementJzodSchemaBasedOnValue]);
 
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
@@ -723,8 +719,8 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
         applicationDeploymentMap,
         () => ({}),
         currentApplicationModelEnvironment??defaultMetaModelEnvironment,
-        // currentMiroirFundamentalMlSchema?{
-        //   miroirFundamentalMlSchema: currentMiroirFundamentalMlSchema,
+        // currentMiroirFundamentalJzodSchema?{
+        //   miroirFundamentalJzodSchema: currentMiroirFundamentalJzodSchema,
         //   currentModel,
         //   miroirMetaModel,
         // }: defaultMetaModelEnvironment
@@ -735,9 +731,9 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
   
   // ##############################################################################################
   const foldableItemsCount = useMemo(() => {
-    return currentTypeCheckKeyMap?.resolvedSchema.type === "object" // for record / object type, the resolvedSchema is a MlObject
+    return currentTypeCheckKeyMap?.resolvedSchema.type === "object" // for record / object type, the resolvedSchema is a JzodObject
       ? Object.values(currentTypeCheckKeyMap.resolvedSchema.definition).filter(
-        (item: MlElement) => foldableElementTypes.includes(item.type)
+        (item: JzodElement) => foldableElementTypes.includes(item.type)
       ).length : 0
   }, [currentTypeCheckKeyMap?.resolvedSchema]);
 
@@ -748,21 +744,21 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
   }, [currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display]);
 
 
-  const resolvedRawSchema = currentTypeCheckKeyMap?.rawSchema.type === "schemaReference" ? resolveMlSchemaReferenceInContext(
+  const resolvedRawSchema = currentTypeCheckKeyMap?.rawSchema.type === "schemaReference" ? resolveJzodSchemaReferenceInContext(
     currentTypeCheckKeyMap?.rawSchema,
     currentTypeCheckKeyMap?.rawSchema.context ?? {},
     currentApplicationModelEnvironment
   ) : currentTypeCheckKeyMap?.rawSchema;
 
   // ##############################################################################################
-  // MlSchemaTooltip
-  //   const mlSchemaTooltip: JSX.Element = useMemo(
+  // JzodSchemaTooltip
+  //   const jzodSchemaTooltip: JSX.Element = useMemo(
   //     () => canRenderObject?(
   //       <span
   //         title={`
-  // ${parentType} / ${unfoldedRawSchema.type} / ${localResolvedElementMlSchemaBasedOnValue?.type}
+  // ${parentType} / ${unfoldedRawSchema.type} / ${localResolvedElementJzodSchemaBasedOnValue?.type}
 
-  // ${JSON.stringify(props.rawMlSchema, null, 2)}`}
+  // ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
   //         style={{
   //           display: "inline-flex",
   //           alignItems: "center",
@@ -783,7 +779,7 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
   //       </span>
   //       // </span>
   //     ):<></>,
-  //     [props.rawMlSchema]
+  //     [props.rawJzodSchema]
   //   );
 
   // ##############################################################################################
@@ -840,10 +836,10 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
 
   // ##############################################################################################
   const addExtraRecordEntry = useCallback(async () => {
-    if (localResolvedElementMlSchemaBasedOnValue?.type != "object") {
+    if (localResolvedElementJzodSchemaBasedOnValue?.type != "object") {
       throw (
         "addExtraRecordEntry called for non-object type: " +
-        localResolvedElementMlSchemaBasedOnValue
+        localResolvedElementJzodSchemaBasedOnValue
       );
     }
 
@@ -856,16 +852,16 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
         "addExtraRecordEntry called for non-record type: " + currentTypeCheckKeyMap?.rawSchema.type
       );
     }
-    const effectiveRawSchema: MlRecord = insideAny
+    const effectiveRawSchema: JzodRecord = insideAny
       ? { type: "record", definition: { type: "string" } }
       : currentTypeCheckKeyMap?.rawSchema?.type === "record"
-        ? (currentTypeCheckKeyMap?.rawSchema as MlRecord)
-        : (resolvedRawSchema as MlRecord);
+        ? (currentTypeCheckKeyMap?.rawSchema as JzodRecord)
+        : (resolvedRawSchema as JzodRecord);
 
-    const newAttributeType: MlElement = (effectiveRawSchema as MlRecord)?.definition;
+    const newAttributeType: JzodElement = (effectiveRawSchema as JzodRecord)?.definition;
     log.info("addExtraRecordEntry newAttributeType", JSON.stringify(newAttributeType, null, 2));
-    const newAttributeValue = currentMiroirFundamentalMlSchema
-      ? getDefaultValueForMlSchemaWithResolutionNonHook(
+    const newAttributeValue = currentMiroirFundamentalJzodSchema
+      ? getDefaultValueForJzodSchemaWithResolutionNonHook(
           "build",
           effectiveRawSchema.definition,
           currentValueObject,//formik.values, // rootObject
@@ -912,15 +908,15 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
       '"' + listKey + '"',
       ", itemsOrder",
       itemsOrder,
-      Object.keys(localResolvedElementMlSchemaBasedOnValue.definition),
+      Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
       ", formik",
       formik.values
     );
   }, [
     props,
     itemsOrder,
-    localResolvedElementMlSchemaBasedOnValue,
-    currentMiroirFundamentalMlSchema,
+    localResolvedElementJzodSchemaBasedOnValue,
+    currentMiroirFundamentalJzodSchema,
     currentModel,
     miroirMetaModel,
     formik.values,
@@ -953,7 +949,7 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
   // ##############################################################################################
   const addObjectOptionalAttribute = useCallback(
     async (attributeName: string) => {
-      if (localResolvedElementMlSchemaBasedOnValue?.type != "object") {
+      if (localResolvedElementJzodSchemaBasedOnValue?.type != "object") {
         throw "addObjectOptionalAttribute called for non-object type: " + currentTypeCheckKeyMap?.rawSchema.type;
       }
       log.info(
@@ -965,21 +961,21 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
         "itemsOrder",
         itemsOrder,
         "objectKeys",
-        Object.keys(localResolvedElementMlSchemaBasedOnValue.definition),
+        Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
         "formik",
         formik.values,
         "undefinedOptionalAttributes",
         undefinedOptionalAttributes,
       );
       // const currentObjectValue = resolvePathOnObject(formik.values, rootLessListKeyArray);
-      const newAttributeType: MlElement = resolvePathOnObject(
+      const newAttributeType: JzodElement = resolvePathOnObject(
         currentTypeCheckKeyMap?.chosenUnionBranchRawSchema ??
-          currentTypeCheckKeyMap?.mlObjectFlattenedSchema ??
+          currentTypeCheckKeyMap?.jzodObjectFlattenedSchema ??
           currentTypeCheckKeyMap?.rawSchema,
         ["definition", attributeName]
       );
-      const newAttributeValue = !!currentMiroirFundamentalMlSchema
-        ? getDefaultValueForMlSchemaWithResolutionNonHook(
+      const newAttributeValue = !!currentMiroirFundamentalJzodSchema
+        ? getDefaultValueForJzodSchemaWithResolutionNonHook(
             "build",
             newAttributeType,
             currentValueObject,
@@ -1015,7 +1011,7 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
       //   "addObjectOptionalAttribute clicked2!",
       //   listKey,
       //   itemsOrder,
-      //   Object.keys(localResolvedElementMlSchemaBasedOnValue.definition),
+      //   Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
       //   "newAttributeType",
       //   newAttributeType,
       //   "newObjectValue",
@@ -1037,8 +1033,8 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
     [
       props,
       itemsOrder,
-      localResolvedElementMlSchemaBasedOnValue,
-      currentMiroirFundamentalMlSchema,
+      localResolvedElementJzodSchemaBasedOnValue,
+      currentMiroirFundamentalJzodSchema,
       currentModel,
       miroirMetaModel,
       currentValueObjectAtKey,
@@ -1050,8 +1046,8 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
   // // ##############################################################################################
   // // Get displayed value when object is folded using the shared utility function
   const foldedDisplayValue = useMemo(() => {
-    return getFoldedDisplayValue(localResolvedElementMlSchemaBasedOnValue, currentValueObjectAtKey);
-  }, [localResolvedElementMlSchemaBasedOnValue, currentValueObjectAtKey]);
+    return getFoldedDisplayValue(localResolvedElementJzodSchemaBasedOnValue, currentValueObjectAtKey);
+  }, [localResolvedElementJzodSchemaBasedOnValue, currentValueObjectAtKey]);
 
   const unitTestKind = useMemo(
     () => getUnitTestKind(currentValueObjectAtKey),
@@ -1187,16 +1183,16 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
   // Render error state if we can't properly render an object
   if (!canRenderObject) {
     log.error(
-      "MlObjectEditor cannot render object",
+      "JzodObjectEditor cannot render object",
       rootLessListKey,
-      "localResolvedElementMlSchemaBasedOnValue",
-      localResolvedElementMlSchemaBasedOnValue
+      "localResolvedElementJzodSchemaBasedOnValue",
+      localResolvedElementJzodSchemaBasedOnValue
     );
     return (
       <div>
         <span className="error">
-          MlObjectEditor: localResolvedElementMlSchemaBasedOnValue is not an object type:{" "}
-          {JSON.stringify(localResolvedElementMlSchemaBasedOnValue, null, 2)}
+          JzodObjectEditor: localResolvedElementJzodSchemaBasedOnValue is not an object type:{" "}
+          {JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2)}
         </span>
       </div>
     );
@@ -1212,13 +1208,13 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
             error={error}
             resetErrorBoundary={resetErrorBoundary}
             context={{
-              origin: "MlObjectEditor-BlobEditorField",
+              origin: "JzodObjectEditor-BlobEditorField",
               objectType: "blob",
               rootLessListKey,
               rootLessListKeyArray,
               currentValue: blobValue,
               formikValues: formik.values,
-              localResolvedElementMlSchemaBasedOnValue,
+              localResolvedElementJzodSchemaBasedOnValue,
             }}
           />
         )}
@@ -1242,7 +1238,7 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
   // Memoize the array of rendered attributes to prevent unnecessary re-renders
   const attributeElements = useMemo(() => {
     // log.info(
-    //   "MlObjectEditor rendering attributes for",
+    //   "JzodObjectEditor rendering attributes for",
     //   rootLessListKey,
     //   "foldedObjectAttributeOrArrayItems",
     //   reportContext.foldedObjectAttributeOrArrayItems
@@ -1252,12 +1248,12 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
         {/* <ThemedOnScreenHelper label="itemsOrder" data={itemsOrder} /> */}
         {!reportContext.isNodeFolded(rootLessListKeyArray) &&
           itemsOrder
-            .map((i): [string, MlElement] => [
+            .map((i): [string, JzodElement] => [
               i,
               formik.values[rootLessListKey.length > 0 ? rootLessListKey + "." + i[0] : i[0]],
               // currentValueObjectAtKey[rootLessListKey.length > 0 ? rootLessListKey + "." + i[0] : i[0]],
             ])
-            .map((attribute: [string, MlElement], attributeNumber: number) => (
+            .map((attribute: [string, JzodElement], attributeNumber: number) => (
               <ProgressiveAttribute
                 key={attribute[0]}
                 valueObjectEditMode={valueObjectEditMode}
@@ -1276,8 +1272,8 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
                 foreignKeyObjects={foreignKeyObjects || {}}
                 insideAny={insideAny}
                 anyRootLessListKey={props.anyRootLessListKey}
-                localResolvedElementMlSchemaBasedOnValue={
-                  localResolvedElementMlSchemaBasedOnValue as MlObject
+                localResolvedElementJzodSchemaBasedOnValue={
+                  localResolvedElementJzodSchemaBasedOnValue as JzodObject
                 }
                 typeCheckKeyMap={typeCheckKeyMap}
                 currentValue={currentValueObjectAtKey}
@@ -1289,15 +1285,15 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
                 duplicateRecordEntry={duplicateRecordEntry}
                 handleMoveAttribute={handleMoveAttribute}
                 totalAttributes={itemsOrder.length}
-                hideOptionalButton={localResolvedElementMlSchemaBasedOnValue?.tag?.value?.display?.objectHideOptionalButton}
+                hideOptionalButton={localResolvedElementJzodSchemaBasedOnValue?.tag?.value?.display?.objectHideOptionalButton}
                 maxRenderDepth={maxRenderDepth}
                 readOnly={readOnly}
                 existingObject={existingObject}
                 formik={formik}
-                currentMiroirFundamentalMlSchema={currentMiroirFundamentalMlSchema}
+                currentMiroirFundamentalJzodSchema={currentMiroirFundamentalJzodSchema}
                 currentModel={currentModel}
                 miroirMetaModel={miroirMetaModel}
-                measuredUnfoldMlSchemaOnce={measuredUnfoldMlSchemaOnce}
+                measuredUnfoldJzodSchemaOnce={measuredUnfoldJzodSchemaOnce}
                 displayError={displayError}
             compatibilityWarnings={compatibilityWarnings}
             showMlSchemaTypes={showMlSchemaTypes}
@@ -1313,7 +1309,7 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
     rootLessListKey,
     listKey,
     rootLessListKeyArray,
-    localResolvedElementMlSchemaBasedOnValue,
+    localResolvedElementJzodSchemaBasedOnValue,
     typeCheckKeyMap,
     currentDeploymentUuid,
     currentApplicationSection,
@@ -1329,10 +1325,10 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
     duplicateRecordEntry,
     handleMoveAttribute,
     formik,
-    currentMiroirFundamentalMlSchema,
+    currentMiroirFundamentalJzodSchema,
     currentModel,
     miroirMetaModel,
-    measuredUnfoldMlSchemaOnce,
+    measuredUnfoldJzodSchemaOnce,
     reportContext.foldedObjectAttributeOrArrayItems, // This is the key addition!
     compatibilityWarnings,
     showMlSchemaTypes,
@@ -1340,23 +1336,16 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
     environmentAnnotations,
   ]);
 
+  // Records resolve to objects: the declared type decides.
   const schemaType =
-    currentTypeCheckKeyMap?.resolvedSchema?.type ??
-    currentTypeCheckKeyMap?.rawSchema?.type;
+    currentTypeCheckKeyMap?.rawSchema?.type === "record"
+      ? "record"
+      : currentTypeCheckKeyMap?.resolvedSchema?.type ?? currentTypeCheckKeyMap?.rawSchema?.type;
   const insightRole = schemaType === "record" ? "record" : "object";
   const insightComponentId =
-    insightRole === "record" ? "MlRecordEditor" : "MlObjectEditor";
-  const insightEnabled = !!context.showPerformanceDisplay;
+    insightRole === "record" ? "JzodRecordEditor" : "JzodObjectEditor";
   // Sync accrual: chips need live counts; progressive mount limits fan-out.
-  const insightCounts = insightEnabled
-    ? renderInsightRegistry.trackRender({
-        componentId: insightComponentId,
-        navigationKey: `${currentDeploymentUuid ?? ""}-${currentApplicationSection ?? ""}`,
-        formikPath: formikRootLessListKey,
-        enabled: true,
-        durationMs: performance.now() - renderStartRef.current,
-      })
-    : NOOP_RENDER_COUNTS;
+  const insightCounts = trackedRender.end(insightComponentId, formikRootLessListKey);
 
   const titleRowWarning = findPathAnnotation(compatibilityWarnings, rootLessListKeyArray);
 
@@ -1368,10 +1357,10 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
     >
       <JsonDisplayHelper
         debug={true}
-        componentName={`MlObjectEditor insideAny=${insideAny} rootLessListKey=${rootLessListKey}`}
+        componentName={`JzodObjectEditor insideAny=${insideAny} rootLessListKey=${rootLessListKey}`}
         elements={[
           {
-            label: `MlObjectEditor: rootLessListKey=${rootLessListKey}`,
+            label: `JzodObjectEditor: rootLessListKey=${rootLessListKey}`,
             data: {
               rootLessListKey,
               itemsOrder,
@@ -1380,8 +1369,8 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
               formikRootLessListKey,
               rawSchema: currentTypeCheckKeyMap?.rawSchema,
               resolvedSchema: currentTypeCheckKeyMap?.resolvedSchema,
-              mlObjectFlattenedSchema:
-                currentTypeCheckKeyMap?.mlObjectFlattenedSchema ?? "NO FLATTENED SCHEMA",
+              jzodObjectFlattenedSchema:
+                currentTypeCheckKeyMap?.jzodObjectFlattenedSchema ?? "NO FLATTENED SCHEMA",
               currentValueObjectAtKey,
             },
             copyButton: true,
@@ -1504,7 +1493,7 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
           <ThemedDeleteButtonContainer>
             {deleteButtonElement ?? <></>}
             {displayAsStructuredElementSwitch ?? <></>}
-            {/* {mlSchemaTooltip ?? <></>} */}
+            {/* {jzodSchemaTooltip ?? <></>} */}
           </ThemedDeleteButtonContainer>
         </ThemedFlexRow>
       )}

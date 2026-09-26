@@ -2,7 +2,7 @@ import { ThemeProvider } from "@emotion/react";
 import { createTheme, StyledEngineProvider } from "@mui/material";
 import { blue } from "@mui/material/colors";
 import { Formik, FormikProps } from "formik";
-import { Profiler, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { MemoryRouter } from "react-router-dom";
 
 import {
@@ -444,7 +444,12 @@ export function createRecordingFunction(): RecordingFunction {
 
 // ################################################################################################
 export interface BuildComponentTestWrapperOptions {
-  isPerformanceTest?: boolean;
+  /**
+   * Turns render insight tracking on (`showPerformanceDisplay`) for the wrapped tree (#303):
+   * every JzodElementEditor component then reports its renders to `renderInsightRegistry`
+   * and the container editors render their insight chips. Off by default (same DOM as before).
+   */
+  trackRenders?: boolean;
   applicationDeploymentMap: ApplicationDeploymentMap;
   /** Opt-in: real handleCompositeActionTemplate writes the wrapper localCache (issue #274). */
   wireLocalCacheCompositeAction?: boolean;
@@ -465,7 +470,7 @@ export interface ComponentTestWrapper {
 export function buildComponentTestWrapper(
   options: BuildComponentTestWrapperOptions,
 ): ComponentTestWrapper {
-  const isPerformanceTest: boolean = options.isPerformanceTest ?? false;
+  const trackRenders: boolean = options.trackRenders ?? false;
   const applicationDeploymentMap: ApplicationDeploymentMap = options.wireLocalCacheCompositeAction
     ? {
         ...options.applicationDeploymentMap,
@@ -734,59 +739,7 @@ export function buildComponentTestWrapper(
       // add other methods if needed
     } as any);
 
-    const renderCount = { current: 0 };
-    const totalRenderTime = { current: 0 };
-
-    const onRender = useCallback((
-      id: string,
-      phase: "mount" | "update" | "nested-update",
-      actualDuration: number,
-      baseDuration: number,
-      startTime: number,
-      commitTime: number
-    ) => {
-      renderCount.current++;
-      totalRenderTime.current += actualDuration;
-      log.info(
-      `Render #${renderCount.current} - ${id} [${phase}] took ${actualDuration.toFixed(2)}ms`,
-      `(Total: ${totalRenderTime.current.toFixed(2)}ms)`
-      );
-    }, []);
-
-    return isPerformanceTest ? (
-      <Profiler id="App" onRender={onRender}>
-        <ThemeProvider theme={theme}>
-          <StyledEngineProvider injectFirst>
-            <LocalCacheProvider store={localCache.getInnerStore()}>
-              <MiroirContextReactProvider
-                miroirContext={miroirContext}
-                domainController={domainController}
-                testingApplication={
-                  options.wireLocalCacheCompositeAction
-                    ? selfApplicationLibrary.uuid
-                    : undefined
-                }
-                testingDeploymentUuid={deployment_Library_DO_NO_USE.uuid}
-              >
-                <DocumentOutlineContextProvider
-                  isOutlineOpen={true}
-                  onToggleOutline={handleToggleOutline}
-                  onNavigateToPath={handleNavigateToPath}
-                >
-                  <ReportPageContextProvider>
-                    {options.wireLocalCacheCompositeAction ? (
-                      <MemoryRouter>{props.children}</MemoryRouter>
-                    ) : (
-                      props.children
-                    )}
-                  </ReportPageContextProvider>
-                </DocumentOutlineContextProvider>
-              </MiroirContextReactProvider>
-            </LocalCacheProvider>
-          </StyledEngineProvider>
-        </ThemeProvider>
-      </Profiler>
-    ) : (
+    return (
       <ThemeProvider theme={theme}>
         <StyledEngineProvider injectFirst>
           <LocalCacheProvider store={localCache.getInnerStore()}>
@@ -799,6 +752,7 @@ export function buildComponentTestWrapper(
                   : undefined
               }
               testingDeploymentUuid={deployment_Library_DO_NO_USE.uuid}
+              initialShowPerformanceDisplay={trackRenders}
             >
               <DocumentOutlineContextProvider
                 isOutlineOpen={true}

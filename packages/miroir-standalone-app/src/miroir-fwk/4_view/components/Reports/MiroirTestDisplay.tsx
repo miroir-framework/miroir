@@ -12,6 +12,7 @@ import {
 
 import { packageName } from "../../../../constants.js";
 import {
+  miroirTestDefinitionHasStepKind,
   resolveUiIntegrationRunnerSuiteKey,
   resolveMiroirTestSuiteUiExecutionMode,
   uiExecutionModeBadgeColors,
@@ -23,6 +24,7 @@ import {
   RunMiroirTestSuiteButton,
   type MiroirTestResultData,
 } from "../Buttons/RunMiroirTestSuiteButton.js";
+import { ThemedEditableInput, ThemedLabel } from "../Themes/index.js";
 import { ComponentTestSandboxProvider, useComponentTestSandbox } from "./ComponentTestSandbox.js";
 import { TestExecutionPanel } from "./TestExecutionPanel.js";
 import { UiIntegrationTestRunControls } from "./UiIntegrationTestRunControls.js";
@@ -46,6 +48,16 @@ export interface MiroirTestSectionProps {
   onTestComplete?: (testSuiteKey: string, structuredResults: TestResultDataAndSelect[]) => void;
   /** Filter used while no result is selected in the results grid (e.g. one sub-suite). */
   testFilter?: MiroirTestRunFilter;
+}
+
+/**
+ * #303 D8: the "Render iterations" field value as the run's `iterationsOverride`. Empty: undefined
+ * (the instance's `iterations`). Any other value is passed as a number; the `measureRendering`
+ * step rejects one that is not a positive integer.
+ */
+export function parseIterationsOverride(fieldValue: string): number | undefined {
+  const trimmed = fieldValue.trim();
+  return trimmed === "" ? undefined : Number(trimmed);
 }
 
 const runButtonStyle: React.CSSProperties = {
@@ -75,9 +87,15 @@ const MiroirTestDisplayContent = (props: MiroirTestSectionProps) => {
   const [testSelectionState, setTestSelectionsState] = useState<TestSelectionState | undefined>(
     undefined,
   );
+  // #303 D8: iterations override of the `measureRendering` steps, for the next unit run only.
+  const [iterationsFieldValue, setIterationsFieldValue] = useState("");
 
   const executionCapabilities = useMemo(
     () => classifyMiroirTestSuiteExecutionCapabilities(instance.definition),
+    [instance.definition],
+  );
+  const hasMeasureRenderingStep = useMemo(
+    () => miroirTestDefinitionHasStepKind(instance.definition, "measureRendering"),
     [instance.definition],
   );
   const uiExecutionMode = resolveMiroirTestSuiteUiExecutionMode(instance.definition);
@@ -152,18 +170,40 @@ const MiroirTestDisplayContent = (props: MiroirTestSectionProps) => {
       </div>
 
       {executionCapabilities.hasUnitLeaves && (
-        <RunMiroirTestSuiteButton
-          miroirTestSuite={instance}
-          testSuiteKey={testLabel}
-          useSnackBar={useSnackBar}
-          testFilter={currentTestFilter}
-          onTestComplete={handleTestComplete}
-          runMode="unit"
-          beforeRun={componentTestSandbox?.prepareComponentTests}
-          afterRun={componentTestSandbox?.finishComponentTests}
-          label={`Run ${testLabel} Unit Tests`}
-          style={runButtonStyle}
-        />
+        <div
+          data-testid="unit-run-controls"
+          style={{ display: "inline-flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}
+        >
+          <RunMiroirTestSuiteButton
+            miroirTestSuite={instance}
+            testSuiteKey={testLabel}
+            useSnackBar={useSnackBar}
+            testFilter={currentTestFilter}
+            onTestComplete={handleTestComplete}
+            runMode="unit"
+            beforeRun={componentTestSandbox?.prepareComponentTests}
+            afterRun={componentTestSandbox?.finishComponentTests}
+            iterationsOverride={
+              hasMeasureRenderingStep ? parseIterationsOverride(iterationsFieldValue) : undefined
+            }
+            label={`Run ${testLabel} Unit Tests`}
+            style={runButtonStyle}
+          />
+          {hasMeasureRenderingStep && (
+            <>
+              <ThemedLabel>Iterations</ThemedLabel>
+              <ThemedEditableInput
+                type="number"
+                aria-label="Render iterations"
+                title="Iterations of every measureRendering step for the next run (empty: the instance's value)"
+                value={iterationsFieldValue}
+                onChange={(event) => setIterationsFieldValue(event.target.value)}
+                dynamicWidth={false}
+                minWidth={80}
+              />
+            </>
+          )}
+        </div>
       )}
 
       {executionCapabilities.hasIntegrationLeaves && (

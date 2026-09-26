@@ -1,4 +1,4 @@
-import type { ReactComponentTestStep, ReactComponentTestTarget } from "miroir-core";
+import type { ComponentRenderMeasurement, ReactComponentTestStep, ReactComponentTestTarget } from "miroir-core";
 
 import {
   componentTestAct,
@@ -6,6 +6,7 @@ import {
   type ComponentTestEnvironment,
 } from "./componentTestEnvironment.js";
 import { describeTarget, queryAllTarget, resolveTarget } from "./componentTestTargets.js";
+import { runMeasureRendering } from "./measureRendering.js";
 import {
   extractValuesFromRenderedElements,
   formikFieldName,
@@ -154,9 +155,40 @@ function valueAtPath(value: unknown, path: readonly (string | number)[]): unknow
   return current;
 }
 
+/**
+ * A copy of `value` without the sub-values at the dot paths of `ignorePaths` (#303 T1). A numeric
+ * segment indexes an array; an ignored array item is removed. A missing path is left as is.
+ */
+function withoutIgnoredPaths(value: unknown, ignorePaths: readonly string[]): unknown {
+  const copy: unknown = structuredClone(value);
+  for (const ignorePath of ignorePaths) {
+    const segments = ignorePath.split(".");
+    const parent = valueAtPath(copy, segments.slice(0, -1));
+    const last = segments[segments.length - 1];
+    if (Array.isArray(parent) && /^\d+$/.test(last)) {
+      parent.splice(Number(last), 1);
+      continue;
+    }
+    if (isPlainObject(parent)) {
+      delete parent[last];
+    }
+  }
+  return copy;
+}
+
 /** The `value` of a form element, as the old `(element as HTMLInputElement).value` reads. */
 function elementValue(element: HTMLElement): unknown {
   return (element as HTMLInputElement).value;
+}
+
+export interface ComponentTestStepsOptions {
+  /** Replaces the `iterations` of every `measureRendering` step (#303 T7, one run of the app). */
+  iterationsOverride?: number;
+}
+
+export interface ComponentTestStepsResult {
+  /** Measurements of the `measureRendering` steps, in step order (#303 T5); empty without such steps. */
+  measurements: ComponentRenderMeasurement[];
 }
 
 // ################################################################################################
@@ -164,8 +196,10 @@ function elementValue(element: HTMLElement): unknown {
 export async function runComponentTestSteps(
   env: ComponentTestEnvironment,
   steps: readonly ReactComponentTestStep[],
-): Promise<void> {
+  options: ComponentTestStepsOptions = {},
+): Promise<ComponentTestStepsResult> {
   const context: ComponentTestStepContext = { elements: {} };
+  const measurements: ComponentRenderMeasurement[] = [];
   let user: ReturnType<ComponentTestEnvironment["userEvent"]["setup"]> | undefined;
   const userSession = () => (user ??= env.userEvent.setup());
 
@@ -195,17 +229,22 @@ export async function runComponentTestSteps(
     if (step.path !== undefined) {
       actual = valueAtPath(actual, step.path);
     }
+    let expected: unknown = step.expectedValue;
+    if (step.ignorePaths !== undefined) {
+      actual = withoutIgnoredPaths(actual, step.ignorePaths);
+      expected = withoutIgnoredPaths(expected, step.ignorePaths);
+    }
     const options = renderedOptions(env);
     if (Object.keys(options).length > 0 && isPlainObject(actual)) {
       actual = { ...actual, $options: options };
     }
     env.log.info("expectRenderedValues", step.label, actual);
     try {
-      env.expect(actual, "rendered values").toEqual(step.expectedValue);
+      env.expect(actual, "rendered values").toEqual(expected);
     } catch (error) {
       throw new RenderedValuesMismatch(
         error instanceof Error ? error.message : String(error),
-        step.expectedValue,
+        expected,
         actual,
       );
     }
@@ -417,6 +456,9 @@ export async function runComponentTestSteps(
       }
       await waitUntil(env, () => checkElement(step), step.timeout);
     },
+    measureRendering: async (step) => {
+      measurements.push(...(await runMeasureRendering(env, step, options.iterationsOverride ?? step.iterations)));
+    },
   };
 
   for (const [index, step] of steps.entries()) {
@@ -435,4 +477,5 @@ export async function runComponentTestSteps(
       );
     }
   }
+  return { measurements };
 }

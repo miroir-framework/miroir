@@ -3,19 +3,19 @@ import {
   defaultSelfApplicationDeploymentMap,
   entityMLSchema,
   foldableElementTypes,
-  getDefaultValueForMlSchemaWithResolutionNonHook,
-  MlArray,
-  MlElement,
-  MlTuple,
+  getDefaultValueForJzodSchemaWithResolutionNonHook,
+  JzodArray,
+  JzodElement,
+  JzodTuple,
   LoggerInterface,
   MiroirLoggerFactory,
   ReduxDeploymentsState,
-  resolveMlSchemaReferenceInContext,
+  resolveJzodSchemaReferenceInContext,
   resolvePathOnObject,
   findEntityFromUuid,
   SyncBoxedExtractorOrQueryRunnerMap,
-  type MlPlainAttribute,
-  type MlReference,
+  type JzodPlainAttribute,
+  type JzodReference,
   type KeyMapEntry,
   type MiroirModelEnvironment,
   type Uuid,
@@ -27,15 +27,12 @@ import {
   useMiroirContextService,
   useSelector,
 } from "miroir-react";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { useCurrentModel, useCurrentModelEnvironment, useDefaultValueParams } from "../../ReduxHooks";
-import {
-  NOOP_RENDER_COUNTS,
-  renderInsightRegistry,
-} from "../../tools/renderInsightRegistry.js";
+import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
 import { useViewportReveal } from "../../tools/useViewportReveal.js";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
 import {
@@ -55,15 +52,15 @@ import {
 import {
   FoldUnfoldAllObjectAttributesOrArrayItems,
   FoldUnfoldObjectOrArray,
-  MlElementEditor,
-} from "./MlElementEditor";
-import { getFoldedDisplayValue } from "./MlElementEditorHooks";
-import { MlArrayEditorProps } from "./MlElementEditorInterface";
+  JzodElementEditor,
+} from "./JzodElementEditor";
+import { getFoldedDisplayValue } from "./JzodElementEditorHooks";
+import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
 import { valueToJzod } from "@miroir-framework/jzod";
 import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
-// import { MlUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+// import { JzodUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlElementEditor");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodElementEditor");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {
@@ -73,7 +70,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 // export const indentShift = "1em + 4px"; // TODO: centralize style
 export const indentShift = "4px"; // TODO: centralize style
 
-interface MlArrayMoveButtonProps {
+interface JzodArrayMoveButtonProps {
   direction: "up" | "down";
   index: number;
   itemsOrder: any[];
@@ -86,7 +83,7 @@ interface MlArrayMoveButtonProps {
 }
 
 // ################################################################################################
-export const MlArrayEditorMoveButton: React.FC<MlArrayMoveButtonProps> = ({
+export const JzodArrayEditorMoveButton: React.FC<JzodArrayMoveButtonProps> = ({
   direction,
   index,
   itemsOrder,
@@ -114,7 +111,7 @@ export const MlArrayEditorMoveButton: React.FC<MlArrayMoveButtonProps> = ({
     newList.splice(insertAt, 0, movedItem);
 
     log.info(
-      `MlArrayMoveButton array moving ${direction} item`,
+      `JzodArrayMoveButton array moving ${direction} item`,
       currentItemIndex,
       "in object with items",
       itemsOrder,
@@ -155,7 +152,7 @@ interface ProgressiveArrayItemProps {
   rootLessListKeyArray: (string | number)[];
   anyRootLessListKey: string | undefined;
   reportSectionPathAsString: string;
-  // currentArrayElementRawDefinitionDEFUNCT: MlElement | undefined;
+  // currentArrayElementRawDefinitionDEFUNCT: JzodElement | undefined;
   typeCheckKeyMap?: Record<string, KeyMapEntry>;
   usedIndentLevel: number;
   currentApplication: Uuid;
@@ -237,7 +234,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
             {/* Only show move buttons in edit mode */}
             {!readOnly && (
               <>
-                <MlArrayEditorMoveButton
+                <JzodArrayEditorMoveButton
                   direction="down"
                   index={index}
                   itemsOrder={itemsOrder as number[]}
@@ -248,7 +245,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                   currentValue={currentValue}
                   onChangeVector={onChangeVector}
                 />
-                <MlArrayEditorMoveButton
+                <JzodArrayEditorMoveButton
                   direction="up"
                   index={index}
                   itemsOrder={itemsOrder as number[]}
@@ -289,7 +286,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                   error={error}
                   resetErrorBoundary={resetErrorBoundary}
                   context={{
-                    origin: "MlArrayEditor",
+                    origin: "JzodArrayEditor",
                     objectType: "array",
                     rootLessListKey:
                       rootLessListKey.length > 0 ? rootLessListKey + "." + index : "" + index,
@@ -298,8 +295,8 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                     attributeListKey: listKey + "." + index,
                     currentValue: currentValue,
                     formikValues: formik.values,
-                    // rawMlSchema: currentArrayElementRawDefinition.element,
-                    // rawMlSchema: currentArrayElementRawDefinitionDEFUNCT,
+                    // rawJzodSchema: currentArrayElementRawDefinition.element,
+                    // rawJzodSchema: currentArrayElementRawDefinitionDEFUNCT,
                   }}
                 />
               )}
@@ -312,7 +309,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                   useCodeBlock: true,
                 }]}
               />
-              <MlElementEditor
+              <JzodElementEditor
                 name={"" + index}
                 valueObjectEditMode={props.valueObjectEditMode}
                 listKey={listKey + "." + index}
@@ -354,9 +351,9 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-let mlArrayEditorRenderCount: number = 0;
-export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
-  // props: MlArrayEditorProps
+let jzodArrayEditorRenderCount: number = 0;
+export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
+  // props: JzodArrayEditorProps
   {
     name,
     labelElement: label,
@@ -385,12 +382,11 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
     ...props
   }
 ) => {
-  mlArrayEditorRenderCount++;
+  jzodArrayEditorRenderCount++;
   const context = useMiroirContextService();
-  const renderStartRef = useRef(0);
-  if (context.showPerformanceDisplay) {
-    renderStartRef.current = performance.now();
-  }
+  const trackedRender = useTrackedRender(
+    editorNavigationKey(currentDeploymentUuid, currentApplicationSection),
+  );
   
   const formik = useFormikContext<Record<string, any>>();
   const formikRootLessListKeyArray = [reportSectionPathAsString, ...rootLessListKeyArray];
@@ -412,17 +408,17 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
     ? typeCheckKeyMap[rootLessListKey]
     : undefined;
 
-  const currentRawMlSchema: MlElement | undefined = insideAny ? { type: "any" } : currentTypeCheckKeyMap?.rawSchema;
-  const localResolvedElementMlSchemaBasedOnValue: MlElement | undefined = useMemo(
+  const currentRawJzodSchema: JzodElement | undefined = insideAny ? { type: "any" } : currentTypeCheckKeyMap?.rawSchema;
+  const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined = useMemo(
     () => {
       if (insideAny) {
-        return valueToJzod(currentValue) as MlElement;
+        return valueToJzod(currentValue) as JzodElement;
       }
       if (currentTypeCheckKeyMap?.resolvedSchema) {
         return currentTypeCheckKeyMap.resolvedSchema;
       }
       if (currentValue !== undefined && currentValue !== null) {
-        return valueToJzod(currentValue) as MlElement;
+        return valueToJzod(currentValue) as JzodElement;
       }
       return undefined;
     },
@@ -456,49 +452,49 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
   );
 
   const foldableItemsCount = useMemo(() => {
-    return localResolvedElementMlSchemaBasedOnValue?.type === "tuple" // for array type, the resolvedSchema is a MlTuple
-      ? (localResolvedElementMlSchemaBasedOnValue as MlTuple).definition.filter(
-        (item: MlElement) => foldableElementTypes.includes(item.type)
+    return localResolvedElementJzodSchemaBasedOnValue?.type === "tuple" // for array type, the resolvedSchema is a JzodTuple
+      ? (localResolvedElementJzodSchemaBasedOnValue as JzodTuple).definition.filter(
+        (item: JzodElement) => foldableElementTypes.includes(item.type)
       ).length : 0
-  }, [localResolvedElementMlSchemaBasedOnValue]);
+  }, [localResolvedElementJzodSchemaBasedOnValue]);
 
   // ##############################################################################################
   // Get unfoldingDepth from schema tag or default to 1
   const unfoldingDepth = useMemo(() => {
-    return (localResolvedElementMlSchemaBasedOnValue?.tag?.value?.display as any)?.unfoldSubLevels ?? 1;
-  }, [localResolvedElementMlSchemaBasedOnValue]);
+    return (localResolvedElementJzodSchemaBasedOnValue?.tag?.value?.display as any)?.unfoldSubLevels ?? 1;
+  }, [localResolvedElementJzodSchemaBasedOnValue]);
 
   // ##############################################################################################
   const addNewArrayItem = useCallback(
     async (e:any) => {
       e.stopPropagation();
       e.preventDefault();
-      let schema: MlElement | undefined = currentRawMlSchema;
+      let schema: JzodElement | undefined = currentRawJzodSchema;
 
       if (schema?.type === "schemaReference") {
-        schema = resolveMlSchemaReferenceInContext(
-          schema as MlReference,
+        schema = resolveJzodSchemaReferenceInContext(
+          schema as JzodReference,
           {},
           currentMiroirModelEnvironment
         );
       }
 
-      if (!currentRawMlSchema || !["array", "any"].includes(currentRawMlSchema.type)) {
+      if (!currentRawJzodSchema || !["array", "any"].includes(currentRawJzodSchema.type)) {
         throw new Error(
-          "MlArrayEditor addNewArrayItem called with a non-array / non-any schema: " +
-            JSON.stringify(currentRawMlSchema, null, 2)
+          "JzodArrayEditor addNewArrayItem called with a non-array / non-any schema: " +
+            JSON.stringify(currentRawJzodSchema, null, 2)
         );
       }
 
-      if (!currentMiroirModelEnvironment.miroirFundamentalMlSchema) {
+      if (!currentMiroirModelEnvironment.miroirFundamentalJzodSchema) {
         throw new Error(
-          "MlArrayEditor addNewArrayItem called without miroirFundamentalMlSchema: " +
-            JSON.stringify(currentMiroirModelEnvironment.miroirFundamentalMlSchema, null, 2)
+          "JzodArrayEditor addNewArrayItem called without miroirFundamentalJzodSchema: " +
+            JSON.stringify(currentMiroirModelEnvironment.miroirFundamentalJzodSchema, null, 2)
         );
       }
 
       log.info(
-        "MlArrayEditor addNewArrayItem",
+        "JzodArrayEditor addNewArrayItem",
         "rootLessListKey",
         rootLessListKey,
         "currentTypeCheckKeyMap",
@@ -509,7 +505,7 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
         currentValue,
       );
 
-      let newItemSchema: MlElement | undefined = insideAny?{ type: "string"}:(schema as any)?.definition;
+      let newItemSchema: JzodElement | undefined = insideAny?{ type: "string"}:(schema as any)?.definition;
 
       if ((schema as any).definition?.tag?.value?.ifThenElseMMLS?.parentUuid?.defaultValuePath) {
         const entityPath = (schema as any).definition?.tag?.value?.ifThenElseMMLS?.parentUuid?.defaultValuePath;
@@ -526,13 +522,13 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
   
         if (!newItemEntityUuid) {
           throw new Error(
-            "MlArrayEditor addNewArrayItem called without a newItemEntityUuid: " +
+            "JzodArrayEditor addNewArrayItem called without a newItemEntityUuid: " +
               JSON.stringify(newItemEntityUuid, null, 2)
           );
         }
         if (!currentDeploymentUuid) {
           throw new Error(
-            "MlArrayEditor addNewArrayItem called without a currentDeploymentUuid: " +
+            "JzodArrayEditor addNewArrayItem called without a currentDeploymentUuid: " +
               JSON.stringify(currentDeploymentUuid, null, 2)
           );
         }
@@ -542,7 +538,7 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
         );
 
         log.info(
-          "MlArrayEditor addNewArrayItem",
+          "JzodArrayEditor addNewArrayItem",
           "rootLessListKey",
           rootLessListKey,
           "path",
@@ -566,7 +562,7 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
         );
         if (!newItemEntity) {
           throw new Error(
-            "MlArrayEditor addNewArrayItem could not find entity for newItemEntityUuid: " +
+            "JzodArrayEditor addNewArrayItem could not find entity for newItemEntityUuid: " +
               JSON.stringify(newItemEntityUuid, null, 2)
           );
         }
@@ -574,7 +570,7 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
       }
 
       
-      const newItem = getDefaultValueForMlSchemaWithResolutionNonHook(
+      const newItem = getDefaultValueForJzodSchemaWithResolutionNonHook(
         "build",
         newItemSchema ?? { type: "string" }, // TODO: not correct with runtimeTypes
         currentValue, // formik.values,
@@ -589,7 +585,7 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
         defaultValueParams, // transformerParams
         {}, // contextResults
         deploymentEntityState, // deploymentEntityState is not needed here
-        {}, // relativeReferenceMlContext
+        {}, // relativeReferenceJzodContext
       );
       // Create the new array value
       const newArrayValue = [
@@ -599,14 +595,14 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
         // "",
       ];
       log.info(
-        "MlArrayEditor addNewArrayItem setting value for",
+        "JzodArrayEditor addNewArrayItem setting value for",
         "rootLessListKey",
         rootLessListKey,
         "newItem",
         newItem,
         // JSON.stringify(newItem, null, 2),
-        "rawMlSchema",
-        currentRawMlSchema,
+        "rawJzodSchema",
+        currentRawJzodSchema,
         // JSON.stringify(currentTypeCheckKeyMap.rawSchema, null, 2),
         "currentValue",
         currentValue,
@@ -630,7 +626,7 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
     },
     [
       formik,
-      currentRawMlSchema,
+      currentRawJzodSchema,
       arrayValueObject,
       onChangeCallback,
       rootLessListKey,
@@ -684,13 +680,13 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
       <>
         {!reportContext.isNodeFolded(rootLessListKeyArray) &&
           (itemsOrder as number[])
-            .map((i: number): [number, MlElement] => [i, arrayValueObject[i]])
-            .map((attributeParam: [number, MlElement]) => {
+            .map((i: number): [number, JzodElement] => [i, arrayValueObject[i]])
+            .map((attributeParam: [number, JzodElement]) => {
               const index: number = attributeParam[0];
               const attributeRootLessListKey: string =
                 rootLessListKey.length > 0 ? rootLessListKey + "." + index : "" + index;
               // log.info(
-              //   "MlArrayEditor arrayItems map",
+              //   "JzodArrayEditor arrayItems map",
               //   "index",
               //   index,
               //   "attributeRootLessListKey",
@@ -701,7 +697,7 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
               //   "typeCheckKeyMap",
               //   typeCheckKeyMap,
               // );
-              // const currentArrayElementRawDefinitionDEFUNCT: MlElement | undefined =
+              // const currentArrayElementRawDefinitionDEFUNCT: JzodElement | undefined =
               //   typeCheckKeyMap &&
               //   typeCheckKeyMap[rootLessListKey]?.rawSchema &&
               //   typeCheckKeyMap[rootLessListKey]?.rawSchema.type !== "any" &&
@@ -712,7 +708,7 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
               // // const attributeTypeCheckKeyMap = typeCheckKeyMap? typeCheckKeyMap[attributeRootLessListKey]: undefined;
               // if (!currentArrayElementRawDefinitionDEFUNCT) {
               //   log.error(
-              //     "MlArrayEditor could not find typeCheckKeyMap for attribute",
+              //     "JzodArrayEditor could not find typeCheckKeyMap for attribute",
               //     index,
               //     "in rootLessListKey",
               //     rootLessListKey,
@@ -722,7 +718,7 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
               //     // JSON.stringify(typeCheckKeyMap, null, 2)
               //   );
               //   throw new Error(
-              //     "MlArrayEditor could not find typeCheckKeyMap for attribute " +
+              //     "JzodArrayEditor could not find typeCheckKeyMap for attribute " +
               //       index +
               //       " in rootLessListKey " +
               //       rootLessListKey
@@ -730,7 +726,7 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
               //     // JSON.stringify(typeCheckKeyMap, null, 2)
               //   );
               // }
-              // const currentArrayElementRawDefinition: MlElement | undefined = attributeTypeCheckKeyMap.rawSchema;
+              // const currentArrayElementRawDefinition: JzodElement | undefined = attributeTypeCheckKeyMap.rawSchema;
               return (
                 <ProgressiveArrayItem
                   key={rootLessListKey + "." + index}
@@ -793,33 +789,28 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
   );
   ;
   // ##############################################################################################
+  // The declared type decides (arrays resolve to tuples by value); resolved type only under any / unions.
+  const declaredType = currentTypeCheckKeyMap?.rawSchema?.type ?? currentRawJzodSchema?.type;
   const schemaType =
-    localResolvedElementMlSchemaBasedOnValue?.type ??
-    currentTypeCheckKeyMap?.resolvedSchema?.type ??
-    currentRawMlSchema?.type;
+    declaredType === "array" || declaredType === "tuple"
+      ? declaredType
+      : localResolvedElementJzodSchemaBasedOnValue?.type ??
+        currentTypeCheckKeyMap?.resolvedSchema?.type ??
+        currentRawJzodSchema?.type;
   const insightRole = schemaType === "tuple" ? "tuple" : "array";
   const insightComponentId =
-    insightRole === "tuple" ? "MlTupleEditor" : "MlArrayEditor";
-  const insightEnabled = !!context.showPerformanceDisplay;
+    insightRole === "tuple" ? "JzodTupleEditor" : "JzodArrayEditor";
   // Sync accrual: chips need live counts; progressive mount limits fan-out.
-  const insightCounts = insightEnabled
-    ? renderInsightRegistry.trackRender({
-        componentId: insightComponentId,
-        navigationKey: `${currentDeploymentUuid ?? ""}-${currentApplicationSection ?? ""}`,
-        formikPath: formikRootLessListKey,
-        enabled: true,
-        durationMs: performance.now() - renderStartRef.current,
-      })
-    : NOOP_RENDER_COUNTS;
+  const insightCounts = trackedRender.end(insightComponentId, formikRootLessListKey);
 
   const titleRowWarning = findPathAnnotation(compatibilityWarnings, rootLessListKeyArray);
 
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
       <JsonDisplayHelper debug={true}
-        componentName="MlArrayEditor"
+        componentName="JzodArrayEditor"
         elements={[{
-          label: `Rendering MlArrayEditor for array at ${rootLessListKey || "ROOT"}`,
+          label: `Rendering JzodArrayEditor for array at ${rootLessListKey || "ROOT"}`,
           data: { rootLessListKey, readOnly, currentTypeCheckKeyMap },
           copyButton: true,
           useCodeBlock: true,
@@ -931,11 +922,11 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
           key={`${rootLessListKey}|body`}
         >
           {/* <ThemedOnScreenDebug
-            label={`MlArrayEditor rendering items for array at ${rootLessListKey || "ROOT"}`}
+            label={`JzodArrayEditor rendering items for array at ${rootLessListKey || "ROOT"}`}
             data={{ 
               rootLessListKey,
               typeCheckKeyMap,
-              // resolvedElementMlSchema,
+              // resolvedElementJzodSchema,
              }}
             copyButton={true}
             initiallyUnfolded={false}

@@ -1,0 +1,817 @@
+{
+  "uuid": "26ef2886-2cd8-4f91-b846-1525b24d5f41",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "JzodTestPattern_ComponentTestSuite",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Issue #303: JzodElementEditor test pattern, one object exercising every editor type (no foreign key, no reference to another application's instances). The display leaf compares the whole rendered value, except the branches of ignorePaths that the extractor reads wrongly (#303 analysis 3.3), each checked by an expectElement instead. Three interaction leaves (#303 Slice 2) edit a deep leaf and the enum, switch the simple union from number to string, and add / delete an array item, rename a record entry and add the absent optional attribute; each ends with the same whole-value comparison (same ignorePaths) so that a side effect on another editor is caught. aReference children are not rendered (the local context of the schemaReference is not passed to array items, #303 Slice 0). anAnyFile (any with display.any.format file, #303 Slice 4) renders JzodAnyEditor's file selector, which the extractor does not read: it is under ignorePaths and checked by an expectElement on its button. Edited by hand.",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "JzodTestPattern_ComponentTestSuite",
+    "miroirTests": [
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "JzodTestPattern",
+        "component": "JzodElementEditor",
+        "componentProps": {
+          "label": "Test Label",
+          "name": "testField",
+          "listKey": "ROOT.testField",
+          "rootLessListKey": "testField",
+          "rootLessListKeyArray": [
+            "testField"
+          ],
+          "rawJzodSchema": {
+            "type": "object",
+            "definition": {
+              "aString": {
+                "type": "string"
+              },
+              "aNumber": {
+                "type": "number"
+              },
+              "aBigint": {
+                "type": "bigint"
+              },
+              "aBoolean": {
+                "type": "boolean"
+              },
+              "aDate": {
+                "type": "date"
+              },
+              "aUuid": {
+                "type": "uuid"
+              },
+              "anOptionalString": {
+                "type": "string",
+                "optional": true
+              },
+              "anAbsentOptional": {
+                "type": "number",
+                "optional": true
+              },
+              "aLiteral": {
+                "type": "literal",
+                "definition": "fixed"
+              },
+              "anEnum": {
+                "type": "enum",
+                "definition": [
+                  "red",
+                  "green",
+                  "blue"
+                ]
+              },
+              "anArray": {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "anEmptyArray": {
+                "type": "array",
+                "definition": {
+                  "type": "number"
+                }
+              },
+              "aTuple": {
+                "type": "tuple",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "aRecord": {
+                "type": "record",
+                "definition": {
+                  "type": "number"
+                }
+              },
+              "anEmptyRecord": {
+                "type": "record",
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "aSimpleUnion": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "aMixedUnion": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "x": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                ]
+              },
+              "aDiscriminatedUnion": {
+                "type": "union",
+                "discriminator": "kind",
+                "definition": [
+                  {
+                    "type": "object",
+                    "definition": {
+                      "kind": {
+                        "type": "literal",
+                        "definition": "circle"
+                      },
+                      "radius": {
+                        "type": "number"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "kind": {
+                        "type": "literal",
+                        "definition": "square"
+                      },
+                      "side": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                ]
+              },
+              "anAny": {
+                "type": "any"
+              },
+              "anAnyFile": {
+                "type": "any",
+                "tag": {
+                  "value": {
+                    "display": {
+                      "any": {
+                        "format": "file"
+                      }
+                    }
+                  }
+                }
+              },
+              "aReference": {
+                "type": "schemaReference",
+                "context": {
+                  "node": {
+                    "type": "object",
+                    "definition": {
+                      "label": {
+                        "type": "string"
+                      },
+                      "children": {
+                        "type": "array",
+                        "optional": true,
+                        "definition": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "node"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "definition": {
+                  "relativePath": "node"
+                }
+              },
+              "aNestedObject": {
+                "type": "object",
+                "definition": {
+                  "level1": {
+                    "type": "object",
+                    "definition": {
+                      "level2": {
+                        "type": "object",
+                        "definition": {
+                          "leaf": {
+                            "type": "string"
+                          },
+                          "items": {
+                            "type": "array",
+                            "definition": {
+                              "type": "object",
+                              "definition": {
+                                "id": {
+                                  "type": "number"
+                                },
+                                "tags": {
+                                  "type": "array",
+                                  "definition": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "initialFormState": {
+            "aString": "hello",
+            "aNumber": 42,
+            "aBigint": {
+              "$bigint": "12345678901234567890"
+            },
+            "aBoolean": true,
+            "aDate": "2026-09-26T00:00:00.000Z",
+            "aUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+            "anOptionalString": "present",
+            "aLiteral": "fixed",
+            "anEnum": "green",
+            "anArray": [
+              "a",
+              "b",
+              "c"
+            ],
+            "anEmptyArray": [],
+            "aTuple": [
+              "t",
+              7
+            ],
+            "aRecord": {
+              "k1": 1,
+              "k2": 2
+            },
+            "anEmptyRecord": {},
+            "aSimpleUnion": 3,
+            "aMixedUnion": {
+              "x": 5
+            },
+            "aDiscriminatedUnion": {
+              "kind": "square",
+              "side": 4
+            },
+            "anAny": {
+              "free": [
+                "form",
+                1
+              ]
+            },
+            "anAnyFile": "",
+            "aReference": {
+              "label": "root",
+              "children": [
+                {
+                  "label": "child",
+                  "children": [
+                    {
+                      "label": "grandchild"
+                    }
+                  ]
+                }
+              ]
+            },
+            "aNestedObject": {
+              "level1": {
+                "level2": {
+                  "leaf": "deep",
+                  "items": [
+                    {
+                      "id": 1,
+                      "tags": [
+                        "x"
+                      ]
+                    },
+                    {
+                      "id": 2,
+                      "tags": []
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodTestPattern: every editor type displays its value",
+            "steps": [
+              {
+                "step": "expectRenderedValues",
+                "label": "initial",
+                "field": "testField",
+                "ignorePaths": [
+                  "aLiteral",
+                  "testField",
+                  "aReference",
+                  "anEmptyArray",
+                  "anEmptyRecord",
+                  "aNestedObject.level1.level2.items.1.tags",
+                  "anAnyFile"
+                ],
+                "expectedValue": {
+                  "aString": "hello",
+                  "aNumber": 42,
+                  "aBigint": "12345678901234567890",
+                  "aBoolean": true,
+                  "aDate": "2026-09-26",
+                  "aUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+                  "anOptionalString": "present",
+                  "aLiteral": "fixed",
+                  "anEnum": "green",
+                  "anArray": [
+                    "a",
+                    "b",
+                    "c"
+                  ],
+                  "anEmptyArray": [],
+                  "aTuple": [
+                    "t",
+                    7
+                  ],
+                  "aRecord": {
+                    "k1": 1,
+                    "k2": 2
+                  },
+                  "anEmptyRecord": {},
+                  "aSimpleUnion": 3,
+                  "aMixedUnion": {
+                    "x": 5
+                  },
+                  "aDiscriminatedUnion": {
+                    "kind": "square",
+                    "side": 4
+                  },
+                  "anAny": {
+                    "free": [
+                      "form",
+                      1
+                    ]
+                  },
+                  "anAnyFile": "",
+                  "aReference": {
+                    "label": "root",
+                    "children": [
+                      {
+                        "label": "child",
+                        "children": [
+                          {
+                            "label": "grandchild"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "aNestedObject": {
+                    "level1": {
+                      "level2": {
+                        "leaf": "deep",
+                        "items": [
+                          {
+                            "id": 1,
+                            "tags": [
+                              "x"
+                            ]
+                          },
+                          {
+                            "id": 2,
+                            "tags": []
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "aLiteral",
+                "target": {
+                  "byDisplayValue": "fixed"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "aReference root label",
+                "target": {
+                  "byDisplayValue": "root",
+                  "fieldName": "testField.aReference.label"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "anEmptyArray add button",
+                "target": {
+                  "widget": "arrayButton",
+                  "field": "testField.anEmptyArray",
+                  "action": "add"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "anEmptyRecord add button",
+                "target": {
+                  "widget": "objectButton",
+                  "field": "testField.anEmptyRecord",
+                  "action": "addRecordEntry"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "empty tags add button",
+                "target": {
+                  "widget": "arrayButton",
+                  "field": "testField.aNestedObject.level1.level2.items.1.tags",
+                  "action": "add"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "anAnyFile file selector",
+                "target": {
+                  "byText": "Select File"
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodTestPattern: a deep leaf and the enum can be edited",
+            "steps": [
+              {
+                "step": "change",
+                "label": "deep leaf",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "testField.aNestedObject.level1.level2.leaf"
+                },
+                "value": "changed"
+              },
+              {
+                "step": "selectOption",
+                "label": "enum blue",
+                "field": "testField.anEnum",
+                "option": "blue"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after edits",
+                "field": "testField",
+                "ignorePaths": [
+                  "aLiteral",
+                  "testField",
+                  "aReference",
+                  "anEmptyArray",
+                  "anEmptyRecord",
+                  "aNestedObject.level1.level2.items.1.tags",
+                  "anAnyFile"
+                ],
+                "expectedValue": {
+                  "aString": "hello",
+                  "aNumber": 42,
+                  "aBigint": "12345678901234567890",
+                  "aBoolean": true,
+                  "aDate": "2026-09-26",
+                  "aUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+                  "anOptionalString": "present",
+                  "aLiteral": "fixed",
+                  "anEnum": "blue",
+                  "anArray": [
+                    "a",
+                    "b",
+                    "c"
+                  ],
+                  "anEmptyArray": [],
+                  "aTuple": [
+                    "t",
+                    7
+                  ],
+                  "aRecord": {
+                    "k1": 1,
+                    "k2": 2
+                  },
+                  "anEmptyRecord": {},
+                  "aSimpleUnion": 3,
+                  "aMixedUnion": {
+                    "x": 5
+                  },
+                  "aDiscriminatedUnion": {
+                    "kind": "square",
+                    "side": 4
+                  },
+                  "anAny": {
+                    "free": [
+                      "form",
+                      1
+                    ]
+                  },
+                  "anAnyFile": "",
+                  "aReference": {
+                    "label": "root",
+                    "children": [
+                      {
+                        "label": "child",
+                        "children": [
+                          {
+                            "label": "grandchild"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "aNestedObject": {
+                    "level1": {
+                      "level2": {
+                        "leaf": "changed",
+                        "items": [
+                          {
+                            "id": 1,
+                            "tags": [
+                              "x"
+                            ]
+                          },
+                          {
+                            "id": 2,
+                            "tags": []
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodTestPattern: the simple union switches from number to string",
+            "steps": [
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "open",
+                "field": "testField.aSimpleUnion"
+              },
+              {
+                "step": "expectElement",
+                "label": "current type",
+                "target": {
+                  "widget": "selectState",
+                  "field": "testField.aSimpleUnion",
+                  "select": "unionType"
+                },
+                "attribute": {
+                  "name": "data-test-selected-value",
+                  "value": "number"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "select string",
+                "field": "testField.aSimpleUnion",
+                "select": "unionType",
+                "option": "string"
+              },
+              {
+                "step": "expectElement",
+                "label": "selector closed",
+                "target": {
+                  "widget": "unionTypeInput",
+                  "field": "testField.aSimpleUnion"
+                },
+                "present": false,
+                "timeout": 3000
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after switch to string",
+                "field": "testField",
+                "ignorePaths": [
+                  "aLiteral",
+                  "testField",
+                  "aReference",
+                  "anEmptyArray",
+                  "anEmptyRecord",
+                  "aNestedObject.level1.level2.items.1.tags",
+                  "anAnyFile"
+                ],
+                "expectedValue": {
+                  "aString": "hello",
+                  "aNumber": 42,
+                  "aBigint": "12345678901234567890",
+                  "aBoolean": true,
+                  "aDate": "2026-09-26",
+                  "aUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+                  "anOptionalString": "present",
+                  "aLiteral": "fixed",
+                  "anEnum": "green",
+                  "anArray": [
+                    "a",
+                    "b",
+                    "c"
+                  ],
+                  "anEmptyArray": [],
+                  "aTuple": [
+                    "t",
+                    7
+                  ],
+                  "aRecord": {
+                    "k1": 1,
+                    "k2": 2
+                  },
+                  "anEmptyRecord": {},
+                  "aSimpleUnion": "",
+                  "aMixedUnion": {
+                    "x": 5
+                  },
+                  "aDiscriminatedUnion": {
+                    "kind": "square",
+                    "side": 4
+                  },
+                  "anAny": {
+                    "free": [
+                      "form",
+                      1
+                    ]
+                  },
+                  "anAnyFile": "",
+                  "aReference": {
+                    "label": "root",
+                    "children": [
+                      {
+                        "label": "child",
+                        "children": [
+                          {
+                            "label": "grandchild"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "aNestedObject": {
+                    "level1": {
+                      "level2": {
+                        "leaf": "deep",
+                        "items": [
+                          {
+                            "id": 1,
+                            "tags": [
+                              "x"
+                            ]
+                          },
+                          {
+                            "id": 2,
+                            "tags": []
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "timeout": 3000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodTestPattern: array items, record entries and optional attributes can be added, removed and renamed",
+            "steps": [
+              {
+                "step": "clickArrayButton",
+                "label": "add anArray item",
+                "field": "testField.anArray",
+                "action": "add"
+              },
+              {
+                "step": "clickArrayButton",
+                "label": "delete anArray item 0",
+                "field": "testField.anArray",
+                "action": "delete",
+                "index": 0
+              },
+              {
+                "step": "renameRecordEntry",
+                "label": "rename aRecord k1",
+                "field": "testField.aRecord",
+                "entry": "k1",
+                "newName": "renamed"
+              },
+              {
+                "step": "clickObjectButton",
+                "label": "add anAbsentOptional",
+                "field": "testField",
+                "action": "addOptionalAttribute",
+                "attribute": "anAbsentOptional"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after structure edits",
+                "field": "testField",
+                "ignorePaths": [
+                  "aLiteral",
+                  "testField",
+                  "aReference",
+                  "anEmptyArray",
+                  "anEmptyRecord",
+                  "aNestedObject.level1.level2.items.1.tags",
+                  "anAnyFile"
+                ],
+                "expectedValue": {
+                  "aString": "hello",
+                  "aNumber": 42,
+                  "aBigint": "12345678901234567890",
+                  "aBoolean": true,
+                  "aDate": "2026-09-26",
+                  "aUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+                  "anOptionalString": "present",
+                  "aLiteral": "fixed",
+                  "anEnum": "green",
+                  "anArray": [
+                    "b",
+                    "c",
+                    ""
+                  ],
+                  "anEmptyArray": [],
+                  "aTuple": [
+                    "t",
+                    7
+                  ],
+                  "aRecord": {
+                    "renamed": 1,
+                    "k2": 2
+                  },
+                  "anEmptyRecord": {},
+                  "aSimpleUnion": 3,
+                  "aMixedUnion": {
+                    "x": 5
+                  },
+                  "aDiscriminatedUnion": {
+                    "kind": "square",
+                    "side": 4
+                  },
+                  "anAny": {
+                    "free": [
+                      "form",
+                      1
+                    ]
+                  },
+                  "anAnyFile": "",
+                  "aReference": {
+                    "label": "root",
+                    "children": [
+                      {
+                        "label": "child",
+                        "children": [
+                          {
+                            "label": "grandchild"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "aNestedObject": {
+                    "level1": {
+                      "level2": {
+                        "leaf": "deep",
+                        "items": [
+                          {
+                            "id": 1,
+                            "tags": [
+                              "x"
+                            ]
+                          },
+                          {
+                            "id": 2,
+                            "tags": []
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "anAbsentOptional": 0
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

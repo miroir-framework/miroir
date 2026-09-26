@@ -1735,6 +1735,7 @@ export {
   effectiveMiroirTransformerSkip,
   miroirTransformerAssertionName,
   miroirTestTypeExcludedMessage,
+  runOnDemandSuiteSkippedMessage,
   runMiroirTest,
   runMiroirTests,
   runMiroirTestSuite,
@@ -1748,6 +1749,7 @@ export {
   type CompositeActionTestContext,
   type RunnerTestContext,
 } from "./5_tests/MiroirTestTools.js";
+export { reactComponentTestSuiteStepKinds } from "./5_tests/miroirTestSuiteWalk.js";
 export {
   REACT_COMPONENT_TEST_NO_RUNNER_MESSAGE,
   REACT_COMPONENT_TEST_NO_SUITE_MESSAGE,
@@ -1760,6 +1762,7 @@ export {
   type RunMiroirTestSuiteInProcessParams,
 } from "./5_tests/runMiroirTestSuiteInProcess.js";
 export type {
+  ComponentRenderMeasurement,
   MiroirTestAnyLeaf,
   MiroirTestRunFilter,
   ReactComponentTestRunner,

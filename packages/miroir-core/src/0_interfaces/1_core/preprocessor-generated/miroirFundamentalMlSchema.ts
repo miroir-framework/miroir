@@ -6611,6 +6611,44 @@ export const miroirFundamentalMlSchema = {
           "assertionActualValue": {
             "type": "any",
             "description": "The actual value of the assertion"
+          },
+          "assertionMeasurements": {
+            "type": "array",
+            "optional": true,
+            "description": "Render measurements of a reactComponentTest leaf with measureRendering steps (#303): one entry per component and mode, never a pass / fail criterion",
+            "definition": {
+              "type": "object",
+              "definition": {
+                "mode": {
+                  "type": "enum",
+                  "description": "remount: unmount then mount the case; update: new props on the mounted case",
+                  "definition": [
+                    "remount",
+                    "update"
+                  ]
+                },
+                "componentId": {
+                  "type": "string",
+                  "description": "Render insight component id (formik paths folded); \"(total)\" sums every component"
+                },
+                "count": {
+                  "type": "number",
+                  "description": "Number of samples: iterations in which the component rendered"
+                },
+                "minMs": {
+                  "type": "number"
+                },
+                "medianMs": {
+                  "type": "number"
+                },
+                "maxMs": {
+                  "type": "number"
+                },
+                "totalMs": {
+                  "type": "number"
+                }
+              }
+            }
           }
         }
       },
@@ -7027,6 +7065,16 @@ export const miroirFundamentalMlSchema = {
           "skip": {
             "type": "boolean",
             "optional": true
+          },
+          "runOnDemand": {
+            "type": "boolean",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Run on demand",
+                "description": "The suite runs only when launched explicitly: the vitest entry skips it unless MIROIR_COMPONENT_PERF=1, the app runs it when launched (#303)"
+              }
+            }
           },
           "component": {
             "type": "string"
@@ -7867,6 +7915,19 @@ export const miroirFundamentalMlSchema = {
                   ]
                 }
               },
+              "ignorePaths": {
+                "type": "array",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Ignored paths",
+                    "description": "Dot paths (e.g. a.b.0.c) removed from both the rendered value and expectedValue before the comparison (#303)"
+                  }
+                },
+                "definition": {
+                  "type": "string"
+                }
+              },
               "filter": {
                 "type": "array",
                 "optional": true,
@@ -7997,6 +8058,43 @@ export const miroirFundamentalMlSchema = {
               "saveAs": {
                 "type": "string",
                 "optional": true
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "measureRendering",
+                "description": "Measures the renders of the editor components, per component, over iterations remounts and / or prop updates; records the measurements, never fails on timing (#303)"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "measureRendering"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "iterations": {
+                "type": "number"
+              },
+              "mode": {
+                "type": "enum",
+                "definition": [
+                  "remount",
+                  "update",
+                  "both"
+                ]
+              },
+              "updateProps": {
+                "type": "record",
+                "optional": true,
+                "definition": {
+                  "type": "any"
+                }
               }
             }
           }
@@ -8675,6 +8773,16 @@ export const miroirFundamentalMlSchema = {
                   "skip": {
                     "type": "boolean",
                     "optional": true
+                  },
+                  "runOnDemand": {
+                    "type": "boolean",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Run on demand",
+                        "description": "The suite runs only when launched explicitly: the vitest entry skips it unless MIROIR_COMPONENT_PERF=1, the app runs it when launched (#303)"
+                      }
+                    }
                   },
                   "component": {
                     "type": "string"
@@ -9489,6 +9597,19 @@ export const miroirFundamentalMlSchema = {
                           ]
                         }
                       },
+                      "ignorePaths": {
+                        "type": "array",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Ignored paths",
+                            "description": "Dot paths (e.g. a.b.0.c) removed from both the rendered value and expectedValue before the comparison (#303)"
+                          }
+                        },
+                        "definition": {
+                          "type": "string"
+                        }
+                      },
                       "filter": {
                         "type": "array",
                         "optional": true,
@@ -9615,6 +9736,43 @@ export const miroirFundamentalMlSchema = {
                       "saveAs": {
                         "type": "string",
                         "optional": true
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "measureRendering",
+                        "description": "Measures the renders of the editor components, per component, over iterations remounts and / or prop updates; records the measurements, never fails on timing (#303)"
+                      }
+                    },
+                    "definition": {
+                      "step": {
+                        "type": "literal",
+                        "definition": "measureRendering"
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "iterations": {
+                        "type": "number"
+                      },
+                      "mode": {
+                        "type": "enum",
+                        "definition": [
+                          "remount",
+                          "update",
+                          "both"
+                        ]
+                      },
+                      "updateProps": {
+                        "type": "record",
+                        "optional": true,
+                        "definition": {
+                          "type": "any"
+                        }
                       }
                     }
                   }

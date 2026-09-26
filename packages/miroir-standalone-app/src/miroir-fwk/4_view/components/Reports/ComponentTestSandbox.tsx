@@ -31,11 +31,17 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger:
 export interface ComponentTestSandboxContextValue {
   /**
    * Loads the component test chunk, registers the runner over the sandbox, and shows the panel.
-   * Throws when another display's component test run is active.
+   * Throws when another display's component test run is active. `iterationsOverride` replaces
+   * the `iterations` of every `measureRendering` step of the run (#303 T7).
    */
-  prepareComponentTests: () => Promise<void>;
+  prepareComponentTests: (options?: ComponentTestRunOptions) => Promise<void>;
   /** Ends the run started by `prepareComponentTests()`. The last case stays mounted. */
   finishComponentTests: () => void;
+}
+
+export interface ComponentTestRunOptions {
+  /** #303 T7: replaces the `iterations` of every `measureRendering` step of the run. */
+  iterationsOverride?: number;
 }
 
 const ComponentTestSandboxContext = createContext<ComponentTestSandboxContextValue | undefined>(
@@ -98,7 +104,7 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
     registration?.close();
   }, []);
 
-  const prepareComponentTests = useCallback(async () => {
+  const prepareComponentTests = useCallback(async (options?: ComponentTestRunOptions) => {
     const { componentTestRunInProgressMessage, isComponentTestRunActive, registerComponentTests } =
       await import("../../../4-tests/componentTests/index.js");
     // Checked before closing this display's previous registration, so that a refused run leaves
@@ -111,11 +117,14 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
     if (!sandboxElement) {
       throw new Error("component test sandbox element is not mounted");
     }
-    registrationRef.current = registerComponentTests({ sandboxElement });
+    registrationRef.current = registerComponentTests({
+      sandboxElement,
+      ...(options?.iterationsOverride !== undefined ? { iterationsOverride: options.iterationsOverride } : {}),
+    });
     runningRef.current = true;
     setRunning(true);
     setOpen(true);
-    log.info("component test sandbox ready");
+    log.info("component test sandbox ready", options ?? {});
   }, [closeRegistration]);
 
   const finishComponentTests = useCallback(() => {
