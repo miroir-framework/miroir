@@ -13,7 +13,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/145
 Working branch: `claude/rename-jzod-to-ml-2ucg0f` → draft PR against `aba`
 
-**Resume note:** Slices 0–5 DONE; baseline on `aba` @ `256e625` is green (miroir-core `tsc`; vitest 156 files / 2023 tests passed, 1 skipped).
+**Resume note:** Slices 0–6 DONE (#145 step 1 complete); baseline on `aba` @ `256e625` is green (miroir-core `tsc`; vitest 156 files / 2023 tests passed, 1 skipped).
 
 ---
 
@@ -41,7 +41,7 @@ migrate deployments stored outside the repository (clean break, see analysis D6)
 | 3 | Transformers `mlsTypeCheck`, `ansiColumnsToMlSchema` | ✅ DONE (merged into 2) | guard scope transformer assets; `miroirCoreTransformers` unit + integ (filesystem) |
 | 4 | Remaining miroir-core and non-UI packages | ✅ DONE | guard scope `packages/` minus standalone-app; `tsc` per package; nonreg unit |
 | 5 | Standalone-app UI (editors, labels, component tests) | ✅ DONE | guard scope `packages/`; component-test nonreg steps |
-| 6 | Docs, agent files, repo-wide guard, final nonreg | ⬜ | guard repo-wide; `nonreg:filesystem` + indexedDb; AC checklist |
+| 6 | Docs, agent files, repo-wide guard, final nonreg | ✅ DONE | guard repo-wide; `nonreg:filesystem` + indexedDb; AC checklist |
 
 ---
 
@@ -468,7 +468,7 @@ npm run build -w miroir-standalone-app
 
 ## Slice 6 — Docs, agent files, repo-wide guard, final non-regression
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -508,3 +508,19 @@ python scripts/run-nonreg.py --tier default --run-all --profile emulatedServer-i
 ```
 
 ### Realization
+
+- Docs, `AGENTS.md`, `README.md`, `.agents/skills`, workflow, Dockerfile and homepage say ML / MLS for Miroir's
+  meta-language; Jzod stays for the external project and the sibling repos (`build-all.sh`, `ci/`, `docker/ci/`).
+  Doc anchors follow the renamed headings (`#mlelementeditor-component-tests`, `#ml-the-meta-language`,
+  `#ml-schema-of-an-entity`); proposal names `jzodTypeVar` / `jzodForAll` → `mlTypeVar` / `mlForAll`.
+- Guard: one rule "R ml-repository" over the whole repository; allowlist adds `JzodToZod` / `JzodToTs` (source files of
+  the external packages, named in design docs) and `.code-workspace` (sibling-repo path); the migration table
+  `docs/reference/ml-nomenclature.md` is excluded from the scan. Inventory: 0 names left.
+- Migration table: [`docs/reference/ml-nomenclature.md`](../../../docs/reference/ml-nomenclature.md), linked from `docs/index.md`.
+- `graphify update .`: not run, graphify is not installed in the cloud session and `graphify-out/` is untracked.
+- Validation: `nonreg:unit` 34/34; `nonreg:filesystem` and the indexedDb profile 66/70 each. The same 4 steps fail on a
+  clean `aba` build (`256e625`, same session): `integ-transformer-miroirCoreTransformers` (1/261, "unpivot keeps
+  explicit nulls and skips absent keys"), `appstack-uiIntegrationTestLauncher.integ`,
+  `appstack-MiroirTestDisplayIntegrationLaunch`, `appstack-MiroirTestListIntegrationLaunch`. Postgres tier: to be run
+  by the user.
+
