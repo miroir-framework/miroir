@@ -13,7 +13,7 @@ import {
   prepareAndRunTestSuites,
   type ReactComponentTestSuitePrep,
   type ReactComponentTestSuites,
-} from "./JzodElementEditorTestTools";
+} from "./MlElementEditorTestTools";
 import { defaultSelfApplicationDeploymentMap, type Deployment } from "miroir-core";
 // import { selfApplicationLibrary } from "miroir-core";
 const deployment_Library: Deployment = {
@@ -110,7 +110,7 @@ vi.spyOn(RRDom, "useParams").mockReturnValue({
 //   },
 // ]);
 
-const jzodElementEditorTests: Record<
+const mlElementEditorTests: Record<
   string,
   ReactComponentTestSuitePrep<any>
   // ReactComponentTestSuitePrep<any> & { modes?: ModesType }
@@ -118,7 +118,7 @@ const jzodElementEditorTests: Record<
   reportView: { 
     editor: ReportPage, 
     // editor: () =>(<RouterProvider router={router}><ReportPage /></RouterProvider>), 
-    getJzodEditorTests: (
+    getMlEditorTests: (
       componentUnderTest: React.FC<ReportViewProps>
     ): ReactComponentTestSuites<ReportViewProps> =>{
       return {
@@ -196,7 +196,7 @@ const jzodElementEditorTests: Record<
 
 // Integration-style smoke test using the shared test wrapper
 describe('ReportViewWithEditor integration', () => {
-  prepareAndRunTestSuites("reportView.integ", jzodElementEditorTests, defaultSelfApplicationDeploymentMap);
+  prepareAndRunTestSuites("reportView.integ", mlElementEditorTests, defaultSelfApplicationDeploymentMap);
   
   // Task 4.12: Additional editing tests will be added here
   // These tests verify that section-level properties (extractors, combiners, 

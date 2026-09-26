@@ -7,7 +7,7 @@
  *
  * Each test calls the runner of `createReactComponentTestRunner` over its own sandbox element with
  * one `reactComponentTest` leaf and a fixture `reactComponentTestSuite` context, as the MiroirTest
- * walk does. The fixtures render the real `JzodElementEditor` of the component registry: a string
+ * walk does. The fixtures render the real `MlElementEditor` of the component registry: a string
  * array, a record of objects, an object with optional attributes, and an object with a
  * `definition` attribute.
  *
@@ -39,7 +39,7 @@ const testFieldProps = {
 function fixtureSuite(name: string, componentProps: Record<string, any>): ReactComponentTestSuiteContext {
   return {
     suitePath: [`${name}_ComponentTestSuite`, name],
-    component: "JzodElementEditor",
+    component: "MlElementEditor",
     componentProps: { ...testFieldProps, ...componentProps },
     caseLabels: [caseLabel],
   };

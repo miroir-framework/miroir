@@ -185,7 +185,7 @@ const MODEL_ENDPOINT = "7947ae40-eb34-4149-887b-15a9021e714e";
 /** TypedValueObjectEditor dumps this prefix in a plain <span> when mlsTypeCheck fails (no testid). */
 const TYPED_VALUE_OBJECT_EDITOR_TYPE_ERROR = /typeError:/;
 /** Innermost mlsTypeCheck error for an unknown object key (stringified into CodeBlock_ReadOnly). */
-const JZOD_UNKNOWN_ATTRIBUTE_ERROR = /not found in schema definition/;
+const ML_UNKNOWN_ATTRIBUTE_ERROR = /not found in schema definition/;
 
 function tracksOnlySpotifyPlaylistMlSchema(liveSchema: MlObject): MlObject {
   const { items: _omittedNewShapeItems, ...definitionWithoutItems } = liveSchema.definition;
@@ -674,7 +674,7 @@ describe.skipIf(!shouldRun).sequential("spotifyApp — Spotify deployment boot +
       {},
     );
     expect(staleResult.status).toBe("error");
-    expect(JSON.stringify(staleResult)).toMatch(JZOD_UNKNOWN_ATTRIBUTE_ERROR);
+    expect(JSON.stringify(staleResult)).toMatch(ML_UNKNOWN_ATTRIBUTE_ERROR);
     expect(JSON.stringify(staleResult)).toMatch(/'items'/);
 
     const liveResult = mlsTypeCheck(
@@ -710,9 +710,9 @@ describe.skipIf(!shouldRun).sequential("spotifyApp — Spotify deployment boot +
     // apiCallReportSection → readonly TypedValueObjectEditor. On mlsTypeCheck
     // error it renders a <span>"typeError: "…</span> plus CodeBlock_ReadOnly.
     expect(screen.queryByText(TYPED_VALUE_OBJECT_EDITOR_TYPE_ERROR)).toBeNull();
-    expect(screen.queryByText(JZOD_UNKNOWN_ATTRIBUTE_ERROR)).toBeNull();
-    expect(screen.queryByText(/Could not resolve jzod schema/)).toBeNull();
-    expect(document.body.textContent).not.toMatch(JZOD_UNKNOWN_ATTRIBUTE_ERROR);
+    expect(screen.queryByText(ML_UNKNOWN_ATTRIBUTE_ERROR)).toBeNull();
+    expect(screen.queryByText(/Could not resolve ML schema/)).toBeNull();
+    expect(document.body.textContent).not.toMatch(ML_UNKNOWN_ATTRIBUTE_ERROR);
     expect(screen.queryByText(/Oops, ReportSectionEntityInstance could not be displayed/)).toBeNull();
   });
 

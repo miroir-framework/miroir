@@ -26,19 +26,19 @@ type LoadedModules = {
   ComponentTestModeContext: typeof import("../../../../src/miroir-fwk/4_view/tools/ComponentTestModeContext").ComponentTestModeContext;
   componentTestSandboxMode: typeof import("../../../../src/miroir-fwk/4_view/tools/ComponentTestModeContext").componentTestSandboxMode;
   buildComponentTestWrapper: typeof import("../../../../src/miroir-fwk/4-tests/componentTests/componentTestTools").buildComponentTestWrapper;
-  getJzodElementEditorForTest: typeof import("../../../../src/miroir-fwk/4-tests/componentTests/componentTestTools").getJzodElementEditorForTest;
+  getMlElementEditorForTest: typeof import("../../../../src/miroir-fwk/4-tests/componentTests/componentTestTools").getMlElementEditorForTest;
 };
 
 /** Loads the editors after `VITE_TEST_MODE` is stubbed, so that module-level reads see the stub. */
 async function loadModules(): Promise<LoadedModules> {
-  await import("../../../../src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditor");
+  await import("../../../../src/miroir-fwk/4_view/components/ValueObjectEditor/MlElementEditor");
   const context = await import("../../../../src/miroir-fwk/4_view/tools/ComponentTestModeContext");
   const tools = await import("../../../../src/miroir-fwk/4-tests/componentTests/componentTestTools");
   return {
     ComponentTestModeContext: context.ComponentTestModeContext,
     componentTestSandboxMode: context.componentTestSandboxMode,
     buildComponentTestWrapper: tools.buildComponentTestWrapper,
-    getJzodElementEditorForTest: tools.getJzodElementEditorForTest,
+    getMlElementEditorForTest: tools.getMlElementEditorForTest,
   };
 }
 
@@ -62,7 +62,7 @@ function renderObjectEditor(modules: LoadedModules, withSandboxMode: boolean) {
   const { Wrapper } = modules.buildComponentTestWrapper({
     applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
   });
-  const Component = modules.getJzodElementEditorForTest("componentTestMode.286.phase4");
+  const Component = modules.getMlElementEditorForTest("componentTestMode.286.phase4");
   const editor = (
     <Wrapper>
       <Component {...(objectProps as any)} />

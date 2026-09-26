@@ -37,7 +37,7 @@ RootComponent                 # provides DocumentOutline + ReportPage contexts (
           → [generalEditMode only] InlineReportEditor
           → ReportSectionViewWithEditor   # recursive for list/grid/accordion
             → leaf: EntityInstance | ListDisplay | Input | Markdown | …
-                  → TypedValueObjectEditor → JzodElementEditor → …
+                  → TypedValueObjectEditor → MlElementEditor → …
 ```
 
 `ReportDisplay` has **no** Formik. It only chooses the report, runs `runStoredQueries`, and passes props into RVWE. Besides `ReportPage`, `ReportDisplay` is also mounted by `HomePage` and `SettingsPage` — the stack above is the canonical "one report page" case.
@@ -185,7 +185,7 @@ It does **not** run on a timer. It is not Formik’s `validate`. It runs as ofte
 
 ### Why it is necessary
 
-Without a successful typecheck, TVOE cannot hand `JzodElementEditor` a reliable `typeCheckKeyMap` / resolved schema. That map drives:
+Without a successful typecheck, TVOE cannot hand `MlElementEditor` a reliable `typeCheckKeyMap` / resolved schema. That map drives:
 
 - which editor variant to show (union branch, object fields, …),
 - foreign-key target entity queries,
@@ -245,6 +245,6 @@ All under `packages/miroir-standalone-app/src/miroir-fwk/4_view/`:
 | `components/Reports/ReportInputSection.tsx` | Input leaf + `onChangeVector` navigation |
 | `components/Reports/TypedValueObjectEditor.tsx` | Typecheck + TVOE; consumes Formik |
 | `components/Reports/TypedValueObjectEditorWithFormik.tsx` | Standalone Formik wrapper (non-report) |
-| `components/ValueObjectEditor/JzodElementEditor*.tsx` | Field writes via `setFieldValue`; `onChangeVector` fan-out |
+| `components/ValueObjectEditor/MlElementEditor*.tsx` | Field writes via `setFieldValue`; `onChangeVector` fan-out |
 | `components/ValueObjectEditor/FieldValidationContext.tsx` | Aggregate field errors for submit (ref + version counter) |
 | `components/ValueObjectEditor/InstanceEditorOutlineContext.tsx` | Outline + unused-in-hot-path typeCheckKeyMap state |

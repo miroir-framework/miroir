@@ -16,11 +16,11 @@ import { cleanLevel } from "../../constants";
 import { useCurrentModelEnvironment } from "../../ReduxHooks";
 import { ThemedStatusText } from "../Themes/BasicComponents";
 import { FileSelector } from "../Themes/FileSelector.js";
-import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
-import { JzodAnyEditorProps } from "./JzodElementEditorInterface";
-import { JzodElementEditor } from "./JzodElementEditor";
+import { useMlElementEditorHooks } from "./MlElementEditorHooks";
+import { MlAnyEditorProps } from "./MlElementEditorInterface";
+import { MlElementEditor } from "./MlElementEditor";
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodAnyEditor");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlAnyEditor");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {
@@ -29,16 +29,16 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 
 // ################################################################################################
 /**
- * JzodAnyEditor Component
+ * MlAnyEditor Component
  * 
- * Editor for Jzod schema elements of type "any".
+ * Editor for ML schema elements of type "any".
  * Supports dynamic type selection and rendering of appropriate sub-editors.
  */
-let JzodAnyEditorRenderCount: number = 0;
-export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
-  props: JzodAnyEditorProps
+let MlAnyEditorRenderCount: number = 0;
+export const MlAnyEditor: React.FC<MlAnyEditorProps> = (
+  props: MlAnyEditorProps
 ) => {
-  JzodAnyEditorRenderCount++;
+  MlAnyEditorRenderCount++;
   const context = useMiroirContextService();
   const {
     // name,
@@ -49,7 +49,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     // currentDeploymentUuid,
     // currentApplicationSection,
     // foreignKeyObjects,
-    // resolvedElementJzodSchemaDEFUNCT, // handleSelectLiteralChange,
+    // resolvedElementMlSchemaDEFUNCT, // handleSelectLiteralChange,
     labelElement,
     insideAny,
     // readOnly,
@@ -73,7 +73,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     // codeMirrorIsValidJson,
     // setCodeMirrorIsValidJson,
 
-  } = useJzodElementEditorHooks(
+  } = useMlElementEditorHooks(
     props.rootLessListKey,
     props.rootLessListKeyArray,
     reportSectionPathAsString,
@@ -82,8 +82,8 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     props.currentApplication,
     props.applicationDeploymentMap,
     props.currentDeploymentUuid,
-    JzodAnyEditorRenderCount,
-    "JzodAnyEditor",
+    MlAnyEditorRenderCount,
+    "MlAnyEditor",
   );
 
   const [selectedFileName, setSelectedFileName] = useState<string | undefined>(undefined);
@@ -123,7 +123,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
   const setSelectedFileContents = useCallback(
     (contents: MetaModel | undefined) => {
       log.info(
-        "JzodAnyEditor - setSelectedFileContents for",
+        "MlAnyEditor - setSelectedFileContents for",
         formikRootLessListKey,
         "contents:",
         mStringify(contents, null, 2)
@@ -254,9 +254,9 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
   //     ),
   // );
   // if (insideAny) {
-  //   log.info(`JzodAnyEditor Rendered insideAny for ${rootLessListKey} ${JzodAnyEditorRenderCount}`);
+  //   log.info(`MlAnyEditor Rendered insideAny for ${rootLessListKey} ${MlAnyEditorRenderCount}`);
   //   return (<ThemedStatusText style={{color: "red"}}>
-  //     JzodAnyEditor rendered inside an "any" type is not supported yet.
+  //     MlAnyEditor rendered inside an "any" type is not supported yet.
   //   </ThemedStatusText>)
   // }
   if (format === "file") {
@@ -264,9 +264,9 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
       <div key={rootLessListKey}>
         {/* fomat = "file" */}
         <JsonDisplayHelper debug={true}
-          componentName="JzodAnyEditor"
+          componentName="MlAnyEditor"
           elements={[{
-            label: `JzodAnyEditor Render ${JzodAnyEditorRenderCount} for ${rootLessListKey} format=file`,
+            label: `MlAnyEditor Render ${MlAnyEditorRenderCount} for ${rootLessListKey} format=file`,
             data: {
               reportSectionPathAsString,
               rootLessListKey,
@@ -304,13 +304,13 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
 
   return (
     <div key={rootLessListKey}>
-      {/* <ThemedOnScreenHelper label="JzodAnyEditor" data={rootLessListKey} /> */}
+      {/* <ThemedOnScreenHelper label="MlAnyEditor" data={rootLessListKey} /> */}
       <JsonDisplayHelper
         debug={true}
-        componentName={`JzodAnyEditor ${localResolvedElementMlSchemaBasedOnValue?.type}`}
+        componentName={`MlAnyEditor ${localResolvedElementMlSchemaBasedOnValue?.type}`}
         elements={[
           {
-            label: `JzodAnyEditor Render ${JzodAnyEditorRenderCount} for ${rootLessListKey} general case`,
+            label: `MlAnyEditor Render ${MlAnyEditorRenderCount} for ${rootLessListKey} general case`,
             data: { currentValueObject, currentValueObjectAtKey, localResolvedElementMlSchemaBasedOnValue, currentTypecheckKeyMap },
             useCodeBlock: true,
           },
@@ -318,8 +318,8 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
       />
       {localResolvedElementMlSchemaBasedOnValue &&
         localResolvedElementMlSchemaBasedOnValue.type !== "any" && (
-          // NOT USED IN PRACTICE: the JzodAnyEditor is used by JzodElementEditor only when rawSchema type is "nay" and currentTypecheckKeyMap?.rawSchema?.tag?.value?.display?.any?.format is true
-          <JzodElementEditor
+          // NOT USED IN PRACTICE: the MlAnyEditor is used by MlElementEditor only when rawSchema type is "nay" and currentTypecheckKeyMap?.rawSchema?.tag?.value?.display?.any?.format is true
+          <MlElementEditor
             valueObjectEditMode={props.valueObjectEditMode}
             name={props.name}
             labelElement={props.labelElement}
@@ -336,7 +336,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
             submitButton={props.submitButton}
             readOnly={props.readOnly}
             indentLevel={props.indentLevel}
-            insideAny={true} // important to avoid infinite recursion between JzodAnyEditor and JzodElementEditor when type is "any"
+            insideAny={true} // important to avoid infinite recursion between MlAnyEditor and MlElementEditor when type is "any"
             anyRootLessListKey={props.anyRootLessListKey}
             displayError={props.displayError}
             compatibilityWarnings={props.compatibilityWarnings}

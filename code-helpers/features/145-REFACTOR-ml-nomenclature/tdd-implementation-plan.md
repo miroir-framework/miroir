@@ -13,7 +13,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/145
 Working branch: `claude/rename-jzod-to-ml-2ucg0f` → draft PR against `aba`
 
-**Resume note:** Slices 0–4 DONE; baseline on `aba` @ `256e625` is green (miroir-core `tsc`; vitest 156 files / 2023 tests passed, 1 skipped).
+**Resume note:** Slices 0–5 DONE; baseline on `aba` @ `256e625` is green (miroir-core `tsc`; vitest 156 files / 2023 tests passed, 1 skipped).
 
 ---
 
@@ -40,7 +40,7 @@ migrate deployments stored outside the repository (clean break, see analysis D6)
 | 2 | Schema-tool modules `1_core/mls/` | ✅ DONE (with 3) | guard scope `1_core/`; MiroirTest functionCallTest suites (unit) |
 | 3 | Transformers `mlsTypeCheck`, `ansiColumnsToMlSchema` | ✅ DONE (merged into 2) | guard scope transformer assets; `miroirCoreTransformers` unit + integ (filesystem) |
 | 4 | Remaining miroir-core and non-UI packages | ✅ DONE | guard scope `packages/` minus standalone-app; `tsc` per package; nonreg unit |
-| 5 | Standalone-app UI (editors, labels, component tests) | ⬜ | guard scope `packages/`; component-test nonreg steps |
+| 5 | Standalone-app UI (editors, labels, component tests) | ✅ DONE | guard scope `packages/`; component-test nonreg steps |
 | 6 | Docs, agent files, repo-wide guard, final nonreg | ⬜ | guard repo-wide; `nonreg:filesystem` + indexedDb; AC checklist |
 
 ---
@@ -411,7 +411,7 @@ Slice gate over every touched package, plus deployment `modelValidation` (4 pack
 
 ## Slice 5 — Standalone-app UI
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -443,6 +443,26 @@ npm run build -w miroir-standalone-app
 ```
 
 ### Realization
+
+- `git mv` of the 17 files named Jzod: the editors in `4_view/components/ValueObjectEditor/` (`MlElementEditor.tsx`,
+  `MlObjectEditor.tsx`, `MlArrayEditor.tsx`, `MlAnyEditor.tsx`, `MlEnumEditor.tsx`, `MlLiteralEditor.tsx`,
+  `MlElementStringEditor.tsx`, `MlEditorButton.tsx`, `MlElementEditorHooks.ts`, `MlElementEditorInterface.ts`,
+  `MlElementEditorReactCodeMirror.tsx`), `components/MlElementDisplay.tsx`, `miroir-fwk/MlTools.ts`, and the tests
+  `MlElementEditorTestTools.tsx`, `MlElementEditorReactCodeMirror.test.tsx`, `MlObjectEditor.BlobIntegration.integ.test.tsx`,
+  `mlEditorRenderInsight.unit.test.ts`.
+- Token map [`slice5-map.json`](./slice5-map.json) (124 entries): `Jzod`→`Ml` in every UI name (components, props,
+  hooks, test tools, `miroirTest_Ml*Editor_ComponentTestSuite`, `component` keys and `data-testid` strings, logger names,
+  `baseline-component-cases.txt`, nonreg manifest, docs), `jzodTypeCheckResult` → `mlsTypeCheckResult` and
+  `measuredJzodTypeCheck` → `measuredMlsTypeCheck` (schema operations take `Mls`).
+- Clean break: the AI entity proposal no longer reads the legacy `entityVersion.jzodSchema` field (only `mlSchema`).
+- Prose and UI text: "Could not resolve ML schema", "raw ML schema", the standalone copy of the AI system prompt,
+  snapshot JSON labels.
+- Guard: rule P now covers all of `packages/`; the per-rule token exclusions are gone.
+- Validation: guard OK (19 names left, all in docs and the workspace file, Slice 6); build incl. `miroir-standalone-app`;
+  `tsc` 16 packages, only the two `aba` errors; `modelValidation` 160/51/183/34; miroir-core vitest 2 023 passed;
+  `nonreg:unit` 34/34; `appstack-miroir-component-tests` (filesystem) PASS. Outside nonreg and unrelated to naming
+  (inferred pre-existing): `MlObjectEditor.BlobIntegration` fails in `MiroirThemeContext` (`undefined.find`),
+  `MlElementEditorReactCodeMirror.test.tsx` has no active test.
 
 ---
 

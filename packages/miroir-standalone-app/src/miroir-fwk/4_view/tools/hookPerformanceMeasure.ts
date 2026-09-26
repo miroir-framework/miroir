@@ -7,10 +7,10 @@ import {
   // rootLessListKeyMapDEFUNCT,
   unfoldMlSchemaOnce,
 } from "miroir-core";
-import { useJzodElementEditorHooks } from "../components/ValueObjectEditor/JzodElementEditorHooks";
+import { useMlElementEditorHooks } from "../components/ValueObjectEditor/MlElementEditorHooks";
 
 // Create measured versions of key functions used in this component
-export const measuredJzodTypeCheck = measurePerformance("mlsTypeCheck", mlsTypeCheck, 100);
+export const measuredMlsTypeCheck = measurePerformance("mlsTypeCheck", mlsTypeCheck, 100);
 // export const measuredRootLessListKeyMap = measurePerformance(
 //   "rootLessListKeyMapDEFUNCT",
 //   rootLessListKeyMapDEFUNCT,
@@ -28,22 +28,22 @@ export const measuredGetQueryRunnerParamsForReduxDeploymentsState = measurePerfo
 );
 
 // Measure unfoldMlSchemaOnce using our new higher-order function
-export const measuredUnfoldJzodSchemaOnce = measurePerformance(
+export const measuredUnfoldMlSchemaOnce = measurePerformance(
   'unfoldMlSchemaOnce',
   unfoldMlSchemaOnce,
   100
 );
 
 // Example of how to measure other core functions with performance tracking
-export const measuredGetDefaultValueForJzodSchemaWithResolution = measurePerformance(
+export const measuredGetDefaultValueForMlSchemaWithResolution = measurePerformance(
   'getDefaultValueForMlSchemaWithResolution',
   getDefaultValueForMlSchemaWithResolution,
   100
 );
 
-export const measuredUseJzodElementEditorHooks = measurePerformance(
-  'useJzodElementEditorHooks',
-  useJzodElementEditorHooks,
+export const measuredUseMlElementEditorHooks = measurePerformance(
+  'useMlElementEditorHooks',
+  useMlElementEditorHooks,
   500
 );
 

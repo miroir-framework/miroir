@@ -1,6 +1,6 @@
 import type { MlElement, MlSchema } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-// ── Classification of MlElement fields for JzodElementEditor use ──────────
+// ── Classification of MlElement fields for MlElementEditor use ──────────
 //
 // Tag fields (tag.value.*):
 //   ESSENTIAL (kept): defaultLabel, description, foreignKeyParams, formValidation
@@ -69,7 +69,7 @@ function minimalSummary(el: MlElement): any {
 
 /**
  * Produces a summary of a MlElement schema containing only information
- * directly useful for human understanding during value editing in JzodElementEditor.
+ * directly useful for human understanding during value editing in MlElementEditor.
  *
  * - Strips all view-related and meta tag fields (see classification above).
  * - Recursively summarizes container type children up to `depth` levels.
@@ -209,7 +209,7 @@ export function mlsToMls_Summary(
     }
 
     // ── Non-editable types ────────────────────────────────────────────────────
-    // function, lazy, promise: not directly editable in JzodElementEditor.
+    // function, lazy, promise: not directly editable in MlElementEditor.
     case "function":
     case "lazy":
       return base;

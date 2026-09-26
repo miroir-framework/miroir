@@ -2,7 +2,7 @@ import { graphConfig, type MlElement, type MlObject } from 'miroir-core';
 import { z } from 'zod';
 export {GraphConfig} from 'miroir-core'
 // ################################################################################################
-// Graph Data Schema using Jzod
+// Graph Data Schema using ML
 // ################################################################################################
 
 export const graphDataPointSchema: MlObject = {
@@ -153,7 +153,7 @@ export const graphDataSchema: MlElement = {
 } as const;
 
 // ################################################################################################
-// Zod schemas derived from Jzod for runtime validation  
+// Zod schemas derived from ML schemas for runtime validation  
 // ################################################################################################
 
 export const GraphDataPointSchema = z.object({

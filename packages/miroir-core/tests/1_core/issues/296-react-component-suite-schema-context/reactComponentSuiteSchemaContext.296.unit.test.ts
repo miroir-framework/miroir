@@ -3,7 +3,7 @@
  *
  * The editor (`TypedValueObjectEditor`) calls `mlsTypeCheck` on the displayed instance with the
  * flattened MiroirTest mlSchema (`entityWithResolvedMLSchema`) and an empty relative context, then
- * renders each node from the flat `keyMap`. `JzodObjectEditor` re-resolves a keyMap entry whose
+ * renders each node from the flat `keyMap`. `MlObjectEditor` re-resolves a keyMap entry whose
  * `rawSchema` is a `schemaReference` with `resolveMlSchemaReferenceInContext(rawSchema,
  * rawSchema.context ?? {}, ...)`. The MiroirTest context lives on an ancestor
  * (`mlSchema.definition.definition.context`), so a bare relative reference reached below it (the
@@ -23,7 +23,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   entityMiroirTest,
-  miroirTest_JzodAnyEditor_ComponentTestSuite,
+  miroirTest_MlAnyEditor_ComponentTestSuite,
 } from "miroir-test-app_deployment-miroir";
 
 import {
@@ -69,7 +69,7 @@ function expectOk(result: ResolvedMlSchemaReturnType) {
 }
 
 /**
- * The keyMap contract the editor relies on (`JzodObjectEditor`): a `schemaReference` rawSchema can
+ * The keyMap contract the editor relies on (`MlObjectEditor`): a `schemaReference` rawSchema can
  * be resolved from the entry alone. Returns the keys that cannot.
  */
 function unresolvableSchemaReferenceKeys(result: ResolvedMlSchemaReturnType): string[] {
@@ -113,20 +113,20 @@ const leafWithSteps = (label: string) => ({
 const reactComponentSuite = (label: string) => ({
   miroirTestType: "reactComponentTestSuite",
   miroirTestLabel: label,
-  component: "JzodElementEditor",
+  component: "MlElementEditor",
   componentProps: { rawMlSchema: { type: "any" } },
   miroirTests: [leafWithSteps(label + " leaf 1"), leafWithSteps(label + " leaf 2")],
 });
 
 const instanceWith = (definition: any) => ({
-  ...(miroirTest_JzodAnyEditor_ComponentTestSuite as any),
+  ...(miroirTest_MlAnyEditor_ComponentTestSuite as any),
   definition,
 });
 
 // ################################################################################################
 describe("issue 296: MiroirTest editor type-check of a reactComponentTestSuite", () => {
-  it("type-checks the real JzodAnyEditor_ComponentTestSuite instance, leaves and steps resolved", () => {
-    const instance: any = miroirTest_JzodAnyEditor_ComponentTestSuite;
+  it("type-checks the real MlAnyEditor_ComponentTestSuite instance, leaves and steps resolved", () => {
+    const instance: any = miroirTest_MlAnyEditor_ComponentTestSuite;
     const result = typeCheckLikeTheEditor(instance);
     expectOk(result);
     if (result.status !== "ok") return;

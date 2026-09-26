@@ -18,11 +18,11 @@ import {
 } from "miroir-test-app_deployment-library";
 import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-library";
 import { Container } from "react-dom";
-import { JzodEditorPropsRoot } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditorInterface";
+import { MlEditorPropsRoot } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/MlElementEditorInterface";
 import {
   buildComponentTestWrapper,
   extractValuesFromRenderedElements as extractValuesFromRenderedElementsInRoot,
-  JzodElementEditorProps_Test,
+  MlElementEditorProps_Test,
   type ExtractValuesExpect,
 } from "../../src/miroir-fwk/4-tests/componentTests/componentTestTools";
 
@@ -37,13 +37,13 @@ export {
   createRecordingFunction,
   formikFieldName,
   formValuesToJSON,
-  getJzodElementEditorForTest,
+  getMlElementEditorForTest,
   testSectionName,
   testThemeParams,
   type BuildComponentTestWrapperOptions,
   type ComponentTestWrapper,
   type ExtractValuesExpect,
-  type JzodElementEditorProps_Test,
+  type MlElementEditorProps_Test,
   type RecordingFunction,
 } from "../../src/miroir-fwk/4-tests/componentTests/componentTestTools";
 
@@ -74,8 +74,8 @@ export function extractValuesFromRenderedElements(
 }
 
 // vitest test names keep the former render mode segment, so that they stay comparable with
-// baseline-JzodElementEditor.txt (#286).
-const jzodElementEditorTestModeLabel = "jzodElementEditor";
+// baseline-MlElementEditor.txt (#286).
+const mlElementEditorTestModeLabel = "mlElementEditor";
 
 
 // ################################################################################################
@@ -111,9 +111,9 @@ export const waitAfterUserInteraction = async () => {
   });
 };
 
-// export type JzodEditorTestCaseRenderer<PropType> = {
-//   // renderAsJzodElementEditor?: React.FC<JzodElementEditorProps_Test>;
-//   renderAsJzodElementEditor?: React.FC<PropType>;
+// export type MlEditorTestCaseRenderer<PropType> = {
+//   // renderAsMlElementEditor?: React.FC<MlElementEditorProps_Test>;
+//   renderAsMlElementEditor?: React.FC<PropType>;
 // };
 
 export interface ReactComponentTestSuitePrep<PropType extends Record<string, any>> {
@@ -121,8 +121,8 @@ export interface ReactComponentTestSuitePrep<PropType extends Record<string, any
   performanceTests?: boolean;
   /** Opt-in: real handleCompositeActionTemplate writes the wrapper localCache (issue #274). */
   wireLocalCacheCompositeAction?: boolean;
-  getJzodEditorTests: (
-    jzodElementEditor: React.FC<PropType>
+  getMlEditorTests: (
+    mlElementEditor: React.FC<PropType>
   ) => ReactComponentTestSuites<PropType>;
 }
 
@@ -133,37 +133,37 @@ const libraryApplicationDeploymentMapForTests: ApplicationDeploymentMap = {
   [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
 };
 
-let jzodEditorTestLocalCache: LocalCacheInterface | undefined;
-let jzodEditorTestApplicationDeploymentMap: ApplicationDeploymentMap =
+let mlEditorTestLocalCache: LocalCacheInterface | undefined;
+let mlEditorTestApplicationDeploymentMap: ApplicationDeploymentMap =
   libraryApplicationDeploymentMapForTests;
 
 function libraryCountryFromDomainState(uuid: string): EntityInstance | undefined {
-  if (!jzodEditorTestLocalCache) {
+  if (!mlEditorTestLocalCache) {
     return undefined;
   }
-  const domainState = jzodEditorTestLocalCache.getDomainState();
+  const domainState = mlEditorTestLocalCache.getDomainState();
   const deploymentUuid =
-    jzodEditorTestApplicationDeploymentMap[selfApplicationLibrary.uuid];
+    mlEditorTestApplicationDeploymentMap[selfApplicationLibrary.uuid];
   return domainState?.[deploymentUuid]?.data?.[LIBRARY_TEST_COUNTRY_ENTITY_UUID]?.[uuid] as
     | EntityInstance
     | undefined;
 }
 
-export function getJzodEditorTestLocalCache(): LocalCacheInterface | undefined {
-  return jzodEditorTestLocalCache;
+export function getMlEditorTestLocalCache(): LocalCacheInterface | undefined {
+  return mlEditorTestLocalCache;
 }
 
-export function getLibraryCountryFromJzodEditorTestCache(
+export function getLibraryCountryFromMlEditorTestCache(
   uuid: string = LIBRARY_TEST_TRACER_COUNTRY_UUID,
 ): EntityInstance | undefined {
   return libraryCountryFromDomainState(uuid);
 }
 
-export function upsertLibraryCountryInJzodEditorTestCache(instance: EntityInstance): void {
-  if (!jzodEditorTestLocalCache) {
-    throw new Error("upsertLibraryCountryInJzodEditorTestCache: localCache is not initialized");
+export function upsertLibraryCountryInMlEditorTestCache(instance: EntityInstance): void {
+  if (!mlEditorTestLocalCache) {
+    throw new Error("upsertLibraryCountryInMlEditorTestCache: localCache is not initialized");
   }
-  const result = jzodEditorTestLocalCache.handleLocalCacheAction(
+  const result = mlEditorTestLocalCache.handleLocalCacheAction(
     {
       actionType: "createInstance",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -174,26 +174,26 @@ export function upsertLibraryCountryInJzodEditorTestCache(instance: EntityInstan
         objects: [instance],
       },
     } as any,
-    jzodEditorTestApplicationDeploymentMap,
+    mlEditorTestApplicationDeploymentMap,
   );
   if (result.status !== "ok") {
     throw new Error(
-      `upsertLibraryCountryInJzodEditorTestCache failed: ${JSON.stringify(result)}`,
+      `upsertLibraryCountryInMlEditorTestCache failed: ${JSON.stringify(result)}`,
     );
   }
 }
 
-export function deleteLibraryCountryFromJzodEditorTestCache(
+export function deleteLibraryCountryFromMlEditorTestCache(
   uuid: string = LIBRARY_TEST_TRACER_COUNTRY_UUID,
 ): void {
-  if (!jzodEditorTestLocalCache) {
+  if (!mlEditorTestLocalCache) {
     return;
   }
   const existing = libraryCountryFromDomainState(uuid);
   if (!existing) {
     return;
   }
-  jzodEditorTestLocalCache.handleLocalCacheAction(
+  mlEditorTestLocalCache.handleLocalCacheAction(
     {
       actionType: "deleteInstance",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -204,23 +204,23 @@ export function deleteLibraryCountryFromJzodEditorTestCache(
         objects: [existing],
       },
     } as any,
-    jzodEditorTestApplicationDeploymentMap,
+    mlEditorTestApplicationDeploymentMap,
   );
 }
 
-function upsertInstanceInJzodEditorTestCache(
+function upsertInstanceInMlEditorTestCache(
   application: string,
   applicationSection: ApplicationSection,
   instance: EntityInstance,
 ): void {
-  if (!jzodEditorTestLocalCache) {
-    throw new Error("upsertInstanceInJzodEditorTestCache: localCache is not initialized");
+  if (!mlEditorTestLocalCache) {
+    throw new Error("upsertInstanceInMlEditorTestCache: localCache is not initialized");
   }
-  const deploymentUuid = jzodEditorTestApplicationDeploymentMap[application];
-  const domainState = jzodEditorTestLocalCache.getDomainState();
+  const deploymentUuid = mlEditorTestApplicationDeploymentMap[application];
+  const domainState = mlEditorTestLocalCache.getDomainState();
   const existing =
     domainState?.[deploymentUuid]?.[applicationSection]?.[instance.parentUuid]?.[instance.uuid];
-  const result = jzodEditorTestLocalCache.handleLocalCacheAction(
+  const result = mlEditorTestLocalCache.handleLocalCacheAction(
     {
       actionType: existing ? "updateInstance" : "createInstance",
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -231,17 +231,17 @@ function upsertInstanceInJzodEditorTestCache(
         objects: [instance],
       },
     } as any,
-    jzodEditorTestApplicationDeploymentMap,
+    mlEditorTestApplicationDeploymentMap,
   );
   if (result.status !== "ok") {
     throw new Error(
-      `upsertInstanceInJzodEditorTestCache failed: ${JSON.stringify(result)}`,
+      `upsertInstanceInMlEditorTestCache failed: ${JSON.stringify(result)}`,
     );
   }
 }
 
-export function upsertLibraryReportInJzodEditorTestCache(report: EntityInstance): void {
-  upsertInstanceInJzodEditorTestCache(
+export function upsertLibraryReportInMlEditorTestCache(report: EntityInstance): void {
+  upsertInstanceInMlEditorTestCache(
     selfApplicationLibrary.uuid,
     "model",
     {
@@ -251,8 +251,8 @@ export function upsertLibraryReportInJzodEditorTestCache(report: EntityInstance)
   );
 }
 
-export function upsertLibraryStoredQueryInJzodEditorTestCache(query: EntityInstance): void {
-  upsertInstanceInJzodEditorTestCache(
+export function upsertLibraryStoredQueryInMlEditorTestCache(query: EntityInstance): void {
+  upsertInstanceInMlEditorTestCache(
     selfApplicationLibrary.uuid,
     "model",
     {
@@ -262,22 +262,22 @@ export function upsertLibraryStoredQueryInJzodEditorTestCache(query: EntityInsta
   );
 }
 
-export function restoreLibraryMultistepTracerReportInJzodEditorTestCache(): void {
-  if (!jzodEditorTestLocalCache) {
+export function restoreLibraryMultistepTracerReportInMlEditorTestCache(): void {
+  if (!mlEditorTestLocalCache) {
     return;
   }
-  upsertLibraryReportInJzodEditorTestCache(reportMultistepCountryCreate as EntityInstance);
-  upsertLibraryReportInJzodEditorTestCache(reportMultistepLaunchPad as EntityInstance);
+  upsertLibraryReportInMlEditorTestCache(reportMultistepCountryCreate as EntityInstance);
+  upsertLibraryReportInMlEditorTestCache(reportMultistepLaunchPad as EntityInstance);
 }
 
 export interface ReactComponentTestCase<PropType extends Record<string, any>> {
   props?: PropType | ((props: PropType) => PropType);
-  jzodElementEditorProps?:
+  mlElementEditorProps?:
     | PropType
     | ((props: PropType) => PropType);
-    // | JzodElementEditorProps_Test
-    // | ((props: PropType) => JzodElementEditorProps_Test);
-  // renderComponent?: JzodEditorTestCaseRenderer<PropType>;
+    // | MlElementEditorProps_Test
+    // | ((props: PropType) => MlElementEditorProps_Test);
+  // renderComponent?: MlEditorTestCaseRenderer<PropType>;
   renderComponent?: React.FC<PropType>;
   tests: ((expect: ExpectStatic, container: Container) => Promise<void>);
 }
@@ -285,7 +285,7 @@ export interface ReactComponentTestCase<PropType extends Record<string, any>> {
 export type ReactComponentTest<PropType extends Record<string, any>> = Record<string, ReactComponentTestCase<PropType>>;
 
 export interface ReactComponentTestSuite<PropType extends Record<string, any>> {
-  // suiteRenderComponent?: JzodEditorTestCaseRenderer<PropType>;
+  // suiteRenderComponent?: MlEditorTestCaseRenderer<PropType>;
   suiteRenderComponent?: React.FC<PropType>;
   suiteProps?: PropType;
   tests: ReactComponentTest<PropType>;
@@ -310,9 +310,9 @@ export interface LocalLiteralEditorProps extends LocalEditorPropsRoot {
 }
 
 export function getLocalEditor<
-  JzodEditorProps extends JzodEditorPropsRoot,
+  MlEditorProps extends MlEditorPropsRoot,
   LocalEditorProps extends LocalEditorPropsRoot
->(pageLabel: string, Compo: React.FC<JzodEditorProps>): React.FC<LocalEditorProps> {
+>(pageLabel: string, Compo: React.FC<MlEditorProps>): React.FC<LocalEditorProps> {
   console.log("getLocalEditor", "pageLabel", pageLabel);
   const result: React.FC<LocalEditorProps> = (props: LocalEditorProps) => {
     const initialFormState: any = { [props.name]: props.initialFormState };
@@ -343,7 +343,7 @@ export function getLocalEditor<
     // );
 
     const onSubmit = (values: any) => {
-      console.log("JzodElementEditorTestTools onSubmit formik values ###########################################", values);
+      console.log("MlElementEditorTestTools onSubmit formik values ###########################################", values);
       // const newFormState: any = alterObjectAtPath(formState, props.rootLessListKeyArray, values);
       // setFormState(newFormState);
       // setFormState(values);
@@ -401,20 +401,20 @@ export function getWrapperLoadingLocalCache(
   });
 
   if (options?.wireLocalCacheCompositeAction) {
-    jzodEditorTestLocalCache = localCache;
-    jzodEditorTestApplicationDeploymentMap = applicationDeploymentMap;
+    mlEditorTestLocalCache = localCache;
+    mlEditorTestApplicationDeploymentMap = applicationDeploymentMap;
   }
   return Wrapper;
 };
 
 // ##############################################################################################
-export async function runJzodEditorTest(
+export async function runMlEditorTest(
   testCase: ReactComponentTestCase<any>,
   testSuite: ReactComponentTestSuite<any>,
   testName: string,
 ) {
   console.log(
-    "runJzodEditorTest start",
+    "runMlEditorTest start",
     "testName",
     testName,
   );
@@ -422,14 +422,14 @@ export async function runJzodEditorTest(
       testCase.renderComponent ?? testSuite.suiteRenderComponent
   if (!ComponentToRender) {
     throw new Error(
-      `Test case ${testName} does not have a renderAsJzodElementEditor or renderAsComponent function, skipping test: ${testName}`
+      `Test case ${testName} does not have a renderAsMlElementEditor or renderAsComponent function, skipping test: ${testName}`
     );
   }
-  console.log("runJzodEditorTest", "found ComponentToRender"
+  console.log("runMlEditorTest", "found ComponentToRender"
     // , ComponentToRender
   );
-  const testCaseSpecificProps = testCase.jzodElementEditorProps;
-  const props: JzodElementEditorProps_Test | undefined =
+  const testCaseSpecificProps = testCase.mlElementEditorProps;
+  const props: MlElementEditorProps_Test | undefined =
     testCaseSpecificProps == undefined
       ? typeof testCase.props === "function"
         ? (testCase.props(testSuite.suiteProps as any) as any)
@@ -442,7 +442,7 @@ export async function runJzodEditorTest(
         ) // TODO: testCase.props can be a function, which will fail.
       : testCaseSpecificProps;
   // console.log(
-  //   "runJzodEditorTest",
+  //   "runMlEditorTest",
   //   "testName",
   //   testName,
   //   "testCaseSpecificProps",
@@ -467,72 +467,72 @@ export async function runJzodEditorTest(
     console.warn(`Test case ${testName} does not have props defined, skipping test: ${testName}`);
   }
   console.log(
-    "runJzodEditorTest end",
+    "runMlEditorTest end",
     "testName",
     testName,
   );
 }
 
 // ################################################################################################
-export function getJzodEditorTestSuites<
-  JzodEditorProps extends JzodEditorPropsRoot,
+export function getMlEditorTestSuites<
+  MlEditorProps extends MlEditorPropsRoot,
   // LocalEditorProps extends LocalEditorPropsRoot,
 >(
   pageLabel: string,
-  reactComponentUnderTest: React.FC<JzodEditorProps>,
-  getJzodEditorTests: (
-    jzodElementEditor: React.FC<JzodEditorProps>
-  ) => ReactComponentTestSuites<JzodEditorProps>,
+  reactComponentUnderTest: React.FC<MlEditorProps>,
+  getMlEditorTests: (
+    mlElementEditor: React.FC<MlEditorProps>
+  ) => ReactComponentTestSuites<MlEditorProps>,
   performanceTests: boolean = false,
   applicationDeploymentMap: ApplicationDeploymentMap,
   options?: { wireLocalCacheCompositeAction?: boolean },
-): ReactComponentTestSuites<JzodEditorProps> {
-  const WrapperForJzodElementEditor: React.FC<any> = getWrapperLoadingLocalCache(
+): ReactComponentTestSuites<MlEditorProps> {
+  const WrapperForMlElementEditor: React.FC<any> = getWrapperLoadingLocalCache(
     performanceTests,
     applicationDeploymentMap,
     options,
   );
 
-  const JzodElementEditorForTest: React.FC<JzodEditorProps> = reactComponentUnderTest;
-    // getJzodElementEditorForTest(pageLabel);
+  const MlElementEditorForTest: React.FC<MlEditorProps> = reactComponentUnderTest;
+    // getMlElementEditorForTest(pageLabel);
 
-  // const jzodEditorTest: ReactComponentTestSuites<LocalEditorProps> = getJzodEditorTests(
-  const jzodEditorTest: ReactComponentTestSuites<JzodEditorProps> = getJzodEditorTests(
-    (props: JzodEditorProps) => (
-      <WrapperForJzodElementEditor>
-        <JzodElementEditorForTest {...props} />
-      </WrapperForJzodElementEditor>
+  // const mlEditorTest: ReactComponentTestSuites<LocalEditorProps> = getMlEditorTests(
+  const mlEditorTest: ReactComponentTestSuites<MlEditorProps> = getMlEditorTests(
+    (props: MlEditorProps) => (
+      <WrapperForMlElementEditor>
+        <MlElementEditorForTest {...props} />
+      </WrapperForMlElementEditor>
     )
   );
-  return jzodEditorTest;
+  return mlEditorTest;
 }
 
 // ################################################################################################
 export function prepareAndRunTestSuites(
   pageLabel: string,
-  jzodElementEditorTests: Record<
+  mlElementEditorTests: Record<
   string,
   ReactComponentTestSuitePrep<any>
 >,
   applicationDeploymentMap: ApplicationDeploymentMap,
 ) {
-  Object.entries(jzodElementEditorTests).forEach(([editorName, testSuite]) => {
-      // const suites: ReactComponentTestSuites<LocalEditorPropsRoot> = getJzodEditorTestSuites(
-      const suites: ReactComponentTestSuites<JzodElementEditorProps_Test> = getJzodEditorTestSuites(
+  Object.entries(mlElementEditorTests).forEach(([editorName, testSuite]) => {
+      // const suites: ReactComponentTestSuites<LocalEditorPropsRoot> = getMlEditorTestSuites(
+      const suites: ReactComponentTestSuites<MlElementEditorProps_Test> = getMlEditorTestSuites(
         pageLabel,
-        testSuite.editor, //getJzodElementEditorForTest(pageLabel)
-        testSuite.getJzodEditorTests,
+        testSuite.editor, //getMlElementEditorForTest(pageLabel)
+        testSuite.getMlEditorTests,
         testSuite.performanceTests,
         applicationDeploymentMap,
         { wireLocalCacheCompositeAction: testSuite.wireLocalCacheCompositeAction },
       );
-      const mode = jzodElementEditorTestModeLabel;
+      const mode = mlElementEditorTestModeLabel;
       console.log(`Running tests for ${editorName} with Test suites: ${JSON.stringify(Object.keys(suites), null, 2)}`);
       Object.entries(suites[editorName].tests).forEach(([testName, testCase]) => {
         console.log(`Running test: ${editorName} - ${mode} - ${testName}`);
         it(`${editorName} - ${mode} - ${testName}`, async () => {
           console.log(`Running test: ${editorName} - ${mode} - ${testName}`);
-          await runJzodEditorTest(testCase, suites[editorName], testName);
+          await runMlEditorTest(testCase, suites[editorName], testName);
           console.log(`Completed test: ${editorName} - ${mode} - ${testName}`);
         });
         console.log(`Completed test: ${editorName} - ${mode} - ${testName}`);

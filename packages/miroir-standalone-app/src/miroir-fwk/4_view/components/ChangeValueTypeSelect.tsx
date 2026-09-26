@@ -9,24 +9,24 @@ export const ChangeValueTypeSelect: React.FC<{ onChange: (type: MlElement) => vo
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newType = event.target.value;
     setSelectedType(newType);
-    let newJzodSchema: MlElement | undefined;
+    let newMlSchema: MlElement | undefined;
     switch (newType) {
       case "undefined":
-        newJzodSchema = { type: "undefined" };
+        newMlSchema = { type: "undefined" };
         break;
       case "record":
-        newJzodSchema = { type: "record", definition: { type: "any" } };
+        newMlSchema = { type: "record", definition: { type: "any" } };
         break;
       case "array":
-        newJzodSchema = { type: "array", definition: { type: "any" } };
+        newMlSchema = { type: "array", definition: { type: "any" } };
         break;
       case "simple":
-        newJzodSchema = { type: "string" }; // or any other simple type
+        newMlSchema = { type: "string" }; // or any other simple type
         break;
       default:
         throw new Error(`Unsupported type: ${newType}`);
     }
-    onChange(newJzodSchema);
+    onChange(newMlSchema);
   };
 
   return (

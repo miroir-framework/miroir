@@ -73,7 +73,7 @@ describe.skipIf(!shouldRun)("externalService — current contracts", () => {
     expect(jsonFilesIn(LIBRARY_MODEL_ENDPOINT_DIR)).toHaveLength(2);
   });
 
-  it("validates all 13 endpoint source assets against the current Endpoint Jzod schema", () => {
+  it("validates all 13 endpoint source assets against the current Endpoint ML schema", () => {
     const endpointSchema = entityDefinitionEndpoint.mlSchema;
     expect(endpointSchema).toBeTruthy();
 

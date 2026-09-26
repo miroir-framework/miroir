@@ -1,11 +1,11 @@
 // import { render, screen, fireEvent } from "@testing-library/react";
 // import { describe, it, expect, vi } from "vitest";
-// // import {JzodElementEditorReactCodeMirror} from "../../src/miroir-fwk/4_view/components/JzodElementEditorReactCodeMirror";
+// // import {MlElementEditorReactCodeMirror} from "../../src/miroir-fwk/4_view/components/MlElementEditorReactCodeMirror";
 
-// describe("JzodElementEditorReactCodeMirror", () => {
+// describe("MlElementEditorReactCodeMirror", () => {
 //   it("renders the CodeMirror editor", () => {
 //     render(
-//       <JzodElementEditorReactCodeMirror
+//       <MlElementEditorReactCodeMirror
 //         // initialValue="Initial content"
 //         // onChange={() => {}}
 //       />
@@ -21,7 +21,7 @@
 //   //   const mockOnChange = vi.fn();
 
 //   //   render(
-//   //     <JzodElementEditorReactCodeMirror
+//   //     <MlElementEditorReactCodeMirror
 //   //       // initialValue="Initial content"
 //   //       // onChange={mockOnChange}
 //   //     />
@@ -39,7 +39,7 @@
 
 //   // it("handles empty initial value", () => {
 //   //   render(
-//   //     <JzodElementEditorReactCodeMirror
+//   //     <MlElementEditorReactCodeMirror
 //   //       // initialValue=""
 //   //       // onChange={() => {}}
 //   //     />

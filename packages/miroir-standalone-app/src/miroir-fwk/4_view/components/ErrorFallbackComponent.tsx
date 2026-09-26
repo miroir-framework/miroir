@@ -19,7 +19,7 @@ export interface ErrorFallbackComponentProps {
   error: Error;
   resetErrorBoundary?: () => void;
   context: {
-    origin?: string; // used to identify the origin of the error, e.g., "JzodElementEditor"
+    origin?: string; // used to identify the origin of the error, e.g., "MlElementEditor"
     objectType: string;
     rootLessListKey: string;
     rootLessListKeyArray?: (string | number)[]; // Added this field to match the new path structure

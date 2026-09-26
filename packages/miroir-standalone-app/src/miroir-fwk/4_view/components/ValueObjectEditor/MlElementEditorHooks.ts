@@ -45,7 +45,7 @@ import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
 import { adminSelfApplication } from "miroir-test-app_deployment-admin";
 import { useApplicationAccess } from "../../auth/useApplicationAccess.js";
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodElementEditorHooks");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlElementEditorHooks");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {
@@ -53,7 +53,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 });
 
 // ##################################################################################################
-export interface JzodElementEditorHooks {
+export interface MlElementEditorHooks {
   // environment
   context: MiroirReactContext;
   currentModel: MetaModel;
@@ -66,7 +66,7 @@ export interface JzodElementEditorHooks {
   formikRootLessListKeyArray: (string | number)[];
   formikRootLessListKey: string;
   currentValueObject: any;
-  currentValueObjectAtKey: any; // current value of the jzod element
+  currentValueObjectAtKey: any; // current value of the ML element
   codeMirrorValue: string;
   setCodeMirrorValue: React.Dispatch<React.SetStateAction<string>>;
   codeMirrorIsValidJson: boolean;
@@ -173,7 +173,7 @@ export function getItemsOrder(
 // ################################################################################################
 let count = 0;
 
-export function useJzodElementEditorHooks(
+export function useMlElementEditorHooks(
   rootLessListKey: string,
   rootLessListKeyArray: (string | number)[],
   reportSectionPathAsString: string,
@@ -184,7 +184,7 @@ export function useJzodElementEditorHooks(
   currentDeploymentUuid: Uuid | undefined,
   count: number, // used for debugging
   caller: string,
-): JzodElementEditorHooks {
+): MlElementEditorHooks {
   // general use
   count++;
   const context = useMiroirContextService();
@@ -211,7 +211,7 @@ export function useJzodElementEditorHooks(
         : currentReportSectionFormikValues;
     } catch (e) {
       log.warn(
-        "useJzodElementEditorHooks resolvePathOnObject error",
+        "useMlElementEditorHooks resolvePathOnObject error",
         "rootLessListKeyArray",
         rootLessListKeyArray,
         "aggregate",
@@ -320,7 +320,7 @@ export function useJzodElementEditorHooks(
             formik.values, // contextResults - pass the instance to transform
           );
           // log.info(
-          //   "useJzodElementEditorHooks",
+          //   "useMlElementEditorHooks",
           //   "rootLessListKey:", rootLessListKey,
           //   "resolved applicationUuid:",
           //   targetApplication,
@@ -332,13 +332,13 @@ export function useJzodElementEditorHooks(
           // );
           if (targetApplication instanceof TransformerFailure) {
             throw new Error(
-              "JzodElementEditorHooks: applicationUuid resolved from transformer is not a string: " +
+              "MlElementEditorHooks: applicationUuid resolved from transformer is not a string: " +
                 targetApplication
             );
           }
         }
         // log.info(
-        //   "useJzodElementEditorHooks foreignKeyObjects",
+        //   "useMlElementEditorHooks foreignKeyObjects",
         //   "rootLessListKey:",
         //   rootLessListKey,
         //   "for foreignKeyObjects",
@@ -361,7 +361,7 @@ export function useJzodElementEditorHooks(
               extractors: {
                 [currentTypecheckKeyMap.resolvedSchema.tag?.value?.foreignKeyParams?.targetEntity]: {
                   extractorOrCombinerType: "extractorInstancesByEntity",
-                  label: "jzodElementEditorHooks foreign key objects",
+                  label: "mlElementEditorHooks foreign key objects",
                   applicationSection,
                   parentName: "",
                   parentUuid:
@@ -405,7 +405,7 @@ export function useJzodElementEditorHooks(
   ) || {};
 
   // log.info(
-  //   "useJzodElementEditorHooks foreignKeyObjects",
+  //   "useMlElementEditorHooks foreignKeyObjects",
   //   "rootLessListKey:",
   //   rootLessListKey,
   //   "currentDeploymentUuid:",
@@ -418,7 +418,7 @@ export function useJzodElementEditorHooks(
   // );
 
   // ######################### optional attributes #########################
-  const typeCheckMapJzodObjectFlattenedSchema: MlObject | undefined =
+  const typeCheckMapMlObjectFlattenedSchema: MlObject | undefined =
     typeCheckKeyMap !== undefined &&
     typeCheckKeyMap[rootLessListKey] !== undefined &&
     typeCheckKeyMap[rootLessListKey].mlObjectFlattenedSchema !== undefined
@@ -434,9 +434,9 @@ export function useJzodElementEditorHooks(
       : undefined;
 
   const undefinedOptionalAttributes: string[] = useMemo(() => {
-    if (typeCheckMapJzodObjectFlattenedSchema) {
+    if (typeCheckMapMlObjectFlattenedSchema) {
       const currentObjectAttributes = Object.keys(currentValueObjectAtKey);
-      return Object.entries(typeCheckMapJzodObjectFlattenedSchema.definition)
+      return Object.entries(typeCheckMapMlObjectFlattenedSchema.definition)
         .filter((a) => a[1].optional)
         .filter((a) => !currentObjectAttributes.includes(a[0]))
         .map((a) => a[0]);
@@ -451,15 +451,15 @@ export function useJzodElementEditorHooks(
     return [];
   }, [
     typeCheckKeyMapChosenUnionBranchObjectSchema,
-    typeCheckMapJzodObjectFlattenedSchema,
+    typeCheckMapMlObjectFlattenedSchema,
     currentValueObjectAtKey,
   ]);
 
   const definedOptionalAttributes: Set<string> = useMemo(() => {
-    if (typeCheckMapJzodObjectFlattenedSchema) {
+    if (typeCheckMapMlObjectFlattenedSchema) {
       const currentObjectAttributes = Object.keys(currentValueObjectAtKey);
       return new Set(
-        Object.entries(typeCheckMapJzodObjectFlattenedSchema.definition)
+        Object.entries(typeCheckMapMlObjectFlattenedSchema.definition)
           .filter((a) => a[1].optional)
           .filter((a) => currentObjectAttributes.includes(a[0]))
           .map((a) => a[0])
@@ -476,7 +476,7 @@ export function useJzodElementEditorHooks(
     }
     return new Set();
   }, [
-    typeCheckMapJzodObjectFlattenedSchema,
+    typeCheckMapMlObjectFlattenedSchema,
     typeCheckKeyMapChosenUnionBranchObjectSchema,
     currentValueObjectAtKey,
   ]);
@@ -552,7 +552,7 @@ export function useJzodElementEditorHooks(
     candidates,
     visible,
   ]);
-  // log.info("getJzodElementEditorHooks ", dbgInt++, "aggregate", count, "caller", caller);
+  // log.info("getMlElementEditorHooks ", dbgInt++, "aggregate", count, "caller", caller);
 
   return {
     context,
@@ -587,7 +587,7 @@ export function useJzodElementEditorHooks(
  * Shared utility function to get the displayed value when an object/array is folded.
  * Uses the schema's tag.value.display.displayedAttributeValueWhenFolded path to resolve a display value from the current value.
  * 
- * @param schema - The Jzod schema element that may contain the display configuration
+ * @param schema - The ML schema element that may contain the display configuration
  * @param currentValue - The current data value to resolve the display path on
  * @returns The display value if found and valid, null otherwise
  */

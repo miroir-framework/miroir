@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { screen } from "@testing-library/react";
-import { formValuesToJSON } from "./4_view/JzodElementEditorTestTools";
+import { formValuesToJSON } from "./4_view/MlElementEditorTestTools";
 
 describe("formValuesToJSON", () => {
   it("top-level array: should convert flat object with dot notation keys to array of objects", () => {
@@ -31,7 +31,7 @@ describe("formValuesToJSON", () => {
     ]);
   });
 
-  it("top-level array: example from JzodElementEditor tests", () => {
+  it("top-level array: example from MlElementEditor tests", () => {
     const input = {
       "0.a": "value1",
       "0.b.c": 1,
@@ -49,7 +49,7 @@ describe("formValuesToJSON", () => {
     };
     const result = formValuesToJSON(input);
     // formValuesToJSON keeps values as given: the former "e" to BigInt special case is disabled
-    // in JzodElementEditorTestTools.tsx, and every index present in the input yields an item.
+    // in MlElementEditorTestTools.tsx, and every index present in the input yields an item.
     expect(result).toEqual([
       {
         a: "value1",

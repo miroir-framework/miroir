@@ -1004,7 +1004,7 @@ export function mlsTypeCheck(
         };
       }
       // #296: the keyMap is flat, so a consumer re-resolving this entry's rawSchema (e.g. the
-      // instance editor's JzodObjectEditor) only has `rawSchema.context`. A purely relative
+      // instance editor's MlObjectEditor) only has `rawSchema.context`. A purely relative
       // reference whose context comes from an ancestor (e.g. `{relativePath:
       // "miroirTestForReactComponent"}` below the MiroirTest mlSchema's context) must carry that
       // context in its keyMap entry to be resolvable there.

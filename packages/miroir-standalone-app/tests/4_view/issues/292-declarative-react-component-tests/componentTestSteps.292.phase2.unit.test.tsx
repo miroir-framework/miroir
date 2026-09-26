@@ -4,7 +4,7 @@
  *
  * Each test calls the runner of `createReactComponentTestRunner` over its own sandbox element with
  * a `reactComponentTest` leaf that has `steps`, and a `reactComponentTestSuite` context, as the
- * MiroirTest walk does. The Enum fixture renders the real `JzodElementEditor` of the component
+ * MiroirTest walk does. The Enum fixture renders the real `MlElementEditor` of the component
  * registry. The props and wrapper-lifetime tests use a fake component registry.
  *
  * Run:
@@ -29,7 +29,7 @@ const enumCaseLabel = "FixtureEnum: case";
 
 const enumSuite: ReactComponentTestSuiteContext = {
   suitePath: ["Fixture_ComponentTestSuite", "FixtureEnum"],
-  component: "JzodElementEditor",
+  component: "MlElementEditor",
   componentProps: {
     label: "Test Label",
     name: "testField",
@@ -104,7 +104,7 @@ function newRunner(componentRegistry?: Record<string, React.FC<any>>) {
 }
 
 // ################################################################################################
-describe("componentTestSteps.292.phase2: Enum fixture on the real JzodElementEditor", () => {
+describe("componentTestSteps.292.phase2: Enum fixture on the real MlElementEditor", () => {
   it("the steps of the Enum case 2 give ok", async () => {
     const result = await newRunner()({
       testNamePath: [...enumSuite.suitePath, enumCaseLabel],

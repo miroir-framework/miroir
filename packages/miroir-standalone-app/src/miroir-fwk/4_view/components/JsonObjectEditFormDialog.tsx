@@ -28,7 +28,7 @@ import {
   useMiroirContextService
 } from "miroir-react";
 import { packageName } from "../../../constants.js";
-import { useMiroirFundamentalJzodSchemaForDeployment } from "../ReduxHooks.js";
+import { useMiroirFundamentalMlSchemaForDeployment } from "../ReduxHooks.js";
 import { cleanLevel } from "../constants.js";
 import { ErrorFallbackComponent } from "./ErrorFallbackComponent.js";
 import type { ValueObjectEditMode } from "./Reports/ReportSectionEntityInstance.js";
@@ -426,7 +426,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
   //   mlSchema
   // );
   // const context = useMiroirContextService();
-  const miroirFundamentalMlSchema = useMiroirFundamentalJzodSchemaForDeployment(
+  const miroirFundamentalMlSchema = useMiroirFundamentalMlSchemaForDeployment(
     currentDeploymentUuid,
   );
   const domainController: DomainControllerInterface = useDomainControllerService();

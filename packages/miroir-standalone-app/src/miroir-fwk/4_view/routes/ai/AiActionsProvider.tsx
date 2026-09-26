@@ -136,11 +136,10 @@ function useApplyEntityProposal() {
           entities: [
             {
               ...(proposal.entity as any),
-              // #220 — Entity-only create; promote schema from proposal EntityVersion / legacy jzodSchema
+              // #220 — Entity-only create; promote schema from proposal EntityVersion
               mlSchema:
                 (proposal.entity as any).mlSchema ??
-                (proposal.entityVersion as any)?.mlSchema ??
-                (proposal.entityVersion as any)?.jzodSchema,
+                (proposal.entityVersion as any)?.mlSchema,
               defaultInstanceDetailsReportUuid:
                 (proposal.entity as any).defaultInstanceDetailsReportUuid ??
                 (proposal.entityVersion as any)?.defaultInstanceDetailsReportUuid,

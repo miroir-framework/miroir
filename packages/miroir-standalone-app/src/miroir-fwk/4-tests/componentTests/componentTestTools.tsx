@@ -65,7 +65,7 @@ import {
 import { packageName } from "../../../constants.js";
 import { ReportPageContextProvider } from "../../4_view/components/Reports/ReportPageContext.js";
 import { DocumentOutlineContextProvider } from "../../4_view/components/ValueObjectEditor/InstanceEditorOutlineContext.js";
-import { JzodElementEditor } from "../../4_view/components/ValueObjectEditor/JzodElementEditor.js";
+import { MlElementEditor } from "../../4_view/components/ValueObjectEditor/MlElementEditor.js";
 import { cleanLevel } from "../../4_view/constants.js";
 import { useCurrentModel, useCurrentModelEnvironment } from "../../4_view/ReduxHooks.js";
 import { emptyObject } from "../../4_view/tools/emptyObject.js";
@@ -73,7 +73,7 @@ import { emptyObject } from "../../4_view/tools/emptyObject.js";
 // ################################################################################################
 // Browser-safe component test tools (#286). No vitest, no @testing-library/react, no process.env,
 // no registerTestImplementation: this module can be loaded by the running app.
-// The vitest-only helpers stay in tests/4_view/JzodElementEditorTestTools.tsx, which re-exports this module.
+// The vitest-only helpers stay in tests/4_view/MlElementEditorTestTools.tsx, which re-exports this module.
 // ################################################################################################
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "componentTestTools");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -197,7 +197,7 @@ export const testThemeParams = {
 };
 
 // ################################################################################################
-export interface JzodElementEditorProps_Test {
+export interface MlElementEditorProps_Test {
   // forceTestingMode?: boolean;
   name: string;
   label?: string;
@@ -224,14 +224,14 @@ export type ExtractValuesExpect = (actual: any, message?: string) => { toBeTruth
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-// JZOD ELEMENT EDITOR
+// ML ELEMENT EDITOR
 // ################################################################################################
-let JzodElementEditorForTestRenderCount: number = 0;
+let MlElementEditorForTestRenderCount: number = 0;
 
-export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodElementEditorProps_Test> =
+export const getMlElementEditorForTest: (pageLabel: string) => React.FC<MlElementEditorProps_Test> =
   (pageLabel: string) =>
   (
-    props: JzodElementEditorProps_Test
+    props: MlElementEditorProps_Test
 ) => {
   const {
     name,
@@ -244,8 +244,8 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
     rawMlSchema,
   } = props;
     // const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
-    log.debug("getJzodElementEditorForTest", "rawMlSchema", rawMlSchema);
-    JzodElementEditorForTestRenderCount++;
+    log.debug("getMlElementEditorForTest", "rawMlSchema", rawMlSchema);
+    MlElementEditorForTestRenderCount++;
     const context = useMiroirContextService();
     context.setDeploymentUuid
 
@@ -261,8 +261,8 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
     );
     // log.debug("currentMiroirModel", currentMiroirModel);
 
-    const effectiveRawJzodSchema: MlElement | undefined = useMemo(() => {
-      // log.debug("getJzodElementEditorForTest", "rawMlSchema", rawMlSchema);
+    const effectiveRawMlSchema: MlElement | undefined = useMemo(() => {
+      // log.debug("getMlElementEditorForTest", "rawMlSchema", rawMlSchema);
       return rawMlSchema != undefined
         ? { type: "object", definition: { [rootLessListKey]: rawMlSchema } }
         : undefined;
@@ -270,13 +270,13 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
 
     const onSubmit = useCallback(
       async (
-        actionCreateSchemaParamValues: any /* actually follows formJzodSchema */,
+        actionCreateSchemaParamValues: any /* actually follows formMlSchema */,
         formikFunctions: { setSubmitting: any; setErrors: any }
       ) => {
         try {
           //  Send values somehow
           log.debug(
-            "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ JzodElementEditorTestTools onSubmit formik values",
+            "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ MlElementEditorTestTools onSubmit formik values",
             actionCreateSchemaParamValues,
             "newApplicationName",
             actionCreateSchemaParamValues.newApplicationName,
@@ -299,7 +299,7 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
       return { [testSectionName]: { [name]: initialFormState }};
     }, [name, initialFormState]);
     log.debug(
-      "getJzodElementEditorForTest",
+      "getMlElementEditorForTest",
       "formikInitialValues",
       JSON.stringify(formikInitialValues, null, 2)
     );
@@ -318,10 +318,10 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
         >
           {(formik: FormikProps<any>) => {
             log.debug(
-              "getJzodElementEditorForTest render formik, values",
+              "getMlElementEditorForTest render formik, values",
               JSON.stringify(formik.values),
-              "effectiveRawJzodSchema",
-              JSON.stringify(effectiveRawJzodSchema, null, 2)
+              "effectiveRawMlSchema",
+              JSON.stringify(effectiveRawMlSchema, null, 2)
             );
 
             let typeError: JSX.Element | undefined = undefined;
@@ -330,11 +330,11 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
               try {
                 result =
                   currentMiroirModelEnvironment.miroirFundamentalMlSchema &&
-                  effectiveRawJzodSchema &&
+                  effectiveRawMlSchema &&
                   formik.values &&
                   currentModel
                     ? mlsTypeCheck(
-                        effectiveRawJzodSchema,
+                        effectiveRawMlSchema,
                         formik.values[testSectionName],
                         [], // currentValuePath
                         [], // currentTypePath
@@ -358,21 +358,21 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
                 };
               }
               return result;
-            }, [formik.values, effectiveRawJzodSchema, context, currentModel]);
+            }, [formik.values, effectiveRawMlSchema, context, currentModel]);
                       // log.debug(
                       //   "ReportSectionEntityInstance mlsTypeCheck done for render", ReportSectionEntityInstanceCount ,"resolvedMlSchema",
                       //   resolvedMlSchema,
                       // );
           if (!resolvedMlSchema || resolvedMlSchema.status != "ok") {
             log.error(
-              "ReportSectionEntityInstance could not resolve jzod schema",
+              "ReportSectionEntityInstance could not resolve ML schema",
               // props,
               // context,
               resolvedMlSchema
             );
 
-            // return <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedMlSchema)}</>;
-            // typeError = <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedMlSchema, null, 2)}</>;
+            // return <>ReportSectionEntityInstance: could not resolve ML schema: {JSON.stringify(resolvedMlSchema)}</>;
+            // typeError = <>ReportSectionEntityInstance: could not resolve ML schema: {JSON.stringify(resolvedMlSchema, null, 2)}</>;
             // Calculate the maximum line width for fixed sizing
             // const jsonString = JSON.stringify(resolvedMlSchema, null, 2);
             // const lines = jsonString.split("\n");
@@ -387,7 +387,7 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
                 <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
                   {resolvedMlSchema != undefined  && resolvedMlSchema.status === "ok"? (
                     <>
-                      <JzodElementEditor
+                      <MlElementEditor
                         name={name}
                         valueObjectEditMode="update"
                         currentDeploymentUuid={context.deploymentUuid}

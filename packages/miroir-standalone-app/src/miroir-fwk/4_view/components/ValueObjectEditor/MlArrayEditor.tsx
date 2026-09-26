@@ -55,15 +55,15 @@ import {
 import {
   FoldUnfoldAllObjectAttributesOrArrayItems,
   FoldUnfoldObjectOrArray,
-  JzodElementEditor,
-} from "./JzodElementEditor";
-import { getFoldedDisplayValue } from "./JzodElementEditorHooks";
-import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
+  MlElementEditor,
+} from "./MlElementEditor";
+import { getFoldedDisplayValue } from "./MlElementEditorHooks";
+import { MlArrayEditorProps } from "./MlElementEditorInterface";
 import { valueToJzod } from "@miroir-framework/jzod";
 import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 // import { MlUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodElementEditor");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlElementEditor");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {
@@ -73,7 +73,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 // export const indentShift = "1em + 4px"; // TODO: centralize style
 export const indentShift = "4px"; // TODO: centralize style
 
-interface JzodArrayMoveButtonProps {
+interface MlArrayMoveButtonProps {
   direction: "up" | "down";
   index: number;
   itemsOrder: any[];
@@ -86,7 +86,7 @@ interface JzodArrayMoveButtonProps {
 }
 
 // ################################################################################################
-export const JzodArrayEditorMoveButton: React.FC<JzodArrayMoveButtonProps> = ({
+export const MlArrayEditorMoveButton: React.FC<MlArrayMoveButtonProps> = ({
   direction,
   index,
   itemsOrder,
@@ -114,7 +114,7 @@ export const JzodArrayEditorMoveButton: React.FC<JzodArrayMoveButtonProps> = ({
     newList.splice(insertAt, 0, movedItem);
 
     log.info(
-      `JzodArrayMoveButton array moving ${direction} item`,
+      `MlArrayMoveButton array moving ${direction} item`,
       currentItemIndex,
       "in object with items",
       itemsOrder,
@@ -237,7 +237,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
             {/* Only show move buttons in edit mode */}
             {!readOnly && (
               <>
-                <JzodArrayEditorMoveButton
+                <MlArrayEditorMoveButton
                   direction="down"
                   index={index}
                   itemsOrder={itemsOrder as number[]}
@@ -248,7 +248,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                   currentValue={currentValue}
                   onChangeVector={onChangeVector}
                 />
-                <JzodArrayEditorMoveButton
+                <MlArrayEditorMoveButton
                   direction="up"
                   index={index}
                   itemsOrder={itemsOrder as number[]}
@@ -289,7 +289,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                   error={error}
                   resetErrorBoundary={resetErrorBoundary}
                   context={{
-                    origin: "JzodArrayEditor",
+                    origin: "MlArrayEditor",
                     objectType: "array",
                     rootLessListKey:
                       rootLessListKey.length > 0 ? rootLessListKey + "." + index : "" + index,
@@ -312,7 +312,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                   useCodeBlock: true,
                 }]}
               />
-              <JzodElementEditor
+              <MlElementEditor
                 name={"" + index}
                 valueObjectEditMode={props.valueObjectEditMode}
                 listKey={listKey + "." + index}
@@ -354,9 +354,9 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-let jzodArrayEditorRenderCount: number = 0;
-export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
-  // props: JzodArrayEditorProps
+let mlArrayEditorRenderCount: number = 0;
+export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
+  // props: MlArrayEditorProps
   {
     name,
     labelElement: label,
@@ -385,7 +385,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     ...props
   }
 ) => {
-  jzodArrayEditorRenderCount++;
+  mlArrayEditorRenderCount++;
   const context = useMiroirContextService();
   const renderStartRef = useRef(0);
   if (context.showPerformanceDisplay) {
@@ -412,7 +412,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     ? typeCheckKeyMap[rootLessListKey]
     : undefined;
 
-  const currentRawJzodSchema: MlElement | undefined = insideAny ? { type: "any" } : currentTypeCheckKeyMap?.rawSchema;
+  const currentRawMlSchema: MlElement | undefined = insideAny ? { type: "any" } : currentTypeCheckKeyMap?.rawSchema;
   const localResolvedElementMlSchemaBasedOnValue: MlElement | undefined = useMemo(
     () => {
       if (insideAny) {
@@ -473,7 +473,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     async (e:any) => {
       e.stopPropagation();
       e.preventDefault();
-      let schema: MlElement | undefined = currentRawJzodSchema;
+      let schema: MlElement | undefined = currentRawMlSchema;
 
       if (schema?.type === "schemaReference") {
         schema = resolveMlSchemaReferenceInContext(
@@ -483,22 +483,22 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         );
       }
 
-      if (!currentRawJzodSchema || !["array", "any"].includes(currentRawJzodSchema.type)) {
+      if (!currentRawMlSchema || !["array", "any"].includes(currentRawMlSchema.type)) {
         throw new Error(
-          "JzodArrayEditor addNewArrayItem called with a non-array / non-any schema: " +
-            JSON.stringify(currentRawJzodSchema, null, 2)
+          "MlArrayEditor addNewArrayItem called with a non-array / non-any schema: " +
+            JSON.stringify(currentRawMlSchema, null, 2)
         );
       }
 
       if (!currentMiroirModelEnvironment.miroirFundamentalMlSchema) {
         throw new Error(
-          "JzodArrayEditor addNewArrayItem called without miroirFundamentalMlSchema: " +
+          "MlArrayEditor addNewArrayItem called without miroirFundamentalMlSchema: " +
             JSON.stringify(currentMiroirModelEnvironment.miroirFundamentalMlSchema, null, 2)
         );
       }
 
       log.info(
-        "JzodArrayEditor addNewArrayItem",
+        "MlArrayEditor addNewArrayItem",
         "rootLessListKey",
         rootLessListKey,
         "currentTypeCheckKeyMap",
@@ -526,13 +526,13 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   
         if (!newItemEntityUuid) {
           throw new Error(
-            "JzodArrayEditor addNewArrayItem called without a newItemEntityUuid: " +
+            "MlArrayEditor addNewArrayItem called without a newItemEntityUuid: " +
               JSON.stringify(newItemEntityUuid, null, 2)
           );
         }
         if (!currentDeploymentUuid) {
           throw new Error(
-            "JzodArrayEditor addNewArrayItem called without a currentDeploymentUuid: " +
+            "MlArrayEditor addNewArrayItem called without a currentDeploymentUuid: " +
               JSON.stringify(currentDeploymentUuid, null, 2)
           );
         }
@@ -542,7 +542,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         );
 
         log.info(
-          "JzodArrayEditor addNewArrayItem",
+          "MlArrayEditor addNewArrayItem",
           "rootLessListKey",
           rootLessListKey,
           "path",
@@ -566,7 +566,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         );
         if (!newItemEntity) {
           throw new Error(
-            "JzodArrayEditor addNewArrayItem could not find entity for newItemEntityUuid: " +
+            "MlArrayEditor addNewArrayItem could not find entity for newItemEntityUuid: " +
               JSON.stringify(newItemEntityUuid, null, 2)
           );
         }
@@ -599,14 +599,14 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         // "",
       ];
       log.info(
-        "JzodArrayEditor addNewArrayItem setting value for",
+        "MlArrayEditor addNewArrayItem setting value for",
         "rootLessListKey",
         rootLessListKey,
         "newItem",
         newItem,
         // JSON.stringify(newItem, null, 2),
         "rawMlSchema",
-        currentRawJzodSchema,
+        currentRawMlSchema,
         // JSON.stringify(currentTypeCheckKeyMap.rawSchema, null, 2),
         "currentValue",
         currentValue,
@@ -630,7 +630,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     },
     [
       formik,
-      currentRawJzodSchema,
+      currentRawMlSchema,
       arrayValueObject,
       onChangeCallback,
       rootLessListKey,
@@ -690,7 +690,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               const attributeRootLessListKey: string =
                 rootLessListKey.length > 0 ? rootLessListKey + "." + index : "" + index;
               // log.info(
-              //   "JzodArrayEditor arrayItems map",
+              //   "MlArrayEditor arrayItems map",
               //   "index",
               //   index,
               //   "attributeRootLessListKey",
@@ -712,7 +712,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               // // const attributeTypeCheckKeyMap = typeCheckKeyMap? typeCheckKeyMap[attributeRootLessListKey]: undefined;
               // if (!currentArrayElementRawDefinitionDEFUNCT) {
               //   log.error(
-              //     "JzodArrayEditor could not find typeCheckKeyMap for attribute",
+              //     "MlArrayEditor could not find typeCheckKeyMap for attribute",
               //     index,
               //     "in rootLessListKey",
               //     rootLessListKey,
@@ -722,7 +722,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               //     // JSON.stringify(typeCheckKeyMap, null, 2)
               //   );
               //   throw new Error(
-              //     "JzodArrayEditor could not find typeCheckKeyMap for attribute " +
+              //     "MlArrayEditor could not find typeCheckKeyMap for attribute " +
               //       index +
               //       " in rootLessListKey " +
               //       rootLessListKey
@@ -796,10 +796,10 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   const schemaType =
     localResolvedElementMlSchemaBasedOnValue?.type ??
     currentTypeCheckKeyMap?.resolvedSchema?.type ??
-    currentRawJzodSchema?.type;
+    currentRawMlSchema?.type;
   const insightRole = schemaType === "tuple" ? "tuple" : "array";
   const insightComponentId =
-    insightRole === "tuple" ? "JzodTupleEditor" : "JzodArrayEditor";
+    insightRole === "tuple" ? "MlTupleEditor" : "MlArrayEditor";
   const insightEnabled = !!context.showPerformanceDisplay;
   // Sync accrual: chips need live counts; progressive mount limits fan-out.
   const insightCounts = insightEnabled
@@ -817,9 +817,9 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
       <JsonDisplayHelper debug={true}
-        componentName="JzodArrayEditor"
+        componentName="MlArrayEditor"
         elements={[{
-          label: `Rendering JzodArrayEditor for array at ${rootLessListKey || "ROOT"}`,
+          label: `Rendering MlArrayEditor for array at ${rootLessListKey || "ROOT"}`,
           data: { rootLessListKey, readOnly, currentTypeCheckKeyMap },
           copyButton: true,
           useCodeBlock: true,
@@ -931,7 +931,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
           key={`${rootLessListKey}|body`}
         >
           {/* <ThemedOnScreenDebug
-            label={`JzodArrayEditor rendering items for array at ${rootLessListKey || "ROOT"}`}
+            label={`MlArrayEditor rendering items for array at ${rootLessListKey || "ROOT"}`}
             data={{ 
               rootLessListKey,
               typeCheckKeyMap,

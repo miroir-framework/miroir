@@ -880,7 +880,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //           referenceName: "currentApplicationUuid",
   //         },
   //       },
-  //       splitEntity_newEntityJzodSchema: {
+  //       splitEntity_newEntityMlSchema: {
   //         type: "object",
   //         definition: {
   //           uuid: {
@@ -923,7 +923,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         },
   //         mlSchema: {
   //           transformerType: "getFromParameters",
-  //           referenceName: "splitEntity_newEntityJzodSchema",
+  //           referenceName: "splitEntity_newEntityMlSchema",
   //         },
   //       },
   //       splitEntity_newEntityListReport: {
@@ -1784,7 +1784,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
 
   // const resolvedMlSchema:MlElement = useMemo(
   //   () => {
-  //     if (!context.miroirFundamentalMlSchema || context.miroirFundamentalMlSchema.name == "dummyJzodSchema") {
+  //     if (!context.miroirFundamentalMlSchema || context.miroirFundamentalMlSchema.name == "dummyMlSchema") {
   //       return defaultObject
   //     } else {
   //       const configuration = mlsTypeCheck(
@@ -2227,7 +2227,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   // );
 
   const onSubmit = useCallback(
-    async (actionCreateSchemaParamValues: any /* actually follows formJzodSchema */, formikFunctions:{ setSubmitting:any, setErrors:any }) => {
+    async (actionCreateSchemaParamValues: any /* actually follows formMlSchema */, formikFunctions:{ setSubmitting:any, setErrors:any }) => {
       try {
         //  Send values somehow
         // setformHelperState(actionCreateSchemaParamValues);
@@ -2365,7 +2365,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     <div>no object definition found!</div>
                     :
                     <>
-                      <JzodElementEditor
+                      <MlElementEditor
                         name={'ROOT'}
                         listKey={'ROOT'}
                         rootLessListKey={emptyString}
@@ -2375,7 +2375,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                         currentApplicationSection={dataSection}
                         indentLevel={0}
                         // localRootLessListKeyMap={{}}
-                        // resolvedMlSchema={actionsJzodSchema}
+                        // resolvedMlSchema={actionsMlSchema}
                         resolvedElementMlSchema={resolvedMlSchema}
                         typeCheckKeyMap={{}}
                         foreignKeyObjects={emptyObject}

@@ -337,10 +337,10 @@ export function useCurrentModelEnvironment(
 
 // ################################################################################################
 /**
- * Resolves the fundamental jzod schema for a deployment from context cache.
+ * Resolves the fundamental ML schema for a deployment from context cache.
  * Population is owned by ModelEnvironmentSync / ensureSchemaForDeployment.
  */
-export function useMiroirFundamentalJzodSchemaForDeployment(
+export function useMiroirFundamentalMlSchemaForDeployment(
   deploymentUuid?: Uuid,
 ): MlSchema | undefined {
   const context = useMiroirContextService();
@@ -492,7 +492,7 @@ function entityInstancesUuidIndexToEntityInstanceArraySelector(state: EntityInst
 }
 
 //#########################################################################################
-export function useLocalCacheInstancesForJzodAttribute(
+export function useLocalCacheInstancesForMlAttribute(
   application: Uuid,
   applicationDeploymentMap: ApplicationDeploymentMap,
   deploymentUuid: string | undefined,
@@ -511,7 +511,7 @@ export function useLocalCacheInstancesForJzodAttribute(
     })
   );
   log.info(
-    "useLocalCacheInstancesForJzodAttribute",
+    "useLocalCacheInstancesForMlAttribute",
     deploymentUuid,
     applicationSection,
     mlSchema,

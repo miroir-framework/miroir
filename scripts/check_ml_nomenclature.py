@@ -120,23 +120,9 @@ ENFORCED_RULES: list[Rule] = [
             "packages/miroir-core/tests/1_core/mls/",
             "packages/miroir-test-app_deployment-miroir/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/",
         ),
-        exclude_tokens=frozenset(
-            {
-                # Slice 4: bootstrap schema builder and the Entity-name keyed maps
-                "bootstrapJzodSchemas", "getMiroirFundamentalJzodSchema", "getMiroirFundamentalJzodSchemaHelpers",
-                "JzodSchema", "jzod",  # `JzodSchema: "jzod-schema"` in 1_core/Model.ts
-                # Slice 5: UI components named in comments
-                "JzodElementEditor", "JzodObjectEditor", "JzodTools",
-            }
-        ),
     ),
-    # Slice 4: every package but the standalone app; the UI components (and their MiroirTest suites) are slice 5.
-    Rule(
-        "P ml-packages",
-        paths=("packages/",),
-        exclude=("packages/miroir-standalone-app/",),
-        token_re=re.compile(r"(?!(?:miroirTest_)?Jzod[A-Za-z]*(?:Editor|Display|Tools|Button)).*"),
-    ),
+    # Slices 4-5: every package.
+    Rule("P ml-packages", paths=("packages/",)),
     Rule(
         "M ml-schema-tools (MiroirTest and transformer keys)",
         paths=("",),

@@ -559,7 +559,7 @@ export function EntityInstanceSelectorPanel(props:{
               applicationDeploymentMap={applicationDeploymentMap}
               deploymentUuid={deploymentUuid}
               applicationSection={"data"}
-              formLabel={"Application Selector jzod"}
+              formLabel={"Application Selector"}
               // onSubmit={async () => {}} // No-op for readonly
               valueObjectEditMode="create" // Readonly viewer mode, not relevant here
               displaySubmitButton="noDisplay"

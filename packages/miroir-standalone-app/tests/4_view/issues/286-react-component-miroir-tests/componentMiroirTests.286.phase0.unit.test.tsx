@@ -3,7 +3,7 @@
  *
  * `phase0 stable` stays true after Slice 12. The `pre-286 inventory` describe, which recorded the
  * behavior that Slices 2, 3, and 12 changed, was deleted in Slice 12 with the old
- * `JzodElementEditor.test.tsx`.
+ * `MlElementEditor.test.tsx`.
  *
  * Run:
  * ```bash
@@ -19,7 +19,7 @@ import { describe, expect, it } from "vitest";
 import { expect as miroirExpect } from "miroir-core";
 
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
-import { extractValuesFromRenderedElements } from "../../JzodElementEditorTestTools.js";
+import { extractValuesFromRenderedElements } from "../../MlElementEditorTestTools.js";
 
 const REPO_ROOT = resolveRepoRoot();
 

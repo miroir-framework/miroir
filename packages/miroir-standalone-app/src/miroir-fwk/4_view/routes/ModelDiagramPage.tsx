@@ -167,7 +167,7 @@ export const ModelDiagramPage: React.FC<any> = () => {
                 applicationDeploymentMap={currentApplicationDeploymentMap}
                 deploymentUuid={deploymentUuid}
                 applicationSection={"data"}
-                formLabel={"Application Selector jzod"}
+                formLabel={"Application Selector"}
                 valueObjectEditMode="create" // Readonly viewer mode, not relevant here
                 displaySubmitButton="noDisplay"
                 maxRenderDepth={3}

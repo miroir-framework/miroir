@@ -22,7 +22,7 @@ export interface UnionInformation {
   discriminatorValues: string[];
 }
 
-export interface JzodEditorPropsRoot {
+export interface MlEditorPropsRoot {
   // basic display properties
   hidden?: boolean; // used to control visibility of the editor
   valueObjectEditMode: ValueObjectEditMode,
@@ -67,9 +67,9 @@ export interface JzodEditorPropsRoot {
 }
 
 // ################################################################################################
-export interface JzodElementEditorProps extends JzodEditorPropsRoot {
+export interface MlElementEditorProps extends MlEditorPropsRoot {
   forceTestingMode?: boolean;
-  unresolvedJzodSchema?: MlElement | undefined;
+  unresolvedMlSchema?: MlElement | undefined;
   indentLevel: number;
   submitButton?: JSX.Element; // used to display a submit button in the editor
   extraToolsButtons?: JSX.Element; // used to display extra tool buttons on the title line
@@ -77,7 +77,7 @@ export interface JzodElementEditorProps extends JzodEditorPropsRoot {
 }
 
 // ################################################################################################
-export interface JzodArrayEditorProps extends JzodEditorPropsRoot {
+export interface MlArrayEditorProps extends MlEditorPropsRoot {
   currentDeploymentUuid?: Uuid,
   currentApplicationSection?: ApplicationSection;
   indentLevel?: number;
@@ -88,18 +88,18 @@ export interface JzodArrayEditorProps extends JzodEditorPropsRoot {
 }
 
 // #################################################################################################
-export interface JzodEnumEditorProps extends JzodEditorPropsRoot {
+export interface MlEnumEditorProps extends MlEditorPropsRoot {
   enumValues: string[];
   forceTestingMode?: boolean;
 }
 
 // #################################################################################################
-export interface JzodLiteralEditorProps extends JzodEditorPropsRoot {
+export interface MlLiteralEditorProps extends MlEditorPropsRoot {
   hasPathError?: boolean;
 }
 
 // #################################################################################################
-export interface JzodAnyEditorProps extends JzodElementEditorProps {
+export interface MlAnyEditorProps extends MlElementEditorProps {
   submitButton?: JSX.Element; // used to display a submit button in the editor
 
   // visible?: boolean;
@@ -107,27 +107,27 @@ export interface JzodAnyEditorProps extends JzodElementEditorProps {
 
 // #################################################################################################
 /**
- * @interface JzodObjectEditorProps
- * Props for the JzodObjectEditor component.
- * @extends JzodEditorPropsRoot
+ * @interface MlObjectEditorProps
+ * Props for the MlObjectEditor component.
+ * @extends MlEditorPropsRoot
  * @property {number} [indentLevel] - Optional indent level for nested objects.
  * @property {JSX.Element} [deleteButtonElement] - Optional delete button element to display in the editor.
  * @property {JSX.Element} [displayAsStructuredElementSwitch] - Optional switch element to toggle structured display.
- * @property {JSX.Element} [jzodSchemaTooltip] - Optional tooltip element to display the raw Jzod schema.
+ * @property {JSX.Element} [mlSchemaTooltip] - Optional tooltip element to display the raw ML schema.
  * @property {number} [maxRenderDepth] - Optional max depth for initial rendering, default is 1.
  * @property {JSX.Element} [extraToolsButtons] - Optional extra tool buttons to display on the title line.
  */
-export interface JzodObjectEditorProps extends JzodEditorPropsRoot {
+export interface MlObjectEditorProps extends MlEditorPropsRoot {
   indentLevel?: number;
   deleteButtonElement?: JSX.Element; // used to display a delete button in the editor
   displayAsStructuredElementSwitch?: JSX.Element; // used to display switches in the editor
-  jzodSchemaTooltip?: JSX.Element; // used to display the actual raw jzod schema as a tooltip
+  mlSchemaTooltip?: JSX.Element; // used to display the actual raw ML schema as a tooltip
   maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
   extraToolsButtons?: JSX.Element; // used to display extra tool buttons on the title line
 }
 
 // #####################################################################################################
-export type JzodElementEditorReactCodeMirrorProps = {
+export type MlElementEditorReactCodeMirrorProps = {
   initialValue: any;
   // rawMlSchema: MlElement;
   // formik: any; // Formik instance
@@ -143,7 +143,7 @@ export type JzodElementEditorReactCodeMirrorProps = {
   hidden?: boolean; // used to control visibility of the editor 
   insideAny?: boolean; // used to control visibility of the editor
   displayAsStructuredElementSwitch?: JSX.Element;
-  jzodSchemaTooltip?: JSX.Element; // used to display the actual raw jzod schema as a tooltip
+  mlSchemaTooltip?: JSX.Element; // used to display the actual raw ML schema as a tooltip
   readOnly?: boolean; // NEW: if true, display as read-only code block
   // displayAsCode?: boolean; // used to display the editor as a structured element, not as code editor  
 };

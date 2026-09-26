@@ -25,7 +25,7 @@ import { ListTransformerPanel } from "../../../src/miroir-fwk/4_view/components/
 import { TableComponentTypeSchema } from "../../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGridInterface.js";
 import { MiroirThemeProvider } from "../../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js";
 
-import { getWrapperLoadingLocalCache } from "../JzodElementEditorTestTools.js";
+import { getWrapperLoadingLocalCache } from "../MlElementEditorTestTools.js";
 
 export const libraryApplicationDeploymentMap = {
   ...defaultSelfApplicationDeploymentMap,

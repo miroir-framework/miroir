@@ -6,10 +6,10 @@ import {
 
 /**
  * Documents the object/record + array/tuple instrumentation contract used by
- * JzodObjectEditor / JzodArrayEditor (gated trackRender + durationMs + formik
+ * MlObjectEditor / MlArrayEditor (gated trackRender + durationMs + formik
  * path; sync accrual so progressive-reveal chips stay live).
  */
-describe("Jzod editor render-insight contract", () => {
+describe("ML editor render-insight contract", () => {
   beforeEach(() => {
     renderInsightRegistry.resetAll();
   });
@@ -20,14 +20,14 @@ describe("Jzod editor render-insight contract", () => {
 
   it("tracks object and record levels as distinct path keys with timing", () => {
     const objectCounts = renderInsightRegistry.trackRender({
-      componentId: "JzodObjectEditor",
+      componentId: "MlObjectEditor",
       navigationKey: "dep-app",
       formikPath: "instance.person",
       enabled: true,
       durationMs: 3.5,
     });
     const recordCounts = renderInsightRegistry.trackRender({
-      componentId: "JzodRecordEditor",
+      componentId: "MlRecordEditor",
       navigationKey: "dep-app",
       formikPath: "instance.tags",
       enabled: true,
@@ -41,24 +41,24 @@ describe("Jzod editor render-insight contract", () => {
     const byPath = Object.fromEntries(
       renderInsightRegistry.getSnapshot().map((n) => [n.pathKey, n])
     );
-    expect(byPath[buildPathKey("JzodObjectEditor", "instance.person")].formikPath).toBe(
+    expect(byPath[buildPathKey("MlObjectEditor", "instance.person")].formikPath).toBe(
       "instance.person"
     );
-    expect(byPath[buildPathKey("JzodRecordEditor", "instance.tags")].averageRenderTime).toBe(
+    expect(byPath[buildPathKey("MlRecordEditor", "instance.tags")].averageRenderTime).toBe(
       8.25
     );
   });
 
   it("tracks array and tuple levels as distinct path keys with timing", () => {
     renderInsightRegistry.trackRender({
-      componentId: "JzodArrayEditor",
+      componentId: "MlArrayEditor",
       navigationKey: "dep-app",
       formikPath: "instance.items",
       enabled: true,
       durationMs: 2,
     });
     renderInsightRegistry.trackRender({
-      componentId: "JzodTupleEditor",
+      componentId: "MlTupleEditor",
       navigationKey: "dep-app",
       formikPath: "instance.pair",
       enabled: true,
@@ -68,16 +68,16 @@ describe("Jzod editor render-insight contract", () => {
     const snapshot = renderInsightRegistry.getSnapshot();
     expect(snapshot).toHaveLength(2);
     expect(
-      snapshot.find((n) => n.componentId === "JzodArrayEditor")?.lastRenderTime
+      snapshot.find((n) => n.componentId === "MlArrayEditor")?.lastRenderTime
     ).toBe(2);
     expect(
-      snapshot.find((n) => n.componentId === "JzodTupleEditor")?.lastRenderTime
+      snapshot.find((n) => n.componentId === "MlTupleEditor")?.lastRenderTime
     ).toBe(4);
   });
 
   it("does not record when performance mode is off (enabled: false)", () => {
     renderInsightRegistry.trackRender({
-      componentId: "JzodObjectEditor",
+      componentId: "MlObjectEditor",
       navigationKey: "dep-app",
       formikPath: "instance.person",
       enabled: false,

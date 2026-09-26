@@ -296,8 +296,8 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
               // formikValues: undefined,
               // rawMlSchema: zoomedInDisplaySchema,
               // localResolvedElementMlSchemaBasedOnValue:
-              //   jzodTypeCheckResult?.status == "ok"
-              //     ? jzodTypeCheckResult.resolvedSchema
+              //   mlsTypeCheckResult?.status == "ok"
+              //     ? mlsTypeCheckResult.resolvedSchema
               //     : undefined,
             }}
           />

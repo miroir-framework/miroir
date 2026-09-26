@@ -43,7 +43,7 @@ npm run nonreg -- --tier full --run-all
 | Tier | Contents |
 |------|----------|
 | `unit` | MiroirTest unit suites via `testMiroir -w miroir-core -- --mode unit` + `RunAllMiroirTestsButton`, `MiroirTestListDisplay`, `MiroirTestDisplay` + LocalCache memory measure (pure `localCacheMemoryMeasure` / attributed + static redux/zustand images) |
-| `default` | `unit` + deployment `modelValidation` for **miroir**, **admin**, **library** (right after miroir-core unit) + MiroirTest integ (`miroirCoreTransformers`, `runner_lend_document`, `runner_return_document`, `domain_controller_*`) + curated app-stack (PersistenceStoreController, extractors, UI launcher/list/display proofs, JzodElementEditor component tests through `miroir-component-tests`) |
+| `default` | `unit` + deployment `modelValidation` for **miroir**, **admin**, **library** (right after miroir-core unit) + MiroirTest integ (`miroirCoreTransformers`, `runner_lend_document`, `runner_return_document`, `domain_controller_*`) + curated app-stack (PersistenceStoreController, extractors, UI launcher/list/display proofs, MlElementEditor component tests through `miroir-component-tests`) |
 | `full` | `default` + deployment `modelValidation` for **postgres** |
 
 Modes: `--run-all` (continue after failures; default) or `--fail-fast`.
@@ -113,7 +113,7 @@ is a `MiroirTestDefinition` whose `definition` field is a `MiroirTestSuite` tree
 | `functionCallTest` | Direct TypeScript function call with expected result |
 | `queryTest` | Query/extractor runner with fixture |
 | `runnerTest` | Composite action runner test |
-| `reactComponentTest` | Renders the component of its parent `reactComponentTestSuite` with the suite's `componentProps` shallow-merged under its own `componentProps`, then runs its declarative `steps`. Accepted only in a `reactComponentTestSuite` (#294). The step interpreter lives in the standalone app, not in miroir-core (#286, #292, see [JzodElementEditor component tests](#jzodelementeditor-component-tests)) |
+| `reactComponentTest` | Renders the component of its parent `reactComponentTestSuite` with the suite's `componentProps` shallow-merged under its own `componentProps`, then runs its declarative `steps`. Accepted only in a `reactComponentTestSuite` (#294). The step interpreter lives in the standalone app, not in miroir-core (#286, #292, see [MlElementEditor component tests](#jzodelementeditor-component-tests)) |
 | `miroirTestSuite` | Nested grouping (recurses) |
 | `reactComponentTestSuite` | Grouping of `reactComponentTest` leaves only. `component` names the rendered component in the app's component registry; optional `componentProps` are the default props of its leaves (#292) |
 
@@ -142,7 +142,7 @@ Name-list snapshots (`MIROIR_TEST_SUITE_REGISTRY_NAMES`, `MIROIR_RUNNER_TEST_SUI
 | **MiroirTest** | Deployment JSON entity | `testMiroir` / UI catalog. Suite key = instance `name`. |
 | **PLATFORM** | TypeScript under `tests/` with **no** MiroirTest entity | `testByFile` + optional `RUN_TEST` |
 
-PLATFORM files are the vitest tests that have **no MiroirTest equivalent**: CLI/schema apparatus (`parseMiroirTestCliConfig.unit.test.ts`, `miroirTest.schema.unit.test.ts`), LocalCache memory measure, store-layer integ (`PersistenceStoreController.integ`), view RTL (`ReportPage.integ.test.tsx`, `gridPagination.*`), and similar. `RUN_TEST` applies only to those files. The JzodElementEditor component tests are MiroirTests since #286, with one instance per editor since #292 (`JzodEnumEditor_ComponentTestSuite`, `JzodArrayEditor_ComponentTestSuite`, `JzodLiteralEditor_ComponentTestSuite`, `JzodObjectEditor_ComponentTestSuite`, `JzodSimpleTypeEditor_ComponentTestSuite`, `JzodUnionEditor_ComponentTestSuite`, `JzodAnyEditor_ComponentTestSuite`; `reactComponentTest` leaves), see [JzodElementEditor component tests](#jzodelementeditor-component-tests).
+PLATFORM files are the vitest tests that have **no MiroirTest equivalent**: CLI/schema apparatus (`parseMiroirTestCliConfig.unit.test.ts`, `miroirTest.schema.unit.test.ts`), LocalCache memory measure, store-layer integ (`PersistenceStoreController.integ`), view RTL (`ReportPage.integ.test.tsx`, `gridPagination.*`), and similar. `RUN_TEST` applies only to those files. The MlElementEditor component tests are MiroirTests since #286, with one instance per editor since #292 (`MlEnumEditor_ComponentTestSuite`, `MlArrayEditor_ComponentTestSuite`, `MlLiteralEditor_ComponentTestSuite`, `MlObjectEditor_ComponentTestSuite`, `MlSimpleTypeEditor_ComponentTestSuite`, `MlUnionEditor_ComponentTestSuite`, `MlAnyEditor_ComponentTestSuite`; `reactComponentTest` leaves), see [MlElementEditor component tests](#jzodelementeditor-component-tests).
 
 ### Notable catalog suites
 
@@ -760,32 +760,32 @@ Identity under projection uses `resolveProjectionIdentityFields` → `getEntityP
 
 | File | Store / config | Focus |
 |------|----------------|-------|
-| `miroir-component-tests.unit.test.tsx` | In-memory `LocalCache`; no `--profile` | Jzod editor components, run from the 7 per-editor MiroirTest instances (`JzodEnumEditor_ComponentTestSuite`, …) (#286, #292) |
+| `miroir-component-tests.unit.test.tsx` | In-memory `LocalCache`; no `--profile` | Jzod editor components, run from the 7 per-editor MiroirTest instances (`MlEnumEditor_ComponentTestSuite`, …) (#286, #292) |
 | `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` | Node emulated SQL via mocked launcher environment | `MiroirTestDisplay` launches integration and shows the result inspector |
 | `MiroirTestListIntegrationLaunch.integ.test.tsx` | Node emulated SQL via mocked launcher environment | List **Run All Integration Tests** batch for `miroirCoreTransformers` (filtered leaf) |
-| `JzodElementEditorReactCodeMirror.test.tsx` | — | CodeMirror sub-editor (currently commented out) |
+| `MlElementEditorReactCodeMirror.test.tsx` | — | CodeMirror sub-editor (currently commented out) |
 | `ReportPage.integ.test.tsx` | Uses shared React test tools | Report rendering smoke tests |
 | `gridPagination.unit.test.tsx` | In-memory `LocalCache`; real Library deployment assets | Client pagination primitives, viewport height (D2-c), prop contracts |
 | `gridPagination.integ.test.tsx` | In-memory `LocalCache`; real provider stack | ag-grid native pager + Glide Miroir pager on `EntityInstanceGrid` / `ValueObjectGrid` / `ReportSectionListDisplay` |
 | `BlobEditorField.integ.test.tsx` | No | Blob field editor component |
-| `JzodObjectEditor.BlobIntegration.integ.test.tsx` | No | JzodObjectEditor blob integration |
+| `MlObjectEditor.BlobIntegration.integ.test.tsx` | No | MlObjectEditor blob integration |
 | `Runner_*.integ.test.tsx` | Yes (`VITE_MIROIR_*`) | Legacy runner tests — migrating to `miroir-runner-tests.integ.test.ts` |
 
-##### JzodElementEditor component tests
+##### MlElementEditor component tests
 
-The JzodElementEditor component tests are MiroirTests (#286) written as declarative JSON (#292). Each case is a `reactComponentTest` leaf that holds the props of the rendered component and a list of `steps`. The standalone app's component test runner renders the component and interprets the steps. No case has TypeScript code of its own.
+The MlElementEditor component tests are MiroirTests (#286) written as declarative JSON (#292). Each case is a `reactComponentTest` leaf that holds the props of the rendered component and a list of `steps`. The standalone app's component test runner renders the component and interprets the steps. No case has TypeScript code of its own.
 
 There is one MiroirTest instance per editor, in `miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/`:
 
 | Instance `name` | uuid | Cases |
 |---|---|---|
-| `JzodEnumEditor_ComponentTestSuite` | `761d4ed2-1a5c-4901-a9d9-897dbec0b27f` | 3 |
-| `JzodArrayEditor_ComponentTestSuite` | `1b71d68b-7dc9-468c-a251-4fa7889f20f4` | 12 |
-| `JzodLiteralEditor_ComponentTestSuite` | `3995a071-b8ae-48d3-a488-6d1fc828b725` | 3 |
-| `JzodObjectEditor_ComponentTestSuite` | `da353085-c62b-4aa6-bd54-8813d303dfe5` | 14 |
-| `JzodSimpleTypeEditor_ComponentTestSuite` | `590693b6-2125-43fc-89d7-1330ae8318db` | 12 |
-| `JzodUnionEditor_ComponentTestSuite` | `de517cd6-31a8-46d2-ac09-3a5162b630a7` | 9 |
-| `JzodAnyEditor_ComponentTestSuite` | `ec601bcc-a27d-450d-9c37-bdd6a12a1575` | 15 |
+| `MlEnumEditor_ComponentTestSuite` | `761d4ed2-1a5c-4901-a9d9-897dbec0b27f` | 3 |
+| `MlArrayEditor_ComponentTestSuite` | `1b71d68b-7dc9-468c-a251-4fa7889f20f4` | 12 |
+| `MlLiteralEditor_ComponentTestSuite` | `3995a071-b8ae-48d3-a488-6d1fc828b725` | 3 |
+| `MlObjectEditor_ComponentTestSuite` | `da353085-c62b-4aa6-bd54-8813d303dfe5` | 14 |
+| `MlSimpleTypeEditor_ComponentTestSuite` | `590693b6-2125-43fc-89d7-1330ae8318db` | 12 |
+| `MlUnionEditor_ComponentTestSuite` | `de517cd6-31a8-46d2-ac09-3a5162b630a7` | 9 |
+| `MlAnyEditor_ComponentTestSuite` | `ec601bcc-a27d-450d-9c37-bdd6a12a1575` | 15 |
 
 Each instance is exported as `miroirTest_<name>` by `miroir-test-app_deployment-miroir` (`index.ts`, `index.d.ts`) and listed in `defaultMiroirMetaModel.tests` (`src/Model.ts`). The JSON files are edited by hand.
 
@@ -796,8 +796,8 @@ The root of `definition` is a `miroirTestSuite` whose label is the instance name
 ```json
 {
   "miroirTestType": "reactComponentTestSuite",
-  "miroirTestLabel": "JzodEnumEditor",
-  "component": "JzodElementEditor",
+  "miroirTestLabel": "MlEnumEditor",
+  "component": "MlElementEditor",
   "componentProps": {
     "label": "Test Label", "name": "testField", "listKey": "ROOT.testField",
     "rootLessListKey": "testField", "rootLessListKeyArray": ["testField"],
@@ -807,7 +807,7 @@ The root of `definition` is a `miroirTestSuite` whose label is the instance name
   "miroirTests": [
     {
       "miroirTestType": "reactComponentTest",
-      "miroirTestLabel": "JzodEnumEditor: renders select with correct value",
+      "miroirTestLabel": "MlEnumEditor: renders select with correct value",
       "steps": [
         { "step": "expectRenderedValues", "label": "initial", "expectedValue": { "testField": "value2" } }
       ]
@@ -818,7 +818,7 @@ The root of `definition` is a `miroirTestSuite` whose label is the instance name
 
 | Node | Attribute | Meaning |
 |---|---|---|
-| `reactComponentTestSuite` | `component` | Name of the rendered component in the app's component registry (`componentTests/componentRegistry.ts`). The registry has one entry, `JzodElementEditor` |
+| `reactComponentTestSuite` | `component` | Name of the rendered component in the app's component registry (`componentTests/componentRegistry.ts`). The registry has one entry, `MlElementEditor` |
 | | `componentProps` (optional) | Default props of the leaves |
 | | `skip` (optional) | Skips every leaf of the suite |
 | `reactComponentTest` | `steps` | The steps, run in order |
@@ -950,7 +950,7 @@ For `expectRenderedValues`, the runner result also carries `expected` and `actua
 npm run testByFile -w miroir-standalone-app -- miroir-component-tests
 
 # One editor
-npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "JzodObjectEditor"
+npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "MlObjectEditor"
 ```
 
 The entry `tests/4_view/miroir-component-tests.unit.test.tsx` loads every instance of the MiroirTest data folder that has a `reactComponentTest` leaf and runs each through the MiroirTest walk. The vitest names are `<editor> > <editor>: <case>`, so `-t` takes an editor name or part of a case label. The miroir-core generic entry (`testMiroir -w miroir-core`) also loads these instances. It registers no component test runner, so the tracker records their leaves as skipped.
@@ -968,7 +968,7 @@ npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency
 npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "<editor>"
 ```
 
-A new instance also needs its export and declaration in `miroir-test-app_deployment-miroir` (`index.ts`, `index.d.ts`), its entry in `defaultMiroirMetaModel.tests` (`src/Model.ts`), and the instance counts of the vitest entry, `componentTestInstances.292.phase1`, and `componentMiroirTests.consistency`. A component other than `JzodElementEditor` needs an entry in `componentTests/componentRegistry.ts`. A new step kind needs a schema change (the `reactComponentTestStep` union in the MiroirTest Entity and EntityVersion, then `npm run devBuild -w miroir-core`) and a handler in `runComponentTestSteps.ts`.
+A new instance also needs its export and declaration in `miroir-test-app_deployment-miroir` (`index.ts`, `index.d.ts`), its entry in `defaultMiroirMetaModel.tests` (`src/Model.ts`), and the instance counts of the vitest entry, `componentTestInstances.292.phase1`, and `componentMiroirTests.consistency`. A component other than `MlElementEditor` needs an entry in `componentTests/componentRegistry.ts`. A new step kind needs a schema change (the `reactComponentTestStep` union in the MiroirTest Entity and EntityVersion, then `npm run devBuild -w miroir-core`) and a handler in `runComponentTestSteps.ts`.
 
 To check that a new case asserts something, change one value of its `expectedValue` or `expectElement` check, run it, and see it fail with the message above.
 

@@ -49,7 +49,7 @@ function widgetElements(env: ComponentTestEnvironment, target: ReactComponentTes
   const fieldName = formikFieldName(target.field);
   switch (target.widget) {
     case "combobox":
-      // the union type select of a field is its union type input (`JzodElementEditor.tsx`)
+      // the union type select of a field is its union type input (`MlElementEditor.tsx`)
       return target.select === "unionType"
         ? unionTypeInputElements(env, fieldName)
         : querySandbox(env, `input[role="combobox"][name=${cssString(fieldName)}]`);
@@ -57,12 +57,12 @@ function widgetElements(env: ComponentTestEnvironment, target: ReactComponentTes
       return unionTypeInputElements(env, fieldName);
     case "selectState": {
       // `ThemedSelectWithPortal` state tracker, named after the select's `name`; the union type
-      // select is named `union-type-F(field)` (`JzodElementEditor.tsx`)
+      // select is named `union-type-F(field)` (`MlElementEditor.tsx`)
       const selectName = target.select === "unionType" ? `union-type-${fieldName}` : fieldName;
       return querySandbox(env, `[data-testid=${cssString(`themed-select-state-${selectName}`)}]`);
     }
     case "unionTypeStar":
-      // the star that toggles the union type selector (`JzodElementEditor.tsx`)
+      // the star that toggles the union type selector (`MlElementEditor.tsx`)
       return querySandbox(env, `[data-testid=${cssString(`union-type-star-${fieldName}`)}]`);
     case "arrayButton":
       return arrayButtonElements(env, target, fieldName);
@@ -72,7 +72,7 @@ function widgetElements(env: ComponentTestEnvironment, target: ReactComponentTes
       if (target.entry === undefined) {
         throw new Error(`widget "recordEntryName" needs an entry, in ${describeTarget(target)}`);
       }
-      // the name input of a record entry (`JzodObjectEditor.tsx`, `formikRootLessListKey + "-NAME"`)
+      // the name input of a record entry (`MlObjectEditor.tsx`, `formikRootLessListKey + "-NAME"`)
       return env.view.queryAllByRole("textbox", { name: `${formikFieldName(`${target.field}.${target.entry}`)}-NAME` });
     }
     default:
@@ -86,7 +86,7 @@ function unionTypeInputElements(env: ComponentTestEnvironment, fieldName: string
 }
 
 /**
- * The array buttons of `JzodArrayEditor.tsx`: `up` / `down` are the elements whose role is
+ * The array buttons of `MlArrayEditor.tsx`: `up` / `down` are the elements whose role is
  * `F(field).button.<action>`, one per item (`index` picks one); `add` is the button named
  * `<field>.add` (no `TESTSECTION.` prefix); `duplicate` / `delete` are the buttons named
  * `F(field.<index>)-duplicateArrayItem` / `-removeArrayItem`, where `index` is the item index.
@@ -118,7 +118,7 @@ function arrayButtonElements(
 }
 
 /**
- * The object and record buttons of `JzodObjectEditor.tsx`: `addOptionalAttribute` is named
+ * The object and record buttons of `MlObjectEditor.tsx`: `addOptionalAttribute` is named
  * `F(field).addObjectOptionalAttribute.<attribute>`, `addRecordEntry` `F(field).addRecordAttribute`,
  * and `remove` / `duplicate` `F(field.<attribute>)-removeOptionalAttributeOrRecordEntry` /
  * `-duplicateRecordEntry`.

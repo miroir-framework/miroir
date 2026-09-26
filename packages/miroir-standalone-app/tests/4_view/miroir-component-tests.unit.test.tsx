@@ -2,7 +2,7 @@
  * Issues #286, #292: React component tests run as MiroirTests.
  *
  * Loads every MiroirTest instance of the Miroir deployment folder that holds a `reactComponentTest`
- * leaf (one instance per editor since #292, e.g. `JzodEnumEditor_ComponentTestSuite`), registers
+ * leaf (one instance per editor since #292, e.g. `MlEnumEditor_ComponentTestSuite`), registers
  * the component test runner, and runs each child of each instance root (a `reactComponentTestSuite`
  * or a legacy plain sub-suite) inside `describe(<child label>)` with the path
  * `[<instance name>, <child label>]`, through `runMiroirTests._runMiroirTestSuite`, with
@@ -15,7 +15,7 @@
  * Run:
  * ```bash
  * npm run testByFile -w miroir-standalone-app -- miroir-component-tests
- * npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "JzodArrayEditor"
+ * npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "MlArrayEditor"
  * ```
  */
 import { readdirSync, readFileSync } from "node:fs";

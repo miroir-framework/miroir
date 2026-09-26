@@ -253,7 +253,7 @@ export type SyncBoxedExtractorOrQueryRunnerMap<StateType> = {
     >
   ): Domain2QueryReturnType<DomainElementSuccess>;
   // ################################################################################################
-  // TODO: has direct call in ReportView, ReportSectionListDisplay, JzodElementEditor
+  // TODO: has direct call in ReportView, ReportSectionListDisplay, MlElementEditor
   runQueryTemplateWithExtractorCombinerTransformer: SyncQueryTemplateRunner<
     StateType,
     Domain2QueryReturnType<any>

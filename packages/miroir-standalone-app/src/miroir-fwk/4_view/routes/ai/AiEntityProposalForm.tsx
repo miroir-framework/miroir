@@ -37,8 +37,6 @@ export interface EntityProposal {
     name: string;
     entityUuid: string;
     conceptLevel: string;
-    /** @deprecated prefer mlSchema; kept for older proposal payloads */
-    jzodSchema?: Record<string, unknown>;
     mlSchema?: Record<string, unknown>;
     [key: string]: unknown;
   };
@@ -75,10 +73,9 @@ export function AiEntityProposalForm({
   ]);
   const schemaCarrier =
     (proposal.entity as any).mlSchema ??
-    proposal.entityVersion.mlSchema ??
-    proposal.entityVersion.jzodSchema;
-  const jzodDef = (schemaCarrier as any)?.definition ?? {};
-  const customAttributeNames = Object.keys(jzodDef).filter(
+    proposal.entityVersion.mlSchema;
+  const mlDef = (schemaCarrier as any)?.definition ?? {};
+  const customAttributeNames = Object.keys(mlDef).filter(
     (k) => !systemFields.has(k) && k !== "name",
   );
 
@@ -138,7 +135,7 @@ export function AiEntityProposalForm({
         {customAttributeNames
           .filter((a) => a !== "description")
           .map((attrName) => {
-            const attrSchema = (jzodDef as any)[attrName];
+            const attrSchema = (mlDef as any)[attrName];
             const label =
               attrSchema?.tag?.value?.defaultLabel ?? attrName;
             return (

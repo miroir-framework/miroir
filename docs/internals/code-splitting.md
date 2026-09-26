@@ -78,10 +78,10 @@ The app entry (`src/index.tsx`) is **eager**: core startup, `RootComponent`, `Pa
 | | |
 |---|---|
 | **Vendor chunk** | None (embedded in route/shared chunk) |
-| **Static import** | `JzodElementEditorReactCodeMirror.tsx` ← `JzodElementEditor.tsx` |
+| **Static import** | `MlElementEditorReactCodeMirror.tsx` ← `MlElementEditor.tsx` |
 | **Reachability** | Lazy routes that mount editors: `ReportDisplay` (via `TypedValueObjectEditor`), `TransformerBuilderPage` (via `TransformerEditor` → `TypedValueObjectEditor`) |
 | **Initial load?** | No |
-| **On field use?** | No — CodeMirror is a static dependency of `JzodElementEditor`; it loads with the route chunk, not when a JSON/code field first appears |
+| **On field use?** | No — CodeMirror is a static dependency of `MlElementEditor`; it loads with the route chunk, not when a JSON/code field first appears |
 
 ### Mermaid (via `miroir-diagram-class`)
 
@@ -148,7 +148,7 @@ npm run testByFile -w miroir-standalone-app -- componentTestChunk.286.phase4
 
 2. **`manualChunks` is a cache strategy, not a load strategy.** Splitting ag-grid into `vendor-ag-grid.js` helps long-term caching; it does not delay ag-grid until a grid cell is edited.
 
-3. **No per-component dynamic imports** for heavy editors. To load CodeMirror only when a code field mounts, you would need an explicit pattern such as `React.lazy(() => import('@uiw/react-codemirror'))` inside `JzodElementEditorReactCodeMirror` (not implemented today).
+3. **No per-component dynamic imports** for heavy editors. To load CodeMirror only when a code field mounts, you would need an explicit pattern such as `React.lazy(() => import('@uiw/react-codemirror'))` inside `MlElementEditorReactCodeMirror` (not implemented today).
 
 4. **Store driver packages** (`miroir-store-filesystem`, `postgres`, `mongodb`) use dynamic `import()` in `IntegrationTestSession.ts` so Node drivers are not evaluated in the browser. That is bootstrap safety for tests/integration, not UI code splitting.
 
@@ -167,7 +167,7 @@ npm run testByFile -w miroir-standalone-app -- componentTestChunk.286.phase4
 | `packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AgentsCopilotKit.tsx` | Lazy CopilotKit provider (#244) |
 | `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ComponentTestSandbox.tsx` | Dynamic import of the component test chunk (#286) |
 | `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/index.ts` | Component test chunk entry, `registerComponentTests` (#286) |
-| `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditorReactCodeMirror.tsx` | CodeMirror static import |
+| `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/MlElementEditorReactCodeMirror.tsx` | CodeMirror static import |
 | `packages/miroir-diagram-class/src/4_view/MermaidClassDiagram.tsx` | Mermaid static import |
 | `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Grids/ValueObjectGrid.tsx` | ag-grid static import |
 

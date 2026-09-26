@@ -821,7 +821,7 @@
     {
       "id": "appstack-miroir-component-tests",
       "tier": "default",
-      "title": "#286, #292 — JzodElementEditor component tests as MiroirTests (vitest entry + JSON consistency)",
+      "title": "#286, #292 — MlElementEditor component tests as MiroirTests (vitest entry + JSON consistency)",
       "requires": "none",
       "argv": [
         "bash",

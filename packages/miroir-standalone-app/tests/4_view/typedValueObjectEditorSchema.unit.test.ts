@@ -10,7 +10,7 @@ import {
 
 import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 /**
- * TypedValueObjectEditor resolves jzod against useCurrentModelEnvironment(application, …).
+ * TypedValueObjectEditor resolves the ML schema against useCurrentModelEnvironment(application, …).
  * Model-section Library instances (e.g. runner_return_document) must use the Library application so
  * getMiroirFundamentalSchemaForDeployment extends actionTemplate with lendDocument.
  */

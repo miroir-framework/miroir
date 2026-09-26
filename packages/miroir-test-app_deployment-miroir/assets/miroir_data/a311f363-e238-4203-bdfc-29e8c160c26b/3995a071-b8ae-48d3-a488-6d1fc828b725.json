@@ -2,18 +2,18 @@
   "uuid": "3995a071-b8ae-48d3-a488-6d1fc828b725",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "JzodLiteralEditor_ComponentTestSuite",
+  "name": "MlLiteralEditor_ComponentTestSuite",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Issues #286, #292: JzodLiteralEditor React component tests (JzodElementEditor), one MiroirTest instance per editor. Edited by hand.",
+  "description": "Issues #286, #292: MlLiteralEditor React component tests (MlElementEditor), one MiroirTest instance per editor. Edited by hand.",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "JzodLiteralEditor_ComponentTestSuite",
+    "miroirTestLabel": "MlLiteralEditor_ComponentTestSuite",
     "miroirTests": [
       {
         "miroirTestType": "reactComponentTestSuite",
-        "miroirTestLabel": "JzodLiteralEditor",
-        "component": "JzodElementEditor",
+        "miroirTestLabel": "MlLiteralEditor",
+        "component": "MlElementEditor",
         "componentProps": {
           "name": "testField",
           "listKey": "root.testField",
@@ -30,7 +30,7 @@
         "miroirTests": [
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodLiteralEditor: renders Literal input with label when label prop is provided",
+            "miroirTestLabel": "MlLiteralEditor: renders Literal input with label when label prop is provided",
             "componentProps": {
               "label": "Test Label"
             },
@@ -56,7 +56,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodLiteralEditor: renders Literal input without label when label prop is not provided",
+            "miroirTestLabel": "MlLiteralEditor: renders Literal input without label when label prop is not provided",
             "steps": [
               {
                 "step": "expectElement",
@@ -79,7 +79,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodLiteralEditor: setting new value",
+            "miroirTestLabel": "MlLiteralEditor: setting new value",
             "componentProps": {
               "label": "Test Label"
             },

@@ -6,7 +6,7 @@ import type { Entity, MlElement } from "miroir-core";
 export interface ForeignKeyAttributeDefinition {
   /** The attribute name (real for direct FK, synthetic like "__fk_entityUuid" for transitive) */
   attributeName: string;
-  /** The Jzod schema element containing the foreign key definition */
+  /** The ML schema element containing the foreign key definition */
   schema: MlElement;
   /** Whether this is a direct foreign key attribute of the main entity */
   isDirect: boolean;

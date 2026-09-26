@@ -83,10 +83,10 @@ const MIROIR_TEST_DATA_FOLDER = join(
   "packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b",
 );
 
-const arraySuite = "JzodArrayEditor";
-/** #292: the Array cases have their own MiroirTest instance, `JzodArrayEditor_ComponentTestSuite`. */
+const arraySuite = "MlArrayEditor";
+/** #292: the Array cases have their own MiroirTest instance, `MlArrayEditor_ComponentTestSuite`. */
 const componentTestSuiteInstanceUuid = "1b71d68b-7dc9-468c-a251-4fa7889f20f4";
-const componentTestSuiteInstanceName = "JzodArrayEditor_ComponentTestSuite";
+const componentTestSuiteInstanceName = "MlArrayEditor_ComponentTestSuite";
 
 function loadComponentTestSuiteInstance(): MiroirTestDefinition {
   for (const fileName of readdirSync(MIROIR_TEST_DATA_FOLDER)) {

@@ -110,8 +110,8 @@ describe.skipIf(!shouldRun)("externalServiceSchema — Endpoint definition key-u
   });
 
   it("rejects an Endpoint whose definition has both actions and externalService (XOR)", () => {
-    // Jzod objects compile to z.object(...).strict() unless nonStrict is set
-    // (jzod JzodToZod.ts). An untagged z.union of two strict objects therefore
+    // ML objects compile to z.object(...).strict() unless nonStrict is set
+    // (jzodToZod in @miroir-framework/jzod). An untagged z.union of two strict objects therefore
     // rejects both-keys without an extra refinement.
     const check = checkModelValidationInstance(
       entityDefinitionEndpoint.mlSchema,

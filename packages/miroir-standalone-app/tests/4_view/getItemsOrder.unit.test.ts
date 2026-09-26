@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { MlElement, MlObject, KeyMapEntry } from 'miroir-core';
-import { getItemsOrder } from '../../src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditorHooks';
+import { getItemsOrder } from '../../src/miroir-fwk/4_view/components/ValueObjectEditor/MlElementEditorHooks';
 
 // Helper to create a KeyMapEntry whose resolvedReferenceSchemaInContext marks a record type.
-// Note: resolvedReferenceSchemaInContext is defined in the Jzod schema for KeyMapEntry
+// Note: resolvedReferenceSchemaInContext is defined in the ML schema for KeyMapEntry
 // but is not yet reflected in the TypeScript interface, so we cast.
 const makeRecordKeyMapEntry = (): KeyMapEntry =>
   ({

@@ -1085,7 +1085,7 @@
       },
       {
         "miroirTestType": "functionCallTest",
-        "miroirTestLabel": "function: returns type-only (not editable in JzodElementEditor)",
+        "miroirTestLabel": "function: returns type-only (not editable in MlElementEditor)",
         "functionRef": {
           "module": "miroir-core/1_core/mls/MlsToMls_Summary",
           "export": "mlsToMls_Summary"

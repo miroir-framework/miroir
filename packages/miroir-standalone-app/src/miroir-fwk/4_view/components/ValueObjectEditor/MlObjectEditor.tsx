@@ -35,7 +35,7 @@ import {
 import { cleanLevel } from "../../constants";
 import { useDefaultValueParams } from "../../ReduxHooks";
 import {
-  measuredUnfoldJzodSchemaOnce
+  measuredUnfoldMlSchemaOnce
 } from "../../tools/hookPerformanceMeasure";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
 import { JsonDisplayHelper } from "miroir-react";
@@ -68,15 +68,15 @@ import {
   ThemedSmallIconButton,
   ThemedStyledButton,
 } from "../Themes/index";
-import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, JzodElementEditor } from "./JzodElementEditor";
-import { getFoldedDisplayValue, useJzodElementEditorHooks } from "./JzodElementEditorHooks";
-import { JzodObjectEditorProps } from "./JzodElementEditorInterface";
+import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, MlElementEditor } from "./MlElementEditor";
+import { getFoldedDisplayValue, useMlElementEditorHooks } from "./MlElementEditorHooks";
+import { MlObjectEditorProps } from "./MlElementEditorInterface";
 import {
   findPathAnnotation,
   TransformerTitleRowAnnotations,
 } from "../Reports/TransformerTypeAnnotation.js";
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodElementEditor");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlElementEditor");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {
@@ -179,11 +179,11 @@ const ProgressiveAttribute: FC<{
   totalAttributes: number;
   hideOptionalButton?: boolean;
   formik: any;
-  currentMiroirFundamentalJzodSchema: any;
+  currentMiroirFundamentalMlSchema: any;
   currentModel: any;
   miroirMetaModel: any;
-  measuredUnfoldJzodSchemaOnce: any;
-  // Add direct props from JzodObjectEditorProps that are used
+  measuredUnfoldMlSchemaOnce: any;
+  // Add direct props from MlObjectEditorProps that are used
   currentApplication: Uuid;
   applicationDeploymentMap: ApplicationDeploymentMap;
   currentDeploymentUuid?: Uuid;
@@ -226,10 +226,10 @@ const ProgressiveAttribute: FC<{
   totalAttributes,
   hideOptionalButton,
   formik,
-  currentMiroirFundamentalJzodSchema,
+  currentMiroirFundamentalMlSchema,
   currentModel,
   miroirMetaModel,
-  measuredUnfoldJzodSchemaOnce,
+  measuredUnfoldMlSchemaOnce,
   maxRenderDepth,
   readOnly,
   existingObject,
@@ -354,7 +354,7 @@ const ProgressiveAttribute: FC<{
               error={error}
               resetErrorBoundary={resetErrorBoundary}
               context={{
-                origin: "JzodObjectEditor_ProgressiveAttribute",
+                origin: "MlObjectEditor_ProgressiveAttribute",
                 objectType: "object",
                 rootLessListKey,
                 attributeRootLessListKeyArray,
@@ -387,7 +387,7 @@ const ProgressiveAttribute: FC<{
             }]}
           />
           {/* BBBBB {attributeRootLessListKey} */}
-          <JzodElementEditor
+          <MlElementEditor
             valueObjectEditMode={valueObjectEditMode}
             name={attribute[0]}
             existingObject={existingObject}
@@ -563,7 +563,7 @@ function renumberTagValueIds(obj: Record<string, any>, keyOrder: string[]): Reco
 // ##############################################################################################
 // ##############################################################################################
 let count = 0;
-export function JzodObjectEditor(props: JzodObjectEditorProps) {
+export function MlObjectEditor(props: MlObjectEditorProps) {
 
   const {
     name,
@@ -602,7 +602,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
 
   // count++;
   // log.info(
-  //   "JzodObjectEditor render",
+  //   "MlObjectEditor render",
   //   count,
   //   "rootLessListKey",
   //   rootLessListKey,
@@ -629,8 +629,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     definedOptionalAttributes,
     // stringSelectList,
     undefinedOptionalAttributes,
-    // } = useJzodElementEditorHooks(props, count, "JzodElementEditor");
-  } = useJzodElementEditorHooks(
+    // } = useMlElementEditorHooks(props, count, "MlElementEditor");
+  } = useMlElementEditorHooks(
     rootLessListKey,
     rootLessListKeyArray,
     reportSectionPathAsString,
@@ -640,7 +640,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     applicationDeploymentMap,
     currentDeploymentUuid,
     count,
-    "JzodElementEditor"
+    "MlElementEditor"
   );
 
   const renderStartRef = useRef(0);
@@ -698,7 +698,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     };
   }, [isBlob, currentValueObjectAtKey, rootLessListKeyArray, currentValueObjectAtKey]);
 
-  const currentMiroirFundamentalJzodSchema = currentApplicationModelEnvironment.miroirFundamentalMlSchema;
+  const currentMiroirFundamentalMlSchema = currentApplicationModelEnvironment.miroirFundamentalMlSchema;
   const usedIndentLevel: number = indentLevel ? indentLevel : 0;
 
   // Early return if component can't be rendered properly
@@ -723,8 +723,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         applicationDeploymentMap,
         () => ({}),
         currentApplicationModelEnvironment??defaultMetaModelEnvironment,
-        // currentMiroirFundamentalJzodSchema?{
-        //   miroirFundamentalMlSchema: currentMiroirFundamentalJzodSchema,
+        // currentMiroirFundamentalMlSchema?{
+        //   miroirFundamentalMlSchema: currentMiroirFundamentalMlSchema,
         //   currentModel,
         //   miroirMetaModel,
         // }: defaultMetaModelEnvironment
@@ -755,8 +755,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   ) : currentTypeCheckKeyMap?.rawSchema;
 
   // ##############################################################################################
-  // JzodSchemaTooltip
-  //   const jzodSchemaTooltip: JSX.Element = useMemo(
+  // MlSchemaTooltip
+  //   const mlSchemaTooltip: JSX.Element = useMemo(
   //     () => canRenderObject?(
   //       <span
   //         title={`
@@ -864,7 +864,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
 
     const newAttributeType: MlElement = (effectiveRawSchema as MlRecord)?.definition;
     log.info("addExtraRecordEntry newAttributeType", JSON.stringify(newAttributeType, null, 2));
-    const newAttributeValue = currentMiroirFundamentalJzodSchema
+    const newAttributeValue = currentMiroirFundamentalMlSchema
       ? getDefaultValueForMlSchemaWithResolutionNonHook(
           "build",
           effectiveRawSchema.definition,
@@ -920,7 +920,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     props,
     itemsOrder,
     localResolvedElementMlSchemaBasedOnValue,
-    currentMiroirFundamentalJzodSchema,
+    currentMiroirFundamentalMlSchema,
     currentModel,
     miroirMetaModel,
     formik.values,
@@ -978,7 +978,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           currentTypeCheckKeyMap?.rawSchema,
         ["definition", attributeName]
       );
-      const newAttributeValue = !!currentMiroirFundamentalJzodSchema
+      const newAttributeValue = !!currentMiroirFundamentalMlSchema
         ? getDefaultValueForMlSchemaWithResolutionNonHook(
             "build",
             newAttributeType,
@@ -1038,7 +1038,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       props,
       itemsOrder,
       localResolvedElementMlSchemaBasedOnValue,
-      currentMiroirFundamentalJzodSchema,
+      currentMiroirFundamentalMlSchema,
       currentModel,
       miroirMetaModel,
       currentValueObjectAtKey,
@@ -1187,7 +1187,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   // Render error state if we can't properly render an object
   if (!canRenderObject) {
     log.error(
-      "JzodObjectEditor cannot render object",
+      "MlObjectEditor cannot render object",
       rootLessListKey,
       "localResolvedElementMlSchemaBasedOnValue",
       localResolvedElementMlSchemaBasedOnValue
@@ -1195,7 +1195,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     return (
       <div>
         <span className="error">
-          JzodObjectEditor: localResolvedElementMlSchemaBasedOnValue is not an object type:{" "}
+          MlObjectEditor: localResolvedElementMlSchemaBasedOnValue is not an object type:{" "}
           {JSON.stringify(localResolvedElementMlSchemaBasedOnValue, null, 2)}
         </span>
       </div>
@@ -1212,7 +1212,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             error={error}
             resetErrorBoundary={resetErrorBoundary}
             context={{
-              origin: "JzodObjectEditor-BlobEditorField",
+              origin: "MlObjectEditor-BlobEditorField",
               objectType: "blob",
               rootLessListKey,
               rootLessListKeyArray,
@@ -1242,7 +1242,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   // Memoize the array of rendered attributes to prevent unnecessary re-renders
   const attributeElements = useMemo(() => {
     // log.info(
-    //   "JzodObjectEditor rendering attributes for",
+    //   "MlObjectEditor rendering attributes for",
     //   rootLessListKey,
     //   "foldedObjectAttributeOrArrayItems",
     //   reportContext.foldedObjectAttributeOrArrayItems
@@ -1294,10 +1294,10 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                 readOnly={readOnly}
                 existingObject={existingObject}
                 formik={formik}
-                currentMiroirFundamentalJzodSchema={currentMiroirFundamentalJzodSchema}
+                currentMiroirFundamentalMlSchema={currentMiroirFundamentalMlSchema}
                 currentModel={currentModel}
                 miroirMetaModel={miroirMetaModel}
-                measuredUnfoldJzodSchemaOnce={measuredUnfoldJzodSchemaOnce}
+                measuredUnfoldMlSchemaOnce={measuredUnfoldMlSchemaOnce}
                 displayError={displayError}
             compatibilityWarnings={compatibilityWarnings}
             showMlSchemaTypes={showMlSchemaTypes}
@@ -1329,10 +1329,10 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     duplicateRecordEntry,
     handleMoveAttribute,
     formik,
-    currentMiroirFundamentalJzodSchema,
+    currentMiroirFundamentalMlSchema,
     currentModel,
     miroirMetaModel,
-    measuredUnfoldJzodSchemaOnce,
+    measuredUnfoldMlSchemaOnce,
     reportContext.foldedObjectAttributeOrArrayItems, // This is the key addition!
     compatibilityWarnings,
     showMlSchemaTypes,
@@ -1345,7 +1345,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     currentTypeCheckKeyMap?.rawSchema?.type;
   const insightRole = schemaType === "record" ? "record" : "object";
   const insightComponentId =
-    insightRole === "record" ? "JzodRecordEditor" : "JzodObjectEditor";
+    insightRole === "record" ? "MlRecordEditor" : "MlObjectEditor";
   const insightEnabled = !!context.showPerformanceDisplay;
   // Sync accrual: chips need live counts; progressive mount limits fan-out.
   const insightCounts = insightEnabled
@@ -1368,10 +1368,10 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     >
       <JsonDisplayHelper
         debug={true}
-        componentName={`JzodObjectEditor insideAny=${insideAny} rootLessListKey=${rootLessListKey}`}
+        componentName={`MlObjectEditor insideAny=${insideAny} rootLessListKey=${rootLessListKey}`}
         elements={[
           {
-            label: `JzodObjectEditor: rootLessListKey=${rootLessListKey}`,
+            label: `MlObjectEditor: rootLessListKey=${rootLessListKey}`,
             data: {
               rootLessListKey,
               itemsOrder,
@@ -1504,7 +1504,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           <ThemedDeleteButtonContainer>
             {deleteButtonElement ?? <></>}
             {displayAsStructuredElementSwitch ?? <></>}
-            {/* {jzodSchemaTooltip ?? <></>} */}
+            {/* {mlSchemaTooltip ?? <></>} */}
           </ThemedDeleteButtonContainer>
         </ThemedFlexRow>
       )}

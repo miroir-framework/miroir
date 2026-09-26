@@ -7,7 +7,7 @@ import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 import React, { useCallback, useEffect } from "react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
-import { JzodElementEditorReactCodeMirrorProps } from "./JzodElementEditorInterface";
+import { MlElementEditorReactCodeMirrorProps } from "./MlElementEditorInterface";
 import { 
   ThemedBox,
   ThemedStyledButton,
@@ -16,7 +16,7 @@ import {
 } from "../Themes/index";
 import { useFormikContext } from "formik";
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodElementEditorReactCodeMirror");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlElementEditorReactCodeMirror");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {
@@ -25,8 +25,8 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 
 const extensions = [javascript()];
 
-export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCodeMirrorProps> = (
-  props: JzodElementEditorReactCodeMirrorProps
+export const MlElementEditorReactCodeMirror: React.FC<MlElementEditorReactCodeMirrorProps> = (
+  props: MlElementEditorReactCodeMirrorProps
 ) => {
   const {
     formikRootLessListKey,
@@ -38,7 +38,7 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
     hidden,
     insideAny,
     displayAsStructuredElementSwitch,
-    jzodSchemaTooltip,
+    mlSchemaTooltip,
     readOnly
   } = props;
 
@@ -57,7 +57,7 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
   if (readOnly) {
     return (
       <span>
-        <span>{jzodSchemaTooltip ?? <></>}</span>
+        <span>{mlSchemaTooltip ?? <></>}</span>
         <ThemedSpan
           style={{
             border: '2px solid green',
@@ -141,13 +141,13 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
 
   return (
     <span>
-      {/* <ThemedOnScreenHelper label="JzodElementEditorReactCodeMirror" data={{
+      {/* <ThemedOnScreenHelper label="MlElementEditorReactCodeMirror" data={{
         hidden: hidden,
         insideAny: insideAny,
         readOnly: readOnly,
       }}/> */}
       {props.labelElement && <span>{props.labelElement}</span>}
-      <span>{jzodSchemaTooltip ?? <></>}</span>
+      <span>{mlSchemaTooltip ?? <></>}</span>
       <ThemedSpan
         style={{
           border: `2px solid ${codeMirrorIsValidJson ? "green" : "red"}`,
@@ -219,9 +219,9 @@ export const JzodElementEditorReactCodeMirror: React.FC<JzodElementEditorReactCo
 
 // Apply memoization to prevent unnecessary re-renders
 // TODO: is this useful / old school?
-// export const JzodElementEditorReactCodeMirror = JzodElementEditorReactCodeMirror;
+// export const MlElementEditorReactCodeMirror = MlElementEditorReactCodeMirror;
 // React.memo(
-//   JzodElementEditorReactCodeMirror,
+//   MlElementEditorReactCodeMirror,
 //   (prevProps, nextProps) => {
 //     // Custom comparison function to determine if the component should re-render
 //     return (

@@ -9,13 +9,13 @@ import {
 } from "../Themes/index";
 import { FileSelector } from "../Themes/FileSelector.js";
 // import { useServerFilesystemRoot } from "../../hooks/useServerFilesystemRoot.js";
-import type { JzodEditorPropsRoot } from "./JzodElementEditorInterface";
+import type { MlEditorPropsRoot } from "./MlElementEditorInterface";
 import { LoggerInterface, MiroirLoggerFactory, type MlBaseObject, type MetaModel } from "miroir-core";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 
 // ################################################################################################
-export interface JzodElementStringEditorProps extends JzodEditorPropsRoot {
+export interface MlElementStringEditorProps extends MlEditorPropsRoot {
   formik: FormikProps<any>;
   formikRootLessListKey: string;
   currentValueObjectAtKey: any;
@@ -30,7 +30,7 @@ export interface JzodElementStringEditorProps extends JzodEditorPropsRoot {
   };
 }
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodElementStringEditor");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlElementStringEditor");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {
@@ -39,7 +39,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 
 // ################################################################################################
 /**
- * String Editor Component for Jzod Elements
+ * String Editor Component for ML Elements
  * 
  * Handles different string display modes:
  * - File selection (format: "file")
@@ -47,7 +47,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
  * - Multiline text (multiline: true)
  * - Default single-line text input
  */
-export const JzodElementStringEditor: React.FC<JzodElementStringEditorProps> = (props) => {
+export const MlElementStringEditor: React.FC<MlElementStringEditorProps> = (props) => {
   const {
     formik,
     formikRootLessListKey,
@@ -76,7 +76,7 @@ export const JzodElementStringEditor: React.FC<JzodElementStringEditorProps> = (
 
   const setSelectedFileName2 = useCallback((fileName: string | undefined) => {
     // When upload=false (default), we receive a path string
-    log.info('JzodElementStringEditor - Selected file name:', fileName);
+    log.info('MlElementStringEditor - Selected file name:', fileName);
     setSelectedFileName(fileName);
     setFileError(undefined);
     // Store the file path/name in formik
@@ -189,4 +189,4 @@ export const JzodElementStringEditor: React.FC<JzodElementStringEditorProps> = (
   );
 };
 
-JzodElementStringEditor.displayName = "JzodElementStringEditor";
+MlElementStringEditor.displayName = "MlElementStringEditor";

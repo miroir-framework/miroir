@@ -160,7 +160,7 @@ export function recursiveResolveMlSchemaReferenceInContext<T extends MiroirModel
 }
 
 // ################################################################################################
-// TODO: redundant to resolveMlSchemaReferenceInContext, resolveMlSchemaReference is used only in JzodTools,
+// TODO: redundant to resolveMlSchemaReferenceInContext, resolveMlSchemaReference is used only in MlTools,
 // refactor / merge with resolveMlSchemaReferenceInContext.
 export function resolveMlSchemaReference(
   miroirFundamentalMlSchema: MlSchema,

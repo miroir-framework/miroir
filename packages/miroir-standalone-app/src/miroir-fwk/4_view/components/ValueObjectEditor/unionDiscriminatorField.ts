@@ -1,5 +1,5 @@
 /**
- * Primary discriminator of a Jzod union — the field that actually selects the
+ * Primary discriminator of a ML union — the field that actually selects the
  * branch (e.g. `transformerType`). Secondary names listed on the same
  * discriminator array (`interpolation`) do not identify a branch by themselves.
  */

@@ -13,7 +13,7 @@ import { useMiroirContextService } from "miroir-react";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { ThemedStyledButton } from "../Themes/index.js";
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodEditorButton");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlEditorButton");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
   "UI"
@@ -21,13 +21,13 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
   log = logger;
 });
 
-export type JzodEditorButtonConfig = {
+export type MlEditorButtonConfig = {
   label?: string;
   transformer?: any;
 };
 
-type JzodEditorButtonProps = {
-  editorButton: JzodEditorButtonConfig;
+type MlEditorButtonProps = {
+  editorButton: MlEditorButtonConfig;
   currentValue: any;
   rootLessListKey: string;
   currentApplication: Uuid;
@@ -35,7 +35,7 @@ type JzodEditorButtonProps = {
   onApplyResult: (newValue: any) => void;
 };
 
-export const JzodEditorButton: React.FC<JzodEditorButtonProps> = ({
+export const MlEditorButton: React.FC<MlEditorButtonProps> = ({
   editorButton,
   currentValue,
   rootLessListKey,
@@ -70,7 +70,7 @@ export const JzodEditorButton: React.FC<JzodEditorButtonProps> = ({
       );
 
       if ((result as any)?.status === "error") {
-        log.error("JzodEditorButton transformer error:", (result as any)?.message);
+        log.error("MlEditorButton transformer error:", (result as any)?.message);
         return;
       }
 
@@ -102,4 +102,4 @@ export const JzodEditorButton: React.FC<JzodEditorButtonProps> = ({
   );
 };
 
-JzodEditorButton.displayName = "JzodEditorButton";
+MlEditorButton.displayName = "MlEditorButton";

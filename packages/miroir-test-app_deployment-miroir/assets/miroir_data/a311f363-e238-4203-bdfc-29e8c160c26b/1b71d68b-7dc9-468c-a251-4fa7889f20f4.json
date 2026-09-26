@@ -2,18 +2,18 @@
   "uuid": "1b71d68b-7dc9-468c-a251-4fa7889f20f4",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "JzodArrayEditor_ComponentTestSuite",
+  "name": "MlArrayEditor_ComponentTestSuite",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Issues #286, #292: JzodArrayEditor React component tests (JzodElementEditor), one MiroirTest instance per editor. Edited by hand.",
+  "description": "Issues #286, #292: MlArrayEditor React component tests (MlElementEditor), one MiroirTest instance per editor. Edited by hand.",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "JzodArrayEditor_ComponentTestSuite",
+    "miroirTestLabel": "MlArrayEditor_ComponentTestSuite",
     "miroirTests": [
       {
         "miroirTestType": "reactComponentTestSuite",
-        "miroirTestLabel": "JzodArrayEditor",
-        "component": "JzodElementEditor",
+        "miroirTestLabel": "MlArrayEditor",
+        "component": "MlElementEditor",
         "componentProps": {
           "label": "Test Label",
           "name": "testField",
@@ -37,7 +37,7 @@
         "miroirTests": [
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodArrayEditor: renders array input with label when label prop is provided",
+            "miroirTestLabel": "MlArrayEditor: renders array input with label when label prop is provided",
             "steps": [
               {
                 "step": "expectElement",
@@ -53,7 +53,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodArrayEditor: renders all array values, in the right order",
+            "miroirTestLabel": "MlArrayEditor: renders all array values, in the right order",
             "steps": [
               {
                 "step": "expectElement",
@@ -72,7 +72,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodArrayEditor: form state is changed when selection changes",
+            "miroirTestLabel": "MlArrayEditor: form state is changed when selection changes",
             "steps": [
               {
                 "step": "change",
@@ -96,7 +96,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodArrayEditor: changing order of array items when button ROOT.testField.1.up is clicked",
+            "miroirTestLabel": "MlArrayEditor: changing order of array items when button ROOT.testField.1.up is clicked",
             "steps": [
               {
                 "step": "clickArrayButton",
@@ -121,7 +121,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodArrayEditor: changing order of array items when button ROOT.testField.2.up is clicked",
+            "miroirTestLabel": "MlArrayEditor: changing order of array items when button ROOT.testField.2.up is clicked",
             "steps": [
               {
                 "step": "clickArrayButton",
@@ -146,7 +146,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodArrayEditor: changing order of array items when button ROOT.testField.0.down is clicked",
+            "miroirTestLabel": "MlArrayEditor: changing order of array items when button ROOT.testField.0.down is clicked",
             "steps": [
               {
                 "step": "clickArrayButton",
@@ -171,7 +171,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodArrayEditor: changing order of heteronomous object array items from union when button ROOT.testField.0.down is clicked",
+            "miroirTestLabel": "MlArrayEditor: changing order of heteronomous object array items from union when button ROOT.testField.0.down is clicked",
             "componentProps": {
               "rawMlSchema": {
                 "type": "array",
@@ -270,7 +270,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodArrayEditor: renders all array values of a plain 2-items tuple with a string and a number, in the right order",
+            "miroirTestLabel": "MlArrayEditor: renders all array values of a plain 2-items tuple with a string and a number, in the right order",
             "componentProps": {
               "rawMlSchema": {
                 "type": "tuple",
@@ -302,7 +302,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodArrayEditor: renders all array values of a tuple inside an array, in the right order",
+            "miroirTestLabel": "MlArrayEditor: renders all array values of a tuple inside an array, in the right order",
             "componentProps": {
               "rawMlSchema": {
                 "type": "array",
@@ -357,7 +357,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodArrayEditor: add an element to a string array when button ROOT.testField.add is clicked",
+            "miroirTestLabel": "MlArrayEditor: add an element to a string array when button ROOT.testField.add is clicked",
             "steps": [
               {
                 "step": "clickArrayButton",
@@ -379,7 +379,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodArrayEditor: add an element to an object array when button ROOT.testField.add is clicked",
+            "miroirTestLabel": "MlArrayEditor: add an element to an object array when button ROOT.testField.add is clicked",
             "componentProps": {
               "rawMlSchema": {
                 "type": "array",
@@ -458,7 +458,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodArrayEditor: duplicate an element in a string array when duplicate button for item 1 is clicked",
+            "miroirTestLabel": "MlArrayEditor: duplicate an element in a string array when duplicate button for item 1 is clicked",
             "steps": [
               {
                 "step": "expectElement",

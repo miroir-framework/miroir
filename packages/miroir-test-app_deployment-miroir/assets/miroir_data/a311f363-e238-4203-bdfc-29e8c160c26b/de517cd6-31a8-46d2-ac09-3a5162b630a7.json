@@ -2,18 +2,18 @@
   "uuid": "de517cd6-31a8-46d2-ac09-3a5162b630a7",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "JzodUnionEditor_ComponentTestSuite",
+  "name": "MlUnionEditor_ComponentTestSuite",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Issues #286, #292: JzodUnionEditor React component tests (JzodElementEditor), one MiroirTest instance per editor. Edited by hand.",
+  "description": "Issues #286, #292: MlUnionEditor React component tests (MlElementEditor), one MiroirTest instance per editor. Edited by hand.",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "JzodUnionEditor_ComponentTestSuite",
+    "miroirTestLabel": "MlUnionEditor_ComponentTestSuite",
     "miroirTests": [
       {
         "miroirTestType": "reactComponentTestSuite",
-        "miroirTestLabel": "JzodUnionEditor",
-        "component": "JzodElementEditor",
+        "miroirTestLabel": "MlUnionEditor",
+        "component": "MlElementEditor",
         "componentProps": {
           "label": "Test Label",
           "name": "testField",
@@ -26,7 +26,7 @@
         "miroirTests": [
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodUnionEditor: union between simple types renders input with proper value",
+            "miroirTestLabel": "MlUnionEditor: union between simple types renders input with proper value",
             "componentProps": {
               "rawMlSchema": {
                 "type": "union",
@@ -54,7 +54,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodUnionEditor: union between simple type and object for value of simple type renders input with proper value",
+            "miroirTestLabel": "MlUnionEditor: union between simple type and object for value of simple type renders input with proper value",
             "componentProps": {
               "rawMlSchema": {
                 "type": "union",
@@ -93,7 +93,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodUnionEditor: union between simple type and object for value object renders input with proper value",
+            "miroirTestLabel": "MlUnionEditor: union between simple type and object for value object renders input with proper value",
             "componentProps": {
               "rawMlSchema": {
                 "type": "union",
@@ -137,7 +137,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodUnionEditor: union between 2 object types with a discriminator for value object renders input following the proper value type",
+            "miroirTestLabel": "MlUnionEditor: union between 2 object types with a discriminator for value object renders input following the proper value type",
             "componentProps": {
               "rawMlSchema": {
                 "type": "union",
@@ -244,7 +244,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodUnionEditor: non-discriminated union can switch type from number to string via union type selector",
+            "miroirTestLabel": "MlUnionEditor: non-discriminated union can switch type from number to string via union type selector",
             "componentProps": {
               "rawMlSchema": {
                 "type": "union",
@@ -325,7 +325,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodUnionEditor: non-discriminated union can switch type from number to object via union type selector",
+            "miroirTestLabel": "MlUnionEditor: non-discriminated union can switch type from number to object via union type selector",
             "componentProps": {
               "rawMlSchema": {
                 "type": "union",
@@ -426,7 +426,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodUnionEditor: union type star button is visible but selector is initially hidden",
+            "miroirTestLabel": "MlUnionEditor: union type star button is visible but selector is initially hidden",
             "componentProps": {
               "rawMlSchema": {
                 "type": "union",
@@ -463,7 +463,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodUnionEditor: union type star button toggle shows then hides selector",
+            "miroirTestLabel": "MlUnionEditor: union type star button toggle shows then hides selector",
             "componentProps": {
               "rawMlSchema": {
                 "type": "union",
@@ -512,7 +512,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodUnionEditor: union type selector for object value places star and selector above the value",
+            "miroirTestLabel": "MlUnionEditor: union type selector for object value places star and selector above the value",
             "componentProps": {
               "rawMlSchema": {
                 "type": "union",

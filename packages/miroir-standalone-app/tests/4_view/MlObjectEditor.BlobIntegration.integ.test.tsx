@@ -149,7 +149,7 @@ const TestWrapper: React.FC<TestWrapperProps> = ({ initialValues, allowedMimeTyp
 // Tests
 // ################################################################################################
 
-describe('JzodObjectEditor - Blob Integration', () => {
+describe('MlObjectEditor - Blob Integration', () => {
   describe('5.1-5.3: Blob Detection and Rendering', () => {
     it('should render BlobEditorField with correct props from Formik context', async () => {
       const allowedMimeTypes = [
@@ -213,7 +213,7 @@ describe('JzodObjectEditor - Blob Integration', () => {
   });
 
   describe('5.4: Non-Blob Object Handling', () => {
-    // This test would require actual JzodObjectEditor which needs complex setup
+    // This test would require actual MlObjectEditor which needs complex setup
     // Skipping for now - integration will be tested manually
     it.skip('should render normal object attributes when isBlob is false', async () => {
       // Would test that normal objects without isBlob tag render normally

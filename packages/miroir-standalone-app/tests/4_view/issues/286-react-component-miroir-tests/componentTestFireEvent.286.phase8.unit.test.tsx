@@ -5,7 +5,7 @@
  * React listens to `focusout` / `focusin` for `onBlur` / `onFocus`, to `mouseover` / `mouseout`
  * (and the pointer equivalents) for `onMouseEnter` / `onMouseLeave`, and builds `onSelect` from
  * `keyup` on a focused input. `@testing-library/react` wraps `@testing-library/dom`'s `fireEvent`
- * to fire those native events too. The old JzodElementEditor suites used that wrapper, so a
+ * to fire those native events too. The old MlElementEditor suites used that wrapper, so a
  * `fireEvent.blur` there ran the editor's `onBlur` (the record key rename commits on blur).
  *
  * Run:

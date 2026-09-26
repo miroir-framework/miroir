@@ -411,7 +411,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                 Endpoint Action Caller
               </Typography>
               <Typography variant="body2" color="text.secondary" gutterBottom>
-                Use JzodElementEditor for dynamic form generation based on action parameters schema
+                Use MlElementEditor for dynamic form generation based on action parameters schema
               </Typography>
 
               {/* JsonDisplayHelper */}

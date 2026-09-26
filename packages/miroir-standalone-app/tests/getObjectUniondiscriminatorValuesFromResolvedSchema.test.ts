@@ -41,7 +41,7 @@ function local_test(schema: MlUnion, instance: any): string[][] {
   // )
 
   // if (resolvedElementMlSchema.status === "error") {
-  //   throw new Error(`Error while resolving Jzod schema: ${resolvedElementMlSchema.error}`);
+  //   throw new Error(`Error while resolving ML schema: ${resolvedElementMlSchema.error}`);
   // }
 
 

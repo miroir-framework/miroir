@@ -6,7 +6,7 @@
  *   `51c647fe-…` has no `componentTestRef`, and its `steps` are required;
  * - the `reactComponentTestStep` union of the Entity and the EntityVersion has no `custom` member;
  * - the legacy files `componentTestManifest.ts`, `componentTestRegistry.ts`, and the folder
- *   `jzodElementEditor/` are gone from `src/miroir-fwk/4-tests/componentTests/`;
+ *   `mlElementEditor/` are gone from `src/miroir-fwk/4-tests/componentTests/`;
  * - `customStepRegistry.ts` does not exist;
  * - a runner call without `suite` gives an `error` result.
  *
@@ -79,7 +79,7 @@ describe("legacyRemoved.292.phase6: legacy files", () => {
   it.each([
     "componentTestManifest.ts",
     "componentTestRegistry.ts",
-    "jzodElementEditor",
+    "mlElementEditor",
     "customStepRegistry.ts",
   ])("componentTests/%s does not exist", (fileName) => {
     expect(existsSync(join(COMPONENT_TESTS_FOLDER, fileName))).toBe(false);

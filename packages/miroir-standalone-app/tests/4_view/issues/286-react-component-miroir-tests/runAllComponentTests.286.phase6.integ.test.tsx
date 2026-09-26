@@ -6,7 +6,7 @@
  * Harness: the Slice 4 one. `MiroirContextReactProvider` and `LocalCacheProvider` over a real
  * `LocalCache` seeded with the Miroir meta-model. No launch mocks, no Postgres, no `--profile`.
  * The list is narrowed to the 7 per-editor component test instances (#292, e.g.
- * `JzodEnumEditor_ComponentTestSuite`) and the small transformer suite `resolveConditionalSchema`
+ * `MlEnumEditor_ComponentTestSuite`) and the small transformer suite `resolveConditionalSchema`
  * (5 `transformerTest` leaves). Results are read from the list's `onTestComplete`.
  * `registerComponentTests` (the entry of the component test chunk) is wrapped in a `vi.fn` to count
  * its calls. The expected component leaves of each instance come from its JSON.
@@ -112,13 +112,13 @@ function reactComponentLeafLabels(node: any): string[] {
 
 /** The uuids of the 7 per-editor component test instances (#292, analysis §5.6). */
 const COMPONENT_TEST_SUITE_INSTANCE_UUIDS = [
-  "761d4ed2-1a5c-4901-a9d9-897dbec0b27f", // JzodEnumEditor_ComponentTestSuite
-  "1b71d68b-7dc9-468c-a251-4fa7889f20f4", // JzodArrayEditor_ComponentTestSuite
-  "3995a071-b8ae-48d3-a488-6d1fc828b725", // JzodLiteralEditor_ComponentTestSuite
-  "da353085-c62b-4aa6-bd54-8813d303dfe5", // JzodObjectEditor_ComponentTestSuite
-  "590693b6-2125-43fc-89d7-1330ae8318db", // JzodSimpleTypeEditor_ComponentTestSuite
-  "de517cd6-31a8-46d2-ac09-3a5162b630a7", // JzodUnionEditor_ComponentTestSuite
-  "ec601bcc-a27d-450d-9c37-bdd6a12a1575", // JzodAnyEditor_ComponentTestSuite
+  "761d4ed2-1a5c-4901-a9d9-897dbec0b27f", // MlEnumEditor_ComponentTestSuite
+  "1b71d68b-7dc9-468c-a251-4fa7889f20f4", // MlArrayEditor_ComponentTestSuite
+  "3995a071-b8ae-48d3-a488-6d1fc828b725", // MlLiteralEditor_ComponentTestSuite
+  "da353085-c62b-4aa6-bd54-8813d303dfe5", // MlObjectEditor_ComponentTestSuite
+  "590693b6-2125-43fc-89d7-1330ae8318db", // MlSimpleTypeEditor_ComponentTestSuite
+  "de517cd6-31a8-46d2-ac09-3a5162b630a7", // MlUnionEditor_ComponentTestSuite
+  "ec601bcc-a27d-450d-9c37-bdd6a12a1575", // MlAnyEditor_ComponentTestSuite
 ];
 /** The 7 per-editor component test instances (#292). */
 const componentTestSuiteInstanceList = COMPONENT_TEST_SUITE_INSTANCE_UUIDS.map(loadMiroirTestInstance);

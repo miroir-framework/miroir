@@ -57,7 +57,7 @@ import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
 import { ActionButtonWithSnackbar } from '../Page/ActionButtonWithSnackbar.js';
 import { ThemedStyledButton } from '../Themes/index.js';
 import { FieldValidationProvider, useFieldValidationContext } from '../ValueObjectEditor/FieldValidationContext.js';
-import { JzodElementEditor } from '../ValueObjectEditor/JzodElementEditor.js';
+import { MlElementEditor } from '../ValueObjectEditor/MlElementEditor.js';
 import type { ValueObjectEditMode } from './ReportSectionEntityInstance.js';
 
 import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
@@ -112,7 +112,7 @@ export interface TypedValueObjectEditorProps {
   onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>; // callbacks indexed by rootLessListKey for selective field observation
   // optional validation transformer: receives form values as params, must return true (valid) or a string error message (invalid)
   validationTransformer?: CoreTransformerForBuildPlusRuntime;
-  // when displayed in a JzodObjectEditFormDialog modal dialog form
+  // when displayed in a MlObjectEditFormDialog modal dialog form
   setAddObjectdialogFormIsOpen?: (a:boolean) => void,
 }
  let count = 0;
@@ -355,7 +355,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
   );
 
   let typeError: JSX.Element | undefined = undefined;
-  const jzodTypeCheckResult: ResolvedMlSchemaReturnType | undefined = useMemo(() => {
+  const mlsTypeCheckResult: ResolvedMlSchemaReturnType | undefined = useMemo(() => {
     let result: ResolvedMlSchemaReturnType | undefined = undefined;
     try {
       result =
@@ -405,16 +405,16 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
   //   formik.values,
   //   "zoomedInDisplaySchema",
   //   zoomedInDisplaySchema,
-  //   "jzodTypeCheckResult",
-  //   jzodTypeCheckResult
+  //   "mlsTypeCheckResult",
+  //   mlsTypeCheckResult
   // );
 
-  if (!jzodTypeCheckResult || jzodTypeCheckResult.status != "ok") {
-    log.warn("TypedValueObjectEditor could not resolve jzod schema", jzodTypeCheckResult);
+  if (!mlsTypeCheckResult || mlsTypeCheckResult.status != "ok") {
+    log.warn("TypedValueObjectEditor could not resolve ML schema", mlsTypeCheckResult);
     // const jsonString = JSON.stringify(typeCheckKeyMap, null, 2);
-    if (jzodTypeCheckResult) {
+    if (mlsTypeCheckResult) {
       const jsonString: string = JSON.stringify(
-        getInnermostTypeCheckError(jzodTypeCheckResult as any),
+        getInnermostTypeCheckError(mlsTypeCheckResult as any),
         null,
         2
       );
@@ -432,10 +432,10 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
         <CodeBlock_ReadOnly value={jsonString} copyButton={true} />;
         </div>
     } else {
-      typeError = <div>Could not resolve jzod schema
+      typeError = <div>Could not resolve ML schema
         <ThemedOnScreenHelper
-          label={`TypedValueObjectEditor for ${formikValuePathAsString} jzodTypeCheckResult`}
-          data={jzodTypeCheckResult}
+          label={`TypedValueObjectEditor for ${formikValuePathAsString} mlsTypeCheckResult`}
+          data={mlsTypeCheckResult}
         />
         <ThemedOnScreenHelper
           label={`TypedValueObjectEditor for schema at ${formikValuePathAsString}`}
@@ -453,23 +453,23 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
     () =>
       getQueryRunnerParamsForReduxDeploymentsState(
         deploymentUuid &&
-          jzodTypeCheckResult &&
-          jzodTypeCheckResult.status == "ok" &&
-          jzodTypeCheckResult.resolvedSchema.type == "uuid" &&
-          jzodTypeCheckResult.resolvedSchema.tag?.value?.foreignKeyParams?.targetEntity
+          mlsTypeCheckResult &&
+          mlsTypeCheckResult.status == "ok" &&
+          mlsTypeCheckResult.resolvedSchema.type == "uuid" &&
+          mlsTypeCheckResult.resolvedSchema.tag?.value?.foreignKeyParams?.targetEntity
           ? {
               queryType: "boxedQueryWithExtractorCombinerTransformer",
               application,
               extractors: {
-                [jzodTypeCheckResult.resolvedSchema.tag?.value?.foreignKeyParams?.targetEntity]: {
+                [mlsTypeCheckResult.resolvedSchema.tag?.value?.foreignKeyParams?.targetEntity]: {
                   extractorOrCombinerType: "extractorInstancesByEntity",
                   applicationSection: getApplicationSection(
                     application,
-                    jzodTypeCheckResult.resolvedSchema.tag?.value?.foreignKeyParams?.targetEntity
+                    mlsTypeCheckResult.resolvedSchema.tag?.value?.foreignKeyParams?.targetEntity
                   ),
                   parentName: "",
                   parentUuid:
-                    jzodTypeCheckResult.resolvedSchema.tag?.value?.foreignKeyParams?.targetEntity,
+                    mlsTypeCheckResult.resolvedSchema.tag?.value?.foreignKeyParams?.targetEntity,
                 },
               },
             }
@@ -477,7 +477,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
         // applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
         deploymentEntityStateSelectorMap
       ),
-    [deploymentEntityStateSelectorMap, deploymentUuid, jzodTypeCheckResult]
+    [deploymentEntityStateSelectorMap, deploymentUuid, mlsTypeCheckResult]
   );
 
   const foreignKeyObjects: Record<string, EntityInstancesUuidIndex> =
@@ -535,7 +535,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
     </ThemedStyledButton>
   );
   // const resolvedElementMlSchema =
-  //   jzodTypeCheckResult?.status == "ok" ? jzodTypeCheckResult.resolvedSchema : undefined;
+  //   mlsTypeCheckResult?.status == "ok" ? mlsTypeCheckResult.resolvedSchema : undefined;
 
   const result = (
     <>
@@ -569,14 +569,14 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
                   formikValues: undefined,
                   // rawMlSchema: zoomedInDisplaySchema,
                   localResolvedElementMlSchemaBasedOnValue:
-                    jzodTypeCheckResult?.status == "ok"
-                      ? jzodTypeCheckResult.resolvedSchema
+                    mlsTypeCheckResult?.status == "ok"
+                      ? mlsTypeCheckResult.resolvedSchema
                       : undefined,
                 }}
               />
             )}
           >
-            <JzodElementEditor
+            <MlElementEditor
               valueObjectEditMode={props.valueObjectEditMode}
               reportSectionPathAsString={formikValuePathAsString ?? ""}
               name={"ROOT"}
@@ -592,7 +592,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
               currentApplicationSection={applicationSection}
               hasTypeError={typeError != undefined}
               typeCheckKeyMap={
-                jzodTypeCheckResult?.status == "ok" ? jzodTypeCheckResult.keyMap : {}
+                mlsTypeCheckResult?.status == "ok" ? mlsTypeCheckResult.keyMap : {}
               }
               insideAny={false}
               anyRootLessListKey={undefined}
@@ -643,14 +643,14 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
                   formikValues: undefined,
                   // rawMlSchema: zoomedInDisplaySchema,
                   localResolvedElementMlSchemaBasedOnValue:
-                    jzodTypeCheckResult?.status == "ok"
-                      ? jzodTypeCheckResult.resolvedSchema
+                    mlsTypeCheckResult?.status == "ok"
+                      ? mlsTypeCheckResult.resolvedSchema
                       : undefined,
                 }}
               />
             )}
           >
-            <JzodElementEditor
+            <MlElementEditor
               valueObjectEditMode={props.valueObjectEditMode}
               reportSectionPathAsString={formikValuePathAsString ?? ""}
               name={"ROOT"}
@@ -666,7 +666,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
               currentApplicationSection={applicationSection}
               hasTypeError={typeError != undefined}
               typeCheckKeyMap={
-                jzodTypeCheckResult?.status == "ok" ? jzodTypeCheckResult.keyMap : {}
+                mlsTypeCheckResult?.status == "ok" ? mlsTypeCheckResult.keyMap : {}
               }
               insideAny={false}
               anyRootLessListKey={undefined}
@@ -707,7 +707,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
   //     // Log performance every 50 renders or if render took longer than 10ms
   //     if (currentMetrics.renderCount % 50 === 0 || renderDuration > 10) {
   //       log.info(
-  //         `JzodElementEditor render performance - ${componentKey}: ` +
+  //         `MlElementEditor render performance - ${componentKey}: ` +
   //         `#${currentMetrics.renderCount} renders, ` +
   //         `Current: ${renderDuration.toFixed(2)}ms, ` +
   //         `Total: ${currentMetrics.totalRenderTime.toFixed(2)}ms, ` +
