@@ -495,11 +495,11 @@ export function useMlElementEditorHooks(
     if (tagValue?.display?.uuid?.restrictToApplicationDeploymentMap) {
       const miroirUuid = selfApplicationMiroir.uuid;
       const adminUuid = adminSelfApplication.uuid;
-      const labeled: Record<string, EntityInstance & { defaultLabel?: string }> = {};
+      const labeled: Record<string, EntityInstance & { defaultLabel?: string; name?: string }> = {};
       for (const row of applications ?? []) {
         const uuid = (row as { uuid?: string }).uuid;
         if (uuid) {
-          labeled[uuid] = row as EntityInstance & { defaultLabel?: string };
+          labeled[uuid] = row as EntityInstance & { defaultLabel?: string; name?: string };
         }
       }
       const knownNames: Record<string, string> = {
