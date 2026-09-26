@@ -13,6 +13,12 @@
       "skillPath": "skills/engineering/diagnosing-bugs/SKILL.md",
       "computedHash": "5ee02243034d63ad1aeb7155cbf954d87bdcc75d5045f84b476dda8facec16b5"
     },
+    "domain-modeling": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/domain-modeling/SKILL.md",
+      "computedHash": "336547f3ff285e822fc70b69b170dc58bceef9c8ed5fad18de0046287d6be837"
+    },
     "grilling": {
       "source": "mattpocock/skills",
       "sourceType": "github",

@@ -71,12 +71,14 @@ test-results/
 !.agents/skills/unslop/
 !.agents/skills/writing-for-agents/
 !.agents/skills/handoff/
+!.agents/skills/domain-modeling/
 !.agents/skills/diagnosing-bugs/
 !.agents/skills/codebase-design/
 .claude/skills/*
 !.claude/skills/miroir-*/
 !.claude/skills/grilling/
-!.agents/skills/improve-codebase-architecture/
+!.claude/skills/domain-modeling/
+!.claude/skills/improve-codebase-architecture/
 !.claude/skills/tdd/
 !.claude/skills/unslop/
 !.claude/skills/writing-for-agents/
