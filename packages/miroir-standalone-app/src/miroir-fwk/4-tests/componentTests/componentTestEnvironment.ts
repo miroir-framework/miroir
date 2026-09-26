@@ -1,6 +1,7 @@
 import {
   configure,
   fireEvent,
+  getConfig,
   queries,
   waitFor,
   within,
@@ -68,8 +69,24 @@ export type ComponentTestCaseControls = Pick<ComponentTestEnvironment, "remount"
  * Configures `@testing-library/dom` for the act-free driver: the same timeout in vitest and in
  * the app, and event / async wrappers that do not go through React `act` (they replace the ones
  * `@testing-library/react` installs when it is imported, as `tests/setup.ts` does).
+ *
+ * The configuration is global (to the vitest worker, or to the page): the returned function puts
+ * back the configuration found before the call, so that a later test relying on
+ * `@testing-library/react`'s `act` wrappers is not affected (#303 Slice 7; the runner calls it
+ * in `close()`).
  */
-export function configureComponentTestDom(): void {
+export function configureComponentTestDom(): () => void {
+  const previousConfig = { ...getConfig() };
+  applyComponentTestDomConfig();
+  return () => configure(previousConfig);
+}
+
+/**
+ * Sets the act-free configuration without saving the previous one. The runner calls it before
+ * each case, so that another runner's `close()` (the app closes a display's runner after the
+ * commit that unmounts it) cannot leave a later case with the default configuration.
+ */
+export function applyComponentTestDomConfig(): void {
   configure({
     asyncUtilTimeout: 5000,
     testIdAttribute: "data-testid",

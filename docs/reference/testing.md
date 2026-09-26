@@ -758,7 +758,7 @@ Identity under projection uses `resolveProjectionIdentityFields` → `getEntityP
 
 | File | Store / config | Focus |
 |------|----------------|-------|
-| `miroir-component-tests.unit.test.tsx` | In-memory `LocalCache`; no `--profile` | Jzod editor components, run from the 7 per-editor MiroirTest instances (`JzodEnumEditor_ComponentTestSuite`, …) (#286, #292) |
+| `miroir-component-tests.unit.test.tsx` | In-memory `LocalCache`; no `--profile` | Jzod editor components, run from the 9 component MiroirTest instances: 7 per-editor instances (`JzodEnumEditor_ComponentTestSuite`, …), the test pattern and the on-demand render-performance suite (#286, #292, #303) |
 | `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` | Node emulated SQL via mocked launcher environment | `MiroirTestDisplay` launches integration and shows the result inspector |
 | `MiroirTestListIntegrationLaunch.integ.test.tsx` | Node emulated SQL via mocked launcher environment | List **Run All Integration Tests** batch for `miroirCoreTransformers` (filtered leaf) |
 | `JzodElementEditorReactCodeMirror.test.tsx` | — | CodeMirror sub-editor (currently commented out) |
@@ -773,7 +773,7 @@ Identity under projection uses `resolveProjectionIdentityFields` → `getEntityP
 
 The JzodElementEditor component tests are MiroirTests (#286) written as declarative JSON (#292). Each case is a `reactComponentTest` leaf that holds the props of the rendered component and a list of `steps`. The standalone app's component test runner renders the component and interprets the steps. No case has TypeScript code of its own.
 
-There is one MiroirTest instance per editor, in `miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/`:
+There is one MiroirTest instance per editor, plus the test pattern and the render-performance suite (#303), in `miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/`:
 
 | Instance `name` | uuid | Cases |
 |---|---|---|
@@ -784,6 +784,8 @@ There is one MiroirTest instance per editor, in `miroir-test-app_deployment-miro
 | `JzodSimpleTypeEditor_ComponentTestSuite` | `590693b6-2125-43fc-89d7-1330ae8318db` | 12 |
 | `JzodUnionEditor_ComponentTestSuite` | `de517cd6-31a8-46d2-ac09-3a5162b630a7` | 9 |
 | `JzodAnyEditor_ComponentTestSuite` | `ec601bcc-a27d-450d-9c37-bdd6a12a1575` | 15 |
+| `JzodTestPattern_ComponentTestSuite` | `26ef2886-2cd8-4f91-b846-1525b24d5f41` | 4 (see [Test pattern](#test-pattern)) |
+| `JzodEditorRenderPerformance_ComponentTestSuite` | `2da30877-d248-44bd-9786-5c091b1bc8fc` | 15, on demand (see [Render measurements](#render-measurements-measurerendering)) |
 
 Each instance is exported as `miroirTest_<name>` by `miroir-test-app_deployment-miroir` (`index.ts`, `index.d.ts`) and listed in `defaultMiroirMetaModel.tests` (`src/Model.ts`). The JSON files are edited by hand.
 
@@ -819,6 +821,7 @@ The root of `definition` is a `miroirTestSuite` whose label is the instance name
 | `reactComponentTestSuite` | `component` | Name of the rendered component in the app's component registry (`componentTests/componentRegistry.ts`). The registry has one entry, `JzodElementEditor` |
 | | `componentProps` (optional) | Default props of the leaves |
 | | `skip` (optional) | Skips every leaf of the suite |
+| | `runOnDemand` (optional) | `true`: the suite runs only when asked for. The vitest entry skips it unless `MIROIR_COMPONENT_PERF=1`; Miroir Tests "Run All Unit Tests" records its leaves as skipped; the unit Run button of the instance runs it. Unlike `skip`, the suite still runs when launched on its own (#303) |
 | `reactComponentTest` | `steps` | The steps, run in order |
 | | `componentProps` (optional) | Props of this case, shallow-merged over the suite's `componentProps`: a leaf key replaces the suite key. A merge cannot remove a key, so a suite whose cases differ on the presence of a prop leaves it out of its defaults (the Literal suite has no `label`) |
 | | `skip` (optional) | Skips the case |
@@ -896,8 +899,9 @@ Every step has a `step` kind and an optional `label` (required for `expectRender
 | `clickArrayButton` | `field`, `action` (`up`, `down`, `add`, `duplicate`, `delete`), `index?` | Clicks the `arrayButton` widget | `{"step": "clickArrayButton", "field": "testField", "action": "up", "index": 1}` |
 | `clickObjectButton` | `field`, `action` (`addOptionalAttribute`, `addRecordEntry`, `remove`, `duplicate`), `attribute?` | Clicks the `objectButton` widget | `{"step": "clickObjectButton", "field": "testField", "action": "remove", "attribute": "firstRecord"}` |
 | `renameRecordEntry` | `field`, `entry`, `newName` | Changes the `recordEntryName` input to `newName`, then blurs it | `{"step": "renameRecordEntry", "field": "testField", "entry": "firstRecord", "newName": "renamedRecord"}` |
-| `expectRenderedValues` | `label`, `expectedValue`, `field?`, `path?`, `filter?`, `detectOptions?`, `timeout?` | Compares the form values read from the DOM with `expectedValue` (below) | `{"step": "expectRenderedValues", "label": "after add button click", "field": "testField", "expectedValue": ["value1", "value2", "value3", ""]}` |
+| `expectRenderedValues` | `label`, `expectedValue`, `field?`, `path?`, `ignorePaths?`, `filter?`, `detectOptions?`, `timeout?` | Compares the form values read from the DOM with `expectedValue` (below) | `{"step": "expectRenderedValues", "label": "after add button click", "field": "testField", "expectedValue": ["value1", "value2", "value3", ""]}` |
 | `expectElement` | `target` and the checks below, `timeout?`, `saveAs?` | Checks the element or elements of `target` | `{"step": "expectElement", "label": "initial", "target": {"widget": "combobox", "field": "testField"}, "value": "value2"}` |
+| `measureRendering` | `iterations` (positive integer), `mode` (`remount`, `update`, `both`), `updateProps?` | Renders the case again `iterations` times per mode and records per-component render times ([Render measurements](#render-measurements-measurerendering)). Never fails on a duration | `{"step": "measureRendering", "iterations": 3, "mode": "both", "updateProps": {"initialFormState": "value3"}}` |
 
 `expectElement` checks, all optional and combinable:
 
@@ -921,8 +925,9 @@ The step reads the values of the form elements rendered in the case container an
 1. The extractor reads the fields under `F(field)` when `field` is given, under `TESTSECTION` otherwise, and strips that prefix from the keys. `label` is passed to it as the name of the step, and `filter` and `detectOptions` as they are. An open combobox reads as its committed value (`data-test-selected-value` of its state tracker), not as the text typed in it.
 2. The array-valued entries of the result (the extractor's option lists) are dropped, and `formValuesToJSON` turns the dotted keys into nested values. Numeric segments become array indexes, so an array field read with `field` gives an array.
 3. With `path` (an array of keys and indexes), only the value at `path` is compared.
-4. When the value is an object and option lists are rendered, the key `$options` is added: `{"<field>": ["<option text>", …]}`, built from the `[role="option"]` elements whose `aria-label` is `<form field name>-option-<value>`, the field name without its `TESTSECTION.` prefix, the texts in DOM order.
-5. The value is logged, then compared with `expectedValue` by `toEqual`. Keys whose value is `undefined` are ignored.
+4. With `ignorePaths` (an array of dot paths, e.g. `"aNestedObject.level1.items.1.tags"`), each path is removed from a copy of the value and from `expectedValue` before the comparison; a numeric segment on an array removes the item. It is for branches the extractor cannot read yet: each ignored branch should get an `expectElement` check in the same leaf (#303).
+5. When the value is an object and option lists are rendered, the key `$options` is added: `{"<field>": ["<option text>", …]}`, built from the `[role="option"]` elements whose `aria-label` is `<form field name>-option-<value>`, the field name without its `TESTSECTION.` prefix, the texts in DOM order.
+6. The value is logged, then compared with `expectedValue` by `toEqual`. Keys whose value is `undefined` are ignored.
 
 ```json
 { "step": "expectRenderedValues", "label": "after click", "detectOptions": true,
@@ -944,19 +949,30 @@ For `expectRenderedValues`, the runner result also carries `expected` and `actua
 **Run the vitest entry**
 
 ```bash
-# The 68 cases, plus 2 entry checks. No --profile: the in-memory LocalCache reads no store.
+# The 72 default cases plus 2 entry checks (74 passed); the 15 on-demand cases are listed as skipped.
+# No --profile: the in-memory LocalCache reads no store.
 npm run testByFile -w miroir-standalone-app -- miroir-component-tests
 
-# One editor
+# One editor, or the test pattern
 npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "JzodObjectEditor"
+npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "JzodTestPattern"
+
+# The render-performance suite (runOnDemand), with its measurement tables in the log
+MIROIR_COMPONENT_PERF=1 VITE_MIROIR_LOG_CONFIG_FILENAME=catch-all-detailed \
+  npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "JzodEditorRenderPerformance"
 ```
 
-The entry `tests/4_view/miroir-component-tests.unit.test.tsx` loads every instance of the MiroirTest data folder that has a `reactComponentTest` leaf and runs each through the MiroirTest walk. The vitest names are `<editor> > <editor>: <case>`, so `-t` takes an editor name or part of a case label. The miroir-core generic entry (`testMiroir -w miroir-core`) also loads these instances. It registers no component test runner, so the tracker records their leaves as skipped.
+Two limits of `testByFile` (`scripts/test-by-file.ts`):
+
+- It always passes `--bail=1` to vitest: after the first failing case, the later cases are reported as not run, not as passed. To see every failure at once, run vitest directly from the package: `cd packages/miroir-standalone-app && npx vitest run --reporter=verbose miroir-component-tests` (no profile is needed for this entry). `--bail=0` is rejected by vitest ("Expected a single value for option --bail").
+- It starts vitest through a shell, so a `-t` pattern containing spaces is split: the words after the first become file filters, and other files may run. `-t` is a regular expression: write `.` for each space (`-t "JzodTestPattern:.every"`, `-t "field.at.1"`) or use a pattern without spaces.
+
+The entry `tests/4_view/miroir-component-tests.unit.test.tsx` loads every instance of the MiroirTest data folder that has a `reactComponentTest` leaf and runs each through the MiroirTest walk. A `reactComponentTestSuite` with `runOnDemand` is registered as `describe.skip("<suite> (runOnDemand: set MIROIR_COMPONENT_PERF=1 to run)")` with one skipped test per leaf, unless `MIROIR_COMPONENT_PERF=1`. The vitest names are `<editor> > <editor>: <case>`, so `-t` takes an editor name or part of a case label. The miroir-core generic entry (`testMiroir -w miroir-core`) also loads these instances. It registers no component test runner, so the tracker records their leaves as skipped.
 
 **Add or change a case**
 
 1. Edit the instance JSON of the editor: add or change a leaf in its `reactComponentTestSuite`, with the label `<editor>: <case>`.
-2. When a case is added, removed, or renamed, update the reduced case list `tests/4_view/issues/292-declarative-react-component-tests/baseline-component-cases.txt` (checked by `componentTestInstances.292.phase1`) and, for a new count, `EXPECTED_LEAF_COUNT` in the vitest entry.
+2. When a case of a per-editor instance is added, removed, or renamed, update the reduced case list `tests/4_view/issues/292-declarative-react-component-tests/baseline-component-cases.txt` (checked by `componentTestInstances.292.phase1`). For any new leaf, update `EXPECTED_LEAF_COUNT` in the vitest entry (today 87: it counts every leaf of the folder, on-demand ones included), and `EXPECTED_ON_DEMAND_LEAF_COUNT` (today 15) for a leaf under a `runOnDemand` suite.
 3. Rebuild the deployment package and check the instances:
 
 ```bash
@@ -966,13 +982,65 @@ npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency
 npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "<editor>"
 ```
 
-A new instance also needs its export and declaration in `miroir-test-app_deployment-miroir` (`index.ts`, `index.d.ts`), its entry in `defaultMiroirMetaModel.tests` (`src/Model.ts`), and the instance counts of the vitest entry, `componentTestInstances.292.phase1`, and `componentMiroirTests.consistency`. A component other than `JzodElementEditor` needs an entry in `componentTests/componentRegistry.ts`. A new step kind needs a schema change (the `reactComponentTestStep` union in the MiroirTest Entity and EntityVersion, then `npm run devBuild -w miroir-core`) and a handler in `runComponentTestSteps.ts`.
+A new instance also needs its export and declaration in `miroir-test-app_deployment-miroir` (`index.ts`, `index.d.ts`), its entry in `defaultMiroirMetaModel.tests` (`src/Model.ts`), and the instance counts of the vitest entry (`EXPECTED_INSTANCE_COUNT`, today 9) and `componentMiroirTests.consistency` (9), plus its name and uuid in `laterComponentInstances` of `componentTestInstances.292.phase1`. A component other than `JzodElementEditor` needs an entry in `componentTests/componentRegistry.ts`. A new step kind needs a schema change (the `reactComponentTestStep` union in the MiroirTest Entity and EntityVersion, then `npm run devBuild -w miroir-core`) and a handler in `runComponentTestSteps.ts`.
 
 To check that a new case asserts something, change one value of its `expectedValue` or `expectElement` check, run it, and see it fail with the message above.
 
 **Run the cases in the app**
 
-Open one of the 7 instances in the Miroir Tests report and click the unit Run button. The app loads the component test chunk on first use and renders each case in a sandbox panel, with its own providers and `LocalCache`. The application's own `LocalCache` is not changed. The sandbox keeps the last case on screen until you click Close. Close is disabled while the run is going on. One component test run at a time: when another test display is running component tests, its Run is refused with the message "A component test run is already in progress in another test display: wait for it to finish, then run again." "Run All Unit Tests" in the MiroirTest list has an "Include component tests" checkbox, checked by default. When it is unchecked, the component leaves are recorded as skipped. A JSON file added to the data folder appears in the app after a page reload.
+Open one of the component instances in the Miroir Tests report and click the unit Run button. The app loads the component test chunk on first use and renders each case in a sandbox panel, with its own providers and `LocalCache`. The application's own `LocalCache` is not changed. The sandbox keeps the last case on screen until you click Close. Close is disabled while the run is going on. One component test run at a time: when another test display is running component tests, its Run is refused with the message "A component test run is already in progress in another test display: wait for it to finish, then run again." "Run All Unit Tests" in the MiroirTest list has an "Include component tests" checkbox, checked by default. When it is unchecked, the component leaves are recorded as skipped. "Run All Unit Tests" never runs a `runOnDemand` suite: its leaves are recorded as skipped with "runOnDemand suite: not run by Run all (suite "<label>"); launch the suite on its own to run it". A JSON file added to the data folder appears in the app after a page reload.
+
+##### Test pattern
+
+`JzodTestPattern_ComponentTestSuite` renders one object holding every editor type (22 attributes: string, number, bigint, boolean, date, uuid, present and absent optionals, literal, enum, array, empty array, tuple, record, empty record, simple, mixed and discriminated unions, any, any with `display.any.format: "file"`, a recursive `schemaReference`, a 3-level nested object with an array of objects). No foreign key and no reference to another application's data. Its 4 leaves:
+
+| Leaf | Checks |
+|---|---|
+| `JzodTestPattern: every editor type displays its value` | One `expectRenderedValues` on `testField` over the whole value, with `ignorePaths`, then one `expectElement` per ignored branch |
+| `JzodTestPattern: a deep leaf and the enum can be edited` | `change` on `aNestedObject.level1.level2.leaf`, `selectOption` on `anEnum` |
+| `JzodTestPattern: the simple union switches from number to string` | union type selector, then `aSimpleUnion` is `""` |
+| `JzodTestPattern: array items, record entries and optional attributes can be added, removed and renamed` | `clickArrayButton` add / delete, `renameRecordEntry`, `clickObjectButton addOptionalAttribute` |
+
+Every interaction leaf ends with the display leaf's whole-value comparison (same `ignorePaths`, expected value with the edits), so an edit that changes another editor's value fails. A leaf takes about 1.5 to 3.5 s in happy-dom.
+
+Branches under `ignorePaths`, and why: the extractor (`extractValuesFromRenderedElements`) reads them wrongly. The `expectedValue` keeps their true value, so that removing an entry from `ignorePaths` is the only change once the extractor is fixed (follow-up of #303).
+
+| Ignored path | What the extractor returns | Checked instead by |
+|---|---|---|
+| `aLiteral` | its value under a stray `testField: {aLiteral: "fixed"}` subtree | `expectElement byDisplayValue "fixed"` |
+| `testField` | the stray subtree above | (same) |
+| `aReference` | `{label: "root"}`: the `children` of the recursive `schemaReference` are not rendered (the reference's local `context` is not passed to the array items: an editor defect, follow-up of #303) | `expectElement byDisplayValue "root"` on `testField.aReference.label` |
+| `anEmptyArray`, `anEmptyRecord` | absent | `expectElement` on their add buttons |
+| `aNestedObject.level1.level2.items.1.tags` (an empty array) | absent | `expectElement` on its add button |
+| `anAnyFile` | nothing: `JzodAnyEditor` renders a file selector, not a form field | `expectElement byText "Select File"` |
+
+Values that are compared as displayed: `aBigint` as a string, `aDate` as `YYYY-MM-DD`.
+
+##### Render measurements (`measureRendering`)
+
+With the `measureRendering` step, a leaf measures how long each JzodElementEditor component takes to render.
+
+- **Tracking.** Every JzodElementEditor component reports its renders to the render insight registry (`useTrackedRender`, the registry behind the app's performance display). The runner turns tracking on (`initialShowPerformanceDisplay` on `MiroirContextReactProvider`) only for a suite containing a `measureRendering` step; other suites render the same DOM as without it.
+- **Component ids.** `JzodElementEditor`, `JzodElementStringEditor`, `JzodEnumEditor`, `JzodLiteralEditor`, `JzodAnyEditor`, `JzodArrayEditor`, `JzodTupleEditor`, `JzodObjectEditor`, `JzodRecordEditor`, `JzodUnionEditor`. Number, bigint, boolean, date and uuid are rendered inline by `JzodElementEditor`, so they report as `JzodElementEditor`. There is no union component: the `JzodElementEditor` whose declared schema is a union reports as `JzodUnionEditor`. `JzodAnyEditor` renders only for an `any` schema with `tag.value.display.any.format` (an `any` holding an object renders through the object / array editors). In the test component, a `JzodObjectEditor` row also comes from the `TESTSECTION` wrapper.
+- **Modes.** `remount` unmounts the case and mounts it again in the same container. `update` renders the case again with `updateProps` shallow-merged over the leaf props, then with the leaf props, alternately (N=2 ends on the leaf props). `both` runs `remount` first, then `update`; they are reported separately. After each render the step waits for progressive rendering to finish.
+- **Iterations.** `iterations` renders per mode; the Miroir Tests iterations field replaces it for one run (below).
+- **Result.** Per mode and component: `count`, `minMs`, `medianMs`, `maxMs`, `totalMs`. A sample is the component's summed render time over one iteration (every instance and re-render of it); `count` is the number of iterations in which the component rendered, not a number of renders. The `(total)` row sums every component per iteration. The rows go in `assertionMeasurements` of the leaf's `TestAssertionResult` and are logged at `info` by the logger `runReactComponentTest` as a table (component, mode, count, min, median, max). The default log preset (`catch-all`, WARN) hides them: use `VITE_MIROIR_LOG_CONFIG_FILENAME=catch-all-detailed` (or `VITE_MIROIR_LOG_CONFIG`) to see them.
+- **Not a pass / fail.** The step fails only when `iterations` is not a positive integer, a re-render throws, rendering adds an error fallback ("Something went wrong in …") that was not there before the step, or a mode gets no sample. A duration never fails it. The numbers are for comparison between runs on the same machine: happy-dom timings are not browser timings (run the suite in the app for browser numbers), and tracking itself costs about +5 % on a mount (measured on the test pattern). Measurements are not stored across runs.
+
+Example (the pattern leaf, N=3, happy-dom, ms):
+
+```text
+component               | mode    | count | min    | median | max
+JzodElementEditor       | remount | 3     | 276.92 | 287.58 | 324.93
+JzodArrayEditor         | remount | 3     | 34.52  | 38.59  | 39.20
+JzodAnyEditor           | remount | 3     | 9.72   | 10.35  | 10.66
+(total)                 | remount | 3     | 365.00 | 381.71 | 434.71
+(total)                 | update  | 3     | 31.04  | 38.39  | 40.38
+```
+
+`JzodEditorRenderPerformance_ComponentTestSuite` has `runOnDemand: true` and 15 leaves `JzodEditorRenderPerformance: <type>`: one per single type (string, number, bigint, boolean, date, uuid, enum, literal, array, tuple, record, object, union, any with `display.any.format: "file"`) and a copy of the test pattern props, each with `{measureRendering, iterations: 3, mode: "both", updateProps: <another value>}`. It takes about 8 s of test time in vitest (0.2 to 0.5 s per single editor, 3.4 s for the pattern), which is why it is not in the default run nor in `npm run nonreg`.
+
+**In the app.** For an instance containing a `measureRendering` step, Miroir Tests shows an "Iterations" field (`Render iterations`) next to the unit Run button. Empty: the `iterations` of each step. A number: it replaces them for that run (a value that is not a positive integer fails the step). After the run, one table per leaf (`Render measurements: <leaf>`: Component, Mode, Count, Min / Median / Max ms) appears under the results grid, and in the window opened from the leaf's Result cell.
 
 ##### `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` — UI integration launch
 
