@@ -30,6 +30,7 @@
     "nonreg:filesystem": "python scripts/run-nonreg.py --tier default --run-all --profile emulatedServer-filesystem",
     "nonreg:fail-fast": "python scripts/run-nonreg.py --tier default --fail-fast",
     "check:console": "python scripts/check_bare_console.py",
+    "check:ml": "python scripts/check_ml_nomenclature.py",
     "release:tag": "python scripts/release_tag.py",
     "release:tree": "python ci/release/release_version.py"
   },

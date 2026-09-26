@@ -20,6 +20,16 @@
       ]
     },
     {
+      "id": "unit-check-ml-nomenclature",
+      "tier": "unit",
+      "title": "Guard — Jzod names where the ML / MLS nomenclature is required (#145)",
+      "requires": "none",
+      "argv": [
+        "python",
+        "scripts/check_ml_nomenclature.py"
+      ]
+    },
+    {
       "id": "unit-miroir-core",
       "tier": "unit",
       "title": "MiroirTest unit suites (miroir-core registry)",

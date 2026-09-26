@@ -13,7 +13,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/145
 Working branch: `claude/rename-jzod-to-ml-2ucg0f` → draft PR against `aba`
 
-**Resume note:** plan written; baseline on `aba` @ `256e625` is green (miroir-core `tsc`; vitest 156 files / 2023 tests passed, 1 skipped).
+**Resume note:** Slice 0 DONE; baseline on `aba` @ `256e625` is green (miroir-core `tsc`; vitest 156 files / 2023 tests passed, 1 skipped).
 
 ---
 
@@ -35,7 +35,7 @@ migrate deployments stored outside the repository (clean break, see analysis D6)
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Guard + inventory lock | ⬜ | guard script GREEN with empty scope; nonreg `unit` step registered |
+| 0 | Guard + inventory lock | ✅ DONE | guard script GREEN with empty scope; nonreg `unit` step registered |
 | 1 | ML definitions: `mlElement` & co (tracer) | ⬜ | guard rule D; `modelValidation` all deployments; `devBuild`; `tsc` all packages |
 | 2 | Schema-tool modules `1_core/mls/` | ⬜ | guard scope `1_core/`; MiroirTest functionCallTest suites (unit) |
 | 3 | Transformers `mlsTypeCheck`, `ansiColumnsToMlSchema` | ⬜ | guard scope transformer assets; `miroirCoreTransformers` unit + integ (filesystem) |
@@ -105,7 +105,7 @@ No new model element or MiroirTest suite uuid: renamed assets keep their uuids.
 
 ## Slice 0 — Guard and inventory lock
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -137,10 +137,21 @@ Keep the script flat (one file, pure functions), mirroring `check_bare_console.p
 
 ```bash
 python3 scripts/check_ml_nomenclature.py --self-test && python3 scripts/check_ml_nomenclature.py
-python scripts/run-nonreg.py --tier unit --only unit-check-ml-nomenclature   # or the runner's equivalent filter
+python scripts/run-nonreg.py --tier unit --only unit-check-ml-nomenclature
 ```
 
 ### Realization
+
+- `scripts/check_ml_nomenclature.py` written (rules, allowlist, `--inventory`, `--self-test`); `npm run check:ml` added to the
+  root `package.json`; nonreg step `unit-check-ml-nomenclature` inserted after `unit-check-bare-console`; guard documented in
+  `docs/reference/testing.md` next to the bare-console guard.
+- Deviation: build-orchestration files (`.sh`, `.yml`, `Dockerfile`) are treated like prose for the bare words `jzod` /
+  `Jzod` because `build-all.sh` and `ci/build/*.sh` build the sibling `jzod` / `jzod-ts` repos; the stage variables
+  `STAGE_OPTIONAL_JZOD(_TS)` are allowlisted for the same reason. Their "Jzod schemas" comments are still Slice 6 work
+  (`Jzod` followed by `schemas` is prose there, reviewed by hand in Slice 6).
+- Inventory lock: 9 328 remaining names in 407 files (the guard counts tokens, including file paths, so it exceeds the
+  analysis's `git grep -c` line count of 7 731). Largest areas: miroir-core 4 772, standalone-app 2 062,
+  deployment-miroir 1 449, miroir-mcp 356, miroir-localcache 290, docs 103.
 
 ---
 

@@ -628,6 +628,8 @@ Miroir has a small set of **consolidated, named log presets** that work identica
 
 **CI guard:** from repo root, `npm run check:console` (also the first step in `nonreg` unit tier). Violations must be migrated to `log.*` or added explicitly to `scripts/check_bare_console.py` with justification.
 
+**ML nomenclature guard (#145):** `npm run check:ml` (second step of the `nonreg` unit tier) fails when a Jzod name remains where Miroir's meta-language must be named ML / MLS (`Ml` constructs, `MlSchema` schemas, `Mls` schema operations). Jzod stays only for the external `@miroir-framework/jzod` / `jzod-ts` packages, their exports, and prose about the project; see the allowlist in `scripts/check_ml_nomenclature.py`. `--inventory` lists the remaining names per area, `--self-test` checks the matcher.
+
 Workflow reference (Path A vs B, grep recipes): [runQuery-emulated-server.md](../guides/architecture/workflows/runQuery-emulated-server.md).
 
 **Pilot leaf (default quiet logging)** (from repo root):
