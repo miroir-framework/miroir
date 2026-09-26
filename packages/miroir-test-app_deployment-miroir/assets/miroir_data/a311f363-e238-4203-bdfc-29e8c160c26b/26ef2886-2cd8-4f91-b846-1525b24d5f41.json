@@ -320,9 +320,6 @@
                 "field": "testField",
                 "ignorePaths": [
                   "aReference",
-                  "anEmptyArray",
-                  "anEmptyRecord",
-                  "aNestedObject.level1.level2.items.1.tags",
                   "anAnyFile"
                 ],
                 "expectedValue": {
@@ -409,33 +406,6 @@
               },
               {
                 "step": "expectElement",
-                "label": "anEmptyArray add button",
-                "target": {
-                  "widget": "arrayButton",
-                  "field": "testField.anEmptyArray",
-                  "action": "add"
-                }
-              },
-              {
-                "step": "expectElement",
-                "label": "anEmptyRecord add button",
-                "target": {
-                  "widget": "objectButton",
-                  "field": "testField.anEmptyRecord",
-                  "action": "addRecordEntry"
-                }
-              },
-              {
-                "step": "expectElement",
-                "label": "empty tags add button",
-                "target": {
-                  "widget": "arrayButton",
-                  "field": "testField.aNestedObject.level1.level2.items.1.tags",
-                  "action": "add"
-                }
-              },
-              {
-                "step": "expectElement",
                 "label": "anAnyFile file selector",
                 "target": {
                   "byText": "Select File"
@@ -468,9 +438,6 @@
                 "field": "testField",
                 "ignorePaths": [
                   "aReference",
-                  "anEmptyArray",
-                  "anEmptyRecord",
-                  "aNestedObject.level1.level2.items.1.tags",
                   "anAnyFile"
                 ],
                 "expectedValue": {
@@ -594,9 +561,6 @@
                 "field": "testField",
                 "ignorePaths": [
                   "aReference",
-                  "anEmptyArray",
-                  "anEmptyRecord",
-                  "aNestedObject.level1.level2.items.1.tags",
                   "anAnyFile"
                 ],
                 "expectedValue": {
@@ -713,9 +677,6 @@
                 "field": "testField",
                 "ignorePaths": [
                   "aReference",
-                  "anEmptyArray",
-                  "anEmptyRecord",
-                  "aNestedObject.level1.level2.items.1.tags",
                   "anAnyFile"
                 ],
                 "expectedValue": {

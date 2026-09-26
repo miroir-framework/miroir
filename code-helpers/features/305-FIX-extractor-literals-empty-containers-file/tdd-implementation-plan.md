@@ -17,7 +17,7 @@ Related: [analysis](./analysis.md) · issue https://github.com/miroir-framework/
 |---|---|---|---|
 | 0 | Baseline | ✅ DONE | component entry 74 passed / 15 skipped (45 s) |
 | 1 | Literal in place, no stray keys | ✅ DONE | pattern leaves without `aLiteral`, `testField`; component entry 74 passed |
-| 2 | Empty containers read as `[]` / `{}` | ⬜ pending | pattern leaves without `anEmptyArray`, `anEmptyRecord`, `items.1.tags` |
+| 2 | Empty containers read as `[]` / `{}` | ✅ DONE | pattern leaves without `anEmptyArray`, `anEmptyRecord`, `items.1.tags`; component entry 74 passed |
 | 3 | File `any` field read | ⬜ pending | pattern leaves without `anAnyFile` |
 | 4 | Docs, nonreg, AC | ⬜ pending | nonreg filesystem profile |
 
@@ -77,7 +77,7 @@ Pattern suite; component entry; tsc.
 
 ## Slice 2 — Empty containers read as `[]` / `{}`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **RED.** Remove `anEmptyArray`, `anEmptyRecord`, `aNestedObject.level1.level2.items.1.tags` from `ignorePaths` and their 3 `expectElement` stand-ins.
 
@@ -88,6 +88,14 @@ Pattern suite; component entry; tsc.
 ### Validation
 
 Pattern suite; component entry; tsc.
+
+### Realization
+
+- RED: the Slice 1 run already showed the three branches absent (`items: [{id:1,tags:["x"]},{id:2}]`, no `anEmptyArray` / `anEmptyRecord`); with their `ignorePaths` entries and 3 `expectElement` stand-ins removed, the pattern leaves compare them.
+- GREEN: new module `ValueObjectEditor/renderedValueMarkers.ts` (attribute names, `emptyContainerMarker`, `isPlainObjectValue`), used by the `MlArrayEditor` and `MlObjectEditor` roots and by the extractor, which seeds `[]` / `{}` for each marked element strictly under the field with no value read below it.
+- Deviation 1: `checkRenderedValues` dropped every array-valued entry as an option list; it now keeps empty arrays (option lists are only created with a first option, so never empty).
+- Deviation 2: first run, 1 per-editor case failed (`MlObjectEditor: object with 2 optional attributes can have the only attribute value deleted…`, rebuilt `{TESTSECTION: {testField: {}}}` instead of `{}`): the field under test is itself the empty object, and its name equals the label, so the prefix is not removed. The marker of the field under test is now skipped: the rebuilt value of an empty map is already `{}`. An empty array as the field under test still rebuilds as `{}`, as before.
+- Component entry 74 passed / 15 skipped; `extractValuesFromRenderedElements.test` 4, `extractValuesScoped.286` 2, `extractorOpenCombobox.292` 4, `componentMiroirTests.286` 3, `componentMiroirTests.consistency` 6 passed; tsc 0.
 
 ---
 

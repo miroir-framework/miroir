@@ -66,6 +66,10 @@ import { packageName } from "../../../constants.js";
 import { ReportPageContextProvider } from "../../4_view/components/Reports/ReportPageContext.js";
 import { DocumentOutlineContextProvider } from "../../4_view/components/ValueObjectEditor/InstanceEditorOutlineContext.js";
 import { MlElementEditor } from "../../4_view/components/ValueObjectEditor/MlElementEditor.js";
+import {
+  EMPTY_CONTAINER_ATTRIBUTE,
+  ML_NAME_ATTRIBUTE,
+} from "../../4_view/components/ValueObjectEditor/renderedValueMarkers.js";
 import { cleanLevel } from "../../4_view/constants.js";
 import { useCurrentModel, useCurrentModelEnvironment } from "../../4_view/ReduxHooks.js";
 import { emptyObject } from "../../4_view/tools/emptyObject.js";
@@ -1761,6 +1765,17 @@ export function extractValuesFromRenderedElements(
     }
   });
   // Clean up non-indexed duplicates when indexed versions exist
+  // #305 D4: an empty array / object / record has no form field; its editor root carries a marker.
+  // The field under test itself is left out: the rebuilt value of an empty map is already `{}`.
+  queryAll(`[${EMPTY_CONTAINER_ATTRIBUTE}]`).forEach((element: Element) => {
+    const elementName = element.getAttribute(ML_NAME_ATTRIBUTE);
+    if (!elementName || elementName === label || !isUnderLabel(elementName)) return;
+    const name = removeLabelPrefix(elementName);
+    const hasChildValue = Object.keys(values).some((key) => key === name || key.startsWith(`${name}.`));
+    if (hasChildValue) return;
+    values[name] = element.getAttribute(EMPTY_CONTAINER_ATTRIBUTE) === "array" ? [] : {};
+  });
+
   const fieldsToRemove: string[] = [];
   for (const key in values) {
     // Check if this is a non-indexed field (no dots) that has indexed versions

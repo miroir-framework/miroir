@@ -221,9 +221,10 @@ export async function runComponentTestSteps(
       step.detectOptions ?? false,
       env.portalElement,
     );
-    // array-valued entries are the extractor's option lists, replaced by `$options` (T8)
+    // non-empty array-valued entries are the extractor's option lists, replaced by `$options` (T8);
+    // an empty array is an empty array editor (#305 D4), option lists are never empty
     const fieldValues = Object.fromEntries(
-      Object.entries(extracted).filter(([, value]) => !Array.isArray(value)),
+      Object.entries(extracted).filter(([, value]) => !Array.isArray(value) || value.length === 0),
     );
     let actual: unknown = formValuesToJSON(fieldValues);
     if (step.path !== undefined) {
