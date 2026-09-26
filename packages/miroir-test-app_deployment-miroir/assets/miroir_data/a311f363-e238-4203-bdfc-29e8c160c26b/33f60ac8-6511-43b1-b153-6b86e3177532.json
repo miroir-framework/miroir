@@ -9763,6 +9763,7 @@
                   ["1.column", "dep1"],
                   ["length", 2]
                 ],
+                "unitTestExpectedValue": [{ "user": "alice", "column": "dep1", "value": true }, { "user": "bob", "column": "dep1", "value": null }],
                 "integrationTestExpectedValue": [
                   { "user": "alice", "column": "dep1", "value": true },
                   { "user": "bob", "column": "dep1", "value": null }
