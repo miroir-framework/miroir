@@ -103,7 +103,7 @@ const DisplayTransformerEvent: React.FC<{
       Object.entries(activity.transformerParams).map(([key, value]) => {
         // Filter out large objects/arrays for initial display
         if (value && typeof value === 'object') {
-          if (["miroirFundamentalJzodSchema", "miroirMetaModel", "currentModel"].includes(key)) return [key, `{${key}...}`];
+          if (["miroirFundamentalMlSchema", "miroirMetaModel", "currentModel"].includes(key)) return [key, `{${key}...}`];
           if (Array.isArray(value) && value.length > 10) return [key, `[Array with ${value.length} items]`];
           if (!Array.isArray(value) && Object.keys(value).length > 10) return [key, `{Object with ${Object.keys(value).length} keys}`];
         }

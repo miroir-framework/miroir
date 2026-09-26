@@ -4,7 +4,7 @@ import type {
   MlElement,
   MlSchema,
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { jzodToJzod_Summary } from "../../../src/1_core/jzod/JzodToJzod_Summary";
+import { mlsToMls_Summary } from "../../../src/1_core/mls/MlsToMls_Summary";
 
 const dummyMlSchema: MlSchema = {
   uuid: "00000000-0000-0000-0000-000000000000",
@@ -14,8 +14,8 @@ const dummyMlSchema: MlSchema = {
 
 /** Comparative assertion — not expressible as a single functionCallTest expectedValue. */
 const RUN_TEST = process.env.RUN_TEST;
-if (!RUN_TEST || RUN_TEST === "jzodToJzod_Summary.unit.test") {
-  describe("jzodToJzod_Summary (vitest-only)", () => {
+if (!RUN_TEST || RUN_TEST === "mlsToMls_Summary.unit.test") {
+  describe("mlsToMls_Summary (vitest-only)", () => {
     it("default depth is 1 (same as explicit depth=1)", () => {
       const input: MlElement = {
         type: "object",
@@ -26,8 +26,8 @@ if (!RUN_TEST || RUN_TEST === "jzodToJzod_Summary.unit.test") {
           },
         },
       };
-      expect(jzodToJzod_Summary(input, dummyMlSchema)).toEqual(
-        jzodToJzod_Summary(input, dummyMlSchema, 1),
+      expect(mlsToMls_Summary(input, dummyMlSchema)).toEqual(
+        mlsToMls_Summary(input, dummyMlSchema, 1),
       );
     });
   });

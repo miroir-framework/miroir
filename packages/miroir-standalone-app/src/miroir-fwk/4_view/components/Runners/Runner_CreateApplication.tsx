@@ -28,7 +28,7 @@ import {
   defaultSelfApplicationDeploymentMap,
   defaultViewParamsFromAdminStorageFetchQueryParams,
   formatYYYYMMDD_HHMMSS,
-  getDefaultValueForJzodSchemaWithResolutionNonHook,
+  getDefaultValueForMlSchemaWithResolutionNonHook,
   MiroirLoggerFactory,
   noValue,
   transformer_extended_apply_wrapper,
@@ -1445,7 +1445,7 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
     () => ({
       createApplicationAndDeployment: {
         applicationStorage: {
-          ...getDefaultValueForJzodSchemaWithResolutionNonHook(
+          ...getDefaultValueForMlSchemaWithResolutionNonHook(
             "build",
             // (formMLSchema as any).mlSchema,
             formMLSchema.formMLSchemaType === "mlSchema"

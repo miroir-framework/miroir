@@ -22,7 +22,7 @@
           "rootLessListKeyArray": [
             "testField"
           ],
-          "rawJzodSchema": {
+          "rawMlSchema": {
             "type": "any"
           }
         },

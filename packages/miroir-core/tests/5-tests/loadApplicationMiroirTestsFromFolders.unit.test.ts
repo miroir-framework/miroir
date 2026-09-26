@@ -47,7 +47,7 @@ describe("loadApplicationMiroirTestsFromFolders", () => {
     expect(catalog.length).toBeGreaterThanOrEqual(45);
     const leftoverSnapshotToName: Record<string, string> = {
       alterObject: "alterObject_atPath",
-      jzodTypeCheck: "jzodTypeCheck_TransformerTestSuite",
+      mlsTypeCheck: "jzodTypeCheck_TransformerTestSuite",
       menu: "menu_build",
       metaModelTransformers: "metaModelTransformersTest",
     };
@@ -83,7 +83,7 @@ describe("loadApplicationMiroirTestsFromFolders", () => {
     const catalog = loadApplicationMiroirTestCatalog();
     const leftoverAliases: Array<[string, string]> = [
       ["menu", "menu_build"],
-      ["jzodTypeCheck", "jzodTypeCheck_TransformerTestSuite"],
+      ["mlsTypeCheck", "jzodTypeCheck_TransformerTestSuite"],
       ["alterObject", "alterObject_atPath"],
       ["metaModelTransformers", "metaModelTransformersTest"],
       ["runner.returnDocument", "runner_return_document"],
@@ -94,7 +94,7 @@ describe("loadApplicationMiroirTestsFromFolders", () => {
         targetName,
       );
     }
-    expect(() => resolveApplicationMiroirTestSuiteKeys(catalog, ["jzodTypeCheck"])).toThrow(
+    expect(() => resolveApplicationMiroirTestSuiteKeys(catalog, ["mlsTypeCheck"])).toThrow(
       /Did you mean "jzodTypeCheck_TransformerTestSuite"/,
     );
     expect(() => resolveApplicationMiroirTestSuiteKeys(catalog, ["runner.returnDocument"])).toThrow(

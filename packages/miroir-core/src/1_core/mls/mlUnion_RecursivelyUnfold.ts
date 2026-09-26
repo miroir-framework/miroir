@@ -1,20 +1,20 @@
-// import type { JzodUnion_RecursivelyUnfold_ReturnType } from "../../0_interfaces/1_core/jzodUnion_RecursivelyUnfoldInterface";
+// import type { MlUnion_RecursivelyUnfold_ReturnType } from "../../0_interfaces/1_core/mlUnion_RecursivelyUnfoldInterface";
 import type {
   MlElement,
   MlReference,
   MlUnion,
-  JzodUnion_RecursivelyUnfold_ReturnType
+  MlUnion_RecursivelyUnfold_ReturnType
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
-import { recursiveResolveJzodSchemaReferenceInContext, resolveJzodSchemaReferenceInContext } from "./jzodResolveSchemaReferenceInContext";
+import { recursiveResolveMlSchemaReferenceInContext, resolveMlSchemaReferenceInContext } from "./mlsResolveSchemaReferenceInContext";
 
 // ################################################################################################
-export const jzodUnion_recursivelyUnfold = <T extends MiroirModelEnvironment>(
+export const mlUnion_recursivelyUnfold = <T extends MiroirModelEnvironment>(
   mlUnion: MlUnion,
   expandedReferences: Set<string>,
   modelEnvironment: T,
-  relativeReferenceJzodContext: { [k: string]: MlElement }
-): JzodUnion_RecursivelyUnfold_ReturnType => {
+  relativeReferenceMlContext: { [k: string]: MlElement }
+): MlUnion_RecursivelyUnfold_ReturnType => {
   try {
     // TODO: handle case when resolved reference is itself a reference
     // TODO: handle case when resolved reference is itself union with references (is that done?)
@@ -28,9 +28,9 @@ export const jzodUnion_recursivelyUnfold = <T extends MiroirModelEnvironment>(
       .filter((a: MlElement) => a.type == "schemaReference")
       .filter((a: any) => !expandedReferences.has(a.definition.relativePath as any)) as any[];
     const resolvedReferences: MlElement[] = referencesToBeExplored.map((a: MlReference) =>
-      recursiveResolveJzodSchemaReferenceInContext(
+      recursiveResolveMlSchemaReferenceInContext(
         a,
-        { ...relativeReferenceJzodContext, ...a.context },
+        { ...relativeReferenceMlContext, ...a.context },
         modelEnvironment
       )
     );
@@ -62,11 +62,11 @@ export const jzodUnion_recursivelyUnfold = <T extends MiroirModelEnvironment>(
     //   unionsToBeExplored,
     // );
     for (const r of unionsToBeExplored) {
-      const subResult = jzodUnion_recursivelyUnfold(
+      const subResult = mlUnion_recursivelyUnfold(
         r as MlUnion,
         newExpandedReferences,
         modelEnvironment,
-        relativeReferenceJzodContext
+        relativeReferenceMlContext
       );
 
       if (subResult.status === "error") {

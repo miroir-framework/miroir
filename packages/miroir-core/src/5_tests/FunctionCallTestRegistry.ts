@@ -12,26 +12,26 @@ import {
   serializeCompositeKeyValue,
 } from "../1_core/Entity/EntityPrimaryKey";
 import {
-  JzodSchemaReferencesList,
-  JzodSchemaReferencesSet,
-  jzodTransitiveDependencySet,
-} from "../1_core/jzod/JzodSchemaReferences";
-import { jzodToCopilotKitParameter } from "../1_core/jzod/JzodToCopilotKitParameter";
-import { mergePositionBased } from "../1_core/jzod/JzodToJzod_CarryOn";
-import { jzodToJzod_Summary } from "../1_core/jzod/JzodToJzod_Summary";
-import { jzodToJsonSchema } from "../1_core/jzod/JzodToJsonSchema";
-import { jzodObjectFlatten } from "../1_core/jzod/jzodObjectFlatten";
+  MlSchemaReferencesList,
+  MlSchemaReferencesSet,
+  mlsTransitiveDependencySet,
+} from "../1_core/mls/MlSchemaReferences";
+import { mlsToCopilotKitParameter } from "../1_core/mls/MlsToCopilotKitParameter";
+import { mergePositionBased } from "../1_core/mls/MlsToMls_CarryOn";
+import { mlsToMls_Summary } from "../1_core/mls/MlsToMls_Summary";
+import { mlsToJsonSchema } from "../1_core/mls/MlsToJsonSchema";
+import { mlObjectFlatten } from "../1_core/mls/mlObjectFlatten";
 import {
   buildAnyObjectEntry,
   buildAnySubnodeKeyMap,
-  jzodUnionResolvedTypeForArray,
-  jzodUnionResolvedTypeForObject,
+  mlUnionResolvedTypeForArray,
+  mlUnionResolvedTypeForObject,
   selectUnionBranchFromDiscriminator,
   unionArrayChoices,
   unionObjectChoices,
-} from "../1_core/jzod/jzodTypeCheck";
-import { jzodUnion_recursivelyUnfold } from "../1_core/jzod/jzodUnion_RecursivelyUnfold";
-import { localizeJzodSchemaReferenceContext } from "../1_core/jzod/JzodUnfoldSchemaOnce";
+} from "../1_core/mls/mlsTypeCheck";
+import { mlUnion_recursivelyUnfold } from "../1_core/mls/mlUnion_RecursivelyUnfold";
+import { localizeMlSchemaReferenceContext } from "../1_core/mls/MlsUnfoldSchemaOnce";
 import { resolveQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/Templates";
 import { resolveTransformerResultSchema } from "../2_domain/Transformer_ResultSchema";
 import {
@@ -53,7 +53,7 @@ import {
 } from "../2_domain/TransformerInterfaceInference";
 import { mergeIfUnique, pushIfUnique } from "../1_core/tools";
 import { getModelUpdate } from "../1_core/model/ModelUpdate";
-import { ansiColumnsToJzodSchema } from "../1_core/postgres/ansiColumnsToJzodSchema";
+import { ansiColumnsToMlSchema } from "../1_core/postgres/ansiColumnsToMlSchema";
 import {
   domainStateToReduxDeploymentsState,
   resolvePathOnObject,
@@ -61,7 +61,7 @@ import {
   safeResolvePathOnObject,
   stringTuple,
 } from "../tools";
-import { getAttributeTypesFromJzodSchema } from "../1_core/jzod/getAttributeTypesFromJzodSchema";
+import { getAttributeTypesFromMlSchema } from "../1_core/mls/getAttributeTypesFromMlSchema";
 import { alterObjectAtPath } from "../tools";
 import { evaluateVirtualAttributesOnInstance, stripVirtualAttributesFromInstance } from "../2_domain/VirtualAttributes";
 
@@ -80,8 +80,8 @@ const FUNCTION_CALL_REGISTRY: Record<string, Record<string, WhitelistedFunction>
   "miroir-core/1_core/mustache": {
     extractDoubleBracePatterns: extractDoubleBracePatterns as WhitelistedFunction,
   },
-  "miroir-core/1_core/jzod/JzodToJsonSchema": {
-    jzodToJsonSchema: jzodToJsonSchema as WhitelistedFunction,
+  "miroir-core/1_core/mls/MlsToJsonSchema": {
+    mlsToJsonSchema: mlsToJsonSchema as WhitelistedFunction,
   },
   "miroir-core/tools": {
     alterObjectAtPath: alterObjectAtPath as WhitelistedFunction,
@@ -91,41 +91,41 @@ const FUNCTION_CALL_REGISTRY: Record<string, Record<string, WhitelistedFunction>
     resolvePathOnObject: resolvePathOnObject as WhitelistedFunction,
     resolveRelativePath: resolveRelativePath as WhitelistedFunction,
   },
-  "miroir-core/1_core/jzod/JzodToCopilotKitParameter": {
-    jzodToCopilotKitParameter: jzodToCopilotKitParameter as WhitelistedFunction,
+  "miroir-core/1_core/mls/MlsToCopilotKitParameter": {
+    mlsToCopilotKitParameter: mlsToCopilotKitParameter as WhitelistedFunction,
   },
-  "miroir-core/1_core/jzod/JzodToJzod_CarryOn": {
+  "miroir-core/1_core/mls/MlsToMls_CarryOn": {
     mergePositionBased: mergePositionBased as WhitelistedFunction,
   },
-  "miroir-core/1_core/jzod/JzodSchemaReferences": {
-    JzodSchemaReferencesList: JzodSchemaReferencesList as WhitelistedFunction,
-    JzodSchemaReferencesSet: JzodSchemaReferencesSet as WhitelistedFunction,
-    jzodTransitiveDependencySet: jzodTransitiveDependencySet as WhitelistedFunction,
+  "miroir-core/1_core/mls/MlSchemaReferences": {
+    MlSchemaReferencesList: MlSchemaReferencesList as WhitelistedFunction,
+    MlSchemaReferencesSet: MlSchemaReferencesSet as WhitelistedFunction,
+    mlsTransitiveDependencySet: mlsTransitiveDependencySet as WhitelistedFunction,
   },
-  "miroir-core/1_core/jzod/JzodToJzod_Summary": {
-    jzodToJzod_Summary: jzodToJzod_Summary as WhitelistedFunction,
+  "miroir-core/1_core/mls/MlsToMls_Summary": {
+    mlsToMls_Summary: mlsToMls_Summary as WhitelistedFunction,
   },
-  "miroir-core/1_core/jzod/jzodObjectFlatten": {
-    jzodObjectFlatten: jzodObjectFlatten as WhitelistedFunction,
+  "miroir-core/1_core/mls/mlObjectFlatten": {
+    mlObjectFlatten: mlObjectFlatten as WhitelistedFunction,
   },
-  "miroir-core/1_core/jzod/jzodTypeCheck": {
+  "miroir-core/1_core/mls/mlsTypeCheck": {
     buildAnyObjectEntry: buildAnyObjectEntry as WhitelistedFunction,
     buildAnySubnodeKeyMap: buildAnySubnodeKeyMap as WhitelistedFunction,
     selectUnionBranchFromDiscriminator: selectUnionBranchFromDiscriminator as WhitelistedFunction,
     unionObjectChoices: unionObjectChoices as WhitelistedFunction,
     unionArrayChoices: unionArrayChoices as WhitelistedFunction,
-    jzodUnionResolvedTypeForObject: jzodUnionResolvedTypeForObject as WhitelistedFunction,
-    jzodUnionResolvedTypeForArray: jzodUnionResolvedTypeForArray as WhitelistedFunction,
+    mlUnionResolvedTypeForObject: mlUnionResolvedTypeForObject as WhitelistedFunction,
+    mlUnionResolvedTypeForArray: mlUnionResolvedTypeForArray as WhitelistedFunction,
   },
-  "miroir-core/1_core/jzod/jzodUnion_RecursivelyUnfold": {
-    jzodUnion_recursivelyUnfold: jzodUnion_recursivelyUnfold as WhitelistedFunction,
+  "miroir-core/1_core/mls/mlUnion_RecursivelyUnfold": {
+    mlUnion_recursivelyUnfold: mlUnion_recursivelyUnfold as WhitelistedFunction,
   },
-  // "miroir-core/1_core/jzod/jzodReferencesGraphConnectedComponents": {
-  //   jzodReferencesGraphConnectedComponents:
-  //     jzodReferencesGraphConnectedComponents as WhitelistedFunction,
+  // "miroir-core/1_core/mls/mlReferencesGraphConnectedComponents": {
+  //   mlReferencesGraphConnectedComponents:
+  //     mlReferencesGraphConnectedComponents as WhitelistedFunction,
   // },
-  "miroir-core/1_core/jzod/JzodUnfoldSchemaOnce": {
-    localizeJzodSchemaReferenceContext: localizeJzodSchemaReferenceContext as WhitelistedFunction,
+  "miroir-core/1_core/mls/MlsUnfoldSchemaOnce": {
+    localizeMlSchemaReferenceContext: localizeMlSchemaReferenceContext as WhitelistedFunction,
   },
   "miroir-core/1_core/tools": {
     pushIfUnique: pushIfUnique as WhitelistedFunction,
@@ -142,8 +142,8 @@ const FUNCTION_CALL_REGISTRY: Record<string, Record<string, WhitelistedFunction>
   "miroir-core/1_core/model/ModelUpdate": {
     getModelUpdate: getModelUpdate as WhitelistedFunction,
   },
-  "miroir-core/1_core/ansiColumnsToJzodSchema": {
-    ansiColumnsToJzodSchema: ansiColumnsToJzodSchema as WhitelistedFunction,
+  "miroir-core/1_core/ansiColumnsToMlSchema": {
+    ansiColumnsToMlSchema: ansiColumnsToMlSchema as WhitelistedFunction,
   },
   "miroir-core/1_core/EntityPrimaryKey": {
     resolveInstanceParentUuid: resolveInstanceParentUuid as WhitelistedFunction,
@@ -157,12 +157,12 @@ const FUNCTION_CALL_REGISTRY: Record<string, Record<string, WhitelistedFunction>
     getForeignKeyValue: getForeignKeyValue as WhitelistedFunction,
     instanceMatchesForeignKey: instanceMatchesForeignKey as WhitelistedFunction,
   },
-  "miroir-core/1_core/jzod/getAttributeTypesFromJzodSchema": {
-    getAttributeTypesFromJzodSchema: getAttributeTypesFromJzodSchema as WhitelistedFunction,
+  "miroir-core/1_core/mls/getAttributeTypesFromMlSchema": {
+    getAttributeTypesFromMlSchema: getAttributeTypesFromMlSchema as WhitelistedFunction,
   },
   // Backward-compatible alias for existing MiroirTest assets that still reference the postgres path.
   "miroir-store-postgres/1_core/mlSchema": {
-    getAttributeTypesFromJzodSchema: getAttributeTypesFromJzodSchema as WhitelistedFunction,
+    getAttributeTypesFromMlSchema: getAttributeTypesFromMlSchema as WhitelistedFunction,
   },
   "miroir-core/2_domain/Templates": {
     resolveQueryTemplateWithExtractorCombinerTransformer:

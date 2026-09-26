@@ -11,7 +11,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   resolveFundamentalSchemaForDeployment,
-  resolveJzodSchemaReferenceInContext,
+  resolveMlSchemaReferenceInContext,
   getEndpointActions,
   type EndpointDefinition,
   type MlObject,
@@ -98,10 +98,10 @@ export type CliRequestHandlers = Record<string, CliCommandHandler<any>>;
  * Helper function to convert a Jzod payload schema to a Zod schema
  */
 function jzodPayloadToZodSchema(jzodPayload: MlObject): ZodTypeAny {
-  const resolvedJzodSchema = resolveAllReferences(jzodPayload);
+  const resolvedMlSchema = resolveAllReferences(jzodPayload);
   
   const zodTextAndSchema: ZodTextAndZodSchema = jzodToZodTextAndZodSchema(
-    resolvedJzodSchema as any,
+    resolvedMlSchema as any,
     () => ({}),
     () => ({}),
     {datesAsString: true}
@@ -118,11 +118,11 @@ function resolveAllReferences(element: MlElement): MlElement {
   }
 
   if (element.type === 'schemaReference') {
-    const resolvedSchema = resolveJzodSchemaReferenceInContext(
+    const resolvedSchema = resolveMlSchemaReferenceInContext(
       element as MlReference,
       element.context || {},
       {
-        miroirFundamentalJzodSchema: resolveFundamentalSchemaForDeployment(
+        miroirFundamentalMlSchema: resolveFundamentalSchemaForDeployment(
           deployment_Miroir.uuid,
           defaultMiroirMetaModel as MetaModel,
           "static",

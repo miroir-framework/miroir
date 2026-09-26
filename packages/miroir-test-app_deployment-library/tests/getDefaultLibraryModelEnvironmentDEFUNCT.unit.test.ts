@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { miroirFundamentalJzodSchema, type EndpointDefinition } from "miroir-core";
+import { miroirFundamentalMlSchema, type EndpointDefinition } from "miroir-core";
 
 import deployment_Library_DO_NO_USE from "../assets/deployment/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
 import selfApplicationLibrary from "../assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";
@@ -12,15 +12,15 @@ import { resolveLibraryDeploymentUuid } from "../src/resolveLibraryDeploymentUui
 
 import { defaultMiroirMetaModel, instanceEndpointV1 } from "miroir-test-app_deployment-miroir";
 describe("getDefaultLibraryModelEnvironmentDEFUNCT (Phase 1)", () => {
-  it("resolves miroirFundamentalJzodSchema via getMiroirFundamentalSchemaForDeployment, not a caller-supplied schema", () => {
+  it("resolves miroirFundamentalMlSchema via getMiroirFundamentalSchemaForDeployment, not a caller-supplied schema", () => {
     const env = getDefaultLibraryModelEnvironmentDEFUNCT(
       defaultMiroirMetaModel,
       instanceEndpointV1 as EndpointDefinition,
       deployment_Library_DO_NO_USE.uuid,
     );
 
-    expect(env.miroirFundamentalJzodSchema).not.toBe(miroirFundamentalJzodSchema);
-    expect(env.miroirFundamentalJzodSchema.uuid).toBe(miroirFundamentalJzodSchema.uuid);
+    expect(env.miroirFundamentalMlSchema).not.toBe(miroirFundamentalMlSchema);
+    expect(env.miroirFundamentalMlSchema.uuid).toBe(miroirFundamentalMlSchema.uuid);
     expect(env.deploymentUuid).toBe(deployment_Library_DO_NO_USE.uuid);
     expect(env.currentModel).toBe(defaultLibraryAppModel);
     expect(env.miroirMetaModel).toBe(defaultMiroirMetaModel);
@@ -52,7 +52,7 @@ describe("getDefaultLibraryModelEnvironmentDEFUNCT (Phase 1)", () => {
     );
 
     expect(env.deploymentUuid).toBe(deployment_Library_DO_NO_USE.uuid);
-    expect(env.miroirFundamentalJzodSchema).not.toBe(miroirFundamentalJzodSchema);
-    expect(env.miroirFundamentalJzodSchema.uuid).toBe(miroirFundamentalJzodSchema.uuid);
+    expect(env.miroirFundamentalMlSchema).not.toBe(miroirFundamentalMlSchema);
+    expect(env.miroirFundamentalMlSchema.uuid).toBe(miroirFundamentalMlSchema.uuid);
   });
 });

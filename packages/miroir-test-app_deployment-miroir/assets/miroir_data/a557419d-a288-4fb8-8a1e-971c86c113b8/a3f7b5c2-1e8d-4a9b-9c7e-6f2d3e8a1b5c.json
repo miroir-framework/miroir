@@ -1,8 +1,8 @@
 {
   "uuid": "a3f7b5c2-1e8d-4a9b-9c7e-6f2d3e8a1b5c",
-  "name": "jzodTypeCheck",
+  "name": "mlsTypeCheck",
   "defaultLabel": "Type Check Schema Against Value",
-  "description": "Validates whether a value matches a given Jzod schema definition.",
+  "description": "Validates whether a value matches a given ML schema definition.",
   "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
   "parentName": "TransformerDefinition",
@@ -16,7 +16,7 @@
     "transformerParameterSchema": {
       "transformerType": {
         "type": "literal",
-        "definition": "jzodTypeCheck"
+        "definition": "mlsTypeCheck"
       },
       "transformerDefinition": {
         "type": "object",
@@ -61,7 +61,7 @@
               ]
             }
           },
-          "relativeReferenceJzodContext": {
+          "relativeReferenceMlContext": {
             "type": "record",
             "optional": true,
             "definition": {
@@ -97,14 +97,14 @@
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "resolvedJzodSchemaReturnType"
+          "relativePath": "resolvedMlSchemaReturnType"
         }
       }
     }
   },
   "transformerImplementation": {
     "transformerImplementationType": "libraryImplementation",
-    "inMemoryImplementationFunctionName": "transformer_jzodTypeCheck",
+    "inMemoryImplementationFunctionName": "transformer_mlsTypeCheck",
     "sqlImplementationFunctionName": "N/A"
   }
 }

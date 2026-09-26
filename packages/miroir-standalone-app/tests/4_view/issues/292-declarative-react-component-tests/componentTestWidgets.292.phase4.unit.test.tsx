@@ -46,12 +46,12 @@ function fixtureSuite(name: string, componentProps: Record<string, any>): ReactC
 }
 
 const stringArraySuite = fixtureSuite("StringArray", {
-  rawJzodSchema: { type: "array", definition: { type: "string" } },
+  rawMlSchema: { type: "array", definition: { type: "string" } },
   initialFormState: ["value1", "value2", "value3"],
 });
 
 const recordSuite = fixtureSuite("Record", {
-  rawJzodSchema: {
+  rawMlSchema: {
     type: "record",
     definition: { type: "object", definition: { a: { type: "string" }, b: { type: "number" } } },
   },
@@ -59,7 +59,7 @@ const recordSuite = fixtureSuite("Record", {
 });
 
 const optionalAttributesSuite = fixtureSuite("OptionalAttributes", {
-  rawJzodSchema: {
+  rawMlSchema: {
     type: "object",
     definition: {
       a: { type: "string", optional: true },
@@ -71,7 +71,7 @@ const optionalAttributesSuite = fixtureSuite("OptionalAttributes", {
 });
 
 const definitionObjectSuite = fixtureSuite("DefinitionObject", {
-  rawJzodSchema: {
+  rawMlSchema: {
     type: "object",
     definition: {
       definition: { type: "object", definition: { x: { type: "string" } } },

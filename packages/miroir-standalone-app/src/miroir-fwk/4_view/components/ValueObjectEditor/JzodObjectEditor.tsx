@@ -9,7 +9,7 @@ import {
   deleteObjectAtPath,
   EntityInstancesUuidIndex,
   foldableElementTypes,
-  getDefaultValueForJzodSchemaWithResolutionNonHook,
+  getDefaultValueForMlSchemaWithResolutionNonHook,
   MlElement,
   MlObject,
   MlRecord,
@@ -17,7 +17,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   ReduxDeploymentsState,
-  resolveJzodSchemaReferenceInContext,
+  resolveMlSchemaReferenceInContext,
   resolvePathOnObject,
   SyncBoxedExtractorOrQueryRunnerMap,
   Uuid,
@@ -83,7 +83,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
   log = logger;
 });
 
-// Performance tracking for unfoldJzodSchemaOnce - legacy approach
+// Performance tracking for unfoldMlSchemaOnce - legacy approach
 let totalUnfoldTime = 0;
 let unfoldCallCount = 0;
 
@@ -166,7 +166,7 @@ const ProgressiveAttribute: FC<{
   formikRootLessListKey: string;
   formikRootLessListKeyArray: (string | number)[];
   reportSectionPathAsString: string;
-  localResolvedElementJzodSchemaBasedOnValue: MlObject;
+  localResolvedElementMlSchemaBasedOnValue: MlObject;
   typeCheckKeyMap?: Record<string, KeyMapEntry>;
   currentValue: any;
   usedIndentLevel: number;
@@ -212,7 +212,7 @@ const ProgressiveAttribute: FC<{
   formikRootLessListKey,
   formikRootLessListKeyArray,
   reportSectionPathAsString,
-  localResolvedElementJzodSchemaBasedOnValue,
+  localResolvedElementMlSchemaBasedOnValue,
   // unfoldedRawSchema,
   typeCheckKeyMap,
   currentValue,
@@ -253,7 +253,7 @@ const ProgressiveAttribute: FC<{
   const { ref: viewportRef, revealed: isRendered } = useViewportReveal();
 
   const currentAttributeDefinition =
-    localResolvedElementJzodSchemaBasedOnValue.definition[attribute[0]];
+    localResolvedElementMlSchemaBasedOnValue.definition[attribute[0]];
   const attributeListKey = listKey + "." + attribute[0];
   const formikAttributeRootLessListKey =
     formikRootLessListKey.length > 0 ? formikRootLessListKey + "." + attribute[0] : attribute[0];
@@ -362,8 +362,8 @@ const ProgressiveAttribute: FC<{
                 attributeListKey,
                 currentValue,
                 formikValues: formik.values,
-                // rawJzodSchema,
-                localResolvedElementJzodSchemaBasedOnValue,
+                // rawMlSchema,
+                localResolvedElementMlSchemaBasedOnValue,
               }}
             />
           )}
@@ -606,8 +606,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   //   count,
   //   "rootLessListKey",
   //   rootLessListKey,
-  //   // "rawJzodSchema",
-  //   // JSON.stringify(rawJzodSchema, null, 2),
+  //   // "rawMlSchema",
+  //   // JSON.stringify(rawMlSchema, null, 2),
   //   // "rootLessListKeyMapDEFUNCT",
   //   // JSON.stringify(localRootLessListKeyMap, null, 2),
   // );
@@ -620,7 +620,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     formik,
     formikRootLessListKey,
     formikRootLessListKeyArray,
-    localResolvedElementJzodSchemaBasedOnValue,
+    localResolvedElementMlSchemaBasedOnValue,
     miroirMetaModel,
     currentApplicationModelEnvironment,
     // Array / Object fold / unfold state
@@ -698,19 +698,19 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     };
   }, [isBlob, currentValueObjectAtKey, rootLessListKeyArray, currentValueObjectAtKey]);
 
-  const currentMiroirFundamentalJzodSchema = currentApplicationModelEnvironment.miroirFundamentalJzodSchema;
+  const currentMiroirFundamentalJzodSchema = currentApplicationModelEnvironment.miroirFundamentalMlSchema;
   const usedIndentLevel: number = indentLevel ? indentLevel : 0;
 
   // Early return if component can't be rendered properly
   const canRenderObject = useMemo(() => {
     if (
-      !localResolvedElementJzodSchemaBasedOnValue ||
-      localResolvedElementJzodSchemaBasedOnValue.type !== "object"
+      !localResolvedElementMlSchemaBasedOnValue ||
+      localResolvedElementMlSchemaBasedOnValue.type !== "object"
     ) {
       return false;
     }
     return true;
-  }, [localResolvedElementJzodSchemaBasedOnValue]);
+  }, [localResolvedElementMlSchemaBasedOnValue]);
 
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
@@ -724,7 +724,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         () => ({}),
         currentApplicationModelEnvironment??defaultMetaModelEnvironment,
         // currentMiroirFundamentalJzodSchema?{
-        //   miroirFundamentalJzodSchema: currentMiroirFundamentalJzodSchema,
+        //   miroirFundamentalMlSchema: currentMiroirFundamentalJzodSchema,
         //   currentModel,
         //   miroirMetaModel,
         // }: defaultMetaModelEnvironment
@@ -748,7 +748,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   }, [currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display]);
 
 
-  const resolvedRawSchema = currentTypeCheckKeyMap?.rawSchema.type === "schemaReference" ? resolveJzodSchemaReferenceInContext(
+  const resolvedRawSchema = currentTypeCheckKeyMap?.rawSchema.type === "schemaReference" ? resolveMlSchemaReferenceInContext(
     currentTypeCheckKeyMap?.rawSchema,
     currentTypeCheckKeyMap?.rawSchema.context ?? {},
     currentApplicationModelEnvironment
@@ -760,9 +760,9 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   //     () => canRenderObject?(
   //       <span
   //         title={`
-  // ${parentType} / ${unfoldedRawSchema.type} / ${localResolvedElementJzodSchemaBasedOnValue?.type}
+  // ${parentType} / ${unfoldedRawSchema.type} / ${localResolvedElementMlSchemaBasedOnValue?.type}
 
-  // ${JSON.stringify(props.rawJzodSchema, null, 2)}`}
+  // ${JSON.stringify(props.rawMlSchema, null, 2)}`}
   //         style={{
   //           display: "inline-flex",
   //           alignItems: "center",
@@ -783,7 +783,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   //       </span>
   //       // </span>
   //     ):<></>,
-  //     [props.rawJzodSchema]
+  //     [props.rawMlSchema]
   //   );
 
   // ##############################################################################################
@@ -840,10 +840,10 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
 
   // ##############################################################################################
   const addExtraRecordEntry = useCallback(async () => {
-    if (localResolvedElementJzodSchemaBasedOnValue?.type != "object") {
+    if (localResolvedElementMlSchemaBasedOnValue?.type != "object") {
       throw (
         "addExtraRecordEntry called for non-object type: " +
-        localResolvedElementJzodSchemaBasedOnValue
+        localResolvedElementMlSchemaBasedOnValue
       );
     }
 
@@ -865,7 +865,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     const newAttributeType: MlElement = (effectiveRawSchema as MlRecord)?.definition;
     log.info("addExtraRecordEntry newAttributeType", JSON.stringify(newAttributeType, null, 2));
     const newAttributeValue = currentMiroirFundamentalJzodSchema
-      ? getDefaultValueForJzodSchemaWithResolutionNonHook(
+      ? getDefaultValueForMlSchemaWithResolutionNonHook(
           "build",
           effectiveRawSchema.definition,
           currentValueObject,//formik.values, // rootObject
@@ -912,14 +912,14 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       '"' + listKey + '"',
       ", itemsOrder",
       itemsOrder,
-      Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
+      Object.keys(localResolvedElementMlSchemaBasedOnValue.definition),
       ", formik",
       formik.values
     );
   }, [
     props,
     itemsOrder,
-    localResolvedElementJzodSchemaBasedOnValue,
+    localResolvedElementMlSchemaBasedOnValue,
     currentMiroirFundamentalJzodSchema,
     currentModel,
     miroirMetaModel,
@@ -953,7 +953,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   // ##############################################################################################
   const addObjectOptionalAttribute = useCallback(
     async (attributeName: string) => {
-      if (localResolvedElementJzodSchemaBasedOnValue?.type != "object") {
+      if (localResolvedElementMlSchemaBasedOnValue?.type != "object") {
         throw "addObjectOptionalAttribute called for non-object type: " + currentTypeCheckKeyMap?.rawSchema.type;
       }
       log.info(
@@ -965,7 +965,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         "itemsOrder",
         itemsOrder,
         "objectKeys",
-        Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
+        Object.keys(localResolvedElementMlSchemaBasedOnValue.definition),
         "formik",
         formik.values,
         "undefinedOptionalAttributes",
@@ -974,12 +974,12 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       // const currentObjectValue = resolvePathOnObject(formik.values, rootLessListKeyArray);
       const newAttributeType: MlElement = resolvePathOnObject(
         currentTypeCheckKeyMap?.chosenUnionBranchRawSchema ??
-          currentTypeCheckKeyMap?.jzodObjectFlattenedSchema ??
+          currentTypeCheckKeyMap?.mlObjectFlattenedSchema ??
           currentTypeCheckKeyMap?.rawSchema,
         ["definition", attributeName]
       );
       const newAttributeValue = !!currentMiroirFundamentalJzodSchema
-        ? getDefaultValueForJzodSchemaWithResolutionNonHook(
+        ? getDefaultValueForMlSchemaWithResolutionNonHook(
             "build",
             newAttributeType,
             currentValueObject,
@@ -1015,7 +1015,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       //   "addObjectOptionalAttribute clicked2!",
       //   listKey,
       //   itemsOrder,
-      //   Object.keys(localResolvedElementJzodSchemaBasedOnValue.definition),
+      //   Object.keys(localResolvedElementMlSchemaBasedOnValue.definition),
       //   "newAttributeType",
       //   newAttributeType,
       //   "newObjectValue",
@@ -1037,7 +1037,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     [
       props,
       itemsOrder,
-      localResolvedElementJzodSchemaBasedOnValue,
+      localResolvedElementMlSchemaBasedOnValue,
       currentMiroirFundamentalJzodSchema,
       currentModel,
       miroirMetaModel,
@@ -1050,8 +1050,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   // // ##############################################################################################
   // // Get displayed value when object is folded using the shared utility function
   const foldedDisplayValue = useMemo(() => {
-    return getFoldedDisplayValue(localResolvedElementJzodSchemaBasedOnValue, currentValueObjectAtKey);
-  }, [localResolvedElementJzodSchemaBasedOnValue, currentValueObjectAtKey]);
+    return getFoldedDisplayValue(localResolvedElementMlSchemaBasedOnValue, currentValueObjectAtKey);
+  }, [localResolvedElementMlSchemaBasedOnValue, currentValueObjectAtKey]);
 
   const unitTestKind = useMemo(
     () => getUnitTestKind(currentValueObjectAtKey),
@@ -1189,14 +1189,14 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     log.error(
       "JzodObjectEditor cannot render object",
       rootLessListKey,
-      "localResolvedElementJzodSchemaBasedOnValue",
-      localResolvedElementJzodSchemaBasedOnValue
+      "localResolvedElementMlSchemaBasedOnValue",
+      localResolvedElementMlSchemaBasedOnValue
     );
     return (
       <div>
         <span className="error">
-          JzodObjectEditor: localResolvedElementJzodSchemaBasedOnValue is not an object type:{" "}
-          {JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2)}
+          JzodObjectEditor: localResolvedElementMlSchemaBasedOnValue is not an object type:{" "}
+          {JSON.stringify(localResolvedElementMlSchemaBasedOnValue, null, 2)}
         </span>
       </div>
     );
@@ -1218,7 +1218,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
               rootLessListKeyArray,
               currentValue: blobValue,
               formikValues: formik.values,
-              localResolvedElementJzodSchemaBasedOnValue,
+              localResolvedElementMlSchemaBasedOnValue,
             }}
           />
         )}
@@ -1276,8 +1276,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                 foreignKeyObjects={foreignKeyObjects || {}}
                 insideAny={insideAny}
                 anyRootLessListKey={props.anyRootLessListKey}
-                localResolvedElementJzodSchemaBasedOnValue={
-                  localResolvedElementJzodSchemaBasedOnValue as MlObject
+                localResolvedElementMlSchemaBasedOnValue={
+                  localResolvedElementMlSchemaBasedOnValue as MlObject
                 }
                 typeCheckKeyMap={typeCheckKeyMap}
                 currentValue={currentValueObjectAtKey}
@@ -1289,7 +1289,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                 duplicateRecordEntry={duplicateRecordEntry}
                 handleMoveAttribute={handleMoveAttribute}
                 totalAttributes={itemsOrder.length}
-                hideOptionalButton={localResolvedElementJzodSchemaBasedOnValue?.tag?.value?.display?.objectHideOptionalButton}
+                hideOptionalButton={localResolvedElementMlSchemaBasedOnValue?.tag?.value?.display?.objectHideOptionalButton}
                 maxRenderDepth={maxRenderDepth}
                 readOnly={readOnly}
                 existingObject={existingObject}
@@ -1313,7 +1313,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     rootLessListKey,
     listKey,
     rootLessListKeyArray,
-    localResolvedElementJzodSchemaBasedOnValue,
+    localResolvedElementMlSchemaBasedOnValue,
     typeCheckKeyMap,
     currentDeploymentUuid,
     currentApplicationSection,
@@ -1380,8 +1380,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
               formikRootLessListKey,
               rawSchema: currentTypeCheckKeyMap?.rawSchema,
               resolvedSchema: currentTypeCheckKeyMap?.resolvedSchema,
-              jzodObjectFlattenedSchema:
-                currentTypeCheckKeyMap?.jzodObjectFlattenedSchema ?? "NO FLATTENED SCHEMA",
+              mlObjectFlattenedSchema:
+                currentTypeCheckKeyMap?.mlObjectFlattenedSchema ?? "NO FLATTENED SCHEMA",
               currentValueObjectAtKey,
             },
             copyButton: true,

@@ -11,7 +11,7 @@ import {
   clearSchemaCacheForTests,
   getEndpointActions,
   getMiroirFundamentalSchemaForDeployment,
-  miroirFundamentalJzodSchema,
+  miroirFundamentalMlSchema,
   resolveFundamentalSchemaForDeployment,
   type MetaModel,
   LIBRARY_TMP,
@@ -21,13 +21,13 @@ import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 describe("getMiroirFundamentalSchemaForDeployment (Phase 1)", () => {
   it("returns the static schema for any deploymentUuid when model has no app-specific endpoints", () => {
     const result = getMiroirFundamentalSchemaForDeployment("any-uuid", defaultMiroirMetaModel);
-    expect(result).toBe(miroirFundamentalJzodSchema);
+    expect(result).toBe(miroirFundamentalMlSchema);
     expect((result as any).definition.context.domainAction).toBeDefined();
   });
 
   it("resolves the static schema for the Miroir deployment", () => {
     const result = getMiroirFundamentalSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel);
-    expect(result).toBe(miroirFundamentalJzodSchema);
+    expect(result).toBe(miroirFundamentalMlSchema);
   });
 });
 
@@ -40,19 +40,19 @@ describe("getMiroirFundamentalSchemaForDeployment (Phase 2.1 — app-specific en
   }, 120_000);
 
   it("returns a different object when model has app-specific endpoints", () => {
-    expect(librarySchema).not.toBe(miroirFundamentalJzodSchema);
-    expect(librarySchema.uuid).toBe(miroirFundamentalJzodSchema.uuid);
+    expect(librarySchema).not.toBe(miroirFundamentalMlSchema);
+    expect(librarySchema.uuid).toBe(miroirFundamentalMlSchema.uuid);
   });
 
   it("returns the static schema when model has no app-specific endpoints", () => {
     const modelWithoutAppEndpoints = { ...defaultLibraryAppModel, endpoints: [] };
     const schema = getMiroirFundamentalSchemaForDeployment(libraryDeploymentUuid, modelWithoutAppEndpoints as MetaModel);
-    expect(schema).toBe(miroirFundamentalJzodSchema);
+    expect(schema).toBe(miroirFundamentalMlSchema);
   });
 
   it("returns the static schema for the Miroir meta-model even when endpoints exist", () => {
     const schema = getMiroirFundamentalSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel);
-    expect(schema).toBe(miroirFundamentalJzodSchema);
+    expect(schema).toBe(miroirFundamentalMlSchema);
   });
 });
 
@@ -229,7 +229,7 @@ describe("getMiroirFundamentalSchemaForDeployment (Phase 2.7 — Miroir deployme
 
   it("Miroir deployment schema does not include Library actions", () => {
     const schema = getMiroirFundamentalSchemaForDeployment(deployment_Miroir.uuid, defaultMiroirMetaModel);
-    expect(schema).toBe(miroirFundamentalJzodSchema);
+    expect(schema).toBe(miroirFundamentalMlSchema);
 
     const domainAction = (schema as any).definition.context.domainAction;
     for (const actionType of ["lendDocument", "returnDocument"] as const) {

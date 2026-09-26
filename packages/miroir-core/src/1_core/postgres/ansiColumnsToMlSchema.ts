@@ -21,13 +21,13 @@ export type InformationSchemaColumn = {
 };
 
 /**
- * Maps postgres information_schema `data_type` values to Jzod attribute type names.
+ * Maps postgres information_schema `data_type` values to ML attribute type names.
  *
- * Note: Several postgres types map to the same Jzod type (lossy conversion). For example,
+ * Note: Several postgres types map to the same ML type (lossy conversion). For example,
  * both `character varying` and `text` map to `"string"`, so the reverse mapping via
- * getAttributeTypesFromJzodSchema is not a perfect round-trip.
+ * getAttributeTypesFromMlSchema is not a perfect round-trip.
  */
-export const postgresDataTypeToJzodTypeMap: Record<string, string> = {
+export const postgresDataTypeToMlTypeMap: Record<string, string> = {
   "bigint": "bigint",
   "boolean": "boolean",
   "character": "string",
@@ -48,14 +48,14 @@ export const postgresDataTypeToJzodTypeMap: Record<string, string> = {
 
 /**
  * Converts a list of information_schema.columns rows (e.g. from a CSV export or SQL query)
- * into a Jzod object schema suitable for use as the `mlSchema` of a Miroir EntityVersion.
+ * into an ML object schema suitable for use as the `mlSchema` of a Miroir EntityVersion.
  *
  * - Columns are sorted by `ordinal_position` before processing.
  * - Nullable columns (`is_nullable === "YES"`) get `optional: true`.
  * - JSONB/JSON columns produce `{ type: "object", definition: {} }` (unstructured).
- * - Throws if a `data_type` value is not present in `postgresDataTypeToJzodTypeMap`.
+ * - Throws if a `data_type` value is not present in `postgresDataTypeToMlTypeMap`.
  */
-export function ansiColumnsToJzodSchema(
+export function ansiColumnsToMlSchema(
   columns: InformationSchemaColumn[]
 ): { type: "object"; definition: Record<string, MlElement> } {
   const sortedColumns = [...columns].sort(
@@ -65,8 +65,8 @@ export function ansiColumnsToJzodSchema(
   const definition: Record<string, any> = {};
 
   for (const col of sortedColumns) {
-    const jzodType = postgresDataTypeToJzodTypeMap[col.data_type];
-    if (jzodType === undefined) {
+    const mlType = postgresDataTypeToMlTypeMap[col.data_type];
+    if (mlType === undefined) {
       throw new Error(`Postgres data_type ${col.data_type} not supported`);
     }
 
@@ -78,9 +78,9 @@ export function ansiColumnsToJzodSchema(
       },
     };
 
-    const fieldDef: Record<string, any> = { type: jzodType, tag };
+    const fieldDef: Record<string, any> = { type: mlType, tag };
 
-    if (jzodType === "object") {
+    if (mlType === "object") {
       fieldDef.definition = {};
     }
 

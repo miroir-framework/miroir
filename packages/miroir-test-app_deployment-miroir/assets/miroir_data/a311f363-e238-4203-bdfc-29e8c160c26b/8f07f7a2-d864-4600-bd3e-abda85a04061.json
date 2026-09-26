@@ -68,7 +68,7 @@
                   }
                 ],
                 "endpoints": [],
-                "jzodSchemas": [],
+                "mlSchemas": [],
                 "menus": [
                   {
                     "uuid": "dd168e5a-2a21-4d2d-a443-032c6d15eb22",
@@ -192,7 +192,7 @@
                 }
               ],
               "endpoints": [],
-              "jzodSchemas": [],
+              "mlSchemas": [],
               "menus": [
                 {
                   "uuid": "dd168e5a-2a21-4d2d-a443-032c6d15eb22",

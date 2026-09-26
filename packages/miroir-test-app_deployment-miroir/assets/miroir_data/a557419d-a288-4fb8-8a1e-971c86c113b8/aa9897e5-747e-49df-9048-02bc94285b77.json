@@ -51,7 +51,7 @@
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "transformer"
             },
-            "description": "Explicit column set: a transformer resolving to a list of strings (e.g. returnValue wrapping a literal list, or getFromContext). A bare string array is NOT schema-expressible here: it also matches the transformer array branch, making the union ambiguous for jzodTypeCheck. When omitted, columns are derived from the distinct columnKeyAttribute values of the input. Object lists (e.g. Deployment rows) must be plucked first (mapList + accessDynamicPath)."
+            "description": "Explicit column set: a transformer resolving to a list of strings (e.g. returnValue wrapping a literal list, or getFromContext). A bare string array is NOT schema-expressible here: it also matches the transformer array branch, making the union ambiguous for mlsTypeCheck. When omitted, columns are derived from the distinct columnKeyAttribute values of the input. Object lists (e.g. Deployment rows) must be plucked first (mapList + accessDynamicPath)."
           },
           "fillValue": {
             "type": "any",

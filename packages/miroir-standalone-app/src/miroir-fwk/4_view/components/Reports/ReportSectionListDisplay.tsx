@@ -23,7 +23,7 @@ import {
   evaluateVirtualAttributesOnInstance,
   ExtractorOrCombinerRecord,
   getApplicationSection,
-  getDefaultValueForJzodSchemaWithResolutionNonHook,
+  getDefaultValueForMlSchemaWithResolutionNonHook,
   getQueryRunnerParamsForReduxDeploymentsState,
   InstanceAction,
   interpolateExpression,
@@ -680,8 +680,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         currentReportTargetEntity &&
         currentReportTargetEntity?.mlSchema &&
           (context.schemasPerDeployment[props.deploymentUuid] ??
-            currentMiroirModelEnvironment.miroirFundamentalJzodSchema)
-          ? getDefaultValueForJzodSchemaWithResolutionNonHook(
+            currentMiroirModelEnvironment.miroirFundamentalMlSchema)
+          ? getDefaultValueForMlSchemaWithResolutionNonHook(
               "build",
               currentReportTargetEntity?.mlSchema,
               undefined, // rootObject

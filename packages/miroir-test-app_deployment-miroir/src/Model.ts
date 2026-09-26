@@ -62,7 +62,7 @@ import {
   entityEndpointVersion,
   entityEntity,
   entityEntityVersion,
-  entityJzodSchema,
+  entityMlSchema,
   entityMenu,
   entityMiroirTest,
   entityQueryVersion,
@@ -187,7 +187,7 @@ export const defaultMiroirMetaModelEntityNameToAttributeName: Record<string, str
   Entity: "entities",
   EntityVersion: "entityVersions",
   Endpoint: "endpoints",
-  JzodSchema: "jzodSchemas",
+  JzodSchema: "mlSchemas",
   Menu: "menus",
   ApplicationVersion: "applicationVersions",
   Report: "reports",
@@ -225,7 +225,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     //
     entityCommit as Entity,
     entityEndpointVersion as Entity,
-    entityJzodSchema as Entity, // null
+    entityMlSchema as Entity, // null
     entityMenu as Entity,
     entityQueryVersion as Entity,
     entityReport as Entity,
@@ -303,7 +303,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     queryEndpointVersionV1 as any as EndpointDefinition,
     persistenceEndpointVersionV1 as any as EndpointDefinition,
   ],
-  jzodSchemas: [mlSchemaMlMiroirBootstrapSchema as MlSchema],
+  mlSchemas: [mlSchemaMlMiroirBootstrapSchema as MlSchema],
   menus: [menuDefaultMiroir as Menu],
   applicationVersions: [selfApplicationVersionInitialMiroirVersion],
   reports: [
@@ -481,7 +481,7 @@ export const miroirModelInitializeCreateEntityOrder: Entity[] = entitiesInBootst
   entityEndpointVersion.uuid!,
   entityCommit.uuid!,
   entityMenu.uuid!,
-  entityJzodSchema.uuid!,
+  entityMlSchema.uuid!,
   entityReport.uuid!,
   entityRunner.uuid!,
   entityMiroirTest.uuid!,
@@ -544,7 +544,7 @@ export const appModelInitializeCreateEntityOrder: Entity[] = entitiesInBootstrap
   entitySelfApplicationVersion.uuid!,
   entityMenu.uuid!,
   entityEndpointVersion.uuid!,
-  entityJzodSchema.uuid!,
+  entityMlSchema.uuid!,
   entityQueryVersion.uuid!,
   entityReport.uuid!,
   entityRunner.uuid!,

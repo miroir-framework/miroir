@@ -6,8 +6,8 @@ import {
   EntityInstancesUuidIndex,
   MlElement,
   MlUnion,
-  JzodUnion_RecursivelyUnfold_ReturnType,
-  JzodUnion_RecursivelyUnfold_ReturnTypeOK,
+  MlUnion_RecursivelyUnfold_ReturnType,
+  MlUnion_RecursivelyUnfold_ReturnTypeOK,
   KeyMapEntry,
   Uuid,
   type ApplicationDeploymentMap
@@ -16,7 +16,7 @@ import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance
 
 export interface UnionInformation {
   unfoldedRawSchema: MlUnion;
-  resolvedElementJzodSchema: MlElement | undefined;
+  resolvedElementMlSchema: MlElement | undefined;
   objectBranches: MlElement[];
   discriminator: string;
   discriminatorValues: string[];
@@ -129,7 +129,7 @@ export interface JzodObjectEditorProps extends JzodEditorPropsRoot {
 // #####################################################################################################
 export type JzodElementEditorReactCodeMirrorProps = {
   initialValue: any;
-  // rawJzodSchema: MlElement;
+  // rawMlSchema: MlElement;
   // formik: any; // Formik instance
   labelElement?: JSX.Element; // used to display a label in the editor
   formikRootLessListKey: string;

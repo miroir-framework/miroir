@@ -674,7 +674,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               target entity: {currentReportTargetEntity?.name ?? "report target entity not found!"}
             </div>
             {props.zoomInPath && <div>zoom path: {props.zoomInPath}</div>}
-            {/* <div>resolved schema: {JSON.stringify(resolvedJzodSchema)}</div> */}
+            {/* <div>resolved schema: {JSON.stringify(resolvedMlSchema)}</div> */}
             <ThemedOnScreenHelper
               label={`currentDeploymentMetaModel.entities`}
               data={currentDeploymentModel.entities.map((e) => ({ name: e.name, uuid: e.uuid }))}

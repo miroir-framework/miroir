@@ -245,13 +245,13 @@ export function EntityInstanceSelectorPanel(props:{
   );
   // const currentMiroirModelEnvironment: MiroirModelEnvironment = useMemo(() => {
   //   return {
-  //     miroirFundamentalJzodSchema:
-  //       context.miroirFundamentalJzodSchema ??
-  //       (miroirFundamentalJzodSchema as MlSchema),
+  //     miroirFundamentalMlSchema:
+  //       context.miroirFundamentalMlSchema ??
+  //       (miroirFundamentalMlSchema as MlSchema),
   //     miroirMetaModel: miroirMetaModel,
   //     currentModel: currentModel,
   //   };
-  // }, [miroirMetaModel, currentModel, context.miroirFundamentalJzodSchema]);
+  // }, [miroirMetaModel, currentModel, context.miroirFundamentalMlSchema]);
 
   const deploymentEntityState: ReduxDeploymentsState = useSelector(
     useCallback(

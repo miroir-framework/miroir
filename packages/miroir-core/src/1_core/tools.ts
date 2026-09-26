@@ -163,7 +163,7 @@ export function formatFileSize(bytes: number): string {
 // ################################################################################################
 /**
  * Deterministic uuid for (seed, namespace), shaped as a version-4 / variant-1 uuid so it
- * passes jzodTypeCheck's uuid schema (version 4 only). Derived from a uuid v5 hash — the
+ * passes mlsTypeCheck's uuid schema (version 4 only). Derived from a uuid v5 hash — the
  * version/variant nibbles carry no entropy in RFC 4122, so overwriting them keeps the hash
  * uniformly distributed while making the result indistinguishable from a random v4 uuid.
  * Same seed + namespace always yields the same uuid, so rows can still be found by

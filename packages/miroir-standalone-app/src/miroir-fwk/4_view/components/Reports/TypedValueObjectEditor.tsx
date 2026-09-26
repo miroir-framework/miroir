@@ -14,12 +14,12 @@ import {
   getInnermostTypeCheckError,
   getQueryRunnerParamsForReduxDeploymentsState,
   getValueAtPath,
-  jzodTypeCheck,
+  mlsTypeCheck,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
   ReduxDeploymentsState,
-  ResolvedJzodSchemaReturnType,
+  ResolvedMlSchemaReturnType,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   SyncQueryRunnerExtractorAndParams,
@@ -355,20 +355,20 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
   );
 
   let typeError: JSX.Element | undefined = undefined;
-  const jzodTypeCheckResult: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
-    let result: ResolvedJzodSchemaReturnType | undefined = undefined;
+  const jzodTypeCheckResult: ResolvedMlSchemaReturnType | undefined = useMemo(() => {
+    let result: ResolvedMlSchemaReturnType | undefined = undefined;
     try {
       result =
-        // context.miroirFundamentalJzodSchema && zoomedInDisplaySchema && formik.values && currentModel
-        currentMiroirModelEnvironment.miroirFundamentalJzodSchema && formik.values && currentModel
-          ? jzodTypeCheck( // TODO: typecheck only the value for the currently edited instance / object, not the whole formik.values
+        // context.miroirFundamentalMlSchema && zoomedInDisplaySchema && formik.values && currentModel
+        currentMiroirModelEnvironment.miroirFundamentalMlSchema && formik.values && currentModel
+          ? mlsTypeCheck( // TODO: typecheck only the value for the currently edited instance / object, not the whole formik.values
               // formValueMLSchema.definition[formikValuePathAsString], 
               formValueMLSchema, 
               valueObject, // this leads to an error for now if there are multiple instances in the formik values
               [],
               [],
               currentMiroirModelEnvironment,
-              {}, // relativeReferenceJzodContext
+              {}, // relativeReferenceMlContext
               valueObject, // currentDefaultValue
               reduxDeploymentsState,
               deploymentUuid, // Now passing the actual deploymentUuid
@@ -388,7 +388,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
   }, [
     currentModel,
     currentMiroirModelEnvironment,
-    currentMiroirModelEnvironment.miroirFundamentalJzodSchema,
+    currentMiroirModelEnvironment.miroirFundamentalMlSchema,
     deploymentUuid,
     // zoomedInDisplaySchema,
     formik.values,
@@ -399,7 +399,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
     valueObject,
   ]);
   // log.info(
-  //   "TypedValueObjectEditor jzodTypeCheck done for render",
+  //   "TypedValueObjectEditor mlsTypeCheck done for render",
   //   navigationCount,
   //   "formik.values",
   //   formik.values,
@@ -534,7 +534,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
       {formLabel}
     </ThemedStyledButton>
   );
-  // const resolvedElementJzodSchema =
+  // const resolvedElementMlSchema =
   //   jzodTypeCheckResult?.status == "ok" ? jzodTypeCheckResult.resolvedSchema : undefined;
 
   const result = (
@@ -567,8 +567,8 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
                   rootLessListKey: "ROOT",
                   currentValue: zoomedInValueObject_DEFUNCT,
                   formikValues: undefined,
-                  // rawJzodSchema: zoomedInDisplaySchema,
-                  localResolvedElementJzodSchemaBasedOnValue:
+                  // rawMlSchema: zoomedInDisplaySchema,
+                  localResolvedElementMlSchemaBasedOnValue:
                     jzodTypeCheckResult?.status == "ok"
                       ? jzodTypeCheckResult.resolvedSchema
                       : undefined,
@@ -621,10 +621,10 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
               {
                 label: `rendering TypedValueObjectEditor for 'any' type at ${formikValuePathAsString || "ROOT"}`,
                 data: {
-                  // miroirFundamentalJzodSchema: (currentMiroirModelEnvironment as any).miroirFundamentalJzodSchema.definition.context,
-                  // mlSchemaTemplate: (currentMiroirModelEnvironment as any).miroirFundamentalJzodSchema.definition.context["mlSchemaTemplate"],
-                  domainAction: (currentMiroirModelEnvironment as any).miroirFundamentalJzodSchema.definition.context["domainAction"],
-                  // miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction: (currentMiroirModelEnvironment as any).miroirFundamentalJzodSchema.definition.context["miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"]
+                  // miroirFundamentalMlSchema: (currentMiroirModelEnvironment as any).miroirFundamentalMlSchema.definition.context,
+                  // mlSchemaTemplate: (currentMiroirModelEnvironment as any).miroirFundamentalMlSchema.definition.context["mlSchemaTemplate"],
+                  domainAction: (currentMiroirModelEnvironment as any).miroirFundamentalMlSchema.definition.context["domainAction"],
+                  // miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction: (currentMiroirModelEnvironment as any).miroirFundamentalMlSchema.definition.context["miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"]
                 },
               },
             ]}
@@ -641,8 +641,8 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
                   rootLessListKeyArray: [],
                   currentValue: zoomedInValueObject_DEFUNCT,
                   formikValues: undefined,
-                  // rawJzodSchema: zoomedInDisplaySchema,
-                  localResolvedElementJzodSchemaBasedOnValue:
+                  // rawMlSchema: zoomedInDisplaySchema,
+                  localResolvedElementMlSchemaBasedOnValue:
                     jzodTypeCheckResult?.status == "ok"
                       ? jzodTypeCheckResult.resolvedSchema
                       : undefined,

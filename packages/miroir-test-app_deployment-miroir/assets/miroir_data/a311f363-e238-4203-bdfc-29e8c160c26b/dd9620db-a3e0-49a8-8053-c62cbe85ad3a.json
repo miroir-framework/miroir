@@ -14,7 +14,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "flat object: sets rawSchema to ANY_SCHEMA, resolvedSchema to inferred object schema, valuePath/typePath, and embeds scalar children",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "buildAnyObjectEntry"
         },
         "arguments": [
@@ -153,7 +153,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "nested object: child object entries are recursively built with ANY_SCHEMA rawSchema",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "buildAnyObjectEntry"
         },
         "arguments": [
@@ -256,7 +256,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "empty object: produces entry with empty definition resolvedSchema and no child keys beyond rawSchema/resolvedSchema/valuePath/typePath",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "buildAnyObjectEntry"
         },
         "arguments": [
@@ -288,7 +288,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "uses provided basePath/typePath in all descendant entries",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "buildAnyObjectEntry"
         },
         "arguments": [
@@ -355,7 +355,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "scalar value: key is full dotted path, rawSchema is ANY_SCHEMA",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "buildAnySubnodeKeyMap"
         },
         "arguments": [
@@ -412,7 +412,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "scalar value with non-empty basePath: key uses full dotted path",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "buildAnySubnodeKeyMap"
         },
         "arguments": [
@@ -464,7 +464,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "object value: key is full dotted path, entry has ANY_SCHEMA rawSchema and embedded child navigation",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "buildAnySubnodeKeyMap"
         },
         "arguments": [
@@ -542,7 +542,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "mixed flat and object children produce correct keys",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "buildAnySubnodeKeyMap"
         },
         "arguments": [
@@ -650,7 +650,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "deeply nested object: nested object child gets ANY_SCHEMA rawSchema, grandchildren are embedded",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "buildAnySubnodeKeyMap"
         },
         "arguments": [
@@ -713,7 +713,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "empty object produces empty result",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "buildAnySubnodeKeyMap"
         },
         "arguments": [
@@ -727,7 +727,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "ANY_IMPLICIT_UNION_TYPE is NOT used — all rawSchemas are ANY_SCHEMA",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "buildAnySubnodeKeyMap"
         },
         "arguments": [

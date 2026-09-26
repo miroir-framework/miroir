@@ -1324,8 +1324,8 @@ export function resolveTransformerResultSchema(
     case "constantAsExtractor": {
       const constantTransformer =
         transformer as CoreTransformerForBuildPlusRuntime_constantAsExtractor;
-      if (constantTransformer.valueJzodSchema) {
-        return constantTransformer.valueJzodSchema as MlElement;
+      if (constantTransformer.valueMlSchema) {
+        return constantTransformer.valueMlSchema as MlElement;
       }
       break;
     }

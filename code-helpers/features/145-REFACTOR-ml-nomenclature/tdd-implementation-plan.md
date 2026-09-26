@@ -13,7 +13,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/145
 Working branch: `claude/rename-jzod-to-ml-2ucg0f` → draft PR against `aba`
 
-**Resume note:** Slices 0–1 DONE; baseline on `aba` @ `256e625` is green (miroir-core `tsc`; vitest 156 files / 2023 tests passed, 1 skipped).
+**Resume note:** Slices 0–3 DONE; baseline on `aba` @ `256e625` is green (miroir-core `tsc`; vitest 156 files / 2023 tests passed, 1 skipped).
 
 ---
 
@@ -37,8 +37,8 @@ migrate deployments stored outside the repository (clean break, see analysis D6)
 |---|---|---|---|
 | 0 | Guard + inventory lock | ✅ DONE | guard script GREEN with empty scope; nonreg `unit` step registered |
 | 1 | ML definitions: `mlElement` & co (tracer) | ✅ DONE | guard rule D; `modelValidation` all deployments; `devBuild`; `tsc` all packages |
-| 2 | Schema-tool modules `1_core/mls/` | ⬜ | guard scope `1_core/`; MiroirTest functionCallTest suites (unit) |
-| 3 | Transformers `mlsTypeCheck`, `ansiColumnsToMlSchema` | ⬜ | guard scope transformer assets; `miroirCoreTransformers` unit + integ (filesystem) |
+| 2 | Schema-tool modules `1_core/mls/` | ✅ DONE (with 3) | guard scope `1_core/`; MiroirTest functionCallTest suites (unit) |
+| 3 | Transformers `mlsTypeCheck`, `ansiColumnsToMlSchema` | ✅ DONE (merged into 2) | guard scope transformer assets; `miroirCoreTransformers` unit + integ (filesystem) |
 | 4 | Remaining miroir-core and non-UI packages | ⬜ | guard scope `packages/` minus standalone-app; `tsc` per package; nonreg unit |
 | 5 | Standalone-app UI (editors, labels, component tests) | ⬜ | guard scope `packages/`; component-test nonreg steps |
 | 6 | Docs, agent files, repo-wide guard, final nonreg | ⬜ | guard repo-wide; `nonreg:filesystem` + indexedDb; AC checklist |
@@ -226,7 +226,7 @@ npm run nonreg:unit
 
 ## Slice 2 — Schema-tool modules `1_core/mls/`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE (Slice 3 merged into this commit, see Realization)
 
 ### Goal
 
@@ -271,11 +271,41 @@ npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation
 
 ### Realization
 
+- Deviation: Slices 2 and 3 landed as one commit. The function `jzodTypeCheck` and the transformer type
+  `"jzodTypeCheck"` are the same exact token, as are `ansiColumnsToJzodSchema` (function, transformerType, MiroirTest
+  `export`) and the parameter keys shared by TS and TransformerDefinition assets; splitting them would have needed
+  field-aware substitution for a transient intermediate state.
+- `git mv`: `1_core/jzod/` → `1_core/mls/` and 12 files in it (`jzodTypeCheck.ts` → `mlsTypeCheck.ts`,
+  `JzodToJzod_Summary.ts` → `MlsToMls_Summary.ts`, …), `1_core/postgres/ansiColumnsToMlSchema.ts`,
+  `0_interfaces/1_core/mlsTypeCheckInterface.ts`, `mlUnion_RecursivelyUnfoldInterface.ts`, generated
+  `miroirFundamentalMlSchema.ts` (the generator's output path follows the renamed token), tests
+  `tests/1_core/mls/`, `mlsToMls*.unit.test.ts`, `issues/288-uuid-v4-mlsTypeCheck/`,
+  `transformer_tools.substituteTranformerReferencesInMlElement.unit.test.ts`.
+- Token map [`slice2-map.json`](./slice2-map.json): every Jzod token found in the slice scope (1_core, the two interface
+  files, `Transformers*.ts`, `FunctionCallTestRegistry.ts`, TransformerDefinition assets, MiroirTest `module`/`export` and
+  transformer fields), derived by ordered rules (`JzodToJzod`→`MlsToMls`, `JzodSchema`→`MlSchema`, `jzodTypeCheck`→`mlsTypeCheck`,
+  `jzodTo`→`mlsTo`, `JzodUnfold`/`jzodResolve`/`jzodTransitive`/`JzodError`→`Mls…`, then `Jzod`→`Ml`), applied repo-wide:
+  3 095 replacements in 214 files. Includes the MetaModel key `jzodSchemas` → `mlSchemas`, `entityJzodSchema` →
+  `entityMlSchema`, `miroirFundamentalJzodSchema` → `miroirFundamentalMlSchema`, transformer params
+  `relativeReferenceMlContext`, `rawMlSchema`, `rawMlSchemaType`, `valueMlSchema`.
+- Kept for Slice 4 (collision or behavior risk): bare `jzodSchema` (would collide with `mlSchema`, and is a field of the AI
+  entity proposal payload) and the Entity-name keyed maps `JzodSchema: "jzod-schema"` (miroir-core `1_core/Model.ts`) and
+  `JzodSchema: "mlSchemas"` (deployment-miroir `src/Model.ts`): the Entity is named `MlSchema`, so these keys never match
+  today and renaming them to `MlSchema` would change behavior.
+- Prose in the renamed files and TransformerDefinition descriptions → "ML schema"; logger `"Jzod"` in
+  `MlsUnfoldSchemaOnce.ts` → `"MlsUnfoldSchemaOnce"` (no logging config referenced it). MiroirTest
+  `getAttributeTypesFromMlSchema` `expectedError` follows the message change ("ML type unsupported not supported").
+- Guard: rules "M ml-schema-tools" (paths above, any token, with later-slice tokens excluded) and the repo-wide line rule on
+  `module` / `export` / `transformerType` / `transformerName` / `inMemoryImplementationFunctionName`.
+- Validation: build OK (the gate now also builds miroir-cli and miroir-ai: a stale `miroir-ai/dist` made
+  `unit-275-cursor-sdk` fail once); `tsc` only the two `aba` errors; `modelValidation` 159/51/183/34; miroir-core vitest
+  2 023 passed; `nonreg:unit` 34/34 after the rebuild.
+
 ---
 
 ## Slice 3 — Transformers `mlsTypeCheck` and `ansiColumnsToMlSchema`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE in Slice 2's commit
 
 ### Goal
 

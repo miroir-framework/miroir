@@ -83,7 +83,7 @@ Both scripts produce the same JSON structure:
   menus: Menu[],
   reports: Report[],
   storedQueries: Query[],
-  jzodSchemas: MlSchema[],
+  mlSchemas: MlSchema[],
   applicationVersions: ApplicationVersion[],
   applicationVersionCrossEntityDefinition: []
 }

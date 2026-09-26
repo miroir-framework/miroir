@@ -199,7 +199,7 @@ export const miroirCoreTransformers: TransformerDefinition[] = [
 
 ---
 
-## Example 2: Complex Composite - spreadSheetToJzodSchema
+## Example 2: Complex Composite - spreadSheetToMlSchema
 
 This real transformer from Miroir converts spreadsheet data into a Jzod schema.
 
@@ -209,8 +209,8 @@ This real transformer from Miroir converts spreadsheet data into a Jzod schema.
 ```json
 {
   "uuid": "e44300e8-ed02-40fb-a9ee-d83d08cb1f25",
-  "name": "spreadSheetToJzodSchema",
-  "defaultLabel": "spreadSheetToJzodSchema",
+  "name": "spreadSheetToMlSchema",
+  "defaultLabel": "spreadSheetToMlSchema",
   "description": "Transform the contents of a spreadsheet into a ML schema",
   "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
@@ -220,7 +220,7 @@ This real transformer from Miroir converts spreadsheet data into a Jzod schema.
     "transformerParameterSchema": {
       "transformerType": {
         "type": "literal",
-        "definition": "spreadSheetToJzodSchema"
+        "definition": "spreadSheetToMlSchema"
       },
       "transformerDefinition": {
         "type": "object",
@@ -350,11 +350,11 @@ This real transformer from Miroir converts spreadsheet data into a Jzod schema.
 ```json
 {
   "transformerTestType": "transformerTest",
-  "transformerTestLabel": "spreadSheetToJzodSchema converts spreadsheet to schema",
-  "transformerName": "spreadSheetToJzodSchema",
+  "transformerTestLabel": "spreadSheetToMlSchema converts spreadsheet to schema",
+  "transformerName": "spreadSheetToMlSchema",
   "runTestStep": "runtime",
   "transformer": {
-    "transformerType": "spreadSheetToJzodSchema",
+    "transformerType": "spreadSheetToMlSchema",
     "interpolation": "runtime",
     "spreadsheetContents": {
       "transformerType": "getFromContext",

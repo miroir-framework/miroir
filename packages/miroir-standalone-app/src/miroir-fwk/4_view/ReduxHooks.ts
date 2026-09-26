@@ -26,7 +26,7 @@ import {
   getApplicationSection,
   getReduxDeploymentsStateIndex,
   computeSchemaRevision,
-  miroirFundamentalJzodSchema,
+  miroirFundamentalMlSchema,
   selectEntityUuidFromJzodAttribute,
   type ApplicationDeploymentMap,
   type Deployment,
@@ -319,8 +319,8 @@ export function useCurrentModelEnvironment(
 
   return useMemo(() => {
     return {
-      miroirFundamentalJzodSchema:
-        context.schemasPerDeployment[deploymentUuid] ?? miroirFundamentalJzodSchema,
+      miroirFundamentalMlSchema:
+        context.schemasPerDeployment[deploymentUuid] ?? miroirFundamentalMlSchema,
       miroirMetaModel: miroirMetaModel,
       endpointsByUuid,
       currentModel: currentModel,

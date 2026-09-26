@@ -73,7 +73,7 @@ export interface JzodElementEditorHooks {
   setCodeMirrorIsValidJson: React.Dispatch<React.SetStateAction<boolean>>;
   displayAsStructuredElement: boolean;
   setDisplayAsStructuredElement: React.Dispatch<React.SetStateAction<boolean>>;
-  localResolvedElementJzodSchemaBasedOnValue: MlElement | undefined;
+  localResolvedElementMlSchemaBasedOnValue: MlElement | undefined;
   // uuid, objects, arrays
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>
   definedOptionalAttributes: Set<string>;
@@ -252,7 +252,7 @@ export function useJzodElementEditorHooks(
   // ################################################################################################
   // value schema
   // Memoize to prevent infinite re-renders when used in useMemo dependencies
-  const localResolvedElementJzodSchemaBasedOnValue: MlElement | undefined = useMemo(
+  const localResolvedElementMlSchemaBasedOnValue: MlElement | undefined = useMemo(
     () => {
       if (insideAny) {
         return valueToJzod(currentValueObjectAtKey) as MlElement;
@@ -273,11 +273,11 @@ export function useJzodElementEditorHooks(
       getItemsOrder(
         currentValueObjectAtKey,
         currentTypecheckKeyMap?.rawSchema,
-        currentTypecheckKeyMap?.jzodObjectFlattenedSchema,
-        localResolvedElementJzodSchemaBasedOnValue,
+        currentTypecheckKeyMap?.mlObjectFlattenedSchema,
+        localResolvedElementMlSchemaBasedOnValue,
         currentTypecheckKeyMap?.resolvedReferenceSchemaInContext
       ),
-    [localResolvedElementJzodSchemaBasedOnValue, currentValueObjectAtKey],
+    [localResolvedElementMlSchemaBasedOnValue, currentValueObjectAtKey],
   );
     
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
@@ -421,11 +421,11 @@ export function useJzodElementEditorHooks(
   const typeCheckMapJzodObjectFlattenedSchema: MlObject | undefined =
     typeCheckKeyMap !== undefined &&
     typeCheckKeyMap[rootLessListKey] !== undefined &&
-    typeCheckKeyMap[rootLessListKey].jzodObjectFlattenedSchema !== undefined
-      ? typeCheckKeyMap[rootLessListKey].jzodObjectFlattenedSchema
+    typeCheckKeyMap[rootLessListKey].mlObjectFlattenedSchema !== undefined
+      ? typeCheckKeyMap[rootLessListKey].mlObjectFlattenedSchema
       : undefined;
 
-  const typeCheckKeyMapChosenUnionBranchObjectSchema: MlObject | undefined = // defined when rawSchema.type == "union" && resolvedElementJzodSchema.type == "object"
+  const typeCheckKeyMapChosenUnionBranchObjectSchema: MlObject | undefined = // defined when rawSchema.type == "union" && resolvedElementMlSchema.type == "object"
     typeCheckKeyMap !== undefined &&
     typeCheckKeyMap[rootLessListKey] !== undefined &&
     typeCheckKeyMap[rootLessListKey].chosenUnionBranchRawSchema !== undefined &&
@@ -482,10 +482,10 @@ export function useJzodElementEditorHooks(
   ]);
 
   const stringSelectList = useMemo(() => {
-    if (localResolvedElementJzodSchemaBasedOnValue?.type != "uuid") {
+    if (localResolvedElementMlSchemaBasedOnValue?.type != "uuid") {
       return [];
     }
-    const tagValue = localResolvedElementJzodSchemaBasedOnValue.tag?.value as
+    const tagValue = localResolvedElementMlSchemaBasedOnValue.tag?.value as
       | {
           foreignKeyParams?: { targetEntity?: string };
           display?: { uuid?: { restrictToApplicationDeploymentMap?: boolean } };
@@ -545,7 +545,7 @@ export function useJzodElementEditorHooks(
     }
     return [];
   }, [
-    localResolvedElementJzodSchemaBasedOnValue,
+    localResolvedElementMlSchemaBasedOnValue,
     foreignKeyObjects,
     applicationDeploymentMap,
     applications,
@@ -572,7 +572,7 @@ export function useJzodElementEditorHooks(
     codeMirrorIsValidJson,
     setCodeMirrorIsValidJson,
     deploymentEntityStateSelectorMap,
-    localResolvedElementJzodSchemaBasedOnValue,
+    localResolvedElementMlSchemaBasedOnValue,
     foreignKeyObjects,
     // Array / Object fold / unfold state
     itemsOrder,

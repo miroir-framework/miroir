@@ -9,7 +9,7 @@ allowed-tools: Read, Grep, Glob, Bash(npm *), Edit, Create
 This skill guides the creation and modification of **Composite** Miroir Transformers - those that are composed entirely of other transformers without requiring TypeScript code.
 
 **Use this skill for**: Transformers with `transformerImplementationType: "transformer"`  
-**Examples**: `spreadSheetToJzodSchema`, domain-specific transformations
+**Examples**: `spreadSheetToMlSchema`, domain-specific transformations
 
 **For library transformers** (with TypeScript handler functions), use the `miroir-edit-transformers` skill instead.
 

@@ -801,7 +801,7 @@ The root of `definition` is a `miroirTestSuite` whose label is the instance name
   "componentProps": {
     "label": "Test Label", "name": "testField", "listKey": "ROOT.testField",
     "rootLessListKey": "testField", "rootLessListKeyArray": ["testField"],
-    "rawJzodSchema": { "type": "enum", "definition": ["value1", "value2", "value3"] },
+    "rawMlSchema": { "type": "enum", "definition": ["value1", "value2", "value3"] },
     "initialFormState": "value2"
   },
   "miroirTests": [
@@ -827,7 +827,7 @@ The root of `definition` is a `miroirTestSuite` whose label is the instance name
 
 In `componentProps`, the tagged value `{"$bigint": "<digits>"}` is replaced by `BigInt(<digits>)` before rendering, at any depth. JSON has no bigint. Example: `"initialFormState": {"$bigint": "12345678901234567890"}`.
 
-Leaf labels are `<editor>: <case>`. `componentMiroirTests.consistency` checks that every instance passes `jzodTypeCheck` against the MiroirTest Entity and EntityVersion `mlSchema`, that no leaf label is used twice, that every leaf label starts with `<child label>: `, and that every leaf has `steps`.
+Leaf labels are `<editor>: <case>`. `componentMiroirTests.consistency` checks that every instance passes `mlsTypeCheck` against the MiroirTest Entity and EntityVersion `mlSchema`, that no leaf label is used twice, that every leaf label starts with `<child label>: `, and that every leaf has `steps`.
 
 A `reactComponentTest` leaf is accepted only in the `miroirTests` of a `reactComponentTestSuite`. Placed directly under a `miroirTestSuite`, it is a schema error: `modelValidation` rejects the instance (#294). An instance that was not validated still gets a runtime check: such a leaf is recorded as `error` ("reactComponentTest must be a leaf of a reactComponentTestSuite") and the runner is not called.
 

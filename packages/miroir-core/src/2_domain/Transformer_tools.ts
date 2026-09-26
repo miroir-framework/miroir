@@ -1,6 +1,6 @@
 import { MlElement, MlObject, TransformerDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-export function substituteTransformerReferencesInJzodElement<T>(
+export function substituteTransformerReferencesInMlElement<T>(
   // mlElement: MlObject,
   mlElement: any,
   newReference: Record<string, string>,
@@ -10,7 +10,7 @@ export function substituteTransformerReferencesInJzodElement<T>(
   }
   if (typeof mlElement == "object") {
     if (Array.isArray(mlElement)) {
-      return mlElement.map((v) => substituteTransformerReferencesInJzodElement(v, newReference)) as T;
+      return mlElement.map((v) => substituteTransformerReferencesInMlElement(v, newReference)) as T;
     }
     if (mlElement.type == "schemaReference") {
       return {
@@ -29,10 +29,10 @@ export function substituteTransformerReferencesInJzodElement<T>(
           if (Array.isArray(value)) {
             return [
               key,
-              value.map((v) => substituteTransformerReferencesInJzodElement(v, newReference)),
+              value.map((v) => substituteTransformerReferencesInMlElement(v, newReference)),
             ];
           } else if (typeof value === "object" && value !== null) {
-            return [key, substituteTransformerReferencesInJzodElement(value, newReference)];
+            return [key, substituteTransformerReferencesInMlElement(value, newReference)];
           } else {
             return [key, value];
           }
@@ -100,7 +100,7 @@ export function transformerInterfaceFromDefinition(
     // ],
   }: { type: "never"};
 
-  const newDefinition = substituteTransformerReferencesInJzodElement<MlObject>(
+  const newDefinition = substituteTransformerReferencesInMlElement<MlObject>(
     transformerParameterSchema.transformerDefinition,
     referenceMap
   ).definition;

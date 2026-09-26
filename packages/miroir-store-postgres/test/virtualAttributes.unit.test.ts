@@ -36,7 +36,7 @@ function bookModelEnv(entity: Entity = entityBook): MiroirModelEnvironment {
   return {
     currentModel: { entities: [entity] } as any,
     endpointsByUuid: {},
-    miroirFundamentalJzodSchema: {} as any,
+    miroirFundamentalMlSchema: {} as any,
   } as unknown as MiroirModelEnvironment;
 }
 

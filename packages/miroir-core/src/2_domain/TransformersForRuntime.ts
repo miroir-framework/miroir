@@ -71,32 +71,32 @@ import {
 import { ReduxDeploymentsState } from "../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import {
-  resolveJzodSchemaReferenceInContext,
+  resolveMlSchemaReferenceInContext,
   resolveSchemaReferenceInContextTransformer,
-} from "../1_core/jzod/jzodResolveSchemaReferenceInContext";
+} from "../1_core/mls/mlsResolveSchemaReferenceInContext";
 import {
-  jzodTypeCheckTransformer,
+  mlsTypeCheckTransformer,
   resolveObjectExtendClauseAndDefinition,
-} from "../1_core/jzod/jzodTypeCheck";
-import { unfoldSchemaOnceTransformer } from "../1_core/jzod/JzodUnfoldSchemaOnce";
+} from "../1_core/mls/mlsTypeCheck";
+import { unfoldSchemaOnceTransformer } from "../1_core/mls/MlsUnfoldSchemaOnce";
 import { transformer_resolveTransformerResultSchema } from "./Transformer_ResultSchema";
 import {
   resolveConditionalSchema,
   resolveConditionalSchemaTransformer,
-} from "../1_core/jzod/resolveConditionalSchema";
+} from "../1_core/mls/resolveConditionalSchema";
 import { handleTransformer_menu_AddItem } from "../1_core/Menu";
-import { ansiColumnsToJzodSchema } from "../1_core/postgres/ansiColumnsToJzodSchema";
+import { ansiColumnsToMlSchema } from "../1_core/postgres/ansiColumnsToMlSchema";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { findEntityFromUuid, resolvePathOnObject, safeResolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
 import { getEntityInstancesIndexNonHook } from "./ReduxDeploymentsStateQueryExecutor";
 import { getInstancePrimaryKeyValue } from "../1_core/Entity/EntityPrimaryKey";
-// import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
+// import { transformer_spreadSheetToMlSchema } from "./Transformer_Spreadsheet";
 import {
   mlsTransformers,
   // 
-  transformer_spreadSheetToJzodSchema,
+  transformer_spreadSheetToMlSchema,
   // 
   transformer_ifThenElse,
   transformer_boolExpr,
@@ -137,7 +137,7 @@ import {
   type ResolveBuildTransformersTo,
   type Step,
   transformer_getActiveDeployment,
-  transformer_ansiColumnsToJzodSchema,
+  transformer_ansiColumnsToMlSchema,
   transformer_defaultValueForMLSchema,
   transformer_duplicateApplicationModel,
   transformer_syncExternalServiceSchema,
@@ -182,9 +182,9 @@ export const defaultTransformers = { // TODO: should it be exported? Should'nt i
 };
 
 // ################################################################################################
-// Default value for Jzod Schema functions - moved here to avoid circular dependency
+// Default value for ML Schema functions - moved here to avoid circular dependency
 // ################################################################################################
-export function getDefaultValueForJzodSchemaWithResolution(
+export function getDefaultValueForMlSchemaWithResolution(
   step: Step,
   mlSchema: MlElement,
   rootObject: any | undefined, // Optional parameter for backward compatibility
@@ -199,7 +199,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
   transformerParams: Record<string, any> = {},
   contextResults?: Record<string, any>,
   reduxDeploymentsState?: ReduxDeploymentsState | undefined,
-  relativeReferenceJzodContext?: { [k: string]: MlElement }
+  relativeReferenceMlContext?: { [k: string]: MlElement }
 ): any {
   let effectiveSchemaOrError = resolveConditionalSchema(
     step,
@@ -215,7 +215,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
   );
 
   // log.info(
-  //   "getDefaultValueForJzodSchemaWithResolution called with",
+  //   "getDefaultValueForMlSchemaWithResolution called with",
   //   "step",
   //   step,
   //   "currentValuePath",
@@ -243,7 +243,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
   // if (Object.hasOwn(effectiveSchemaOrError, 'error')) {
   if (!effectiveSchemaOrError || Object.hasOwn(effectiveSchemaOrError, "error")) {
     log.error(
-      "getDefaultValueForJzodSchemaWithResolution: resolveConditionalSchema returned error",
+      "getDefaultValueForMlSchemaWithResolution: resolveConditionalSchema returned error",
       effectiveSchemaOrError
     );
     return undefined; // or propagate error as needed
@@ -252,7 +252,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
 
   if (effectiveSchema.optional && !forceOptional) {
     // log.info(
-    //   "getDefaultValueForJzodSchemaWithResolution: effectiveSchema is optional and forceOptional is false",
+    //   "getDefaultValueForMlSchemaWithResolution: effectiveSchema is optional and forceOptional is false",
     //   "currentValuePath", currentValuePath,
     //   "effectiveSchema", effectiveSchema
     // );
@@ -268,7 +268,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
   ) {
     const result = effectiveSchema.tag.value.initializeTo.value;
     log.info(
-      "getDefaultValueForJzodSchemaWithResolutionWithResolution returning value from tag.value.initializeTo.value",
+      "getDefaultValueForMlSchemaWithResolutionWithResolution returning value from tag.value.initializeTo.value",
       "currentValuePath",
       currentValuePath,
       "result",
@@ -305,7 +305,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
       const resolvedObjectType = resolveObjectExtendClauseAndDefinition(
         effectiveSchema,
         miroirEnvironment,
-        relativeReferenceJzodContext
+        relativeReferenceMlContext
       );
       let result: Record<string, any> = {};
 
@@ -314,7 +314,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
         .filter((a) => forceOptional || !a[1].optional || a[1].tag?.value?.initializeTo)
         .forEach((a) => {
           const attributeName = a[0];
-          const attributeValue = getDefaultValueForJzodSchemaWithResolution(
+          const attributeValue = getDefaultValueForMlSchemaWithResolution(
             step,
             a[1],
             rootObject,
@@ -329,12 +329,12 @@ export function getDefaultValueForJzodSchemaWithResolution(
             transformerParams,
             contextResults,
             reduxDeploymentsState,
-            relativeReferenceJzodContext,
+            relativeReferenceMlContext,
           );
           result[attributeName] = attributeValue;
         });
       // log.info(
-      //   "getDefaultValueForJzodSchemaWithResolution for object type",
+      //   "getDefaultValueForMlSchemaWithResolution for object type",
       //   "effectiveSchema",
       //   effectiveSchema,
       //   "mlSchema",
@@ -349,7 +349,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
     }
     case "string": {
       // log.info(
-      //   "getDefaultValueForJzodSchemaWithResolution called for string",
+      //   "getDefaultValueForMlSchemaWithResolution called for string",
       //   "effectiveSchema", effectiveSchema, "return empty string"
       // );
       return "";
@@ -374,7 +374,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
     }
     case "uuid": {
       // log.info(
-      //   "getDefaultValueForJzodSchemaWithResolutionWithResolution called for UUID",
+      //   "getDefaultValueForMlSchemaWithResolutionWithResolution called for UUID",
       //   "deploymentUuid", deploymentUuid,
       //   "effectiveSchema", effectiveSchema,
       // );
@@ -414,22 +414,22 @@ export function getDefaultValueForJzodSchemaWithResolution(
       ) {
         if (!reduxDeploymentsState) {
           throw new Error(
-            "getDefaultValueForJzodSchemaWithResolution called with UUID foreign key but no reduxDeploymentsState provided"
+            "getDefaultValueForMlSchemaWithResolution called with UUID foreign key but no reduxDeploymentsState provided"
           );
         }
         if (!deploymentUuid) {
           throw new Error(
-            "getDefaultValueForJzodSchemaWithResolution called with UUID foreign key but no deploymentUuid provided"
+            "getDefaultValueForMlSchemaWithResolution called with UUID foreign key but no deploymentUuid provided"
           );
         }
         if (!application) {
           throw new Error(
-            "getDefaultValueForJzodSchemaWithResolution called with UUID foreign key but no application provided"
+            "getDefaultValueForMlSchemaWithResolution called with UUID foreign key but no application provided"
           );
         }
         if (!applicationDeploymentMap) {
           throw new Error(
-            "getDefaultValueForJzodSchemaWithResolution called with UUID foreign key but no applicationDeploymentMap provided"
+            "getDefaultValueForMlSchemaWithResolution called with UUID foreign key but no applicationDeploymentMap provided"
           );
         }
 
@@ -477,7 +477,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
     case "never":
     case "void": {
       throw new Error(
-        "getDefaultValueForJzodSchemaWithResolution can not generate value for schema type " +
+        "getDefaultValueForMlSchemaWithResolution can not generate value for schema type " +
           mlSchema.type
       );
     }
@@ -502,15 +502,15 @@ export function getDefaultValueForJzodSchemaWithResolution(
         return { type: "any"}
       }
       const localContext = effectiveSchema.context
-        ? { ...relativeReferenceJzodContext, ...effectiveSchema.context }
-        : relativeReferenceJzodContext;
+        ? { ...relativeReferenceMlContext, ...effectiveSchema.context }
+        : relativeReferenceMlContext;
       
-      const resolvedReference = resolveJzodSchemaReferenceInContext(
+      const resolvedReference = resolveMlSchemaReferenceInContext(
         effectiveSchema,
         localContext,
         miroirEnvironment
       );
-      return getDefaultValueForJzodSchemaWithResolution(
+      return getDefaultValueForMlSchemaWithResolution(
         step,
         resolvedReference,
         rootObject,
@@ -531,14 +531,14 @@ export function getDefaultValueForJzodSchemaWithResolution(
     case "union": {
       if (effectiveSchema.definition.length == 0) {
         throw new Error(
-          "getDefaultValueForJzodSchemaWithResolution union definition is empty for effectiveSchema=" +
+          "getDefaultValueForMlSchemaWithResolution union definition is empty for effectiveSchema=" +
             JSON.stringify(effectiveSchema, null, 2)
         );
       }
       if (mlSchema.tag?.value?.initializeTo?.initializeToType == "value") {
         return mlSchema.tag?.value?.initializeTo.value;
       } else {
-        return getDefaultValueForJzodSchemaWithResolution(
+        return getDefaultValueForMlSchemaWithResolution(
           "runtime",
           effectiveSchema.definition[0],
           rootObject,
@@ -553,7 +553,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
           transformerParams,
           contextResults,
           reduxDeploymentsState,
-          relativeReferenceJzodContext,
+          relativeReferenceMlContext,
         );
       }
     }
@@ -563,7 +563,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
       } else {
         return effectiveSchema.definition[0];
         // throw new Error(
-        //   "getDefaultValueForJzodSchemaWithResolution enum definition does not have 'tag.value.initalizeTo' for effectiveSchema=" +
+        //   "getDefaultValueForMlSchemaWithResolution enum definition does not have 'tag.value.initalizeTo' for effectiveSchema=" +
         //     JSON.stringify(effectiveSchema, null, 2)
         // );
       }
@@ -574,7 +574,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
     case "promise":
     case "tuple": {
       throw new Error(
-        "getDefaultValueForJzodSchemaWithResolution does not handle type: " +
+        "getDefaultValueForMlSchemaWithResolution does not handle type: " +
           effectiveSchema.type +
           " for effectiveSchema=" +
           JSON.stringify(effectiveSchema, null, 2)
@@ -582,7 +582,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
     }
     default: {
       throw new Error(
-        "getDefaultValueForJzodSchemaWithResolution reached default case for type, this is a bug: " +
+        "getDefaultValueForMlSchemaWithResolution reached default case for type, this is a bug: " +
           JSON.stringify(effectiveSchema, null, 2)
       );
     }
@@ -590,7 +590,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
 }
 
 // ################################################################################################
-export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends MiroirModelEnvironment>(
+export function getDefaultValueForMlSchemaWithResolutionNonHook<T extends MiroirModelEnvironment>(
   step: Step,
   mlSchema: MlElement,
   rootObject: any = undefined,
@@ -605,10 +605,10 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
   transformerParams: Record<string, any> = {},
   contextResults?: Record<string, any>,
   reduxDeploymentsState?: ReduxDeploymentsState | undefined,
-  relativeReferenceJzodContext?: { [k: string]: MlElement }
+  relativeReferenceMlContext?: { [k: string]: MlElement }
 ): any {
   log.info(
-    "getDefaultValueForJzodSchemaWithResolutionNonHook called with",
+    "getDefaultValueForMlSchemaWithResolutionNonHook called with",
     "rootLessListKey",
     rootLessListKey,
     "deploymentUuid",
@@ -632,7 +632,7 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
   );
 
   if (deploymentUuid == undefined || deploymentUuid.length < 8 || !reduxDeploymentsState) {
-    return getDefaultValueForJzodSchemaWithResolution(
+    return getDefaultValueForMlSchemaWithResolution(
       step,
       mlSchema,
       rootObject,
@@ -647,11 +647,11 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
       transformerParams,
       contextResults,
       reduxDeploymentsState,
-      relativeReferenceJzodContext,
+      relativeReferenceMlContext,
     );
   }
 
-  return getDefaultValueForJzodSchemaWithResolution(
+  return getDefaultValueForMlSchemaWithResolution(
     step,
     mlSchema,
     rootObject,
@@ -666,7 +666,7 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
     transformerParams,
     contextResults,
     reduxDeploymentsState,
-    relativeReferenceJzodContext,
+    relativeReferenceMlContext,
   );
 }
 
@@ -686,7 +686,7 @@ export function defaultValueForMLSchemaTransformer(
   applicationDeploymentMap?: ApplicationDeploymentMap,
   deploymentUuid?: Uuid,
 ): any {
-  const result = getDefaultValueForJzodSchemaWithResolutionNonHook(
+  const result = getDefaultValueForMlSchemaWithResolutionNonHook(
     step,
     transformer.mlSchema,
     undefined, // rootObject
@@ -701,7 +701,7 @@ export function defaultValueForMLSchemaTransformer(
     transformerParams, 
     contextResults,
     reduxDeploymentsState,
-    undefined // relativeReferenceJzodContext
+    undefined // relativeReferenceMlContext
   );
   log.info(
     "defaultValueForMLSchemaTransformer called with",
@@ -1088,9 +1088,9 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   transformer_resolveConditionalSchema: resolveConditionalSchemaTransformer,
   transformer_resolveSchemaReferenceInContext: resolveSchemaReferenceInContextTransformer,
   transformer_unfoldSchemaOnce: unfoldSchemaOnceTransformer,
-  transformer_jzodTypeCheck: jzodTypeCheckTransformer,
+  transformer_mlsTypeCheck: mlsTypeCheckTransformer,
   transformer_resolveTransformerResultSchema,
-  handleTransformer_ansiColumnsToJzodSchema,
+  handleTransformer_ansiColumnsToMlSchema,
   handleTransformer_concatLists,
   handleTransformer_filterList,
   handleTransformer_find,
@@ -1115,7 +1115,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   getActiveDeployment: transformer_getActiveDeployment,
   duplicateApplicationModel: transformer_duplicateApplicationModel,
   //
-  spreadSheetToJzodSchema: transformer_spreadSheetToJzodSchema,
+  spreadSheetToMlSchema: transformer_spreadSheetToMlSchema,
   aggregate: transformer_aggregate,
   ifThenElse: transformer_ifThenElse,
   boolExpr: transformer_boolExpr,
@@ -1139,7 +1139,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   createObjectFromPairs: transformer_createObjectFromPairs,
   getFromParameters: transformer_getFromParameters,
   getUniqueValues: transformer_getUniqueValues,
-  ansiColumnsToJzodSchema: transformer_ansiColumnsToJzodSchema,
+  ansiColumnsToMlSchema: transformer_ansiColumnsToMlSchema,
   concatLists: transformer_concatLists,
   filterList: transformer_filterList,
   find: transformer_find,
@@ -1180,7 +1180,7 @@ function handleTransformer_getActiveDeployment(
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ) {
 
   if (typeof transformer.application == "object") {
@@ -1230,7 +1230,7 @@ function handleTransformer_duplicateApplicationModel(
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ) {
 
   let newApplicationUuid: Uuid | undefined = undefined;
@@ -1401,7 +1401,7 @@ function resolveApplyTo(
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ) {
   if (!transformer.applyTo) {
     return defaultTransformers.transformer_extended_apply(
@@ -1535,7 +1535,7 @@ export function resolveApplyTo_legacy(
   queryParams: Record<string, any>,
   contextResults: Record<string, any> | undefined,
   label: string | undefined,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ) {
   // log.info(
   //   "resolveApplyTo_legacy",
@@ -1644,7 +1644,7 @@ function transformerForBuild_list_listMapperToList_apply(
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any[]> {
   const resolvedApplyTo = resolveApplyTo_legacy(
     transformer,
@@ -1744,7 +1744,7 @@ function transformer_object_listReducerToSpreadObject_apply(
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   // log.info(
   //   "transformer_object_listReducerToSpreadObject_apply called for transformer",
@@ -1803,7 +1803,7 @@ function transformer_object_indexListBy_apply(
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   // log.info(
   //   "transformer_object_indexListBy_apply called for transformer",
@@ -1862,7 +1862,7 @@ function handleTransformer_createObjectFromPairs(
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<DomainElementString | DomainElementInstanceArray> {
   // log.info(
   //   "transformer_createObjectFromPairs called with objectName=",
@@ -2020,7 +2020,7 @@ function handleTransformer_mergeIntoObject<T extends MiroirModelEnvironment>(
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   const resolvedApplyTo = resolveApplyTo(
     step,
@@ -2076,7 +2076,7 @@ export function transformer_resolveReference(
   paramOrContext: "param" | "context",
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   // ReferenceNotFound
   const bank: Record<string, any> =
@@ -2223,7 +2223,7 @@ export function transformer_InnerReference_resolve(
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   // TODO: copy / paste (almost?) from query parameter lookup!
   // log.info(
@@ -2363,7 +2363,7 @@ export function transformer_mustacheStringTemplate_apply(
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   try {
     // log.info(
@@ -2415,7 +2415,7 @@ export function transformer_dynamicObjectAccess_apply(
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   const result = (transformer.objectAccessPath.reduce as any)(
     // triggers "error TS2349: This expression is not callable" in tsc. Not in eslint, though!
@@ -2535,7 +2535,7 @@ export function handleCountTransformer(
   transformerParams: Record<string, any>,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
@@ -2848,7 +2848,7 @@ export function handleUniqueTransformer(
   transformerParams: Record<string, any>,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
@@ -2917,7 +2917,7 @@ export function handleListPickElementTransformer(
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
@@ -3005,7 +3005,7 @@ export function handleTransformer_FreeObjectTemplate(
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   // log.info(
   //   "innerTransformer_apply createObject",
@@ -3069,7 +3069,7 @@ export function handleTransformer_getObjectEntries(
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
@@ -3112,7 +3112,7 @@ export function handleTransformer_getObjectValues(
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   const resolvedReference = resolveApplyTo_legacy(
     transformer,
@@ -3155,7 +3155,7 @@ export function handleTransformer_dataflowObject(
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   const resultObject: Record<string, any> = {};
   for (const [key, value] of Object.entries(transformer.definition)) {
@@ -3203,7 +3203,7 @@ export function handleTransformer_ifThenElse(
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   // Evaluate the boolean condition given by the 'if' attribute
   const conditionValue = defaultTransformers.transformer_extended_apply(
@@ -3271,7 +3271,7 @@ export function handleTransformer_boolExpr(
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only
 ): TransformerReturnType<any> {
   const leftValue = defaultTransformers.transformer_extended_apply(
     step,
@@ -3583,7 +3583,7 @@ export function handleTransformer_constant(
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   if (transformer.interpolation == "runtime" && step == "build") {
     log.warn(
@@ -3643,7 +3643,7 @@ export function handleTransformer_getFromContext(
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   const rawValue = defaultTransformers.transformer_InnerReference_resolve(
     step,
@@ -3672,7 +3672,7 @@ export function handleTransformer_getFromParameters(
   transformerParams: Record<string, any>,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   const rawValue = defaultTransformers.transformer_InnerReference_resolve(
     step,
@@ -3700,7 +3700,7 @@ export function handleTransformer_constantAsExtractor(
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   return transformer.value;
 }
@@ -3716,7 +3716,7 @@ export function handleTransformer_generateUuid(
   transformerParams: Record<string, any>,
   // queryParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
 ): TransformerReturnType<any> {
   const rawValue = defaultTransformers.transformer_InnerReference_resolve(
     step,
@@ -3752,7 +3752,7 @@ export function innerTransformer_plainObject_apply(
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined, // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined, // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
   deploymentUuid?: Uuid,
 ): TransformerReturnType<any> {
   // log.info(
@@ -3807,7 +3807,7 @@ export function innerTransformer_array_apply(
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined, // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined, // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
   deploymentUuid?: Uuid,
 ): TransformerReturnType<any> {
   // log.info(
@@ -3889,7 +3889,7 @@ export function transformer_extended_apply(
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined, // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined, // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
   deploymentUuid?: Uuid,
 ): TransformerReturnType<any> {
   try {
@@ -4373,7 +4373,7 @@ export function transformer_extended_apply_wrapper(
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>, // includes queryParams
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined, // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined, // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
   deploymentUuid?: Uuid,
 ): TransformerReturnType<any> {
   // log.info(
@@ -4531,7 +4531,7 @@ export function getInnermostTransformerError(error: TransformerFailure): Transfo
       if (error.innerError instanceof TransformerFailure) {
         return getInnermostTransformerError(error.innerError as TransformerFailure);
       }
-      // // record of ResolvedJzodSchemaReturnTypeError, take the first one
+      // // record of ResolvedMlSchemaReturnTypeError, take the first one
       // const firstError = Object.values(error.innerError)[0];
       // return getInnermostTransformerError(firstError as TransformerFailure);
     }
@@ -4539,7 +4539,7 @@ export function getInnermostTransformerError(error: TransformerFailure): Transfo
     //   // If innerError is an array, recursively check each error in the array
     //   return error.innerError.reduce((innermost, current) => {
     //     if (typeof current === "object") {
-    //       return getInnermostJzodError(current);
+    //       return getInnermostMlsError(current);
     //     }
     //     return innermost;
     //   }, error);
@@ -4549,7 +4549,7 @@ export function getInnermostTransformerError(error: TransformerFailure): Transfo
 }
 
 // ################################################################################################
-export function handleTransformer_ansiColumnsToJzodSchema(
+export function handleTransformer_ansiColumnsToMlSchema(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
@@ -4575,20 +4575,20 @@ export function handleTransformer_ansiColumnsToJzodSchema(
     throw new TransformerFailure({
       queryFailure: "FailedTransformer",
       transformerPath,
-      failureOrigin: ["handleTransformer_ansiColumnsToJzodSchema"],
+      failureOrigin: ["handleTransformer_ansiColumnsToMlSchema"],
       failureMessage:
-        "handleTransformer_ansiColumnsToJzodSchema called on something that is not an array: " +
+        "handleTransformer_ansiColumnsToMlSchema called on something that is not an array: " +
         typeof resolvedReference,
     });
   }
 
   try {
-    return ansiColumnsToJzodSchema(resolvedReference as any);
+    return ansiColumnsToMlSchema(resolvedReference as any);
   } catch (e: any) {
     throw new TransformerFailure({
       queryFailure: "FailedTransformer",
       transformerPath,
-      failureOrigin: ["handleTransformer_ansiColumnsToJzodSchema"],
+      failureOrigin: ["handleTransformer_ansiColumnsToMlSchema"],
       failureMessage: e?.message ?? String(e),
     });
   }

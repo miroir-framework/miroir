@@ -176,7 +176,7 @@ describe("applicationMiroirTestCatalog", () => {
       runnerSuiteInstance("runner_return_document"),
     ]);
     expect(resolveApplicationMiroirTestSuiteKey(catalog, "menu")).toBeUndefined();
-    expect(resolveApplicationMiroirTestSuiteKey(catalog, "jzodTypeCheck")).toBeUndefined();
+    expect(resolveApplicationMiroirTestSuiteKey(catalog, "mlsTypeCheck")).toBeUndefined();
     expect(resolveApplicationMiroirTestSuiteKey(catalog, "menu_build")).toBe("menu_build");
     expect(
       resolveApplicationMiroirTestSuiteKey(catalog, "00000000-0000-4000-8000-000000000001"),

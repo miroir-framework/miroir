@@ -8,14 +8,14 @@ import {
   type MlUnion
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
-  JzodUnion_RecursivelyUnfold_ReturnTypeError,
-  JzodUnion_RecursivelyUnfold_ReturnTypeOK,
-} from "./jzodUnion_RecursivelyUnfoldInterface";
+  MlUnion_RecursivelyUnfold_ReturnTypeError,
+  MlUnion_RecursivelyUnfold_ReturnTypeOK,
+} from "./mlUnion_RecursivelyUnfoldInterface";
 
 // ################################################################################################
 export interface SelectUnionBranchFromDiscriminatorReturnTypeOK {
   status: "ok";
-  currentDiscriminatedObjectJzodSchema: MlObject;
+  currentDiscriminatedObjectMlSchema: MlObject;
   flattenedUnionChoices: MlObject[];
   chosenDiscriminator: {discriminator: string, value: any}[];
 }
@@ -39,21 +39,21 @@ export type SelectUnionBranchFromDiscriminatorReturnType =
   SelectUnionBranchFromDiscriminatorReturnTypeOK | SelectUnionBranchFromDiscriminatorReturnTypeError;
 
 // ################################################################################################
-export interface JzodUnionResolvedTypeForObjectReturnTypeOK {
+export interface MlUnionResolvedTypeForObjectReturnTypeOK {
   status: "ok";
-  resolvedJzodObjectSchema: MlObject | MlRecord;
+  resolvedMlObjectSchema: MlObject | MlRecord;
   objectUnionChoices: MlObject[];
   chosenDiscriminator?: {discriminator: string, value: any}[];
 }
 
-export interface JzodUnionResolvedTypeForArrayReturnTypeOK {
+export interface MlUnionResolvedTypeForArrayReturnTypeOK {
   status: "ok";
-  resolvedJzodObjectSchema: MlArray | MlTuple;
+  resolvedMlObjectSchema: MlArray | MlTuple;
   arrayUnionChoices: (MlArray | MlTuple)[];
   chosenDiscriminator?: {discriminator: string, value: any}[];
 }
 
-export interface JzodUnionResolvedTypeReturnTypeError {
+export interface MlUnionResolvedTypeReturnTypeError {
   status: "error";
   error: string;
   discriminator?: string | (string | string[])[] | undefined;
@@ -61,22 +61,22 @@ export interface JzodUnionResolvedTypeReturnTypeError {
   typePath: (string | number)[];
   value?: any;
   rawSchema?: MlElement;
-  concreteUnrolledJzodSchemas?: MlElement[];
+  concreteUnrolledMlSchemas?: MlElement[];
   unionChoices?: MlObject[] | (MlArray | MlTuple)[];
   innerError?: SelectUnionBranchFromDiscriminatorReturnTypeError;
 }
 
-export type JzodUnionResolvedTypeReturnType =
-  | JzodUnionResolvedTypeForObjectReturnTypeOK
-  | JzodUnionResolvedTypeForArrayReturnTypeOK
-  | JzodUnionResolvedTypeReturnTypeError;
+export type MlUnionResolvedTypeReturnType =
+  | MlUnionResolvedTypeForObjectReturnTypeOK
+  | MlUnionResolvedTypeForArrayReturnTypeOK
+  | MlUnionResolvedTypeReturnTypeError;
 
 
 // #################################################################################################
 export interface KeyMapEntry {
   rawSchema: MlElement;
-  jzodObjectFlattenedSchema?: MlObject;
-  recursivelyUnfoldedUnionSchema?: JzodUnion_RecursivelyUnfold_ReturnTypeOK;
+  mlObjectFlattenedSchema?: MlObject;
+  recursivelyUnfoldedUnionSchema?: MlUnion_RecursivelyUnfold_ReturnTypeOK;
   resolvedSchema: MlElement;
   chosenUnionBranchRawSchema?: MlElement; // for unions, this is the raw schema of the chosen branch
   discriminatorValues?: string[][]; // for unions, this is the list of possible discriminator values
@@ -92,7 +92,7 @@ export const keyMapEntry: MlElement = {
         relativePath: "mlElement",
       },
     }, // the raw schema that was checked
-    jzodObjectFlattenedSchema: {
+    mlObjectFlattenedSchema: {
       type: "schemaReference",
       optional: true,
       definition: {
@@ -105,7 +105,7 @@ export const keyMapEntry: MlElement = {
       optional: true,
       definition: {
         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-        relativePath: "jzodUnion_RecursivelyUnfold_ReturnTypeOK",
+        relativePath: "mlUnion_RecursivelyUnfold_ReturnTypeOK",
       },
     }, // the recursively unfolded union schema
     resolvedReferenceSchemaInContext: {
@@ -161,7 +161,7 @@ export const keyMapEntry: MlElement = {
   },
 };
 
-export interface ResolvedJzodSchemaReturnTypeOK {
+export interface ResolvedMlSchemaReturnTypeOK {
   status: "ok";
   schemaReferenceName?: string;
   valuePath: (string | number)[];
@@ -170,12 +170,12 @@ export interface ResolvedJzodSchemaReturnTypeOK {
   resolvedSchema: MlElement;
   keyMap?: Record<string, KeyMapEntry>;
   subSchemas?:
-    | ResolvedJzodSchemaReturnType
-    | ResolvedJzodSchemaReturnType[]
-    | Record<string, ResolvedJzodSchemaReturnType>
+    | ResolvedMlSchemaReturnType
+    | ResolvedMlSchemaReturnType[]
+    | Record<string, ResolvedMlSchemaReturnType>
     | undefined; // for unions, this is the list of sub-schemas that were resolved
 }
-export const resolvedJzodSchemaReturnTypeOK: MlElement = {
+export const resolvedMlSchemaReturnTypeOK: MlElement = {
   type: "object",
   definition: {
     status: { type: "literal", definition: "ok" },
@@ -230,7 +230,7 @@ export const resolvedJzodSchemaReturnTypeOK: MlElement = {
           type: "schemaReference",
           definition: {
             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            relativePath: "resolvedJzodSchemaReturnType",
+            relativePath: "resolvedMlSchemaReturnType",
           },
         },
         {
@@ -239,7 +239,7 @@ export const resolvedJzodSchemaReturnTypeOK: MlElement = {
             type: "schemaReference",
             definition: {
               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "resolvedJzodSchemaReturnType",
+              relativePath: "resolvedMlSchemaReturnType",
             },
           },
         },
@@ -249,7 +249,7 @@ export const resolvedJzodSchemaReturnTypeOK: MlElement = {
             type: "schemaReference",
             definition: {
               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "resolvedJzodSchemaReturnType",
+              relativePath: "resolvedMlSchemaReturnType",
             },
           },
         },
@@ -260,10 +260,10 @@ export const resolvedJzodSchemaReturnTypeOK: MlElement = {
     }, // for unions, this is the list of sub-schemas that were resolved
   },
 };
-export interface ResolvedJzodSchemaReturnTypeError {
+export interface ResolvedMlSchemaReturnTypeError {
   status: "error";
   error: string;
-  rawJzodSchemaType?: string;
+  rawMlSchemaType?: string;
   valuePath: (string | number)[];
   typePath: (string | number)[];
   value?: any; // the value that was checked
@@ -271,18 +271,18 @@ export interface ResolvedJzodSchemaReturnTypeError {
   errorOnValueAttributes?: string[]; // the attributes that failed to check, if relevant
   errorOnSchemaAttributes?: string[]; // the attributes that failed to check, if relevant
   innerError?:
-    | JzodUnion_RecursivelyUnfold_ReturnTypeError
-    | ResolvedJzodSchemaReturnTypeError
-    | Record<string, ResolvedJzodSchemaReturnTypeError>
+    | MlUnion_RecursivelyUnfold_ReturnTypeError
+    | ResolvedMlSchemaReturnTypeError
+    | Record<string, ResolvedMlSchemaReturnTypeError>
     | undefined; // for unions, this is the error of the sub-schema that failed
 }
-export const resolvedJzodSchemaReturnTypeError: MlElement = {
+export const resolvedMlSchemaReturnTypeError: MlElement = {
   type: "object",
   definition: {
     status: { type: "literal", definition: "error" },
     error: { type: "string" },
     schemaReferenceName: { type: "string", optional: true },
-    rawJzodSchemaType: { type: "string", optional: true }, // the raw schema type that was checked
+    rawMlSchemaType: { type: "string", optional: true }, // the raw schema type that was checked
     valuePath: { type: "array", definition: { type: "union", definition: [{ type: "string" }, { type: "number" }] } },
     typePath: { type: "array", definition: { type: "union", definition: [{ type: "string" }, { type: "number" }] } },
     // typePath: { type: "array", definition: { type: "string" } },
@@ -313,14 +313,14 @@ export const resolvedJzodSchemaReturnTypeError: MlElement = {
           type: "schemaReference",
           definition: {
             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            relativePath: "jzodUnion_RecursivelyUnfold_ReturnTypeError",
+            relativePath: "mlUnion_RecursivelyUnfold_ReturnTypeError",
           },
         },
         {
           type: "schemaReference",
           definition: {
             absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            relativePath: "resolvedJzodSchemaReturnTypeError",
+            relativePath: "resolvedMlSchemaReturnTypeError",
           },
         },
         {
@@ -329,7 +329,7 @@ export const resolvedJzodSchemaReturnTypeError: MlElement = {
             type: "schemaReference",
             definition: {
               absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              relativePath: "resolvedJzodSchemaReturnTypeError",
+              relativePath: "resolvedMlSchemaReturnTypeError",
             },
           },
         },
@@ -338,11 +338,11 @@ export const resolvedJzodSchemaReturnTypeError: MlElement = {
     }, // for unions, this is the error of the sub-schema that failed
   },
 };
-export type ResolvedJzodSchemaReturnType = ResolvedJzodSchemaReturnTypeError | ResolvedJzodSchemaReturnTypeOK;
-export const resolvedJzodSchemaReturnType: MlElement = {
+export type ResolvedMlSchemaReturnType = ResolvedMlSchemaReturnTypeError | ResolvedMlSchemaReturnTypeOK;
+export const resolvedMlSchemaReturnType: MlElement = {
   type: "union",
   definition: [
-    resolvedJzodSchemaReturnTypeOK,
-    resolvedJzodSchemaReturnTypeError,
+    resolvedMlSchemaReturnTypeOK,
+    resolvedMlSchemaReturnTypeError,
   ],
 };

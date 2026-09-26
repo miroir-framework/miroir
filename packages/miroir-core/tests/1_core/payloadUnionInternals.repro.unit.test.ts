@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   defaultMiroirModelEnvironment,
-  jzodUnion_recursivelyUnfold,
+  mlUnion_recursivelyUnfold,
   unionObjectChoices,
   type MlUnion,
   type MiroirModelEnvironment,
@@ -9,7 +9,7 @@ import {
 
 describe("payload union internals", () => {
   it("inspects unfolded union and object choices", () => {
-    const ctx = (defaultMiroirModelEnvironment as any).miroirFundamentalJzodSchema
+    const ctx = (defaultMiroirModelEnvironment as any).miroirFundamentalMlSchema
       .definition.context;
     const domainActionTemplate =
       ctx["miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"];
@@ -18,7 +18,7 @@ describe("payload union internals", () => {
     );
     const payloadSchema = branch.definition.payload as MlUnion;
 
-    const unfolded = jzodUnion_recursivelyUnfold(
+    const unfolded = mlUnion_recursivelyUnfold(
       payloadSchema,
       new Set(),
       defaultMiroirModelEnvironment as MiroirModelEnvironment,

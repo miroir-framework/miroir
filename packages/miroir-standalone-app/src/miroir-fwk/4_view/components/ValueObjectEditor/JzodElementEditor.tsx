@@ -17,8 +17,8 @@ import {
   EntityAttribute,
   EntityInstance,
   EntityInstanceWithName,
-  getDefaultValueForJzodSchemaWithResolutionNonHook,
-  jzodToJzod_Summary,
+  getDefaultValueForMlSchemaWithResolutionNonHook,
+  mlsToMls_Summary,
   LoggerInterface,
   MiroirLoggerFactory,
   mStringify,
@@ -367,7 +367,7 @@ function jzodElementToTooltipText(el: any, depth: number = 1): string {
     case "object": {
       if (!e.definition || depth <= 0) return `object${optional}${nullable}${label}`;
       const keys = Object.keys(e.definition as Record<string, any>);
-      // jzodToJzod_Summary already sorts literal-valued keys first, so the most discriminating
+      // mlsToMls_Summary already sorts literal-valued keys first, so the most discriminating
       // info appears within the 4-key preview window.
       const keyDescriptions = keys.slice(0, 4).map((k: string) => {
         const fieldEl = (e.definition as any)[k];
@@ -446,7 +446,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     displayAsStructuredElement,
     setDisplayAsStructuredElement,
     currentValueObjectAtKey,
-    localResolvedElementJzodSchemaBasedOnValue,
+    localResolvedElementMlSchemaBasedOnValue,
     foreignKeyObjects,
     itemsOrder,
     stringSelectList,
@@ -505,7 +505,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         return;
       }
 
-      const defaultValue = getDefaultValueForJzodSchemaWithResolutionNonHook(
+      const defaultValue = getDefaultValueForMlSchemaWithResolutionNonHook(
         "build",
         matchingBranch,
         formik.values[props.reportSectionPathAsString],
@@ -604,9 +604,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   // ##############################################################################################
   // Determine if the element is an object, array or any type
   const resolvedTypeIsObjectOrArrayOrAny = useMemo(() => 
-    !localResolvedElementJzodSchemaBasedOnValue || ["any", "object", "record", "array", "tuple"].includes(
-      localResolvedElementJzodSchemaBasedOnValue.type
-    ), [localResolvedElementJzodSchemaBasedOnValue]
+    !localResolvedElementMlSchemaBasedOnValue || ["any", "object", "record", "array", "tuple"].includes(
+      localResolvedElementMlSchemaBasedOnValue.type
+    ), [localResolvedElementMlSchemaBasedOnValue]
   );
   
   // Switches for display mode
@@ -637,7 +637,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   const displayAsCodeEditor =
     !displayAsStructuredElement ||
     !props.typeCheckKeyMap ||
-    !localResolvedElementJzodSchemaBasedOnValue || // same as props.hasTypeError?
+    !localResolvedElementMlSchemaBasedOnValue || // same as props.hasTypeError?
     !displayAsStructuredElement
   ;
 
@@ -659,12 +659,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   // Check if this element type supports nesting (should have alternating background)
   // These are the container types that can hold other JzodElements
   const isNestableType = useMemo(() => {
-    const elementType = localResolvedElementJzodSchemaBasedOnValue?.type;
+    const elementType = localResolvedElementMlSchemaBasedOnValue?.type;
     return elementType === "object" || 
            elementType === "record" || 
            elementType === "array" || 
            elementType === "tuple";
-  }, [localResolvedElementJzodSchemaBasedOnValue?.type]);
+  }, [localResolvedElementMlSchemaBasedOnValue?.type]);
 
   // Check if this element should be highlighted due to an error
   const hasPathError = useMemo(() => {
@@ -821,11 +821,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     const isContainerType = ["object", "array"].includes(currentType);
 
     const unionTooltip = (() => {
-      if (!currentApplicationModelEnvironment.miroirFundamentalJzodSchema) return `${unionOptions.length} types`;
+      if (!currentApplicationModelEnvironment.miroirFundamentalMlSchema) return `${unionOptions.length} types`;
       const summaries = branches.map((branch: MlElement) => {
-        const s = jzodToJzod_Summary(
+        const s = mlsToMls_Summary(
           branch,
-          currentApplicationModelEnvironment.miroirFundamentalJzodSchema!,
+          currentApplicationModelEnvironment.miroirFundamentalMlSchema!,
           1,
         );
         return jzodElementToTooltipText(s, 1);
@@ -845,7 +845,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       isContainerType,
       unionTooltip,
     };
-  }, [currentKeyMap, currentValueObjectAtKey, currentApplicationModelEnvironment.miroirFundamentalJzodSchema, innerInsideAny]);
+  }, [currentKeyMap, currentValueObjectAtKey, currentApplicationModelEnvironment.miroirFundamentalMlSchema, innerInsideAny]);
 
   const unionStarButton = useMemo((): JSX.Element | null => {
     if (!unionTypeDataForControls) return null;
@@ -924,11 +924,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       // if (
       //     props.rootLessListKey.includes("foldSubLevels") &&
       //     (currentValue === true || currentValue === false ||
-      //     localResolvedElementJzodSchemaBasedOnValue?.type === "boolean")) {
+      //     localResolvedElementMlSchemaBasedOnValue?.type === "boolean")) {
       //   console.log("=== BOOLEAN DEBUG ===");
       //   console.log("rootLessListKey:", props.rootLessListKey);
       //   console.log("currentValue:", currentValue, "type:", typeof currentValue);
-      //   console.log("localResolvedElementJzodSchemaBasedOnValue:", localResolvedElementJzodSchemaBasedOnValue);
+      //   console.log("localResolvedElementMlSchemaBasedOnValue:", localResolvedElementMlSchemaBasedOnValue);
       //   console.log("currentKeyMap:", currentKeyMap);
       //   // console.log("isSimpleType:", isSimpleType);
       //   // console.log("shouldShowCodeEditorForThisElement:", shouldShowCodeEditorForThisElement);
@@ -937,7 +937,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       // }
 
       // HANDLE MISSING SCHEMA
-      if (!localResolvedElementJzodSchemaBasedOnValue) {
+      if (!localResolvedElementMlSchemaBasedOnValue) {
         return (
           <div>
             Could not find schema for element: {props.rootLessListKey}
@@ -948,15 +948,15 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             <br />
             raw Jzod schema: {JSON.stringify(currentKeyMap?.rawSchema, undefined, 2)}
             <br />
-            {/* resolved schema: {safeStringify(localResolvedElementJzodSchemaBasedOnValue, 500)} */}
-            resolved schema: {JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, undefined, 2)}
+            {/* resolved schema: {safeStringify(localResolvedElementMlSchemaBasedOnValue, 500)} */}
+            resolved schema: {JSON.stringify(localResolvedElementMlSchemaBasedOnValue, undefined, 2)}
           </div>
         );
       }
 
       // HIDDEN ELEMENT
-      if (localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.hidden) {
-        const hidden: CoreTransformerForBuildPlusRuntime = localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.hidden;
+      if (localResolvedElementMlSchemaBasedOnValue.tag?.value?.display?.hidden) {
+        const hidden: CoreTransformerForBuildPlusRuntime = localResolvedElementMlSchemaBasedOnValue.tag?.value?.display?.hidden;
         if (typeof hidden === "boolean" && hidden === true) {
           // return <></>;
           return <>hidden 2</>;
@@ -992,7 +992,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             && // TODO: passing through the JzodAnyEditor does not give the same result as going on in the current JzodElementEditor, although it should
             currentKeyMap?.rawSchema.tag?.value?.display?.any?.format
           ) ||
-          localResolvedElementJzodSchemaBasedOnValue.type === "any" // can this be true??
+          localResolvedElementMlSchemaBasedOnValue.type === "any" // can this be true??
         // ) &&
         // !props.insideAny
       ) {
@@ -1042,24 +1042,24 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
 
       const localReadOnly =
         props.readOnly ||
-        localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.editable === false ||
+        localResolvedElementMlSchemaBasedOnValue.tag?.value?.display?.editable === false ||
         (props.valueObjectEditMode == "update" &&
-          localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.modifiable === false);
+          localResolvedElementMlSchemaBasedOnValue.tag?.value?.display?.modifiable === false);
       // Generate element based on schema type 
       // log.info(
       //   "JzodElementEditor",
       //   count,
       //   "rootLessListKey:", props.rootLessListKey,
       //   "Rendering element of type:",
-      //   localResolvedElementJzodSchemaBasedOnValue.type,
+      //   localResolvedElementMlSchemaBasedOnValue.type,
       //   "props.valueObjectEditMode",
       //   props.valueObjectEditMode,
       //   "localReadOnly:", localReadOnly,
       //   "existingObject:", existingObject,
-      //   "localResolvedElementJzodSchemaBasedOnValue.tag?.value",
-      //   localResolvedElementJzodSchemaBasedOnValue.tag?.value
+      //   "localResolvedElementMlSchemaBasedOnValue.tag?.value",
+      //   localResolvedElementMlSchemaBasedOnValue.tag?.value
       // );
-      switch (localResolvedElementJzodSchemaBasedOnValue.type) {
+      switch (localResolvedElementMlSchemaBasedOnValue.type) {
         case "object": {
           return (
             <JzodObjectEditor
@@ -1229,7 +1229,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         }
         case "string": {
           // Get display configuration from schema tag
-          const stringDisplay = localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.string;
+          const stringDisplay = localResolvedElementMlSchemaBasedOnValue.tag?.value?.display?.string;
           
           return (
             <>
@@ -1238,7 +1238,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               data={{
                 rootLessListKey: props.rootLessListKey,
                 // rawSchema: currentKeyMap?.rawSchema,
-                localResolvedElementJzodSchemaBasedOnValue,
+                localResolvedElementMlSchemaBasedOnValue,
                 stringDisplay: stringDisplay,
                 currentValueObjectAtKey,
               }}
@@ -1265,13 +1265,13 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           //   "formik.values",
           //   formik.values,
           //   "MLS tag",
-          //   localResolvedElementJzodSchemaBasedOnValue.tag,
+          //   localResolvedElementMlSchemaBasedOnValue.tag,
           //   "foreignKeyObjects",
           //   foreignKeyObjects,
           //   "stringSelectList",
           //   stringSelectList
           // );
-          // if (props.readOnly || !localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.editable) {
+          // if (props.readOnly || !localResolvedElementMlSchemaBasedOnValue.tag?.value?.display?.editable) {
           //   return (
           //     // <ThemedDisplayValue value={currentValueObjectAtKey} type="uuid" />
           //     <ThemedLabeledEditor
@@ -1283,7 +1283,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           //   );
           // }
           const uuidDisplayTag = (
-            localResolvedElementJzodSchemaBasedOnValue.tag?.value as
+            localResolvedElementMlSchemaBasedOnValue.tag?.value as
               | {
                   foreignKeyParams?: { targetEntity?: string };
                   display?: {
@@ -1296,7 +1296,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               | undefined
           )?.display?.uuid;
           if (
-            localResolvedElementJzodSchemaBasedOnValue.tag?.value?.foreignKeyParams?.targetEntity ||
+            localResolvedElementMlSchemaBasedOnValue.tag?.value?.foreignKeyParams?.targetEntity ||
             uuidDisplayTag?.restrictToApplicationDeploymentMap
           ) {
             // Convert stringSelectList to options for selectors
@@ -1368,7 +1368,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                   />
                   <ThemedMUISelect
                     labelId={`${props.rootLessListKey}-label`}
-                    label={localResolvedElementJzodSchemaBasedOnValue.tag?.value?.defaultLabel || props.rootLessListKey}
+                    label={localResolvedElementMlSchemaBasedOnValue.tag?.value?.defaultLabel || props.rootLessListKey}
                     id={props.rootLessListKey}
                     key={props.rootLessListKey}
                     data-testid="miroirInput"
@@ -1407,8 +1407,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             ) : (
               <div>
                 unknown value for
-                localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.uuid?.selector:{" "}
-                {localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.uuid?.selector}
+                localResolvedElementMlSchemaBasedOnValue.tag?.value?.display?.uuid?.selector:{" "}
+                {localResolvedElementMlSchemaBasedOnValue.tag?.value?.display?.uuid?.selector}
               </div>
             );
             ;
@@ -1435,7 +1435,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             );
 
             switch (
-              localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display
+              localResolvedElementMlSchemaBasedOnValue.tag?.value?.display
                 ?.objectUuidAttributeLabelPosition
             ) {
               case "hidden":
@@ -1460,13 +1460,13 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 <>
                   {/* <ThemedOnScreenHelper
                     label={`Uuid: ${props.rootLessListKey}`}
-                    data={localResolvedElementJzodSchemaBasedOnValue}
+                    data={localResolvedElementMlSchemaBasedOnValue}
                   /> */}
                   <ThemedLabeledEditor
                     labelElement={enhancedLabelElement}
                     editor={
                       props.readOnly ||
-                      localResolvedElementJzodSchemaBasedOnValue.tag?.value?.display?.editable ===
+                      localResolvedElementMlSchemaBasedOnValue.tag?.value?.display?.editable ===
                         false ? (
                         <ThemedDisplayValue value={currentValueObjectAtKey} type="uuid" />
                       ) : (
@@ -1532,8 +1532,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         }
         case "enum": {
           const enumValues: string[] =
-            (localResolvedElementJzodSchemaBasedOnValue &&
-              localResolvedElementJzodSchemaBasedOnValue.definition) ||
+            (localResolvedElementMlSchemaBasedOnValue &&
+              localResolvedElementMlSchemaBasedOnValue.definition) ||
             (currentKeyMap?.rawSchema && ((currentKeyMap?.rawSchema as any).definition ?? [])) ||
             [];
           return (
@@ -1695,7 +1695,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         case "record":
         case "union": {
           throw new Error(
-            `JzodElementEditor: Unsupported type ${localResolvedElementJzodSchemaBasedOnValue.type} for listKey ${props.listKey}. This is a bug. Records must be resolved to Objects and Unions must be unfolded.`
+            `JzodElementEditor: Unsupported type ${localResolvedElementMlSchemaBasedOnValue.type} for listKey ${props.listKey}. This is a bug. Records must be resolved to Objects and Unions must be unfolded.`
           );
         }
         case "function":
@@ -1712,12 +1712,12 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
         default: {
           return (
             <span>
-              default case: {localResolvedElementJzodSchemaBasedOnValue.type}, for {props.listKey}
+              default case: {localResolvedElementMlSchemaBasedOnValue.type}, for {props.listKey}
               values
               <pre>{safeStringify(currentValueObjectAtKey, 500)}</pre>
               <br />
               <pre>
-                resolved Jzod schema: {safeStringify(localResolvedElementJzodSchemaBasedOnValue, 500)}
+                resolved Jzod schema: {safeStringify(localResolvedElementMlSchemaBasedOnValue, 500)}
               </pre>
               <pre>raw Jzod schema: {safeStringify(currentKeyMap?.rawSchema, 500)}</pre>
             </span>
@@ -1735,7 +1735,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
             rootLessListKey: props.rootLessListKey,
             currentValue: currentValueObjectAtKey,
             formikValues: formik.values,
-            localResolvedElementJzodSchemaBasedOnValue,
+            localResolvedElementMlSchemaBasedOnValue,
           }}
         />
       );
@@ -1769,7 +1769,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     unionTypeSelectorElement,
     effectiveExtraToolsButtonsForContainer,
     // Computed values that affect rendering (all properly memoized)
-    localResolvedElementJzodSchemaBasedOnValue, 
+    localResolvedElementMlSchemaBasedOnValue, 
     currentValueObjectAtKey, 
     hideSubJzodEditor,
     itemsOrder,
@@ -1938,7 +1938,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               width: "100%",
             }}
           >
-            {!localResolvedElementJzodSchemaBasedOnValue?.tag?.value?.display
+            {!localResolvedElementMlSchemaBasedOnValue?.tag?.value?.display
               ?.objectHideDeleteButton && props.deleteButtonElement}
             {/* {mainElementWithUnionTypeSelector} */}
             {mainElementWithDebug}
@@ -2007,7 +2007,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           componentName="JzodElementEditor"
           elements={[
             {
-              label: `key "${formikRootLessListKey}" of type ${localResolvedElementJzodSchemaBasedOnValue?.type}`,
+              label: `key "${formikRootLessListKey}" of type ${localResolvedElementMlSchemaBasedOnValue?.type}`,
               data: {
                 existingObject,
                 itemsOrder,
@@ -2018,7 +2018,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 hidden: !!props.hidden,
                 hideSubJzodEditor,
                 currentKeyMap,
-                localResolvedElementJzodSchemaBasedOnValue,
+                localResolvedElementMlSchemaBasedOnValue,
                 innerInsideAny,
                 unionTypeDataForControlsIsNull: unionTypeDataForControls == null,
                 isContainerType: unionTypeDataForControls?.isContainerType,
@@ -2036,7 +2036,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                   {
                     label: `rendering JzodElementEditor for 'any' at ${props.rootLessListKey || "ROOT"}, objectOrArrayOrAny=${resolvedTypeIsObjectOrArrayOrAny}, displayAsCodeEditor=${displayAsCodeEditor}`,
                     data: {
-                      localResolvedElementJzodSchemaBasedOnValue,
+                      localResolvedElementMlSchemaBasedOnValue,
                       currentValueObjectAtKey,
                       currentKeyMap,
                     },
@@ -2057,7 +2057,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   }, [
     mainElementWithUnionTypeSelector,
     formikRootLessListKey,
-    localResolvedElementJzodSchemaBasedOnValue,
+    localResolvedElementMlSchemaBasedOnValue,
     existingObject,
     itemsOrder,
     currentKeyMap,

@@ -8,7 +8,7 @@ import {
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
   getEndpointActions,
-  getDefaultValueForJzodSchemaWithResolutionNonHook,
+  getDefaultValueForMlSchemaWithResolutionNonHook,
   MlObject,
   LoggerInterface,
   MetaModel,
@@ -361,10 +361,10 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
           useEffect(() => {
             const initialFormState: Record<string, any> =
               !currentAction?.actionParameters ||
-              !currentMiroirModelEnvironment.miroirFundamentalJzodSchema ||
+              !currentMiroirModelEnvironment.miroirFundamentalMlSchema ||
               !selectedApplicationUuid
                 ? {}
-                : getDefaultValueForJzodSchemaWithResolutionNonHook(
+                : getDefaultValueForMlSchemaWithResolutionNonHook(
                     "build",
                     currentActionParametersMMLSchema,
                     undefined, // rootObject
@@ -379,7 +379,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                     {}, // transformerParams
                     {}, // contextResults
                     deploymentEntityState,
-                    {} // relativeReferenceJzodContext
+                    {} // relativeReferenceMlContext
                   );
             log.info(
               "EndpointActionCaller useEffect: handleActionChange Initial form state",

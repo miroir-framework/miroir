@@ -28,7 +28,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodSimpleTypeEditor: string renders input with proper value",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "string"
               },
               "initialFormState": "placeholder text"
@@ -50,7 +50,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodSimpleTypeEditor: string allows to modify input value with consistent update",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "string"
               },
               "initialFormState": "placeholder text"
@@ -87,7 +87,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodSimpleTypeEditor: string allows to modify input value with consistent update then submit form",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "string"
               },
               "initialFormState": "placeholder text"
@@ -130,7 +130,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodSimpleTypeEditor: number renders input with proper value",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "number"
               },
               "initialFormState": 42
@@ -151,7 +151,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodSimpleTypeEditor: number allows to modify input value with consistent update",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "number"
               },
               "initialFormState": 42
@@ -188,7 +188,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodSimpleTypeEditor: uuid renders input with proper value",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "uuid"
               },
               "initialFormState": "c8e2cc98-b0ec-426a-8be0-2d526039f85a"
@@ -210,7 +210,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodSimpleTypeEditor: uuid allows to modify input value with consistent update",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "uuid"
               },
               "initialFormState": "c8e2cc98-b0ec-426a-8be0-2d526039f85a"
@@ -247,7 +247,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodSimpleTypeEditor: boolean renders checkbox with proper value true",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "boolean"
               },
               "initialFormState": true
@@ -266,7 +266,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodSimpleTypeEditor: boolean renders checkbox with proper value false",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "boolean"
               },
               "initialFormState": false
@@ -285,7 +285,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodSimpleTypeEditor: boolean allows to modify checkbox value with consistent update",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "boolean"
               },
               "initialFormState": true
@@ -328,7 +328,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodSimpleTypeEditor: bigint renders input with proper bigint value",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "bigint"
               },
               "initialFormState": {
@@ -352,7 +352,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodSimpleTypeEditor: bigint allows to modify input value with consistent update",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "bigint"
               },
               "initialFormState": {

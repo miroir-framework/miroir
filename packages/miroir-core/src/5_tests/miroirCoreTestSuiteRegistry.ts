@@ -6,23 +6,23 @@ export type MiroirTestSuiteLoader = () => Promise<{ default: MiroirTestSuite }>;
 export const MIROIR_TEST_SUITE_REGISTRY_NAMES = [
   "adminTransformers",
   "alterObject",
-  "ansiColumnsToJzodSchema",
+  "ansiColumnsToMlSchema",
   "buildAnyKeyMap",
   "defaultValueForMLSchema",
   "EntityPrimaryKey",
-  "getAttributeTypesFromJzodSchema",
-  "jzodObjectFlatten",
-  "JzodSchemaReferencesList",
-  "JzodSchemaReferencesSet",
-  "jzodToCopilotKitParameter",
-  "jzodToJsonSchema",
-  "jzodToJzod_Summary",
-  "jzodTransitiveDependencySet",
-  "jzodTypeCheck",
+  "getAttributeTypesFromMlSchema",
+  "mlObjectFlatten",
+  "MlSchemaReferencesList",
+  "MlSchemaReferencesSet",
+  "mlsToCopilotKitParameter",
+  "mlsToJsonSchema",
+  "mlsToMls_Summary",
+  "mlsTransitiveDependencySet",
+  "mlsTypeCheck",
   "jzodUnion_RecursiveUnfold",
-  "jzodUnionResolvedTypeForArray",
-  "jzodUnionResolvedTypeForObject",
-  "localizeJzodSchemaReferenceContext",
+  "mlUnionResolvedTypeForArray",
+  "mlUnionResolvedTypeForObject",
+  "localizeMlSchemaReferenceContext",
   "menu",
   "mergePositionBased",
   "metaModelTransformers",
@@ -55,7 +55,7 @@ export const MIROIR_TEST_SUITE_REGISTRY: Record<string, MiroirTestSuiteLoader> =
         const instance =
           name === "alterObject"
             ? deployment.miroirTest_alterObject_atPath
-            : name === "jzodTypeCheck"
+            : name === "mlsTypeCheck"
               ? deployment.miroirTest_jzodTypeCheck_TransformerTestSuite
               : name === "menu"
                 ? deployment.miroirTest_menu_build

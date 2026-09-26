@@ -4,7 +4,7 @@
  *
  * - the `mlSchema` contexts of the Entity `a311f363-…` and the EntityVersion `51c647fe-…` are equal;
  * - the issue's example suite (analysis §5.4, the Enum suite), wrapped in a MiroirTest instance
- *   with a `miroirTestSuite` root, passes `jzodTypeCheck` against both `mlSchema`s;
+ *   with a `miroirTestSuite` root, passes `mlsTypeCheck` against both `mlSchema`s;
  * - a step of an unknown kind and a `reactComponentTestSuite` without `component` both fail.
  *
  * Issue #294: a `reactComponentTest` leaf is accepted only in `reactComponentTestSuite.miroirTests`.
@@ -22,7 +22,7 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { defaultMiroirModelEnvironment, jzodTypeCheck, type MlElement } from "miroir-core";
+import { defaultMiroirModelEnvironment, mlsTypeCheck, type MlElement } from "miroir-core";
 
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
@@ -62,7 +62,7 @@ function exampleEnumSuite(): any {
       listKey: "ROOT.testField",
       rootLessListKey: "testField",
       rootLessListKeyArray: ["testField"],
-      rawJzodSchema: { type: "enum", definition: ["value1", "value2", "value3"] },
+      rawMlSchema: { type: "enum", definition: ["value1", "value2", "value3"] },
       initialFormState: "value2",
     },
     miroirTests: [
@@ -136,7 +136,7 @@ function miroirTestInstanceOf(child: any): any {
 }
 
 function typeCheckStatus(schema: MlElement, instance: any): string {
-  return jzodTypeCheck(schema, instance, [], [], defaultMiroirModelEnvironment, {}).status;
+  return mlsTypeCheck(schema, instance, [], [], defaultMiroirModelEnvironment, {}).status;
 }
 
 // ################################################################################################
@@ -147,8 +147,8 @@ describe("MiroirTest schema for declarative component tests", () => {
     );
   });
 
-  it.each(schemas)("the issue's example suite passes jzodTypeCheck against the %s mlSchema", (_name, schema) => {
-    const result = jzodTypeCheck(
+  it.each(schemas)("the issue's example suite passes mlsTypeCheck against the %s mlSchema", (_name, schema) => {
+    const result = mlsTypeCheck(
       schema,
       miroirTestInstanceOf(exampleEnumSuite()),
       [],

@@ -25,11 +25,11 @@
           "path": [],
           "unfoldingReference": [],
           "depth": 0,
-          "miroirFundamentalJzodSchema": {
+          "miroirFundamentalMlSchema": {
             "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
             "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
-            "name": "miroirFundamentalJzodSchema",
+            "name": "miroirFundamentalMlSchema",
             "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
             "definition": {
               "type": "schemaReference",
@@ -64,11 +64,11 @@
           "path": [],
           "unfoldingReference": [],
           "depth": 0,
-          "miroirFundamentalJzodSchema": {
+          "miroirFundamentalMlSchema": {
             "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
             "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
-            "name": "miroirFundamentalJzodSchema",
+            "name": "miroirFundamentalMlSchema",
             "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
             "definition": {
               "type": "schemaReference",
@@ -110,11 +110,11 @@
           "path": [],
           "unfoldingReference": [],
           "depth": 0,
-          "miroirFundamentalJzodSchema": {
+          "miroirFundamentalMlSchema": {
             "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
             "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
-            "name": "miroirFundamentalJzodSchema",
+            "name": "miroirFundamentalMlSchema",
             "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
             "definition": {
               "type": "schemaReference",
@@ -125,7 +125,7 @@
               "context": {}
             }
           },
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "transformerParams": {},
         "expectedValue": {
@@ -167,11 +167,11 @@
           "path": [],
           "unfoldingReference": [],
           "depth": 0,
-          "miroirFundamentalJzodSchema": {
+          "miroirFundamentalMlSchema": {
             "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
             "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
-            "name": "miroirFundamentalJzodSchema",
+            "name": "miroirFundamentalMlSchema",
             "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
             "definition": {
               "type": "schemaReference",
@@ -182,7 +182,7 @@
               "context": {}
             }
           },
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "transformerParams": {},
         "expectedValue": {
@@ -227,11 +227,11 @@
           "path": [],
           "unfoldingReference": [],
           "depth": 0,
-          "miroirFundamentalJzodSchema": {
+          "miroirFundamentalMlSchema": {
             "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
             "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
-            "name": "miroirFundamentalJzodSchema",
+            "name": "miroirFundamentalMlSchema",
             "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
             "definition": {
               "type": "schemaReference",
@@ -242,7 +242,7 @@
               "context": {}
             }
           },
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "transformerParams": {},
         "expectedValue": {
@@ -294,11 +294,11 @@
           "path": [],
           "unfoldingReference": [],
           "depth": 0,
-          "miroirFundamentalJzodSchema": {
+          "miroirFundamentalMlSchema": {
             "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
             "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
-            "name": "miroirFundamentalJzodSchema",
+            "name": "miroirFundamentalMlSchema",
             "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
             "definition": {
               "type": "schemaReference",
@@ -309,7 +309,7 @@
               "context": {}
             }
           },
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "transformerParams": {},
         "expectedValue": {
@@ -397,11 +397,11 @@
           "path": [],
           "unfoldingReference": [],
           "depth": 0,
-          "miroirFundamentalJzodSchema": {
+          "miroirFundamentalMlSchema": {
             "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
             "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
-            "name": "miroirFundamentalJzodSchema",
+            "name": "miroirFundamentalMlSchema",
             "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
             "definition": {
               "type": "schemaReference",
@@ -412,7 +412,7 @@
               "context": {}
             }
           },
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "transformerParams": {},
         "expectedValue": {
@@ -485,11 +485,11 @@
           "path": [],
           "unfoldingReference": [],
           "depth": 0,
-          "miroirFundamentalJzodSchema": {
+          "miroirFundamentalMlSchema": {
             "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
             "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
-            "name": "miroirFundamentalJzodSchema",
+            "name": "miroirFundamentalMlSchema",
             "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
             "definition": {
               "type": "schemaReference",
@@ -500,7 +500,7 @@
               "context": {}
             }
           },
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "transformerParams": {},
         "expectedValue": {

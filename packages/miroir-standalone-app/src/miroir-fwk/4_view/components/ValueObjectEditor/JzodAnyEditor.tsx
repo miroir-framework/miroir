@@ -62,7 +62,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
     currentValueObject,
     currentValueObjectAtKey,
     formikRootLessListKey,
-    localResolvedElementJzodSchemaBasedOnValue,
+    localResolvedElementMlSchemaBasedOnValue,
     // currentModel,
     // miroirMetaModel,
     // // 
@@ -209,9 +209,9 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
   // );
 
   // const resolvedTypeIsObjectOrArrayOrAny = useMemo(() => 
-  //   !localResolvedElementJzodSchemaBasedOnValue || ["any", "object", "record", "array", "tuple"].includes(
-  //     localResolvedElementJzodSchemaBasedOnValue.type
-  //   ), [localResolvedElementJzodSchemaBasedOnValue]
+  //   !localResolvedElementMlSchemaBasedOnValue || ["any", "object", "record", "array", "tuple"].includes(
+  //     localResolvedElementMlSchemaBasedOnValue.type
+  //   ), [localResolvedElementMlSchemaBasedOnValue]
   // );
 
   //   // Switches for display mode
@@ -307,17 +307,17 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
       {/* <ThemedOnScreenHelper label="JzodAnyEditor" data={rootLessListKey} /> */}
       <JsonDisplayHelper
         debug={true}
-        componentName={`JzodAnyEditor ${localResolvedElementJzodSchemaBasedOnValue?.type}`}
+        componentName={`JzodAnyEditor ${localResolvedElementMlSchemaBasedOnValue?.type}`}
         elements={[
           {
             label: `JzodAnyEditor Render ${JzodAnyEditorRenderCount} for ${rootLessListKey} general case`,
-            data: { currentValueObject, currentValueObjectAtKey, localResolvedElementJzodSchemaBasedOnValue, currentTypecheckKeyMap },
+            data: { currentValueObject, currentValueObjectAtKey, localResolvedElementMlSchemaBasedOnValue, currentTypecheckKeyMap },
             useCodeBlock: true,
           },
         ]}
       />
-      {localResolvedElementJzodSchemaBasedOnValue &&
-        localResolvedElementJzodSchemaBasedOnValue.type !== "any" && (
+      {localResolvedElementMlSchemaBasedOnValue &&
+        localResolvedElementMlSchemaBasedOnValue.type !== "any" && (
           // NOT USED IN PRACTICE: the JzodAnyEditor is used by JzodElementEditor only when rawSchema type is "nay" and currentTypecheckKeyMap?.rawSchema?.tag?.value?.display?.any?.format is true
           <JzodElementEditor
             valueObjectEditMode={props.valueObjectEditMode}
@@ -346,8 +346,8 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
             onChangeVector={props.onChangeVector}
           />
         )}
-      {!localResolvedElementJzodSchemaBasedOnValue ||
-        (localResolvedElementJzodSchemaBasedOnValue.type === "any" && (
+      {!localResolvedElementMlSchemaBasedOnValue ||
+        (localResolvedElementMlSchemaBasedOnValue.type === "any" && (
           <div style={{ display: "flex", flexFlow: "row nowrap", justifyContent: "flex-start" }}>
             {labelElement ?? <>{label}</>}:{JSON.stringify(currentValueObjectAtKey, null, 2)}
           </div>

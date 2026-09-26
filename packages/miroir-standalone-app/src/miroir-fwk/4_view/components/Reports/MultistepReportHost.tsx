@@ -6,8 +6,8 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   entityWithResolvedMLSchema,
-  getDefaultValueForJzodSchemaWithResolutionNonHook,
-  jzodTypeCheck,
+  getDefaultValueForMlSchemaWithResolutionNonHook,
+  mlsTypeCheck,
   transformer_extended_apply_wrapper,
   TransformerFailure,
   type ApplicationDeploymentMap,
@@ -424,7 +424,7 @@ function objectSchemaAllowsNext(
   if (hasExtras) {
     return true;
   }
-  const checked = jzodTypeCheck(
+  const checked = mlsTypeCheck(
     schema,
     safeValue,
     [],
@@ -642,7 +642,7 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
     const key = inputReportSectionBagKey(currentChild.section, reportSectionPath);
     let defaults: Record<string, unknown> = {};
     try {
-      defaults = getDefaultValueForJzodSchemaWithResolutionNonHook(
+      defaults = getDefaultValueForMlSchemaWithResolutionNonHook(
         "build",
         resolvedInputSchema,
         undefined,

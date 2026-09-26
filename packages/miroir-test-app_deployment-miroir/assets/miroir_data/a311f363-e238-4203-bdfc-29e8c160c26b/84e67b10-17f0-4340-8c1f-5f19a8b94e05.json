@@ -14,7 +14,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "returns error if discriminator is not found in the value object and at least 2 options are possible",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "selectUnionBranchFromDiscriminator"
         },
         "arguments": [
@@ -106,7 +106,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "returns error if no branch matches the discriminator value, and at least 2 options are possible",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "selectUnionBranchFromDiscriminator"
         },
         "arguments": [
@@ -199,7 +199,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "returns error if multiple branches match the discriminator value",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "selectUnionBranchFromDiscriminator"
         },
         "arguments": [
@@ -292,7 +292,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "returns error if first entry a discriminator array matches many options and second entry is not found in valueObject (thus matches 0)",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "selectUnionBranchFromDiscriminator"
         },
         "arguments": [
@@ -404,7 +404,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "returns error if first entry a discriminator array matches many options and second entry matches no option",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "selectUnionBranchFromDiscriminator"
         },
         "arguments": [
@@ -517,7 +517,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "returns the given type if only 1 is provided, even if it does not match the given discriminator",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "selectUnionBranchFromDiscriminator"
         },
         "arguments": [
@@ -572,9 +572,9 @@
             "expectedValue": "ok"
           },
           {
-            "label": "currentDiscriminatedObjectJzodSchema",
+            "label": "currentDiscriminatedObjectMlSchema",
             "resultAccessPath": [
-              "currentDiscriminatedObjectJzodSchema"
+              "currentDiscriminatedObjectMlSchema"
             ],
             "expectedValue": {
               "type": "object",
@@ -615,7 +615,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "selects the correct branch for a literal discriminator",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "selectUnionBranchFromDiscriminator"
         },
         "arguments": [
@@ -694,9 +694,9 @@
             "expectedValue": "ok"
           },
           {
-            "label": "currentDiscriminatedObjectJzodSchema",
+            "label": "currentDiscriminatedObjectMlSchema",
             "resultAccessPath": [
-              "currentDiscriminatedObjectJzodSchema"
+              "currentDiscriminatedObjectMlSchema"
             ],
             "expectedValue": {
               "type": "object",
@@ -737,7 +737,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "selects the correct branch for an enum discriminator",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "selectUnionBranchFromDiscriminator"
         },
         "arguments": [
@@ -822,9 +822,9 @@
             "expectedValue": "ok"
           },
           {
-            "label": "currentDiscriminatedObjectJzodSchema",
+            "label": "currentDiscriminatedObjectMlSchema",
             "resultAccessPath": [
-              "currentDiscriminatedObjectJzodSchema"
+              "currentDiscriminatedObjectMlSchema"
             ],
             "expectedValue": {
               "type": "object",
@@ -871,7 +871,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "selects the correct branch for an enum with multiple values",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "selectUnionBranchFromDiscriminator"
         },
         "arguments": [
@@ -934,9 +934,9 @@
             "expectedValue": "ok"
           },
           {
-            "label": "currentDiscriminatedObjectJzodSchema",
+            "label": "currentDiscriminatedObjectMlSchema",
             "resultAccessPath": [
-              "currentDiscriminatedObjectJzodSchema"
+              "currentDiscriminatedObjectMlSchema"
             ],
             "expectedValue": {
               "type": "object",
@@ -985,7 +985,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "returns found branch based on the first entry in a discriminator array if only 1 option matches, even if the discriminator features many items",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "selectUnionBranchFromDiscriminator"
         },
         "arguments": [
@@ -1067,9 +1067,9 @@
             "expectedValue": "ok"
           },
           {
-            "label": "currentDiscriminatedObjectJzodSchema",
+            "label": "currentDiscriminatedObjectMlSchema",
             "resultAccessPath": [
-              "currentDiscriminatedObjectJzodSchema"
+              "currentDiscriminatedObjectMlSchema"
             ],
             "expectedValue": {
               "type": "object",
@@ -1110,7 +1110,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "returns found branch based on the second entry in a discriminator array if only 1 option matches",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "selectUnionBranchFromDiscriminator"
         },
         "arguments": [
@@ -1209,9 +1209,9 @@
             "expectedValue": "ok"
           },
           {
-            "label": "currentDiscriminatedObjectJzodSchema",
+            "label": "currentDiscriminatedObjectMlSchema",
             "resultAccessPath": [
-              "currentDiscriminatedObjectJzodSchema"
+              "currentDiscriminatedObjectMlSchema"
             ],
             "expectedValue": {
               "type": "object",
@@ -1260,7 +1260,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "returns found branch based on the first entry in a discriminator array if one of the entries has the discrimitator in an 'extend' clause",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "selectUnionBranchFromDiscriminator"
         },
         "arguments": [
@@ -1381,9 +1381,9 @@
             "expectedValue": "ok"
           },
           {
-            "label": "currentDiscriminatedObjectJzodSchema",
+            "label": "currentDiscriminatedObjectMlSchema",
             "resultAccessPath": [
-              "currentDiscriminatedObjectJzodSchema"
+              "currentDiscriminatedObjectMlSchema"
             ],
             "expectedValue": {
               "type": "object",
@@ -1432,7 +1432,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "returns the correct branch for combinerOneToMany in combinerTemplate",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "selectUnionBranchFromDiscriminator"
         },
         "arguments": [
@@ -2086,9 +2086,9 @@
             "expectedValue": "ok"
           },
           {
-            "label": "currentDiscriminatedObjectJzodSchema",
+            "label": "currentDiscriminatedObjectMlSchema",
             "resultAccessPath": [
-              "currentDiscriminatedObjectJzodSchema"
+              "currentDiscriminatedObjectMlSchema"
             ],
             "expectedValue": {
               "type": "object",
@@ -2287,7 +2287,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "returns the correct branch for an object without any discriminator values when exactly 1 branch without any discriminator values exists in the discriminated union",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodTypeCheck",
+          "module": "miroir-core/1_core/mls/mlsTypeCheck",
           "export": "selectUnionBranchFromDiscriminator"
         },
         "arguments": [
@@ -2365,9 +2365,9 @@
             "expectedValue": "ok"
           },
           {
-            "label": "currentDiscriminatedObjectJzodSchema",
+            "label": "currentDiscriminatedObjectMlSchema",
             "resultAccessPath": [
-              "currentDiscriminatedObjectJzodSchema"
+              "currentDiscriminatedObjectMlSchema"
             ],
             "expectedValue": {
               "type": "object",

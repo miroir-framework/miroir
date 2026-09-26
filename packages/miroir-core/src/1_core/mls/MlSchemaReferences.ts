@@ -3,23 +3,23 @@ import type { MlElement, MlObject, MlReference } from "../../0_interfaces/1_core
 /**
  * Recursively collects all MlReference elements found
  * within the provided MlElement definition. It specifically
- * checks the "extend" clause within JzodObjects.
+ * checks the "extend" clause within ML objects.
  *
  * @param element The root MlElement to search within.
  * @returns Array of discovered MlReference elements.
  */
-export function JzodSchemaReferencesList(
+export function MlSchemaReferencesList(
   element: MlElement,
   includeExtend: boolean = true
 ): MlReference[] {
   const refs: MlReference[] = [];
 
-  traverseJzodSchemaForRefs(element, refs, includeExtend);
+  traverseMlSchemaForRefs(element, refs, includeExtend);
   return refs;
 }
 
 // ################################################################################################
-function traverseJzodSchemaForRefs(
+function traverseMlSchemaForRefs(
   node: MlElement,
   refs: MlReference[] | Set<MlReference>,
   includeExtend: boolean = true
@@ -47,20 +47,20 @@ function traverseJzodSchemaForRefs(
         if (Array.isArray(node.extend)) {
           node.extend.forEach((ref: MlReference | MlObject | undefined) => {
             if (ref) {
-              traverseJzodSchemaForRefs(ref, refs, includeExtend);
+              traverseMlSchemaForRefs(ref, refs, includeExtend);
             }
           });
         } else {
-          traverseJzodSchemaForRefs(node.extend, refs, includeExtend);
+          traverseMlSchemaForRefs(node.extend, refs, includeExtend);
         }
       }
-      Object.values(node.definition).forEach((value) => traverseJzodSchemaForRefs(value, refs, includeExtend));
+      Object.values(node.definition).forEach((value) => traverseMlSchemaForRefs(value, refs, includeExtend));
       break;
     }
     case "function": {
-      node.definition.args.forEach((arg) => traverseJzodSchemaForRefs(arg, refs, includeExtend));
+      node.definition.args.forEach((arg) => traverseMlSchemaForRefs(arg, refs, includeExtend));
       if (node.definition.returns) {
-        traverseJzodSchemaForRefs(node.definition.returns, refs, includeExtend);
+        traverseMlSchemaForRefs(node.definition.returns, refs, includeExtend);
       }
       break;
     }
@@ -69,18 +69,18 @@ function traverseJzodSchemaForRefs(
     case "promise":
     case "record":
     case "set": {
-      traverseJzodSchemaForRefs(node.definition, refs, includeExtend);
+      traverseMlSchemaForRefs(node.definition, refs, includeExtend);
       break;
     }
     case "intersection": {
-      traverseJzodSchemaForRefs(node.definition.left, refs, includeExtend);
-      traverseJzodSchemaForRefs(node.definition.right, refs, includeExtend);
+      traverseMlSchemaForRefs(node.definition.left, refs, includeExtend);
+      traverseMlSchemaForRefs(node.definition.right, refs, includeExtend);
       break;
     }
     case "map":
     case "tuple":
     case "union": {
-      node.definition.forEach((value) => traverseJzodSchemaForRefs(value, refs, includeExtend));
+      node.definition.forEach((value) => traverseMlSchemaForRefs(value, refs, includeExtend));
       break;
     }
     case "schemaReference": {
@@ -106,18 +106,18 @@ function traverseJzodSchemaForRefs(
 }
 
 // ## ################################################################################
-export function JzodSchemaReferencesSet(
+export function MlSchemaReferencesSet(
   element: MlElement,
   includeExtend: boolean = true
 ): Set<MlReference> {
   const refs: Set<MlReference> = new Set<MlReference>();
-  traverseJzodSchemaForRefs(element, refs, includeExtend);
+  traverseMlSchemaForRefs(element, refs, includeExtend);
   return refs;
 }
 
 // ################################################################################################
-export function jzodTransitiveDependencySet(
-  miroirFundamentalJzodSchema: MlReference,
+export function mlsTransitiveDependencySet(
+  miroirFundamentalMlSchema: MlReference,
   contextElementName: string,
   includeExtend: boolean = false,
   filterPrefix?: string
@@ -126,11 +126,11 @@ export function jzodTransitiveDependencySet(
   const toVisitMap = new Map<string, string[]>();
   toVisitMap.set(contextElementName, [contextElementName]);
 
-  if (!miroirFundamentalJzodSchema.context) {
-    throw new Error("miroirFundamentalJzodSchema.context is not defined");
+  if (!miroirFundamentalMlSchema.context) {
+    throw new Error("miroirFundamentalMlSchema.context is not defined");
   }
 
-  function visit(element: string, path: string[], miroirFundamentalJzodSchema: MlReference) {
+  function visit(element: string, path: string[], miroirFundamentalMlSchema: MlReference) {
     // console.log(
     //   "############## visting",
     //   element,
@@ -138,18 +138,18 @@ export function jzodTransitiveDependencySet(
     //   "visitedSet size",
     //   visitedSet.size,
     // );
-    if (!miroirFundamentalJzodSchema.context) {
-      throw new Error("miroirFundamentalJzodSchema.context is not defined");
+    if (!miroirFundamentalMlSchema.context) {
+      throw new Error("miroirFundamentalMlSchema.context is not defined");
     }
     // if (filterPrefix && element.startsWith(filterPrefix)) {
-    //   console.log("jzodTransitiveDependencySet skipping dependencies for element", element, "filterPrefix", filterPrefix, "visitedSet", visitedSet.size);
+    //   console.log("mlsTransitiveDependencySet skipping dependencies for element", element, "filterPrefix", filterPrefix, "visitedSet", visitedSet.size);
     //   visitedSet.add(element);
     //   return;
     // }
-    if (!miroirFundamentalJzodSchema.context[element]) {
+    if (!miroirFundamentalMlSchema.context[element]) {
       throw new Error(
-        `jzodTransitiveDependencySet Element ${element} not found in context:` +
-          JSON.stringify(Object.keys(miroirFundamentalJzodSchema.context), null, 2)
+        `mlsTransitiveDependencySet Element ${element} not found in context:` +
+          JSON.stringify(Object.keys(miroirFundamentalMlSchema.context), null, 2)
       );
     }
     if (visitedSet.has(element)) {
@@ -157,10 +157,10 @@ export function jzodTransitiveDependencySet(
     }
     visitedSet.add(element);
     const localRefs: (string | undefined)[] = Array.from(
-      JzodSchemaReferencesSet(miroirFundamentalJzodSchema.context[element], includeExtend).values()
+      MlSchemaReferencesSet(miroirFundamentalMlSchema.context[element], includeExtend).values()
     ).map((ref: MlReference) => ref.definition.relativePath);
 
-    // console.log("jzodTransitiveDependencySet for element",element,"found localRefs", localRefs);
+    // console.log("mlsTransitiveDependencySet for element",element,"found localRefs", localRefs);
     for (const ref of localRefs) {
       if (!ref) {
         throw new Error("ref is undefined");
@@ -183,9 +183,9 @@ export function jzodTransitiveDependencySet(
     if (!element) {
       throw new Error("element is undefined");
     }
-    // console.log("jzodTransitiveDependencySet visiting element", element, "visitedSet", visitedSet.size);
+    // console.log("mlsTransitiveDependencySet visiting element", element, "visitedSet", visitedSet.size);
     toVisitMap.delete(element);
-    visit(element, path, miroirFundamentalJzodSchema);
+    visit(element, path, miroirFundamentalMlSchema);
   }
   return visitedSet;
 }

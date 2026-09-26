@@ -8,11 +8,11 @@ import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodToJzod");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlsToMls");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
-export type JzodReferenceResolutionFunction = (schema: MlReference) => MlElement | undefined;
+export type MlReferenceResolutionFunction = (schema: MlReference) => MlElement | undefined;
 
 // function forgeIdFromReference(r:MlReference) {
 // ################################################################################################
@@ -42,7 +42,7 @@ export function applyLimitedCarryOnSchema(
   carryOnPrefix: string,
   localReferencePrefix?: string | undefined,
   suffixForReferences?: string | undefined,
-  resolveJzodReference?: JzodReferenceResolutionFunction, // non-converted reference lookup
+  resolveMlReference?: MlReferenceResolutionFunction, // non-converted reference lookup
   convertedReferences?: Record<string, MlElement>, // converted reference lookup
 ): { resultSchema: MlElement; hasBeenApplied: boolean; resolvedReferences?: Record<string, MlElement> } {
   return applyLimitedCarryOnSchemaOnLevel(
@@ -55,7 +55,7 @@ export function applyLimitedCarryOnSchema(
     carryOnPrefix, // carryOnPrefix,
     localReferencePrefix,
     suffixForReferences,
-    resolveJzodReference,
+    resolveMlReference,
     convertedReferences
   );
 }
@@ -122,7 +122,7 @@ export function mergePositionBased(
  * @param carryOnPrefix the prefix to use for carryOn references, if any
  * @param localReferencePrefix the prefix to use for local references, if any
  * @param suffixForReferences the suffix to use for references, if any
- * @param resolveJzodReference the reference resolution function. Corollary: the definition of absolute references must be known at carryOn-application time.
+ * @param resolveMlReference the reference resolution function. Corollary: the definition of absolute references must be known at carryOn-application time.
  * @param convertedReferences the references already converted, to be used for reference resolution
  * @returns transformed @param baseSchema joined with @param carryOnSchema
  */
@@ -136,7 +136,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
   carryOnPrefix: string,
   localReferencePrefix?: string | undefined,
   suffixForReferences?: string | undefined,
-  resolveJzodReference?: JzodReferenceResolutionFunction, // non-converted reference lookup
+  resolveMlReference?: MlReferenceResolutionFunction, // non-converted reference lookup
   convertedReferences?: Record<string, MlElement>, // converted reference lookup
   skipObjectAttributesOnFirstLevel?: string[],
 ): ApplyCarryOnSchemaOnLevelReturnType
@@ -245,7 +245,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
         carryOnPrefix,
         localReferencePrefix,
         suffixForReferences,
-        resolveJzodReference,
+        resolveMlReference,
         convertedReferences,
         undefined, // skipObjectAttributesOnFirstLevel,
         // skipReference,
@@ -323,7 +323,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
         carryOnPrefix,
         localReferencePrefix,
         suffixForReferences,
-        resolveJzodReference,
+        resolveMlReference,
         convertedReferences,
         undefined, // skipObjectAttributesOnFirstLevel,
         // skipReference,
@@ -386,7 +386,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
         carryOnPrefix,
         localReferencePrefix,
         suffixForReferences,
-        resolveJzodReference,
+        resolveMlReference,
         convertedReferences,
         undefined, // skipObjectAttributesOnFirstLevel,
         // skipReference,
@@ -446,7 +446,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
           carryOnPrefix,
           localReferencePrefix,
           suffixForReferences,
-          resolveJzodReference,
+          resolveMlReference,
           {
             ...convertedReferences,
             ...convertedSubSchemasReferences,
@@ -521,7 +521,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
             carryOnPrefix,
             localReferencePrefix,
             suffixForReferences,
-            resolveJzodReference,
+            resolveMlReference,
             // #200: only pay the merge cost when a prior sibling branch actually discovered something new
             Object.keys(unionAccumulatedReferences).length === 0
               ? convertedReferences
@@ -600,7 +600,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
           carryOnPrefix,
           localReferencePrefix,
           undefined, // do not add suffixForReferences to definition of an object, only to extended references
-          resolveJzodReference,
+          resolveMlReference,
           { ...convertedReferences, ...convertedSubSchemasReferences }, // resolved references
           undefined, // skipObjectAttributesOnFirstLevel,
           // skipReference,
@@ -628,7 +628,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
                   carryOnPrefix,
                   localReferencePrefix,
                   "extend", //suffixForReferences,
-                  resolveJzodReference,
+                  resolveMlReference,
                   convertedReferences,
                   undefined, // skipObjectAttributesOnFirstLevel,
                   // skipReference,
@@ -650,7 +650,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
                       carryOnPrefix,
                       localReferencePrefix,
                       "extend", //suffixForReferences,
-                      resolveJzodReference,
+                      resolveMlReference,
                       Object.keys(extendAccumulatedReferences).length === 0
                         ? convertedReferences
                         : { ...convertedReferences, ...extendAccumulatedReferences },
@@ -779,7 +779,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
           carryOnPrefix,
           localReferencePrefix,
           suffixForReferences,
-          resolveJzodReference,
+          resolveMlReference,
           {
             ...convertedReferences,
             ...convertedContextSubSchemasReferences,
@@ -833,16 +833,16 @@ export function applyLimitedCarryOnSchemaOnLevel(
         if (!convertedReferences || !convertedReferences[localReferenceName]) {
           // absolute reference must be converted
           // we must lookup for the reference definition
-          if (!resolveJzodReference) {
+          if (!resolveMlReference) {
             throw new Error(
-              "applyCarryOnSchema was not provided a resolveJzodReference function, but a reference with absolutePath was found " +
+              "applyCarryOnSchema was not provided a resolveMlReference function, but a reference with absolutePath was found " +
                 JSON.stringify(baseSchema.definition)
             );
           }
-          const resolvedReference = resolveJzodReference(baseSchema);
+          const resolvedReference = resolveMlReference(baseSchema);
           if (!resolvedReference) {
             throw new Error(
-              "applyCarryOnSchema no value corresponding to absolute reference for resolveJzodReference: " +
+              "applyCarryOnSchema no value corresponding to absolute reference for resolveMlReference: " +
                 JSON.stringify(baseSchema.definition)
             );
           }
@@ -866,7 +866,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
             carryOnPrefix,
             baseSchema.definition.absolutePath,
             suffixForReferences,
-            resolveJzodReference,
+            resolveMlReference,
             newConvertedReferences,
             skipObjectAttributesOnFirstLevel,
             // skipReference,

@@ -1,6 +1,6 @@
 import {
   type MlElement,
-  resolveJzodSchemaReferenceInContext,
+  resolveMlSchemaReferenceInContext,
   type MlReference,
   defaultMiroirModelEnvironment,
 } from "miroir-core";
@@ -154,7 +154,7 @@ function jzodElementToJsonSchemaInner(
       options.resolvingRefs.add(refKey);
 
       try {
-        const resolvedSchema = resolveJzodSchemaReferenceInContext(
+        const resolvedSchema = resolveMlSchemaReferenceInContext(
           ref,
           ref.context || {},
           defaultMiroirModelEnvironment,

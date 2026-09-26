@@ -7,13 +7,12 @@ import {
   MlReference,
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-// import { JzodReferenceResolutionFunction } from "@miroir-framework/jzod";
-import { applyLimitedCarryOnSchema } from "../../../src/1_core/jzod/JzodToJzod_CarryOn";
+import { applyLimitedCarryOnSchema } from "../../../src/1_core/mls/MlsToMls_CarryOn";
 import { cleanupObject } from "../../../src/tools";
 
-type JzodReferenceResolutionFunction = (schema: MlReference) => MlElement | undefined;
+type MlReferenceResolutionFunction = (schema: MlReference) => MlElement | undefined;
 
-function fullResolveJzodReference (store: Record<string, MlReference>, ref: MlReference): MlElement | undefined {
+function fullResolveMlReference (store: Record<string, MlReference>, ref: MlReference): MlElement | undefined {
   const resolvedAbsolutePath = store[ref.definition?.absolutePath ?? ""];
   return resolvedAbsolutePath && resolvedAbsolutePath.context
     ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
@@ -23,28 +22,28 @@ function fullResolveJzodReference (store: Record<string, MlReference>, ref: MlRe
 interface TestCase {
   name: string,
   label?: string,
-  testJzodSchema: MlElement,
-  mlElementTemplateJzodSchema: MlElement,
+  testMlSchema: MlElement,
+  mlElementTemplateSchema: MlElement,
   mlElementTemplateSchemaDiscriminator?:undefined | string | string[],
   alwaysPropagate?: boolean,
   expectedReferences: Record<string,MlElement>,
   expectedResult: {schema: MlElement, hasBeenApplied: boolean},
-  resolveJzodReference?: JzodReferenceResolutionFunction, // non-converted reference lookup
+  resolveMlReference?: MlReferenceResolutionFunction, // non-converted reference lookup
   convertedReferences?: Record<string, MlElement>, // converted reference lookup
 }
 function runTest(
   t: TestCase
 ) {
   const testResult = cleanupObject(applyLimitedCarryOnSchema(
-    t.testJzodSchema,
-    t.mlElementTemplateJzodSchema,
-    t.mlElementTemplateJzodSchema, // for array
+    t.testMlSchema,
+    t.mlElementTemplateSchema,
+    t.mlElementTemplateSchema, // for array
     t.mlElementTemplateSchemaDiscriminator,
     t.alwaysPropagate??false, // alwaysPropagate
     "mlElementTemplate_", // mlElementTemplatePrefix
     undefined, // prefixForReference
     undefined, // suffixForReference
-    t.resolveJzodReference,
+    t.resolveMlReference,
     t.convertedReferences
   ));
   console.log(t.name, "result references=", JSON.stringify(testResult.resolvedReferences, null, 2))
@@ -63,19 +62,19 @@ function runTest(
 // ################################################################################################
 // ################################################################################################
 describe(
-  'JzodToJzod',
+  'MlsToMls',
   () => {
     // ###########################################################################################
-    it('jzod mlElementTemplate conversion',
+    it('ML mlElementTemplate conversion',
       () => {
         const tests: TestCase[] = [
           // // test000: simple string, canBeTemplate=false
           // {
           //   name: "test000",
-          //   testJzodSchema: {
+          //   testMlSchema: {
           //     type: "string",
           //   },
-          //   mlElementTemplateJzodSchema: {
+          //   mlElementTemplateSchema: {
           //     type: "object",
           //     definition: {
           //       c: { type: "string" },
@@ -92,11 +91,11 @@ describe(
           // // test001: simple string, canBeTemplate=true
           // {
           //   name: "test001",
-          //   testJzodSchema: {
+          //   testMlSchema: {
           //     type: "string",
           //     tag: { value: { canBeTemplate: true } } as any,
           //   },
-          //   mlElementTemplateJzodSchema: {
+          //   mlElementTemplateSchema: {
           //     type: "object",
           //     definition: {
           //       c: { type: "string" },
@@ -129,7 +128,7 @@ describe(
           // // test010: simple object schema, no references
           // {
           //   name: "test010",
-          //   testJzodSchema: {
+          //   testMlSchema: {
           //     type: "object",
           //     definition: {
           //       a: { type: "string", tag: { value: { canBeTemplate: true } } as any },
@@ -148,7 +147,7 @@ describe(
           //       },
           //     },
           //   },
-          //   mlElementTemplateJzodSchema: {
+          //   mlElementTemplateSchema: {
           //     type: "object",
           //     definition: {
           //       c: { type: "string" },
@@ -233,7 +232,7 @@ describe(
           // // test015: simple object schema with extend clause wich canBeTemplate, no references
           // {
           //   name: "test015",
-          //   testJzodSchema: {
+          //   testMlSchema: {
           //     type: "object",
           //     extend: {
           //       type: "object",
@@ -257,7 +256,7 @@ describe(
           //       },
           //     },
           //   },
-          //   mlElementTemplateJzodSchema: {
+          //   mlElementTemplateSchema: {
           //     type: "object",
           //     definition: {
           //       c: { type: "string" },
@@ -349,7 +348,7 @@ describe(
           // // test016: simple object schema with extend clause wich canBeTemplate accessed as a reference
           // {
           //   name: "test016",
-          //   testJzodSchema: {
+          //   testMlSchema: {
           //     type: "object",
           //     extend: {
           //       type: "object",
@@ -373,7 +372,7 @@ describe(
           //       },
           //     },
           //   },
-          //   mlElementTemplateJzodSchema: {
+          //   mlElementTemplateSchema: {
           //     type: "object",
           //     definition: {
           //       c: { type: "string" },
@@ -465,20 +464,20 @@ describe(
           // test020: absolutePath schemaReference with complex mlElementTemplate type, NO canBeTemplate!
           {
             name: "test020",
-            testJzodSchema: {
+            testMlSchema: {
               type: "schemaReference",
               definition: {
                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
                 relativePath: "myObject",
               },
             },
-            mlElementTemplateJzodSchema: {
+            mlElementTemplateSchema: {
               type: "object",
               definition: {
                 d: { type: "string" },
               },
             },
-            resolveJzodReference: fullResolveJzodReference.bind(null, {
+            resolveMlReference: fullResolveMlReference.bind(null, {
               "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                 type: "schemaReference",
                 context: {
@@ -542,20 +541,20 @@ describe(
           // test030: simple base type with absolute schemaReference and simple mlElementTemplate type
           {
             name: "test30",
-            testJzodSchema: {
+            testMlSchema: {
               type: "schemaReference",
               definition: {
                 absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
                 relativePath: "myString",
               },
             },
-            mlElementTemplateJzodSchema: {
+            mlElementTemplateSchema: {
               type: "object",
               definition: {
                 c: { type: "number" },
               },
             },
-            resolveJzodReference: (ref: MlReference): MlElement | undefined => {
+            resolveMlReference: (ref: MlReference): MlElement | undefined => {
               const store: Record<string, MlReference> = {
                 "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                   type: "schemaReference",
@@ -604,7 +603,7 @@ describe(
           // test040: simple base type with absolute schemaReference within object and simple mlElementTemplate type
           {
             name: "test040",
-            testJzodSchema: {
+            testMlSchema: {
               type: "object",
               tag: { value: { canBeTemplate: true } },
               definition: {
@@ -617,13 +616,13 @@ describe(
                 },
               },
             },
-            mlElementTemplateJzodSchema: {
+            mlElementTemplateSchema: {
               type: "object",
               definition: {
                 c: { type: "number" },
               },
             },
-            resolveJzodReference: (ref: MlReference): MlElement | undefined => {
+            resolveMlReference: (ref: MlReference): MlElement | undefined => {
               const store: Record<string, MlReference> = {
                 "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                   type: "schemaReference",
@@ -703,7 +702,7 @@ describe(
           // test050: simple base type with absolute schemaReference within object and union and simple mlElementTemplate type
           {
             name: "test050",
-            testJzodSchema: {
+            testMlSchema: {
               type: "object",
               tag: { value: { canBeTemplate: true } },
               definition: {
@@ -725,13 +724,13 @@ describe(
                 },
               },
             },
-            mlElementTemplateJzodSchema: {
+            mlElementTemplateSchema: {
               type: "object",
               definition: {
                 c: { type: "number" },
               },
             },
-            resolveJzodReference: fullResolveJzodReference.bind(null, {
+            resolveMlReference: fullResolveMlReference.bind(null, {
               "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                 type: "schemaReference",
                 context: {
@@ -827,7 +826,7 @@ describe(
           // test060: complex base type with one inner relative schemaReference and one inner absolute schemaReference, on a simple mlElementTemplate type
           {
             name: "test060",
-            testJzodSchema: {
+            testMlSchema: {
               type: "object",
               tag: { value: { canBeTemplate: true } },
               definition: {
@@ -854,13 +853,13 @@ describe(
                 },
               },
             },
-            mlElementTemplateJzodSchema: {
+            mlElementTemplateSchema: {
               type: "object",
               definition: {
                 c: { type: "number" },
               },
             },
-            resolveJzodReference: (ref: MlReference): MlElement | undefined => {
+            resolveMlReference: (ref: MlReference): MlElement | undefined => {
               const store: Record<string, MlReference> = {
                 "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                   type: "schemaReference",
@@ -983,7 +982,7 @@ describe(
           // test070: object with extend clause using schemaReference based on absolutePath
           {
             name: "test070",
-            testJzodSchema: {
+            testMlSchema: {
               type: "object",
               tag: { value: { canBeTemplate: true } },
               extend: {
@@ -998,13 +997,13 @@ describe(
                 a: { type: "string", tag: { value: { canBeTemplate: true } } },
               },
             },
-            mlElementTemplateJzodSchema: {
+            mlElementTemplateSchema: {
               type: "object",
               definition: {
                 c: { type: "number" },
               },
             },
-            resolveJzodReference: (ref: MlReference): MlElement | undefined => {
+            resolveMlReference: (ref: MlReference): MlElement | undefined => {
               const store: Record<string, MlReference> = {
                 "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                   type: "schemaReference",
@@ -1141,7 +1140,7 @@ describe(
           // test080: object with array extend clause using schemaReference based on absolutePath
           {
             name: "test080",
-            testJzodSchema: {
+            testMlSchema: {
               type: "object",
               tag: { value: { canBeTemplate: true } },
               extend: [
@@ -1166,13 +1165,13 @@ describe(
                 a: { type: "string", tag: { value: { canBeTemplate: true } } },
               },
             },
-            mlElementTemplateJzodSchema: {
+            mlElementTemplateSchema: {
               type: "object",
               definition: {
                 c: { type: "number" },
               },
             },
-            resolveJzodReference: (ref: MlReference): MlElement | undefined => {
+            resolveMlReference: (ref: MlReference): MlElement | undefined => {
               const store: Record<string, MlReference> = {
                 "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                   type: "schemaReference",
@@ -1362,7 +1361,7 @@ describe(
           // test090: non-altered object with extend clause using schemaReference with mlElementTemplate type
           {
             name: "test090",
-            testJzodSchema: {
+            testMlSchema: {
               type: "object",
               // tag: { value: { canBeTemplate: true } },
               extend: {
@@ -1377,13 +1376,13 @@ describe(
                 a: { type: "string" },
               },
             },
-            mlElementTemplateJzodSchema: {
+            mlElementTemplateSchema: {
               type: "object",
               definition: {
                 c: { type: "number" },
               },
             },
-            resolveJzodReference: (ref: MlReference): MlElement | undefined => {
+            resolveMlReference: (ref: MlReference): MlElement | undefined => {
               const store: Record<string, MlReference> = {
                 "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                   type: "schemaReference",
@@ -1454,20 +1453,20 @@ describe(
           // test100: non-altered record which element subtype has canBeTemplate
           {
             name: "test100",
-            testJzodSchema: {
+            testMlSchema: {
               type: "record",
               definition: {
                 type: "string",
                 tag: { value: { canBeTemplate: true } },
               },
             },
-            mlElementTemplateJzodSchema: {
+            mlElementTemplateSchema: {
               type: "object",
               definition: {
                 c: { type: "number" },
               },
             },
-            resolveJzodReference: (ref: MlReference): MlElement | undefined => undefined,
+            resolveMlReference: (ref: MlReference): MlElement | undefined => undefined,
             expectedResult: {
               schema: {
                 type: "record",
@@ -1506,12 +1505,12 @@ describe(
           // test110: an array of string items which canBeTemplate of a schemaReference to a discriminated union
           {
             name: "test110",
-            testJzodSchema: {
+            testMlSchema: {
               type: "array",
               // tag: { value: { canBeTemplate: true } },
               definition: { type: "string", tag: { value: { canBeTemplate: true } } },
             },
-            mlElementTemplateJzodSchema: {
+            mlElementTemplateSchema: {
               type: "schemaReference",
               definition: {
                 eager: true,
@@ -1520,7 +1519,7 @@ describe(
               },
             },
             mlElementTemplateSchemaDiscriminator: "type",
-            resolveJzodReference: (ref: MlReference): MlElement | undefined => {
+            resolveMlReference: (ref: MlReference): MlElement | undefined => {
               const store: Record<string, MlReference> = {
                 "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                   type: "schemaReference",
@@ -1593,12 +1592,12 @@ describe(
           // test120: like 110, but always propagate for an array of string items which canBeTemplate of a schemaReference to a discriminated union
           {
             name: "test120",
-            testJzodSchema: {
+            testMlSchema: {
               type: "array",
               // tag: { value: { canBeTemplate: true } },
               definition: { type: "string", tag: { value: { canBeTemplate: true } } },
             },
-            mlElementTemplateJzodSchema: {
+            mlElementTemplateSchema: {
               type: "schemaReference",
               definition: {
                 eager: true,
@@ -1608,7 +1607,7 @@ describe(
             },
             mlElementTemplateSchemaDiscriminator: "type",
             alwaysPropagate: true,
-            resolveJzodReference: (ref: MlReference): MlElement | undefined => {
+            resolveMlReference: (ref: MlReference): MlElement | undefined => {
               const store: Record<string, MlReference> = {
                 "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                   type: "schemaReference",
@@ -1695,7 +1694,7 @@ describe(
           // test130: an array of schemaReferences items which canBeTemplate of a schemaReference to a discriminated union
           {
             name: "test130",
-            testJzodSchema: {
+            testMlSchema: {
               type: "array",
               definition: {
                 type: "schemaReference",
@@ -1706,7 +1705,7 @@ describe(
                 },
               },
             },
-            mlElementTemplateJzodSchema: {
+            mlElementTemplateSchema: {
               type: "schemaReference",
               definition: {
                 eager: true,
@@ -1715,7 +1714,7 @@ describe(
               },
             },
             mlElementTemplateSchemaDiscriminator: "type",
-            resolveJzodReference: (ref: MlReference): MlElement | undefined => {
+            resolveMlReference: (ref: MlReference): MlElement | undefined => {
               const store: Record<string, MlReference> = {
                 "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                   type: "schemaReference",
@@ -1802,7 +1801,7 @@ describe(
             name: "test140",
             label:
               "test140, references: 2 attributes of an object are schemaReferences with canBeTemplate to the same absolutePath, conversion should only be applied once and both should point to the same converted reference",
-            testJzodSchema: {
+            testMlSchema: {
               type: "object",
               definition: {
                 a: {
@@ -1823,10 +1822,10 @@ describe(
                 },
               },
             },
-            mlElementTemplateJzodSchema: {
+            mlElementTemplateSchema: {
               type: "number",
             },
-            resolveJzodReference: fullResolveJzodReference.bind(null, {
+            resolveMlReference: fullResolveMlReference.bind(null, {
               "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                 type: "schemaReference",
                 context: {
@@ -1929,7 +1928,7 @@ describe(
             name: "test150",
             label:
               "test150, references: 2 items of a reference context are schemaReferences with canBeTemplate to the same absolutePath, conversion should only be applied once and both should point to the same converted reference",
-            testJzodSchema: {
+            testMlSchema: {
               type: "schemaReference",
               context: {
                 a: {
@@ -1951,10 +1950,10 @@ describe(
               },
               definition: { relativePath: "a" },
             },
-            mlElementTemplateJzodSchema: {
+            mlElementTemplateSchema: {
               type: "number",
             },
-            resolveJzodReference: fullResolveJzodReference.bind(null, {
+            resolveMlReference: fullResolveMlReference.bind(null, {
               "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                 type: "schemaReference",
                 context: {
@@ -2060,7 +2059,7 @@ describe(
             name: "test160",
             label:
               "test160: template for union of schemaReferences uses (identical) templates of those schemaReferences",
-            testJzodSchema: {
+            testMlSchema: {
               type: "union",
               definition: [
                 {
@@ -2081,11 +2080,11 @@ describe(
                 },
               ],
             },
-            mlElementTemplateJzodSchema: {
+            mlElementTemplateSchema: {
               type: "boolean",
             },
             mlElementTemplateSchemaDiscriminator: "type",
-            resolveJzodReference: fullResolveJzodReference.bind(null, {
+            resolveMlReference: fullResolveMlReference.bind(null, {
               "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                 type: "schemaReference",
                 context: {
@@ -2145,7 +2144,7 @@ describe(
             name: "test170",
             label:
               "test170: template for union of schemaReferences uses (non-identical) templates of those schemaReferences",
-            testJzodSchema: {
+            testMlSchema: {
               type: "union",
               definition: [
                 {
@@ -2166,11 +2165,11 @@ describe(
                 },
               ],
             },
-            mlElementTemplateJzodSchema: {
+            mlElementTemplateSchema: {
               type: "boolean",
             },
             mlElementTemplateSchemaDiscriminator: "type",
-            resolveJzodReference: fullResolveJzodReference.bind(null, {
+            resolveMlReference: fullResolveMlReference.bind(null, {
               "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                 type: "schemaReference",
                 context: {
@@ -2270,7 +2269,7 @@ describe(
             name: "test180",
             label:
               "test180: template for union of schemaReferences uses original of schemaReferences when canBeTemplate is false",
-            testJzodSchema: {
+            testMlSchema: {
               type: "union",
               definition: [
                 {
@@ -2289,11 +2288,11 @@ describe(
                 },
               ],
             },
-            mlElementTemplateJzodSchema: {
+            mlElementTemplateSchema: {
               type: "boolean",
             },
             mlElementTemplateSchemaDiscriminator: "type",
-            resolveJzodReference: fullResolveJzodReference.bind(null, {
+            resolveMlReference: fullResolveMlReference.bind(null, {
               "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                 type: "schemaReference",
                 context: {
@@ -2381,7 +2380,7 @@ describe(
             name: "test190",
             label:
               "test190: template for discriminated union of schemaReferences uses original of schemaReferences when canBeTemplate is false",
-            testJzodSchema: {
+            testMlSchema: {
               type: "union",
               discriminator: "type",
               definition: [
@@ -2401,11 +2400,11 @@ describe(
                 },
               ],
             },
-            mlElementTemplateJzodSchema: {
+            mlElementTemplateSchema: {
               type: "boolean",
             },
             mlElementTemplateSchemaDiscriminator: "type",
-            resolveJzodReference: fullResolveJzodReference.bind(null, {
+            resolveMlReference: fullResolveMlReference.bind(null, {
               "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                 type: "schemaReference",
                 context: {

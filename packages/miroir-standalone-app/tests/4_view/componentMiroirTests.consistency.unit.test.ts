@@ -4,7 +4,7 @@
  *
  * For every instance of the Miroir deployment folder that holds a `reactComponentTest` leaf (the
  * 7 per-editor instances of #292):
- * - it passes `jzodTypeCheck` against the MiroirTest Entity `mlSchema` and the EntityVersion
+ * - it passes `mlsTypeCheck` against the MiroirTest Entity `mlSchema` and the EntityVersion
  *   `mlSchema`;
  * - its leaf labels are unique over all the instances and start with `<child label>: `, the child
  *   being the `reactComponentTestSuite` under the instance root;
@@ -22,7 +22,7 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { defaultMiroirModelEnvironment, jzodTypeCheck, type MlElement } from "miroir-core";
+import { defaultMiroirModelEnvironment, mlsTypeCheck, type MlElement } from "miroir-core";
 
 import { resolveRepoRoot } from "../helpers/integrationTestProfiles.js";
 
@@ -134,12 +134,12 @@ const schemas: [string, MlElement][] = [
 
 // ################################################################################################
 describe("componentMiroirTests consistency", () => {
-  it("the 7 component test instances pass jzodTypeCheck against the Entity and EntityVersion mlSchemas", () => {
+  it("the 7 component test instances pass mlsTypeCheck against the Entity and EntityVersion mlSchemas", () => {
     expect(componentTestInstances.map((instance) => instance.name)).toHaveLength(7);
     const failures: string[] = [];
     for (const instance of componentTestInstances) {
       for (const [schemaName, schema] of schemas) {
-        const result = jzodTypeCheck(schema, instance, [], [], defaultMiroirModelEnvironment, {});
+        const result = mlsTypeCheck(schema, instance, [], [], defaultMiroirModelEnvironment, {});
         if (result.status !== "ok") {
           failures.push(`${instance.name} against the ${schemaName} mlSchema: ${JSON.stringify(result).slice(0, 500)}`);
         }

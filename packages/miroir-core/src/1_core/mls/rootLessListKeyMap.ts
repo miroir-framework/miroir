@@ -1,4 +1,4 @@
-// import type { ResolvedJzodSchemaReturnType } from "../../0_interfaces/1_core/jzodTypeCheckInterface";
+// import type { ResolvedMlSchemaReturnType } from "../../0_interfaces/1_core/mlsTypeCheckInterface";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
 import { packageName } from "../../constants";
@@ -11,25 +11,25 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 });
 
 // /**
-//  * Maps the resolved Jzod schema to value keys based on the current value.
-//  * This function recursively traverses the Jzod schema and current value,
-//  * building a map of keys to their corresponding resolved Jzod schemas.
+//  * Maps the resolved ML schema to value keys based on the current value.
+//  * This function recursively traverses the ML schema and current value,
+//  * building a map of keys to their corresponding resolved ML schemas.
 //  * IMPERATIVE IMPLEMENTATION: This function is imperative and not functional, this is ugly!!
 //  *
-//  * @param resolvedElementJzodSchema - The resolved Jzod schema for the current element.
+//  * @param resolvedElementMlSchema - The resolved ML schema for the current element.
 //  * @param value - The current value to be mapped.
 //  * @param rootLessListKey - The key for the root-less list.
 //  * @param result - The result map to store the resolved schemas.
 //  */
-// function mapResolveJzodSchemaToValueKeys(
-//   resolvedElementJzodSchema: MlElement,
+// function mapResolveMlSchemaToValueKeys(
+//   resolvedElementMlSchema: MlElement,
 //   value: any,
 //   rootLessListKey: string,
-//   result: Record<string, { resolvedElementJzodSchema: MlElement }> = {}
+//   result: Record<string, { resolvedElementMlSchema: MlElement }> = {}
 // ): void {
-//   // log.info("mapResolveJzodSchemaToValueKeys called with", "resolvedElementJzodSchema", JSON.stringify(resolvedElementJzodSchema, null, 2));
+//   // log.info("mapResolveMlSchemaToValueKeys called with", "resolvedElementMlSchema", JSON.stringify(resolvedElementMlSchema, null, 2));
 //   result[rootLessListKey] = {
-//     resolvedElementJzodSchema: resolvedElementJzodSchema,
+//     resolvedElementMlSchema: resolvedElementMlSchema,
 //   };
 //   switch (typeof value) {
 //     case "string":
@@ -38,7 +38,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 //     case "boolean":
 //     case "undefined": {
 //       //  result[rootLessListKey] = {
-//       //    resolvedElementJzodSchema: resolvedElementJzodSchema,
+//       //    resolvedElementMlSchema: resolvedElementMlSchema,
 //       //  };
 //       break;
 //     }
@@ -46,14 +46,14 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 //       if (Array.isArray(value)) {
 //         // If the value is an array, we need to handle it differently
 //         // result[rootLessListKey] = {
-//         //   resolvedElementJzodSchema: resolvedElementJzodSchema,
+//         //   resolvedElementMlSchema: resolvedElementMlSchema,
 //         // };
 //         // If the schema is an array, we can also add the array items
-//         switch (resolvedElementJzodSchema.type) {
+//         switch (resolvedElementMlSchema.type) {
 //           case "array": {
 //             value.forEach((item, index) => {
-//               mapResolveJzodSchemaToValueKeys(
-//                 (resolvedElementJzodSchema as any).definition,
+//               mapResolveMlSchemaToValueKeys(
+//                 (resolvedElementMlSchema as any).definition,
 //                 item,
 //                 `${rootLessListKey.length > 0 ? rootLessListKey + "." : ""}${index}`,
 //                 result
@@ -63,8 +63,8 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 //           }
 //           case "tuple": {
 //             value.forEach((item, index) => {
-//               mapResolveJzodSchemaToValueKeys(
-//                 (resolvedElementJzodSchema as any).definition[index],
+//               mapResolveMlSchemaToValueKeys(
+//                 (resolvedElementMlSchema as any).definition[index],
 //                 item,
 //                 `${rootLessListKey.length > 0 ? rootLessListKey + "." : ""}${index}`,
 //                 result
@@ -74,27 +74,27 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 //           }
 //           default: {
 //             throw new Error(
-//               "mapResolveJzodSchemaToValueKeys " +
+//               "mapResolveMlSchemaToValueKeys " +
 //                 "path '" +
 //                 rootLessListKey +
-//                 "' could not map resolved jzod schema to key, value is array but schema is not, for" +
+//                 "' could not map resolved ML schema to key, value is array but schema is not, for" +
 //                 " currentValue " +
 //                 JSON.stringify(value, null, 2) +
-//                 " resolvedJzodSchema " +
-//                 JSON.stringify(resolvedElementJzodSchema, null, 2)
+//                 " resolvedMlSchema " +
+//                 JSON.stringify(resolvedElementMlSchema, null, 2)
 //             );
 //           }
 //         }
 //       } else if (value === null) {
 //         // Handle null values
 //         // result[rootLessListKey] = {
-//         //   resolvedElementJzodSchema: resolvedElementJzodSchema,
+//         //   resolvedElementMlSchema: resolvedElementMlSchema,
 //         // };
-//       } else if (resolvedElementJzodSchema.type === "object") {
+//       } else if (resolvedElementMlSchema.type === "object") {
 //         // If the value is an object, we need to iterate over its keys
 //         Object.keys(value).forEach((key) => {
-//           mapResolveJzodSchemaToValueKeys(
-//             resolvedElementJzodSchema.definition[key],
+//           mapResolveMlSchemaToValueKeys(
+//             resolvedElementMlSchema.definition[key],
 //             value[key],
 //             `${rootLessListKey.length > 0 ? rootLessListKey + "." : ""}${key}`,
 //             result
@@ -102,14 +102,14 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 //         });
 //       } else {
 //         throw new Error(
-//           "mapResolveJzodSchemaToValueKeys " +
+//           "mapResolveMlSchemaToValueKeys " +
 //             "path '" +
 //             rootLessListKey +
-//             "' could not resolve jzod schema for object " +
+//             "' could not resolve ML schema for object " +
 //             " currentValue " +
 //             JSON.stringify(value, null, 2) +
-//             " resolvedJzodSchema " +
-//             JSON.stringify(resolvedElementJzodSchema, null, 2)
+//             " resolvedMlSchema " +
+//             JSON.stringify(resolvedElementMlSchema, null, 2)
 //         );
 //       }
 //       break;
@@ -118,14 +118,14 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 //     case "function":
 //     default: {
 //       throw new Error(
-//         "mapResolveJzodSchemaToValueKeys " +
+//         "mapResolveMlSchemaToValueKeys " +
 //           "path '" +
 //           rootLessListKey +
-//           "' could not resolve jzod schema for default " +
+//           "' could not resolve ML schema for default " +
 //           " currentValue " +
 //           JSON.stringify(value, null, 2) +
-//           " resolvedJzodSchema " +
-//           JSON.stringify(resolvedElementJzodSchema, null, 2)
+//           " resolvedMlSchema " +
+//           JSON.stringify(resolvedElementMlSchema, null, 2)
 //       );
 //       break;
 //     }
@@ -133,39 +133,39 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 // }
 
 // /**
-//  * Generates a map for a root-less list key based on the provided Jzod schema and current value.
-//  * This function resolves the Jzod schema for the given root-less list key and current value.
+//  * Generates a map for a root-less list key based on the provided ML schema and current value.
+//  * This function resolves the ML schema for the given root-less list key and current value.
 //  *
 //  * @param rootLessListKey - The key for the root-less list.
-//  * @param rawJzodSchema - The raw Jzod schema to be checked against the current value.
+//  * @param rawMlSchema - The raw ML schema to be checked against the current value.
 //  * @param currentModel - The current model context.
 //  * @param miroirMetaModel - The Miroir meta model context.
-//  * @param miroirFundamentalJzodSchema - The fundamental Jzod schema used for type checking.
-//  * @param currentValue - The current value of the Jzod element.
-//  * @returns A map with the root-less list key and its resolved Jzod schema.
+//  * @param miroirFundamentalMlSchema - The fundamental ML schema used for type checking.
+//  * @param currentValue - The current value of the ML element.
+//  * @returns A map with the root-less list key and its resolved ML schema.
 //  */
 // export function rootLessListKeyMapDEFUNCT(
 //   rootLessListKey: string,
-//   rawJzodSchema: MlElement | undefined,
-//   resolvedElementJzodSchemaBasedOnValue: MlElement | undefined,
+//   rawMlSchema: MlElement | undefined,
+//   resolvedElementMlSchemaBasedOnValue: MlElement | undefined,
 //   currentModel: MetaModel,
 //   miroirMetaModel: MetaModel,
-//   miroirFundamentalJzodSchema: MlSchema,
-//   currentValue: any // current value of the jzod element
-// ): Record<string, { resolvedElementJzodSchema: MlElement }> {
-//   let localResolvedElementJzodSchemaBasedOnValue: MlElement;
+//   miroirFundamentalMlSchema: MlSchema,
+//   currentValue: any // current value of the ML element
+// ): Record<string, { resolvedElementMlSchema: MlElement }> {
+//   let localResolvedElementMlSchemaBasedOnValue: MlElement;
 
-//   if (!resolvedElementJzodSchemaBasedOnValue) {
-//     const returnedLocalResolvedElementJzodSchemaBasedOnValue:
-//       | ResolvedJzodSchemaReturnType
-//       | undefined = rawJzodSchema
-//       ? jzodTypeCheck(
-//           rawJzodSchema,
+//   if (!resolvedElementMlSchemaBasedOnValue) {
+//     const returnedLocalResolvedElementMlSchemaBasedOnValue:
+//       | ResolvedMlSchemaReturnType
+//       | undefined = rawMlSchema
+//       ? mlsTypeCheck(
+//           rawMlSchema,
 //           currentValue,
 //           [], // currentValuePath
 //           [], // currentTypePath
 //           {
-//             miroirFundamentalJzodSchema,
+//             miroirFundamentalMlSchema,
 //             currentModel,
 //             miroirMetaModel,
 //           },
@@ -174,39 +174,39 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 //       : undefined;
 
 //     if (
-//       !returnedLocalResolvedElementJzodSchemaBasedOnValue ||
-//       returnedLocalResolvedElementJzodSchemaBasedOnValue.status == "error"
+//       !returnedLocalResolvedElementMlSchemaBasedOnValue ||
+//       returnedLocalResolvedElementMlSchemaBasedOnValue.status == "error"
 //     ) {
 //       throw new Error(
 //         "rootLessListKeyMapDEFUNCT " +
 //           "path '" +
 //           rootLessListKey +
-//           "' could not jzodTypeCheck for " +
+//           "' could not mlsTypeCheck for " +
 //           " currentValue " +
 //           // JSON.stringify(currentValue, null, 2) +
 //           JSON.stringify(currentValue, null, 2) +
-//           " rawJzodSchema " +
-//           JSON.stringify(rawJzodSchema, null, 2) +
-//           " returnedLocalResolvedElementJzodSchemaBasedOnValue " +
-//           JSON.stringify(returnedLocalResolvedElementJzodSchemaBasedOnValue, null, 2)
+//           " rawMlSchema " +
+//           JSON.stringify(rawMlSchema, null, 2) +
+//           " returnedLocalResolvedElementMlSchemaBasedOnValue " +
+//           JSON.stringify(returnedLocalResolvedElementMlSchemaBasedOnValue, null, 2)
 //       );
 //     }
-//     localResolvedElementJzodSchemaBasedOnValue =
-//       returnedLocalResolvedElementJzodSchemaBasedOnValue.resolvedSchema;
+//     localResolvedElementMlSchemaBasedOnValue =
+//       returnedLocalResolvedElementMlSchemaBasedOnValue.resolvedSchema;
 //   } else {
-//     localResolvedElementJzodSchemaBasedOnValue = resolvedElementJzodSchemaBasedOnValue;
+//     localResolvedElementMlSchemaBasedOnValue = resolvedElementMlSchemaBasedOnValue;
 //   }
 
 //   // log.info(
-//   //   "rootLessListKeyMapDEFUNCT found localResolvedElementJzodSchemaBasedOnValue",
-//   //   localResolvedElementJzodSchemaBasedOnValue,
+//   //   "rootLessListKeyMapDEFUNCT found localResolvedElementMlSchemaBasedOnValue",
+//   //   localResolvedElementMlSchemaBasedOnValue,
 //   //   "for rootLessListKey",
 //   //   rootLessListKey,
-//   //   // JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2)
+//   //   // JSON.stringify(localResolvedElementMlSchemaBasedOnValue, null, 2)
 //   // );
-//   const result: Record<string, { resolvedElementJzodSchema: MlElement }> = {};
-//   mapResolveJzodSchemaToValueKeys(
-//     localResolvedElementJzodSchemaBasedOnValue,
+//   const result: Record<string, { resolvedElementMlSchema: MlElement }> = {};
+//   mapResolveMlSchemaToValueKeys(
+//     localResolvedElementMlSchemaBasedOnValue,
 //     currentValue,
 //     rootLessListKey,
 //     result

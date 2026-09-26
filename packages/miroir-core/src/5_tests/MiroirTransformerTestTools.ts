@@ -312,7 +312,7 @@ export function runMiroirTransformerIntegrationTest(
     // explicitly expects QueryNotExecutable on the SQL integration path.
     const defaultRunAsSql = options.runAsSql ?? true;
     const runAsSql =
-      transformerType === "ansiColumnsToJzodSchema"
+      transformerType === "ansiColumnsToMlSchema"
         ? defaultRunAsSql &&
           (transformerTest.integrationTestExpectedValue as { queryFailure?: string } | undefined)
             ?.queryFailure === "QueryNotExecutable"

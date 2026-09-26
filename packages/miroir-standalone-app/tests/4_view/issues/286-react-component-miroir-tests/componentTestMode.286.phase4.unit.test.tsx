@@ -48,7 +48,7 @@ const objectProps = {
   listKey: "ROOT.testField",
   rootLessListKey: "testField",
   rootLessListKeyArray: ["testField"],
-  rawJzodSchema: {
+  rawMlSchema: {
     type: "object",
     definition: {
       firstAttribute: { type: "string" },

@@ -22,7 +22,7 @@
             "testField"
           ],
           "initialFormState": "test-value",
-          "rawJzodSchema": {
+          "rawMlSchema": {
             "type": "literal",
             "definition": "test-value"
           }

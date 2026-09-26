@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import {
   entityMLSchema,
   getApplicationSection,
-  getDefaultValueForJzodSchemaWithResolutionNonHook,
+  getDefaultValueForMlSchemaWithResolutionNonHook,
   LoggerInterface,
   MiroirLoggerFactory,
   findEntityFromUuid,
@@ -240,7 +240,7 @@ export const reportSectionsFormValue = (
         ? // {[editedQueryParameterValueKey]: { classification: "admin" }}
           {
             // [editedQueryParameterValueKey]: { classification: "MLS" }
-            [editedQueryParameterValueKey]: getDefaultValueForJzodSchemaWithResolutionNonHook(
+            [editedQueryParameterValueKey]: getDefaultValueForMlSchemaWithResolutionNonHook(
               "build",
               queryParametersSchema,
               undefined, // rootObject
@@ -272,7 +272,7 @@ export const reportSectionsFormValue = (
     }
     case "inputReportSection":  {
       let queryParametersDefaultValue = reportSection.definition.inputMLSchema
-        ? getDefaultValueForJzodSchemaWithResolutionNonHook(
+        ? getDefaultValueForMlSchemaWithResolutionNonHook(
             "build",
             reportSection.definition.inputMLSchema,
             undefined, // rootObject

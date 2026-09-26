@@ -36,7 +36,7 @@ const enumSuite: ReactComponentTestSuiteContext = {
     listKey: "ROOT.testField",
     rootLessListKey: "testField",
     rootLessListKeyArray: ["testField"],
-    rawJzodSchema: { type: "enum", definition: ["value1", "value2", "value3"] },
+    rawMlSchema: { type: "enum", definition: ["value1", "value2", "value3"] },
     initialFormState: "value2",
   },
   caseLabels: [enumCaseLabel],

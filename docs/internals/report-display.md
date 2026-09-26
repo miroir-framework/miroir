@@ -16,7 +16,7 @@ Internal reference for refactoring the report UI from `ReportViewWithEditor` dow
 | **RSVWE** | `ReportSectionViewWithEditor` — picks a leaf renderer from the section type. |
 | **TVOE** | `TypedValueObjectEditor` — schema-driven instance editor; expects an existing Formik above it. |
 | **TVOE+Formik** | `TypedValueObjectEditorWithFormik` — wraps TVOE in its own Formik. Used outside the report tree (e.g. transformer panels), not by RVWE. |
-| **typecheck / `jzodTypeCheck`** | Resolves the Jzod schema against the current value; yields `resolvedSchema` + `keyMap` (per-path metadata for editors). |
+| **typecheck / `mlsTypeCheck`** | Resolves the Jzod schema against the current value; yields `resolvedSchema` + `keyMap` (per-path metadata for editors). |
 | **typeCheckKeyMap** | Map from field path → schema metadata. In the report editor path it is **computed and passed as props**, not written back into Formik. |
 | **onChangeVector** | Optional map of `rootLessListKey` → callback. Fired by field editors alongside the Formik write, so a parent can react (e.g. navigate) without owning every keystroke. |
 | **rootLessListKey** | A field's path inside the edited value object (e.g. `application`, `definition.section`). Used to key `onChangeVector` and field-validation errors. |
@@ -64,7 +64,7 @@ Nested `storedReportDisplay` sections mount another `ReportDisplay` → another 
 Creation site in RVWE:
 
 - `enableReinitialize={true}` — when `initialReportSectionsFormValue` gets a new reference, Formik resets.
-- `validateOnChange={false}`, `validateOnBlur={false}` — Formik’s built-in validators do not run on every edit (schema work is done by `jzodTypeCheck` instead).
+- `validateOnChange={false}`, `validateOnBlur={false}` — Formik’s built-in validators do not run on every edit (schema work is done by `mlsTypeCheck` instead).
 
 ### What lives in the bag
 
@@ -142,7 +142,7 @@ Typecheck runs in a `useMemo` inside TVOE whenever `valueObject` / `formik.value
 So the intended cycle is one-way:
 
 ```
-user edits → setFieldValue → Formik values change → re-render → jzodTypeCheck → richer editor props
+user edits → setFieldValue → Formik values change → re-render → mlsTypeCheck → richer editor props
 ```
 
 not

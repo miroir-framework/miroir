@@ -9,8 +9,8 @@ import type { Action, Parameter } from "@copilotkit/shared";
 import {
   Action2Error,
   getEndpointActions,
-  jzodToCopilotKitParameter,
-  jzodToJsonSchema,
+  mlsToCopilotKitParameter,
+  mlsToJsonSchema,
   LoggerInterface,
   MiroirLoggerFactory,
   type ApplicationDeploymentMap,
@@ -60,12 +60,12 @@ if (!firstLendingActionPayload || firstLendingActionPayload.type !== "object") {
 }
 
 // const lendDocumentActionJzodParameters = Object.entries(endpointDefinition[0].definition.actions[0].actionParameters.payload.definition);
-const lendDocumentActionCopilotKitParameters = jzodToCopilotKitParameter(
+const lendDocumentActionCopilotKitParameters = mlsToCopilotKitParameter(
   "payload",
   firstLendingActionPayload
 ).attributes ?? [];
 
-const lendDocumentActionJsonSchema = jzodToJsonSchema(
+const lendDocumentActionJsonSchema = mlsToJsonSchema(
   firstLendingActionPayload as MlObject,
 );
 
@@ -76,7 +76,7 @@ const lendDocumentActionJsonSchema = jzodToJsonSchema(
 //     }))
 //   : [];
 // // const lendDocumentActionJsonSchemaParameters = lendDocumentActionJzodParameters.map(([key, value]) =>
-// //     jzodToJsonSchema(
+// //     mlsToJsonSchema(
 // //       value,
 // //       (endpointDefinition[0].definition.actions[0].actionParameters.payload as MlObject)
 // //         .definition,

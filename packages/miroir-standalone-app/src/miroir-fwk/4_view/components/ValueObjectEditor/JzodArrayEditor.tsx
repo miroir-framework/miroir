@@ -3,14 +3,14 @@ import {
   defaultSelfApplicationDeploymentMap,
   entityMLSchema,
   foldableElementTypes,
-  getDefaultValueForJzodSchemaWithResolutionNonHook,
+  getDefaultValueForMlSchemaWithResolutionNonHook,
   MlArray,
   MlElement,
   MlTuple,
   LoggerInterface,
   MiroirLoggerFactory,
   ReduxDeploymentsState,
-  resolveJzodSchemaReferenceInContext,
+  resolveMlSchemaReferenceInContext,
   resolvePathOnObject,
   findEntityFromUuid,
   SyncBoxedExtractorOrQueryRunnerMap,
@@ -298,8 +298,8 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                     attributeListKey: listKey + "." + index,
                     currentValue: currentValue,
                     formikValues: formik.values,
-                    // rawJzodSchema: currentArrayElementRawDefinition.element,
-                    // rawJzodSchema: currentArrayElementRawDefinitionDEFUNCT,
+                    // rawMlSchema: currentArrayElementRawDefinition.element,
+                    // rawMlSchema: currentArrayElementRawDefinitionDEFUNCT,
                   }}
                 />
               )}
@@ -413,7 +413,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     : undefined;
 
   const currentRawJzodSchema: MlElement | undefined = insideAny ? { type: "any" } : currentTypeCheckKeyMap?.rawSchema;
-  const localResolvedElementJzodSchemaBasedOnValue: MlElement | undefined = useMemo(
+  const localResolvedElementMlSchemaBasedOnValue: MlElement | undefined = useMemo(
     () => {
       if (insideAny) {
         return valueToJzod(currentValue) as MlElement;
@@ -456,17 +456,17 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   );
 
   const foldableItemsCount = useMemo(() => {
-    return localResolvedElementJzodSchemaBasedOnValue?.type === "tuple" // for array type, the resolvedSchema is a MlTuple
-      ? (localResolvedElementJzodSchemaBasedOnValue as MlTuple).definition.filter(
+    return localResolvedElementMlSchemaBasedOnValue?.type === "tuple" // for array type, the resolvedSchema is a MlTuple
+      ? (localResolvedElementMlSchemaBasedOnValue as MlTuple).definition.filter(
         (item: MlElement) => foldableElementTypes.includes(item.type)
       ).length : 0
-  }, [localResolvedElementJzodSchemaBasedOnValue]);
+  }, [localResolvedElementMlSchemaBasedOnValue]);
 
   // ##############################################################################################
   // Get unfoldingDepth from schema tag or default to 1
   const unfoldingDepth = useMemo(() => {
-    return (localResolvedElementJzodSchemaBasedOnValue?.tag?.value?.display as any)?.unfoldSubLevels ?? 1;
-  }, [localResolvedElementJzodSchemaBasedOnValue]);
+    return (localResolvedElementMlSchemaBasedOnValue?.tag?.value?.display as any)?.unfoldSubLevels ?? 1;
+  }, [localResolvedElementMlSchemaBasedOnValue]);
 
   // ##############################################################################################
   const addNewArrayItem = useCallback(
@@ -476,7 +476,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       let schema: MlElement | undefined = currentRawJzodSchema;
 
       if (schema?.type === "schemaReference") {
-        schema = resolveJzodSchemaReferenceInContext(
+        schema = resolveMlSchemaReferenceInContext(
           schema as MlReference,
           {},
           currentMiroirModelEnvironment
@@ -490,10 +490,10 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         );
       }
 
-      if (!currentMiroirModelEnvironment.miroirFundamentalJzodSchema) {
+      if (!currentMiroirModelEnvironment.miroirFundamentalMlSchema) {
         throw new Error(
-          "JzodArrayEditor addNewArrayItem called without miroirFundamentalJzodSchema: " +
-            JSON.stringify(currentMiroirModelEnvironment.miroirFundamentalJzodSchema, null, 2)
+          "JzodArrayEditor addNewArrayItem called without miroirFundamentalMlSchema: " +
+            JSON.stringify(currentMiroirModelEnvironment.miroirFundamentalMlSchema, null, 2)
         );
       }
 
@@ -574,7 +574,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       }
 
       
-      const newItem = getDefaultValueForJzodSchemaWithResolutionNonHook(
+      const newItem = getDefaultValueForMlSchemaWithResolutionNonHook(
         "build",
         newItemSchema ?? { type: "string" }, // TODO: not correct with runtimeTypes
         currentValue, // formik.values,
@@ -589,7 +589,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         defaultValueParams, // transformerParams
         {}, // contextResults
         deploymentEntityState, // deploymentEntityState is not needed here
-        {}, // relativeReferenceJzodContext
+        {}, // relativeReferenceMlContext
       );
       // Create the new array value
       const newArrayValue = [
@@ -605,7 +605,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         "newItem",
         newItem,
         // JSON.stringify(newItem, null, 2),
-        "rawJzodSchema",
+        "rawMlSchema",
         currentRawJzodSchema,
         // JSON.stringify(currentTypeCheckKeyMap.rawSchema, null, 2),
         "currentValue",
@@ -794,7 +794,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   ;
   // ##############################################################################################
   const schemaType =
-    localResolvedElementJzodSchemaBasedOnValue?.type ??
+    localResolvedElementMlSchemaBasedOnValue?.type ??
     currentTypeCheckKeyMap?.resolvedSchema?.type ??
     currentRawJzodSchema?.type;
   const insightRole = schemaType === "tuple" ? "tuple" : "array";
@@ -935,7 +935,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
             data={{ 
               rootLessListKey,
               typeCheckKeyMap,
-              // resolvedElementJzodSchema,
+              // resolvedElementMlSchema,
              }}
             copyButton={true}
             initiallyUnfolded={false}

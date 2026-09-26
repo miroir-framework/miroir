@@ -1782,18 +1782,18 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   // );
   // const currentMiroirModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
 
-  // const resolvedJzodSchema:MlElement = useMemo(
+  // const resolvedMlSchema:MlElement = useMemo(
   //   () => {
-  //     if (!context.miroirFundamentalJzodSchema || context.miroirFundamentalJzodSchema.name == "dummyJzodSchema") {
+  //     if (!context.miroirFundamentalMlSchema || context.miroirFundamentalMlSchema.name == "dummyJzodSchema") {
   //       return defaultObject
   //     } else {
-  //       const configuration = jzodTypeCheck(
+  //       const configuration = mlsTypeCheck(
   //         rawSchema,
   //         formState,
   //         [], // currentValuePath
   //         [], // currentTypePath
   //         {
-  //           miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
+  //           miroirFundamentalMlSchema: context.miroirFundamentalMlSchema,
   //           currentModel,
   //           miroirMetaModel: currentMiroirModel,
   //         },
@@ -1804,10 +1804,10 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //       return configuration.status == "ok"? configuration.resolvedSchema : defaultObject;
   //     }
   //   },
-  //   [context.miroirFundamentalJzodSchema, rawSchema, formState]
+  //   [context.miroirFundamentalMlSchema, rawSchema, formState]
   // );
 
-  // log.info("resolvedJzodSchema", resolvedJzodSchema, context.miroirFundamentalJzodSchema?.name, "rawSchema", rawSchema)
+  // log.info("resolvedMlSchema", resolvedMlSchema, context.miroirFundamentalMlSchema?.name, "rawSchema", rawSchema)
 
   // const createNewApplication: CompositeActionTemplate = useMemo(
   //   () => ({
@@ -2359,9 +2359,9 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     <CodeMirror value={JSON.stringify(dialogOuterFormObject, null, 2)} height="200px" extensions={[javascript({ jsx: true })]} onChange={onCodeEditorChange} />
                     :<></>
                   } */}
-                {/* DISABLED - resolvedJzodSchema and rawSchema are undefined
+                {/* DISABLED - resolvedMlSchema and rawSchema are undefined
                   {
-                    resolvedJzodSchema === defaultObject?
+                    resolvedMlSchema === defaultObject?
                     <div>no object definition found!</div>
                     :
                     <>
@@ -2375,8 +2375,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                         currentApplicationSection={dataSection}
                         indentLevel={0}
                         // localRootLessListKeyMap={{}}
-                        // resolvedJzodSchema={actionsJzodSchema}
-                        resolvedElementJzodSchema={resolvedJzodSchema}
+                        // resolvedMlSchema={actionsJzodSchema}
+                        resolvedElementMlSchema={resolvedMlSchema}
                         typeCheckKeyMap={{}}
                         foreignKeyObjects={emptyObject}
                         // handleChange={formik.handleChange as any}

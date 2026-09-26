@@ -30,7 +30,7 @@ import { InitApplicationParameters } from "../../src/0_interfaces/4-services/Per
 
 
 
-import { zodErrorDeepestIssueLeaves } from "../../src/1_core/jzod/zodParseErrorHandler";
+import { zodErrorDeepestIssueLeaves } from "../../src/1_core/mls/zodParseErrorHandler";
 
 // import { extractorOrCombinerTemplate, StoreUnitConfiguration } from '../../dist';
 import { Uuid } from '../../src/0_interfaces/1_core/EntityVersion.js';
@@ -131,7 +131,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             endpoints: [],
             entities: [],
             entityVersions: [],
-            jzodSchemas: [],
+            mlSchemas: [],
             menus: [],
             applicationVersions: [],
             reports: [],

@@ -68,7 +68,7 @@ export const defaultSpotifyAppModel: MetaModel = {
   applicationVersionCrossTransformerDefinitionVersion: [],
   transformerDefinitionVersions: [],
   storedQueries: [querySpotifyGetPlaylist as QueryWithExtractorCombinerTransformer],
-  jzodSchemas: [],
+  mlSchemas: [],
   applicationVersions: [],
 };
 
@@ -83,7 +83,7 @@ export function getDefaultSpotifyModelEnvironment(
   }
 
   return {
-    miroirFundamentalJzodSchema: getMiroirFundamentalSchemaForDeployment(
+    miroirFundamentalMlSchema: getMiroirFundamentalSchemaForDeployment(
       spotifyDeploymentUuid,
       defaultSpotifyAppModel,
     ),

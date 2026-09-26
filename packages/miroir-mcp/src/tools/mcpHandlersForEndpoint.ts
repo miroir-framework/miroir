@@ -12,7 +12,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   resolveFundamentalSchemaForDeployment,
-  resolveJzodSchemaReferenceInContext,
+  resolveMlSchemaReferenceInContext,
   getEndpointActions,
   redactCredentialSecretsFromValue,
   type EndpointDefinition,
@@ -59,12 +59,12 @@ export type ToolHandler = (
 function jzodPayloadToZodSchema(jzodPayload: MlElement): ZodTypeAny {
   // Resolve references for Zod conversion, but stop on cycles / depth — the meta-model is
   // recursive (mlElement, compositeAction, coreTransformerForBuildPlusRuntime, …).
-  const resolvedJzodSchema = resolveAllReferences(jzodPayload);
+  const resolvedMlSchema = resolveAllReferences(jzodPayload);
 
   log.debug("jzodPayloadToZodSchema resolved schema for MCP payload conversion");
 
   const zodTextAndSchema: ZodTextAndZodSchema = jzodToZodTextAndZodSchema(
-    resolvedJzodSchema as any,
+    resolvedMlSchema as any,
     () => ({}),
     () => ({}),
     { datesAsString: true },
@@ -107,11 +107,11 @@ function resolveAllReferences(
 
     options.resolvingRefs.add(refKey);
     try {
-      const resolvedSchema = resolveJzodSchemaReferenceInContext(
+      const resolvedSchema = resolveMlSchemaReferenceInContext(
         ref,
         ref.context || {},
         {
-          miroirFundamentalJzodSchema: resolveFundamentalSchemaForDeployment(
+          miroirFundamentalMlSchema: resolveFundamentalSchemaForDeployment(
             deployment_Miroir.uuid,
             defaultMiroirMetaModel as any as MetaModel,
             "static",

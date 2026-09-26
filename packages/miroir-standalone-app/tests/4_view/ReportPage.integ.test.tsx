@@ -148,7 +148,7 @@ const jzodElementEditorTests: Record<
                 // listKey: "ROOT.testField",
                 // rootLessListKey: "testField",
                 // rootLessListKeyArray: ["testField"],
-                // rawJzodSchema: {
+                // rawMlSchema: {
                 //   type: "object",
                 //   definition: { a: { type: "string" }, b: { type: "number" } },
                 // },

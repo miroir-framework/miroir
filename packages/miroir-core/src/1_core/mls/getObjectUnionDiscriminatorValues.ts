@@ -1,4 +1,4 @@
-import type { JzodUnionResolvedTypeForObjectReturnTypeOK } from "../../0_interfaces/1_core/jzodTypeCheckInterface";
+import type { MlUnionResolvedTypeForObjectReturnTypeOK } from "../../0_interfaces/1_core/mlsTypeCheckInterface";
 import { MlElement, type MlObject, type MlRecord } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { TransformerFailure, type TransformerReturnType } from "../../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
@@ -27,18 +27,18 @@ function safeStringify(obj: any, maxLength: number = 1000): string {
 
 // #####################################################################################################
 export function getObjectUnionDiscriminatorValuesFromResolvedSchema(
-  // resolvedElementJzodSchema: MlElement | undefined, // is it needed?
+  // resolvedElementMlSchema: MlElement | undefined, // is it needed?
   currentValuePathString: string,
   unfoldedRawSchema: MlElement | undefined, // is it needed?
   recursivelyUnfoldedRawSchemaList: MlElement[],
   unionObjectChoices: (MlObject | MlRecord)[],
-  resolveUnionResult: JzodUnionResolvedTypeForObjectReturnTypeOK
+  resolveUnionResult: MlUnionResolvedTypeForObjectReturnTypeOK
 ): TransformerReturnType<string[][]> {
   // log.info(
-  //   "getObjectUniondiscriminatorValuesFromResolvedSchema for jzodTypeCheck called with",
+  //   "getObjectUniondiscriminatorValuesFromResolvedSchema for mlsTypeCheck called with",
   //   currentValuePathString,
-  //   // "resolvedElementJzodSchema:",
-  //   // resolvedElementJzodSchema,
+  //   // "resolvedElementMlSchema:",
+  //   // resolvedElementMlSchema,
   //   "unfoldedRawSchema:",
   //   unfoldedRawSchema,
   //   "recursivelyUnfoldedRawSchemaList:",

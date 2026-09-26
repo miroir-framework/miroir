@@ -33,7 +33,7 @@
 //   entityUuid?: Uuid,
 //   element: any,
 //   elementJzodSchema: MlElement, // used only for displaying error messages
-//   resolvedElementJzodSchema: MlElement,
+//   resolvedElementMlSchema: MlElement,
 //   currentReportDeploymentSectionEntities?: Entity[],
 //   currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver,
 // }
@@ -42,44 +42,44 @@
 // export function JzodElementDisplay(props: JzodElementDisplayProps){
 //   const context = useMiroirContextService();
 
-//   const targetJzodSchema = // hack to display Jzod Schemas (DRAWBACK: makes of "type" a reserved attribute name, it has to be changed to something more specific)
-//     props.resolvedElementJzodSchema?.type == "union" && props.element?.type
+//   const targetMlSchema = // hack to display Jzod Schemas (DRAWBACK: makes of "type" a reserved attribute name, it has to be changed to something more specific)
+//     props.resolvedElementMlSchema?.type == "union" && props.element?.type
 //       ? props.currentEnumJzodSchemaResolver(props.element?.type,props.element?.definition)
-//       : props.resolvedElementJzodSchema;
+//       : props.resolvedElementMlSchema;
 
-//   const displayName = targetJzodSchema?.tag?.value?.defaultLabel?targetJzodSchema?.tag?.value?.defaultLabel:props.name;
+//   const displayName = targetMlSchema?.tag?.value?.defaultLabel?targetMlSchema?.tag?.value?.defaultLabel:props.name;
 //   log.info(
 //     "JzodElementDisplay",
 //     "props",
 //     props,
-//     "resolvedElementJzodSchema",
-//     props.resolvedElementJzodSchema,
+//     "resolvedElementMlSchema",
+//     props.resolvedElementMlSchema,
 //   )
 //   // log.info(
 //   //   "~~~~~~~~~~~~~~~~~~~~~~~~~~~~ path",
 //   //   props.path,
 //   //   "props.elementJzodSchema",
 //   //   props.elementJzodSchema,
-//   //   "props.resolvedElementJzodSchema",
-//   //   props.resolvedElementJzodSchema,
-//   //   "targetJzodSchema",
-//   //   targetJzodSchema,
+//   //   "props.resolvedElementMlSchema",
+//   //   props.resolvedElementMlSchema,
+//   //   "targetMlSchema",
+//   //   targetMlSchema,
 //   //   "props.element",
 //   //   props.element,
 //   //   "miroirModel",
 //   //   miroirModel
 //   // );
 
-//   switch (props.resolvedElementJzodSchema.type) {
+//   switch (props.resolvedElementMlSchema.type) {
 //     case "array": {
 //       const columnDefs: any[] = [
 //         getMDataGridColumnDefinition(
 //           props.deploymentUuid??"",
 //           props.name,
-//           props.resolvedElementJzodSchema.definition
+//           props.resolvedElementMlSchema.definition
 //         ),
 //       ];
-//       log.info("JzodElementDisplay array","targetJzodSchema",targetJzodSchema,"columnDefs",columnDefs,"props.element",props.element);
+//       log.info("JzodElementDisplay array","targetMlSchema",targetMlSchema,"columnDefs",columnDefs,"props.element",props.element);
       
 //       return (
 //         <>
@@ -104,10 +104,10 @@
 //                             path={props.path+'.'+attribute[0]}
 //                             applicationSection={props.applicationSection}
 //                             deploymentUuid={props.deploymentUuid}
-//                             elementJzodSchema={(props.resolvedElementJzodSchema as MlRecord).definition}
+//                             elementJzodSchema={(props.resolvedElementMlSchema as MlRecord).definition}
 //                             entityUuid={props.entityUuid}
 //                             currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
-//                             resolvedElementJzodSchema={(props.resolvedElementJzodSchema as MlRecord).definition}
+//                             resolvedElementMlSchema={(props.resolvedElementMlSchema as MlRecord).definition}
 //                             element={attribute[1]}
 //                             currentReportDeploymentSectionEntities={props.currentReportDeploymentSectionEntities}
 //                           ></JzodElementDisplay>
@@ -168,11 +168,11 @@
 //                             path={props.path + '.' + attribute[0]}
 //                             applicationSection={props.applicationSection}
 //                             deploymentUuid={props.deploymentUuid}
-//                             elementJzodSchema={(props.resolvedElementJzodSchema as MlObject)?.definition[attribute[0]]}
+//                             elementJzodSchema={(props.resolvedElementMlSchema as MlObject)?.definition[attribute[0]]}
 //                             entityUuid={props.entityUuid}
-//                             // rootJzodSchema={props.rootJzodSchema}
+//                             // rootMlSchema={props.rootMlSchema}
 //                             currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
-//                             resolvedElementJzodSchema={(props.resolvedElementJzodSchema as MlObject).definition[attribute[0]]}
+//                             resolvedElementMlSchema={(props.resolvedElementMlSchema as MlObject).definition[attribute[0]]}
 //                             element={attribute[1]}
 //                             name={attribute[0]}
 //                             currentReportDeploymentSectionEntities={props.currentReportDeploymentSectionEntities}
@@ -224,11 +224,11 @@
 //     case "number": 
 //     case "date": 
 //     case "string": {
-//       const targetEntityUuid = targetJzodSchema.tag?.value?.foreignKeyParams?.targetEntity
+//       const targetEntityUuid = targetMlSchema.tag?.value?.foreignKeyParams?.targetEntity
 //       if (
 //         context.applicationSection &&
-//         targetJzodSchema.type == "uuid" &&
-//         targetJzodSchema?.tag?.value?.foreignKeyParams?.targetEntity &&
+//         targetMlSchema.type == "uuid" &&
+//         targetMlSchema?.tag?.value?.foreignKeyParams?.targetEntity &&
 //         targetEntityUuid
 //       ) {
 //         const targetEntity: Entity | undefined = props.currentReportDeploymentSectionEntities?.find(
@@ -240,7 +240,7 @@
 //             <EntityInstanceLink
 //               deploymentUuid={context.deploymentUuid}
 //               applicationSection={context.applicationSection}
-//               entityUuid={targetJzodSchema?.tag?.value?.foreignKeyParams?.targetEntity}
+//               entityUuid={targetMlSchema?.tag?.value?.foreignKeyParams?.targetEntity}
 //               instanceUuid={props.element}
 //               key={props.name}
 //             />
@@ -265,7 +265,7 @@
 //     default: {
 //         return (
 //             <div>
-//               {"JzodElementDisplay"} {"instance default"}: {displayName} {targetJzodSchema?.type}
+//               {"JzodElementDisplay"} {"instance default"}: {displayName} {targetMlSchema?.type}
 //             </div>
 //         )
 //         break;

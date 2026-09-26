@@ -47,7 +47,7 @@ import {
   defaultMiroirMetaModel,
   entityEntity,
   entityEntityVersion,
-  entityJzodSchema,
+  entityMlSchema,
   entityMenu,
   entityReport,
   entitySelfApplicationVersion,
@@ -155,7 +155,7 @@ function buildAppHarness() {
         objects: [
           { parentName: entityEntity.name, parentUuid: entityEntity.uuid, applicationSection: "model", instances: defaultMiroirMetaModel.entities },
           { parentName: entityEntityVersion.name, parentUuid: entityEntityVersion.uuid, applicationSection: "model", instances: defaultMiroirMetaModel.entityVersions },
-          { parentName: entityJzodSchema.name, parentUuid: entityJzodSchema.uuid, applicationSection: "data", instances: defaultMiroirMetaModel.jzodSchemas },
+          { parentName: entityMlSchema.name, parentUuid: entityMlSchema.uuid, applicationSection: "data", instances: defaultMiroirMetaModel.mlSchemas },
           { parentName: entityMenu.name, parentUuid: entityMenu.uuid, applicationSection: "data", instances: defaultMiroirMetaModel.menus },
           { parentName: entitySelfApplicationVersion.name, parentUuid: entitySelfApplicationVersion.uuid, applicationSection: "data", instances: defaultMiroirMetaModel.applicationVersions },
           { parentName: entityReport.name, parentUuid: entityReport.uuid, applicationSection: "data", instances: defaultMiroirMetaModel.reports },

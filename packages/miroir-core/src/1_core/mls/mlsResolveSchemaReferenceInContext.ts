@@ -14,7 +14,7 @@ import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "jzodResolveSchemaReferenceInContext");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "mlsResolveSchemaReferenceInContext");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => { log = logger; });
 
@@ -31,9 +31,9 @@ export function resolveSchemaReferenceInContextTransformer<T extends MiroirModel
   reduxDeploymentsState?: ReduxDeploymentsState | undefined,
   deploymentUuid?: Uuid,
 ): MlElement {
-  return resolveJzodSchemaReferenceInContext(
+  return resolveMlSchemaReferenceInContext(
     transformer.mlReference,
-    transformer.relativeReferenceJzodContext || {},
+    transformer.relativeReferenceMlContext || {},
     modelEnvironment,
   );
 }
@@ -45,27 +45,27 @@ export function resolveSchemaReferenceInContextTransformer<T extends MiroirModel
 /**
  * 
  * TODO: inappropriate interface, passing the testSchema and the testSchema.context separately is redundant.
- * resolveJzodSchemaReferenceInContext should take a relativeReferenceJzodContext, and add to it the
+ * resolveMlSchemaReferenceInContext should take a relativeReferenceMlContext, and add to it the
  * local context found in the mlReference
  * 
  * 
  * @param mlReference 
- * @param relativeReferenceJzodContext 
+ * @param relativeReferenceMlContext 
  * @param miroirEnvironment 
  * @returns 
  */
-export function resolveJzodSchemaReferenceInContext<T extends MiroirModelEnvironment>(
+export function resolveMlSchemaReferenceInContext<T extends MiroirModelEnvironment>(
   mlReference: MlReference | MlObject | (MlReference | MlObject | undefined)[],
-  relativeReferenceJzodContext: { [k: string]: MlElement } = {},
+  relativeReferenceMlContext: { [k: string]: MlElement } = {},
   miroirEnvironment: T,
 ): MlElement {
   if (Array.isArray(mlReference)) {
     // Aggregate resolved items into an object with keys as indices
     const resolvedItems = mlReference.map((ref, idx) => {
       if (ref === undefined) return undefined;
-      return resolveJzodSchemaReferenceInContext(
+      return resolveMlSchemaReferenceInContext(
         ref,
-        relativeReferenceJzodContext,
+        relativeReferenceMlContext,
         miroirEnvironment,
       );
     });
@@ -78,135 +78,135 @@ export function resolveJzodSchemaReferenceInContext<T extends MiroirModelEnviron
     return { type: "object", definition: mergedDefinition };
     } else {
       throw new Error(
-        "resolveJzodSchemaReferenceInContext can not handle array of references with mixed types or non-object definitions: " +
+        "resolveMlSchemaReferenceInContext can not handle array of references with mixed types or non-object definitions: " +
           JSON.stringify(resolvedItems)
       );
     }
   }
   if (mlReference.type == "object") {
     throw new Error(
-      "resolveJzodSchemaReferenceInContext can not handle object reference " +
+      "resolveMlSchemaReferenceInContext can not handle object reference " +
         JSON.stringify(mlReference)
     );
   }
-  if ((!mlReference.definition || !mlReference.definition?.absolutePath) && !relativeReferenceJzodContext) {
+  if ((!mlReference.definition || !mlReference.definition?.absolutePath) && !relativeReferenceMlContext) {
     throw new Error(
-      "resolveJzodSchemaReferenceInContext can not handle complex / unexisting reference " +
+      "resolveMlSchemaReferenceInContext can not handle complex / unexisting reference " +
         JSON.stringify(mlReference) +
         " for empty relative reference: " +
-        JSON.stringify(relativeReferenceJzodContext)
+        JSON.stringify(relativeReferenceMlContext)
     );
   }
   // log.info(
-  //   "resolveJzodSchemaReferenceInContext called for reference",
+  //   "resolveMlSchemaReferenceInContext called for reference",
   //   JSON.stringify(mlReference, null, 2),
   // );
   const absoluteReferences = miroirEnvironment.currentModel
     ? [
-        miroirEnvironment.miroirFundamentalJzodSchema,
-        ...((miroirEnvironment.currentModel as any)?.jzodSchemas || []),
-        ...((miroirEnvironment.miroirMetaModel as any)?.jzodSchemas || []),
+        miroirEnvironment.miroirFundamentalMlSchema,
+        ...((miroirEnvironment.currentModel as any)?.mlSchemas || []),
+        ...((miroirEnvironment.miroirMetaModel as any)?.mlSchemas || []),
       ] // very inefficient!
-    : [miroirEnvironment.miroirFundamentalJzodSchema];
-  const absoluteReferenceTargetJzodSchema: { [k: string]: MlElement } = mlReference?.definition
+    : [miroirEnvironment.miroirFundamentalMlSchema];
+  const absoluteReferenceTargetMlSchema: { [k: string]: MlElement } = mlReference?.definition
     .absolutePath
     ? (absoluteReferences.find((s: MlSchema) => s.uuid == mlReference?.definition.absolutePath)
         ?.definition.context ?? {})
-    : (relativeReferenceJzodContext ?? mlReference);
+    : (relativeReferenceMlContext ?? mlReference);
 
-  const targetJzodSchema: MlElement | undefined = mlReference?.definition.relativePath
-    ? absoluteReferenceTargetJzodSchema[mlReference?.definition.relativePath]
-    : { type: "object", definition: absoluteReferenceTargetJzodSchema };
+  const targetMlSchema: MlElement | undefined = mlReference?.definition.relativePath
+    ? absoluteReferenceTargetMlSchema[mlReference?.definition.relativePath]
+    : { type: "object", definition: absoluteReferenceTargetMlSchema };
 
 
   // log.info(
-  //   "resolveJzodSchemaReferenceInContext for reference",
+  //   "resolveMlSchemaReferenceInContext for reference",
   //   "absolutePath",
   //   mlReference.definition.absolutePath,
   //   "relativePath",
   //   mlReference.definition.relativePath,
-  //   "relativeReferenceJzodContext",
-  //   Object.keys(relativeReferenceJzodContext??{}),
+  //   "relativeReferenceMlContext",
+  //   Object.keys(relativeReferenceMlContext??{}),
   //   "result",
-  //   targetJzodSchema,
+  //   targetMlSchema,
   // );
 
-  if (!targetJzodSchema) {
+  if (!targetMlSchema) {
     throw new Error(
-      "resolveJzodSchemaReferenceInContext could not resolve reference " +
+      "resolveMlSchemaReferenceInContext could not resolve reference " +
         JSON.stringify(mlReference.definition) +
         " absoluteReferences keys " +
         JSON.stringify(absoluteReferences.map(r => r.uuid)) +
         " current Model " + Object.keys(miroirEnvironment.currentModel??{}) + 
-        " relativeReferenceJzodContext keys " +
-        JSON.stringify(relativeReferenceJzodContext)
+        " relativeReferenceMlContext keys " +
+        JSON.stringify(relativeReferenceMlContext)
     );
   }
 
-  return targetJzodSchema;
+  return targetMlSchema;
 }
 
 // ################################################################################################
-export function recursiveResolveJzodSchemaReferenceInContext<T extends MiroirModelEnvironment>(
+export function recursiveResolveMlSchemaReferenceInContext<T extends MiroirModelEnvironment>(
   mlReference: MlReference | MlObject | (MlReference | MlObject | undefined)[],
-  relativeReferenceJzodContext: { [k: string]: MlElement } = {},
+  relativeReferenceMlContext: { [k: string]: MlElement } = {},
   miroirEnvironment: T,
 ): MlElement {
-  const resolved = resolveJzodSchemaReferenceInContext(mlReference, relativeReferenceJzodContext, miroirEnvironment);
+  const resolved = resolveMlSchemaReferenceInContext(mlReference, relativeReferenceMlContext, miroirEnvironment);
   if (resolved.type === "schemaReference") {
-    return recursiveResolveJzodSchemaReferenceInContext(resolved, relativeReferenceJzodContext, miroirEnvironment);
+    return recursiveResolveMlSchemaReferenceInContext(resolved, relativeReferenceMlContext, miroirEnvironment);
   }
   return resolved;
 }
 
 // ################################################################################################
-// TODO: redundant to resolveJzodSchemaReferenceInContext, resolveJzodSchemaReference is used only in JzodTools,
-// refactor / merge with resolveJzodSchemaReferenceInContext.
-export function resolveJzodSchemaReference(
-  miroirFundamentalJzodSchema: MlSchema,
+// TODO: redundant to resolveMlSchemaReferenceInContext, resolveMlSchemaReference is used only in JzodTools,
+// refactor / merge with resolveMlSchemaReferenceInContext.
+export function resolveMlSchemaReference(
+  miroirFundamentalMlSchema: MlSchema,
   mlReference?: MlReference,
   currentModel?: MetaModel,
-  relativeReferenceJzodContext?: MlObject | MlReference,
+  relativeReferenceMlContext?: MlObject | MlReference,
 ): MlElement {
-  // const fundamentalJzodSchemas = miroirFundamentalJzodSchema.definition.context
+  // const fundamentalMlSchemas = miroirFundamentalMlSchema.definition.context
   const absoluteReferences = (currentModel
-    ? [miroirFundamentalJzodSchema, ...((currentModel as any)?.jzodSchemas || [])] // very inefficient!
-    : [miroirFundamentalJzodSchema]
+    ? [miroirFundamentalMlSchema, ...((currentModel as any)?.mlSchemas || [])] // very inefficient!
+    : [miroirFundamentalMlSchema]
   )
-  const absoluteReferenceTargetJzodSchema: MlObject | MlReference | undefined = mlReference?.definition
+  const absoluteReferenceTargetMlSchema: MlObject | MlReference | undefined = mlReference?.definition
     .absolutePath
     ? {
         type: "object",
         definition:
           absoluteReferences.find((s: MlSchema) => s.uuid == mlReference?.definition.absolutePath)?.definition.context ?? {},
       }
-    : relativeReferenceJzodContext ?? mlReference;
-  const targetJzodSchema = mlReference?.definition.relativePath
-    ? absoluteReferenceTargetJzodSchema?.type == "object" && absoluteReferenceTargetJzodSchema?.definition
-      ? absoluteReferenceTargetJzodSchema?.definition[mlReference?.definition.relativePath]
-      : absoluteReferenceTargetJzodSchema?.type == "schemaReference" && absoluteReferenceTargetJzodSchema?.context
-      ? absoluteReferenceTargetJzodSchema?.context[mlReference?.definition.relativePath]
+    : relativeReferenceMlContext ?? mlReference;
+  const targetMlSchema = mlReference?.definition.relativePath
+    ? absoluteReferenceTargetMlSchema?.type == "object" && absoluteReferenceTargetMlSchema?.definition
+      ? absoluteReferenceTargetMlSchema?.definition[mlReference?.definition.relativePath]
+      : absoluteReferenceTargetMlSchema?.type == "schemaReference" && absoluteReferenceTargetMlSchema?.context
+      ? absoluteReferenceTargetMlSchema?.context[mlReference?.definition.relativePath]
       : undefined
-    : absoluteReferenceTargetJzodSchema;
+    : absoluteReferenceTargetMlSchema;
 
 
-  if (!targetJzodSchema) {
+  if (!targetMlSchema) {
     log.error(
-      "resolveJzodSchemaReference failed for mlSchema",
+      "resolveMlSchemaReference failed for mlSchema",
       mlReference,
       "result",
-      targetJzodSchema,
+      targetMlSchema,
       " absoluteReferences", 
       absoluteReferences,
-      "absoluteReferenceTargetJzodSchema",
-      absoluteReferenceTargetJzodSchema,
+      "absoluteReferenceTargetMlSchema",
+      absoluteReferenceTargetMlSchema,
       "currentModel",
       currentModel,
-      "rootJzodSchema",
-      relativeReferenceJzodContext
+      "rootMlSchema",
+      relativeReferenceMlContext
     );
-    throw new Error("resolveJzodSchemaReference could not resolve reference " + JSON.stringify(mlReference) + " absoluteReferences" + absoluteReferences);
+    throw new Error("resolveMlSchemaReference could not resolve reference " + JSON.stringify(mlReference) + " absoluteReferences" + absoluteReferences);
   }
 
-  return targetJzodSchema;
+  return targetMlSchema;
 }

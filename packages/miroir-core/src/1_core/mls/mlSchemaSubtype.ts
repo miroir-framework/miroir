@@ -11,13 +11,13 @@ import type {
  * accepted by `potentialSupertype`, so the former may be used wherever the latter
  * is expected.
  *
- * Value-acceptance semantics follow `jzodTypeCheck`. In particular, objects are
+ * Value-acceptance semantics follow `mlsTypeCheck`. In particular, objects are
  * **strict** by default: a value may not carry attributes outside the schema
  * definition unless the schema is `nonStrict`. Width subtyping therefore only
  * applies against `nonStrict` supertypes.
  *
  * - Presentation metadata (`tag`, `description`) is ignored.
- * - `optional` / `nullable` follow `jzodTypeCheck`: either flag accepts both
+ * - `optional` / `nullable` follow `mlsTypeCheck`: either flag accepts both
  *   `null` and `undefined`, and a missing object attribute is allowed when the
  *   target attribute is optional **or** nullable (or the object is `partial`).
  * - `validations` / `coerce` are compared conservatively: a subtype may add
@@ -59,7 +59,7 @@ function isSubtype(a: MlElement, b: MlElement): boolean {
  * Expand optional / nullable / union into a flat list of core (non-optional,
  * non-nullable, non-union) alternatives. Value set = union of branch value sets.
  *
- * Matches `jzodTypeCheck`: `optional` and `nullable` each accept both `null`
+ * Matches `mlsTypeCheck`: `optional` and `nullable` each accept both `null`
  * and `undefined` (see null/undefined handling at the top of that function).
  */
 function normalizeToBranches(schema: MlElement): CoreSchema[] {
@@ -141,7 +141,7 @@ function isCoreSubtype(a: CoreSchema, b: CoreSchema): boolean {
     );
   }
 
-  // Literals (Jzod literal definitions are strings)
+  // Literals (ML literal definitions are strings)
   if (aCore.type === "literal") {
     if (bCore.type === "literal") {
       return aCore.definition === bCore.definition;
@@ -224,7 +224,7 @@ function isCoreSubtype(a: CoreSchema, b: CoreSchema): boolean {
     return false;
   }
 
-  // Objects — strict by default, following jzodTypeCheck
+  // Objects — strict by default, following mlsTypeCheck
   if (aCore.type === "object" && bCore.type === "object") {
     return isObjectSubtype(aCore, bCore);
   }
@@ -305,7 +305,7 @@ function objectSubtypeOfRecord(
   }
   const aPartial = objectSchema.partial === true;
   const props = objectSchema.definition ?? {};
-  // Do not strip optional/nullable: under jzodTypeCheck those flags also admit
+  // Do not strip optional/nullable: under mlsTypeCheck those flags also admit
   // null/undefined *as present values*, which a plain record value type rejects.
   const propsOk = Object.values(props).every((prop) =>
     isSubtype(aPartial ? { ...prop, optional: true } : prop, recordValueSchema),
@@ -321,7 +321,7 @@ function objectSubtypeOfRecord(
 }
 
 /**
- * Object subtyping, following `jzodTypeCheck` acceptance semantics: objects are
+ * Object subtyping, following `mlsTypeCheck` acceptance semantics: objects are
  * strict by default (a value may not carry attributes outside the schema
  * definition) unless the schema is `nonStrict`.
  */
@@ -345,7 +345,7 @@ function isObjectSubtype(a: MlObject, b: MlObject): boolean {
     if (aNonStrict) {
       return false;
     }
-    // strict target: no width subtyping (jzodTypeCheck rejects unknown attributes)
+    // strict target: no width subtyping (mlsTypeCheck rejects unknown attributes)
     for (const key of Object.keys(aDef)) {
       if (!Object.prototype.hasOwnProperty.call(bDef, key)) {
         return false;
@@ -365,7 +365,7 @@ function isObjectSubtype(a: MlObject, b: MlObject): boolean {
         continue;
       }
       // `key` never occurs in values of A: fine if B tolerates absence — same as
-      // jzodTypeCheck, which skips missing attrs when optional OR nullable
+      // mlsTypeCheck, which skips missing attrs when optional OR nullable
       if (bPartial || bProp.optional === true || bProp.nullable === true) {
         continue;
       }

@@ -63,7 +63,7 @@ function buildMetaSchemaRevisionPayload(deploymentUuid: Uuid, model: MetaModel) 
     reports: fingerprintReports(model.reports),
     storedQueries: fingerprintQueries(model.storedQueries),
     runners: fingerprintRunners(model.runners),
-    jzodSchemas: fingerprintJzodSchemas(model.jzodSchemas),
+    mlSchemas: fingerprintMlSchemas(model.mlSchemas),
     menus: fingerprintMenus(model.menus),
     endpoints: fingerprintEndpoints(model.endpoints),
   };
@@ -146,8 +146,8 @@ function fingerprintRunners(runners: MetaModel["runners"] | undefined) {
     .sort((left, right) => left.uuid.localeCompare(right.uuid));
 }
 
-function fingerprintJzodSchemas(jzodSchemas: MlSchema[] | undefined) {
-  return [...definedArray(jzodSchemas)]
+function fingerprintMlSchemas(mlSchemas: MlSchema[] | undefined) {
+  return [...definedArray(mlSchemas)]
     .map((schema) => ({
       uuid: schema.uuid,
       definition: schema.definition,

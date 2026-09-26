@@ -6,14 +6,14 @@ import {
   type MlBaseObject
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
-import { resolveJzodSchemaReferenceInContext } from "./jzodResolveSchemaReferenceInContext";
+import { resolveMlSchemaReferenceInContext } from "./mlsResolveSchemaReferenceInContext";
 
   // Function to recursively get all properties from parent objects
 const getAllProperties = <T extends MiroirModelEnvironment>(
   parent: MlObject | MlReference | (MlObject | MlReference | undefined)[],
   referenceChain: MlReference[] = [],
   modelEnvironment: T,
-  relativeReferenceJzodContext?: { [k: string]: MlElement }
+  relativeReferenceMlContext?: { [k: string]: MlElement }
 ): {properties: Record<string, MlElement>, tag?: MlBaseObject["tag"]} => {
   // Handle array of extends
   let resultTag: MlBaseObject["tag"] | undefined = undefined;
@@ -21,7 +21,7 @@ const getAllProperties = <T extends MiroirModelEnvironment>(
     const allProps: Record<string, MlElement> = {};
     for (const p of parent) {
       if (p) {
-        const props = getAllProperties(p, referenceChain, modelEnvironment, relativeReferenceJzodContext);
+        const props = getAllProperties(p, referenceChain, modelEnvironment, relativeReferenceMlContext);
         Object.assign(allProps, props.properties);
         if (!resultTag && p && (p as MlBaseObject).tag ) {
           resultTag = (p as MlBaseObject).tag;
@@ -39,7 +39,7 @@ const getAllProperties = <T extends MiroirModelEnvironment>(
     for (const ref of referenceChain) {
       if (equal(ref, parent)) {
         throw new Error(
-          "jzodObjectFlatten: Circular reference detected. Reference chain: " +
+          "mlObjectFlatten: Circular reference detected. Reference chain: " +
             JSON.stringify(referenceChain.map((r) => r.definition)) +
             " -> " +
             JSON.stringify(parent.definition)
@@ -47,15 +47,15 @@ const getAllProperties = <T extends MiroirModelEnvironment>(
       }
     }
 
-    if (!modelEnvironment.miroirFundamentalJzodSchema) {
+    if (!modelEnvironment.miroirFundamentalMlSchema) {
       throw new Error(
-        "jzodObjectFlatten: Cannot resolve schema reference without miroirFundamentalJzodSchema"
+        "mlObjectFlatten: Cannot resolve schema reference without miroirFundamentalMlSchema"
       );
     }
 
-    const resolvedElement = resolveJzodSchemaReferenceInContext(
+    const resolvedElement = resolveMlSchemaReferenceInContext(
       parent,
-      relativeReferenceJzodContext || {},
+      relativeReferenceMlContext || {},
       modelEnvironment
     );
 
@@ -68,13 +68,13 @@ const getAllProperties = <T extends MiroirModelEnvironment>(
         resolvedElement as MlReference,
         newReferenceChain,
         modelEnvironment,
-        relativeReferenceJzodContext
+        relativeReferenceMlContext
       );
     }
 
     if (resolvedElement.type !== "object") {
       throw new Error(
-        `jzodObjectFlatten: Schema reference resolved to non-object type '${resolvedElement.type}'. ` +
+        `mlObjectFlatten: Schema reference resolved to non-object type '${resolvedElement.type}'. ` +
           `Only object types can be used in extend clauses.`
       );
     }
@@ -84,7 +84,7 @@ const getAllProperties = <T extends MiroirModelEnvironment>(
       resolvedElement as MlObject,
       newReferenceChain,
       modelEnvironment,
-      relativeReferenceJzodContext
+      relativeReferenceMlContext
     );
   }
 
@@ -99,7 +99,7 @@ const getAllProperties = <T extends MiroirModelEnvironment>(
         parent.extend,
         referenceChain,
         modelEnvironment,
-        relativeReferenceJzodContext
+        relativeReferenceMlContext
       );
       return parent.tag
         ? { properties: { ...parentProps.properties, ...properties }, tag: parent.tag }
@@ -119,17 +119,17 @@ const getAllProperties = <T extends MiroirModelEnvironment>(
  * all parent attributes directly into the definition.
  *
  * @param obj The MlObject to flatten
- * @param miroirFundamentalJzodSchema Schema for resolving references
+ * @param miroirFundamentalMlSchema Schema for resolving references
  * @param currentModel Current model for context
  * @param miroirMetaModel Miroir meta model for context
- * @param relativeReferenceJzodContext Relative reference context
+ * @param relativeReferenceMlContext Relative reference context
  * @returns A new MlObject with all inherited properties directly in the definition
  * @throws Error if a schema reference resolves to a non-object type
  */
-export function jzodObjectFlatten<T extends MiroirModelEnvironment>(
+export function mlObjectFlatten<T extends MiroirModelEnvironment>(
   obj: MlObject,
   modelEnvironment: T,
-  relativeReferenceJzodContext?: { [k: string]: MlElement }
+  relativeReferenceMlContext?: { [k: string]: MlElement }
 ): MlObject {
   // If there's no extend property, just return the object as is
   if (!obj.extend) {
@@ -138,7 +138,7 @@ export function jzodObjectFlatten<T extends MiroirModelEnvironment>(
 
 
   // Get all parent properties
-  const parentProperties = getAllProperties(obj.extend, [], modelEnvironment, relativeReferenceJzodContext);
+  const parentProperties = getAllProperties(obj.extend, [], modelEnvironment, relativeReferenceMlContext);
 
   // Create flattened object with extend removed
   const flattened: MlObject = {

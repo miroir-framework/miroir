@@ -11,8 +11,8 @@ import type {
 } from "miroir-core";
 import {
   defaultMiroirModelEnvironment,
-  jzodTypeCheck,
-  miroirFundamentalJzodSchema,
+  mlsTypeCheck,
+  miroirFundamentalMlSchema,
   resolveFundamentalSchemaForDeployment,
 } from "miroir-core";
 
@@ -78,7 +78,7 @@ const adminMetaModel: MetaModel = {
   ] as unknown as Entity[],
   entityVersions: [],
   endpoints: [],
-  jzodSchemas: [],
+  mlSchemas: [],
   menus: [],
   applicationVersions: [],
   reports: [],
@@ -114,7 +114,7 @@ const adminMetaModel: MetaModel = {
  * so that currentModel reflects the admin application model.
  */
 const adminModelEnvironment: MiroirModelEnvironment = {
-  miroirFundamentalJzodSchema: resolveFundamentalSchemaForDeployment(
+  miroirFundamentalMlSchema: resolveFundamentalSchemaForDeployment(
     deployment_Admin.uuid,
     adminMetaModel,
     "static",
@@ -141,7 +141,7 @@ const designerMetaModel: MetaModel = {
   ] as unknown as Entity[],
   entityVersions: [],
   endpoints: [],
-  jzodSchemas: [],
+  mlSchemas: [],
   menus: [],
   applicationVersions: [],
   reports: [],
@@ -169,7 +169,7 @@ const designerMetaModel: MetaModel = {
 };
 
 const designerModelEnvironment: MiroirModelEnvironment = {
-  miroirFundamentalJzodSchema: resolveFundamentalSchemaForDeployment(
+  miroirFundamentalMlSchema: resolveFundamentalSchemaForDeployment(
     deployment_Designer.uuid,
     designerMetaModel,
     "static",
@@ -297,17 +297,17 @@ function describeEntityGroup(
       const instance = module.default;
       const label = buildInstanceLabel(instance, path);
       it(label, () => {
-        const result = jzodTypeCheck(
+        const result = mlsTypeCheck(
           jzodSchema,
           instance,
           [], // currentValuePath
           [], // currentTypePath
           modelEnv,
-          {}, // relativeReferenceJzodContext
+          {}, // relativeReferenceMlContext
         );
         expect(
           result.status,
-          `jzodTypeCheck failed for instance ${label}: ${JSON.stringify(result)}`,
+          `mlsTypeCheck failed for instance ${label}: ${JSON.stringify(result)}`,
         ).toBe("ok");
       });
     }
@@ -433,11 +433,11 @@ describeEntityGroup(
 );
 
 describe("static schema mode (199)", () => {
-  it("admin model environment schema is miroirFundamentalJzodSchema by reference", () => {
-    expect(adminModelEnvironment.miroirFundamentalJzodSchema).toBe(miroirFundamentalJzodSchema);
+  it("admin model environment schema is miroirFundamentalMlSchema by reference", () => {
+    expect(adminModelEnvironment.miroirFundamentalMlSchema).toBe(miroirFundamentalMlSchema);
   });
 
-  it("defaultMiroirModelEnvironment schema is miroirFundamentalJzodSchema by reference", () => {
-    expect(defaultMiroirModelEnvironment.miroirFundamentalJzodSchema).toBe(miroirFundamentalJzodSchema);
+  it("defaultMiroirModelEnvironment schema is miroirFundamentalMlSchema by reference", () => {
+    expect(defaultMiroirModelEnvironment.miroirFundamentalMlSchema).toBe(miroirFundamentalMlSchema);
   });
 });

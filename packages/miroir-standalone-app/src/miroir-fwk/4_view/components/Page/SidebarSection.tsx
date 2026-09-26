@@ -294,8 +294,8 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
               rootLessListKey: "ROOT",
               // currentValue: zoomedInValueObject_DEFUNCT,
               // formikValues: undefined,
-              // rawJzodSchema: zoomedInDisplaySchema,
-              // localResolvedElementJzodSchemaBasedOnValue:
+              // rawMlSchema: zoomedInDisplaySchema,
+              // localResolvedElementMlSchemaBasedOnValue:
               //   jzodTypeCheckResult?.status == "ok"
               //     ? jzodTypeCheckResult.resolvedSchema
               //     : undefined,

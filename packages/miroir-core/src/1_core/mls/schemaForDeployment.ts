@@ -1,7 +1,7 @@
 import { getEndpointActions } from "../../0_interfaces/1_core/endpointDefinition.js";
 import type { Uuid } from "../../0_interfaces/1_core/EntityVersion";
 import { applyDeploymentDomainActionCarryOn } from "../../0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchemaHelpers";
-import { miroirFundamentalJzodSchema } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
+import { miroirFundamentalMlSchema } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalMlSchema";
 import type {
   Action,
   MlElement,
@@ -128,7 +128,7 @@ function buildAppActionBranches(
 }
 
 function buildExtendedSchema(model: MetaModel): MlSchema {
-  const baseSchema = miroirFundamentalJzodSchema as MlSchema & { definition: any };
+  const baseSchema = miroirFundamentalMlSchema as MlSchema & { definition: any };
   const appEndpoints = getAppSpecificEndpoints(model);
   const staticDomainAction = baseSchema.definition.context.domainAction as MlUnion;
   const appActionBranches = buildAppActionBranches(
@@ -144,7 +144,7 @@ function buildExtendedSchema(model: MetaModel): MlSchema {
 }
 
 /**
- * Returns the jzod schema for a deployment + model with an explicit resolution mode.
+ * Returns the ML schema for a deployment + model with an explicit resolution mode.
  * - `'static'` → build artifact only (no carry-on, no app endpoint branches)
  * - `'extended'` → app endpoint branches + carry-on when app-owned endpoints exist
  * - `'auto'` → legacy 198 behavior (extended when `hasAppSpecificEndpoints`)
@@ -157,7 +157,7 @@ export function resolveFundamentalSchemaForDeployment(
   const effectiveMode = resolveEffectiveSchemaMode(mode);
 
   if (effectiveMode === "static") {
-    return miroirFundamentalJzodSchema as MlSchema;
+    return miroirFundamentalMlSchema as MlSchema;
   }
 
   const cached = getCachedSchema(deploymentUuid, model, effectiveMode);
@@ -166,7 +166,7 @@ export function resolveFundamentalSchemaForDeployment(
   }
 
   const schema = !shouldBuildExtendedSchema(model, effectiveMode)
-    ? (miroirFundamentalJzodSchema as MlSchema)
+    ? (miroirFundamentalMlSchema as MlSchema)
     : buildExtendedSchema(model);
 
   setCachedSchema(deploymentUuid, model, effectiveMode, schema);
@@ -174,7 +174,7 @@ export function resolveFundamentalSchemaForDeployment(
 }
 
 /**
- * Returns the jzod schema for a deployment + model.
+ * Returns the ML schema for a deployment + model.
  * Phase 2.1+: distinct schema object when the model has app-owned endpoints.
  * Phase 2.2+: extends domainAction with app endpoint action shapes.
  * Phase 2.4+: rebuilds carry-on templates (actionTemplate) for extended domainAction.

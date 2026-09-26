@@ -56,12 +56,12 @@ function fixtureSuite(name: string, componentProps: Record<string, any>): ReactC
 }
 
 const stringOrNumberSuite = fixtureSuite("StringOrNumber", {
-  rawJzodSchema: { type: "union", definition: [{ type: "string" }, { type: "number" }] },
+  rawMlSchema: { type: "union", definition: [{ type: "string" }, { type: "number" }] },
   initialFormState: 42,
 });
 
 const objectValueSuite = fixtureSuite("ObjectValue", {
-  rawJzodSchema: {
+  rawMlSchema: {
     type: "union",
     definition: [
       { type: "string" },
@@ -73,7 +73,7 @@ const objectValueSuite = fixtureSuite("ObjectValue", {
 });
 
 const discriminatedSuite = fixtureSuite("Discriminated", {
-  rawJzodSchema: {
+  rawMlSchema: {
     type: "union",
     discriminator: "testObjectType",
     definition: [

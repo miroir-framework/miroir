@@ -39,7 +39,7 @@ There are **two implementation types** for transformers:
 - Defined with `transformerImplementationType: "transformer"`
 - Composed of other transformers (no TypeScript code needed)
 - The `definition` field contains the transformer composition
-- Example: `spreadSheetToJzodSchema`
+- Example: `spreadSheetToMlSchema`
 
 ---
 
@@ -645,7 +645,7 @@ Before submitting (library-implemented transformer):
 - [case.md](file://docs-OLD/transformers/case.md) for case transformer (SQL CASE WHEN style)
 - [mapperListToList.md](file://docs-OLD/transformers/mapperListToList.md) for mapList examples
 - See existing transformer definitions for patterns
-- See `spreadSheetToJzodSchema` for a complex composite transformer example
+- See `spreadSheetToMlSchema` for a complex composite transformer example
 
 ---
 

@@ -8,7 +8,7 @@ import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "getDefaultValueForJzodSchema");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "getDefaultValueForMlSchema");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
@@ -20,8 +20,8 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 // Re-export the functions from TransformersForRuntime to maintain backward compatibility
 export {
   defaultValueForMLSchemaTransformer,
-  getDefaultValueForJzodSchemaWithResolution,
-  getDefaultValueForJzodSchemaWithResolutionNonHook,
+  getDefaultValueForMlSchemaWithResolution,
+  getDefaultValueForMlSchemaWithResolutionNonHook,
 } from "../../2_domain/TransformersForRuntime";
 
 // Error value types for resolveConditionalSchema

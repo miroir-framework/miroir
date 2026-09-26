@@ -13,7 +13,7 @@ import {
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
   MlElement,
-  jzodTypeCheck,
+  mlsTypeCheck,
   LocalCacheInterface,
   LoggerInterface,
   MetaModel,
@@ -22,7 +22,7 @@ import {
   MiroirEventService,
   MiroirLoggerFactory,
   PersistenceStoreControllerManager,
-  ResolvedJzodSchemaReturnType,
+  ResolvedMlSchemaReturnType,
   type ApplicationDeploymentMap,
   type EntityInstance,
 } from "miroir-core";
@@ -55,7 +55,7 @@ import {
   defaultMiroirMetaModel,
   entityEntity,
   entityEntityVersion,
-  entityJzodSchema,
+  entityMlSchema,
   entityMenu,
   entityReport,
   entitySelfApplicationVersion,
@@ -205,7 +205,7 @@ export interface JzodElementEditorProps_Test {
   rootLessListKey: string;
   rootLessListKeyArray: string[];
   initialFormState: any;
-  rawJzodSchema: MlElement | undefined;
+  rawMlSchema: MlElement | undefined;
   // isPerformanceTest?: boolean;
 }
 
@@ -241,10 +241,10 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
     rootLessListKeyArray,
     // indentLevel?: number;
     initialFormState,
-    rawJzodSchema,
+    rawMlSchema,
   } = props;
     // const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
-    log.debug("getJzodElementEditorForTest", "rawJzodSchema", rawJzodSchema);
+    log.debug("getJzodElementEditorForTest", "rawMlSchema", rawMlSchema);
     JzodElementEditorForTestRenderCount++;
     const context = useMiroirContextService();
     context.setDeploymentUuid
@@ -262,11 +262,11 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
     // log.debug("currentMiroirModel", currentMiroirModel);
 
     const effectiveRawJzodSchema: MlElement | undefined = useMemo(() => {
-      // log.debug("getJzodElementEditorForTest", "rawJzodSchema", rawJzodSchema);
-      return rawJzodSchema != undefined
-        ? { type: "object", definition: { [rootLessListKey]: rawJzodSchema } }
+      // log.debug("getJzodElementEditorForTest", "rawMlSchema", rawMlSchema);
+      return rawMlSchema != undefined
+        ? { type: "object", definition: { [rootLessListKey]: rawMlSchema } }
         : undefined;
-    }, [rawJzodSchema]);
+    }, [rawMlSchema]);
 
     const onSubmit = useCallback(
       async (
@@ -325,15 +325,15 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
             );
 
             let typeError: JSX.Element | undefined = undefined;
-            const resolvedJzodSchema: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
-              let result: ResolvedJzodSchemaReturnType | undefined = undefined;
+            const resolvedMlSchema: ResolvedMlSchemaReturnType | undefined = useMemo(() => {
+              let result: ResolvedMlSchemaReturnType | undefined = undefined;
               try {
                 result =
-                  currentMiroirModelEnvironment.miroirFundamentalJzodSchema &&
+                  currentMiroirModelEnvironment.miroirFundamentalMlSchema &&
                   effectiveRawJzodSchema &&
                   formik.values &&
                   currentModel
-                    ? jzodTypeCheck(
+                    ? mlsTypeCheck(
                         effectiveRawJzodSchema,
                         formik.values[testSectionName],
                         [], // currentValuePath
@@ -360,32 +360,32 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
               return result;
             }, [formik.values, effectiveRawJzodSchema, context, currentModel]);
                       // log.debug(
-                      //   "ReportSectionEntityInstance jzodTypeCheck done for render", ReportSectionEntityInstanceCount ,"resolvedJzodSchema",
-                      //   resolvedJzodSchema,
+                      //   "ReportSectionEntityInstance mlsTypeCheck done for render", ReportSectionEntityInstanceCount ,"resolvedMlSchema",
+                      //   resolvedMlSchema,
                       // );
-          if (!resolvedJzodSchema || resolvedJzodSchema.status != "ok") {
+          if (!resolvedMlSchema || resolvedMlSchema.status != "ok") {
             log.error(
               "ReportSectionEntityInstance could not resolve jzod schema",
               // props,
               // context,
-              resolvedJzodSchema
+              resolvedMlSchema
             );
 
-            // return <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema)}</>;
-            // typeError = <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema, null, 2)}</>;
+            // return <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedMlSchema)}</>;
+            // typeError = <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedMlSchema, null, 2)}</>;
             // Calculate the maximum line width for fixed sizing
-            // const jsonString = JSON.stringify(resolvedJzodSchema, null, 2);
+            // const jsonString = JSON.stringify(resolvedMlSchema, null, 2);
             // const lines = jsonString.split("\n");
             // const maxLineLength = Math.max(...lines.map((line) => line.length));
             // const fixedWidth = Math.min(Math.max(maxLineLength * 0.6, 1200), 1800); // 0.6px per character, min 400px, max 1200px
 
-            typeError = (<pre>type error: {JSON.stringify(resolvedJzodSchema)}</pre>);
+            typeError = (<pre>type error: {JSON.stringify(resolvedMlSchema)}</pre>);
           }
 
             return (
               <>
                 <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
-                  {resolvedJzodSchema != undefined  && resolvedJzodSchema.status === "ok"? (
+                  {resolvedMlSchema != undefined  && resolvedMlSchema.status === "ok"? (
                     <>
                       <JzodElementEditor
                         name={name}
@@ -399,7 +399,7 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
                         reportSectionPathAsString="TESTSECTION"
                         labelElement={labelElement}
                         currentApplicationSection={"data"}
-                        typeCheckKeyMap={resolvedJzodSchema.keyMap}
+                        typeCheckKeyMap={resolvedMlSchema.keyMap}
                         foreignKeyObjects={emptyObject}
                         insideAny={false}
                         anyRootLessListKey=""
@@ -521,10 +521,10 @@ export function buildComponentTestWrapper(
           instances: defaultMiroirMetaModel.entityVersions
         },
         {
-          parentName: entityJzodSchema.name,
-          parentUuid: entityJzodSchema.uuid,
+          parentName: entityMlSchema.name,
+          parentUuid: entityMlSchema.uuid,
           applicationSection: "data",
-          instances: defaultMiroirMetaModel.jzodSchemas
+          instances: defaultMiroirMetaModel.mlSchemas
         },
         {
           parentName: entityMenu.name,

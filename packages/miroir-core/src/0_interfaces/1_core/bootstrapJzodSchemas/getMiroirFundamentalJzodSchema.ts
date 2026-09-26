@@ -2,7 +2,7 @@ import type { MlElement, MlReference } from "../preprocessor-generated/miroirFun
 import { entityVersionHistoricalQueryVersion, entityVersionHistoricalReportVersion, entityVersionHistoricalMenuVersion, entityVersionHistoricalEndpointVersion, entityVersionHistoricalRunnerVersion, entityVersionHistoricalThemeVersion, entityVersionHistoricalTransformerDefinitionVersion, miroirThemeSchemaJson, tableThemeSchemaJson } from "miroir-test-app_deployment-miroir";
 
 import { cleanLevel } from "../../../1_core/constants";
-import { jzodTransitiveDependencySet } from "../../../1_core/jzod/JzodSchemaReferences";
+import { mlsTransitiveDependencySet } from "../../../1_core/mls/MlSchemaReferences";
 import {
   coreTransformerForBuildPlusRuntimeNames,
   miroirCoreTransformers,
@@ -16,15 +16,15 @@ import { LoggerInterface } from "../../4-services/LoggerInterface";
 import { testSuitesResults } from "../../4-services/TestInterface";
 import {
   keyMapEntry,
-  resolvedJzodSchemaReturnType,
-  resolvedJzodSchemaReturnTypeError,
-  resolvedJzodSchemaReturnTypeOK,
-} from "../jzodTypeCheckInterface";
+  resolvedMlSchemaReturnType,
+  resolvedMlSchemaReturnTypeError,
+  resolvedMlSchemaReturnTypeOK,
+} from "../mlsTypeCheckInterface";
 import {
-  jzodUnion_RecursivelyUnfold_ReturnType,
-  jzodUnion_RecursivelyUnfold_ReturnTypeError,
-  jzodUnion_RecursivelyUnfold_ReturnTypeOK,
-} from "../jzodUnion_RecursivelyUnfoldInterface";
+  mlUnion_RecursivelyUnfold_ReturnType,
+  mlUnion_RecursivelyUnfold_ReturnTypeError,
+  mlUnion_RecursivelyUnfold_ReturnTypeOK,
+} from "../mlUnion_RecursivelyUnfoldInterface";
 import { getEndpointActions } from "../endpointDefinition.js";
 import { zodParseErrorJzodSchema } from "../zodParseError";
 import {
@@ -653,12 +653,12 @@ export function getMiroirFundamentalJzodSchema(
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
-  const miroirFundamentalJzodSchema: any = {
-    // const miroirFundamentalJzodSchema: MlSchema = {
+  const miroirFundamentalMlSchema: any = {
+    // const miroirFundamentalMlSchema: MlSchema = {
     uuid: miroirFundamentalJzodSchemaUuid,
     parentName: "MlSchema",
     parentUuid: "5e81e1b9-38be-487c-b3e5-53796c57fccf",
-    name: "miroirFundamentalJzodSchema",
+    name: "miroirFundamentalMlSchema",
     defaultLabel:
       "The Jzod Schema of fundamental Miroir Datatypes. Those are fundamental Jzod schemas that are needed before further Jzod Schemas can be loaded from the datastore.",
     definition: {
@@ -963,14 +963,14 @@ export function getMiroirFundamentalJzodSchema(
           miroirFundamentalJzodSchemaUuid,
           true,
         ).context, // gives "transformerForBuild_InnerReference", "transformerForBuild", "actionHandler"
-        // jzodTypeCheck
-        jzodUnion_RecursivelyUnfold_ReturnTypeOK: jzodUnion_RecursivelyUnfold_ReturnTypeOK,
-        jzodUnion_RecursivelyUnfold_ReturnTypeError: jzodUnion_RecursivelyUnfold_ReturnTypeError,
-        jzodUnion_RecursivelyUnfold_ReturnType: jzodUnion_RecursivelyUnfold_ReturnType,
+        // mlsTypeCheck
+        mlUnion_RecursivelyUnfold_ReturnTypeOK: mlUnion_RecursivelyUnfold_ReturnTypeOK,
+        mlUnion_RecursivelyUnfold_ReturnTypeError: mlUnion_RecursivelyUnfold_ReturnTypeError,
+        mlUnion_RecursivelyUnfold_ReturnType: mlUnion_RecursivelyUnfold_ReturnType,
         keyMapEntry: keyMapEntry,
-        resolvedJzodSchemaReturnTypeOK: resolvedJzodSchemaReturnTypeOK,
-        resolvedJzodSchemaReturnTypeError: resolvedJzodSchemaReturnTypeError,
-        resolvedJzodSchemaReturnType: resolvedJzodSchemaReturnType,
+        resolvedMlSchemaReturnTypeOK: resolvedMlSchemaReturnTypeOK,
+        resolvedMlSchemaReturnTypeError: resolvedMlSchemaReturnTypeError,
+        resolvedMlSchemaReturnType: resolvedMlSchemaReturnType,
         // ########################################################################################
         ...Object.fromEntries(
           miroirTransformersJzodSchemas.map((e: any) => [
@@ -3391,7 +3391,7 @@ export function getMiroirFundamentalJzodSchema(
         // WRONG!!!! (???)
         //
         transformerForBuildPlusRuntime_spreadSheetToJzodSchema:
-          miroirTransformersForBuildPlusRuntime.transformer_spreadSheetToJzodSchema,
+          miroirTransformersForBuildPlusRuntime.transformer_spreadSheetToMlSchema,
         //
         transformerForBuildPlusRuntime_getActiveDeployment:
           miroirTransformersForBuildPlusRuntime.transformer_getActiveDeployment,
@@ -3402,7 +3402,7 @@ export function getMiroirFundamentalJzodSchema(
           miroirTransformersForBuildPlusRuntime.transformer_menu_addItem,
         //
         transformerForBuildPlusRuntime_ansiColumnsToJzodSchema:
-          miroirTransformersForBuildPlusRuntime.transformer_ansiColumnsToJzodSchema,
+          miroirTransformersForBuildPlusRuntime.transformer_ansiColumnsToMlSchema,
         // MLS
         ...Object.fromEntries(
           Object.entries(mlsTransformers).map(([key, value]) => [
@@ -3420,16 +3420,16 @@ export function getMiroirFundamentalJzodSchema(
     },
   };
 
-  _phaseTimings.push({phase: "miroirFundamentalJzodSchema construction", ms: Date.now() - _t_start});
+  _phaseTimings.push({phase: "miroirFundamentalMlSchema construction", ms: Date.now() - _t_start});
   let _t_phase = Date.now();
-  const nullEntries = Object.entries(miroirFundamentalJzodSchema.definition.context).filter((e) => !e[1]);
+  const nullEntries = Object.entries(miroirFundamentalMlSchema.definition.context).filter((e) => !e[1]);
   log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
   log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
   log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
   log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
   log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
   log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-  log.info("getMiroirFundamentalJzodSchema nullEntries in miroirFundamentalJzodSchema.definition.context", nullEntries.length, JSON.stringify(nullEntries, null, 2));
+  log.info("getMiroirFundamentalJzodSchema nullEntries in miroirFundamentalMlSchema.definition.context", nullEntries.length, JSON.stringify(nullEntries, null, 2));
   log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
   log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
   log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
@@ -3447,11 +3447,11 @@ export function getMiroirFundamentalJzodSchema(
   // ##############################################################################################
   // ##############################################################################################
   const absoluteMiroirFundamentalJzodSchema = {
-    ...miroirFundamentalJzodSchema,
+    ...miroirFundamentalMlSchema,
     definition: {
-      ...miroirFundamentalJzodSchema.definition,
+      ...miroirFundamentalMlSchema.definition,
       context: Object.fromEntries(
-        Object.entries(miroirFundamentalJzodSchema.definition.context).map((e) => [
+        Object.entries(miroirFundamentalMlSchema.definition.context).map((e) => [
           e[0],
           makeReferencesAbsolute(e[1], miroirFundamentalJzodSchemaUuid, true) as any,
         ])
@@ -3532,10 +3532,10 @@ export function getMiroirFundamentalJzodSchema(
 
 
   log.debug("getMiroirFundamentalJzodSchema - extractorOrCombiner templates START");
-  const extractorOrCombiner = (miroirFundamentalJzodSchema as any).definition.context["extractorOrCombiner"]
+  const extractorOrCombiner = (miroirFundamentalMlSchema as any).definition.context["extractorOrCombiner"]
 
-  const queriesDependencySet = jzodTransitiveDependencySet(
-    miroirFundamentalJzodSchema.definition,
+  const queriesDependencySet = mlsTransitiveDependencySet(
+    miroirFundamentalMlSchema.definition,
     "extractorOrCombinerRecord",
     true, // includeExtend
   );
@@ -3591,8 +3591,8 @@ export function getMiroirFundamentalJzodSchema(
   log.info("########################################## Create buildPlusRuntimeDomainAction templates...");
     const domainAction = (absoluteMiroirFundamentalJzodSchemaWithQueriesTemplates as any).definition.context["domainAction"]
 
-  const domainActionDependencySet = jzodTransitiveDependencySet(
-    // miroirFundamentalJzodSchema.definition,
+  const domainActionDependencySet = mlsTransitiveDependencySet(
+    // miroirFundamentalMlSchema.definition,
     absoluteMiroirFundamentalJzodSchemaWithQueriesTemplates.definition,
     "domainAction",
     true, // includeExtend
@@ -3635,11 +3635,11 @@ export function getMiroirFundamentalJzodSchema(
   // ##############################################################################################
   _t_phase = Date.now();
   const miroirFundamentalJzodSchemaWithActionTemplate: any = {
-    ...miroirFundamentalJzodSchema,
+    ...miroirFundamentalMlSchema,
     definition: {
-      ...miroirFundamentalJzodSchema.definition,
+      ...miroirFundamentalMlSchema.definition,
       context: {
-        ...((miroirFundamentalJzodSchema.definition as any)?.context ?? {}),
+        ...((miroirFundamentalMlSchema.definition as any)?.context ?? {}),
         // ______________________________________________jzodElementWithCarryOnContext________________________________________________:
         //   { type: "any" },
         // ...jzodElementWithCarryOnContext,
@@ -4057,7 +4057,7 @@ export function getMiroirFundamentalJzodSchema(
                 },
               },
             },
-            jzodSchemas: {
+            mlSchemas: {
               type: "array",
               definition: {
                 type: "schemaReference",

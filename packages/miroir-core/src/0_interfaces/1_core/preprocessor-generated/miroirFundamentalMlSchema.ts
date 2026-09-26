@@ -1,8 +1,8 @@
-export const miroirFundamentalJzodSchema = {
+export const miroirFundamentalMlSchema = {
   "uuid": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
   "parentName": "MlSchema",
   "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
-  "name": "miroirFundamentalJzodSchema",
+  "name": "miroirFundamentalMlSchema",
   "defaultLabel": "The Jzod Schema of fundamental Miroir Datatypes. Those are fundamental Jzod schemas that are needed before further Jzod Schemas can be loaded from the datastore.",
   "definition": {
     "type": "schemaReference",
@@ -2395,7 +2395,7 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "jzodUnion_RecursivelyUnfold_ReturnTypeOK": {
+      "mlUnion_RecursivelyUnfold_ReturnTypeOK": {
         "type": "object",
         "definition": {
           "status": {
@@ -2446,7 +2446,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "jzodUnion_RecursivelyUnfold_ReturnTypeError": {
+      "mlUnion_RecursivelyUnfold_ReturnTypeError": {
         "type": "object",
         "definition": {
           "status": {
@@ -2461,26 +2461,26 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "jzodUnion_RecursivelyUnfold_ReturnTypeError"
+              "relativePath": "mlUnion_RecursivelyUnfold_ReturnTypeError"
             }
           }
         }
       },
-      "jzodUnion_RecursivelyUnfold_ReturnType": {
+      "mlUnion_RecursivelyUnfold_ReturnType": {
         "type": "union",
         "definition": [
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "jzodUnion_RecursivelyUnfold_ReturnTypeOK"
+              "relativePath": "mlUnion_RecursivelyUnfold_ReturnTypeOK"
             }
           },
           {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "jzodUnion_RecursivelyUnfold_ReturnTypeError"
+              "relativePath": "mlUnion_RecursivelyUnfold_ReturnTypeError"
             }
           }
         ]
@@ -2495,7 +2495,7 @@ export const miroirFundamentalJzodSchema = {
               "relativePath": "mlElement"
             }
           },
-          "jzodObjectFlattenedSchema": {
+          "mlObjectFlattenedSchema": {
             "type": "schemaReference",
             "optional": true,
             "definition": {
@@ -2508,7 +2508,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "jzodUnion_RecursivelyUnfold_ReturnTypeOK"
+              "relativePath": "mlUnion_RecursivelyUnfold_ReturnTypeOK"
             }
           },
           "resolvedReferenceSchemaInContext": {
@@ -2600,7 +2600,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "resolvedJzodSchemaReturnTypeOK": {
+      "resolvedMlSchemaReturnTypeOK": {
         "type": "object",
         "definition": {
           "status": {
@@ -2672,7 +2672,7 @@ export const miroirFundamentalJzodSchema = {
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "resolvedJzodSchemaReturnType"
+                  "relativePath": "resolvedMlSchemaReturnType"
                 }
               },
               {
@@ -2681,7 +2681,7 @@ export const miroirFundamentalJzodSchema = {
                   "type": "schemaReference",
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "resolvedJzodSchemaReturnType"
+                    "relativePath": "resolvedMlSchemaReturnType"
                   }
                 }
               },
@@ -2691,7 +2691,7 @@ export const miroirFundamentalJzodSchema = {
                   "type": "schemaReference",
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "resolvedJzodSchemaReturnType"
+                    "relativePath": "resolvedMlSchemaReturnType"
                   }
                 }
               },
@@ -2702,7 +2702,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "resolvedJzodSchemaReturnTypeError": {
+      "resolvedMlSchemaReturnTypeError": {
         "type": "object",
         "definition": {
           "status": {
@@ -2716,7 +2716,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "string",
             "optional": true
           },
-          "rawJzodSchemaType": {
+          "rawMlSchemaType": {
             "type": "string",
             "optional": true
           },
@@ -2781,14 +2781,14 @@ export const miroirFundamentalJzodSchema = {
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodUnion_RecursivelyUnfold_ReturnTypeError"
+                  "relativePath": "mlUnion_RecursivelyUnfold_ReturnTypeError"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "resolvedJzodSchemaReturnTypeError"
+                  "relativePath": "resolvedMlSchemaReturnTypeError"
                 }
               },
               {
@@ -2797,7 +2797,7 @@ export const miroirFundamentalJzodSchema = {
                   "type": "schemaReference",
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "resolvedJzodSchemaReturnTypeError"
+                    "relativePath": "resolvedMlSchemaReturnTypeError"
                   }
                 }
               },
@@ -2808,7 +2808,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "resolvedJzodSchemaReturnType": {
+      "resolvedMlSchemaReturnType": {
         "type": "union",
         "definition": [
           {
@@ -2883,7 +2883,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "resolvedJzodSchemaReturnType"
+                      "relativePath": "resolvedMlSchemaReturnType"
                     }
                   },
                   {
@@ -2892,7 +2892,7 @@ export const miroirFundamentalJzodSchema = {
                       "type": "schemaReference",
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "resolvedJzodSchemaReturnType"
+                        "relativePath": "resolvedMlSchemaReturnType"
                       }
                     }
                   },
@@ -2902,7 +2902,7 @@ export const miroirFundamentalJzodSchema = {
                       "type": "schemaReference",
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "resolvedJzodSchemaReturnType"
+                        "relativePath": "resolvedMlSchemaReturnType"
                       }
                     }
                   },
@@ -2927,7 +2927,7 @@ export const miroirFundamentalJzodSchema = {
                 "type": "string",
                 "optional": true
               },
-              "rawJzodSchemaType": {
+              "rawMlSchemaType": {
                 "type": "string",
                 "optional": true
               },
@@ -2992,14 +2992,14 @@ export const miroirFundamentalJzodSchema = {
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "jzodUnion_RecursivelyUnfold_ReturnTypeError"
+                      "relativePath": "mlUnion_RecursivelyUnfold_ReturnTypeError"
                     }
                   },
                   {
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "resolvedJzodSchemaReturnTypeError"
+                      "relativePath": "resolvedMlSchemaReturnTypeError"
                     }
                   },
                   {
@@ -3008,7 +3008,7 @@ export const miroirFundamentalJzodSchema = {
                       "type": "schemaReference",
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "resolvedJzodSchemaReturnTypeError"
+                        "relativePath": "resolvedMlSchemaReturnTypeError"
                       }
                     }
                   },
@@ -3227,7 +3227,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "defaultLabel": "Return type (mlSchema)",
-                "description": "Optional Jzod schema describing the type of the returned value.",
+                "description": "Optional ML schema describing the type of the returned value.",
                 "initializeTo": {
                   "initializeToType": "value",
                   "value": {
@@ -3459,7 +3459,7 @@ export const miroirFundamentalJzodSchema = {
               "array"
             ]
           },
-          "valueJzodSchema": {
+          "valueMlSchema": {
             "type": "any"
           },
           "value": {
@@ -4511,7 +4511,7 @@ export const miroirFundamentalJzodSchema = {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "coreTransformerForBuildPlusRuntime"
             },
-            "description": "Explicit column set: a transformer resolving to a list of strings (e.g. returnValue wrapping a literal list, or getFromContext). A bare string array is NOT schema-expressible here: it also matches the transformer array branch, making the union ambiguous for jzodTypeCheck. When omitted, columns are derived from the distinct columnKeyAttribute values of the input. Object lists (e.g. Deployment rows) must be plucked first (mapList + accessDynamicPath)."
+            "description": "Explicit column set: a transformer resolving to a list of strings (e.g. returnValue wrapping a literal list, or getFromContext). A bare string array is NOT schema-expressible here: it also matches the transformer array branch, making the union ambiguous for mlsTypeCheck. When omitted, columns are derived from the distinct columnKeyAttribute values of the input. Object lists (e.g. Deployment rows) must be plucked first (mapList + accessDynamicPath)."
           },
           "fillValue": {
             "type": "any",
@@ -4561,7 +4561,7 @@ export const miroirFundamentalJzodSchema = {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "coreTransformerForBuildPlusRuntime"
             },
-            "description": "Explicit whitelist of columns to melt: a transformer resolving to a list of strings (e.g. returnValue wrapping a literal list). A bare string array is NOT schema-expressible here (ambiguous with the transformer array branch for jzodTypeCheck). When omitted, each row melts its own keys minus idColumns (per-row melt)."
+            "description": "Explicit whitelist of columns to melt: a transformer resolving to a list of strings (e.g. returnValue wrapping a literal list). A bare string array is NOT schema-expressible here (ambiguous with the transformer array branch for mlsTypeCheck). When omitted, each row melts its own keys minus idColumns (per-row melt)."
           },
           "nameInto": {
             "type": "string",
@@ -4904,7 +4904,7 @@ export const miroirFundamentalJzodSchema = {
               }
             ]
           },
-          "relativeReferenceJzodContext": {
+          "relativeReferenceMlContext": {
             "type": "record",
             "definition": {
               "type": "schemaReference",
@@ -4965,7 +4965,7 @@ export const miroirFundamentalJzodSchema = {
           "depth": {
             "type": "number"
           },
-          "relativeReferenceJzodContext": {
+          "relativeReferenceMlContext": {
             "type": "record",
             "definition": {
               "type": "schemaReference",
@@ -4978,7 +4978,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "mlsTransformerForBuildPlusRuntime_jzodTypeCheck": {
+      "mlsTransformerForBuildPlusRuntime_mlsTypeCheck": {
         "type": "object",
         "extend": [
           {
@@ -4994,7 +4994,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "transformerType": {
             "type": "literal",
-            "definition": "jzodTypeCheck"
+            "definition": "mlsTypeCheck"
           },
           "mlSchema": {
             "type": "schemaReference",
@@ -5036,7 +5036,7 @@ export const miroirFundamentalJzodSchema = {
               ]
             }
           },
-          "relativeReferenceJzodContext": {
+          "relativeReferenceMlContext": {
             "type": "record",
             "optional": true,
             "definition": {
@@ -5105,7 +5105,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "mlsTransformerForBuildPlusRuntime_ansiColumnsToJzodSchema": {
+      "mlsTransformerForBuildPlusRuntime_ansiColumnsToMlSchema": {
         "type": "object",
         "extend": [
           {
@@ -5121,7 +5121,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "transformerType": {
             "type": "literal",
-            "definition": "ansiColumnsToJzodSchema"
+            "definition": "ansiColumnsToMlSchema"
           },
           "applyTo": {
             "type": "schemaReference",
@@ -30429,7 +30429,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "transformerType": {
             "type": "literal",
-            "definition": "spreadSheetToJzodSchema"
+            "definition": "spreadSheetToMlSchema"
           },
           "spreadsheetContents": {
             "type": "union",
@@ -30595,7 +30595,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "transformerType": {
             "type": "literal",
-            "definition": "ansiColumnsToJzodSchema"
+            "definition": "ansiColumnsToMlSchema"
           },
           "applyTo": {
             "type": "schemaReference",
@@ -30719,7 +30719,7 @@ export const miroirFundamentalJzodSchema = {
               }
             ]
           },
-          "relativeReferenceJzodContext": {
+          "relativeReferenceMlContext": {
             "type": "record",
             "definition": {
               "type": "schemaReference",
@@ -30780,7 +30780,7 @@ export const miroirFundamentalJzodSchema = {
           "depth": {
             "type": "number"
           },
-          "relativeReferenceJzodContext": {
+          "relativeReferenceMlContext": {
             "type": "record",
             "definition": {
               "type": "schemaReference",
@@ -30793,7 +30793,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "transformerForBuildPlusRuntime_jzodTypeCheck": {
+      "transformerForBuildPlusRuntime_mlsTypeCheck": {
         "type": "object",
         "extend": [
           {
@@ -30809,7 +30809,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "transformerType": {
             "type": "literal",
-            "definition": "jzodTypeCheck"
+            "definition": "mlsTypeCheck"
           },
           "mlSchema": {
             "type": "schemaReference",
@@ -30851,7 +30851,7 @@ export const miroirFundamentalJzodSchema = {
               ]
             }
           },
-          "relativeReferenceJzodContext": {
+          "relativeReferenceMlContext": {
             "type": "record",
             "optional": true,
             "definition": {
@@ -30917,6 +30917,35 @@ export const miroirFundamentalJzodSchema = {
               }
             },
             "description": "Schema context for reference resolution (referenceName / referencePath operands)."
+          }
+        }
+      },
+      "transformerForBuildPlusRuntime_ansiColumnsToMlSchema": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildPlusRuntime_optional_Abstract"
+            },
+            "context": {}
+          }
+        ],
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "ansiColumnsToMlSchema"
+          },
+          "applyTo": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "relativePath": "coreTransformerForBuildPlusRuntime",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
           }
         }
       },
@@ -34400,7 +34429,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "defaultLabel": "Return type (mlSchema)",
-                "description": "Optional Jzod schema describing the type of the returned value.",
+                "description": "Optional ML schema describing the type of the returned value.",
                 "initializeTo": {
                   "initializeToType": "value",
                   "value": {
@@ -34629,7 +34658,7 @@ export const miroirFundamentalJzodSchema = {
               "array"
             ]
           },
-          "valueJzodSchema": {
+          "valueMlSchema": {
             "type": "any"
           },
           "value": {
@@ -35666,7 +35695,7 @@ export const miroirFundamentalJzodSchema = {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
             },
-            "description": "Explicit column set: a transformer resolving to a list of strings (e.g. returnValue wrapping a literal list, or getFromContext). A bare string array is NOT schema-expressible here: it also matches the transformer array branch, making the union ambiguous for jzodTypeCheck. When omitted, columns are derived from the distinct columnKeyAttribute values of the input. Object lists (e.g. Deployment rows) must be plucked first (mapList + accessDynamicPath)."
+            "description": "Explicit column set: a transformer resolving to a list of strings (e.g. returnValue wrapping a literal list, or getFromContext). A bare string array is NOT schema-expressible here: it also matches the transformer array branch, making the union ambiguous for mlsTypeCheck. When omitted, columns are derived from the distinct columnKeyAttribute values of the input. Object lists (e.g. Deployment rows) must be plucked first (mapList + accessDynamicPath)."
           },
           "fillValue": {
             "type": "any",
@@ -35714,7 +35743,7 @@ export const miroirFundamentalJzodSchema = {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
             },
-            "description": "Explicit whitelist of columns to melt: a transformer resolving to a list of strings (e.g. returnValue wrapping a literal list). A bare string array is NOT schema-expressible here (ambiguous with the transformer array branch for jzodTypeCheck). When omitted, each row melts its own keys minus idColumns (per-row melt)."
+            "description": "Explicit whitelist of columns to melt: a transformer resolving to a list of strings (e.g. returnValue wrapping a literal list). A bare string array is NOT schema-expressible here (ambiguous with the transformer array branch for mlsTypeCheck). When omitted, each row melts its own keys minus idColumns (per-row melt)."
           },
           "nameInto": {
             "type": "string",
@@ -45487,7 +45516,7 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
-          "jzodSchemas": {
+          "mlSchemas": {
             "type": "array",
             "definition": {
               "type": "schemaReference",

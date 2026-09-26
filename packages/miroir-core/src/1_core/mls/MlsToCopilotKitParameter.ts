@@ -1,5 +1,5 @@
 import type { MlElement } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import type { JzodToJsonSchemaContext } from "./JzodToJsonSchema";
+import type { MlsToJsonSchemaContext } from "./MlsToJsonSchema";
 
 // ################################################################################################
 // CopilotKit-compatible Parameter type, mirroring @copilotkit/shared Parameter.
@@ -32,13 +32,13 @@ export interface CopilotKitParameter {
  * Convert a named MlElement to a CopilotKit-compatible Parameter.
  *
  * @param name          The parameter name (required by CopilotKit)
- * @param element       The Jzod schema element to convert
+ * @param element       The ML schema element to convert
  * @param context       Optional map of named MlElement definitions for resolving schemaReference
  */
-export function jzodToCopilotKitParameter(
+export function mlsToCopilotKitParameter(
   name: string,
   element: MlElement,
-  context: JzodToJsonSchemaContext = {},
+  context: MlsToJsonSchemaContext = {},
 ): CopilotKitParameter {
   if (!element) {
     return { name };
@@ -106,7 +106,7 @@ export function jzodToCopilotKitParameter(
           ...base(),
           type: "object[]",
           attributes: Object.entries(castInner.definition).map(([k, v]) =>
-            jzodToCopilotKitParameter(k, v, context)
+            mlsToCopilotKitParameter(k, v, context)
           ),
         };
       }
@@ -124,7 +124,7 @@ export function jzodToCopilotKitParameter(
         ...base(),
         type: "object",
         attributes: Object.entries(castEl.definition).map(([k, v]) =>
-          jzodToCopilotKitParameter(k, v, context)
+          mlsToCopilotKitParameter(k, v, context)
         ),
       };
     }
@@ -157,20 +157,20 @@ export function jzodToCopilotKitParameter(
         context?: { [k: string]: MlElement };
         definition: { relativePath: string };
       };
-      const mergedContext: JzodToJsonSchemaContext = {
+      const mergedContext: MlsToJsonSchemaContext = {
         ...context,
         ...(castEl.context ?? {}),
       };
       const resolved = mergedContext[castEl.definition.relativePath];
       if (resolved) {
-        return jzodToCopilotKitParameter(name, resolved, mergedContext);
+        return mlsToCopilotKitParameter(name, resolved, mergedContext);
       }
       return { ...base() };
     }
 
     case "lazy": {
       const castEl = element as { type: "lazy"; definition: MlElement };
-      return jzodToCopilotKitParameter(name, castEl.definition, context);
+      return mlsToCopilotKitParameter(name, castEl.definition, context);
     }
 
     default:

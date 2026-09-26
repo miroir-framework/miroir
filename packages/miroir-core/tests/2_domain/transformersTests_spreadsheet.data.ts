@@ -78,10 +78,10 @@ export const transformerTestSuite_spreadsheet: TransformerTestSuite = {
             transformerTestType: "transformerTest",
             transformerTestLabel:
               "inferSpreadsheetSchema allows to infer a schema from a spreadsheet step 1: infer jzod schema based on spreadsheet columns",
-            transformerName: "spreadSheetToJzodSchema",
-            // transformer: (transformer_spreadSheetToJzodSchema.transformerImplementation as any).definition,
+            transformerName: "spreadSheetToMlSchema",
+            // transformer: (transformer_spreadSheetToMlSchema.transformerImplementation as any).definition,
             transformer: {
-              transformerType: "spreadSheetToJzodSchema",
+              transformerType: "spreadSheetToMlSchema",
               spreadsheetContents: {
                 transformerType: "getFromParameters",
                 interpolation: "build",

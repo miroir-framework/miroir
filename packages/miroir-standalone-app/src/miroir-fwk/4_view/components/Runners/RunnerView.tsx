@@ -29,7 +29,7 @@ import {
   getClientEnvironment,
   Domain2ElementFailed,
   getEndpointActions,
-  getDefaultValueForJzodSchemaWithResolutionNonHook,
+  getDefaultValueForMlSchemaWithResolutionNonHook,
   MiroirLoggerFactory,
   templateEvaluationParams,
   transformer_extended_apply_wrapper,
@@ -269,7 +269,7 @@ export function StoredRunnerView(props: {
       ? undefined
       : storedRunner?.definition.runnerType === "actionRunner" ||
           storedRunner?.definition.runnerType === "mcpToolRunner"
-        ? getDefaultValueForJzodSchemaWithResolutionNonHook(
+        ? getDefaultValueForMlSchemaWithResolutionNonHook(
             "build",
             // (formMLSchema as any).mlSchema,
             resolvedMLSchema.mlSchema,
@@ -304,7 +304,7 @@ export function StoredRunnerView(props: {
                   {}, // contextResults
                 ),
               }
-            : getDefaultValueForJzodSchemaWithResolutionNonHook(
+            : getDefaultValueForMlSchemaWithResolutionNonHook(
                 "build",
                 resolvedMLSchema.mlSchema,
                 undefined, // rootObject

@@ -28,7 +28,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodUnionEditor: union between simple types renders input with proper value",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "union",
                 "definition": [
                   {
@@ -56,7 +56,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodUnionEditor: union between simple type and object for value of simple type renders input with proper value",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "union",
                 "definition": [
                   {
@@ -95,7 +95,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodUnionEditor: union between simple type and object for value object renders input with proper value",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "union",
                 "definition": [
                   {
@@ -139,7 +139,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodUnionEditor: union between 2 object types with a discriminator for value object renders input following the proper value type",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "union",
                 "discriminator": "testObjectType",
                 "definition": [
@@ -246,7 +246,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodUnionEditor: non-discriminated union can switch type from number to string via union type selector",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "union",
                 "definition": [
                   {
@@ -327,7 +327,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodUnionEditor: non-discriminated union can switch type from number to object via union type selector",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "union",
                 "definition": [
                   {
@@ -428,7 +428,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodUnionEditor: union type star button is visible but selector is initially hidden",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "union",
                 "definition": [
                   {
@@ -465,7 +465,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodUnionEditor: union type star button toggle shows then hides selector",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "union",
                 "definition": [
                   {
@@ -514,7 +514,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodUnionEditor: union type selector for object value places star and selector above the value",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "union",
                 "definition": [
                   {

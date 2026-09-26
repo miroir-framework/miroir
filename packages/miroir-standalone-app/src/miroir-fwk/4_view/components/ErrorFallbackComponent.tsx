@@ -28,9 +28,9 @@ export interface ErrorFallbackComponentProps {
     attributeListKey?: string;
     currentValue?: any;
     formikValues?: any;
-    rawJzodSchema?: any;
-    unfoldedJzodSchema?: any;
-    localResolvedElementJzodSchemaBasedOnValue?: any;
+    rawMlSchema?: any;
+    unfoldedMlSchema?: any;
+    localResolvedElementMlSchemaBasedOnValue?: any;
   };
 }
 
@@ -49,9 +49,9 @@ export const ErrorFallbackComponent: React.FC<ErrorFallbackComponentProps> = ({
     attributeListKey,
     currentValue,
     formikValues,
-    // rawJzodSchema,
-    unfoldedJzodSchema,
-    localResolvedElementJzodSchemaBasedOnValue
+    // rawMlSchema,
+    unfoldedMlSchema,
+    localResolvedElementMlSchemaBasedOnValue
   } = context;
 
   log.error(
@@ -125,22 +125,22 @@ export const ErrorFallbackComponent: React.FC<ErrorFallbackComponentProps> = ({
             object value <pre>{JSON.stringify(currentValue, null, 2)}</pre>
           </div>
         )}
-        {rawJzodSchema && (
+        {rawMlSchema && (
           <div key="5">
-            {rootLessListKey} rawJzodSchema: <pre>{JSON.stringify(rawJzodSchema, null, 2)}</pre>
+            {rootLessListKey} rawMlSchema: <pre>{JSON.stringify(rawMlSchema, null, 2)}</pre>
           </div>
         )}
-        {rawJzodSchema && (
+        {rawMlSchema && (
           <div key="6">
-            {rootLessListKey} unfoldedJzodSchema: <pre>{JSON.stringify(unfoldedJzodSchema, null, 2)}</pre>
+            {rootLessListKey} unfoldedMlSchema: <pre>{JSON.stringify(unfoldedMlSchema, null, 2)}</pre>
           </div>
         )}
         <div key="7"></div>
-        {localResolvedElementJzodSchemaBasedOnValue && (
+        {localResolvedElementMlSchemaBasedOnValue && (
           <>
             {rootLessListKey} resolved type:{" "}
             <pre>
-              {JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2)}
+              {JSON.stringify(localResolvedElementMlSchemaBasedOnValue, null, 2)}
             </pre>
           </>
         )} */}

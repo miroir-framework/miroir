@@ -12,8 +12,8 @@ import type {
   MetaModel,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
-import { getInnermostTypeCheckError } from "../1_core/jzod/mlsTypeCheckError.js";
-import { jzodTypeCheck } from "../1_core/jzod/jzodTypeCheck.js";
+import { getInnermostTypeCheckError } from "../1_core/mls/mlsTypeCheckError.js";
+import { mlsTypeCheck } from "../1_core/mls/mlsTypeCheck.js";
 
 // ================================================================================================
 // Types
@@ -163,7 +163,7 @@ export function checkModelValidationInstance(
 ): ModelValidationInstanceCheck {
   const label = buildModelValidationInstanceLabel(instance, fallbackPath);
   const filter = buildModelValidationVitestNameFilter(instance, fallbackPath);
-  const result = jzodTypeCheck(
+  const result = mlsTypeCheck(
     jzodSchema,
     instance,
     [],

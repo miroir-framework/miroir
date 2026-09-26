@@ -77,17 +77,17 @@ function minimalSummary(el: MlElement): any {
  * - Leaf types (literal, enum, string/number/date with validations) are always fully shown.
  * - schemaReference.context is always dropped (bulk, internal resolution data).
  *
- * @param jzodSchema - The MlElement to summarize.
- * @param miroirFundamentalJzodSchema - Schema registry (reserved for future reference resolution).
+ * @param mlSchema - The MlElement to summarize.
+ * @param miroirFundamentalMlSchema - Schema registry (reserved for future reference resolution).
  * @param depth - Recursion budget: 0 = current element + type-only child stubs;
  *                1 (default) = current element + children at depth=0; N = N levels deep.
  */
-export function jzodToJzod_Summary(
-  jzodSchema: MlElement,
-  miroirFundamentalJzodSchema: MlSchema,
+export function mlsToMls_Summary(
+  mlSchema: MlElement,
+  miroirFundamentalMlSchema: MlSchema,
   depth: number = 1,
 ): any {
-  const el = jzodSchema as any;
+  const el = mlSchema as any;
   const base = buildBase(el);
 
   switch (el.type) {
@@ -100,7 +100,7 @@ export function jzodToJzod_Summary(
 
     // ── Plain scalar types ────────────────────────────────────────────────────
     // Includes MlPlainAttribute ("any","bigint","boolean","never","uuid","undefined","unknown","void")
-    // and JzodAttributePlain{String,Number,Date}WithValidations ("string","number","date").
+    // and MlAttributePlain{String,Number,Date}WithValidations ("string","number","date").
     // coerce is intentionally omitted (technical parsing detail).
     case "any":
     case "bigint":
@@ -125,7 +125,7 @@ export function jzodToJzod_Summary(
       for (const [k, v] of Object.entries(el.definition as Record<string, MlElement>)) {
         allDef[k] = depth <= 0
           ? minimalSummary(v)
-          : jzodToJzod_Summary(v, miroirFundamentalJzodSchema, depth - 1);
+          : mlsToMls_Summary(v, miroirFundamentalMlSchema, depth - 1);
       }
       // Literal-valued keys are discriminating — sort them first so short previews always show them.
       const literalKeys = Object.keys(allDef).filter(k => allDef[k]?.type === "literal");
@@ -147,7 +147,7 @@ export function jzodToJzod_Summary(
       if (!el.definition) return base;
       const childSummary = depth <= 0
         ? minimalSummary(el.definition as MlElement)
-        : jzodToJzod_Summary(el.definition as MlElement, miroirFundamentalJzodSchema, depth - 1);
+        : mlsToMls_Summary(el.definition as MlElement, miroirFundamentalMlSchema, depth - 1);
       return { ...base, definition: childSummary };
     }
 
@@ -157,7 +157,7 @@ export function jzodToJzod_Summary(
       const items = (el.definition as MlElement[]).map((item) =>
         depth <= 0
           ? minimalSummary(item)
-          : jzodToJzod_Summary(item, miroirFundamentalJzodSchema, depth - 1)
+          : mlsToMls_Summary(item, miroirFundamentalMlSchema, depth - 1)
       );
       return { ...base, definition: items };
     }
@@ -167,7 +167,7 @@ export function jzodToJzod_Summary(
       const branches = (el.definition as MlElement[]).map((item) =>
         depth <= 0
           ? minimalSummary(item)
-          : jzodToJzod_Summary(item, miroirFundamentalJzodSchema, depth - 1)
+          : mlsToMls_Summary(item, miroirFundamentalMlSchema, depth - 1)
       );
       const result: any = { ...base, definition: branches };
       // discriminator tells the user HOW to choose a branch — keep it
@@ -188,10 +188,10 @@ export function jzodToJzod_Summary(
       if (!el.definition) return base;
       const leftSummary = depth <= 0
         ? minimalSummary(el.definition.left as MlElement)
-        : jzodToJzod_Summary(el.definition.left as MlElement, miroirFundamentalJzodSchema, depth - 1);
+        : mlsToMls_Summary(el.definition.left as MlElement, miroirFundamentalMlSchema, depth - 1);
       const rightSummary = depth <= 0
         ? minimalSummary(el.definition.right as MlElement)
-        : jzodToJzod_Summary(el.definition.right as MlElement, miroirFundamentalJzodSchema, depth - 1);
+        : mlsToMls_Summary(el.definition.right as MlElement, miroirFundamentalMlSchema, depth - 1);
       return { ...base, definition: { left: leftSummary, right: rightSummary } };
     }
 
@@ -201,10 +201,10 @@ export function jzodToJzod_Summary(
       const [keyEl, valEl] = el.definition as [MlElement, MlElement];
       const keySummary = depth <= 0
         ? minimalSummary(keyEl)
-        : jzodToJzod_Summary(keyEl, miroirFundamentalJzodSchema, depth - 1);
+        : mlsToMls_Summary(keyEl, miroirFundamentalMlSchema, depth - 1);
       const valSummary = depth <= 0
         ? minimalSummary(valEl)
-        : jzodToJzod_Summary(valEl, miroirFundamentalJzodSchema, depth - 1);
+        : mlsToMls_Summary(valEl, miroirFundamentalMlSchema, depth - 1);
       return { ...base, definition: [keySummary, valSummary] };
     }
 

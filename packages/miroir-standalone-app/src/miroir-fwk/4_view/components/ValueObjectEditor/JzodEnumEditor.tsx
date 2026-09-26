@@ -1,10 +1,10 @@
 import { useFormikContext } from "formik";
 import {
-  getDefaultValueForJzodSchemaWithResolutionNonHook,
+  getDefaultValueForMlSchemaWithResolutionNonHook,
   MlElement,
   MlEnum,
   MlLiteral,
-  jzodUnionResolvedTypeForObject,
+  mlUnionResolvedTypeForObject,
   KeyMapEntry,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -167,7 +167,7 @@ const handleDiscriminatorChange = (
       "selectedValue",
       selectedValue,
     );
-    const resolveUnionResult = jzodUnionResolvedTypeForObject( 
+    const resolveUnionResult = mlUnionResolvedTypeForObject( 
       parentKeyMap.recursivelyUnfoldedUnionSchema.result,
       parentKeyMap.rawSchema as MlUnion,
       parentKeyMap.discriminator,
@@ -175,19 +175,19 @@ const handleDiscriminatorChange = (
       parentKeyMap.valuePath,
       parentKeyMap.typePath,
       modelEnvironment,
-      {}, // relativeReferenceJzodContext
+      {}, // relativeReferenceMlContext
     );
 
     log.info(
-      `handleDiscriminatorChange (${discriminatorType}) jzodUnionResolvedTypeForObject result`,
+      `handleDiscriminatorChange (${discriminatorType}) mlUnionResolvedTypeForObject result`,
       resolveUnionResult,
     );
     if (resolveUnionResult.status === "error") {
       throw new Error(
-        `handleDiscriminatorChange jzodUnionResolvedTypeForObject error: ${resolveUnionResult.error}`,
+        `handleDiscriminatorChange mlUnionResolvedTypeForObject error: ${resolveUnionResult.error}`,
       );
     }
-    newJzodSchema = resolveUnionResult.resolvedJzodObjectSchema;
+    newJzodSchema = resolveUnionResult.resolvedMlObjectSchema;
   } else {
     localChosenDiscriminator = parentKeyMap.discriminator as string;
     newJzodSchema = parentKeyMap.recursivelyUnfoldedUnionSchema?.result.find((a: MlElement) => {
@@ -238,7 +238,7 @@ const handleDiscriminatorChange = (
   );
   const defaultValue = modelEnvironment
     ? {
-        ...getDefaultValueForJzodSchemaWithResolutionNonHook(
+        ...getDefaultValueForMlSchemaWithResolutionNonHook(
           "build",
           newJzodSchemaWithOptional,
           formik.values[reportSectionPathAsString],
@@ -320,7 +320,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
     : "";
   const parentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[parentKey] : undefined;
   const currentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
-  // const rawJzodSchema = currentKeyMap?.rawSchema;
+  // const rawMlSchema = currentKeyMap?.rawSchema;
   const currentEnumSchema: MlElement | undefined = currentKeyMap?.resolvedSchema;
   const formikRootLessListKeyArray = [reportSectionPathAsString, ...rootLessListKeyArray];
   const formikRootLessListKey = formikRootLessListKeyArray.join(".");
@@ -568,7 +568,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
     name,
     selectOptions,
     handleFilterableSelectEnumChange,
-    // rawJzodSchema,
+    // rawMlSchema,
     forceTestingMode,
     isDiscriminator,
     handleSelectEnumChange,
@@ -584,7 +584,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
               data: {
                 isDiscriminator,
                 selectOptions,
-                // rawJzodSchema,
+                // rawMlSchema,
                 currentEnumSchema,
                 currentKeyMap,
                 currentDiscriminatorValues,

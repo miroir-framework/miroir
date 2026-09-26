@@ -52,7 +52,7 @@ The workflows are **fundamentally different** enough that maintaining separate s
 - ✅ Don't need SQL execution
 - ✅ Creating application-specific business logic
 
-**Examples**: `spreadSheetToJzodSchema`, format conversions, data pipelines
+**Examples**: `spreadSheetToMlSchema`, format conversions, data pipelines
 
 ## Quick Comparison
 

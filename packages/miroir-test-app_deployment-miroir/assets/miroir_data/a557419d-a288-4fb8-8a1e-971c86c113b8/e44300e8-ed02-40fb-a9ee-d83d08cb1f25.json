@@ -1,7 +1,7 @@
 {
   "uuid": "e44300e8-ed02-40fb-a9ee-d83d08cb1f25",
-  "name": "spreadSheetToJzodSchema",
-  "defaultLabel": "spreadSheetToJzodSchema",
+  "name": "spreadSheetToMlSchema",
+  "defaultLabel": "spreadSheetToMlSchema",
   "description": "Transform the contents of a spreadsheet into a ML schema",
   "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
@@ -11,7 +11,7 @@
     "transformerParameterSchema": {
       "transformerType": {
         "type": "literal",
-        "definition": "spreadSheetToJzodSchema"
+        "definition": "spreadSheetToMlSchema"
       },
       "transformerDefinition": {
         "type": "object",

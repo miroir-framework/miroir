@@ -4,7 +4,7 @@ import {
   MlSchema,
   MetaModel,
   MiroirLoggerFactory,
-  resolveJzodSchemaReference,
+  resolveMlSchemaReference,
   type LoggerInterface
 } from "miroir-core";
 import { packageName, cleanLevel } from "../constants";
@@ -20,7 +20,7 @@ export type JzodEnumSchemaToJzodElementResolver = (type: string, definition?: an
 
 export function getCurrentEnumJzodSchemaResolver(
   currentMiroirModel: MetaModel,
-  miroirFundamentalJzodSchema: MlSchema,
+  miroirFundamentalMlSchema: MlSchema,
 ):JzodEnumSchemaToJzodElementResolver  {
   return (type: string, definition?: any) => {
     log.info("getCurrentEnumJzodSchemaResolver called with", type, "definition", definition);
@@ -28,8 +28,8 @@ export function getCurrentEnumJzodSchemaResolver(
       currentMiroirModel.entities.length == 0
         ? ({} as JzodElementRecord)
         : ({
-            array: resolveJzodSchemaReference(
-              miroirFundamentalJzodSchema,
+            array: resolveMlSchemaReference(
+              miroirFundamentalMlSchema,
               {
                 type: "schemaReference",
                 definition: {
@@ -40,8 +40,8 @@ export function getCurrentEnumJzodSchemaResolver(
               currentMiroirModel
               // relativeReferenceJzodSchema,
             ),
-            simpleType: resolveJzodSchemaReference(
-              miroirFundamentalJzodSchema,
+            simpleType: resolveMlSchemaReference(
+              miroirFundamentalMlSchema,
               {
                 type: "schemaReference",
                 definition: {
@@ -59,8 +59,8 @@ export function getCurrentEnumJzodSchemaResolver(
               currentMiroirModel
               // relativeReferenceJzodSchema,
             ),
-            enum: resolveJzodSchemaReference(
-              miroirFundamentalJzodSchema,
+            enum: resolveMlSchemaReference(
+              miroirFundamentalMlSchema,
               {
                 type: "schemaReference",
                 definition: {
@@ -71,8 +71,8 @@ export function getCurrentEnumJzodSchemaResolver(
               currentMiroirModel
               // relativeReferenceJzodSchema,
             ),
-            union: resolveJzodSchemaReference(
-              miroirFundamentalJzodSchema,
+            union: resolveMlSchemaReference(
+              miroirFundamentalMlSchema,
               {
                 type: "schemaReference",
                 definition: {
@@ -83,8 +83,8 @@ export function getCurrentEnumJzodSchemaResolver(
               currentMiroirModel
               // relativeReferenceJzodSchema,
             ),
-            record: resolveJzodSchemaReference(
-              miroirFundamentalJzodSchema,
+            record: resolveMlSchemaReference(
+              miroirFundamentalMlSchema,
               {
                 type: "schemaReference",
                 definition: {
@@ -95,8 +95,8 @@ export function getCurrentEnumJzodSchemaResolver(
               currentMiroirModel
               // relativeReferenceJzodSchema,
             ),
-            object: resolveJzodSchemaReference(
-              miroirFundamentalJzodSchema,
+            object: resolveMlSchemaReference(
+              miroirFundamentalMlSchema,
               {
                 type: "schemaReference",
                 definition: {
@@ -107,8 +107,8 @@ export function getCurrentEnumJzodSchemaResolver(
               currentMiroirModel
               // relativeReferenceJzodSchema,
             ),
-            function: resolveJzodSchemaReference(
-              miroirFundamentalJzodSchema,
+            function: resolveMlSchemaReference(
+              miroirFundamentalMlSchema,
               {
                 type: "schemaReference",
                 definition: {
@@ -119,8 +119,8 @@ export function getCurrentEnumJzodSchemaResolver(
               currentMiroirModel
               // relativeReferenceJzodSchema,
             ),
-            lazy: resolveJzodSchemaReference(
-              miroirFundamentalJzodSchema,
+            lazy: resolveMlSchemaReference(
+              miroirFundamentalMlSchema,
               {
                 type: "schemaReference",
                 definition: {
@@ -131,8 +131,8 @@ export function getCurrentEnumJzodSchemaResolver(
               currentMiroirModel
               // relativeReferenceJzodSchema,
             ),
-            literal: resolveJzodSchemaReference(
-              miroirFundamentalJzodSchema,
+            literal: resolveMlSchemaReference(
+              miroirFundamentalMlSchema,
               {
                 type: "schemaReference",
                 definition: {
@@ -143,8 +143,8 @@ export function getCurrentEnumJzodSchemaResolver(
               currentMiroirModel
               // relativeReferenceJzodSchema,
             ),
-            schemaReference: resolveJzodSchemaReference(
-              miroirFundamentalJzodSchema,
+            schemaReference: resolveMlSchemaReference(
+              miroirFundamentalMlSchema,
               {
                 type: "schemaReference",
                 definition: {

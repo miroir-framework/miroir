@@ -11,25 +11,25 @@ import {
   MlUnion,
   KeyMapEntry,
   type MlRecord,
-  type ResolvedJzodSchemaReturnType,
-  type ResolvedJzodSchemaReturnTypeError,
-  type ResolvedJzodSchemaReturnTypeOK,
-  type TransformerForBuildPlusRuntime_jzodTypeCheck
+  type ResolvedMlSchemaReturnType,
+  type ResolvedMlSchemaReturnTypeError,
+  type ResolvedMlSchemaReturnTypeOK,
+  type TransformerForBuildPlusRuntime_mlsTypeCheck
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
-import { recursiveResolveJzodSchemaReferenceInContext, resolveJzodSchemaReferenceInContext } from "./jzodResolveSchemaReferenceInContext";
+import { recursiveResolveMlSchemaReferenceInContext, resolveMlSchemaReferenceInContext } from "./mlsResolveSchemaReferenceInContext";
 import {
-  jzodUnion_recursivelyUnfold,
-} from "./jzodUnion_RecursivelyUnfold";
+  mlUnion_recursivelyUnfold,
+} from "./mlUnion_RecursivelyUnfold";
 
 import type {
-  JzodUnionResolvedTypeForArrayReturnTypeOK,
-  JzodUnionResolvedTypeForObjectReturnTypeOK,
-  JzodUnionResolvedTypeReturnTypeError,
+  MlUnionResolvedTypeForArrayReturnTypeOK,
+  MlUnionResolvedTypeForObjectReturnTypeOK,
+  MlUnionResolvedTypeReturnTypeError,
   SelectUnionBranchFromDiscriminatorReturnType,
   SelectUnionBranchFromDiscriminatorReturnTypeError,
-} from "../../0_interfaces/1_core/jzodTypeCheckInterface";
+} from "../../0_interfaces/1_core/mlsTypeCheckInterface";
 import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
 import { ReduxDeploymentsState } from "../../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import { Step } from "../../2_domain/Transformers";
@@ -37,15 +37,15 @@ import { packageName } from "../../constants";
 import { cleanLevel } from "../constants";
 import { defaultMiroirModelEnvironment } from "../Model";
 import { getObjectUnionDiscriminatorValuesFromResolvedSchema } from "./getObjectUnionDiscriminatorValues";
-import { jzodObjectFlatten } from "./jzodObjectFlatten";
+import { mlObjectFlatten } from "./mlObjectFlatten";
 import { resolveConditionalSchema, type ResolveConditionalSchemaError } from "./resolveConditionalSchema";
 import { TransformerFailure } from "../../0_interfaces/2_domain/DomainElement";
 
-// export const miroirFundamentalJzodSchema2 = miroirFundamentalJzodSchema;
-// import { miroirFundamentalJzodSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalJzodSchema";
+// export const miroirFundamentalMlSchema2 = miroirFundamentalMlSchema;
+// import { miroirFundamentalMlSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalMlSchema";
 
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodTypeCheck");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlsTypeCheck");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
 ).then((logger: LoggerInterface) => {log = logger});
@@ -87,7 +87,7 @@ export const ANY_IMPLICIT_UNION_TYPE: MlUnion = {
 export const ANY_SCHEMA: MlElement = { type: "any" };
 
 /** Schema used for record values when the record definition is an opt-in union fallback. */
-function jzodRecordElementSchema(definition: MlElement): MlElement {
+function mlRecordElementSchema(definition: MlElement): MlElement {
   if (definition?.type === "union") {
     return ANY_SCHEMA;
   }
@@ -164,16 +164,16 @@ export function buildAnySubnodeKeyMap(
 }
 
 // ################################################################################################
-// to be replaced by jzodObjectFlatten?
+// to be replaced by mlObjectFlatten?
 export function resolveObjectExtendClauseAndDefinition<T extends MiroirModelEnvironment>(
   mlObject: MlObject,
   modelEnvironment: T,
-  relativeReferenceJzodContext?: { [k: string]: MlElement }
+  relativeReferenceMlContext?: { [k: string]: MlElement }
 ): MlObject {
   if (mlObject.extend) {
-    const extension: MlElement = resolveJzodSchemaReferenceInContext(
+    const extension: MlElement = resolveMlSchemaReferenceInContext(
       mlObject.extend,
-      relativeReferenceJzodContext,
+      relativeReferenceMlContext,
       modelEnvironment
     );
     const resolvedDefinition = Object.fromEntries(
@@ -181,9 +181,9 @@ export function resolveObjectExtendClauseAndDefinition<T extends MiroirModelEnvi
         .filter((e: [string, MlElement]) => e[1].type == "schemaReference")
         .map((e) => [
           e[0],
-          resolveJzodSchemaReferenceInContext(
+          resolveMlSchemaReferenceInContext(
             e[1] as MlReference,
-            { ...relativeReferenceJzodContext, ...((e[1] as MlReference).context ?? {}) },
+            { ...relativeReferenceMlContext, ...((e[1] as MlReference).context ?? {}) },
             modelEnvironment,
           ),
         ]),
@@ -206,7 +206,7 @@ export function resolveObjectExtendClauseAndDefinition<T extends MiroirModelEnvi
       );
       // return ({
       //   status: "error",
-      //   error: "jzodTypeCheck object extend clause schema " +
+      //   error: "mlsTypeCheck object extend clause schema " +
       //       JSON.stringify(mlSchema) +
       //       " is not an object " +
       //       JSON.stringify(extension)
@@ -226,29 +226,29 @@ function isValidUUID(uuid: string): boolean {
 
 // ################################################################################################
 /**
- * returns an array of MlObject schemas by recursively unrolling the unions and references in @param concreteUnrolledJzodSchemas.
+ * returns an array of MlObject schemas by recursively unrolling the unions and references in @param concreteUnrolledMlSchemas.
  * TODO: WHAT ABOUT RECORD SCHEMAS?
- * @param concreteUnrolledJzodSchemas 
- * @param miroirFundamentalJzodSchema 
+ * @param concreteUnrolledMlSchemas 
+ * @param miroirFundamentalMlSchema 
  * @param currentModel 
  * @param miroirMetaModel 
- * @param relativeReferenceJzodContext 
+ * @param relativeReferenceMlContext 
  * @returns 
  */
 export function unionObjectChoices<T extends MiroirModelEnvironment> (
-  concreteUnrolledJzodSchemas: MlElement[],
+  concreteUnrolledMlSchemas: MlElement[],
   modelEnvironment: T,
-  relativeReferenceJzodContext: { [k: string]: MlElement }
+  relativeReferenceMlContext: { [k: string]: MlElement }
 ): (MlObject | MlRecord)[] {
   return (
-    concreteUnrolledJzodSchemas.filter((j) => j.type == "record") as (MlObject | MlRecord)[]
+    concreteUnrolledMlSchemas.filter((j) => j.type == "record") as (MlObject | MlRecord)[]
   ).concat(
-    (concreteUnrolledJzodSchemas.filter((j) => j.type == "object") as MlObject[]).map(
+    (concreteUnrolledMlSchemas.filter((j) => j.type == "object") as MlObject[]).map(
       (k: MlObject): MlObject =>
-        jzodObjectFlatten(k, modelEnvironment, relativeReferenceJzodContext)
+        mlObjectFlatten(k, modelEnvironment, relativeReferenceMlContext)
     ) as MlObject[],
     (
-      concreteUnrolledJzodSchemas.filter(
+      concreteUnrolledMlSchemas.filter(
         (j: MlElement): boolean => j.type == "union"
       ) as MlUnion[]
     ).flatMap(
@@ -256,27 +256,27 @@ export function unionObjectChoices<T extends MiroirModelEnvironment> (
       (j: MlUnion): MlObject[] =>
         (j.definition.filter((k: MlElement) => k.type == "object") as MlObject[]).map(
           (k: MlObject): MlObject =>
-            jzodObjectFlatten(k, modelEnvironment, relativeReferenceJzodContext)
+            mlObjectFlatten(k, modelEnvironment, relativeReferenceMlContext)
         ) as MlObject[]
     ),
     (
-      concreteUnrolledJzodSchemas.filter((j: MlElement) => j.type == "union") as MlUnion[]
+      concreteUnrolledMlSchemas.filter((j: MlElement) => j.type == "union") as MlUnion[]
     ).flatMap(
       // if schemaReferences are found, we resolve them, squashing the extend clause for objects
       (j: MlUnion) =>
         (
           (j.definition.filter((k: MlElement) => k.type == "schemaReference") as MlReference[])
             .map((k: MlReference) =>
-              resolveJzodSchemaReferenceInContext(
+              resolveMlSchemaReferenceInContext(
                 k,
-                { ...relativeReferenceJzodContext, ...k.context },
+                { ...relativeReferenceMlContext, ...k.context },
                 modelEnvironment
               )
             )
             .filter((j) => j.type == "object") as MlObject[]
         ).map(
           (k: MlObject): MlObject =>
-            jzodObjectFlatten(k, modelEnvironment, relativeReferenceJzodContext)
+            mlObjectFlatten(k, modelEnvironment, relativeReferenceMlContext)
         ) as MlObject[]
     )
   );
@@ -285,26 +285,26 @@ export function unionObjectChoices<T extends MiroirModelEnvironment> (
 
 // ################################################################################################
 /**
- * returns an array of MlArray and MlTuple schemas by recursively unrolling the unions and references in @param concreteUnrolledJzodSchemas.
- * @param concreteUnrolledJzodSchemas 
- * @param miroirFundamentalJzodSchema 
+ * returns an array of MlArray and MlTuple schemas by recursively unrolling the unions and references in @param concreteUnrolledMlSchemas.
+ * @param concreteUnrolledMlSchemas 
+ * @param miroirFundamentalMlSchema 
  * @param currentModel 
  * @param miroirMetaModel 
- * @param relativeReferenceJzodContext 
+ * @param relativeReferenceMlContext 
  * @returns 
  */
 export function unionArrayChoices<T extends MiroirModelEnvironment> (
-  concreteUnrolledJzodSchemas: MlElement[],
+  concreteUnrolledMlSchemas: MlElement[],
   modelEnvironment: T,
-  relativeReferenceJzodContext: { [k: string]: MlElement }
+  relativeReferenceMlContext: { [k: string]: MlElement }
 ): (MlArray | MlTuple)[] {
   return (
-    concreteUnrolledJzodSchemas.filter(
+    concreteUnrolledMlSchemas.filter(
       (j: MlElement) => j.type == "array" || j.type == "tuple"
     ) as (MlArray | MlTuple)[]
   ).concat(
     (
-      concreteUnrolledJzodSchemas.filter(
+      concreteUnrolledMlSchemas.filter(
         (j: MlElement): boolean => j.type == "union"
       ) as MlUnion[]
     ).flatMap(
@@ -316,15 +316,15 @@ export function unionArrayChoices<T extends MiroirModelEnvironment> (
         )[]
     ),
     (
-      concreteUnrolledJzodSchemas.filter((j: MlElement) => j.type == "union") as MlUnion[]
+      concreteUnrolledMlSchemas.filter((j: MlElement) => j.type == "union") as MlUnion[]
     ).flatMap(
       // if schemaReferences are found, we resolve them, squashing the extend clause for objects
       (j: MlUnion) =>
         (j.definition.filter((k: MlElement) => k.type == "schemaReference") as MlReference[])
           .map((k: MlReference) => {
-            const result = recursiveResolveJzodSchemaReferenceInContext(
+            const result = recursiveResolveMlSchemaReferenceInContext(
               k,
-              { ...relativeReferenceJzodContext, ...k.context },
+              { ...relativeReferenceMlContext, ...k.context },
               modelEnvironment,
             );
             return result;
@@ -353,7 +353,7 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
   valueObjectPath: (string | number)[],
   typePath: (string | number)[], // for logging purposes only
   modelEnvironment: T,
-  relativeReferenceJzodContext: {[k:string]: MlElement},
+  relativeReferenceMlContext: {[k:string]: MlElement},
 ): SelectUnionBranchFromDiscriminatorReturnType {
   // Untagged object unions (no discriminator): match by key inclusion — every
   // value key must exist on the branch (issue #267 D1 key-union / XOR).
@@ -367,20 +367,20 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
   // WHY CAN objectUnionChoices NOT be flattened already?
   // "flatten" object hierarchy, if there is an extend clause, we resolve it
   const flatteningResults = objectUnionChoices.map(
-    (jzodObjectSchema) => {
-      let extendedJzodSchema: MlObject
-      if (jzodObjectSchema.extend) {
-        const extension = resolveJzodSchemaReferenceInContext(
-          jzodObjectSchema.extend,
-          relativeReferenceJzodContext,
+    (mlObjectSchema) => {
+      let extendedMlSchema: MlObject
+      if (mlObjectSchema.extend) {
+        const extension = resolveMlSchemaReferenceInContext(
+          mlObjectSchema.extend,
+          relativeReferenceMlContext,
           modelEnvironment,
         )
         if (extension.type == "object") {
-          extendedJzodSchema = {
+          extendedMlSchema = {
             type: "object",
             definition: {
               ...extension.definition,
-              ...jzodObjectSchema.definition
+              ...mlObjectSchema.definition
             }
           }
         } else {
@@ -395,9 +395,9 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
           };
         }
       } else {
-        extendedJzodSchema = jzodObjectSchema
+        extendedMlSchema = mlObjectSchema
       }
-      return { status: "ok" as const, result: extendedJzodSchema };
+      return { status: "ok" as const, result: extendedMlSchema };
     }
   );
 
@@ -457,9 +457,9 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
   //     valueObject,
   //     "valueObject[discriminator]=",
   //     discriminators??[].map(d => valueObject[d]),
-  //     "relativeReferenceJzodContext=",
-  //     // JSON.stringify(relativeReferenceJzodContext, null, 2),
-  //     relativeReferenceJzodContext,
+  //     "relativeReferenceMlContext=",
+  //     // JSON.stringify(relativeReferenceMlContext, null, 2),
+  //     relativeReferenceMlContext,
   //     // "flattenedUnionChoices=",
   //     // JSON.stringify(flattenedUnionChoices, null, 2),
   //     // flattenedUnionChoices
@@ -502,7 +502,7 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
       if (choiceWithNoDiscriminator.length === 1) {
         return {
           status: "ok",
-          currentDiscriminatedObjectJzodSchema: filteredFlattenedUnionChoices[0],
+          currentDiscriminatedObjectMlSchema: filteredFlattenedUnionChoices[0],
           flattenedUnionChoices: filteredFlattenedUnionChoices,
           chosenDiscriminator: [],
         };
@@ -633,11 +633,11 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
   //   "chosen discriminator=",
   //   JSON.stringify(chosenDiscriminator, null, 2),
   // );
-  const currentDiscriminatedObjectJzodSchema: MlObject =
+  const currentDiscriminatedObjectMlSchema: MlObject =
     filteredFlattenedUnionChoices[0] as MlObject;
   return {
     status: "ok",
-    currentDiscriminatedObjectJzodSchema,
+    currentDiscriminatedObjectMlSchema,
     flattenedUnionChoices: filteredFlattenedUnionChoices,
     chosenDiscriminator,
   };
@@ -654,89 +654,89 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-export function jzodUnionResolvedTypeForArray<T extends MiroirModelEnvironment>(
-  concreteUnrolledJzodSchemas: MlElement[],
+export function mlUnionResolvedTypeForArray<T extends MiroirModelEnvironment>(
+  concreteUnrolledMlSchemas: MlElement[],
   effectiveRawSchema: MlUnion,
   discriminator: string | (string | string[])[] | undefined,
   valueArray: any[],
   currentValuePath: (string | number)[],
   currentTypePath: (string | number)[],
   modelEnvironment: T,
-  relativeReferenceJzodContext: { [k: string]: MlElement }
-): JzodUnionResolvedTypeForArrayReturnTypeOK
-  | JzodUnionResolvedTypeReturnTypeError
+  relativeReferenceMlContext: { [k: string]: MlElement }
+): MlUnionResolvedTypeForArrayReturnTypeOK
+  | MlUnionResolvedTypeReturnTypeError
  {
   /**
    * ALLOWING ONLY ONE MATCHING UNION BRANCH FOR THE ARRAY
    */
-  // log.info("jzodUnionResolvedTypeForArray called for valueArray=", valueArray, "discriminator=", discriminator);
+  // log.info("mlUnionResolvedTypeForArray called for valueArray=", valueArray, "discriminator=", discriminator);
   const arrayUnionChoices = unionArrayChoices(
-    concreteUnrolledJzodSchemas,
+    concreteUnrolledMlSchemas,
     modelEnvironment,
-    relativeReferenceJzodContext
+    relativeReferenceMlContext
   );
   if (arrayUnionChoices.length == 1) {
     return {
       status: "ok",
-      resolvedJzodObjectSchema: arrayUnionChoices[0],
+      resolvedMlObjectSchema: arrayUnionChoices[0],
       arrayUnionChoices: arrayUnionChoices,
     };
   }
   if (!arrayUnionChoices || arrayUnionChoices.length == 0) {
     return {
       status: "error",
-      error: "jzodUnionResolvedTypeForArray could not find object type for given array value in resolved union",
+      error: "mlUnionResolvedTypeForArray could not find object type for given array value in resolved union",
       rawSchema: effectiveRawSchema,
       discriminator,
       valuePath: currentValuePath,
       typePath: currentTypePath,
       value: valueArray,
-      concreteUnrolledJzodSchemas,
+      concreteUnrolledMlSchemas,
       unionChoices: arrayUnionChoices,
     };
   }
   return {
     status: "error",
-    error: "jzodUnionResolvedTypeForArray called for union-type value array with discriminator(s)=" +
+    error: "mlUnionResolvedTypeForArray called for union-type value array with discriminator(s)=" +
       JSON.stringify(discriminator) + " found " + arrayUnionChoices.length + " matches.",
     discriminator,
     valuePath: currentValuePath,
     typePath: currentTypePath,
     value: valueArray,
-    concreteUnrolledJzodSchemas,
+    concreteUnrolledMlSchemas,
     unionChoices: arrayUnionChoices,
   };
-} // end of jzodUnionResolvedTypeForArray
+} // end of mlUnionResolvedTypeForArray
 
 // ################################################################################################
-export function jzodUnionResolvedTypeForObject<T extends MiroirModelEnvironment>(
-  concreteUnrolledJzodSchemas: MlElement[],
+export function mlUnionResolvedTypeForObject<T extends MiroirModelEnvironment>(
+  concreteUnrolledMlSchemas: MlElement[],
   effectiveRawSchema: MlUnion,
   discriminator: string | (string | string[])[] | undefined,
   valueObject: Record<string, any>,
   currentValuePath: (string | number)[],
   currentTypePath: (string | number)[],
   modelEnvironment: T,
-  relativeReferenceJzodContext: { [k: string]: MlElement }
-): JzodUnionResolvedTypeForObjectReturnTypeOK
-  | JzodUnionResolvedTypeReturnTypeError
+  relativeReferenceMlContext: { [k: string]: MlElement }
+): MlUnionResolvedTypeForObjectReturnTypeOK
+  | MlUnionResolvedTypeReturnTypeError
  {
   const objectUnionChoices: MlObject[] = unionObjectChoices(
-    concreteUnrolledJzodSchemas,
+    concreteUnrolledMlSchemas,
     modelEnvironment,
-    relativeReferenceJzodContext
+    relativeReferenceMlContext
   ) as any;
 
   // if (valueObject.transformerType == "getFromParameters") {
   //   log.info(
-  //     "jzodUnionResolvedTypeForObject called for",
+  //     "mlUnionResolvedTypeForObject called for",
   //     "valuePath=" + currentValuePath.join("."),
   //     "valueObject=",
   //     valueObject,
   //     "discriminator=",
   //     discriminator,
-  //     "concreteUnrolledJzodSchemas",
-  //     JSON.stringify(concreteUnrolledJzodSchemas.map((e: any) => e?.definition?.transformerType ? e?.definition?.transformerType : e), null, 2),
+  //     "concreteUnrolledMlSchemas",
+  //     JSON.stringify(concreteUnrolledMlSchemas.map((e: any) => e?.definition?.transformerType ? e?.definition?.transformerType : e), null, 2),
   //     "objectUnionChoices",
   //     JSON.stringify(objectUnionChoices.map(e => e.definition.transformerType), null, 2),
   //   );
@@ -746,19 +746,19 @@ export function jzodUnionResolvedTypeForObject<T extends MiroirModelEnvironment>
   if (objectUnionChoices.length == 1) {
     return {
       status: "ok",
-      resolvedJzodObjectSchema: objectUnionChoices[0],
+      resolvedMlObjectSchema: objectUnionChoices[0],
       objectUnionChoices: objectUnionChoices,
     };
   }
   if (!objectUnionChoices || (objectUnionChoices.length == 0 && !effectiveRawSchema.optInDiscriminator)) {
     return {
       status: "error",
-      error: "jzodUnionResolvedTypeForObject could not find object type for given object value in resolved union",
+      error: "mlUnionResolvedTypeForObject could not find object type for given object value in resolved union",
       discriminator,
       valuePath: currentValuePath,
       typePath: currentTypePath,
       value: valueObject,
-      concreteUnrolledJzodSchemas,
+      concreteUnrolledMlSchemas,
       unionChoices: objectUnionChoices,
     };
   }
@@ -771,7 +771,7 @@ export function jzodUnionResolvedTypeForObject<T extends MiroirModelEnvironment>
     currentValuePath,
     currentTypePath, // typePath
     modelEnvironment,
-    relativeReferenceJzodContext
+    relativeReferenceMlContext
   );
   
   if (selectUnionResult.status === "error") {
@@ -794,7 +794,7 @@ export function jzodUnionResolvedTypeForObject<T extends MiroirModelEnvironment>
 
       return {
         status: "ok",
-        resolvedJzodObjectSchema: {
+        resolvedMlObjectSchema: {
           type: "record",
           definition: ANY_SCHEMA,
         },
@@ -805,30 +805,30 @@ export function jzodUnionResolvedTypeForObject<T extends MiroirModelEnvironment>
 
     return {
       status: "error",
-      error: "jzodUnionResolvedTypeForObject failed to select union branch",
+      error: "mlUnionResolvedTypeForObject failed to select union branch",
       discriminator,
       valuePath: currentValuePath,
       typePath: currentTypePath,
       innerError: selectUnionResult,
       value: valueObject,
-      concreteUnrolledJzodSchemas,
+      concreteUnrolledMlSchemas,
       unionChoices: objectUnionChoices,
     };
   }
 
   const {
-    currentDiscriminatedObjectJzodSchema,
+    currentDiscriminatedObjectMlSchema,
     flattenedUnionChoices,
     chosenDiscriminator,
     // discriminatorValues,
   } = selectUnionResult;
   return {
     status: "ok",
-    resolvedJzodObjectSchema: currentDiscriminatedObjectJzodSchema,
+    resolvedMlObjectSchema: currentDiscriminatedObjectMlSchema,
     objectUnionChoices: objectUnionChoices,
     chosenDiscriminator,
   };
-} // end of jzodUnionResolvedTypeForObject
+} // end of mlUnionResolvedTypeForObject
 
 // #####################################################################################################
 // #####################################################################################################
@@ -843,8 +843,8 @@ export function jzodUnionResolvedTypeForObject<T extends MiroirModelEnvironment>
 // #####################################################################################################
 // #####################################################################################################
 /**
- * jzodTypeCheck is the main function to check if a valueObject matches a MlElement schema.
- * It recursively checks the schema and returns a ResolvedJzodSchemaReturnType.
+ * mlsTypeCheck is the main function to check if a valueObject matches a MlElement schema.
+ * It recursively checks the schema and returns a ResolvedMlSchemaReturnType.
  * 
  * Basically, it removes the unions and references from the MlElement schema,
  * getting a node-for-node representation of the schema,
@@ -854,27 +854,27 @@ export function jzodUnionResolvedTypeForObject<T extends MiroirModelEnvironment>
  * @param valueObject - The value object to check.
  * @param currentValuePath - The current path in the value object.
  * @param currentTypePath - The current path in the type schema.
- * @param miroirFundamentalJzodSchema - The fundamental Jzod schema for reference resolution.
+ * @param miroirFundamentalMlSchema - The fundamental ML schema for reference resolution.
  * @param currentModel - The current model being processed.
  * @param miroirMetaModel - The meta model for the Miroir framework.
- * @param relativeReferenceJzodContext - Context for resolving relative references in Jzod schemas.
+ * @param relativeReferenceMlContext - Context for resolving relative references in ML schemas.
  */
-export function jzodTypeCheck(
+export function mlsTypeCheck(
   mlSchema: MlElement,
   valueObject: any,
   currentValuePath: (string | number)[],
   currentTypePath: (string | number)[],
   modelEnvironment: MiroirModelEnvironment,
-  relativeReferenceJzodContext: {[k:string]: MlElement},
+  relativeReferenceMlContext: {[k:string]: MlElement},
   // 
   currentDefaultValue?: any,
   reduxDeploymentsState: ReduxDeploymentsState | undefined = undefined,
   deploymentUuid?: string,
   rootObject?: any, // Optional parameter for backward compatibility, NOT USED ANYMORE? TO BE REMOVED?
   schemaReferenceName?: string, // only for logging purposes, to track the name of the schema reference being resolved, if applicable
-): ResolvedJzodSchemaReturnType {
+): ResolvedMlSchemaReturnType {
   // log.info(
-  //   "jzodTypeCheck called for valuePath=." + 
+  //   "mlsTypeCheck called for valuePath=." + 
   //   currentValuePath.join("."),
   //   "value",
   //   // // JSON.stringify(valueObject, null, 2),
@@ -894,8 +894,8 @@ export function jzodTypeCheck(
     if (!isOptional && !isNullable && mlSchema.type !== "any" && mlSchema.type !== "undefined") {
       return {
         status: "error",
-        error: `jzodTypeCheck expected a value but got ${valueObject === null ? 'null' : 'undefined'} for non-optional schema`,
-        rawJzodSchemaType: mlSchema.type,
+        error: `mlsTypeCheck expected a value but got ${valueObject === null ? 'null' : 'undefined'} for non-optional schema`,
+        rawMlSchemaType: mlSchema.type,
         valuePath: currentValuePath,
         typePath: currentTypePath,
         value: valueObject,
@@ -949,8 +949,8 @@ export function jzodTypeCheck(
     return {
       status: "error",
       schemaReferenceName,
-      error: `jzodTypeCheck: resolveConditionalSchema returned error: ${effectiveSchemaOrError.error}`,
-      rawJzodSchemaType: mlSchema.type,
+      error: `mlsTypeCheck: resolveConditionalSchema returned error: ${effectiveSchemaOrError.error}`,
+      rawMlSchemaType: mlSchema.type,
       valuePath: currentValuePath,
       typePath: currentTypePath,
       value: valueObject,
@@ -971,14 +971,14 @@ export function jzodTypeCheck(
   
   switch (effectiveRawSchema?.type) {
     case "schemaReference": {
-      const newContext = { ...relativeReferenceJzodContext, ...effectiveRawSchema.context };
-      const resolvedJzodSchema = recursiveResolveJzodSchemaReferenceInContext(
+      const newContext = { ...relativeReferenceMlContext, ...effectiveRawSchema.context };
+      const resolvedMlSchema = recursiveResolveMlSchemaReferenceInContext(
         effectiveRawSchema,
         newContext,
         modelEnvironment
       );
-      const typeCheck = jzodTypeCheck(
-        resolvedJzodSchema,
+      const typeCheck = mlsTypeCheck(
+        resolvedMlSchema,
         valueObject,
         currentValuePath,
         [...currentTypePath, "ref:" + (effectiveRawSchema.definition.relativePath ?? "NO_RELATIVE_PATH")],
@@ -993,9 +993,9 @@ export function jzodTypeCheck(
       if (typeCheck.status == "error") {
         return {
           status: "error",
-          error: "jzodTypeCheck failed to resolve schemaReference",
+          error: "mlsTypeCheck failed to resolve schemaReference",
           schemaReferenceName: effectiveRawSchema.definition.relativePath,
-          rawJzodSchemaType: effectiveRawSchema.type,
+          rawMlSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           innerError: typeCheck,
@@ -1025,13 +1025,13 @@ export function jzodTypeCheck(
           [currentValuePath.join(".")]: (typeCheck.keyMap??{})[currentValuePath.join(".")]?{
             ...(typeCheck.keyMap??{})[currentValuePath.join(".")], // useful for unions, where the keyMap is a map of value paths to sub-schemas
             rawSchema: keyMapRawSchema,
-            resolvedReferenceSchemaInContext: resolvedJzodSchema,
+            resolvedReferenceSchemaInContext: resolvedMlSchema,
             resolvedSchema: typeCheck.resolvedSchema,
             valuePath: currentValuePath,
             typePath: currentTypePath,
           }:{
             rawSchema: keyMapRawSchema,
-            resolvedReferenceSchemaInContext: resolvedJzodSchema,
+            resolvedReferenceSchemaInContext: resolvedMlSchema,
             resolvedSchema: typeCheck.resolvedSchema,
             valuePath: currentValuePath,
             typePath: currentTypePath,
@@ -1044,9 +1044,9 @@ export function jzodTypeCheck(
       if (typeof valueObject != "object") {
         return {
           status: "error",
-          error: "jzodTypeCheck failed for object schema to match non-object value",
+          error: "mlsTypeCheck failed for object schema to match non-object value",
           schemaReferenceName,
-          rawJzodSchemaType: effectiveRawSchema.type,
+          rawMlSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           value: valueObject,
@@ -1054,25 +1054,25 @@ export function jzodTypeCheck(
         };
       }
 
-      const jzodObjectFlattenedSchema: MlObject = jzodObjectFlatten(
+      const mlObjectFlattenedSchema: MlObject = mlObjectFlatten(
         effectiveRawSchema,
         modelEnvironment,
-        relativeReferenceJzodContext
+        relativeReferenceMlContext
       );
-      // log.info("jzodTypeCheck object extendedJzodSchema",JSON.stringify(extendedJzodSchema, null, 2));
+      // log.info("mlsTypeCheck object extendedMlSchema",JSON.stringify(extendedMlSchema, null, 2));
 
       // checks that all attributes of the valueObject are present in the schema definition
-      const resolvedObjectEntries: [string, ResolvedJzodSchemaReturnType][] = Object.entries(
+      const resolvedObjectEntries: [string, ResolvedMlSchemaReturnType][] = Object.entries(
         valueObject
       ).map((e: [string, any]) => {
-        if (jzodObjectFlattenedSchema.definition[e[0]]) {
-          const resultSchemaTmp = jzodTypeCheck(
-            jzodObjectFlattenedSchema.definition[e[0]],
+        if (mlObjectFlattenedSchema.definition[e[0]]) {
+          const resultSchemaTmp = mlsTypeCheck(
+            mlObjectFlattenedSchema.definition[e[0]],
             e[1],
             [...currentValuePath, e[0]],
             [...currentTypePath, e[0]],
             modelEnvironment,
-            relativeReferenceJzodContext,
+            relativeReferenceMlContext,
             currentDefaultValue,
             reduxDeploymentsState,
             deploymentUuid,
@@ -1100,35 +1100,35 @@ export function jzodTypeCheck(
             e[0],
             {
               status: "error",
-              error: "jzodTypeCheck value attribute '" + e[0] + "' not found in schema definition",
-              rawJzodSchemaType: effectiveRawSchema.type,
+              error: "mlsTypeCheck value attribute '" + e[0] + "' not found in schema definition",
+              rawMlSchemaType: effectiveRawSchema.type,
               valuePath: [...currentValuePath, e[0]],
               typePath: currentTypePath,
               value: valueObject,
               rawSchema: effectiveRawSchema,
-              errorOnSchemaAttributes: jzodObjectFlattenedSchema as any
+              errorOnSchemaAttributes: mlObjectFlattenedSchema as any
             },
           ];
         }
       });
 
       const foundErrors = resolvedObjectEntries.filter(
-        (e: [string, ResolvedJzodSchemaReturnType]) => e[1].status == "error"
+        (e: [string, ResolvedMlSchemaReturnType]) => e[1].status == "error"
       );
       if (foundErrors.length > 0) {
         return {
           status: "error",
           error:
-            "jzodTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)",
+            "mlsTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)",
           schemaReferenceName,
-          rawJzodSchemaType: effectiveRawSchema.type,
+          rawMlSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           errorOnValueAttributes: foundErrors.map((e) => e[0]),
           innerError: Object.fromEntries(
-            foundErrors.map((e: [string, ResolvedJzodSchemaReturnType]) => [
+            foundErrors.map((e: [string, ResolvedMlSchemaReturnType]) => [
               e[0],
-              e[1] as ResolvedJzodSchemaReturnTypeError,
+              e[1] as ResolvedMlSchemaReturnTypeError,
             ])
           ),
           value: valueObject,
@@ -1137,7 +1137,7 @@ export function jzodTypeCheck(
       }
       // checks that all mandatory attributes of the schema definition are present in the valueObject
       const missingMandatoryAttributes = Object.entries(
-        jzodObjectFlattenedSchema.definition
+        mlObjectFlattenedSchema.definition
       ).filter(
         (e: [string, MlElement]) =>
           e[1].optional !== true &&
@@ -1148,9 +1148,9 @@ export function jzodTypeCheck(
         return {
           status: "error",
           error:
-            "jzodTypeCheck failed to match some mandatory object value attribute(s) with the schema of that attribute(s)",
+            "mlsTypeCheck failed to match some mandatory object value attribute(s) with the schema of that attribute(s)",
           schemaReferenceName,
-          rawJzodSchemaType: effectiveRawSchema.type,
+          rawMlSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           errorOnSchemaAttributes: missingMandatoryAttributes.map((e) => e[0]),
@@ -1158,17 +1158,17 @@ export function jzodTypeCheck(
           rawSchema: effectiveRawSchema,
         };
       }
-      const resultResolvedJzodSchema: MlObject = {
-        ...jzodObjectFlattenedSchema,
+      const resultResolvedMlSchema: MlObject = {
+        ...mlObjectFlattenedSchema,
         definition: Object.fromEntries(
           resolvedObjectEntries.map((e) => [
             e[0],
-            (e[1] as ResolvedJzodSchemaReturnTypeOK).resolvedSchema,
+            (e[1] as ResolvedMlSchemaReturnTypeOK).resolvedSchema,
           ])
         ),
       } as MlObject;
       const objecAttributeskeyMap: { [k: string]: KeyMapEntry } = (resolvedObjectEntries
-      .filter((e) => e[1].status === "ok")  as [string, ResolvedJzodSchemaReturnTypeOK][])
+      .filter((e) => e[1].status === "ok")  as [string, ResolvedMlSchemaReturnTypeOK][])
       .filter((e) => e[1].keyMap !== undefined)
       .reduce(
         (acc, [key, value]) => {
@@ -1179,7 +1179,7 @@ export function jzodTypeCheck(
           }
           // return acc;
           // throw new Error(
-          //   `jzodTypeCheck object schema keyMap should only contain "ok" entries, but found error for key "${key}": ${value.error}`
+          //   `mlsTypeCheck object schema keyMap should only contain "ok" entries, but found error for key "${key}": ${value.error}`
           // );
         },
         // {} as { [k: string]: { rawSchema: MlElement; resolvedSchema: MlElement } }
@@ -1192,14 +1192,14 @@ export function jzodTypeCheck(
         valuePath: currentValuePath,
         typePath: currentTypePath,
         rawSchema: effectiveRawSchema,
-        resolvedSchema: resultResolvedJzodSchema,
+        resolvedSchema: resultResolvedMlSchema,
         subSchemas: Object.fromEntries(resolvedObjectEntries),
         keyMap: {
           ...objecAttributeskeyMap,
           [currentValuePath.join(".")]: {
             rawSchema: effectiveRawSchema,
-            resolvedSchema: resultResolvedJzodSchema,
-            jzodObjectFlattenedSchema: jzodObjectFlattenedSchema,
+            resolvedSchema: resultResolvedMlSchema,
+            mlObjectFlattenedSchema: mlObjectFlattenedSchema,
             valuePath: currentValuePath,
             typePath: currentTypePath,
           }, // map the current value path to the resolved schema
@@ -1208,25 +1208,25 @@ export function jzodTypeCheck(
       break;
     }
     case "union": {
-      const recursivelyUnfoldedUnionSchema = jzodUnion_recursivelyUnfold(
+      const recursivelyUnfoldedUnionSchema = mlUnion_recursivelyUnfold(
         effectiveRawSchema as MlUnion,
         new Set(),
         modelEnvironment,
-        relativeReferenceJzodContext
+        relativeReferenceMlContext
       );
 
       if (recursivelyUnfoldedUnionSchema.status == "error") {
         // log.error(
-        //   "jzodTypeCheck union schema",
+        //   "mlsTypeCheck union schema",
         //   JSON.stringify(effectiveSchema, null, 2),
         //   "could not be unfolded, error:",
-        //   unfoldedJzodSchema.error
+        //   unfoldedMlSchema.error
         // );
         return {
           status: "error",
           schemaReferenceName,
-          error: "jzodTypeCheck failed to recursively unfold schema",
-          rawJzodSchemaType: effectiveRawSchema.type,
+          error: "mlsTypeCheck failed to recursively unfold schema",
+          rawMlSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           innerError: recursivelyUnfoldedUnionSchema,
@@ -1234,29 +1234,29 @@ export function jzodTypeCheck(
           rawSchema: effectiveRawSchema,
         };
       }
-      // const concreteUnfoldedJzodSchemas: MlElement[] = recursivelyUnfoldedUnionSchema.result;
+      // const concreteUnfoldedMlSchemas: MlElement[] = recursivelyUnfoldedUnionSchema.result;
 
       // log.info(
-      //   "jzodTypeCheck called for union",
+      //   "mlsTypeCheck called for union",
       //   effectiveSchema,
-      //   "concreteUnrolledJzodSchemas resolved type:",
-      //   // JSON.stringify(concreteUnfoldedJzodSchemas, null, 2)
-      //   concreteUnfoldedJzodSchemas
+      //   "concreteUnrolledMlSchemas resolved type:",
+      //   // JSON.stringify(concreteUnfoldedMlSchemas, null, 2)
+      //   concreteUnfoldedMlSchemas
       // );
       switch (typeof valueObject) {
         case "number":
         case "bigint":
         case "boolean": {
           // why is selectUnionBranchFromDiscriminator not used here? This is really similar to it.
-          const resultJzodSchema = recursivelyUnfoldedUnionSchema.result.find(
+          const resultMlSchema = recursivelyUnfoldedUnionSchema.result.find(
             (a) => a.type == typeof valueObject
           );
-          if (resultJzodSchema) {
+          if (resultMlSchema) {
             // log.info(
-            //   "jzodTypeCheck object at",
+            //   "mlsTypeCheck object at",
             //   currentValuePath.join("."),
             //   "type:",
-            //   JSON.stringify(resultJzodSchema, null, 2),
+            //   JSON.stringify(resultMlSchema, null, 2),
             //   "validates",
             //   JSON.stringify(
             //     valueObject,
@@ -1270,13 +1270,13 @@ export function jzodTypeCheck(
               valuePath: currentValuePath,
               typePath: currentTypePath,
               rawSchema: effectiveRawSchema,
-              resolvedSchema: resultJzodSchema,
+              resolvedSchema: resultMlSchema,
               keyMap: {
                 [currentValuePath.join(".")]: {
                   rawSchema: effectiveRawSchema,
                   recursivelyUnfoldedUnionSchema: recursivelyUnfoldedUnionSchema,
-                  resolvedSchema: resultJzodSchema,
-                  chosenUnionBranchRawSchema: resultJzodSchema,
+                  resolvedSchema: resultMlSchema,
+                  chosenUnionBranchRawSchema: resultMlSchema,
                   valuePath: currentValuePath,
                   typePath: currentTypePath,
                 }, // map the current value path to the resolved schema
@@ -1286,8 +1286,8 @@ export function jzodTypeCheck(
             return {
               status: "error",
               schemaReferenceName,
-              error: "jzodTypeCheck could not find type for value in resolved union",
-              rawJzodSchemaType: effectiveRawSchema.type,
+              error: "mlsTypeCheck could not find type for value in resolved union",
+              rawMlSchemaType: effectiveRawSchema.type,
               valuePath: currentValuePath,
               typePath: currentTypePath,
               value: valueObject,
@@ -1298,7 +1298,7 @@ export function jzodTypeCheck(
         }
         case "string": {
           // TODO: the following line may introduce some non-determinism, in the case many records actually match the "find" predicate! BAD!
-          const resultJzodSchema = recursivelyUnfoldedUnionSchema.result.find(
+          const resultMlSchema = recursivelyUnfoldedUnionSchema.result.find(
             (a) =>
               a.type == "any" ||
               a.type == "string" ||
@@ -1306,12 +1306,12 @@ export function jzodTypeCheck(
               (a.type == "literal" && a.definition == valueObject) ||
               (a.type == "enum" && (a.definition as string[]).includes(valueObject))
           );
-          if (resultJzodSchema) {
+          if (resultMlSchema) {
             // log.info(
-            //   "jzodTypeCheck union for string at",
+            //   "mlsTypeCheck union for string at",
             //   currentValuePath.join("."),
             //   "type:",
-            //   JSON.stringify(resultJzodSchema, null, 2),
+            //   JSON.stringify(resultMlSchema, null, 2),
             //   "validates",
             //   JSON.stringify(valueObject, null, 2)
             // );
@@ -1321,13 +1321,13 @@ export function jzodTypeCheck(
               valuePath: currentValuePath,
               typePath: currentTypePath,
               rawSchema: effectiveRawSchema,
-              resolvedSchema: resultJzodSchema,
+              resolvedSchema: resultMlSchema,
               keyMap: {
                 [currentValuePath.join(".")]: {
                   rawSchema: effectiveRawSchema,
                   recursivelyUnfoldedUnionSchema: recursivelyUnfoldedUnionSchema,
-                  resolvedSchema: resultJzodSchema,
-                  chosenUnionBranchRawSchema: resultJzodSchema,
+                  resolvedSchema: resultMlSchema,
+                  chosenUnionBranchRawSchema: resultMlSchema,
                   valuePath: currentValuePath,
                   typePath: currentTypePath,
                 }, // map the current value path to the resolved schema
@@ -1337,8 +1337,8 @@ export function jzodTypeCheck(
             return {
               status: "error",
               schemaReferenceName,
-              error: "jzodTypeCheck could not find type for string value in resolved union",
-              rawJzodSchemaType: effectiveRawSchema.type,
+              error: "mlsTypeCheck could not find type for string value in resolved union",
+              rawMlSchemaType: effectiveRawSchema.type,
               valuePath: currentValuePath,
               typePath: currentTypePath,
               value: valueObject,
@@ -1350,14 +1350,14 @@ export function jzodTypeCheck(
         case "object": {
           if (Array.isArray(valueObject)) {
             // log.info(
-            //   "jzodTypeCheck union for array at",
+            //   "mlsTypeCheck union for array at",
             //   currentValuePath.join("."),
             //   "type:",
             //   JSON.stringify(effectiveSchema, null, 2),
             //   "validates",
             //   JSON.stringify(valueObject, null, 2)
             // );
-            const resolveUnionResult = jzodUnionResolvedTypeForArray(
+            const resolveUnionResult = mlUnionResolvedTypeForArray(
               recursivelyUnfoldedUnionSchema.result,
               effectiveRawSchema,
               effectiveRawSchema.discriminator,
@@ -1365,14 +1365,14 @@ export function jzodTypeCheck(
               currentValuePath,
               currentTypePath,
               modelEnvironment,
-              relativeReferenceJzodContext
+              relativeReferenceMlContext
             );
             if (resolveUnionResult.status === "error") {
               return {
                 status: "error",
                 schemaReferenceName,
-                error: "jzodTypeCheck failed to resolve union for array",
-                rawJzodSchemaType: effectiveRawSchema.type,
+                error: "mlsTypeCheck failed to resolve union for array",
+                rawMlSchemaType: effectiveRawSchema.type,
                 valuePath: currentValuePath,
                 typePath: currentTypePath,
                 innerError: resolveUnionResult,
@@ -1380,12 +1380,12 @@ export function jzodTypeCheck(
                 rawSchema: effectiveRawSchema,
               };
             }
-            if (resolveUnionResult.resolvedJzodObjectSchema.type != "array") {
+            if (resolveUnionResult.resolvedMlObjectSchema.type != "array") {
               return {
                 status: "error",
                 schemaReferenceName,
-                error: "jzodTypeCheck resolved union for array did not yield an array schema",
-                rawJzodSchemaType: effectiveRawSchema.type,
+                error: "mlsTypeCheck resolved union for array did not yield an array schema",
+                rawMlSchemaType: effectiveRawSchema.type,
                 valuePath: currentValuePath,
                 typePath: currentTypePath,
                 value: valueObject,
@@ -1393,25 +1393,25 @@ export function jzodTypeCheck(
               };
             }
             // TODO: schema of different items may vary!
-            // const arrayItemSchema = jzodTypeCheck(
-            //   resolveUnionResult.resolvedJzodObjectSchema.definition,
+            // const arrayItemSchema = mlsTypeCheck(
+            //   resolveUnionResult.resolvedMlObjectSchema.definition,
             //   valueObject[0], // we take the first element of the array to determine the type
             //   currentValuePath,
             //   [...currentTypePath, "0"],
             //   modelEnvironment,
-            //   relativeReferenceJzodContext,
+            //   relativeReferenceMlContext,
             //   currentDefaultValue,
             //   reduxDeploymentsState,
             //   deploymentUuid,
             //   rootObject
             // );
-            const concreteArraySchema = jzodTypeCheck(
-              resolveUnionResult.resolvedJzodObjectSchema,
+            const concreteArraySchema = mlsTypeCheck(
+              resolveUnionResult.resolvedMlObjectSchema,
               valueObject, // resolving the valueObject a second time as an array, not as a union
               currentValuePath,
               currentTypePath,
               modelEnvironment,
-              relativeReferenceJzodContext,
+              relativeReferenceMlContext,
               currentDefaultValue,
               reduxDeploymentsState,
               deploymentUuid,
@@ -1422,8 +1422,8 @@ export function jzodTypeCheck(
               return {
                 status: "error",
                 schemaReferenceName,
-                error: "jzodTypeCheck failed to match array (resolved from union) with schema",
-                rawJzodSchemaType: effectiveRawSchema.type,
+                error: "mlsTypeCheck failed to match array (resolved from union) with schema",
+                rawMlSchemaType: effectiveRawSchema.type,
                 valuePath: currentValuePath,
                 typePath: currentTypePath,
                 innerError: concreteArraySchema,
@@ -1434,8 +1434,8 @@ export function jzodTypeCheck(
             // if (arrayItemSchema.status === "error") {
             //   return {
             //     status: "error",
-            //     error: "jzodTypeCheck failed to match array item with schema",
-            //     rawJzodSchemaType: effectiveRawSchema.type,
+            //     error: "mlsTypeCheck failed to match array item with schema",
+            //     rawMlSchemaType: effectiveRawSchema.type,
             //     valuePath: currentValuePath,
             //     typePath: currentTypePath,
             //     innerError: arrayItemSchema,
@@ -1462,7 +1462,7 @@ export function jzodTypeCheck(
                 [currentValuePath.join(".")]: {
                   rawSchema: effectiveRawSchema,
                   recursivelyUnfoldedUnionSchema: recursivelyUnfoldedUnionSchema,
-                  chosenUnionBranchRawSchema: resolveUnionResult.resolvedJzodObjectSchema,
+                  chosenUnionBranchRawSchema: resolveUnionResult.resolvedMlObjectSchema,
                   resolvedSchema,
                   valuePath: currentValuePath,
                   typePath: currentTypePath,
@@ -1471,7 +1471,7 @@ export function jzodTypeCheck(
             };
           } // end of if (Array.isArray(valueObject))
 
-          const resolveUnionResult = jzodUnionResolvedTypeForObject(
+          const resolveUnionResult = mlUnionResolvedTypeForObject(
             recursivelyUnfoldedUnionSchema.result,
             effectiveRawSchema,
             effectiveRawSchema.discriminator,
@@ -1479,15 +1479,15 @@ export function jzodTypeCheck(
             currentValuePath,
             currentTypePath,
             modelEnvironment,
-            relativeReferenceJzodContext
+            relativeReferenceMlContext
           );
 
           if (resolveUnionResult.status === "error") {
             return {
               status: "error",
               schemaReferenceName,
-              error: "jzodTypeCheck failed to resolve union for object",
-              rawJzodSchemaType: effectiveRawSchema.type,
+              error: "mlsTypeCheck failed to resolve union for object",
+              rawMlSchemaType: effectiveRawSchema.type,
               valuePath: currentValuePath,
               typePath: currentTypePath,
               innerError: resolveUnionResult,
@@ -1496,22 +1496,22 @@ export function jzodTypeCheck(
             };
           }
 
-          const discriminatedSchemaForObject = resolveUnionResult.resolvedJzodObjectSchema;
+          const discriminatedSchemaForObject = resolveUnionResult.resolvedMlObjectSchema;
           // log.info(
-          //   "jzodTypeCheck union for object at",
+          //   "mlsTypeCheck union for object at",
           //   currentValuePath.join("."),
           //   "discriminator:",
           //   effectiveRawSchema.discriminator,
           //   "resolveUnionResult:",
           //   resolveUnionResult,
           // );
-          const subResolvedSchemas = jzodTypeCheck(
+          const subResolvedSchemas = mlsTypeCheck(
             discriminatedSchemaForObject,
             valueObject,
             currentValuePath,
             [...currentTypePath, "union choice(" + JSON.stringify(resolveUnionResult.chosenDiscriminator) + ")"],
             modelEnvironment,
-            relativeReferenceJzodContext,
+            relativeReferenceMlContext,
             currentDefaultValue,
             reduxDeploymentsState,
             deploymentUuid,
@@ -1523,8 +1523,8 @@ export function jzodTypeCheck(
               status: "error",
               schemaReferenceName,
               error:
-                "jzodTypeCheck union failed to match object attribute value with schema attribute",
-              rawJzodSchemaType: effectiveRawSchema.type,
+                "mlsTypeCheck union failed to match object attribute value with schema attribute",
+              rawMlSchemaType: effectiveRawSchema.type,
               valuePath: currentValuePath,
               typePath: currentTypePath,
               innerError: subResolvedSchemas,
@@ -1547,9 +1547,9 @@ export function jzodTypeCheck(
               status: "error",
               schemaReferenceName,
               error:
-                "jzodTypeCheck failed to get object union discriminator values: " +
+                "mlsTypeCheck failed to get object union discriminator values: " +
                 objectUniondiscriminatorValues.failureMessage,
-              rawJzodSchemaType: effectiveRawSchema.type,
+              rawMlSchemaType: effectiveRawSchema.type,
               valuePath: currentValuePath,
               typePath: currentTypePath,
               value: valueObject,
@@ -1558,7 +1558,7 @@ export function jzodTypeCheck(
             };
           }
           // log.info(
-          //   "jzodTypeCheck object at",
+          //   "mlsTypeCheck object at",
           //   currentValuePath.join("."),
           //   "type:",
           //   subResolvedSchemas.resolvedSchema,
@@ -1603,12 +1603,12 @@ export function jzodTypeCheck(
         case "symbol": // TODO: what does this correspond to?
         case "undefined":
         default: {
-          // throw new Error("jzodTypeCheck could not resolve type for union with valueObject " + valueObject);
+          // throw new Error("mlsTypeCheck could not resolve type for union with valueObject " + valueObject);
           return {
             status: "error",
             schemaReferenceName,
-            error: "jzodTypeCheck value type not supported for union schema: " + typeof valueObject,
-            rawJzodSchemaType: effectiveRawSchema.type,
+            error: "mlsTypeCheck value type not supported for union schema: " + typeof valueObject,
+            rawMlSchemaType: effectiveRawSchema.type,
             valuePath: currentValuePath,
             typePath: currentTypePath,
             value: valueObject,
@@ -1622,32 +1622,32 @@ export function jzodTypeCheck(
     case "record": {
       if (typeof valueObject != "object") {
         // throw new Error(
-        //   "jzodTypeCheck record schema " +
+        //   "mlsTypeCheck record schema " +
         //     JSON.stringify(effectiveSchema) +
         //     " for value " +
         //     JSON.stringify(valueObject)
         // );
         return {
           status: "error",
-          error: "jzodTypeCheck record schema for value is not an object",
+          error: "mlsTypeCheck record schema for value is not an object",
           schemaReferenceName,
-          rawJzodSchemaType: effectiveRawSchema.type,
+          rawMlSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           value: valueObject,
           rawSchema: effectiveRawSchema,
         };
       }
-      const resolvedRecordEntries: { [k: string]: ResolvedJzodSchemaReturnType } =
+      const resolvedRecordEntries: { [k: string]: ResolvedMlSchemaReturnType } =
         Object.fromEntries(
           Object.entries(valueObject).map((e: [string, any]) => {
-            const resultSchemaTmp: ResolvedJzodSchemaReturnType = jzodTypeCheck(
-              jzodRecordElementSchema(effectiveRawSchema.definition),
+            const resultSchemaTmp: ResolvedMlSchemaReturnType = mlsTypeCheck(
+              mlRecordElementSchema(effectiveRawSchema.definition),
               e[1],
               [...currentValuePath, e[0]],
               [...currentTypePath, e[0]],
               modelEnvironment,
-              relativeReferenceJzodContext,
+              relativeReferenceMlContext,
               currentDefaultValue,
               reduxDeploymentsState,
               deploymentUuid,
@@ -1655,23 +1655,23 @@ export function jzodTypeCheck(
               undefined, // schemaReferenceName
             );
             return [e[0], resultSchemaTmp];
-          }) as [string, ResolvedJzodSchemaReturnType][]
+          }) as [string, ResolvedMlSchemaReturnType][]
         );
       const foundErrors = Object.entries(resolvedRecordEntries).filter(
-        (e: [string, ResolvedJzodSchemaReturnType]) => e[1].status == "error"
+        (e: [string, ResolvedMlSchemaReturnType]) => e[1].status == "error"
       );
       if (foundErrors.length > 0) {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
+          error: `mlsTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
           schemaReferenceName,
-          rawJzodSchemaType: effectiveRawSchema.type,
+          rawMlSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           innerError: Object.fromEntries(
-            foundErrors.map((e: [string, ResolvedJzodSchemaReturnType]) => [
+            foundErrors.map((e: [string, ResolvedMlSchemaReturnType]) => [
               e[0],
-              e[1] as ResolvedJzodSchemaReturnTypeError,
+              e[1] as ResolvedMlSchemaReturnTypeError,
             ])
           ),
           value: valueObject,
@@ -1684,12 +1684,12 @@ export function jzodTypeCheck(
         definition: Object.fromEntries(
           Object.entries(resolvedRecordEntries).map((e) => [
             e[0],
-            (e[1] as ResolvedJzodSchemaReturnTypeOK).resolvedSchema,
+            (e[1] as ResolvedMlSchemaReturnTypeOK).resolvedSchema,
           ])
         ),
       };
       // log.info(
-      //   "jzodTypeCheck resolvedRecordEntries",
+      //   "mlsTypeCheck resolvedRecordEntries",
       //   JSON.stringify(resolvedRecordEntries, null, 2),
       //   Object.entries(resolvedRecordEntries).length,
       // );
@@ -1704,13 +1704,13 @@ export function jzodTypeCheck(
           }: acc;
         }
         throw new Error(
-          `jzodTypeCheck record schema keyMap should only contain "ok" entries,
+          `mlsTypeCheck record schema keyMap should only contain "ok" entries,
             but found error for key "${key}": ${value}`
         );
       // }, {} as { [k: string]: { rawSchema: MlElement; resolvedSchema: MlElement } });
       }, {} as { [k: string]: KeyMapEntry });
       // log.info(
-      //   "jzodTypeCheck recordEntrieskeyMap",
+      //   "mlsTypeCheck recordEntrieskeyMap",
       //   "done"  );
       return {
         status: "ok",
@@ -1734,7 +1734,7 @@ export function jzodTypeCheck(
     case "literal": {
       if (valueObject == effectiveRawSchema.definition) {
         // log.info(
-        //   "jzodTypeCheck literal at path=valueObject." +
+        //   "mlsTypeCheck literal at path=valueObject." +
         //   currentValuePath.join("."),
         //   ", type:",
         //   JSON.stringify(effectiveSchema, null, 2),
@@ -1761,9 +1761,9 @@ export function jzodTypeCheck(
       } else {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
+          error: `mlsTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
           schemaReferenceName,
-          rawJzodSchemaType: effectiveRawSchema.type,
+          rawMlSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           value: valueObject,
@@ -1774,7 +1774,7 @@ export function jzodTypeCheck(
     }
     case "enum": {
       // log.info(
-      //   "jzodTypeCheck enum at path=valueObject." +
+      //   "mlsTypeCheck enum at path=valueObject." +
       //   currentValuePath.join("."),
       //   ", type:",
       //   JSON.stringify(effectiveSchema, null, 2),
@@ -1802,9 +1802,9 @@ export function jzodTypeCheck(
       if (!Array.isArray(valueObject)) {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
+          error: `mlsTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
           schemaReferenceName,
-          rawJzodSchemaType: effectiveRawSchema.type,
+          rawMlSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           value: valueObject,
@@ -1815,20 +1815,20 @@ export function jzodTypeCheck(
       //   status: "error",
       //   valuePath: currentValuePath,
       //   typePath: currentTypePath,
-      //   error: "jzodTypeCheck can not handle tuple schema " +
+      //   error: "mlsTypeCheck can not handle tuple schema " +
       //   JSON.stringify(effectiveSchema) +
       //   " for value " +
       //   JSON.stringify(valueObject)
       // }
-      const resolvedInnerSchemas: ResolvedJzodSchemaReturnType[] = effectiveRawSchema.definition.map(
+      const resolvedInnerSchemas: ResolvedMlSchemaReturnType[] = effectiveRawSchema.definition.map(
         (e: MlElement, index: number) => {
-          const resultSchemaTmp = jzodTypeCheck(
+          const resultSchemaTmp = mlsTypeCheck(
             e,
             valueObject[index],
             [...currentValuePath, index],
             [...currentTypePath, index],
             modelEnvironment,
-            relativeReferenceJzodContext,
+            relativeReferenceMlContext,
             currentDefaultValue,
             reduxDeploymentsState,
             deploymentUuid,
@@ -1839,18 +1839,18 @@ export function jzodTypeCheck(
         }
       );
       const foundErrors = resolvedInnerSchemas.filter(
-        (e: ResolvedJzodSchemaReturnType) => e.status == "error"
+        (e: ResolvedMlSchemaReturnType) => e.status == "error"
       );
       if (foundErrors.length > 0) {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
+          error: `mlsTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
           schemaReferenceName,
-          rawJzodSchemaType: effectiveRawSchema.type,
+          rawMlSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           innerError: Object.fromEntries(
-            // foundErrors.map((e: ResolvedJzodSchemaReturnTypeError) => [
+            // foundErrors.map((e: ResolvedMlSchemaReturnTypeError) => [
             foundErrors.map((e: any) => [
               e.valuePath && e.valuePath.length > 0 ? e.valuePath.join(".") : "" ,
               e as any,
@@ -1864,7 +1864,7 @@ export function jzodTypeCheck(
         ...effectiveRawSchema,
         type: "tuple",
         definition: resolvedInnerSchemas.map(
-          (e) => (e as ResolvedJzodSchemaReturnTypeOK).resolvedSchema
+          (e) => (e as ResolvedMlSchemaReturnTypeOK).resolvedSchema
         ),
       };
       return {
@@ -1884,7 +1884,7 @@ export function jzodTypeCheck(
               };
             }
             throw new Error(
-              `jzodTypeCheck tuple schema keyMap should only contain "ok" entries, but found error for index ${index}: ${e.error}`
+              `mlsTypeCheck tuple schema keyMap should only contain "ok" entries, but found error for index ${index}: ${e.error}`
             );
           // }, {} as { [k: string]: { rawSchema: MlElement; resolvedSchema: MlElement } }),
           }, {} as { [k: string]: KeyMapEntry }),
@@ -1905,9 +1905,9 @@ export function jzodTypeCheck(
       if (!Array.isArray(valueObject)) {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
+          error: `mlsTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
           schemaReferenceName,
-          rawJzodSchemaType: effectiveRawSchema.type,
+          rawMlSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           value: valueObject,
@@ -1916,19 +1916,19 @@ export function jzodTypeCheck(
       }
 
       // log.info(
-      //   "jzodTypeCheck called resolveJzodSchemaReferenceInContext for array found innerSchema",
+      //   "mlsTypeCheck called resolveMlSchemaReferenceInContext for array found innerSchema",
       //   JSON.stringify(innerSchema, null, 2)
       // );
 
-      const subSchemas: ResolvedJzodSchemaReturnType[] = valueObject.map(
+      const subSchemas: ResolvedMlSchemaReturnType[] = valueObject.map(
         (e: any, index: number) => {
-          const subSchema = jzodTypeCheck(
+          const subSchema = mlsTypeCheck(
             effectiveRawSchema.definition,
             e,
             [...currentValuePath, index],
             [...currentTypePath, index],
             modelEnvironment,
-            relativeReferenceJzodContext,
+            relativeReferenceMlContext,
             currentDefaultValue,
             reduxDeploymentsState,
             deploymentUuid,
@@ -1938,20 +1938,20 @@ export function jzodTypeCheck(
           return subSchema;
         }
       );
-      const foundErrors: ResolvedJzodSchemaReturnTypeError[] = subSchemas.filter(
-        (e: ResolvedJzodSchemaReturnType) => e.status == "error"
+      const foundErrors: ResolvedMlSchemaReturnTypeError[] = subSchemas.filter(
+        (e: ResolvedMlSchemaReturnType) => e.status == "error"
       ) as any;
 
       if (foundErrors.length > 0) {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
+          error: `mlsTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
           schemaReferenceName,
-          rawJzodSchemaType: effectiveRawSchema.type,
+          rawMlSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           innerError: Object.fromEntries(
-            foundErrors.map((e: ResolvedJzodSchemaReturnTypeError) => [
+            foundErrors.map((e: ResolvedMlSchemaReturnTypeError) => [
               e.valuePath && e.valuePath.length > 0 ? e.valuePath.join(".") : "",
               e,
             ])
@@ -1963,10 +1963,10 @@ export function jzodTypeCheck(
       const resolvedSchema: MlElement = {
         ...effectiveRawSchema,
         type: "tuple",
-        definition: subSchemas.map((s) => (s as ResolvedJzodSchemaReturnTypeOK).resolvedSchema), // TODO: this is a shortcut assuming that all items in the array are of the same type, which is not always true
+        definition: subSchemas.map((s) => (s as ResolvedMlSchemaReturnTypeOK).resolvedSchema), // TODO: this is a shortcut assuming that all items in the array are of the same type, which is not always true
       };
       // log.info(
-      //   "jzodTypeCheck resolvedSchema for array",
+      //   "mlsTypeCheck resolvedSchema for array",
       //   JSON.stringify(subSchemas, null, 2),
       // );
       return {
@@ -2027,13 +2027,13 @@ export function jzodTypeCheck(
       };
     }
     case "uuid": {
-      // log.info("jzodTypeCheck uuid at path=valueObject." + currentValue
+      // log.info("mlsTypeCheck uuid at path=valueObject." + currentValue
       if (typeof valueObject != "string" || !isValidUUID(valueObject)) {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
+          error: `mlsTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
           schemaReferenceName,
-          rawJzodSchemaType: effectiveRawSchema.type,
+          rawMlSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           value: valueObject,
@@ -2063,9 +2063,9 @@ export function jzodTypeCheck(
       if (typeof valueObject != "string") {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
+          error: `mlsTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
           schemaReferenceName,
-          rawJzodSchemaType: effectiveRawSchema.type,
+          rawMlSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           value: valueObject,
@@ -2093,9 +2093,9 @@ export function jzodTypeCheck(
       if (typeof valueObject != "number") {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
+          error: `mlsTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
           schemaReferenceName,
-          rawJzodSchemaType: effectiveRawSchema.type,
+          rawMlSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           value: valueObject,
@@ -2123,9 +2123,9 @@ export function jzodTypeCheck(
       if (typeof valueObject != "bigint") {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
+          error: `mlsTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
           schemaReferenceName,
-          rawJzodSchemaType: effectiveRawSchema.type,
+          rawMlSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           value: valueObject,
@@ -2153,9 +2153,9 @@ export function jzodTypeCheck(
       if (typeof valueObject != "boolean") {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
+          error: `mlsTypeCheck failed to match value with ${effectiveRawSchema.type} schema`,
           schemaReferenceName,
-          rawJzodSchemaType: effectiveRawSchema.type,
+          rawMlSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           value: valueObject,
@@ -2216,9 +2216,9 @@ export function jzodTypeCheck(
         } else {
           return {
             status: "error",
-            error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema. ${typeof valueObject} could not be converted to Date. Value: ${JSON.stringify(valueObject)}`,
+            error: `mlsTypeCheck failed to match value with ${effectiveRawSchema.type} schema. ${typeof valueObject} could not be converted to Date. Value: ${JSON.stringify(valueObject)}`,
             schemaReferenceName,
-            rawJzodSchemaType: effectiveRawSchema.type,
+            rawMlSchemaType: effectiveRawSchema.type,
             valuePath: currentValuePath,
             typePath: currentTypePath,
             value: JSON.stringify(valueObject),
@@ -2228,9 +2228,9 @@ export function jzodTypeCheck(
       } catch (e) {
         return {
           status: "error",
-          error: `jzodTypeCheck failed to match value with ${effectiveRawSchema.type} schema: ` + e,
+          error: `mlsTypeCheck failed to match value with ${effectiveRawSchema.type} schema: ` + e,
           schemaReferenceName,
-          rawJzodSchemaType: effectiveRawSchema.type,
+          rawMlSchemaType: effectiveRawSchema.type,
           valuePath: currentValuePath,
           typePath: currentTypePath,
           value: valueObject,
@@ -2271,16 +2271,16 @@ export function jzodTypeCheck(
     }
     default: {
       // throw new Error(
-      //   "jzodTypeCheck could not resolve schemaReferences for valueObject " +
+      //   "mlsTypeCheck could not resolve schemaReferences for valueObject " +
       //     JSON.stringify(valueObject, undefined, 2) +
       //     " and schema " +
       //     JSON.stringify(effectiveSchema)
       // );
       return {
         status: "error",
-        error: `jzodTypeCheck failed to match value with undefined schema type`,
+        error: `mlsTypeCheck failed to match value with undefined schema type`,
         schemaReferenceName,
-        rawJzodSchemaType: "not supported",
+        rawMlSchemaType: "not supported",
         valuePath: currentValuePath,
         typePath: currentTypePath,
         value: valueObject,
@@ -2293,40 +2293,40 @@ export function jzodTypeCheck(
 }
 
 // ################################################################################################
-// Transformer function for jzodTypeCheck
-export function jzodTypeCheckTransformer<T extends MiroirModelEnvironment>(
+// Transformer function for mlsTypeCheck
+export function mlsTypeCheckTransformer<T extends MiroirModelEnvironment>(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
   // transformer: any,
-  transformer: TransformerForBuildPlusRuntime_jzodTypeCheck,
+  transformer: TransformerForBuildPlusRuntime_mlsTypeCheck,
   resolveBuildTransformersTo: any,
   // queryParams: Record<string, any>,
   queryParams: T,
   contextResults?: Record<string, any>,
-): ResolvedJzodSchemaReturnType {
+): ResolvedMlSchemaReturnType {
   const {
     mlSchema,
     valueObject,
     currentValuePath = [],
     currentTypePath = [],
-    // miroirFundamentalJzodSchema,
+    // miroirFundamentalMlSchema,
     // currentModel,
     // miroirMetaModel,
-    relativeReferenceJzodContext = {},
+    relativeReferenceMlContext = {},
     currentDefaultValue,
     reduxDeploymentsState,
     deploymentUuid,
     rootObject
   } = transformer;
 
-  return jzodTypeCheck(
+  return mlsTypeCheck(
     mlSchema,
     valueObject,
     currentValuePath,
     currentTypePath,
     defaultMiroirModelEnvironment, // TODO: use proper model environment
-    relativeReferenceJzodContext,
+    relativeReferenceMlContext,
     currentDefaultValue,
     reduxDeploymentsState,
     deploymentUuid,

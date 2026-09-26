@@ -413,7 +413,7 @@ describe("RunnerTestSession (Gap E R)", () => {
         { uuid: "fbec9082-5cdf-4877-bd78-66a434a8eebf", entityUuid: customEntityUuid },
       ],
       endpoints: [],
-      jzodSchemas: [],
+      mlSchemas: [],
       menus: [],
       runners: [],
       themes: [],

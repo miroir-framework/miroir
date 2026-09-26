@@ -1,18 +1,18 @@
 import type { MlEnumAttributeTypes } from "miroir-core";
 import {
-  getAttributeTypesFromJzodSchema,
-  jzodToSqlAttributeTypeMap,
+  getAttributeTypesFromMlSchema,
+  mlsToSqlAttributeTypeMap,
 } from "miroir-core";
 import type { PostgresDataTypes } from "./Postgres";
 
 // Re-export for callers / MiroirTest functionRefs that still use this module path.
-export { getAttributeTypesFromJzodSchema };
+export { getAttributeTypesFromMlSchema };
 
 // TODO: refactor with getConstantSqlTypeMap?
 export const jzodToPostgresTypeMap: Record<
   MlEnumAttributeTypes,
   { targetType: "json" | "scalar"; sqlTargetType: PostgresDataTypes }
-> = jzodToSqlAttributeTypeMap as Record<
+> = mlsToSqlAttributeTypeMap as Record<
   MlEnumAttributeTypes,
   { targetType: "json" | "scalar"; sqlTargetType: PostgresDataTypes }
 >;

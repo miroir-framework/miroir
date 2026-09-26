@@ -88,7 +88,7 @@ A transformer's `transformerInterface` would become:
 | `jzod` (bootstrap schema JSON) | Add `jzodTypeVar`, `jzodForAll` to `mlElement` union and `mlEnumElementTypes` |
 | `jzod/src/JzodToZod.ts` | Handle `typeVar` (emit `z.any()` at generation time, or a branded marker) |
 | `jzod-ts/src/JzodToTs.ts` | Emit generic TS type parameters (`<X>`) when encountering `forAll` |
-| `miroir-core` fundamental schema | Add `typeVar`/`forAll` to `miroirFundamentalJzodSchema.definition.context` |
+| `miroir-core` fundamental schema | Add `typeVar`/`forAll` to `miroirFundamentalMlSchema.definition.context` |
 | `miroir-core` transformer resolution | New unification pass in `transformer_extended_apply` or a new `resolveTypeVars` utility |
 | Transformer EntityDefinition schema | Replace `InputOutputType` enum with structural Jzod types |
 | UI schema editor | Render type variables as generic placeholders; propagate bindings during composition |

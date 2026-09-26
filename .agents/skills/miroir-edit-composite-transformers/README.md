@@ -20,7 +20,7 @@ A specialized skill for creating and updating **Composite** Miroir Transformers 
 ### Invoke via natural language:
 ```
 "Create a composite transformer to filter and format user data"
-"Update the spreadSheetToJzodSchema transformer"
+"Update the spreadSheetToMlSchema transformer"
 "Build a transformer that combines filtering and mapping"
 ```
 
@@ -48,7 +48,7 @@ A specialized skill for creating and updating **Composite** Miroir Transformers 
 - **No devBuild**: No type generation needed
 - **Simple**: Only 3 files to modify
 - **Reusable**: Great for domain-specific logic
-- **Examples**: `spreadSheetToJzodSchema`, data format conversions
+- **Examples**: `spreadSheetToMlSchema`, data format conversions
 
 ## The 5-Step Workflow
 

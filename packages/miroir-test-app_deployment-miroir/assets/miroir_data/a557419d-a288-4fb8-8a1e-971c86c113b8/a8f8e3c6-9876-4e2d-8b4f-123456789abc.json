@@ -67,7 +67,7 @@
               }
             ]
           },
-          "relativeReferenceJzodContext": {
+          "relativeReferenceMlContext": {
             "type": "record",
             "definition": {
               "type": "schemaReference",

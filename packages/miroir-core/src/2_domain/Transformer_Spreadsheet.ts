@@ -1,10 +1,10 @@
 import { optional } from "zod";
 import { TransformerDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-// export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
+// export const transformer_spreadSheetToMlSchema: TransformerDefinition = {
 //   uuid: "f1dc903c-19b5-4903-91dd-4f78ffa42929",
-//   name: "spreadSheetToJzodSchema",
-//   defaultLabel: "spreadSheetToJzodSchema",
+//   name: "spreadSheetToMlSchema",
+//   defaultLabel: "spreadSheetToMlSchema",
 //   description: "Transform a spreadsheet into a Jzod schema",
 //   parentUuid: "a557419d-a288-4fb8-8a1e-971c86c113b8",
 //   parentDefinitionVersionUuid: "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
@@ -13,7 +13,7 @@ import { TransformerDefinition } from "../0_interfaces/1_core/preprocessor-gener
 //     transformerParameterSchema: {
 //       transformerType: {
 //         type: "literal",
-//         definition: "spreadSheetToJzodSchema",
+//         definition: "spreadSheetToMlSchema",
 //       },
 //       transformerDefinition: {
 //         type: "object",

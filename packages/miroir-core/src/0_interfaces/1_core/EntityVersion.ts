@@ -6,7 +6,7 @@ import type {
   EntityVersion,
   MlObject,
 } from "./preprocessor-generated/miroirFundamentalType";
-import { miroirFundamentalJzodSchema } from "./preprocessor-generated/miroirFundamentalJzodSchema";
+import { miroirFundamentalMlSchema } from "./preprocessor-generated/miroirFundamentalMlSchema";
 
 // ##########################################################################################
 
@@ -71,7 +71,7 @@ function assertPresentModelMlSchema(source: PresentModelSchemaSource): MlObject 
 function resolvePresentModelMlSchema(source: PresentModelSchemaSource): MlObject {
   const mlSchema = assertPresentModelMlSchema(source);
   const extendedMLSchema: MlObject | undefined = mlSchema.extend
-    ? (miroirFundamentalJzodSchema.definition.context.entityDefinitionRoot as MlObject)
+    ? (miroirFundamentalMlSchema.definition.context.entityDefinitionRoot as MlObject)
     : undefined;
   return {
     type: "object",

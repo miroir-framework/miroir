@@ -129,8 +129,8 @@ const INFRASTRUCTURE_ATTRIBUTES = new Set([
 /**
  * Map a Jzod type string to a UML-friendly type string.
  */
-export function jzodTypeToUml(jzodType: string): string {
-  switch (jzodType) {
+export function jzodTypeToUml(mlType: string): string {
+  switch (mlType) {
     case "uuid":
       return "UUID";
     case "string":
@@ -148,7 +148,7 @@ export function jzodTypeToUml(jzodType: string): string {
     case "array":
       return "Array";
     default:
-      return jzodType;
+      return mlType;
   }
 }
 

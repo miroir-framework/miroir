@@ -4,11 +4,11 @@ import React, { FC, useCallback, useMemo } from "react";
 
 import {
   defaultViewParamsFromAdminStorageFetchQueryParams,
-  getDefaultValueForJzodSchemaWithResolutionNonHook,
+  getDefaultValueForMlSchemaWithResolutionNonHook,
   MlElement,
   MlEnum,
   MlLiteral,
-  jzodUnionResolvedTypeForObject,
+  mlUnionResolvedTypeForObject,
   LoggerInterface,
   MiroirLoggerFactory,
   resolvePathOnObject,
@@ -175,7 +175,7 @@ const handleDiscriminatorChange = (
       "selectedValue",
       selectedValue
     );
-    const resolveUnionResult = jzodUnionResolvedTypeForObject(
+    const resolveUnionResult = mlUnionResolvedTypeForObject(
       parentKeyMap.recursivelyUnfoldedUnionSchema.result,
       parentKeyMap.rawSchema as MlUnion,
       parentKeyMap.discriminator,
@@ -183,19 +183,19 @@ const handleDiscriminatorChange = (
       parentKeyMap.valuePath,
       parentKeyMap.typePath,
       modelEnvironment,
-      {}, // relativeReferenceJzodContext
+      {}, // relativeReferenceMlContext
     );
 
     log.info(
-      `handleDiscriminatorChange (${discriminatorType}) jzodUnionResolvedTypeForObject result`,
+      `handleDiscriminatorChange (${discriminatorType}) mlUnionResolvedTypeForObject result`,
       resolveUnionResult,
     );
     if (resolveUnionResult.status === "error") {
       throw new Error(
-        `handleDiscriminatorChange jzodUnionResolvedTypeForObject error: ${resolveUnionResult.error}`
+        `handleDiscriminatorChange mlUnionResolvedTypeForObject error: ${resolveUnionResult.error}`
       );
     }
-    newJzodSchema = resolveUnionResult.resolvedJzodObjectSchema;
+    newJzodSchema = resolveUnionResult.resolvedMlObjectSchema;
   } else {
     localChosenDiscriminator = parentKeyMap.discriminator as string;
     newJzodSchema =
@@ -249,7 +249,7 @@ const handleDiscriminatorChange = (
   
   const defaultValue = modelEnvironment
     ? {
-      ...getDefaultValueForJzodSchemaWithResolutionNonHook(
+      ...getDefaultValueForMlSchemaWithResolutionNonHook(
         "build",
         newJzodSchemaWithOptional,
         formik.values[reportSectionPathAsString],

@@ -217,11 +217,11 @@ interface JsonElementEditorDialogProps {
   currentApplicationSection?: ApplicationSection;
   entity: Entity;
   mlSchema: MlObject;
-  resolvedJzodSchema: any;
+  resolvedMlSchema: any;
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;
   currentAppModel: MetaModel;
   currentMiroirModel: MetaModel;
-  miroirFundamentalJzodSchema: any;
+  miroirFundamentalMlSchema: any;
   // dialog
   setdialogOuterFormObject: (obj: any) => void;
   handleAddObjectDialogFormSubmit: (data: any, source?: string) => Promise<any>;
@@ -247,11 +247,11 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
   currentApplicationSection,
   entity,
   mlSchema,
-  resolvedJzodSchema,
+  resolvedMlSchema,
   foreignKeyObjects,
   currentAppModel,
   currentMiroirModel,
-  miroirFundamentalJzodSchema,
+  miroirFundamentalMlSchema,
   setdialogOuterFormObject,
   handleAddObjectDialogFormSubmit,
   handleAddObjectDialogFormClose,
@@ -362,7 +362,7 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
                 rootLessListKey: "ROOT",
                 currentValue: formState,
                 formikValues: formik.values,
-                rawJzodSchema: mlSchema,
+                rawMlSchema: mlSchema,
               }}
             />
           )}
@@ -426,7 +426,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
   //   mlSchema
   // );
   // const context = useMiroirContextService();
-  const miroirFundamentalJzodSchema = useMiroirFundamentalJzodSchemaForDeployment(
+  const miroirFundamentalMlSchema = useMiroirFundamentalJzodSchemaForDeployment(
     currentDeploymentUuid,
   );
   const domainController: DomainControllerInterface = useDomainControllerService();
@@ -436,9 +436,9 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
   const formIsOpen = addObjectdialogFormIsOpen || (!showButton && props.isOpen);
 
   // We'll pass a simple validation that the dialog is ready, actual resolution happens in Formik
-  const resolvedJzodSchema = useMemo(() => {
+  const resolvedMlSchema = useMemo(() => {
     if (
-      miroirFundamentalJzodSchema &&
+      miroirFundamentalMlSchema &&
       mlSchema &&
       defaultFormValuesObject &&
       dialogOuterFormObject &&
@@ -448,14 +448,14 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
     }
     return undefined;
   }, [
-    miroirFundamentalJzodSchema,
+    miroirFundamentalMlSchema,
     mlSchema,
     defaultFormValuesObject,
     dialogOuterFormObject,
     currentAppModel,
   ]);
 
-  if (!resolvedJzodSchema) {
+  if (!resolvedMlSchema) {
     log.error(
       "JsonObjectEditFormDialog prerequisites not met",
       // "defaultFormValuesObject", defaultFormValuesObject,
@@ -466,7 +466,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
       <div>
         Prerequisites not met for JsonObjectEditFormDialog:
         <ul>
-          <li>miroirFundamentalJzodSchema: {miroirFundamentalJzodSchema ? "✓" : "✗"}</li>
+          <li>miroirFundamentalMlSchema: {miroirFundamentalMlSchema ? "✓" : "✗"}</li>
           <li>mlSchema: {mlSchema ? "✓" : "✗"}</li>
           <li>defaultFormValuesObject: {defaultFormValuesObject ? "✓" : "✗"}</li>
           <li>dialogOuterFormObject: {dialogOuterFormObject ? "✓" : "✗"}</li>
@@ -575,11 +575,11 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
           currentApplicationSection={currentApplicationSection}
           entity={props.entity}
           mlSchema={mlSchema}
-          resolvedJzodSchema={resolvedJzodSchema}
+          resolvedMlSchema={resolvedMlSchema}
           foreignKeyObjects={foreignKeyObjects}
           currentAppModel={currentAppModel}
           currentMiroirModel={currentMiroirModel}
-          miroirFundamentalJzodSchema={miroirFundamentalJzodSchema}
+          miroirFundamentalMlSchema={miroirFundamentalMlSchema}
           count={count}
           formIsOpen={formIsOpen}
           setAddObjectdialogFormIsOpen={setAddObjectdialogFormIsOpen}

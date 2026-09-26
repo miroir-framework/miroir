@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { MlElement } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { isMlSchemaSubtype } from "../../../src/1_core/jzod/mlSchemaSubtype";
+import { isMlSchemaSubtype } from "../../../src/1_core/mls/mlSchemaSubtype";
 
 const stringSchema = { type: "string" } as MlElement;
 const numberSchema = { type: "number" } as MlElement;
@@ -61,7 +61,7 @@ describe("isMlSchemaSubtype — optional / nullable (#250)", () => {
     expect(isMlSchemaSubtype(nullableString, stringSchema)).toBe(false);
   });
 
-  it("follows jzodTypeCheck: optional and nullable each accept null and undefined", () => {
+  it("follows mlsTypeCheck: optional and nullable each accept null and undefined", () => {
     const optionalString = { type: "string", optional: true } as MlElement;
     const nullableString = { type: "string", nullable: true } as MlElement;
     expect(isMlSchemaSubtype(undefinedSchema, optionalString)).toBe(true);
@@ -70,14 +70,14 @@ describe("isMlSchemaSubtype — optional / nullable (#250)", () => {
     expect(isMlSchemaSubtype(nullSchema, nullableString)).toBe(true);
   });
 
-  it("follows jzodTypeCheck: optional and nullable are equivalent value sets", () => {
+  it("follows mlsTypeCheck: optional and nullable are equivalent value sets", () => {
     const optionalString = { type: "string", optional: true } as MlElement;
     const nullableString = { type: "string", nullable: true } as MlElement;
     expect(isMlSchemaSubtype(optionalString, nullableString)).toBe(true);
     expect(isMlSchemaSubtype(nullableString, optionalString)).toBe(true);
   });
 
-  it("missing object attribute is OK when target attribute is nullable (jzodTypeCheck)", () => {
+  it("missing object attribute is OK when target attribute is nullable (mlsTypeCheck)", () => {
     const empty = { type: "object", definition: {} } as MlElement;
     const nullableName = {
       type: "object",
@@ -154,7 +154,7 @@ describe("isMlSchemaSubtype — literals & enums (#250)", () => {
   });
 });
 
-describe("isMlSchemaSubtype — objects follow jzodTypeCheck strictness (#250)", () => {
+describe("isMlSchemaSubtype — objects follow mlsTypeCheck strictness (#250)", () => {
   const wider = {
     type: "object",
     definition: {
@@ -335,7 +335,7 @@ describe("isMlSchemaSubtype — arrays, records, tuples (#250)", () => {
   });
 
   it("optional object attributes do not fit a record of their core type (null/undefined values)", () => {
-    // jzodTypeCheck: optional admits null as a present value; Record<string,string> does not
+    // mlsTypeCheck: optional admits null as a present value; Record<string,string> does not
     const objWithOptional = {
       type: "object",
       definition: { a: { type: "uuid", optional: true } },

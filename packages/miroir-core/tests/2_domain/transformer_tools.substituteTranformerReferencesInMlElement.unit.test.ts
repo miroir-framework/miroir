@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { MlElement, TransformerDefinition } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { substituteTransformerReferencesInJzodElement } from "../../src/2_domain/Transformer_tools";
+import { substituteTransformerReferencesInMlElement } from "../../src/2_domain/Transformer_tools";
 const transformerDefinition: TransformerDefinition = {
   uuid: "16d866c4-bc81-4773-89a4-a47ac7f6549d",
   name: "createObjectFromPairs",
@@ -75,7 +75,7 @@ const transformerDefinition: TransformerDefinition = {
 };
 
 
-describe("substituteTransformerReferencesInJzodElement", () => {
+describe("substituteTransformerReferencesInMlElement", () => {
   it("should substitute schemaReference relativePath in MlElement", () => {
     const mlElement: MlElement = {
       type: "schemaReference",
@@ -85,7 +85,7 @@ describe("substituteTransformerReferencesInJzodElement", () => {
       },
     };
 
-    const result = substituteTransformerReferencesInJzodElement(mlElement, {"transformer": "newPath"});
+    const result = substituteTransformerReferencesInMlElement(mlElement, {"transformer": "newPath"});
 
     expect(result).toEqual({
       type: "schemaReference",
@@ -110,7 +110,7 @@ describe("substituteTransformerReferencesInJzodElement", () => {
       },
     };
 
-    const result = substituteTransformerReferencesInJzodElement(mlElement, {"transformer": "newPath"});
+    const result = substituteTransformerReferencesInMlElement(mlElement, {"transformer": "newPath"});
 
     expect(result).toEqual({
       type: "object",
@@ -127,7 +127,7 @@ describe("substituteTransformerReferencesInJzodElement", () => {
   });
 
   it("should subtitute schemaReference in real-case createObjectFromPairs transformerDefinition"), () => {
-    const result = substituteTransformerReferencesInJzodElement(
+    const result = substituteTransformerReferencesInMlElement(
       transformerDefinition.transformerInterface.transformerParameterSchema.transformerDefinition,
       {"transformer": "transformerForBuild"}
     );

@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest";
 import {
   defaultMiroirModelEnvironment,
-  jzodUnion_recursivelyUnfold,
-  jzodUnionResolvedTypeForObject,
+  mlUnion_recursivelyUnfold,
+  mlUnionResolvedTypeForObject,
   type MlUnion,
   type MiroirModelEnvironment,
 } from "miroir-core";
 
 describe("union resolved type for object", () => {
   it("picks getFromParameters branch for transformer value", () => {
-    const ctx = (defaultMiroirModelEnvironment as any).miroirFundamentalJzodSchema
+    const ctx = (defaultMiroirModelEnvironment as any).miroirFundamentalMlSchema
       .definition.context;
     const domainActionTemplate =
       ctx["miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"];
@@ -18,7 +18,7 @@ describe("union resolved type for object", () => {
     );
     const payloadSchema = branch.definition.payload as MlUnion;
 
-    const unfolded = jzodUnion_recursivelyUnfold(
+    const unfolded = mlUnion_recursivelyUnfold(
       payloadSchema,
       new Set(),
       defaultMiroirModelEnvironment as MiroirModelEnvironment,
@@ -33,7 +33,7 @@ describe("union resolved type for object", () => {
       referencePath: ["document", "text"],
     };
 
-    const resolved = jzodUnionResolvedTypeForObject(
+    const resolved = mlUnionResolvedTypeForObject(
       unfolded.result,
       payloadSchema,
       payloadSchema.discriminator,
@@ -48,7 +48,7 @@ describe("union resolved type for object", () => {
     } else {
       console.log(
         "resolved schema keys:",
-        Object.keys((resolved.resolvedJzodObjectSchema as any).definition ?? {}),
+        Object.keys((resolved.resolvedMlObjectSchema as any).definition ?? {}),
       );
     }
     expect(resolved.status).toBe("ok");

@@ -34,7 +34,7 @@ Example Entity instance (present model — includes mlSchema):
     "type": "object",
     "extend": {
       "type": "schemaReference",
-      "definition": { "absolutePath": "miroirFundamentalJzodSchema", "relativePath": "entityDefinitionRoot" }
+      "definition": { "absolutePath": "miroirFundamentalMlSchema", "relativePath": "entityDefinitionRoot" }
     },
     "definition": {
       "sku": {

@@ -256,9 +256,9 @@ export {
   GraphConfig,
   graphConfig,
   // those are zod schemas, not imported. Importing MLS with the same name.
-  // jzodUnion_RecursivelyUnfold_ReturnType,
-  // jzodUnion_RecursivelyUnfold_ReturnTypeError,
-  // jzodUnion_RecursivelyUnfold_ReturnTypeOK,
+  // mlUnion_RecursivelyUnfold_ReturnType,
+  // mlUnion_RecursivelyUnfold_ReturnTypeError,
+  // mlUnion_RecursivelyUnfold_ReturnTypeOK,
   GraphReportSection,
   graphReportSection,
   GridReportSection,
@@ -325,9 +325,9 @@ export {
   mlTuple,
   MlUnion,
   mlUnion,
-  JzodUnion_RecursivelyUnfold_ReturnType,
-  JzodUnion_RecursivelyUnfold_ReturnTypeError,
-  JzodUnion_RecursivelyUnfold_ReturnTypeOK,
+  MlUnion_RecursivelyUnfold_ReturnType,
+  MlUnion_RecursivelyUnfold_ReturnTypeError,
+  MlUnion_RecursivelyUnfold_ReturnTypeOK,
   KeyMapEntry,
   keyMapEntry,
   ListReportSection,
@@ -395,12 +395,12 @@ export {
   report,
   ReportSection,
   reportSection,
-  ResolvedJzodSchemaReturnType,
-  resolvedJzodSchemaReturnType,
-  ResolvedJzodSchemaReturnTypeError,
-  resolvedJzodSchemaReturnTypeError,
-  ResolvedJzodSchemaReturnTypeOK,
-  resolvedJzodSchemaReturnTypeOK,
+  ResolvedMlSchemaReturnType,
+  resolvedMlSchemaReturnType,
+  ResolvedMlSchemaReturnTypeError,
+  resolvedMlSchemaReturnTypeError,
+  ResolvedMlSchemaReturnTypeOK,
+  resolvedMlSchemaReturnTypeOK,
   RestPersistenceAction,
   RootReport,
   rootReport,
@@ -510,8 +510,8 @@ export {
 } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export {
-  miroirFundamentalJzodSchema
-} from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
+  miroirFundamentalMlSchema
+} from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalMlSchema";
 
 export {
   BlobContents, BlobUploadResult, BlobValidationResult
@@ -551,19 +551,19 @@ export {
 //   jzodSchemaDefinitionSchema,
 // } from "./0_interfaces/1_core/JzodSchemaDefinition.js";
 export {
-  JzodUnionResolvedTypeForArrayReturnTypeOK, JzodUnionResolvedTypeForObjectReturnTypeOK,
-  JzodUnionResolvedTypeReturnType, JzodUnionResolvedTypeReturnTypeError, SelectUnionBranchFromDiscriminatorReturnType,
+  MlUnionResolvedTypeForArrayReturnTypeOK, MlUnionResolvedTypeForObjectReturnTypeOK,
+  MlUnionResolvedTypeReturnType, MlUnionResolvedTypeReturnTypeError, SelectUnionBranchFromDiscriminatorReturnType,
   SelectUnionBranchFromDiscriminatorReturnTypeError,
   SelectUnionBranchFromDiscriminatorReturnTypeOK
-} from "./0_interfaces/1_core/jzodTypeCheckInterface";
+} from "./0_interfaces/1_core/mlsTypeCheckInterface";
 export {
-  // JzodUnion_RecursivelyUnfold_ReturnType,
-  // JzodUnion_RecursivelyUnfold_ReturnTypeError,
-  // JzodUnion_RecursivelyUnfold_ReturnTypeOK,
-  jzodUnion_RecursivelyUnfold_ReturnType,
-  jzodUnion_RecursivelyUnfold_ReturnTypeError,
-  jzodUnion_RecursivelyUnfold_ReturnTypeOK
-} from "./0_interfaces/1_core/jzodUnion_RecursivelyUnfoldInterface";
+  // MlUnion_RecursivelyUnfold_ReturnType,
+  // MlUnion_RecursivelyUnfold_ReturnTypeError,
+  // MlUnion_RecursivelyUnfold_ReturnTypeOK,
+  mlUnion_RecursivelyUnfold_ReturnType,
+  mlUnion_RecursivelyUnfold_ReturnTypeError,
+  mlUnion_RecursivelyUnfold_ReturnTypeOK
+} from "./0_interfaces/1_core/mlUnion_RecursivelyUnfoldInterface";
 export { DeploymentMode } from "./0_interfaces/1_core/MiroirConfig.js";
 export { LIBRARY_TMP } from "./0_interfaces/1_core/LIBRARY_TMP";
 export {
@@ -801,7 +801,7 @@ export {
   ActionEvent, EventFilter, MiroirEvent, MiroirEventLog, MiroirEventService, MiroirEventServiceInterface, TestEvent,
   TransformerEvent
 } from "./3_controllers/MiroirEventService.js";
-// export { rootLessListKeyMapDEFUNCT } from "./1_core/jzod/rootLessListKeyMap";
+// export { rootLessListKeyMapDEFUNCT } from "./1_core/mls/rootLessListKeyMap";
 export {
   entityHasCompositePrimaryKey,
   entityHasUuidPrimaryKey,
@@ -914,63 +914,63 @@ export {
   actionsWithDeploymentInPayload, noValue
 } from "./1_core/Instance";
 export {
-  getDefaultValueForJzodSchemaWithResolution,
-  getDefaultValueForJzodSchemaWithResolutionNonHook
-} from "./1_core/jzod/getDefaultValueForJzodSchema.js";
+  getDefaultValueForMlSchemaWithResolution,
+  getDefaultValueForMlSchemaWithResolutionNonHook
+} from "./1_core/mls/getDefaultValueForMlSchema.js";
 export {
   getObjectUnionDiscriminatorValuesFromResolvedSchema
-} from "./1_core/jzod/getObjectUnionDiscriminatorValues";
+} from "./1_core/mls/getObjectUnionDiscriminatorValues";
 export {
-  resolveJzodSchemaReference,
-  resolveJzodSchemaReferenceInContext
-} from "./1_core/jzod/jzodResolveSchemaReferenceInContext";
+  resolveMlSchemaReference,
+  resolveMlSchemaReferenceInContext
+} from "./1_core/mls/mlsResolveSchemaReferenceInContext";
 export {
-  jzodToJzod_Summary
-} from "./1_core/jzod/JzodToJzod_Summary";
-export type { JsonSchema, JzodToJsonSchemaContext } from "./1_core/jzod/JzodToJsonSchema";
-export { jzodToJsonSchema } from "./1_core/jzod/JzodToJsonSchema";
+  mlsToMls_Summary
+} from "./1_core/mls/MlsToMls_Summary";
+export type { JsonSchema, MlsToJsonSchemaContext } from "./1_core/mls/MlsToJsonSchema";
+export { mlsToJsonSchema } from "./1_core/mls/MlsToJsonSchema";
 export {
-  getAttributeTypesFromJzodSchema,
-  jzodToSqlAttributeTypeMap,
-} from "./1_core/jzod/getAttributeTypesFromJzodSchema";
-export type { CopilotKitParameter, CopilotKitParameterType } from "./1_core/jzod/JzodToCopilotKitParameter";
-export { jzodToCopilotKitParameter } from "./1_core/jzod/JzodToCopilotKitParameter";
+  getAttributeTypesFromMlSchema,
+  mlsToSqlAttributeTypeMap,
+} from "./1_core/mls/getAttributeTypesFromMlSchema";
+export type { CopilotKitParameter, CopilotKitParameterType } from "./1_core/mls/MlsToCopilotKitParameter";
+export { mlsToCopilotKitParameter } from "./1_core/mls/MlsToCopilotKitParameter";
 export {
   ANY_IMPLICIT_UNION_BRANCHES,
-  ANY_IMPLICIT_UNION_TYPE, jzodTypeCheck,
-  jzodUnionResolvedTypeForObject, selectUnionBranchFromDiscriminator, unionObjectChoices
-} from "./1_core/jzod/jzodTypeCheck.js";
-export { isMlSchemaSubtype } from "./1_core/jzod/mlSchemaSubtype.js";
+  ANY_IMPLICIT_UNION_TYPE, mlsTypeCheck,
+  mlUnionResolvedTypeForObject, selectUnionBranchFromDiscriminator, unionObjectChoices
+} from "./1_core/mls/mlsTypeCheck.js";
+export { isMlSchemaSubtype } from "./1_core/mls/mlSchemaSubtype.js";
 export {
   getMiroirFundamentalSchemaForDeployment,
   resolveFundamentalSchemaForDeployment,
   clearSchemaCacheForTests,
   type SchemaResolutionMode,
-} from "./1_core/jzod/schemaForDeployment.js";
+} from "./1_core/mls/schemaForDeployment.js";
 export {
   classifySchemaChange,
   computeCombinedSchemaRevision,
   computeSchemaRevision,
   type SchemaChangeKind,
   type SchemaRevisionScope,
-} from "./1_core/jzod/schemaChangeKind.js";
+} from "./1_core/mls/schemaChangeKind.js";
 export {
   getMiroirSchemaMode,
   resolveEffectiveSchemaMode,
   type MiroirSchemaMode,
-} from "./1_core/jzod/schemaModePolicy.js";
+} from "./1_core/mls/schemaModePolicy.js";
 export {
-  localizeJzodSchemaReferenceContext,
-  unfoldJzodSchemaOnce, UnfoldJzodSchemaOnceReturnType,
-  UnfoldJzodSchemaOnceReturnTypeError,
-  UnfoldJzodSchemaOnceReturnTypeOK
-} from "./1_core/jzod/JzodUnfoldSchemaOnce.js";
+  localizeMlSchemaReferenceContext,
+  unfoldMlSchemaOnce, UnfoldMlSchemaOnceReturnType,
+  UnfoldMlSchemaOnceReturnTypeError,
+  UnfoldMlSchemaOnceReturnTypeOK
+} from "./1_core/mls/MlsUnfoldSchemaOnce.js";
 export {
-  jzodUnion_recursivelyUnfold
-} from "./1_core/jzod/jzodUnion_RecursivelyUnfold";
+  mlUnion_recursivelyUnfold
+} from "./1_core/mls/mlUnion_RecursivelyUnfold";
 export {
   getInnermostTypeCheckError
-} from "./1_core/jzod/mlsTypeCheckError";
+} from "./1_core/mls/mlsTypeCheckError";
 export {
   applicationModelEntities,
   defaultMetaModelEnvironment,
@@ -1065,7 +1065,7 @@ export {
   pushIfUnique,
   validateMimeType
 } from "./1_core/tools.js";
-export { zodErrorDeepestIssueLeaves, zodErrorFirstIssueLeaf } from "./1_core/jzod/zodParseErrorHandler";
+export { zodErrorDeepestIssueLeaves, zodErrorFirstIssueLeaf } from "./1_core/mls/zodParseErrorHandler";
 export {
   isEvolutionTraceEnabled,
   shouldTraceEvolutionEvent,

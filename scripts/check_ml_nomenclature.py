@@ -80,11 +80,15 @@ class Rule:
     exclude: tuple[str, ...] = ()
     token_re: re.Pattern[str] | None = None
     line_re: re.Pattern[str] | None = None
+    # names owned by a later slice, reported only once that slice enables its own rule
+    exclude_tokens: frozenset[str] = frozenset()
 
     def applies(self, rel: str, line: str, token: str) -> bool:
         if not any(rel.startswith(p) for p in self.paths):
             return False
         if any(rel.startswith(p) for p in self.exclude):
+            return False
+        if token in self.exclude_tokens:
             return False
         if self.token_re is not None and not self.token_re.fullmatch(token):
             return False
@@ -101,6 +105,36 @@ ENFORCED_RULES: list[Rule] = [
         paths=("",),
         token_re=re.compile(
             r"(?:[A-Za-z0-9_$]*[_$])?[jJ]zod(" + "|".join(ELEMENT_KINDS) + r")|jzodMiroirBootstrapSchema|jzodSchemajzodMiroirBootstrapSchema"
+        ),
+    ),    # Slice 2: the schema tools (1_core/mls/) and their transformers, with the MiroirTest keys that name them.
+    Rule(
+        "M ml-schema-tools",
+        paths=(
+            "packages/miroir-core/src/1_core/",
+            "packages/miroir-core/src/0_interfaces/1_core/mlsTypeCheckInterface.ts",
+            "packages/miroir-core/src/0_interfaces/1_core/mlUnion_RecursivelyUnfoldInterface.ts",
+            "packages/miroir-core/src/2_domain/Transformers.ts",
+            "packages/miroir-core/src/2_domain/TransformersForRuntime.ts",
+            "packages/miroir-core/src/5_tests/FunctionCallTestRegistry.ts",
+            "packages/miroir-core/tests/1_core/mls/",
+            "packages/miroir-test-app_deployment-miroir/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/",
+        ),
+        exclude_tokens=frozenset(
+            {
+                # Slice 4: bootstrap schema builder and the Entity-name keyed maps
+                "bootstrapJzodSchemas", "getMiroirFundamentalJzodSchema", "getMiroirFundamentalJzodSchemaHelpers",
+                "JzodSchema", "jzod",  # `JzodSchema: "jzod-schema"` in 1_core/Model.ts
+                # Slice 5: UI components named in comments
+                "JzodElementEditor", "JzodObjectEditor", "JzodTools",
+            }
+        ),
+    ),
+    Rule(
+        "M ml-schema-tools (MiroirTest and transformer keys)",
+        paths=("",),
+        line_re=re.compile(
+            r'"(module|export|transformerType|transformerName|inMemoryImplementationFunctionName)"\s*:\s*"[^"]*jzod',
+            re.IGNORECASE,
         ),
     ),
 ]

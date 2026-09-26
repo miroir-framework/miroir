@@ -1,6 +1,6 @@
 import { 
   type MlElement,
-  resolveJzodSchemaReferenceInContext,
+  resolveMlSchemaReferenceInContext,
   type MlReference,
   defaultMiroirModelEnvironment,
 } from "miroir-core";
@@ -50,7 +50,7 @@ export function jzodElementToTS(
 
     case 'schemaReference': {
       // Resolve the schema reference using the miroir context
-      const resolvedSchema = resolveJzodSchemaReferenceInContext(
+      const resolvedSchema = resolveMlSchemaReferenceInContext(
         mlElement as MlReference,
         (mlElement as MlReference).context || {},
         defaultMiroirModelEnvironment,

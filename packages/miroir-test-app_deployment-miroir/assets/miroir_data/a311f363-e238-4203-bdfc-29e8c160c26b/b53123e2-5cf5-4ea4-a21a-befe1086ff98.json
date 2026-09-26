@@ -2,20 +2,20 @@
   "uuid": "b53123e2-5cf5-4ea4-a21a-befe1086ff98",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "jzodToJzod_Summary",
+  "name": "mlsToMls_Summary",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Migrated from UnitTest bb95b2da-3ca9-4149-be5f-d3da9c7deef1 (Feature #196 Phase 5)",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "jzod.jzodToJzod_Summary",
+    "miroirTestLabel": "jzod.mlsToMls_Summary",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "strips non-essential tag fields from a string type, keeps essential ones",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {
@@ -64,8 +64,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "strips tag entirely when only non-essential fields are present",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {
@@ -96,8 +96,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "keeps foreignKeyParams in tag value",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {
@@ -138,8 +138,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "keeps formValidation in tag value",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {
@@ -180,8 +180,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "literal: keeps type and definition value",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {
@@ -210,8 +210,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "enum: keeps type and all enum values",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {
@@ -249,8 +249,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "string with validations: keeps validations",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {
@@ -290,8 +290,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "number with validations: keeps validations",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {
@@ -329,8 +329,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "plain attribute (boolean): returns type only",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {
@@ -358,8 +358,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "object depth=0: shows keys with type-only child stubs",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {
@@ -407,8 +407,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "object depth=1: recursively summarizes one level deep (child object shows its keys, grandchild is a stub)",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {
@@ -469,8 +469,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "object depth=2: recursively summarizes two levels deep",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {
@@ -527,8 +527,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "object: keeps partial and nonStrict flags",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {
@@ -563,8 +563,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "object: tag fields are stripped on both the object and its child",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {
@@ -623,8 +623,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "array depth=0: shows element type-only summary",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {
@@ -659,8 +659,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "array depth=1: shows element summarized at depth=0 (object keys visible)",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {
@@ -703,8 +703,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "tuple depth=0: shows each element as a type-only stub",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {
@@ -752,8 +752,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "record depth=0: shows value type as a type-only stub",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {
@@ -785,8 +785,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "union depth=0: shows branch type stubs and keeps discriminator",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {
@@ -843,8 +843,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "union depth=1: shows branch definitions at depth=0 (with object keys and literal values)",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {
@@ -903,8 +903,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "union: optInDiscriminator is stripped",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {
@@ -941,8 +941,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "schemaReference: drops context, keeps definition path",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {
@@ -980,8 +980,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "schemaReference minimal summary keeps definition",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {
@@ -1023,8 +1023,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "intersection depth=1: summarizes left and right branches",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {
@@ -1087,8 +1087,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "function: returns type-only (not editable in JzodElementEditor)",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_Summary",
-          "export": "jzodToJzod_Summary"
+          "module": "miroir-core/1_core/mls/MlsToMls_Summary",
+          "export": "mlsToMls_Summary"
         },
         "arguments": [
           {

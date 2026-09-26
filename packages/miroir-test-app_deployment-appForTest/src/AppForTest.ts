@@ -37,6 +37,6 @@ export const defaultAppForTestModel: MetaModel = {
   applicationVersionCrossTransformerDefinitionVersion: [],
   transformerDefinitionVersions: [],
   storedQueries: [],
-  jzodSchemas: [],
+  mlSchemas: [],
   applicationVersions: [appForTestInitialApplicationVersion as EntityInstance],
 };

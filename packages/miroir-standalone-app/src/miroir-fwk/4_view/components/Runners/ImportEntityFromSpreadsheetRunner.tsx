@@ -488,7 +488,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
       } as any,
       // #217 Phase 9 — Entity is present-model authority; dual-write still copies to EntityVersion
       mlSchema: {
-        transformerType: "spreadSheetToJzodSchema",
+        transformerType: "spreadSheetToMlSchema",
         spreadsheetContents: fileData,
       } as any,
     };

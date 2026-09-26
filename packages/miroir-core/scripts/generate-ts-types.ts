@@ -27,7 +27,7 @@ import {
   entityEndpointVersion,
   entityEntity,
   entityEntityVersion,
-  entityJzodSchema,
+  entityMlSchema,
   entityMenu,
   entityMiroirTest,
   entityQueryVersion,
@@ -353,15 +353,15 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
     console.log("miroir-core generateSchemas start!");
     const targetDirectory = "./src/0_interfaces/1_core/preprocessor-generated";
     // const targetFileName = "./src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType2.ts";
-    // const miroirFundamentalJzodSchemaFilePath = path.join(targetDirectory, "miroirFundamentalJzodSchema2.ts");
+    // const miroirFundamentalJzodSchemaFilePath = path.join(targetDirectory, "miroirFundamentalMlSchema2.ts");
     const targetFileName = "./src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts";
-    const miroirFundamentalJzodSchemaFilePath = path.join(targetDirectory, "miroirFundamentalJzodSchema.ts");
+    const miroirFundamentalJzodSchemaFilePath = path.join(targetDirectory, "miroirFundamentalMlSchema.ts");
     const extendedSchemaVariableName = "extendedSchemasType";
     const jzodSchemaVariableName = "miroirFundamentalType";
     // const start = Date.now();
-    let miroirFundamentalJzodSchema: any; // TODO: not really a JzodElement!!
+    let miroirFundamentalMlSchema: any; // TODO: not really a JzodElement!!
     try {
-      miroirFundamentalJzodSchema = getMiroirFundamentalJzodSchema(
+      miroirFundamentalMlSchema = getMiroirFundamentalJzodSchema(
         entityDefinitionBundleV1,
         entityCommit,
         modelEndpointVersionV1,
@@ -383,7 +383,7 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         entityDeployment,
         entityEntity,
         entityEntityVersion,
-        entityJzodSchema,
+        entityMlSchema,
         entityMenu,
         entityQueryVersion,
         entityReport,
@@ -397,7 +397,7 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         entityApplicationEvolutionTrace,
         entityApplicationEvolutionTraceEvent,
       );
-      // console.log("miroir-core generateSchemas miroirFundamentalJzodSchema:", miroirFundamentalJzodSchema);
+      // console.log("miroir-core generateSchemas miroirFundamentalMlSchema:", miroirFundamentalMlSchema);
       _t_getMiroirFundamental = Date.now() - generateSchemasStartTime;
       console.log(
         "miroir-core generateSchemas getMiroirFundamentalJzodSchema took",
@@ -405,7 +405,7 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         "ms"
       );
       const filteredMiroirFundamentalJzodSchemaContext = Object.fromEntries(
-        Object.entries(miroirFundamentalJzodSchema.definition.context).filter(
+        Object.entries(miroirFundamentalMlSchema.definition.context).filter(
           ([key, value]) =>
             ![
               "transformerForBuild",
@@ -421,8 +421,8 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
       // );
       const writeFundamentalJzodSchemaStartTime = Date.now();
       const miroirFundamentalJzodSchemaJson =
-        "export const miroirFundamentalJzodSchema = " +
-        JSON.stringify(miroirFundamentalJzodSchema, undefined, 2);
+        "export const miroirFundamentalMlSchema = " +
+        JSON.stringify(miroirFundamentalMlSchema, undefined, 2);
       console.log(
         "generateSchemas miroirFundamentalJzodSchemaFilePath",
         miroirFundamentalJzodSchemaFilePath
@@ -455,11 +455,11 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         "ms"
       );
 
-      if (miroirFundamentalJzodSchema.definition?.type !== "schemaReference") {
-        throw new Error("miroir-core miroirFundamentalJzodSchema is not a schemaReference");
+      if (miroirFundamentalMlSchema.definition?.type !== "schemaReference") {
+        throw new Error("miroir-core miroirFundamentalMlSchema is not a schemaReference");
       }
-      if (!miroirFundamentalJzodSchema.definition.context) {
-        throw new Error("miroir-core miroirFundamentalJzodSchema.context is undefined");
+      if (!miroirFundamentalMlSchema.definition.context) {
+        throw new Error("miroir-core miroirFundamentalMlSchema.context is undefined");
       }
       const preExtendedSchemas: string[] = getExtendedSchemas(mlSchemaMlMiroirBootstrapSchema.definition.context);
       const mlElementTemplateExtendedSchemas: string[] = getExtendedSchemasWithCarryOn(
@@ -470,10 +470,10 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
       const extendedSchemas = preExtendedSchemas.concat(mlElementTemplateExtendedSchemas);
 
       const extendedJzodSchemaContext: [string, JzodElement][] = Object.entries(
-        // miroirFundamentalJzodSchema.definition.context
+        // miroirFundamentalMlSchema.definition.context
         filteredMiroirFundamentalJzodSchemaContext
       ).filter((e) => extendedSchemas.includes(e[0])) as any;
-      // const exendedJzodSchemaContext = Object.fromEntries(Object.entries(miroirFundamentalJzodSchema.definition.context));
+      // const exendedJzodSchemaContext = Object.fromEntries(Object.entries(miroirFundamentalMlSchema.definition.context));
       // console.log("miroir-core generateSchemas exendedJzodSchemaContext:", exendedJzodSchemaContext);
       const extendedZodSchema = {
         type: "schemaReference",
@@ -548,7 +548,7 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
 
       console.log("miroir-core generateSchemas extendedTypes generated.");
       const nonExtendedJzodSchemaContext: ZodTextAndZodSchemaRecord = Object.fromEntries(
-        // Object.entries(miroirFundamentalJzodSchema.definition.context).filter(
+        // Object.entries(miroirFundamentalMlSchema.definition.context).filter(
         Object.entries(filteredMiroirFundamentalJzodSchemaContext).filter(
           (e) => !extendedSchemas.includes(e[0])
         )
@@ -562,7 +562,7 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
       };
 
       const startGenerateZodSchemaFileFromZodSchema = Date.now();
-      // console.log("miroir-core generateSchemas main miroirFundamentalJzodSchema started");
+      // console.log("miroir-core generateSchemas main miroirFundamentalMlSchema started");
       await generateTsTypeFileFromJzod(
         nonExtendedZodSchema,
         targetFileName,
@@ -579,7 +579,7 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         _t_generateTsFile,
         "ms"
       );
-      // const oldTransformer = (miroirFundamentalJzodSchema as any).definition.context.transformerForBuild_getUniqueValues;
+      // const oldTransformer = (miroirFundamentalMlSchema as any).definition.context.transformerForBuild_getUniqueValues;
       const newTransformer = miroirTransformersForBuildPlusRuntime.transformer_menu_addItem;
       // console.log(
       //   "old transformer", 

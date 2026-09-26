@@ -13,7 +13,7 @@ import type {
   TransformerMlSchemaNodeReport,
 } from "../0_interfaces/2_domain/TransformerMlSchemaCheckInterface";
 import { isFailedTransformerInterfaceFromDefinition } from "../0_interfaces/2_domain/TransformerResultSchemaInterface";
-import { isMlSchemaSubtype } from "../1_core/jzod/mlSchemaSubtype";
+import { isMlSchemaSubtype } from "../1_core/mls/mlSchemaSubtype";
 import {
   resolveTransformerResultSchema,
   type TransformerResultSchemaContext,

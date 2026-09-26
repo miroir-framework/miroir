@@ -17,16 +17,16 @@ export interface JsonSchema {
   nullable?: boolean;
 }
 
-export type JzodToJsonSchemaContext = { [k: string]: MlElement };
+export type MlsToJsonSchemaContext = { [k: string]: MlElement };
 
 // ################################################################################################
 /**
  * Convert a MlElement to a JSON Schema definition.
  * Context maps reference names to their MlElement definitions, used to resolve schemaReference elements.
  */
-export function jzodToJsonSchema(
+export function mlsToJsonSchema(
   element: MlElement,
-  context: JzodToJsonSchemaContext = {},
+  context: MlsToJsonSchemaContext = {},
 ): JsonSchema {
   if (!element) {
     return {};
@@ -86,7 +86,7 @@ export function jzodToJsonSchema(
       const castElement = element as { type: "array"; definition: MlElement; optional?: boolean };
       return withMeta({
         type: "array",
-        items: jzodToJsonSchema(castElement.definition, context),
+        items: mlsToJsonSchema(castElement.definition, context),
       });
     }
 
@@ -102,7 +102,7 @@ export function jzodToJsonSchema(
       const required: string[] = [];
 
       for (const [key, value] of Object.entries(castElement.definition)) {
-        properties[key] = jzodToJsonSchema(value, context);
+        properties[key] = mlsToJsonSchema(value, context);
         if (!value.optional && !castElement.partial) {
           required.push(key);
         }
@@ -120,14 +120,14 @@ export function jzodToJsonSchema(
       const castElement = element as { type: "record"; definition: MlElement; optional?: boolean };
       return withMeta({
         type: "object",
-        additionalProperties: jzodToJsonSchema(castElement.definition, context),
+        additionalProperties: mlsToJsonSchema(castElement.definition, context),
       });
     }
 
     case "union": {
       const castElement = element as { type: "union"; definition: MlElement[]; optional?: boolean };
       return withMeta({
-        anyOf: castElement.definition.map((d) => jzodToJsonSchema(d, context)),
+        anyOf: castElement.definition.map((d) => mlsToJsonSchema(d, context)),
       });
     }
 
@@ -135,8 +135,8 @@ export function jzodToJsonSchema(
       const castElement = element as { type: "intersection"; definition: { left: MlElement; right: MlElement }; optional?: boolean };
       return withMeta({
         allOf: [
-          jzodToJsonSchema(castElement.definition.left, context),
-          jzodToJsonSchema(castElement.definition.right, context),
+          mlsToJsonSchema(castElement.definition.left, context),
+          mlsToJsonSchema(castElement.definition.right, context),
         ],
       });
     }
@@ -149,14 +149,14 @@ export function jzodToJsonSchema(
         optional?: boolean;
       };
       // Merge local context with the passed context
-      const mergedContext: JzodToJsonSchemaContext = {
+      const mergedContext: MlsToJsonSchemaContext = {
         ...context,
         ...(castElement.context ?? {}),
       };
       const refPath = castElement.definition.relativePath;
       const resolved = mergedContext[refPath];
       if (resolved) {
-        return jzodToJsonSchema(resolved, mergedContext);
+        return mlsToJsonSchema(resolved, mergedContext);
       }
       // Unresolvable reference: emit a $ref as fallback
       return withMeta({ $ref: `#/$defs/${refPath}` });
@@ -164,14 +164,14 @@ export function jzodToJsonSchema(
 
     case "lazy": {
       const castElement = element as { type: "lazy"; definition: MlElement; optional?: boolean };
-      return jzodToJsonSchema(castElement.definition, context);
+      return mlsToJsonSchema(castElement.definition, context);
     }
 
     case "tuple": {
       const castElement = element as { type: "tuple"; definition: MlElement[]; optional?: boolean };
       return withMeta({
         type: "array",
-        items: castElement.definition.map((d) => jzodToJsonSchema(d, context)),
+        items: castElement.definition.map((d) => mlsToJsonSchema(d, context)),
         minItems: castElement.definition.length,
         maxItems: castElement.definition.length,
       } as JsonSchema);

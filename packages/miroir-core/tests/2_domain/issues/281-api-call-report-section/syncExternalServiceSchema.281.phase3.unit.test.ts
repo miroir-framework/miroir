@@ -17,7 +17,7 @@ import { describe, expect, it } from "vitest";
 
 import type { MlObject } from "../../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { TransformerFailure } from "../../../../src/0_interfaces/2_domain/DomainElement.js";
-import { jzodTypeCheck } from "../../../../src/1_core/jzod/jzodTypeCheck.js";
+import { mlsTypeCheck } from "../../../../src/1_core/mls/mlsTypeCheck.js";
 import { defaultMetaModelEnvironment } from "../../../../src/1_core/Model.js";
 import { handleTransformer_syncExternalServiceSchema } from "../../../../src/2_domain/syncExternalServiceSchema.js";
 
@@ -361,7 +361,7 @@ function simpleGetOpenApi(operationId: string, path: string): Record<string, unk
         ],
       },
     };
-    const metadataResult = jzodTypeCheck(
+    const metadataResult = mlsTypeCheck(
       schema,
       metadataOnly,
       [],
@@ -369,7 +369,7 @@ function simpleGetOpenApi(operationId: string, path: string): Record<string, unk
       defaultMetaModelEnvironment,
       {},
     );
-    const newShapeResult = jzodTypeCheck(
+    const newShapeResult = mlsTypeCheck(
       schema,
       newShape,
       [],

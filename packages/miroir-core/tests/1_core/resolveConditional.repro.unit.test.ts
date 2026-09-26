@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveConditionalSchema } from "../../src/1_core/jzod/resolveConditionalSchema.js";
+import { resolveConditionalSchema } from "../../src/1_core/mls/resolveConditionalSchema.js";
 import {
   defaultMiroirModelEnvironment,
   type MiroirModelEnvironment,
@@ -7,7 +7,7 @@ import {
 
 describe("resolveConditionalSchema on payload union", () => {
   it("returns the union unchanged", () => {
-    const ctx = (defaultMiroirModelEnvironment as any).miroirFundamentalJzodSchema
+    const ctx = (defaultMiroirModelEnvironment as any).miroirFundamentalMlSchema
       .definition.context;
     const domainActionTemplate =
       ctx["miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"];

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { MlElement, MetaModel, MiroirModelEnvironment } from "miroir-core";
-import { getMiroirFundamentalSchemaForDeployment, jzodTypeCheck } from "miroir-core";
+import { getMiroirFundamentalSchemaForDeployment, mlsTypeCheck } from "miroir-core";
 import {
   defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,
@@ -16,7 +16,7 @@ import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
  */
 describe("TypedValueObjectEditor schema resolution (Feature 198)", () => {
   const libraryModelEnvironment: MiroirModelEnvironment = {
-    miroirFundamentalJzodSchema: getMiroirFundamentalSchemaForDeployment(
+    miroirFundamentalMlSchema: getMiroirFundamentalSchemaForDeployment(
       deployment_Library_DO_NO_USE.uuid,
       defaultLibraryAppModel as MetaModel,
     ),
@@ -35,7 +35,7 @@ describe("TypedValueObjectEditor schema resolution (Feature 198)", () => {
   };
 
   it("runner_return_document MiroirTest validates when model environment uses Library deployment schema", () => {
-    const result = jzodTypeCheck(
+    const result = mlsTypeCheck(
       miroirTestDefinitionSchema,
       miroirTest_runner_return_document,
       [],

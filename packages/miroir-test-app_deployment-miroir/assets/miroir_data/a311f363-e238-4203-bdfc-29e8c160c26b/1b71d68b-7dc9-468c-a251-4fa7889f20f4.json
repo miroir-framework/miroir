@@ -22,7 +22,7 @@
           "rootLessListKeyArray": [
             "testField"
           ],
-          "rawJzodSchema": {
+          "rawMlSchema": {
             "type": "array",
             "definition": {
               "type": "string"
@@ -173,7 +173,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodArrayEditor: changing order of heteronomous object array items from union when button ROOT.testField.0.down is clicked",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "array",
                 "definition": {
                   "type": "union",
@@ -272,7 +272,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodArrayEditor: renders all array values of a plain 2-items tuple with a string and a number, in the right order",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "tuple",
                 "definition": [
                   {
@@ -304,7 +304,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodArrayEditor: renders all array values of a tuple inside an array, in the right order",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "array",
                 "definition": {
                   "type": "tuple",
@@ -381,7 +381,7 @@
             "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "JzodArrayEditor: add an element to an object array when button ROOT.testField.add is clicked",
             "componentProps": {
-              "rawJzodSchema": {
+              "rawMlSchema": {
                 "type": "array",
                 "definition": {
                   "type": "object",

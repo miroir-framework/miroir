@@ -2,20 +2,20 @@
   "uuid": "b1000bf2-4067-4881-9ac9-fa4911fb3a67",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "JzodSchemaReferencesSet",
+  "name": "MlSchemaReferencesSet",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Migrated from UnitTest e2f3a4b5-c6d7-4e8f-9a01-b2c3d4e5f6a7 (Feature #196 Phase 5)",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "jzod.JzodSchemaReferencesSet",
+    "miroirTestLabel": "jzod.MlSchemaReferencesSet",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "returns empty array for a literal element",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
-          "export": "JzodSchemaReferencesSet"
+          "module": "miroir-core/1_core/mls/MlSchemaReferences",
+          "export": "MlSchemaReferencesSet"
         },
         "arguments": [
           {
@@ -29,8 +29,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "detects a direct schemaReference element",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
-          "export": "JzodSchemaReferencesSet"
+          "module": "miroir-core/1_core/mls/MlSchemaReferences",
+          "export": "MlSchemaReferencesSet"
         },
         "arguments": [
           {
@@ -53,8 +53,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "detects schemaReference in an object extend (single value)",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
-          "export": "JzodSchemaReferencesSet"
+          "module": "miroir-core/1_core/mls/MlSchemaReferences",
+          "export": "MlSchemaReferencesSet"
         },
         "arguments": [
           {
@@ -85,8 +85,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "detects schemaReference in an object extend (array)",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
-          "export": "JzodSchemaReferencesSet"
+          "module": "miroir-core/1_core/mls/MlSchemaReferences",
+          "export": "MlSchemaReferencesSet"
         },
         "arguments": [
           {
@@ -132,8 +132,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "detects schemaReference in an object extend and definition",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
-          "export": "JzodSchemaReferencesSet"
+          "module": "miroir-core/1_core/mls/MlSchemaReferences",
+          "export": "MlSchemaReferencesSet"
         },
         "arguments": [
           {
@@ -173,8 +173,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "detects schemaReference in an object definition without taking extend into account",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
-          "export": "JzodSchemaReferencesSet"
+          "module": "miroir-core/1_core/mls/MlSchemaReferences",
+          "export": "MlSchemaReferencesSet"
         },
         "arguments": [
           {
@@ -209,8 +209,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "recursively detects schemaReference in union definitions",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
-          "export": "JzodSchemaReferencesSet"
+          "module": "miroir-core/1_core/mls/MlSchemaReferences",
+          "export": "MlSchemaReferencesSet"
         },
         "arguments": [
           {
@@ -241,8 +241,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "recursively detects schemaReference in intersection definitions",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
-          "export": "JzodSchemaReferencesSet"
+          "module": "miroir-core/1_core/mls/MlSchemaReferences",
+          "export": "MlSchemaReferencesSet"
         },
         "arguments": [
           {
@@ -282,8 +282,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "recursively detects schemaReference in function arguments/returns",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodSchemaReferences",
-          "export": "JzodSchemaReferencesSet"
+          "module": "miroir-core/1_core/mls/MlSchemaReferences",
+          "export": "MlSchemaReferencesSet"
         },
         "arguments": [
           {

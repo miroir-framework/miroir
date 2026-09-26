@@ -14,7 +14,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "merges two undefineds into undefined",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "module": "miroir-core/1_core/mls/MlsToMls_CarryOn",
           "export": "mergePositionBased"
         },
         "arguments": [
@@ -31,7 +31,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "merges undefined and string into single element array",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "module": "miroir-core/1_core/mls/MlsToMls_CarryOn",
           "export": "mergePositionBased"
         },
         "arguments": [
@@ -48,7 +48,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "merges string and undefined into single element array",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "module": "miroir-core/1_core/mls/MlsToMls_CarryOn",
           "export": "mergePositionBased"
         },
         "arguments": [
@@ -65,7 +65,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "merges two strings at same position into nested array",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "module": "miroir-core/1_core/mls/MlsToMls_CarryOn",
           "export": "mergePositionBased"
         },
         "arguments": [
@@ -83,7 +83,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "merges string and array with single element",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "module": "miroir-core/1_core/mls/MlsToMls_CarryOn",
           "export": "mergePositionBased"
         },
         "arguments": [
@@ -105,7 +105,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "merges array and string at first position",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "module": "miroir-core/1_core/mls/MlsToMls_CarryOn",
           "export": "mergePositionBased"
         },
         "arguments": [
@@ -127,7 +127,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "merges two arrays of same length with strings",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "module": "miroir-core/1_core/mls/MlsToMls_CarryOn",
           "export": "mergePositionBased"
         },
         "arguments": [
@@ -155,7 +155,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "merges arrays with nested arrays at positions",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "module": "miroir-core/1_core/mls/MlsToMls_CarryOn",
           "export": "mergePositionBased"
         },
         "arguments": [
@@ -191,7 +191,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "merges arrays of different lengths - first longer",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "module": "miroir-core/1_core/mls/MlsToMls_CarryOn",
           "export": "mergePositionBased"
         },
         "arguments": [
@@ -217,7 +217,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "merges arrays of different lengths - second longer",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "module": "miroir-core/1_core/mls/MlsToMls_CarryOn",
           "export": "mergePositionBased"
         },
         "arguments": [
@@ -243,7 +243,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "merges string with nested array",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "module": "miroir-core/1_core/mls/MlsToMls_CarryOn",
           "export": "mergePositionBased"
         },
         "arguments": [
@@ -267,7 +267,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "merges nested array with string",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "module": "miroir-core/1_core/mls/MlsToMls_CarryOn",
           "export": "mergePositionBased"
         },
         "arguments": [
@@ -291,7 +291,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "merges undefined with array",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "module": "miroir-core/1_core/mls/MlsToMls_CarryOn",
           "export": "mergePositionBased"
         },
         "arguments": [
@@ -312,7 +312,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "merges array with undefined",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "module": "miroir-core/1_core/mls/MlsToMls_CarryOn",
           "export": "mergePositionBased"
         },
         "arguments": [
@@ -333,7 +333,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "merges complex nested structure",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "module": "miroir-core/1_core/mls/MlsToMls_CarryOn",
           "export": "mergePositionBased"
         },
         "arguments": [
@@ -379,7 +379,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "handles empty arrays correctly",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "module": "miroir-core/1_core/mls/MlsToMls_CarryOn",
           "export": "mergePositionBased"
         },
         "arguments": [
@@ -392,7 +392,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "merges empty array with string",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "module": "miroir-core/1_core/mls/MlsToMls_CarryOn",
           "export": "mergePositionBased"
         },
         "arguments": [
@@ -407,7 +407,7 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "merges string with empty array",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToJzod_CarryOn",
+          "module": "miroir-core/1_core/mls/MlsToMls_CarryOn",
           "export": "mergePositionBased"
         },
         "arguments": [

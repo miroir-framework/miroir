@@ -98,7 +98,7 @@ export const ADMIN_MODEL_PARENT_UUIDS_ARRAY: string[] = [
   "7990c0c9-86c3-40a1-a121-036c91b55ed7", // entityStoreBasedConfiguration (selfApp config)
   // empty placeholder dirs in admin_model/ — safe to include, produce [] in model
   "3d8da4d4-8f76-4bb4-9212-14869d81c00c", // entityEndpointVersion (no admin endpoints)
-  "5e81e1b9-38be-487c-b3e5-53796c57fccf", // entityJzodSchema
+  "5e81e1b9-38be-487c-b3e5-53796c57fccf", // entityMlSchema
   "bdcf956a-771d-40a1-a878-06e0bf6efd3e", // (placeholder)
   "e4320b9e-ab45-4abe-85d8-359604b3c62f", // entityQueryVersion
   "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd", // entityRunner
