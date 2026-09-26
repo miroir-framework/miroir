@@ -1003,6 +1003,15 @@ export function jzodTypeCheck(
           rawSchema: effectiveRawSchema,
         };
       }
+      // #296: the keyMap is flat, so a consumer re-resolving this entry's rawSchema (e.g. the
+      // instance editor's JzodObjectEditor) only has `rawSchema.context`. A purely relative
+      // reference whose context comes from an ancestor (e.g. `{relativePath:
+      // "miroirTestForReactComponent"}` below the MiroirTest mlSchema's context) must carry that
+      // context in its keyMap entry to be resolvable there.
+      const keyMapRawSchema: JzodReference =
+        !effectiveRawSchema.definition?.absolutePath && Object.keys(newContext).length > 0
+          ? { ...effectiveRawSchema, context: newContext }
+          : effectiveRawSchema;
       return {
         status: "ok",
         schemaReferenceName: effectiveRawSchema.definition.relativePath,
@@ -1015,13 +1024,13 @@ export function jzodTypeCheck(
           ...(typeCheck.keyMap ?? {}), // for unions, this is the map of keys to sub-schemas
           [currentValuePath.join(".")]: (typeCheck.keyMap??{})[currentValuePath.join(".")]?{
             ...(typeCheck.keyMap??{})[currentValuePath.join(".")], // useful for unions, where the keyMap is a map of value paths to sub-schemas
-            rawSchema: effectiveRawSchema,
+            rawSchema: keyMapRawSchema,
             resolvedReferenceSchemaInContext: resolvedJzodSchema,
             resolvedSchema: typeCheck.resolvedSchema,
             valuePath: currentValuePath,
             typePath: currentTypePath,
           }:{
-            rawSchema: effectiveRawSchema,
+            rawSchema: keyMapRawSchema,
             resolvedReferenceSchemaInContext: resolvedJzodSchema,
             resolvedSchema: typeCheck.resolvedSchema,
             valuePath: currentValuePath,
