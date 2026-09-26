@@ -95,3 +95,8 @@ def test_claude_session_start_hook_runs_the_script_in_cloud_only() -> None:
     settings = json.loads((SCRIPT.parents[1] / ".claude" / "settings.json").read_text(encoding="utf-8"))
     commands = [h["command"] for entry in settings["hooks"]["SessionStart"] for h in entry["hooks"]]
     assert any("scripts/agent_session_setup.py" in c and "CLAUDE_CODE_REMOTE" in c for c in commands)
+
+
+def test_graphify_ignores_agent_tooling() -> None:
+    ignored = (SCRIPT.parents[1] / ".graphifyignore").read_text(encoding="utf-8").split()
+    assert {".agents/", ".claude/"} <= set(ignored)
