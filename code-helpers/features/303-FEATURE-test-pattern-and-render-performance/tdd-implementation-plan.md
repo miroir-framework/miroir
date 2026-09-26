@@ -2,7 +2,7 @@
 
 > Vertical TDD slices, RED then GREEN, integration-first per `docs/contributing/testing.md`. Tests render the real `JzodElementEditor` through the real MiroirTest walk (`runMiroirTests._runMiroirTestSuite`) and the real component test runner, with the real render insight registry. No mocks. The applicative interface is the MiroirTest JSON (new instances, new step, new fields); vitest files are used only where noted, with a one-line reason. Slice 1 is the tracer: the test pattern displays from JSON.
 
-**Resume note (2026-09-26):** plan written, no slice started.
+**Resume note (2026-09-26):** Slice 0 done (baselines saved, R4 = real rendering defect, R5 = caused by `--bail=1` in `testByFile`, not by the entry). Next: Slice 1. Open point for the user: keep or drop `--bail=1` for the component entry (Slice 1 GREEN note).
 
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/303
 Working branch: to be created from `origin/_integration` (256e625 at plan time) when implementation starts.
@@ -20,7 +20,7 @@ Working branch: to be created from `origin/_integration` (256e625 at plan time) 
 
 | Slice | Title | Complexity | Status | Primary proof |
 |---|---|---|---|---|
-| 0 | Baselines and probe checks | S | ⬜ pending | baseline table; R4 / R5 decided |
+| 0 | Baselines and probe checks | S | ✅ DONE | baseline table; R4 / R5 decided |
 | 1 | Tracer: test pattern displayed (`ignorePaths`) | M | ⬜ pending | `-t "JzodTestPattern"` display leaf green |
 | 2 | Test pattern interactions | S | ⬜ pending | `-t "JzodTestPattern"` all leaves green |
 | 3 | Every editor reports its renders | M | ⬜ pending | `renderInsightCoverage.303.phase3` |
@@ -83,7 +83,7 @@ Copied from [`analysis.md`](./analysis.md) §2. Deviations go in the slice Reali
 
 ## Slice 0 — Baselines and probe checks
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Goal: lock what later slices compare against and settle analysis R4 and R5.
 
@@ -96,6 +96,27 @@ Goal: lock what later slices compare against and settle analysis R4 and R5.
 
 - `npm run testByFile -w miroir-standalone-app -- miroir-component-tests` (baseline duration and counts).
 - The three tsc commands (baseline lists saved next to this plan as `baseline-tsc-*.txt`).
+
+### Realization
+
+Branch `303-FEATURE-test-pattern-and-render-performance` at 917f176.
+
+| Baseline | Result |
+|---|---|
+| `miroir-component-tests` | 70 tests passed (2 entry checks + 68 leaves, 7 instances); vitest 41.3 s (collect 13.2 s, tests 27.0 s), wall 43.9 s |
+| tsc miroir-core | 0 errors (`baseline-tsc-miroir-core.txt`) |
+| tsc miroir-react | 0 errors (`baseline-tsc-miroir-react.txt`) |
+| tsc miroir-standalone-app | 1 error, pre-existing: `JzodElementEditorHooks.ts(528,59)` TS2339 `name` on `EntityInstance` (`baseline-tsc-miroir-standalone-app.txt`) |
+| `npm run nonreg:unit` (snapshot `test-results/nonreg/20260926T180650Z`) | 32 pass, 2 fail: `unit-301-agent-tooling` environment-unavailable (`No module named pytest`); `unit-286-react-component-miroir-tests` flaky: `componentTestSandbox.286.phase4` "a second display's Run during an active run is refused…" (10 of 12 cases rendered in the first sandbox), passes 5/5 when rerun alone |
+| full nonreg | not run in Slice 0 (no earlier snapshot under `test-results/nonreg/`); compared at Slice 7 |
+
+**R4 — real rendering defect, not folding.** Probe (temporary instance, deleted): the `aReference` schema of analysis §3.3 wrapped in an object, value `{aReference: {label:"root", children:[{label:"child", children:[{label:"grandchild"}]}]}}`. Results: rebuilt value `{"aReference":{"label":"root"}}`; `byDisplayValue "root"` found, `"child"` and `"grandchild"` not found; no `default case` text. The only inputs rendered are `TESTSECTION.testField.aReference.label` plus the structure switches of `testField`, `aReference`, `aReference.children`. The `children` array is unfolded (its buttons `+ v ^ × ⧉` render), and item 0 renders the error boundary "Something went wrong in JzodArrayEditor … array testField.aReference.children.0" with `resolveJzodSchemaReferenceInContext could not resolve reference {"relativePath":"node"} … relativeReferenceJzodContext keys {}`: the local `context` of the enclosing `schemaReference` is not passed down to the array items. No fold / unfold step can show the children. Consequence: the pattern keeps `aReference` under `ignorePaths`, checked by `expectElement` on the root label only (or the branch is dropped from the pattern); a bug issue is opened (Slice 7 list).
+
+**R5 — real, but the cause is `--bail=1`, not the entry.** `packages/miroir-standalone-app/scripts/test-by-file.ts` always passes `--bail=1` to vitest. With the probe instance in place (entry count check failing first), `testByFile … miroir-component-tests` without `-t` ran 2 of 75 tests and listed the other 73 as not run. The same entry through `npx vitest run --reporter=verbose --poolOptions.forks.singleFork miroir-component-tests` (same env, no bail) ran all 75: 4 failed, 71 passed, every suite reported. `describe(async …)` + `rethrowComponentTestFailures` only fails the leaf's own `it`. `testByFile … --bail=0` is rejected by vitest ("Expected a single value for option --bail"). The #291 G6 observation (81 collected, 74 reported) is the same bail.
+
+**R1 — deferred to Slice 3** (tracking cannot be turned on in the test wrapper before `initialShowPerformanceDisplay`).
+
+Deviation: none in scope; the Slice 1 R5 item changes (see Slice 1 GREEN).
 
 ---
 
@@ -113,7 +134,8 @@ Goal: a maintainer runs `-t "JzodTestPattern"` and sees the pattern render with 
 - Schema (T8): add `ignorePaths` to `expectRenderedValues`, `measureRendering` step object, `runOnDemand` on `reactComponentTestSuite`, in the MiroirTest Entity and its EntityVersion; rebuild; `devBuild`.
 - Interpreter: remove each dot path from actual and expected before the comparison; `measureRendering` handler throws `not implemented`.
 - Wire the instance: exports in `miroir-test-app_deployment-miroir` (`index.ts`, `index.d.ts`), `defaultMiroirMetaModel.tests`.
-- If Slice 0 found R5 real: run each suite's walk inside `it`-level failures instead of aborting collection.
+- R5 (Slice 0): no entry change needed; the abort is `--bail=1` in `scripts/test-by-file.ts`. **User input needed:** keep bail (document that a failing case hides the later ones, run `npx vitest run …` to see all), or let `testByFile` accept a bail override. Default if no answer: keep bail, document it in Slice 7.
+- R4 (Slice 0): `aReference` children do not render (reference context lost in array items); keep the branch under `ignorePaths` with an `expectElement` on the root label.
 
 **Refactor checkpoint:** the ignore helper sits next to the existing `path` selection of `expectRenderedValues`, not in a new module.
 
