@@ -54,6 +54,8 @@ Written in Slice 7: the agent that implemented #303 had no access to open GitHub
 
 ## 4. (optional) `testByFile`: `--bail=1` hides later cases, and `-t` patterns with spaces are split
 
+**Status:** done in #307 (`--no-bail` / `--bail=<n>`, vitest spawned without a shell); see `code-helpers/features/307-BUILD-testByFile-bail-and-args/`.
+
 **Observed (#303 Slices 0 and 6).**
 
 - `packages/miroir-standalone-app/scripts/test-by-file.ts` always passes `--bail=1` to vitest. After one failing case, the later cases of the run are reported as not run (Slice 0: with one failing check, 2 of 75 tests ran, 73 not run; the same entry through `npx vitest run` without bail ran all 75 and reported 4 failures). `testByFile … --bail=0` is rejected by vitest ("Expected a single value for option --bail").
