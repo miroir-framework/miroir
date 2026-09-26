@@ -201,7 +201,7 @@ export const miroirCoreTransformers: TransformerDefinition[] = [
 
 ## Example 2: Complex Composite - spreadSheetToMlSchema
 
-This real transformer from Miroir converts spreadsheet data into a Jzod schema.
+This real transformer from Miroir converts spreadsheet data into a ML schema.
 
 ### TransformerDefinition JSON
 **File**: `packages/miroir-core/src/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/e44300e8-ed02-40fb-a9ee-d83d08cb1f25.json`
@@ -341,9 +341,9 @@ This real transformer from Miroir converts spreadsheet data into a Jzod schema.
 
 1. **firstLine**: Gets the first row (headers) from the spreadsheet
 2. **attributeNames**: Extracts column names as an array
-3. **splitAttributeDefinitions**: Maps each name to a Jzod field definition
+3. **splitAttributeDefinitions**: Maps each name to a ML field definition
 4. **mergedAttributeDefinitions**: Merges all field definitions into one object
-5. **schema**: Creates final Jzod schema with type "object"
+5. **schema**: Creates final ML schema with type "object"
 
 ### Test Case:
 

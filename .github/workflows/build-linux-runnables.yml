@@ -90,7 +90,7 @@ jobs:
           if-no-files-found: error
 
   # ──────────────────────────────────────────────────────────────────────────────
-  # Job 2 · miroir-core  (devBuild regenerates TS types from Jzod schemas)
+  # Job 2 · miroir-core  (devBuild regenerates TS types from ML schemas)
   # ──────────────────────────────────────────────────────────────────────────────
   core:
     runs-on: ubuntu-latest
@@ -116,7 +116,7 @@ jobs:
         with:
           name: dist-deployment-packages
           path: packages
-      - name: devBuild miroir-core (generates TypeScript types from Jzod schemas)
+      - name: devBuild miroir-core (generates TypeScript types from ML schemas)
         run: npm run devBuild -w miroir-core
       - name: Upload dist – miroir-core
         uses: actions/upload-artifact@v4

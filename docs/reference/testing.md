@@ -113,7 +113,7 @@ is a `MiroirTestDefinition` whose `definition` field is a `MiroirTestSuite` tree
 | `functionCallTest` | Direct TypeScript function call with expected result |
 | `queryTest` | Query/extractor runner with fixture |
 | `runnerTest` | Composite action runner test |
-| `reactComponentTest` | Renders the component of its parent `reactComponentTestSuite` with the suite's `componentProps` shallow-merged under its own `componentProps`, then runs its declarative `steps`. Accepted only in a `reactComponentTestSuite` (#294). The step interpreter lives in the standalone app, not in miroir-core (#286, #292, see [MlElementEditor component tests](#jzodelementeditor-component-tests)) |
+| `reactComponentTest` | Renders the component of its parent `reactComponentTestSuite` with the suite's `componentProps` shallow-merged under its own `componentProps`, then runs its declarative `steps`. Accepted only in a `reactComponentTestSuite` (#294). The step interpreter lives in the standalone app, not in miroir-core (#286, #292, see [MlElementEditor component tests](#mlelementeditor-component-tests)) |
 | `miroirTestSuite` | Nested grouping (recurses) |
 | `reactComponentTestSuite` | Grouping of `reactComponentTest` leaves only. `component` names the rendered component in the app's component registry; optional `componentProps` are the default props of its leaves (#292) |
 
@@ -142,7 +142,7 @@ Name-list snapshots (`MIROIR_TEST_SUITE_REGISTRY_NAMES`, `MIROIR_RUNNER_TEST_SUI
 | **MiroirTest** | Deployment JSON entity | `testMiroir` / UI catalog. Suite key = instance `name`. |
 | **PLATFORM** | TypeScript under `tests/` with **no** MiroirTest entity | `testByFile` + optional `RUN_TEST` |
 
-PLATFORM files are the vitest tests that have **no MiroirTest equivalent**: CLI/schema apparatus (`parseMiroirTestCliConfig.unit.test.ts`, `miroirTest.schema.unit.test.ts`), LocalCache memory measure, store-layer integ (`PersistenceStoreController.integ`), view RTL (`ReportPage.integ.test.tsx`, `gridPagination.*`), and similar. `RUN_TEST` applies only to those files. The MlElementEditor component tests are MiroirTests since #286, with one instance per editor since #292 (`MlEnumEditor_ComponentTestSuite`, `MlArrayEditor_ComponentTestSuite`, `MlLiteralEditor_ComponentTestSuite`, `MlObjectEditor_ComponentTestSuite`, `MlSimpleTypeEditor_ComponentTestSuite`, `MlUnionEditor_ComponentTestSuite`, `MlAnyEditor_ComponentTestSuite`; `reactComponentTest` leaves), see [MlElementEditor component tests](#jzodelementeditor-component-tests).
+PLATFORM files are the vitest tests that have **no MiroirTest equivalent**: CLI/schema apparatus (`parseMiroirTestCliConfig.unit.test.ts`, `miroirTest.schema.unit.test.ts`), LocalCache memory measure, store-layer integ (`PersistenceStoreController.integ`), view RTL (`ReportPage.integ.test.tsx`, `gridPagination.*`), and similar. `RUN_TEST` applies only to those files. The MlElementEditor component tests are MiroirTests since #286, with one instance per editor since #292 (`MlEnumEditor_ComponentTestSuite`, `MlArrayEditor_ComponentTestSuite`, `MlLiteralEditor_ComponentTestSuite`, `MlObjectEditor_ComponentTestSuite`, `MlSimpleTypeEditor_ComponentTestSuite`, `MlUnionEditor_ComponentTestSuite`, `MlAnyEditor_ComponentTestSuite`; `reactComponentTest` leaves), see [MlElementEditor component tests](#mlelementeditor-component-tests).
 
 ### Notable catalog suites
 
@@ -628,7 +628,7 @@ Miroir has a small set of **consolidated, named log presets** that work identica
 
 **CI guard:** from repo root, `npm run check:console` (also the first step in `nonreg` unit tier). Violations must be migrated to `log.*` or added explicitly to `scripts/check_bare_console.py` with justification.
 
-**ML nomenclature guard (#145):** `npm run check:ml` (second step of the `nonreg` unit tier) fails when a Jzod name remains where Miroir's meta-language must be named ML / MLS (`Ml` constructs, `MlSchema` schemas, `Mls` schema operations). Jzod stays only for the external `@miroir-framework/jzod` / `jzod-ts` packages, their exports, and prose about the project; see the allowlist in `scripts/check_ml_nomenclature.py`. Enforcement is incremental while #145 is in progress: only the areas listed in `ENFORCED_RULES` fail the check, so a green result does not mean the rename is complete. `--inventory` lists the remaining names per area, `--self-test` checks the matcher.
+**ML nomenclature guard (#145):** `npm run check:ml` (second step of the `nonreg` unit tier) fails when a Jzod name remains where Miroir's meta-language must be named ML / MLS (`Ml` constructs, `MlSchema` schemas, `Mls` schema operations). Jzod stays only for the external `@miroir-framework/jzod` / `jzod-ts` packages, their exports, and prose about the project; see the allowlist in `scripts/check_ml_nomenclature.py`. The check covers the whole repository; the old → new names are listed in [ml-nomenclature.md](ml-nomenclature.md). `--inventory` lists the remaining names per area, `--self-test` checks the matcher.
 
 Workflow reference (Path A vs B, grep recipes): [runQuery-emulated-server.md](../guides/architecture/workflows/runQuery-emulated-server.md).
 
@@ -760,7 +760,7 @@ Identity under projection uses `resolveProjectionIdentityFields` → `getEntityP
 
 | File | Store / config | Focus |
 |------|----------------|-------|
-| `miroir-component-tests.unit.test.tsx` | In-memory `LocalCache`; no `--profile` | Jzod editor components, run from the 7 per-editor MiroirTest instances (`MlEnumEditor_ComponentTestSuite`, …) (#286, #292) |
+| `miroir-component-tests.unit.test.tsx` | In-memory `LocalCache`; no `--profile` | ML editor components, run from the 7 per-editor MiroirTest instances (`MlEnumEditor_ComponentTestSuite`, …) (#286, #292) |
 | `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` | Node emulated SQL via mocked launcher environment | `MiroirTestDisplay` launches integration and shows the result inspector |
 | `MiroirTestListIntegrationLaunch.integ.test.tsx` | Node emulated SQL via mocked launcher environment | List **Run All Integration Tests** batch for `miroirCoreTransformers` (filtered leaf) |
 | `MlElementEditorReactCodeMirror.test.tsx` | — | CodeMirror sub-editor (currently commented out) |
@@ -854,7 +854,7 @@ Steps that act on or check one element take a `target`. A target has exactly one
 | `byText` | `queryAllByText` |
 | `byDisplayValue` | `queryAllByDisplayValue` |
 | `byLabelText` | `queryAllByLabelText` |
-| `widget` (with `field` and the attributes below) | An element of a Jzod editor, addressed by field |
+| `widget` (with `field` and the attributes below) | An element of a ML editor, addressed by field |
 | `ref` | The element saved earlier in the case with `saveAs: "<name>"` |
 
 `name`, `byText`, `byDisplayValue`, and `byLabelText` take a text match: a string, a number, or `{"regex": "<pattern>", "flags": "<flags>"}` (`flags` optional). Queries run inside the sandbox element, which holds the case container and the portal element, so option lists rendered in a portal are found.
@@ -1570,7 +1570,7 @@ Real-server profiles require a reachable `miroir-server` and the selected backen
 # After changing MiroirTest JSON assets
 npm run build -w miroir-test-app_deployment-miroir
 
-# After changing Query / Endpoint / EntityVersion Jzod in deployment-miroir
+# After changing Query / Endpoint / EntityVersion ML schemas in deployment-miroir
 # (e.g. `attributes` on extractors or RestPersistenceAction_read)
 npm run build -w miroir-test-app_deployment-miroir
 npm run devBuild -w miroir-core   # regenerates preprocessor-generated types + package build
@@ -1582,7 +1582,7 @@ npm run devBuild -w miroir-core
 npm run build -w miroir-react
 ```
 
-Hand-editing `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/*` is not durable — the next `devBuild` overwrites it from deployment Jzod.
+Hand-editing `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/*` is not durable — the next `devBuild` overwrites it from the deployment's ML schemas.
 
 ---
 

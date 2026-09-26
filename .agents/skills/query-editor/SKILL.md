@@ -200,14 +200,14 @@ documentation is in folder `docs-OLD\transformers`
       "transformerDefinition": {
         "type": "object",
         "definition": {
-          // Define parameters here using Jzod schema
+          // Define parameters here using ML schema
         }
       }
     },
     "transformerResultSchema": {
       "returns": "mlSchema",
       "definition": {
-        // Define return type using Jzod schema
+        // Define return type using ML schema
       }
     }
   },
@@ -721,7 +721,7 @@ if (leftIsBigintSchema && rightIsBigintSchema) {
 When modifying schemas, always use `devBuild` (includes type generation):
 
 ```bash
-npm run devBuild -w miroir-core  # Generates types from Jzod schemas
+npm run devBuild -w miroir-core  # Generates types from ML schemas
 ```
 
 For implementation-only changes, regular `build` is sufficient:

@@ -22,7 +22,7 @@
     {
       "id": "unit-check-ml-nomenclature",
       "tier": "unit",
-      "title": "Guard — Jzod names where the ML / MLS nomenclature is required (#145)",
+      "title": "Guard — ML / MLS nomenclature for Miroir's meta-language (#145)",
       "requires": "none",
       "argv": [
         "python",

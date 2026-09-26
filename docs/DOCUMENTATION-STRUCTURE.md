@@ -78,7 +78,7 @@ docs-new/
 │   ├── why-miroir.md               # Philosophy and rationale ⚠️⚠️
 │   ├── comparison.md               # Competitive analysis ✅
 │   ├── architecture.md             # Layered architecture overview ⚠️⚠️⚠️
-│   ├── meta-model.md               # Understanding Jzod and bootstrapping
+│   ├── meta-model.md               # Understanding ML and bootstrapping
 │   ├── model-vs-data.md            # Application structure
 │   ├── use-cases.md                # Real-world scenarios
 │   ├── roadmap.md                  # Future development plans ⚠️⚠️⚠️
@@ -126,7 +126,7 @@ docs-new/
 │   ├── testing.md                  # Full testing reference (env vars, backends, API) ✅
 │   ├── versioning.md               # Model versioning: modes, freeze, EntityVersion & *Version history, modelVersion section ✅
 │   │
-│   └── api/                        # API reference (auto-generated from Jzod)
+│   └── api/                        # API reference (auto-generated from ML schemas)
 │       ├── index.md                # API overview ⚠️⚠️⚠️
 │       ├── entity.md               # Entity ⚠️⚠️⚠️
 │       ├── query.md                # Query API ⚠️⚠️⚠️
@@ -190,7 +190,7 @@ docs-new/
 2. [Core Concepts](guides/core-concepts.md) - Fundamental architecture (25 min)
 3. [Architecture Overview](guides/architecture.md) - Layered design (30 min)
 4. [Why Miroir?](guides/why-miroir.md) - Design philosophy (20 min)
-5. [Meta-Model & Jzod](guides/meta-model.md) - Bootstrapping and schemas (30 min)
+5. [Meta-Model & ML](guides/meta-model.md) - Bootstrapping and schemas (30 min)
 6. [API Reference](reference/api/) - Complete API surface (60 min)
 7. [Integration Guide](guides/developer/integration.md) - System integration (30 min)
 8. [Deployment Guide](guides/deployment.md) - Production architecture (20 min)
@@ -274,7 +274,7 @@ docs-new/
 2. [Contributing Guide](contributing/) - Contribution workflow (20 min)
 3. [Architecture Overview](guides/architecture.md) - Framework internals (45 min)
 4. [Core Concepts](guides/core-concepts.md) - Fundamental architecture (25 min)
-5. [Meta-Model & Jzod](guides/meta-model.md) - Bootstrapping (45 min)
+5. [Meta-Model & ML](guides/meta-model.md) - Bootstrapping (45 min)
 6. [Development Setup](contributing/development-setup.md) - Developer environment (30 min)
 7. [Testing Guide](contributing/testing.md) - Running and writing tests (60 min)
 8. [Code Style Guide](contributing/code-style.md) - Coding conventions (20 min)
@@ -354,7 +354,7 @@ Level 4: Reference & Deep Dive
 
 ### 📅 To Be Created (Future)
 - All other planned documents per structure above
-- Auto-generated API documentation from Jzod schemas
+- Auto-generated API documentation from ML schemas
 
 ### 📄 Existing to Integrate
 - [docs/libraryTutorial/libraryTutorial.md](../../docs-OLD/libraryTutorial/libraryTutorial.md) → tutorials/library-tutorial.md
@@ -369,7 +369,7 @@ Level 4: Reference & Deep Dive
 2. **Phase 2**: Create priority missing documents (installation, architecture, use cases, creating applications)
 3. **Phase 3**: Integrate existing documentation (library tutorial, transformer docs)
 4. **Phase 4**: Create user guides and advanced topics
-5. **Phase 5**: Implement auto-generation for API reference from Jzod schemas
+5. **Phase 5**: Implement auto-generation for API reference from ML schemas
 6. **Phase 6**: Add tutorials for blog app, task manager, natural language interface
 7. **Phase 7**: Community feedback and iteration
 

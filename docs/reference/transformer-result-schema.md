@@ -1,6 +1,6 @@
 # Transformer result schema inference
 
-Design-time API for inferring the Jzod output schema of a transformer **without evaluating** it at runtime. Implements [Proposal B](../proposals/dependent-types-for-transformer-composition.md) incrementally (issue [#88](https://github.com/miroir-framework/miroir/issues/88)).
+Design-time API for inferring the ML output schema of a transformer **without evaluating** it at runtime. Implements [Proposal B](../proposals/dependent-types-for-transformer-composition.md) incrementally (issue [#88](https://github.com/miroir-framework/miroir/issues/88)).
 
 Implementation plan: [`code-helpers/features/88-FEATURE-typed-transformers/tdd-implementation-plan.md`](../../code-helpers/features/88-FEATURE-typed-transformers/tdd-implementation-plan.md).
 

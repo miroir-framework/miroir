@@ -16,7 +16,7 @@ Internal reference for refactoring the report UI from `ReportViewWithEditor` dow
 | **RSVWE** | `ReportSectionViewWithEditor` — picks a leaf renderer from the section type. |
 | **TVOE** | `TypedValueObjectEditor` — schema-driven instance editor; expects an existing Formik above it. |
 | **TVOE+Formik** | `TypedValueObjectEditorWithFormik` — wraps TVOE in its own Formik. Used outside the report tree (e.g. transformer panels), not by RVWE. |
-| **typecheck / `mlsTypeCheck`** | Resolves the Jzod schema against the current value; yields `resolvedSchema` + `keyMap` (per-path metadata for editors). |
+| **typecheck / `mlsTypeCheck`** | Resolves the ML schema against the current value; yields `resolvedSchema` + `keyMap` (per-path metadata for editors). |
 | **typeCheckKeyMap** | Map from field path → schema metadata. In the report editor path it is **computed and passed as props**, not written back into Formik. |
 | **onChangeVector** | Optional map of `rootLessListKey` → callback. Fired by field editors alongside the Formik write, so a parent can react (e.g. navigate) without owning every keystroke. |
 | **rootLessListKey** | A field's path inside the edited value object (e.g. `application`, `definition.section`). Used to key `onChangeVector` and field-validation errors. |
@@ -179,7 +179,7 @@ Changing `application` in an input section navigates away. That remounts the pag
 
 ### When it runs
 
-On TVOE render, inside `useMemo`, when any of these change: current model / model environment (incl. the fundamental Jzod schema), deployment, `formik.values`, `valueObject`, `formValueMLSchema`, the Formik path string, zoom flags, and the redux deployment state (also used for FK resolution).
+On TVOE render, inside `useMemo`, when any of these change: current model / model environment (incl. the fundamental ML schema), deployment, `formik.values`, `valueObject`, `formValueMLSchema`, the Formik path string, zoom flags, and the redux deployment state (also used for FK resolution).
 
 It does **not** run on a timer. It is not Formik’s `validate`. It runs as often as those deps churn — typically once per meaningful edit that updates Formik.
 

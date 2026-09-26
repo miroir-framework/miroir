@@ -33,6 +33,7 @@ EXCLUDED_PREFIXES = (
     "docs-OLD/",
     "graphify-out/",
     "scripts/check_ml_nomenclature.py",
+    "docs/reference/ml-nomenclature.md",  # the old-name → new-name migration table
 )
 EXCLUDED_PARTS = ("node_modules", "dist")
 
@@ -59,11 +60,14 @@ EXTERNAL_EXPORTS = {
     "jzodToZodTextAndTsTypeAliases",
     "jzodToZodTextAndZodSchemaForTsGeneration",
     "jzodToZod",
+    # source files of the external packages, named in design docs
+    "JzodToZod",
+    "JzodToTs",
 }
 
 # Prose and build-orchestration files, where the bare words "Jzod" / "jzod" (the project, the sibling repo) are
 # legitimate. Build scripts also name their optional sibling-repo stages.
-PROSE_SUFFIXES = (".md", ".html", ".sh", ".yml", ".yaml", "Dockerfile")
+PROSE_SUFFIXES = (".md", ".html", ".sh", ".yml", ".yaml", "Dockerfile", ".code-workspace")
 PROJECT_WORDS = {"Jzod", "jzod", "JZOD", "STAGE_OPTIONAL_JZOD", "STAGE_OPTIONAL_JZOD_TS"}
 
 PACKAGE_PREFIX = "@miroir-framework/"
@@ -98,39 +102,9 @@ class Rule:
         return True
 
 
-# Rules are enabled slice by slice (see the TDD plan); the last slice leaves a single repo-wide rule.
+# One repo-wide rule: every Jzod name outside the allowlist designates a Miroir construct and must be named ML.
 ENFORCED_RULES: list[Rule] = [
-    # Slice 1: the language's element kinds and its bootstrap schema are named ML everywhere.
-    Rule(
-        "D ml-definitions",
-        paths=("",),
-        token_re=re.compile(
-            r"(?:[A-Za-z0-9_$]*[_$])?[jJ]zod(" + "|".join(ELEMENT_KINDS) + r")|jzodMiroirBootstrapSchema|jzodSchemajzodMiroirBootstrapSchema"
-        ),
-    ),    # Slice 2: the schema tools (1_core/mls/) and their transformers, with the MiroirTest keys that name them.
-    Rule(
-        "M ml-schema-tools",
-        paths=(
-            "packages/miroir-core/src/1_core/",
-            "packages/miroir-core/src/0_interfaces/1_core/mlsTypeCheckInterface.ts",
-            "packages/miroir-core/src/0_interfaces/1_core/mlUnion_RecursivelyUnfoldInterface.ts",
-            "packages/miroir-core/src/2_domain/Transformers.ts",
-            "packages/miroir-core/src/2_domain/TransformersForRuntime.ts",
-            "packages/miroir-core/src/5_tests/FunctionCallTestRegistry.ts",
-            "packages/miroir-core/tests/1_core/mls/",
-            "packages/miroir-test-app_deployment-miroir/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/",
-        ),
-    ),
-    # Slices 4-5: every package.
-    Rule("P ml-packages", paths=("packages/",)),
-    Rule(
-        "M ml-schema-tools (MiroirTest and transformer keys)",
-        paths=("",),
-        line_re=re.compile(
-            r'"(module|export|transformerType|transformerName|inMemoryImplementationFunctionName)"\s*:\s*"[^"]*jzod',
-            re.IGNORECASE,
-        ),
-    ),
+    Rule("R ml-repository", paths=("",)),
 ]
 
 

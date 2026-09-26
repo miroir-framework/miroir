@@ -40,7 +40,7 @@ the tables that follow.
    - **Combine / aggregate a list** — items are merged into one thing, or the list is measured
      (`concatLists`, `aggregate`, `listLength`, `listReducerToSpreadObject`, `indexListBy`).
    - **Convert object ⇄ list** — shape-shift between an object and a list of its parts.
-   - **Schema / meta-model utilities** — advanced transformers that manipulate Jzod schemas or
+   - **Schema / meta-model utilities** — advanced transformers that manipulate ML schemas or
      whole application models (MLS, admin).
    - **Application examples** — transformers shipped as examples inside a specific application.
 
@@ -232,18 +232,18 @@ Example — extract the title of every Book:
 
 ## 9. Schema / meta-model utilities
 
-Advanced transformers operating on Jzod schemas or whole application models. Mostly used inside the
+Advanced transformers operating on ML schemas or whole application models. Mostly used inside the
 Miroir application itself (MLS = Miroir Meta-Language Schema), not in ordinary report/action logic.
 
 | Transformer | Business use | Declared input | Declared output |
 |-------------|--------------|----------------|-----------------|
-| `mlsTypeCheck` | Validate a value object against a Jzod schema (`mlSchema`), returning a type-check result. | `object` | `object` |
-| `defaultValueForSchema` | Generate a default value object conforming to a Jzod schema (`mlSchema`). | `object` | `any` |
+| `mlsTypeCheck` | Validate a value object against a ML schema (`mlSchema`), returning a type-check result. | `object` | `object` |
+| `defaultValueForSchema` | Generate a default value object conforming to a ML schema (`mlSchema`). | `object` | `any` |
 | `resolveConditionalSchema` | Resolve an `ifThenElse` schema declaration against a value object to the concrete schema. | `object` | `object` |
 | `resolveSchemaReferenceInContext` | Resolve a `schemaReference` within a relative reference context. | `object` | `object` |
-| `unfoldSchemaOnce` | Unfold a Jzod schema one level, resolving immediate references. | `object` | `object` |
+| `unfoldSchemaOnce` | Unfold a ML schema one level, resolving immediate references. | `object` | `object` |
 | `resolveTransformerResultSchema` | Infer the output `mlSchema` of a nested `transformer` without evaluating it (the design-time API — see [transformer-result-schema.md](./transformer-result-schema.md)). | `object` | `object` |
-| `ansiColumnsToMlSchema` | Convert `information_schema.columns` rows into a Jzod object schema (nullable → `optional`, JSON columns → open object). | `array` | `object` |
+| `ansiColumnsToMlSchema` | Convert `information_schema.columns` rows into a ML object schema (nullable → `optional`, JSON columns → open object). | `array` | `object` |
 | `spreadSheetToMlSchema` | Convert spreadsheet contents into an ML schema. | *(none declared)* | *(schemaReference)* |
 | `duplicateApplicationModel` | Duplicate an application model, rewriting the application uuid throughout. | `object` | `object` |
 | `entityDefinition_extractAttributes` | Extract attribute definitions from an Entity (`16dbfe28-…` = the Entity entity). | Entity (uuid-typed) | `array` |

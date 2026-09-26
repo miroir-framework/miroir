@@ -268,7 +268,7 @@ Documentation is in folder `docs-OLD/transformers`
       "transformerDefinition": {
         "type": "object",
         "definition": {
-          // Define parameters here using Jzod schema
+          // Define parameters here using ML schema
           "paramName": {
             "type": "string"
           }
@@ -278,7 +278,7 @@ Documentation is in folder `docs-OLD/transformers`
     "transformerResultSchema": {
       "returns": "mlSchema",
       "definition": {
-        // Define return type using Jzod schema
+        // Define return type using ML schema
         "type": "string"
       }
     }

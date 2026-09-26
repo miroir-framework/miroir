@@ -163,7 +163,7 @@ Common filters: `DomainController.integ`, `PersistenceStoreController.integ`, `E
 npm run testByFile -w miroir-standalone-app -- miroir-component-tests
 ```
 
-Filter one editor: `npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "MlObjectEditor"`. Full detail: [reference/testing.md](../../reference/testing.md#jzodelementeditor-component-tests).
+Filter one editor: `npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "MlObjectEditor"`. Full detail: [reference/testing.md](../../reference/testing.md#mlelementeditor-component-tests).
 
 **MiroirTestDisplay integration launch (B6-d1)** — RTL proof for the **Run Integration Tests** button (`tests/4_view/MiroirTestDisplayIntegrationLaunch.integ.test.tsx`). Return Book leaf on `runner.returnDocument`; Postgres required (Node SQL mock env):
 

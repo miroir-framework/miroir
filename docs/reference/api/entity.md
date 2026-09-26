@@ -57,7 +57,7 @@ interface Entity {
 | `uuid` | string (UUID) | ✅ Yes | Unique identifier for this entity |
 | `parentUuid` | string (UUID) | ✅ Yes | The Entity meta-entity `16dbfe28-e1d7-4f20-9ba4-c1a9873202ad` (every Entity, including `Entity` itself, is an instance of Entity) |
 | `name` | string | ✅ Yes | Human-readable name (e.g., "Book", "Author") |
-| `mlSchema` | MlObject | ✅ Yes | Structure of the instances of this Entity, in Jzod / ML format. Application Entities usually `extend` `entityDefinitionRoot` — see [Jzod / ML Schema](#jzod--ml-schema-of-an-entity) |
+| `mlSchema` | MlObject | ✅ Yes | Structure of the instances of this Entity, in ML format. Application Entities usually `extend` `entityDefinitionRoot` — see [ML Schema](#ml-schema-of-an-entity) |
 | `description` | string | No | Optional documentation |
 | `conceptLevel` | `"MetaModel"` \| `"Model"` \| `"Data"` \| `"External"` | No | Level in meta-model hierarchy. `External` marks Entities whose instances live outside Miroir-managed storage (requires `externalDataSource`) |
 | `selfApplication` | string (UUID) | No | The SelfApplication this Entity belongs to |
@@ -143,9 +143,9 @@ Report-local `runtimeTransformers` remain the tool for cluster/JOIN display.
 
 ---
 
-## Jzod / ML Schema of an Entity
+## ML Schema of an Entity
 
-The **`mlSchema`** property of an Entity defines the structure of its instances. It is a Jzod `object`. See [Jzod documentation](../../../../jzod/README.md) for complete schema syntax.
+The **`mlSchema`** property of an Entity defines the structure of its instances. It is an ML `object`. See [Jzod documentation](../../../../jzod/README.md) for complete schema syntax.
 
 ### Common Patterns
 
@@ -312,7 +312,7 @@ const dropEntityAction: ModelActionDropEntity = {
 
 ## Related Concepts
 
-- **[Jzod Schema Language](../../../../jzod/README.md)** - Schema definition syntax
+- **[Jzod, the schema language ML derives from](../../../../jzod/README.md)** - Schema definition syntax
 - **[Query API](query.md)** - Querying entity instances
 - **[Action API](actions.md)** - Creating/updating entities
 - **[Transformer API](transformers.md)** - Transforming entity data
