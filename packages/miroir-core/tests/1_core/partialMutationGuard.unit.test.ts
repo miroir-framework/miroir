@@ -6,7 +6,7 @@ import {
   isPartialMutationInstanceAction,
   markSiblingPartialSegmentStale,
   rejectPartialMutationInstanceAction,
-} from "../../src/1_core/partialMutationGuard.js";
+} from "../../src/1_core/localCache/partialMutationGuard.js";
 import { Action2Error } from "../../src/0_interfaces/2_domain/DomainElement.js";
 import { getReduxDeploymentsStateIndex } from "../../src/2_domain/ReduxDeploymentsState.js";
 import type { InstanceAction } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";

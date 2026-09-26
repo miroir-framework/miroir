@@ -8,6 +8,7 @@ import type {
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import type { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import type { ReduxDeploymentsState } from "../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
+import { getInstancePrimaryKeyValue } from "../1_core/Entity/EntityPrimaryKey";
 import { applyExtractorFilterAndOrderBy } from "./ExtractorByEntityReturningObjectListTools";
 import { getReduxDeploymentsStateIndex } from "./ReduxDeploymentsState";
 import {
@@ -94,9 +95,24 @@ export function stripUnprojectedVirtualAttributes(
   );
 }
 
-export function indexInstancesByUuid(instances: EntityInstance[]): Record<string, EntityInstance> {
+/**
+ * Re-index filtered / ordered instances under their original state keys, so that non-uuid and
+ * composite primary keys survive. Instances copied by virtual-attribute evaluation are not found
+ * in `sourceIndex` and fall back to the entity's primary key value.
+ */
+export function indexInstancesByPrimaryKey(
+  entity: Entity | undefined,
+  instances: EntityInstance[],
+  sourceIndex: Record<string, EntityInstance | undefined>,
+): Record<string, EntityInstance> {
+  const keyByInstance = new Map<EntityInstance | undefined, string>(
+    Object.entries(sourceIndex).map(([key, instance]) => [instance, key]),
+  );
   return instances.reduce((acc: Record<string, EntityInstance>, instance) => {
-    acc[instance.uuid!] = instance;
+    const key =
+      keyByInstance.get(instance) ??
+      (entity ? getInstancePrimaryKeyValue(entity, instance) : instance.uuid!);
+    acc[key] = instance;
     return acc;
   }, {});
 }

@@ -11,8 +11,6 @@ import {
   miroirTestForFunctionCall,
   miroirTestForQuery,
   miroirTestLeaf,
-  miroirTest_pilot_transformer_plus,
-  miroirTest_queries_library,
   resolveFunctionCallTarget,
   resolveQueryRunnerFixture,
   runMiroirTest,
@@ -20,6 +18,10 @@ import {
   runMiroirTestSuite,
 } from "../../src";
 import { miroirTest_runner_return_document } from "miroir-test-app_deployment-library";
+import {
+  miroirTest_pilot_transformer_plus,
+  miroirTest_queries_library,
+} from "miroir-test-app_deployment-miroir";
 import type {
   MiroirTestForFunctionCall,
   MiroirTestForQuery,
