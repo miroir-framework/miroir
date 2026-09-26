@@ -2,7 +2,7 @@
 
 > Integration-first, no mocks. Every slice is proven through the public MiroirTest step `expectRenderedValues` of `MlTestPattern_ComponentTestSuite`, run by the real component runner (component entry `miroir-component-tests`), and guarded by the 68 per-editor cases that share the extractor.
 
-**Resume note:** see the progress table.
+**Resume note (2026-09-26):** all slices ✅ DONE; PR into `_integration`.
 
 ## Scope
 
@@ -19,7 +19,7 @@ Related: [analysis](./analysis.md) · issue https://github.com/miroir-framework/
 | 1 | Literal in place, no stray keys | ✅ DONE | pattern leaves without `aLiteral`, `testField`; component entry 74 passed |
 | 2 | Empty containers read as `[]` / `{}` | ✅ DONE | pattern leaves without `anEmptyArray`, `anEmptyRecord`, `items.1.tags`; component entry 74 passed |
 | 3 | File `any` field read (and `aReference`) | ✅ DONE | pattern leaves without `ignorePaths`; component entry 74 passed |
-| 4 | Docs, nonreg, AC | ⬜ pending | nonreg filesystem profile |
+| 4 | Docs, nonreg, AC | ✅ DONE | nonreg filesystem 65 passed / 7 failed, none from #305 |
 
 ## Locked implementation defaults
 
@@ -115,7 +115,7 @@ Pattern suite; component entry; tsc.
 
 - RED: `anAnyFile` was absent from every rebuilt value so far (Slice 1 output).
 - GREEN: `hiddenValueInputProps` in `renderedValueMarkers.ts`, rendered by the `MlAnyEditor` file branch as `<input type="hidden" readOnly …>`; the extractor's generic input pass parses inputs flagged `data-ml-json`. A loaded file (object value) is not exercised by the pattern.
-- Deviation (D6 moot): the #304 thread found that `aReference` renders its children on `_integration` since #296 (the #303 probe used an older miroir-core build). `aReference` and its root-label `expectElement` are removed too, so `ignorePaths` is gone from the 4 leaves (the key is dropped, not left empty). The #304 branch `304-BUG-recursive-schemaReference-array-items` edits the same arrays: whichever merges second resolves a one-line conflict per leaf to this state.
+- Deviation (D6 moot): the #304 thread found that `aReference` renders its children on `_integration` since #296 (the #303 probe used an older miroir-core build). `aReference` and its root-label `expectElement` are removed too, so `ignorePaths` is gone from the 4 leaves (the key is dropped, not left empty). The #304 PR #308 (branch `claude/project-thread-li8ifu`) edits the same arrays: whichever merges second resolves a one-line conflict per leaf to this state.
 - The instance `description` is rewritten: it described the ignored branches.
 - Component entry 74 passed / 15 skipped; consistency 6 passed; tsc 0.
 
@@ -123,12 +123,18 @@ Pattern suite; component entry; tsc.
 
 ## Slice 4 — Docs, nonreg, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 - `docs/reference/testing.md`: the extractor reads literals, empty containers and file fields; `ignorePaths` holds only `aReference` in the pattern.
 - `npm run nonreg:filesystem`; compare failures with the known list (memory `jzod-to-ml-rename`).
 
 | AC | Proof |
 |---|---|
-| `ignorePaths` empty or only `aReference` | enumeration of `26ef2886-….json` |
-| 68 per-editor cases pass | component entry |
+| `ignorePaths` empty or only `aReference` | no `ignorePaths` left in the 4 leaves of `26ef2886-….json` (enumerated) |
+| 68 per-editor cases pass | component entry 74 passed / 15 skipped |
+
+### Realization
+
+- Docs: `docs/reference/testing.md` (`expectRenderedValues` reading rules: prefix filter, markers; test pattern without `ignorePaths`; the ignored-branches table replaced by one sentence), `docs/contributing/testing.md` (link text).
+- `npm run nonreg:filesystem`, snapshot `test-results/nonreg/20260926T211532Z`: 65 passed, 7 failed. Known on a clean base: `integ-transformer-miroirCoreTransformers`, `appstack-uiIntegrationTestLauncher.integ`, `appstack-MiroirTestDisplayIntegrationLaunch`, `appstack-MiroirTestListIntegrationLaunch`. Container only: `unit-301-agent-tooling` (`No module named pytest`), `unit-275-cursor-sdk` (`jzodToCopilotKitParameter is not a function`: the name is not in the current source, a stale package build). Passed: `appstack-miroir-component-tests`, `unit-286-…`, `unit-292-…`, `unit-303-…`.
+- No issue-scoped test directory was created, so there is nothing to clean up.
