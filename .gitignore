@@ -66,6 +66,7 @@ test-results/
 .agents/skills/*
 !.agents/skills/miroir-*/
 !.agents/skills/grilling/
+!.agents/skills/improve-codebase-architecture/
 !.agents/skills/tdd/
 !.agents/skills/unslop/
 !.agents/skills/writing-for-agents/
@@ -75,6 +76,7 @@ test-results/
 .claude/skills/*
 !.claude/skills/miroir-*/
 !.claude/skills/grilling/
+!.agents/skills/improve-codebase-architecture/
 !.claude/skills/tdd/
 !.claude/skills/unslop/
 !.claude/skills/writing-for-agents/
