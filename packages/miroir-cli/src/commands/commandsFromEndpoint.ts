@@ -6,15 +6,15 @@ import {
   ApplicationDeploymentMap,
   DomainControllerInterface,
   InstanceAction,
-  JzodElement,
-  JzodReference,
+  MlElement,
+  MlReference,
   LoggerInterface,
   MiroirLoggerFactory,
   resolveFundamentalSchemaForDeployment,
   resolveJzodSchemaReferenceInContext,
   getEndpointActions,
   type EndpointDefinition,
-  type JzodObject,
+  type MlObject,
   type MetaModel,
 } from "miroir-core";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
@@ -97,7 +97,7 @@ export type CliRequestHandlers = Record<string, CliCommandHandler<any>>;
 /**
  * Helper function to convert a Jzod payload schema to a Zod schema
  */
-function jzodPayloadToZodSchema(jzodPayload: JzodObject): ZodTypeAny {
+function jzodPayloadToZodSchema(jzodPayload: MlObject): ZodTypeAny {
   const resolvedJzodSchema = resolveAllReferences(jzodPayload);
   
   const zodTextAndSchema: ZodTextAndZodSchema = jzodToZodTextAndZodSchema(
@@ -112,14 +112,14 @@ function jzodPayloadToZodSchema(jzodPayload: JzodObject): ZodTypeAny {
 /**
  * Recursively resolves all schema references in a Jzod schema element
  */
-function resolveAllReferences(element: JzodElement): JzodElement {
+function resolveAllReferences(element: MlElement): MlElement {
   if (!element || typeof element !== 'object') {
     return element;
   }
 
   if (element.type === 'schemaReference') {
     const resolvedSchema = resolveJzodSchemaReferenceInContext(
-      element as JzodReference,
+      element as MlReference,
       element.context || {},
       {
         miroirFundamentalJzodSchema: resolveFundamentalSchemaForDeployment(
@@ -173,7 +173,7 @@ function resolveAllReferences(element: JzodElement): JzodElement {
 /**
  * Extract CLI command options from Jzod schema
  */
-function extractCommandOptions(jzodPayload: JzodObject): CliCommandOption[] {
+function extractCommandOptions(jzodPayload: MlObject): CliCommandOption[] {
   const options: CliCommandOption[] = [];
   
   if (jzodPayload.type !== 'object' || !jzodPayload.definition) {
@@ -181,7 +181,7 @@ function extractCommandOptions(jzodPayload: JzodObject): CliCommandOption[] {
   }
 
   for (const [name, schema] of Object.entries(jzodPayload.definition)) {
-    const schemaElement = schema as JzodElement;
+    const schemaElement = schema as MlElement;
     const isRequired = !schemaElement.optional;
     const description = (schemaElement as any).tag?.value?.description || 
                        (schemaElement as any).tag?.value?.defaultLabel ||
@@ -348,9 +348,9 @@ function cliCommandEntry(endpoint: EndpointDefinition, actionType: string): CliC
     commandDescription: {
       name: commandName,
       description: actionDescription,
-      options: extractCommandOptions(jzodPayload as JzodObject),
+      options: extractCommandOptions(jzodPayload as MlObject),
     },
-    payloadZodSchema: jzodPayloadToZodSchema(jzodPayload as JzodObject),
+    payloadZodSchema: jzodPayloadToZodSchema(jzodPayload as MlObject),
     actionEnvelope: {
       actionType: actionType,
       actionLabel: `CLI: ${actionType.replace(/([A-Z])/g, " $1").trim()}`,

@@ -1,9 +1,9 @@
 import { useFormikContext } from "formik";
 import {
   getDefaultValueForJzodSchemaWithResolutionNonHook,
-  JzodElement,
-  JzodEnum,
-  JzodLiteral,
+  MlElement,
+  MlEnum,
+  MlLiteral,
   jzodUnionResolvedTypeForObject,
   KeyMapEntry,
   LoggerInterface,
@@ -12,8 +12,8 @@ import {
   resolvePathOnObject,
   TransformerFailure,
   type ApplicationDeploymentMap,
-  type JzodObject,
-  type JzodUnion,
+  type MlObject,
+  type MlUnion,
   type ReduxDeploymentsState,
   type ReduxStateWithUndoRedo,
   type SyncBoxedExtractorOrQueryRunnerMap,
@@ -121,7 +121,7 @@ const handleDiscriminatorChange = (
   //     "handleDiscriminatorChange called but current object does not have a string discriminator!"
   //   );
   // }
-  let newJzodSchema: JzodElement | undefined = undefined;
+  let newJzodSchema: MlElement | undefined = undefined;
   let localChosenDiscriminator: string | undefined = undefined;
   if (Array.isArray(parentKeyMap.discriminator)) {
     if (!parentKeyMap.recursivelyUnfoldedUnionSchema) {
@@ -135,7 +135,7 @@ const handleDiscriminatorChange = (
       );
     }
     const discriminator: string | string[] = parentKeyMap.discriminator[0];
-    const currentObjectKeys = Object.keys((parentKeyMap.resolvedSchema as JzodObject).definition);
+    const currentObjectKeys = Object.keys((parentKeyMap.resolvedSchema as MlObject).definition);
     localChosenDiscriminator = !Array.isArray(discriminator)
       ? discriminator
       : parentKeyMap.discriminator.flat().find((d) => currentObjectKeys.includes(d));
@@ -169,7 +169,7 @@ const handleDiscriminatorChange = (
     );
     const resolveUnionResult = jzodUnionResolvedTypeForObject( 
       parentKeyMap.recursivelyUnfoldedUnionSchema.result,
-      parentKeyMap.rawSchema as JzodUnion,
+      parentKeyMap.rawSchema as MlUnion,
       parentKeyMap.discriminator,
       newParentValue,
       parentKeyMap.valuePath,
@@ -190,15 +190,15 @@ const handleDiscriminatorChange = (
     newJzodSchema = resolveUnionResult.resolvedJzodObjectSchema;
   } else {
     localChosenDiscriminator = parentKeyMap.discriminator as string;
-    newJzodSchema = parentKeyMap.recursivelyUnfoldedUnionSchema?.result.find((a: JzodElement) => {
+    newJzodSchema = parentKeyMap.recursivelyUnfoldedUnionSchema?.result.find((a: MlElement) => {
       if (a.type !== "object") return false;
       const discriminatorElement = a.definition[parentKeyMap.discriminator as string];
       if (!discriminatorElement) return false;
 
       if (discriminatorElement.type === "literal") {
-        return (discriminatorElement as JzodLiteral).definition === selectedValue;
+        return (discriminatorElement as MlLiteral).definition === selectedValue;
       } else if (discriminatorElement.type === "enum") {
-        return (discriminatorElement as JzodEnum).definition.includes(selectedValue);
+        return (discriminatorElement as MlEnum).definition.includes(selectedValue);
       } else if (
         discriminatorType === "schemaReference" &&
         discriminatorElement.type === "schemaReference"
@@ -321,7 +321,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   const parentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[parentKey] : undefined;
   const currentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
   // const rawJzodSchema = currentKeyMap?.rawSchema;
-  const currentEnumSchema: JzodElement | undefined = currentKeyMap?.resolvedSchema;
+  const currentEnumSchema: MlElement | undefined = currentKeyMap?.resolvedSchema;
   const formikRootLessListKeyArray = [reportSectionPathAsString, ...rootLessListKeyArray];
   const formikRootLessListKey = formikRootLessListKeyArray.join(".");
 
@@ -543,7 +543,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
             />
           )}
           {forceTestingMode ? (
-            <div>enumValues={JSON.stringify((currentEnumSchema as JzodEnum).definition)}</div>
+            <div>enumValues={JSON.stringify((currentEnumSchema as MlEnum).definition)}</div>
           ) : (
             <></>
           )}

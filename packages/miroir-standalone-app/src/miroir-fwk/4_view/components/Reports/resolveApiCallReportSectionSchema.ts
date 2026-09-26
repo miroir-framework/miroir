@@ -1,7 +1,7 @@
 import {
   getExternalService,
   type EndpointDefinitionLike,
-  type JzodElement,
+  type MlElement,
 } from "miroir-core";
 
 const EXTERNAL_SERVICE_EXTRACTOR_TYPES = new Set([
@@ -27,7 +27,7 @@ export type ResolveApiCallReportSectionSchemaInput = {
 };
 
 export type ResolveApiCallReportSectionSchemaResult =
-  | { ok: true; schema: JzodElement }
+  | { ok: true; schema: MlElement }
   | { ok: false; error: string };
 
 function asExtractorRecord(
@@ -107,7 +107,7 @@ export function resolveApiCallReportSectionSchema(
     };
   }
 
-  const schema = operation.responseSchema as JzodElement | undefined;
+  const schema = operation.responseSchema as MlElement | undefined;
   if (!schema) {
     return {
       ok: false,

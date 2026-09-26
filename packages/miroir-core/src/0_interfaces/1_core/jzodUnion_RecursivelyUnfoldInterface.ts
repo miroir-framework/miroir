@@ -1,15 +1,15 @@
 import {
-  JzodElement
+  MlElement
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 
 export interface JzodUnion_RecursivelyUnfold_ReturnTypeOK {
   status: "ok",
-  result: JzodElement[],
+  result: MlElement[],
   expandedReferences: Set<string>,
   discriminator?: (string | string[]) | undefined
 }
-export const jzodUnion_RecursivelyUnfold_ReturnTypeOK: JzodElement = {
+export const jzodUnion_RecursivelyUnfold_ReturnTypeOK: MlElement = {
   type: "object",
   definition: {
     status: { type: "literal", definition: "ok" },
@@ -19,7 +19,7 @@ export const jzodUnion_RecursivelyUnfold_ReturnTypeOK: JzodElement = {
         type: "schemaReference",
         definition: {
           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          relativePath: "jzodElement",
+          relativePath: "mlElement",
         },
       },
     },
@@ -50,7 +50,7 @@ export interface JzodUnion_RecursivelyUnfold_ReturnTypeError {
   error: string,
   innerError?: JzodUnion_RecursivelyUnfold_ReturnTypeError,
 }
-export const jzodUnion_RecursivelyUnfold_ReturnTypeError: JzodElement = {
+export const jzodUnion_RecursivelyUnfold_ReturnTypeError: MlElement = {
   type: "object",
   definition: {
     status: { type: "literal", definition: "error" },
@@ -66,7 +66,7 @@ export const jzodUnion_RecursivelyUnfold_ReturnTypeError: JzodElement = {
   },
 };
 export type JzodUnion_RecursivelyUnfold_ReturnType = JzodUnion_RecursivelyUnfold_ReturnTypeError | JzodUnion_RecursivelyUnfold_ReturnTypeOK;
-export const jzodUnion_RecursivelyUnfold_ReturnType: JzodElement = {
+export const jzodUnion_RecursivelyUnfold_ReturnType: MlElement = {
   type: "union",
   definition: [
     {

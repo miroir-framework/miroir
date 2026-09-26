@@ -1,4 +1,4 @@
-import { JzodElement, JzodReference } from "@miroir-framework/jzod-ts";
+import type { MlElement, MlReference } from "../preprocessor-generated/miroirFundamentalType";
 import { entityVersionHistoricalQueryVersion, entityVersionHistoricalReportVersion, entityVersionHistoricalMenuVersion, entityVersionHistoricalEndpointVersion, entityVersionHistoricalRunnerVersion, entityVersionHistoricalThemeVersion, entityVersionHistoricalTransformerDefinitionVersion, miroirThemeSchemaJson, tableThemeSchemaJson } from "miroir-test-app_deployment-miroir";
 
 import { cleanLevel } from "../../../1_core/constants";
@@ -149,9 +149,9 @@ function endpointEntityActionsSchemaContext(entityDefinitionEndpointDefinition: 
   return definitionFieldSchema?.definition?.actions?.context ?? {};
 }
 
-function makeObjectsMandatory (element: JzodElement): JzodElement {
+function makeObjectsMandatory (element: MlElement): MlElement {
   if (element.type === "object") {
-    const result: JzodElement = {
+    const result: MlElement = {
       ...element,
       definition: Object.fromEntries(
         Object.entries(element.definition).map(([key, value]) => [key, makeObjectsMandatory(value)])
@@ -289,7 +289,7 @@ export function getMiroirFundamentalJzodSchema(
   queryEndpointVersionV1: any,
   persistenceEndpointVersionV1: any,
   testEndpointVersionV1: any,
-  jzodSchemajzodMiroirBootstrapSchema: any,
+  mlSchemaMlMiroirBootstrapSchema: any,
   transformerJzodSchema: any,
   miroirTransformersJzodSchemas: any[], // TransformerDefinition[] NOT USED
   entityDefinitionAdminApplication: any,
@@ -314,10 +314,10 @@ export function getMiroirFundamentalJzodSchema(
   entityDefinitionEndpointDefinition: any,
   entityDefinitionApplicationEvolutionTrace: any,
   entityDefinitionApplicationEvolutionTraceEvent: any,
-// ): JzodReference {
-  // ): any /** JzodReference, avoiding reference to ensure proper compilation */ {
+// ): MlReference {
+  // ): any /** MlReference, avoiding reference to ensure proper compilation */ {
   ): any /** MlSchema, avoiding reference to ensure proper compilation */ {
-  // TODO: not really a JzodReference!!
+  // TODO: not really a MlReference!!
   log.info("getMiroirFundamentalJzodSchema called!");
   const _t_start = Date.now();
   const _phaseTimings: Array<{phase: string; ms: number}> = [];
@@ -344,7 +344,7 @@ export function getMiroirFundamentalJzodSchema(
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
-  const extraQueryElements: Record<string, any /*JzodElement*/> = {
+  const extraQueryElements: Record<string, any /*MlElement*/> = {
     localCacheExtractor: {
       type: "object",
       definition: {
@@ -670,7 +670,7 @@ export function getMiroirFundamentalJzodSchema(
           },
         ...(
           makeReferencesAbsolute(
-            jzodSchemajzodMiroirBootstrapSchema.definition as any,
+            mlSchemaMlMiroirBootstrapSchema.definition as any,
             miroirFundamentalJzodSchemaUuid,
             true,
           ) as any
@@ -1225,7 +1225,7 @@ export function getMiroirFundamentalJzodSchema(
             eager: true,
             partial: true,
             absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "jzodElement",
+            relativePath: "mlElement",
           },
         },
         applicationSection: {
@@ -3467,7 +3467,7 @@ export function getMiroirFundamentalJzodSchema(
 
   // ##############################################################################
   log.info("getMiroirFundamentalJzodSchema calculating extendedSchemas...");
-  const extendedSchemas: string[] = getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchema.definition.context);
+  const extendedSchemas: string[] = getExtendedSchemas(mlSchemaMlMiroirBootstrapSchema.definition.context);
 
   log.info(
     "getMiroirFundamentalJzodSchema extendedSchemas",
@@ -3604,7 +3604,7 @@ export function getMiroirFundamentalJzodSchema(
   );
 
   // // // TODO: HACK!! forcing jzod schema definition into compositeActionDependencySet
-  // Object.keys((jzodSchemajzodMiroirBootstrapSchema as any).definition.context).forEach((key) => {
+  // Object.keys((mlSchemaMlMiroirBootstrapSchema as any).definition.context).forEach((key) => {
   //   domainActionDependencySet.add(key);
   // });
 
@@ -3663,7 +3663,7 @@ export function getMiroirFundamentalJzodSchema(
           type: "schemaReference",
           definition: {
             absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement",
+            relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_mlElement",
           },
         },
         metaModel: {
@@ -4421,7 +4421,7 @@ export function getMiroirFundamentalJzodSchema(
             relativePath: "buildPlusRuntimeCompositeAction",
           },
         }, // compositeActionTemplate: THAT's THE RESULT OF THE WHOLE MOVEMENT!
-      } as Record<string, any /**JzodElement */>,
+      } as Record<string, any /**MlElement */>,
     } as any /** JzodObjectOrReference */,
   };
   log.info(

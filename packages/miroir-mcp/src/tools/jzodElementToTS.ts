@@ -1,25 +1,25 @@
 import { 
-  type JzodElement,
+  type MlElement,
   resolveJzodSchemaReferenceInContext,
-  type JzodReference,
+  type MlReference,
   defaultMiroirModelEnvironment,
 } from "miroir-core";
 
 /**
- * Recursively converts a JzodElement to a TypeScript type string.
+ * Recursively converts a MlElement to a TypeScript type string.
  * 
- * @param jzodElement - The Jzod schema element to convert
+ * @param mlElement - The Jzod schema element to convert
  * @param indentLevel - Current indentation level for nested structures
  * @returns A well-formatted TypeScript type string
  */
 export function jzodElementToTS(
-  jzodElement: JzodElement,
+  mlElement: MlElement,
   indentLevel: number = 0
 ): string {
   const indent = '  '.repeat(indentLevel);
   const nextIndent = '  '.repeat(indentLevel + 1);
 
-  switch (jzodElement.type) {
+  switch (mlElement.type) {
     case 'uuid':
     case 'string':
       return 'string';
@@ -34,7 +34,7 @@ export function jzodElementToTS(
       return 'Date';
 
     case 'literal': {
-      const literalValue = jzodElement.definition;
+      const literalValue = mlElement.definition;
       if (typeof literalValue === 'number') {
         return String(literalValue);
       }
@@ -42,17 +42,17 @@ export function jzodElementToTS(
     }
 
     case 'enum': {
-      if (!Array.isArray(jzodElement.definition)) {
+      if (!Array.isArray(mlElement.definition)) {
         throw new Error('Enum definition must be an array');
       }
-      return jzodElement.definition.map((val: string) => `"${val}"`).join(' | ');
+      return mlElement.definition.map((val: string) => `"${val}"`).join(' | ');
     }
 
     case 'schemaReference': {
       // Resolve the schema reference using the miroir context
       const resolvedSchema = resolveJzodSchemaReferenceInContext(
-        jzodElement as JzodReference,
-        (jzodElement as JzodReference).context || {},
+        mlElement as MlReference,
+        (mlElement as MlReference).context || {},
         defaultMiroirModelEnvironment,
       );
       
@@ -61,12 +61,12 @@ export function jzodElementToTS(
     }
 
     case 'object': {
-      if (!jzodElement.definition) {
+      if (!mlElement.definition) {
         return '{}';
       }
 
       const properties: string[] = [];
-      for (const [key, value] of Object.entries(jzodElement.definition)) {
+      for (const [key, value] of Object.entries(mlElement.definition)) {
         const valueType = jzodElementToTS(value as any, indentLevel + 1);
         const optional = (value as any).optional ? '?' : '';
         
@@ -82,11 +82,11 @@ export function jzodElementToTS(
     }
 
     case 'array': {
-      if (!jzodElement.definition) {
+      if (!mlElement.definition) {
         throw new Error('Array definition missing item type');
       }
       
-      const itemType = jzodElementToTS(jzodElement.definition, indentLevel);
+      const itemType = jzodElementToTS(mlElement.definition, indentLevel);
       
       // Only wrap in parentheses if it contains a union (|) but not an object (which starts with {)
       if (itemType.includes('|') && !itemType.startsWith('{')) {
@@ -97,20 +97,20 @@ export function jzodElementToTS(
     }
 
     case 'record': {
-      if (!jzodElement.definition) {
+      if (!mlElement.definition) {
         throw new Error('Record definition missing value type');
       }
       
-      const valueType = jzodElementToTS(jzodElement.definition, indentLevel);
+      const valueType = jzodElementToTS(mlElement.definition, indentLevel);
       return `Record<string, ${valueType}>`;
     }
 
     case 'tuple': {
-      if (!jzodElement.definition || !Array.isArray(jzodElement.definition)) {
+      if (!mlElement.definition || !Array.isArray(mlElement.definition)) {
         throw new Error('Tuple definition missing or invalid');
       }
       
-      const itemTypes = jzodElement.definition.map((item: JzodElement) => 
+      const itemTypes = mlElement.definition.map((item: MlElement) => 
         jzodElementToTS(item as any, indentLevel)
       );
       
@@ -118,11 +118,11 @@ export function jzodElementToTS(
     }
 
     case 'union': {
-      if (!jzodElement.definition || !Array.isArray(jzodElement.definition)) {
+      if (!mlElement.definition || !Array.isArray(mlElement.definition)) {
         throw new Error('Union definition missing or invalid');
       }
       
-      const memberTypes = jzodElement.definition.map((member: JzodElement) => 
+      const memberTypes = mlElement.definition.map((member: MlElement) => 
         jzodElementToTS(member as any, indentLevel)
       );
       
@@ -153,7 +153,7 @@ export function jzodElementToTS(
     case "map":
     case "promise":
     case "set": {
-      throw new Error(`Unsupported Jzod type for TypeScript conversion: ${jzodElement.type}`);
+      throw new Error(`Unsupported Jzod type for TypeScript conversion: ${mlElement.type}`);
     }
 
     default:

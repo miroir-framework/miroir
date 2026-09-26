@@ -1,17 +1,17 @@
 import { describe, expect, it } from "vitest";
 
-import type { JzodElement } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { MlElement } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { isMlSchemaSubtype } from "../../../src/1_core/jzod/mlSchemaSubtype";
 
-const stringSchema = { type: "string" } as JzodElement;
-const numberSchema = { type: "number" } as JzodElement;
-const booleanSchema = { type: "boolean" } as JzodElement;
-const uuidSchema = { type: "uuid" } as JzodElement;
-const anySchema = { type: "any" } as JzodElement;
-const unknownSchema = { type: "unknown" } as JzodElement;
-const neverSchema = { type: "never" } as JzodElement;
-const nullSchema = { type: "null" } as JzodElement;
-const undefinedSchema = { type: "undefined" } as JzodElement;
+const stringSchema = { type: "string" } as MlElement;
+const numberSchema = { type: "number" } as MlElement;
+const booleanSchema = { type: "boolean" } as MlElement;
+const uuidSchema = { type: "uuid" } as MlElement;
+const anySchema = { type: "any" } as MlElement;
+const unknownSchema = { type: "unknown" } as MlElement;
+const neverSchema = { type: "never" } as MlElement;
+const nullSchema = { type: "null" } as MlElement;
+const undefinedSchema = { type: "undefined" } as MlElement;
 
 describe("isMlSchemaSubtype — primitives & tops/bottoms (#250)", () => {
   it("is reflexive for plain primitives", () => {
@@ -50,20 +50,20 @@ describe("isMlSchemaSubtype — primitives & tops/bottoms (#250)", () => {
 
 describe("isMlSchemaSubtype — optional / nullable (#250)", () => {
   it("required is subtype of optional (same core)", () => {
-    const optionalString = { type: "string", optional: true } as JzodElement;
+    const optionalString = { type: "string", optional: true } as MlElement;
     expect(isMlSchemaSubtype(stringSchema, optionalString)).toBe(true);
     expect(isMlSchemaSubtype(optionalString, stringSchema)).toBe(false);
   });
 
   it("non-null is subtype of nullable (same core)", () => {
-    const nullableString = { type: "string", nullable: true } as JzodElement;
+    const nullableString = { type: "string", nullable: true } as MlElement;
     expect(isMlSchemaSubtype(stringSchema, nullableString)).toBe(true);
     expect(isMlSchemaSubtype(nullableString, stringSchema)).toBe(false);
   });
 
   it("follows jzodTypeCheck: optional and nullable each accept null and undefined", () => {
-    const optionalString = { type: "string", optional: true } as JzodElement;
-    const nullableString = { type: "string", nullable: true } as JzodElement;
+    const optionalString = { type: "string", optional: true } as MlElement;
+    const nullableString = { type: "string", nullable: true } as MlElement;
     expect(isMlSchemaSubtype(undefinedSchema, optionalString)).toBe(true);
     expect(isMlSchemaSubtype(nullSchema, optionalString)).toBe(true);
     expect(isMlSchemaSubtype(undefinedSchema, nullableString)).toBe(true);
@@ -71,18 +71,18 @@ describe("isMlSchemaSubtype — optional / nullable (#250)", () => {
   });
 
   it("follows jzodTypeCheck: optional and nullable are equivalent value sets", () => {
-    const optionalString = { type: "string", optional: true } as JzodElement;
-    const nullableString = { type: "string", nullable: true } as JzodElement;
+    const optionalString = { type: "string", optional: true } as MlElement;
+    const nullableString = { type: "string", nullable: true } as MlElement;
     expect(isMlSchemaSubtype(optionalString, nullableString)).toBe(true);
     expect(isMlSchemaSubtype(nullableString, optionalString)).toBe(true);
   });
 
   it("missing object attribute is OK when target attribute is nullable (jzodTypeCheck)", () => {
-    const empty = { type: "object", definition: {} } as JzodElement;
+    const empty = { type: "object", definition: {} } as MlElement;
     const nullableName = {
       type: "object",
       definition: { name: { type: "string", nullable: true } },
-    } as JzodElement;
+    } as MlElement;
     expect(isMlSchemaSubtype(empty, nullableName)).toBe(true);
   });
 });
@@ -92,7 +92,7 @@ describe("isMlSchemaSubtype — validations & coerce (#250)", () => {
     const constrained = {
       type: "string",
       validations: [{ type: "min", parameter: 5 }],
-    } as JzodElement;
+    } as MlElement;
     expect(isMlSchemaSubtype(constrained, stringSchema)).toBe(true);
     expect(isMlSchemaSubtype(stringSchema, constrained)).toBe(false);
   });
@@ -101,22 +101,22 @@ describe("isMlSchemaSubtype — validations & coerce (#250)", () => {
     const min5 = {
       type: "string",
       validations: [{ type: "min", parameter: 5 }],
-    } as JzodElement;
+    } as MlElement;
     const min5Again = {
       type: "string",
       validations: [{ type: "min", parameter: 5 }],
-    } as JzodElement;
+    } as MlElement;
     const min3 = {
       type: "string",
       validations: [{ type: "min", parameter: 3 }],
-    } as JzodElement;
+    } as MlElement;
     expect(isMlSchemaSubtype(min5, min5Again)).toBe(true);
     // min 5 implies min 3, but comparing validation semantics is out of scope
     expect(isMlSchemaSubtype(min5, min3)).toBe(false);
   });
 
   it("coerce widens the accepted input set: coerce subtype requires coerce supertype", () => {
-    const coercedNumber = { type: "number", coerce: true } as JzodElement;
+    const coercedNumber = { type: "number", coerce: true } as MlElement;
     expect(isMlSchemaSubtype(numberSchema, coercedNumber)).toBe(true);
     expect(isMlSchemaSubtype(coercedNumber, numberSchema)).toBe(false);
   });
@@ -125,29 +125,29 @@ describe("isMlSchemaSubtype — validations & coerce (#250)", () => {
     const constrainedString = {
       type: "string",
       validations: [{ type: "max", parameter: 10 }],
-    } as JzodElement;
+    } as MlElement;
     expect(isMlSchemaSubtype(uuidSchema, constrainedString)).toBe(false);
   });
 });
 
 describe("isMlSchemaSubtype — literals & enums (#250)", () => {
   it("string literal is subtype of string and of enum containing it", () => {
-    const lit = { type: "literal", definition: "active" } as JzodElement;
+    const lit = { type: "literal", definition: "active" } as MlElement;
     const statusEnum = {
       type: "enum",
       definition: ["active", "inactive"],
-    } as JzodElement;
+    } as MlElement;
     expect(isMlSchemaSubtype(lit, stringSchema)).toBe(true);
     expect(isMlSchemaSubtype(lit, statusEnum)).toBe(true);
     expect(isMlSchemaSubtype(lit, {
       type: "enum",
       definition: ["pending"],
-    } as JzodElement)).toBe(false);
+    } as MlElement)).toBe(false);
   });
 
   it("narrower enum is subtype of wider enum and of string", () => {
-    const narrow = { type: "enum", definition: ["a"] } as JzodElement;
-    const wide = { type: "enum", definition: ["a", "b"] } as JzodElement;
+    const narrow = { type: "enum", definition: ["a"] } as MlElement;
+    const wide = { type: "enum", definition: ["a", "b"] } as MlElement;
     expect(isMlSchemaSubtype(narrow, wide)).toBe(true);
     expect(isMlSchemaSubtype(wide, narrow)).toBe(false);
     expect(isMlSchemaSubtype(narrow, stringSchema)).toBe(true);
@@ -161,13 +161,13 @@ describe("isMlSchemaSubtype — objects follow jzodTypeCheck strictness (#250)",
       name: { type: "string" },
       age: { type: "number" },
     },
-  } as JzodElement;
+  } as MlElement;
   const narrower = {
     type: "object",
     definition: {
       name: { type: "string" },
     },
-  } as JzodElement;
+  } as MlElement;
 
   it("rejects width subtyping against a strict target (extra value attributes are type errors)", () => {
     expect(isMlSchemaSubtype(wider, narrower)).toBe(false);
@@ -175,12 +175,12 @@ describe("isMlSchemaSubtype — objects follow jzodTypeCheck strictness (#250)",
   });
 
   it("allows width subtyping when the target object is nonStrict", () => {
-    const openNarrower = { ...narrower, nonStrict: true } as JzodElement;
+    const openNarrower = { ...narrower, nonStrict: true } as MlElement;
     expect(isMlSchemaSubtype(wider, openNarrower)).toBe(true);
   });
 
   it("a nonStrict subtype requires a nonStrict supertype", () => {
-    const openNarrower = { ...narrower, nonStrict: true } as JzodElement;
+    const openNarrower = { ...narrower, nonStrict: true } as MlElement;
     // openNarrower admits arbitrary extra attributes, the strict wider rejects them
     expect(isMlSchemaSubtype(openNarrower, wider)).toBe(false);
   });
@@ -190,17 +190,17 @@ describe("isMlSchemaSubtype — objects follow jzodTypeCheck strictness (#250)",
       type: "object",
       nonStrict: true,
       definition: { name: { type: "string" } },
-    } as JzodElement;
+    } as MlElement;
     const openB = {
       type: "object",
       nonStrict: true,
       definition: { name: { type: "string" }, age: { type: "number" } },
-    } as JzodElement;
+    } as MlElement;
     const openC = {
       type: "object",
       nonStrict: true,
       definition: { name: { type: "string" }, age: { type: "any" } },
-    } as JzodElement;
+    } as MlElement;
     // values of openA may carry `age` with any value, which does not fit openB's `age: number`
     expect(isMlSchemaSubtype(openA, openB)).toBe(false);
     expect(isMlSchemaSubtype(openA, openC)).toBe(true);
@@ -210,30 +210,30 @@ describe("isMlSchemaSubtype — objects follow jzodTypeCheck strictness (#250)",
     const withUuid = {
       type: "object",
       definition: { id: { type: "uuid" } },
-    } as JzodElement;
+    } as MlElement;
     const withString = {
       type: "object",
       definition: { id: { type: "string" } },
-    } as JzodElement;
+    } as MlElement;
     expect(isMlSchemaSubtype(withUuid, withString)).toBe(true);
     expect(isMlSchemaSubtype(withString, withUuid)).toBe(false);
   });
 
   it("required property does not subtype as missing required on target", () => {
-    const empty = { type: "object", definition: {} } as JzodElement;
+    const empty = { type: "object", definition: {} } as MlElement;
     const needsName = {
       type: "object",
       definition: { name: { type: "string" } },
-    } as JzodElement;
+    } as MlElement;
     expect(isMlSchemaSubtype(empty, needsName)).toBe(false);
   });
 
   it("missing property is OK when target property is optional", () => {
-    const empty = { type: "object", definition: {} } as JzodElement;
+    const empty = { type: "object", definition: {} } as MlElement;
     const optionalName = {
       type: "object",
       definition: { name: { type: "string", optional: true } },
-    } as JzodElement;
+    } as MlElement;
     expect(isMlSchemaSubtype(empty, optionalName)).toBe(true);
   });
 
@@ -242,16 +242,16 @@ describe("isMlSchemaSubtype — objects follow jzodTypeCheck strictness (#250)",
       type: "object",
       partial: true,
       definition: { name: { type: "string" } },
-    } as JzodElement;
+    } as MlElement;
     const optionalName = {
       type: "object",
       definition: { name: { type: "string", optional: true } },
-    } as JzodElement;
+    } as MlElement;
     const requiredName = {
       type: "object",
       definition: { name: { type: "string" } },
-    } as JzodElement;
-    const empty = { type: "object", definition: {} } as JzodElement;
+    } as MlElement;
+    const empty = { type: "object", definition: {} } as MlElement;
     expect(isMlSchemaSubtype(partialName, optionalName)).toBe(true);
     expect(isMlSchemaSubtype(optionalName, partialName)).toBe(true);
     expect(isMlSchemaSubtype(empty, partialName)).toBe(true);
@@ -263,8 +263,8 @@ describe("isMlSchemaSubtype — objects follow jzodTypeCheck strictness (#250)",
       type: "string",
       description: "a",
       tag: { value: { defaultLabel: "A" } },
-    } as JzodElement;
-    const b = { type: "string", description: "b" } as JzodElement;
+    } as MlElement;
+    const b = { type: "string", description: "b" } as MlElement;
     expect(isMlSchemaSubtype(a, b)).toBe(true);
   });
 });
@@ -273,19 +273,19 @@ describe("isMlSchemaSubtype — objects with extend (#250)", () => {
   const baseRef = {
     type: "schemaReference",
     definition: { relativePath: "baseObject" },
-  } as JzodElement;
+  } as MlElement;
 
   it("identical objects bearing extend are subtypes (identity)", () => {
     const a = {
       type: "object",
       extend: baseRef,
       definition: { c: { type: "number" } },
-    } as JzodElement;
+    } as MlElement;
     const aClone = {
       type: "object",
       extend: baseRef,
       definition: { c: { type: "number" } },
-    } as JzodElement;
+    } as MlElement;
     expect(isMlSchemaSubtype(a, aClone)).toBe(true);
   });
 
@@ -294,12 +294,12 @@ describe("isMlSchemaSubtype — objects with extend (#250)", () => {
       type: "object",
       extend: baseRef,
       definition: { c: { type: "number" } },
-    } as JzodElement;
+    } as MlElement;
     const b = {
       type: "object",
       extend: baseRef,
       definition: {},
-    } as JzodElement;
+    } as MlElement;
     // the local definition of `a` may override inherited attributes
     // incompatibly — without a model environment this cannot be decided
     expect(isMlSchemaSubtype(a, b)).toBe(false);
@@ -309,15 +309,15 @@ describe("isMlSchemaSubtype — objects with extend (#250)", () => {
 
 describe("isMlSchemaSubtype — arrays, records, tuples (#250)", () => {
   it("arrays are covariant in element type", () => {
-    const uuidArray = { type: "array", definition: uuidSchema } as JzodElement;
-    const stringArray = { type: "array", definition: stringSchema } as JzodElement;
+    const uuidArray = { type: "array", definition: uuidSchema } as MlElement;
+    const stringArray = { type: "array", definition: stringSchema } as MlElement;
     expect(isMlSchemaSubtype(uuidArray, stringArray)).toBe(true);
     expect(isMlSchemaSubtype(stringArray, uuidArray)).toBe(false);
   });
 
   it("records are covariant in value type", () => {
-    const uuidRecord = { type: "record", definition: uuidSchema } as JzodElement;
-    const stringRecord = { type: "record", definition: stringSchema } as JzodElement;
+    const uuidRecord = { type: "record", definition: uuidSchema } as MlElement;
+    const stringRecord = { type: "record", definition: stringSchema } as MlElement;
     expect(isMlSchemaSubtype(uuidRecord, stringRecord)).toBe(true);
     expect(isMlSchemaSubtype(stringRecord, uuidRecord)).toBe(false);
   });
@@ -329,8 +329,8 @@ describe("isMlSchemaSubtype — arrays, records, tuples (#250)", () => {
         a: { type: "uuid" },
         b: { type: "string" },
       },
-    } as JzodElement;
-    const stringRecord = { type: "record", definition: stringSchema } as JzodElement;
+    } as MlElement;
+    const stringRecord = { type: "record", definition: stringSchema } as MlElement;
     expect(isMlSchemaSubtype(obj, stringRecord)).toBe(true);
   });
 
@@ -339,12 +339,12 @@ describe("isMlSchemaSubtype — arrays, records, tuples (#250)", () => {
     const objWithOptional = {
       type: "object",
       definition: { a: { type: "uuid", optional: true } },
-    } as JzodElement;
-    const stringRecord = { type: "record", definition: stringSchema } as JzodElement;
+    } as MlElement;
+    const stringRecord = { type: "record", definition: stringSchema } as MlElement;
     const optionalStringRecord = {
       type: "record",
       definition: { type: "string", optional: true },
-    } as JzodElement;
+    } as MlElement;
     expect(isMlSchemaSubtype(objWithOptional, stringRecord)).toBe(false);
     expect(isMlSchemaSubtype(objWithOptional, optionalStringRecord)).toBe(true);
   });
@@ -354,9 +354,9 @@ describe("isMlSchemaSubtype — arrays, records, tuples (#250)", () => {
       type: "object",
       nonStrict: true,
       definition: { a: { type: "string" } },
-    } as JzodElement;
-    const stringRecord = { type: "record", definition: stringSchema } as JzodElement;
-    const anyRecord = { type: "record", definition: anySchema } as JzodElement;
+    } as MlElement;
+    const stringRecord = { type: "record", definition: stringSchema } as MlElement;
+    const anyRecord = { type: "record", definition: anySchema } as MlElement;
     expect(isMlSchemaSubtype(openObj, stringRecord)).toBe(false);
     expect(isMlSchemaSubtype(openObj, anyRecord)).toBe(true);
   });
@@ -365,12 +365,12 @@ describe("isMlSchemaSubtype — arrays, records, tuples (#250)", () => {
     const tuple = {
       type: "tuple",
       definition: [uuidSchema, numberSchema],
-    } as JzodElement;
+    } as MlElement;
     const sameTuple = {
       type: "tuple",
       definition: [stringSchema, numberSchema],
-    } as JzodElement;
-    const anyArray = { type: "array", definition: anySchema } as JzodElement;
+    } as MlElement;
+    const anyArray = { type: "array", definition: anySchema } as MlElement;
     expect(isMlSchemaSubtype(tuple, sameTuple)).toBe(true);
     expect(isMlSchemaSubtype(tuple, anyArray)).toBe(true);
   });
@@ -381,7 +381,7 @@ describe("isMlSchemaSubtype — unions (#250)", () => {
     const union = {
       type: "union",
       definition: [stringSchema, numberSchema],
-    } as JzodElement;
+    } as MlElement;
     expect(isMlSchemaSubtype(stringSchema, union)).toBe(true);
     expect(isMlSchemaSubtype(booleanSchema, union)).toBe(false);
   });
@@ -390,7 +390,7 @@ describe("isMlSchemaSubtype — unions (#250)", () => {
     const union = {
       type: "union",
       definition: [stringSchema, numberSchema],
-    } as JzodElement;
+    } as MlElement;
     expect(isMlSchemaSubtype(union, anySchema)).toBe(true);
     expect(isMlSchemaSubtype(union, stringSchema)).toBe(false);
   });
@@ -399,11 +399,11 @@ describe("isMlSchemaSubtype — unions (#250)", () => {
     const narrow = {
       type: "union",
       definition: [stringSchema],
-    } as JzodElement;
+    } as MlElement;
     const wide = {
       type: "union",
       definition: [stringSchema, numberSchema],
-    } as JzodElement;
+    } as MlElement;
     expect(isMlSchemaSubtype(narrow, wide)).toBe(true);
     expect(isMlSchemaSubtype(wide, narrow)).toBe(false);
   });
@@ -416,7 +416,7 @@ describe("isMlSchemaSubtype — schemaReference identity (#250)", () => {
       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
       relativePath: "entity",
     },
-  } as JzodElement;
+  } as MlElement;
 
   it("identical references are subtypes; unequal paths are not", () => {
     const same = {
@@ -425,14 +425,14 @@ describe("isMlSchemaSubtype — schemaReference identity (#250)", () => {
         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
         relativePath: "entity",
       },
-    } as JzodElement;
+    } as MlElement;
     const otherPath = {
       type: "schemaReference",
       definition: {
         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
         relativePath: "report",
       },
-    } as JzodElement;
+    } as MlElement;
     expect(isMlSchemaSubtype(refEntity, same)).toBe(true);
     expect(isMlSchemaSubtype(refEntity, otherPath)).toBe(false);
   });
@@ -442,17 +442,17 @@ describe("isMlSchemaSubtype — schemaReference identity (#250)", () => {
       type: "schemaReference",
       context: { x: { type: "string" } },
       definition: { relativePath: "x" },
-    } as JzodElement;
+    } as MlElement;
     const ctxNumber = {
       type: "schemaReference",
       context: { x: { type: "number" } },
       definition: { relativePath: "x" },
-    } as JzodElement;
+    } as MlElement;
     const ctxStringAgain = {
       type: "schemaReference",
       context: { x: { type: "string" } },
       definition: { relativePath: "x" },
-    } as JzodElement;
+    } as MlElement;
     // same path, different resolution context: different schemas
     expect(isMlSchemaSubtype(ctxString, ctxNumber)).toBe(false);
     expect(isMlSchemaSubtype(ctxNumber, ctxString)).toBe(false);
@@ -466,7 +466,7 @@ describe("isMlSchemaSubtype — schemaReference identity (#250)", () => {
         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
         relativePath: "entity",
       },
-    } as JzodElement;
+    } as MlElement;
     const eager = {
       type: "schemaReference",
       definition: {
@@ -474,7 +474,7 @@ describe("isMlSchemaSubtype — schemaReference identity (#250)", () => {
         relativePath: "entity",
         eager: true,
       },
-    } as JzodElement;
+    } as MlElement;
     const partial = {
       type: "schemaReference",
       definition: {
@@ -482,7 +482,7 @@ describe("isMlSchemaSubtype — schemaReference identity (#250)", () => {
         relativePath: "entity",
         partial: true,
       },
-    } as JzodElement;
+    } as MlElement;
     expect(isMlSchemaSubtype(base, eager)).toBe(false);
     expect(isMlSchemaSubtype(eager, base)).toBe(false);
     expect(isMlSchemaSubtype(base, partial)).toBe(false);
@@ -494,7 +494,7 @@ describe("isMlSchemaSubtype — schemaReference identity (#250)", () => {
         relativePath: "entity",
         eager: true,
       },
-    } as JzodElement)).toBe(true);
+    } as MlElement)).toBe(true);
   });
 
   it("references differing only in presentation metadata are subtypes", () => {
@@ -506,7 +506,7 @@ describe("isMlSchemaSubtype — schemaReference identity (#250)", () => {
         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
         relativePath: "entity",
       },
-    } as JzodElement;
+    } as MlElement;
     expect(isMlSchemaSubtype(refEntity, withTag)).toBe(true);
     expect(isMlSchemaSubtype(withTag, refEntity)).toBe(true);
   });
@@ -526,12 +526,12 @@ describe("isMlSchemaSubtype — robustness (#250)", () => {
         id: { type: "uuid" },
         tags: { type: "array", definition: { type: "string", optional: true } },
       },
-    } as JzodElement;
+    } as MlElement;
     const b = {
       type: "object",
       nonStrict: true,
       definition: { id: { type: "string" } },
-    } as JzodElement;
+    } as MlElement;
     const snapshotA = JSON.stringify(a);
     const snapshotB = JSON.stringify(b);
     isMlSchemaSubtype(a, b);
@@ -548,7 +548,7 @@ describe("isMlSchemaSubtype — robustness (#250)", () => {
       deep = { type: "array", definition: deep };
       deepWide = { type: "array", definition: deepWide };
     }
-    expect(isMlSchemaSubtype(deep as JzodElement, deepWide as JzodElement)).toBe(true);
-    expect(isMlSchemaSubtype(deepWide as JzodElement, deep as JzodElement)).toBe(false);
+    expect(isMlSchemaSubtype(deep as MlElement, deepWide as MlElement)).toBe(true);
+    expect(isMlSchemaSubtype(deepWide as MlElement, deep as MlElement)).toBe(false);
   });
 });

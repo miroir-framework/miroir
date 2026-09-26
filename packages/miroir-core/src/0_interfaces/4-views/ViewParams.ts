@@ -1,16 +1,16 @@
-import { JzodElement, JzodEnum } from "../1_core/preprocessor-generated/miroirFundamentalType";
+import { MlElement, MlEnum } from "../1_core/preprocessor-generated/miroirFundamentalType";
 
-export const gridType: JzodEnum = {
+export const gridType: MlEnum = {
   type: "enum",
   definition: ["ag-grid", "glide-data-grid"],
 }
 
-export const appTheme: JzodEnum = {
+export const appTheme: MlEnum = {
   type: "enum",
   definition: ["default", "dark", "compact", "material"],
 }
 
-export const viewParams: JzodElement = {
+export const viewParams: MlElement = {
   type: "object",
   // tag: {
   //   value: {

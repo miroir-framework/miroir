@@ -2,7 +2,7 @@ import type {
   CoreTransformerForBuildPlusRuntime,
   Entity,
   EntityInstance,
-  JzodElement,
+  MlElement,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { TransformerFailure } from "../0_interfaces/2_domain/DomainElement";
@@ -25,7 +25,7 @@ export type VirtualAttributeNeed = {
 };
 
 function virtualAttributeTransformer(
-  schema: JzodElement,
+  schema: MlElement,
 ): CoreTransformerForBuildPlusRuntime | undefined {
   const virtual = (
     schema as { tag?: { value?: { virtualAttribute?: unknown } } }
@@ -37,7 +37,7 @@ function virtualAttributeTransformer(
 }
 
 /** True when the attribute schema is marked virtual (tag.value.virtualAttribute present). */
-export function isVirtualAttribute(schema: JzodElement): boolean {
+export function isVirtualAttribute(schema: MlElement): boolean {
   return virtualAttributeTransformer(schema) != null;
 }
 

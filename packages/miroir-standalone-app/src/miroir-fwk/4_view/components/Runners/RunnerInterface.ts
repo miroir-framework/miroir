@@ -3,7 +3,7 @@ import type {
   ApplicationDeploymentMap,
   CompositeActionSequence,
   CompositeActionTemplate,
-  JzodObject,
+  MlObject,
   CoreTransformerForBuildPlusRuntime,
   Uuid
 } from "miroir-core";
@@ -39,7 +39,7 @@ export type FormMLSchema =
   | {
       formMLSchemaType: "mlSchema";
       initialFormValues?: Record<string, any>;
-      mlSchema: JzodObject;
+      mlSchema: MlObject;
     }
   | {
       formMLSchemaType: "transformer";

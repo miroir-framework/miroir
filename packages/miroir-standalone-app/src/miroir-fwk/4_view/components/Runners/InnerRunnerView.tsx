@@ -2,7 +2,7 @@ import { useFormikContext } from "formik";
 import { useMemo } from "react";
 
 import type {
-  JzodObject,
+  MlObject,
   LoggerInterface,
   MiroirModelEnvironment,
   CoreTransformerForBuildPlusRuntime,
@@ -61,7 +61,7 @@ export const InnerRunnerView = <T extends Record<string, any>>({
   
   const deploymentUuidFromApplicationUuid: Uuid = applicationDeploymentMap[currentApplication] || "";
 
-  const targetSchema: JzodObject = useMemo(() => {
+  const targetSchema: MlObject = useMemo(() => {
     if (typeof formMLSchema === "object" && "formMLSchemaType" in formMLSchema) {
       if (formMLSchema.formMLSchemaType === "mlSchema") {
         return formMLSchema.mlSchema;
@@ -78,10 +78,10 @@ export const InnerRunnerView = <T extends Record<string, any>>({
             [runnerName]: formikContext.values[runnerName] }, // transformerParams
           // { [runnerName]: { deploymentUuidQuery: deploymentUuidFromApplicationUuid } }, // transformerParams
           {}, // contextResults
-        ) as JzodObject;
+        ) as MlObject;
       }
     } else {
-      return formMLSchema as JzodObject;
+      return formMLSchema as MlObject;
     }
   }, [
     formMLSchema,
@@ -121,7 +121,7 @@ export const InnerRunnerView = <T extends Record<string, any>>({
       />
       <TypedValueObjectEditor
         labelElement={<h2>{formLabel}</h2>}
-        formValueMLSchema={targetSchema.definition[formikValuePathAsString] as JzodObject}
+        formValueMLSchema={targetSchema.definition[formikValuePathAsString] as MlObject}
         formikValuePathAsString={formikValuePathAsString}
         application={currentApplication}
         applicationDeploymentMap={applicationDeploymentMap}

@@ -13,7 +13,7 @@ import {
   MiroirLoggerFactory,
   defaultSelfApplicationDeploymentMap,
   noValue,
-  type JzodElement,
+  type MlElement,
   type MetaModel,
 } from "miroir-core";
 
@@ -57,7 +57,7 @@ export const ModelDiagramPage: React.FC<any> = () => {
 
   const formikPath = "modelDiagramPage";
   const inputSelector_applicationUuid = context.toolsPageState?.applicationSelector ?? deployment_Miroir.uuid;
-  const applicationSelectorPanelSchema: JzodElement = {
+  const applicationSelectorPanelSchema: MlElement = {
     type: "object",
     definition: {
       [formikPath]: {
@@ -161,7 +161,7 @@ export const ModelDiagramPage: React.FC<any> = () => {
             >
               <TypedValueObjectEditor
                 labelElement={<span>select Application</span>}
-                formValueMLSchema={applicationSelectorPanelSchema.definition["modelDiagramPage"] as JzodElement}
+                formValueMLSchema={applicationSelectorPanelSchema.definition["modelDiagramPage"] as MlElement}
                 formikValuePathAsString={"modelDiagramPage"}
                 application={inputSelector_applicationUuid}
                 applicationDeploymentMap={currentApplicationDeploymentMap}

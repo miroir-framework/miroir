@@ -455,8 +455,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
                 schema: "TestApplicationData",
               },
             },
-            // model?: JzodObject | undefined;
-            // data?: JzodObject | undefined;
+            // model?: MlObject | undefined;
+            // data?: MlObject | undefined;
           },
         ],
       },

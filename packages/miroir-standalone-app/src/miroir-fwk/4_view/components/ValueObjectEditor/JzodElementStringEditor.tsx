@@ -10,7 +10,7 @@ import {
 import { FileSelector } from "../Themes/FileSelector.js";
 // import { useServerFilesystemRoot } from "../../hooks/useServerFilesystemRoot.js";
 import type { JzodEditorPropsRoot } from "./JzodElementEditorInterface";
-import { LoggerInterface, MiroirLoggerFactory, type JzodBaseObject, type MetaModel } from "miroir-core";
+import { LoggerInterface, MiroirLoggerFactory, type MlBaseObject, type MetaModel } from "miroir-core";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 
@@ -24,7 +24,7 @@ export interface JzodElementStringEditorProps extends JzodEditorPropsRoot {
   hasPathError: boolean;
   stringDisplay?: {
     format?: "email" | "url" | "uuid" | "uri" | "color" |  "date-time" | "date" | "time" | "file" | "folder";
-    // format?: JzodBaseObject["tag"]?["value"]?[""]["format"];
+    // format?: MlBaseObject["tag"]?["value"]?[""]["format"];
     multiline?: boolean;
     rows?: number;
   };

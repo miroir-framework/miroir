@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import type {
   Entity,
   EntityVersion,
-  JzodElement,
+  MlElement,
   MetaModel,
   MiroirModelEnvironment,
 } from "miroir-core";
@@ -285,7 +285,7 @@ function buildInstanceLabel(instance: any, fallbackPath: string): string {
 
 function describeEntityGroup(
   groupName: string,
-  jzodSchema: JzodElement,
+  jzodSchema: MlElement,
   instances: Record<string, { default: any }>,
   modelEnv: MiroirModelEnvironment,
 ): void {
@@ -320,35 +320,35 @@ function describeEntityGroup(
 
 describeEntityGroup(
   "Entity",
-  (entityDefinitionEntity as unknown as EntityVersion).mlSchema as unknown as JzodElement,
+  (entityDefinitionEntity as unknown as EntityVersion).mlSchema as unknown as MlElement,
   entityInstances,
   defaultMiroirModelEnvironment,
 );
 
 describeEntityGroup(
   "Report",
-  (entityDefinitionReport as unknown as EntityVersion).mlSchema as unknown as JzodElement,
+  (entityDefinitionReport as unknown as EntityVersion).mlSchema as unknown as MlElement,
   reportInstances,
   defaultMiroirModelEnvironment,
 );
 
 describeEntityGroup(
   "Menu",
-  (entityDefinitionMenu as unknown as EntityVersion).mlSchema as unknown as JzodElement,
+  (entityDefinitionMenu as unknown as EntityVersion).mlSchema as unknown as MlElement,
   menuInstances,
   defaultMiroirModelEnvironment,
 );
 
 // describeEntityGroup(
 //   "StoreBasedConfiguration",
-//   (entityDefinitionStoreBasedConfiguration as unknown as EntityVersion).mlSchema as unknown as JzodElement,
+//   (entityDefinitionStoreBasedConfiguration as unknown as EntityVersion).mlSchema as unknown as MlElement,
 //   storeBasedConfigurationInstances,
 //   defaultMiroirModelEnvironment,
 // );
 
 describeEntityGroup(
   "SelfApplication",
-  (entityDefinitionSelfApplication as unknown as EntityVersion).mlSchema as unknown as JzodElement,
+  (entityDefinitionSelfApplication as unknown as EntityVersion).mlSchema as unknown as MlElement,
   selfApplicationInstances,
   defaultMiroirModelEnvironment,
 );
@@ -356,7 +356,7 @@ describeEntityGroup(
 
 describeEntityGroup(
   "SelfApplicationModelBranch",
-  (entityDefinitionSelfApplicationModelBranch as unknown as EntityVersion).mlSchema as unknown as JzodElement,
+  (entityDefinitionSelfApplicationModelBranch as unknown as EntityVersion).mlSchema as unknown as MlElement,
   selfApplicationModelBranchInstances,
   defaultMiroirModelEnvironment,
 );
@@ -367,35 +367,35 @@ describeEntityGroup(
 
 describeEntityGroup(
   "AdminApplication",
-  (entityApplicationForAdmin as unknown as Entity).mlSchema as unknown as JzodElement,
+  (entityApplicationForAdmin as unknown as Entity).mlSchema as unknown as MlElement,
   adminApplicationInstances,
   adminModelEnvironment,
 );
 
 describeEntityGroup(
   "Deployment",
-  (entityDeployment as unknown as Entity).mlSchema as unknown as JzodElement,
+  (entityDeployment as unknown as Entity).mlSchema as unknown as MlElement,
   deploymentInstances,
   adminModelEnvironment,
 );
 
 // describeEntityGroup(
 //   "StoreBasedConfiguration",
-//   (entityStoreBasedConfigurationAdmin as unknown as Entity).mlSchema as unknown as JzodElement,
+//   (entityStoreBasedConfigurationAdmin as unknown as Entity).mlSchema as unknown as MlElement,
 //   bundleInstances,
 //   adminModelEnvironment,
 // );
 
 describeEntityGroup(
   "ViewParams",
-  (entityViewParams as unknown as Entity).mlSchema as unknown as JzodElement,
+  (entityViewParams as unknown as Entity).mlSchema as unknown as MlElement,
   viewParamsInstances,
   adminModelEnvironment,
 );
 
 describeEntityGroup(
   "Import",
-  (entityImport as unknown as Entity).mlSchema as unknown as JzodElement,
+  (entityImport as unknown as Entity).mlSchema as unknown as MlElement,
   applicationVersionDataInstances,
   adminModelEnvironment,
 );
@@ -406,28 +406,28 @@ describeEntityGroup(
 
 describeEntityGroup(
   "DesignerApplication",
-  (entityApplicationForDesigner as unknown as Entity).mlSchema as unknown as JzodElement,
+  (entityApplicationForDesigner as unknown as Entity).mlSchema as unknown as MlElement,
   designerApplicationInstances,
   designerModelEnvironment,
 );
 
 describeEntityGroup(
   "Activity",
-  (entityActivity as unknown as Entity).mlSchema as unknown as JzodElement,
+  (entityActivity as unknown as Entity).mlSchema as unknown as MlElement,
   activityDataInstances,
   designerModelEnvironment,
 );
 
 describeEntityGroup(
   "UserStory",
-  (entityUserStory as unknown as Entity).mlSchema as unknown as JzodElement,
+  (entityUserStory as unknown as Entity).mlSchema as unknown as MlElement,
   userStoryDataInstances,
   designerModelEnvironment,
 );
 
 describeEntityGroup(
   "Role",
-  (entityRole as unknown as Entity).mlSchema as unknown as JzodElement,
+  (entityRole as unknown as Entity).mlSchema as unknown as MlElement,
   roleDataInstances,
   designerModelEnvironment,
 );

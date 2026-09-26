@@ -1,7 +1,7 @@
 import {
-  type JzodElement,
+  type MlElement,
   resolveJzodSchemaReferenceInContext,
-  type JzodReference,
+  type MlReference,
   defaultMiroirModelEnvironment,
 } from "miroir-core";
 import type { McpToolDescriptionProperty } from "./mcpHandlersForEndpoint.js";
@@ -79,14 +79,14 @@ function finalizeRootMcpInputSchema(
 }
 
 /**
- * Recursively converts a JzodElement to an MCP tool description property.
+ * Recursively converts a MlElement to an MCP tool description property.
  *
  * Schema references are resolved against the Miroir fundamental model environment and
  * emitted as JSON Schema `$ref` / `$defs` entries so recursive Miroir types are not
  * combinatorially inlined (see #248).
  */
 export function jzodElementToJsonSchema(
-  jzodElement: JzodElement,
+  mlElement: MlElement,
   propertyName?: string,
   propertyNameMapping?: Record<string, string>,
   conversionOptions?: JzodConversionOptions,
@@ -95,7 +95,7 @@ export function jzodElementToJsonSchema(
   const options = normalizeJzodConversionOptions(conversionOptions);
 
   const result = jzodElementToJsonSchemaInner(
-    jzodElement,
+    mlElement,
     propertyName,
     propertyNameMapping,
     options,
@@ -108,7 +108,7 @@ export function jzodElementToJsonSchema(
 }
 
 function jzodElementToJsonSchemaInner(
-  jzodElement: JzodElement,
+  mlElement: MlElement,
   propertyName: string | undefined,
   propertyNameMapping: Record<string, string> | undefined,
   options: NormalizedJzodConversionOptions,
@@ -118,9 +118,9 @@ function jzodElementToJsonSchemaInner(
   }
 
   const description =
-    jzodElement.tag?.value?.description || jzodElement.tag?.value?.defaultLabel || "";
+    mlElement.tag?.value?.description || mlElement.tag?.value?.defaultLabel || "";
 
-  switch (jzodElement.type) {
+  switch (mlElement.type) {
     case "uuid":
     case "string":
       return {
@@ -135,7 +135,7 @@ function jzodElementToJsonSchemaInner(
       };
 
     case "schemaReference": {
-      const ref = jzodElement as JzodReference;
+      const ref = mlElement as MlReference;
       const refKey = schemaReferenceKey(ref);
       const defKey = sanitizeJsonSchemaDefKey(refKey);
       const refPointer = jsonSchemaRefPointer(defKey);
@@ -179,8 +179,8 @@ function jzodElementToJsonSchemaInner(
       const properties: Record<string, any> = {};
       const required: string[] = [];
 
-      if (jzodElement.definition) {
-        for (const [key, value] of Object.entries(jzodElement.definition)) {
+      if (mlElement.definition) {
+        for (const [key, value] of Object.entries(mlElement.definition)) {
           properties[key] = jzodElementToJsonSchemaInner(
             value as any,
             key,
@@ -202,14 +202,14 @@ function jzodElementToJsonSchemaInner(
     }
 
     case "array": {
-      if (!jzodElement.definition) {
+      if (!mlElement.definition) {
         throw new Error("Array definition missing item type");
       }
       return {
         type: "array",
         description,
         items: jzodElementToJsonSchemaInner(
-          jzodElement.definition,
+          mlElement.definition,
           undefined,
           propertyNameMapping,
           childOptions(options),
@@ -220,7 +220,7 @@ function jzodElementToJsonSchemaInner(
       return {
         type: "string",
         description,
-        enum: jzodElement.definition,
+        enum: mlElement.definition,
       };
     }
     case "number": {
@@ -237,7 +237,7 @@ function jzodElementToJsonSchemaInner(
       };
     }
     case "literal": {
-      const literalValue = jzodElement.definition;
+      const literalValue = mlElement.definition;
       const literalType = typeof literalValue === "number" ? "number" : "string";
       return {
         type: literalType,
@@ -246,14 +246,14 @@ function jzodElementToJsonSchemaInner(
       };
     }
     case "record": {
-      if (!jzodElement.definition) {
+      if (!mlElement.definition) {
         throw new Error("Record definition missing value type");
       }
       return {
         type: "object",
         description,
         additionalProperties: jzodElementToJsonSchemaInner(
-          jzodElement.definition,
+          mlElement.definition,
           undefined,
           propertyNameMapping,
           childOptions(options),
@@ -261,10 +261,10 @@ function jzodElementToJsonSchemaInner(
       };
     }
     case "tuple": {
-      if (!jzodElement.definition || !Array.isArray(jzodElement.definition)) {
+      if (!mlElement.definition || !Array.isArray(mlElement.definition)) {
         throw new Error("Tuple definition missing or invalid");
       }
-      const prefixItems = jzodElement.definition.map((item: JzodElement) =>
+      const prefixItems = mlElement.definition.map((item: MlElement) =>
         jzodElementToJsonSchemaInner(item as any, undefined, propertyNameMapping, childOptions(options)),
       );
       return {
@@ -276,21 +276,21 @@ function jzodElementToJsonSchemaInner(
       };
     }
     case "union": {
-      if (!jzodElement.definition || !Array.isArray(jzodElement.definition)) {
+      if (!mlElement.definition || !Array.isArray(mlElement.definition)) {
         throw new Error("Union definition missing or invalid");
       }
 
-      const convertedMembers = jzodElement.definition.map((member: JzodElement) =>
+      const convertedMembers = mlElement.definition.map((member: MlElement) =>
         jzodElementToJsonSchemaInner(member as any, undefined, propertyNameMapping, childOptions(options)),
       );
 
-      const isDiscriminated = !!(jzodElement as any).discriminator;
+      const isDiscriminated = !!(mlElement as any).discriminator;
 
       if (isDiscriminated) {
         return {
           oneOf: convertedMembers,
           discriminator: {
-            propertyName: (jzodElement as any).discriminator,
+            propertyName: (mlElement as any).discriminator,
           },
           description,
         };
@@ -301,7 +301,7 @@ function jzodElementToJsonSchemaInner(
       };
     }
     case "intersection": {
-      const intersection = jzodElement.definition as { left?: JzodElement; right?: JzodElement };
+      const intersection = mlElement.definition as { left?: MlElement; right?: MlElement };
       if (!intersection?.left || !intersection?.right) {
         return looseObject(description);
       }
@@ -324,11 +324,11 @@ function jzodElementToJsonSchemaInner(
       };
     }
     case "lazy": {
-      if (!jzodElement.definition) {
+      if (!mlElement.definition) {
         return looseObject(description);
       }
       return jzodElementToJsonSchemaInner(
-        jzodElement.definition,
+        mlElement.definition,
         propertyName,
         propertyNameMapping,
         childOptions(options),
@@ -356,7 +356,7 @@ function jzodElementToJsonSchemaInner(
     case "map":
     case "promise":
     case "set": {
-      throw new Error(`Unsupported Jzod type for MCP tool description: ${jzodElement.type}`);
+      throw new Error(`Unsupported Jzod type for MCP tool description: ${mlElement.type}`);
     }
 
     default:

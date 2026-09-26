@@ -27,8 +27,8 @@ import {
   getQueryRunnerParamsForReduxDeploymentsState,
   InstanceAction,
   interpolateExpression,
-  JzodElement,
-  JzodObject,
+  MlElement,
+  MlObject,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
@@ -360,7 +360,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const currentApplicationSection = props.chosenApplicationSection??"data";
 
   // ##############################################################################################
-  const instancesToDisplayJzodSchema: JzodObject | undefined = useMemo(
+  const instancesToDisplayJzodSchema: MlObject | undefined = useMemo(
     () =>
         currentReportTargetEntity
           ? entityMLSchema(currentReportTargetEntity)
@@ -380,7 +380,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
   // ##############################################################################################
   // FOREIGN KEY OBJECTS FETCHING
-  const foreignKeyObjectsAttributeDefinition:[string, JzodElement][] = useMemo(
+  const foreignKeyObjectsAttributeDefinition:[string, MlElement][] = useMemo(
     ()=> {
       if (props.tableComponentReportType !== TableComponentTypeSchema.enum.EntityInstance) {
         return [];
@@ -918,7 +918,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 defaultFormValuesObject={dialogOuterFormObject}
                 entity={currentReportTargetEntity ?? {} as Entity}
                 mlSchema={
-                  currentReportTargetEntity?.mlSchema as JzodObject
+                  currentReportTargetEntity?.mlSchema as MlObject
                 }
                 foreignKeyObjects={foreignKeyObjects}
                 currentApplication={props.application}

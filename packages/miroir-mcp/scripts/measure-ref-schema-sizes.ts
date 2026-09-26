@@ -9,7 +9,7 @@ const absolutePath = "fe9b7d99-f216-44de-bb6e-60e1a1ebb739";
 const refs = [
   "applicationSection",
   "entityInstance",
-  "jzodElement",
+  "mlElement",
   "compositeActionSequence",
   "compositeAction",
   "boxedQueryWithExtractorCombinerTransformer",

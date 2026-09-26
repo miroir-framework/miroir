@@ -90,7 +90,7 @@ import {
   entityVersionApplicationVersionCrossTransformerDefinitionVersion,
   instanceEndpointV1,
   instanceEndpointVersionV1,
-  jzodSchemajzodMiroirBootstrapSchema,
+  mlSchemaMlMiroirBootstrapSchema,
   localCacheEndpointVersionV1,
   materialStoredMiroirTheme,
   menuDefaultMiroir,
@@ -303,7 +303,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     queryEndpointVersionV1 as any as EndpointDefinition,
     persistenceEndpointVersionV1 as any as EndpointDefinition,
   ],
-  jzodSchemas: [jzodSchemajzodMiroirBootstrapSchema as MlSchema],
+  jzodSchemas: [mlSchemaMlMiroirBootstrapSchema as MlSchema],
   menus: [menuDefaultMiroir as Menu],
   applicationVersions: [selfApplicationVersionInitialMiroirVersion],
   reports: [

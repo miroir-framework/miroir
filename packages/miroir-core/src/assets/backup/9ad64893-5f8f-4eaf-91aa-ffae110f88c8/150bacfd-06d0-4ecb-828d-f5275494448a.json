@@ -46,7 +46,7 @@
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodElement"
+              "relativePath": "mlElement"
             }
           }
         }
@@ -56,7 +56,7 @@
       "type": "schemaReference",
       "definition": {
         "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-        "relativePath": "jzodReference"
+        "relativePath": "mlReference"
       },
       "optional": true,
       "tag": { "value": { 
@@ -71,7 +71,7 @@
         "type": "schemaReference",
         "definition": {
           "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-          "relativePath": "jzodElement"
+          "relativePath": "mlElement"
         }
       }
     }

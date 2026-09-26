@@ -10,7 +10,7 @@ import {
   DomainControllerInterface,
   EntityAttribute,
   EntityInstancesUuidIndex,
-  JzodObject,
+  MlObject,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
@@ -60,7 +60,7 @@ export interface JsonObjectFormEditorCoreDialogProps {
   label?: string,
   isAttributes?: boolean,
   entity: Entity,
-  mlSchema: JzodObject,
+  mlSchema: MlObject,
   defaultFormValuesObject: any,
   currentApplication: Uuid,
   applicationDeploymentMap: ApplicationDeploymentMap,
@@ -216,7 +216,7 @@ interface JsonElementEditorDialogProps {
   currentDeploymentUuid?: Uuid;
   currentApplicationSection?: ApplicationSection;
   entity: Entity;
-  mlSchema: JzodObject;
+  mlSchema: MlObject;
   resolvedJzodSchema: any;
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;
   currentAppModel: MetaModel;
@@ -296,7 +296,7 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
   }, [defaultFormValuesObject]);
 
   // ##############################################################################################
-  const formValueMLSchema: JzodObject = useMemo(() => {
+  const formValueMLSchema: MlObject = useMemo(() => {
     const r = currentDeploymentUuid && currentApplication ? reportSectionsFormSchema(
       (defaultDetailsReport as any)?.definition?.section?.definition[0],
       currentApplication,
@@ -311,11 +311,11 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
       reportSectionPath
     )
      : { };
-    const formValueMLSchema: JzodObject = {
+    const formValueMLSchema: MlObject = {
       type: "object",
       definition: {
         ...r,
-        [formikReportDefinitionPath]: reportFormMlSchemaSource.mlSchema as JzodObject,
+        [formikReportDefinitionPath]: reportFormMlSchemaSource.mlSchema as MlObject,
       },
     };
     return formValueMLSchema;

@@ -1,5 +1,5 @@
 import type { JzodUnionResolvedTypeForObjectReturnTypeOK } from "../../0_interfaces/1_core/jzodTypeCheckInterface";
-import { JzodElement, type JzodObject, type JzodRecord } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { MlElement, type MlObject, type MlRecord } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { TransformerFailure, type TransformerReturnType } from "../../0_interfaces/2_domain/DomainElement";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
@@ -27,11 +27,11 @@ function safeStringify(obj: any, maxLength: number = 1000): string {
 
 // #####################################################################################################
 export function getObjectUnionDiscriminatorValuesFromResolvedSchema(
-  // resolvedElementJzodSchema: JzodElement | undefined, // is it needed?
+  // resolvedElementJzodSchema: MlElement | undefined, // is it needed?
   currentValuePathString: string,
-  unfoldedRawSchema: JzodElement | undefined, // is it needed?
-  recursivelyUnfoldedRawSchemaList: JzodElement[],
-  unionObjectChoices: (JzodObject | JzodRecord)[],
+  unfoldedRawSchema: MlElement | undefined, // is it needed?
+  recursivelyUnfoldedRawSchemaList: MlElement[],
+  unionObjectChoices: (MlObject | MlRecord)[],
   resolveUnionResult: JzodUnionResolvedTypeForObjectReturnTypeOK
 ): TransformerReturnType<string[][]> {
   // log.info(
@@ -79,18 +79,18 @@ export function getObjectUnionDiscriminatorValuesFromResolvedSchema(
     const result: string[][] = [
       [
         ...new Set(
-          // recursivelyUnfoldedRawSchema.result.flatMap((branch: any /** JzodObject */) => {
+          // recursivelyUnfoldedRawSchema.result.flatMap((branch: any /** MlObject */) => {
           recursivelyUnfoldedRawSchemaList
-            .filter((branch: any /** JzodObject */) => {
+            .filter((branch: any /** MlObject */) => {
               // filter branches that have a discriminator
               // return branch && branch.definition && branch.definition[discriminator];
               return branch && branch.definition;
             })
             .filter(
-              (branch: any /** JzodObject */) =>
+              (branch: any /** MlObject */) =>
                 branch && (branch.type == "object" || branch.type == "union")
             ) // keep only union branches
-            .flatMap((branch: any /** JzodObject */) => {
+            .flatMap((branch: any /** MlObject */) => {
               // return (a.definition as any)[(unfoldedRawSchema as any).discriminator].definition}
               if (!branch || !branch.definition || !branch.definition[discriminator]) {
                 // ATTENTION:
@@ -194,10 +194,10 @@ export function getObjectUnionDiscriminatorValuesFromResolvedSchema(
       }
       return [
         ...new Set(
-          // recursivelyUnfoldedRawSchema.result.flatMap((branch: any /** JzodObject */) => {
+          // recursivelyUnfoldedRawSchema.result.flatMap((branch: any /** MlObject */) => {
           // recursivelyUnfoldedRawSchemaList
           unionObjectChoices
-            .filter((branch: any /** JzodObject */, index) => {
+            .filter((branch: any /** MlObject */, index) => {
               // filter branches that have a discriminator
               // return branch && branch.definition && branch.definition[discriminator];
               // log.info(
@@ -211,7 +211,7 @@ export function getObjectUnionDiscriminatorValuesFromResolvedSchema(
 
               return branch && branch.definition;
             })
-            .flatMap((branch: any /** JzodObject */, index) => {
+            .flatMap((branch: any /** MlObject */, index) => {
               // if (index == 1) log.info("getObjectUniondiscriminatorValuesFromResolvedSchema flatmap processing disc", disc, "on branch", branch);
               // log.info(
               //   "getObjectUniondiscriminatorValuesFromResolvedSchema flatmap processing",

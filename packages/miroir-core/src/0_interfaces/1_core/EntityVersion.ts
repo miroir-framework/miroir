@@ -4,7 +4,7 @@ import { EntityInstanceWithNameSchema } from "./Instance";
 import type {
   Entity,
   EntityVersion,
-  JzodObject,
+  MlObject,
 } from "./preprocessor-generated/miroirFundamentalType";
 import { miroirFundamentalJzodSchema } from "./preprocessor-generated/miroirFundamentalJzodSchema";
 
@@ -44,12 +44,12 @@ export interface InstanceDictionary<T> extends InstanceDictionaryNum<T> {
 }
 
 type PresentModelSchemaSource = {
-  mlSchema?: JzodObject | undefined;
+  mlSchema?: MlObject | undefined;
   name?: string | undefined;
   uuid?: string | undefined;
 };
 
-function assertPresentModelMlSchema(source: PresentModelSchemaSource): JzodObject {
+function assertPresentModelMlSchema(source: PresentModelSchemaSource): MlObject {
   if (!source.mlSchema) {
     throw new Error(
       `Present-model source ${source.name ?? source.uuid ?? "<unknown>"} has no mlSchema`,
@@ -68,10 +68,10 @@ function assertPresentModelMlSchema(source: PresentModelSchemaSource): JzodObjec
   return source.mlSchema;
 }
 
-function resolvePresentModelMlSchema(source: PresentModelSchemaSource): JzodObject {
+function resolvePresentModelMlSchema(source: PresentModelSchemaSource): MlObject {
   const mlSchema = assertPresentModelMlSchema(source);
-  const extendedMLSchema: JzodObject | undefined = mlSchema.extend
-    ? (miroirFundamentalJzodSchema.definition.context.entityDefinitionRoot as JzodObject)
+  const extendedMLSchema: MlObject | undefined = mlSchema.extend
+    ? (miroirFundamentalJzodSchema.definition.context.entityDefinitionRoot as MlObject)
     : undefined;
   return {
     type: "object",
@@ -85,7 +85,7 @@ function resolvePresentModelMlSchema(source: PresentModelSchemaSource): JzodObje
 /**
  * Resolve Entity-carried mlSchema (Entity-authoritative present model, #217 Phase 4).
  */
-export function entityMLSchema(entity: Entity): JzodObject {
+export function entityMLSchema(entity: Entity): MlObject {
   return resolvePresentModelMlSchema(entity);
 }
 
@@ -102,7 +102,7 @@ export function entityWithResolvedMLSchema(entity: Entity): Entity {
 /**
  * @deprecated Prefer {@link entityMLSchema}. Retained for EntityVersion compatibility readers.
  */
-export function entityDefinitionMLSchema(e: EntityVersion): JzodObject {
+export function entityDefinitionMLSchema(e: EntityVersion): MlObject {
   return resolvePresentModelMlSchema(e);
 }
 

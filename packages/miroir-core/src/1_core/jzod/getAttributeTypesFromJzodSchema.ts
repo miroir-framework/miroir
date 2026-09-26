@@ -1,4 +1,4 @@
-import type { JzodElement, JzodEnumAttributeTypes } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import type { MlElement, MlEnumAttributeTypes } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 /**
  * Map Jzod scalar attribute types to SQL column types.
@@ -6,7 +6,7 @@ import type { JzodElement, JzodEnumAttributeTypes } from "../../0_interfaces/1_c
  * miroir-store-postgres (which would create a circular dependency and break the browser).
  */
 export const jzodToSqlAttributeTypeMap: Record<
-  JzodEnumAttributeTypes,
+  MlEnumAttributeTypes,
   { targetType: "json" | "scalar"; sqlTargetType: string }
 > = {
   boolean: { targetType: "scalar", sqlTargetType: "boolean" },
@@ -18,15 +18,15 @@ export const jzodToSqlAttributeTypeMap: Record<
   enum: { targetType: "scalar", sqlTargetType: "text" },
 } as any; // TODO: consider all cases!
 
-export function getAttributeTypesFromJzodSchema(jzodElement: JzodElement): Record<string, string> {
-  if (!jzodElement.type) {
+export function getAttributeTypesFromJzodSchema(mlElement: MlElement): Record<string, string> {
+  if (!mlElement.type) {
     throw new Error("MlSchema has no type");
   }
-  if (jzodElement.type !== "object") {
+  if (mlElement.type !== "object") {
     throw new Error("MlSchema type is not object");
   }
   const attributeTypes: Record<string, string> = {};
-  for (const [key, value] of Object.entries(jzodElement.definition)) {
+  for (const [key, value] of Object.entries(mlElement.definition)) {
     if (!(jzodToSqlAttributeTypeMap as any)[value.type]) {
       throw new Error(`Jzod type ${value.type} not supported`);
     }

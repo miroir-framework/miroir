@@ -3,7 +3,7 @@ import { jzodElementToTS } from '../../src/tools/jzodElementToTS.js';
 
 describe('jzodElementToTS', () => {
   it('should convert uuid type to string', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'uuid',
       tag: {
         value: {
@@ -12,13 +12,13 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(jzodElement as any);
+    const result = jzodElementToTS(mlElement as any);
 
     expect(result).toBe('string');
   });
 
   it('should convert string type', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'string',
       tag: {
         value: {
@@ -27,13 +27,13 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(jzodElement as any);
+    const result = jzodElementToTS(mlElement as any);
 
     expect(result).toBe('string');
   });
 
   it('should convert boolean type to boolean', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'boolean',
       tag: {
         value: {
@@ -42,13 +42,13 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(jzodElement as any);
+    const result = jzodElementToTS(mlElement as any);
 
     expect(result).toBe('boolean');
   });
 
   it('should convert number type to number', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'number',
       tag: {
         value: {
@@ -57,13 +57,13 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(jzodElement as any);
+    const result = jzodElementToTS(mlElement as any);
 
     expect(result).toBe('number');
   });
 
   it('should convert date type to Date', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'date',
       tag: {
         value: {
@@ -72,13 +72,13 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(jzodElement as any);
+    const result = jzodElementToTS(mlElement as any);
 
     expect(result).toBe('Date');
   });
 
   it('should convert literal string type', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'literal',
       definition: 'active',
       tag: {
@@ -88,24 +88,24 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(jzodElement as any);
+    const result = jzodElementToTS(mlElement as any);
 
     expect(result).toBe('"active"');
   });
 
   it('should convert literal number type', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'literal',
       definition: 42,
     };
 
-    const result = jzodElementToTS(jzodElement as any);
+    const result = jzodElementToTS(mlElement as any);
 
     expect(result).toBe('42');
   });
 
   it('should convert enum type to union of string literals', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'enum',
       definition: ['model', 'data'],
       tag: {
@@ -115,13 +115,13 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(jzodElement as any);
+    const result = jzodElementToTS(mlElement as any);
 
     expect(result).toBe('"model" | "data"');
   });
 
   it('should convert simple object type', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'object',
       definition: {
         uuid: {
@@ -143,7 +143,7 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(jzodElement as any);
+    const result = jzodElementToTS(mlElement as any);
 
     expect(result).toBe(`{
   uuid: string;
@@ -152,7 +152,7 @@ describe('jzodElementToTS', () => {
   });
 
   it('should handle optional fields in object', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'object',
       definition: {
         name: {
@@ -175,7 +175,7 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(jzodElement as any);
+    const result = jzodElementToTS(mlElement as any);
 
     expect(result).toBe(`{
   name: string;
@@ -184,7 +184,7 @@ describe('jzodElementToTS', () => {
   });
 
   it('should convert array type with primitive items', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'array',
       tag: {
         value: {
@@ -196,13 +196,13 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(jzodElement as any);
+    const result = jzodElementToTS(mlElement as any);
 
     expect(result).toBe('string[]');
   });
 
   it('should convert array type with object items', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'array',
       tag: {
         value: {
@@ -222,7 +222,7 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(jzodElement as any);
+    const result = jzodElementToTS(mlElement as any);
 
     expect(result).toBe(`{
   uuid: string;
@@ -231,7 +231,7 @@ describe('jzodElementToTS', () => {
   });
 
   it('should convert record type', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'record',
       tag: {
         value: {
@@ -243,13 +243,13 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(jzodElement as any);
+    const result = jzodElementToTS(mlElement as any);
 
     expect(result).toBe('Record<string, string>');
   });
 
   it('should convert record with complex value type', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'record',
       definition: {
         type: 'object',
@@ -261,7 +261,7 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(jzodElement as any);
+    const result = jzodElementToTS(mlElement as any);
 
     expect(result).toBe(`Record<string, {
   count: number;
@@ -269,7 +269,7 @@ describe('jzodElementToTS', () => {
   });
 
   it('should convert tuple type', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'tuple',
       definition: [
         {
@@ -291,13 +291,13 @@ describe('jzodElementToTS', () => {
       ],
     };
 
-    const result = jzodElementToTS(jzodElement as any);
+    const result = jzodElementToTS(mlElement as any);
 
     expect(result).toBe('[string, number]');
   });
 
   it('should convert simple union type', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'union',
       definition: [
         {
@@ -309,13 +309,13 @@ describe('jzodElementToTS', () => {
       ],
     };
 
-    const result = jzodElementToTS(jzodElement as any);
+    const result = jzodElementToTS(mlElement as any);
 
     expect(result).toBe('string | number');
   });
 
   it('should convert union with literal types', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'union',
       definition: [
         {
@@ -333,13 +333,13 @@ describe('jzodElementToTS', () => {
       ],
     };
 
-    const result = jzodElementToTS(jzodElement as any);
+    const result = jzodElementToTS(mlElement as any);
 
     expect(result).toBe('"active" | "inactive" | "pending"');
   });
 
   it('should convert union with object types', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'union',
       definition: [
         {
@@ -369,7 +369,7 @@ describe('jzodElementToTS', () => {
       ],
     };
 
-    const result = jzodElementToTS(jzodElement as any);
+    const result = jzodElementToTS(mlElement as any);
 
     expect(result).toBe(`{
   type: "success";
@@ -381,7 +381,7 @@ describe('jzodElementToTS', () => {
   });
 
   it('should resolve schemaReference for applicationSection', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'schemaReference',
       definition: {
         absolutePath: 'fe9b7d99-f216-44de-bb6e-60e1a1ebb739',
@@ -389,13 +389,13 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(jzodElement as any);
+    const result = jzodElementToTS(mlElement as any);
 
     expect(result).toBe('"model" | "data"');
   });
 
   it('should handle nested objects with proper indentation', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'object',
       definition: {
         user: {
@@ -415,7 +415,7 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(jzodElement as any);
+    const result = jzodElementToTS(mlElement as any);
 
     expect(result).toBe(`{
   user: {
@@ -427,7 +427,7 @@ describe('jzodElementToTS', () => {
   });
 
   it('should handle arrays of arrays', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'array',
       definition: {
         type: 'array',
@@ -437,7 +437,7 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(jzodElement as any);
+    const result = jzodElementToTS(mlElement as any);
 
     expect(result).toBe('number[][]');
   });

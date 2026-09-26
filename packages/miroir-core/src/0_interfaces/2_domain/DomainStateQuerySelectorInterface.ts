@@ -1,10 +1,10 @@
 import {
-  JzodElement,
-  JzodObject
+  MlElement,
+  MlObject
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 
 // ################################################################################################
-export type RecordOfJzodElement = Record<string, JzodElement | undefined>;
-export type RecordOfJzodObject = Record<string, JzodObject | undefined>;
+export type RecordOfJzodElement = Record<string, MlElement | undefined>;
+export type RecordOfJzodObject = Record<string, MlObject | undefined>;
 
 

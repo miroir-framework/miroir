@@ -16,7 +16,7 @@ import {
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type EndpointDefinition,
-  type JzodObject,
+  type MlObject,
   type MiroirModelEnvironment,
 } from "miroir-core";
 import { defaultMiroirMetaModel, instanceEndpointV1 } from "miroir-test-app_deployment-miroir";
@@ -66,7 +66,7 @@ const lendDocumentActionCopilotKitParameters = jzodToCopilotKitParameter(
 ).attributes ?? [];
 
 const lendDocumentActionJsonSchema = jzodToJsonSchema(
-  firstLendingActionPayload as JzodObject,
+  firstLendingActionPayload as MlObject,
 );
 
 // const lendDocumentActionJsonSchemaParameters = lendDocumentActionJsonSchema.properties
@@ -78,7 +78,7 @@ const lendDocumentActionJsonSchema = jzodToJsonSchema(
 // // const lendDocumentActionJsonSchemaParameters = lendDocumentActionJzodParameters.map(([key, value]) =>
 // //     jzodToJsonSchema(
 // //       value,
-// //       (endpointDefinition[0].definition.actions[0].actionParameters.payload as JzodObject)
+// //       (endpointDefinition[0].definition.actions[0].actionParameters.payload as MlObject)
 // //         .definition,
 // //     ),
 // //   )

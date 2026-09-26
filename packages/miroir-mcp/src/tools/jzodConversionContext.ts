@@ -1,4 +1,4 @@
-import type { JzodReference } from "miroir-core";
+import type { MlReference } from "miroir-core";
 
 /** Options threaded through Jzod → JSON-Schema / resolved-Jzod conversion. */
 export type JzodConversionOptions = {
@@ -35,7 +35,7 @@ export function normalizeJzodConversionOptions(
   };
 }
 
-export function schemaReferenceKey(ref: JzodReference): string {
+export function schemaReferenceKey(ref: MlReference): string {
   const definition = ref.definition as { absolutePath?: string; relativePath?: string };
   return `${definition.absolutePath ?? ""}#${definition.relativePath ?? ""}`;
 }

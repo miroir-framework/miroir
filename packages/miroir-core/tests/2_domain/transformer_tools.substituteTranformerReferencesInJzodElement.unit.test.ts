@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { JzodElement, TransformerDefinition } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { MlElement, TransformerDefinition } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { substituteTransformerReferencesInJzodElement } from "../../src/2_domain/Transformer_tools";
 const transformerDefinition: TransformerDefinition = {
   uuid: "16d866c4-bc81-4773-89a4-a47ac7f6549d",
@@ -76,8 +76,8 @@ const transformerDefinition: TransformerDefinition = {
 
 
 describe("substituteTransformerReferencesInJzodElement", () => {
-  it("should substitute schemaReference relativePath in JzodElement", () => {
-    const jzodElement: JzodElement = {
+  it("should substitute schemaReference relativePath in MlElement", () => {
+    const mlElement: MlElement = {
       type: "schemaReference",
       definition: {
         relativePath: "transformer",
@@ -85,7 +85,7 @@ describe("substituteTransformerReferencesInJzodElement", () => {
       },
     };
 
-    const result = substituteTransformerReferencesInJzodElement(jzodElement, {"transformer": "newPath"});
+    const result = substituteTransformerReferencesInJzodElement(mlElement, {"transformer": "newPath"});
 
     expect(result).toEqual({
       type: "schemaReference",
@@ -96,8 +96,8 @@ describe("substituteTransformerReferencesInJzodElement", () => {
     });
   });
 
-  it("should recursively substitute schemaReference relativePath in nested JzodElement", () => {
-    const jzodElement: JzodElement = {
+  it("should recursively substitute schemaReference relativePath in nested MlElement", () => {
+    const mlElement: MlElement = {
       type: "object",
       definition: {
         nested: {
@@ -110,7 +110,7 @@ describe("substituteTransformerReferencesInJzodElement", () => {
       },
     };
 
-    const result = substituteTransformerReferencesInJzodElement(jzodElement, {"transformer": "newPath"});
+    const result = substituteTransformerReferencesInJzodElement(mlElement, {"transformer": "newPath"});
 
     expect(result).toEqual({
       type: "object",

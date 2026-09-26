@@ -3,7 +3,7 @@ import { jzodElementToJsonSchema } from '../../src/tools/jzodElementToJsonSchema
 
 describe('jzodElementToJsonSchema', () => {
   it('should convert uuid type to string', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'uuid',
       tag: {
         value: {
@@ -12,7 +12,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(jzodElement as any);
+    const result = jzodElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'string',
@@ -21,7 +21,7 @@ describe('jzodElementToJsonSchema', () => {
   });
 
   it('should convert string type', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'string',
       tag: {
         value: {
@@ -30,7 +30,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(jzodElement as any);
+    const result = jzodElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'string',
@@ -39,7 +39,7 @@ describe('jzodElementToJsonSchema', () => {
   });
 
   it('should convert boolean type to boolean', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'boolean',
       tag: {
         value: {
@@ -48,7 +48,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(jzodElement as any);
+    const result = jzodElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'boolean',
@@ -57,7 +57,7 @@ describe('jzodElementToJsonSchema', () => {
   });
 
   it('should use defaultLabel when description is not available', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'uuid',
       tag: {
         value: {
@@ -66,7 +66,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(jzodElement as any);
+    const result = jzodElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'string',
@@ -75,7 +75,7 @@ describe('jzodElementToJsonSchema', () => {
   });
 
   it('should resolve schemaReference for applicationSection with enum via $ref/$defs', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'schemaReference',
       tag: {
         value: {
@@ -88,7 +88,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(jzodElement as any, 'applicationSection');
+    const result = jzodElementToJsonSchema(mlElement as any, 'applicationSection');
     const defKey = 'fe9b7d99-f216-44de-bb6e-60e1a1ebb739_applicationSection';
 
     // Root must be type:object for MCP/Cursor (#248); non-object defs are wrapped via allOf.
@@ -110,7 +110,7 @@ describe('jzodElementToJsonSchema', () => {
   });
 
   it('should convert object type recursively', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'object',
       definition: {
         uuid: {
@@ -132,7 +132,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(jzodElement as any);
+    const result = jzodElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'object',
@@ -152,7 +152,7 @@ describe('jzodElementToJsonSchema', () => {
   });
 
   it('should handle optional fields in object', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'object',
       definition: {
         name: {
@@ -175,7 +175,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(jzodElement as any);
+    const result = jzodElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'object',
@@ -195,7 +195,7 @@ describe('jzodElementToJsonSchema', () => {
   });
 
   it('should convert array type with object items', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'array',
       tag: {
         value: {
@@ -225,7 +225,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(jzodElement as any);
+    const result = jzodElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'array',
@@ -249,7 +249,7 @@ describe('jzodElementToJsonSchema', () => {
   });
 
   it('should resolve array type with schemaReference items', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'array',
       tag: {
         value: {
@@ -265,7 +265,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(jzodElement as any);
+    const result = jzodElementToJsonSchema(mlElement as any);
     const entityInstanceKey = 'fe9b7d99-f216-44de-bb6e-60e1a1ebb739_entityInstance';
 
     expect(result.type).toBe('array');
@@ -277,7 +277,7 @@ describe('jzodElementToJsonSchema', () => {
   });
 
   it('should resolve schemaReference with context (relative reference) via $ref/$defs', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'schemaReference',
       context: {
         myString: {
@@ -294,7 +294,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(jzodElement as any);
+    const result = jzodElementToJsonSchema(mlElement as any);
     const defKey = '_myString';
 
     expect(result.type).toBe('object');
@@ -311,7 +311,7 @@ describe('jzodElementToJsonSchema', () => {
   });
 
   it('should resolve nested schemaReference in object properties via $ref/$defs', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'object',
       definition: {
         section: {
@@ -332,7 +332,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(jzodElement as any);
+    const result = jzodElementToJsonSchema(mlElement as any);
     const sectionKey = 'fe9b7d99-f216-44de-bb6e-60e1a1ebb739_applicationSection';
 
     expect(result.type).toBe('object');
@@ -350,7 +350,7 @@ describe('jzodElementToJsonSchema', () => {
   });
 
   it('should resolve schemaReference for entityInstanceCollection via $ref/$defs', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'schemaReference',
       definition: {
         absolutePath: 'fe9b7d99-f216-44de-bb6e-60e1a1ebb739',
@@ -358,7 +358,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(jzodElement as any);
+    const result = jzodElementToJsonSchema(mlElement as any);
     const collectionKey = 'fe9b7d99-f216-44de-bb6e-60e1a1ebb739_entityInstanceCollection';
 
     // Root $ref expanded once so inputSchema.type is object (#248 cause 2).
@@ -371,7 +371,7 @@ describe('jzodElementToJsonSchema', () => {
   });
 
   it('should handle complex nested schemaReference resolution via $ref/$defs', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'object',
       definition: {
         deployment: {
@@ -400,7 +400,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(jzodElement as any);
+    const result = jzodElementToJsonSchema(mlElement as any);
     const entityInstanceKey = 'fe9b7d99-f216-44de-bb6e-60e1a1ebb739_entityInstance';
 
     expect(result.type).toBe('object');
@@ -412,7 +412,7 @@ describe('jzodElementToJsonSchema', () => {
 
   // TDD: New type conversions
   it('should convert number type to number', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'number',
       tag: {
         value: {
@@ -421,7 +421,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(jzodElement as any);
+    const result = jzodElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'number',
@@ -430,7 +430,7 @@ describe('jzodElementToJsonSchema', () => {
   });
 
   it('should convert date type to string with date-time format', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'date',
       tag: {
         value: {
@@ -439,7 +439,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(jzodElement as any);
+    const result = jzodElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'string',
@@ -449,7 +449,7 @@ describe('jzodElementToJsonSchema', () => {
   });
 
   it('should convert literal type to const', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'literal',
       definition: 'active',
       tag: {
@@ -459,7 +459,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(jzodElement as any);
+    const result = jzodElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'string',
@@ -469,12 +469,12 @@ describe('jzodElementToJsonSchema', () => {
   });
 
   it('should convert literal type with number value', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'literal',
       definition: 42,
     };
 
-    const result = jzodElementToJsonSchema(jzodElement as any);
+    const result = jzodElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'number',
@@ -484,7 +484,7 @@ describe('jzodElementToJsonSchema', () => {
   });
 
   it('should convert record type to object with additionalProperties', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'record',
       tag: {
         value: {
@@ -501,7 +501,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(jzodElement as any);
+    const result = jzodElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'object',
@@ -514,7 +514,7 @@ describe('jzodElementToJsonSchema', () => {
   });
 
   it('should convert tuple type to array with prefixItems', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'tuple',
       tag: {
         value: {
@@ -541,7 +541,7 @@ describe('jzodElementToJsonSchema', () => {
       ],
     };
 
-    const result = jzodElementToJsonSchema(jzodElement as any);
+    const result = jzodElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'array',
@@ -562,7 +562,7 @@ describe('jzodElementToJsonSchema', () => {
   });
 
   it('should convert tuple with mixed types', () => {
-    const jzodElement = {
+    const mlElement = {
       type: 'tuple',
       definition: [
         {
@@ -592,7 +592,7 @@ describe('jzodElementToJsonSchema', () => {
       ],
     };
 
-    const result = jzodElementToJsonSchema(jzodElement as any);
+    const result = jzodElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'array',
@@ -619,7 +619,7 @@ describe('jzodElementToJsonSchema', () => {
   // TDD: Union type conversions
   describe('union types', () => {
     it('should convert simple union of primitives using anyOf', () => {
-      const jzodElement = {
+      const mlElement = {
         type: 'union',
         tag: {
           value: {
@@ -636,7 +636,7 @@ describe('jzodElementToJsonSchema', () => {
         ],
       };
 
-      const result = jzodElementToJsonSchema(jzodElement as any);
+      const result = jzodElementToJsonSchema(mlElement as any);
 
       expect(result).toEqual({
         anyOf: [
@@ -654,7 +654,7 @@ describe('jzodElementToJsonSchema', () => {
     });
 
     it('should convert union of multiple primitives', () => {
-      const jzodElement = {
+      const mlElement = {
         type: 'union',
         definition: [
           {
@@ -684,7 +684,7 @@ describe('jzodElementToJsonSchema', () => {
         ],
       };
 
-      const result = jzodElementToJsonSchema(jzodElement as any);
+      const result = jzodElementToJsonSchema(mlElement as any);
 
       expect(result).toEqual({
         anyOf: [
@@ -706,7 +706,7 @@ describe('jzodElementToJsonSchema', () => {
     });
 
     it('should convert union with literal types using anyOf', () => {
-      const jzodElement = {
+      const mlElement = {
         type: 'union',
         definition: [
           {
@@ -724,7 +724,7 @@ describe('jzodElementToJsonSchema', () => {
         ],
       };
 
-      const result = jzodElementToJsonSchema(jzodElement as any);
+      const result = jzodElementToJsonSchema(mlElement as any);
 
       expect(result).toEqual({
         anyOf: [
@@ -749,7 +749,7 @@ describe('jzodElementToJsonSchema', () => {
     });
 
     it('should convert discriminated union using oneOf', () => {
-      const jzodElement = {
+      const mlElement = {
         type: 'union',
         tag: {
           value: {
@@ -803,7 +803,7 @@ describe('jzodElementToJsonSchema', () => {
         discriminator: 'type',
       };
 
-      const result = jzodElementToJsonSchema(jzodElement as any);
+      const result = jzodElementToJsonSchema(mlElement as any);
 
       expect(result).toEqual({
         oneOf: [
@@ -852,7 +852,7 @@ describe('jzodElementToJsonSchema', () => {
     });
 
     it('should convert union in object property', () => {
-      const jzodElement = {
+      const mlElement = {
         type: 'object',
         definition: {
           id: {
@@ -882,7 +882,7 @@ describe('jzodElementToJsonSchema', () => {
         },
       };
 
-      const result = jzodElementToJsonSchema(jzodElement as any);
+      const result = jzodElementToJsonSchema(mlElement as any);
 
       expect(result.type).toBe('object');
       expect(result.properties.id.type).toBe('string');
@@ -902,7 +902,7 @@ describe('jzodElementToJsonSchema', () => {
     });
 
     it('should convert union with array types', () => {
-      const jzodElement = {
+      const mlElement = {
         type: 'union',
         definition: [
           {
@@ -917,7 +917,7 @@ describe('jzodElementToJsonSchema', () => {
         ],
       };
 
-      const result = jzodElementToJsonSchema(jzodElement as any);
+      const result = jzodElementToJsonSchema(mlElement as any);
 
       expect(result).toEqual({
         anyOf: [
@@ -939,7 +939,7 @@ describe('jzodElementToJsonSchema', () => {
     });
 
     it('should handle nested unions', () => {
-      const jzodElement = {
+      const mlElement = {
         type: 'union',
         definition: [
           {
@@ -959,7 +959,7 @@ describe('jzodElementToJsonSchema', () => {
         ],
       };
 
-      const result = jzodElementToJsonSchema(jzodElement as any);
+      const result = jzodElementToJsonSchema(mlElement as any);
 
       expect(result).toEqual({
         anyOf: [
@@ -986,7 +986,7 @@ describe('jzodElementToJsonSchema', () => {
     });
 
     it('should convert union with schemaReference via $ref/$defs', () => {
-      const jzodElement = {
+      const mlElement = {
         type: 'union',
         definition: [
           {
@@ -1002,7 +1002,7 @@ describe('jzodElementToJsonSchema', () => {
         ],
       };
 
-      const result = jzodElementToJsonSchema(jzodElement as any);
+      const result = jzodElementToJsonSchema(mlElement as any);
       const sectionKey = 'fe9b7d99-f216-44de-bb6e-60e1a1ebb739_applicationSection';
 
       expect(result.anyOf).toHaveLength(2);
@@ -1021,18 +1021,18 @@ describe('jzodElementToJsonSchema', () => {
   });
 
   describe("cycle-safe conversion", () => {
-    it("does not stack overflow on self-referential meta-schema references (jzodElement)", () => {
-      const jzodElement = {
+    it("does not stack overflow on self-referential meta-schema references (mlElement)", () => {
+      const mlElement = {
         type: "schemaReference",
         definition: {
           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          relativePath: "jzodElement",
+          relativePath: "mlElement",
         },
       };
 
-      expect(() => jzodElementToJsonSchema(jzodElement as any)).not.toThrow();
-      const result = jzodElementToJsonSchema(jzodElement as any);
-      const defKey = "fe9b7d99-f216-44de-bb6e-60e1a1ebb739_jzodElement";
+      expect(() => jzodElementToJsonSchema(mlElement as any)).not.toThrow();
+      const result = jzodElementToJsonSchema(mlElement as any);
+      const defKey = "fe9b7d99-f216-44de-bb6e-60e1a1ebb739_mlElement";
       expect(result.type).toBe("object");
       expect(result.$defs[defKey]).toBeDefined();
       // Recursive encounters must reuse $ref, not re-inline (size stays bounded).
@@ -1041,7 +1041,7 @@ describe('jzodElementToJsonSchema', () => {
     });
 
     it("ensures root inputSchema is type object when payload is a schemaReference", () => {
-      const jzodElement = {
+      const mlElement = {
         type: "schemaReference",
         definition: {
           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -1049,14 +1049,14 @@ describe('jzodElementToJsonSchema', () => {
         },
       };
 
-      const result = jzodElementToJsonSchema(jzodElement as any);
+      const result = jzodElementToJsonSchema(mlElement as any);
       expect(result.type).toBe("object");
       expect(result.$ref).toBeUndefined();
       expect(result.properties || result.allOf).toBeTruthy();
     });
 
     it("does not stack overflow on compositeActionSequence payload shape", () => {
-      const jzodElement = {
+      const mlElement = {
         type: "schemaReference",
         definition: {
           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -1064,15 +1064,15 @@ describe('jzodElementToJsonSchema', () => {
         },
       };
 
-      expect(() => jzodElementToJsonSchema(jzodElement as any)).not.toThrow();
-      const result = jzodElementToJsonSchema(jzodElement as any);
+      expect(() => jzodElementToJsonSchema(mlElement as any)).not.toThrow();
+      const result = jzodElementToJsonSchema(mlElement as any);
       const serialized = JSON.stringify(result);
       // Pre-$ref this class of schema expanded to tens of MB; budget matches #248 provisional gate.
       expect(serialized.length).toBeLessThan(512 * 1024);
     });
 
     it("converts Jzod any type to a generic object instead of throwing", () => {
-      const jzodElement = {
+      const mlElement = {
         type: "any",
         tag: {
           value: {
@@ -1081,7 +1081,7 @@ describe('jzodElementToJsonSchema', () => {
         },
       };
 
-      const result = jzodElementToJsonSchema(jzodElement as any);
+      const result = jzodElementToJsonSchema(mlElement as any);
 
       expect(result.type).toBe("object");
       expect(result.description).toBe("Opaque model payload");

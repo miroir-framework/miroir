@@ -1,7 +1,7 @@
-import { JzodElement } from "miroir-core";
+import { MlElement } from "miroir-core";
 import { useState } from "react";
 
-export const ChangeValueTypeSelect: React.FC<{ onChange: (type: JzodElement) => void }> = ({
+export const ChangeValueTypeSelect: React.FC<{ onChange: (type: MlElement) => void }> = ({
   onChange,
 }) => {
   const [selectedType, setSelectedType] = useState("undefined");
@@ -9,7 +9,7 @@ export const ChangeValueTypeSelect: React.FC<{ onChange: (type: JzodElement) => 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newType = event.target.value;
     setSelectedType(newType);
-    let newJzodSchema: JzodElement | undefined;
+    let newJzodSchema: MlElement | undefined;
     switch (newType) {
       case "undefined":
         newJzodSchema = { type: "undefined" };

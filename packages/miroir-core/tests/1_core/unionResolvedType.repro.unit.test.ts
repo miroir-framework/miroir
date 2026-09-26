@@ -3,7 +3,7 @@ import {
   defaultMiroirModelEnvironment,
   jzodUnion_recursivelyUnfold,
   jzodUnionResolvedTypeForObject,
-  type JzodUnion,
+  type MlUnion,
   type MiroirModelEnvironment,
 } from "miroir-core";
 
@@ -16,7 +16,7 @@ describe("union resolved type for object", () => {
     const branch = domainActionTemplate.definition.find(
       (b: any) => b.definition?.actionType?.definition === "prepareOpenApiDocument",
     );
-    const payloadSchema = branch.definition.payload as JzodUnion;
+    const payloadSchema = branch.definition.payload as MlUnion;
 
     const unfolded = jzodUnion_recursivelyUnfold(
       payloadSchema,

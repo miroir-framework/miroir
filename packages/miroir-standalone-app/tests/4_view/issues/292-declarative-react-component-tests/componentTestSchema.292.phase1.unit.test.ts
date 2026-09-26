@@ -22,7 +22,7 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { defaultMiroirModelEnvironment, jzodTypeCheck, type JzodElement } from "miroir-core";
+import { defaultMiroirModelEnvironment, jzodTypeCheck, type MlElement } from "miroir-core";
 
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
@@ -44,7 +44,7 @@ function readJson(path: string): any {
 const entity = readJson(MIROIR_TEST_ENTITY_PATH);
 const entityVersion = readJson(MIROIR_TEST_ENTITY_VERSION_PATH);
 
-const schemas: [string, JzodElement][] = [
+const schemas: [string, MlElement][] = [
   ["Entity", entity.mlSchema],
   ["EntityVersion", entityVersion.mlSchema],
 ];
@@ -135,7 +135,7 @@ function miroirTestInstanceOf(child: any): any {
   };
 }
 
-function typeCheckStatus(schema: JzodElement, instance: any): string {
+function typeCheckStatus(schema: MlElement, instance: any): string {
   return jzodTypeCheck(schema, instance, [], [], defaultMiroirModelEnvironment, {}).status;
 }
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { JzodElement, MetaModel, MiroirModelEnvironment } from "miroir-core";
+import type { MlElement, MetaModel, MiroirModelEnvironment } from "miroir-core";
 import { getMiroirFundamentalSchemaForDeployment, jzodTypeCheck } from "miroir-core";
 import {
   defaultLibraryAppModel,
@@ -26,7 +26,7 @@ describe("TypedValueObjectEditor schema resolution (Feature 198)", () => {
     currentModel: defaultLibraryAppModel,
   };
 
-  const miroirTestDefinitionSchema: JzodElement = {
+  const miroirTestDefinitionSchema: MlElement = {
     type: "schemaReference",
     definition: {
       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",

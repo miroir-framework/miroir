@@ -25,7 +25,7 @@ import type {
   Deployment,
   EndpointDefinition,
   EntityInstance,
-  JzodObject,
+  MlObject,
   Report,
   StoreUnitConfiguration,
 } from "miroir-core";
@@ -187,7 +187,7 @@ const TYPED_VALUE_OBJECT_EDITOR_TYPE_ERROR = /typeError:/;
 /** Innermost jzodTypeCheck error for an unknown object key (stringified into CodeBlock_ReadOnly). */
 const JZOD_UNKNOWN_ATTRIBUTE_ERROR = /not found in schema definition/;
 
-function tracksOnlySpotifyPlaylistMlSchema(liveSchema: JzodObject): JzodObject {
+function tracksOnlySpotifyPlaylistMlSchema(liveSchema: MlObject): MlObject {
   const { items: _omittedNewShapeItems, ...definitionWithoutItems } = liveSchema.definition;
   return { type: "object", definition: definitionWithoutItems };
 }
@@ -658,7 +658,7 @@ describe.skipIf(!shouldRun).sequential("spotifyApp — Spotify deployment boot +
   it("new-shape playlist fails display-time jzodTypeCheck against a tracks-only get-playlist responseSchema", () => {
     const operations = spotifyServiceEndpoint.definition.externalService?.operations ?? [];
     const getPlaylist = operations.find((operation) => operation.operationId === "get-playlist");
-    const liveSchema = getPlaylist?.responseSchema as JzodObject;
+    const liveSchema = getPlaylist?.responseSchema as MlObject;
     expect(liveSchema, "get-playlist operations[].responseSchema").toBeDefined();
     expect(
       liveSchema.definition.items,

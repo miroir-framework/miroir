@@ -1,4 +1,4 @@
-import { JzodElement } from "../1_core/preprocessor-generated/miroirFundamentalType";
+import { MlElement } from "../1_core/preprocessor-generated/miroirFundamentalType";
 
 export type FailedTransformerInterfaceFromDefinitionFailureKind =
   | "missingTransformerType"
@@ -16,15 +16,15 @@ export interface FailedTransformerInterfaceFromDefinition {
   transformerType?: string;
   referenceName?: string;
   referencePath?: string[];
-  expectedSchema?: JzodElement;
-  actualSchema?: JzodElement;
+  expectedSchema?: MlElement;
+  actualSchema?: MlElement;
   typePath: (string | number)[];
   transformerPath?: (string | number)[];
   innerError?: FailedTransformerInterfaceFromDefinition;
 }
 
 export type ResolveTransformerResultSchemaReturnType =
-  | JzodElement
+  | MlElement
   | FailedTransformerInterfaceFromDefinition;
 
 export function isFailedTransformerInterfaceFromDefinition(

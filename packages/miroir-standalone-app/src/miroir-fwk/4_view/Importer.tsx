@@ -5,7 +5,7 @@ import { z } from "zod";
 import { Formik } from "formik";
 import {
   DomainControllerInterface,
-  JzodObject,
+  MlObject,
   LoggerInterface,
   MiroirLoggerFactory,
   metaModel,
@@ -50,10 +50,10 @@ const dataSection = "data"
 const emptyList:any[] = []
 const emptyObject = {}
 
-const defaultObject: JzodObject = {
+const defaultObject: MlObject = {
   type: "object",
   definition: {}
-} as JzodObject
+} as MlObject
 
 const initialValues = {
   // newApplicationName: "placeholder...",
@@ -258,7 +258,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //     name: newEntityName,
   //   }
   //   log.info("createEntity fileData", fileData);
-  //   const mlSchema:JzodObject = {
+  //   const mlSchema:MlObject = {
   //     type: "object",
   //     definition: Object.assign(
   //       {},
@@ -886,15 +886,15 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //           uuid: {
   //             type: "uuid",
   //             tag: { id: 1, defaultLabel: "Uuid", editable: false },
-  //           } as JzodPlainAttribute,
+  //           } as MlPlainAttribute,
   //           parentUuid: {
   //             type: "uuid",
   //             tag: { id: 1, defaultLabel: "Uuid", editable: false },
-  //           } as JzodPlainAttribute,
+  //           } as MlPlainAttribute,
   //           name: {
   //             type: "string",
   //             tag: { id: 2, defaultLabel: "name", editable: false },
-  //           } as JzodAttributePlainStringWithValidations,
+  //           } as MlAttributePlainStringWithValidations,
   //         },
   //       },
   //       splitEntity_newEntityDefinition: {
@@ -1773,7 +1773,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
 
   // const [formHelperState, setformHelperState] = useMiroirContextformHelperState(); // NOT USED
 
-  // const [rawSchema, setRawSchema] = useState<JzodElement>(
+  // const [rawSchema, setRawSchema] = useState<MlElement>(
   //   actionHandlerCreateApplication.interface.actionJzodObjectSchema
   // );
 
@@ -1782,7 +1782,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   // );
   // const currentMiroirModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
 
-  // const resolvedJzodSchema:JzodElement = useMemo(
+  // const resolvedJzodSchema:MlElement = useMemo(
   //   () => {
   //     if (!context.miroirFundamentalJzodSchema || context.miroirFundamentalJzodSchema.name == "dummyJzodSchema") {
   //       return defaultObject

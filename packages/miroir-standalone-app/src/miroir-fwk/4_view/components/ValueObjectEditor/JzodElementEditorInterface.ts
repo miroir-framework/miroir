@@ -4,8 +4,8 @@ import {
   ApplicationSection,
   EntityInstance,
   EntityInstancesUuidIndex,
-  JzodElement,
-  JzodUnion,
+  MlElement,
+  MlUnion,
   JzodUnion_RecursivelyUnfold_ReturnType,
   JzodUnion_RecursivelyUnfold_ReturnTypeOK,
   KeyMapEntry,
@@ -15,9 +15,9 @@ import {
 import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
 
 export interface UnionInformation {
-  unfoldedRawSchema: JzodUnion;
-  resolvedElementJzodSchema: JzodElement | undefined;
-  objectBranches: JzodElement[];
+  unfoldedRawSchema: MlUnion;
+  resolvedElementJzodSchema: MlElement | undefined;
+  objectBranches: MlElement[];
   discriminator: string;
   discriminatorValues: string[];
 }
@@ -69,7 +69,7 @@ export interface JzodEditorPropsRoot {
 // ################################################################################################
 export interface JzodElementEditorProps extends JzodEditorPropsRoot {
   forceTestingMode?: boolean;
-  unresolvedJzodSchema?: JzodElement | undefined;
+  unresolvedJzodSchema?: MlElement | undefined;
   indentLevel: number;
   submitButton?: JSX.Element; // used to display a submit button in the editor
   extraToolsButtons?: JSX.Element; // used to display extra tool buttons on the title line
@@ -129,7 +129,7 @@ export interface JzodObjectEditorProps extends JzodEditorPropsRoot {
 // #####################################################################################################
 export type JzodElementEditorReactCodeMirrorProps = {
   initialValue: any;
-  // rawJzodSchema: JzodElement;
+  // rawJzodSchema: MlElement;
   // formik: any; // Formik instance
   labelElement?: JSX.Element; // used to display a label in the editor
   formikRootLessListKey: string;

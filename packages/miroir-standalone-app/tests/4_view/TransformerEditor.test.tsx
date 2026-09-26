@@ -5,7 +5,7 @@ import '@testing-library/jest-dom';
 
 import {
   deployment_Library_DO_NO_USE,
-  JzodElement,
+  MlElement,
   LoggerInterface,
   MiroirLoggerFactory,
   TransformerForBuild,

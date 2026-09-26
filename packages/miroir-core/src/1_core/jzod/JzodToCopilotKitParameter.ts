@@ -1,4 +1,4 @@
-import type { JzodElement } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { MlElement } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { JzodToJsonSchemaContext } from "./JzodToJsonSchema";
 
 // ################################################################################################
@@ -29,15 +29,15 @@ export interface CopilotKitParameter {
 
 // ################################################################################################
 /**
- * Convert a named JzodElement to a CopilotKit-compatible Parameter.
+ * Convert a named MlElement to a CopilotKit-compatible Parameter.
  *
  * @param name          The parameter name (required by CopilotKit)
  * @param element       The Jzod schema element to convert
- * @param context       Optional map of named JzodElement definitions for resolving schemaReference
+ * @param context       Optional map of named MlElement definitions for resolving schemaReference
  */
 export function jzodToCopilotKitParameter(
   name: string,
-  element: JzodElement,
+  element: MlElement,
   context: JzodToJsonSchemaContext = {},
 ): CopilotKitParameter {
   if (!element) {
@@ -87,7 +87,7 @@ export function jzodToCopilotKitParameter(
     }
 
     case "array": {
-      const castEl = element as { type: "array"; definition: JzodElement };
+      const castEl = element as { type: "array"; definition: MlElement };
       const inner = castEl.definition;
       const innerType = inner.type;
 
@@ -101,7 +101,7 @@ export function jzodToCopilotKitParameter(
         return { ...base(), type: "boolean[]" };
       }
       if (innerType === "object") {
-        const castInner = inner as { type: "object"; definition: { [k: string]: JzodElement }; partial?: boolean };
+        const castInner = inner as { type: "object"; definition: { [k: string]: MlElement }; partial?: boolean };
         return {
           ...base(),
           type: "object[]",
@@ -117,7 +117,7 @@ export function jzodToCopilotKitParameter(
     case "object": {
       const castEl = element as {
         type: "object";
-        definition: { [k: string]: JzodElement };
+        definition: { [k: string]: MlElement };
         partial?: boolean;
       };
       return {
@@ -133,7 +133,7 @@ export function jzodToCopilotKitParameter(
       return { ...base(), type: "object" };
 
     case "union": {
-      const castEl = element as { type: "union"; definition: JzodElement[] };
+      const castEl = element as { type: "union"; definition: MlElement[] };
       // Collect enum strings if all branches are literals
       const allLiterals = castEl.definition.every(
         (d) => d.type === "literal"
@@ -154,7 +154,7 @@ export function jzodToCopilotKitParameter(
     case "schemaReference": {
       const castEl = element as {
         type: "schemaReference";
-        context?: { [k: string]: JzodElement };
+        context?: { [k: string]: MlElement };
         definition: { relativePath: string };
       };
       const mergedContext: JzodToJsonSchemaContext = {
@@ -169,7 +169,7 @@ export function jzodToCopilotKitParameter(
     }
 
     case "lazy": {
-      const castEl = element as { type: "lazy"; definition: JzodElement };
+      const castEl = element as { type: "lazy"; definition: MlElement };
       return jzodToCopilotKitParameter(name, castEl.definition, context);
     }
 

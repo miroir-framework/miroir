@@ -1,30 +1,30 @@
 import equal from "fast-deep-equal";
 import {
-  JzodElement,
-  JzodObject,
-  JzodReference,
-  type JzodBaseObject
+  MlElement,
+  MlObject,
+  MlReference,
+  type MlBaseObject
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
 import { resolveJzodSchemaReferenceInContext } from "./jzodResolveSchemaReferenceInContext";
 
   // Function to recursively get all properties from parent objects
 const getAllProperties = <T extends MiroirModelEnvironment>(
-  parent: JzodObject | JzodReference | (JzodObject | JzodReference | undefined)[],
-  referenceChain: JzodReference[] = [],
+  parent: MlObject | MlReference | (MlObject | MlReference | undefined)[],
+  referenceChain: MlReference[] = [],
   modelEnvironment: T,
-  relativeReferenceJzodContext?: { [k: string]: JzodElement }
-): {properties: Record<string, JzodElement>, tag?: JzodBaseObject["tag"]} => {
+  relativeReferenceJzodContext?: { [k: string]: MlElement }
+): {properties: Record<string, MlElement>, tag?: MlBaseObject["tag"]} => {
   // Handle array of extends
-  let resultTag: JzodBaseObject["tag"] | undefined = undefined;
+  let resultTag: MlBaseObject["tag"] | undefined = undefined;
   if (Array.isArray(parent)) {
-    const allProps: Record<string, JzodElement> = {};
+    const allProps: Record<string, MlElement> = {};
     for (const p of parent) {
       if (p) {
         const props = getAllProperties(p, referenceChain, modelEnvironment, relativeReferenceJzodContext);
         Object.assign(allProps, props.properties);
-        if (!resultTag && p && (p as JzodBaseObject).tag ) {
-          resultTag = (p as JzodBaseObject).tag;
+        if (!resultTag && p && (p as MlBaseObject).tag ) {
+          resultTag = (p as MlBaseObject).tag;
         } else if (!resultTag && props.tag) {
           resultTag = props.tag;
         }
@@ -33,7 +33,7 @@ const getAllProperties = <T extends MiroirModelEnvironment>(
     return resultTag?{properties: allProps, tag: resultTag}:{properties: allProps};
   }
 
-  // Handle JzodReference - resolve it using the provided context
+  // Handle MlReference - resolve it using the provided context
   if (parent.type === "schemaReference") {
     // Check for circular reference
     for (const ref of referenceChain) {
@@ -65,7 +65,7 @@ const getAllProperties = <T extends MiroirModelEnvironment>(
     // If resolved element is still a reference, continue resolving recursively
     if (resolvedElement.type === "schemaReference") {
       return getAllProperties(
-        resolvedElement as JzodReference,
+        resolvedElement as MlReference,
         newReferenceChain,
         modelEnvironment,
         relativeReferenceJzodContext
@@ -81,14 +81,14 @@ const getAllProperties = <T extends MiroirModelEnvironment>(
 
     // Recursively get properties from the resolved object
     return getAllProperties(
-      resolvedElement as JzodObject,
+      resolvedElement as MlObject,
       newReferenceChain,
       modelEnvironment,
       relativeReferenceJzodContext
     );
   }
 
-  // Handle JzodObject
+  // Handle MlObject
   if (parent.type === "object") {
     // Start with the parent's own definition
     const properties = parent.definition ? { ...parent.definition } : {};
@@ -115,22 +115,22 @@ const getAllProperties = <T extends MiroirModelEnvironment>(
 };
 
 /**
- * Flattens a JzodObject by removing the "extend" clause and incorporating
+ * Flattens a MlObject by removing the "extend" clause and incorporating
  * all parent attributes directly into the definition.
  *
- * @param obj The JzodObject to flatten
+ * @param obj The MlObject to flatten
  * @param miroirFundamentalJzodSchema Schema for resolving references
  * @param currentModel Current model for context
  * @param miroirMetaModel Miroir meta model for context
  * @param relativeReferenceJzodContext Relative reference context
- * @returns A new JzodObject with all inherited properties directly in the definition
+ * @returns A new MlObject with all inherited properties directly in the definition
  * @throws Error if a schema reference resolves to a non-object type
  */
 export function jzodObjectFlatten<T extends MiroirModelEnvironment>(
-  obj: JzodObject,
+  obj: MlObject,
   modelEnvironment: T,
-  relativeReferenceJzodContext?: { [k: string]: JzodElement }
-): JzodObject {
+  relativeReferenceJzodContext?: { [k: string]: MlElement }
+): MlObject {
   // If there's no extend property, just return the object as is
   if (!obj.extend) {
     return obj;
@@ -141,7 +141,7 @@ export function jzodObjectFlatten<T extends MiroirModelEnvironment>(
   const parentProperties = getAllProperties(obj.extend, [], modelEnvironment, relativeReferenceJzodContext);
 
   // Create flattened object with extend removed
-  const flattened: JzodObject = {
+  const flattened: MlObject = {
     type: "object",
     definition: {
       ...parentProperties.properties,

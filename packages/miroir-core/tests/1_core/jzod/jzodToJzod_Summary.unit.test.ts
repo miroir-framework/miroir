@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type {
-  JzodElement,
+  MlElement,
   MlSchema,
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { jzodToJzod_Summary } from "../../../src/1_core/jzod/JzodToJzod_Summary";
@@ -17,7 +17,7 @@ const RUN_TEST = process.env.RUN_TEST;
 if (!RUN_TEST || RUN_TEST === "jzodToJzod_Summary.unit.test") {
   describe("jzodToJzod_Summary (vitest-only)", () => {
     it("default depth is 1 (same as explicit depth=1)", () => {
-      const input: JzodElement = {
+      const input: MlElement = {
         type: "object",
         definition: {
           child: {

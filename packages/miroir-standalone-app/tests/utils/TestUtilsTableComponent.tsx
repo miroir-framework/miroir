@@ -7,7 +7,7 @@ import {
   EntityVersion,
   EntityInstance,
   EntityInstanceWithName,
-  JzodElement,
+  MlElement,
   LocalCacheExtractor,
   LoggerInterface,
   MetaEntity,
@@ -110,14 +110,14 @@ export const TestUtilsTableComponent = (
   log.info("TestUtilsTableComponent currentStoredQueryResults",JSON.stringify(currentStoredQueryResults, null, 2));
   log.info("TestUtilsTableComponent instancesToDisplay",instancesToDisplay);
   
-  const currentAttributes: [string, JzodElement][] = [["uuid", { type: "uuid" } as JzodElement]]
+  const currentAttributes: [string, MlElement][] = [["uuid", { type: "uuid" } as MlElement]]
   .concat(
     props.entityVersion?.mlSchema
     ? Object.entries(props.entityVersion?.mlSchema.definition)?.filter(
         (a) => a[0] !== "parentUuid",
-      ) as [string, JzodElement][]
-    : [] as [string, JzodElement][]
-  ) as [string, JzodElement][];
+      ) as [string, MlElement][]
+    : [] as [string, MlElement][]
+  ) as [string, MlElement][];
   log.info("TestUtilsTableComponent currentAttributes",JSON.stringify(currentAttributes));
   return (
     <div>
@@ -132,7 +132,7 @@ export const TestUtilsTableComponent = (
               <tr>
                 {
                   currentAttributes.map(
-                    (a:[string,JzodElement], key:any) => (
+                    (a:[string,MlElement], key:any) => (
                       <th  key={a[0]}>{a[0]}</th>
                     )
                   )

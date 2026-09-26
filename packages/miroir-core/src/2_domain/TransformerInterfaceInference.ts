@@ -2,7 +2,7 @@ import {
   type CoreTransformerForBuildPlusRuntime,
   type InputOutputPayloadType,
   type InputOutputType,
-  type JzodElement,
+  type MlElement,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { isFailedTransformerInterfaceFromDefinition } from "../0_interfaces/2_domain/TransformerResultSchemaInterface";
 import { safeStringify } from "../4_services/otherTools";
@@ -14,7 +14,7 @@ function isTransformerExpression(
   return typeof transformer === "object" && !Array.isArray(transformer) && "transformerType" in transformer;
 }
 
-function jzodSchemasEquivalent(a: JzodElement, b: JzodElement): boolean {
+function jzodSchemasEquivalent(a: MlElement, b: MlElement): boolean {
   return safeStringify(a) === safeStringify(b);
 }
 
@@ -23,8 +23,8 @@ function jzodSchemasEquivalent(a: JzodElement, b: JzodElement): boolean {
  * When the schema is the list row entity ML schema, prefer the row entity uuid over bare `object`.
  */
 export function inferTransformerOutputTypeFromSchema(
-  resultSchema: JzodElement,
-  options?: { rowEntityUuid?: string; rowMlSchema?: JzodElement },
+  resultSchema: MlElement,
+  options?: { rowEntityUuid?: string; rowMlSchema?: MlElement },
 ): InputOutputType {
   const type = resultSchema.type;
   if (type === "any") {
@@ -47,15 +47,15 @@ export function inferTransformerOutputTypeFromSchema(
     return "object";
   }
   if (type === "array") {
-    let elementSchema: JzodElement | undefined;
+    let elementSchema: MlElement | undefined;
     if (Array.isArray(resultSchema.definition)) {
-      elementSchema = resultSchema.definition[0] as JzodElement | undefined;
+      elementSchema = resultSchema.definition[0] as MlElement | undefined;
     } else if (
       resultSchema.definition &&
       typeof resultSchema.definition === "object" &&
       "type" in resultSchema.definition
     ) {
-      elementSchema = resultSchema.definition as JzodElement;
+      elementSchema = resultSchema.definition as MlElement;
     }
     const payload: InputOutputPayloadType =
       elementSchema === undefined
@@ -75,7 +75,7 @@ export function inferTransformerOutputTypeFromSchema(
  */
 export function inferElementTransformerOutputType(
   elementTransformer: CoreTransformerForBuildPlusRuntime,
-  rowMlSchema?: JzodElement,
+  rowMlSchema?: MlElement,
   rowEntityUuid?: string,
 ): InputOutputType | undefined {
   if (!rowMlSchema || !isTransformerExpression(elementTransformer)) {

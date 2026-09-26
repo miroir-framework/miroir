@@ -5,9 +5,9 @@ import React, { FC, useCallback, useMemo } from "react";
 import {
   defaultViewParamsFromAdminStorageFetchQueryParams,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
-  JzodElement,
-  JzodEnum,
-  JzodLiteral,
+  MlElement,
+  MlEnum,
+  MlLiteral,
   jzodUnionResolvedTypeForObject,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -16,8 +16,8 @@ import {
   type Domain2QueryReturnType,
   type DomainElementSuccess,
   type EntityInstancesUuidIndex,
-  type JzodObject,
-  type JzodUnion,
+  type MlObject,
+  type MlUnion,
   type KeyMapEntry,
   type MiroirModelEnvironment,
   type ReduxDeploymentsState,
@@ -106,7 +106,7 @@ const handleDiscriminatorChange = (
     formik.setFieldValue(targetRootLessListKey, patched, false);
     return;
   }
-  let newJzodSchema: JzodElement | undefined = undefined;
+  let newJzodSchema: MlElement | undefined = undefined;
   let localChosenDiscriminator: string | undefined = undefined;
   if (Array.isArray(parentKeyMap.discriminator)) {
     if (!parentKeyMap.recursivelyUnfoldedUnionSchema) {
@@ -121,7 +121,7 @@ const handleDiscriminatorChange = (
     }
     // const discriminator = parentKeyMap.discriminator[0];
     const discriminator: string | string[] = parentKeyMap.discriminator[0];
-    const currentObjectKeys = Object.keys((parentKeyMap.resolvedSchema as JzodObject).definition);
+    const currentObjectKeys = Object.keys((parentKeyMap.resolvedSchema as MlObject).definition);
     localChosenDiscriminator = !Array.isArray(discriminator)
       ? discriminator
       : parentKeyMap.discriminator.flat().find((d) =>
@@ -133,12 +133,12 @@ const handleDiscriminatorChange = (
       );
     }
     // const discriminatorTypeLocal = parentKeyMap.resolvedSchema.definition[discriminator]?.type;
-    const parentNewUnionBranch:JzodObject | undefined = parentKeyMap.recursivelyUnfoldedUnionSchema.result.find((a: JzodElement) => {
+    const parentNewUnionBranch:MlObject | undefined = parentKeyMap.recursivelyUnfoldedUnionSchema.result.find((a: MlElement) => {
       if (a.type !== "object") return false;
       const discriminatorElement = a.definition[discriminator as string];
       if (!discriminatorElement) return false;
       return true;
-    }) as JzodObject | undefined;
+    }) as MlObject | undefined;
 
     log.info("handleDiscriminatorChange found parentNewUnionBranch", parentNewUnionBranch);
 
@@ -177,7 +177,7 @@ const handleDiscriminatorChange = (
     );
     const resolveUnionResult = jzodUnionResolvedTypeForObject(
       parentKeyMap.recursivelyUnfoldedUnionSchema.result,
-      parentKeyMap.rawSchema as JzodUnion,
+      parentKeyMap.rawSchema as MlUnion,
       parentKeyMap.discriminator,
       newParentValue, // valueObject,
       parentKeyMap.valuePath,
@@ -199,21 +199,21 @@ const handleDiscriminatorChange = (
   } else {
     localChosenDiscriminator = parentKeyMap.discriminator as string;
     newJzodSchema =
-      parentKeyMap.recursivelyUnfoldedUnionSchema?.result.find((a: JzodElement) => {
+      parentKeyMap.recursivelyUnfoldedUnionSchema?.result.find((a: MlElement) => {
         if (a.type !== "object") return false;
         const discriminatorElement = a.definition[parentKeyMap.discriminator as string];
         if (!discriminatorElement) return false;
         
         if (discriminatorElement.type === "literal") {
-          return (discriminatorElement as JzodLiteral).definition === selectedValue;
+          return (discriminatorElement as MlLiteral).definition === selectedValue;
         } else if (discriminatorElement.type === "enum") {
           log.info(
             "handleDiscriminatorChange checking enum",
-            (discriminatorElement as JzodEnum).definition,
+            (discriminatorElement as MlEnum).definition,
             "for value",
             selectedValue
           );
-          return (discriminatorElement as JzodEnum).definition.includes(selectedValue);
+          return (discriminatorElement as MlEnum).definition.includes(selectedValue);
         } else if (discriminatorType === "schemaReference" && discriminatorElement.type === "schemaReference") {
           return (
             typeof discriminatorElement.definition === "object" &&

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   defaultMiroirModelEnvironment,
   jzodTypeCheck,
-  type JzodElement,
+  type MlElement,
   type MiroirModelEnvironment,
 } from "miroir-core";
 
@@ -15,7 +15,7 @@ describe("payload union resolution repro", () => {
     const branch = domainActionTemplate.definition.find(
       (b: any) => b.definition?.actionType?.definition === "prepareOpenApiDocument",
     );
-    const payloadSchema = branch.definition.payload as JzodElement;
+    const payloadSchema = branch.definition.payload as MlElement;
     console.log("payloadSchema type:", payloadSchema.type);
 
     const value = {

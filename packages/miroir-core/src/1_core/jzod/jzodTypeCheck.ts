@@ -1,16 +1,16 @@
 import { valueToJzod } from "@miroir-framework/jzod";
 
 import {
-  JzodArray,
-  JzodElement,
-  JzodEnum,
-  JzodLiteral,
-  JzodObject,
-  JzodReference,
-  JzodTuple,
-  JzodUnion,
+  MlArray,
+  MlElement,
+  MlEnum,
+  MlLiteral,
+  MlObject,
+  MlReference,
+  MlTuple,
+  MlUnion,
   KeyMapEntry,
-  type JzodRecord,
+  type MlRecord,
   type ResolvedJzodSchemaReturnType,
   type ResolvedJzodSchemaReturnTypeError,
   type ResolvedJzodSchemaReturnTypeOK,
@@ -53,7 +53,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
 
 // Implicit union branches used when rawSchema.type === "any"
 // These represent the full set of types that an "any" field can hold.
-export const ANY_IMPLICIT_UNION_BRANCHES: JzodElement[] = [
+export const ANY_IMPLICIT_UNION_BRANCHES: MlElement[] = [
   { type: "string" },
   { type: "number" },
   { type: "bigint" },
@@ -68,7 +68,7 @@ export const ANY_IMPLICIT_UNION_BRANCHES: JzodElement[] = [
         value: { "a": "enter attributes here..." }
       }
     }
-  }, definition: { type: "any" } } as JzodElement,
+  }, definition: { type: "any" } } as MlElement,
   { type: "array", tag: {
     value: {
       defaultLabel: "Array<any>",
@@ -77,17 +77,17 @@ export const ANY_IMPLICIT_UNION_BRANCHES: JzodElement[] = [
         value: ["enter elements here..."]
       }
     }
-  }, definition: { type: "any" } } as JzodElement,
+  }, definition: { type: "any" } } as MlElement,
 ];
 
-export const ANY_IMPLICIT_UNION_TYPE: JzodUnion = {
+export const ANY_IMPLICIT_UNION_TYPE: MlUnion = {
   type: "union",
   definition: ANY_IMPLICIT_UNION_BRANCHES,
 };
-export const ANY_SCHEMA: JzodElement = { type: "any" };
+export const ANY_SCHEMA: MlElement = { type: "any" };
 
 /** Schema used for record values when the record definition is an opt-in union fallback. */
-function jzodRecordElementSchema(definition: JzodElement): JzodElement {
+function jzodRecordElementSchema(definition: MlElement): MlElement {
   if (definition?.type === "union") {
     return ANY_SCHEMA;
   }
@@ -106,9 +106,9 @@ export function buildAnyObjectEntry(
   childTypePath: (string | number)[],
 ): any {
   const entry: any = {
-    // rawSchema: ANY_IMPLICIT_UNION_TYPE as JzodElement,
+    // rawSchema: ANY_IMPLICIT_UNION_TYPE as MlElement,
     rawSchema: ANY_SCHEMA,
-    resolvedSchema: valueToJzod(v) as JzodElement,
+    resolvedSchema: valueToJzod(v) as MlElement,
     valuePath: childPath,
     typePath: childTypePath,
   };
@@ -119,9 +119,9 @@ export function buildAnyObjectEntry(
       entry[k2] = buildAnyObjectEntry(v2, subPath, subTypePath);
     } else {
       entry[k2] = {
-        // rawSchema: ANY_IMPLICIT_UNION_TYPE as JzodElement,
+        // rawSchema: ANY_IMPLICIT_UNION_TYPE as MlElement,
         rawSchema: ANY_SCHEMA,
-        resolvedSchema: valueToJzod(v2) as JzodElement,
+        resolvedSchema: valueToJzod(v2) as MlElement,
         valuePath: subPath,
         typePath: subTypePath,
       };
@@ -152,9 +152,9 @@ export function buildAnySubnodeKeyMap(
       result[flatKey] = buildAnyObjectEntry(v, childPath, childTypePath);
     } else {
       result[flatKey] = {
-        // rawSchema: ANY_IMPLICIT_UNION_TYPE as JzodElement,
+        // rawSchema: ANY_IMPLICIT_UNION_TYPE as MlElement,
         rawSchema: ANY_SCHEMA,
-        resolvedSchema: valueToJzod(v) as JzodElement,
+        resolvedSchema: valueToJzod(v) as MlElement,
         valuePath: childPath,
         typePath: childTypePath,
       };
@@ -166,24 +166,24 @@ export function buildAnySubnodeKeyMap(
 // ################################################################################################
 // to be replaced by jzodObjectFlatten?
 export function resolveObjectExtendClauseAndDefinition<T extends MiroirModelEnvironment>(
-  jzodObject: JzodObject,
+  mlObject: MlObject,
   modelEnvironment: T,
-  relativeReferenceJzodContext?: { [k: string]: JzodElement }
-): JzodObject {
-  if (jzodObject.extend) {
-    const extension: JzodElement = resolveJzodSchemaReferenceInContext(
-      jzodObject.extend,
+  relativeReferenceJzodContext?: { [k: string]: MlElement }
+): MlObject {
+  if (mlObject.extend) {
+    const extension: MlElement = resolveJzodSchemaReferenceInContext(
+      mlObject.extend,
       relativeReferenceJzodContext,
       modelEnvironment
     );
     const resolvedDefinition = Object.fromEntries(
-      Object.entries(jzodObject.definition)
-        .filter((e: [string, JzodElement]) => e[1].type == "schemaReference")
+      Object.entries(mlObject.definition)
+        .filter((e: [string, MlElement]) => e[1].type == "schemaReference")
         .map((e) => [
           e[0],
           resolveJzodSchemaReferenceInContext(
-            e[1] as JzodReference,
-            { ...relativeReferenceJzodContext, ...((e[1] as JzodReference).context ?? {}) },
+            e[1] as MlReference,
+            { ...relativeReferenceJzodContext, ...((e[1] as MlReference).context ?? {}) },
             modelEnvironment,
           ),
         ]),
@@ -193,14 +193,14 @@ export function resolveObjectExtendClauseAndDefinition<T extends MiroirModelEnvi
         type: "object",
         definition: {
           ...extension.definition,
-          ...jzodObject.definition,
+          ...mlObject.definition,
           ...resolvedDefinition,
         },
       };
     } else {
       throw new Error(
         "resolveObjectExtendClauseAndDefinition object extend clause schema " +
-          JSON.stringify(jzodObject) +
+          JSON.stringify(mlObject) +
           " is not an object " +
           JSON.stringify(extension)
       );
@@ -213,7 +213,7 @@ export function resolveObjectExtendClauseAndDefinition<T extends MiroirModelEnvi
       // })
     }
   } else {
-    return jzodObject;
+    return mlObject;
   }
 }
 
@@ -226,7 +226,7 @@ function isValidUUID(uuid: string): boolean {
 
 // ################################################################################################
 /**
- * returns an array of JzodObject schemas by recursively unrolling the unions and references in @param concreteUnrolledJzodSchemas.
+ * returns an array of MlObject schemas by recursively unrolling the unions and references in @param concreteUnrolledJzodSchemas.
  * TODO: WHAT ABOUT RECORD SCHEMAS?
  * @param concreteUnrolledJzodSchemas 
  * @param miroirFundamentalJzodSchema 
@@ -236,48 +236,48 @@ function isValidUUID(uuid: string): boolean {
  * @returns 
  */
 export function unionObjectChoices<T extends MiroirModelEnvironment> (
-  concreteUnrolledJzodSchemas: JzodElement[],
+  concreteUnrolledJzodSchemas: MlElement[],
   modelEnvironment: T,
-  relativeReferenceJzodContext: { [k: string]: JzodElement }
-): (JzodObject | JzodRecord)[] {
+  relativeReferenceJzodContext: { [k: string]: MlElement }
+): (MlObject | MlRecord)[] {
   return (
-    concreteUnrolledJzodSchemas.filter((j) => j.type == "record") as (JzodObject | JzodRecord)[]
+    concreteUnrolledJzodSchemas.filter((j) => j.type == "record") as (MlObject | MlRecord)[]
   ).concat(
-    (concreteUnrolledJzodSchemas.filter((j) => j.type == "object") as JzodObject[]).map(
-      (k: JzodObject): JzodObject =>
+    (concreteUnrolledJzodSchemas.filter((j) => j.type == "object") as MlObject[]).map(
+      (k: MlObject): MlObject =>
         jzodObjectFlatten(k, modelEnvironment, relativeReferenceJzodContext)
-    ) as JzodObject[],
+    ) as MlObject[],
     (
       concreteUnrolledJzodSchemas.filter(
-        (j: JzodElement): boolean => j.type == "union"
-      ) as JzodUnion[]
+        (j: MlElement): boolean => j.type == "union"
+      ) as MlUnion[]
     ).flatMap(
       // for sub-unions, return the sub-objects clauses, with their extend clauses resolved
-      (j: JzodUnion): JzodObject[] =>
-        (j.definition.filter((k: JzodElement) => k.type == "object") as JzodObject[]).map(
-          (k: JzodObject): JzodObject =>
+      (j: MlUnion): MlObject[] =>
+        (j.definition.filter((k: MlElement) => k.type == "object") as MlObject[]).map(
+          (k: MlObject): MlObject =>
             jzodObjectFlatten(k, modelEnvironment, relativeReferenceJzodContext)
-        ) as JzodObject[]
+        ) as MlObject[]
     ),
     (
-      concreteUnrolledJzodSchemas.filter((j: JzodElement) => j.type == "union") as JzodUnion[]
+      concreteUnrolledJzodSchemas.filter((j: MlElement) => j.type == "union") as MlUnion[]
     ).flatMap(
       // if schemaReferences are found, we resolve them, squashing the extend clause for objects
-      (j: JzodUnion) =>
+      (j: MlUnion) =>
         (
-          (j.definition.filter((k: JzodElement) => k.type == "schemaReference") as JzodReference[])
-            .map((k: JzodReference) =>
+          (j.definition.filter((k: MlElement) => k.type == "schemaReference") as MlReference[])
+            .map((k: MlReference) =>
               resolveJzodSchemaReferenceInContext(
                 k,
                 { ...relativeReferenceJzodContext, ...k.context },
                 modelEnvironment
               )
             )
-            .filter((j) => j.type == "object") as JzodObject[]
+            .filter((j) => j.type == "object") as MlObject[]
         ).map(
-          (k: JzodObject): JzodObject =>
+          (k: MlObject): MlObject =>
             jzodObjectFlatten(k, modelEnvironment, relativeReferenceJzodContext)
-        ) as JzodObject[]
+        ) as MlObject[]
     )
   );
 }
@@ -285,7 +285,7 @@ export function unionObjectChoices<T extends MiroirModelEnvironment> (
 
 // ################################################################################################
 /**
- * returns an array of JzodArray and JzodTuple schemas by recursively unrolling the unions and references in @param concreteUnrolledJzodSchemas.
+ * returns an array of MlArray and MlTuple schemas by recursively unrolling the unions and references in @param concreteUnrolledJzodSchemas.
  * @param concreteUnrolledJzodSchemas 
  * @param miroirFundamentalJzodSchema 
  * @param currentModel 
@@ -294,34 +294,34 @@ export function unionObjectChoices<T extends MiroirModelEnvironment> (
  * @returns 
  */
 export function unionArrayChoices<T extends MiroirModelEnvironment> (
-  concreteUnrolledJzodSchemas: JzodElement[],
+  concreteUnrolledJzodSchemas: MlElement[],
   modelEnvironment: T,
-  relativeReferenceJzodContext: { [k: string]: JzodElement }
-): (JzodArray | JzodTuple)[] {
+  relativeReferenceJzodContext: { [k: string]: MlElement }
+): (MlArray | MlTuple)[] {
   return (
     concreteUnrolledJzodSchemas.filter(
-      (j: JzodElement) => j.type == "array" || j.type == "tuple"
-    ) as (JzodArray | JzodTuple)[]
+      (j: MlElement) => j.type == "array" || j.type == "tuple"
+    ) as (MlArray | MlTuple)[]
   ).concat(
     (
       concreteUnrolledJzodSchemas.filter(
-        (j: JzodElement): boolean => j.type == "union"
-      ) as JzodUnion[]
+        (j: MlElement): boolean => j.type == "union"
+      ) as MlUnion[]
     ).flatMap(
       // for sub-unions, return the sub-objects clauses, with their extend clauses resolved
-      (j: JzodUnion): (JzodArray | JzodTuple)[] =>
-        j.definition.filter((k: JzodElement) => k.type == "array" || k.type == "tuple") as (
-          | JzodArray
-          | JzodTuple
+      (j: MlUnion): (MlArray | MlTuple)[] =>
+        j.definition.filter((k: MlElement) => k.type == "array" || k.type == "tuple") as (
+          | MlArray
+          | MlTuple
         )[]
     ),
     (
-      concreteUnrolledJzodSchemas.filter((j: JzodElement) => j.type == "union") as JzodUnion[]
+      concreteUnrolledJzodSchemas.filter((j: MlElement) => j.type == "union") as MlUnion[]
     ).flatMap(
       // if schemaReferences are found, we resolve them, squashing the extend clause for objects
-      (j: JzodUnion) =>
-        (j.definition.filter((k: JzodElement) => k.type == "schemaReference") as JzodReference[])
-          .map((k: JzodReference) => {
+      (j: MlUnion) =>
+        (j.definition.filter((k: MlElement) => k.type == "schemaReference") as MlReference[])
+          .map((k: MlReference) => {
             const result = recursiveResolveJzodSchemaReferenceInContext(
               k,
               { ...relativeReferenceJzodContext, ...k.context },
@@ -330,8 +330,8 @@ export function unionArrayChoices<T extends MiroirModelEnvironment> (
             return result;
           }
           )
-          .filter((j) => j.type == "array" || j.type == "tuple") as (JzodArray | JzodTuple)[]
-    ) as (JzodArray | JzodTuple)[]
+          .filter((j) => j.type == "array" || j.type == "tuple") as (MlArray | MlTuple)[]
+    ) as (MlArray | MlTuple)[]
   );
 }
 ;
@@ -346,14 +346,14 @@ export function unionArrayChoices<T extends MiroirModelEnvironment> (
 // #####################################################################################################
 // #####################################################################################################
 export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironment>(
-  objectUnionChoices: JzodObject[],
-  effectiveRawSchema: JzodUnion,
+  objectUnionChoices: MlObject[],
+  effectiveRawSchema: MlUnion,
   discriminator: string | (string | string[])[] | undefined,
   valueObject: Record<string,any>,
   valueObjectPath: (string | number)[],
   typePath: (string | number)[], // for logging purposes only
   modelEnvironment: T,
-  relativeReferenceJzodContext: {[k:string]: JzodElement},
+  relativeReferenceJzodContext: {[k:string]: MlElement},
 ): SelectUnionBranchFromDiscriminatorReturnType {
   // Untagged object unions (no discriminator): match by key inclusion — every
   // value key must exist on the branch (issue #267 D1 key-union / XOR).
@@ -368,7 +368,7 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
   // "flatten" object hierarchy, if there is an extend clause, we resolve it
   const flatteningResults = objectUnionChoices.map(
     (jzodObjectSchema) => {
-      let extendedJzodSchema: JzodObject
+      let extendedJzodSchema: MlObject
       if (jzodObjectSchema.extend) {
         const extension = resolveJzodSchemaReferenceInContext(
           jzodObjectSchema.extend,
@@ -443,7 +443,7 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
   });
 
   // Extract successful results
-  const flattenedUnionChoices:JzodObject[] = flatteningResults.map(r => (r as any).result) as JzodObject[];
+  const flattenedUnionChoices:MlObject[] = flatteningResults.map(r => (r as any).result) as MlObject[];
   // if (discriminatorValues.includes("getFromParameters")) {
   //   log.info(
   //     "selectUnionBranchFromDiscriminator called",
@@ -473,11 +473,11 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
   const flatDiscriminators: string [] = discriminators.flatMap(d => d);
   let i = 0;
   let chosenDiscriminator = [];
-  let filteredFlattenedUnionChoices: JzodObject[] = flattenedUnionChoices;
+  let filteredFlattenedUnionChoices: MlObject[] = flattenedUnionChoices;
   let possibleDiscriminators: (string | undefined)[][] = [];
   if (!discriminators || discriminators.length == 0) {
     // no discriminator, proceed by eliminating all choices that do not match the valueObject
-    filteredFlattenedUnionChoices = flattenedUnionChoices.filter((objectChoice: JzodObject) => {
+    filteredFlattenedUnionChoices = flattenedUnionChoices.filter((objectChoice: MlObject) => {
       const objectChoiceKeys = Object.keys(objectChoice.definition);
       return Object.keys(valueObject).every(
         (valueObjectKey) =>
@@ -491,7 +491,7 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
       valueObject[d] !== undefined
     );
     if (!hasDiscriminatorValues) {
-      const choiceWithNoDiscriminator: JzodObject[] = flattenedUnionChoices.filter(
+      const choiceWithNoDiscriminator: MlObject[] = flattenedUnionChoices.filter(
         (objectChoice: any) => // TODO: typing!
           Object.keys(objectChoice.definition).every(
             (key) => !flatDiscriminators.includes(key) // TODO: invert loop, will be faster!
@@ -545,12 +545,12 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
           return (
             a.type == "object" &&
             a.definition[localChosenDiscriminator]?.type == "literal" &&
-            (a.definition[localChosenDiscriminator] as JzodLiteral).definition == valueObject[localChosenDiscriminator]
+            (a.definition[localChosenDiscriminator] as MlLiteral).definition == valueObject[localChosenDiscriminator]
           ) ||
           (
             a.type == "object" &&
             a.definition[localChosenDiscriminator]?.type == "enum" &&
-            (a.definition[localChosenDiscriminator] as JzodEnum).definition.includes(valueObject[localChosenDiscriminator])
+            (a.definition[localChosenDiscriminator] as MlEnum).definition.includes(valueObject[localChosenDiscriminator])
           )
         }
       );
@@ -633,8 +633,8 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
   //   "chosen discriminator=",
   //   JSON.stringify(chosenDiscriminator, null, 2),
   // );
-  const currentDiscriminatedObjectJzodSchema: JzodObject =
-    filteredFlattenedUnionChoices[0] as JzodObject;
+  const currentDiscriminatedObjectJzodSchema: MlObject =
+    filteredFlattenedUnionChoices[0] as MlObject;
   return {
     status: "ok",
     currentDiscriminatedObjectJzodSchema,
@@ -655,14 +655,14 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
 // ################################################################################################
 // ################################################################################################
 export function jzodUnionResolvedTypeForArray<T extends MiroirModelEnvironment>(
-  concreteUnrolledJzodSchemas: JzodElement[],
-  effectiveRawSchema: JzodUnion,
+  concreteUnrolledJzodSchemas: MlElement[],
+  effectiveRawSchema: MlUnion,
   discriminator: string | (string | string[])[] | undefined,
   valueArray: any[],
   currentValuePath: (string | number)[],
   currentTypePath: (string | number)[],
   modelEnvironment: T,
-  relativeReferenceJzodContext: { [k: string]: JzodElement }
+  relativeReferenceJzodContext: { [k: string]: MlElement }
 ): JzodUnionResolvedTypeForArrayReturnTypeOK
   | JzodUnionResolvedTypeReturnTypeError
  {
@@ -710,18 +710,18 @@ export function jzodUnionResolvedTypeForArray<T extends MiroirModelEnvironment>(
 
 // ################################################################################################
 export function jzodUnionResolvedTypeForObject<T extends MiroirModelEnvironment>(
-  concreteUnrolledJzodSchemas: JzodElement[],
-  effectiveRawSchema: JzodUnion,
+  concreteUnrolledJzodSchemas: MlElement[],
+  effectiveRawSchema: MlUnion,
   discriminator: string | (string | string[])[] | undefined,
   valueObject: Record<string, any>,
   currentValuePath: (string | number)[],
   currentTypePath: (string | number)[],
   modelEnvironment: T,
-  relativeReferenceJzodContext: { [k: string]: JzodElement }
+  relativeReferenceJzodContext: { [k: string]: MlElement }
 ): JzodUnionResolvedTypeForObjectReturnTypeOK
   | JzodUnionResolvedTypeReturnTypeError
  {
-  const objectUnionChoices: JzodObject[] = unionObjectChoices(
+  const objectUnionChoices: MlObject[] = unionObjectChoices(
     concreteUnrolledJzodSchemas,
     modelEnvironment,
     relativeReferenceJzodContext
@@ -843,14 +843,14 @@ export function jzodUnionResolvedTypeForObject<T extends MiroirModelEnvironment>
 // #####################################################################################################
 // #####################################################################################################
 /**
- * jzodTypeCheck is the main function to check if a valueObject matches a JzodElement schema.
+ * jzodTypeCheck is the main function to check if a valueObject matches a MlElement schema.
  * It recursively checks the schema and returns a ResolvedJzodSchemaReturnType.
  * 
- * Basically, it removes the unions and references from the JzodElement schema,
+ * Basically, it removes the unions and references from the MlElement schema,
  * getting a node-for-node representation of the schema,
  * and checks if the valueObject matches the schema.
  * 
- * @param effectiveSchema - The JzodElement schema to check against.
+ * @param effectiveSchema - The MlElement schema to check against.
  * @param valueObject - The value object to check.
  * @param currentValuePath - The current path in the value object.
  * @param currentTypePath - The current path in the type schema.
@@ -860,12 +860,12 @@ export function jzodUnionResolvedTypeForObject<T extends MiroirModelEnvironment>
  * @param relativeReferenceJzodContext - Context for resolving relative references in Jzod schemas.
  */
 export function jzodTypeCheck(
-  mlSchema: JzodElement,
+  mlSchema: MlElement,
   valueObject: any,
   currentValuePath: (string | number)[],
   currentTypePath: (string | number)[],
   modelEnvironment: MiroirModelEnvironment,
-  relativeReferenceJzodContext: {[k:string]: JzodElement},
+  relativeReferenceJzodContext: {[k:string]: MlElement},
   // 
   currentDefaultValue?: any,
   reduxDeploymentsState: ReduxDeploymentsState | undefined = undefined,
@@ -905,7 +905,7 @@ export function jzodTypeCheck(
 
     const resolvedSchema =
       mlSchema.type === "any"
-        ? (valueToJzod(valueObject) as JzodElement)
+        ? (valueToJzod(valueObject) as MlElement)
         : mlSchema;
 
     // If schema is optional, nullable, any, or undefined — accept null/undefined
@@ -928,7 +928,7 @@ export function jzodTypeCheck(
   }
 
 
-  let effectiveSchemaOrError: JzodElement | ResolveConditionalSchemaError =
+  let effectiveSchemaOrError: MlElement | ResolveConditionalSchemaError =
     currentDefaultValue &&
     currentValuePath &&
     reduxDeploymentsState?
@@ -967,7 +967,7 @@ export function jzodTypeCheck(
       },
     };
   }
-  const effectiveRawSchema: JzodElement = effectiveSchemaOrError;
+  const effectiveRawSchema: MlElement = effectiveSchemaOrError;
   
   switch (effectiveRawSchema?.type) {
     case "schemaReference": {
@@ -1008,7 +1008,7 @@ export function jzodTypeCheck(
       // reference whose context comes from an ancestor (e.g. `{relativePath:
       // "miroirTestForReactComponent"}` below the MiroirTest mlSchema's context) must carry that
       // context in its keyMap entry to be resolvable there.
-      const keyMapRawSchema: JzodReference =
+      const keyMapRawSchema: MlReference =
         !effectiveRawSchema.definition?.absolutePath && Object.keys(newContext).length > 0
           ? { ...effectiveRawSchema, context: newContext }
           : effectiveRawSchema;
@@ -1054,7 +1054,7 @@ export function jzodTypeCheck(
         };
       }
 
-      const jzodObjectFlattenedSchema: JzodObject = jzodObjectFlatten(
+      const jzodObjectFlattenedSchema: MlObject = jzodObjectFlatten(
         effectiveRawSchema,
         modelEnvironment,
         relativeReferenceJzodContext
@@ -1091,8 +1091,8 @@ export function jzodTypeCheck(
                 rawSchema: effectiveRawSchema,
                 resolvedSchema: {
                   type: "any",
-                } as JzodElement,
-                // resolvedSchema: valueToJzod(e[1]) as JzodElement,
+                } as MlElement,
+                // resolvedSchema: valueToJzod(e[1]) as MlElement,
               },
             ];
           }
@@ -1139,7 +1139,7 @@ export function jzodTypeCheck(
       const missingMandatoryAttributes = Object.entries(
         jzodObjectFlattenedSchema.definition
       ).filter(
-        (e: [string, JzodElement]) =>
+        (e: [string, MlElement]) =>
           e[1].optional !== true &&
           e[1].nullable !== true &&
           !Object.keys(valueObject).includes(e[0])
@@ -1158,7 +1158,7 @@ export function jzodTypeCheck(
           rawSchema: effectiveRawSchema,
         };
       }
-      const resultResolvedJzodSchema: JzodObject = {
+      const resultResolvedJzodSchema: MlObject = {
         ...jzodObjectFlattenedSchema,
         definition: Object.fromEntries(
           resolvedObjectEntries.map((e) => [
@@ -1166,7 +1166,7 @@ export function jzodTypeCheck(
             (e[1] as ResolvedJzodSchemaReturnTypeOK).resolvedSchema,
           ])
         ),
-      } as JzodObject;
+      } as MlObject;
       const objecAttributeskeyMap: { [k: string]: KeyMapEntry } = (resolvedObjectEntries
       .filter((e) => e[1].status === "ok")  as [string, ResolvedJzodSchemaReturnTypeOK][])
       .filter((e) => e[1].keyMap !== undefined)
@@ -1182,7 +1182,7 @@ export function jzodTypeCheck(
           //   `jzodTypeCheck object schema keyMap should only contain "ok" entries, but found error for key "${key}": ${value.error}`
           // );
         },
-        // {} as { [k: string]: { rawSchema: JzodElement; resolvedSchema: JzodElement } }
+        // {} as { [k: string]: { rawSchema: MlElement; resolvedSchema: MlElement } }
         {} as { [k: string]: KeyMapEntry }
       );
 
@@ -1209,7 +1209,7 @@ export function jzodTypeCheck(
     }
     case "union": {
       const recursivelyUnfoldedUnionSchema = jzodUnion_recursivelyUnfold(
-        effectiveRawSchema as JzodUnion,
+        effectiveRawSchema as MlUnion,
         new Set(),
         modelEnvironment,
         relativeReferenceJzodContext
@@ -1234,7 +1234,7 @@ export function jzodTypeCheck(
           rawSchema: effectiveRawSchema,
         };
       }
-      // const concreteUnfoldedJzodSchemas: JzodElement[] = recursivelyUnfoldedUnionSchema.result;
+      // const concreteUnfoldedJzodSchemas: MlElement[] = recursivelyUnfoldedUnionSchema.result;
 
       // log.info(
       //   "jzodTypeCheck called for union",
@@ -1443,10 +1443,10 @@ export function jzodTypeCheck(
             //     rawSchema: effectiveRawSchema,
             //   };
             // }
-            const resolvedSchema: JzodElement = {
+            const resolvedSchema: MlElement = {
               ...effectiveRawSchema,
               // type: "array",
-              ...(concreteArraySchema.resolvedSchema as JzodTuple),
+              ...(concreteArraySchema.resolvedSchema as MlTuple),
             };
 
             return {
@@ -1678,7 +1678,7 @@ export function jzodTypeCheck(
           rawSchema: effectiveRawSchema,
         };
       }
-      const resolvedSchema: JzodElement = {
+      const resolvedSchema: MlElement = {
         ...effectiveRawSchema,
         type: "object",
         definition: Object.fromEntries(
@@ -1707,7 +1707,7 @@ export function jzodTypeCheck(
           `jzodTypeCheck record schema keyMap should only contain "ok" entries,
             but found error for key "${key}": ${value}`
         );
-      // }, {} as { [k: string]: { rawSchema: JzodElement; resolvedSchema: JzodElement } });
+      // }, {} as { [k: string]: { rawSchema: MlElement; resolvedSchema: MlElement } });
       }, {} as { [k: string]: KeyMapEntry });
       // log.info(
       //   "jzodTypeCheck recordEntrieskeyMap",
@@ -1821,7 +1821,7 @@ export function jzodTypeCheck(
       //   JSON.stringify(valueObject)
       // }
       const resolvedInnerSchemas: ResolvedJzodSchemaReturnType[] = effectiveRawSchema.definition.map(
-        (e: JzodElement, index: number) => {
+        (e: MlElement, index: number) => {
           const resultSchemaTmp = jzodTypeCheck(
             e,
             valueObject[index],
@@ -1860,7 +1860,7 @@ export function jzodTypeCheck(
           rawSchema: effectiveRawSchema,
         };
       }
-      const resolvedSchema: JzodElement = {
+      const resolvedSchema: MlElement = {
         ...effectiveRawSchema,
         type: "tuple",
         definition: resolvedInnerSchemas.map(
@@ -1886,7 +1886,7 @@ export function jzodTypeCheck(
             throw new Error(
               `jzodTypeCheck tuple schema keyMap should only contain "ok" entries, but found error for index ${index}: ${e.error}`
             );
-          // }, {} as { [k: string]: { rawSchema: JzodElement; resolvedSchema: JzodElement } }),
+          // }, {} as { [k: string]: { rawSchema: MlElement; resolvedSchema: MlElement } }),
           }, {} as { [k: string]: KeyMapEntry }),
           [currentValuePath.join(".")]: {
             // ...((resolvedInnerSchemas.length > 0 && resolvedInnerSchemas[0].status == "ok"
@@ -1960,7 +1960,7 @@ export function jzodTypeCheck(
           rawSchema: effectiveRawSchema,
         };
       }
-      const resolvedSchema: JzodElement = {
+      const resolvedSchema: MlElement = {
         ...effectiveRawSchema,
         type: "tuple",
         definition: subSchemas.map((s) => (s as ResolvedJzodSchemaReturnTypeOK).resolvedSchema), // TODO: this is a shortcut assuming that all items in the array are of the same type, which is not always true
@@ -1986,7 +1986,7 @@ export function jzodTypeCheck(
               };
             }
             return acc;
-          // }, {} as { [k: string]: { rawSchema: JzodElement; resolvedSchema: JzodElement } }),
+          // }, {} as { [k: string]: { rawSchema: MlElement; resolvedSchema: MlElement } }),
           }, {} as { [k: string]: KeyMapEntry }),
           [currentValuePath.join(".")]: {
             ...((subSchemas.length > 0 && subSchemas[0].status == "ok"
@@ -2003,7 +2003,7 @@ export function jzodTypeCheck(
     }
     // plain Attributes
     case "any": {
-      const resolvedSchema = valueToJzod(valueObject) as JzodElement;
+      const resolvedSchema = valueToJzod(valueObject) as MlElement;
       const anySubnodeKeyMap: Record<string, KeyMapEntry> =
         typeof valueObject === "object" && valueObject !== null && !Array.isArray(valueObject)
           ? buildAnySubnodeKeyMap(valueObject, currentValuePath, currentTypePath)
@@ -2264,7 +2264,7 @@ export function jzodTypeCheck(
             resolvedSchema: effectiveRawSchema,
             valuePath: currentValuePath,
             typePath: currentTypePath,
-            // resolvedSchema: valueToJzod(valueObject) as JzodElement
+            // resolvedSchema: valueToJzod(valueObject) as MlElement
           }, // map the current value path to the resolved schema
         },
       };

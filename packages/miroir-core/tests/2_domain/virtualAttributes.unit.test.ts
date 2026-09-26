@@ -15,7 +15,7 @@ function jzodTagValueDefinition(): JzodTagValueDefinition {
   const bootstrap = miroirJzodSchemaBootstrap as {
     definition: {
       context: {
-        jzodBaseObject: {
+        mlBaseObject: {
           definition: {
             tag: { definition: { value: { definition: JzodTagValueDefinition } } };
           };
@@ -23,7 +23,7 @@ function jzodTagValueDefinition(): JzodTagValueDefinition {
       };
     };
   };
-  return bootstrap.definition.context.jzodBaseObject.definition.tag.definition.value.definition;
+  return bootstrap.definition.context.mlBaseObject.definition.tag.definition.value.definition;
 }
 
 describe.skipIf(!shouldRun)("virtual attributes — Jzod tag and Book citation", () => {

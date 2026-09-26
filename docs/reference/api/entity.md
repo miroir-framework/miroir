@@ -46,7 +46,7 @@ interface Entity {
   };
   scope?: "versioning" | "modeling";          // Meta-model only, see Versioning reference
   logicalDataModel?: "entity" | "manyToMany"; // Meta-model only, see Versioning reference
-  mlSchema: JzodObject;            // Present-model structure of instances (authoritative, required)
+  mlSchema: MlObject;            // Present-model structure of instances (authoritative, required)
 }
 ```
 
@@ -57,7 +57,7 @@ interface Entity {
 | `uuid` | string (UUID) | ✅ Yes | Unique identifier for this entity |
 | `parentUuid` | string (UUID) | ✅ Yes | The Entity meta-entity `16dbfe28-e1d7-4f20-9ba4-c1a9873202ad` (every Entity, including `Entity` itself, is an instance of Entity) |
 | `name` | string | ✅ Yes | Human-readable name (e.g., "Book", "Author") |
-| `mlSchema` | JzodObject | ✅ Yes | Structure of the instances of this Entity, in Jzod / ML format. Application Entities usually `extend` `entityDefinitionRoot` — see [Jzod / ML Schema](#jzod--ml-schema-of-an-entity) |
+| `mlSchema` | MlObject | ✅ Yes | Structure of the instances of this Entity, in Jzod / ML format. Application Entities usually `extend` `entityDefinitionRoot` — see [Jzod / ML Schema](#jzod--ml-schema-of-an-entity) |
 | `description` | string | No | Optional documentation |
 | `conceptLevel` | `"MetaModel"` \| `"Model"` \| `"Data"` \| `"External"` | No | Level in meta-model hierarchy. `External` marks Entities whose instances live outside Miroir-managed storage (requires `externalDataSource`) |
 | `selfApplication` | string (UUID) | No | The SelfApplication this Entity belongs to |

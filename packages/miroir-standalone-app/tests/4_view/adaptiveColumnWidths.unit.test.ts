@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-import { JzodElement } from "miroir-core";
+import { MlElement } from "miroir-core";
 
 import {
   calculateAdaptiveColumnWidths,
@@ -25,7 +25,7 @@ describe("calculateAdaptiveColumnWidths", () => {
     { field: "meta", headerName: "Meta" },
   ];
 
-  const baseJzodSchema: Record<string, JzodElement> = {
+  const baseJzodSchema: Record<string, MlElement> = {
     uuid: { type: "string" },
     name: { type: "string" },
     age: { type: "number" },
@@ -235,7 +235,7 @@ describe("calculateAdaptiveColumnWidths", () => {
     const columnDefs = [
       { field: "fk", headerName: "FK", cellRendererParams: { isFK: true, entityUuid: "entity1" } },
     ];
-    const mlSchema: Record<string, JzodElement> = {
+    const mlSchema: Record<string, MlElement> = {
       fk: { type: "string", tag: { value: { foreignKeyParams: {targetEntity: "entity1"} } } },
     };
     const rows: TableComponentRow[] = [

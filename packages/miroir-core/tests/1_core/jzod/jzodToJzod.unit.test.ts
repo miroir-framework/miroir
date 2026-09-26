@@ -2,18 +2,18 @@ import * as vitest from 'vitest';
 import { describe, expect, it } from "vitest";
 
 import {
-  JzodElement,
-  JzodObject,
-  JzodReference,
+  MlElement,
+  MlObject,
+  MlReference,
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 // import { JzodReferenceResolutionFunction } from "@miroir-framework/jzod";
 import { applyLimitedCarryOnSchema } from "../../../src/1_core/jzod/JzodToJzod_CarryOn";
 import { cleanupObject } from "../../../src/tools";
 
-type JzodReferenceResolutionFunction = (schema: JzodReference) => JzodElement | undefined;
+type JzodReferenceResolutionFunction = (schema: MlReference) => MlElement | undefined;
 
-function fullResolveJzodReference (store: Record<string, JzodReference>, ref: JzodReference): JzodElement | undefined {
+function fullResolveJzodReference (store: Record<string, MlReference>, ref: MlReference): MlElement | undefined {
   const resolvedAbsolutePath = store[ref.definition?.absolutePath ?? ""];
   return resolvedAbsolutePath && resolvedAbsolutePath.context
     ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
@@ -23,14 +23,14 @@ function fullResolveJzodReference (store: Record<string, JzodReference>, ref: Jz
 interface TestCase {
   name: string,
   label?: string,
-  testJzodSchema: JzodElement,
-  mlElementTemplateJzodSchema: JzodElement,
+  testJzodSchema: MlElement,
+  mlElementTemplateJzodSchema: MlElement,
   mlElementTemplateSchemaDiscriminator?:undefined | string | string[],
   alwaysPropagate?: boolean,
-  expectedReferences: Record<string,JzodElement>,
-  expectedResult: {schema: JzodElement, hasBeenApplied: boolean},
+  expectedReferences: Record<string,MlElement>,
+  expectedResult: {schema: MlElement, hasBeenApplied: boolean},
   resolveJzodReference?: JzodReferenceResolutionFunction, // non-converted reference lookup
-  convertedReferences?: Record<string, JzodElement>, // converted reference lookup
+  convertedReferences?: Record<string, MlElement>, // converted reference lookup
 }
 function runTest(
   t: TestCase
@@ -555,8 +555,8 @@ describe(
                 c: { type: "number" },
               },
             },
-            resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
-              const store: Record<string, JzodReference> = {
+            resolveJzodReference: (ref: MlReference): MlElement | undefined => {
+              const store: Record<string, MlReference> = {
                 "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                   type: "schemaReference",
                   context: {
@@ -623,8 +623,8 @@ describe(
                 c: { type: "number" },
               },
             },
-            resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
-              const store: Record<string, JzodReference> = {
+            resolveJzodReference: (ref: MlReference): MlElement | undefined => {
+              const store: Record<string, MlReference> = {
                 "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                   type: "schemaReference",
                   context: {
@@ -860,8 +860,8 @@ describe(
                 c: { type: "number" },
               },
             },
-            resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
-              const store: Record<string, JzodReference> = {
+            resolveJzodReference: (ref: MlReference): MlElement | undefined => {
+              const store: Record<string, MlReference> = {
                 "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                   type: "schemaReference",
                   context: {
@@ -1004,8 +1004,8 @@ describe(
                 c: { type: "number" },
               },
             },
-            resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
-              const store: Record<string, JzodReference> = {
+            resolveJzodReference: (ref: MlReference): MlElement | undefined => {
+              const store: Record<string, MlReference> = {
                 "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                   type: "schemaReference",
                   tag: { value: { canBeTemplate: true } },
@@ -1172,8 +1172,8 @@ describe(
                 c: { type: "number" },
               },
             },
-            resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
-              const store: Record<string, JzodReference> = {
+            resolveJzodReference: (ref: MlReference): MlElement | undefined => {
+              const store: Record<string, MlReference> = {
                 "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                   type: "schemaReference",
                   context: {
@@ -1383,8 +1383,8 @@ describe(
                 c: { type: "number" },
               },
             },
-            resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
-              const store: Record<string, JzodReference> = {
+            resolveJzodReference: (ref: MlReference): MlElement | undefined => {
+              const store: Record<string, MlReference> = {
                 "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                   type: "schemaReference",
                   context: {
@@ -1467,7 +1467,7 @@ describe(
                 c: { type: "number" },
               },
             },
-            resolveJzodReference: (ref: JzodReference): JzodElement | undefined => undefined,
+            resolveJzodReference: (ref: MlReference): MlElement | undefined => undefined,
             expectedResult: {
               schema: {
                 type: "record",
@@ -1520,8 +1520,8 @@ describe(
               },
             },
             mlElementTemplateSchemaDiscriminator: "type",
-            resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
-              const store: Record<string, JzodReference> = {
+            resolveJzodReference: (ref: MlReference): MlElement | undefined => {
+              const store: Record<string, MlReference> = {
                 "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                   type: "schemaReference",
                   context: {
@@ -1608,8 +1608,8 @@ describe(
             },
             mlElementTemplateSchemaDiscriminator: "type",
             alwaysPropagate: true,
-            resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
-              const store: Record<string, JzodReference> = {
+            resolveJzodReference: (ref: MlReference): MlElement | undefined => {
+              const store: Record<string, MlReference> = {
                 "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                   type: "schemaReference",
                   context: {
@@ -1715,8 +1715,8 @@ describe(
               },
             },
             mlElementTemplateSchemaDiscriminator: "type",
-            resolveJzodReference: (ref: JzodReference): JzodElement | undefined => {
-              const store: Record<string, JzodReference> = {
+            resolveJzodReference: (ref: MlReference): MlElement | undefined => {
+              const store: Record<string, MlReference> = {
                 "1e8dab4b-65a3-4686-922e-ce89a2d62aa9": {
                   type: "schemaReference",
                   context: {

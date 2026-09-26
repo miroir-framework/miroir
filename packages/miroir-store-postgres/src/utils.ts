@@ -4,8 +4,8 @@ import {
   Entity,
   entityMLSchema,
   isVirtualAttribute,
-  JzodElement,
-  JzodObject,
+  MlElement,
+  MlObject,
   LoggerInterface,
   MiroirLoggerFactory,
 } from "miroir-core";
@@ -31,7 +31,7 @@ export type EntityUuidIndexedSequelizeModel = {
   };
 };
 
-function resolveMlSchemaForSequelize(entity: Entity): JzodObject {
+function resolveMlSchemaForSequelize(entity: Entity): MlObject {
   if (!entity.mlSchema) {
     return { type: "object", definition: {} };
   }
@@ -85,7 +85,7 @@ export function fromMiroirPresentModelToSequelizeEntityDefinition(
   const result = Object.fromEntries(
     Object.entries(jzodObjectAttributes)
       .filter(([, schema]) => !isVirtualAttribute(schema))
-      .map((a: [string, JzodElement]) => {
+      .map((a: [string, MlElement]) => {
       return [
         [a[0]],
         {
@@ -127,7 +127,7 @@ export function getOptionalNonNullableAttributes(
   const mlSchema = resolveMlSchemaForSequelize(entity);
   return Object.entries(mlSchema.definition)
     .filter(([, attrDef]) => {
-      const attr = attrDef as JzodElement & { optional?: boolean; nullable?: boolean };
+      const attr = attrDef as MlElement & { optional?: boolean; nullable?: boolean };
       // Virtual attributes are not columns; if a leftover NULL appears on read, drop it (D4).
       if (isVirtualAttribute(attr)) {
         return true;
@@ -162,7 +162,7 @@ export function stripNullOptionalAttributes(instance: Record<string, any>, optio
 }
 // // ##############################################################################################
 // export function fromMiroirAttributeDefinitionToSequelizeModelAttributeColumnOptions(
-//   attributeDefinition: JzodElement
+//   attributeDefinition: MlElement
 // ): {dataType: DataTypes.AbstractDataTypeConstructor, options:ModelAttributeColumnOptions} {
 
 //   const dataType =  dataTypesMapping[attributeDefinition?.definition as string]

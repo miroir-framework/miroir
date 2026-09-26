@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { JzodElement, JzodObject, KeyMapEntry } from 'miroir-core';
+import { MlElement, MlObject, KeyMapEntry } from 'miroir-core';
 import { getItemsOrder } from '../../src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditorHooks';
 
 // Helper to create a KeyMapEntry whose resolvedReferenceSchemaInContext marks a record type.
@@ -7,14 +7,14 @@ import { getItemsOrder } from '../../src/miroir-fwk/4_view/components/ValueObjec
 // but is not yet reflected in the TypeScript interface, so we cast.
 const makeRecordKeyMapEntry = (): KeyMapEntry =>
   ({
-    rawSchema: { type: 'string' } as JzodElement,
-    resolvedSchema: { type: 'string' } as JzodElement,
-    resolvedReferenceSchemaInContext: { type: 'record', definition: { type: 'string' } } as JzodElement,
+    rawSchema: { type: 'string' } as MlElement,
+    resolvedSchema: { type: 'string' } as MlElement,
+    resolvedReferenceSchemaInContext: { type: 'record', definition: { type: 'string' } } as MlElement,
   } as unknown as KeyMapEntry);
 
-// Helper to attach a tag.value.id to a JzodElement definition entry
-const withId = (id: number): JzodElement => ({ type: 'string', tag: { value: { id } } } as any);
-const noId = (): JzodElement => ({ type: 'string' } as any);
+// Helper to attach a tag.value.id to a MlElement definition entry
+const withId = (id: number): MlElement => ({ type: 'string', tag: { value: { id } } } as any);
+const noId = (): MlElement => ({ type: 'string' } as any);
 
 describe('getItemsOrder', () => {
   // ─────────────────────────────────────────────────────────────
@@ -68,7 +68,7 @@ describe('getItemsOrder', () => {
   // Record type — detected via rawMLSchema.type === "record"
   // ─────────────────────────────────────────────────────────────
   describe('record type detected via rawMLSchema', () => {
-    const rawRecordSchema: JzodElement = { type: 'record', definition: { type: 'string' } } as any;
+    const rawRecordSchema: MlElement = { type: 'record', definition: { type: 'string' } } as any;
 
     it('returns [] for an empty record object', () => {
       expect(getItemsOrder({}, rawRecordSchema, undefined, undefined)).toEqual([]);
@@ -127,7 +127,7 @@ describe('getItemsOrder', () => {
 
     it('schemaReference: returns keys in insertion order when no entry has a tag.value.id', () => {
       const value = { b: {}, a: {} };
-      expect(getItemsOrder(value, undefined, undefined, undefined, { type: 'record', definition: { type: 'string' } } as JzodElement))
+      expect(getItemsOrder(value, undefined, undefined, undefined, { type: 'record', definition: { type: 'string' } } as MlElement))
         .toEqual(['b', 'a']);
     });
 
@@ -137,18 +137,18 @@ describe('getItemsOrder', () => {
         noId: {},
         a: { tag: { value: { id: 1 } } },
       };
-      expect(getItemsOrder(value, undefined, undefined, undefined, { type: 'record', definition: { type: 'string' } } as JzodElement))
+      expect(getItemsOrder(value, undefined, undefined, undefined, { type: 'record', definition: { type: 'string' } } as MlElement))
         .toEqual(['a', 'b', 'noId']);
     });
 
     it('schemaReference: also works when rawMLSchema is a record at the same time (consistent result)', () => {
-      const rawRecordSchema: JzodElement = { type: 'record', definition: { type: 'string' } } as any;
+      const rawRecordSchema: MlElement = { type: 'record', definition: { type: 'string' } } as any;
       const value = {
         b: { tag: { value: { id: 2 } } },
         a: { tag: { value: { id: 1 } } },
       };
       const resultViaRaw = getItemsOrder(value, rawRecordSchema, undefined, undefined);
-      const resultViaKeyMap = getItemsOrder(value, undefined, undefined, undefined, { type: 'record', definition: { type: 'string' } } as JzodElement);
+      const resultViaKeyMap = getItemsOrder(value, undefined, undefined, undefined, { type: 'record', definition: { type: 'string' } } as MlElement);
       expect(resultViaRaw).toEqual(resultViaKeyMap);
     });
   });
@@ -158,19 +158,19 @@ describe('getItemsOrder', () => {
   // (and rawMLSchema is NOT "record" / keymap does NOT signal "record")
   // ─────────────────────────────────────────────────────────────
   describe('typed object — resolvedMLSchema.type === "object"', () => {
-    const resolvedObjectSchema: JzodElement = { type: 'object', definition: {} } as any;
+    const resolvedObjectSchema: MlElement = { type: 'object', definition: {} } as any;
 
     it('returns [] for an empty currentValue object', () => {
-      const flatSchema: JzodObject = {
+      const flatSchema: MlObject = {
         type: 'object',
         definition: { a: withId(1), b: withId(2) },
       };
-      const rawSchema: JzodElement = { type: 'object', definition: {} } as any;
+      const rawSchema: MlElement = { type: 'object', definition: {} } as any;
       expect(getItemsOrder({}, rawSchema, flatSchema, resolvedObjectSchema)).toEqual([]);
     });
 
     it('sorts present attribute keys by tag.value.id ascending', () => {
-      const flatSchema: JzodObject = {
+      const flatSchema: MlObject = {
         type: 'object',
         definition: {
           a: withId(2),
@@ -178,35 +178,35 @@ describe('getItemsOrder', () => {
           c: withId(3),
         },
       };
-      const rawSchema: JzodElement = { type: 'object', definition: {} } as any;
+      const rawSchema: MlElement = { type: 'object', definition: {} } as any;
       const value = { a: 'A', b: 'B', c: 'C' };
       expect(getItemsOrder(value, rawSchema, flatSchema, resolvedObjectSchema))
         .toEqual(['b', 'a', 'c']);
     });
 
     it('puts id-less attributes after id-carrying attributes', () => {
-      const flatSchema: JzodObject = {
+      const flatSchema: MlObject = {
         type: 'object',
         definition: {
           noId: noId(),
           withId: withId(1),
         },
       };
-      const rawSchema: JzodElement = { type: 'object', definition: {} } as any;
+      const rawSchema: MlElement = { type: 'object', definition: {} } as any;
       const value = { noId: 'x', withId: 'y' };
       expect(getItemsOrder(value, rawSchema, flatSchema, resolvedObjectSchema))
         .toEqual(['withId', 'noId']);
     });
 
     it('excludes attributes absent from currentValue', () => {
-      const flatSchema: JzodObject = {
+      const flatSchema: MlObject = {
         type: 'object',
         definition: {
           present: withId(1),
           absent: withId(2),
         },
       };
-      const rawSchema: JzodElement = { type: 'object', definition: {} } as any;
+      const rawSchema: MlElement = { type: 'object', definition: {} } as any;
       const value = { present: 'here' }; // 'absent' is not in currentValue
       expect(getItemsOrder(value, rawSchema, flatSchema, resolvedObjectSchema))
         .toEqual(['present']);
@@ -216,21 +216,21 @@ describe('getItemsOrder', () => {
       // flatSchema: first=id1, second=id2  → order: first, second
       // resolvedSchema: second=id1, first=id2 → order would be: second, first
       // rawMLSchema.type === "object" → flattenedMLSchema wins
-      const flatSchema: JzodObject = {
+      const flatSchema: MlObject = {
         type: 'object',
         definition: {
           first: withId(1),
           second: withId(2),
         },
       };
-      const resolvedSchemaWithDifferentOrder: JzodElement = {
+      const resolvedSchemaWithDifferentOrder: MlElement = {
         type: 'object',
         definition: {
           second: withId(1), // reversed ids
           first: withId(2),
         },
       } as any;
-      const rawSchema: JzodElement = { type: 'object', definition: {} } as any;
+      const rawSchema: MlElement = { type: 'object', definition: {} } as any;
       const value = { first: 'a', second: 'b' };
       expect(getItemsOrder(value, rawSchema, flatSchema, resolvedSchemaWithDifferentOrder))
         .toEqual(['first', 'second']);
@@ -239,14 +239,14 @@ describe('getItemsOrder', () => {
     it('uses resolvedMLSchema.definition when rawMLSchema is undefined (not type "object")', () => {
       // When rawMLSchema is undefined, (resolvedMLSchema as any)?.definition is used.
       // resolvedSchema: first=id1, second=id2  → order: first, second
-      const resolvedSchema: JzodElement = {
+      const resolvedSchema: MlElement = {
         type: 'object',
         definition: {
           first: withId(1),
           second: withId(2),
         },
       } as any;
-      const flatSchema: JzodObject = {
+      const flatSchema: MlObject = {
         type: 'object',
         definition: {
           second: withId(1), // different ordering — should NOT be used
@@ -259,7 +259,7 @@ describe('getItemsOrder', () => {
     });
 
     it('returns all id-less attributes in schema-definition order when no ids are present', () => {
-      const flatSchema: JzodObject = {
+      const flatSchema: MlObject = {
         type: 'object',
         definition: {
           z: noId(),
@@ -267,7 +267,7 @@ describe('getItemsOrder', () => {
           a: noId(),
         },
       };
-      const rawSchema: JzodElement = { type: 'object', definition: {} } as any;
+      const rawSchema: MlElement = { type: 'object', definition: {} } as any;
       const value = { z: 1, m: 2, a: 3 };
       // withId is empty → sorted (empty), withoutId contains all keys in Object.keys(definition) order filtered by presence
       expect(getItemsOrder(value, rawSchema, flatSchema, resolvedObjectSchema))

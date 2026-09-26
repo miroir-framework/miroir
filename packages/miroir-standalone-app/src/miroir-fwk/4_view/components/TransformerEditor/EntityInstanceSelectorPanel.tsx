@@ -16,8 +16,8 @@ import {
   type ApplicationDeploymentMap,
   type ApplicationSection,
   type Entity,
-  type JzodElement,
-  type JzodObject,
+  type MlElement,
+  type MlObject,
   type MiroirModelEnvironment,
   type ReduxDeploymentsState,
   type SyncBoxedExtractorOrQueryRunnerMap
@@ -67,7 +67,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 // ################################################################################################
 // Helper function to create a generic "any" schema for displaying arbitrary objects
 // ################################################################################################
-function createGenericObjectSchema(): JzodElement {
+function createGenericObjectSchema(): MlElement {
   return {
     type: "any"
   };
@@ -94,7 +94,7 @@ export function EntityInstanceSelectorPanel(props:{
   const context = useMiroirContextService();
   const persistedState = context.toolsPageState.transformerEditor;
 
-  const entityInstanceSelectorPanelSchema: JzodElement = {
+  const entityInstanceSelectorPanelSchema: MlElement = {
     type: "object",
     definition: {
       [formikPath_EntityInstanceSelectorPanel]: {
@@ -553,7 +553,7 @@ export function EntityInstanceSelectorPanel(props:{
           {formikContext.values[formikPath_EntityInstanceSelectorPanel] && (
             <TypedValueObjectEditor
               labelElement={<span>select Application</span>}
-              formValueMLSchema={entityInstanceSelectorPanelSchema.definition[formikPath_EntityInstanceSelectorPanel] as JzodObject}
+              formValueMLSchema={entityInstanceSelectorPanelSchema.definition[formikPath_EntityInstanceSelectorPanel] as MlObject}
               formikValuePathAsString={formikPath_EntityInstanceSelectorPanel}
               application={inputSelector_applicationUuid}
               applicationDeploymentMap={applicationDeploymentMap}

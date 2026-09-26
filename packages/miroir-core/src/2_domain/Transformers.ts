@@ -1,4 +1,4 @@
-import { JzodElement, TransformerDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { MlElement, TransformerDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { transformerInterfaceFromDefinition } from "./Transformer_tools";
 
 
@@ -209,7 +209,7 @@ const coreBuildPlusRuntimeReferenceMap: Record<string, string> = {
   transformer_mustacheStringTemplate: "coreTransformerForBuildPlusRuntime_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate
 };
 
-export const miroirCoreTransformersForBuildPlusRuntime: Record<string, JzodElement> = Object.fromEntries(
+export const miroirCoreTransformersForBuildPlusRuntime: Record<string, MlElement> = Object.fromEntries(
   Object.entries(miroirTransformers).map(([key, transformer]) => [
     key,
     transformerInterfaceFromDefinition(
@@ -221,7 +221,7 @@ export const miroirCoreTransformersForBuildPlusRuntime: Record<string, JzodEleme
   ])
 );
 
-export const miroirTransformersForBuildPlusRuntime: Record<string, JzodElement> = Object.fromEntries(
+export const miroirTransformersForBuildPlusRuntime: Record<string, MlElement> = Object.fromEntries(
   Object.entries(miroirTransformers).map(([key, transformer]) => [
     key,
     transformerInterfaceFromDefinition(

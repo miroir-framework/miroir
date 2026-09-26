@@ -29,7 +29,7 @@ export function mcpToolDescriptionFromActionDefinition(
     throw new Error(`Payload definition not found for action type: ${actionType}`);
   }
 
-  // Get the payload definition as a JzodObject
+  // Get the payload definition as a MlObject
   const payload = actionDef.actionParameters.payload;
   
   // Map of internal property names to MCP tool property names

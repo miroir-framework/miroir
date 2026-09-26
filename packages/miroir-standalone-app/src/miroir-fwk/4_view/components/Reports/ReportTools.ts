@@ -8,8 +8,8 @@ import {
   findEntityFromUuid,
   type ApplicationDeploymentMap,
   type DeploymentUuidToReportsEntities,
-  type JzodElement,
-  type JzodObject,
+  type MlElement,
+  type MlObject,
   type MetaModel,
   type MiroirModelEnvironment,
   type ReportSection,
@@ -38,7 +38,7 @@ export const reportSectionsFormSchema = (
   currentModel: MetaModel,
   reportData: Record<string, any>,
   reportSectionPath: (string | number)[]
-): Record<string, JzodElement> => {
+): Record<string, MlElement> => {
   if (isMultistepStepEnvelope(reportSection)) {
     return reportSectionsFormSchema(
       reportSection.section,
@@ -227,7 +227,7 @@ export const reportSectionsFormValue = (
               name: "",
             }
           : reportData?.[""];
-      const queryParametersSchema: JzodObject =
+      const queryParametersSchema: MlObject =
         typeof targetData === "object" &&
         targetData !== null &&
         !Array.isArray(targetData) &&

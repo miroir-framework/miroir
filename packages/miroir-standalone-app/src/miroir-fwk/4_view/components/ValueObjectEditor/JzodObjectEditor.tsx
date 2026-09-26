@@ -10,9 +10,9 @@ import {
   EntityInstancesUuidIndex,
   foldableElementTypes,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
-  JzodElement,
-  JzodObject,
-  JzodRecord,
+  MlElement,
+  MlObject,
+  MlRecord,
   KeyMapEntry,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -158,7 +158,7 @@ const EditableAttributeName: FC<{
 // Progressive Attribute Component for asynchronous rendering
 const ProgressiveAttribute: FC<{
   valueObjectEditMode: ValueObjectEditMode;
-  attribute: [string, JzodElement];
+  attribute: [string, MlElement];
   attributeNumber: number;
   listKey: string;
   rootLessListKey: string;
@@ -166,7 +166,7 @@ const ProgressiveAttribute: FC<{
   formikRootLessListKey: string;
   formikRootLessListKeyArray: (string | number)[];
   reportSectionPathAsString: string;
-  localResolvedElementJzodSchemaBasedOnValue: JzodObject;
+  localResolvedElementJzodSchemaBasedOnValue: MlObject;
   typeCheckKeyMap?: Record<string, KeyMapEntry>;
   currentValue: any;
   usedIndentLevel: number;
@@ -664,7 +664,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     }
     
     // The blob structure has a mimeType field with an enum definition
-    const blobSchema = currentTypeCheckKeyMap.resolvedSchema as JzodObject;
+    const blobSchema = currentTypeCheckKeyMap.resolvedSchema as MlObject;
     const mimeTypeField = blobSchema.definition?.mimeType;
     
     if (mimeTypeField && mimeTypeField.type === 'enum' && Array.isArray(mimeTypeField.definition)) {
@@ -735,9 +735,9 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
   
   // ##############################################################################################
   const foldableItemsCount = useMemo(() => {
-    return currentTypeCheckKeyMap?.resolvedSchema.type === "object" // for record / object type, the resolvedSchema is a JzodObject
+    return currentTypeCheckKeyMap?.resolvedSchema.type === "object" // for record / object type, the resolvedSchema is a MlObject
       ? Object.values(currentTypeCheckKeyMap.resolvedSchema.definition).filter(
-        (item: JzodElement) => foldableElementTypes.includes(item.type)
+        (item: MlElement) => foldableElementTypes.includes(item.type)
       ).length : 0
   }, [currentTypeCheckKeyMap?.resolvedSchema]);
 
@@ -856,13 +856,13 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         "addExtraRecordEntry called for non-record type: " + currentTypeCheckKeyMap?.rawSchema.type
       );
     }
-    const effectiveRawSchema: JzodRecord = insideAny
+    const effectiveRawSchema: MlRecord = insideAny
       ? { type: "record", definition: { type: "string" } }
       : currentTypeCheckKeyMap?.rawSchema?.type === "record"
-        ? (currentTypeCheckKeyMap?.rawSchema as JzodRecord)
-        : (resolvedRawSchema as JzodRecord);
+        ? (currentTypeCheckKeyMap?.rawSchema as MlRecord)
+        : (resolvedRawSchema as MlRecord);
 
-    const newAttributeType: JzodElement = (effectiveRawSchema as JzodRecord)?.definition;
+    const newAttributeType: MlElement = (effectiveRawSchema as MlRecord)?.definition;
     log.info("addExtraRecordEntry newAttributeType", JSON.stringify(newAttributeType, null, 2));
     const newAttributeValue = currentMiroirFundamentalJzodSchema
       ? getDefaultValueForJzodSchemaWithResolutionNonHook(
@@ -972,7 +972,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         undefinedOptionalAttributes,
       );
       // const currentObjectValue = resolvePathOnObject(formik.values, rootLessListKeyArray);
-      const newAttributeType: JzodElement = resolvePathOnObject(
+      const newAttributeType: MlElement = resolvePathOnObject(
         currentTypeCheckKeyMap?.chosenUnionBranchRawSchema ??
           currentTypeCheckKeyMap?.jzodObjectFlattenedSchema ??
           currentTypeCheckKeyMap?.rawSchema,
@@ -1252,12 +1252,12 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         {/* <ThemedOnScreenHelper label="itemsOrder" data={itemsOrder} /> */}
         {!reportContext.isNodeFolded(rootLessListKeyArray) &&
           itemsOrder
-            .map((i): [string, JzodElement] => [
+            .map((i): [string, MlElement] => [
               i,
               formik.values[rootLessListKey.length > 0 ? rootLessListKey + "." + i[0] : i[0]],
               // currentValueObjectAtKey[rootLessListKey.length > 0 ? rootLessListKey + "." + i[0] : i[0]],
             ])
-            .map((attribute: [string, JzodElement], attributeNumber: number) => (
+            .map((attribute: [string, MlElement], attributeNumber: number) => (
               <ProgressiveAttribute
                 key={attribute[0]}
                 valueObjectEditMode={valueObjectEditMode}
@@ -1277,7 +1277,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                 insideAny={insideAny}
                 anyRootLessListKey={props.anyRootLessListKey}
                 localResolvedElementJzodSchemaBasedOnValue={
-                  localResolvedElementJzodSchemaBasedOnValue as JzodObject
+                  localResolvedElementJzodSchemaBasedOnValue as MlObject
                 }
                 typeCheckKeyMap={typeCheckKeyMap}
                 currentValue={currentValueObjectAtKey}

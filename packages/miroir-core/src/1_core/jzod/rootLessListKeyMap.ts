@@ -22,10 +22,10 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 //  * @param result - The result map to store the resolved schemas.
 //  */
 // function mapResolveJzodSchemaToValueKeys(
-//   resolvedElementJzodSchema: JzodElement,
+//   resolvedElementJzodSchema: MlElement,
 //   value: any,
 //   rootLessListKey: string,
-//   result: Record<string, { resolvedElementJzodSchema: JzodElement }> = {}
+//   result: Record<string, { resolvedElementJzodSchema: MlElement }> = {}
 // ): void {
 //   // log.info("mapResolveJzodSchemaToValueKeys called with", "resolvedElementJzodSchema", JSON.stringify(resolvedElementJzodSchema, null, 2));
 //   result[rootLessListKey] = {
@@ -146,14 +146,14 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 //  */
 // export function rootLessListKeyMapDEFUNCT(
 //   rootLessListKey: string,
-//   rawJzodSchema: JzodElement | undefined,
-//   resolvedElementJzodSchemaBasedOnValue: JzodElement | undefined,
+//   rawJzodSchema: MlElement | undefined,
+//   resolvedElementJzodSchemaBasedOnValue: MlElement | undefined,
 //   currentModel: MetaModel,
 //   miroirMetaModel: MetaModel,
 //   miroirFundamentalJzodSchema: MlSchema,
 //   currentValue: any // current value of the jzod element
-// ): Record<string, { resolvedElementJzodSchema: JzodElement }> {
-//   let localResolvedElementJzodSchemaBasedOnValue: JzodElement;
+// ): Record<string, { resolvedElementJzodSchema: MlElement }> {
+//   let localResolvedElementJzodSchemaBasedOnValue: MlElement;
 
 //   if (!resolvedElementJzodSchemaBasedOnValue) {
 //     const returnedLocalResolvedElementJzodSchemaBasedOnValue:
@@ -204,7 +204,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 //   //   rootLessListKey,
 //   //   // JSON.stringify(localResolvedElementJzodSchemaBasedOnValue, null, 2)
 //   // );
-//   const result: Record<string, { resolvedElementJzodSchema: JzodElement }> = {};
+//   const result: Record<string, { resolvedElementJzodSchema: MlElement }> = {};
 //   mapResolveJzodSchemaToValueKeys(
 //     localResolvedElementJzodSchemaBasedOnValue,
 //     currentValue,

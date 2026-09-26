@@ -13,7 +13,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/145
 Working branch: `claude/rename-jzod-to-ml-2ucg0f` → draft PR against `aba`
 
-**Resume note:** Slice 0 DONE; baseline on `aba` @ `256e625` is green (miroir-core `tsc`; vitest 156 files / 2023 tests passed, 1 skipped).
+**Resume note:** Slices 0–1 DONE; baseline on `aba` @ `256e625` is green (miroir-core `tsc`; vitest 156 files / 2023 tests passed, 1 skipped).
 
 ---
 
@@ -36,7 +36,7 @@ migrate deployments stored outside the repository (clean break, see analysis D6)
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Guard + inventory lock | ✅ DONE | guard script GREEN with empty scope; nonreg `unit` step registered |
-| 1 | ML definitions: `mlElement` & co (tracer) | ⬜ | guard rule D; `modelValidation` all deployments; `devBuild`; `tsc` all packages |
+| 1 | ML definitions: `mlElement` & co (tracer) | ✅ DONE | guard rule D; `modelValidation` all deployments; `devBuild`; `tsc` all packages |
 | 2 | Schema-tool modules `1_core/mls/` | ⬜ | guard scope `1_core/`; MiroirTest functionCallTest suites (unit) |
 | 3 | Transformers `mlsTypeCheck`, `ansiColumnsToMlSchema` | ⬜ | guard scope transformer assets; `miroirCoreTransformers` unit + integ (filesystem) |
 | 4 | Remaining miroir-core and non-UI packages | ⬜ | guard scope `packages/` minus standalone-app; `tsc` per package; nonreg unit |
@@ -157,7 +157,7 @@ python scripts/run-nonreg.py --tier unit --only unit-check-ml-nomenclature
 
 ## Slice 1 — ML definitions `mlElement` & co (tracer bullet)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -200,6 +200,27 @@ npm run nonreg:unit
 ```
 
 ### Realization
+
+- RED: rule D enabled, 3 127 hits. GREEN: [`rename_tokens.py`](./rename_tokens.py) with [`slice1-map.json`](./slice1-map.json)
+  (exact tokens, 77 entries): 3 123 replacements in 199 files, plus by hand: the bootstrap schema `defaultLabel`, the
+  generator's own schema keys in `generate-ts-types.ts` (`relativePath: "mlElement"`), and
+  `miroirTemplate_fe9b7d99$…_jzodElement` in `getMiroirFundamentalJzodSchema.ts` (a `$`-joined name the token rule missed).
+  D4 applied: the four jzod-ts type imports now import `Ml*` from `preprocessor-generated/miroirFundamentalType`
+  (the `MlJzodElement` alias in the helpers disappears).
+- Guard fixes found while doing it: rule D matches any `…_` / `…$` prefix; in the two jzod-ts API scripts only unquoted
+  element-kind names are allowed (a quoted one is a Miroir schema key).
+- Regenerated `preprocessor-generated/*` is a pure rename: after mapping `ml`→`jzod` back, `miroirFundamentalJzodSchema.ts`
+  is identical to `aba` and `miroirFundamentalType.ts` differs only by its timestamp line.
+- Validation: build of all packages OK; `tsc` 0 errors except two errors also present on clean `aba` (checked by stash +
+  rebuild): `miroir-localcache-zustand/…/localCache/Model.ts(161)` (MetaModel missing properties) and
+  `miroir-standalone-app/…/JzodElementEditorHooks.ts(528)` (`name` on EntityInstance). `modelValidation` miroir 159,
+  admin 51, library 183, designer 34 passed; miroir-core vitest 156 files / 2 023 tests passed; `nonreg:unit` 33/34, the
+  failure being `unit-286` below.
+- Problem met: `componentTestSandbox.286.phase4` failed 2 runs in 4 on this slice (4/4 on `aba`). Root cause is in the test:
+  happy-dom 20.7 holds a MutationObserver's listener through a `WeakRef`
+  (`MutationObserverListener`: `callback: new WeakRef(…)`), so a GC during the run silently stops the reports and
+  `containerParents` gets 5–6 entries instead of 12; this slice only moved GC timing. Fixed in a separate commit by
+  recording case containers at `appendChild` on the two sandboxes; 5/5 runs green afterwards.
 
 ---
 

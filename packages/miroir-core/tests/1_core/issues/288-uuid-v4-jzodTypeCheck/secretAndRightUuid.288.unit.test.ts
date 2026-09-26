@@ -17,7 +17,7 @@ import {
   checkModelValidationInstance,
   defaultMiroirModelEnvironment,
   importProcessSecrets,
-  type JzodElement,
+  type MlElement,
   type MiroirModelEnvironment,
 } from "miroir-core";
 
@@ -33,7 +33,7 @@ describe("issue 288 — SecretsService / TestbedAccessGrant rows pass jzodTypeCh
     });
 
     const result = checkModelValidationInstance(
-      entityMiroirSecret.mlSchema as unknown as JzodElement,
+      entityMiroirSecret.mlSchema as unknown as MlElement,
       instance,
       "importProcessSecrets result",
       defaultMiroirModelEnvironment as MiroirModelEnvironment,
@@ -49,7 +49,7 @@ describe("issue 288 — SecretsService / TestbedAccessGrant rows pass jzodTypeCh
     });
 
     const result = checkModelValidationInstance(
-      entityMiroirRight.mlSchema as unknown as JzodElement,
+      entityMiroirRight.mlSchema as unknown as MlElement,
       instance,
       "buildTestbedApplicationAccessGrantInstance result",
       defaultMiroirModelEnvironment as MiroirModelEnvironment,

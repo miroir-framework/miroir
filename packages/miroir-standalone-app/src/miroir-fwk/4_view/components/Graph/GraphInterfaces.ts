@@ -1,12 +1,11 @@
-import { JzodElement, JzodObject } from '@miroir-framework/jzod-ts';
-import { graphConfig } from 'miroir-core';
+import { graphConfig, type MlElement, type MlObject } from 'miroir-core';
 import { z } from 'zod';
 export {GraphConfig} from 'miroir-core'
 // ################################################################################################
 // Graph Data Schema using Jzod
 // ################################################################################################
 
-export const graphDataPointSchema: JzodObject = {
+export const graphDataPointSchema: MlObject = {
   type: "object",
   definition: {
     label: {
@@ -22,7 +21,7 @@ export const graphDataPointSchema: JzodObject = {
   }
 } as const;
 
-export const graphConfigSchema: JzodObject = {
+export const graphConfigSchema: MlObject = {
   type: "object",
   definition: {
     width: {
@@ -76,7 +75,7 @@ export const graphConfigSchema: JzodObject = {
     }
   }
 } as const;
-export const barChartDataSchema: JzodObject = {
+export const barChartDataSchema: MlObject = {
   type: "object",
   definition: {
     type: {
@@ -99,7 +98,7 @@ export const barChartDataSchema: JzodObject = {
   }
 } as const;
 
-export const lineChartDataSchema: JzodObject = {
+export const lineChartDataSchema: MlObject = {
   type: "object", 
   definition: {
     type: {
@@ -122,7 +121,7 @@ export const lineChartDataSchema: JzodObject = {
   }
 } as const;
 
-export const pieChartDataSchema: JzodObject = {
+export const pieChartDataSchema: MlObject = {
   type: "object",
   definition: {
     type: {
@@ -144,7 +143,7 @@ export const pieChartDataSchema: JzodObject = {
     }
   }
 } as const;
-export const graphDataSchema: JzodElement = {
+export const graphDataSchema: MlElement = {
   type: "union",
   definition: [
     barChartDataSchema,
@@ -205,7 +204,7 @@ export type GraphData = z.infer<typeof GraphDataSchema>;
 // Graph Report Section Schema for integration with Miroir report system
 // ################################################################################################
 
-// export const graphReportSectionSchema: JzodObject = {
+// export const graphReportSectionSchema: MlObject = {
 //   type: "object",
 //   definition: {
 //     type: {

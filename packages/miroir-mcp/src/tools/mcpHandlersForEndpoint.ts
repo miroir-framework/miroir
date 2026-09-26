@@ -7,8 +7,8 @@ import {
   ApplicationDeploymentMap,
   DomainControllerInterface,
   InstanceAction,
-  JzodElement,
-  JzodReference,
+  MlElement,
+  MlReference,
   LoggerInterface,
   MiroirLoggerFactory,
   resolveFundamentalSchemaForDeployment,
@@ -55,10 +55,10 @@ export type ToolHandler = (
  * @param jzodPayload - The Jzod schema definition from actionParameters.payload
  * @returns The Zod schema for validation
  */
-// function jzodPayloadToZodSchema(jzodPayload: JzodObject): ZodTypeAny {
-function jzodPayloadToZodSchema(jzodPayload: JzodElement): ZodTypeAny {
+// function jzodPayloadToZodSchema(jzodPayload: MlObject): ZodTypeAny {
+function jzodPayloadToZodSchema(jzodPayload: MlElement): ZodTypeAny {
   // Resolve references for Zod conversion, but stop on cycles / depth — the meta-model is
-  // recursive (jzodElement, compositeAction, coreTransformerForBuildPlusRuntime, …).
+  // recursive (mlElement, compositeAction, coreTransformerForBuildPlusRuntime, …).
   const resolvedJzodSchema = resolveAllReferences(jzodPayload);
 
   log.debug("jzodPayloadToZodSchema resolved schema for MCP payload conversion");
@@ -72,8 +72,8 @@ function jzodPayloadToZodSchema(jzodPayload: JzodElement): ZodTypeAny {
   return zodTextAndSchema.zodSchema as any;
 }
 
-function unresolvedJzodAny(): JzodElement {
-  return { type: "any" } as JzodElement;
+function unresolvedJzodAny(): MlElement {
+  return { type: "any" } as MlElement;
 }
 
 /**
@@ -81,9 +81,9 @@ function unresolvedJzodAny(): JzodElement {
  * Cyclic references degrade to `any` instead of overflowing the stack.
  */
 function resolveAllReferences(
-  element: JzodElement,
+  element: MlElement,
   conversionOptions?: JzodConversionOptions,
-): JzodElement {
+): MlElement {
   if (!element || typeof element !== "object") {
     return element;
   }
@@ -99,7 +99,7 @@ function resolveAllReferences(
   };
 
   if (element.type === "schemaReference") {
-    const ref = element as JzodReference;
+    const ref = element as MlReference;
     const refKey = schemaReferenceKey(ref);
     if (isJzodConversionLimitReached(options, refKey)) {
       return unresolvedJzodAny();
@@ -171,7 +171,7 @@ function resolveAllReferences(
   }
 
   if (element.type === "intersection" && element.definition) {
-    const intersection = element.definition as { left?: JzodElement; right?: JzodElement };
+    const intersection = element.definition as { left?: MlElement; right?: MlElement };
     return {
       ...element,
       definition: {
@@ -182,14 +182,14 @@ function resolveAllReferences(
           ? resolveAllReferences(intersection.right, childOptions)
           : unresolvedJzodAny(),
       },
-    } as JzodElement;
+    } as MlElement;
   }
 
   if (element.type === "lazy" && element.definition) {
     return {
       ...element,
-      definition: resolveAllReferences(element.definition as JzodElement, childOptions),
-    } as JzodElement;
+      definition: resolveAllReferences(element.definition as MlElement, childOptions),
+    } as MlElement;
   }
 
   return element;

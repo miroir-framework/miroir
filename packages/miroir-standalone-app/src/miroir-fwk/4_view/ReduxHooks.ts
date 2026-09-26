@@ -7,7 +7,7 @@ import {
   DomainState,
   EntityInstance,
   EntityInstancesUuidIndex,
-  JzodPlainAttribute,
+  MlPlainAttribute,
   // LocalCacheExtractor,
   LoggerInterface,
   MetaModel,
@@ -497,7 +497,7 @@ export function useLocalCacheInstancesForJzodAttribute(
   applicationDeploymentMap: ApplicationDeploymentMap,
   deploymentUuid: string | undefined,
   applicationSection: ApplicationSection | undefined,
-  mlSchema: JzodPlainAttribute | undefined
+  mlSchema: MlPlainAttribute | undefined
 ): EntityInstance[] {
   const entityUuid = selectEntityUuidFromJzodAttribute(mlSchema);
   const miroirEntities = useSelector((state: ReduxStateWithUndoRedo) =>

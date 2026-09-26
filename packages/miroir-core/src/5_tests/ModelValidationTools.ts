@@ -8,7 +8,7 @@
 
 import type {
   EntityVersion,
-  JzodElement,
+  MlElement,
   MetaModel,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
@@ -23,7 +23,7 @@ export type ModelValidationInstanceModule = { default: any };
 
 export type ModelValidationGroup = {
   groupName: string;
-  jzodSchema: JzodElement;
+  jzodSchema: MlElement;
   /** Path / uuid keyed modules, typically from import.meta.glob or MetaModel arrays. */
   instances: Record<string, ModelValidationInstanceModule>;
   filterByName?: string[];
@@ -125,7 +125,7 @@ export function modelValidationSuite(
     const attributeName = entityNameToAttributeName[entityName] ?? entityName;
     return {
       groupName: entityName,
-      jzodSchema: entityDefinitions[entityName]?.mlSchema as unknown as JzodElement,
+      jzodSchema: entityDefinitions[entityName]?.mlSchema as unknown as MlElement,
       instances: modelValidationInstancesArrayToRecord(
         ((metaModel as any)[attributeName] as readonly any[] | undefined) ?? [],
       ),
@@ -156,7 +156,7 @@ export function buildModelValidationPlanFromGroups(
 // ================================================================================================
 
 export function checkModelValidationInstance(
-  jzodSchema: JzodElement,
+  jzodSchema: MlElement,
   instance: any,
   fallbackPath: string,
   modelEnv: MiroirModelEnvironment,
