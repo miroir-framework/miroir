@@ -566,6 +566,8 @@ npm run testByFile -w miroir-standalone-app -- \
   --storage sql uiIntegrationTestLauncher.realServer.integ
 ```
 
+`testByFile` stops at the first failing case (`--bail=1`); add `--no-bail` or `--bail=<n>` to change that. Other arguments are passed to vitest unchanged, so `-t "a pattern with spaces"` works.
+
 | Variable | Purpose |
 |----------|---------|
 | `VITE_MIROIR_TEST_CONFIG_FILENAME` | Path to a `miroirConfig.test-*.json` file (must have `.json` extension) |
@@ -964,10 +966,7 @@ MIROIR_COMPONENT_PERF=1 VITE_MIROIR_LOG_CONFIG_FILENAME=catch-all-detailed \
   npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "MlEditorRenderPerformance"
 ```
 
-Two limits of `testByFile` (`scripts/test-by-file.ts`):
-
-- It always passes `--bail=1` to vitest: after the first failing case, the later cases are reported as not run, not as passed. To see every failure at once, run vitest directly from the package: `cd packages/miroir-standalone-app && npx vitest run --reporter=verbose miroir-component-tests` (no profile is needed for this entry). `--bail=0` is rejected by vitest ("Expected a single value for option --bail").
-- It starts vitest through a shell, so a `-t` pattern containing spaces is split: the words after the first become file filters, and other files may run. `-t` is a regular expression: write `.` for each space (`-t "MlTestPattern:.every"`, `-t "field.at.1"`) or use a pattern without spaces.
+`testByFile` (`scripts/test-by-file.ts`) passes `--bail=1` to vitest by default: after the first failing case, the later cases are reported as not run, not as passed. To see every failure at once, add `--no-bail` (or `--bail=0`); any other `--bail=<n>` replaces the default. Arguments reach vitest exactly as given, so a `-t` pattern may contain spaces (`-t "field at 1"`).
 
 The entry `tests/4_view/miroir-component-tests.unit.test.tsx` loads every instance of the MiroirTest data folder that has a `reactComponentTest` leaf and runs each through the MiroirTest walk. A `reactComponentTestSuite` with `runOnDemand` is registered as `describe.skip("<suite> (runOnDemand: set MIROIR_COMPONENT_PERF=1 to run)")` with one skipped test per leaf, unless `MIROIR_COMPONENT_PERF=1`. The vitest names are `<editor> > <editor>: <case>`, so `-t` takes an editor name or part of a case label. The miroir-core generic entry (`testMiroir -w miroir-core`) also loads these instances. It registers no component test runner, so the tracker records their leaves as skipped.
 

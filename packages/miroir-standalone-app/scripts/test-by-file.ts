@@ -1,9 +1,10 @@
 #!/usr/bin/env tsx
 import { spawnSync } from "node:child_process";
+import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { prepareTestByFileLaunch } from "./testByFileLauncher.js";
+import { buildTestByFileVitestArgs, prepareTestByFileLaunch } from "./testByFileLauncher.js";
 import { resolveRepoRoot } from "../tests/helpers/integrationTestProfiles.js";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
@@ -18,22 +19,17 @@ const launchEnv: NodeJS.ProcessEnv = {
   PWD: resolveRepoRoot(),
 };
 
-const result = spawnSync(
-  "npx",
-  [
-    "vitest",
-    "run",
-    "--reporter=verbose",
-    "--poolOptions.forks.singleFork",
-    "--bail=1",
-    ...vitestArgs,
-  ],
-  {
-    cwd: packageRoot,
-    env: launchEnv,
-    stdio: "inherit",
-    shell: true,
-  },
+// Run vitest's CLI with node directly, without a shell, so every argument (e.g. a `-t`
+// pattern with spaces) reaches vitest exactly as given, on every platform.
+const vitestBin = path.join(
+  path.dirname(createRequire(import.meta.url).resolve("vitest/package.json")),
+  "vitest.mjs",
 );
+
+const result = spawnSync(process.execPath, [vitestBin, ...buildTestByFileVitestArgs(vitestArgs)], {
+  cwd: packageRoot,
+  env: launchEnv,
+  stdio: "inherit",
+});
 
 process.exit(result.status ?? 1);
