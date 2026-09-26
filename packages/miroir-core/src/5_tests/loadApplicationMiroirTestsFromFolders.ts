@@ -7,6 +7,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 
 import type {
+  Entity,
   MiroirTestDefinition,
   MiroirTestSuite,
   Runner,
@@ -22,11 +23,16 @@ import {
   isMiroirTestSuiteInstance,
 } from "./applicationMiroirTestCatalog.js";
 import { ALL_SUITES_JOKER, resolveSuiteKeys } from "./parseMiroirTestCliConfig.js";
-import { miroirTestInstanceHasAnyTag } from "./miroirTestTags.js";
+import {
+  assertAllowedMiroirTestTags,
+  getMiroirTestAllowedTags,
+  miroirTestInstanceHasAnyTag,
+} from "./miroirTestTags.js";
 import {
   APPLICATION_MIROIR_TEST_SOURCE_FOLDERS_LEGACY,
   DEPLOYMENT_PACKAGE_PREFIX,
   ENTITY_MIROIR_TEST_UUID,
+  MIROIR_TEST_ENTITY_RELATIVE_PATH,
   buildRunnerUuidIndex,
   isRunnerInstance,
   runnerEntityFolderRelativePath,
@@ -146,6 +152,13 @@ export function loadApplicationRunnerUuidIndexFromFolders(
   return buildRunnerUuidIndex(runners);
 }
 
+/** The live MiroirTest Entity row, whose `tags` schema declares the tag vocabulary (#312). */
+export function loadMiroirTestEntityFromFolders(repoRoot: string = resolveMonorepoRoot()): Entity {
+  return JSON.parse(
+    readFileSync(join(repoRoot, MIROIR_TEST_ENTITY_RELATIVE_PATH), "utf-8"),
+  ) as Entity;
+}
+
 export function loadApplicationMiroirTestCatalog(
   repoRoot: string = resolveMonorepoRoot(),
 ): ApplicationMiroirTestCatalogEntry[] {
@@ -173,7 +186,8 @@ export function listCliTransformerIntegrationSuiteKeysFromFolders(
 /**
  * Expand `*` / empty to every key in `availableKeys`, then resolve suite keys
  * (instance `name` or `uuid`) against the folder catalog. With `tags` (#312),
- * keep only the suites carrying any of them.
+ * keep only the suites carrying any of them; an unknown tag (per the MiroirTest
+ * Entity) or a selection left empty is an error.
  */
 export function resolveCliSuiteKeysFromCatalog(
   rawKeys: string[],
@@ -189,11 +203,18 @@ export function resolveCliSuiteKeysFromCatalog(
   if (!tags?.length) {
     return resolved;
   }
+  assertAllowedMiroirTestTags(tags, getMiroirTestAllowedTags(loadMiroirTestEntityFromFolders()));
   const catalogByKey = new Map(catalog.map((entry) => [entry.suiteKey, entry]));
-  return resolved.filter((suiteKey) => {
+  const tagged = resolved.filter((suiteKey) => {
     const entry = catalogByKey.get(suiteKey);
     return entry !== undefined && miroirTestInstanceHasAnyTag(entry.instance, tags);
   });
+  if (tagged.length === 0) {
+    throw new Error(
+      `No suite carries any of the tags ${tags.join(", ")} among the ${resolved.length} suites available here`,
+    );
+  }
+  return tagged;
 }
 
 /** Node CLI / test loader: read the suite from application folders, not named exports. */

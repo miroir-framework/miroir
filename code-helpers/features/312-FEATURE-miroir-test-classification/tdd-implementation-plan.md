@@ -15,7 +15,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/312
 Working branch: `claude/project-thread-4gyfzk` (from `_integration`)
 
-**Resume note:** Slice 1 DONE.
+**Resume note:** Slices 1–2 DONE.
 
 ---
 
@@ -36,7 +36,7 @@ This plan does **not** tag leaves, add all-of matching, tag other Entities, chan
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 1 | Tracer: `--tags` selects a tagged unit suite | ✅ | `miroirTestTags.unit.test.ts` + `testMiroir --tags tools` |
-| 2 | Unknown tags rejected, from the Entity vocabulary | ⬜ | `miroirTestTags.unit.test.ts` (CLI error + model validation) |
+| 2 | Unknown tags rejected, from the Entity vocabulary | ✅ | `miroirTestTags.unit.test.ts` (CLI errors) |
 | 3 | Every MiroirTest tagged | ⬜ | guard test over the folder catalog + `modelValidation` |
 | 4 | `--tags` in the standalone-app launcher | ⬜ | `testMiroirLauncher` test |
 | 5 | Tags in the Miroir Tests page | ⬜ | `MiroirTestListDisplay.unit.test.tsx` + grid column test |
@@ -141,7 +141,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ## Slice 2 — Unknown tags rejected, from the Entity vocabulary
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** a typo in `--tags` or in an instance is reported with the allowed values, taken from the MiroirTest Entity.
 
@@ -164,7 +164,10 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ### Realization
 
-_(pending)_
+- `getMiroirTestAllowedTags` and `assertAllowedMiroirTestTags` in `miroirTestTags.ts` (exported); `loadMiroirTestEntityFromFolders` reads the live Entity row at `MIROIR_TEST_ENTITY_RELATIVE_PATH` (`applicationMiroirTestFolders.ts`); `resolveCliSuiteKeysFromCatalog` checks tags against it and fails on an empty tagged selection.
+- Deviation: the planned "model validation rejects an unknown tag" assertion could not go green. `mlsTypeCheck` accepts any enum value; the strict version turned 7 existing instances red (library `conceptLevel` values, miroir Theme `format: "color"`, a `domain_controller_data_crud` fixture). That is a separate bug with its own data fixes: filed as #313, `mlsTypeCheck` left unchanged, assertion dropped. Committed values are guarded by the Slice 3 test instead (analysis T7 updated).
+- `testMiroir -w miroir-core -- --tags toolz` fails with `Unknown tag "toolz". Allowed tags (MiroirTest Entity): transformer, …`.
+- Validation: `miroirTestTags.unit` 11/11; `npm run test -w miroir-core -- ''` 2054 passed (run with the strict enum, before reverting it; the revert only restores the previous code); `tsc` miroir-core clean.
 
 ---
 

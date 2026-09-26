@@ -1601,6 +1601,8 @@ export {
   type UiIntegrationTransformerSuiteRegistryMap,
 } from "./5_tests/applicationMiroirTestCatalog.js";
 export {
+  assertAllowedMiroirTestTags,
+  getMiroirTestAllowedTags,
   getMiroirTestInstanceTags,
   miroirTestInstanceHasAnyTag,
 } from "./5_tests/miroirTestTags.js";

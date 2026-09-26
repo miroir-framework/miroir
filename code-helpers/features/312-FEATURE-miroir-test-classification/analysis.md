@@ -36,8 +36,8 @@ Companion: [`tag-assignment.md`](tag-assignment.md) (vocabulary and the tags of 
 | T3 | Which Entity the CLI reads | The live Entity row, read from the miroir deployment folder next to the catalog it filters (`loadMiroirTestEntityFromFolders`). | The folder catalog already reads instances from disk (`loadApplicationMiroirTestsFromFolders`); the live row is authoritative (AGENTS.md, "Schema-first model"). |
 | T4 | Where the CLI filter applies | `tags` joins `MiroirTestCliConfig` (`--tags`, `MIROIR_TEST_TAGS`, exported back by `miroirTestCliConfigToEnv`), and `resolveCliSuiteKeysFromCatalog` takes it as a 4th argument. | That function is the one step every launcher and vitest entry already calls (§3.4), so one change covers `testMiroir` in miroir-core and in the standalone app, and env-only CI runs. |
 | T5 | Standalone launcher routing | Tags are resolved to suite keys **before** the launcher picks its vitest entry. If they select both core suites and runner suites, the launcher stops with an error naming both groups. | The launcher runs one vitest entry per launch and routes on the requested keys (§3.4); mixing the two groups is already unsupported for `--suites`. |
-| T6 | UI chip values | The tags present on the listed instances, alphabetical, each with its count. | Chips for unused tags select nothing. The vocabulary constraint is enforced where values are written (the instance editor shows the enum, model validation rejects unknown values), not in the filter. |
-| T7 | Keeping every test tagged | A unit test over the folder catalog: every MiroirTest instance has at least one tag, and every tag is allowed by the Entity. | D7 would decay without it: `tags` is optional in the schema (T1). |
+| T6 | UI chip values | The tags present on the listed instances, alphabetical, each with its count. | Chips for unused tags select nothing. The vocabulary constraint is enforced where values are written (the instance editor shows the enum, the generated type is a union of the values) and by the T7 guard, not in the filter. |
+| T7 | Keeping every test tagged | A unit test over the folder catalog: every MiroirTest instance has at least one tag, and every tag is allowed by the Entity. | D7 would decay without it: `tags` is optional in the schema (T1). It is also the only check of committed values, since model validation does not check enum values (§3.2, #313). |
 
 ---
 
@@ -46,7 +46,7 @@ Companion: [`tag-assignment.md`](tag-assignment.md) (vocabulary and the tags of 
 1. **Run one area from the CLI** — In order to run only the tests of the area I am changing, as a framework developer, I can run `npm run testMiroir -w miroir-core -- --tags ml-union` and get every unit suite tagged `ml-union`, without knowing their names.
 2. **Narrow the Run section** — In order to run a subset of tests from the app, as a framework developer, I can select tag chips in the Miroir Tests Run section, and "Run All" runs only the tests that carry one of them.
 3. **Sort and filter the list** — In order to find a test among 66, as a framework developer, I can sort and filter the Miroir Tests grid on a Tags column.
-4. **Tag a test** — In order to classify a new test consistently, as a test author, I can choose its tags from the values the MiroirTest Entity allows, in the instance editor.
+4. **Tag a test** — In order to classify a new test consistently, as a test author, I can choose its tags from the values the MiroirTest Entity allows, in the instance editor, and a tag outside them fails the unit tests.
 5. **Extend the vocabulary** — In order to add a tag when a new area appears, as a framework maintainer, I can add a value to the `tags` enum of the MiroirTest Entity, and the CLI and editor accept it.
 
 ## 2. Non-goals
@@ -66,6 +66,8 @@ Companion: [`tag-assignment.md`](tag-assignment.md) (vocabulary and the tags of 
 ### 3.2 Schema
 
 The instance attributes are `selfApplication`, `branch`, `name`, `skip`, `description`, `definition` (+ the `entityDefinitionRoot` extension). `viewAttributes` is `["name", "uuid", "description"]`. `testTag` (string or string[], optional) is declared on `miroirTestForTransformer`, `miroirTestForFunctionCall`, `miroirTestForRunner` and `miroirTestForAction`; no instance sets it and no source outside `preprocessor-generated/` reads it. The only instance-level flags that classify are `skip` and, on `reactComponentTestSuite`, `runOnDemand` (#303).
+
+**Found during Slice 2 (misaligned, out of scope):** `mlsTypeCheck` accepts any value for an `enum` schema (`mlsTypeCheck.ts`, `case "enum"` returns `ok` unconditionally), so model validation does not reject an unknown tag. Making it strict breaks 7 existing instances in the library and miroir deployments (wrong `conceptLevel` values, a `color` string format). Filed as [#313](https://github.com/miroir-framework/miroir/issues/313); this issue relies on the T7 guard instead.
 
 ### 3.3 Derived classification (aligned: kept as is)
 

@@ -10,9 +10,11 @@ import {
   listCliUnitSuiteKeysFromFolders,
   loadApplicationMiroirTestCatalog,
   loadApplicationMiroirTestsFromFolders,
+  loadMiroirTestEntityFromFolders,
   resolveCliSuiteKeysFromCatalog,
   resolveMonorepoRoot,
 } from "../../src/5_tests/loadApplicationMiroirTestsFromFolders";
+import { getMiroirTestAllowedTags } from "../../src/5_tests/miroirTestTags";
 import { checkModelValidationInstance } from "../../src/5_tests/ModelValidationTools";
 import {
   miroirTestCliConfigToEnv,
@@ -101,5 +103,37 @@ describe("MiroirTest tags: schema", () => {
       defaultMiroirModelEnvironment,
     );
     expect(check.status).toBe("ok");
+  });
+});
+
+describe("MiroirTest tags: vocabulary from the MiroirTest Entity", () => {
+  const catalog = loadApplicationMiroirTestCatalog(repoRoot);
+  const unitKeys = listCliUnitSuiteKeysFromFolders(repoRoot);
+  const miroirTestEntity = loadMiroirTestEntityFromFolders(repoRoot);
+
+  it("reads the allowed tags from the live Entity row, in declaration order", () => {
+    expect(miroirTestEntity.uuid).toBe(ENTITY_MIROIR_TEST_UUID);
+    const allowed = getMiroirTestAllowedTags(miroirTestEntity);
+    expect(allowed).toHaveLength(20);
+    expect(allowed?.slice(0, 3)).toEqual(["transformer", "ml-schema", "ml-union"]);
+    expect(allowed).toContain("tools");
+  });
+
+  it("accepts any tag when the Entity declares plain string tags", () => {
+    const unconstrained: any = structuredClone(miroirTestEntity);
+    unconstrained.mlSchema.definition.tags.definition = { type: "string" };
+    expect(getMiroirTestAllowedTags(unconstrained)).toBeUndefined();
+  });
+
+  it("rejects an unknown tag, listing the allowed ones", () => {
+    expect(() => resolveCliSuiteKeysFromCatalog([], unitKeys, catalog, ["toolz"])).toThrow(
+      /Unknown tag "toolz".*transformer, ml-schema/,
+    );
+  });
+
+  it("rejects a tag selection that matches no available suite", () => {
+    expect(() => resolveCliSuiteKeysFromCatalog([], unitKeys, catalog, ["mcp"])).toThrow(
+      /No suite carries any of the tags mcp/,
+    );
   });
 });
