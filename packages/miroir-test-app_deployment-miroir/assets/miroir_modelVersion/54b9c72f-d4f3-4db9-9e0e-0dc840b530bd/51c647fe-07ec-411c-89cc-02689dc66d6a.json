@@ -11,6 +11,7 @@
   },
   "viewAttributes": [
     "name",
+    "tags",
     "uuid",
     "description"
   ],

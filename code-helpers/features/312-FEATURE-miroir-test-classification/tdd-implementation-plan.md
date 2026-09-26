@@ -15,7 +15,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/312
 Working branch: `claude/project-thread-4gyfzk` (from `_integration`)
 
-**Resume note:** Slices 1–4 DONE.
+**Resume note:** Slices 1–5 DONE.
 
 ---
 
@@ -39,7 +39,7 @@ This plan does **not** tag leaves, add all-of matching, tag other Entities, chan
 | 2 | Unknown tags rejected, from the Entity vocabulary | ✅ | `miroirTestTags.unit.test.ts` (CLI errors) |
 | 3 | Every MiroirTest tagged | ✅ | guard test over the folder catalog + `modelValidation` |
 | 4 | `--tags` in the standalone-app launcher | ✅ | `testMiroirLauncher.tags.unit.test.ts` |
-| 5 | Tags in the Miroir Tests page | ⬜ | `MiroirTestListDisplay.unit.test.tsx` + grid column test |
+| 5 | Tags in the Miroir Tests page | ✅ | `MiroirTestListDisplay.unit.test.tsx` + grid column test |
 | 6 | Docs, nonreg, AC | ⬜ | `nonreg:unit` + tracer narrative |
 
 ---
@@ -232,7 +232,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ## Slice 5 — Tags in the Miroir Tests page
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** in the app, the Miroir Tests grid shows a sortable, filterable Tags column, and tag chips restrict "Run All".
 
@@ -254,7 +254,12 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-_(pending)_
+- `viewAttributes` of the Entity row and EntityVersion: `["name", "tags", "uuid", "description"]` (no type change, so no `devBuild`; deployment rebuilt).
+- `miroirTestTags.ts`: `filterMiroirTestInstancesByTags`, `listMiroirTestTagCounts` (exported). `MiroirTestListDisplay`: `selectedTags` state, one `aria-pressed` chip per tag present (`tag (count)`), header `Miroir Tests Available (n of total)` while a tag is selected; the filtered list feeds both Run All buttons, the capability counts and the results list.
+- Tests: two cases in `MiroirTestListDisplay.unit.test.tsx`; its existing `RunAllMiroirTestsButton` stub now exposes the suites it receives (`data-suites`). One case in `getColumnDefinitionsFromEntityAttributes.unit.test.ts`, which had to go through `entityMLSchema` as `ReportSectionListDisplay` does (the raw `mlSchema` lacks the inherited `uuid`).
+- Grid behavior checked in the ag-grid 31.3.4 source rather than in a browser: `defaultComparator` compares non-strings with `<` / `>`, so an array sorts as its comma-joined string (by first tag); the text filter lower-cases `toString()`, so "contains runner" matches `["runner","data"]`.
+- Refactor checkpoint: the app's `getMiroirTestSuiteKey` / `sortMiroirTestInstances` duplicate miroir-core's `suiteKeyFromMiroirTestInstance`; 3 files use them, left as is to keep the change local.
+- Validation: `MiroirTestListDisplay.unit` 6/6, `getColumnDefinitionsFromEntityAttributes.unit` 2/2, `tsc` miroir-core and miroir-standalone-app clean.
 
 ---
 

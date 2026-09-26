@@ -1602,8 +1602,10 @@ export {
 } from "./5_tests/applicationMiroirTestCatalog.js";
 export {
   assertAllowedMiroirTestTags,
+  filterMiroirTestInstancesByTags,
   getMiroirTestAllowedTags,
   getMiroirTestInstanceTags,
+  listMiroirTestTagCounts,
   miroirTestInstanceHasAnyTag,
 } from "./5_tests/miroirTestTags.js";
 export {
