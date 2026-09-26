@@ -30,165 +30,89 @@ There are two main query types:
 **BEFORE starting any query work, verify current test state to avoid investigating unrelated issues:**
 
 ```bash
-# Run query unit tests
-npm run vitest -w miroir-core -- queries.unit
-
-# Run query template resolution tests
-npm run vitest -w miroir-core -- resolveQueryTemplates.unit
+npm run testMiroir -w miroir-core -- --suites queries_library,resolveQueryTemplates --mode unit
+npm run testMiroir -w miroir-standalone-app -- --suites queries_library --mode integration
 ```
 
 If tests are failing, inform the user of the baseline state before proceeding.
 
 ---
 
+## Where query tests live
+
+Query tests are **MiroirTest** instances (see `docs/reference/testing.md`), not vitest files:
+
+| Suite (`--suites` name) | File | Leaves |
+|---|---|---|
+| `queries_library` | `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/a7a74c51-f24e-43d6-bd62-ba3ebcded97d.json` | `queryTest` |
+| `resolveQueryTemplates` | `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/40fd4dae-037c-4b1b-ad33-204d15e90dba.json` | template resolution |
+
+After editing a MiroirTest JSON file, rebuild the deployment package before running:
+
+```bash
+npm run build -w miroir-test-app_deployment-miroir
+```
+
 ## Test Execution Commands
 
-### Unit Tests (In-Memory - Fast)
-
 ```bash
-# All query unit tests
-npm run vitest -w miroir-core -- queries.unit
+# Unit (in-memory, fast)
+npm run testMiroir -w miroir-core -- --suites queries_library --mode unit
 
-# Query template resolution tests
-npm run vitest -w miroir-core -- resolveQueryTemplates.unit
+# Integration (runs in miroir-standalone-app against a store profile)
+npm run testMiroir -w miroir-standalone-app -- --suites queries_library --mode integration
 
-# Watch mode for TDD
-npm run vitest -w miroir-core -- queries.unit --watch
+# Only some leaves: catalog-root key = suite name, values = miroirTestLabel
+npm run testMiroir -w miroir-core -- --suites queries_library --mode unit \
+  --filter '{"queries_library":["select Authors with values filter (multiple values)"]}'
 ```
 
-### Integration Tests (Database Execution)
-
-#### Filesystem Persistence
-```bash
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem npm run vitest -w miroir-standalone-app -- ExtractorPersistenceStoreRunner.integ
-```
-
-#### IndexedDB Persistence
-```bash
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb npm run vitest -w miroir-standalone-app -- ExtractorPersistenceStoreRunner.integ
-```
-
-#### PostgreSQL Persistence
-```bash
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql npm run vitest -w miroir-standalone-app -- ExtractorPersistenceStoreRunner.integ
-```
-
-### Extractor Template Tests (with Query Resolution)
-
-```bash
-# Filesystem
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem npm run vitest -w miroir-standalone-app -- ExtractorTemplatePersistenceStoreRunner.integ
-
-# IndexedDB
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb npm run vitest -w miroir-standalone-app -- ExtractorTemplatePersistenceStoreRunner.integ
-
-# PostgreSQL
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql npm run vitest -w miroir-standalone-app -- ExtractorTemplatePersistenceStoreRunner.integ
-```
-
----
-
-## Narrowing Down Test Execution
-
-### Using Vitest Pattern Matching
-
-Run specific tests by name pattern:
-
-```bash
-# Run tests matching "select 1 object"
-npm run vitest -w miroir-core -- queries.unit -t "select 1 object"
-
-# Run tests matching "combiner"
-npm run vitest -w miroir-core -- queries.unit -t "combiner"
-
-# Run tests matching "filter"
-npm run vitest -w miroir-core -- queries.unit -t "filter"
-```
-
-### Using Test Name Filter in queries.unit.test.ts
-
-The test file uses `it.each()` with a `testExtractorParams` record. Filter tests by:
-
-1. **Comment out unwanted test cases** in the `testExtractorParams` object
-2. **Use `.only`** on specific test:
-   ```typescript
-   it.only.each([["test name", testParams]])(...)
-   ```
-
-### Integration Test Filtering
-
-For integration tests, use the `-t` flag with vitest:
-
-```bash
-# Run only "select object by direct reference" tests
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem npm run vitest -w miroir-standalone-app -- ExtractorPersistenceStoreRunner.integ -t "select object"
-```
+Store-level PLATFORM tests (no MiroirTest entity) remain vitest files, run by file name:
+`packages/miroir-standalone-app/tests/4_storage/ExtractorPersistenceStoreRunner.integ.test.tsx`
+(`npm run testByFile -w miroir-standalone-app -- ExtractorPersistenceStoreRunner.integ`, see `AGENTS.md` for per-store config).
 
 ---
 
 ## TDD Workflow for Queries
 
 ### Step 1: Verify Current Test State
-Always run tests first to establish baseline:
-```bash
-npm run vitest -w miroir-core -- queries.unit
-```
+Run the pre-flight commands above.
 
 ### Step 2: Write the Test First
-Add test case to `packages/miroir-core/tests/2_domain/queries.unit.test.ts`:
+Add a `queryTest` leaf to the `queries_library` suite file. Shape of a leaf:
 
-```typescript
-"my new query test": {
-  queryTemplate: {
-    queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-    application: selfApplicationLibrary.uuid,
-    contextResults: {},
-    pageParams: {},
-    queryParams: {},
-    extractorTemplates: {
-      // Define extractors with build-time interpolation
-    },
-    combinerTemplates: {
-      // Define combiners with runtime references
-    },
+```json
+{
+  "miroirTestType": "queryTest",
+  "miroirTestLabel": "my new query test",
+  "fixtureRef": "libraryDomainState",
+  "runner": "runQueryFromDomainState",
+  "query": {
+    "queryType": "boxedQueryWithExtractorCombinerTransformer",
+    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+    "extractors": { },
+    "combiners": { }
   },
-  query: {
-    queryType: "boxedQueryWithExtractorCombinerTransformer",
-    application: selfApplicationLibrary.uuid,
-    contextResults: {},
-    pageParams: {},
-    queryParams: {},
-    extractors: {
-      // Resolved extractors (no templates)
-    },
-    combiners: {
-      // Resolved combiners
-    },
-  },
-  ...testExtractorTools,
-  testAssertions: {
-    test1: {
-      resultAccessPath: ["myExtractorName"], // Optional: navigate to specific result
-      expectedResult: {
-        // Expected output
-      },
-    },
-  },
-},
+  "assertions": [
+    { "label": "test1", "expectedValue": { } }
+  ]
+}
 ```
+
+Copy an existing leaf close to what you need; the suite file shows the templated (`queryTemplate`) variants and `resultAccessPath` usage.
 
 ### Step 3: Run the Test (Expect Failure)
 ```bash
-npm run vitest -w miroir-core -- queries.unit -t "my new query test"
+npm run build -w miroir-test-app_deployment-miroir
+npm run testMiroir -w miroir-core -- --suites queries_library --mode unit \
+  --filter '{"queries_library":["my new query test"]}'
 ```
 
 ### Step 4: Implement/Fix the Query
 Modify extractors, combiners, or transformers as needed.
 
 ### Step 5: Run Tests Again (Expect Success)
-```bash
-npm run vitest -w miroir-core -- queries.unit -t "my new query test"
-```
+Same command as Step 3, then the integration run.
 
 ---
 
@@ -410,8 +334,8 @@ runtimeTransformers: {
 
 | Purpose | Path |
 |---------|------|
-| Query unit tests | `packages/miroir-core/tests/2_domain/queries.unit.test.ts` |
-| Query template resolution tests | `packages/miroir-core/tests/2_domain/resolveQueryTemplates.unit.test.ts` |
+| Query tests (MiroirTest `queries_library`) | `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/a7a74c51-f24e-43d6-bd62-ba3ebcded97d.json` |
+| Template resolution tests (MiroirTest `resolveQueryTemplates`) | `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/40fd4dae-037c-4b1b-ad33-204d15e90dba.json` |
 | Extractor integration tests | `packages/miroir-standalone-app/tests/4_storage/ExtractorPersistenceStoreRunner.integ.test.tsx` |
 | Template integration tests | `packages/miroir-standalone-app/tests/4_storage/ExtractorTemplatePersistenceStoreRunner.integ.test.tsx` |
 | Domain state test data | `packages/miroir-core/tests/2_domain/domainState.json` |
@@ -585,7 +509,7 @@ Commonly used UUIDs from the Library example application:
 ### Enable Debug Logging
 
 ```bash
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run vitest -w miroir-core -- queries.unit
+VITE_MIROIR_LOG_CONFIG_FILENAME=scope-query npm run testMiroir -w miroir-core -- --suites queries_library --mode unit
 ```
 
 ### Check Query Resolution
@@ -641,8 +565,8 @@ Before submitting query changes:
 - [ ] Pre-flight tests passed (baseline established)
 - [ ] Test case(s) written first (TDD)
 - [ ] Both `queryTemplate` and `query` provided (when applicable)
-- [ ] `testAssertions` defined with expected results
-- [ ] Unit tests pass: `npm run vitest -w miroir-core -- queries.unit`
+- [ ] `assertions` defined with expected results
+- [ ] Unit tests pass: `npm run testMiroir -w miroir-core -- --suites queries_library --mode unit`
 - [ ] Query template resolution tested (if using templates)
 - [ ] Integration tests pass on at least one storage backend
 
@@ -814,7 +738,7 @@ applyTransformer: {
 ## Additional Resources
 
 - See [implementation.md](implementation.md) for detailed query execution architecture
-- See [query-editor SKILL.md](../query-editor/SKILL.md) for transformer-related query work
-- See existing tests in `queries.unit.test.ts` for more patterns
-- Review `resolveQueryTemplates.unit.test.ts` for template resolution examples
+- See [miroir-edit-transformers](../miroir-edit-transformers/SKILL.md) for transformer work used inside queries
+- See existing leaves in the `queries_library` suite for more patterns
+- Review the `resolveQueryTemplates` suite for template resolution examples
 - Check [ExtractorByEntityReturningObjectListTools.md](../../packages/miroir-core/src/2_domain/ExtractorByEntityReturningObjectListTools.md) for filter/orderBy details

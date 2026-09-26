@@ -1,5 +1,5 @@
 ---
-name: assess-evolution-quality
+name: miroir-assess-evolution-quality
 description: >
   Assess the quality of a software project **evolution** from its git history and GitHub issue history.
   Evaluates lean/agile-aligned evolution practices: the core thesis is that quality and throughput

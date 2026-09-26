@@ -5,15 +5,17 @@ This file contains detailed examples of Miroir Query test patterns.
 ## Quick Test Commands
 
 ```bash
-# Run all query unit tests
-npm run vitest -w miroir-core -- queries.unit
+# Run all query tests (MiroirTest suite queries_library)
+npm run testMiroir -w miroir-core -- --suites queries_library --mode unit
 
-# Run specific test by name
-npm run vitest -w miroir-core -- queries.unit -t "select 1 object"
-
-# Watch mode for TDD
-npm run vitest -w miroir-core -- queries.unit --watch -t "my test name"
+# Run specific leaves by miroirTestLabel
+npm run testMiroir -w miroir-core -- --suites queries_library --mode unit --filter '{"queries_library":["my test name"]}'
 ```
+
+> The examples below show query shapes in the former vitest (TypeScript) form. Current tests are
+> `queryTest` leaves in the `queries_library` MiroirTest suite (JSON, see [SKILL.md](SKILL.md)):
+> the `query` / `queryTemplate` bodies carry over as-is; `testAssertions.<k>.expectedResult`
+> becomes `assertions: [{"label": "<k>", "expectedValue": ...}]`.
 
 ---
 

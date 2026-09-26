@@ -462,7 +462,7 @@ const result = selectEntityInstanceUuidIndexFromDomainState(
 );
 ```
 
-**File**: `packages/miroir-core/tests/2_domain/queries.unit.test.ts`
+**Suite**: MiroirTest `queries_library` (`packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/a7a74c51-f24e-43d6-bd62-ba3ebcded97d.json`)
 
 ### Integration Tests
 
@@ -509,7 +509,7 @@ This minimizes data transferred through the pipeline.
 ### Enable Query Logging
 
 ```bash
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run vitest -w miroir-core -- queries.unit
+VITE_MIROIR_LOG_CONFIG_FILENAME=scope-query npm run testMiroir -w miroir-core -- --suites queries_library --mode unit
 ```
 
 ### Common Log Points

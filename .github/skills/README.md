@@ -50,7 +50,7 @@ Create and update **Miroir Queries** (with Extractors, Combiners, and Transforme
 
 ### Process & Quality Skills
 
-#### 📊 [assess-evolution-quality](../../.agents/skills/assess-evolution-quality/)
+#### 📊 [miroir-assess-evolution-quality](../../.agents/skills/miroir-assess-evolution-quality/)
 Assess the quality of a software project **evolution** from its git history and GitHub issue history.
 
 **Use when:**
@@ -66,13 +66,13 @@ counter-examples, and a "Mistakes" catalogue of reversed decisions.
 
 ---
 
-### Other Skills
+### Feature Workflow Skills
 
-#### [create-skill](../../.agents/skills/create-skill/)
-Tools for creating new Copilot skills.
+#### [miroir-feature-analysis](../../.agents/skills/miroir-feature-analysis/)
+Write `code-helpers/features/<NNN>-<TYPE>-<slug>/analysis.md` for an issue: current state, decision record confirmed with the maintainer, goals as user stories.
 
-#### [query-editor](../../.agents/skills/query-editor/)
-Legacy query/transformer workflow (see [miroir-edit-queries](../../.agents/skills/miroir-edit-queries/) for TDD-focused query work).
+#### [miroir-analysis-to-tdd-plan](../../.agents/skills/miroir-analysis-to-tdd-plan/)
+Turn an `analysis.md` into `tdd-implementation-plan.md`: vertical slices, MiroirTest first, no mocks.
 
 ---
 
@@ -202,8 +202,9 @@ This is the original unified transformer skill that handled both library and com
 ## Contributing
 
 When creating new skills:
-1. Use [create-skill](../../.agents/skills/create-skill/) as a template
+1. Follow the `writing-for-agents` skill; name Miroir-owned skills `miroir-<topic>` and put them in `.agents/skills/`
 2. Follow the established pattern (SKILL.md, README.md, examples.md)
 3. Include JSON templates where applicable
 4. Add comprehensive examples
 5. Update this README with the new skill
+6. Run `python scripts/sync_agent_skills.py` to refresh the `.claude/skills/` copies
