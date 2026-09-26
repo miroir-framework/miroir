@@ -1,10 +1,10 @@
 import { useFormikContext } from "formik";
 import {
-  getDefaultValueForJzodSchemaWithResolutionNonHook,
-  JzodElement,
-  JzodEnum,
-  JzodLiteral,
-  jzodUnionResolvedTypeForObject,
+  getDefaultValueForMlSchemaWithResolutionNonHook,
+  MlElement,
+  MlEnum,
+  MlLiteral,
+  mlUnionResolvedTypeForObject,
   KeyMapEntry,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -12,8 +12,8 @@ import {
   resolvePathOnObject,
   TransformerFailure,
   type ApplicationDeploymentMap,
-  type JzodObject,
-  type JzodUnion,
+  type MlObject,
+  type MlUnion,
   type ReduxDeploymentsState,
   type ReduxStateWithUndoRedo,
   type SyncBoxedExtractorOrQueryRunnerMap,
@@ -28,7 +28,7 @@ import {
   ThemedLabeledEditor,
   ThemedSelectWithPortal
 } from "../Themes/index";
-import { JzodEnumEditorProps } from "./JzodElementEditorInterface";
+import { MlEnumEditorProps } from "./MlElementEditorInterface";
 import { isPrimaryUnionDiscriminatorField } from "./unionDiscriminatorField.js";
 import { useSelector } from "react-redux";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-localcache-redux";
@@ -36,7 +36,7 @@ import { JsonDisplayHelper } from "miroir-react";
 import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
 
 // Common function to handle discriminator changes
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodEnumEditor");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlEnumEditor");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI"
 ).then((logger: LoggerInterface) => {
@@ -122,7 +122,7 @@ const handleDiscriminatorChange = (
   //     "handleDiscriminatorChange called but current object does not have a string discriminator!"
   //   );
   // }
-  let newJzodSchema: JzodElement | undefined = undefined;
+  let newMlSchema: MlElement | undefined = undefined;
   let localChosenDiscriminator: string | undefined = undefined;
   if (Array.isArray(parentKeyMap.discriminator)) {
     if (!parentKeyMap.recursivelyUnfoldedUnionSchema) {
@@ -136,7 +136,7 @@ const handleDiscriminatorChange = (
       );
     }
     const discriminator: string | string[] = parentKeyMap.discriminator[0];
-    const currentObjectKeys = Object.keys((parentKeyMap.resolvedSchema as JzodObject).definition);
+    const currentObjectKeys = Object.keys((parentKeyMap.resolvedSchema as MlObject).definition);
     localChosenDiscriminator = !Array.isArray(discriminator)
       ? discriminator
       : parentKeyMap.discriminator.flat().find((d) => currentObjectKeys.includes(d));
@@ -168,38 +168,38 @@ const handleDiscriminatorChange = (
       "selectedValue",
       selectedValue,
     );
-    const resolveUnionResult = jzodUnionResolvedTypeForObject( 
+    const resolveUnionResult = mlUnionResolvedTypeForObject( 
       parentKeyMap.recursivelyUnfoldedUnionSchema.result,
-      parentKeyMap.rawSchema as JzodUnion,
+      parentKeyMap.rawSchema as MlUnion,
       parentKeyMap.discriminator,
       newParentValue,
       parentKeyMap.valuePath,
       parentKeyMap.typePath,
       modelEnvironment,
-      {}, // relativeReferenceJzodContext
+      {}, // relativeReferenceMlContext
     );
 
     log.info(
-      `handleDiscriminatorChange (${discriminatorType}) jzodUnionResolvedTypeForObject result`,
+      `handleDiscriminatorChange (${discriminatorType}) mlUnionResolvedTypeForObject result`,
       resolveUnionResult,
     );
     if (resolveUnionResult.status === "error") {
       throw new Error(
-        `handleDiscriminatorChange jzodUnionResolvedTypeForObject error: ${resolveUnionResult.error}`,
+        `handleDiscriminatorChange mlUnionResolvedTypeForObject error: ${resolveUnionResult.error}`,
       );
     }
-    newJzodSchema = resolveUnionResult.resolvedJzodObjectSchema;
+    newMlSchema = resolveUnionResult.resolvedMlObjectSchema;
   } else {
     localChosenDiscriminator = parentKeyMap.discriminator as string;
-    newJzodSchema = parentKeyMap.recursivelyUnfoldedUnionSchema?.result.find((a: JzodElement) => {
+    newMlSchema = parentKeyMap.recursivelyUnfoldedUnionSchema?.result.find((a: MlElement) => {
       if (a.type !== "object") return false;
       const discriminatorElement = a.definition[parentKeyMap.discriminator as string];
       if (!discriminatorElement) return false;
 
       if (discriminatorElement.type === "literal") {
-        return (discriminatorElement as JzodLiteral).definition === selectedValue;
+        return (discriminatorElement as MlLiteral).definition === selectedValue;
       } else if (discriminatorElement.type === "enum") {
-        return (discriminatorElement as JzodEnum).definition.includes(selectedValue);
+        return (discriminatorElement as MlEnum).definition.includes(selectedValue);
       } else if (
         discriminatorType === "schemaReference" &&
         discriminatorElement.type === "schemaReference"
@@ -219,29 +219,29 @@ const handleDiscriminatorChange = (
     });
   }
 
-  if (!newJzodSchema) {
+  if (!newMlSchema) {
     throw new Error(
       `handleDiscriminatorChange could not find union branch for discriminator ${parentKeyMap.discriminator} with value ${selectedValue} in ${JSON.stringify(parentKeyMap.resolvedSchema)}`,
     );
   }
 
-  const newJzodSchemaWithOptional = parentKeyMap.rawSchema.optional
+  const newMlSchemaWithOptional = parentKeyMap.rawSchema.optional
     ? {
-        ...newJzodSchema,
+        ...newMlSchema,
         optional: true,
       }
-    : newJzodSchema;
+    : newMlSchema;
 
   log.info(
     `handleDiscriminatorChange (${discriminatorType})`,
-    "newJzodSchema",
-    JSON.stringify(newJzodSchema, null, 2),
+    "newMlSchema",
+    JSON.stringify(newMlSchema, null, 2),
   );
   const defaultValue = modelEnvironment
     ? {
-        ...getDefaultValueForJzodSchemaWithResolutionNonHook(
+        ...getDefaultValueForMlSchemaWithResolutionNonHook(
           "build",
-          newJzodSchemaWithOptional,
+          newMlSchemaWithOptional,
           formik.values[reportSectionPathAsString],
           rootLessListKey,
           undefined, // currentDefaultValue
@@ -296,9 +296,9 @@ const handleDiscriminatorChange = (
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-// JzodEnumEditor Component
+// MlEnumEditor Component
 // ################################################################################################
-export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
+export const MlEnumEditor: FC<MlEnumEditorProps> = ({
   name,
   labelElement,
   listKey,
@@ -313,7 +313,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   currentApplicationSection,
   readOnly,
   onChangeVector,
-}: JzodEnumEditorProps) => {
+}: MlEnumEditorProps) => {
   const trackedRender = useTrackedRender(
     editorNavigationKey(currentDeploymentUuid, currentApplicationSection),
   );
@@ -325,8 +325,8 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
     : "";
   const parentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[parentKey] : undefined;
   const currentKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
-  // const rawJzodSchema = currentKeyMap?.rawSchema;
-  const currentEnumSchema: JzodElement | undefined = currentKeyMap?.resolvedSchema;
+  // const rawMlSchema = currentKeyMap?.rawSchema;
+  const currentEnumSchema: MlElement | undefined = currentKeyMap?.resolvedSchema;
   const formikRootLessListKeyArray = [reportSectionPathAsString, ...rootLessListKeyArray];
   const formikRootLessListKey = formikRootLessListKeyArray.join(".");
 
@@ -398,7 +398,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
       } catch (error) {
         const message =
           error instanceof Error ? error.message : "Failed to apply enum discriminator change";
-        log.error("JzodEnumEditor handleSelectEnumChange failed", error);
+        log.error("MlEnumEditor handleSelectEnumChange failed", error);
         setDiscriminatorChangeError(message);
       }
     },
@@ -481,7 +481,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
         } catch (error) {
           const message =
             error instanceof Error ? error.message : "Failed to apply enum discriminator change";
-          log.error("JzodEnumEditor handleFilterableSelectEnumChange failed", error);
+          log.error("MlEnumEditor handleFilterableSelectEnumChange failed", error);
           setDiscriminatorChangeError(message);
         }
       } else {
@@ -548,7 +548,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
             />
           )}
           {forceTestingMode ? (
-            <div>enumValues={JSON.stringify((currentEnumSchema as JzodEnum).definition)}</div>
+            <div>enumValues={JSON.stringify((currentEnumSchema as MlEnum).definition)}</div>
           ) : (
             <></>
           )}
@@ -573,24 +573,24 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
     name,
     selectOptions,
     handleFilterableSelectEnumChange,
-    // rawJzodSchema,
+    // rawMlSchema,
     forceTestingMode,
     isDiscriminator,
     handleSelectEnumChange,
   ]);
-  trackedRender.end("JzodEnumEditor", formikRootLessListKey);
+  trackedRender.end("MlEnumEditor", formikRootLessListKey);
   return (
     <div>
         <JsonDisplayHelper
           debug={true}
-          componentName="JzodEnumEditor"
+          componentName="MlEnumEditor"
           elements={[
             {
               label: `key "${formikRootLessListKey}" of type ${currentEnumSchema?.type}`,
               data: {
                 isDiscriminator,
                 selectOptions,
-                // rawJzodSchema,
+                // rawMlSchema,
                 currentEnumSchema,
                 currentKeyMap,
                 currentDiscriminatorValues,

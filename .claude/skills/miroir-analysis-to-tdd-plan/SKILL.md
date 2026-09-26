@@ -28,7 +28,7 @@ This skill **leverages the generic `tdd` skill's wisdom** (`.agents/skills/tdd/`
 
 ### 2. Interfaces are applicative first, code second
 
-The `tdd` skill's "public interface" means TS/JS signatures only. In Miroir the primary interface surface is **applicative**: Jzod schemas and JSON model elements — Entities, EntityVersions, Reports, Queries, Menus, Endpoints, Runners, MiroirTests. Rules:
+The `tdd` skill's "public interface" means TS/JS signatures only. In Miroir the primary interface surface is **applicative**: ML schemas and JSON model elements — Entities, EntityVersions, Reports, Queries, Menus, Endpoints, Runners, MiroirTests. Rules:
 
 - **Favor applicative interfaces whenever the behavior can be expressed as model data.** A new Report/Query/Runner asset is interface; a new exported TS function is a last resort.
 - Lock applicative contracts (JSON shapes, uuids, `menuItemScope`-style marker fields, endpoint action payload schemas) in **Slice 0** before any code changes.
@@ -56,7 +56,7 @@ Vitest is the **exception**, reserved for what cannot be expressed through the M
 Existing plans too often produced shallow slices (a module + its unit test, no observable behavior). Each slice in the plan **must**:
 
 - deliver **one observable behavior** — something a user, an MCP client, a runner, or a downstream model element can *do* that it could not do before;
-- cut through **all layers the behavior touches** in that slice (JSON asset → Jzod schema/generated type → domain/controller → view), even if each cut is thin;
+- cut through **all layers the behavior touches** in that slice (JSON asset → ML schema/generated type → domain/controller → view), even if each cut is thin;
 - be proven by **one new test** (RED) written against the applicative or code public interface, then minimal implementation (GREEN);
 - **deepen, not widen**: prefer adding behavior behind an existing interface over exporting new surface. A slice whose main output is a new exported helper with no new observable behavior is rejected at plan review.
 

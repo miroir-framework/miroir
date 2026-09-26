@@ -288,6 +288,8 @@ export declare const miroirTest_MlObjectEditor_ComponentTestSuite: any;
 export declare const miroirTest_MlSimpleTypeEditor_ComponentTestSuite: any;
 export declare const miroirTest_MlUnionEditor_ComponentTestSuite: any;
 export declare const miroirTest_MlAnyEditor_ComponentTestSuite: any;
+export declare const miroirTest_MlTestPattern_ComponentTestSuite: any;
+export declare const miroirTest_MlEditorRenderPerformance_ComponentTestSuite: any;
 export declare const transformerMenuV1: any;
 export declare const transformer_spreadSheetToMlSchema_json: any;
 export declare const transformer_ifThenElse_json: any;

@@ -90,7 +90,7 @@ export const MlElementStringEditor: React.FC<MlElementStringEditorProps> = (prop
   // Handle color format using ThemedColorPicker
   if (format === "color") {
     if (readOnly || localReadOnly) {
-      trackedRender.end("JzodElementStringEditor", formikRootLessListKey);
+      trackedRender.end("MlElementStringEditor", formikRootLessListKey);
       return (
         <ThemedLabeledEditor
           labelElement={enhancedLabelElement}
@@ -98,7 +98,7 @@ export const MlElementStringEditor: React.FC<MlElementStringEditorProps> = (prop
         />
       );
     }
-    trackedRender.end("JzodElementStringEditor", formikRootLessListKey);
+    trackedRender.end("MlElementStringEditor", formikRootLessListKey);
     return (
       <ThemedLabeledEditor
         labelElement={enhancedLabelElement}
@@ -118,7 +118,7 @@ export const MlElementStringEditor: React.FC<MlElementStringEditorProps> = (prop
   // Handle file and folder formats using FileSelector
   if (format === "file" || format === "folder") {
     if (readOnly || localReadOnly) {
-      trackedRender.end("JzodElementStringEditor", formikRootLessListKey);
+      trackedRender.end("MlElementStringEditor", formikRootLessListKey);
       return (
         <ThemedLabeledEditor
           labelElement={enhancedLabelElement}
@@ -126,7 +126,7 @@ export const MlElementStringEditor: React.FC<MlElementStringEditorProps> = (prop
         />
       );
     }
-    trackedRender.end("JzodElementStringEditor", formikRootLessListKey);
+    trackedRender.end("MlElementStringEditor", formikRootLessListKey);
     return (
       <ThemedLabeledEditor
         labelElement={enhancedLabelElement}
@@ -152,7 +152,7 @@ export const MlElementStringEditor: React.FC<MlElementStringEditorProps> = (prop
 
   // Handle multiline text
   if (multiline) {
-    trackedRender.end("JzodElementStringEditor", formikRootLessListKey);
+    trackedRender.end("MlElementStringEditor", formikRootLessListKey);
     return (
       <ThemedLabeledEditor
         labelElement={enhancedLabelElement}
@@ -177,7 +177,7 @@ export const MlElementStringEditor: React.FC<MlElementStringEditorProps> = (prop
   }
 
   // Default single-line string input
-  trackedRender.end("JzodElementStringEditor", formikRootLessListKey);
+  trackedRender.end("MlElementStringEditor", formikRootLessListKey);
   return (
     <ThemedLabeledEditor
       labelElement={enhancedLabelElement}

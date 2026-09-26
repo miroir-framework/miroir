@@ -1,7 +1,7 @@
 /**
- * Issue #303 Slice 3: every JzodElementEditor component reports its renders (analysis T2, T3).
+ * Issue #303 Slice 3: every MlElementEditor component reports its renders (analysis T2, T3).
  *
- * The test pattern of `JzodTestPattern_ComponentTestSuite` (its suite `componentProps` and display
+ * The test pattern of `MlTestPattern_ComponentTestSuite` (its suite `componentProps` and display
  * leaf, read from the instance JSON) is run through `createReactComponentTestRunner` with a suite
  * context whose `stepKinds` contains `measureRendering`: the runner then builds the suite wrapper
  * with `trackRenders` (`initialShowPerformanceDisplay` on `MiroirContextReactProvider`), and every
@@ -39,22 +39,22 @@ const TEST_PATTERN_INSTANCE_FILE = join(
 
 /**
  * The editor components that the test pattern renders (analysis T2, plan Slice 3 RED). The
- * pattern's `anAny` (object value) renders through `JzodObjectEditor` (inside any);
- * `JzodElementEditor` renders `JzodAnyEditor` only for an `any` schema with
+ * pattern's `anAny` (object value) renders through `MlObjectEditor` (inside any);
+ * `MlElementEditor` renders `MlAnyEditor` only for an `any` schema with
  * `tag.value.display.any.format` (the app's file-bundle fields): the pattern's `anAnyFile` since
  * #303 Slice 4, and the separate `anyFileSuite` case.
  */
 const EXPECTED_PATTERN_COMPONENT_IDS = [
-  "JzodElementEditor",
-  "JzodAnyEditor",
-  "JzodEnumEditor",
-  "JzodLiteralEditor",
-  "JzodElementStringEditor",
-  "JzodUnionEditor",
-  "JzodArrayEditor",
-  "JzodTupleEditor",
-  "JzodObjectEditor",
-  "JzodRecordEditor",
+  "MlElementEditor",
+  "MlAnyEditor",
+  "MlEnumEditor",
+  "MlLiteralEditor",
+  "MlElementStringEditor",
+  "MlUnionEditor",
+  "MlArrayEditor",
+  "MlTupleEditor",
+  "MlObjectEditor",
+  "MlRecordEditor",
 ];
 
 const patternSuite: ReactComponentTestSuite = JSON.parse(readFileSync(TEST_PATTERN_INSTANCE_FILE, "utf-8"))
@@ -63,7 +63,7 @@ const displayLeaf: MiroirTestForReactComponent = patternSuite.miroirTests[0];
 
 function suiteContext(stepKinds: ReactComponentTestSuiteContext["stepKinds"]): ReactComponentTestSuiteContext {
   return {
-    suitePath: ["JzodTestPattern_ComponentTestSuite", patternSuite.miroirTestLabel],
+    suitePath: ["MlTestPattern_ComponentTestSuite", patternSuite.miroirTestLabel],
     component: patternSuite.component,
     componentProps: patternSuite.componentProps ?? {},
     caseLabels: [displayLeaf.miroirTestLabel],
@@ -74,14 +74,14 @@ function suiteContext(stepKinds: ReactComponentTestSuiteContext["stepKinds"]): R
 /** An `any` attribute with `display.any.format: "file"`, as `applicationBundle` of the Miroir deployment. */
 const anyFileSuite: ReactComponentTestSuiteContext = {
   suitePath: ["renderInsightCoverage", "AnyFile"],
-  component: "JzodElementEditor",
+  component: "MlElementEditor",
   componentProps: {
     label: "Test Label",
     name: "testField",
     listKey: "ROOT.testField",
     rootLessListKey: "testField",
     rootLessListKeyArray: ["testField"],
-    rawJzodSchema: {
+    rawMlSchema: {
       type: "object",
       definition: {
         aFile: { type: "any", tag: { value: { display: { any: { format: "file" } } } } },
@@ -176,7 +176,7 @@ describe("renderInsightCoverage.303.phase3", () => {
   );
 
   it(
-    "with a measureRendering step in the suite, JzodAnyEditor (any with display.any.format) reports its renders with a timing",
+    "with a measureRendering step in the suite, MlAnyEditor (any with display.any.format) reports its renders with a timing",
     async () => {
       runner = createReactComponentTestRunner({ sandboxElement });
       const result = await runner({
@@ -185,7 +185,7 @@ describe("renderInsightCoverage.303.phase3", () => {
         suite: anyFileSuite,
       });
       expect(result).toEqual({ status: "ok" });
-      expect(missingTimedComponentIds(["JzodAnyEditor"]), `timed components: ${[...timedComponentIds()].join(", ")}`).toEqual([]);
+      expect(missingTimedComponentIds(["MlAnyEditor"]), `timed components: ${[...timedComponentIds()].join(", ")}`).toEqual([]);
     },
     30000,
   );

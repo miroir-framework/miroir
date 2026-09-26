@@ -9,9 +9,9 @@
  * - `miroirTestDefinitionHasReactComponentTest` is true for each instance and for a fixture whose
  *   only component leaf is inside a `reactComponentTestSuite`;
  * - `miroir-test-app_deployment-miroir` exports `miroirTest_<name>` for the 7 names, and
- *   `defaultMiroirMetaModel.tests` holds the 7 uuids and not `JzodElementEditor_ComponentTestSuite`;
- * - (#303) the only other instances with component leaves are `JzodTestPattern_ComponentTestSuite`
- *   and `JzodEditorRenderPerformance_ComponentTestSuite`, exported and listed in
+ *   `defaultMiroirMetaModel.tests` holds the 7 uuids and not `MlElementEditor_ComponentTestSuite`;
+ * - (#303) the only other instances with component leaves are `MlTestPattern_ComponentTestSuite`
+ *   and `MlEditorRenderPerformance_ComponentTestSuite`, exported and listed in
  *   `defaultMiroirMetaModel.tests`;
  * - (Slice 5, Slice 6) every child is a `reactComponentTestSuite`, and every leaf has `steps`,
  *   only the attributes of the leaf schema (no legacy reference to a TypeScript case), and no
@@ -45,20 +45,20 @@ const BASELINE_PATH = join(
 
 /** Editor name to instance uuid (plan, "Allocated UUIDs and keys"). */
 const expectedInstances: Record<string, string> = {
-  JzodEnumEditor: "761d4ed2-1a5c-4901-a9d9-897dbec0b27f",
-  JzodArrayEditor: "1b71d68b-7dc9-468c-a251-4fa7889f20f4",
-  JzodLiteralEditor: "3995a071-b8ae-48d3-a488-6d1fc828b725",
-  JzodObjectEditor: "da353085-c62b-4aa6-bd54-8813d303dfe5",
-  JzodSimpleTypeEditor: "590693b6-2125-43fc-89d7-1330ae8318db",
-  JzodUnionEditor: "de517cd6-31a8-46d2-ac09-3a5162b630a7",
-  JzodAnyEditor: "ec601bcc-a27d-450d-9c37-bdd6a12a1575",
+  MlEnumEditor: "761d4ed2-1a5c-4901-a9d9-897dbec0b27f",
+  MlArrayEditor: "1b71d68b-7dc9-468c-a251-4fa7889f20f4",
+  MlLiteralEditor: "3995a071-b8ae-48d3-a488-6d1fc828b725",
+  MlObjectEditor: "da353085-c62b-4aa6-bd54-8813d303dfe5",
+  MlSimpleTypeEditor: "590693b6-2125-43fc-89d7-1330ae8318db",
+  MlUnionEditor: "de517cd6-31a8-46d2-ac09-3a5162b630a7",
+  MlAnyEditor: "ec601bcc-a27d-450d-9c37-bdd6a12a1575",
 };
 const instanceName = (editor: string) => `${editor}_ComponentTestSuite`;
 
 /** Component test instances added after #292, not per-editor: name to uuid (#303 plan). */
 const laterComponentInstances: Record<string, string> = {
-  JzodTestPattern_ComponentTestSuite: "26ef2886-2cd8-4f91-b846-1525b24d5f41",
-  JzodEditorRenderPerformance_ComponentTestSuite: "2da30877-d248-44bd-9786-5c091b1bc8fc",
+  MlTestPattern_ComponentTestSuite: "26ef2886-2cd8-4f91-b846-1525b24d5f41",
+  MlEditorRenderPerformance_ComponentTestSuite: "2da30877-d248-44bd-9786-5c091b1bc8fc",
 };
 
 /** The attributes of `miroirTestForReactComponent` since #292 M1. */
@@ -178,7 +178,7 @@ describe("per-editor component test MiroirTest instances", () => {
         {
           miroirTestType: "reactComponentTestSuite",
           miroirTestLabel: "S",
-          component: "JzodElementEditor",
+          component: "MlElementEditor",
           miroirTests: [{ miroirTestType: "reactComponentTest", miroirTestLabel: "A", steps: [] }],
         },
       ],
@@ -192,14 +192,14 @@ describe("per-editor component test MiroirTest instances", () => {
       (editor) => exports[`miroirTest_${instanceName(editor)}`]?.uuid !== expectedInstances[editor],
     );
     expect(missingExports).toEqual([]);
-    expect(exports["miroirTest_JzodElementEditor_ComponentTestSuite"]).toBeUndefined();
+    expect(exports["miroirTest_MlElementEditor_ComponentTestSuite"]).toBeUndefined();
 
     const testUuids = defaultMiroirMetaModel.tests.map((test: any) => test.uuid);
     const testNames = defaultMiroirMetaModel.tests.map((test: any) => test.name);
     for (const uuid of Object.values(expectedInstances)) {
       expect(testUuids).toContain(uuid);
     }
-    expect(testNames).not.toContain("JzodElementEditor_ComponentTestSuite");
+    expect(testNames).not.toContain("MlElementEditor_ComponentTestSuite");
     for (const [name, uuid] of Object.entries(laterComponentInstances)) {
       expect(exports[`miroirTest_${name}`]?.uuid, name).toBe(uuid);
       expect(testUuids).toContain(uuid);

@@ -149,6 +149,8 @@ import {
   miroirTest_MlSimpleTypeEditor_ComponentTestSuite,
   miroirTest_MlUnionEditor_ComponentTestSuite,
   miroirTest_MlAnyEditor_ComponentTestSuite,
+  miroirTest_MlTestPattern_ComponentTestSuite,
+  miroirTest_MlEditorRenderPerformance_ComponentTestSuite,
   modelEndpointV1,
   queryVersionBundleProducerV1,
   persistenceEndpointVersionV1,
@@ -410,6 +412,8 @@ export const defaultMiroirMetaModel: MetaModel = {
     miroirTest_MlSimpleTypeEditor_ComponentTestSuite as MiroirTestDefinition,
     miroirTest_MlUnionEditor_ComponentTestSuite as MiroirTestDefinition,
     miroirTest_MlAnyEditor_ComponentTestSuite as MiroirTestDefinition,
+    miroirTest_MlTestPattern_ComponentTestSuite as MiroirTestDefinition,
+    miroirTest_MlEditorRenderPerformance_ComponentTestSuite as MiroirTestDefinition,
     // miroirTest_mustache as MiroirTestDefinition
   ],
   themes: [

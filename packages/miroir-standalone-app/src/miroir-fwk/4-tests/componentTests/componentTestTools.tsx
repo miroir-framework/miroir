@@ -446,7 +446,7 @@ export function createRecordingFunction(): RecordingFunction {
 export interface BuildComponentTestWrapperOptions {
   /**
    * Turns render insight tracking on (`showPerformanceDisplay`) for the wrapped tree (#303):
-   * every JzodElementEditor component then reports its renders to `renderInsightRegistry`
+   * every MlElementEditor component then reports its renders to `renderInsightRegistry`
    * and the container editors render their insight chips. Off by default (same DOM as before).
    */
   trackRenders?: boolean;

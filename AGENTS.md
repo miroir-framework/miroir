@@ -72,7 +72,7 @@ Build in this order (`build-all.sh` is canonical; `./build-all.sh` or `./build-a
 
 Artefacts: `miroir-server` release binary (`npm run build:release -w miroir-server`), `miroir-standalone-app-electron`, Docker image. `miroir-designer` and `miroir-runtime` are unused stubs.
 
-**Generated types:** `npm run devBuild -w miroir-core` regenerates `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/` (mainly `miroirFundamentalType.ts`) from ML schemas, then builds. Run it after every change to a core schema in `packages/miroir-test-app_deployment-miroir/assets`, once `miroir-test-app_deployment-miroir` itself is rebuilt. Generator helpers: `packages/miroir-core/src/0_interfaces/1_core/bootstrapJzodSchemas/`.
+**Generated types:** `npm run devBuild -w miroir-core` regenerates `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/` (mainly `miroirFundamentalType.ts`) from ML schemas, then builds. Run it after every change to a core schema in `packages/miroir-test-app_deployment-miroir/assets`, once `miroir-test-app_deployment-miroir` itself is rebuilt. Generator helpers: `packages/miroir-core/src/0_interfaces/1_core/bootstrapMlSchemas/`.
 
 **Note**: `miroir-core` has a `devBuild` step to generate TypeScript types (the files in `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated`) from ML schemas. It must be built every time some core schema in `packages/miroir-test-app_deployment-miroir/assets` is modified, after building `miroir-test-app_deployment-miroir` itself. Prefer `./build-all.sh` / `./build-all.sh devBuild` for full ordered builds.
 

@@ -2,12 +2,12 @@
  * Issue #303 Slice 4: the `measureRendering` step puts per-component render measurements in the
  * test result (analysis D5, D9, D10, T4, T5, T7).
  *
- * A one-leaf `reactComponentTestSuite` on the Enum schema (props of `JzodEnumEditor_ComponentTestSuite`)
+ * A one-leaf `reactComponentTestSuite` on the Enum schema (props of `MlEnumEditor_ComponentTestSuite`)
  * with `{step: "measureRendering", iterations: 2, mode: "both", updateProps: {initialFormState: "value3"}}`
  * is run through the real MiroirTest walk (`runMiroirTests._runMiroirTestSuite`, as the component
  * test vitest entry does) with the real component test runner and a real `MiroirActivityTracker`.
  * The leaf's `TestAssertionResult` read back from the tracker must carry `assertionMeasurements`
- * with `remount` and `update` entries for `JzodEnumEditor` and `JzodElementEditor`, and so must the
+ * with `remount` and `update` entries for `MlEnumEditor` and `MlElementEditor`, and so must the
  * rows built by the app's `generateTestReport`. A second run with `iterationsOverride: 1` on the
  * runner yields one sample per component and mode.
  *
@@ -48,14 +48,14 @@ function enumMeasureSuite(suiteLabel: string, finalValue: string): ReactComponen
   return {
     miroirTestType: "reactComponentTestSuite",
     miroirTestLabel: suiteLabel,
-    component: "JzodElementEditor",
+    component: "MlElementEditor",
     componentProps: {
       label: "Test Label",
       name: "testField",
       listKey: "ROOT.testField",
       rootLessListKey: "testField",
       rootLessListKeyArray: ["testField"],
-      rawJzodSchema: { type: "enum", definition: ["value1", "value2", "value3"] },
+      rawMlSchema: { type: "enum", definition: ["value1", "value2", "value3"] },
       initialFormState: "value2",
     },
     miroirTests: [
@@ -172,10 +172,10 @@ describe("measureRendering.303.phase4: iterations 2, mode both", async () => {
   const { tracker, walk } = measuredSuite("EnumMeasure", undefined, "value2");
   await walk;
 
-  it("the leaf is ok and carries remount and update measurements for JzodEnumEditor and JzodElementEditor", () => {
+  it("the leaf is ok and carries remount and update measurements for MlEnumEditor and MlElementEditor", () => {
     const assertion = leafAssertion(tracker);
     expect(assertion.assertionResult).toBe("ok");
-    for (const componentId of ["JzodEnumEditor", "JzodElementEditor"]) {
+    for (const componentId of ["MlEnumEditor", "MlElementEditor"]) {
       for (const mode of ["remount", "update"] as const) {
         const entry = measurement(assertion, componentId, mode);
         expect(entry.count).toBeGreaterThanOrEqual(2);
@@ -202,7 +202,7 @@ describe("measureRendering.303.phase4: iterationsOverride 1 on the runner", asyn
   it("yields one sample per component and mode", () => {
     const assertion = leafAssertion(tracker);
     expect(assertion.assertionResult).toBe("ok");
-    for (const componentId of ["JzodEnumEditor", "JzodElementEditor"]) {
+    for (const componentId of ["MlEnumEditor", "MlElementEditor"]) {
       for (const mode of ["remount", "update"] as const) {
         expect(measurement(assertion, componentId, mode).count).toBe(1);
       }

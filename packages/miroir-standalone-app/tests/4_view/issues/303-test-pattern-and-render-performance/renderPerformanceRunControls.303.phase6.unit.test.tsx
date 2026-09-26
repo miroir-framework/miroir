@@ -50,12 +50,12 @@ import {
   defaultMiroirMetaModel,
   entityEntity,
   entityEntityVersion,
-  entityJzodSchema,
+  entityMlSchema,
   entityMenu,
   entityReport,
   entitySelfApplicationVersion,
-  miroirTest_JzodEditorRenderPerformance_ComponentTestSuite,
-  miroirTest_JzodEnumEditor_ComponentTestSuite,
+  miroirTest_MlEditorRenderPerformance_ComponentTestSuite,
+  miroirTest_MlEnumEditor_ComponentTestSuite,
   miroirTest_resolveConditionalSchema,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
@@ -78,8 +78,8 @@ import { MiroirTestListDisplay } from "../../../../src/miroir-fwk/4_view/compone
 import { ReportPageContextProvider } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportPageContext";
 
 // ################################################################################################
-const perfInstance = miroirTest_JzodEditorRenderPerformance_ComponentTestSuite as unknown as MiroirTestDefinition;
-const enumInstance = miroirTest_JzodEnumEditor_ComponentTestSuite as unknown as MiroirTestDefinition;
+const perfInstance = miroirTest_MlEditorRenderPerformance_ComponentTestSuite as unknown as MiroirTestDefinition;
+const enumInstance = miroirTest_MlEnumEditor_ComponentTestSuite as unknown as MiroirTestDefinition;
 const transformerInstance = miroirTest_resolveConditionalSchema as unknown as MiroirTestDefinition;
 const TRANSFORMER_SUITE_LEAF_COUNT = 5;
 const RUN_TEST_TIMEOUT = 300_000;
@@ -123,7 +123,7 @@ function buildAppHarness() {
         objects: [
           { parentName: entityEntity.name, parentUuid: entityEntity.uuid, applicationSection: "model", instances: defaultMiroirMetaModel.entities },
           { parentName: entityEntityVersion.name, parentUuid: entityEntityVersion.uuid, applicationSection: "model", instances: defaultMiroirMetaModel.entityVersions },
-          { parentName: entityJzodSchema.name, parentUuid: entityJzodSchema.uuid, applicationSection: "data", instances: defaultMiroirMetaModel.jzodSchemas },
+          { parentName: entityMlSchema.name, parentUuid: entityMlSchema.uuid, applicationSection: "data", instances: defaultMiroirMetaModel.mlSchemas },
           { parentName: entityMenu.name, parentUuid: entityMenu.uuid, applicationSection: "data", instances: defaultMiroirMetaModel.menus },
           { parentName: entitySelfApplicationVersion.name, parentUuid: entitySelfApplicationVersion.uuid, applicationSection: "data", instances: defaultMiroirMetaModel.applicationVersions },
           { parentName: entityReport.name, parentUuid: entityReport.uuid, applicationSection: "data", instances: defaultMiroirMetaModel.reports },
@@ -255,7 +255,7 @@ describe("Miroir Tests render-performance run controls (#303 Slice 6)", () => {
           expect(min <= median && median <= max, `${leafLabel} ${cells.join(" | ")}`).toBe(true);
         }
         expect([...modes].sort(), leafLabel).toEqual(["remount", "update"]);
-        expect(within(table).getAllByRole("cell").map((cell) => cell.textContent)).toContain("JzodElementEditor");
+        expect(within(table).getAllByRole("cell").map((cell) => cell.textContent)).toContain("MlElementEditor");
       }
     },
     RUN_TEST_TIMEOUT,
