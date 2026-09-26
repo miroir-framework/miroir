@@ -3,6 +3,7 @@ import type { ViewParams } from "miroir-core";
 
 import { UnitTestExecutionSummary } from "./UnitTestExecutionSummary.js";
 import { TestResultsGrid } from "./TestResultsGrid.js";
+import { RenderMeasurementsPanel } from "./RenderMeasurementTable.js";
 import type { TestResultDataAndSelect, TestSelectionState } from "./testSelectionUtils.js";
 
 export interface TestExecutionPanelProps {
@@ -43,6 +44,8 @@ export const TestExecutionPanel: React.FC<TestExecutionPanelProps> = ({
         onResetSelections={onResetSelections}
         linkResultsToEditor={linkResultsToEditor}
       />
+      {/* #303 D10: leaves with a `measureRendering` step. */}
+      <RenderMeasurementsPanel testResultsData={testResultsData} />
     </div>
   );
 };

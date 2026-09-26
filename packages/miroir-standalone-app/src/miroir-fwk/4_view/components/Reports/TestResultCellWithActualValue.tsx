@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
 import { formatValue } from './SideBySideDiff.js';
 import { DraggableContainer } from '../DraggableContainer.js';
+import { RenderMeasurementTable, renderMeasurementsOfTestResult } from './RenderMeasurementTable.js';
 
 // ################################################################################################
 // Test Result Cell Component specifically for the Result column
@@ -181,7 +182,20 @@ export const TestResultCellWithActualValue: React.FC<TestResultCellWithActualVal
   // Render the actual result content for the draggable container
   const renderActualResultContent = () => {
     const actualResult = getActualResult();
-    
+    // #303 D10: a passing leaf with a `measureRendering` step shows its render measurements.
+    const measurements = renderMeasurementsOfTestResult(testData ?? {});
+
+    if (typeof actualResult === 'string' && measurements.length > 0) {
+      return (
+        <div style={{ padding: currentTheme.spacing.md }}>
+          <RenderMeasurementTable
+            leafLabel={testData?.testPath?.[testData.testPath.length - 1] ?? testName}
+            measurements={measurements}
+          />
+        </div>
+      );
+    }
+
     if (typeof actualResult === 'string') {
       return (
         <div style={{ 

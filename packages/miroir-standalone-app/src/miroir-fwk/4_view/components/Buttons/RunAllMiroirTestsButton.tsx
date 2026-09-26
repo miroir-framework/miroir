@@ -63,7 +63,8 @@ interface RunAllMiroirTestsButtonProps {
   integrationRunTargetMode?: UiIntegrationTestRunTargetMode;
   /**
    * #286: prepares the component test sandbox. Unit mode awaits it once, before the first suite,
-   * when "Include component tests" is checked and a suite has a `reactComponentTest` leaf.
+   * when "Include component tests" is checked and a suite has a `reactComponentTest` leaf outside
+   * a `runOnDemand` suite (#303: Run all skips those).
    */
   beforeRun?: () => Promise<void>;
   /**
@@ -220,7 +221,9 @@ export const RunAllMiroirTestsButton: React.FC<RunAllMiroirTestsButtonProps> = (
     const componentTestsPrepared =
       includeComponentTests &&
       beforeRun !== undefined &&
-      sortedInstances.some((instance) => miroirTestDefinitionHasReactComponentTest(instance.definition));
+      sortedInstances.some((instance) =>
+        miroirTestDefinitionHasReactComponentTest(instance.definition, { ignoreRunOnDemandSuites: true }),
+      );
     if (componentTestsPrepared) {
       await beforeRun();
     }
@@ -240,8 +243,10 @@ export const RunAllMiroirTestsButton: React.FC<RunAllMiroirTestsButtonProps> = (
           undefined,
           true,
           runMiroirTests,
+          // #303: the leaves of `runOnDemand` suites (the render-performance suite) are recorded
+          // as skipped; launching such a suite on its own runs it.
           includeComponentTests
-            ? { executionMode: 'unit' }
+            ? { executionMode: 'unit', skipRunOnDemandSuites: true }
             : { executionMode: 'unit', excludeMiroirTestTypes: ['reactComponentTest'] },
         );
 

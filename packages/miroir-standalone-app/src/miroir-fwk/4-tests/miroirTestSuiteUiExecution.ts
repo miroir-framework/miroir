@@ -1,6 +1,8 @@
 import {
   classifyMiroirTestSuiteExecutionCapabilities,
   isUiIntegrationLaunchableSuite,
+  reactComponentTestSuiteStepKinds,
+  type ReactComponentTestStep,
   type MiroirTestDefinition,
   type MiroirTestSuite,
   type ReactComponentTestSuite,
@@ -133,8 +135,17 @@ export function uiExecutionModeBadgeColors(mode: MiroirTestSuiteUiExecutionMode)
  * True when the MiroirTest node holds a `reactComponentTest` leaf at any depth (#286): its unit
  * run needs the component test sandbox (`beforeRun` of `RunMiroirTestSuiteButton`).
  */
+type MiroirTestNode =
+  | MiroirTestSuite
+  | MiroirTestSuite['miroirTests'][number]
+  | ReactComponentTestSuite['miroirTests'][number];
+
 export function miroirTestDefinitionHasReactComponentTest(
-  node: MiroirTestSuite | MiroirTestSuite['miroirTests'][number] | ReactComponentTestSuite['miroirTests'][number] | undefined,
+  node: MiroirTestNode | undefined,
+  options?: {
+    /** #303: ignore `reactComponentTestSuite` nodes with `runOnDemand: true` (Run all skips them). */
+    ignoreRunOnDemandSuites?: boolean;
+  },
 ): boolean {
   if (!node) {
     return false;
@@ -142,9 +153,36 @@ export function miroirTestDefinitionHasReactComponentTest(
   if (node.miroirTestType === 'reactComponentTest') {
     return true;
   }
+  if (node.miroirTestType === 'reactComponentTestSuite' && options?.ignoreRunOnDemandSuites && node.runOnDemand) {
+    return false;
+  }
   // A `reactComponentTestSuite` (#292) holds `reactComponentTest` leaves only.
   if (node.miroirTestType === 'miroirTestSuite' || node.miroirTestType === 'reactComponentTestSuite') {
-    return node.miroirTests.some(miroirTestDefinitionHasReactComponentTest);
+    return node.miroirTests.some((child: MiroirTestNode) =>
+      miroirTestDefinitionHasReactComponentTest(child, options),
+    );
+  }
+  return false;
+}
+
+/**
+ * True when a `reactComponentTestSuite` under `node`, at any depth, has a leaf using the step kind
+ * `stepKind` (#303): Miroir Tests shows the iterations field for a suite containing a
+ * `measureRendering` step. Same helper as the runner's tracking decision
+ * (`reactComponentTestSuiteStepKinds`, miroir-core).
+ */
+export function miroirTestDefinitionHasStepKind(
+  node: MiroirTestNode | undefined,
+  stepKind: ReactComponentTestStep['step'],
+): boolean {
+  if (!node) {
+    return false;
+  }
+  if (node.miroirTestType === 'reactComponentTestSuite') {
+    return reactComponentTestSuiteStepKinds(node).includes(stepKind);
+  }
+  if (node.miroirTestType === 'miroirTestSuite') {
+    return node.miroirTests.some((child: MiroirTestNode) => miroirTestDefinitionHasStepKind(child, stepKind));
   }
   return false;
 }

@@ -122,6 +122,12 @@ export type MiroirTestExecutionOptions = {
        * tests" checkbox is off.
        */
       excludeMiroirTestTypes?: MiroirTestAnyLeaf["miroirTestType"][];
+      /**
+       * Leaves of a `reactComponentTestSuite` with `runOnDemand: true` are recorded as skipped by
+       * `_runMiroirTestWithTracking`, with `runOnDemandSuiteSkippedMessage` (#303). Set by Run all:
+       * an on-demand suite (the render-performance suite) runs only when launched on its own.
+       */
+      skipRunOnDemandSuites?: boolean;
     }
   | {
       executionMode: "integration";
@@ -133,6 +139,11 @@ export type MiroirTestExecutionOptions = {
 /** Recorded as `assertionActualValue` of a leaf skipped by `excludeMiroirTestTypes` (#286). */
 export function miroirTestTypeExcludedMessage(miroirTestType: string): string {
   return `${miroirTestType} leaves are excluded from this run (excludeMiroirTestTypes)`;
+}
+
+/** Recorded as `assertionActualValue` of a leaf skipped by `skipRunOnDemandSuites` (#303). */
+export function runOnDemandSuiteSkippedMessage(suiteLabel: string): string {
+  return `runOnDemand suite: not run by Run all (suite "${suiteLabel}"); launch the suite on its own to run it`;
 }
 
 function miroirTestLeafLabel(leaf: MiroirTestAnyLeaf): string {
@@ -419,15 +430,22 @@ export const runMiroirTests: RunMiroirTests = {
       return;
     }
     const label = miroirTestLeafLabel(leaf);
-    const excluded =
-      executionOptions?.executionMode === "unit" &&
-      (executionOptions.excludeMiroirTestTypes ?? []).includes(leaf.miroirTestType);
+    const unitOptions = executionOptions?.executionMode === "unit" ? executionOptions : undefined;
+    const excludedMessage = !unitOptions
+      ? undefined
+      : (unitOptions.excludeMiroirTestTypes ?? []).includes(leaf.miroirTestType)
+        ? miroirTestTypeExcludedMessage(leaf.miroirTestType)
+        : unitOptions.skipRunOnDemandSuites && reactComponentTestSuite?.runOnDemand
+          ? runOnDemandSuiteSkippedMessage(
+              reactComponentTestSuite.suitePath[reactComponentTestSuite.suitePath.length - 1] ?? "",
+            )
+          : undefined;
     let runId: string | undefined;
     try {
       await miroirActivityTracker.trackTest(label, parentTrackingId, async (nestedId) => {
         runId = LoggerGlobalContext.getRunId();
         await miroirActivityTracker.trackTestAssertion(label, nestedId, async (assertionId) => {
-          if (excluded) {
+          if (excludedMessage !== undefined) {
             const assertionPath =
               testAssertionPath ?? miroirActivityTracker.getCurrentTestAssertionPath();
             if (!assertionPath) {
@@ -438,7 +456,7 @@ export const runMiroirTests: RunMiroirTests = {
             miroirActivityTracker.setTestAssertionResult(assertionPath, {
               assertionName: label,
               assertionResult: "skipped",
-              assertionActualValue: miroirTestTypeExcludedMessage(leaf.miroirTestType),
+              assertionActualValue: excludedMessage,
             });
             return;
           }

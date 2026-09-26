@@ -55,9 +55,15 @@ interface RunMiroirTestSuiteButtonProps {
   integrationRunTargetMode?: UiIntegrationTestRunTargetMode;
   /**
    * #286: awaited before a unit run of a suite that holds a `reactComponentTest` leaf (prepares
-   * the component test sandbox and registers the component test runner).
+   * the component test sandbox and registers the component test runner). Receives
+   * `iterationsOverride` when set (#303 T7).
    */
-  beforeRun?: () => Promise<void>;
+  beforeRun?: (options?: { iterationsOverride?: number }) => Promise<void>;
+  /**
+   * #303 T7: replaces the `iterations` of every `measureRendering` step for this run (passed to
+   * `beforeRun`). Undefined: the instance's values.
+   */
+  iterationsOverride?: number;
   /**
    * #286: called when a run prepared by `beforeRun` ends, success or error (ends the component
    * test run: releases the suite wrappers and the run lock).
@@ -100,6 +106,7 @@ export const RunMiroirTestSuiteButton: React.FC<RunMiroirTestSuiteButtonProps> =
   integrationRunTargetMode,
   beforeRun,
   afterRun,
+  iterationsOverride,
   ...buttonProps
 }) => {
   const { handleAsyncAction } = useSnackbar();
@@ -124,7 +131,7 @@ export const RunMiroirTestSuiteButton: React.FC<RunMiroirTestSuiteButtonProps> =
     const componentTestsPrepared =
       beforeRun !== undefined && miroirTestDefinitionHasReactComponentTest(miroirTestSuite.definition);
     if (componentTestsPrepared) {
-      await beforeRun();
+      await beforeRun(iterationsOverride !== undefined ? { iterationsOverride } : undefined);
     }
 
     try {

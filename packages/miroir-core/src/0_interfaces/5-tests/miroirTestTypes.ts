@@ -53,6 +53,8 @@ export type ReactComponentTestSuiteContext = {
    * built by hand (tests), read as "no step kind".
    */
   stepKinds?: ReactComponentTestStep["step"][];
+  /** Set when the suite has `runOnDemand: true` (#303 T6): Run all skips its leaves. */
+  runOnDemand?: true;
 };
 
 /**
