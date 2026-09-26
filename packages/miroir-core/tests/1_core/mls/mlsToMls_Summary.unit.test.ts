@@ -1,0 +1,34 @@
+import { describe, expect, it } from "vitest";
+
+import type {
+  MlElement,
+  MlSchema,
+} from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { mlsToMls_Summary } from "../../../src/1_core/mls/MlsToMls_Summary";
+
+const dummyMlSchema: MlSchema = {
+  uuid: "00000000-0000-0000-0000-000000000000",
+  parentUuid: "00000000-0000-0000-0000-000000000000",
+  name: "dummy",
+};
+
+/** Comparative assertion — not expressible as a single functionCallTest expectedValue. */
+const RUN_TEST = process.env.RUN_TEST;
+if (!RUN_TEST || RUN_TEST === "mlsToMls_Summary.unit.test") {
+  describe("mlsToMls_Summary (vitest-only)", () => {
+    it("default depth is 1 (same as explicit depth=1)", () => {
+      const input: MlElement = {
+        type: "object",
+        definition: {
+          child: {
+            type: "object",
+            definition: { x: { type: "string" } },
+          },
+        },
+      };
+      expect(mlsToMls_Summary(input, dummyMlSchema)).toEqual(
+        mlsToMls_Summary(input, dummyMlSchema, 1),
+      );
+    });
+  });
+}

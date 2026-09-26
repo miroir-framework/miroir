@@ -9,14 +9,14 @@ import type { Action, Parameter } from "@copilotkit/shared";
 import {
   Action2Error,
   getEndpointActions,
-  jzodToCopilotKitParameter,
-  jzodToJsonSchema,
+  mlsToCopilotKitParameter,
+  mlsToJsonSchema,
   LoggerInterface,
   MiroirLoggerFactory,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type EndpointDefinition,
-  type JzodObject,
+  type MlObject,
   type MiroirModelEnvironment,
 } from "miroir-core";
 import { defaultMiroirMetaModel, instanceEndpointV1 } from "miroir-test-app_deployment-miroir";
@@ -59,14 +59,14 @@ if (!firstLendingActionPayload || firstLendingActionPayload.type !== "object") {
   throw new Error("Lending endpoint action parameters payload type is not 'object' for endpoint: " + "212f2784-5b68-43b2-8ee0-89b1c6fdd0de");
 }
 
-// const lendDocumentActionJzodParameters = Object.entries(endpointDefinition[0].definition.actions[0].actionParameters.payload.definition);
-const lendDocumentActionCopilotKitParameters = jzodToCopilotKitParameter(
+// const lendDocumentActionMlParameters = Object.entries(endpointDefinition[0].definition.actions[0].actionParameters.payload.definition);
+const lendDocumentActionCopilotKitParameters = mlsToCopilotKitParameter(
   "payload",
   firstLendingActionPayload
 ).attributes ?? [];
 
-const lendDocumentActionJsonSchema = jzodToJsonSchema(
-  firstLendingActionPayload as JzodObject,
+const lendDocumentActionJsonSchema = mlsToJsonSchema(
+  firstLendingActionPayload as MlObject,
 );
 
 // const lendDocumentActionJsonSchemaParameters = lendDocumentActionJsonSchema.properties
@@ -75,10 +75,10 @@ const lendDocumentActionJsonSchema = jzodToJsonSchema(
 //       ...(value as any), // TODO: fix type!
 //     }))
 //   : [];
-// // const lendDocumentActionJsonSchemaParameters = lendDocumentActionJzodParameters.map(([key, value]) =>
-// //     jzodToJsonSchema(
+// // const lendDocumentActionJsonSchemaParameters = lendDocumentActionMlParameters.map(([key, value]) =>
+// //     mlsToJsonSchema(
 // //       value,
-// //       (endpointDefinition[0].definition.actions[0].actionParameters.payload as JzodObject)
+// //       (endpointDefinition[0].definition.actions[0].actionParameters.payload as MlObject)
 // //         .definition,
 // //     ),
 // //   )

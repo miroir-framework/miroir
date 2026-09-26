@@ -38,7 +38,7 @@ import { runQueryTemplateFromDomainState } from "./DomainStateQueryTemplateSelec
 import {
   extractorVirtualAttributeNeed,
   findPresentModelEntityFromDomainState,
-  indexInstancesByUuid,
+  indexInstancesByPrimaryKey,
   overlayAndFilterExtractorInstances,
 } from "./ExtractorVirtualAttributes";
 import {
@@ -173,13 +173,15 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncBoxedExtractorRun
   if (!localSelect.filter && !localSelect.orderBy && needed.length === 0) {
     return entityInstances;
   }
-  return indexInstancesByUuid(
+  return indexInstancesByPrimaryKey(
+    entity,
     overlayAndFilterExtractorInstances(
       entity,
       Object.values(entityInstances),
       localSelect,
       modelEnvironment,
     ),
+    entityInstances,
   );
 };
 

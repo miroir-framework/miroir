@@ -22,7 +22,7 @@ export {
 
 import type {
   Entity,
-  JzodElement,
+  MlElement,
   MetaModel,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type {
@@ -98,7 +98,7 @@ export function buildModelValidationGroupsFromFilesystem(
     }
     groups.push({
       groupName: entity.name,
-      jzodSchema: entity.mlSchema as unknown as JzodElement,
+      mlSchema: entity.mlSchema as unknown as MlElement,
       instances,
     });
   }
@@ -130,7 +130,7 @@ export function buildModelValidationGroupsFromFilesystem(
     }
     groups.push({
       groupName: appEntity.name,
-      jzodSchema: appEntity.mlSchema as unknown as JzodElement,
+      mlSchema: appEntity.mlSchema as unknown as MlElement,
       instances,
     });
   }

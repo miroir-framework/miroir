@@ -5,7 +5,7 @@ import {
   projectEntityInstance,
   projectEntityInstancesOnAttributes,
   resolveProjectionIdentityFields,
-} from "../../src/1_core/instanceProjection.js";
+} from "../../src/1_core/partials/instanceProjection.js";
 
 describe("instanceProjection", () => {
   const full = {

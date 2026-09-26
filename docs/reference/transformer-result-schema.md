@@ -1,6 +1,6 @@
 # Transformer result schema inference
 
-Design-time API for inferring the Jzod output schema of a transformer **without evaluating** it at runtime. Implements [Proposal B](../proposals/dependent-types-for-transformer-composition.md) incrementally (issue [#88](https://github.com/miroir-framework/miroir/issues/88)).
+Design-time API for inferring the ML output schema of a transformer **without evaluating** it at runtime. Implements [Proposal B](../proposals/dependent-types-for-transformer-composition.md) incrementally (issue [#88](https://github.com/miroir-framework/miroir/issues/88)).
 
 Implementation plan: [`code-helpers/features/88-FEATURE-typed-transformers/tdd-implementation-plan.md`](../../code-helpers/features/88-FEATURE-typed-transformers/tdd-implementation-plan.md).
 
@@ -24,10 +24,10 @@ const schema = resolveTransformerResultSchema(transformer, context);
 | Parameter | Type | Role |
 |-----------|------|------|
 | `transformer` | `CoreTransformerForBuildPlusRuntime` | Transformer instance graph to infer |
-| `context` | `Record<string, JzodElement>` | Schemas for names already resolved in the surrounding composition |
+| `context` | `Record<string, MlElement>` | Schemas for names already resolved in the surrounding composition |
 | `transformerDefinitions` | `Record<string, TransformerDefinition>` (optional) | Defaults to `applicationTransformerDefinitions` |
 
-**Return value:** a `JzodElement` on success, or `FailedTransformerInterfaceFromDefinition` (`status: "error"`) when inference fails. Use `isFailedTransformerInterfaceFromDefinition()` to distinguish.
+**Return value:** a `MlElement` on success, or `FailedTransformerInterfaceFromDefinition` (`status: "error"`) when inference fails. Use `isFailedTransformerInterfaceFromDefinition()` to distinguish.
 
 ---
 

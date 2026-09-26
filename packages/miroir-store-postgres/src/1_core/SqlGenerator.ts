@@ -79,7 +79,7 @@ import {
   sqlSelectExpression,
   sqlWith,
 } from "./SqlQueryBuilder";
-import { getAttributeTypesFromJzodSchema, jzodToPostgresTypeMap } from "./mlSchema";
+import { getAttributeTypesFromMlSchema, mlToPostgresTypeMap } from "./mlSchema";
 import { SqlQuerySelectExpressionSchema } from "../generated";
 
 
@@ -5391,7 +5391,7 @@ function sqlStringForConstantAsExtractorTransformer(
     case "object": {
       const paramIndex = preparedStatementParametersCount + 1;
       // array of objects or array of scalars
-      if (!actionRuntimeTransformer.valueJzodSchema) {
+      if (!actionRuntimeTransformer.valueMlSchema) {
         return new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
           query: actionRuntimeTransformer as any,
@@ -5400,31 +5400,31 @@ function sqlStringForConstantAsExtractorTransformer(
       }
       if (
         Array.isArray(actionRuntimeTransformer.value) &&
-          actionRuntimeTransformer.valueJzodSchema.type != "array"
+          actionRuntimeTransformer.valueMlSchema.type != "array"
       ) {
         return new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
           query: actionRuntimeTransformer as any,
-          failureMessage: "sqlStringForRuntimeTransformer constantAsExtractor not constistent for array of objects, valueJzodSchema.type:" + actionRuntimeTransformer.valueJzodSchema.type,
+          failureMessage: "sqlStringForRuntimeTransformer constantAsExtractor not constistent for array of objects, valueMlSchema.type:" + actionRuntimeTransformer.valueMlSchema.type,
         });
       }
 
       if (
-        actionRuntimeTransformer.valueJzodSchema.type == "object" ||
+        actionRuntimeTransformer.valueMlSchema.type == "object" ||
         (
           Array.isArray(actionRuntimeTransformer.value) &&
-          actionRuntimeTransformer.valueJzodSchema.type == "array" &&
-          actionRuntimeTransformer.valueJzodSchema.definition.type == "object"
+          actionRuntimeTransformer.valueMlSchema.type == "array" &&
+          actionRuntimeTransformer.valueMlSchema.definition.type == "object"
         )
       ) {
         // object which attributes are returned as columns on a single row, or array of objects which attributes are returned as columns on many rows (one row per object)
         const recordFunction = Array.isArray(actionRuntimeTransformer.value)
           ? "jsonb_to_recordset"
           : "jsonb_to_record";
-        const attributeTypes = getAttributeTypesFromJzodSchema(
+        const attributeTypes = getAttributeTypesFromMlSchema(
           Array.isArray(actionRuntimeTransformer.value)
-            ? actionRuntimeTransformer.valueJzodSchema.definition as any
-            : actionRuntimeTransformer.valueJzodSchema
+            ? actionRuntimeTransformer.valueMlSchema.definition as any
+            : actionRuntimeTransformer.valueMlSchema
         );
         const selectFields = Object.entries(attributeTypes)
           .map(([key, value]) => {
@@ -5442,17 +5442,17 @@ function sqlStringForConstantAsExtractorTransformer(
         };
       } else {
         // scalar or array of scalars
-        // if (!Object.hasOwn(jzodToPostgresTypeMap, (actionRuntimeTransformer.valueJzodSchema as any).definition.type)) {
-        if (!(jzodToPostgresTypeMap as any)[(actionRuntimeTransformer.valueJzodSchema as any).definition.type]) {
+        // if (!Object.hasOwn(mlToPostgresTypeMap, (actionRuntimeTransformer.valueMlSchema as any).definition.type)) {
+        if (!(mlToPostgresTypeMap as any)[(actionRuntimeTransformer.valueMlSchema as any).definition.type]) {
           return new Domain2ElementFailed({
             queryFailure: "QueryNotExecutable",
             query: actionRuntimeTransformer as any,
             failureMessage:
               "sqlStringForRuntimeTransformer constantAsExtractor no sql type corresponding to elements of array with scalar type:" +
-              actionRuntimeTransformer.valueJzodSchema.type,
+              actionRuntimeTransformer.valueMlSchema.type,
           });
         }
-        // const sqlTargetType = (jzodToPostgresTypeMap as any)[actionRuntimeTransformer.valueJzodSchema.type].sqlTargetType;
+        // const sqlTargetType = (mlToPostgresTypeMap as any)[actionRuntimeTransformer.valueMlSchema.type].sqlTargetType;
         if (Array.isArray(actionRuntimeTransformer.value)) {
           return {
             // type: "table",

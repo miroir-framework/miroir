@@ -20,6 +20,29 @@
       ]
     },
     {
+      "id": "unit-check-ml-nomenclature",
+      "tier": "unit",
+      "title": "Guard — ML / MLS nomenclature for Miroir's meta-language (#145)",
+      "requires": "none",
+      "argv": [
+        "python",
+        "scripts/check_ml_nomenclature.py"
+      ]
+    },
+    {
+      "id": "unit-301-agent-tooling",
+      "tier": "unit",
+      "title": "Repo scripts (scripts/tests): #301 agent tooling",
+      "requires": "none",
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "-q",
+        "scripts/tests"
+      ]
+    },
+    {
       "id": "unit-miroir-core",
       "tier": "unit",
       "title": "MiroirTest unit suites (miroir-core registry)",
@@ -811,7 +834,7 @@
     {
       "id": "appstack-miroir-component-tests",
       "tier": "default",
-      "title": "#286, #292 — JzodElementEditor component tests as MiroirTests (vitest entry + JSON consistency)",
+      "title": "#286, #292, #303 — MlElementEditor component tests as MiroirTests (vitest entry + JSON consistency; the runOnDemand perf suite is skipped without MIROIR_COMPONENT_PERF=1)",
       "requires": "none",
       "argv": [
         "bash",
@@ -1078,6 +1101,17 @@
         "bash",
         "-c",
         "npm run testByFile -w miroir-core -- 292-declarative-react-component-tests && npm run testByFile -w miroir-standalone-app -- componentTestSchema.292.phase1 && npm run testByFile -w miroir-standalone-app -- componentTestInstances.292.phase1 && npm run testByFile -w miroir-standalone-app -- extractorOpenCombobox.292.phase2 && npm run testByFile -w miroir-standalone-app -- componentTestSteps.292.phase2 && npm run testByFile -w miroir-standalone-app -- componentTestTargets.292.phase3 && npm run testByFile -w miroir-standalone-app -- componentTestWidgets.292.phase4 && npm run testByFile -w miroir-standalone-app -- componentTestUnionWidgets.292.phase5 && npm run testByFile -w miroir-standalone-app -- legacyRemoved.292.phase6"
+      ]
+    },
+    {
+      "id": "unit-303-test-pattern-and-render-performance",
+      "tier": "unit",
+      "title": "#303 — test pattern and render performance (render insight coverage, measureRendering step, iterations override + measurement table)",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w miroir-standalone-app -- renderInsightCoverage.303.phase3 && npm run testByFile -w miroir-standalone-app -- measureRendering.303.phase4 && npm run testByFile -w miroir-standalone-app -- renderPerformanceRunControls.303.phase6"
       ]
     },
     {

@@ -28,7 +28,7 @@ import {
   entityEndpointVersion,
   entityEntity,
   entityEntityVersion,
-  entityJzodSchema,
+  entityMlSchema,
   entityMenu,
   entityQueryVersion,
   entityReport,
@@ -166,7 +166,7 @@ const selectEntityDefinitionsFromReduxState = createSelector(
 );
 
 // ################################################################################################
-const selectJzodSchemasFromReduxState = createSelector(
+const selectMlSchemasFromReduxState = createSelector(
   [
     selectCurrentReduxDeploymentsStateFromReduxState,
     selectApplicationDeploymentMap,
@@ -188,7 +188,7 @@ const selectJzodSchemasFromReduxState = createSelector(
           ? "data"
           : "model"
         : undefined,
-      entityJzodSchema.uuid
+      entityMlSchema.uuid
     );
   }
 );
@@ -451,7 +451,7 @@ export const selectModelForDeploymentFromReduxState: () => (
       selectApplicationVersionsFromReduxState,
       selectEntitiesFromReduxState,
       selectEntityDefinitionsFromReduxState,
-      selectJzodSchemasFromReduxState,
+      selectMlSchemasFromReduxState,
       selectMenusFromReduxState,
       selectReportsFromReduxState,
       selectRunnersFromReduxState,
@@ -465,7 +465,7 @@ export const selectModelForDeploymentFromReduxState: () => (
       applicationVersions: EntityInstancesUuidIndex | undefined,
       entities: EntityInstancesUuidIndex | undefined,
       entityVersions: EntityInstancesUuidIndex | undefined,
-      jzodSchemas: EntityInstancesUuidIndex | undefined,
+      mlSchemas: EntityInstancesUuidIndex | undefined,
       menus: EntityInstancesUuidIndex | undefined,
       reports: EntityInstancesUuidIndex | undefined,
       runners: EntityInstancesUuidIndex | undefined,
@@ -502,7 +502,7 @@ export const selectModelForDeploymentFromReduxState: () => (
         entities: (entities ? Object.values(entities) : []) as Entity[],
         entityVersions: (entityVersions ? Object.values(entityVersions) : []) as EntityVersion[],
         endpoints: (endpoints ? Object.values(endpoints) : []) as EndpointDefinition[],
-        jzodSchemas: (jzodSchemas ? Object.values(jzodSchemas) : []) as MlSchema[],
+        mlSchemas: (mlSchemas ? Object.values(mlSchemas) : []) as MlSchema[],
         menus: (menus ? Object.values(menus) : []) as Menu[],
         reports: (reports ? Object.values(reports) : []) as Report[],
         runners: (runners ? Object.values(runners) : []) as Runner[],

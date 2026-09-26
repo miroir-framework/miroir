@@ -2,7 +2,7 @@
 
 ## Problem Statement
 
-Jzod currently lacks dependent types or type-level parameterisation. Every transformer parameter accepting another transformer is typed as the full `TransformerForBuildPlusRuntime` union—no narrowing based on expected input/output. Concretely:
+ML currently lacks dependent types or type-level parameterisation. Every transformer parameter accepting another transformer is typed as the full `TransformerForBuildPlusRuntime` union—no narrowing based on expected input/output. Concretely:
 
 - `mapList.elementTransformer` should accept only transformers whose *input* type matches the list's element type.
 - `pickFromList` (type `X[] → X`) cannot express that its output type is the element type of its input.
@@ -25,11 +25,11 @@ None of these relate the *output* of one transformer to the *input* of another.
 
 ---
 
-## Proposal A — Type Variables in Jzod (`jzodTypeVar` + `jzodForAll`)
+## Proposal A — Type Variables in ML (`mlTypeVar` + `mlForAll`)
 
 ### Design
 
-Add two new Jzod element types:
+Add two new ML element types:
 
 ```jsonc
 // New element: a type variable (placeholder)
@@ -42,7 +42,7 @@ Add two new Jzod element types:
 {
   "type": "forAll",
   "typeVars": ["X", "Y"],
-  "definition": <jzodElement using typeVar references>
+  "definition": <mlElement using typeVar references>
 }
 ```
 
@@ -66,14 +66,14 @@ A transformer's `transformerInterface` would become:
 
 - **Expressive**: captures `X[] → X`, `Record<string, X> → X[]`, `(X → Y) → X[] → Y[]`, etc.
 - **Familiar**: follows established parametric-polymorphism conventions (System F style).
-- **Composable**: type variables can appear anywhere a `jzodElement` is accepted, enabling deep nesting (`array(array(X))`).
+- **Composable**: type variables can appear anywhere a `mlElement` is accepted, enabling deep nesting (`array(array(X))`).
 - **Schema-level**: the information is part of the schema itself, so tooling (editor, code-gen) has direct access.
 
 ### Cons
 
-- **Invasive change**: `jzodElement` union gains two new variants → every consumer of `jzodElement` (Zod codegen in `jzod`, TS codegen in `jzod-ts`, runtime validators, UI schema editors) must handle them.
+- **Invasive change**: `mlElement` union gains two new variants → every consumer of `mlElement` (Zod codegen in `jzod`, TS codegen in `jzod-ts`, runtime validators, UI schema editors) must handle them.
 - **Unification engine required**: a non-trivial addition to the schema-resolution pipeline; must handle recursive types, partial binding, failure reporting.
-- **Bootstrap complexity**: the meta-schema (`1e8dab4b-…`) must define `jzodTypeVar` and `jzodForAll` in terms of itself.
+- **Bootstrap complexity**: the meta-schema (`1e8dab4b-…`) must define `mlTypeVar` and `mlForAll` in terms of itself.
 - **Over-engineering risk**: full parametric polymorphism may exceed what transformer composition actually needs.
 
 ### Redundancy with Existing Constructs
@@ -85,12 +85,12 @@ A transformer's `transformerInterface` would become:
 
 | Area | Change |
 |---|---|
-| `jzod` (bootstrap schema JSON) | Add `jzodTypeVar`, `jzodForAll` to `jzodElement` union and `jzodEnumElementTypes` |
+| Bootstrap schema JSON (`1e8dab4b-…`) | Add `mlTypeVar`, `mlForAll` to `mlElement` union and `mlEnumElementTypes` |
 | `jzod/src/JzodToZod.ts` | Handle `typeVar` (emit `z.any()` at generation time, or a branded marker) |
 | `jzod-ts/src/JzodToTs.ts` | Emit generic TS type parameters (`<X>`) when encountering `forAll` |
-| `miroir-core` fundamental schema | Add `typeVar`/`forAll` to `miroirFundamentalJzodSchema.definition.context` |
+| `miroir-core` fundamental schema | Add `typeVar`/`forAll` to `miroirFundamentalMlSchema.definition.context` |
 | `miroir-core` transformer resolution | New unification pass in `transformer_extended_apply` or a new `resolveTypeVars` utility |
-| Transformer EntityDefinition schema | Replace `InputOutputType` enum with structural Jzod types |
+| Transformer EntityDefinition schema | Replace `InputOutputType` enum with structural ML types |
 | UI schema editor | Render type variables as generic placeholders; propagate bindings during composition |
 
 ---
@@ -99,7 +99,7 @@ A transformer's `transformerInterface` would become:
 
 ### Design
 
-Instead of modifying the Jzod type system itself, enrich each transformer's `transformerInterface` with **structural Jzod schemas for input and output**, and add a **composition validator** that checks compatibility at design time.
+Instead of modifying the ML type system itself, enrich each transformer's `transformerInterface` with **structural ML schemas for input and output**, and add a **composition validator** that checks compatibility at design time.
 
 ```jsonc
 {
@@ -135,7 +135,7 @@ The **composition validator** runs at design time (in the editor or during `devB
 
 ### Pros
 
-- **Non-invasive to Jzod core**: no new element types; the bootstrap schema is unchanged.
+- **Non-invasive to the ML core**: no new element types; the bootstrap schema is unchanged.
 - **Incremental adoption**: validators can be added per-transformer, starting with the most common ones.
 - **Tooling-friendly**: the editor receives concrete schemas to filter transformer suggestions—straightforward to implement.
 - **Leverages existing infrastructure**: schema-derivation rules can themselves be transformers (`resolveSchemaReferenceInContext`, `unfoldSchemaOnce`), reusing existing evaluation.
@@ -157,7 +157,7 @@ The **composition validator** runs at design time (in the editor or during `devB
 | Area | Change |
 |---|---|
 | Transformer EntityDefinition schema | Add `inputSchema`, `outputSchema`, `outputSchemaTransformer` to `transformerInterface` |
-| `miroir-core` new utility | `deriveOutputSchema(transformerDef, inputSchema): JzodElement` |
+| `miroir-core` new utility | `deriveOutputSchema(transformerDef, inputSchema): MlElement` |
 | `miroir-core` new utility | `validateTransformerComposition(steps): ValidationResult[]` |
 | Transformer JSON assets | Annotate each transformer definition with `inputSchema`/`outputSchema` |
 | UI editor | Call `deriveOutputSchema` to filter and rank available transformers |
@@ -200,11 +200,11 @@ At composition time, when a concrete array `array(Book)` is supplied as input, t
 2. Binds `"ElementType" → Book schema`.
 3. Replaces `output`'s `typeSlot: "ElementType"` with the `Book` schema.
 
-This is essentially a simplified unification, but encoded **within the existing tag infrastructure** rather than as new Jzod element types.
+This is essentially a simplified unification, but encoded **within the existing tag infrastructure** rather than as new ML element types.
 
 ### Pros
 
-- **Minimal schema changes**: no new `jzodElement` variants; only the tag `value` schema gains `typeSlot` and `typeSlotBinding` fields.
+- **Minimal schema changes**: no new `mlElement` variants; only the tag `value` schema gains `typeSlot` and `typeSlotBinding` fields.
 - **Backward compatible**: tags are already optional and extensible; existing schemas continue to work unchanged.
 - **Matches existing conventions**: tags are already used for `canBeTemplate`, `ifThenElseMMLS`, `foreignKeyParams`—adding `typeSlot` follows the established pattern.
 - **Moderate expressiveness**: handles `X[] → X`, `Record<string, X> → X[]`, and simple parameterised transformers; sufficient for the composition use case.
@@ -227,10 +227,10 @@ This is essentially a simplified unification, but encoded **within the existing 
 
 | Area | Change |
 |---|---|
-| Bootstrap schema (`1e8dab4b-…`) | Add `typeSlot?: string` and `typeSlotBinding?: Record<string, jzodElement>` to `tag.value` definition |
+| Bootstrap schema (`1e8dab4b-…`) | Add `typeSlot?: string` and `typeSlotBinding?: Record<string, mlElement>` to `tag.value` definition |
 | Transformer EntityDefinition schema | Add `typeSlots: string[]` to `transformerInterface` |
-| `miroir-core` new utility | `resolveTypeSlots(schema, bindings): JzodElement` — substitute `typeSlot` placeholders |
-| `miroir-core` new utility | `matchAndBindSlots(concreteSchema, paramSchema): Record<string, JzodElement>` — structural matching |
+| `miroir-core` new utility | `resolveTypeSlots(schema, bindings): MlElement` — substitute `typeSlot` placeholders |
+| `miroir-core` new utility | `matchAndBindSlots(concreteSchema, paramSchema): Record<string, MlElement>` — structural matching |
 | Transformer JSON assets | Annotate input/output schemas with `typeSlot` tags |
 | UI editor | Use `matchAndBindSlots` + `resolveTypeSlots` to filter transformers |
 | `jzod` | Minor: `JzodToZod.ts` propagates tags but no new element handling needed |
@@ -243,7 +243,7 @@ This is essentially a simplified unification, but encoded **within the existing 
 | Criterion | A: Type Variables | B: Schema Annotations | C: Tag-based Slots |
 |---|---|---|---|
 | Expressiveness | High (full parametric polymorphism) | Medium (per-transformer rules) | Medium (single-level parameterisation) |
-| Jzod schema changes | Major (2 new element types) | None | Minor (tag extension) |
+| ML schema changes | Major (2 new element types) | None | Minor (tag extension) |
 | Bootstrap impact | Significant | None | Minor |
 | Implementation effort | High | Medium | Medium-Low |
 | Unification/matching | Full unification engine | Ad-hoc derivation rules | Simplified structural matching |

@@ -46,7 +46,7 @@ creation.
 
 ### Proposed improvement: Preview button on the Query edit form
 
-Add a **Preview** button to the Query edit form (the `JzodElementEditor` surface that
+Add a **Preview** button to the Query edit form (the `MlElementEditor` surface that
 already exists for queries in Design Mode). Clicking it would:
 
 1. Collect the current (unsaved) query JSON from the form.
@@ -112,8 +112,8 @@ Proceed anyway?   [Cancel]  [Save]
 
 This requires:
 - Retrieving all Book instances from the local Redux cache (already done for list reports).
-- Running the candidate Jzod schema through the existing Zod validator path
-  (`JzodToZod.ts` in the `jzod` package) against each instance.
+- Running the candidate ML schema through the existing Zod validator path
+  (`jzodToZod` in the `@miroir-framework/jzod` package) against each instance.
 - Displaying the results before the model action is dispatched.
 
 No save happens until the user explicitly confirms. The check is purely local and
@@ -262,7 +262,7 @@ real-time and displaying the result exactly as a saved Report would — without 
 any Report instance.
 
 The scratch-pad would reuse:
-- The existing `JzodElementEditor` for editing the Report JSON.
+- The existing `MlElementEditor` for editing the Report JSON.
 - The existing `ReportPage` rendering pipeline (`ReportSectionEntityInstance`,
   `ReportSectionListDisplay`, etc.) fed with the local definition instead of a persisted
   one.
@@ -297,10 +297,10 @@ the biggest single quality-of-life gap identified in the tutorial walk-through.
 | # | Improvement | Requires new infra? | Reuses existing code | Difficulty |
 |---|-------------|--------------------|-----------------------|------------|
 | 1 | Query Live Preview | No | QuerySelectors, TransformationResultPanel | Low |
-| 2 | Schema Mutation Impact Preview | No | JzodToZod, local Redux cache | Medium |
+| 2 | Schema Mutation Impact Preview | No | jzodToZod, local Redux cache | Medium |
 | 3 | Transformer Step-Through | Minor (steps in return type) | TransformerEventsPanel, dataflowSequence | Medium |
 | 4 | Action Diff Preview | No | undoableReducer, JSON-patch | Medium |
-| 5 | Report Scratch-Pad | No | ReportPage, JzodElementEditor | High |
+| 5 | Report Scratch-Pad | No | ReportPage, MlElementEditor | High |
 
 All five improvements share a common principle: **show the effect of a change before
 it is committed**. They do not require new backend services — the data and execution

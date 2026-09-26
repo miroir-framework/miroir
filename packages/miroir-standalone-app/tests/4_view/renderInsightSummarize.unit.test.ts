@@ -16,7 +16,7 @@ function node(
   };
 }
 
-/** Fixture: Root(0) → Section(1) → EntityInstance(2) → two Jzod leaves(3) */
+/** Fixture: Root(0) → Section(1) → EntityInstance(2) → two ML leaves(3) */
 function fixtureTree(): RenderInsightNode[] {
   return [
     node({
@@ -40,15 +40,15 @@ function fixtureTree(): RenderInsightNode[] {
       navigationCount: 3,
     }),
     node({
-      pathKey: "JzodElementEditor@instance.name",
-      componentId: "JzodElementEditor",
+      pathKey: "MlElementEditor@instance.name",
+      componentId: "MlElementEditor",
       formikPath: "instance.name",
       depth: 3,
       navigationCount: 1,
     }),
     node({
-      pathKey: "JzodElementEditor@instance.firstName",
-      componentId: "JzodElementEditor",
+      pathKey: "MlElementEditor@instance.firstName",
+      componentId: "MlElementEditor",
       formikPath: "instance.firstName",
       depth: 3,
       navigationCount: 18,
@@ -66,7 +66,7 @@ describe("summarizeTree (Phase 2.2–2.3)", () => {
       "ReportSectionViewWithEditor@sections.0",
       "ReportSectionEntityInstance@instance",
     ]);
-    expect(result.find((n) => n.pathKey.includes("JzodElementEditor"))).toBeUndefined();
+    expect(result.find((n) => n.pathKey.includes("MlElementEditor"))).toBeUndefined();
 
     const entity = result.find(
       (n) => n.pathKey === "ReportSectionEntityInstance@instance"
@@ -76,11 +76,11 @@ describe("summarizeTree (Phase 2.2–2.3)", () => {
     expect(entity.aggregate!.sumNavigationRenders).toBe(19);
     expect(entity.aggregate!.avgNavigationRenders).toBe(9.5);
     expect(entity.aggregate!.min).toEqual({
-      path: "JzodElementEditor@instance.name",
+      path: "MlElementEditor@instance.name",
       navigationCount: 1,
     });
     expect(entity.aggregate!.max).toEqual({
-      path: "JzodElementEditor@instance.firstName",
+      path: "MlElementEditor@instance.firstName",
       navigationCount: 18,
     });
   });

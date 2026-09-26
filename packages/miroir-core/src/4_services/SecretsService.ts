@@ -26,7 +26,7 @@ const QUERY_ENDPOINT = "9e404b3c-368c-40cb-be8b-e3c28550c25e";
 
 /**
  * Stable instance identity for name + scope + owner (process owner is empty).
- * Version-4 shaped (see `deterministicUuidV4`): jzodTypeCheck's uuid schema accepts
+ * Version-4 shaped (see `deterministicUuidV4`): mlsTypeCheck's uuid schema accepts
  * version 4 only.
  */
 export function miroirSecretInstanceUuid(

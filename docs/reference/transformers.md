@@ -6,7 +6,7 @@ references:
 
 - [Transformer result schema inference](./transformer-result-schema.md) — how the output `mlSchema`
   of a transformer is derived without running it (issue #88 / Proposal B).
-- [mlSchema subtyping](../../packages/miroir-core/src/1_core/jzod/mlSchemaSubtype.ts) — the LSP
+- [mlSchema subtyping](../../packages/miroir-core/src/1_core/mls/mlSchemaSubtype.ts) — the LSP
   subtype relation used by the compatibility checker (#250, #251).
 - Dependent-types proposal:
   [dependent-types-for-transformer-composition](../proposals/dependent-types-for-transformer-composition.md).
@@ -40,7 +40,7 @@ the tables that follow.
    - **Combine / aggregate a list** — items are merged into one thing, or the list is measured
      (`concatLists`, `aggregate`, `listLength`, `listReducerToSpreadObject`, `indexListBy`).
    - **Convert object ⇄ list** — shape-shift between an object and a list of its parts.
-   - **Schema / meta-model utilities** — advanced transformers that manipulate Jzod schemas or
+   - **Schema / meta-model utilities** — advanced transformers that manipulate ML schemas or
      whole application models (MLS, admin).
    - **Application examples** — transformers shipped as examples inside a specific application.
 
@@ -86,7 +86,7 @@ the tables that follow.
 | List — reduced cardinality | `filterList`, `find`, `pickFromList`, `getUniqueValues` |
 | Combine / aggregate a list | `concatLists`, `aggregate`, `listLength`, `listReducerToSpreadObject`, `indexListBy` |
 | Object ⇄ list | `getObjectValues`, `getObjectEntries`, `object_fromEntries`, `indexListBy` |
-| Schema / meta-model utilities | `jzodTypeCheck`, `defaultValueForSchema`, `resolveConditionalSchema`, `resolveSchemaReferenceInContext`, `unfoldSchemaOnce`, `resolveTransformerResultSchema`, `ansiColumnsToJzodSchema`, `spreadSheetToJzodSchema`, `duplicateApplicationModel`, `entityDefinition_extractAttributes` |
+| Schema / meta-model utilities | `mlsTypeCheck`, `defaultValueForSchema`, `resolveConditionalSchema`, `resolveSchemaReferenceInContext`, `unfoldSchemaOnce`, `resolveTransformerResultSchema`, `ansiColumnsToMlSchema`, `spreadSheetToMlSchema`, `duplicateApplicationModel`, `entityDefinition_extractAttributes` |
 | Application examples | `transformer_menu_addItem` (library app) |
 
 *(`object_fromEntries` and `indexListBy` appear in two roles; see their sections.)*
@@ -102,7 +102,7 @@ These transformers *source* data rather than transform it.
 | `getFromContext` | Read a value from the runtime context by name (`referenceName`) or nested path (`referencePath`), e.g. the current `row`. | `undefined` | `any` (actual: the context value) | `none→1` |
 | `getFromParameters` | Read a value from the build/query parameters (safe lookup with `expectedType`). | `undefined` | `any` | `none→1` |
 | `returnValue` | A literal constant; optionally declares its exact `mlSchema`. | `undefined` | `any` (typed by `mlSchema`) | `none→1` |
-| `constantAsExtractor` | A constant wrapped as an extractor result (mainly for tests). | `undefined` | `any` (typed by `valueJzodSchema`) | `none→1` |
+| `constantAsExtractor` | A constant wrapped as an extractor result (mainly for tests). | `undefined` | `any` (typed by `valueMlSchema`) | `none→1` |
 | `accessDynamicPath` | Navigate nested object attributes through a dynamic path (`objectAccessPath`), like `a.b[0].c`. | `object` | `any` (the value at the path) | `1→1` |
 | `getActiveDeployment` | Given an application uuid, return its active deployment uuid. | `string` | `string` | `1→1` |
 
@@ -232,19 +232,19 @@ Example — extract the title of every Book:
 
 ## 9. Schema / meta-model utilities
 
-Advanced transformers operating on Jzod schemas or whole application models. Mostly used inside the
+Advanced transformers operating on ML schemas or whole application models. Mostly used inside the
 Miroir application itself (MLS = Miroir Meta-Language Schema), not in ordinary report/action logic.
 
 | Transformer | Business use | Declared input | Declared output |
 |-------------|--------------|----------------|-----------------|
-| `jzodTypeCheck` | Validate a value object against a Jzod schema (`mlSchema`), returning a type-check result. | `object` | `object` |
-| `defaultValueForSchema` | Generate a default value object conforming to a Jzod schema (`mlSchema`). | `object` | `any` |
+| `mlsTypeCheck` | Validate a value object against a ML schema (`mlSchema`), returning a type-check result. | `object` | `object` |
+| `defaultValueForSchema` | Generate a default value object conforming to a ML schema (`mlSchema`). | `object` | `any` |
 | `resolveConditionalSchema` | Resolve an `ifThenElse` schema declaration against a value object to the concrete schema. | `object` | `object` |
 | `resolveSchemaReferenceInContext` | Resolve a `schemaReference` within a relative reference context. | `object` | `object` |
-| `unfoldSchemaOnce` | Unfold a Jzod schema one level, resolving immediate references. | `object` | `object` |
+| `unfoldSchemaOnce` | Unfold a ML schema one level, resolving immediate references. | `object` | `object` |
 | `resolveTransformerResultSchema` | Infer the output `mlSchema` of a nested `transformer` without evaluating it (the design-time API — see [transformer-result-schema.md](./transformer-result-schema.md)). | `object` | `object` |
-| `ansiColumnsToJzodSchema` | Convert `information_schema.columns` rows into a Jzod object schema (nullable → `optional`, JSON columns → open object). | `array` | `object` |
-| `spreadSheetToJzodSchema` | Convert spreadsheet contents into an ML schema. | *(none declared)* | *(schemaReference)* |
+| `ansiColumnsToMlSchema` | Convert `information_schema.columns` rows into a ML object schema (nullable → `optional`, JSON columns → open object). | `array` | `object` |
+| `spreadSheetToMlSchema` | Convert spreadsheet contents into an ML schema. | *(none declared)* | *(schemaReference)* |
 | `duplicateApplicationModel` | Duplicate an application model, rewriting the application uuid throughout. | `object` | `object` |
 | `entityDefinition_extractAttributes` | Extract attribute definitions from an Entity (`16dbfe28-…` = the Entity entity). | Entity (uuid-typed) | `array` |
 

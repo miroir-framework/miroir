@@ -28,7 +28,7 @@ import type { TestbedUuids } from "./TestbedUuids";
 import { mergeRunnerTestParamBank, expandGetFromParametersInParamBank } from "./TestbedUuids.js";
 import { resolveRunnerRefFromMiroirTestSuite } from "./runnerTestSuiteResolve.js";
 
-export { miroirTestForRunner as runnerTestJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+export { miroirTestForRunner as runnerTestMlSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 export {
   buildRunnerTestSessionParamBank,
   mergeRunnerTestParamBank,

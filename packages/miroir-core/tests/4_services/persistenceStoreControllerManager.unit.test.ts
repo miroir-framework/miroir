@@ -353,10 +353,11 @@ describe("PersistenceStoreControllerManager startup with modelVersion storage", 
     expect(modelStore.opened).toBe(true);
     expect(dataStore.opened).toBe(true);
 
+    // Unversioned / bundled deployments have no modelVersion section: reads return an empty
+    // collection rather than an error (PersistenceStoreController.getInstances, #232 / #234).
     const historyRead = await controller!.getInstances("modelVersion", ENTITY_UUID);
-    expect(historyRead instanceof Action2Error).toBe(true);
-    if (!(historyRead instanceof Action2Error)) return;
-    expect(historyRead.errorMessage).toMatch(/modelVersion/i);
+    expect(historyRead instanceof Action2Error).toBe(false);
+    expect((historyRead.returnedDomainElement as any).elementValue?.instances ?? []).toHaveLength(0);
   });
 });
 
@@ -455,10 +456,10 @@ describe("modelVersion backend support policy", () => {
     const controller = manager.getPersistenceStoreController(DEPLOYMENT_UUID)!;
     await controller.open();
 
+    // Unversioned / bundled deployments have no modelVersion section: reads return an empty
+    // collection rather than an error (PersistenceStoreController.getInstances, #232 / #234).
     const historyRead = await controller.getInstances("modelVersion", HISTORY_PARENT_UUID);
-    expect(historyRead instanceof Action2Error).toBe(true);
-    if (historyRead instanceof Action2Error) {
-      expect(historyRead.errorMessage).toMatch(/modelVersion/i);
-    }
+    expect(historyRead instanceof Action2Error).toBe(false);
+    expect((historyRead.returnedDomainElement as any).elementValue?.instances ?? []).toHaveLength(0);
   });
 });

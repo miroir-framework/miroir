@@ -3,7 +3,7 @@ import React from "react";
 // ################################################################################################
 /**
  * Shared component to display field-level validation errors.
- * Used by JzodElementEditor (and transitively by all element-type editors).
+ * Used by MlElementEditor (and transitively by all element-type editors).
  * Matches the form-level validation error style from TypedValueObjectEditor for visual consistency.
  */
 export const FieldValidationError: React.FC<{ error: string | undefined }> = ({ error }) => {

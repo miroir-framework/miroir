@@ -8,12 +8,12 @@
 
 import type {
   EntityVersion,
-  JzodElement,
+  MlElement,
   MetaModel,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
-import { getInnermostTypeCheckError } from "../1_core/jzod/mlsTypeCheckError.js";
-import { jzodTypeCheck } from "../1_core/jzod/jzodTypeCheck.js";
+import { getInnermostTypeCheckError } from "../1_core/mls/mlsTypeCheckError.js";
+import { mlsTypeCheck } from "../1_core/mls/mlsTypeCheck.js";
 
 // ================================================================================================
 // Types
@@ -23,7 +23,7 @@ export type ModelValidationInstanceModule = { default: any };
 
 export type ModelValidationGroup = {
   groupName: string;
-  jzodSchema: JzodElement;
+  mlSchema: MlElement;
   /** Path / uuid keyed modules, typically from import.meta.glob or MetaModel arrays. */
   instances: Record<string, ModelValidationInstanceModule>;
   filterByName?: string[];
@@ -125,7 +125,7 @@ export function modelValidationSuite(
     const attributeName = entityNameToAttributeName[entityName] ?? entityName;
     return {
       groupName: entityName,
-      jzodSchema: entityDefinitions[entityName]?.mlSchema as unknown as JzodElement,
+      mlSchema: entityDefinitions[entityName]?.mlSchema as unknown as MlElement,
       instances: modelValidationInstancesArrayToRecord(
         ((metaModel as any)[attributeName] as readonly any[] | undefined) ?? [],
       ),
@@ -156,15 +156,15 @@ export function buildModelValidationPlanFromGroups(
 // ================================================================================================
 
 export function checkModelValidationInstance(
-  jzodSchema: JzodElement,
+  mlSchema: MlElement,
   instance: any,
   fallbackPath: string,
   modelEnv: MiroirModelEnvironment,
 ): ModelValidationInstanceCheck {
   const label = buildModelValidationInstanceLabel(instance, fallbackPath);
   const filter = buildModelValidationVitestNameFilter(instance, fallbackPath);
-  const result = jzodTypeCheck(
-    jzodSchema,
+  const result = mlsTypeCheck(
+    mlSchema,
     instance,
     [],
     [],

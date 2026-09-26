@@ -1,6 +1,6 @@
 # Endpoint API Reference (⚠️SLOPPY⚠️)
 
-**Status: 🚧 Sketch - To be auto-generated from Jzod schemas**
+**Status: 🚧 Sketch - To be auto-generated from ML schemas**
 
 ---
 

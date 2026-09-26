@@ -8,7 +8,7 @@ import type {
   DomainElementSuccess,
   EndpointDefinition,
   EntityInstancesUuidIndex,
-  JzodObject,
+  MlObject,
   LoggerInterface,
   MiroirModelEnvironment,
   ReduxDeploymentsState,
@@ -29,7 +29,7 @@ import {
   getClientEnvironment,
   Domain2ElementFailed,
   getEndpointActions,
-  getDefaultValueForJzodSchemaWithResolutionNonHook,
+  getDefaultValueForMlSchemaWithResolutionNonHook,
   MiroirLoggerFactory,
   templateEvaluationParams,
   transformer_extended_apply_wrapper,
@@ -177,7 +177,7 @@ export function StoredRunnerView(props: {
       !storedRunner
         ? {
             formMLSchemaType: "mlSchema",
-            mlSchema: { type: "object", definition: {} } as JzodObject,
+            mlSchema: { type: "object", definition: {} } as MlObject,
           }
         : storedRunner?.definition.runnerType === "actionRunner"
         ? {
@@ -190,7 +190,7 @@ export function StoredRunnerView(props: {
                   definition: currentActionDefinition?.actionParameters ?? {},
                 },
               },
-            } as JzodObject,
+            } as MlObject,
           }
         : storedRunner?.definition.runnerType === "mcpToolRunner"
         ? {
@@ -204,7 +204,7 @@ export function StoredRunnerView(props: {
                     definition: {},
                   },
               },
-            } as JzodObject,
+            } as MlObject,
           }
         : storedRunner?.definition.formMLSchema.formMLSchemaType === "mlSchema"
         ? ({
@@ -250,8 +250,8 @@ export function StoredRunnerView(props: {
               defaultMiroirModelEnvironment,
               transformerParams,
               {},
-            ) as JzodObject)
-          : (formMLSchema.mlSchema as JzodObject),
+            ) as MlObject)
+          : (formMLSchema.mlSchema as MlObject),
     };
   }, [formMLSchema, transformerParams]);
 
@@ -269,7 +269,7 @@ export function StoredRunnerView(props: {
       ? undefined
       : storedRunner?.definition.runnerType === "actionRunner" ||
           storedRunner?.definition.runnerType === "mcpToolRunner"
-        ? getDefaultValueForJzodSchemaWithResolutionNonHook(
+        ? getDefaultValueForMlSchemaWithResolutionNonHook(
             "build",
             // (formMLSchema as any).mlSchema,
             resolvedMLSchema.mlSchema,
@@ -304,7 +304,7 @@ export function StoredRunnerView(props: {
                   {}, // contextResults
                 ),
               }
-            : getDefaultValueForJzodSchemaWithResolutionNonHook(
+            : getDefaultValueForMlSchemaWithResolutionNonHook(
                 "build",
                 resolvedMLSchema.mlSchema,
                 undefined, // rootObject

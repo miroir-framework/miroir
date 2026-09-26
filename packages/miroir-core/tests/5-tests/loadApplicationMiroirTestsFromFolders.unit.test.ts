@@ -47,7 +47,7 @@ describe("loadApplicationMiroirTestsFromFolders", () => {
     expect(catalog.length).toBeGreaterThanOrEqual(45);
     const leftoverSnapshotToName: Record<string, string> = {
       alterObject: "alterObject_atPath",
-      jzodTypeCheck: "jzodTypeCheck_TransformerTestSuite",
+      mlsTypeCheck: "mlsTypeCheck_TransformerTestSuite",
       menu: "menu_build",
       metaModelTransformers: "metaModelTransformersTest",
     };
@@ -72,7 +72,7 @@ describe("loadApplicationMiroirTestsFromFolders", () => {
   it("loads suite JSON from application folders, including library runner suites", () => {
     const unitSuite = loadMiroirCoreTestSuiteFromFolders("mergePositionBased");
     expect(unitSuite.miroirTestType).toBe("miroirTestSuite");
-    expect(unitSuite.miroirTestLabel).toBe("jzod.mergePositionBased");
+    expect(unitSuite.miroirTestLabel).toBe("mls.mergePositionBased");
 
     const lendSuite = loadMiroirCoreTestSuiteFromFolders("runner_lend_document");
     expect(lendSuite.miroirTestLabel).toBe("runner.lendDocument");
@@ -83,7 +83,7 @@ describe("loadApplicationMiroirTestsFromFolders", () => {
     const catalog = loadApplicationMiroirTestCatalog();
     const leftoverAliases: Array<[string, string]> = [
       ["menu", "menu_build"],
-      ["jzodTypeCheck", "jzodTypeCheck_TransformerTestSuite"],
+      ["mlsTypeCheck", "mlsTypeCheck_TransformerTestSuite"],
       ["alterObject", "alterObject_atPath"],
       ["metaModelTransformers", "metaModelTransformersTest"],
       ["runner.returnDocument", "runner_return_document"],
@@ -94,8 +94,8 @@ describe("loadApplicationMiroirTestsFromFolders", () => {
         targetName,
       );
     }
-    expect(() => resolveApplicationMiroirTestSuiteKeys(catalog, ["jzodTypeCheck"])).toThrow(
-      /Did you mean "jzodTypeCheck_TransformerTestSuite"/,
+    expect(() => resolveApplicationMiroirTestSuiteKeys(catalog, ["mlsTypeCheck"])).toThrow(
+      /Did you mean "mlsTypeCheck_TransformerTestSuite"/,
     );
     expect(() => resolveApplicationMiroirTestSuiteKeys(catalog, ["runner.returnDocument"])).toThrow(
       /Did you mean "runner_return_document"/,

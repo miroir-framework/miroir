@@ -87,7 +87,7 @@ Welcome to the Miroir Framework documentation. This guide will help you find the
 ### Core Concepts
 - [Core Concepts Overview](guides/core-concepts.md) - Entity, Query, Transformer, Action, Report
 - [Architecture](guides/architecture.md) - Layered architecture and [action workflows](guides/architecture/workflows/runQuery-emulated-server.md) (start with `runBoxedQueryAction` on emulated server)
-- [Meta-Model & Jzod](guides/meta-model.md) - Understanding the meta-language
+- [Meta-Model & ML](guides/meta-model.md) - Understanding the meta-language
 - [Model vs Data](guides/model-vs-data.md) - Application structure
 - [Glossary](reference/glossary.md) - Terms and definitions
 
@@ -120,6 +120,7 @@ Welcome to the Miroir Framework documentation. This guide will help you find the
 - [Process capabilities](reference/process-capabilities.md) - Feature switches: AI, MCP, Cursor, designer tools, store types
 - [Data architecture: deployments](reference/data-architecture-deployments.md) - Store backends, `emulateServer`, product scenarios
 - [Versioning](reference/versioning.md) - Model history: versioning modes, freeze, EntityVersion, `modelVersion` section
+- [ML nomenclature](reference/ml-nomenclature.md) - ML / MLS names of the meta-language; old Jzod names to migrate (#145)
 - [Configuration Reference](reference/configuration.md) - Environment variables and settings
 - [Data Stores](reference/data-stores.md) - Postgres, IndexedDB, Filesystem
 - [Logging](reference/logging.md) - Logging configuration

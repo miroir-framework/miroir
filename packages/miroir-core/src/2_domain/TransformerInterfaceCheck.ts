@@ -140,7 +140,7 @@ export function getTransformerDefinitionInputOutput(
  * Names of stock transformer definitions whose declared `inputOutput` fails the (enhanced)
  * inputOutput schema. Definitions without `inputOutput` are fine (absent = any/any).
  * Deliberately scoped to `inputOutput`: full-definition validation surfaces pre-existing
- * unrelated debt (e.g. spreadSheetToJzodSchema's transformerImplementation content).
+ * unrelated debt (e.g. spreadSheetToMlSchema's transformerImplementation content).
  */
 export function findInvalidStockTransformerInputOutputs(
   transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,

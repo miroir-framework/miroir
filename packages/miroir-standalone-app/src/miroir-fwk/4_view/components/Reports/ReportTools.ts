@@ -2,14 +2,14 @@ import { v4 as uuidv4 } from "uuid";
 import {
   entityMLSchema,
   getApplicationSection,
-  getDefaultValueForJzodSchemaWithResolutionNonHook,
+  getDefaultValueForMlSchemaWithResolutionNonHook,
   LoggerInterface,
   MiroirLoggerFactory,
   findEntityFromUuid,
   type ApplicationDeploymentMap,
   type DeploymentUuidToReportsEntities,
-  type JzodElement,
-  type JzodObject,
+  type MlElement,
+  type MlObject,
   type MetaModel,
   type MiroirModelEnvironment,
   type ReportSection,
@@ -38,7 +38,7 @@ export const reportSectionsFormSchema = (
   currentModel: MetaModel,
   reportData: Record<string, any>,
   reportSectionPath: (string | number)[]
-): Record<string, JzodElement> => {
+): Record<string, MlElement> => {
   if (isMultistepStepEnvelope(reportSection)) {
     return reportSectionsFormSchema(
       reportSection.section,
@@ -227,7 +227,7 @@ export const reportSectionsFormValue = (
               name: "",
             }
           : reportData?.[""];
-      const queryParametersSchema: JzodObject =
+      const queryParametersSchema: MlObject =
         typeof targetData === "object" &&
         targetData !== null &&
         !Array.isArray(targetData) &&
@@ -240,7 +240,7 @@ export const reportSectionsFormValue = (
         ? // {[editedQueryParameterValueKey]: { classification: "admin" }}
           {
             // [editedQueryParameterValueKey]: { classification: "MLS" }
-            [editedQueryParameterValueKey]: getDefaultValueForJzodSchemaWithResolutionNonHook(
+            [editedQueryParameterValueKey]: getDefaultValueForMlSchemaWithResolutionNonHook(
               "build",
               queryParametersSchema,
               undefined, // rootObject
@@ -272,7 +272,7 @@ export const reportSectionsFormValue = (
     }
     case "inputReportSection":  {
       let queryParametersDefaultValue = reportSection.definition.inputMLSchema
-        ? getDefaultValueForJzodSchemaWithResolutionNonHook(
+        ? getDefaultValueForMlSchemaWithResolutionNonHook(
             "build",
             reportSection.definition.inputMLSchema,
             undefined, // rootObject

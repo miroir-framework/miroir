@@ -11,7 +11,7 @@ import type {
 } from "./preprocessor-generated/miroirFundamentalType";
 
 export interface MiroirModelEnvironment {
-  miroirFundamentalJzodSchema: MlSchema,
+  miroirFundamentalMlSchema: MlSchema,
   miroirMetaModel?: MetaModel,
   endpointsByUuid: Record<Uuid, any>,
   currentModel: MetaModel,
@@ -31,7 +31,7 @@ export type ITransformerHandler<
   modelEnvironment: MiroirModelEnvironment,
   transformerParams: Record<string, any>,
   contextResults?: Record<string, any>,
-  reduxDeploymentsState?: ReduxDeploymentsState | undefined, // used by getDefaultValueForJzodSchemaWithResolution only, somewhat redundant with modelEnvironment
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined, // used by getDefaultValueForMlSchemaWithResolution only, somewhat redundant with modelEnvironment
   application?: Uuid,
   applicationDeploymentMap?: ApplicationDeploymentMap,
   deploymentUuid?: Uuid,

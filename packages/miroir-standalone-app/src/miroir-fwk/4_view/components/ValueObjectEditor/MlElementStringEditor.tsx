@@ -1,0 +1,202 @@
+import React, { useCallback, useState } from "react";
+import { FormikProps } from "formik";
+
+import {
+  ThemedColorPicker,
+  ThemedDisplayValue,
+  ThemedLabeledEditor,
+  ThemedTextEditor
+} from "../Themes/index";
+import { FileSelector } from "../Themes/FileSelector.js";
+// import { useServerFilesystemRoot } from "../../hooks/useServerFilesystemRoot.js";
+import type { MlEditorPropsRoot } from "./MlElementEditorInterface";
+import { LoggerInterface, MiroirLoggerFactory, type MlBaseObject, type MetaModel } from "miroir-core";
+import { packageName } from "../../../../constants";
+import { cleanLevel } from "../../constants";
+import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
+
+// ################################################################################################
+export interface MlElementStringEditorProps extends MlEditorPropsRoot {
+  formik: FormikProps<any>;
+  formikRootLessListKey: string;
+  currentValueObjectAtKey: any;
+  localReadOnly: boolean;
+  enhancedLabelElement: JSX.Element;
+  hasPathError: boolean;
+  stringDisplay?: {
+    format?: "email" | "url" | "uuid" | "uri" | "color" |  "date-time" | "date" | "time" | "file" | "folder";
+    // format?: MlBaseObject["tag"]?["value"]?[""]["format"];
+    multiline?: boolean;
+    rows?: number;
+  };
+}
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlElementStringEditor");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
+).then((logger: LoggerInterface) => {
+  log = logger;
+});
+
+// ################################################################################################
+/**
+ * String Editor Component for ML Elements
+ * 
+ * Handles different string display modes:
+ * - File selection (format: "file")
+ * - Folder selection (format: "folder")
+ * - Multiline text (multiline: true)
+ * - Default single-line text input
+ */
+export const MlElementStringEditor: React.FC<MlElementStringEditorProps> = (props) => {
+  const {
+    formik,
+    formikRootLessListKey,
+    currentValueObjectAtKey,
+    localReadOnly,
+    enhancedLabelElement,
+    hasPathError,
+    stringDisplay,
+    readOnly,
+    rootLessListKey,
+    onChangeVector,
+  } = props;
+  const trackedRender = useTrackedRender(
+    editorNavigationKey(props.currentDeploymentUuid, props.currentApplicationSection),
+  );
+
+  const format = stringDisplay?.format;
+  const multiline = stringDisplay?.multiline;
+  const rows = stringDisplay?.rows || 4;
+  // const serverFilesystemRoot = useServerFilesystemRoot();
+  const [selectedFileName, setSelectedFileName] = useState<string | undefined>(
+    currentValueObjectAtKey || undefined
+  );
+  const [fileError, setFileError] = useState<string | undefined>(undefined);
+
+  const setSelectedMetaModel = useCallback((metaModel: MetaModel | undefined) => {
+    formik.setFieldValue(formikRootLessListKey, metaModel);
+  }, [formikRootLessListKey, formik]);
+
+  const setSelectedFileName2 = useCallback((fileName: string | undefined) => {
+    // When upload=false (default), we receive a path string
+    log.info('MlElementStringEditor - Selected file name:', fileName);
+    setSelectedFileName(fileName);
+    setFileError(undefined);
+    // Store the file path/name in formik
+    formik.setFieldValue(formikRootLessListKey, fileName);
+  }, [formikRootLessListKey, onChangeVector, rootLessListKey, formik]);
+
+  // Handle color format using ThemedColorPicker
+  if (format === "color") {
+    if (readOnly || localReadOnly) {
+      trackedRender.end("MlElementStringEditor", formikRootLessListKey);
+      return (
+        <ThemedLabeledEditor
+          labelElement={enhancedLabelElement}
+          editor={<ThemedColorPicker value={currentValueObjectAtKey} readOnly />}
+        />
+      );
+    }
+    trackedRender.end("MlElementStringEditor", formikRootLessListKey);
+    return (
+      <ThemedLabeledEditor
+        labelElement={enhancedLabelElement}
+        editor={
+          <ThemedColorPicker
+            value={formik.getFieldProps(formikRootLessListKey).value ?? currentValueObjectAtKey}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              formik.setFieldValue(formikRootLessListKey, e.target.value)
+            }
+            error={hasPathError}
+          />
+        }
+      />
+    );
+  }
+
+  // Handle file and folder formats using FileSelector
+  if (format === "file" || format === "folder") {
+    if (readOnly || localReadOnly) {
+      trackedRender.end("MlElementStringEditor", formikRootLessListKey);
+      return (
+        <ThemedLabeledEditor
+          labelElement={enhancedLabelElement}
+          editor={<ThemedDisplayValue value={currentValueObjectAtKey} type="string" />}
+        />
+      );
+    }
+    trackedRender.end("MlElementStringEditor", formikRootLessListKey);
+    return (
+      <ThemedLabeledEditor
+        labelElement={enhancedLabelElement}
+        editor={
+          <FileSelector
+            title=""
+            buttonLabel={format === "folder" ? "Select Folder" : "Select File"}
+            accept={format === "file" ? "*" : undefined}
+            folder={format === "folder"}
+            setSelectedFileContents={setSelectedMetaModel}
+            setSelectedFileError={setFileError}
+            setSelectedFileName={setSelectedFileName2}
+            selectedFileName={selectedFileName}
+            error={fileError}
+            showBorder={false}
+            compact={true}
+            style={{ marginBottom: 0 }}
+          />
+        }
+      />
+    );
+  }
+
+  // Handle multiline text
+  if (multiline) {
+    trackedRender.end("MlElementStringEditor", formikRootLessListKey);
+    return (
+      <ThemedLabeledEditor
+        labelElement={enhancedLabelElement}
+        editor={
+          readOnly || localReadOnly ? (
+            <ThemedDisplayValue value={currentValueObjectAtKey} type="string" />
+          ) : (
+            <ThemedTextEditor
+              variant="standard"
+              data-testid="miroirInput"
+              id={rootLessListKey}
+              key={rootLessListKey}
+              {...formik.getFieldProps(formikRootLessListKey)}
+              multiline
+              rows={rows}
+              error={hasPathError}
+            />
+          )
+        }
+      />
+    );
+  }
+
+  // Default single-line string input
+  trackedRender.end("MlElementStringEditor", formikRootLessListKey);
+  return (
+    <ThemedLabeledEditor
+      labelElement={enhancedLabelElement}
+      editor={
+        readOnly || localReadOnly ? (
+          <ThemedDisplayValue value={currentValueObjectAtKey} type="string" />
+        ) : (
+          <ThemedTextEditor
+            variant="standard"
+            data-testid="miroirInput"
+            id={rootLessListKey}
+            key={rootLessListKey}
+            {...formik.getFieldProps(formikRootLessListKey)}
+            error={hasPathError}
+          />
+        )
+      }
+    />
+  );
+};
+
+MlElementStringEditor.displayName = "MlElementStringEditor";

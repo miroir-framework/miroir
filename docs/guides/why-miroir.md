@@ -247,7 +247,7 @@ To build an application with Miroir, you provide:
 1. **📋 A Structured Data Model**
    - Define your domain entities
    - Specify attributes and relationships
-   - Use Jzod (Miroir Meta-Language) schemas
+   - Use ML (Miroir Meta-Language) schemas
    - Maintain through integrated versioning
 
 2. **🔧 Domain-Specific Language Definitions**

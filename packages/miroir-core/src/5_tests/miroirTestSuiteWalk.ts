@@ -1,5 +1,6 @@
 import type {
   MiroirTestSuite,
+  ReactComponentTestStep,
   ReactComponentTestSuite,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
@@ -45,6 +46,22 @@ function miroirTestNodeLabel(node: MiroirTestNode): string {
 }
 
 /**
+ * Distinct step kinds used by the leaves of a `reactComponentTestSuite`, in order of first use
+ * (#303). "Does the suite contain a step kind" is `reactComponentTestSuiteStepKinds(suite).includes(kind)`.
+ */
+export function reactComponentTestSuiteStepKinds(
+  suite: Pick<ReactComponentTestSuite, "miroirTests">,
+): ReactComponentTestStep["step"][] {
+  const kinds = new Set<ReactComponentTestStep["step"]>();
+  for (const leaf of suite.miroirTests) {
+    for (const step of leaf.steps ?? []) {
+      kinds.add(step.step);
+    }
+  }
+  return [...kinds];
+}
+
+/**
  * The context passed to the component test runner with each leaf of a `reactComponentTestSuite`
  * (#292, analysis T3). `caseLabels` lists every leaf, whatever the filter.
  */
@@ -60,7 +77,29 @@ function reactComponentTestSuiteContext(
     component: suite.component,
     componentProps: suite.componentProps ?? {},
     caseLabels: suite.miroirTests.map((leaf) => leaf.miroirTestLabel),
+    stepKinds: reactComponentTestSuiteStepKinds(suite),
+    ...(suite.runOnDemand ? { runOnDemand: true as const } : {}),
   };
+}
+
+/**
+ * The filter for a nested suite that an object filter does not name, when every key of that
+ * filter names a child of the current suite (#287). It selects no leaf, so the nested suite
+ * records its leaves as skipped instead of throwing on the sibling's key. When a key names no
+ * child, returns `undefined`: the nested suites keep the filter and report the unknown key.
+ */
+function unnamedSiblingSuiteFilter(
+  innerTestList: TestSuiteListFilter | undefined,
+  childLabels: readonly string[],
+): MiroirTestRunFilter | undefined {
+  if (!innerTestList || Array.isArray(innerTestList) || typeof innerTestList !== "object") {
+    return undefined;
+  }
+  const filterKeys = Object.keys(innerTestList);
+  if (filterKeys.length === 0 || !filterKeys.every((key) => childLabels.includes(key))) {
+    return undefined;
+  }
+  return { testList: [] };
 }
 
 export type RunMiroirTestSuiteWalkParams = {
@@ -127,6 +166,7 @@ export async function runMiroirTestSuiteWalk(
     },
   );
   const innerFilter: { testList: TestSuiteListFilter | undefined } = { testList: innerTestList };
+  const siblingSuiteFilter = unnamedSiblingSuiteFilter(innerTestList, availableLeafLabels);
   const selectedTests = allTests.filter((entry) =>
     isMiroirTestLeafSelected(miroirTestNodeLabel(entry), innerFilter?.testList),
   );
@@ -149,11 +189,12 @@ export async function runMiroirTestSuiteWalk(
     const isSkipped = !selectedTests.includes(node) || !!shouldSkipSuite;
 
     if (node.miroirTestType === "miroirTestSuite" || node.miroirTestType === "reactComponentTestSuite") {
+      const nestedFilter = siblingSuiteFilter && isSkipped ? siblingSuiteFilter : innerFilter;
       const nestedParams: RunMiroirTestSuiteWalkParams = {
         ...params,
         testSuitePath: [...testSuitePath, node.miroirTestLabel],
         miroirTestSuite: node,
-        filter: innerFilter,
+        filter: nestedFilter,
         parentSkip: shouldSkipSuite,
       };
 
@@ -185,7 +226,7 @@ export async function runMiroirTestSuiteWalk(
         localVitest,
         nestedParams.testSuitePath,
         node,
-        innerFilter,
+        nestedFilter,
         modelEnvironment,
         miroirActivityTracker,
         parentTrackingId,

@@ -294,10 +294,10 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
               rootLessListKey: "ROOT",
               // currentValue: zoomedInValueObject_DEFUNCT,
               // formikValues: undefined,
-              // rawJzodSchema: zoomedInDisplaySchema,
-              // localResolvedElementJzodSchemaBasedOnValue:
-              //   jzodTypeCheckResult?.status == "ok"
-              //     ? jzodTypeCheckResult.resolvedSchema
+              // rawMlSchema: zoomedInDisplaySchema,
+              // localResolvedElementMlSchemaBasedOnValue:
+              //   mlsTypeCheckResult?.status == "ok"
+              //     ? mlsTypeCheckResult.resolvedSchema
               //     : undefined,
             }}
           />

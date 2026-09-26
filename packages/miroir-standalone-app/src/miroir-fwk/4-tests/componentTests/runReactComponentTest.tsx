@@ -17,14 +17,18 @@ import {
 } from "../../4_view/tools/ComponentTestModeContext.js";
 import { PortalContainerProvider } from "../../4_view/tools/PortalContainerContext.js";
 import {
+  applyComponentTestDomConfig,
   configureComponentTestDom,
   createComponentTestEnvironment,
   mountComponent,
   waitForProgressiveRendering,
+  type ComponentTestCaseControls,
+  type MountedComponent,
 } from "./componentTestEnvironment.js";
 import { componentRegistry as defaultComponentRegistry, type ComponentRegistry } from "./componentRegistry.js";
 import { reviveComponentProps } from "./componentTestTargets.js";
 import { buildComponentTestWrapper, type ComponentTestWrapper } from "./componentTestTools.js";
+import { formatMeasurementTable } from "./measureRendering.js";
 import { ComponentTestStepError, runComponentTestSteps } from "./runComponentTestSteps.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "runReactComponentTest");
@@ -40,6 +44,8 @@ export interface ComponentTestSandboxHost {
   portalElement?: HTMLElement;
   /** Components of the `reactComponentTestSuite` nodes (#292). Defaults to `componentRegistry`. */
   componentRegistry?: ComponentRegistry;
+  /** Replaces the `iterations` of every `measureRendering` step of the run (#303 T7). */
+  iterationsOverride?: number;
 }
 
 /**
@@ -61,15 +67,20 @@ export type ClosableReactComponentTestRunner = ReactComponentTestRunner & {
  *    without `suite`, a leaf without `steps`, or an unknown component is an `error` result.
  * 2. It builds one wrapper (providers over its own `LocalCache`) per suite, keyed by the
  *    `reactComponentTestSuite` path, on the suite's first case, and reuses it for the later cases.
+ *    The wrapper turns render tracking on (`trackRenders`) when the suite contains a
+ *    `measureRendering` step (#303 T3).
  * 3. It unmounts the previous case, creates a fresh container under `sandboxElement`, and mounts
  *    the wrapped component into it.
  * 4. It runs the steps (`runComponentTestSteps`) with a fresh `ComponentTestEnvironment`, a thrown
  *    error becoming an `error` result (with the expected and actual values of a failed
- *    `expectRenderedValues`).
+ *    `expectRenderedValues`). The environment's `remount` / `rerender` act on the case's React
+ *    root (#303 T4); the measurements of `measureRendering` steps (iterations replaced by
+ *    `host.iterationsOverride` when set) go in the `ok` result and in the log, as a table.
  * 5. After the suite's last case (the last of `suite.caseLabels`), it destroys the suite
  *    wrapper's `MiroirEventService`; `endRun()` does the same for
  *    any wrapper still open when the run ends (a filtered run need not reach the suite's last
- *    case), and so does `close()`.
+ *    case), and so does `close()`, which also puts back the `@testing-library/dom` configuration
+ *    found when the runner was created.
  *
  * The component is rendered inside `ComponentTestModeContext` set to the sandbox mode, so that in
  * the app it renders the same DOM as under vitest, and inside `PortalContainerProvider` set to
@@ -79,7 +90,7 @@ export type ClosableReactComponentTestRunner = ReactComponentTestRunner & {
 export function createReactComponentTestRunner(
   host: ComponentTestSandboxHost,
 ): ClosableReactComponentTestRunner {
-  configureComponentTestDom();
+  const restoreDomConfig = configureComponentTestDom();
   const componentRegistry = host.componentRegistry ?? defaultComponentRegistry;
   const sandboxElement = host.sandboxElement;
   const ownsPortalElement = !host.portalElement;
@@ -93,19 +104,49 @@ export function createReactComponentTestRunner(
     })();
 
   const suiteWrappers = new Map<string, ComponentTestWrapper>();
-  let currentCase: { unmount: () => void; container: HTMLElement } | undefined;
+  /** The mounted case: its container, its React root, and its element for given props. */
+  let currentCase:
+    | {
+        container: HTMLElement;
+        mounted: MountedComponent | undefined;
+        element: (props: Record<string, any>) => React.ReactElement;
+        props: Record<string, any>;
+      }
+    | undefined;
 
   const unmountCurrentCase = () => {
     if (!currentCase) {
       return;
     }
-    const { unmount, container } = currentCase;
+    const { mounted, container } = currentCase;
     currentCase = undefined;
     try {
-      unmount();
+      mounted?.unmount();
     } finally {
       container.remove();
     }
+  };
+
+  /** `remount` / `rerender` of the mounted case (#303 T4). */
+  const caseControls: ComponentTestCaseControls = {
+    remount: async () => {
+      if (!currentCase) {
+        throw new Error("no mounted case to remount");
+      }
+      const mountedCase = currentCase;
+      mountedCase.mounted?.unmount();
+      mountedCase.mounted = undefined;
+      mountedCase.mounted = mountComponent(mountedCase.element(mountedCase.props), mountedCase.container);
+      await waitForProgressiveRendering(mountedCase.container);
+    },
+    rerender: async (propsOverride) => {
+      if (!currentCase?.mounted) {
+        throw new Error("no mounted case to rerender");
+      }
+      const props = { ...currentCase.props, ...reviveComponentProps(propsOverride ?? {}) };
+      currentCase.mounted.render(currentCase.element(props));
+      await waitForProgressiveRendering(currentCase.container);
+    },
   };
 
   const destroySuiteWrapper = (key: string) => {
@@ -124,32 +165,34 @@ export function createReactComponentTestRunner(
     props: Record<string, any>,
   ): Promise<HTMLElement> => {
     unmountCurrentCase();
+    applyComponentTestDomConfig();
     const container = sandboxElement.ownerDocument.createElement("div");
     container.setAttribute("data-testid", "component-test-container");
     sandboxElement.appendChild(container);
 
     const { Wrapper } = wrapper;
-    currentCase = { container, unmount: () => undefined };
-    currentCase.unmount = mountComponent(
+    const element = (elementProps: Record<string, any>) => (
       <ComponentTestModeContext.Provider value={componentTestSandboxMode}>
         <Wrapper>
           <PortalContainerProvider portalElement={portalElement}>
-            <Component {...props} />
+            <Component {...elementProps} />
           </PortalContainerProvider>
         </Wrapper>
-      </ComponentTestModeContext.Provider>,
-      container,
-    ).unmount;
+      </ComponentTestModeContext.Provider>
+    );
+    currentCase = { container, mounted: undefined, element, props };
+    currentCase.mounted = mountComponent(element(props), container);
     await waitForProgressiveRendering(container);
     return container;
   };
 
-  const suiteWrapper = (key: string) => {
+  const suiteWrapper = (key: string, trackRenders: boolean) => {
     let wrapper = suiteWrappers.get(key);
     if (!wrapper) {
       // no suite sets a deployment map (analysis T13)
       wrapper = buildComponentTestWrapper({
         applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+        trackRenders,
       });
       suiteWrappers.set(key, wrapper);
     }
@@ -193,15 +236,21 @@ export function createReactComponentTestRunner(
     const testName = MiroirActivityTracker.testPathName(testNamePath);
     try {
       const container = await mountCase(
-        suiteWrapper(wrapperKey),
+        // #303 T3: render tracking only for a suite that measures renders (other suites: same DOM)
+        suiteWrapper(wrapperKey, !!suite.stepKinds?.includes("measureRendering")),
         Component,
         reviveComponentProps({ ...suite.componentProps, ...(leaf.componentProps ?? {}) }),
       );
-      await runComponentTestSteps(
-        createComponentTestEnvironment({ testName, container, sandboxElement, portalElement, log }),
+      const { measurements } = await runComponentTestSteps(
+        createComponentTestEnvironment({ testName, container, sandboxElement, portalElement, log, caseControls }),
         leaf.steps,
+        { iterationsOverride: host.iterationsOverride },
       );
-      return { status: "ok" };
+      if (measurements.length === 0) {
+        return { status: "ok" };
+      }
+      log.info(`render measurements of ${testName}\n${formatMeasurementTable(measurements)}`);
+      return { status: "ok", measurements };
     } catch (error) {
       return failure(testName, error);
     } finally {
@@ -224,7 +273,11 @@ export function createReactComponentTestRunner(
       if (ownsPortalElement) {
         portalElement.remove();
       }
-      endRun();
+      try {
+        endRun();
+      } finally {
+        restoreDomConfig();
+      }
     }
   };
 

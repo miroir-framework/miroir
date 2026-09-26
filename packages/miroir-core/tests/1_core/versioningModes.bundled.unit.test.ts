@@ -88,9 +88,11 @@ describe("bundled Miroir profile excludes Version History", () => {
       "modelVersion",
       entitySelfApplicationVersion.uuid!,
     );
-    expect(modelVersionRead instanceof Action2Error).toBe(true);
-    if (modelVersionRead instanceof Action2Error) {
-      expect(modelVersionRead.errorMessage).toMatch(/modelVersion/i);
-    }
+    // Unversioned / bundled deployments have no modelVersion section: reads return an empty
+    // collection rather than an error (PersistenceStoreController.getInstances, #232 / #234).
+    expect(modelVersionRead instanceof Action2Error).toBe(false);
+    expect(
+      (modelVersionRead.returnedDomainElement as any).elementValue?.instances ?? [],
+    ).toHaveLength(0);
   });
 });

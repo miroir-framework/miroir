@@ -50,7 +50,7 @@ import {
   defaultMiroirMetaModel,
   entityEntity,
   entityEntityVersion,
-  entityJzodSchema,
+  entityMlSchema,
   entityMenu,
   entityReport,
   entitySelfApplicationVersion,
@@ -83,10 +83,10 @@ const MIROIR_TEST_DATA_FOLDER = join(
   "packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b",
 );
 
-const arraySuite = "JzodArrayEditor";
-/** #292: the Array cases have their own MiroirTest instance, `JzodArrayEditor_ComponentTestSuite`. */
+const arraySuite = "MlArrayEditor";
+/** #292: the Array cases have their own MiroirTest instance, `MlArrayEditor_ComponentTestSuite`. */
 const componentTestSuiteInstanceUuid = "1b71d68b-7dc9-468c-a251-4fa7889f20f4";
-const componentTestSuiteInstanceName = "JzodArrayEditor_ComponentTestSuite";
+const componentTestSuiteInstanceName = "MlArrayEditor_ComponentTestSuite";
 
 function loadComponentTestSuiteInstance(): MiroirTestDefinition {
   for (const fileName of readdirSync(MIROIR_TEST_DATA_FOLDER)) {
@@ -140,7 +140,7 @@ function buildAppHarness() {
         objects: [
           { parentName: entityEntity.name, parentUuid: entityEntity.uuid, applicationSection: "model", instances: defaultMiroirMetaModel.entities },
           { parentName: entityEntityVersion.name, parentUuid: entityEntityVersion.uuid, applicationSection: "model", instances: defaultMiroirMetaModel.entityVersions },
-          { parentName: entityJzodSchema.name, parentUuid: entityJzodSchema.uuid, applicationSection: "data", instances: defaultMiroirMetaModel.jzodSchemas },
+          { parentName: entityMlSchema.name, parentUuid: entityMlSchema.uuid, applicationSection: "data", instances: defaultMiroirMetaModel.mlSchemas },
           { parentName: entityMenu.name, parentUuid: entityMenu.uuid, applicationSection: "data", instances: defaultMiroirMetaModel.menus },
           { parentName: entitySelfApplicationVersion.name, parentUuid: entitySelfApplicationVersion.uuid, applicationSection: "data", instances: defaultMiroirMetaModel.applicationVersions },
           { parentName: entityReport.name, parentUuid: entityReport.uuid, applicationSection: "data", instances: defaultMiroirMetaModel.reports },
@@ -407,20 +407,25 @@ describe("Array component suite in the MiroirTestDisplay sandbox", () => {
     const secondSandbox = within(secondPanel).getByTestId("component-test-sandbox");
 
     // For each case start, the sandbox that receives the new case container.
+    // Recorded at appendChild rather than with a MutationObserver: happy-dom holds an observer's listener through
+    // a WeakRef, so a garbage collection during the run silently stops the reports.
     const containerParents: string[] = [];
-    const observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        for (const node of mutation.addedNodes) {
-          if (node instanceof HTMLElement && node.getAttribute("data-testid") === "component-test-container") {
-            containerParents.push(
-              mutation.target === firstSandbox ? "first" : mutation.target === secondSandbox ? "second" : "other",
-            );
-          }
+    const recordContainerAppends = (sandbox: HTMLElement, name: string): (() => void) => {
+      const appendChild = sandbox.appendChild;
+      sandbox.appendChild = function <T extends Node>(node: T): T {
+        if (node instanceof HTMLElement && node.getAttribute("data-testid") === "component-test-container") {
+          containerParents.push(name);
         }
-      }
-    });
-    observer.observe(firstSandbox, { childList: true });
-    observer.observe(secondSandbox, { childList: true });
+        return appendChild.call(sandbox, node) as T;
+      };
+      return () => {
+        sandbox.appendChild = appendChild;
+      };
+    };
+    const stopRecording = [
+      recordContainerAppends(firstSandbox, "first"),
+      recordContainerAppends(secondSandbox, "second"),
+    ];
 
     const savedDomConfig = { ...getDomConfig() };
     try {
@@ -438,7 +443,7 @@ describe("Array component suite in the MiroirTestDisplay sandbox", () => {
       });
     } finally {
       configureDom(savedDomConfig);
-      observer.disconnect();
+      stopRecording.forEach((stop) => stop());
     }
 
     expect(arrayResults(firstResults!).filter((result) => result.testResult === "ok")).toHaveLength(12);

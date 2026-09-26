@@ -4,7 +4,7 @@ import type { Action } from "./preprocessor-generated/miroirFundamentalType.js";
  * Narrowing guards for Endpoint.definition (untagged key-union, issue #267 D1).
  *
  * Lives in layer 0 so bootstrap schema assembly
- * (`getMiroirFundamentalJzodSchema`) can import it without an upward
+ * (`getMiroirFundamentalMlSchema`) can import it without an upward
  * dependency on `1_core`.
  */
 

@@ -150,7 +150,7 @@ describe('resolveTestCompositeActionTemplate', () => {
       },
     } as MetaEntity;
 
-    const actionEffectiveParamsCreateEntity /** parsed by actionHandlerCreateEntity.interface.actionJzodObjectSchema */ =
+    const actionEffectiveParamsCreateEntity /** parsed by actionHandlerCreateEntity.interface.actionMlObjectSchema */ =
       {
         currentApplicationName,
         currentApplicationUuid,

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-import { JzodElement } from "miroir-core";
+import { MlElement } from "miroir-core";
 
 import {
   calculateAdaptiveColumnWidths,
@@ -25,7 +25,7 @@ describe("calculateAdaptiveColumnWidths", () => {
     { field: "meta", headerName: "Meta" },
   ];
 
-  const baseJzodSchema: Record<string, JzodElement> = {
+  const baseMlSchema: Record<string, MlElement> = {
     uuid: { type: "string" },
     name: { type: "string" },
     age: { type: "number" },
@@ -49,7 +49,7 @@ describe("calculateAdaptiveColumnWidths", () => {
         uuid: "abc-123",
         parentUuid: "parent-1",
       },
-      mlSchema: baseJzodSchema,
+      mlSchema: baseMlSchema,
       foreignKeyObjects: {},
     },
     {
@@ -66,7 +66,7 @@ describe("calculateAdaptiveColumnWidths", () => {
         uuid: "def-456",
         parentUuid: "parent-1",
       },
-      mlSchema: baseJzodSchema,
+      mlSchema: baseMlSchema,
       foreignKeyObjects: {},
     },
   ];
@@ -77,7 +77,7 @@ describe("calculateAdaptiveColumnWidths", () => {
       baseRows,
       1200,
       defaultToolsColumnDef,
-      baseJzodSchema
+      baseMlSchema
     );
     expect(specs[0].type).toBe("tools");
     expect(specs[0].field).toBe("");
@@ -90,7 +90,7 @@ describe("calculateAdaptiveColumnWidths", () => {
       baseRows,
       1200,
       defaultToolsColumnDef,
-      baseJzodSchema
+      baseMlSchema
     );
     const types = specs.map((s) => s.type);
     expect(types).toContain("uuid");
@@ -110,7 +110,7 @@ describe("calculateAdaptiveColumnWidths", () => {
       baseRows,
       availableWidth,
       defaultToolsColumnDef,
-      baseJzodSchema
+      baseMlSchema
     );
 
     // Calculate the total actual width to verify exact matching
@@ -140,7 +140,7 @@ describe("calculateAdaptiveColumnWidths", () => {
       baseRows,
       availableWidth,
       defaultToolsColumnDef,
-      baseJzodSchema
+      baseMlSchema
     );
     const totalWidth = specs.reduce((sum, s) => sum + s.calculatedWidth, 0);
 
@@ -163,7 +163,7 @@ describe("calculateAdaptiveColumnWidths", () => {
       baseRows,
       availableWidth,
       defaultToolsColumnDef,
-      baseJzodSchema
+      baseMlSchema
     );
     const totalWidth = specs.reduce((sum, s) => sum + s.calculatedWidth, 0);
     expect(Math.abs(totalWidth - availableWidth)).toBeLessThan(2); // Allow for rounding
@@ -180,7 +180,7 @@ describe("calculateAdaptiveColumnWidths", () => {
         baseRows,
         availableWidth,
         defaultToolsColumnDef,
-        baseJzodSchema
+        baseMlSchema
       );
       const totalWidth = specs.reduce((sum, s) => sum + s.calculatedWidth, 0);
 
@@ -204,7 +204,7 @@ describe("calculateAdaptiveColumnWidths", () => {
       baseRows,
       availableWidth,
       defaultToolsColumnDef,
-      baseJzodSchema
+      baseMlSchema
     );
     const totalWidth = specs.reduce((sum, s) => sum + s.calculatedWidth, 0);
 
@@ -224,7 +224,7 @@ describe("calculateAdaptiveColumnWidths", () => {
       baseRows,
       largeWidth,
       defaultToolsColumnDef,
-      baseJzodSchema
+      baseMlSchema
     );
     const totalWidth = specs.reduce((sum, s) => sum + s.calculatedWidth, 0);
     expect(totalWidth).toBeLessThanOrEqual(largeWidth);
@@ -235,7 +235,7 @@ describe("calculateAdaptiveColumnWidths", () => {
     const columnDefs = [
       { field: "fk", headerName: "FK", cellRendererParams: { isFK: true, entityUuid: "entity1" } },
     ];
-    const mlSchema: Record<string, JzodElement> = {
+    const mlSchema: Record<string, MlElement> = {
       fk: { type: "string", tag: { value: { foreignKeyParams: {targetEntity: "entity1"} } } },
     };
     const rows: TableComponentRow[] = [
@@ -277,7 +277,7 @@ describe("calculateAdaptiveColumnWidths", () => {
       [],
       1200,
       defaultToolsColumnDef,
-      baseJzodSchema
+      baseMlSchema
     );
     specs.forEach((spec) => {
       expect(spec.calculatedWidth).toBeGreaterThan(0);
@@ -290,7 +290,7 @@ describe("calculateAdaptiveColumnWidths", () => {
         deploymentUuid: "550e8400-e29b-41d4-a716-446655440000",
         displayedValue: { name: "A very very very long name for testing column width" },
         rawValue: { uuid: "test-uuid", parentUuid: "parent-1" },
-        mlSchema: baseJzodSchema,
+        mlSchema: baseMlSchema,
         foreignKeyObjects: {},
       },
     ];
@@ -299,7 +299,7 @@ describe("calculateAdaptiveColumnWidths", () => {
       rows,
       500,
       defaultToolsColumnDef,
-      baseJzodSchema
+      baseMlSchema
     );
     expect(specs[1].calculatedWidth).toBeGreaterThan(100);
   });
@@ -317,7 +317,7 @@ describe("calculateAdaptiveColumnWidths", () => {
       fewRows,
       availableWidth,
       defaultToolsColumnDef,
-      baseJzodSchema
+      baseMlSchema
     );
     const totalWidth = specs.reduce((sum, s) => sum + s.calculatedWidth, 0);
 

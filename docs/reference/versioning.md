@@ -83,7 +83,7 @@ interface EntityVersion {
   externalDataSource?: { kind?: "sql" | "http"; endpoint?: string; schema?: string; tableName?: string };
   defaultInstanceDetailsReportUuid?: string;
   viewAttributes?: string[];
-  mlSchema: JzodObject;            // deep copy of the Entity's mlSchema
+  mlSchema: MlObject;            // deep copy of the Entity's mlSchema
 }
 ```
 
@@ -188,7 +188,7 @@ Do not confuse this with the unrelated `scope` (`"meta"` vs `"app"`) of `schemaC
 
 ---
 
-> **Historical note: EntityDefinition.** Until #217–#222, an Entity's structure lived in a separate **EntityDefinition** row (attribute first named `jzodSchema`, later `mlSchema`), and model actions "dual-wrote" both rows. EntityDefinition was renamed EntityVersion. The Entity became the authoritative present model, and EntityVersion became freeze-only history. The TypeScript alias `EntityDefinition = EntityVersion` is still exported but deprecated. Some code identifiers keep the old wording, e.g. the `entityDefinitionRoot` schema, `parentDefinitionVersionUuid` and the `entityDefinition_extractAttributes` transformer.
+> **Historical note: EntityDefinition.** Until #217–#222, an Entity's structure lived in a separate **EntityDefinition** row (attribute renamed over time, now `mlSchema`), and model actions "dual-wrote" both rows. EntityDefinition was renamed EntityVersion. The Entity became the authoritative present model, and EntityVersion became freeze-only history. The TypeScript alias `EntityDefinition = EntityVersion` is still exported but deprecated. Some code identifiers keep the old wording, e.g. the `entityDefinitionRoot` schema, `parentDefinitionVersionUuid` and the `entityDefinition_extractAttributes` transformer.
 
 ---
 

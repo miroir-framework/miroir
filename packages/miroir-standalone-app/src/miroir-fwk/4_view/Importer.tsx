@@ -5,7 +5,7 @@ import { z } from "zod";
 import { Formik } from "formik";
 import {
   DomainControllerInterface,
-  JzodObject,
+  MlObject,
   LoggerInterface,
   MiroirLoggerFactory,
   metaModel,
@@ -50,10 +50,10 @@ const dataSection = "data"
 const emptyList:any[] = []
 const emptyObject = {}
 
-const defaultObject: JzodObject = {
+const defaultObject: MlObject = {
   type: "object",
   definition: {}
-} as JzodObject
+} as MlObject
 
 const initialValues = {
   // newApplicationName: "placeholder...",
@@ -126,7 +126,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   // ##############################################################################################
   // const actionHandlerCreateApplication: ActionHandler = useMemo(()=> ({
   //   interface: {
-  //     actionJzodObjectSchema: {
+  //     actionMlObjectSchema: {
   //       type: "object",
   //       definition: {
   //         newApplicationName: {
@@ -258,7 +258,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //     name: newEntityName,
   //   }
   //   log.info("createEntity fileData", fileData);
-  //   const mlSchema:JzodObject = {
+  //   const mlSchema:MlObject = {
   //     type: "object",
   //     definition: Object.assign(
   //       {},
@@ -298,7 +298,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   };
 
   //   // ############################################################################################
-  //   const actionEffectiveParamsCreateEntity /** parsed by actionHandlerCreateEntity.interface.actionJzodObjectSchema */ = {
+  //   const actionEffectiveParamsCreateEntity /** parsed by actionHandlerCreateEntity.interface.actionMlObjectSchema */ = {
   //     currentApplicationName: "Paris",
   //     currentApplicationUuid: props.currentApplicationUuid,
   //     currentDeploymentUuid: props.currentDeploymentUuid,
@@ -340,7 +340,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   // const actionHandlerCreateFountainEntity: CompositeActionTemplate = {
   //   //   actionType: "compositeActionSequence",
   //   //   // interface: {
-  //   //   //   actionJzodObjectSchema: {
+  //   //   //   actionMlObjectSchema: {
   //   //   //     type: "object",
   //   //   //     definition: {
   //   //   //       newEntityName: {
@@ -880,21 +880,21 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //           referenceName: "currentApplicationUuid",
   //         },
   //       },
-  //       splitEntity_newEntityJzodSchema: {
+  //       splitEntity_newEntityMlSchema: {
   //         type: "object",
   //         definition: {
   //           uuid: {
   //             type: "uuid",
   //             tag: { id: 1, defaultLabel: "Uuid", editable: false },
-  //           } as JzodPlainAttribute,
+  //           } as MlPlainAttribute,
   //           parentUuid: {
   //             type: "uuid",
   //             tag: { id: 1, defaultLabel: "Uuid", editable: false },
-  //           } as JzodPlainAttribute,
+  //           } as MlPlainAttribute,
   //           name: {
   //             type: "string",
   //             tag: { id: 2, defaultLabel: "name", editable: false },
-  //           } as JzodAttributePlainStringWithValidations,
+  //           } as MlAttributePlainStringWithValidations,
   //         },
   //       },
   //       splitEntity_newEntityDefinition: {
@@ -923,7 +923,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         },
   //         mlSchema: {
   //           transformerType: "getFromParameters",
-  //           referenceName: "splitEntity_newEntityJzodSchema",
+  //           referenceName: "splitEntity_newEntityMlSchema",
   //         },
   //       },
   //       splitEntity_newEntityListReport: {
@@ -1773,8 +1773,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
 
   // const [formHelperState, setformHelperState] = useMiroirContextformHelperState(); // NOT USED
 
-  // const [rawSchema, setRawSchema] = useState<JzodElement>(
-  //   actionHandlerCreateApplication.interface.actionJzodObjectSchema
+  // const [rawSchema, setRawSchema] = useState<MlElement>(
+  //   actionHandlerCreateApplication.interface.actionMlObjectSchema
   // );
 
   // const currentModel: MetaModel = useCurrentModel(
@@ -1782,18 +1782,18 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   // );
   // const currentMiroirModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
 
-  // const resolvedJzodSchema:JzodElement = useMemo(
+  // const resolvedMlSchema:MlElement = useMemo(
   //   () => {
-  //     if (!context.miroirFundamentalJzodSchema || context.miroirFundamentalJzodSchema.name == "dummyJzodSchema") {
+  //     if (!context.miroirFundamentalMlSchema || context.miroirFundamentalMlSchema.name == "dummyMlSchema") {
   //       return defaultObject
   //     } else {
-  //       const configuration = jzodTypeCheck(
+  //       const configuration = mlsTypeCheck(
   //         rawSchema,
   //         formState,
   //         [], // currentValuePath
   //         [], // currentTypePath
   //         {
-  //           miroirFundamentalJzodSchema: context.miroirFundamentalJzodSchema,
+  //           miroirFundamentalMlSchema: context.miroirFundamentalMlSchema,
   //           currentModel,
   //           miroirMetaModel: currentMiroirModel,
   //         },
@@ -1804,10 +1804,10 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //       return configuration.status == "ok"? configuration.resolvedSchema : defaultObject;
   //     }
   //   },
-  //   [context.miroirFundamentalJzodSchema, rawSchema, formState]
+  //   [context.miroirFundamentalMlSchema, rawSchema, formState]
   // );
 
-  // log.info("resolvedJzodSchema", resolvedJzodSchema, context.miroirFundamentalJzodSchema?.name, "rawSchema", rawSchema)
+  // log.info("resolvedMlSchema", resolvedMlSchema, context.miroirFundamentalMlSchema?.name, "rawSchema", rawSchema)
 
   // const createNewApplication: CompositeActionTemplate = useMemo(
   //   () => ({
@@ -2227,7 +2227,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   // );
 
   const onSubmit = useCallback(
-    async (actionCreateSchemaParamValues: any /* actually follows formJzodSchema */, formikFunctions:{ setSubmitting:any, setErrors:any }) => {
+    async (actionCreateSchemaParamValues: any /* actually follows formMlSchema */, formikFunctions:{ setSubmitting:any, setErrors:any }) => {
       try {
         //  Send values somehow
         // setformHelperState(actionCreateSchemaParamValues);
@@ -2359,13 +2359,13 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                     <CodeMirror value={JSON.stringify(dialogOuterFormObject, null, 2)} height="200px" extensions={[javascript({ jsx: true })]} onChange={onCodeEditorChange} />
                     :<></>
                   } */}
-                {/* DISABLED - resolvedJzodSchema and rawSchema are undefined
+                {/* DISABLED - resolvedMlSchema and rawSchema are undefined
                   {
-                    resolvedJzodSchema === defaultObject?
+                    resolvedMlSchema === defaultObject?
                     <div>no object definition found!</div>
                     :
                     <>
-                      <JzodElementEditor
+                      <MlElementEditor
                         name={'ROOT'}
                         listKey={'ROOT'}
                         rootLessListKey={emptyString}
@@ -2375,8 +2375,8 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
                         currentApplicationSection={dataSection}
                         indentLevel={0}
                         // localRootLessListKeyMap={{}}
-                        // resolvedJzodSchema={actionsJzodSchema}
-                        resolvedElementJzodSchema={resolvedJzodSchema}
+                        // resolvedMlSchema={actionsMlSchema}
+                        resolvedElementMlSchema={resolvedMlSchema}
                         typeCheckKeyMap={{}}
                         foreignKeyObjects={emptyObject}
                         // handleChange={formik.handleChange as any}

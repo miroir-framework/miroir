@@ -2,7 +2,7 @@
  * Issue #286 Slice 3: `extractValuesFromRenderedElements` (src) searches only its root and the
  * given portal element, not the whole document (analysis G5).
  *
- * Uses the src function directly: the tests-side re-export in `JzodElementEditorTestTools.tsx`
+ * Uses the src function directly: the tests-side re-export in `MlElementEditorTestTools.tsx`
  * keeps the whole-document search for its importers.
  *
  * Run:

@@ -38,7 +38,7 @@ import domainStateImport from "../domainState.json";
 import type { TestSuiteListFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 import { LIBRARY_TMP } from "../0_interfaces/1_core/LIBRARY_TMP";
 
-export { miroirTestForQuery as queryRunnerTestJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+export { miroirTestForQuery as queryRunnerTestMlSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 type VitestNamespace = typeof vitest;
 

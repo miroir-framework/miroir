@@ -46,7 +46,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu = {
                   },
                   "mlSchema": {
                     "transformerType": "getFromParameters",
-                    "referenceName": "newEntityJzodSchema"
+                    "referenceName": "newEntityMlSchema"
                   }
                 }
               },
@@ -77,7 +77,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu = {
                   },
                   "mlSchema": {
                     "transformerType": "getFromParameters",
-                    "referenceName": "newEntityJzodSchema"
+                    "referenceName": "newEntityMlSchema"
                   }
                 }
               },
@@ -714,7 +714,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu = {
                     },
                     "mlSchema": {
                       "transformerType": "getFromParameters",
-                      "referenceName": "newEntityJzodSchema"
+                      "referenceName": "newEntityMlSchema"
                     }
                   }
                 ]

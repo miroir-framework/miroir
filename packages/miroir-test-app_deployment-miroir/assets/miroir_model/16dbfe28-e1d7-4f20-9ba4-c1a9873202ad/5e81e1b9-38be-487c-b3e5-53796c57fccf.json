@@ -6,7 +6,7 @@
   "name": "MlSchema",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "conceptLevel": "Model",
-  "description": "Common Jzod Schema definitions, available to all Entity definitions",
+  "description": "Common ML Schema definitions, available to all Entity definitions",
   "icon": "Interests",
   "cache": {
     "cacheAllInstancesOnRefresh": true
@@ -81,7 +81,7 @@
       "definition": {
         "type": "schemaReference",
         "context": {
-          "jzodObjectOrReference": {
+          "mlObjectOrReference": {
             "type": "union",
             "discriminator": "type",
             "definition": [
@@ -89,21 +89,21 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  "relativePath": "jzodReference"
+                  "relativePath": "mlReference"
                 }
               },
               {
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  "relativePath": "jzodObject"
+                  "relativePath": "mlObject"
                 }
               }
             ]
           }
         },
         "definition": {
-          "relativePath": "jzodObjectOrReference"
+          "relativePath": "mlObjectOrReference"
         },
         "optional": true,
         "tag": {

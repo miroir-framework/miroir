@@ -1,6 +1,8 @@
 import type {
   MiroirTestForReactComponent,
   MiroirTestLeaf,
+  ReactComponentTestStep,
+  TestAssertionResult,
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 
 /**
@@ -18,8 +20,18 @@ export type MiroirTestRunFilter = {
   match?: RegExp;
 };
 
+/**
+ * Render measurement of one component (formik paths folded) for one `measureRendering` mode
+ * (#303 T5), as carried by `TestAssertionResult.assertionMeasurements`.
+ */
+export type ComponentRenderMeasurement = NonNullable<TestAssertionResult["assertionMeasurements"]>[number];
+
 export type ReactComponentTestRunnerResult =
-  | { status: "ok" }
+  | {
+      status: "ok";
+      /** Measurements of the leaf's `measureRendering` steps (#303), absent when it has none. */
+      measurements?: ComponentRenderMeasurement[];
+    }
   | { status: "error"; message: string; expected?: unknown; actual?: unknown };
 
 /**
@@ -35,6 +47,14 @@ export type ReactComponentTestSuiteContext = {
   componentProps: Record<string, any>;
   /** Labels of every leaf of the suite, in order (the runner releases its wrapper after the last). */
   caseLabels: string[];
+  /**
+   * Distinct step kinds used by the leaves of the suite, whatever the filter (#303): the runner
+   * turns render tracking on for a suite containing a `measureRendering` step. Absent in contexts
+   * built by hand (tests), read as "no step kind".
+   */
+  stepKinds?: ReactComponentTestStep["step"][];
+  /** Set when the suite has `runOnDemand: true` (#303 T6): Run all skips its leaves. */
+  runOnDemand?: true;
 };
 
 /**

@@ -157,13 +157,13 @@ Swap the profile / config file to exercise filesystem, IndexedDB, or MongoDB bac
 
 Common filters: `DomainController.integ`, `PersistenceStoreController.integ`, `ExtractorPersistenceStoreRunner.integ`, `ReportPage.integ`, `BlobEditorField.integ`, `miroir-component-tests`, `MiroirTestDisplayIntegrationLaunch.integ`.
 
-**JzodElementEditor component tests.** The schema editor cases are MiroirTests (#286) written as declarative JSON steps (#292): one instance per editor (`JzodEnumEditor_ComponentTestSuite`, `JzodObjectEditor_ComponentTestSuite`, …), 68 `reactComponentTest` leaves in all. The vitest entry `tests/4_view/miroir-component-tests.unit.test.tsx` runs them over an in-memory `LocalCache`, with no profile:
+**MlElementEditor component tests.** The schema editor cases are MiroirTests (#286) written as declarative JSON steps (#292): one instance per editor (`MlEnumEditor_ComponentTestSuite`, `MlObjectEditor_ComponentTestSuite`, …), 68 `reactComponentTest` leaves in all. The vitest entry `tests/4_view/miroir-component-tests.unit.test.tsx` runs them over an in-memory `LocalCache`, with no profile:
 
 ```bash
 npm run testByFile -w miroir-standalone-app -- miroir-component-tests
 ```
 
-Filter one editor: `npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "JzodObjectEditor"`. Full detail: [reference/testing.md](../../reference/testing.md#jzodelementeditor-component-tests).
+Filter one editor: `npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "MlObjectEditor"`. Full detail: [reference/testing.md](../../reference/testing.md#mlelementeditor-component-tests).
 
 **MiroirTestDisplay integration launch (B6-d1)** — RTL proof for the **Run Integration Tests** button (`tests/4_view/MiroirTestDisplayIntegrationLaunch.integ.test.tsx`). Return Book leaf on `runner.returnDocument`; Postgres required (Node SQL mock env):
 

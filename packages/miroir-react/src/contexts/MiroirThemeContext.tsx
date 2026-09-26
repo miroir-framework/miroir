@@ -159,7 +159,7 @@ export const useMiroirTableTheme = () => {
 };
 
 /**
- * Hook to get the appropriate nesting background color for JzodElement editors.
+ * Hook to get the appropriate nesting background color for MlElement editors.
  * Provides alternating background shades for nested structures (objects, arrays, tuples, records).
  * Colors cycle through 3 levels: A -> B -> C -> A -> B -> C...
  *
@@ -182,7 +182,7 @@ export const useMiroirNestingColor = (indentLevel: number = 0): string => {
 };
 
 /**
- * Hook to get the appropriate border color for nested JzodElement editors.
+ * Hook to get the appropriate border color for nested MlElement editors.
  * Provides complementary border colors that work with the nesting background colors.
  *
  * @param indentLevel - The nesting level (0-based). Defaults to 0.

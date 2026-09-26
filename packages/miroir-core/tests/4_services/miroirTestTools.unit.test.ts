@@ -11,8 +11,6 @@ import {
   miroirTestForFunctionCall,
   miroirTestForQuery,
   miroirTestLeaf,
-  miroirTest_pilot_transformer_plus,
-  miroirTest_queries_library,
   resolveFunctionCallTarget,
   resolveQueryRunnerFixture,
   runMiroirTest,
@@ -20,6 +18,10 @@ import {
   runMiroirTestSuite,
 } from "../../src";
 import { miroirTest_runner_return_document } from "miroir-test-app_deployment-library";
+import {
+  miroirTest_pilot_transformer_plus,
+  miroirTest_queries_library,
+} from "miroir-test-app_deployment-miroir";
 import type {
   MiroirTestForFunctionCall,
   MiroirTestForQuery,
@@ -74,8 +76,8 @@ describe("miroir leaf zod schemas", () => {
       miroirTestType: "functionCallTest",
       miroirTestLabel: "converts string type",
       functionRef: {
-        module: "miroir-core/1_core/jzod/JzodToJsonSchema",
-        export: "jzodToJsonSchema",
+        module: "miroir-core/1_core/mls/MlsToJsonSchema",
+        export: "mlsToJsonSchema",
       },
       arguments: [{ type: "string" }],
       expectedValue: { type: "string" },
@@ -135,15 +137,15 @@ describe("runMiroirTestInMemory — functionCallTest", () => {
     ).toThrow(/not whitelisted/);
   });
 
-  it("whitelist includes mustache and jzodToJsonSchema exports", () => {
+  it("whitelist includes mustache and mlsToJsonSchema exports", () => {
     const refs = listWhitelistedFunctionRefs();
     expect(refs).toContainEqual({
       module: "miroir-core/1_core/mustache",
       export: "extractDoubleBracePatterns",
     });
     expect(refs).toContainEqual({
-      module: "miroir-core/1_core/jzod/JzodToJsonSchema",
-      export: "jzodToJsonSchema",
+      module: "miroir-core/1_core/mls/MlsToJsonSchema",
+      export: "mlsToJsonSchema",
     });
   });
 
@@ -491,7 +493,7 @@ describe("runMiroirTestSuite", () => {
   it("requires vitest.expect before registering suite tests", async () => {
     const emptySuite: MiroirTestSuite = {
       miroirTestType: "miroirTestSuite",
-      miroirTestLabel: "jzod.mergePositionBased",
+      miroirTestLabel: "mls.mergePositionBased",
       miroirTests: [],
     };
     const vitestWithoutExpect = {

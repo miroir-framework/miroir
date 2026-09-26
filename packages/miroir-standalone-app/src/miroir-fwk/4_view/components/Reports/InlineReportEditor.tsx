@@ -10,7 +10,7 @@ import {
   Report,
   Uuid,
   type ApplicationDeploymentMap,
-  type JzodObject
+  type MlObject
 } from "miroir-core";
 
 import { ThemedOnScreenHelper } from 'miroir-react';

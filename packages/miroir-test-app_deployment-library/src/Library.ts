@@ -121,7 +121,7 @@ export const defaultLibraryAppModel: MetaModel = {
   applicationVersionCrossTransformerDefinitionVersion: [],
   transformerDefinitionVersions: [],
   storedQueries: [],
-  jzodSchemas: [],
+  mlSchemas: [],
   applicationVersions: [],
 };
 
@@ -137,7 +137,7 @@ export function getDefaultLibraryModelEnvironmentDEFUNCT(
   }
 
   return {
-    miroirFundamentalJzodSchema: getMiroirFundamentalSchemaForDeployment(
+    miroirFundamentalMlSchema: getMiroirFundamentalSchemaForDeployment(
       libraryDeploymentUuid,
       defaultLibraryAppModel,
     ),

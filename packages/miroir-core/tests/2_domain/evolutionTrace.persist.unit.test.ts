@@ -4,7 +4,7 @@ import type {
   ApplicationEvolutionTrace,
   Entity,
   EntityVersion,
-  JzodObject,
+  MlObject,
   ModelActionAlterEntityAttribute,
   ModelActionCreateEntity,
   ModelActionDropEntity,
@@ -41,7 +41,7 @@ const mockEntityDefinition: EntityVersion = {
   parentUuid: ENTITYDEF_PARENT_UUID,
   name: "TestEntity",
   entityUuid: ENTITY_UUID,
-  mlSchema: { type: "object", definition: {} } as JzodObject,
+  mlSchema: { type: "object", definition: {} } as MlObject,
 };
 
 // ── Action fixtures ─────────────────────────────────────────────────────────

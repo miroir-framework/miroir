@@ -1,6 +1,6 @@
 # Action API Reference (⚠️SLOPPY⚠️)
 
-**Status: 🚧 Sketch - To be auto-generated from Jzod schemas**
+**Status: 🚧 Sketch - To be auto-generated from ML schemas**
 
 ---
 
@@ -137,7 +137,7 @@ function CreateBookButton() {
 
 ## Complete Action Type Reference
 
-**Coming Soon**: Auto-generated from Jzod schemas
+**Coming Soon**: Auto-generated from ML schemas
 
 - `instanceAction` - CRUD on instances
 - `modelAction` - Operations on model

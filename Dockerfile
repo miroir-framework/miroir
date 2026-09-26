@@ -40,7 +40,7 @@ RUN rm -f package-lock.json && npm install
 # Build in strict dependency order (mirrors build-all.sh / copilot-instructions)
 # ---------------------------------------------------------------------------
 
-# 1. Application deployment metadata packages (define core types as Jzod schemas)
+# 1. Application deployment metadata packages (define core types as ML schemas)
 RUN npm run build -w miroir-test-app_deployment-miroir
 RUN npm run build -w miroir-test-app_deployment-admin
 RUN npm run build -w miroir-test-app_deployment-library

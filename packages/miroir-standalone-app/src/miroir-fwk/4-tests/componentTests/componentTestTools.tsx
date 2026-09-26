@@ -2,7 +2,7 @@ import { ThemeProvider } from "@emotion/react";
 import { createTheme, StyledEngineProvider } from "@mui/material";
 import { blue } from "@mui/material/colors";
 import { Formik, FormikProps } from "formik";
-import { Profiler, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { MemoryRouter } from "react-router-dom";
 
 import {
@@ -12,8 +12,8 @@ import {
   DomainController,
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
-  JzodElement,
-  jzodTypeCheck,
+  MlElement,
+  mlsTypeCheck,
   LocalCacheInterface,
   LoggerInterface,
   MetaModel,
@@ -22,7 +22,7 @@ import {
   MiroirEventService,
   MiroirLoggerFactory,
   PersistenceStoreControllerManager,
-  ResolvedJzodSchemaReturnType,
+  ResolvedMlSchemaReturnType,
   type ApplicationDeploymentMap,
   type EntityInstance,
 } from "miroir-core";
@@ -55,7 +55,7 @@ import {
   defaultMiroirMetaModel,
   entityEntity,
   entityEntityVersion,
-  entityJzodSchema,
+  entityMlSchema,
   entityMenu,
   entityReport,
   entitySelfApplicationVersion,
@@ -65,7 +65,7 @@ import {
 import { packageName } from "../../../constants.js";
 import { ReportPageContextProvider } from "../../4_view/components/Reports/ReportPageContext.js";
 import { DocumentOutlineContextProvider } from "../../4_view/components/ValueObjectEditor/InstanceEditorOutlineContext.js";
-import { JzodElementEditor } from "../../4_view/components/ValueObjectEditor/JzodElementEditor.js";
+import { MlElementEditor } from "../../4_view/components/ValueObjectEditor/MlElementEditor.js";
 import { cleanLevel } from "../../4_view/constants.js";
 import { useCurrentModel, useCurrentModelEnvironment } from "../../4_view/ReduxHooks.js";
 import { emptyObject } from "../../4_view/tools/emptyObject.js";
@@ -73,7 +73,7 @@ import { emptyObject } from "../../4_view/tools/emptyObject.js";
 // ################################################################################################
 // Browser-safe component test tools (#286). No vitest, no @testing-library/react, no process.env,
 // no registerTestImplementation: this module can be loaded by the running app.
-// The vitest-only helpers stay in tests/4_view/JzodElementEditorTestTools.tsx, which re-exports this module.
+// The vitest-only helpers stay in tests/4_view/MlElementEditorTestTools.tsx, which re-exports this module.
 // ################################################################################################
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "componentTestTools");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -197,7 +197,7 @@ export const testThemeParams = {
 };
 
 // ################################################################################################
-export interface JzodElementEditorProps_Test {
+export interface MlElementEditorProps_Test {
   // forceTestingMode?: boolean;
   name: string;
   label?: string;
@@ -205,7 +205,7 @@ export interface JzodElementEditorProps_Test {
   rootLessListKey: string;
   rootLessListKeyArray: string[];
   initialFormState: any;
-  rawJzodSchema: JzodElement | undefined;
+  rawMlSchema: MlElement | undefined;
   // isPerformanceTest?: boolean;
 }
 
@@ -224,14 +224,14 @@ export type ExtractValuesExpect = (actual: any, message?: string) => { toBeTruth
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-// JZOD ELEMENT EDITOR
+// ML ELEMENT EDITOR
 // ################################################################################################
-let JzodElementEditorForTestRenderCount: number = 0;
+let MlElementEditorForTestRenderCount: number = 0;
 
-export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodElementEditorProps_Test> =
+export const getMlElementEditorForTest: (pageLabel: string) => React.FC<MlElementEditorProps_Test> =
   (pageLabel: string) =>
   (
-    props: JzodElementEditorProps_Test
+    props: MlElementEditorProps_Test
 ) => {
   const {
     name,
@@ -241,11 +241,11 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
     rootLessListKeyArray,
     // indentLevel?: number;
     initialFormState,
-    rawJzodSchema,
+    rawMlSchema,
   } = props;
     // const [formHelperState, setformHelperState] = useMiroirContextformHelperState();
-    log.debug("getJzodElementEditorForTest", "rawJzodSchema", rawJzodSchema);
-    JzodElementEditorForTestRenderCount++;
+    log.debug("getMlElementEditorForTest", "rawMlSchema", rawMlSchema);
+    MlElementEditorForTestRenderCount++;
     const context = useMiroirContextService();
     context.setDeploymentUuid
 
@@ -261,22 +261,22 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
     );
     // log.debug("currentMiroirModel", currentMiroirModel);
 
-    const effectiveRawJzodSchema: JzodElement | undefined = useMemo(() => {
-      // log.debug("getJzodElementEditorForTest", "rawJzodSchema", rawJzodSchema);
-      return rawJzodSchema != undefined
-        ? { type: "object", definition: { [rootLessListKey]: rawJzodSchema } }
+    const effectiveRawMlSchema: MlElement | undefined = useMemo(() => {
+      // log.debug("getMlElementEditorForTest", "rawMlSchema", rawMlSchema);
+      return rawMlSchema != undefined
+        ? { type: "object", definition: { [rootLessListKey]: rawMlSchema } }
         : undefined;
-    }, [rawJzodSchema]);
+    }, [rawMlSchema]);
 
     const onSubmit = useCallback(
       async (
-        actionCreateSchemaParamValues: any /* actually follows formJzodSchema */,
+        actionCreateSchemaParamValues: any /* actually follows formMlSchema */,
         formikFunctions: { setSubmitting: any; setErrors: any }
       ) => {
         try {
           //  Send values somehow
           log.debug(
-            "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ JzodElementEditorTestTools onSubmit formik values",
+            "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ MlElementEditorTestTools onSubmit formik values",
             actionCreateSchemaParamValues,
             "newApplicationName",
             actionCreateSchemaParamValues.newApplicationName,
@@ -299,7 +299,7 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
       return { [testSectionName]: { [name]: initialFormState }};
     }, [name, initialFormState]);
     log.debug(
-      "getJzodElementEditorForTest",
+      "getMlElementEditorForTest",
       "formikInitialValues",
       JSON.stringify(formikInitialValues, null, 2)
     );
@@ -318,23 +318,23 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
         >
           {(formik: FormikProps<any>) => {
             log.debug(
-              "getJzodElementEditorForTest render formik, values",
+              "getMlElementEditorForTest render formik, values",
               JSON.stringify(formik.values),
-              "effectiveRawJzodSchema",
-              JSON.stringify(effectiveRawJzodSchema, null, 2)
+              "effectiveRawMlSchema",
+              JSON.stringify(effectiveRawMlSchema, null, 2)
             );
 
             let typeError: JSX.Element | undefined = undefined;
-            const resolvedJzodSchema: ResolvedJzodSchemaReturnType | undefined = useMemo(() => {
-              let result: ResolvedJzodSchemaReturnType | undefined = undefined;
+            const resolvedMlSchema: ResolvedMlSchemaReturnType | undefined = useMemo(() => {
+              let result: ResolvedMlSchemaReturnType | undefined = undefined;
               try {
                 result =
-                  currentMiroirModelEnvironment.miroirFundamentalJzodSchema &&
-                  effectiveRawJzodSchema &&
+                  currentMiroirModelEnvironment.miroirFundamentalMlSchema &&
+                  effectiveRawMlSchema &&
                   formik.values &&
                   currentModel
-                    ? jzodTypeCheck(
-                        effectiveRawJzodSchema,
+                    ? mlsTypeCheck(
+                        effectiveRawMlSchema,
                         formik.values[testSectionName],
                         [], // currentValuePath
                         [], // currentTypePath
@@ -358,36 +358,36 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
                 };
               }
               return result;
-            }, [formik.values, effectiveRawJzodSchema, context, currentModel]);
+            }, [formik.values, effectiveRawMlSchema, context, currentModel]);
                       // log.debug(
-                      //   "ReportSectionEntityInstance jzodTypeCheck done for render", ReportSectionEntityInstanceCount ,"resolvedJzodSchema",
-                      //   resolvedJzodSchema,
+                      //   "ReportSectionEntityInstance mlsTypeCheck done for render", ReportSectionEntityInstanceCount ,"resolvedMlSchema",
+                      //   resolvedMlSchema,
                       // );
-          if (!resolvedJzodSchema || resolvedJzodSchema.status != "ok") {
+          if (!resolvedMlSchema || resolvedMlSchema.status != "ok") {
             log.error(
-              "ReportSectionEntityInstance could not resolve jzod schema",
+              "ReportSectionEntityInstance could not resolve ML schema",
               // props,
               // context,
-              resolvedJzodSchema
+              resolvedMlSchema
             );
 
-            // return <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema)}</>;
-            // typeError = <>ReportSectionEntityInstance: could not resolve jzod schema: {JSON.stringify(resolvedJzodSchema, null, 2)}</>;
+            // return <>ReportSectionEntityInstance: could not resolve ML schema: {JSON.stringify(resolvedMlSchema)}</>;
+            // typeError = <>ReportSectionEntityInstance: could not resolve ML schema: {JSON.stringify(resolvedMlSchema, null, 2)}</>;
             // Calculate the maximum line width for fixed sizing
-            // const jsonString = JSON.stringify(resolvedJzodSchema, null, 2);
+            // const jsonString = JSON.stringify(resolvedMlSchema, null, 2);
             // const lines = jsonString.split("\n");
             // const maxLineLength = Math.max(...lines.map((line) => line.length));
             // const fixedWidth = Math.min(Math.max(maxLineLength * 0.6, 1200), 1800); // 0.6px per character, min 400px, max 1200px
 
-            typeError = (<pre>type error: {JSON.stringify(resolvedJzodSchema)}</pre>);
+            typeError = (<pre>type error: {JSON.stringify(resolvedMlSchema)}</pre>);
           }
 
             return (
               <>
                 <form id={"form." + pageLabel} onSubmit={formik.handleSubmit}>
-                  {resolvedJzodSchema != undefined  && resolvedJzodSchema.status === "ok"? (
+                  {resolvedMlSchema != undefined  && resolvedMlSchema.status === "ok"? (
                     <>
-                      <JzodElementEditor
+                      <MlElementEditor
                         name={name}
                         valueObjectEditMode="update"
                         currentDeploymentUuid={context.deploymentUuid}
@@ -399,7 +399,7 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
                         reportSectionPathAsString="TESTSECTION"
                         labelElement={labelElement}
                         currentApplicationSection={"data"}
-                        typeCheckKeyMap={resolvedJzodSchema.keyMap}
+                        typeCheckKeyMap={resolvedMlSchema.keyMap}
                         foreignKeyObjects={emptyObject}
                         insideAny={false}
                         anyRootLessListKey=""
@@ -444,7 +444,12 @@ export function createRecordingFunction(): RecordingFunction {
 
 // ################################################################################################
 export interface BuildComponentTestWrapperOptions {
-  isPerformanceTest?: boolean;
+  /**
+   * Turns render insight tracking on (`showPerformanceDisplay`) for the wrapped tree (#303):
+   * every MlElementEditor component then reports its renders to `renderInsightRegistry`
+   * and the container editors render their insight chips. Off by default (same DOM as before).
+   */
+  trackRenders?: boolean;
   applicationDeploymentMap: ApplicationDeploymentMap;
   /** Opt-in: real handleCompositeActionTemplate writes the wrapper localCache (issue #274). */
   wireLocalCacheCompositeAction?: boolean;
@@ -465,7 +470,7 @@ export interface ComponentTestWrapper {
 export function buildComponentTestWrapper(
   options: BuildComponentTestWrapperOptions,
 ): ComponentTestWrapper {
-  const isPerformanceTest: boolean = options.isPerformanceTest ?? false;
+  const trackRenders: boolean = options.trackRenders ?? false;
   const applicationDeploymentMap: ApplicationDeploymentMap = options.wireLocalCacheCompositeAction
     ? {
         ...options.applicationDeploymentMap,
@@ -521,10 +526,10 @@ export function buildComponentTestWrapper(
           instances: defaultMiroirMetaModel.entityVersions
         },
         {
-          parentName: entityJzodSchema.name,
-          parentUuid: entityJzodSchema.uuid,
+          parentName: entityMlSchema.name,
+          parentUuid: entityMlSchema.uuid,
           applicationSection: "data",
-          instances: defaultMiroirMetaModel.jzodSchemas
+          instances: defaultMiroirMetaModel.mlSchemas
         },
         {
           parentName: entityMenu.name,
@@ -734,59 +739,7 @@ export function buildComponentTestWrapper(
       // add other methods if needed
     } as any);
 
-    const renderCount = { current: 0 };
-    const totalRenderTime = { current: 0 };
-
-    const onRender = useCallback((
-      id: string,
-      phase: "mount" | "update" | "nested-update",
-      actualDuration: number,
-      baseDuration: number,
-      startTime: number,
-      commitTime: number
-    ) => {
-      renderCount.current++;
-      totalRenderTime.current += actualDuration;
-      log.info(
-      `Render #${renderCount.current} - ${id} [${phase}] took ${actualDuration.toFixed(2)}ms`,
-      `(Total: ${totalRenderTime.current.toFixed(2)}ms)`
-      );
-    }, []);
-
-    return isPerformanceTest ? (
-      <Profiler id="App" onRender={onRender}>
-        <ThemeProvider theme={theme}>
-          <StyledEngineProvider injectFirst>
-            <LocalCacheProvider store={localCache.getInnerStore()}>
-              <MiroirContextReactProvider
-                miroirContext={miroirContext}
-                domainController={domainController}
-                testingApplication={
-                  options.wireLocalCacheCompositeAction
-                    ? selfApplicationLibrary.uuid
-                    : undefined
-                }
-                testingDeploymentUuid={deployment_Library_DO_NO_USE.uuid}
-              >
-                <DocumentOutlineContextProvider
-                  isOutlineOpen={true}
-                  onToggleOutline={handleToggleOutline}
-                  onNavigateToPath={handleNavigateToPath}
-                >
-                  <ReportPageContextProvider>
-                    {options.wireLocalCacheCompositeAction ? (
-                      <MemoryRouter>{props.children}</MemoryRouter>
-                    ) : (
-                      props.children
-                    )}
-                  </ReportPageContextProvider>
-                </DocumentOutlineContextProvider>
-              </MiroirContextReactProvider>
-            </LocalCacheProvider>
-          </StyledEngineProvider>
-        </ThemeProvider>
-      </Profiler>
-    ) : (
+    return (
       <ThemeProvider theme={theme}>
         <StyledEngineProvider injectFirst>
           <LocalCacheProvider store={localCache.getInnerStore()}>
@@ -799,6 +752,7 @@ export function buildComponentTestWrapper(
                   : undefined
               }
               testingDeploymentUuid={deployment_Library_DO_NO_USE.uuid}
+              initialShowPerformanceDisplay={trackRenders}
             >
               <DocumentOutlineContextProvider
                 isOutlineOpen={true}

@@ -55,6 +55,7 @@ const MIROIR_ENTITY_VERSION_INSTANCE_UUIDS = [
   "d2842a84-3e66-43ee-ac58-7e13b95b01e8",
   "d3e4f5a6-b7c8-4901-a2e3-f4a5b6c7d8e9",
   "d4e5f6a7-b8c9-4012-a3b4-c5d6e7f8a9b0",
+  "d85749be-caf7-4595-9375-5ab6abf2061b",
   "daa38a5f-f1b5-4d4f-94b7-54e97fe6782e",
   "e3c1cc69-066d-4f52-beeb-b659dc7a88b9",
   "e4f5a6b7-c8d9-4012-a2b3-f4a5b6c7d8e9",

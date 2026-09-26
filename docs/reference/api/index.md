@@ -1,14 +1,14 @@
 # API Reference (⚠️SLOPPY⚠️)
 
-**Status: 🚧 In Progress - Auto-generated from Jzod schemas**
+**Status: 🚧 In Progress - Auto-generated from ML schemas**
 
-This API reference is generated from Jzod schemas defined in the Miroir meta-model. For the most up-to-date schemas, see the Entity rows in `packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/` (each Entity carries the `mlSchema` of its instances) and the generated types in `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/`.
+This API reference is generated from ML schemas defined in the Miroir meta-model. For the most up-to-date schemas, see the Entity rows in `packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/` (each Entity carries the `mlSchema` of its instances) and the generated types in `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/`.
 
 ---
 
 ## Overview
 
-The Miroir Framework API is defined through Jzod schemas and consists of several core concepts:
+The Miroir Framework API is defined through ML schemas and consists of several core concepts:
 
 - **[Entity](entity.md)** - Data model definitions
 - **[Query](query.md)** - Data retrieval and extraction
@@ -64,7 +64,7 @@ Generated TypeScript types are available at:
 packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/
 ```
 
-These types are generated from Jzod schemas using:
+These types are generated from ML schemas using:
 
 ```bash
 npm run devBuild -w miroir-core
@@ -207,7 +207,7 @@ Click on any topic below for complete API documentation:
 
 ## Future: Auto-Generated Documentation
 
-**Coming Soon**: Full API documentation auto-generated from Jzod schemas with:
+**Coming Soon**: Full API documentation auto-generated from ML schemas with:
 
 - ✅ Complete type signatures
 - ✅ Field descriptions

@@ -6,15 +6,15 @@ import {
   ApplicationDeploymentMap,
   DomainControllerInterface,
   InstanceAction,
-  JzodElement,
-  JzodReference,
+  MlElement,
+  MlReference,
   LoggerInterface,
   MiroirLoggerFactory,
   resolveFundamentalSchemaForDeployment,
-  resolveJzodSchemaReferenceInContext,
+  resolveMlSchemaReferenceInContext,
   getEndpointActions,
   type EndpointDefinition,
-  type JzodObject,
+  type MlObject,
   type MetaModel,
 } from "miroir-core";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
@@ -95,13 +95,13 @@ export type CliRequestHandlers = Record<string, CliCommandHandler<any>>;
 // ################################################################################################
 
 /**
- * Helper function to convert a Jzod payload schema to a Zod schema
+ * Helper function to convert a ML payload schema to a Zod schema
  */
-function jzodPayloadToZodSchema(jzodPayload: JzodObject): ZodTypeAny {
-  const resolvedJzodSchema = resolveAllReferences(jzodPayload);
+function mlPayloadToZodSchema(mlPayload: MlObject): ZodTypeAny {
+  const resolvedMlSchema = resolveAllReferences(mlPayload);
   
   const zodTextAndSchema: ZodTextAndZodSchema = jzodToZodTextAndZodSchema(
-    resolvedJzodSchema as any,
+    resolvedMlSchema as any,
     () => ({}),
     () => ({}),
     {datesAsString: true}
@@ -110,19 +110,19 @@ function jzodPayloadToZodSchema(jzodPayload: JzodObject): ZodTypeAny {
 }
 
 /**
- * Recursively resolves all schema references in a Jzod schema element
+ * Recursively resolves all schema references in a ML schema element
  */
-function resolveAllReferences(element: JzodElement): JzodElement {
+function resolveAllReferences(element: MlElement): MlElement {
   if (!element || typeof element !== 'object') {
     return element;
   }
 
   if (element.type === 'schemaReference') {
-    const resolvedSchema = resolveJzodSchemaReferenceInContext(
-      element as JzodReference,
+    const resolvedSchema = resolveMlSchemaReferenceInContext(
+      element as MlReference,
       element.context || {},
       {
-        miroirFundamentalJzodSchema: resolveFundamentalSchemaForDeployment(
+        miroirFundamentalMlSchema: resolveFundamentalSchemaForDeployment(
           deployment_Miroir.uuid,
           defaultMiroirMetaModel as MetaModel,
           "static",
@@ -171,17 +171,17 @@ function resolveAllReferences(element: JzodElement): JzodElement {
 }
 
 /**
- * Extract CLI command options from Jzod schema
+ * Extract CLI command options from ML schema
  */
-function extractCommandOptions(jzodPayload: JzodObject): CliCommandOption[] {
+function extractCommandOptions(mlPayload: MlObject): CliCommandOption[] {
   const options: CliCommandOption[] = [];
   
-  if (jzodPayload.type !== 'object' || !jzodPayload.definition) {
+  if (mlPayload.type !== 'object' || !mlPayload.definition) {
     return options;
   }
 
-  for (const [name, schema] of Object.entries(jzodPayload.definition)) {
-    const schemaElement = schema as JzodElement;
+  for (const [name, schema] of Object.entries(mlPayload.definition)) {
+    const schemaElement = schema as MlElement;
     const isRequired = !schemaElement.optional;
     const description = (schemaElement as any).tag?.value?.description || 
                        (schemaElement as any).tag?.value?.defaultLabel ||
@@ -337,7 +337,7 @@ function cliCommandEntry(endpoint: EndpointDefinition, actionType: string): CliC
     throw new Error(`Payload definition not found for action type: ${actionType}`);
   }
 
-  const jzodPayload = actionDef.actionParameters.payload;
+  const mlPayload = actionDef.actionParameters.payload;
   const commandName = actionType;
   const actionDescription =
     actionDef.actionParameters.actionType.tag?.value?.description ||
@@ -348,9 +348,9 @@ function cliCommandEntry(endpoint: EndpointDefinition, actionType: string): CliC
     commandDescription: {
       name: commandName,
       description: actionDescription,
-      options: extractCommandOptions(jzodPayload as JzodObject),
+      options: extractCommandOptions(mlPayload as MlObject),
     },
-    payloadZodSchema: jzodPayloadToZodSchema(jzodPayload as JzodObject),
+    payloadZodSchema: mlPayloadToZodSchema(mlPayload as MlObject),
     actionEnvelope: {
       actionType: actionType,
       actionLabel: `CLI: ${actionType.replace(/([A-Z])/g, " $1").trim()}`,

@@ -20,7 +20,7 @@ import {
   resolveGridSizingMode,
   useClientPagination,
 } from "../../src/miroir-fwk/4_view/components/Grids/gridPagination.js";
-import { waitForProgressiveRendering } from "./JzodElementEditorTestTools.js";
+import { waitForProgressiveRendering } from "./MlElementEditorTestTools.js";
 import {
   renderEntityInstanceGridHarness,
   renderGlideDataGridHarness,

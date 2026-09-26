@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   defaultMetaModelEnvironment,
   defaultMiroirModelEnvironment,
-  miroirFundamentalJzodSchema,
+  miroirFundamentalMlSchema,
 } from "miroir-core";
 import {
   resolveFunctionCallEnvironment,
@@ -14,23 +14,23 @@ describe("FunctionCallTestFixtures (199 — frozen schema policy)", () => {
   it("defaultMetaModelEnvironment factory returns static schema", () => {
     const environment = resolveFunctionCallEnvironment("defaultMetaModelEnvironment");
     expect(environment).toBeDefined();
-    expect(environment!.miroirFundamentalJzodSchema).toBe(miroirFundamentalJzodSchema);
-    expect(environment!.miroirFundamentalJzodSchema).toBe(
-      defaultMetaModelEnvironment.miroirFundamentalJzodSchema,
+    expect(environment!.miroirFundamentalMlSchema).toBe(miroirFundamentalMlSchema);
+    expect(environment!.miroirFundamentalMlSchema).toBe(
+      defaultMetaModelEnvironment.miroirFundamentalMlSchema,
     );
   });
 
   it("defaultMiroirModelEnvironment factory returns static schema", () => {
     const environment = resolveFunctionCallEnvironment("defaultMiroirModelEnvironment");
     expect(environment).toBeDefined();
-    expect(environment!.miroirFundamentalJzodSchema).toBe(miroirFundamentalJzodSchema);
-    expect(environment!.miroirFundamentalJzodSchema).toBe(
-      defaultMiroirModelEnvironment.miroirFundamentalJzodSchema,
+    expect(environment!.miroirFundamentalMlSchema).toBe(miroirFundamentalMlSchema);
+    expect(environment!.miroirFundamentalMlSchema).toBe(
+      defaultMiroirModelEnvironment.miroirFundamentalMlSchema,
     );
   });
 
-  it("miroirFundamentalJzodSchema fixture returns static schema", () => {
-    const fixture = resolveFunctionCallFixture("miroirFundamentalJzodSchema");
-    expect(fixture).toBe(miroirFundamentalJzodSchema);
+  it("miroirFundamentalMlSchema fixture returns static schema", () => {
+    const fixture = resolveFunctionCallFixture("miroirFundamentalMlSchema");
+    expect(fixture).toBe(miroirFundamentalMlSchema);
   });
 });

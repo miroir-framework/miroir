@@ -1,4 +1,4 @@
-import { JzodElement, MiroirLoggerFactory, type LoggerInterface } from "miroir-core";
+import { MlElement, MiroirLoggerFactory, type LoggerInterface } from "miroir-core";
 import { TableComponentRow } from "./components/Grids/EntityInstanceGridInterface.js";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -34,7 +34,7 @@ export function calculateAdaptiveColumnWidths(
   rowData: TableComponentRow[],
   availableWidth: number = 1200,
   toolsColumnDef: ToolsColumnDefinition,
-  mlSchema?: Record<string, JzodElement>,
+  mlSchema?: Record<string, MlElement>,
 ): ColumnWidthSpec[] {
   const CHAR_WIDTH = 8; // Average character width in pixels
   const MIN_COLUMN_WIDTH = 80;

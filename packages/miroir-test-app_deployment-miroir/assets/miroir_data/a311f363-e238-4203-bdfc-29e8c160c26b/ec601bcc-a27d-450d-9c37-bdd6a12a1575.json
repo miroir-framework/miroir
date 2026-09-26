@@ -2,18 +2,18 @@
   "uuid": "ec601bcc-a27d-450d-9c37-bdd6a12a1575",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "JzodAnyEditor_ComponentTestSuite",
+  "name": "MlAnyEditor_ComponentTestSuite",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Issues #286, #292: JzodAnyEditor React component tests (JzodElementEditor), one MiroirTest instance per editor. Edited by hand.",
+  "description": "Issues #286, #292: MlAnyEditor React component tests (MlElementEditor), one MiroirTest instance per editor. Edited by hand.",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "JzodAnyEditor_ComponentTestSuite",
+    "miroirTestLabel": "MlAnyEditor_ComponentTestSuite",
     "miroirTests": [
       {
         "miroirTestType": "reactComponentTestSuite",
-        "miroirTestLabel": "JzodAnyEditor",
-        "component": "JzodElementEditor",
+        "miroirTestLabel": "MlAnyEditor",
+        "component": "MlElementEditor",
         "componentProps": {
           "label": "Test Label",
           "name": "testField",
@@ -22,14 +22,14 @@
           "rootLessListKeyArray": [
             "testField"
           ],
-          "rawJzodSchema": {
+          "rawMlSchema": {
             "type": "any"
           }
         },
         "miroirTests": [
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodAnyEditor: any type star button is visible for a string value",
+            "miroirTestLabel": "MlAnyEditor: any type star button is visible for a string value",
             "componentProps": {
               "initialFormState": "hello"
             },
@@ -55,7 +55,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodAnyEditor: any type star button toggle shows then hides selector",
+            "miroirTestLabel": "MlAnyEditor: any type star button toggle shows then hides selector",
             "componentProps": {
               "initialFormState": 42
             },
@@ -93,7 +93,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodAnyEditor: any type can switch from number to string via selector",
+            "miroirTestLabel": "MlAnyEditor: any type can switch from number to string via selector",
             "componentProps": {
               "initialFormState": 42
             },
@@ -144,7 +144,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodAnyEditor: any type star button for object value places star and selector in header",
+            "miroirTestLabel": "MlAnyEditor: any type star button for object value places star and selector in header",
             "componentProps": {
               "initialFormState": {
                 "a": "hello",
@@ -190,7 +190,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodAnyEditor: any type with object value shows text input for string attribute",
+            "miroirTestLabel": "MlAnyEditor: any type with object value shows text input for string attribute",
             "componentProps": {
               "initialFormState": {
                 "a": "hello"
@@ -210,7 +210,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodAnyEditor: any type with object value shows text input for number attribute",
+            "miroirTestLabel": "MlAnyEditor: any type with object value shows text input for number attribute",
             "componentProps": {
               "initialFormState": {
                 "b": 1
@@ -230,7 +230,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodAnyEditor: any type can switch from number to object via selector",
+            "miroirTestLabel": "MlAnyEditor: any type can switch from number to object via selector",
             "componentProps": {
               "initialFormState": 42
             },
@@ -281,7 +281,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodAnyEditor: any type can switch from object to string via selector",
+            "miroirTestLabel": "MlAnyEditor: any type can switch from object to string via selector",
             "componentProps": {
               "initialFormState": {
                 "a": "hello",
@@ -322,7 +322,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodAnyEditor: any type can switch from object to array via selector",
+            "miroirTestLabel": "MlAnyEditor: any type can switch from object to array via selector",
             "componentProps": {
               "initialFormState": {
                 "a": "hello"
@@ -362,7 +362,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodAnyEditor: any type can switch from array to string via selector",
+            "miroirTestLabel": "MlAnyEditor: any type can switch from array to string via selector",
             "componentProps": {
               "initialFormState": [
                 "item1",
@@ -416,7 +416,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodAnyEditor: any-typed array can be added an item",
+            "miroirTestLabel": "MlAnyEditor: any-typed array can be added an item",
             "componentProps": {
               "initialFormState": [
                 "item1",
@@ -443,7 +443,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodAnyEditor: any-typed array can have an item removed",
+            "miroirTestLabel": "MlAnyEditor: any-typed array can have an item removed",
             "componentProps": {
               "initialFormState": [
                 "item1",
@@ -481,7 +481,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodAnyEditor: any-typed array can have an item duplicated",
+            "miroirTestLabel": "MlAnyEditor: any-typed array can have an item duplicated",
             "componentProps": {
               "initialFormState": [
                 "item1",
@@ -521,7 +521,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodAnyEditor: any-typed object can be added an attribute (it is a record)",
+            "miroirTestLabel": "MlAnyEditor: any-typed object can be added an attribute (it is a record)",
             "componentProps": {
               "initialFormState": {
                 "a": "hello"
@@ -546,7 +546,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "JzodAnyEditor: any-typed array can have an attribute removed (it is a record)",
+            "miroirTestLabel": "MlAnyEditor: any-typed array can have an attribute removed (it is a record)",
             "componentProps": {
               "initialFormState": {
                 "a": "hello",

@@ -1,6 +1,6 @@
-import { JzodReference, type JzodElement } from "../1_core/preprocessor-generated/miroirFundamentalType";
+import { MlReference, type MlElement } from "../1_core/preprocessor-generated/miroirFundamentalType";
 
-export const testAssertionResult: JzodElement = {
+export const testAssertionResult: MlElement = {
   type: "object",
   definition: {
     assertionName: {
@@ -20,9 +20,37 @@ export const testAssertionResult: JzodElement = {
       type: "any",
       description: "The actual value of the assertion",
     },
+    assertionMeasurements: {
+      type: "array",
+      optional: true,
+      description:
+        "Render measurements of a reactComponentTest leaf with measureRendering steps (#303): one entry per component and mode, never a pass / fail criterion",
+      definition: {
+        type: "object",
+        definition: {
+          mode: {
+            type: "enum",
+            description: "remount: unmount then mount the case; update: new props on the mounted case",
+            definition: ["remount", "update"],
+          },
+          componentId: {
+            type: "string",
+            description: "Render insight component id (formik paths folded); \"(total)\" sums every component",
+          },
+          count: {
+            type: "number",
+            description: "Number of samples: iterations in which the component rendered",
+          },
+          minMs: { type: "number" },
+          medianMs: { type: "number" },
+          maxMs: { type: "number" },
+          totalMs: { type: "number" },
+        },
+      },
+    },
   },
 };
-export const testAssertionsResults: JzodElement = {
+export const testAssertionsResults: MlElement = {
   type: "record",
   definition: {
     type: "schemaReference",
@@ -32,7 +60,7 @@ export const testAssertionsResults: JzodElement = {
   },
 };
 
-export const testResult: JzodElement = {
+export const testResult: MlElement = {
   type: "object",
   definition: {
     testLabel: {
@@ -54,7 +82,7 @@ export const testResult: JzodElement = {
   },
 };
 
-export const testsResults: JzodElement = {
+export const testsResults: MlElement = {
   type: "record",
   definition: {
     type: "schemaReference",
@@ -64,7 +92,7 @@ export const testsResults: JzodElement = {
   },
 };
 
-export const innerTestSuitesResults: JzodElement = {
+export const innerTestSuitesResults: MlElement = {
   type: "record",
   definition: {
     type: "schemaReference",
@@ -74,7 +102,7 @@ export const innerTestSuitesResults: JzodElement = {
   },
 };
 
-export const testSuiteResult: JzodElement = {
+export const testSuiteResult: MlElement = {
   type: "object",
   definition: {
     testsResults: {
@@ -91,7 +119,7 @@ export const testSuiteResult: JzodElement = {
 };
 
 
-export const testSuitesResults: JzodReference = {
+export const testSuitesResults: MlReference = {
   type: "schemaReference",
   context: {
     testAssertionResult,

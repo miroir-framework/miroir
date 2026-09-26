@@ -57,14 +57,21 @@ describe("computeSchemaRevision — app overlay changes (3.2)", () => {
     const base = cloneModel(defaultLibraryAppModel) as MetaModel;
     const rev1 = computeSchemaRevision(libraryDeploymentUuid, base, libraryApplicationUuid);
 
+    // The Library model carries no EntityVersion rows: the live Entity holds mlSchema.
     const mutated = cloneModel(base) as MetaModel;
-    mutated.entityVersions = mutated.entityVersions.map((entityVersion) =>
-      entityVersion.uuid === "797dd185-0155-43fd-b23f-f6d0af8cae06"
+    mutated.entities = mutated.entities.map((entity) =>
+      entity.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
         ? {
-            ...entityVersion,
-            viewAttributes: [...(entityVersion.viewAttributes ?? []), "isbn"],
+            ...entity,
+            mlSchema: {
+              ...entity.mlSchema,
+              definition: {
+                ...entity.mlSchema.definition,
+                isbn: { type: "string", optional: true },
+              },
+            },
           }
-        : entityVersion,
+        : entity,
     );
 
     expect(computeSchemaRevision(libraryDeploymentUuid, mutated, libraryApplicationUuid)).not.toBe(rev1);
@@ -155,10 +162,10 @@ describe("computeSchemaRevision — app overlay changes (3.2)", () => {
     const prev = computeSchemaRevision(libraryDeploymentUuid, base, libraryApplicationUuid);
 
     const mutated = cloneModel(base) as MetaModel;
-    mutated.entityVersions = mutated.entityVersions.map((entityVersion) =>
-      entityVersion.uuid === "797dd185-0155-43fd-b23f-f6d0af8cae06"
-        ? { ...entityVersion, name: "BookRenamed" }
-        : entityVersion,
+    mutated.entities = mutated.entities.map((entity) =>
+      entity.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        ? { ...entity, name: "BookRenamed" }
+        : entity,
     );
     const next = computeSchemaRevision(libraryDeploymentUuid, mutated, libraryApplicationUuid);
 

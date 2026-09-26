@@ -1,9 +1,9 @@
-import { JzodElement, TransformerDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { MlElement, TransformerDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { transformerInterfaceFromDefinition } from "./Transformer_tools";
 
 
 import {
-  transformer_spreadSheetToJzodSchema_json,
+  transformer_spreadSheetToMlSchema_json,
   transformer_menu_addItem_json,
   transformer_ifThenElse_json,
   transformer_boolExpr_json,
@@ -30,7 +30,7 @@ import {
   transformer_getUniqueValues_json,
   transformer_getActiveDeployment_json,
   transformer_duplicateApplicationModel_json,
-  transformer_ansiColumnsToJzodSchema_json,
+  transformer_ansiColumnsToMlSchema_json,
   transformer_concatLists_json,
   transformer_filterList_json,
   transformer_find_json,
@@ -46,7 +46,7 @@ import {
   transformer_syncExternalServiceSchema_json,
   // MLS
   transformer_defaultValueForMLSchema_json,
-  transformer_jzodTypeCheck_json,
+  transformer_mlsTypeCheck_json,
   transformer_resolveConditionalSchema_json,
   transformer_resolveSchemaReferenceInContext_json,
   transformer_unfoldSchemaOnce_json,
@@ -60,7 +60,7 @@ export type Step = "build" | "runtime";
 export type ResolveBuildTransformersTo = "value" | "constantTransformer";
 
 
-export const transformer_spreadSheetToJzodSchema: TransformerDefinition = transformer_spreadSheetToJzodSchema_json as TransformerDefinition;
+export const transformer_spreadSheetToMlSchema: TransformerDefinition = transformer_spreadSheetToMlSchema_json as TransformerDefinition;
 export const transformer_menu_addItem: TransformerDefinition = transformer_menu_addItem_json as TransformerDefinition;
 // 
 export const transformer_ifThenElse: TransformerDefinition = transformer_ifThenElse_json as TransformerDefinition;
@@ -91,12 +91,12 @@ export const transformer_defaultValueForMLSchema: TransformerDefinition = transf
 export const transformer_resolveConditionalSchema: TransformerDefinition = transformer_resolveConditionalSchema_json as TransformerDefinition;
 export const transformer_resolveSchemaReferenceInContext: TransformerDefinition = transformer_resolveSchemaReferenceInContext_json as TransformerDefinition;
 export const transformer_unfoldSchemaOnce: TransformerDefinition = transformer_unfoldSchemaOnce_json as TransformerDefinition;
-export const transformer_jzodTypeCheck: TransformerDefinition = transformer_jzodTypeCheck_json as TransformerDefinition;
+export const transformer_mlsTypeCheck: TransformerDefinition = transformer_mlsTypeCheck_json as TransformerDefinition;
 export const transformer_resolveTransformerResultSchema: TransformerDefinition = transformer_resolveTransformerResultSchema_json as TransformerDefinition;
 // admin
 export const transformer_getActiveDeployment: TransformerDefinition = transformer_getActiveDeployment_json as TransformerDefinition;
 export const transformer_duplicateApplicationModel: TransformerDefinition = transformer_duplicateApplicationModel_json as TransformerDefinition;
-export const transformer_ansiColumnsToJzodSchema: TransformerDefinition = transformer_ansiColumnsToJzodSchema_json as TransformerDefinition;
+export const transformer_ansiColumnsToMlSchema: TransformerDefinition = transformer_ansiColumnsToMlSchema_json as TransformerDefinition;
 export const transformer_concatLists: TransformerDefinition = transformer_concatLists_json as TransformerDefinition;
 export const transformer_filterList: TransformerDefinition = transformer_filterList_json as TransformerDefinition;
 export const transformer_find: TransformerDefinition = transformer_find_json as TransformerDefinition;
@@ -120,16 +120,16 @@ export const adminTransformers: Record<string,TransformerDefinition> = {
 };
 
 export const spreadsheetTransformers: Record<string,TransformerDefinition> = {
-  transformer_spreadSheetToJzodSchema,
+  transformer_spreadSheetToMlSchema,
 };
 
 export const mlsTransformers: Record<string,TransformerDefinition> = {
   transformer_resolveConditionalSchema,
   transformer_resolveSchemaReferenceInContext,
   transformer_unfoldSchemaOnce,
-  transformer_jzodTypeCheck,
+  transformer_mlsTypeCheck,
   transformer_resolveTransformerResultSchema,
-  transformer_ansiColumnsToJzodSchema,
+  transformer_ansiColumnsToMlSchema,
   transformer_defaultValueForMLSchema,
 };
 
@@ -209,7 +209,7 @@ const coreBuildPlusRuntimeReferenceMap: Record<string, string> = {
   transformer_mustacheStringTemplate: "coreTransformerForBuildPlusRuntime_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate
 };
 
-export const miroirCoreTransformersForBuildPlusRuntime: Record<string, JzodElement> = Object.fromEntries(
+export const miroirCoreTransformersForBuildPlusRuntime: Record<string, MlElement> = Object.fromEntries(
   Object.entries(miroirTransformers).map(([key, transformer]) => [
     key,
     transformerInterfaceFromDefinition(
@@ -221,7 +221,7 @@ export const miroirCoreTransformersForBuildPlusRuntime: Record<string, JzodEleme
   ])
 );
 
-export const miroirTransformersForBuildPlusRuntime: Record<string, JzodElement> = Object.fromEntries(
+export const miroirTransformersForBuildPlusRuntime: Record<string, MlElement> = Object.fromEntries(
   Object.entries(miroirTransformers).map(([key, transformer]) => [
     key,
     transformerInterfaceFromDefinition(

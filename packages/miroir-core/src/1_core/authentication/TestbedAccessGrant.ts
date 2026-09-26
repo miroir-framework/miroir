@@ -33,7 +33,7 @@ export function resolveTestbedAccessGrantPrincipal(args: {
 }
 
 /**
- * Version-4 shaped (see `deterministicUuidV4`): jzodTypeCheck's uuid schema accepts
+ * Version-4 shaped (see `deterministicUuidV4`): mlsTypeCheck's uuid schema accepts
  * version 4 only.
  */
 export function testbedApplicationAccessGrantUuid(

@@ -20,8 +20,8 @@ const ADMIN_DEPLOYMENT_UUID = "18db21bf-f8d3-4f6a-8296-84b69f6dc48b";
 const APP_UUID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 const DEPLOYMENT_UUID = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
 const ALICE_UUID = "1c39328c-7de4-44ae-bcf1-5bbc38d8e267";
-/** uuid v5(`${alice}\napplication\n${app}`, ENTITY_MIROIR_RIGHT_UUID) */
-const EXPECTED_GRANT_UUID = "20b0b4ce-1d09-54c5-93be-59886264356f";
+/** deterministicUuidV4(`${alice}\napplication\n${app}`, ENTITY_MIROIR_RIGHT_UUID) */
+const EXPECTED_GRANT_UUID = "20b0b4ce-1d09-44c5-93be-59886264356f";
 
 const adminDeployment = {
   uuid: ADMIN_DEPLOYMENT_UUID,

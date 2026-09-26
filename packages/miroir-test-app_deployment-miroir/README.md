@@ -7,7 +7,7 @@ This package contains the Miroir meta-model and data instances (previously in `m
 ## Contents
 
 - **miroir_model**: Entity and EntityDefinition instances for the Miroir meta-model
-- **miroir_data**: Data instances (Reports, Endpoints, JzodSchemas, Queries, Menus, Transformers, Runners, Tests, etc.)
+- **miroir_data**: Data instances (Reports, Endpoints, MlSchemas, Queries, Menus, Transformers, Runners, Tests, etc.)
 
 ## Usage
 
