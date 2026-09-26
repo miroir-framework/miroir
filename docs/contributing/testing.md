@@ -175,14 +175,20 @@ Full catalogue: [reference/testing.md](../reference/testing.md#running-app-stack
 
 ### MlElementEditor component tests
 
-The ML schema editor cases are MiroirTests (#286) written as declarative JSON (#292). There is one instance per editor (`MlEnumEditor_ComponentTestSuite`, `MlArrayEditor_ComponentTestSuite`, `MlLiteralEditor_ComponentTestSuite`, `MlObjectEditor_ComponentTestSuite`, `MlSimpleTypeEditor_ComponentTestSuite`, `MlUnionEditor_ComponentTestSuite`, `MlAnyEditor_ComponentTestSuite`; 68 cases in all). Each instance has one `reactComponentTestSuite` node, which names the rendered component and its default props, and one `reactComponentTest` leaf per case, with its own props and a list of steps (`click`, `change`, `selectOption`, `expectRenderedValues`, `expectElement`, …). The vitest entry `tests/4_view/miroir-component-tests.unit.test.tsx` runs them:
+The ML schema editor cases are MiroirTests (#286) written as declarative JSON (#292). There is one instance per editor (`MlEnumEditor_ComponentTestSuite`, `MlArrayEditor_ComponentTestSuite`, `MlLiteralEditor_ComponentTestSuite`, `MlObjectEditor_ComponentTestSuite`, `MlSimpleTypeEditor_ComponentTestSuite`, `MlUnionEditor_ComponentTestSuite`, `MlAnyEditor_ComponentTestSuite`; 68 cases in all), plus the test pattern `MlTestPattern_ComponentTestSuite` (one object with every editor type, 4 cases) and the render-performance suite `MlEditorRenderPerformance_ComponentTestSuite` (15 cases with a `measureRendering` step, `runOnDemand`) (#303). Each instance has one `reactComponentTestSuite` node, which names the rendered component and its default props, and one `reactComponentTest` leaf per case, with its own props and a list of steps (`click`, `change`, `selectOption`, `expectRenderedValues`, `expectElement`, …). The vitest entry `tests/4_view/miroir-component-tests.unit.test.tsx` runs them:
 
 ```bash
-# All 68 cases, plus 2 entry checks. No --profile and no Postgres (in-memory LocalCache).
+# The 72 default cases, plus 2 entry checks; the 15 on-demand cases are skipped.
+# No --profile and no Postgres (in-memory LocalCache).
 npm run testByFile -w miroir-standalone-app -- miroir-component-tests
 
-# One editor
+# One editor, or the test pattern (-t is a regex: write "." for a space, testByFile splits spaces)
 npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "MlObjectEditor"
+npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "MlTestPattern"
+
+# Render-performance suite (on demand), measurement tables in the log
+MIROIR_COMPONENT_PERF=1 VITE_MIROIR_LOG_CONFIG_FILENAME=catch-all-detailed \
+  npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "MlEditorRenderPerformance"
 
 # After a change to an instance JSON in miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-…/
 npm run build -w miroir-test-app_deployment-miroir
@@ -190,7 +196,9 @@ npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.
 npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency
 ```
 
-To add a case, add a leaf to the editor's instance JSON, labelled `<editor>: <case>`, and add its line to `tests/4_view/issues/292-declarative-react-component-tests/baseline-component-cases.txt` (and the new count to the vitest entry). A failing step reports `step <n> (<kind> "<label>"): <message>`.
+To add a case, add a leaf to the editor's instance JSON, labelled `<editor>: <case>`, and add its line to `tests/4_view/issues/292-declarative-react-component-tests/baseline-component-cases.txt` (and the new count, `EXPECTED_LEAF_COUNT`, to the vitest entry). A failing step reports `step <n> (<kind> "<label>"): <message>`. `testByFile` passes `--bail=1`: after a failing case the later ones are reported as not run; run `npx vitest run --reporter=verbose miroir-component-tests` from `packages/miroir-standalone-app` to see every failure.
+
+Render measurements are not a pass / fail: the `measureRendering` step fails only if rendering fails or no measurement is collected, and happy-dom timings are not browser timings. The test pattern's `ignorePaths`, the measurement fields and the app's iterations field are described in [reference/testing.md § Test pattern](../reference/testing.md#test-pattern) and [§ Render measurements](../reference/testing.md#render-measurements-measurerendering).
 
 The same cases run in the app: open one of the instances in the Miroir Tests report and click the unit Run button. Each case renders in a sandbox panel with its own `LocalCache`. The instance format, the step vocabulary, the targets, and the waiting rule are in [reference/testing.md § MlElementEditor component tests](../reference/testing.md#mlelementeditor-component-tests).
 

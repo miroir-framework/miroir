@@ -17,6 +17,7 @@ import {
 } from "../../4_view/tools/ComponentTestModeContext.js";
 import { PortalContainerProvider } from "../../4_view/tools/PortalContainerContext.js";
 import {
+  applyComponentTestDomConfig,
   configureComponentTestDom,
   createComponentTestEnvironment,
   mountComponent,
@@ -78,7 +79,8 @@ export type ClosableReactComponentTestRunner = ReactComponentTestRunner & {
  * 5. After the suite's last case (the last of `suite.caseLabels`), it destroys the suite
  *    wrapper's `MiroirEventService`; `endRun()` does the same for
  *    any wrapper still open when the run ends (a filtered run need not reach the suite's last
- *    case), and so does `close()`.
+ *    case), and so does `close()`, which also puts back the `@testing-library/dom` configuration
+ *    found when the runner was created.
  *
  * The component is rendered inside `ComponentTestModeContext` set to the sandbox mode, so that in
  * the app it renders the same DOM as under vitest, and inside `PortalContainerProvider` set to
@@ -88,7 +90,7 @@ export type ClosableReactComponentTestRunner = ReactComponentTestRunner & {
 export function createReactComponentTestRunner(
   host: ComponentTestSandboxHost,
 ): ClosableReactComponentTestRunner {
-  configureComponentTestDom();
+  const restoreDomConfig = configureComponentTestDom();
   const componentRegistry = host.componentRegistry ?? defaultComponentRegistry;
   const sandboxElement = host.sandboxElement;
   const ownsPortalElement = !host.portalElement;
@@ -163,6 +165,7 @@ export function createReactComponentTestRunner(
     props: Record<string, any>,
   ): Promise<HTMLElement> => {
     unmountCurrentCase();
+    applyComponentTestDomConfig();
     const container = sandboxElement.ownerDocument.createElement("div");
     container.setAttribute("data-testid", "component-test-container");
     sandboxElement.appendChild(container);
@@ -270,7 +273,11 @@ export function createReactComponentTestRunner(
       if (ownsPortalElement) {
         portalElement.remove();
       }
-      endRun();
+      try {
+        endRun();
+      } finally {
+        restoreDomConfig();
+      }
     }
   };
 
