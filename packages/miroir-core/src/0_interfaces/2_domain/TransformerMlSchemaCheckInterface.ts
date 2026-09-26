@@ -1,21 +1,21 @@
-import type { JzodElement } from "../1_core/preprocessor-generated/miroirFundamentalType";
+import type { MlElement } from "../1_core/preprocessor-generated/miroirFundamentalType";
 
 /**
  * Issue #251 — per-node mlSchema compatibility report (Proposal B derivation + #250 LSP).
  */
 export interface TransformerMlSchemaMismatch {
   direction: "input" | "output";
-  given: JzodElement;
-  declared: JzodElement;
+  given: MlElement;
+  declared: MlElement;
 }
 
 export interface TransformerMlSchemaNodeReport {
   path: (string | number)[];
   transformerType: string;
-  givenInput?: JzodElement;
-  acceptedInput?: JzodElement;
-  actualOutput?: JzodElement;
-  expectedOutput?: JzodElement;
+  givenInput?: MlElement;
+  acceptedInput?: MlElement;
+  actualOutput?: MlElement;
+  expectedOutput?: MlElement;
   failures: TransformerMlSchemaMismatch[];
 }
 
@@ -25,6 +25,6 @@ export type TransformerMlSchemaCompatibility = {
 };
 
 export interface TransformerMlSchemaGivenTypes {
-  input: JzodElement;
-  output?: JzodElement;
+  input: MlElement;
+  output?: MlElement;
 }

@@ -28,7 +28,7 @@ Create and update **composite** transformers - those composed entirely of other 
 - Want rapid development without TypeScript
 - No SQL execution needed
 
-**Examples**: `spreadSheetToJzodSchema`, format conversions, data pipelines
+**Examples**: `spreadSheetToMlSchema`, format conversions, data pipelines
 
 ---
 

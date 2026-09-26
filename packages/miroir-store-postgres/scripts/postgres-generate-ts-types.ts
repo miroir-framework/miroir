@@ -28,7 +28,7 @@ async function fileExists(filePath: string): Promise<boolean> {
 async function writeFile(
   jzodElement: any,
   targetFileName: any,
-  jzodSchemaVariableName: any,
+  mlSchemaVariableName: any,
   newFileContents: any
 ) {
   if (targetFileName && (await fileExists(targetFileName))) {
@@ -47,7 +47,7 @@ async function writeFile(
 }
 
 // ################################################################################################
-const extendedJzodSchemasTsTypes = jzodToTsCode(
+const extendedMlSchemasTsTypes = jzodToTsCode(
   "sqlQuerySelectSchema",
   sqlQuerySelectSchema,
   {},
@@ -55,13 +55,13 @@ const extendedJzodSchemasTsTypes = jzodToTsCode(
   false, // headerForZodImports
   Object.keys(sqlQuerySelectSchema.context?? {}),
 );
-log.info("extendedJzodSchemasTsTypes",extendedJzodSchemasTsTypes);
+log.info("extendedMlSchemasTsTypes",extendedMlSchemasTsTypes);
 
 const fileContents = `import { ZodType, ZodTypeAny, z } from "zod";
-${extendedJzodSchemasTsTypes}
+${extendedMlSchemasTsTypes}
 `
 
 const targetFileName = path.join("./src","generated.ts")
-log.info("generateTsTypeFileFromJzodSchemaInParallel writing file:", targetFileName, fileContents.length);
+log.info("generateTsTypeFileFromMlSchemaInParallel writing file:", targetFileName, fileContents.length);
 writeFile(undefined, targetFileName, undefined, fileContents);
-log.info("generateTsTypeFileFromJzodSchemaInParallel file written OK:", targetFileName);
+log.info("generateTsTypeFileFromMlSchemaInParallel file written OK:", targetFileName);

@@ -2,12 +2,12 @@
 
 import type {
   Entity,
-  JzodElement,
-  JzodObject,
+  MlElement,
+  MlObject,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 export type AlterEntityAttributeColumns = {
-  addColumns?: { name: string; definition: JzodElement }[] | undefined;
+  addColumns?: { name: string; definition: MlElement }[] | undefined;
   removeColumns?: string[] | undefined;
 };
 
@@ -16,9 +16,9 @@ export type AlterEntityAttributeColumns = {
  * `removeColumns` drops matching keys; `addColumns` overlays/adds attributes.
  */
 export function applyMlSchemaColumnChanges(
-  mlSchema: JzodObject,
+  mlSchema: MlObject,
   changes: AlterEntityAttributeColumns,
-): JzodObject {
+): MlObject {
   const removeColumns = changes.removeColumns ?? [];
   const baseDefinition =
     removeColumns.length > 0

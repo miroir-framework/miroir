@@ -24,17 +24,17 @@ import {
 import { ReportPage } from "../../../../src/miroir-fwk/4_view/routes/ReportPage";
 import type { ReportViewProps } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportHooks";
 import {
-  deleteLibraryCountryFromJzodEditorTestCache,
-  getLibraryCountryFromJzodEditorTestCache,
+  deleteLibraryCountryFromMlEditorTestCache,
+  getLibraryCountryFromMlEditorTestCache,
   LIBRARY_TEST_TRACER_COUNTRY_UUID,
   prepareAndRunTestSuites,
-  restoreLibraryMultistepTracerReportInJzodEditorTestCache,
-  upsertLibraryCountryInJzodEditorTestCache,
-  upsertLibraryReportInJzodEditorTestCache,
+  restoreLibraryMultistepTracerReportInMlEditorTestCache,
+  upsertLibraryCountryInMlEditorTestCache,
+  upsertLibraryReportInMlEditorTestCache,
   waitAfterUserInteraction,
   type ReactComponentTestSuitePrep,
   type ReactComponentTestSuites,
-} from "../../JzodElementEditorTestTools";
+} from "../../MlElementEditorTestTools";
 
 const RUN_TEST = process.env.RUN_TEST;
 const shouldRun =
@@ -312,7 +312,7 @@ function buildBranchFixtureReport(): any {
 
 function mountBranchFixture() {
   currentUseParams.reportUuid = BRANCH_REPORT_UUID;
-  upsertLibraryReportInJzodEditorTestCache(buildBranchFixtureReport());
+  upsertLibraryReportInMlEditorTestCache(buildBranchFixtureReport());
 }
 
 function branchFixtureProps(): ReportViewProps {
@@ -390,11 +390,11 @@ async function typeStepOneCountry(container: Container, name: string, iso: strin
 
 const pageLabel = "multistepBranch.284";
 
-const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> = {
+const mlElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> = {
   multistepBranch: {
     editor: ReportPage,
     wireLocalCacheCompositeAction: true,
-    getJzodEditorTests: (
+    getMlEditorTests: (
       componentUnderTest: React.FC<ReportViewProps>,
     ): ReactComponentTestSuites<ReportViewProps> => {
       return {
@@ -418,7 +418,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                 fireEvent.click(screen.getByRole("button", { name: "Finish" }));
                 await waitAfterUserInteraction();
                 await waitFor(() => {
-                  const country = getLibraryCountryFromJzodEditorTestCache();
+                  const country = getLibraryCountryFromMlEditorTestCache();
                   expect(country).toBeTruthy();
                   expect(country?.name).toEqual("BranchFinishLand");
                 });
@@ -449,7 +449,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
             "onNext-error-stays-with-inner-message": {
               props: () => {
                 const props = branchFixtureProps();
-                upsertLibraryCountryInJzodEditorTestCache({
+                upsertLibraryCountryInMlEditorTestCache({
                   uuid: ON_NEXT_COLLISION_UUID,
                   parentName: "Country",
                   parentUuid: COUNTRY_ENTITY_UUID,
@@ -481,7 +481,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
             "bare-section-back-is-index-minus-one": {
               props: () => {
                 currentUseParams.reportUuid = MULTISTEP_COUNTRY_REPORT_UUID;
-                restoreLibraryMultistepTracerReportInJzodEditorTestCache();
+                restoreLibraryMultistepTracerReportInMlEditorTestCache();
                 return {
                   application: selfApplicationLibrary.uuid,
                   applicationSection: "data",
@@ -608,15 +608,15 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
 
 (shouldRun ? describe : describe.skip)("multistepBranch.284", () => {
   afterEach(() => {
-    deleteLibraryCountryFromJzodEditorTestCache();
-    deleteLibraryCountryFromJzodEditorTestCache(ON_NEXT_COLLISION_UUID);
-    restoreLibraryMultistepTracerReportInJzodEditorTestCache();
+    deleteLibraryCountryFromMlEditorTestCache();
+    deleteLibraryCountryFromMlEditorTestCache(ON_NEXT_COLLISION_UUID);
+    restoreLibraryMultistepTracerReportInMlEditorTestCache();
     currentUseParams.reportUuid = BRANCH_REPORT_UUID;
     navigateMock.mockClear();
   });
   prepareAndRunTestSuites(
     pageLabel,
-    jzodElementEditorTests,
+    mlElementEditorTests,
     defaultSelfApplicationDeploymentMap,
   );
 });

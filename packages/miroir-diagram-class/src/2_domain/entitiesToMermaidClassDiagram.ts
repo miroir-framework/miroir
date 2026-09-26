@@ -14,8 +14,8 @@ import type { Entity } from "miroir-core";
 /** Minimal Entity shape required for Mermaid diagram generation. */
 export type MermaidDiagramEntity = Pick<Entity, "uuid" | "name" | "description" | "mlSchema">
 
-/** Jzod schema attribute entry as found inside `mlSchema.definition`. */
-export interface JzodAttributeEntry {
+/** ML schema attribute entry as found inside `mlSchema.definition`. */
+export interface MlAttributeEntry {
   type: string;
   optional?: boolean;
   tag?: {
@@ -127,10 +127,10 @@ const INFRASTRUCTURE_ATTRIBUTES = new Set([
 // ############################################################################
 
 /**
- * Map a Jzod type string to a UML-friendly type string.
+ * Map a ML type string to a UML-friendly type string.
  */
-export function jzodTypeToUml(jzodType: string): string {
-  switch (jzodType) {
+export function mlTypeToUml(mlType: string): string {
+  switch (mlType) {
     case "uuid":
       return "UUID";
     case "string":
@@ -148,7 +148,7 @@ export function jzodTypeToUml(jzodType: string): string {
     case "array":
       return "Array";
     default:
-      return jzodType;
+      return mlType;
   }
 }
 
@@ -248,7 +248,7 @@ export function extractClassInfo(
   const attributes: AttributeInfo[] = [];
 
   for (const [attrName, attrSchema] of Object.entries(definition)) {
-    const attr = attrSchema as JzodAttributeEntry;
+    const attr = attrSchema as MlAttributeEntry;
 
     if (!showInfra && INFRASTRUCTURE_ATTRIBUTES.has(attrName)) {
       continue;
@@ -342,7 +342,7 @@ export function entitiesToMermaidClassDiagram(
         continue;
       }
 
-      const umlType = jzodTypeToUml(attr.type);
+      const umlType = mlTypeToUml(attr.type);
       const sanitisedName = sanitiseMermaidId(attr.name);
       const optionalMark = attr.optional ? "?" : "";
       const labelComment = showLabels && attr.label ? `  %% ${attr.label}` : "";

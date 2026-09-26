@@ -3,15 +3,15 @@ import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
   getObjectUniondiscriminatorValuesFromResolvedSchema,
   getMiroirFundamentalSchemaForDeployment,
-  JzodElement,
-  JzodUnion,
-  jzodUnion_recursivelyUnfold,
-  JzodUnion_RecursivelyUnfold_ReturnType,
-  jzodUnionResolvedTypeForObject,
+  MlElement,
+  MlUnion,
+  mlUnion_recursivelyUnfold,
+  MlUnion_RecursivelyUnfold_ReturnType,
+  mlUnionResolvedTypeForObject,
   MetaModel,
   MlSchema,
-  unfoldJzodSchemaOnce,
-  UnfoldJzodSchemaOnceReturnType,
+  unfoldMlSchemaOnce,
+  UnfoldMlSchemaOnceReturnType,
 } from "miroir-core";
 import { describe, expect, it } from "vitest";
 import currentMiroirModel from "./currentMiroirModel.json";
@@ -22,16 +22,16 @@ const schemaForTest = getMiroirFundamentalSchemaForDeployment(
   currentModel as any as MetaModel,
 );
 
-// function local_test(schema: JzodElement, instance: any): string[][] {
-function local_test(schema: JzodUnion, instance: any): string[][] {
+// function local_test(schema: MlElement, instance: any): string[][] {
+function local_test(schema: MlUnion, instance: any): string[][] {
   const modelEnvironment: MiroirModelEnvironment = {
-    miroirFundamentalJzodSchema: schemaForTest,
+    miroirFundamentalMlSchema: schemaForTest,
     currentModel: currentModel as any as MetaModel,
     miroirMetaModel: currentMiroirModel as any as MetaModel,
     endpointsByUuid: {},
   };
 
-  // const resolvedElementJzodSchema: ResolvedJzodSchemaReturnType | undefined = jzodTypeCheck(
+  // const resolvedElementMlSchema: ResolvedMlSchemaReturnType | undefined = mlsTypeCheck(
   //   schema,
   //   instance,
   //   [], // currentValuePath
@@ -40,12 +40,12 @@ function local_test(schema: JzodUnion, instance: any): string[][] {
   //   {}
   // )
 
-  // if (resolvedElementJzodSchema.status === "error") {
-  //   throw new Error(`Error while resolving Jzod schema: ${resolvedElementJzodSchema.error}`);
+  // if (resolvedElementMlSchema.status === "error") {
+  //   throw new Error(`Error while resolving ML schema: ${resolvedElementMlSchema.error}`);
   // }
 
 
-  const unfoldedRawSchema: UnfoldJzodSchemaOnceReturnType = unfoldJzodSchemaOnce(
+  const unfoldedRawSchema: UnfoldMlSchemaOnceReturnType = unfoldMlSchemaOnce(
     schemaForTest,
     schema,
     [], // path
@@ -56,51 +56,51 @@ function local_test(schema: JzodUnion, instance: any): string[][] {
     currentMiroirModel as any as MetaModel
   );
   if (unfoldedRawSchema.status === "error") {
-    throw new Error(`Error while unfolding JzodUnion: ${unfoldedRawSchema.error}`);
+    throw new Error(`Error while unfolding MlUnion: ${unfoldedRawSchema.error}`);
   }
   if (unfoldedRawSchema.element.type !== "union") {
-    throw new Error(`Expected a JzodUnion, got ${unfoldedRawSchema.element.type}`);
+    throw new Error(`Expected a MlUnion, got ${unfoldedRawSchema.element.type}`);
   }
-  const recursivelyUnfoldedSchema: JzodUnion_RecursivelyUnfold_ReturnType = jzodUnion_recursivelyUnfold(
-    unfoldedRawSchema.element as JzodUnion,
+  const recursivelyUnfoldedSchema: MlUnion_RecursivelyUnfold_ReturnType = mlUnion_recursivelyUnfold(
+    unfoldedRawSchema.element as MlUnion,
     new Set(),
     modelEnvironment, // modelEnvironment
-    {} // relativeReferenceJzodContext
+    {} // relativeReferenceMlContext
   );
   if (recursivelyUnfoldedSchema.status === "error") {
-    throw new Error(`Error while recursively unfolding JzodUnion: ${recursivelyUnfoldedSchema.error}`);
+    throw new Error(`Error while recursively unfolding MlUnion: ${recursivelyUnfoldedSchema.error}`);
   }
-  const resolveUnionResult = jzodUnionResolvedTypeForObject(
+  const resolveUnionResult = mlUnionResolvedTypeForObject(
     recursivelyUnfoldedSchema.result,
-    parentKeyMap.rawSchema as JzodUnion,
+    parentKeyMap.rawSchema as MlUnion,
     schema.discriminator,
     instance, //valueObject,
     [], // currentValuePath,
     [], // currentTypePath,
     modelEnvironment,
-    {}, // relativeReferenceJzodContext
+    {}, // relativeReferenceMlContext
   );
 
   if (resolveUnionResult.status === "error") {
-    throw new Error(`Error while resolving JzodUnion for object: ${resolveUnionResult.error}`);
+    throw new Error(`Error while resolving MlUnion for object: ${resolveUnionResult.error}`);
   }
 
   console.log("resolveUnionResult:", JSON.stringify(resolveUnionResult, null, 2));
   
   return getObjectUniondiscriminatorValuesFromResolvedSchema(
     "",
-    // resolvedElementJzodSchema.resolvedSchema,
+    // resolvedElementMlSchema.resolvedSchema,
     unfoldedRawSchema.element,
     recursivelyUnfoldedSchema.result,
     resolveUnionResult.objectUnionChoices,
     resolveUnionResult
-    // (unfoldedRawSchema.element as JzodUnion).discriminator
+    // (unfoldedRawSchema.element as MlUnion).discriminator
   );
 }
 
 describe("getObjectUniondiscriminatorValuesFromResolvedSchema", () => {
   it("returns correct result for a simple union of objects with discriminator", () => {
-    const schema: JzodUnion = {
+    const schema: MlUnion = {
       type: "union",
       discriminator: "objectType",
       definition: [
@@ -127,7 +127,7 @@ describe("getObjectUniondiscriminatorValuesFromResolvedSchema", () => {
   });
 
   // it("composite discriminator", () => {
-  //   const schema: JzodUnion = {
+  //   const schema: MlUnion = {
   //     type: "union",
   //     discriminator: ["objectType", "interpolation"],
   //     definition: [
@@ -156,7 +156,7 @@ describe("getObjectUniondiscriminatorValuesFromResolvedSchema", () => {
   // });
 
   // it("discriminated union with array opt-in", () => {
-  //   const schema: JzodUnion = {
+  //   const schema: MlUnion = {
   //     type: "union",
   //     discriminator: "type",
   //     definition: [
@@ -164,14 +164,14 @@ describe("getObjectUniondiscriminatorValuesFromResolvedSchema", () => {
   //         type: "schemaReference",
   //         definition: {
   //           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-  //           relativePath: "jzodReference",
+  //           relativePath: "mlReference",
   //         },
   //       },
   //       {
   //         type: "schemaReference",
   //         definition: {
   //           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-  //           relativePath: "jzodObject",
+  //           relativePath: "mlObject",
   //         },
   //       },
   //       {
@@ -184,14 +184,14 @@ describe("getObjectUniondiscriminatorValuesFromResolvedSchema", () => {
   //               type: "schemaReference",
   //               definition: {
   //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-  //                 relativePath: "jzodReference",
+  //                 relativePath: "mlReference",
   //               },
   //             },
   //             {
   //               type: "schemaReference",
   //               definition: {
   //                 absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-  //                 relativePath: "jzodObject",
+  //                 relativePath: "mlObject",
   //               },
   //             },
   //             {

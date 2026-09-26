@@ -132,7 +132,7 @@
               "interpolation": "runtime"
             },
             "mlSchema": {
-              "transformerType": "ansiColumnsToJzodSchema",
+              "transformerType": "ansiColumnsToMlSchema",
               "applyTo": {
                 "transformerType": "getFromContext",
                 "referencePath": ["tableAggregate", "json_agg"],

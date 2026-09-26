@@ -19,19 +19,19 @@ import {
 import { ReportPage } from "../../../../src/miroir-fwk/4_view/routes/ReportPage";
 import type { ReportViewProps } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportHooks";
 import {
-  deleteLibraryCountryFromJzodEditorTestCache,
+  deleteLibraryCountryFromMlEditorTestCache,
   extractValuesFromRenderedElements,
-  getLibraryCountryFromJzodEditorTestCache,
+  getLibraryCountryFromMlEditorTestCache,
   LIBRARY_TEST_TRACER_COUNTRY_UUID,
   prepareAndRunTestSuites,
-  restoreLibraryMultistepTracerReportInJzodEditorTestCache,
-  upsertLibraryCountryInJzodEditorTestCache,
-  upsertLibraryReportInJzodEditorTestCache,
-  upsertLibraryStoredQueryInJzodEditorTestCache,
+  restoreLibraryMultistepTracerReportInMlEditorTestCache,
+  upsertLibraryCountryInMlEditorTestCache,
+  upsertLibraryReportInMlEditorTestCache,
+  upsertLibraryStoredQueryInMlEditorTestCache,
   waitAfterUserInteraction,
   type ReactComponentTestSuitePrep,
   type ReactComponentTestSuites,
-} from "../../JzodElementEditorTestTools";
+} from "../../MlElementEditorTestTools";
 import bookCountByPublisherQuery from "../../../../../miroir-test-app_deployment-library/assets/library_model/e4320b9e-ab45-4abe-85d8-359604b3c62f/6176dcdf-39a6-4805-8dc5-3c2366a31a11.json" with { type: "json" };
 
 const LIBRARY_APPLICATION_UUID = "5af03c98-fe5e-490b-b08f-e1230971c57f";
@@ -304,7 +304,7 @@ async function mountInstanceWalkClone(container: Container) {
 
 function prepareInstanceWalkCase(): ReportViewProps {
   currentUseParams.reportUuid = INSTANCE_WALK_REPORT_UUID;
-  upsertLibraryReportInJzodEditorTestCache(buildInstanceWalkClone());
+  upsertLibraryReportInMlEditorTestCache(buildInstanceWalkClone());
   return instanceWalkTestProps();
 }
 
@@ -348,11 +348,11 @@ async function changeApplicationFieldToMiroir(container: Container) {
 
 const pageLabel = "multistepProcess.274";
 
-const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> = {
+const mlElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> = {
   multistepProcess: {
     editor: ReportPage,
     wireLocalCacheCompositeAction: true,
-    getJzodEditorTests: (
+    getMlEditorTests: (
       componentUnderTest: React.FC<ReportViewProps>,
     ): ReactComponentTestSuites<ReportViewProps> => {
       return {
@@ -400,7 +400,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                 }
                 await waitAfterUserInteraction();
                 await waitFor(() => {
-                  const country = getLibraryCountryFromJzodEditorTestCache();
+                  const country = getLibraryCountryFromMlEditorTestCache();
                   expect(country).toBeTruthy();
                   expect(country?.name).toEqual("Testland");
                   expect((country as any)?.["iso3166-1Alpha-2"]).toEqual("TL");
@@ -503,7 +503,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                 fireEvent.click(screen.getByRole("button", { name: "Confirm cancel" }));
                 await waitAfterUserInteraction();
                 expect(screen.queryByTestId("multistep-report-host")).toBeNull();
-                expect(getLibraryCountryFromJzodEditorTestCache()).toBeUndefined();
+                expect(getLibraryCountryFromMlEditorTestCache()).toBeUndefined();
                 expect(inputByName(container, "stepOne.name")).toBeUndefined();
               },
             },
@@ -547,7 +547,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                 applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
               },
               tests: async (expect: ExpectStatic, container: Container) => {
-                upsertLibraryCountryInJzodEditorTestCache({
+                upsertLibraryCountryInMlEditorTestCache({
                   uuid: LIBRARY_TEST_TRACER_COUNTRY_UUID,
                   parentName: "Country",
                   parentUuid: COUNTRY_ENTITY_UUID,
@@ -567,7 +567,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
 
                 expect(screen.getByTestId("multistep-report-host")).toBeTruthy();
                 expect(screen.getByRole("button", { name: "Finish" })).toBeTruthy();
-                const collision = getLibraryCountryFromJzodEditorTestCache();
+                const collision = getLibraryCountryFromMlEditorTestCache();
                 expect(collision?.name).toEqual("Collisionland");
 
                 fireEvent.click(screen.getByRole("button", { name: "Back" }));
@@ -662,7 +662,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                 await waitForHost();
                 const clone = cloneFrozenTracer();
                 clone.definition.section.definition[0].definition.urlParamFields = ["name"];
-                upsertLibraryReportInJzodEditorTestCache(clone);
+                upsertLibraryReportInMlEditorTestCache(clone);
                 await waitFor(() => {
                   expect(screen.getByRole("button", { name: "OK" })).toBeTruthy();
                 });
@@ -697,7 +697,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                       },
                     },
                   };
-                upsertLibraryReportInJzodEditorTestCache(clone);
+                upsertLibraryReportInMlEditorTestCache(clone);
                 navigateMock.mockClear();
                 await changeApplicationFieldToMiroir(container);
                 const navigateCalls = navigateMock.mock.calls.map((call) => String(call[0] ?? ""));
@@ -717,7 +717,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
               },
               tests: async (expect: ExpectStatic, _container: Container) => {
                 await waitForHost();
-                upsertLibraryStoredQueryInJzodEditorTestCache(bookCountByPublisherQuery as any);
+                upsertLibraryStoredQueryInMlEditorTestCache(bookCountByPublisherQuery as any);
                 const clone = cloneFrozenTracer();
                 clone.definition.runStoredQueries = [
                   {
@@ -725,7 +725,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                     label: "BookCountByPublisher",
                   },
                 ];
-                upsertLibraryReportInJzodEditorTestCache(clone);
+                upsertLibraryReportInMlEditorTestCache(clone);
                 await waitForTracerCloneOnScreen();
                 await waitAfterUserInteraction();
                 await waitAfterUserInteraction();
@@ -746,7 +746,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                 applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
               },
               tests: async (_expect: ExpectStatic, container: Container) => {
-                upsertLibraryCountryInJzodEditorTestCache({
+                upsertLibraryCountryInMlEditorTestCache({
                   uuid: PRE_EXISTING_COUNTRY_UUID,
                   parentName: "Country",
                   parentUuid: COUNTRY_ENTITY_UUID,
@@ -760,10 +760,10 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                 fireEvent.click(screen.getByRole("button", { name: "Confirm cancel" }));
                 await waitAfterUserInteraction();
                 expect(screen.queryByTestId("multistep-report-host")).toBeNull();
-                expect(getLibraryCountryFromJzodEditorTestCache(PRE_EXISTING_COUNTRY_UUID)?.name).toEqual(
+                expect(getLibraryCountryFromMlEditorTestCache(PRE_EXISTING_COUNTRY_UUID)?.name).toEqual(
                   "France",
                 );
-                expect(getLibraryCountryFromJzodEditorTestCache()).toBeUndefined();
+                expect(getLibraryCountryFromMlEditorTestCache()).toBeUndefined();
               },
             },
             "instance-no-child-formik": {
@@ -794,7 +794,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                 fireEvent.click(screen.getByRole("button", { name: "Finish" }));
                 await waitAfterUserInteraction();
                 await waitFor(() => {
-                  const country = getLibraryCountryFromJzodEditorTestCache(INSTANCE_WALK_FINISH_COUNTRY_UUID);
+                  const country = getLibraryCountryFromMlEditorTestCache(INSTANCE_WALK_FINISH_COUNTRY_UUID);
                   expect(country?.name).toEqual("HoistedFinish");
                 });
                 expect(navigateMock).toHaveBeenCalledWith(-1);
@@ -827,7 +827,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                 applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
               },
               tests: async (_expect: ExpectStatic, container: Container) => {
-                upsertLibraryReportInJzodEditorTestCache(buildRunnerMiddleStepClone());
+                upsertLibraryReportInMlEditorTestCache(buildRunnerMiddleStepClone());
                 await waitForHost();
                 await typeStepOne(container, "Testland", "TL");
                 fireEvent.click(screen.getByRole("button", { name: "Next" }));
@@ -852,7 +852,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                 await waitForHost();
                 const leaf = cloneFrozenTracer();
                 leaf.definition.section = leaf.definition.section.definition[0];
-                upsertLibraryReportInJzodEditorTestCache(leaf);
+                upsertLibraryReportInMlEditorTestCache(leaf);
                 await waitFor(() => {
                   expect(screen.getByRole("button", { name: "Finish" })).toBeTruthy();
                   expect(screen.queryByRole("button", { name: "Next" })).toBeNull();
@@ -862,14 +862,14 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                 await waitAfterUserInteraction();
                 expect(screen.getByTestId("multistep-finish-error")).toBeTruthy();
                 expect(screen.getByRole("button", { name: "Finish" })).toBeTruthy();
-                expect(getLibraryCountryFromJzodEditorTestCache()).toBeUndefined();
+                expect(getLibraryCountryFromMlEditorTestCache()).toBeUndefined();
                 expect(navigateMock).not.toHaveBeenCalledWith(-1);
 
                 await typeStepOne(container, "Testland", "TL");
                 fireEvent.click(screen.getByRole("button", { name: "Finish" }));
                 await waitAfterUserInteraction();
                 await waitFor(() => {
-                  const country = getLibraryCountryFromJzodEditorTestCache();
+                  const country = getLibraryCountryFromMlEditorTestCache();
                   expect(country).toBeTruthy();
                   expect(country?.name).toEqual("Testland");
                   expect(country?.uuid).toEqual(LIBRARY_TEST_TRACER_COUNTRY_UUID);
@@ -886,16 +886,16 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
 
 describe("multistepProcess.274", () => {
   afterEach(() => {
-    deleteLibraryCountryFromJzodEditorTestCache();
-    deleteLibraryCountryFromJzodEditorTestCache(INSTANCE_WALK_FINISH_COUNTRY_UUID);
-    deleteLibraryCountryFromJzodEditorTestCache(PRE_EXISTING_COUNTRY_UUID);
-    restoreLibraryMultistepTracerReportInJzodEditorTestCache();
+    deleteLibraryCountryFromMlEditorTestCache();
+    deleteLibraryCountryFromMlEditorTestCache(INSTANCE_WALK_FINISH_COUNTRY_UUID);
+    deleteLibraryCountryFromMlEditorTestCache(PRE_EXISTING_COUNTRY_UUID);
+    restoreLibraryMultistepTracerReportInMlEditorTestCache();
     currentUseParams.reportUuid = MULTISTEP_REPORT_UUID;
     navigateMock.mockClear();
   });
   prepareAndRunTestSuites(
     pageLabel,
-    jzodElementEditorTests,
+    mlElementEditorTests,
     defaultSelfApplicationDeploymentMap,
   );
 });

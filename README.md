@@ -44,7 +44,7 @@ Miroir defined as punchlines for hipsters:
 
 <!-- ### Key Features
 
-✨ **Schema-First Development** - Define your data model using Jzod (Miroir Meta-Language), generate TypeScript types, Zod validators, and database schemas automatically
+✨ **Schema-First Development** - Define your data model using ML (Miroir Meta-Language, derived from Jzod), generate TypeScript types, Zod validators, and database schemas automatically
 
 🔄 **Write Once, Run Anywhere** - Business logic (Queries, Transformers, Actions) runs on client, server, or in-database (SQL)
 
@@ -266,7 +266,7 @@ Documentation organized by role: Executives, Project Managers, Architects, Devel
 ### Layered Domain-Driven Design
 
 ```
-0_interfaces/    → Core types and Jzod schemas
+0_interfaces/    → Core types and ML schemas
 1_core/          → Foundation (tools, constants, domain state)
 2_domain/        → Domain logic (selectors, transformers, templates)
 3_controllers/   → Application controllers

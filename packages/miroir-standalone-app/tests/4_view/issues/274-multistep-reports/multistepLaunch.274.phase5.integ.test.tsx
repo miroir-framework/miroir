@@ -18,14 +18,14 @@ import { ReportPage } from "../../../../src/miroir-fwk/4_view/routes/ReportPage"
 import { reportUrl } from "../../../../src/miroir-fwk/4_view/navigation";
 import type { ReportViewProps } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportHooks";
 import {
-  deleteLibraryCountryFromJzodEditorTestCache,
-  getLibraryCountryFromJzodEditorTestCache,
+  deleteLibraryCountryFromMlEditorTestCache,
+  getLibraryCountryFromMlEditorTestCache,
   LIBRARY_TEST_TRACER_COUNTRY_UUID,
   prepareAndRunTestSuites,
   waitAfterUserInteraction,
   type ReactComponentTestSuitePrep,
   type ReactComponentTestSuites,
-} from "../../JzodElementEditorTestTools";
+} from "../../MlElementEditorTestTools";
 
 const LIBRARY_APPLICATION_UUID = "5af03c98-fe5e-490b-b08f-e1230971c57f";
 const LIBRARY_DEPLOYMENT_UUID = "f714bb2f-a12d-4e71-a03b-74dcedea6eb4";
@@ -195,11 +195,11 @@ const launchPadProps = {
 
 const pageLabel = "multistepLaunch.274.phase5";
 
-const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> = {
+const mlElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> = {
   multistepLaunch: {
     editor: ReportPage,
     wireLocalCacheCompositeAction: true,
-    getJzodEditorTests: (
+    getMlEditorTests: (
       componentUnderTest: React.FC<ReportViewProps>,
     ): ReactComponentTestSuites<ReportViewProps> => {
       return {
@@ -297,7 +297,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
 
                 await waitFor(() => {
                   expect(screen.queryByRole("dialog")).toBeNull();
-                  const country = getLibraryCountryFromJzodEditorTestCache();
+                  const country = getLibraryCountryFromMlEditorTestCache();
                   expect(country).toBeTruthy();
                   expect(country?.name).toEqual("Testland");
                   expect((country as any)?.["iso3166-1Alpha-2"]).toEqual("TL");
@@ -324,7 +324,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                 fireEvent.click(screen.getByRole("button", { name: "Finish" }));
                 await waitAfterUserInteraction();
                 await waitFor(() => {
-                  const country = getLibraryCountryFromJzodEditorTestCache();
+                  const country = getLibraryCountryFromMlEditorTestCache();
                   expect(country?.name).toEqual("RouteFinish");
                 });
                 expect(navigateMock).toHaveBeenCalledWith(-1);
@@ -362,7 +362,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                 await waitFor(() => {
                   expect(screen.queryByTestId("open-report-dialog")).toBeNull();
                 });
-                expect(getLibraryCountryFromJzodEditorTestCache()).toBeUndefined();
+                expect(getLibraryCountryFromMlEditorTestCache()).toBeUndefined();
               },
             },
           },
@@ -374,10 +374,10 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
 
 describe.skipIf(!shouldRun)("multistep reports #274 phase5 — launchers", () => {
   afterEach(() => {
-    deleteLibraryCountryFromJzodEditorTestCache();
+    deleteLibraryCountryFromMlEditorTestCache();
     currentUseParams.reportUuid = LAUNCH_PAD_REPORT_UUID;
     navigateMock.mockClear();
   });
 
-  prepareAndRunTestSuites(pageLabel, jzodElementEditorTests, defaultSelfApplicationDeploymentMap);
+  prepareAndRunTestSuites(pageLabel, mlElementEditorTests, defaultSelfApplicationDeploymentMap);
 });

@@ -2,20 +2,20 @@
   "uuid": "28463869-0408-48f0-b2fd-1aa9ead080ce",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "jzodObjectFlatten",
+  "name": "mlObjectFlatten",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Migrated from UnitTest 912863b2-08d6-4e57-9bdd-9c35b1948403 (Feature #196 Phase 5)",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "jzod.jzodObjectFlatten",
+    "miroirTestLabel": "mls.mlObjectFlatten",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "returns the same object if there is no extend",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodObjectFlatten",
-          "export": "jzodObjectFlatten"
+          "module": "miroir-core/1_core/mls/mlObjectFlatten",
+          "export": "mlObjectFlatten"
         },
         "arguments": [
           {
@@ -42,8 +42,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "flattens a single-level extend",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodObjectFlatten",
-          "export": "jzodObjectFlatten"
+          "module": "miroir-core/1_core/mls/mlObjectFlatten",
+          "export": "mlObjectFlatten"
         },
         "arguments": [
           {
@@ -90,8 +90,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "flattens multi-level extends",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodObjectFlatten",
-          "export": "jzodObjectFlatten"
+          "module": "miroir-core/1_core/mls/mlObjectFlatten",
+          "export": "mlObjectFlatten"
         },
         "arguments": [
           {
@@ -140,8 +140,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "flattens with array of extends",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodObjectFlatten",
-          "export": "jzodObjectFlatten"
+          "module": "miroir-core/1_core/mls/mlObjectFlatten",
+          "export": "mlObjectFlatten"
         },
         "arguments": [
           {
@@ -192,8 +192,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "resolves schemaReferences and flatten recursively",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodObjectFlatten",
-          "export": "jzodObjectFlatten"
+          "module": "miroir-core/1_core/mls/mlObjectFlatten",
+          "export": "mlObjectFlatten"
         },
         "arguments": [
           {
@@ -249,8 +249,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "copies optional, nullable, and tag properties",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodObjectFlatten",
-          "export": "jzodObjectFlatten"
+          "module": "miroir-core/1_core/mls/mlObjectFlatten",
+          "export": "mlObjectFlatten"
         },
         "arguments": [
           {
@@ -294,8 +294,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "resolves reference chains (reference -> reference -> object)",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodObjectFlatten",
-          "export": "jzodObjectFlatten"
+          "module": "miroir-core/1_core/mls/mlObjectFlatten",
+          "export": "mlObjectFlatten"
         },
         "arguments": [
           {
@@ -347,8 +347,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "detects circular references and throws an error",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/jzodObjectFlatten",
-          "export": "jzodObjectFlatten"
+          "module": "miroir-core/1_core/mls/mlObjectFlatten",
+          "export": "mlObjectFlatten"
         },
         "arguments": [
           {

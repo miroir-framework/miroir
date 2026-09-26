@@ -55,9 +55,9 @@ let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerNa
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################
-// Jzod schemas for TransformerTest and TransformerTestSuite
+// ML schemas for TransformerTest and TransformerTestSuite
 
-export const transformerTestJzodSchema = {
+export const transformerTestMlSchema = {
   type: "object",
   definition: {
     transformerTestType: { type: "literal", definition: "transformerTest" },
@@ -80,11 +80,11 @@ export const transformerTestJzodSchema = {
   },
 };
 
-export const transformerTestSuiteJzodSchema = {
+export const transformerTestSuiteMlSchema = {
   type: "union",
   discriminator: "transformerTestType",
   definition: [
-    { type: "schemaReference", definition: { relativePath: "transformerTestJzodSchema" } },
+    { type: "schemaReference", definition: { relativePath: "transformerTestMlSchema" } },
     {
       type: "object",
       definition: {
@@ -94,7 +94,7 @@ export const transformerTestSuiteJzodSchema = {
           type: "record",
           definition: {
             type: "schemaReference",
-            definition: { relativePath: "transformerTestSuiteJzodSchema" },
+            definition: { relativePath: "transformerTestSuiteMlSchema" },
           },
         },
       },

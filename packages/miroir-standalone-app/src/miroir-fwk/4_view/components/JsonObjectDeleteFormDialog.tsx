@@ -6,13 +6,13 @@ import {
   ApplicationSection,
   EntityAttribute,
   EntityInstancesUuidIndex,
-  JzodObject,
+  MlObject,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
   Uuid,
   defaultSelfApplicationDeploymentMap,
-  jzodTypeCheck,
+  mlsTypeCheck,
   type ApplicationDeploymentMap,
   type MiroirModelEnvironment
 } from "miroir-core";
@@ -54,7 +54,7 @@ export interface JsonObjectDeleteFormCoreDialogProps {
   label?: string,
   defaultFormValuesObject: any,
   deleteObjectdialogFormIsOpen: boolean,
-  mlSchema: JzodObject,
+  mlSchema: MlObject,
   isAttributes?: boolean,
   currentApplication: Uuid,
   currentApplicationDeploymentMap: ApplicationDeploymentMap,
@@ -123,13 +123,13 @@ export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps)
 
   const formIsOpen = props.deleteObjectdialogFormIsOpen || (!props.showButton && props.isOpen);
 
-  const resolvedJzodSchema = useMemo(
+  const resolvedMlSchema = useMemo(
     () =>
-      currentModelEnvironment.miroirFundamentalJzodSchema &&
+      currentModelEnvironment.miroirFundamentalMlSchema &&
       props.mlSchema &&
       props.defaultFormValuesObject &&
       props.currentAppModel
-        ? jzodTypeCheck(
+        ? mlsTypeCheck(
             props.mlSchema,
             props.defaultFormValuesObject,
             [], // currentValuePath
@@ -138,15 +138,15 @@ export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps)
             {}
           )
         : undefined,
-    [props, currentModelEnvironment.miroirFundamentalJzodSchema]
+    [props, currentModelEnvironment.miroirFundamentalMlSchema]
   );
   // log.info(
-  //   "JsonObjectDeleteFormDialog called jzodTypeCheck for valueObject",
+  //   "JsonObjectDeleteFormDialog called mlsTypeCheck for valueObject",
   //   props.defaultFormValuesObject,
   //   "mlSchema",
   //   props.mlSchema,
-  //   " resolvedJzodSchema",
-  //   resolvedJzodSchema
+  //   " resolvedMlSchema",
+  //   resolvedMlSchema
   // );
 
   // ##############################################################################################

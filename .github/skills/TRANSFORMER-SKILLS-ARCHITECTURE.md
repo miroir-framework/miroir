@@ -52,7 +52,7 @@ The workflows are **fundamentally different** enough that maintaining separate s
 - ✅ Don't need SQL execution
 - ✅ Creating application-specific business logic
 
-**Examples**: `spreadSheetToJzodSchema`, format conversions, data pipelines
+**Examples**: `spreadSheetToMlSchema`, format conversions, data pipelines
 
 ## Quick Comparison
 
@@ -80,7 +80,7 @@ The workflows are **fundamentally different** enough that maintaining separate s
 1. `a557419d-a288-4fb8-8a1e-971c86c113b8/<uuid>.json` - Definition
 2. `TransformersForRuntime.ts` - Handler + 2 registrations
 3. `Transformers.ts` - Export + registration
-4. `getMiroirFundamentalJzodSchema.ts` - Schema registration (2 entries + dependency)
+4. `getMiroirFundamentalMlSchema.ts` - Schema registration (2 entries + dependency)
 5. `generate-ts-types.ts` - Type generation (4 entries)
 6. `a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` - Tests (`miroirTest_miroirCoreTransformers`)
 

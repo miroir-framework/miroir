@@ -17,7 +17,7 @@ import {
   reportBookListSectionPath,
   setPanelElementTransformerType,
 } from "./helpers/listTransformerIntegRig.js";
-import { waitForProgressiveRendering } from "./JzodElementEditorTestTools.js";
+import { waitForProgressiveRendering } from "./MlElementEditorTestTools.js";
 import { TableComponentTypeSchema } from "../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGridInterface.js";
 import {
   deployment_Library_DO_NO_USE,

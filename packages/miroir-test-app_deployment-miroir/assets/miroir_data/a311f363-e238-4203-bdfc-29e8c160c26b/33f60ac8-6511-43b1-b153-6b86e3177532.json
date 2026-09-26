@@ -528,7 +528,7 @@
                     "transformer": {
                       "transformerType": "constantAsExtractor",
                       "interpolation": "runtime",
-                      "valueJzodSchema": {
+                      "valueMlSchema": {
                         "type": "object",
                         "definition": {
                           "test": {
@@ -552,7 +552,7 @@
                     "transformer": {
                       "transformerType": "constantAsExtractor",
                       "interpolation": "runtime",
-                      "valueJzodSchema": {
+                      "valueMlSchema": {
                         "type": "object",
                         "definition": {
                           "uuid": {
@@ -657,7 +657,7 @@
                     "transformer": {
                       "transformerType": "constantAsExtractor",
                       "interpolation": "runtime",
-                      "valueJzodSchema": {
+                      "valueMlSchema": {
                         "type": "array",
                         "definition": {
                           "type": "object",
@@ -4471,7 +4471,7 @@
                   "applyTo": {
                     "transformerType": "constantAsExtractor",
                     "interpolation": "runtime",
-                    "valueJzodSchema": {
+                    "valueMlSchema": {
                       "type": "array",
                       "definition": {
                         "type": "string"
@@ -4499,7 +4499,7 @@
                   "applyTo": {
                     "transformerType": "constantAsExtractor",
                     "interpolation": "runtime",
-                    "valueJzodSchema": {
+                    "valueMlSchema": {
                       "type": "array",
                       "definition": {
                         "type": "object",
@@ -4678,7 +4678,7 @@
                   "applyTo": {
                     "transformerType": "constantAsExtractor",
                     "interpolation": "runtime",
-                    "valueJzodSchema": {
+                    "valueMlSchema": {
                       "type": "array",
                       "definition": {
                         "type": "object",
@@ -4830,7 +4830,7 @@
                   "applyTo": {
                     "transformerType": "constantAsExtractor",
                     "interpolation": "runtime",
-                    "valueJzodSchema": {
+                    "valueMlSchema": {
                       "type": "array",
                       "definition": {
                         "type": "string"
@@ -4860,7 +4860,7 @@
                   "applyTo": {
                     "transformerType": "constantAsExtractor",
                     "interpolation": "runtime",
-                    "valueJzodSchema": {
+                    "valueMlSchema": {
                       "type": "array",
                       "definition": {
                         "type": "object",
@@ -5963,7 +5963,7 @@
                   "applyTo": {
                     "transformerType": "constantAsExtractor",
                     "interpolation": "runtime",
-                    "valueJzodSchema": {
+                    "valueMlSchema": {
                       "type": "object",
                       "definition": {
                         "uuid": {
@@ -7499,15 +7499,15 @@
           },
           {
             "miroirTestType": "miroirTestSuite",
-            "miroirTestLabel": "ansiColumnsToJzodSchema",
+            "miroirTestLabel": "ansiColumnsToMlSchema",
             "skip": false,
             "miroirTests": [
               {
                 "miroirTestType": "transformerTest",
-                "miroirTestLabel": "ansiColumnsToJzodSchema converts basic column types to a Jzod object schema",
-                "transformerName": "ansiColumnsToJzodSchema",
+                "miroirTestLabel": "ansiColumnsToMlSchema converts basic column types to a ML object schema",
+                "transformerName": "ansiColumnsToMlSchema",
                 "transformer": {
-                  "transformerType": "ansiColumnsToJzodSchema",
+                  "transformerType": "ansiColumnsToMlSchema",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "getFromContext",
@@ -7615,10 +7615,10 @@
               },
               {
                 "miroirTestType": "transformerTest",
-                "miroirTestLabel": "ansiColumnsToJzodSchema sorts columns by ordinal_position",
-                "transformerName": "ansiColumnsToJzodSchema",
+                "miroirTestLabel": "ansiColumnsToMlSchema sorts columns by ordinal_position",
+                "transformerName": "ansiColumnsToMlSchema",
                 "transformer": {
-                  "transformerType": "ansiColumnsToJzodSchema",
+                  "transformerType": "ansiColumnsToMlSchema",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "getFromContext",
@@ -7681,10 +7681,10 @@
               },
               {
                 "miroirTestType": "transformerTest",
-                "miroirTestLabel": "ansiColumnsToJzodSchema fails for unsupported data_type",
-                "transformerName": "ansiColumnsToJzodSchemaFailed",
+                "miroirTestLabel": "ansiColumnsToMlSchema fails for unsupported data_type",
+                "transformerName": "ansiColumnsToMlSchemaFailed",
                 "transformer": {
-                  "transformerType": "ansiColumnsToJzodSchema",
+                  "transformerType": "ansiColumnsToMlSchema",
                   "interpolation": "runtime",
                   "applyTo": {
                     "transformerType": "getFromContext",

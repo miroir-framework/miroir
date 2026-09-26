@@ -14,7 +14,7 @@ import {
   getMiroirFundamentalSchemaForDeployment,
   MiroirActivityTracker,
   MiroirEventService,
-  miroirFundamentalJzodSchema,
+  miroirFundamentalMlSchema,
   resolveFundamentalSchemaForDeployment,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
@@ -161,10 +161,10 @@ describe("useCurrentModelEnvironment (Phase 1)", () => {
 
     await waitFor(() => {
       expect(capturedEnv).toBeDefined();
-      expect(capturedEnv!.miroirFundamentalJzodSchema).toBe(
+      expect(capturedEnv!.miroirFundamentalMlSchema).toBe(
         getMiroirFundamentalSchemaForDeployment(deployment_Miroir.uuid, capturedEnv!.currentModel),
       );
-      expect(capturedEnv!.miroirFundamentalJzodSchema).toBe(miroirFundamentalJzodSchema);
+      expect(capturedEnv!.miroirFundamentalMlSchema).toBe(miroirFundamentalMlSchema);
     });
   });
 
@@ -189,7 +189,7 @@ describe("useCurrentModelEnvironment (Phase 1)", () => {
 
     await waitFor(() => {
       expect(capturedContext?.schemasPerDeployment[deployment_Miroir.uuid]).toBe(
-        miroirFundamentalJzodSchema,
+        miroirFundamentalMlSchema,
       );
     });
   });
@@ -241,7 +241,7 @@ describe("useCurrentModelEnvironment (Phase 1)", () => {
       expect(capturedContext?.schemaReloadRequired).toBe(true);
       expect(schemaSpy.mock.calls.length).toBe(callsAfterMount);
       expect(capturedContext?.schemasPerDeployment[deployment_Miroir.uuid]).toBe(
-        miroirFundamentalJzodSchema,
+        miroirFundamentalMlSchema,
       );
     });
   });
@@ -409,7 +409,7 @@ describe("useCurrentModelEnvironment (Phase 199 — schemaRevision policy)", () 
           defaultLibraryAppModel.applicationUuid,
           applicationDeploymentMap,
         );
-        capturedLibrarySchema = env.miroirFundamentalJzodSchema;
+        capturedLibrarySchema = env.miroirFundamentalMlSchema;
         return env;
       },
       {
@@ -478,12 +478,12 @@ describe("useCurrentModelEnvironment (Phase 199 — schemaRevision policy)", () 
     );
 
     await waitFor(() => {
-      expect(capturedEnv?.miroirFundamentalJzodSchema).toBeDefined();
+      expect(capturedEnv?.miroirFundamentalMlSchema).toBeDefined();
       expect(resolveSpy.mock.calls.length).toBeGreaterThan(0);
     });
 
     const callsAfterMount = resolveSpy.mock.calls.length;
-    const schemaBefore = capturedEnv!.miroirFundamentalJzodSchema;
+    const schemaBefore = capturedEnv!.miroirFundamentalMlSchema;
 
     act(() => {
       store.dispatch({
@@ -499,7 +499,7 @@ describe("useCurrentModelEnvironment (Phase 199 — schemaRevision policy)", () 
 
     await waitFor(() => {
       expect(resolveSpy.mock.calls.length).toBe(callsAfterMount);
-      expect(capturedEnv!.miroirFundamentalJzodSchema).toBe(schemaBefore);
+      expect(capturedEnv!.miroirFundamentalMlSchema).toBe(schemaBefore);
     });
   });
 

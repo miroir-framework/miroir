@@ -1,0 +1,151 @@
+
+import { FormikProps } from "formik";
+import {
+  ApplicationSection,
+  EntityInstance,
+  EntityInstancesUuidIndex,
+  MlElement,
+  MlUnion,
+  MlUnion_RecursivelyUnfold_ReturnType,
+  MlUnion_RecursivelyUnfold_ReturnTypeOK,
+  KeyMapEntry,
+  Uuid,
+  type ApplicationDeploymentMap
+} from "miroir-core";
+import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
+
+export interface UnionInformation {
+  unfoldedRawSchema: MlUnion;
+  resolvedElementMlSchema: MlElement | undefined;
+  objectBranches: MlElement[];
+  discriminator: string;
+  discriminatorValues: string[];
+}
+
+export interface MlEditorPropsRoot {
+  // basic display properties
+  hidden?: boolean; // used to control visibility of the editor
+  valueObjectEditMode: ValueObjectEditMode,
+  existingObject?: boolean; // used to control if the editor is for an existing object or a new one
+  readOnly?: boolean; // used to switch between editable and read-only display modes
+  labelElement?: JSX.Element; // used to display a label in the editor
+  // environment
+  currentApplication: Uuid,
+  applicationDeploymentMap: ApplicationDeploymentMap;
+  currentDeploymentUuid?: Uuid,
+  currentApplicationSection?: ApplicationSection;
+  name: string;
+  listKey: string;
+  rootLessListKey: string;
+  rootLessListKeyArray: (string | number)[];
+  reportSectionPathAsString: string;
+  initialFormState?: any;
+  typeCheckKeyMap: Record<string, KeyMapEntry> | undefined;
+  // objects
+  foreignKeyObjects: Record<string, EntityInstancesUuidIndex>; // prop drilling: for uuid / objects only
+  returnsEmptyElement?: boolean; // used to force the editor to return an empty element
+  // any
+  isTopLevel?: boolean; // used to control if the editor is an inner editor (used for any type)
+  insideAny: boolean;
+  anyRootLessListKey: string | undefined; // gives the rootLessListKey of the root element with type `any`, which typeCheckKeyMap contains the resolved schema for the value
+  optional?: boolean; // used to control if the displayed element can be removed or not
+  deleteButtonElement?: JSX.Element; // used to display a delete button in the editor
+  hasTypeError?: boolean; // used to control if the editor has a type error or not
+  // error highlighting
+  displayError?: {
+    errorPath: string[]; // Path to element that should be highlighted with red border due to error
+    errorMessage: string; // Error message to display as tooltip or title
+  };
+  /** #251 — orange warning on transformer nodes whose path matches. */
+  compatibilityWarnings?: { path: (string | number)[]; title: string }[];
+  showMlSchemaTypes?: boolean;
+  mlSchemaTypeAnnotations?: { path: (string | number)[]; label: string }[];
+  /** Per-path getFromContext / getFromParameters names. */
+  environmentAnnotations?: { path: (string | number)[]; label: string }[];
+  // external field change observation
+  onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>; // callbacks indexed by rootLessListKey for selective field observation
+}
+
+// ################################################################################################
+export interface MlElementEditorProps extends MlEditorPropsRoot {
+  forceTestingMode?: boolean;
+  unresolvedMlSchema?: MlElement | undefined;
+  indentLevel: number;
+  submitButton?: JSX.Element; // used to display a submit button in the editor
+  extraToolsButtons?: JSX.Element; // used to display extra tool buttons on the title line
+  maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
+}
+
+// ################################################################################################
+export interface MlArrayEditorProps extends MlEditorPropsRoot {
+  currentDeploymentUuid?: Uuid,
+  currentApplicationSection?: ApplicationSection;
+  indentLevel?: number;
+  itemsOrder: any[];
+  displayAsStructuredElementSwitch?: JSX.Element; // used to display switches in the editor
+  extraToolsButtons?: JSX.Element; // used to display extra tool buttons on the title line
+  maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
+}
+
+// #################################################################################################
+export interface MlEnumEditorProps extends MlEditorPropsRoot {
+  enumValues: string[];
+  forceTestingMode?: boolean;
+}
+
+// #################################################################################################
+export interface MlLiteralEditorProps extends MlEditorPropsRoot {
+  hasPathError?: boolean;
+}
+
+// #################################################################################################
+export interface MlAnyEditorProps extends MlElementEditorProps {
+  submitButton?: JSX.Element; // used to display a submit button in the editor
+
+  // visible?: boolean;
+}
+
+// #################################################################################################
+/**
+ * @interface MlObjectEditorProps
+ * Props for the MlObjectEditor component.
+ * @extends MlEditorPropsRoot
+ * @property {number} [indentLevel] - Optional indent level for nested objects.
+ * @property {JSX.Element} [deleteButtonElement] - Optional delete button element to display in the editor.
+ * @property {JSX.Element} [displayAsStructuredElementSwitch] - Optional switch element to toggle structured display.
+ * @property {JSX.Element} [mlSchemaTooltip] - Optional tooltip element to display the raw ML schema.
+ * @property {number} [maxRenderDepth] - Optional max depth for initial rendering, default is 1.
+ * @property {JSX.Element} [extraToolsButtons] - Optional extra tool buttons to display on the title line.
+ */
+export interface MlObjectEditorProps extends MlEditorPropsRoot {
+  indentLevel?: number;
+  deleteButtonElement?: JSX.Element; // used to display a delete button in the editor
+  displayAsStructuredElementSwitch?: JSX.Element; // used to display switches in the editor
+  mlSchemaTooltip?: JSX.Element; // used to display the actual raw ML schema as a tooltip
+  maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
+  extraToolsButtons?: JSX.Element; // used to display extra tool buttons on the title line
+}
+
+// #####################################################################################################
+export type MlElementEditorReactCodeMirrorProps = {
+  initialValue: any;
+  // rawMlSchema: MlElement;
+  // formik: any; // Formik instance
+  labelElement?: JSX.Element; // used to display a label in the editor
+  formikRootLessListKey: string;
+  codeMirrorValue: string;
+  setCodeMirrorValue: React.Dispatch<React.SetStateAction<string>>;
+  codeMirrorIsValidJson: boolean;
+  setCodeMirrorIsValidJson: React.Dispatch<React.SetStateAction<boolean>>;
+  rootLessListKey: string;
+  rootLessListKeyArray: (string | number)[];
+  isUnderTest?: boolean; // codemirror issue with vitest https://github.com/miroir-framework/miroir/issues/56
+  hidden?: boolean; // used to control visibility of the editor 
+  insideAny?: boolean; // used to control visibility of the editor
+  displayAsStructuredElementSwitch?: JSX.Element;
+  mlSchemaTooltip?: JSX.Element; // used to display the actual raw ML schema as a tooltip
+  readOnly?: boolean; // NEW: if true, display as read-only code block
+  // displayAsCode?: boolean; // used to display the editor as a structured element, not as code editor  
+};
+
+

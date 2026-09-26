@@ -1,11 +1,11 @@
 import { optional } from "zod";
 import { TransformerDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-// export const transformer_spreadSheetToJzodSchema: TransformerDefinition = {
+// export const transformer_spreadSheetToMlSchema: TransformerDefinition = {
 //   uuid: "f1dc903c-19b5-4903-91dd-4f78ffa42929",
-//   name: "spreadSheetToJzodSchema",
-//   defaultLabel: "spreadSheetToJzodSchema",
-//   description: "Transform a spreadsheet into a Jzod schema",
+//   name: "spreadSheetToMlSchema",
+//   defaultLabel: "spreadSheetToMlSchema",
+//   description: "Transform a spreadsheet into a ML schema",
 //   parentUuid: "a557419d-a288-4fb8-8a1e-971c86c113b8",
 //   parentDefinitionVersionUuid: "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
 //   parentName: "TransformerDefinition",
@@ -13,7 +13,7 @@ import { TransformerDefinition } from "../0_interfaces/1_core/preprocessor-gener
 //     transformerParameterSchema: {
 //       transformerType: {
 //         type: "literal",
-//         definition: "spreadSheetToJzodSchema",
+//         definition: "spreadSheetToMlSchema",
 //       },
 //       transformerDefinition: {
 //         type: "object",
@@ -48,7 +48,7 @@ import { TransformerDefinition } from "../0_interfaces/1_core/preprocessor-gener
 //         type: "schemaReference",
 //         definition: {
 //           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-//           relativePath: "jzodElement",
+//           relativePath: "mlElement",
 //         },
 //       }
 //     },

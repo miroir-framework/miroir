@@ -1,6 +1,6 @@
-import { JzodReference, type JzodElement } from "../1_core/preprocessor-generated/miroirFundamentalType";
+import { MlReference, type MlElement } from "../1_core/preprocessor-generated/miroirFundamentalType";
 
-export const testAssertionResult: JzodElement = {
+export const testAssertionResult: MlElement = {
   type: "object",
   definition: {
     assertionName: {
@@ -22,7 +22,7 @@ export const testAssertionResult: JzodElement = {
     },
   },
 };
-export const testAssertionsResults: JzodElement = {
+export const testAssertionsResults: MlElement = {
   type: "record",
   definition: {
     type: "schemaReference",
@@ -32,7 +32,7 @@ export const testAssertionsResults: JzodElement = {
   },
 };
 
-export const testResult: JzodElement = {
+export const testResult: MlElement = {
   type: "object",
   definition: {
     testLabel: {
@@ -54,7 +54,7 @@ export const testResult: JzodElement = {
   },
 };
 
-export const testsResults: JzodElement = {
+export const testsResults: MlElement = {
   type: "record",
   definition: {
     type: "schemaReference",
@@ -64,7 +64,7 @@ export const testsResults: JzodElement = {
   },
 };
 
-export const innerTestSuitesResults: JzodElement = {
+export const innerTestSuitesResults: MlElement = {
   type: "record",
   definition: {
     type: "schemaReference",
@@ -74,7 +74,7 @@ export const innerTestSuitesResults: JzodElement = {
   },
 };
 
-export const testSuiteResult: JzodElement = {
+export const testSuiteResult: MlElement = {
   type: "object",
   definition: {
     testsResults: {
@@ -91,7 +91,7 @@ export const testSuiteResult: JzodElement = {
 };
 
 
-export const testSuitesResults: JzodReference = {
+export const testSuitesResults: MlReference = {
   type: "schemaReference",
   context: {
     testAssertionResult,

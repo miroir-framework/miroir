@@ -14,9 +14,9 @@ import {
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 
-import { zodParseErrorJzodSchema } from "../../src/0_interfaces/1_core/zodParseError";
+import { zodParseErrorMlSchema } from "../../src/0_interfaces/1_core/zodParseError";
 import zodParseErrorExample from "./zodParseErrorExample.json";
-import { zodErrorDeepestIssueLeaves, zodErrorFirstIssueLeaf } from "../../src/1_core/jzod/zodParseErrorHandler";
+import { zodErrorDeepestIssueLeaves, zodErrorFirstIssueLeaf } from "../../src/1_core/mls/zodParseErrorHandler";
 
 describe("zodParseError", () => {
   it("zodParseError type parses actual Zod parse error example", () => {
@@ -36,7 +36,7 @@ describe("zodParseError", () => {
   });
 
   it("zodParseError type parses actual error", () => {
-    const zodParseErrorZodSchema = jzodToZod(zodParseErrorJzodSchema as any);
+    const zodParseErrorZodSchema = jzodToZod(zodParseErrorMlSchema as any);
     zodParseErrorZodSchema.parse(zodParseErrorExample);
   });
 

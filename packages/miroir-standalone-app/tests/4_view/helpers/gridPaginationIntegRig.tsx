@@ -31,7 +31,7 @@ import {
   ListTransformerIntegShell,
 } from "./listTransformerIntegRig.js";
 
-import { getWrapperLoadingLocalCache } from "../JzodElementEditorTestTools.js";
+import { getWrapperLoadingLocalCache } from "../MlElementEditorTestTools.js";
 
 vi.mock("../../../src/miroir-fwk/4_view/components/JsonObjectEditFormDialog.js", () => ({
   JsonObjectEditFormDialog: () => null,

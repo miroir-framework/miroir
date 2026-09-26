@@ -15,7 +15,7 @@ import {
   TransformerFailure,
   Uuid,
   type ApplicationDeploymentMap,
-  type JzodObject,
+  type MlObject,
 } from "miroir-core";
 
 import { useFormikContext } from 'formik';
@@ -754,7 +754,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
             }
             inputMLSchema={
               (multistepHost?.resolvedInputSchema ??
-                reportSectionDefinitionFromFormik.definition.inputMLSchema) as JzodObject
+                reportSectionDefinitionFromFormik.definition.inputMLSchema) as MlObject
             }
             urlParamFields={reportSectionDefinitionFromFormik.definition.urlParamFields}
             application={props.application}

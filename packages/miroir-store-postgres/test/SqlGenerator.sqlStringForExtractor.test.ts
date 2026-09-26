@@ -15,7 +15,7 @@ function makeModelEnv(
   return {
     currentModel: { entityVersions: entityDefinitions } as any,
     endpointsByUuid: {},
-    miroirFundamentalJzodSchema: {} as any,
+    miroirFundamentalMlSchema: {} as any,
   } as unknown as MiroirModelEnvironment;
 }
 

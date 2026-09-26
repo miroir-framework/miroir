@@ -11,7 +11,7 @@ import {
   defaultMiroirModelEnvironment,
   entityDefinitionsByEntityName,
 } from "../../src/index.js";
-import { jzodObjectFlatten } from "../../src/1_core/jzod/jzodObjectFlatten.js";
+import { mlObjectFlatten } from "../../src/1_core/mls/mlObjectFlatten.js";
 import { defaultMiroirMetaModel } from "../../../miroir-test-app_deployment-miroir/src/Model.js";
 
 const REPO_ROOT = join(import.meta.dirname, "../../../..");
@@ -91,7 +91,7 @@ describe("Entity meta scope and logicalDataModel", () => {
 
   it("model validation accepts versioning entity rows against Entity schema", () => {
     const entitySchema = entityDefinitionsByEntityName(defaultMiroirMetaModel).Entity?.mlSchema;
-    const flattened = jzodObjectFlatten(entitySchema as any, defaultMiroirModelEnvironment);
+    const flattened = mlObjectFlatten(entitySchema as any, defaultMiroirModelEnvironment);
     expect(flattened.definition.scope).toBeDefined();
 
     const entityVersionRow = defaultMiroirMetaModel.entities.find((e) => e.name === "EntityVersion");

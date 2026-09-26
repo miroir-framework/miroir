@@ -152,7 +152,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
     console.log(`  - Menus: ${libraryMetaModel.menus.length}`);
     console.log(`  - Reports: ${libraryMetaModel.reports.length}`);
     console.log(`  - Runners: ${libraryMetaModel.runners.length}`);
-    console.log(`  - Jzod Schemas: ${libraryMetaModel.jzodSchemas.length}`);
+    console.log(`  - ML Schemas: ${libraryMetaModel.mlSchemas.length}`);
     console.log(`  - Stored Queries: ${libraryMetaModel.storedQueries.length}`);
     console.log(`  - Application Versions: ${libraryMetaModel.applicationVersions.length}`);
     console.log(`  - Themes: ${libraryMetaModel.themes.length}`);

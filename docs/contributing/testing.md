@@ -108,7 +108,7 @@ npm run testByFile -w miroir-core -- tests/1_core/instanceProjectionSchema.unit.
 npm run testByFile -w miroir-core -- tests/4_services/PersistenceStoreController.projection.unit.test.ts
 ```
 
-After changing Query / Endpoint Jzod for `attributes` (or any fundamental schema), rebuild before these tests:
+After changing Query / Endpoint ML schemas for `attributes` (or any fundamental schema), rebuild before these tests:
 
 ```bash
 npm run build -w miroir-test-app_deployment-miroir
@@ -173,16 +173,16 @@ npm run testByFile -w miroir-standalone-app -- ExtractorPersistenceStoreRunner.i
 
 Full catalogue: [reference/testing.md](../reference/testing.md#running-app-stack-integration-tests-testbyfile).
 
-### JzodElementEditor component tests
+### MlElementEditor component tests
 
-The Jzod schema editor cases are MiroirTests (#286) written as declarative JSON (#292). There is one instance per editor (`JzodEnumEditor_ComponentTestSuite`, `JzodArrayEditor_ComponentTestSuite`, `JzodLiteralEditor_ComponentTestSuite`, `JzodObjectEditor_ComponentTestSuite`, `JzodSimpleTypeEditor_ComponentTestSuite`, `JzodUnionEditor_ComponentTestSuite`, `JzodAnyEditor_ComponentTestSuite`; 68 cases in all). Each instance has one `reactComponentTestSuite` node, which names the rendered component and its default props, and one `reactComponentTest` leaf per case, with its own props and a list of steps (`click`, `change`, `selectOption`, `expectRenderedValues`, `expectElement`, …). The vitest entry `tests/4_view/miroir-component-tests.unit.test.tsx` runs them:
+The ML schema editor cases are MiroirTests (#286) written as declarative JSON (#292). There is one instance per editor (`MlEnumEditor_ComponentTestSuite`, `MlArrayEditor_ComponentTestSuite`, `MlLiteralEditor_ComponentTestSuite`, `MlObjectEditor_ComponentTestSuite`, `MlSimpleTypeEditor_ComponentTestSuite`, `MlUnionEditor_ComponentTestSuite`, `MlAnyEditor_ComponentTestSuite`; 68 cases in all). Each instance has one `reactComponentTestSuite` node, which names the rendered component and its default props, and one `reactComponentTest` leaf per case, with its own props and a list of steps (`click`, `change`, `selectOption`, `expectRenderedValues`, `expectElement`, …). The vitest entry `tests/4_view/miroir-component-tests.unit.test.tsx` runs them:
 
 ```bash
 # All 68 cases, plus 2 entry checks. No --profile and no Postgres (in-memory LocalCache).
 npm run testByFile -w miroir-standalone-app -- miroir-component-tests
 
 # One editor
-npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "JzodObjectEditor"
+npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "MlObjectEditor"
 
 # After a change to an instance JSON in miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-…/
 npm run build -w miroir-test-app_deployment-miroir
@@ -192,7 +192,7 @@ npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency
 
 To add a case, add a leaf to the editor's instance JSON, labelled `<editor>: <case>`, and add its line to `tests/4_view/issues/292-declarative-react-component-tests/baseline-component-cases.txt` (and the new count to the vitest entry). A failing step reports `step <n> (<kind> "<label>"): <message>`.
 
-The same cases run in the app: open one of the instances in the Miroir Tests report and click the unit Run button. Each case renders in a sandbox panel with its own `LocalCache`. The instance format, the step vocabulary, the targets, and the waiting rule are in [reference/testing.md § JzodElementEditor component tests](../reference/testing.md#jzodelementeditor-component-tests).
+The same cases run in the app: open one of the instances in the Miroir Tests report and click the unit Run button. Each case renders in a sandbox panel with its own `LocalCache`. The instance format, the step vocabulary, the targets, and the waiting rule are in [reference/testing.md § MlElementEditor component tests](../reference/testing.md#mlelementeditor-component-tests).
 
 ### MiroirTestDisplay UI integration launch (B6-d1)
 

@@ -174,7 +174,7 @@ describe("listSelfApplicationUuidPaths (T1)", () => {
         entities: [],
         entityVersions: [],
         endpoints: [],
-        jzodSchemas: [],
+        mlSchemas: [],
         menus: [],
         storedQueries: [],
         reports: [],

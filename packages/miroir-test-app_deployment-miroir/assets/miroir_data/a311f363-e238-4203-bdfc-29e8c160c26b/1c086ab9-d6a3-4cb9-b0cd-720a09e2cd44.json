@@ -2,20 +2,20 @@
   "uuid": "1c086ab9-d6a3-4cb9-b0cd-720a09e2cd44",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "jzodToCopilotKitParameter",
+  "name": "mlsToCopilotKitParameter",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Migrated from UnitTest b2e3f4a5-c6d7-4e8f-9a0b-1c2d3e4f5a6b (Feature #196 Phase 5)",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "jzod.jzodToCopilotKitParameter",
+    "miroirTestLabel": "mls.mlsToCopilotKitParameter",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "converts string type",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToCopilotKitParameter",
-          "export": "jzodToCopilotKitParameter"
+          "module": "miroir-core/1_core/mls/MlsToCopilotKitParameter",
+          "export": "mlsToCopilotKitParameter"
         },
         "arguments": [
           "label",
@@ -32,8 +32,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "converts number type",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToCopilotKitParameter",
-          "export": "jzodToCopilotKitParameter"
+          "module": "miroir-core/1_core/mls/MlsToCopilotKitParameter",
+          "export": "mlsToCopilotKitParameter"
         },
         "arguments": [
           "count",
@@ -50,8 +50,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "converts boolean type",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToCopilotKitParameter",
-          "export": "jzodToCopilotKitParameter"
+          "module": "miroir-core/1_core/mls/MlsToCopilotKitParameter",
+          "export": "mlsToCopilotKitParameter"
         },
         "arguments": [
           "active",
@@ -68,8 +68,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "converts uuid type to string",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToCopilotKitParameter",
-          "export": "jzodToCopilotKitParameter"
+          "module": "miroir-core/1_core/mls/MlsToCopilotKitParameter",
+          "export": "mlsToCopilotKitParameter"
         },
         "arguments": [
           "id",
@@ -86,8 +86,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "marks optional fields with required: false",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToCopilotKitParameter",
-          "export": "jzodToCopilotKitParameter"
+          "module": "miroir-core/1_core/mls/MlsToCopilotKitParameter",
+          "export": "mlsToCopilotKitParameter"
         },
         "arguments": [
           "note",
@@ -106,8 +106,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "does not set required for non-optional fields",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToCopilotKitParameter",
-          "export": "jzodToCopilotKitParameter"
+          "module": "miroir-core/1_core/mls/MlsToCopilotKitParameter",
+          "export": "mlsToCopilotKitParameter"
         },
         "arguments": [
           "title",
@@ -124,8 +124,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "passes description through",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToCopilotKitParameter",
-          "export": "jzodToCopilotKitParameter"
+          "module": "miroir-core/1_core/mls/MlsToCopilotKitParameter",
+          "export": "mlsToCopilotKitParameter"
         },
         "arguments": [
           "label",
@@ -144,8 +144,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "converts enum type to string with enum array",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToCopilotKitParameter",
-          "export": "jzodToCopilotKitParameter"
+          "module": "miroir-core/1_core/mls/MlsToCopilotKitParameter",
+          "export": "mlsToCopilotKitParameter"
         },
         "arguments": [
           "status",
@@ -172,8 +172,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "converts literal type to string with single-value enum",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToCopilotKitParameter",
-          "export": "jzodToCopilotKitParameter"
+          "module": "miroir-core/1_core/mls/MlsToCopilotKitParameter",
+          "export": "mlsToCopilotKitParameter"
         },
         "arguments": [
           "kind",
@@ -194,8 +194,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "converts all-literal union to string with enum",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToCopilotKitParameter",
-          "export": "jzodToCopilotKitParameter"
+          "module": "miroir-core/1_core/mls/MlsToCopilotKitParameter",
+          "export": "mlsToCopilotKitParameter"
         },
         "arguments": [
           "role",
@@ -231,8 +231,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "converts object type to object parameter with attributes",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToCopilotKitParameter",
-          "export": "jzodToCopilotKitParameter"
+          "module": "miroir-core/1_core/mls/MlsToCopilotKitParameter",
+          "export": "mlsToCopilotKitParameter"
         },
         "arguments": [
           "address",
@@ -269,8 +269,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "converts array of strings to string[]",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToCopilotKitParameter",
-          "export": "jzodToCopilotKitParameter"
+          "module": "miroir-core/1_core/mls/MlsToCopilotKitParameter",
+          "export": "mlsToCopilotKitParameter"
         },
         "arguments": [
           "tags",
@@ -290,8 +290,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "converts array of numbers to number[]",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToCopilotKitParameter",
-          "export": "jzodToCopilotKitParameter"
+          "module": "miroir-core/1_core/mls/MlsToCopilotKitParameter",
+          "export": "mlsToCopilotKitParameter"
         },
         "arguments": [
           "scores",
@@ -311,8 +311,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "converts array of booleans to boolean[]",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToCopilotKitParameter",
-          "export": "jzodToCopilotKitParameter"
+          "module": "miroir-core/1_core/mls/MlsToCopilotKitParameter",
+          "export": "mlsToCopilotKitParameter"
         },
         "arguments": [
           "flags",
@@ -332,8 +332,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "converts array of objects to object[] with attributes",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToCopilotKitParameter",
-          "export": "jzodToCopilotKitParameter"
+          "module": "miroir-core/1_core/mls/MlsToCopilotKitParameter",
+          "export": "mlsToCopilotKitParameter"
         },
         "arguments": [
           "items",
@@ -371,8 +371,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "resolves schemaReference from outer context",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToCopilotKitParameter",
-          "export": "jzodToCopilotKitParameter"
+          "module": "miroir-core/1_core/mls/MlsToCopilotKitParameter",
+          "export": "mlsToCopilotKitParameter"
         },
         "arguments": [
           "amount",
@@ -397,8 +397,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "resolves schemaReference from inline context on element",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodToCopilotKitParameter",
-          "export": "jzodToCopilotKitParameter"
+          "module": "miroir-core/1_core/mls/MlsToCopilotKitParameter",
+          "export": "mlsToCopilotKitParameter"
         },
         "arguments": [
           "payload",

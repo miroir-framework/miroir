@@ -25,7 +25,7 @@ import type {
   Deployment,
   EndpointDefinition,
   EntityInstance,
-  JzodObject,
+  MlObject,
   Report,
   StoreUnitConfiguration,
 } from "miroir-core";
@@ -41,7 +41,7 @@ import {
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
   getReportsAndEntitiesForDeploymentUuid,
-  jzodTypeCheck,
+  mlsTypeCheck,
   LoggerInterface,
   LoggerOptions,
   type MiroirConfigForClientStub,
@@ -182,12 +182,12 @@ const SPOTIFY_REPORT_UUID = "10ce3252-7840-4041-a769-9a0e2d5ee10b";
 const INSTANCE_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";
 const MODEL_ENDPOINT = "7947ae40-eb34-4149-887b-15a9021e714e";
 
-/** TypedValueObjectEditor dumps this prefix in a plain <span> when jzodTypeCheck fails (no testid). */
+/** TypedValueObjectEditor dumps this prefix in a plain <span> when mlsTypeCheck fails (no testid). */
 const TYPED_VALUE_OBJECT_EDITOR_TYPE_ERROR = /typeError:/;
-/** Innermost jzodTypeCheck error for an unknown object key (stringified into CodeBlock_ReadOnly). */
-const JZOD_UNKNOWN_ATTRIBUTE_ERROR = /not found in schema definition/;
+/** Innermost mlsTypeCheck error for an unknown object key (stringified into CodeBlock_ReadOnly). */
+const ML_UNKNOWN_ATTRIBUTE_ERROR = /not found in schema definition/;
 
-function tracksOnlySpotifyPlaylistMlSchema(liveSchema: JzodObject): JzodObject {
+function tracksOnlySpotifyPlaylistMlSchema(liveSchema: MlObject): MlObject {
   const { items: _omittedNewShapeItems, ...definitionWithoutItems } = liveSchema.definition;
   return { type: "object", definition: definitionWithoutItems };
 }
@@ -638,7 +638,7 @@ describe.skipIf(!shouldRun).sequential("spotifyApp — Spotify deployment boot +
     expect(playlistIdInput, "playlistId input field must be rendered").not.toBeNull();
     expect(playlistIdInput?.value).toBe("");
     expect(screen.queryByText(TYPED_VALUE_OBJECT_EDITOR_TYPE_ERROR)).toBeNull();
-    expect(screen.queryByText(/jzodTypeCheck expected a value but got undefined/i)).toBeNull();
+    expect(screen.queryByText(/mlsTypeCheck expected a value but got undefined/i)).toBeNull();
     expect(screen.getByText(/No API response yet/i)).toBeTruthy();
 
     fireEvent.change(playlistIdInput as HTMLInputElement, { target: { value: PLAYLIST_ID_OK } });
@@ -655,17 +655,17 @@ describe.skipIf(!shouldRun).sequential("spotifyApp — Spotify deployment boot +
     expect(params.get("playlistId")).toBe(PLAYLIST_ID_OK);
   });
 
-  it("new-shape playlist fails display-time jzodTypeCheck against a tracks-only get-playlist responseSchema", () => {
+  it("new-shape playlist fails display-time mlsTypeCheck against a tracks-only get-playlist responseSchema", () => {
     const operations = spotifyServiceEndpoint.definition.externalService?.operations ?? [];
     const getPlaylist = operations.find((operation) => operation.operationId === "get-playlist");
-    const liveSchema = getPlaylist?.responseSchema as JzodObject;
+    const liveSchema = getPlaylist?.responseSchema as MlObject;
     expect(liveSchema, "get-playlist operations[].responseSchema").toBeDefined();
     expect(
       liveSchema.definition.items,
       "live get-playlist responseSchema must include optional items (the entity-schema fix)",
     ).toBeDefined();
 
-    const staleResult = jzodTypeCheck(
+    const staleResult = mlsTypeCheck(
       tracksOnlySpotifyPlaylistMlSchema(liveSchema),
       PLAYLIST_NEW_SHAPE,
       [],
@@ -674,10 +674,10 @@ describe.skipIf(!shouldRun).sequential("spotifyApp — Spotify deployment boot +
       {},
     );
     expect(staleResult.status).toBe("error");
-    expect(JSON.stringify(staleResult)).toMatch(JZOD_UNKNOWN_ATTRIBUTE_ERROR);
+    expect(JSON.stringify(staleResult)).toMatch(ML_UNKNOWN_ATTRIBUTE_ERROR);
     expect(JSON.stringify(staleResult)).toMatch(/'items'/);
 
-    const liveResult = jzodTypeCheck(
+    const liveResult = mlsTypeCheck(
       liveSchema,
       PLAYLIST_NEW_SHAPE,
       [],
@@ -707,12 +707,12 @@ describe.skipIf(!shouldRun).sequential("spotifyApp — Spotify deployment boot +
       { timeout: 15000 },
     );
 
-    // apiCallReportSection → readonly TypedValueObjectEditor. On jzodTypeCheck
+    // apiCallReportSection → readonly TypedValueObjectEditor. On mlsTypeCheck
     // error it renders a <span>"typeError: "…</span> plus CodeBlock_ReadOnly.
     expect(screen.queryByText(TYPED_VALUE_OBJECT_EDITOR_TYPE_ERROR)).toBeNull();
-    expect(screen.queryByText(JZOD_UNKNOWN_ATTRIBUTE_ERROR)).toBeNull();
-    expect(screen.queryByText(/Could not resolve jzod schema/)).toBeNull();
-    expect(document.body.textContent).not.toMatch(JZOD_UNKNOWN_ATTRIBUTE_ERROR);
+    expect(screen.queryByText(ML_UNKNOWN_ATTRIBUTE_ERROR)).toBeNull();
+    expect(screen.queryByText(/Could not resolve ML schema/)).toBeNull();
+    expect(document.body.textContent).not.toMatch(ML_UNKNOWN_ATTRIBUTE_ERROR);
     expect(screen.queryByText(/Oops, ReportSectionEntityInstance could not be displayed/)).toBeNull();
   });
 

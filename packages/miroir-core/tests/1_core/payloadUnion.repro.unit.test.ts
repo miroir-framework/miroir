@@ -1,21 +1,21 @@
 import { describe, expect, it } from "vitest";
 import {
   defaultMiroirModelEnvironment,
-  jzodTypeCheck,
-  type JzodElement,
+  mlsTypeCheck,
+  type MlElement,
   type MiroirModelEnvironment,
 } from "miroir-core";
 
 describe("payload union resolution repro", () => {
   it("getFromParameters value resolves against payload union", () => {
-    const ctx = (defaultMiroirModelEnvironment as any).miroirFundamentalJzodSchema
+    const ctx = (defaultMiroirModelEnvironment as any).miroirFundamentalMlSchema
       .definition.context;
     const domainActionTemplate =
       ctx["miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"];
     const branch = domainActionTemplate.definition.find(
       (b: any) => b.definition?.actionType?.definition === "prepareOpenApiDocument",
     );
-    const payloadSchema = branch.definition.payload as JzodElement;
+    const payloadSchema = branch.definition.payload as MlElement;
     console.log("payloadSchema type:", payloadSchema.type);
 
     const value = {
@@ -27,7 +27,7 @@ describe("payload union resolution repro", () => {
       },
     };
 
-    const result = jzodTypeCheck(
+    const result = mlsTypeCheck(
       payloadSchema,
       value,
       [],

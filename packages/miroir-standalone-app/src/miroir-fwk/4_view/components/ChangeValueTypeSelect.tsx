@@ -1,7 +1,7 @@
-import { JzodElement } from "miroir-core";
+import { MlElement } from "miroir-core";
 import { useState } from "react";
 
-export const ChangeValueTypeSelect: React.FC<{ onChange: (type: JzodElement) => void }> = ({
+export const ChangeValueTypeSelect: React.FC<{ onChange: (type: MlElement) => void }> = ({
   onChange,
 }) => {
   const [selectedType, setSelectedType] = useState("undefined");
@@ -9,24 +9,24 @@ export const ChangeValueTypeSelect: React.FC<{ onChange: (type: JzodElement) => 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newType = event.target.value;
     setSelectedType(newType);
-    let newJzodSchema: JzodElement | undefined;
+    let newMlSchema: MlElement | undefined;
     switch (newType) {
       case "undefined":
-        newJzodSchema = { type: "undefined" };
+        newMlSchema = { type: "undefined" };
         break;
       case "record":
-        newJzodSchema = { type: "record", definition: { type: "any" } };
+        newMlSchema = { type: "record", definition: { type: "any" } };
         break;
       case "array":
-        newJzodSchema = { type: "array", definition: { type: "any" } };
+        newMlSchema = { type: "array", definition: { type: "any" } };
         break;
       case "simple":
-        newJzodSchema = { type: "string" }; // or any other simple type
+        newMlSchema = { type: "string" }; // or any other simple type
         break;
       default:
         throw new Error(`Unsupported type: ${newType}`);
     }
-    onChange(newJzodSchema);
+    onChange(newMlSchema);
   };
 
   return (

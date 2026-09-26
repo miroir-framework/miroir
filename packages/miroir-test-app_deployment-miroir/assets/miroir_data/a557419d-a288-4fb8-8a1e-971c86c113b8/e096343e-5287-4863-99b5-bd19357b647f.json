@@ -39,7 +39,7 @@
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "transformer"
             },
-            "description": "Explicit whitelist of columns to melt: a transformer resolving to a list of strings (e.g. returnValue wrapping a literal list). A bare string array is NOT schema-expressible here (ambiguous with the transformer array branch for jzodTypeCheck). When omitted, each row melts its own keys minus idColumns (per-row melt)."
+            "description": "Explicit whitelist of columns to melt: a transformer resolving to a list of strings (e.g. returnValue wrapping a literal list). A bare string array is NOT schema-expressible here (ambiguous with the transformer array branch for mlsTypeCheck). When omitted, each row melts its own keys minus idColumns (per-row melt)."
           },
           "nameInto": {
             "type": "string",

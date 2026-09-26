@@ -18,7 +18,7 @@ import {
   type CoreTransformerForBuildPlusRuntime,
   type Entity,
   type InputOutputType,
-  type JzodElement,
+  type MlElement,
   type TransformerMlSchemaNodeReport,
   type TransformerReturnType,
   type Uuid,
@@ -53,7 +53,7 @@ import {
 } from "../Themes/index.js";
 
 /** Shared with TransformerEditor — schemaReference to coreTransformerForBuildPlusRuntime. */
-export const coreTransformerForBuildPlusRuntimeSchemaReference: JzodElement = {
+export const coreTransformerForBuildPlusRuntimeSchemaReference: MlElement = {
   type: "schemaReference",
   definition: {
     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -70,7 +70,7 @@ export interface ListTransformerPanelProps {
   deploymentUuid: Uuid;
   sectionLabel?: string;
   /** Row entity ML schema (enables typed result schema for identity / getFromContext row). */
-  rowMlSchema?: JzodElement;
+  rowMlSchema?: MlElement;
   /** Entity uuid of the list rows — used as transformer input type for the adequacy check. */
   rowEntityUuid?: Uuid;
   /** Entities proposed as output-type choices in addition to the base types. */
@@ -98,7 +98,7 @@ const INPUT_OUTPUT_BASE_TYPES = [
 /** Human-readable label for an input/output type (entity uuid → entity name when known). */
 function formatMlSchemaNodeMismatch(
   node: TransformerMlSchemaNodeReport,
-  schemaNameResolver?: (schema: JzodElement) => string | undefined,
+  schemaNameResolver?: (schema: MlElement) => string | undefined,
 ): string {
   const pathLabel = node.path.length === 0 ? node.transformerType : `${node.path.join(".")} (${node.transformerType})`;
   return node.failures
@@ -123,7 +123,7 @@ function formatInputOutputTypeLabel(type: InputOutputType, entities?: Entity[]):
 
 const ListTransformerResultViewer: React.FC<{
   transformationResult: TransformerReturnType<any>;
-  transformationResultSchema: JzodElement;
+  transformationResultSchema: MlElement;
   application: Uuid;
   applicationDeploymentMap: ApplicationDeploymentMap;
   deploymentUuid: Uuid;
@@ -185,10 +185,10 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
   const givenInputTypeLabel = formatInputOutputTypeLabel(givenInputType, entities);
 
   const entityMlSchemas = useMemo(() => {
-    const map: Record<string, JzodElement> = {};
+    const map: Record<string, MlElement> = {};
     for (const entity of entities ?? []) {
       if (entity.mlSchema) {
-        map[entity.uuid] = entity.mlSchema as JzodElement;
+        map[entity.uuid] = entity.mlSchema as MlElement;
       }
     }
     if (rowEntityUuid && rowMlSchema) {
@@ -213,7 +213,7 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
         nameBySchemaJson.set(JSON.stringify(rowMlSchema), rowEntity.name);
       }
     }
-    return (schema: JzodElement): string | undefined => nameBySchemaJson.get(JSON.stringify(schema));
+    return (schema: MlElement): string | undefined => nameBySchemaJson.get(JSON.stringify(schema));
   }, [entities, rowEntityUuid, rowMlSchema]);
 
   // CoreTransformerForBuildPlusRuntime has string (by-name reference) and array arms — no interface check then.
@@ -250,7 +250,7 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
     [transformerType, rowEntityUuid, expectedOutputType, inferredOutputType],
   );
 
-  const givenInputMlSchema: JzodElement = rowMlSchema ?? liftInputOutputTypeToMlSchema(givenInputType, entityMlSchemas);
+  const givenInputMlSchema: MlElement = rowMlSchema ?? liftInputOutputTypeToMlSchema(givenInputType, entityMlSchemas);
   const expectedOutputMlSchema = liftInputOutputTypeToMlSchema(expectedOutputType, entityMlSchemas);
   const mlSchemaCompatibility = useMemo(
     () =>

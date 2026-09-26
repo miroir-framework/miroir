@@ -1,4 +1,4 @@
-import type { JzodObject, ProcessCapabilities } from "miroir-core";
+import type { MlObject, ProcessCapabilities } from "miroir-core";
 import type { FormMLSchema } from "./RunnerInterface.js";
 
 export type CreateApplicationStoreType = ProcessCapabilities["creatableStoreTypes"][number];
@@ -10,21 +10,21 @@ export const ALL_NON_BUNDLED_CREATABLE_STORE_TYPES: CreateApplicationStoreType[]
   "mongodb",
 ];
 
-const INDEXED_DB_STORE_SECTION_CONFIGURATION: JzodObject = {
+const INDEXED_DB_STORE_SECTION_CONFIGURATION: MlObject = {
   type: "object",
   definition: {
     emulatedServerType: { type: "literal", definition: "indexedDb" },
   },
 };
 
-const FILESYSTEM_STORE_SECTION_CONFIGURATION: JzodObject = {
+const FILESYSTEM_STORE_SECTION_CONFIGURATION: MlObject = {
   type: "object",
   definition: {
     emulatedServerType: { type: "literal", definition: "filesystem" },
   },
 };
 
-const SQL_STORE_SECTION_CONFIGURATION: JzodObject = {
+const SQL_STORE_SECTION_CONFIGURATION: MlObject = {
   type: "object",
   definition: {
     emulatedServerType: { type: "literal", definition: "sql" },
@@ -48,7 +48,7 @@ const SQL_STORE_SECTION_CONFIGURATION: JzodObject = {
   },
 };
 
-const MONGODB_STORE_SECTION_CONFIGURATION: JzodObject = {
+const MONGODB_STORE_SECTION_CONFIGURATION: MlObject = {
   type: "object",
   definition: {
     emulatedServerType: { type: "literal", definition: "mongodb" },
@@ -73,7 +73,7 @@ const MONGODB_STORE_SECTION_CONFIGURATION: JzodObject = {
 };
 
 const VARIANT_BY_STORE_TYPE: Partial<
-  Record<CreateApplicationStoreType, { key: string; schema: JzodObject }>
+  Record<CreateApplicationStoreType, { key: string; schema: MlObject }>
 > = {
   indexedDb: {
     key: "indexedDbStoreSectionConfiguration",
@@ -123,8 +123,8 @@ function connectionStringUnionBranch(
 
 export function buildCreateApplicationStorageSchema(
   creatableStoreTypes: CreateApplicationStoreType[],
-): Record<string, JzodObject> {
-  const context: Record<string, JzodObject> = {};
+): Record<string, MlObject> {
+  const context: Record<string, MlObject> = {};
   const seen = new Set<CreateApplicationStoreType>();
   for (const storeType of creatableStoreTypes) {
     if (storeType === "bundled" || seen.has(storeType)) {

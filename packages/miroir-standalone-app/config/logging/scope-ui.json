@@ -6,6 +6,6 @@
     "4_miroir-standalone-app_ReduxHooks": { "level": "DEBUG" },
     "4_miroir-standalone-app_ReportTools": { "level": "DEBUG" },
     "4_miroir-standalone-app_Scripts": { "level": "DEBUG" },
-    "4_miroir-standalone-app_JzodElementEditorHooks": { "level": "DEBUG" }
+    "4_miroir-standalone-app_MlElementEditorHooks": { "level": "DEBUG" }
   }
 }

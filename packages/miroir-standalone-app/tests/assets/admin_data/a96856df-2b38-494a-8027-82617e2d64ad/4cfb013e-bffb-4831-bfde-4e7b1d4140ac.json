@@ -1,0 +1,8 @@
+{
+  "uuid": "4cfb013e-bffb-4831-bfde-4e7b1d4140ac",
+  "parentName": "MiroirSecret",
+  "parentUuid": "a96856df-2b38-494a-8027-82617e2d64ad",
+  "name": "discogsCcClientSecret",
+  "ciphertext": "aes-256-gcm$Apz-OM7gjc6j1xTh$p5Lv0Al5-uJZ4o0j-szUVA$gKp3r-hI-LSSv_NGXoXEdw",
+  "algorithm": "aes-256-gcm"
+}

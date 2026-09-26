@@ -7,12 +7,12 @@ import {
   ApplicationDeploymentMap,
   DomainControllerInterface,
   InstanceAction,
-  JzodElement,
-  JzodReference,
+  MlElement,
+  MlReference,
   LoggerInterface,
   MiroirLoggerFactory,
   resolveFundamentalSchemaForDeployment,
-  resolveJzodSchemaReferenceInContext,
+  resolveMlSchemaReferenceInContext,
   getEndpointActions,
   redactCredentialSecretsFromValue,
   type EndpointDefinition,
@@ -26,13 +26,13 @@ import {
   getDefaultLibraryModelEnvironmentDEFUNCT,
   resolveLibraryDeploymentUuid,
 } from "miroir-test-app_deployment-library";
-import { jzodElementToJsonSchema } from "./jzodElementToJsonSchema.js";
+import { mlElementToJsonSchema } from "./mlElementToJsonSchema.js";
 import {
-  isJzodConversionLimitReached,
-  normalizeJzodConversionOptions,
+  isMlConversionLimitReached,
+  normalizeMlConversionOptions,
   schemaReferenceKey,
-  type JzodConversionOptions,
-} from "./jzodConversionContext.js";
+  type MlConversionOptions,
+} from "./mlConversionContext.js";
 
 
 const packageName = "miroir-mcp";
@@ -50,21 +50,21 @@ export type ToolHandler = (
 
 
 /**
- * Helper function to convert a Jzod payload schema to a Zod schema
+ * Helper function to convert a ML payload schema to a Zod schema
  * Recursively resolves all schema references before conversion to avoid reference resolution errors
- * @param jzodPayload - The Jzod schema definition from actionParameters.payload
+ * @param mlPayload - The ML schema definition from actionParameters.payload
  * @returns The Zod schema for validation
  */
-// function jzodPayloadToZodSchema(jzodPayload: JzodObject): ZodTypeAny {
-function jzodPayloadToZodSchema(jzodPayload: JzodElement): ZodTypeAny {
+// function mlPayloadToZodSchema(mlPayload: MlObject): ZodTypeAny {
+function mlPayloadToZodSchema(mlPayload: MlElement): ZodTypeAny {
   // Resolve references for Zod conversion, but stop on cycles / depth — the meta-model is
-  // recursive (jzodElement, compositeAction, coreTransformerForBuildPlusRuntime, …).
-  const resolvedJzodSchema = resolveAllReferences(jzodPayload);
+  // recursive (mlElement, compositeAction, coreTransformerForBuildPlusRuntime, …).
+  const resolvedMlSchema = resolveAllReferences(mlPayload);
 
-  log.debug("jzodPayloadToZodSchema resolved schema for MCP payload conversion");
+  log.debug("mlPayloadToZodSchema resolved schema for MCP payload conversion");
 
   const zodTextAndSchema: ZodTextAndZodSchema = jzodToZodTextAndZodSchema(
-    resolvedJzodSchema as any,
+    resolvedMlSchema as any,
     () => ({}),
     () => ({}),
     { datesAsString: true },
@@ -72,46 +72,46 @@ function jzodPayloadToZodSchema(jzodPayload: JzodElement): ZodTypeAny {
   return zodTextAndSchema.zodSchema as any;
 }
 
-function unresolvedJzodAny(): JzodElement {
-  return { type: "any" } as JzodElement;
+function unresolvedMlAny(): MlElement {
+  return { type: "any" } as MlElement;
 }
 
 /**
- * Recursively resolves schema references in a Jzod element for Zod validation.
+ * Recursively resolves schema references in a ML element for Zod validation.
  * Cyclic references degrade to `any` instead of overflowing the stack.
  */
 function resolveAllReferences(
-  element: JzodElement,
-  conversionOptions?: JzodConversionOptions,
-): JzodElement {
+  element: MlElement,
+  conversionOptions?: MlConversionOptions,
+): MlElement {
   if (!element || typeof element !== "object") {
     return element;
   }
 
-  const options = normalizeJzodConversionOptions(conversionOptions);
+  const options = normalizeMlConversionOptions(conversionOptions);
   if (options.depth >= options.maxDepth) {
-    return unresolvedJzodAny();
+    return unresolvedMlAny();
   }
 
-  const childOptions: JzodConversionOptions = {
+  const childOptions: MlConversionOptions = {
     ...options,
     depth: options.depth + 1,
   };
 
   if (element.type === "schemaReference") {
-    const ref = element as JzodReference;
+    const ref = element as MlReference;
     const refKey = schemaReferenceKey(ref);
-    if (isJzodConversionLimitReached(options, refKey)) {
-      return unresolvedJzodAny();
+    if (isMlConversionLimitReached(options, refKey)) {
+      return unresolvedMlAny();
     }
 
     options.resolvingRefs.add(refKey);
     try {
-      const resolvedSchema = resolveJzodSchemaReferenceInContext(
+      const resolvedSchema = resolveMlSchemaReferenceInContext(
         ref,
         ref.context || {},
         {
-          miroirFundamentalJzodSchema: resolveFundamentalSchemaForDeployment(
+          miroirFundamentalMlSchema: resolveFundamentalSchemaForDeployment(
             deployment_Miroir.uuid,
             defaultMiroirMetaModel as any as MetaModel,
             "static",
@@ -171,25 +171,25 @@ function resolveAllReferences(
   }
 
   if (element.type === "intersection" && element.definition) {
-    const intersection = element.definition as { left?: JzodElement; right?: JzodElement };
+    const intersection = element.definition as { left?: MlElement; right?: MlElement };
     return {
       ...element,
       definition: {
         left: intersection.left
           ? resolveAllReferences(intersection.left, childOptions)
-          : unresolvedJzodAny(),
+          : unresolvedMlAny(),
         right: intersection.right
           ? resolveAllReferences(intersection.right, childOptions)
-          : unresolvedJzodAny(),
+          : unresolvedMlAny(),
       },
-    } as JzodElement;
+    } as MlElement;
   }
 
   if (element.type === "lazy" && element.definition) {
     return {
       ...element,
-      definition: resolveAllReferences(element.definition as JzodElement, childOptions),
-    } as JzodElement;
+      definition: resolveAllReferences(element.definition as MlElement, childOptions),
+    } as MlElement;
   }
 
   return element;
@@ -350,7 +350,7 @@ export type McpToolDescriptionPropertyObject = {
   properties: Record<string, McpToolDescriptionProperty>;
   required: string[];
   additionalProperties?: boolean;
-  /** Shared definitions when Jzod schemaReferences are emitted as `$ref` (#248). */
+  /** Shared definitions when ML schemaReferences are emitted as `$ref` (#248). */
   $defs?: Record<string, unknown>;
 };
 
@@ -456,7 +456,7 @@ export function mcpToolEntry(
   if (!actionDef.actionParameters.payload) {
     throw new Error(`Payload definition not found for action type: ${actionType}`);
   }
-  const jzodPayload = actionDef.actionParameters.payload;
+  const mlPayload = actionDef.actionParameters.payload;
   const actionDescription = actionDef.actionParameters.actionType.tag?.value?.description 
     || actionDef.actionParameters.actionType.tag?.value?.defaultLabel
     || `Execute ${actionType} action on ${endpoint.name || endpoint.uuid}`;
@@ -466,7 +466,7 @@ export function mcpToolEntry(
   let payloadZodSchema: ZodTypeAny | undefined;
   const getPayloadZodSchema = (): ZodTypeAny => {
     if (!payloadZodSchema) {
-      payloadZodSchema = jzodPayloadToZodSchema(jzodPayload);
+      payloadZodSchema = mlPayloadToZodSchema(mlPayload);
     }
     return payloadZodSchema;
   };
@@ -480,7 +480,7 @@ export function mcpToolEntry(
     mcpToolDescription: {
       name: toolName,
       description: actionDescription,
-      inputSchema: jzodElementToJsonSchema(jzodPayload) as McpToolDescriptionPropertyObject,
+      inputSchema: mlElementToJsonSchema(mlPayload) as McpToolDescriptionPropertyObject,
     },
     get payloadZodSchema() {
       return getPayloadZodSchema();

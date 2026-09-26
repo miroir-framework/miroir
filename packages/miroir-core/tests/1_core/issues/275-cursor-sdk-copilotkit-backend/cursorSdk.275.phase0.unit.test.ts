@@ -118,10 +118,10 @@ if (runThis) {
     });
   });
 
-  describe("cursorSdk.275.phase0 — Jzod features blocks include cursor", () => {
+  describe("cursorSdk.275.phase0 — ML features blocks include cursor", () => {
     it("miroirConfigClient and miroirConfigServer features.definition keys", () => {
       const src = readSource(
-        "0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts",
+        "0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchema.ts",
       );
       const clientBlock = schemaBlock(src, "miroirConfigClient", "miroirConfigServer");
       const serverBlock = schemaBlock(src, "miroirConfigServer", "miroirConfig");

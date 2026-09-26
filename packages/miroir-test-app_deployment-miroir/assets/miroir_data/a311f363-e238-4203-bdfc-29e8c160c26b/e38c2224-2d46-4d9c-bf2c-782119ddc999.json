@@ -2,7 +2,7 @@
   "uuid": "e38c2224-2d46-4d9c-bf2c-782119ddc999",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "localizeJzodSchemaReferenceContext",
+  "name": "localizeMlSchemaReferenceContext",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Migrated from UnitTest c6d2a002-0002-4000-8000-000000000002 (Feature #196 Phase 5)",
@@ -14,8 +14,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "test010 plain literal",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodUnfoldSchemaOnce",
-          "export": "localizeJzodSchemaReferenceContext"
+          "module": "miroir-core/1_core/mls/MlsUnfoldSchemaOnce",
+          "export": "localizeMlSchemaReferenceContext"
         },
         "arguments": [
           {
@@ -30,7 +30,7 @@
           },
           {}
         ],
-        "fixtureRef": "miroirFundamentalJzodSchema",
+        "fixtureRef": "miroirFundamentalMlSchema",
         "fixtureArgumentIndex": 0,
         "expectedValue": {
           "type": "literal",
@@ -41,8 +41,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "test020 plain object",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodUnfoldSchemaOnce",
-          "export": "localizeJzodSchemaReferenceContext"
+          "module": "miroir-core/1_core/mls/MlsUnfoldSchemaOnce",
+          "export": "localizeMlSchemaReferenceContext"
         },
         "arguments": [
           {
@@ -64,7 +64,7 @@
           },
           {}
         ],
-        "fixtureRef": "miroirFundamentalJzodSchema",
+        "fixtureRef": "miroirFundamentalMlSchema",
         "fixtureArgumentIndex": 0,
         "expectedValue": {
           "type": "object",
@@ -82,8 +82,8 @@
         "miroirTestType": "functionCallTest",
         "miroirTestLabel": "test040 schemaReference object recursive 1-level",
         "functionRef": {
-          "module": "miroir-core/1_core/jzod/JzodUnfoldSchemaOnce",
-          "export": "localizeJzodSchemaReferenceContext"
+          "module": "miroir-core/1_core/mls/MlsUnfoldSchemaOnce",
+          "export": "localizeMlSchemaReferenceContext"
         },
         "arguments": [
           {
@@ -141,7 +141,7 @@
             }
           }
         ],
-        "fixtureRef": "miroirFundamentalJzodSchema",
+        "fixtureRef": "miroirFundamentalMlSchema",
         "fixtureArgumentIndex": 0,
         "expectedValue": {
           "type": "schemaReference",

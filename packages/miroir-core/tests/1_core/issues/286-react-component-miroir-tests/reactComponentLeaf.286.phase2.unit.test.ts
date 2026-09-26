@@ -47,8 +47,8 @@ function suiteOf(...leaves: MiroirTestForReactComponent[]): MiroirTestSuite {
     miroirTests: [
       {
         miroirTestType: "reactComponentTestSuite",
-        miroirTestLabel: "JzodArrayEditor",
-        component: "JzodElementEditor",
+        miroirTestLabel: "MlArrayEditor",
+        component: "MlElementEditor",
         miroirTests: leaves,
       },
     ],
@@ -113,11 +113,11 @@ describe("reactComponentTest leaf", () => {
   it("with no runner registered, a one-leaf suite records skipped with a message and does not throw", async () => {
     await withRegisteredRunner(undefined, async () => {
       const tracker = await runSuiteInProcess(
-        suiteOf(reactComponentLeaf("JzodArrayEditor: case A")),
+        suiteOf(reactComponentLeaf("MlArrayEditor: case A")),
       );
       const results = recordedAssertions(tracker);
-      expect(results["JzodArrayEditor: case A"]?.assertionResult).toBe("skipped");
-      expect(JSON.stringify(results["JzodArrayEditor: case A"])).toContain(
+      expect(results["MlArrayEditor: case A"]?.assertionResult).toBe("skipped");
+      expect(JSON.stringify(results["MlArrayEditor: case A"])).toContain(
         "reactComponentTest requires a registered component test runner",
       );
     });
@@ -128,7 +128,7 @@ describe("reactComponentTest leaf", () => {
     await withRegisteredRunner(
       // #292: the runner receives the leaf and its suite context.
       async ({ leaf }) => {
-        const caseLabel = leaf.miroirTestLabel.replace("JzodArrayEditor: ", "");
+        const caseLabel = leaf.miroirTestLabel.replace("MlArrayEditor: ", "");
         calls.push(caseLabel);
         return caseLabel === "case A"
           ? { status: "error", message: "case A failed on purpose" }
@@ -137,17 +137,17 @@ describe("reactComponentTest leaf", () => {
       async () => {
         const tracker = await runSuiteInProcess(
           suiteOf(
-            reactComponentLeaf("JzodArrayEditor: case A"),
-            reactComponentLeaf("JzodArrayEditor: case B"),
+            reactComponentLeaf("MlArrayEditor: case A"),
+            reactComponentLeaf("MlArrayEditor: case B"),
           ),
         );
         const results = recordedAssertions(tracker);
         expect(calls).toEqual(["case A", "case B"]);
-        expect(results["JzodArrayEditor: case A"]?.assertionResult).toBe("error");
-        expect(JSON.stringify(results["JzodArrayEditor: case A"])).toContain(
+        expect(results["MlArrayEditor: case A"]?.assertionResult).toBe("error");
+        expect(JSON.stringify(results["MlArrayEditor: case A"])).toContain(
           "case A failed on purpose",
         );
-        expect(results["JzodArrayEditor: case B"]?.assertionResult).toBe("ok");
+        expect(results["MlArrayEditor: case B"]?.assertionResult).toBe("ok");
       },
     );
   });
@@ -157,7 +157,7 @@ describe("reactComponentTest leaf", () => {
       async () => ({ status: "error", message: "case A failed on purpose" }),
       async () => {
         await expect(
-          runSuiteInProcess(suiteOf(reactComponentLeaf("JzodArrayEditor: case A")), {
+          runSuiteInProcess(suiteOf(reactComponentLeaf("MlArrayEditor: case A")), {
             executionMode: "unit",
             rethrowComponentTestFailures: true,
           }),
@@ -170,7 +170,7 @@ describe("reactComponentTest leaf", () => {
     await withRegisteredRunner(
       async () => ({ status: "ok" }),
       async () => {
-        const leaf = reactComponentLeaf("JzodArrayEditor: case A");
+        const leaf = reactComponentLeaf("MlArrayEditor: case A");
         await expect(
           runMiroirTest(
             TestFramework as unknown as VitestNamespace,

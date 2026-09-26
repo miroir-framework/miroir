@@ -31,7 +31,7 @@ import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
 import { useMiroirContextService } from 'miroir-react';
 import { exclusivelyUnfoldPath } from './Reports/FoldedStateTreeUtils.js';
 import { useDocumentOutlineContext } from './ValueObjectEditor/InstanceEditorOutlineContext.js';
-import { getFoldedDisplayValue } from './ValueObjectEditor/JzodElementEditorHooks.js';
+import { getFoldedDisplayValue } from './ValueObjectEditor/MlElementEditorHooks.js';
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "InstanceEditorOutline");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -123,7 +123,7 @@ const buildTreeFromObject = (
           typeCheckKeyMap
         );
         
-        // Build the rootLessListKey for schema lookup, similar to how JzodArrayEditor does it
+        // Build the rootLessListKey for schema lookup, similar to how MlArrayEditor does it
         const rootLessListKey = treePath.length > 0 ? treePath.slice(1).join('.') : ''; // ignore the first element which is the rootObjectKey
         const itemRootLessListKey = rootLessListKey.length > 0 ? `${rootLessListKey}.${index}` : `${index}`;
         

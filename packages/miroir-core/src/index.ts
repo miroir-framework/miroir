@@ -1,7 +1,7 @@
 export {
-  getMiroirFundamentalJzodSchema,
-  miroirFundamentalJzodSchemaUuid,
-} from "./0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema";
+  getMiroirFundamentalMlSchema,
+  miroirFundamentalMlSchemaUuid,
+} from "./0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchema";
 
 export {
   ClientEnvironment,
@@ -256,9 +256,9 @@ export {
   GraphConfig,
   graphConfig,
   // those are zod schemas, not imported. Importing MLS with the same name.
-  // jzodUnion_RecursivelyUnfold_ReturnType,
-  // jzodUnion_RecursivelyUnfold_ReturnTypeError,
-  // jzodUnion_RecursivelyUnfold_ReturnTypeOK,
+  // mlUnion_RecursivelyUnfold_ReturnType,
+  // mlUnion_RecursivelyUnfold_ReturnTypeError,
+  // mlUnion_RecursivelyUnfold_ReturnTypeOK,
   GraphReportSection,
   graphReportSection,
   GridReportSection,
@@ -273,61 +273,61 @@ export {
   InputOutputType,
   inputOutputType,
   InstanceAction,
-  JzodArray,
-  jzodArray,
-  JzodAttributeDateValidations,
-  jzodAttributeDateValidations,
-  JzodAttributeNumberValidations,
-  jzodAttributeNumberValidations,
-  JzodAttributePlainDateWithValidations,
-  jzodAttributePlainDateWithValidations,
-  JzodAttributePlainNumberWithValidations,
-  jzodAttributePlainNumberWithValidations,
-  JzodAttributePlainStringWithValidations,
-  jzodAttributePlainStringWithValidations,
-  JzodAttributeStringValidations,
-  jzodAttributeStringValidations,
-  JzodBaseObject,
-  jzodBaseObject,
-  JzodElement,
-  jzodElement,
-  JzodEnum,
-  jzodEnum,
-  JzodEnumAttributeTypes,
-  jzodEnumAttributeTypes,
-  JzodEnumElementTypes,
-  jzodEnumElementTypes,
-  JzodFunction,
-  jzodFunction,
-  JzodIntersection,
-  jzodIntersection,
-  JzodLazy,
-  jzodLazy,
-  JzodLiteral,
-  jzodLiteral,
-  JzodMap,
-  jzodMap,
-  JzodObject,
-  jzodObject,
-  JzodObjectOrReference,
-  jzodObjectOrReference,
-  JzodPlainAttribute,
-  jzodPlainAttribute,
-  JzodPromise,
-  jzodPromise,
-  JzodRecord,
-  jzodRecord,
-  JzodReference,
-  jzodReference,
-  JzodSet,
-  jzodSet,
-  JzodTuple,
-  jzodTuple,
-  JzodUnion,
-  jzodUnion,
-  JzodUnion_RecursivelyUnfold_ReturnType,
-  JzodUnion_RecursivelyUnfold_ReturnTypeError,
-  JzodUnion_RecursivelyUnfold_ReturnTypeOK,
+  MlArray,
+  mlArray,
+  MlAttributeDateValidations,
+  mlAttributeDateValidations,
+  MlAttributeNumberValidations,
+  mlAttributeNumberValidations,
+  MlAttributePlainDateWithValidations,
+  mlAttributePlainDateWithValidations,
+  MlAttributePlainNumberWithValidations,
+  mlAttributePlainNumberWithValidations,
+  MlAttributePlainStringWithValidations,
+  mlAttributePlainStringWithValidations,
+  MlAttributeStringValidations,
+  mlAttributeStringValidations,
+  MlBaseObject,
+  mlBaseObject,
+  MlElement,
+  mlElement,
+  MlEnum,
+  mlEnum,
+  MlEnumAttributeTypes,
+  mlEnumAttributeTypes,
+  MlEnumElementTypes,
+  mlEnumElementTypes,
+  MlFunction,
+  mlFunction,
+  MlIntersection,
+  mlIntersection,
+  MlLazy,
+  mlLazy,
+  MlLiteral,
+  mlLiteral,
+  MlMap,
+  mlMap,
+  MlObject,
+  mlObject,
+  MlObjectOrReference,
+  mlObjectOrReference,
+  MlPlainAttribute,
+  mlPlainAttribute,
+  MlPromise,
+  mlPromise,
+  MlRecord,
+  mlRecord,
+  MlReference,
+  mlReference,
+  MlSet,
+  mlSet,
+  MlTuple,
+  mlTuple,
+  MlUnion,
+  mlUnion,
+  MlUnion_RecursivelyUnfold_ReturnType,
+  MlUnion_RecursivelyUnfold_ReturnTypeError,
+  MlUnion_RecursivelyUnfold_ReturnTypeOK,
   KeyMapEntry,
   keyMapEntry,
   ListReportSection,
@@ -395,12 +395,12 @@ export {
   report,
   ReportSection,
   reportSection,
-  ResolvedJzodSchemaReturnType,
-  resolvedJzodSchemaReturnType,
-  ResolvedJzodSchemaReturnTypeError,
-  resolvedJzodSchemaReturnTypeError,
-  ResolvedJzodSchemaReturnTypeOK,
-  resolvedJzodSchemaReturnTypeOK,
+  ResolvedMlSchemaReturnType,
+  resolvedMlSchemaReturnType,
+  ResolvedMlSchemaReturnTypeError,
+  resolvedMlSchemaReturnTypeError,
+  ResolvedMlSchemaReturnTypeOK,
+  resolvedMlSchemaReturnTypeOK,
   RestPersistenceAction,
   RootReport,
   rootReport,
@@ -510,8 +510,8 @@ export {
 } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export {
-  miroirFundamentalJzodSchema
-} from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
+  miroirFundamentalMlSchema
+} from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalMlSchema";
 
 export {
   BlobContents, BlobUploadResult, BlobValidationResult
@@ -547,23 +547,23 @@ export {
   EntityInstanceWithNameSchema
 } from "./0_interfaces/1_core/Instance.js";
 // export {
-//   JzodSchemaDefinition,
-//   jzodSchemaDefinitionSchema,
-// } from "./0_interfaces/1_core/JzodSchemaDefinition.js";
+//   MlSchemaDefinition,
+//   mlSchemaDefinitionSchema,
+// } from "./0_interfaces/1_core/MlSchemaDefinition.js";
 export {
-  JzodUnionResolvedTypeForArrayReturnTypeOK, JzodUnionResolvedTypeForObjectReturnTypeOK,
-  JzodUnionResolvedTypeReturnType, JzodUnionResolvedTypeReturnTypeError, SelectUnionBranchFromDiscriminatorReturnType,
+  MlUnionResolvedTypeForArrayReturnTypeOK, MlUnionResolvedTypeForObjectReturnTypeOK,
+  MlUnionResolvedTypeReturnType, MlUnionResolvedTypeReturnTypeError, SelectUnionBranchFromDiscriminatorReturnType,
   SelectUnionBranchFromDiscriminatorReturnTypeError,
   SelectUnionBranchFromDiscriminatorReturnTypeOK
-} from "./0_interfaces/1_core/jzodTypeCheckInterface";
+} from "./0_interfaces/1_core/mlsTypeCheckInterface";
 export {
-  // JzodUnion_RecursivelyUnfold_ReturnType,
-  // JzodUnion_RecursivelyUnfold_ReturnTypeError,
-  // JzodUnion_RecursivelyUnfold_ReturnTypeOK,
-  jzodUnion_RecursivelyUnfold_ReturnType,
-  jzodUnion_RecursivelyUnfold_ReturnTypeError,
-  jzodUnion_RecursivelyUnfold_ReturnTypeOK
-} from "./0_interfaces/1_core/jzodUnion_RecursivelyUnfoldInterface";
+  // MlUnion_RecursivelyUnfold_ReturnType,
+  // MlUnion_RecursivelyUnfold_ReturnTypeError,
+  // MlUnion_RecursivelyUnfold_ReturnTypeOK,
+  mlUnion_RecursivelyUnfold_ReturnType,
+  mlUnion_RecursivelyUnfold_ReturnTypeError,
+  mlUnion_RecursivelyUnfold_ReturnTypeOK
+} from "./0_interfaces/1_core/mlUnion_RecursivelyUnfoldInterface";
 export { DeploymentMode } from "./0_interfaces/1_core/MiroirConfig.js";
 export { LIBRARY_TMP } from "./0_interfaces/1_core/LIBRARY_TMP";
 export {
@@ -640,8 +640,8 @@ export {
   TransformerReturnType
 } from "./0_interfaces/2_domain/DomainElement.js";
 export {
-  RecordOfJzodElement,
-  RecordOfJzodObject
+  RecordOfMlElement,
+  RecordOfMlObject
 } from "./0_interfaces/2_domain/DomainStateQuerySelectorInterface.js";
 export {
   AsyncBoxedExtractorOrQueryRunnerMap,
@@ -801,7 +801,7 @@ export {
   ActionEvent, EventFilter, MiroirEvent, MiroirEventLog, MiroirEventService, MiroirEventServiceInterface, TestEvent,
   TransformerEvent
 } from "./3_controllers/MiroirEventService.js";
-// export { rootLessListKeyMapDEFUNCT } from "./1_core/jzod/rootLessListKeyMap";
+// export { rootLessListKeyMapDEFUNCT } from "./1_core/mls/rootLessListKeyMap";
 export {
   entityHasCompositePrimaryKey,
   entityHasUuidPrimaryKey,
@@ -914,63 +914,63 @@ export {
   actionsWithDeploymentInPayload, noValue
 } from "./1_core/Instance";
 export {
-  getDefaultValueForJzodSchemaWithResolution,
-  getDefaultValueForJzodSchemaWithResolutionNonHook
-} from "./1_core/jzod/getDefaultValueForJzodSchema.js";
+  getDefaultValueForMlSchemaWithResolution,
+  getDefaultValueForMlSchemaWithResolutionNonHook
+} from "./1_core/mls/getDefaultValueForMlSchema.js";
 export {
   getObjectUnionDiscriminatorValuesFromResolvedSchema
-} from "./1_core/jzod/getObjectUnionDiscriminatorValues";
+} from "./1_core/mls/getObjectUnionDiscriminatorValues";
 export {
-  resolveJzodSchemaReference,
-  resolveJzodSchemaReferenceInContext
-} from "./1_core/jzod/jzodResolveSchemaReferenceInContext";
+  resolveMlSchemaReference,
+  resolveMlSchemaReferenceInContext
+} from "./1_core/mls/mlsResolveSchemaReferenceInContext";
 export {
-  jzodToJzod_Summary
-} from "./1_core/jzod/JzodToJzod_Summary";
-export type { JsonSchema, JzodToJsonSchemaContext } from "./1_core/jzod/JzodToJsonSchema";
-export { jzodToJsonSchema } from "./1_core/jzod/JzodToJsonSchema";
+  mlsToMls_Summary
+} from "./1_core/mls/MlsToMls_Summary";
+export type { JsonSchema, MlsToJsonSchemaContext } from "./1_core/mls/MlsToJsonSchema";
+export { mlsToJsonSchema } from "./1_core/mls/MlsToJsonSchema";
 export {
-  getAttributeTypesFromJzodSchema,
-  jzodToSqlAttributeTypeMap,
-} from "./1_core/jzod/getAttributeTypesFromJzodSchema";
-export type { CopilotKitParameter, CopilotKitParameterType } from "./1_core/jzod/JzodToCopilotKitParameter";
-export { jzodToCopilotKitParameter } from "./1_core/jzod/JzodToCopilotKitParameter";
+  getAttributeTypesFromMlSchema,
+  mlsToSqlAttributeTypeMap,
+} from "./1_core/mls/getAttributeTypesFromMlSchema";
+export type { CopilotKitParameter, CopilotKitParameterType } from "./1_core/mls/MlsToCopilotKitParameter";
+export { mlsToCopilotKitParameter } from "./1_core/mls/MlsToCopilotKitParameter";
 export {
   ANY_IMPLICIT_UNION_BRANCHES,
-  ANY_IMPLICIT_UNION_TYPE, jzodTypeCheck,
-  jzodUnionResolvedTypeForObject, selectUnionBranchFromDiscriminator, unionObjectChoices
-} from "./1_core/jzod/jzodTypeCheck.js";
-export { isMlSchemaSubtype } from "./1_core/jzod/mlSchemaSubtype.js";
+  ANY_IMPLICIT_UNION_TYPE, mlsTypeCheck,
+  mlUnionResolvedTypeForObject, selectUnionBranchFromDiscriminator, unionObjectChoices
+} from "./1_core/mls/mlsTypeCheck.js";
+export { isMlSchemaSubtype } from "./1_core/mls/mlSchemaSubtype.js";
 export {
   getMiroirFundamentalSchemaForDeployment,
   resolveFundamentalSchemaForDeployment,
   clearSchemaCacheForTests,
   type SchemaResolutionMode,
-} from "./1_core/jzod/schemaForDeployment.js";
+} from "./1_core/mls/schemaForDeployment.js";
 export {
   classifySchemaChange,
   computeCombinedSchemaRevision,
   computeSchemaRevision,
   type SchemaChangeKind,
   type SchemaRevisionScope,
-} from "./1_core/jzod/schemaChangeKind.js";
+} from "./1_core/mls/schemaChangeKind.js";
 export {
   getMiroirSchemaMode,
   resolveEffectiveSchemaMode,
   type MiroirSchemaMode,
-} from "./1_core/jzod/schemaModePolicy.js";
+} from "./1_core/mls/schemaModePolicy.js";
 export {
-  localizeJzodSchemaReferenceContext,
-  unfoldJzodSchemaOnce, UnfoldJzodSchemaOnceReturnType,
-  UnfoldJzodSchemaOnceReturnTypeError,
-  UnfoldJzodSchemaOnceReturnTypeOK
-} from "./1_core/jzod/JzodUnfoldSchemaOnce.js";
+  localizeMlSchemaReferenceContext,
+  unfoldMlSchemaOnce, UnfoldMlSchemaOnceReturnType,
+  UnfoldMlSchemaOnceReturnTypeError,
+  UnfoldMlSchemaOnceReturnTypeOK
+} from "./1_core/mls/MlsUnfoldSchemaOnce.js";
 export {
-  jzodUnion_recursivelyUnfold
-} from "./1_core/jzod/jzodUnion_RecursivelyUnfold";
+  mlUnion_recursivelyUnfold
+} from "./1_core/mls/mlUnion_RecursivelyUnfold";
 export {
   getInnermostTypeCheckError
-} from "./1_core/jzod/mlsTypeCheckError";
+} from "./1_core/mls/mlsTypeCheckError";
 export {
   applicationModelEntities,
   defaultMetaModelEnvironment,
@@ -1065,7 +1065,7 @@ export {
   pushIfUnique,
   validateMimeType
 } from "./1_core/tools.js";
-export { zodErrorDeepestIssueLeaves, zodErrorFirstIssueLeaf } from "./1_core/jzod/zodParseErrorHandler";
+export { zodErrorDeepestIssueLeaves, zodErrorFirstIssueLeaf } from "./1_core/mls/zodParseErrorHandler";
 export {
   isEvolutionTraceEnabled,
   shouldTraceEvolutionEvent,
@@ -1123,8 +1123,8 @@ export {
 export {
   // selectCurrentDeploymentModel,
   selectEntityInstances,
-  selectEntityInstancesFromJzodAttribute,
-  selectEntityUuidFromJzodAttribute,
+  selectEntityInstancesFromMlAttribute,
+  selectEntityUuidFromMlAttribute,
   selectReportDefinitionFromReportUuid
 } from "./2_domain/DomainDataAccess.js";
 export {
@@ -1134,7 +1134,7 @@ export {
   extractEntityInstanceUuidIndexFromListQueryAndDomainState,
   extractWithExtractorOrCombinerReturningObjectOrObjectListFromDomainState,
   getDomainStateExtractorRunnerMap,
-  // getDomainStateJzodSchemaExtractorRunnerMapDEFUNCT,
+  // getDomainStateMlSchemaExtractorRunnerMapDEFUNCT,
   getExtractorRunnerParamsForDomainState,
   GetExtractorRunnerParamsForDomainState,
   GetQueryRunnerParamsForDomainState,
@@ -1220,12 +1220,12 @@ export {
   getMultipleEntityInstancesIndexNonHook as getMultipleEntityInstancesUuidIndexNonHook
 } from "./2_domain/ReduxDeploymentsStateQueryExecutor.js";
 export {
-  // extractEntityJzodSchemaFromReduxDeploymentsState,
+  // extractEntityMlSchemaFromReduxDeploymentsState,
   GetExtractorRunnerParamsForReduxDeploymentsState,
   getExtractorRunnerParamsForReduxDeploymentsState,
   GetQueryRunnerParamsForReduxDeploymentsState,
   getQueryRunnerParamsForReduxDeploymentsState,
-  // getReduxDeploymentsStateJzodSchemaSelectorMap,
+  // getReduxDeploymentsStateMlSchemaSelectorMap,
   getReduxDeploymentsStateSelectorMap,
   runQueryFromReduxDeploymentsState,
   selectEntityInstanceFromReduxDeploymentsState,
@@ -1235,7 +1235,7 @@ export {
 export {
   getQueryTemplateRunnerParamsForReduxDeploymentsState,
   GetQueryTemplateRunnerParamsForReduxDeploymentsState,
-  // getReduxDeploymentsStateJzodSchemaSelectorTemplateMap,
+  // getReduxDeploymentsStateMlSchemaSelectorTemplateMap,
   getReduxDeploymentsStateSelectorTemplateMap,
   runQueryTemplateFromReduxDeploymentsState
 } from "./2_domain/ReduxDeploymentsStateQueryTemplateSelectors.js";
@@ -1553,7 +1553,7 @@ export {
 } from "./5_tests/FunctionCallTestTools.js";
 export {
   listQueryRunnerFixtureRefs,
-  queryRunnerTestJzodSchema,
+  queryRunnerTestMlSchema,
   resolveQueryRunnerFixture,
   runMiroirQueryRunnerTestInMemory,
 } from "./5_tests/QueryRunnerTestTools.js";
@@ -1707,7 +1707,7 @@ export {
   resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite,
   runMiroirRunnerTest as runMiroirRunnerTestInMemory,
   runRunnerTestCompositeAction,
-  runnerTestJzodSchema,
+  runnerTestMlSchema,
 } from "./5_tests/RunnerTestTools.js";
 export {
   composeIntegTestbedResetParams,
@@ -1857,8 +1857,8 @@ export {
   type MiroirTestStorageType,
 } from "./5_tests/parseMiroirTestCliConfig.js";
 // // Bootstrap-only schema fixtures (legacy test entities removed from deployment)
-// export { default as entityDefinitionTransformerTest } from "./0_interfaces/1_core/bootstrapJzodSchemas/fixtures/entityDefinitionTransformerTest.json" assert { type: "json" };
-// export { default as entityDefinitionUnitTest } from "./0_interfaces/1_core/bootstrapJzodSchemas/fixtures/entityDefinitionUnitTest.json" assert { type: "json" };
+// export { default as entityDefinitionTransformerTest } from "./0_interfaces/1_core/bootstrapMlSchemas/fixtures/entityDefinitionTransformerTest.json" assert { type: "json" };
+// export { default as entityDefinitionUnitTest } from "./0_interfaces/1_core/bootstrapMlSchemas/fixtures/entityDefinitionUnitTest.json" assert { type: "json" };
 
 
 const entityDefinitionBundleV1 = require("../src/assets/miroirAdmin/model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/01a051d8-d43c-430d-a98e-739048f54942.json"); //assert { type: "json" };

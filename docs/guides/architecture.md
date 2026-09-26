@@ -3,7 +3,7 @@
 Miroir follows a layered, domain-driven design (Clean / Hexagonal). Implementation dependencies flow **down** (`3_controllers` may use `2_domain` and `1_core`; `1_core` must not import implementations from layer 3). Interfaces may be referenced in both directions.
 
 ```
-0_interfaces/  → types and Jzod schemas
+0_interfaces/  → types and ML schemas
 1_core/        → tools, constants, domain state
 2_domain/      → selectors, transformers, query runners
 3_controllers/ → DomainController, ActionRunner

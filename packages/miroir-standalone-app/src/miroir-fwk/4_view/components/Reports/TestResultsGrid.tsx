@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import { MiroirLoggerFactory, type JzodElement, type LoggerInterface, type ViewParams } from "miroir-core";
+import { MiroirLoggerFactory, type MlElement, type LoggerInterface, type ViewParams } from "miroir-core";
 
 import { ValueObjectGrid } from "../Grids/ValueObjectGrid.js";
 import { packageName } from "../../../../constants.js";
@@ -23,7 +23,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
   log = logger;
 });
 
-const testResultSchema: JzodElement = {
+const testResultSchema: MlElement = {
   type: "object",
   definition: {
     testName: { type: "string" },

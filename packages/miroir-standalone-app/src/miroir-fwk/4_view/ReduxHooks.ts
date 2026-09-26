@@ -7,7 +7,7 @@ import {
   DomainState,
   EntityInstance,
   EntityInstancesUuidIndex,
-  JzodPlainAttribute,
+  MlPlainAttribute,
   // LocalCacheExtractor,
   LoggerInterface,
   MetaModel,
@@ -26,8 +26,8 @@ import {
   getApplicationSection,
   getReduxDeploymentsStateIndex,
   computeSchemaRevision,
-  miroirFundamentalJzodSchema,
-  selectEntityUuidFromJzodAttribute,
+  miroirFundamentalMlSchema,
+  selectEntityUuidFromMlAttribute,
   type ApplicationDeploymentMap,
   type Deployment,
   type LocalCacheExtractor,
@@ -319,8 +319,8 @@ export function useCurrentModelEnvironment(
 
   return useMemo(() => {
     return {
-      miroirFundamentalJzodSchema:
-        context.schemasPerDeployment[deploymentUuid] ?? miroirFundamentalJzodSchema,
+      miroirFundamentalMlSchema:
+        context.schemasPerDeployment[deploymentUuid] ?? miroirFundamentalMlSchema,
       miroirMetaModel: miroirMetaModel,
       endpointsByUuid,
       currentModel: currentModel,
@@ -337,10 +337,10 @@ export function useCurrentModelEnvironment(
 
 // ################################################################################################
 /**
- * Resolves the fundamental jzod schema for a deployment from context cache.
+ * Resolves the fundamental ML schema for a deployment from context cache.
  * Population is owned by ModelEnvironmentSync / ensureSchemaForDeployment.
  */
-export function useMiroirFundamentalJzodSchemaForDeployment(
+export function useMiroirFundamentalMlSchemaForDeployment(
   deploymentUuid?: Uuid,
 ): MlSchema | undefined {
   const context = useMiroirContextService();
@@ -492,14 +492,14 @@ function entityInstancesUuidIndexToEntityInstanceArraySelector(state: EntityInst
 }
 
 //#########################################################################################
-export function useLocalCacheInstancesForJzodAttribute(
+export function useLocalCacheInstancesForMlAttribute(
   application: Uuid,
   applicationDeploymentMap: ApplicationDeploymentMap,
   deploymentUuid: string | undefined,
   applicationSection: ApplicationSection | undefined,
-  mlSchema: JzodPlainAttribute | undefined
+  mlSchema: MlPlainAttribute | undefined
 ): EntityInstance[] {
-  const entityUuid = selectEntityUuidFromJzodAttribute(mlSchema);
+  const entityUuid = selectEntityUuidFromMlAttribute(mlSchema);
   const miroirEntities = useSelector((state: ReduxStateWithUndoRedo) =>
     selectInstanceArrayForDeploymentSectionEntity(state, applicationDeploymentMap,{
       queryType: "localCacheEntityInstancesExtractor",
@@ -511,7 +511,7 @@ export function useLocalCacheInstancesForJzodAttribute(
     })
   );
   log.info(
-    "useLocalCacheInstancesForJzodAttribute",
+    "useLocalCacheInstancesForMlAttribute",
     deploymentUuid,
     applicationSection,
     mlSchema,

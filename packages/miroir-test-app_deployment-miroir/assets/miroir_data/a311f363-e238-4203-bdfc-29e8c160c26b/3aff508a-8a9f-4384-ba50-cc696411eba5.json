@@ -2,19 +2,19 @@
   "uuid": "3aff508a-8a9f-4384-ba50-cc696411eba5",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "jzodTypeCheck_TransformerTestSuite",
+  "name": "mlsTypeCheck_TransformerTestSuite",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Migrated from TransformerTest f8e3c7a1-2b9d-4e6f-8c2a-5d7b9e4f1a8c (Feature #196 Phase 5)",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "jzodTypeCheck",
+    "miroirTestLabel": "mlsTypeCheck",
     "miroirTests": [
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test010_literal",
         "transformerTestDescription": "Checks that a literal value matches a literal schema",
-        "transformerName": "jzodTypeCheck",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -37,7 +37,7 @@
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "literal",
@@ -46,7 +46,7 @@
           "valueObject": "myLiteral",
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "ok",
@@ -80,7 +80,7 @@
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test020_string",
         "transformerTestDescription": "Checks that a string value matches a string schema",
-        "transformerName": "jzodTypeCheck",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -101,7 +101,7 @@
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "string"
@@ -109,7 +109,7 @@
           "valueObject": "myString",
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "ok",
@@ -139,7 +139,7 @@
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test022_boolean_true",
         "transformerTestDescription": "Checks that boolean value true matches a boolean schema",
-        "transformerName": "jzodTypeCheck",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -160,7 +160,7 @@
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "boolean"
@@ -168,7 +168,7 @@
           "valueObject": true,
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "ok",
@@ -198,7 +198,7 @@
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test024_boolean_false",
         "transformerTestDescription": "Checks that boolean value false matches a boolean schema",
-        "transformerName": "jzodTypeCheck",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -219,7 +219,7 @@
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "boolean"
@@ -227,7 +227,7 @@
           "valueObject": false,
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "ok",
@@ -257,7 +257,7 @@
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test030_schemaReference",
         "transformerTestDescription": "Checks that a string value matches a schema reference resolving to a string schema",
-        "transformerName": "jzodTypeCheck",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -286,7 +286,7 @@
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "schemaReference",
@@ -302,7 +302,7 @@
           "valueObject": "myString",
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "ok",
@@ -354,7 +354,7 @@
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test040_simple_object",
         "transformerTestDescription": "Checks type-checking a simple object with union and optional attributes against a schema reference",
-        "transformerName": "jzodTypeCheck",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -418,7 +418,7 @@
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "schemaReference",
@@ -462,7 +462,7 @@
           },
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "ok",
@@ -802,7 +802,7 @@
                   }
                 }
               },
-              "jzodObjectFlattenedSchema": {
+              "mlObjectFlattenedSchema": {
                 "type": "object",
                 "definition": {
                   "a": {
@@ -868,7 +868,7 @@
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test050_object_with_union",
         "transformerTestDescription": "Checks type-checking a deeply nested object containing union-typed attributes",
-        "transformerName": "jzodTypeCheck",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -941,7 +941,7 @@
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "schemaReference",
@@ -988,7 +988,7 @@
           },
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "ok",
@@ -1373,7 +1373,7 @@
                       }
                     }
                   },
-                  "jzodObjectFlattenedSchema": {
+                  "mlObjectFlattenedSchema": {
                     "type": "object",
                     "definition": {
                       "a": {
@@ -1644,7 +1644,7 @@
                   }
                 }
               },
-              "jzodObjectFlattenedSchema": {
+              "mlObjectFlattenedSchema": {
                 "type": "object",
                 "definition": {
                   "a": {
@@ -1826,7 +1826,7 @@
                   }
                 }
               },
-              "jzodObjectFlattenedSchema": {
+              "mlObjectFlattenedSchema": {
                 "type": "object",
                 "definition": {
                   "a": {
@@ -1892,7 +1892,7 @@
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test060_recursive_object",
         "transformerTestDescription": "Checks type-checking a recursive object structure defined via schema reference",
-        "transformerName": "jzodTypeCheck",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -1952,7 +1952,7 @@
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "schemaReference",
@@ -1990,7 +1990,7 @@
           },
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "ok",
@@ -2309,7 +2309,7 @@
                           }
                         }
                       },
-                      "jzodObjectFlattenedSchema": {
+                      "mlObjectFlattenedSchema": {
                         "type": "object",
                         "definition": {
                           "a": {
@@ -2482,7 +2482,7 @@
                       }
                     }
                   },
-                  "jzodObjectFlattenedSchema": {
+                  "mlObjectFlattenedSchema": {
                     "type": "object",
                     "definition": {
                       "a": {
@@ -2591,7 +2591,7 @@
                       }
                     }
                   },
-                  "jzodObjectFlattenedSchema": {
+                  "mlObjectFlattenedSchema": {
                     "type": "object",
                     "definition": {
                       "a": {
@@ -2761,7 +2761,7 @@
                   }
                 }
               },
-              "jzodObjectFlattenedSchema": {
+              "mlObjectFlattenedSchema": {
                 "type": "object",
                 "definition": {
                   "a": {
@@ -2870,7 +2870,7 @@
                   }
                 }
               },
-              "jzodObjectFlattenedSchema": {
+              "mlObjectFlattenedSchema": {
                 "type": "object",
                 "definition": {
                   "a": {
@@ -2994,7 +2994,7 @@
                   }
                 }
               },
-              "jzodObjectFlattenedSchema": {
+              "mlObjectFlattenedSchema": {
                 "type": "object",
                 "definition": {
                   "a": {
@@ -3042,7 +3042,7 @@
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test070",
         "transformerTestDescription": "Checks type-checking a record schema containing schema references to a recursive object type",
-        "transformerName": "jzodTypeCheck",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -3119,7 +3119,7 @@
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "schemaReference",
@@ -3169,7 +3169,7 @@
           },
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "ok",
@@ -3498,7 +3498,7 @@
                           }
                         }
                       },
-                      "jzodObjectFlattenedSchema": {
+                      "mlObjectFlattenedSchema": {
                         "type": "object",
                         "definition": {
                           "a": {
@@ -3671,7 +3671,7 @@
                       }
                     }
                   },
-                  "jzodObjectFlattenedSchema": {
+                  "mlObjectFlattenedSchema": {
                     "type": "object",
                     "definition": {
                       "a": {
@@ -3772,7 +3772,7 @@
                       }
                     }
                   },
-                  "jzodObjectFlattenedSchema": {
+                  "mlObjectFlattenedSchema": {
                     "type": "object",
                     "definition": {
                       "a": {
@@ -4019,7 +4019,7 @@
                       }
                     }
                   },
-                  "jzodObjectFlattenedSchema": {
+                  "mlObjectFlattenedSchema": {
                     "type": "object",
                     "definition": {
                       "a": {
@@ -4157,7 +4157,7 @@
                   }
                 }
               },
-              "jzodObjectFlattenedSchema": {
+              "mlObjectFlattenedSchema": {
                 "type": "object",
                 "definition": {
                   "a": {
@@ -4258,7 +4258,7 @@
                   }
                 }
               },
-              "jzodObjectFlattenedSchema": {
+              "mlObjectFlattenedSchema": {
                 "type": "object",
                 "definition": {
                   "a": {
@@ -4381,7 +4381,7 @@
                   }
                 }
               },
-              "jzodObjectFlattenedSchema": {
+              "mlObjectFlattenedSchema": {
                 "type": "object",
                 "definition": {
                   "a": {
@@ -4509,7 +4509,7 @@
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test120_simple_union",
         "transformerTestDescription": "Checks that a number value matches a union(string, number) schema, resolving to the number branch",
-        "transformerName": "jzodTypeCheck",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -4538,7 +4538,7 @@
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "union",
@@ -4554,7 +4554,7 @@
           "valueObject": 1,
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "ok",
@@ -4615,7 +4615,7 @@
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test130_any_string",
         "transformerTestDescription": "Checks that a string value against an any schema resolves to a string schema",
-        "transformerName": "jzodTypeCheck",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -4636,7 +4636,7 @@
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "any"
@@ -4644,7 +4644,7 @@
           "valueObject": "hello",
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "ok",
@@ -4674,7 +4674,7 @@
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test140_any_number",
         "transformerTestDescription": "Checks that a number value against an any schema resolves to a number schema",
-        "transformerName": "jzodTypeCheck",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -4695,7 +4695,7 @@
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "any"
@@ -4703,7 +4703,7 @@
           "valueObject": 42,
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "ok",
@@ -4733,7 +4733,7 @@
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test150_any_object",
         "transformerTestDescription": "Checks that a flat object value against an any schema resolves to an object schema",
-        "transformerName": "jzodTypeCheck",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -4771,7 +4771,7 @@
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "any"
@@ -4781,17 +4781,17 @@
           },
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         }
       },
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test160_any_object_of_object",
         "transformerTestDescription": "Checks that a nested object value against an any schema resolves to a nested object schema",
-        "transformerName": "jzodTypeCheck",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "any"
@@ -4803,7 +4803,7 @@
           },
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "subExpectedValue": [
           [
@@ -4867,7 +4867,7 @@
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test170_any_array",
         "transformerTestDescription": "Checks that an array value against an any schema resolves to a tuple schema (default arrayAsTuple behavior)",
-        "transformerName": "jzodTypeCheck",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -4896,7 +4896,7 @@
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "any"
@@ -4907,7 +4907,7 @@
           ],
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "ok",
@@ -4953,7 +4953,7 @@
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test180_any_null",
         "transformerTestDescription": "Checks that null against an any schema resolves to a null schema",
-        "transformerName": "jzodTypeCheck",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -4974,7 +4974,7 @@
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "any"
@@ -4982,7 +4982,7 @@
           "valueObject": null,
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "ok",
@@ -5012,7 +5012,7 @@
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test181_any_boolean",
         "transformerTestDescription": "Checks that a boolean value against an any schema resolves to a boolean schema",
-        "transformerName": "jzodTypeCheck",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -5033,7 +5033,7 @@
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "any"
@@ -5041,7 +5041,7 @@
           "valueObject": false,
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "ok",
@@ -5071,7 +5071,7 @@
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test182_any_empty_object",
         "transformerTestDescription": "Checks that an empty object against an any schema resolves to an empty object schema",
-        "transformerName": "jzodTypeCheck",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -5093,7 +5093,7 @@
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "any"
@@ -5101,7 +5101,7 @@
           "valueObject": {},
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "ok",
@@ -5132,8 +5132,8 @@
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test010",
-        "transformerTestDescription": "jzodTypeCheck fail case test010",
-        "transformerName": "jzodTypeCheck",
+        "transformerTestDescription": "mlsTypeCheck fail case test010",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -5142,11 +5142,11 @@
           ],
           [
             "error",
-            "jzodTypeCheck failed to match value with literal schema"
+            "mlsTypeCheck failed to match value with literal schema"
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "literal",
@@ -5155,12 +5155,12 @@
           "valueObject": 42,
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "error",
-          "error": "jzodTypeCheck failed to match value with literal schema",
-          "rawJzodSchemaType": "literal",
+          "error": "mlsTypeCheck failed to match value with literal schema",
+          "rawMlSchemaType": "literal",
           "valuePath": [],
           "typePath": [],
           "value": 42,
@@ -5173,8 +5173,8 @@
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test011",
-        "transformerTestDescription": "jzodTypeCheck fail case test011",
-        "transformerName": "jzodTypeCheck",
+        "transformerTestDescription": "mlsTypeCheck fail case test011",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -5183,11 +5183,11 @@
           ],
           [
             "error",
-            "jzodTypeCheck failed to match value with string schema"
+            "mlsTypeCheck failed to match value with string schema"
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "string"
@@ -5195,12 +5195,12 @@
           "valueObject": 42,
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "error",
-          "error": "jzodTypeCheck failed to match value with string schema",
-          "rawJzodSchemaType": "string",
+          "error": "mlsTypeCheck failed to match value with string schema",
+          "rawMlSchemaType": "string",
           "valuePath": [],
           "typePath": [],
           "value": 42,
@@ -5212,8 +5212,8 @@
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test012",
-        "transformerTestDescription": "jzodTypeCheck fail case test012",
-        "transformerName": "jzodTypeCheck",
+        "transformerTestDescription": "mlsTypeCheck fail case test012",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -5222,11 +5222,11 @@
           ],
           [
             "error",
-            "jzodTypeCheck failed to match value with number schema"
+            "mlsTypeCheck failed to match value with number schema"
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "number"
@@ -5234,12 +5234,12 @@
           "valueObject": "42",
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "error",
-          "error": "jzodTypeCheck failed to match value with number schema",
-          "rawJzodSchemaType": "number",
+          "error": "mlsTypeCheck failed to match value with number schema",
+          "rawMlSchemaType": "number",
           "valuePath": [],
           "typePath": [],
           "value": "42",
@@ -5251,8 +5251,8 @@
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test013",
-        "transformerTestDescription": "jzodTypeCheck fail case test013",
-        "transformerName": "jzodTypeCheck",
+        "transformerTestDescription": "mlsTypeCheck fail case test013",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -5261,11 +5261,11 @@
           ],
           [
             "error",
-            "jzodTypeCheck failed to match value with bigint schema"
+            "mlsTypeCheck failed to match value with bigint schema"
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "bigint"
@@ -5273,12 +5273,12 @@
           "valueObject": 42,
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "error",
-          "error": "jzodTypeCheck failed to match value with bigint schema",
-          "rawJzodSchemaType": "bigint",
+          "error": "mlsTypeCheck failed to match value with bigint schema",
+          "rawMlSchemaType": "bigint",
           "valuePath": [],
           "typePath": [],
           "value": 42,
@@ -5290,8 +5290,8 @@
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test014",
-        "transformerTestDescription": "jzodTypeCheck fail case test014",
-        "transformerName": "jzodTypeCheck",
+        "transformerTestDescription": "mlsTypeCheck fail case test014",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -5300,11 +5300,11 @@
           ],
           [
             "error",
-            "jzodTypeCheck failed to match value with string schema"
+            "mlsTypeCheck failed to match value with string schema"
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "string"
@@ -5312,12 +5312,12 @@
           "valueObject": true,
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "error",
-          "error": "jzodTypeCheck failed to match value with string schema",
-          "rawJzodSchemaType": "string",
+          "error": "mlsTypeCheck failed to match value with string schema",
+          "rawMlSchemaType": "string",
           "valuePath": [],
           "typePath": [],
           "value": true,
@@ -5329,8 +5329,8 @@
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test015",
-        "transformerTestDescription": "jzodTypeCheck fail case test015",
-        "transformerName": "jzodTypeCheck",
+        "transformerTestDescription": "mlsTypeCheck fail case test015",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -5339,11 +5339,11 @@
           ],
           [
             "error",
-            "jzodTypeCheck expected a value but got null for non-optional schema"
+            "mlsTypeCheck expected a value but got null for non-optional schema"
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "number"
@@ -5351,12 +5351,12 @@
           "valueObject": null,
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "error",
-          "error": "jzodTypeCheck expected a value but got null for non-optional schema",
-          "rawJzodSchemaType": "number",
+          "error": "mlsTypeCheck expected a value but got null for non-optional schema",
+          "rawMlSchemaType": "number",
           "valuePath": [],
           "typePath": [],
           "value": null,
@@ -5368,8 +5368,8 @@
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test016",
-        "transformerTestDescription": "jzodTypeCheck fail case test016",
-        "transformerName": "jzodTypeCheck",
+        "transformerTestDescription": "mlsTypeCheck fail case test016",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -5378,11 +5378,11 @@
           ],
           [
             "error",
-            "jzodTypeCheck failed to match value with bigint schema"
+            "mlsTypeCheck failed to match value with bigint schema"
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "bigint"
@@ -5390,12 +5390,12 @@
           "valueObject": "42n",
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "error",
-          "error": "jzodTypeCheck failed to match value with bigint schema",
-          "rawJzodSchemaType": "bigint",
+          "error": "mlsTypeCheck failed to match value with bigint schema",
+          "rawMlSchemaType": "bigint",
           "valuePath": [],
           "typePath": [],
           "value": "42n",
@@ -5407,8 +5407,8 @@
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test017",
-        "transformerTestDescription": "jzodTypeCheck fail case test017",
-        "transformerName": "jzodTypeCheck",
+        "transformerTestDescription": "mlsTypeCheck fail case test017",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -5417,11 +5417,11 @@
           ],
           [
             "error",
-            "jzodTypeCheck failed to match value with boolean schema"
+            "mlsTypeCheck failed to match value with boolean schema"
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "boolean"
@@ -5429,12 +5429,12 @@
           "valueObject": 42,
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "error",
-          "error": "jzodTypeCheck failed to match value with boolean schema",
-          "rawJzodSchemaType": "boolean",
+          "error": "mlsTypeCheck failed to match value with boolean schema",
+          "rawMlSchemaType": "boolean",
           "valuePath": [],
           "typePath": [],
           "value": 42,
@@ -5446,8 +5446,8 @@
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test018",
-        "transformerTestDescription": "jzodTypeCheck fail case test018",
-        "transformerName": "jzodTypeCheck",
+        "transformerTestDescription": "mlsTypeCheck fail case test018",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -5456,11 +5456,11 @@
           ],
           [
             "error",
-            "jzodTypeCheck failed to match value with boolean schema"
+            "mlsTypeCheck failed to match value with boolean schema"
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "boolean"
@@ -5468,12 +5468,12 @@
           "valueObject": "true",
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "error",
-          "error": "jzodTypeCheck failed to match value with boolean schema",
-          "rawJzodSchemaType": "boolean",
+          "error": "mlsTypeCheck failed to match value with boolean schema",
+          "rawMlSchemaType": "boolean",
           "valuePath": [],
           "typePath": [],
           "value": "true",
@@ -5485,8 +5485,8 @@
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test019",
-        "transformerTestDescription": "jzodTypeCheck fail case test019",
-        "transformerName": "jzodTypeCheck",
+        "transformerTestDescription": "mlsTypeCheck fail case test019",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -5495,11 +5495,11 @@
           ],
           [
             "error",
-            "jzodTypeCheck expected a value but got null for non-optional schema"
+            "mlsTypeCheck expected a value but got null for non-optional schema"
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "boolean"
@@ -5507,12 +5507,12 @@
           "valueObject": null,
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "error",
-          "error": "jzodTypeCheck expected a value but got null for non-optional schema",
-          "rawJzodSchemaType": "boolean",
+          "error": "mlsTypeCheck expected a value but got null for non-optional schema",
+          "rawMlSchemaType": "boolean",
           "valuePath": [],
           "typePath": [],
           "value": null,
@@ -5524,8 +5524,8 @@
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test020",
-        "transformerTestDescription": "jzodTypeCheck fail case test020",
-        "transformerName": "jzodTypeCheck",
+        "transformerTestDescription": "mlsTypeCheck fail case test020",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -5534,11 +5534,11 @@
           ],
           [
             "error",
-            "jzodTypeCheck failed to match value with uuid schema"
+            "mlsTypeCheck failed to match value with uuid schema"
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "uuid"
@@ -5546,12 +5546,12 @@
           "valueObject": "not-a-uuid",
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "error",
-          "error": "jzodTypeCheck failed to match value with uuid schema",
-          "rawJzodSchemaType": "uuid",
+          "error": "mlsTypeCheck failed to match value with uuid schema",
+          "rawMlSchemaType": "uuid",
           "valuePath": [],
           "typePath": [],
           "value": "not-a-uuid",
@@ -5563,8 +5563,8 @@
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test021",
-        "transformerTestDescription": "jzodTypeCheck fail case test021",
-        "transformerName": "jzodTypeCheck",
+        "transformerTestDescription": "mlsTypeCheck fail case test021",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -5573,11 +5573,11 @@
           ],
           [
             "error",
-            "jzodTypeCheck failed to match value with uuid schema"
+            "mlsTypeCheck failed to match value with uuid schema"
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "uuid"
@@ -5585,12 +5585,12 @@
           "valueObject": 123,
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "error",
-          "error": "jzodTypeCheck failed to match value with uuid schema",
-          "rawJzodSchemaType": "uuid",
+          "error": "mlsTypeCheck failed to match value with uuid schema",
+          "rawMlSchemaType": "uuid",
           "valuePath": [],
           "typePath": [],
           "value": 123,
@@ -5602,8 +5602,8 @@
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test022",
-        "transformerTestDescription": "jzodTypeCheck fail case test022",
-        "transformerName": "jzodTypeCheck",
+        "transformerTestDescription": "mlsTypeCheck fail case test022",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -5612,11 +5612,11 @@
           ],
           [
             "error",
-            "jzodTypeCheck failed to match value with date schema. string could not be converted to Date. Value: \"not-a-date\""
+            "mlsTypeCheck failed to match value with date schema. string could not be converted to Date. Value: \"not-a-date\""
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "date"
@@ -5624,12 +5624,12 @@
           "valueObject": "not-a-date",
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "error",
-          "error": "jzodTypeCheck failed to match value with date schema. string could not be converted to Date. Value: \"not-a-date\"",
-          "rawJzodSchemaType": "date",
+          "error": "mlsTypeCheck failed to match value with date schema. string could not be converted to Date. Value: \"not-a-date\"",
+          "rawMlSchemaType": "date",
           "valuePath": [],
           "typePath": [],
           "value": "\"not-a-date\"",
@@ -5641,8 +5641,8 @@
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test024",
-        "transformerTestDescription": "jzodTypeCheck fail case test024",
-        "transformerName": "jzodTypeCheck",
+        "transformerTestDescription": "mlsTypeCheck fail case test024",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -5651,11 +5651,11 @@
           ],
           [
             "error",
-            "jzodTypeCheck expected a value but got null for non-optional schema"
+            "mlsTypeCheck expected a value but got null for non-optional schema"
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "date"
@@ -5663,12 +5663,12 @@
           "valueObject": null,
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "error",
-          "error": "jzodTypeCheck expected a value but got null for non-optional schema",
-          "rawJzodSchemaType": "date",
+          "error": "mlsTypeCheck expected a value but got null for non-optional schema",
+          "rawMlSchemaType": "date",
           "valuePath": [],
           "typePath": [],
           "value": null,
@@ -5680,8 +5680,8 @@
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test025",
-        "transformerTestDescription": "jzodTypeCheck fail case test025",
-        "transformerName": "jzodTypeCheck",
+        "transformerTestDescription": "mlsTypeCheck fail case test025",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -5690,11 +5690,11 @@
           ],
           [
             "error",
-            "jzodTypeCheck expected a value but got null for non-optional schema"
+            "mlsTypeCheck expected a value but got null for non-optional schema"
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "string"
@@ -5702,12 +5702,12 @@
           "valueObject": null,
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "error",
-          "error": "jzodTypeCheck expected a value but got null for non-optional schema",
-          "rawJzodSchemaType": "string",
+          "error": "mlsTypeCheck expected a value but got null for non-optional schema",
+          "rawMlSchemaType": "string",
           "valuePath": [],
           "typePath": [],
           "value": null,
@@ -5719,8 +5719,8 @@
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test026",
-        "transformerTestDescription": "jzodTypeCheck fail case test026",
-        "transformerName": "jzodTypeCheck",
+        "transformerTestDescription": "mlsTypeCheck fail case test026",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -5729,11 +5729,11 @@
           ],
           [
             "error",
-            "jzodTypeCheck expected a value but got null for non-optional schema"
+            "mlsTypeCheck expected a value but got null for non-optional schema"
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "number"
@@ -5741,12 +5741,12 @@
           "valueObject": null,
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "error",
-          "error": "jzodTypeCheck expected a value but got null for non-optional schema",
-          "rawJzodSchemaType": "number",
+          "error": "mlsTypeCheck expected a value but got null for non-optional schema",
+          "rawMlSchemaType": "number",
           "valuePath": [],
           "typePath": [],
           "value": null,
@@ -5758,8 +5758,8 @@
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test027",
-        "transformerTestDescription": "jzodTypeCheck fail case test027",
-        "transformerName": "jzodTypeCheck",
+        "transformerTestDescription": "mlsTypeCheck fail case test027",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -5768,11 +5768,11 @@
           ],
           [
             "error",
-            "jzodTypeCheck expected a value but got null for non-optional schema"
+            "mlsTypeCheck expected a value but got null for non-optional schema"
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "bigint"
@@ -5780,12 +5780,12 @@
           "valueObject": null,
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "error",
-          "error": "jzodTypeCheck expected a value but got null for non-optional schema",
-          "rawJzodSchemaType": "bigint",
+          "error": "mlsTypeCheck expected a value but got null for non-optional schema",
+          "rawMlSchemaType": "bigint",
           "valuePath": [],
           "typePath": [],
           "value": null,
@@ -5797,8 +5797,8 @@
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test028",
-        "transformerTestDescription": "jzodTypeCheck fail case test028",
-        "transformerName": "jzodTypeCheck",
+        "transformerTestDescription": "mlsTypeCheck fail case test028",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -5807,11 +5807,11 @@
           ],
           [
             "error",
-            "jzodTypeCheck expected a value but got null for non-optional schema"
+            "mlsTypeCheck expected a value but got null for non-optional schema"
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "boolean"
@@ -5819,12 +5819,12 @@
           "valueObject": null,
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "error",
-          "error": "jzodTypeCheck expected a value but got null for non-optional schema",
-          "rawJzodSchemaType": "boolean",
+          "error": "mlsTypeCheck expected a value but got null for non-optional schema",
+          "rawMlSchemaType": "boolean",
           "valuePath": [],
           "typePath": [],
           "value": null,
@@ -5836,8 +5836,8 @@
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test029",
-        "transformerTestDescription": "jzodTypeCheck fail case test029",
-        "transformerName": "jzodTypeCheck",
+        "transformerTestDescription": "mlsTypeCheck fail case test029",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -5846,11 +5846,11 @@
           ],
           [
             "error",
-            "jzodTypeCheck expected a value but got null for non-optional schema"
+            "mlsTypeCheck expected a value but got null for non-optional schema"
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "uuid"
@@ -5858,12 +5858,12 @@
           "valueObject": null,
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "error",
-          "error": "jzodTypeCheck expected a value but got null for non-optional schema",
-          "rawJzodSchemaType": "uuid",
+          "error": "mlsTypeCheck expected a value but got null for non-optional schema",
+          "rawMlSchemaType": "uuid",
           "valuePath": [],
           "typePath": [],
           "value": null,
@@ -5875,8 +5875,8 @@
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test030",
-        "transformerTestDescription": "jzodTypeCheck fail case test030",
-        "transformerName": "jzodTypeCheck",
+        "transformerTestDescription": "mlsTypeCheck fail case test030",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -5885,11 +5885,11 @@
           ],
           [
             "error",
-            "jzodTypeCheck failed to match value with date schema. string could not be converted to Date. Value: \"not-a-date\""
+            "mlsTypeCheck failed to match value with date schema. string could not be converted to Date. Value: \"not-a-date\""
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "date"
@@ -5897,12 +5897,12 @@
           "valueObject": "not-a-date",
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "error",
-          "error": "jzodTypeCheck failed to match value with date schema. string could not be converted to Date. Value: \"not-a-date\"",
-          "rawJzodSchemaType": "date",
+          "error": "mlsTypeCheck failed to match value with date schema. string could not be converted to Date. Value: \"not-a-date\"",
+          "rawMlSchemaType": "date",
           "valuePath": [],
           "typePath": [],
           "value": "\"not-a-date\"",
@@ -5914,8 +5914,8 @@
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test100",
-        "transformerTestDescription": "jzodTypeCheck fail case test100",
-        "transformerName": "jzodTypeCheck",
+        "transformerTestDescription": "mlsTypeCheck fail case test100",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -5924,11 +5924,11 @@
           ],
           [
             "error",
-            "jzodTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)"
+            "mlsTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)"
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "object",
@@ -5947,12 +5947,12 @@
           },
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "error",
-          "error": "jzodTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)",
-          "rawJzodSchemaType": "object",
+          "error": "mlsTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)",
+          "rawMlSchemaType": "object",
           "valuePath": [],
           "typePath": [],
           "errorOnValueAttributes": [
@@ -5962,8 +5962,8 @@
           "innerError": {
             "name": {
               "status": "error",
-              "error": "jzodTypeCheck failed to match value with string schema",
-              "rawJzodSchemaType": "string",
+              "error": "mlsTypeCheck failed to match value with string schema",
+              "rawMlSchemaType": "string",
               "valuePath": [
                 "name"
               ],
@@ -5977,8 +5977,8 @@
             },
             "age": {
               "status": "error",
-              "error": "jzodTypeCheck failed to match value with number schema",
-              "rawJzodSchemaType": "number",
+              "error": "mlsTypeCheck failed to match value with number schema",
+              "rawMlSchemaType": "number",
               "valuePath": [
                 "age"
               ],
@@ -6011,8 +6011,8 @@
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test110",
-        "transformerTestDescription": "jzodTypeCheck fail case test110",
-        "transformerName": "jzodTypeCheck",
+        "transformerTestDescription": "mlsTypeCheck fail case test110",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -6021,11 +6021,11 @@
           ],
           [
             "error",
-            "jzodTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)"
+            "mlsTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)"
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "object",
@@ -6045,12 +6045,12 @@
           },
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "error",
-          "error": "jzodTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)",
-          "rawJzodSchemaType": "object",
+          "error": "mlsTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)",
+          "rawMlSchemaType": "object",
           "valuePath": [],
           "typePath": [],
           "errorOnValueAttributes": [
@@ -6059,7 +6059,7 @@
           "innerError": {
             "unknownAttribute": {
               "status": "error",
-              "error": "jzodTypeCheck value attribute 'unknownAttribute' not found in schema definition",
+              "error": "mlsTypeCheck value attribute 'unknownAttribute' not found in schema definition",
               "errorOnSchemaAttributes": {
                 "definition": {
                   "age": {
@@ -6071,7 +6071,7 @@
                 },
                 "type": "object"
               },
-              "rawJzodSchemaType": "object",
+              "rawMlSchemaType": "object",
               "valuePath": [
                 "unknownAttribute"
               ],
@@ -6115,8 +6115,8 @@
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test120",
-        "transformerTestDescription": "jzodTypeCheck fail case test120",
-        "transformerName": "jzodTypeCheck",
+        "transformerTestDescription": "mlsTypeCheck fail case test120",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -6125,11 +6125,11 @@
           ],
           [
             "error",
-            "jzodTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)"
+            "mlsTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)"
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "object",
@@ -6170,12 +6170,12 @@
           },
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "error",
-          "error": "jzodTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)",
-          "rawJzodSchemaType": "object",
+          "error": "mlsTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)",
+          "rawMlSchemaType": "object",
           "valuePath": [],
           "typePath": [],
           "errorOnValueAttributes": [
@@ -6184,8 +6184,8 @@
           "innerError": {
             "person": {
               "status": "error",
-              "error": "jzodTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)",
-              "rawJzodSchemaType": "object",
+              "error": "mlsTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)",
+              "rawMlSchemaType": "object",
               "valuePath": [
                 "person"
               ],
@@ -6198,8 +6198,8 @@
               "innerError": {
                 "name": {
                   "status": "error",
-                  "error": "jzodTypeCheck failed to match value with string schema",
-                  "rawJzodSchemaType": "string",
+                  "error": "mlsTypeCheck failed to match value with string schema",
+                  "rawMlSchemaType": "string",
                   "valuePath": [
                     "person",
                     "name"
@@ -6273,8 +6273,8 @@
       {
         "miroirTestType": "transformerTest",
         "miroirTestLabel": "test130",
-        "transformerTestDescription": "jzodTypeCheck fail case test130",
-        "transformerName": "jzodTypeCheck",
+        "transformerTestDescription": "mlsTypeCheck fail case test130",
+        "transformerName": "mlsTypeCheck",
         "runTestStep": "build",
         "subExpectedValue": [
           [
@@ -6283,11 +6283,11 @@
           ],
           [
             "error",
-            "jzodTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)"
+            "mlsTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)"
           ]
         ],
         "transformer": {
-          "transformerType": "jzodTypeCheck",
+          "transformerType": "mlsTypeCheck",
           "interpolation": "build",
           "mlSchema": {
             "type": "object",
@@ -6327,12 +6327,12 @@
           },
           "currentValuePath": [],
           "currentTypePath": [],
-          "relativeReferenceJzodContext": {}
+          "relativeReferenceMlContext": {}
         },
         "expectedValue": {
           "status": "error",
-          "error": "jzodTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)",
-          "rawJzodSchemaType": "object",
+          "error": "mlsTypeCheck failed to match some object value attribute(s) with the schema of that attribute(s)",
+          "rawMlSchemaType": "object",
           "valuePath": [],
           "typePath": [],
           "errorOnValueAttributes": [
@@ -6341,8 +6341,8 @@
           "innerError": {
             "person": {
               "status": "error",
-              "error": "jzodTypeCheck failed to match some mandatory object value attribute(s) with the schema of that attribute(s)",
-              "rawJzodSchemaType": "object",
+              "error": "mlsTypeCheck failed to match some mandatory object value attribute(s) with the schema of that attribute(s)",
+              "rawMlSchemaType": "object",
               "valuePath": [
                 "person"
               ],

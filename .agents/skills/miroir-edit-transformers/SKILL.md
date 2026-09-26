@@ -202,8 +202,8 @@ In `packages/miroir-core/src/2_domain/Transformers.ts`:
 ### Step 7: Register Schema Types (CRITICAL!) 🔑
 **This step is often forgotten but mandatory for devBuild to work!**
 
-#### Part A: In `getMiroirFundamentalJzodSchema.ts`
-File: `packages/miroir-core/src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts`
+#### Part A: In `getMiroirFundamentalMlSchema.ts`
+File: `packages/miroir-core/src/0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchema.ts`
 
 1. Add `transformerForBuild_<name>` entry in `miroirTransformersForBuild` section
 2. Add `transformerForBuildPlusRuntime_<name>` entry in `miroirTransformersForBuildPlusRuntime` section
@@ -236,7 +236,7 @@ Documentation is in folder `docs-OLD/transformers`
 | `miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/<uuid>.json` | TransformerDefinition | New JSON file with `transformerImplementationType: "libraryImplementation"` |
 | `2_domain/TransformersForRuntime.ts` | Implementation | Handler function + registrations in 2 objects |
 | `2_domain/Transformers.ts` | Export/Registration | Import JSON, export constant, add to array |
-| `0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts` | Schema registration | 2 transformer entries + 1 dependency entry |
+| `0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchema.ts` | Schema registration | 2 transformer entries + 1 dependency entry |
 | `scripts/generate-ts-types.ts` | Pre-generated types | 4 transformer entries |
 | `miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` | Test cases (`miroirTest_miroirCoreTransformers`) | New `miroirTest` leaf objects |
 | `miroir-store-postgres/src/1_core/SqlGenerator.ts` | SQL implementation (optional) | `sqlStringFor<Name>Transformer` function + registration in `sqlTransformerImplementations`, then rebuild with `npm run build -w miroir-store-postgres` |
@@ -268,7 +268,7 @@ Documentation is in folder `docs-OLD/transformers`
       "transformerDefinition": {
         "type": "object",
         "definition": {
-          // Define parameters here using Jzod schema
+          // Define parameters here using ML schema
           "paramName": {
             "type": "string"
           }
@@ -278,7 +278,7 @@ Documentation is in folder `docs-OLD/transformers`
     "transformerResultSchema": {
       "returns": "mlSchema",
       "definition": {
-        // Define return type using Jzod schema
+        // Define return type using ML schema
         "type": "string"
       }
     }

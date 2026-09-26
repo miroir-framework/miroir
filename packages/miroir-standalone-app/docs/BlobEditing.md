@@ -6,7 +6,7 @@ The Miroir Framework provides built-in support for displaying and editing binary
 
 ## Enabling Blob Editing
 
-To enable blob editing for an entity attribute, add the `isBlob: true` tag to the attribute's schema definition in your entity's Jzod schema.
+To enable blob editing for an entity attribute, add the `isBlob: true` tag to the attribute's schema definition in your entity's ML schema.
 
 ### Entity Definition Example
 

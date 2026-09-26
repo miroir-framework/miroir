@@ -337,19 +337,19 @@ export function applyDomainStateQueryTemplateSelector<ResultType>( // TODO: memo
 }
 
 // // ################################################################################################
-// export function applyDomainStateJzodSchemaSelector<QueryType extends DomainModelQueryTemplateJzodSchemaParams>( // TODO: memoize?
-//   domainStateSelector: JzodSchemaQueryTemplateSelector<QueryType, DomainState>
+// export function applyDomainStateMlSchemaSelector<QueryType extends DomainModelQueryTemplateMlSchemaParams>( // TODO: memoize?
+//   domainStateSelector: MlSchemaQueryTemplateSelector<QueryType, DomainState>
 // ): (
 //   reduxState: ReduxStateWithUndoRedo,
 //   applicationDeploymentMap: ApplicationDeploymentMap,
-//   params: ExtractorTemplateRunnerParamsForJzodSchema<QueryType, DomainState>,
+//   params: ExtractorTemplateRunnerParamsForMlSchema<QueryType, DomainState>,
 //   modelEnvironment: MiroirModelEnvironment
-// ) => RecordOfJzodElement | JzodElement | undefined { 
+// ) => RecordOfMlElement | MlElement | undefined { 
 //   return createSelector(
 //     [
 //       selectDomainStateFromReduxState, 
 //       selectApplicationDeploymentMapSelector,
-//       selectDomainStateJzodSchemaSelectorParams<QueryType>,
+//       selectDomainStateMlSchemaSelectorParams<QueryType>,
 //       selectMiroirModelEnvironmentSelectorParamsForMLS
 //     ],
 //     domainStateSelector
@@ -359,19 +359,19 @@ export function applyDomainStateQueryTemplateSelector<ResultType>( // TODO: memo
 
 // // ################################################################################################
 // // TODO: create "generic", StateType-independent version, receiving the state-access function as parameter (here selectCurrentReduxDeploymentsStateFromReduxState)
-// export function applyReduxDeploymentsStateJzodSchemaSelectorTemplate<QueryTemplateType extends DomainModelQueryTemplateJzodSchemaParams>( // TODO: memoize?
-//   domainStateSelector: JzodSchemaQueryTemplateSelector<QueryTemplateType, ReduxDeploymentsState>
+// export function applyReduxDeploymentsStateMlSchemaSelectorTemplate<QueryTemplateType extends DomainModelQueryTemplateMlSchemaParams>( // TODO: memoize?
+//   domainStateSelector: MlSchemaQueryTemplateSelector<QueryTemplateType, ReduxDeploymentsState>
 // ): (
 //   reduxState: ReduxStateWithUndoRedo,
 //   applicationDeploymentMap: ApplicationDeploymentMap,
-//   params: ExtractorTemplateRunnerParamsForJzodSchema<QueryTemplateType, ReduxDeploymentsState>,
+//   params: ExtractorTemplateRunnerParamsForMlSchema<QueryTemplateType, ReduxDeploymentsState>,
 //   modelEnvironment: MiroirModelEnvironment
-// ) => RecordOfJzodElement | JzodElement | undefined { 
+// ) => RecordOfMlElement | MlElement | undefined { 
 //   return createSelector(
 //     [
 //       selectCurrentReduxDeploymentsStateFromReduxState,
 //       selectApplicationDeploymentMapSelector,
-//       selectJzodSchemaSelectorParamsForTemplate<QueryTemplateType, ReduxDeploymentsState>,
+//       selectMlSchemaSelectorParamsForTemplate<QueryTemplateType, ReduxDeploymentsState>,
 //       selectMiroirModelEnvironmentSelectorParamsForMLS,
 //     ],
 //     domainStateSelector
@@ -380,19 +380,19 @@ export function applyDomainStateQueryTemplateSelector<ResultType>( // TODO: memo
 
 // // ################################################################################################
 // // TODO: create "generic", StateType-independent version, receiving the state-access function as parameter (here selectCurrentReduxDeploymentsStateFromReduxState)
-// export function applyReduxDeploymentsStateJzodSchemaSelector<QueryType extends QueryJzodSchemaParams>( // TODO: memoize?
-//   domainStateSelector: JzodSchemaQuerySelector<QueryType, ReduxDeploymentsState>
+// export function applyReduxDeploymentsStateMlSchemaSelector<QueryType extends QueryMlSchemaParams>( // TODO: memoize?
+//   domainStateSelector: MlSchemaQuerySelector<QueryType, ReduxDeploymentsState>
 // ): (
 //   reduxState: ReduxStateWithUndoRedo,
 //   applicationDeploymentMap: ApplicationDeploymentMap,
-//   params: ExtractorRunnerParamsForJzodSchema<QueryType, ReduxDeploymentsState>,
+//   params: ExtractorRunnerParamsForMlSchema<QueryType, ReduxDeploymentsState>,
 //   modelEnvironment: MiroirModelEnvironment
-// ) => RecordOfJzodElement | JzodElement | undefined { 
+// ) => RecordOfMlElement | MlElement | undefined { 
 //   return createSelector(
 //     [
 //       selectCurrentReduxDeploymentsStateFromReduxState,
 //       selectApplicationDeploymentMapSelector,
-//       selectJzodSchemaSelectorParams<QueryType, ReduxDeploymentsState>,
+//       selectMlSchemaSelectorParams<QueryType, ReduxDeploymentsState>,
 //       selectMiroirModelEnvironmentSelectorParamsForMLS,
 //     ],
 //     domainStateSelector

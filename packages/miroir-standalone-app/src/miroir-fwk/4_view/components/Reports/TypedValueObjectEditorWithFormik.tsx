@@ -2,7 +2,7 @@ import { Formik } from 'formik';
 import {
   LoggerInterface,
   MiroirLoggerFactory,
-  type JzodObject
+  type MlObject
 } from "miroir-core";
 
 import { packageName } from '../../../../constants.js';

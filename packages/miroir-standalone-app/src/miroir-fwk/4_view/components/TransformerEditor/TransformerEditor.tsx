@@ -13,9 +13,9 @@ import {
   noValue,
   safeStringify,
   transformer_extended_apply_wrapper,
-  type JzodElement,
-  type JzodObject,
-  type JzodUnion,
+  type MlElement,
+  type MlObject,
+  type MlUnion,
   type MiroirModelEnvironment,
 } from 'miroir-core';
 import {
@@ -515,13 +515,13 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
             log.info("TransformerEditor Transformation error path:", errorPath);
 
             // ################################################################################################
-            const transformationResultSchema: JzodElement = useMemo(() => {
-              return (valueToJzod(transformationResult) ?? { type: "any" }) as JzodElement;
+            const transformationResultSchema: MlElement = useMemo(() => {
+              return (valueToJzod(transformationResult) ?? { type: "any" }) as MlElement;
             }, [transformationResult]);
 
             // ##################################################################################
             // Form ML Schema for the transformer editor
-            const formMLSchema: JzodObject = useMemo(() => {
+            const formMLSchema: MlObject = useMemo(() => {
               return {
                 type: "object",
                 definition: {
@@ -620,7 +620,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                         },
                       },
                     ],
-                  } as JzodUnion,
+                  } as MlUnion,
                   [formikPath_TransformerEditorInputModeSelector]: {
                     type: "union",
                     discriminator: "mode",
@@ -665,10 +665,10 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                         },
                       },
                     ],
-                  } as JzodUnion,
+                  } as MlUnion,
                   transformerEditor_input: {
                     type: "any",
-                  } as JzodElement,
+                  } as MlElement,
                   transformerEditor_editor: {
                     type: "object",
                     definition: {
@@ -680,7 +680,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                         },
                       },
                     },
-                  } as JzodObject,
+                  } as MlObject,
                 },
               };
             }, [(formikContext.values.transformerEditor_transformer_selector as any).application, application]);

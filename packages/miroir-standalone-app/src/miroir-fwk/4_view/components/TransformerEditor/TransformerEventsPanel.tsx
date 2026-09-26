@@ -4,7 +4,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   type EventFilter,
-  type JzodElement,
+  type MlElement,
   type MiroirEvent,
   type MiroirEventLog,
   type TransformerEvent,
@@ -103,7 +103,7 @@ const DisplayTransformerEvent: React.FC<{
       Object.entries(activity.transformerParams).map(([key, value]) => {
         // Filter out large objects/arrays for initial display
         if (value && typeof value === 'object') {
-          if (["miroirFundamentalJzodSchema", "miroirMetaModel", "currentModel"].includes(key)) return [key, `{${key}...}`];
+          if (["miroirFundamentalMlSchema", "miroirMetaModel", "currentModel"].includes(key)) return [key, `{${key}...}`];
           if (Array.isArray(value) && value.length > 10) return [key, `[Array with ${value.length} items]`];
           if (!Array.isArray(value) && Object.keys(value).length > 10) return [key, `{Object with ${Object.keys(value).length} keys}`];
         }
@@ -114,11 +114,11 @@ const DisplayTransformerEvent: React.FC<{
   , [activity.transformerParams]);
 
   log.debug("Displayed parameters", displayedParameters);
-  const parametersSchema: JzodElement = useMemo(() => {
+  const parametersSchema: MlElement = useMemo(() => {
     if (!displayedParameters || !isExpanded) {
-      return { type: "any" } as JzodElement;
+      return { type: "any" } as MlElement;
     }
-    return (valueToJzod(displayedParameters) ?? { type: "any" }) as JzodElement;
+    return (valueToJzod(displayedParameters) ?? { type: "any" }) as MlElement;
   }, [displayedParameters, isExpanded]);
 
   return (
