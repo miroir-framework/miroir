@@ -94,3 +94,41 @@ def test_sync_removes_committed_copy_of_skill_dropped_from_lock(repo: Path) -> N
     sync(repo)
     assert not (repo / ".claude/skills/tdd").exists()
     assert check(repo) == []
+
+
+def _link_or_skip(link: Path, target: Path, kind: str) -> None:
+    link.parent.mkdir(parents=True, exist_ok=True)
+    if kind == "junction":
+        if sys.platform != "win32":
+            pytest.skip("junctions are Windows-only")
+        import _winapi
+
+        _winapi.CreateJunction(str(target), str(link))
+        return
+    try:
+        link.symlink_to(target, target_is_directory=True)
+    except OSError:
+        pytest.skip("symlinks not permitted here")
+
+
+@pytest.mark.parametrize("kind", ["symlink", "junction"])
+def test_sync_replaces_linked_copy_without_touching_source(repo: Path, kind: str) -> None:
+    source = repo / ".agents/skills/tdd"
+    link = repo / ".claude/skills/tdd"
+    _link_or_skip(link, source, kind)
+    sync(repo)
+    assert (source / "SKILL.md").exists()
+    assert not link.is_symlink()
+    assert (link / "SKILL.md").read_text(encoding="utf-8") == (source / "SKILL.md").read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize("kind", ["symlink", "junction"])
+def test_sync_removes_stale_linked_copy_without_touching_target(repo: Path, kind: str) -> None:
+    target = repo / "elsewhere/miroir-old"
+    target.mkdir(parents=True)
+    (target / "SKILL.md").write_text("keep", encoding="utf-8")
+    link = repo / ".claude/skills/miroir-old"
+    _link_or_skip(link, target, kind)
+    sync(repo)
+    assert not link.exists() and not link.is_symlink()
+    assert (target / "SKILL.md").read_text(encoding="utf-8") == "keep"

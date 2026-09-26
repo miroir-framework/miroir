@@ -19,7 +19,9 @@ from __future__ import annotations
 import argparse
 import filecmp
 import json
+import os
 import shutil
+import stat
 import subprocess
 import sys
 from pathlib import Path
@@ -89,16 +91,37 @@ def check(root: Path) -> list[str]:
     return sorted(drift + _stale_copies(root, tracked))
 
 
+def _is_link(path: Path) -> bool:
+    """Symlink, or Windows junction (a reparse point that is_symlink() does not report)."""
+    if path.is_symlink():
+        return True
+    try:
+        return bool(os.lstat(path).st_file_attributes & stat.FILE_ATTRIBUTE_REPARSE_POINT)
+    except (AttributeError, OSError):
+        return False
+
+
+def _remove(path: Path) -> None:
+    """Delete a copy; a link is removed itself, never the directory it points to."""
+    if not _is_link(path):
+        shutil.rmtree(path)
+        return
+    try:
+        os.unlink(path)
+    except OSError:
+        os.rmdir(path)  # Windows directory symlink or junction: removes the link only
+
+
 def sync(root: Path) -> None:
     tracked = tracked_skill_names(root)
     target = _target_dir(root)
     target.mkdir(parents=True, exist_ok=True)
     for name in _stale_copies(root, tracked):
-        shutil.rmtree(target / name)
+        _remove(target / name)
     for name in tracked:
         dest = target / name
-        if dest.exists():
-            shutil.rmtree(dest)
+        if dest.exists() or _is_link(dest):
+            _remove(dest)
         shutil.copytree(_source_dir(root) / name, dest)
 
 
