@@ -15,7 +15,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/312
 Working branch: `claude/project-thread-4gyfzk` (from `_integration`)
 
-**Resume note:** plan written, no slice started.
+**Resume note:** Slice 1 DONE.
 
 ---
 
@@ -35,7 +35,7 @@ This plan does **not** tag leaves, add all-of matching, tag other Entities, chan
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 1 | Tracer: `--tags` selects a tagged unit suite | ⬜ | `miroirTestTags.unit.test.ts` + `testMiroir --tags tools` |
+| 1 | Tracer: `--tags` selects a tagged unit suite | ✅ | `miroirTestTags.unit.test.ts` + `testMiroir --tags tools` |
 | 2 | Unknown tags rejected, from the Entity vocabulary | ⬜ | `miroirTestTags.unit.test.ts` (CLI error + model validation) |
 | 3 | Every MiroirTest tagged | ⬜ | guard test over the folder catalog + `modelValidation` |
 | 4 | `--tags` in the standalone-app launcher | ⬜ | `testMiroirLauncher` test |
@@ -96,7 +96,7 @@ Vitest is the vehicle throughout: the behaviors are the test apparatus itself (C
 
 ## Slice 1 — Tracer: `--tags` selects a tagged unit suite
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** a developer runs `testMiroir -w miroir-core -- --tags tools` and gets the suites tagged `tools`.
 
@@ -130,7 +130,12 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-_(pending)_
+- Schema: `tags` (array of the 20-value enum) after `description` in the Entity row and EntityVersion, identical; leaf `testTag` removed from the 4 leaf schemas. Both files rewritten with `json.dumps(indent=2)`, which round-trips them byte for byte. Rebuild + `devBuild` regenerated `miroirFundamentalType.ts` (`tags?: ("transformer" | … | "tools")[]`) and `miroirFundamentalMlSchema.ts`.
+- RED confirmed first: with `mustache` tagged and the schema unchanged, model validation returned `error` (MiroirTest objects reject unknown attributes).
+- `MiroirTestCliConfig.tags`, `splitTags`, `--tags`, `MIROIR_TEST_TAGS` both ways; `miroirTestTags.ts` (`getMiroirTestInstanceTags`, `miroirTestInstanceHasAnyTag`, exported from `index.ts`); `resolveCliSuiteKeysFromCatalog(..., tags?)`.
+- Callers pass `tags`: miroir-core unit entry, standalone core integ entry, launcher (core and runner branches). Deviation: the runner vitest entry (`miroir-runner-tests.integ.test.ts`) did not go through `resolveCliSuiteKeysFromCatalog` at all; it now does, so `MIROIR_TEST_TAGS` works there too.
+- Tracer: `npm run testMiroir -w miroir-core -- --tags tools --mode unit` ran the 6 `mustache` tests only.
+- Validation: `miroirTestTags.unit` 7/7, `parseMiroirTestCliConfig.unit` 13/13, `loadApplicationMiroirTestsFromFolders.unit` 5/5, miroir `modelValidation` 162/162, `componentMiroirTests.consistency` 6/6, `miroirModelVersionLayout` 10/10, `tsc` miroir-core and miroir-standalone-app clean.
 
 ---
 

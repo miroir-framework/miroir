@@ -22,6 +22,7 @@ import {
   isMiroirTestSuiteInstance,
 } from "./applicationMiroirTestCatalog.js";
 import { ALL_SUITES_JOKER, resolveSuiteKeys } from "./parseMiroirTestCliConfig.js";
+import { miroirTestInstanceHasAnyTag } from "./miroirTestTags.js";
 import {
   APPLICATION_MIROIR_TEST_SOURCE_FOLDERS_LEGACY,
   DEPLOYMENT_PACKAGE_PREFIX,
@@ -171,18 +172,28 @@ export function listCliTransformerIntegrationSuiteKeysFromFolders(
 
 /**
  * Expand `*` / empty to every key in `availableKeys`, then resolve suite keys
- * (instance `name` or `uuid`) against the folder catalog.
+ * (instance `name` or `uuid`) against the folder catalog. With `tags` (#312),
+ * keep only the suites carrying any of them.
  */
 export function resolveCliSuiteKeysFromCatalog(
   rawKeys: string[],
   availableKeys: string[],
   catalog: ApplicationMiroirTestCatalogEntry[] = loadApplicationMiroirTestCatalog(),
+  tags?: string[],
 ): string[] {
   const selected = resolveSuiteKeys(rawKeys, availableKeys);
-  if (rawKeys.length === 0 || rawKeys.includes(ALL_SUITES_JOKER)) {
-    return selected;
+  const resolved =
+    rawKeys.length === 0 || rawKeys.includes(ALL_SUITES_JOKER)
+      ? selected
+      : resolveApplicationMiroirTestSuiteKeys(catalog, selected);
+  if (!tags?.length) {
+    return resolved;
   }
-  return resolveApplicationMiroirTestSuiteKeys(catalog, selected);
+  const catalogByKey = new Map(catalog.map((entry) => [entry.suiteKey, entry]));
+  return resolved.filter((suiteKey) => {
+    const entry = catalogByKey.get(suiteKey);
+    return entry !== undefined && miroirTestInstanceHasAnyTag(entry.instance, tags);
+  });
 }
 
 /** Node CLI / test loader: read the suite from application folders, not named exports. */

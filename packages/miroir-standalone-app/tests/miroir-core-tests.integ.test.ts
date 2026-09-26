@@ -29,7 +29,12 @@ const parsedConfig = resolveMiroirTestCliConfigFromPartial(
 );
 const config = {
   ...parsedConfig,
-  suiteKeys: resolveCliSuiteKeysFromCatalog(parsedConfig.suiteKeys, unitSuiteKeys),
+  suiteKeys: resolveCliSuiteKeysFromCatalog(
+    parsedConfig.suiteKeys,
+    unitSuiteKeys,
+    undefined,
+    parsedConfig.tags,
+  ),
 };
 const testSessionOptions = resolveTestSessionForIntegOptionsFromEnv(process.env);
 const miroirActivityTracker = new MiroirActivityTracker();

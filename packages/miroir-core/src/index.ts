@@ -1601,6 +1601,10 @@ export {
   type UiIntegrationTransformerSuiteRegistryMap,
 } from "./5_tests/applicationMiroirTestCatalog.js";
 export {
+  getMiroirTestInstanceTags,
+  miroirTestInstanceHasAnyTag,
+} from "./5_tests/miroirTestTags.js";
+export {
   describeIntegrationTestSession,
   getBootstrapPhasesForDomainControllerProfile,
   getBootstrapPhasesForSessionKind,
@@ -1855,6 +1859,7 @@ export {
   resolveMiroirTestSuiteKeys,
   resolveMiroirTestCliConfigFromPartial,
   splitSuiteKeys,
+  splitTags,
   type MiroirCoreTestVitestEntry,
   type MiroirTestCliConfig,
   type MiroirTestStorageType,

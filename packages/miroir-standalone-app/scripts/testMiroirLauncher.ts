@@ -54,7 +54,12 @@ export function resolveVitestEntry(
     );
     const resolvedCoreConfig = {
       ...coreConfig,
-      suiteKeys: resolveCliSuiteKeysFromCatalog(coreConfig.suiteKeys, unitKeys, catalog),
+      suiteKeys: resolveCliSuiteKeysFromCatalog(
+        coreConfig.suiteKeys,
+        unitKeys,
+        catalog,
+        coreConfig.tags,
+      ),
     };
     if (resolvedCoreConfig.executionMode !== "integration") {
       throw new Error(
@@ -74,7 +79,12 @@ export function resolveVitestEntry(
   const runnerConfig = parseMiroirRunnerTestCliConfig(env, argv, runnerKeys);
   const resolvedRunnerConfig = {
     ...runnerConfig,
-    suiteKeys: resolveCliSuiteKeysFromCatalog(runnerConfig.suiteKeys, runnerKeys, catalog),
+    suiteKeys: resolveCliSuiteKeysFromCatalog(
+      runnerConfig.suiteKeys,
+      runnerKeys,
+      catalog,
+      runnerConfig.tags,
+    ),
   };
   return {
     vitestEntry: MIROIR_RUNNER_TEST_VITEST_ENTRY,
