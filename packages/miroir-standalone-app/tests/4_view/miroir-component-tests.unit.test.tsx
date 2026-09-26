@@ -43,10 +43,11 @@ const MIROIR_TEST_DATA_FOLDER = join(
 
 /**
  * Expected content of the folder: 7 per-editor instances, 68 leaves (#292 Slice 0 baseline), plus
- * the test pattern instance `JzodTestPattern_ComponentTestSuite` (#303).
+ * the test pattern instance `JzodTestPattern_ComponentTestSuite` (#303: 1 display leaf, Slice 1, and 3
+ * interaction leaves, Slice 2).
  */
 const EXPECTED_INSTANCE_COUNT = 8;
-const EXPECTED_LEAF_COUNT = 69;
+const EXPECTED_LEAF_COUNT = 72;
 
 type ComponentTestSuiteInstance = { uuid: string; name: string; definition: MiroirTestSuite };
 

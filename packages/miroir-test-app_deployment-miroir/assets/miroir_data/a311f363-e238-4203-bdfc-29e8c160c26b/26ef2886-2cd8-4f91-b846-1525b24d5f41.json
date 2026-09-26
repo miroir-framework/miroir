@@ -5,7 +5,7 @@
   "name": "JzodTestPattern_ComponentTestSuite",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Issue #303: JzodElementEditor test pattern, one object exercising every editor type (no foreign key, no reference to another application's instances). The display leaf compares the whole rendered value, except the branches of ignorePaths that the extractor reads wrongly (#303 analysis 3.3), each checked by an expectElement instead. aReference children are not rendered (the local context of the schemaReference is not passed to array items, #303 Slice 0). Edited by hand.",
+  "description": "Issue #303: JzodElementEditor test pattern, one object exercising every editor type (no foreign key, no reference to another application's instances). The display leaf compares the whole rendered value, except the branches of ignorePaths that the extractor reads wrongly (#303 analysis 3.3), each checked by an expectElement instead. Three interaction leaves (#303 Slice 2) edit a deep leaf and the enum, switch the simple union from number to string, and add / delete an array item, rename a record entry and add the absent optional attribute; each ends with the same whole-value comparison (same ignorePaths) so that a side effect on another editor is caught. aReference children are not rendered (the local context of the schemaReference is not passed to array items, #303 Slice 0). Edited by hand.",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "JzodTestPattern_ComponentTestSuite",
@@ -426,6 +426,358 @@
                   "widget": "arrayButton",
                   "field": "testField.aNestedObject.level1.level2.items.1.tags",
                   "action": "add"
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodTestPattern: a deep leaf and the enum can be edited",
+            "steps": [
+              {
+                "step": "change",
+                "label": "deep leaf",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "testField.aNestedObject.level1.level2.leaf"
+                },
+                "value": "changed"
+              },
+              {
+                "step": "selectOption",
+                "label": "enum blue",
+                "field": "testField.anEnum",
+                "option": "blue"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after edits",
+                "field": "testField",
+                "ignorePaths": [
+                  "aLiteral",
+                  "testField",
+                  "aReference",
+                  "anEmptyArray",
+                  "anEmptyRecord",
+                  "aNestedObject.level1.level2.items.1.tags"
+                ],
+                "expectedValue": {
+                  "aString": "hello",
+                  "aNumber": 42,
+                  "aBigint": "12345678901234567890",
+                  "aBoolean": true,
+                  "aDate": "2026-09-26",
+                  "aUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+                  "anOptionalString": "present",
+                  "aLiteral": "fixed",
+                  "anEnum": "blue",
+                  "anArray": [
+                    "a",
+                    "b",
+                    "c"
+                  ],
+                  "anEmptyArray": [],
+                  "aTuple": [
+                    "t",
+                    7
+                  ],
+                  "aRecord": {
+                    "k1": 1,
+                    "k2": 2
+                  },
+                  "anEmptyRecord": {},
+                  "aSimpleUnion": 3,
+                  "aMixedUnion": {
+                    "x": 5
+                  },
+                  "aDiscriminatedUnion": {
+                    "kind": "square",
+                    "side": 4
+                  },
+                  "anAny": {
+                    "free": [
+                      "form",
+                      1
+                    ]
+                  },
+                  "aReference": {
+                    "label": "root",
+                    "children": [
+                      {
+                        "label": "child",
+                        "children": [
+                          {
+                            "label": "grandchild"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "aNestedObject": {
+                    "level1": {
+                      "level2": {
+                        "leaf": "changed",
+                        "items": [
+                          {
+                            "id": 1,
+                            "tags": [
+                              "x"
+                            ]
+                          },
+                          {
+                            "id": 2,
+                            "tags": []
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodTestPattern: the simple union switches from number to string",
+            "steps": [
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "open",
+                "field": "testField.aSimpleUnion"
+              },
+              {
+                "step": "expectElement",
+                "label": "current type",
+                "target": {
+                  "widget": "selectState",
+                  "field": "testField.aSimpleUnion",
+                  "select": "unionType"
+                },
+                "attribute": {
+                  "name": "data-test-selected-value",
+                  "value": "number"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "select string",
+                "field": "testField.aSimpleUnion",
+                "select": "unionType",
+                "option": "string"
+              },
+              {
+                "step": "expectElement",
+                "label": "selector closed",
+                "target": {
+                  "widget": "unionTypeInput",
+                  "field": "testField.aSimpleUnion"
+                },
+                "present": false,
+                "timeout": 3000
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after switch to string",
+                "field": "testField",
+                "ignorePaths": [
+                  "aLiteral",
+                  "testField",
+                  "aReference",
+                  "anEmptyArray",
+                  "anEmptyRecord",
+                  "aNestedObject.level1.level2.items.1.tags"
+                ],
+                "expectedValue": {
+                  "aString": "hello",
+                  "aNumber": 42,
+                  "aBigint": "12345678901234567890",
+                  "aBoolean": true,
+                  "aDate": "2026-09-26",
+                  "aUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+                  "anOptionalString": "present",
+                  "aLiteral": "fixed",
+                  "anEnum": "green",
+                  "anArray": [
+                    "a",
+                    "b",
+                    "c"
+                  ],
+                  "anEmptyArray": [],
+                  "aTuple": [
+                    "t",
+                    7
+                  ],
+                  "aRecord": {
+                    "k1": 1,
+                    "k2": 2
+                  },
+                  "anEmptyRecord": {},
+                  "aSimpleUnion": "",
+                  "aMixedUnion": {
+                    "x": 5
+                  },
+                  "aDiscriminatedUnion": {
+                    "kind": "square",
+                    "side": 4
+                  },
+                  "anAny": {
+                    "free": [
+                      "form",
+                      1
+                    ]
+                  },
+                  "aReference": {
+                    "label": "root",
+                    "children": [
+                      {
+                        "label": "child",
+                        "children": [
+                          {
+                            "label": "grandchild"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "aNestedObject": {
+                    "level1": {
+                      "level2": {
+                        "leaf": "deep",
+                        "items": [
+                          {
+                            "id": 1,
+                            "tags": [
+                              "x"
+                            ]
+                          },
+                          {
+                            "id": 2,
+                            "tags": []
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "timeout": 3000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "JzodTestPattern: array items, record entries and optional attributes can be added, removed and renamed",
+            "steps": [
+              {
+                "step": "clickArrayButton",
+                "label": "add anArray item",
+                "field": "testField.anArray",
+                "action": "add"
+              },
+              {
+                "step": "clickArrayButton",
+                "label": "delete anArray item 0",
+                "field": "testField.anArray",
+                "action": "delete",
+                "index": 0
+              },
+              {
+                "step": "renameRecordEntry",
+                "label": "rename aRecord k1",
+                "field": "testField.aRecord",
+                "entry": "k1",
+                "newName": "renamed"
+              },
+              {
+                "step": "clickObjectButton",
+                "label": "add anAbsentOptional",
+                "field": "testField",
+                "action": "addOptionalAttribute",
+                "attribute": "anAbsentOptional"
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "after structure edits",
+                "field": "testField",
+                "ignorePaths": [
+                  "aLiteral",
+                  "testField",
+                  "aReference",
+                  "anEmptyArray",
+                  "anEmptyRecord",
+                  "aNestedObject.level1.level2.items.1.tags"
+                ],
+                "expectedValue": {
+                  "aString": "hello",
+                  "aNumber": 42,
+                  "aBigint": "12345678901234567890",
+                  "aBoolean": true,
+                  "aDate": "2026-09-26",
+                  "aUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+                  "anOptionalString": "present",
+                  "aLiteral": "fixed",
+                  "anEnum": "green",
+                  "anArray": [
+                    "b",
+                    "c",
+                    ""
+                  ],
+                  "anEmptyArray": [],
+                  "aTuple": [
+                    "t",
+                    7
+                  ],
+                  "aRecord": {
+                    "renamed": 1,
+                    "k2": 2
+                  },
+                  "anEmptyRecord": {},
+                  "aSimpleUnion": 3,
+                  "aMixedUnion": {
+                    "x": 5
+                  },
+                  "aDiscriminatedUnion": {
+                    "kind": "square",
+                    "side": 4
+                  },
+                  "anAny": {
+                    "free": [
+                      "form",
+                      1
+                    ]
+                  },
+                  "aReference": {
+                    "label": "root",
+                    "children": [
+                      {
+                        "label": "child",
+                        "children": [
+                          {
+                            "label": "grandchild"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "aNestedObject": {
+                    "level1": {
+                      "level2": {
+                        "leaf": "deep",
+                        "items": [
+                          {
+                            "id": 1,
+                            "tags": [
+                              "x"
+                            ]
+                          },
+                          {
+                            "id": 2,
+                            "tags": []
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "anAbsentOptional": 0
                 }
               }
             ]

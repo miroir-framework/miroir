@@ -2,7 +2,7 @@
 
 > Vertical TDD slices, RED then GREEN, integration-first per `docs/contributing/testing.md`. Tests render the real `JzodElementEditor` through the real MiroirTest walk (`runMiroirTests._runMiroirTestSuite`) and the real component test runner, with the real render insight registry. No mocks. The applicative interface is the MiroirTest JSON (new instances, new step, new fields); vitest files are used only where noted, with a one-line reason. Slice 1 is the tracer: the test pattern displays from JSON.
 
-**Resume note (2026-09-26):** Slices 0-1 done. The MiroirTest schema carries `ignorePaths`, `measureRendering` (handler: `not implemented`) and `runOnDemand` (not honored yet); `JzodTestPattern_ComponentTestSuite` is wired with one display leaf (entry: 8 instances, 69 leaves). Next: Slice 2 (interaction leaves). Open point for the user: keep or drop `--bail=1` for the component entry (Slice 1 GREEN note; default: keep, document in Slice 7).
+**Resume note (2026-09-26):** Slices 0-2 done. The MiroirTest schema carries `ignorePaths`, `measureRendering` (handler: `not implemented`) and `runOnDemand` (not honored yet); `JzodTestPattern_ComponentTestSuite` is wired with one display leaf and three interaction leaves (entry: 8 instances, 72 leaves, about 40 s). Next: Slice 3 (every editor reports its renders). Open point for the user: keep or drop `--bail=1` for the component entry (Slice 1 GREEN note; default: keep, document in Slice 7).
 
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/303
 Working branch: to be created from `origin/_integration` (256e625 at plan time) when implementation starts.
@@ -22,7 +22,7 @@ Working branch: to be created from `origin/_integration` (256e625 at plan time) 
 |---|---|---|---|---|
 | 0 | Baselines and probe checks | S | ✅ DONE | baseline table; R4 / R5 decided |
 | 1 | Tracer: test pattern displayed (`ignorePaths`) | M | ✅ DONE | `-t "JzodTestPattern"` 1 passed (1.6 s); full entry 71 passed (69 leaves + 2 checks), 33.8 s |
-| 2 | Test pattern interactions | S | ⬜ pending | `-t "JzodTestPattern"` all leaves green |
+| 2 | Test pattern interactions | S | ✅ DONE | `-t "JzodTestPattern"` 4 passed (1.7 / 2.1 / 1.6 / 3.4 s); full entry 74 passed (72 leaves + 2 checks), 40.5 s |
 | 3 | Every editor reports its renders | M | ⬜ pending | `renderInsightCoverage.303.phase3` |
 | 4 | `measureRendering` step, measurements in the test result | L | ⬜ pending | `measureRendering.303.phase4` + tracker carries `assertionMeasurements` |
 | 5 | Render-performance suite, on-demand gating | M | ⬜ pending | `MIROIR_COMPONENT_PERF=1 … -t "JzodEditorRenderPerformance"`; default entry skips it |
@@ -179,7 +179,7 @@ Goal: a maintainer runs `-t "JzodTestPattern"` and sees the pattern render with 
 
 ## Slice 2 — Test pattern interactions
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Goal: the pattern suite also proves that editing works across nested editors.
 
@@ -195,6 +195,29 @@ Goal: the pattern suite also proves that editing works across nested editors.
 ### Validation
 
 - `… -t "JzodTestPattern"` green; entry duration recorded against Slice 0.
+
+### Realization
+
+Three leaves added to `26ef2886-…` (4 leaves in the suite, grouped as the RED bullets), existing vocabulary only; each ends with the display leaf's whole-value `expectRenderedValues` (same `field`, same `ignorePaths`, expected value = display value with the edits), so an edit that changes another editor's value fails too.
+
+| Leaf | Steps | Expected change |
+|---|---|---|
+| `a deep leaf and the enum can be edited` | `change` on `{byRole:"textbox", fieldName:"testField.aNestedObject.level1.level2.leaf"}`; `selectOption` `testField.anEnum` `blue` | `leaf: "changed"`, `anEnum: "blue"` |
+| `the simple union switches from number to string` | `toggleUnionTypeSelector` `testField.aSimpleUnion`; `expectElement` union `selectState` selected `number`; `selectOption` `select:"unionType"` `string`; selector gone (timeout 3000); comparison (timeout 3000) | `aSimpleUnion: ""` |
+| `array items, record entries and optional attributes can be added, removed and renamed` | `clickArrayButton` `testField.anArray` `add`, then `delete` index 0; `renameRecordEntry` `testField.aRecord` `k1` → `renamed`; `clickObjectButton` `testField` `addOptionalAttribute` `anAbsentOptional` | `anArray: ["b","c",""]`, `aRecord: {renamed:1, k2:2}`, `anAbsentOptional: 0` |
+
+**RED / GREEN.** As the plan expected, no GREEN code: the three leaves passed on their first run. No product defect found, no widget target missing (`componentTestTargets.ts` unchanged, so no `303` target unit test). The only RED is the entry count, `EXPECTED_LEAF_COUNT` 69 → 72 (the other counts, `componentMiroirTests.consistency` 8 instances and `componentTestInstances.292.phase1` 68 per-editor leaves, do not change). Non-vacuity instead (reverted): with the pre-edit value put back in each final `expectedValue` (`anEnum` `green`, `aSimpleUnion` 3, `aRecord` `{k1,k2}`), `npx vitest run … -t "JzodTestPattern"` without bail gives 3 failed / 1 passed, first differences at `["anEnum"]`, `["aSimpleUnion"]`, `["aRecord","renamed"]`.
+
+**Validation.**
+| Command | Result |
+|---|---|
+| `… miroir-component-tests -t "JzodTestPattern"` | 4 passed, 70 skipped; leaves 1.7 / 2.1 / 1.6 / 3.4 s (tests 8.8 s) |
+| `… miroir-component-tests` | 74 passed (2 checks + 72 leaves); 40.5 s (tests 34.8 s) vs Slice 1 33.8 s (tests 28.0 s) and Slice 0 41.3 s (tests 27.0 s): the three leaves add about 7 s of test time, under the 10 s limit of the refactor checkpoint |
+| `componentMiroirTests.consistency` / `componentTestInstances.292.phase1` | 6 / 5 passed |
+| `npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts` | 160 passed |
+| tsc miroir-core / miroir-react / miroir-standalone-app | 0 / 0 / 1 (the baseline `JzodElementEditorHooks.ts(528,59)`) |
+
+**Notes.** `toEqual` ignores key order, so the position of the renamed record entry is not checked. The instance `description` lists the interaction leaves. `miroir-test-app_deployment-miroir` rebuilt (`tsup`) so its `dist` carries the new leaves.
 
 ---
 
