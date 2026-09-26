@@ -1,5 +1,5 @@
-import { defaultMiroirMetaModel } from "../1_core/defaultMiroirMetaModel";
-import type { MiroirConfigClient } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { defaultMiroirMetaModel as defaultMiroirMetaModelRaw } from "miroir-test-app_deployment-miroir";
+import type { MetaModel, MiroirConfigClient } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { PersistenceStoreControllerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
 import { ConfigurationService } from "../3_controllers/ConfigurationService";
@@ -11,6 +11,9 @@ import { PersistenceStoreControllerManager } from "./PersistenceStoreControllerM
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PersistenceStoreControllerTools");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => { log = logger; });
+
+// See 1_core/Model.ts for why this cast is needed at the import boundary.
+const defaultMiroirMetaModel = defaultMiroirMetaModelRaw as unknown as MetaModel;
 
 
 // ################################################################################################

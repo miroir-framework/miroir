@@ -65,7 +65,7 @@ The Cursor SDK path needs Node ≥ 22.13.0 on the persistence process (`miroir-s
 
 The Versioning AppBar item follows the **browsed** SelfApplication (`toolsPageState.applicationSelector`), not the process snapshot. Home (no selector) hides it. `unversioned` and `versioned-external` hide it. `versioned-internal` (or legacy `versioningEnabled: true`) shows it. Click still opens the report under Miroir. Freeze still uses `assertApplicationVersioningEnabled` on that application.
 
-Set the mode on the SelfApplication row (`versioningMode` / `versioningEnabled`), not on `features`. Store layout: [Data architecture: versioning mode matrix](data-architecture-deployments.md#versioning-mode-matrix).
+Set the mode on the SelfApplication row (`versioningMode` / `versioningEnabled`), not on `features`. Modes and store layout: [Versioning reference](versioning.md#versioning-modes).
 
 ## Refused leftover actions
 

@@ -1,4 +1,7 @@
-import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import {
+  defaultMiroirMetaModel as defaultMiroirMetaModelRaw,
+  selfApplicationMiroir,
+} from "miroir-test-app_deployment-miroir";
 
 
 import type {
@@ -20,7 +23,6 @@ import {
   resetAndinitializeDeploymentCompositeAction,
   testUtils_resetApplicationDeployment
 } from "./Deployment";
-import { defaultMiroirMetaModel } from "./defaultMiroirMetaModel";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
@@ -29,6 +31,9 @@ import { cleanLevel } from "./constants";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Runner");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => { log = logger; });
+
+// See Model.ts for why this cast is needed at the import boundary.
+const defaultMiroirMetaModel = defaultMiroirMetaModelRaw as unknown as MetaModel;
 
 // ################################################################################################
 export function testBuildPlusRuntimeCompositeActionSuiteForRunner(

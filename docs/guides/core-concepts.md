@@ -10,7 +10,7 @@ This guide introduces the fundamental concepts of the Miroir Framework. Understa
 
 1. [Overview](#overview)
 2. [Meta-Model vs Model vs Data](#meta-model-vs-model-vs-data)
-3. [Entity & EntityVersion](#entity--entityversion)
+3. [Entity](#entity)
 4. [Jzod: The Meta-Language](#jzod-the-meta-language)
 5. [Query](#query)
 6. [Transformer](#transformer)
@@ -46,7 +46,7 @@ This approach enables:
 ```
 ┌─────────────────────────────────────────┐
 │          META-MODEL                     │  Defines structure of Models
-│  (Entity, EntityVersion, Query...)      │  Bootstrap: describes itself
+│  (Entity, Query, Report...)             │  Bootstrap: describes itself
 │  Located: miroir_model/                 │
 └─────────────────────────────────────────┘
                   ↓ instances of
@@ -65,41 +65,47 @@ This approach enables:
 
 ### Example
 
-**Meta-Model**: Defines what an "Entity" is
+**Meta-Model**: Defines what an "Entity" is. `Entity` is an instance of itself (bootstrap), hence `uuid` = `parentUuid`:
 ```json
 {
+  "uuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   "name": "Entity",
-  "uuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-  "description": "An Entity represents a concept in your domain"
+  "conceptLevel": "MetaModel",
+  "description": "The Metaclass for entities.",
+  "mlSchema": { "type": "object", "definition": { "name": { "type": "string" }, "...": "..." } }
 }
 ```
 
-**Model**: Your "Book" entity (an instance of the Entity meta-model)
+**Model**: Your "Book" entity (an instance of the Entity meta-model, so its `parentUuid` is the uuid of `Entity`)
 ```json
 {
   "uuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  "parentUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   "name": "Book",
-  "description": "A book in the library"
+  "conceptLevel": "Model",
+  "description": "A book.",
+  "mlSchema": { "type": "object", "definition": { "name": { "type": "string" }, "author": { "type": "uuid" }, "...": "..." } }
 }
 ```
 
-**Data**: A specific book instance
+**Data**: A specific book instance (an instance of Book, so its `parentUuid` is the uuid of `Book`)
 ```json
 {
   "uuid": "550e8400-e29b-41d4-a716-446655440000",
+  "parentName": "Book",
   "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  "title": "The Pragmatic Programmer",
-  "author": "Andrew Hunt & David Thomas",
-  "isbn": "978-0135957059"
+  "name": "The Pragmatic Programmer",
+  "author": "<uuid of an Author instance>",
+  "year": 1999
 }
 ```
 
 ---
 
-## Entity & EntityVersion
-
-### Entity
+## Entity
 
 An **Entity** represents a concept in your domain model (like "Book", "Author", "Customer").
 It is the **authoritative present-model** definition: it carries `mlSchema`, primary-key
@@ -109,73 +115,14 @@ settings (`idAttribute`), view/cache fields, and related display metadata.
 - `uuid` - Unique identifier
 - `name` - Human-readable name
 - `description` - Documentation
-- `mlSchema` - Structure definition in Jzod / ML format (present model)
-- `scope` - *(meta-model Entity rows only)* `versioning` vs `modeling`; absent = modeling. Labels version-history concepts (`EntityVersion`, `SelfApplicationVersion`, …) vs ordinary model concepts. **Not read by runtime routing today** — see [Entity API — scope](../reference/api/entity.md#meta-model-classification-scope--logicaldatamodel).
-- `logicalDataModel` - *(meta-model Entity rows only)* `entity` vs `manyToMany` for cross/link tables; absent = entity.
+- `mlSchema` - Structure definition in Jzod / ML format (present model, required)
+- `conceptLevel` - `MetaModel` | `Model` | `Data` | `External` (`External` for Entities whose instances live in another system, see [Defining Entities](developer/defining-entities.md))
+- `idAttribute` - Primary key attribute(s); absent ⇒ `uuid`
+- `scope`, `logicalDataModel` - *(meta-model Entity rows only, not set by application authors)* see the [Versioning reference](../reference/versioning.md#meta-model-classification-scope-and-logicaldatamodel)
 
 **File Location**: `<app>_model/16dbfe28-…/<entityUuid>.json` (under the Entity meta-entity folder)
 
-### EntityVersion
-
-An **EntityVersion** is a versioned / historical snapshot of an Entity's definition
-(formerly named **EntityDefinition** in older docs and TypeScript aliases). It is **not**
-the live present-model authority — the Entity is. Compatibility dual-write may still
-persist a matching EntityVersion copy.
-
-**Key Properties:**
-- `uuid` - Unique identifier for this version snapshot
-- `parentUuid` - References the EntityVersion meta-entity (`54b9c72f-…`)
-- `name` - Version name (e.g., "Book", "Book_v2")
-- `entityUuid` - The Entity this version describes
-- `mlSchema` - Structure definition in Jzod / ML format
-
-**Example: Book EntityVersion**
-```json
-{
-  "uuid": "e8ba151b-1111-4cc3-9a83-3459d309ccf5",
-  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-  "parentName": "EntityVersion",
-  "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  "name": "Book",
-  "mlSchema": {
-    "type": "object",
-    "definition": {
-      "uuid": {
-        "type": "string",
-        "validations": [{"type": "uuid"}]
-      },
-      "title": {
-        "type": "string"
-      },
-      "author": {
-        "type": "string",
-        "tag": {
-          "value": {
-            "id": 1,
-            "defaultLabel": "Author",
-            "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
-          }
-        }
-      },
-      "isbn": {
-        "type": "string",
-        "optional": true
-      },
-      "publishedDate": {
-        "type": "string",
-        "validations": [{"type": "date"}]
-      }
-    }
-  }
-}
-```
-
-### Versioning
-
-EntityVersions enable optional schema history:
-- Keep old EntityVersion snapshots for existing data / history
-- Evolve the live Entity present model (and optionally snapshot a new EntityVersion)
-- Migration transformers convert between versions when needed
+Evolving a concept means editing its Entity. Keeping a history of model states is optional (versioned applications only); see the [Versioning reference](../reference/versioning.md).
 
 ---
 
@@ -534,27 +481,25 @@ Modify the application model (entities, queries, reports):
 
 ```json
 {
-  "actionType": "modelAction",
-  "actionName": "createEntity",
-  "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcb02aabf9",
+  "actionType": "createEntity",
   "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
-  "entities": [
-    {
-      "entity": {
+  "payload": {
+    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+    "entities": [
+      {
         "uuid": "new-entity-uuid",
+        "parentName": "Entity",
+        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
         "name": "NewEntity",
-        "description": "A new entity"
-      },
-      "entityDefinition": {
-        "uuid": "new-entity-def-uuid",
-        "parentUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-        "entityUuid": "new-entity-uuid",
-        "jzodSchema": { ... }
+        "description": "A new entity",
+        "mlSchema": { "type": "object", "definition": { ... } }
       }
-    }
-  ]
+    ]
+  }
 }
 ```
+
+`createEntity` takes complete Entity rows, `mlSchema` included.
 
 #### 3. Composite Actions
 
@@ -757,7 +702,7 @@ An **Endpoint** defines a service interface exposing Actions to clients.
 An **Application** defines the logical grouping of entities, queries, reports, and endpoints.
 
 **Structure:**
-- **Model** (`<app>_model/`) - Entity definitions, queries, reports, endpoints
+- **Model** (`<app>_model/`) - Entities, queries, reports, endpoints
 - **Data** (`<app>_data/`) - Entity instances
 
 ### Deployment
@@ -793,10 +738,10 @@ A **Deployment** is a running instance of an Application with specific configura
 
 ### Application Sections
 
-Every application has three sections:
+Every application has three sections (plus an optional `modelVersion` section for versioned applications, see the [Versioning reference](../reference/versioning.md#the-modelversion-store-section)):
 
 1. **admin** - Miroir framework metadata (deployments, menus, etc.)
-2. **model** - Application model (entities, entity versions, queries, reports, endpoints)
+2. **model** - Application model (entities, queries, reports, endpoints)
 3. **data** - Application data (entity instances)
 
 ---
@@ -807,7 +752,7 @@ Every application has three sections:
 
 ```
 1. Define Entities (Model)
-   └─> Create Entity with present-model mlSchema (+ optional EntityVersion dual-write)
+   └─> Create Entity with its mlSchema
 
 2. Create Data (Instances)
    └─> Use Actions to create/update/delete instances
@@ -826,21 +771,22 @@ Every application has three sections:
 
 ### Example: Complete Book Feature (⚠️DUPLICATE OF HOME PAGE, USED JSON SCHEMA-LIKE SYNTAX ⚠️)
 
-**1. Entity + EntityVersion**
+**1. Entity** (the Entity carries its own `mlSchema`)
 ```json
 {
-  "entity": {
-    "uuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-    "name": "Book"
-  },
-  "entityDefinition": {
-    "jzodSchema": {
-      "type": "object",
-      "definition": {
-        "uuid": {"type": "string", "validations": [{"type": "uuid"}]},
-        "title": {"type": "string"},
-        "isbn": {"type": "string", "optional": true}
-      }
+  "uuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "name": "Book",
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": { "eager": true, "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", "relativePath": "entityDefinitionRoot" }
+    },
+    "definition": {
+      "name": {"type": "string"},
+      "isbn": {"type": "string", "optional": true}
     }
   }
 }

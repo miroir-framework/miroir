@@ -95,7 +95,7 @@ import {
   shouldCacheAllInstancesOnRefresh,
 } from "../1_core/localCache/cacheRefreshPolicy.js";
 import { ACTION_OK } from "../1_core/constants";
-import { defaultMiroirMetaModel } from "../1_core/defaultMiroirMetaModel";
+import { defaultMiroirMetaModel as defaultMiroirMetaModelRaw } from "miroir-test-app_deployment-miroir";
 import { expandResolvableResetAndinitializeDeploymentCompositeAction } from "../1_core/Deployment.js";
 import {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS
@@ -233,6 +233,9 @@ const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLe
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "action"
 ).then((logger: LoggerInterface) => {log = logger});
+
+// See Model.ts for why this cast is needed at the import boundary.
+const defaultMiroirMetaModel = defaultMiroirMetaModelRaw as unknown as MetaModel;
 
 // ################################################################################################
 export interface DeploymentConfiguration {

@@ -119,6 +119,7 @@ Welcome to the Miroir Framework documentation. This guide will help you find the
 - [Using AI in Miroir](guides/using-ai.md) - In-app CopilotKit assistant (token providers or Cursor)
 - [Process capabilities](reference/process-capabilities.md) - Feature switches: AI, MCP, Cursor, designer tools, store types
 - [Data architecture: deployments](reference/data-architecture-deployments.md) - Store backends, `emulateServer`, product scenarios
+- [Versioning](reference/versioning.md) - Model history: versioning modes, freeze, EntityVersion, `modelVersion` section
 - [Configuration Reference](reference/configuration.md) - Environment variables and settings
 - [Data Stores](reference/data-stores.md) - Postgres, IndexedDB, Filesystem
 - [Logging](reference/logging.md) - Logging configuration
@@ -136,7 +137,7 @@ Welcome to the Miroir Framework documentation. This guide will help you find the
 
 ### API Reference
 - [API Overview](reference/api/) - Complete API documentation
-- [Entity & EntityVersion](reference/api/entity.md) - Data model API
+- [Entity](reference/api/entity.md) - Data model API
 - [Query API](reference/api/query.md) - Data retrieval
 - [Transformer API](reference/api/transformers.md) - Data transformation
 - [Action API](reference/api/actions.md) - Side-effects and mutations

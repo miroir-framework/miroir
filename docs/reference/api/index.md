@@ -2,7 +2,7 @@
 
 **Status: 🚧 In Progress - Auto-generated from Jzod schemas**
 
-This API reference is generated from Jzod schemas defined in the Miroir meta-model. For the most up-to-date schemas, see the source files in `packages/miroir-core/src/assets/miroir_model/`.
+This API reference is generated from Jzod schemas defined in the Miroir meta-model. For the most up-to-date schemas, see the Entity rows in `packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/` (each Entity carries the `mlSchema` of its instances) and the generated types in `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/`.
 
 ---
 
@@ -10,7 +10,7 @@ This API reference is generated from Jzod schemas defined in the Miroir meta-mod
 
 The Miroir Framework API is defined through Jzod schemas and consists of several core concepts:
 
-- **[Entity & EntityVersion](entity.md)** - Data model definitions
+- **[Entity](entity.md)** - Data model definitions
 - **[Query](query.md)** - Data retrieval and extraction
 - **[Transformer](transformers.md)** - Data transformation and manipulation
 - **[Action](actions.md)** - Side-effects and mutations
@@ -23,36 +23,36 @@ The Miroir Framework API is defined through Jzod schemas and consists of several
 
 ### Bootstrapped Meta-Model
 
-The following concepts describe themselves (bootstrapped):
+The following concept describes itself (bootstrapped):
 
-- **Entity** - UUID: `381ab1be-337f-4198-b1d3-f686867fc1dd`
-- **EntityVersion** - UUID: `bdd7ad43-f0fc-4716-90c1-87454c40dd95`
+- **Entity** - Entity UUID: `16dbfe28-e1d7-4f20-9ba4-c1a9873202ad` (an instance of itself)
+
+Model history concepts (EntityVersion, QueryVersion, …) are described in the [Versioning reference](../versioning.md).
 
 ### Model Concepts
 
-Defined using the meta-model:
+Defined as Entities of the Miroir application:
 
-- **Query** - UUID: `359f1f9b-7260-4d76-a864-72c839b9711b`
-- **Transformer** - UUID: `54a16d69-c1f0-4dd7-aba4-a2cda883586c`
-- **Report** - UUID: `952d2c65-4da2-45c2-9394-a0920ceedfb6`
-- **Endpoint** - UUID: `e3c1cc69-066d-4f52-beeb-b659dc7a88b9`
+- **Query** - Entity UUID: `e4320b9e-ab45-4abe-85d8-359604b3c62f`
+- **TransformerDefinition** - Entity UUID: `a557419d-a288-4fb8-8a1e-971c86c113b8`
+- **Report** - Entity UUID: `3f2baa83-3ef7-45ce-82ea-6a43f7a8c916`
+- **Endpoint** - Entity UUID: `3d8da4d4-8f76-4bb4-9212-14869d81c00c`
 
 ---
 
 ## Schema Locations
 
-All schemas are defined in JSON files located at:
+Each concept's schema is the `mlSchema` of its Entity row, in:
 
 ```
-packages/miroir-core/src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/
+packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/
 ```
 
-**Entity**: `381ab1be-337f-4198-b1d3-f686867fc1dd.json`
-**EntityVersion**: `bdd7ad43-f0fc-4716-90c1-87454c40dd95.json`
-**Query**: `359f1f9b-7260-4d76-a864-72c839b9711b.json`
-**Transformer**: `54a16d69-c1f0-4dd7-aba4-a2cda883586c.json`
-**Report**: `952d2c65-4da2-45c2-9394-a0920ceedfb6.json`
-**Endpoint**: `e3c1cc69-066d-4f52-beeb-b659dc7a88b9.json`
+**Entity**: `16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json`
+**Query**: `e4320b9e-ab45-4abe-85d8-359604b3c62f.json`
+**TransformerDefinition**: `a557419d-a288-4fb8-8a1e-971c86c113b8.json`
+**Report**: `3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json`
+**Endpoint**: `3d8da4d4-8f76-4bb4-9212-14869d81c00c.json`
 
 ---
 
@@ -75,7 +75,7 @@ npm run devBuild -w miroir-core
 ## API Documentation by Category
 
 ### Data Model
-- **[Entity & EntityVersion](entity.md)** - Define your domain model
+- **[Entity](entity.md)** - Define your domain model
 
 ### Data Access
 - **[Query API](query.md)** - Retrieve and filter data
@@ -114,28 +114,26 @@ npm run devBuild -w miroir-core
 ### Creating an Entity
 
 ```typescript
-import type { Entity, EntityVersion } from '@miroir-framework/miroir-core';
+import type { Entity } from '@miroir-framework/miroir-core';
 
+// The Entity carries its own mlSchema.
 const bookEntity: Entity = {
   uuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  parentUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  parentName: "Entity",
+  parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   name: "Book",
-  description: "A book in the library"
-};
-
-const bookEntityVersion: EntityVersion = {
-  uuid: "e8ba151b-1111-4cc3-9a83-3459d309ccf5",
-  parentUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-  name: "Book",
-  entityUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  jzodSchema: {
+  description: "A book in the library",
+  mlSchema: {
     type: "object",
+    extend: {
+      type: "schemaReference",
+      definition: { eager: true, absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739", relativePath: "entityDefinitionRoot" },
+    },
     definition: {
-      uuid: { type: "string", validations: [{ type: "uuid" }] },
-      title: { type: "string" },
-      author: { type: "string" }
-    }
-  }
+      name: { type: "string" },
+      author: { type: "uuid", tag: { value: { foreignKeyParams: { targetEntity: "d7a144ff-d1b9-4135-800c-a7cfc1f38733" } } } },
+    },
+  },
 };
 ```
 
@@ -198,7 +196,7 @@ dispatch(createBookAction);
 
 Click on any topic below for complete API documentation:
 
-- **[Entity & EntityVersion →](entity.md)**
+- **[Entity →](entity.md)**
 - **[Query →](query.md)**
 - **[Transformer →](transformers.md)**
 - **[Action →](actions.md)**

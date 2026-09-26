@@ -1,6 +1,8 @@
 # Bundles and Versioning
 
-Versioning in Miroir applies to the **model** (Entities, EntityVersions, Reports, Queries, Transformers, …) of applications, not to application data. Data insertions, updates and deletes are performed directly, similar to "auto-commit" mode of some RDBMS. User-controlled data versioning will be handled separately.
+Versioning in Miroir applies to the **model** (Entities, Reports, Queries, Transformers, …) of applications, not to application data. Data insertions, updates and deletes are performed directly, similar to "auto-commit" mode of some RDBMS. User-controlled data versioning will be handled separately.
+
+This page describes the vision and use cases. For what is implemented today (modes, freeze, history concepts, storage), see the [Versioning reference](../reference/versioning.md).
 
 ## Bundling
 
@@ -25,7 +27,7 @@ A Miroir application can be created in UNVERSIONED mode. In this mode, like in a
 
 ## Versioning Use Cases
 
-Again, versioning in Miroir applies for now to the **model** (Entities, EntityVersions, Reports, Queries, Transformers, …), not to application data. Data versioning is a separate concern.
+Again, versioning in Miroir applies for now to the **model** (Entities, Reports, Queries, Transformers, …), not to application data. Data versioning is a separate concern.
 
 ### Model Evolution
 
@@ -33,7 +35,6 @@ Again, versioning in Miroir applies for now to the **model** (Entities, EntityVe
 - identify differences between the current model of a deployment and a previous version of the application's model (linear history)
 - "Freeze" the current model of a deployment as a new model version for the application
 - create migration script for both model and data to enable conversion of the model and data of a given deployment from version X of an application to version X+1
-<!-- - Keep old `EntityVersion` snapshots as schema  ernal VCS (see *versioned-external*) -->
 
 This will enable differentiated "development" and "production" environment, where developpers collaborate to create a new version of an application, that can be later used to evolve production deployments of said application.
 
@@ -45,7 +46,7 @@ This will enable differentiated "development" and "production" environment, wher
 
 ### Reporting on Version History
 
-- Query past model states (which EntityVersion was active at a given point?)
+- Query past model states (which definition of an Entity was active at a given point?)
 - Audit trail: which Reports / Queries / Transformers were associated with which model version
 - In `versioned-external` mode: feed a GitProxy application's read-only tools into Reports to display git log, diffs, or branch topology directly in the Miroir UI
 
@@ -57,7 +58,7 @@ This will enable differentiated "development" and "production" environment, wher
 | `git clone` | Copy a deployment's `model` + `data` store sections to a new environment | deploy existing application from repository app |
 | `git commit` | "Freeze" a model as a new commit / snapshot in the `modelVersion` section | YES |
 | `git checkout <branch>` | Load a different model snapshot into the active deployment | NO - for now only linear history is allowed |
-| `git diff` | Compare two EntityVersion snapshots (mlSchema diffing) | TODO: internal implementation not relying on Git's |
+| `git diff` | Compare two frozen model versions (mlSchema diffing) | TODO: internal implementation not relying on Git's |
 | `git log` | List `SelfApplicationModelBranch` / version history entries | NO |
 | `git merge` | Reconcile two divergent model histories (manual or tooled) | NO |
 | `git push/pull` | Sync `modelVersion` section between environments (remote server mode) | NO |
@@ -73,11 +74,9 @@ This will enable differentiated "development" and "production" environment, wher
 
 ### Implementation: versioned-internal
 
-- The full version history of the application's model is stored in the **`modelVersion` store section** of the deployment (separate from live `model` and application `data` — see [Data Architecture: Deployments](../reference/data-architecture-deployments.md#modelversion-version-history-optional))
-- Meta-model Entity types that participate in freeze history are marked **`scope: "versioning"`** on their Entity row (e.g. `EntityVersion`, `SelfApplicationVersion`, `ApplicationVersionCross*`). That metadata classifies versioning infrastructure vs ordinary **`modeling`** concepts; runtime section routing currently uses an explicit UUID registry in code, not a scan of `scope`. See [Entity API — scope](../reference/api/entity.md#meta-model-classification-scope--logicaldatamodel).
+- The full version history of the application's model is kept by Miroir itself, in a dedicated store section of the deployment, and written by an explicit "freeze" action
 - Enables in-app rollback, branching, and audit without any external VCS
 - Suited for end-user applications where the model evolves at runtime (no developer Git workflow)
 - Heavier storage footprint; periodic pruning of old snapshots recommended for long-lived deployments
-- **Bundled (sandbox) deployments cannot persist `modelVersion` history** — the bundled Miroir profile omits the `modelVersion` store section entirely and excludes Version History instances from bundled `model`/`data`. Use filesystem, IndexedDB, MongoDB, or PostgreSQL for writable version history.
-- **Git deployment assets** for `versioned-internal` applications mirror the four-folder layout: live model under `*_model/`, domain data under `*_data/`, and Version History under `*_modelVersion/` (see [Data Architecture: Deployments](../reference/data-architecture-deployments.md#deployment-package-asset-folders)).
 
+Details: [Versioning reference](../reference/versioning.md).

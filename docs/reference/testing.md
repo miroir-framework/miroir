@@ -752,7 +752,7 @@ npm run build -w miroir-test-app_deployment-miroir
 npm run devBuild -w miroir-core
 ```
 
-Identity under projection uses `resolveProjectionIdentityFields` → `getEntityPrimaryKeyAttributes` (UUID default; pass `entityDefinition` for non-UUID / composite PK).
+Identity under projection uses `resolveProjectionIdentityFields` → `getEntityPrimaryKeyAttributes` (UUID default; pass the Entity for non-UUID / composite PK).
 
 #### View / React (`tests/4_view/`)
 

@@ -124,10 +124,11 @@ docs-new/
 │   ├── data-stores.md              # PostgreSQL, IndexedDB, Filesystem
 │   ├── logging.md                  # Logging configuration
 │   ├── testing.md                  # Full testing reference (env vars, backends, API) ✅
+│   ├── versioning.md               # Model versioning: modes, freeze, EntityVersion & *Version history, modelVersion section ✅
 │   │
 │   └── api/                        # API reference (auto-generated from Jzod)
 │       ├── index.md                # API overview ⚠️⚠️⚠️
-│       ├── entity.md               # Entity & EntityVersion ⚠️⚠️⚠️
+│       ├── entity.md               # Entity ⚠️⚠️⚠️
 │       ├── query.md                # Query API ⚠️⚠️⚠️
 │       ├── transformers.md         # Transformer API ⚠️⚠️⚠️
 │       ├── actions.md              # Action API ⚠️⚠️⚠️

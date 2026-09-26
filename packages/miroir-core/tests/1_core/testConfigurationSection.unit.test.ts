@@ -12,7 +12,7 @@ import type {
   Report,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { getApplicationSection } from "../../src/1_core/Model.js";
-import { defaultMiroirMetaModel } from "../../src/1_core/defaultMiroirMetaModel.js";
+import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 import {
   entityMiroirTest,
   entityTestConfiguration,
