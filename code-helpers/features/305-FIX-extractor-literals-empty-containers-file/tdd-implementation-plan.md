@@ -9,14 +9,14 @@
 - In: literal input name and prefix filter (D2, D3); empty-container markers (D4); file `any` hidden input (D5); removal of the matching `ignorePaths` entries and `expectElement` stand-ins in the 4 pattern leaves.
 - Out: `aReference` (#304, stays under `ignorePaths`), typed literals, #306, #307.
 
-Related: [analysis](./analysis.md) · issue https://github.com/miroir-framework/miroir/issues/305 · branch `claude/project-thread-lfvhbu` (from `_integration`, #303 merged in) · PR into `_integration`.
+Related: [analysis](./analysis.md) · issue https://github.com/miroir-framework/miroir/issues/305 · branch `claude/project-thread-lfvhbu` (from `_integration`, which carries #303) · PR into `_integration`.
 
 ## Progress summary
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Baseline | ✅ DONE | component entry 74 passed / 15 skipped (45 s) |
-| 1 | Literal in place, no stray keys | ⬜ pending | pattern leaves without `aLiteral`, `testField` in `ignorePaths` |
+| 1 | Literal in place, no stray keys | ✅ DONE | pattern leaves without `aLiteral`, `testField`; component entry 74 passed |
 | 2 | Empty containers read as `[]` / `{}` | ⬜ pending | pattern leaves without `anEmptyArray`, `anEmptyRecord`, `items.1.tags` |
 | 3 | File `any` field read | ⬜ pending | pattern leaves without `anAnyFile` |
 | 4 | Docs, nonreg, AC | ⬜ pending | nonreg filesystem profile |
@@ -54,7 +54,7 @@ The package `dist/` folders of the cloud container were built from an older comm
 
 ## Slice 1 — Literal in place, no stray keys
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **RED.** Remove `aLiteral` and `testField` from `ignorePaths` in the 4 leaves, and the `aLiteral` `expectElement` of leaf 1. The pattern fails at `aLiteral` (absent) with a stray `testField` key.
 
@@ -65,6 +65,13 @@ The package `dist/` folders of the cloud container were built from an older comm
 ### Validation
 
 Pattern suite; component entry; tsc.
+
+### Realization
+
+- RED: `-t "MlTestPattern"` 1 failed, first difference at `["testField"]` (rebuilt `testField: {aLiteral: "fixed"}`, `aLiteral` absent).
+- GREEN: `name={formikRootLessListKey}` on the literal input; `isUnderLabel` (the name equals the label or lies under it) guards the generic input pass. The literal is read by that pass as a string.
+- Component entry 74 passed / 15 skipped (68 per-editor cases unchanged); tsc miroir-standalone-app 0 errors.
+- Refactor checkpoint: the checkbox and combobox passes already test the prefix with `startsWith(label)`; left as is, since `isUnderLabel` is stricter (it rejects `labelX`) and changing them is outside the failing branches.
 
 ---
 

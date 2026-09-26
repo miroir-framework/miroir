@@ -849,6 +849,8 @@ export function extractValuesFromRenderedElements(
   // Pre-compile regex patterns to avoid recreating them
   const labelRegex = label ? new RegExp(`^${label}\\.`) : null;
   const removeLabelPrefix = (str: string) => (labelRegex ? str.replace(labelRegex, "") : str);
+  /** #305 D3: whether `name` is the field under test or lies under it; any name when no `label` is given. */
+  const isUnderLabel = (name: string) => !label || name === label || name.startsWith(`${label}.`);
 
   // Helper function to check for combobox options
   const checkForComboboxOptions = (
@@ -1294,6 +1296,7 @@ export function extractValuesFromRenderedElements(
   allInputs.forEach((input: Element) => {
     const htmlInput = input as HTMLInputElement;
     if (!htmlInput.name && !htmlInput.id) return;
+    if (!isUnderLabel(htmlInput.name || htmlInput.id)) return;
 
     const name = removeLabelPrefix(htmlInput.name || htmlInput.id);
 

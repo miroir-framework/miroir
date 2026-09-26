@@ -319,8 +319,6 @@
                 "label": "initial",
                 "field": "testField",
                 "ignorePaths": [
-                  "aLiteral",
-                  "testField",
                   "aReference",
                   "anEmptyArray",
                   "anEmptyRecord",
@@ -403,13 +401,6 @@
               },
               {
                 "step": "expectElement",
-                "label": "aLiteral",
-                "target": {
-                  "byDisplayValue": "fixed"
-                }
-              },
-              {
-                "step": "expectElement",
                 "label": "aReference root label",
                 "target": {
                   "byDisplayValue": "root",
@@ -476,8 +467,6 @@
                 "label": "after edits",
                 "field": "testField",
                 "ignorePaths": [
-                  "aLiteral",
-                  "testField",
                   "aReference",
                   "anEmptyArray",
                   "anEmptyRecord",
@@ -604,8 +593,6 @@
                 "label": "after switch to string",
                 "field": "testField",
                 "ignorePaths": [
-                  "aLiteral",
-                  "testField",
                   "aReference",
                   "anEmptyArray",
                   "anEmptyRecord",
@@ -725,8 +712,6 @@
                 "label": "after structure edits",
                 "field": "testField",
                 "ignorePaths": [
-                  "aLiteral",
-                  "testField",
                   "aReference",
                   "anEmptyArray",
                   "anEmptyRecord",
