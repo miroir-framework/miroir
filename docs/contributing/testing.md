@@ -182,7 +182,7 @@ The ML schema editor cases are MiroirTests (#286) written as declarative JSON (#
 # No --profile and no Postgres (in-memory LocalCache).
 npm run testByFile -w miroir-standalone-app -- miroir-component-tests
 
-# One editor, or the test pattern (-t is a regex: write "." for a space, testByFile splits spaces)
+# One editor, or the test pattern (-t is a regex; spaces are fine)
 npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "MlObjectEditor"
 npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "MlTestPattern"
 
@@ -196,7 +196,7 @@ npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.
 npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency
 ```
 
-To add a case, add a leaf to the editor's instance JSON, labelled `<editor>: <case>`, and add its line to `tests/4_view/issues/292-declarative-react-component-tests/baseline-component-cases.txt` (and the new count, `EXPECTED_LEAF_COUNT`, to the vitest entry). A failing step reports `step <n> (<kind> "<label>"): <message>`. `testByFile` passes `--bail=1`: after a failing case the later ones are reported as not run; run `npx vitest run --reporter=verbose miroir-component-tests` from `packages/miroir-standalone-app` to see every failure.
+To add a case, add a leaf to the editor's instance JSON, labelled `<editor>: <case>`, and add its line to `tests/4_view/issues/292-declarative-react-component-tests/baseline-component-cases.txt` (and the new count, `EXPECTED_LEAF_COUNT`, to the vitest entry). A failing step reports `step <n> (<kind> "<label>"): <message>`. `testByFile` passes `--bail=1` by default: after a failing case the later ones are reported as not run; add `--no-bail` to see every failure.
 
 Render measurements are not a pass / fail: the `measureRendering` step fails only if rendering fails or no measurement is collected, and happy-dom timings are not browser timings. `expectRenderedValues.ignorePaths`, the measurement fields and the app's iterations field are described in [reference/testing.md § Test pattern](../reference/testing.md#test-pattern) and [§ Render measurements](../reference/testing.md#render-measurements-measurerendering).
 

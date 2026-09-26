@@ -38,6 +38,8 @@ Written in Slice 7: the agent that implemented #303 had no access to open GitHub
 
 **Acceptance.** The probe above renders `child` and `grandchild` with no error boundary; in `JzodTestPattern_ComponentTestSuite`, `aReference` can leave `ignorePaths` (with issue 1).
 
+**Resolution (#304).** Already fixed by #296 (keyMap entries of relative schema references carry their resolution context): the Slice 0 probe ran on a miroir-core build older than #296. On a fresh build the probe renders `child` and `grandchild`, and the extractor reads the whole tree, so `aReference` left `ignorePaths` with no extractor change. Reverting the #296 `keyMapRawSchema` line in `mlsTypeCheck.ts` brings back the rebuilt value `{aReference: {label: "root"}}`.
+
 ---
 
 ## 3. Render measurements: store the results of `measureRendering` across runs for comparison
@@ -51,6 +53,8 @@ Written in Slice 7: the agent that implemented #303 had no access to open GitHub
 ---
 
 ## 4. (optional) `testByFile`: `--bail=1` hides later cases, and `-t` patterns with spaces are split
+
+**Status:** done in #307 (`--no-bail` / `--bail=<n>`, vitest spawned without a shell); see `code-helpers/features/307-BUILD-testByFile-bail-and-args/`.
 
 **Observed (#303 Slices 0 and 6).**
 

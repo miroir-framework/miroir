@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import {
+  buildTestByFileVitestArgs,
   prepareTestByFileLaunch,
   stripProfileArgs,
 } from "../../scripts/testByFileLauncher.js";
@@ -128,5 +129,42 @@ describe("testByFileLauncher profile (Gap D5)", () => {
     ]);
 
     expect(spawnEnv.VITE_MIROIR_TEST_CONFIG_FILENAME).toBe("/custom/config.json");
+  });
+});
+
+describe("buildTestByFileVitestArgs (#307)", () => {
+  const base = ["run", "--reporter=verbose", "--poolOptions.forks.singleFork"];
+
+  it("adds --bail=1 by default", () => {
+    expect(buildTestByFileVitestArgs(["some.integ"])).toEqual([...base, "--bail=1", "some.integ"]);
+  });
+
+  it("--no-bail drops the default bail and is not forwarded", () => {
+    expect(buildTestByFileVitestArgs(["--no-bail", "some.integ"])).toEqual([...base, "some.integ"]);
+  });
+
+  it("a user --bail=<n> replaces the default", () => {
+    expect(buildTestByFileVitestArgs(["--bail=3", "some.integ"])).toEqual([...base, "--bail=3", "some.integ"]);
+    expect(buildTestByFileVitestArgs(["--bail", "2", "some.integ"])).toEqual([
+      ...base,
+      "--bail",
+      "2",
+      "some.integ",
+    ]);
+  });
+
+  it("--bail=0 means no bail", () => {
+    expect(buildTestByFileVitestArgs(["--bail=0", "some.integ"])).toEqual([...base, "some.integ"]);
+    expect(buildTestByFileVitestArgs(["--bail", "0", "some.integ"])).toEqual([...base, "some.integ"]);
+  });
+
+  it("keeps a -t pattern with spaces as one argument", () => {
+    expect(buildTestByFileVitestArgs(["some.integ", "-t", "field at 1"])).toEqual([
+      ...base,
+      "--bail=1",
+      "some.integ",
+      "-t",
+      "field at 1",
+    ]);
   });
 });

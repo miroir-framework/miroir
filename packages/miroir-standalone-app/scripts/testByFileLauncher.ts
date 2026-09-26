@@ -57,3 +57,36 @@ export function prepareTestByFileLaunch(
     spawnEnv,
   };
 }
+
+const DEFAULT_BAIL = "--bail=1";
+
+/**
+ * Vitest argv (after the `vitest` binary) for `testByFile`.
+ *
+ * Bails after the first failing case by default. `--no-bail` or `--bail=0` / `--bail 0`
+ * runs every case; any other user `--bail=<n>` / `--bail <n>` replaces the default.
+ * Arguments are returned as given: the caller must spawn vitest without a shell so a
+ * `-t` pattern with spaces stays one argument.
+ */
+export function buildTestByFileVitestArgs(userArgs: string[]): string[] {
+  const forwarded: string[] = [];
+  let bailArgs: string[] = [DEFAULT_BAIL];
+  for (let index = 0; index < userArgs.length; index++) {
+    const arg = userArgs[index];
+    if (arg === "--no-bail") {
+      bailArgs = [];
+      continue;
+    }
+    if (arg.startsWith("--bail=")) {
+      bailArgs = arg === "--bail=0" ? [] : [arg];
+      continue;
+    }
+    if (arg === "--bail" && index + 1 < userArgs.length) {
+      const value = userArgs[++index];
+      bailArgs = value === "0" ? [] : [arg, value];
+      continue;
+    }
+    forwarded.push(arg);
+  }
+  return ["run", "--reporter=verbose", "--poolOptions.forks.singleFork", ...bailArgs, ...forwarded];
+}
