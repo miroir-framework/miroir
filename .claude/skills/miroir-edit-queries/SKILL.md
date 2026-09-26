@@ -64,7 +64,7 @@ npm run testMiroir -w miroir-standalone-app -- --suites queries_library --mode i
 
 # Only some leaves: catalog-root key = suite name, values = miroirTestLabel
 npm run testMiroir -w miroir-core -- --suites queries_library --mode unit \
-  --filter '{"queries_library":["select Authors with values filter (multiple values)"]}'
+  --filter '{"queries_library":["select Authors with values filter (multiple values) (extractorInstancesByEntity)"]}'
 ```
 
 Store-level PLATFORM tests (no MiroirTest entity) remain vitest files, run by file name:

@@ -6,7 +6,8 @@
 which break on Windows checkouts).
 
 Tracked skills are the `miroir-*` directories plus the keys of skills-lock.json.
-Other directories are personal installs and are left alone.
+A .claude/skills copy that is committed (or `miroir-*`) but no longer tracked is
+stale and removed. Other directories are personal installs and are left alone.
 
 Examples:
   python scripts/sync_agent_skills.py           # write the copies
@@ -19,6 +20,7 @@ import argparse
 import filecmp
 import json
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -44,6 +46,30 @@ def tracked_skill_names(root: Path) -> list[str]:
     )
 
 
+def _committed_copies(root: Path) -> set[str]:
+    """Skill folders under .claude/skills/ known to git (empty outside a git repository)."""
+    result = subprocess.run(
+        ["git", "ls-files", "--", ".claude/skills"], cwd=root, capture_output=True, text=True
+    )
+    if result.returncode != 0:
+        return set()
+    return {Path(p).parts[2] for p in result.stdout.split() if len(Path(p).parts) > 3}
+
+
+def _stale_copies(root: Path, tracked: list[str]) -> list[str]:
+    target = _target_dir(root)
+    if not target.is_dir():
+        return []
+    committed = _committed_copies(root)
+    return sorted(
+        p.name
+        for p in target.iterdir()
+        if p.is_dir()
+        and p.name not in tracked
+        and (p.name.startswith(MIROIR_PREFIX) or p.name in committed)
+    )
+
+
 def _trees_equal(a: Path, b: Path) -> bool:
     if not b.is_dir():
         return False
@@ -57,26 +83,18 @@ def _trees_equal(a: Path, b: Path) -> bool:
 
 
 def check(root: Path) -> list[str]:
-    """Names of tracked skills whose .claude copy is missing or differs, plus stale miroir-* copies."""
+    """Names of tracked skills whose .claude copy is missing or differs, plus stale copies."""
     tracked = tracked_skill_names(root)
     drift = [n for n in tracked if not _trees_equal(_source_dir(root) / n, _target_dir(root) / n)]
-    target = _target_dir(root)
-    if target.is_dir():
-        drift += [
-            p.name
-            for p in target.iterdir()
-            if p.is_dir() and p.name.startswith(MIROIR_PREFIX) and p.name not in tracked
-        ]
-    return sorted(drift)
+    return sorted(drift + _stale_copies(root, tracked))
 
 
 def sync(root: Path) -> None:
     tracked = tracked_skill_names(root)
     target = _target_dir(root)
     target.mkdir(parents=True, exist_ok=True)
-    for p in target.iterdir():
-        if p.is_dir() and p.name.startswith(MIROIR_PREFIX) and p.name not in tracked:
-            shutil.rmtree(p)
+    for name in _stale_copies(root, tracked):
+        shutil.rmtree(target / name)
     for name in tracked:
         dest = target / name
         if dest.exists():

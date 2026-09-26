@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import importlib.util
+import json
 import platform
 import shutil
 import subprocess
@@ -66,8 +67,21 @@ class Step:
 
 
 def _is_built(root: Path, package: str) -> bool:
-    dist = root / "packages" / package / "dist"
-    return dist.is_dir() and any(dist.iterdir())
+    """Every entry point package.json declares under dist/ (main, module, types) exists.
+
+    An interrupted build can leave dist/ partly filled, so a non-empty dist/ is not enough.
+    """
+    package_dir = root / "packages" / package
+    manifest_path = package_dir / "package.json"
+    if not manifest_path.is_file():
+        return False
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    outputs = [
+        manifest[key]
+        for key in ("main", "module", "types")
+        if isinstance(manifest.get(key), str) and manifest[key].lstrip("./").startswith("dist/")
+    ]
+    return bool(outputs) and all((package_dir / out).is_file() for out in outputs)
 
 
 def plan_steps(root: Path, env: Environment, *, graphify: bool = False) -> list[Step]:

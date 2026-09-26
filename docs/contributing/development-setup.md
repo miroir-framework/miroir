@@ -6,7 +6,7 @@ How to get a working Miroir checkout, for a person and for a coding agent. Platf
 
 - Node.js (version in [`.nvmrc`](../../.nvmrc)) and npm
 - Git (Git Bash on Windows)
-- Python 3 (repo scripts: non-regression, release tagging, agent tooling)
+- Python 3 with pytest (`python -m pip install pytest`): repo scripts and their tests (non-regression, release tagging, agent tooling); `npm run nonreg:unit` runs pytest
 - Optional: PostgreSQL (only for `sql` test profiles and `npm run nonreg:default`)
 
 ## Install and build

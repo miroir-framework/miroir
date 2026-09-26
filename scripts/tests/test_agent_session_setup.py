@@ -18,9 +18,16 @@ ALL_PACKAGES = [p for group in BUILD_GROUPS for p in group]
 def _tree(root: Path, *, node_modules: bool = True, built: list[str] | None = None) -> Path:
     if node_modules:
         (root / "node_modules" / "@rollup" / "rollup-linux-x64-gnu").mkdir(parents=True)
+    for pkg in ALL_PACKAGES:
+        package_dir = root / "packages" / pkg
+        package_dir.mkdir(parents=True)
+        manifest = {"main": "dist/index.js", "types": "dist/index.d.ts"}
+        (package_dir / "package.json").write_text(json.dumps(manifest), encoding="utf-8")
     for pkg in ALL_PACKAGES if built is None else built:
-        (root / "packages" / pkg / "dist").mkdir(parents=True)
-        (root / "packages" / pkg / "dist" / "index.js").write_text("", encoding="utf-8")
+        dist = root / "packages" / pkg / "dist"
+        dist.mkdir()
+        for name in ("index.js", "index.d.ts"):
+            (dist / name).write_text("", encoding="utf-8")
     return root
 
 
@@ -52,6 +59,12 @@ def test_builds_only_packages_without_dist(tmp_path: Path) -> None:
     built = [p for p in ALL_PACKAGES if p != "miroir-core"]
     steps = plan_steps(_tree(tmp_path, built=built), _env())
     assert _names(steps) == ["build miroir-core"]
+
+
+def test_partial_build_is_rebuilt(tmp_path: Path) -> None:
+    root = _tree(tmp_path)
+    (root / "packages" / "miroir-core" / "dist" / "index.d.ts").unlink()
+    assert _names(plan_steps(root, _env())) == ["build miroir-core"]
 
 
 def test_builds_follow_dependency_order(tmp_path: Path) -> None:

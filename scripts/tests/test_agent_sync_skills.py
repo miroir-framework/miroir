@@ -83,3 +83,14 @@ def test_cli_check_exits_non_zero_on_drift(repo: Path) -> None:
     )
     assert result.returncode == 1
     assert "miroir-edit-queries" in result.stdout
+
+
+def test_sync_removes_committed_copy_of_skill_dropped_from_lock(repo: Path) -> None:
+    sync(repo)
+    subprocess.run(["git", "init", "-q"], cwd=repo, check=True)
+    subprocess.run(["git", "add", ".claude/skills"], cwd=repo, check=True)
+    (repo / "skills-lock.json").write_text(json.dumps({"version": 1, "skills": {}}), encoding="utf-8")
+    assert check(repo) == ["tdd"]
+    sync(repo)
+    assert not (repo / ".claude/skills/tdd").exists()
+    assert check(repo) == []

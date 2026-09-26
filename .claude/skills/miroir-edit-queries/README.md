@@ -98,7 +98,7 @@ The `filter` attribute in `extractorTemplateInstancesByEntity` and `extractorIns
 **Test Examples**:
 
 ```bash
-npm run testMiroir -w miroir-core -- --suites queries_library --mode unit --filter '{"queries_library":["select Authors with values filter (multiple values)"]}'
+npm run testMiroir -w miroir-core -- --suites queries_library --mode unit --filter '{"queries_library":["select Authors with values filter (multiple values) (extractorInstancesByEntity)"]}'
 ```
 
 ## Related Skills
