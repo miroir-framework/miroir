@@ -67,6 +67,7 @@ import { JzodEnumEditor } from "./JzodEnumEditor.js";
 import { JzodLiteralEditor } from "./JzodLiteralEditor.js";
 import { JzodEditorButton } from "./JzodEditorButton.js";
 import { JzodObjectEditor } from "./JzodObjectEditor.js";
+import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
 
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodElementEditor");
@@ -423,6 +424,9 @@ let count = 0;
 // #####################################################################################################
 export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   count++;
+  const trackedRender = useTrackedRender(
+    editorNavigationKey(props.currentDeploymentUuid, props.currentApplicationSection),
+  );
   const componentTestMode = useComponentTestMode();
   const isUnderTest = isVitestTestMode() || componentTestMode.codeMirrorPlaceholder;
 
@@ -2070,5 +2074,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     displayAsCodeEditor,
     currentValueObjectAtKey,
   ]);
+  // #303 T2: a union is rendered by the JzodElementEditor of its declared (union) schema, which
+  // also renders the resolved branch and the union type selector: it reports as JzodUnionEditor.
+  trackedRender.end(
+    currentKeyMap?.rawSchema?.type === "union" ? "JzodUnionEditor" : "JzodElementEditor",
+    formikRootLessListKey,
+  );
   return resultWithDebug;
 }

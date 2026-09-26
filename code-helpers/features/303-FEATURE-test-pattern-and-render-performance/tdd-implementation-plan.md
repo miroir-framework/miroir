@@ -2,7 +2,7 @@
 
 > Vertical TDD slices, RED then GREEN, integration-first per `docs/contributing/testing.md`. Tests render the real `JzodElementEditor` through the real MiroirTest walk (`runMiroirTests._runMiroirTestSuite`) and the real component test runner, with the real render insight registry. No mocks. The applicative interface is the MiroirTest JSON (new instances, new step, new fields); vitest files are used only where noted, with a one-line reason. Slice 1 is the tracer: the test pattern displays from JSON.
 
-**Resume note (2026-09-26):** Slices 0-2 done. The MiroirTest schema carries `ignorePaths`, `measureRendering` (handler: `not implemented`) and `runOnDemand` (not honored yet); `JzodTestPattern_ComponentTestSuite` is wired with one display leaf and three interaction leaves (entry: 8 instances, 72 leaves, about 40 s). Next: Slice 3 (every editor reports its renders). Open point for the user: keep or drop `--bail=1` for the component entry (Slice 1 GREEN note; default: keep, document in Slice 7).
+**Resume note (2026-09-26):** Slices 0-3 done. The MiroirTest schema carries `ignorePaths`, `measureRendering` (handler: `not implemented`) and `runOnDemand` (not honored yet); `JzodTestPattern_ComponentTestSuite` is wired with one display leaf and three interaction leaves (entry: 8 instances, 72 leaves, about 40 s). Every JzodElementEditor component reports timed renders through `useTrackedRender` (ids: `JzodElementEditor`, `JzodUnionEditor`, `JzodElementStringEditor`, `JzodEnumEditor`, `JzodLiteralEditor`, `JzodAnyEditor`, `JzodArrayEditor` / `JzodTupleEditor`, `JzodObjectEditor` / `JzodRecordEditor`); the runner turns tracking on for a suite whose `stepKinds` (walk context, `reactComponentTestSuiteStepKinds`) contains `measureRendering`. Next: Slice 4 (`measureRendering` step). Note for Slice 5: the pattern does not reach `JzodAnyEditor` (only `any` + `display.any.format` does). Open point for the user: keep or drop `--bail=1` for the component entry (Slice 1 GREEN note; default: keep, document in Slice 7).
 
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/303
 Working branch: to be created from `origin/_integration` (256e625 at plan time) when implementation starts.
@@ -23,7 +23,7 @@ Working branch: to be created from `origin/_integration` (256e625 at plan time) 
 | 0 | Baselines and probe checks | S | ✅ DONE | baseline table; R4 / R5 decided |
 | 1 | Tracer: test pattern displayed (`ignorePaths`) | M | ✅ DONE | `-t "JzodTestPattern"` 1 passed (1.6 s); full entry 71 passed (69 leaves + 2 checks), 33.8 s |
 | 2 | Test pattern interactions | S | ✅ DONE | `-t "JzodTestPattern"` 4 passed (1.7 / 2.1 / 1.6 / 3.4 s); full entry 74 passed (72 leaves + 2 checks), 40.5 s |
-| 3 | Every editor reports its renders | M | ⬜ pending | `renderInsightCoverage.303.phase3` |
+| 3 | Every editor reports its renders | M | ✅ DONE | `renderInsightCoverage.303.phase3` 4 passed (10 editor ids timed); full entry 74 passed, 45.4 s; tracking overhead on the pattern ≈ +5 % (R1) |
 | 4 | `measureRendering` step, measurements in the test result | L | ⬜ pending | `measureRendering.303.phase4` + tracker carries `assertionMeasurements` |
 | 5 | Render-performance suite, on-demand gating | M | ⬜ pending | `MIROIR_COMPONENT_PERF=1 … -t "JzodEditorRenderPerformance"`; default entry skips it |
 | 6 | Miroir Tests: iterations override and measurement table | M | ⬜ pending | `renderPerformanceRunControls.303.phase6` + app check |
@@ -223,7 +223,7 @@ Three leaves added to `26ef2886-…` (4 leaves in the suite, grouped as the RED 
 
 ## Slice 3 — Every editor reports its renders
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Goal: with performance display on, every JzodElementEditor component shows up in the render insight registry with a timing.
 
@@ -240,6 +240,33 @@ Goal: with performance display on, every JzodElementEditor component shows up in
 - `npm run testByFile -w miroir-standalone-app -- renderInsightCoverage.303.phase3`.
 - Full component entry green (tracking stays off for the existing suites: same DOM as before).
 - tsc for miroir-react and miroir-standalone-app.
+
+### Realization
+
+**RED observed.** `renderInsightCoverage.303.phase3.unit.test.tsx` reads the `JzodTestPattern` suite and its display leaf from the instance JSON and runs the leaf through `createReactComponentTestRunner` with a suite context whose `stepKinds` contains `measureRendering`. Before instrumentation (wrapper and provider change in place): leaf `ok`, but only `JzodObjectEditor` and `JzodTupleEditor` in the registry; missing `JzodElementEditor`, `JzodEnumEditor`, `JzodLiteralEditor`, `JzodElementStringEditor`, `JzodAnyEditor`, `JzodUnionEditor`, and also `JzodArrayEditor`, `JzodRecordEditor` although instrumented (see defect below).
+
+**GREEN.**
+- `MiroirContextReactProvider` (miroir-react): optional `initialShowPerformanceDisplay` overrides the `sessionStorage` initial value (T3); `npm run build -w miroir-react`.
+- `buildComponentTestWrapper`: `trackRenders?: boolean` → `initialShowPerformanceDisplay`; the dead `isPerformanceTest` / `Profiler` / `onRender` branch removed (one provider tree).
+- "Suite contains a step kind": the runner only receives the suite context, not the other leaves, so the helper lives in miroir-core: `reactComponentTestSuiteStepKinds(suite)` (exported, `miroirTestSuiteWalk.ts`) and a new optional `stepKinds` on `ReactComponentTestSuiteContext`, filled by the walk. The runner builds the suite wrapper with `trackRenders: suite.stepKinds?.includes("measureRendering")`. Slice 6 reuses `reactComponentTestSuiteStepKinds(node).includes("measureRendering")`. `npm run build -w miroir-core` (no `devBuild`: no schema change). `reactComponentTestSuite.292.phase1` expected context gets `stepKinds: []`.
+- Refactor checkpoint done with the GREEN: `4_view/tools/useTrackedRender.ts`. `useTrackedRender(navigationKey)` is called unconditionally at the top of the render (reads `showPerformanceDisplay`, starts the timer when on) and returns `{enabled, end(componentId, formikPath)}`; `end` is a plain function called before each measured `return`, so the id can be chosen late (array / tuple) and early returns stay legal. `editorNavigationKey(deploymentUuid, section)` keeps the existing key. No `useEffect`. Callers: `JzodArrayEditor`, `JzodObjectEditor` (their chips unchanged: `insightCounts = trackedRender.end(…)`), and the new `JzodElementEditor`, `JzodElementStringEditor` (6 returns), `JzodEnumEditor`, `JzodLiteralEditor`, `JzodAnyEditor` (2 returns). New components record only, no chip.
+- Simple types: number, bigint, boolean, date, uuid are rendered inline by `JzodElementEditor` (no separate component), so they report as `JzodElementEditor`. Union: no union component exists; the `JzodElementEditor` whose declared schema is a union renders the resolved branch and the union type selector, and reports as `JzodUnionEditor` instead of `JzodElementEditor` (same scheme as array / tuple).
+- **Defect fixed (#61 ids):** `JzodArrayEditor` took its role from the value-resolved schema, where every array is a `tuple`, and `JzodObjectEditor` from the resolved schema, where every record is an `object`: arrays reported (and chipped) as tuple, records as object. The declared (raw) type now decides (`array` / `tuple`, `record`), the resolved type only otherwise (under `any`, unions). App-visible change: the chip label of arrays and records in performance mode.
+
+**Deviation — `JzodAnyEditor` is not reached by the pattern.** `anAny` (object value) renders through `JzodObjectEditor` / `JzodTupleEditor` inside any; `JzodElementEditor` renders `JzodAnyEditor` only for an `any` schema with `tag.value.display.any.format` (as `applicationBundle`, format `file`), and the 15 leaves of `JzodAnyEditor_ComponentTestSuite` do not reach it either. The test checks it on a second case (`{aFile: {type:"any", display.any.format:"file"}}`, `steps: []`); non-vacuity: with its `end` calls disabled, that case fails (`timed components: JzodElementEditor, JzodObjectEditor`). Slice 5: the "any" performance leaf needs `display.any.format` to measure `JzodAnyEditor`; adding such a branch to the pattern is a user decision (it changes the Slices 1-2 expected values).
+
+**Test isolation problem met and solved.** `testByFile … RenderInsight` (case-insensitive) now also matches the new file; run first, it made `RenderInsightSummary` "shows empty-state copy" fail. Cause (pre-existing, not from this slice): the runner's `configureComponentTestDom` sets `@testing-library/dom` `eventWrapper` / `asyncWrapper` without `act`, global to the single vitest worker; `componentTestSteps.292.phase2` + `RenderInsightSummary` fail the same way (4 of 6) on HEAD. The new file saves `getConfig()` and `IS_REACT_ACT_ENVIRONMENT` in `beforeAll` and restores them in `afterAll`. The 286 / 292 files keep the leak (Slice 7 cleanup candidate).
+
+**R1 (from Slice 0).** Probe (temporary vitest file, deleted): the pattern display leaf through the runner, 6 alternated rounds per mode, one fresh runner + wrapper per run. Off: 1751 / 1451 / 1251 / 1198 / 1361 / 1333 ms (median 1347); on: 1465 / 1398 / 1414 / 1346 / 1519 / 1323 ms (median 1406): about +60 ms (+4-5 %) per mount + display check, the order of the run-to-run noise. It includes the chips of the container editors and the new `performance.now()` / registry writes (one track per editor node of the pattern). Accepted (R1), to be restated in the docs (Slice 7).
+
+**Validation.**
+| Command | Result |
+|---|---|
+| `npm run testByFile -w miroir-standalone-app -- renderInsightCoverage.303.phase3` | 4 passed (step kinds helper; pattern: 9 ids timed, 1.6 s; `JzodAnyEditor` case 0.1 s; tracking off: empty registry and no `render-insight-header`, 1.5 s) |
+| `… miroir-component-tests` | 74 passed (2 checks + 72 leaves); 45.4 s (tests 36.2 s) vs Slice 2 40.5 s (tests 34.8 s): tracking stays off, same DOM |
+| `npm run testByFile -w miroir-standalone-app -- RenderInsight` | 11 files, 48 passed (incl. `RenderInsightSummary`, `RenderInsightHeader`, `jzodEditorRenderInsight`, the new file) |
+| `npm run test -w miroir-core -- ''` | 156 files passed, 1 skipped; 2027 tests passed, 1 skipped |
+| tsc miroir-core / miroir-react / miroir-standalone-app | 0 / 0 / 1 (the baseline `JzodElementEditorHooks.ts(528,59)`) |
 
 ---
 

@@ -27,15 +27,12 @@ import {
   useMiroirContextService,
   useSelector,
 } from "miroir-react";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { useCurrentModel, useCurrentModelEnvironment, useDefaultValueParams } from "../../ReduxHooks";
-import {
-  NOOP_RENDER_COUNTS,
-  renderInsightRegistry,
-} from "../../tools/renderInsightRegistry.js";
+import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
 import { useViewportReveal } from "../../tools/useViewportReveal.js";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
 import {
@@ -387,10 +384,9 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
 ) => {
   jzodArrayEditorRenderCount++;
   const context = useMiroirContextService();
-  const renderStartRef = useRef(0);
-  if (context.showPerformanceDisplay) {
-    renderStartRef.current = performance.now();
-  }
+  const trackedRender = useTrackedRender(
+    editorNavigationKey(currentDeploymentUuid, currentApplicationSection),
+  );
   
   const formik = useFormikContext<Record<string, any>>();
   const formikRootLessListKeyArray = [reportSectionPathAsString, ...rootLessListKeyArray];
@@ -793,24 +789,19 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   );
   ;
   // ##############################################################################################
+  // The declared type decides (arrays resolve to tuples by value); resolved type only under any / unions.
+  const declaredType = currentTypeCheckKeyMap?.rawSchema?.type ?? currentRawJzodSchema?.type;
   const schemaType =
-    localResolvedElementJzodSchemaBasedOnValue?.type ??
-    currentTypeCheckKeyMap?.resolvedSchema?.type ??
-    currentRawJzodSchema?.type;
+    declaredType === "array" || declaredType === "tuple"
+      ? declaredType
+      : localResolvedElementJzodSchemaBasedOnValue?.type ??
+        currentTypeCheckKeyMap?.resolvedSchema?.type ??
+        currentRawJzodSchema?.type;
   const insightRole = schemaType === "tuple" ? "tuple" : "array";
   const insightComponentId =
     insightRole === "tuple" ? "JzodTupleEditor" : "JzodArrayEditor";
-  const insightEnabled = !!context.showPerformanceDisplay;
   // Sync accrual: chips need live counts; progressive mount limits fan-out.
-  const insightCounts = insightEnabled
-    ? renderInsightRegistry.trackRender({
-        componentId: insightComponentId,
-        navigationKey: `${currentDeploymentUuid ?? ""}-${currentApplicationSection ?? ""}`,
-        formikPath: formikRootLessListKey,
-        enabled: true,
-        durationMs: performance.now() - renderStartRef.current,
-      })
-    : NOOP_RENDER_COUNTS;
+  const insightCounts = trackedRender.end(insightComponentId, formikRootLessListKey);
 
   const titleRowWarning = findPathAnnotation(compatibilityWarnings, rootLessListKeyArray);
 

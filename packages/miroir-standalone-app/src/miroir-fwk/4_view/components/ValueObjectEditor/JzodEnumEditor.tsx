@@ -33,6 +33,7 @@ import { isPrimaryUnionDiscriminatorField } from "./unionDiscriminatorField.js";
 import { useSelector } from "react-redux";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-localcache-redux";
 import { JsonDisplayHelper } from "miroir-react";
+import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
 
 // Common function to handle discriminator changes
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodEnumEditor");
@@ -309,9 +310,13 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   currentApplication,
   applicationDeploymentMap,
   currentDeploymentUuid,
+  currentApplicationSection,
   readOnly,
   onChangeVector,
 }: JzodEnumEditorProps) => {
+  const trackedRender = useTrackedRender(
+    editorNavigationKey(currentDeploymentUuid, currentApplicationSection),
+  );
   const formik = useFormikContext<Record<string, any>>();
   const [discriminatorChangeError, setDiscriminatorChangeError] = useState<string | undefined>();
 
@@ -573,6 +578,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
     isDiscriminator,
     handleSelectEnumChange,
   ]);
+  trackedRender.end("JzodEnumEditor", formikRootLessListKey);
   return (
     <div>
         <JsonDisplayHelper

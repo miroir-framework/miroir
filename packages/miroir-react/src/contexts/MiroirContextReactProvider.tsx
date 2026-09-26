@@ -243,6 +243,12 @@ export function MiroirContextReactProvider(props: {
   processCapabilities?: ProcessCapabilities;
   testingApplication?: Uuid; // for tests only! Yuck!
   testingDeploymentUuid?: Uuid; // for tests only! Yuck!
+  /**
+   * Initial value of `showPerformanceDisplay` (render insight tracking), overriding the
+   * `sessionStorage` value. Used by component tests that measure renders (#303), so that
+   * no `sessionStorage` write leaks into the app session.
+   */
+  initialShowPerformanceDisplay?: boolean;
   children: ReactNode;
 }) {
   const [application, setApplication] = useState(props.testingApplication ?? "");
@@ -378,6 +384,9 @@ export function MiroirContextReactProvider(props: {
     return saved ? JSON.parse(saved) : {};
   });
   const [showPerformanceDisplay, setShowPerformanceDisplay] = useState(() => {
+    if (props.initialShowPerformanceDisplay !== undefined) {
+      return props.initialShowPerformanceDisplay;
+    }
     // Persist showPerformanceDisplay state across navigation
     const saved = sessionStorage.getItem("showPerformanceDisplay");
     return saved ? JSON.parse(saved) : false;

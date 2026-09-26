@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Clear } from "../Themes/MaterialSymbolWrappers";
 
@@ -41,10 +41,7 @@ import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
 import { JsonDisplayHelper } from "miroir-react";
 import { useReportPageContext } from "../Reports/ReportPageContext";
 import { RenderInsightHeader } from "../RenderInsightHeader.js";
-import {
-  NOOP_RENDER_COUNTS,
-  renderInsightRegistry,
-} from "../../tools/renderInsightRegistry.js";
+import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
 import { useViewportReveal } from "../../tools/useViewportReveal.js";
 import {
   getUnitTestKind,
@@ -643,10 +640,9 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     "JzodElementEditor"
   );
 
-  const renderStartRef = useRef(0);
-  if (context.showPerformanceDisplay) {
-    renderStartRef.current = performance.now();
-  }
+  const trackedRender = useTrackedRender(
+    editorNavigationKey(currentDeploymentUuid, currentApplicationSection),
+  );
 
   const reportContext = useReportPageContext();
   const currentTypeCheckKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
@@ -1340,23 +1336,16 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     environmentAnnotations,
   ]);
 
+  // Records resolve to objects: the declared type decides.
   const schemaType =
-    currentTypeCheckKeyMap?.resolvedSchema?.type ??
-    currentTypeCheckKeyMap?.rawSchema?.type;
+    currentTypeCheckKeyMap?.rawSchema?.type === "record"
+      ? "record"
+      : currentTypeCheckKeyMap?.resolvedSchema?.type ?? currentTypeCheckKeyMap?.rawSchema?.type;
   const insightRole = schemaType === "record" ? "record" : "object";
   const insightComponentId =
     insightRole === "record" ? "JzodRecordEditor" : "JzodObjectEditor";
-  const insightEnabled = !!context.showPerformanceDisplay;
   // Sync accrual: chips need live counts; progressive mount limits fan-out.
-  const insightCounts = insightEnabled
-    ? renderInsightRegistry.trackRender({
-        componentId: insightComponentId,
-        navigationKey: `${currentDeploymentUuid ?? ""}-${currentApplicationSection ?? ""}`,
-        formikPath: formikRootLessListKey,
-        enabled: true,
-        durationMs: performance.now() - renderStartRef.current,
-      })
-    : NOOP_RENDER_COUNTS;
+  const insightCounts = trackedRender.end(insightComponentId, formikRootLessListKey);
 
   const titleRowWarning = findPathAnnotation(compatibilityWarnings, rootLessListKeyArray);
 

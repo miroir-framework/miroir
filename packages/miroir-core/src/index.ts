@@ -1748,6 +1748,7 @@ export {
   type CompositeActionTestContext,
   type RunnerTestContext,
 } from "./5_tests/MiroirTestTools.js";
+export { reactComponentTestSuiteStepKinds } from "./5_tests/miroirTestSuiteWalk.js";
 export {
   REACT_COMPONENT_TEST_NO_RUNNER_MESSAGE,
   REACT_COMPONENT_TEST_NO_SUITE_MESSAGE,

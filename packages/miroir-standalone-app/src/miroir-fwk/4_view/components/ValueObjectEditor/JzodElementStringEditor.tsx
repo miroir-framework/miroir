@@ -13,6 +13,7 @@ import type { JzodEditorPropsRoot } from "./JzodElementEditorInterface";
 import { LoggerInterface, MiroirLoggerFactory, type JzodBaseObject, type MetaModel } from "miroir-core";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
+import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
 
 // ################################################################################################
 export interface JzodElementStringEditorProps extends JzodEditorPropsRoot {
@@ -60,6 +61,9 @@ export const JzodElementStringEditor: React.FC<JzodElementStringEditorProps> = (
     rootLessListKey,
     onChangeVector,
   } = props;
+  const trackedRender = useTrackedRender(
+    editorNavigationKey(props.currentDeploymentUuid, props.currentApplicationSection),
+  );
 
   const format = stringDisplay?.format;
   const multiline = stringDisplay?.multiline;
@@ -86,6 +90,7 @@ export const JzodElementStringEditor: React.FC<JzodElementStringEditorProps> = (
   // Handle color format using ThemedColorPicker
   if (format === "color") {
     if (readOnly || localReadOnly) {
+      trackedRender.end("JzodElementStringEditor", formikRootLessListKey);
       return (
         <ThemedLabeledEditor
           labelElement={enhancedLabelElement}
@@ -93,6 +98,7 @@ export const JzodElementStringEditor: React.FC<JzodElementStringEditorProps> = (
         />
       );
     }
+    trackedRender.end("JzodElementStringEditor", formikRootLessListKey);
     return (
       <ThemedLabeledEditor
         labelElement={enhancedLabelElement}
@@ -112,6 +118,7 @@ export const JzodElementStringEditor: React.FC<JzodElementStringEditorProps> = (
   // Handle file and folder formats using FileSelector
   if (format === "file" || format === "folder") {
     if (readOnly || localReadOnly) {
+      trackedRender.end("JzodElementStringEditor", formikRootLessListKey);
       return (
         <ThemedLabeledEditor
           labelElement={enhancedLabelElement}
@@ -119,6 +126,7 @@ export const JzodElementStringEditor: React.FC<JzodElementStringEditorProps> = (
         />
       );
     }
+    trackedRender.end("JzodElementStringEditor", formikRootLessListKey);
     return (
       <ThemedLabeledEditor
         labelElement={enhancedLabelElement}
@@ -144,6 +152,7 @@ export const JzodElementStringEditor: React.FC<JzodElementStringEditorProps> = (
 
   // Handle multiline text
   if (multiline) {
+    trackedRender.end("JzodElementStringEditor", formikRootLessListKey);
     return (
       <ThemedLabeledEditor
         labelElement={enhancedLabelElement}
@@ -168,6 +177,7 @@ export const JzodElementStringEditor: React.FC<JzodElementStringEditorProps> = (
   }
 
   // Default single-line string input
+  trackedRender.end("JzodElementStringEditor", formikRootLessListKey);
   return (
     <ThemedLabeledEditor
       labelElement={enhancedLabelElement}

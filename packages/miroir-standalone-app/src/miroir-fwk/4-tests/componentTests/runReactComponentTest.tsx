@@ -61,6 +61,8 @@ export type ClosableReactComponentTestRunner = ReactComponentTestRunner & {
  *    without `suite`, a leaf without `steps`, or an unknown component is an `error` result.
  * 2. It builds one wrapper (providers over its own `LocalCache`) per suite, keyed by the
  *    `reactComponentTestSuite` path, on the suite's first case, and reuses it for the later cases.
+ *    The wrapper turns render tracking on (`trackRenders`) when the suite contains a
+ *    `measureRendering` step (#303 T3).
  * 3. It unmounts the previous case, creates a fresh container under `sandboxElement`, and mounts
  *    the wrapped component into it.
  * 4. It runs the steps (`runComponentTestSteps`) with a fresh `ComponentTestEnvironment`, a thrown
@@ -144,12 +146,13 @@ export function createReactComponentTestRunner(
     return container;
   };
 
-  const suiteWrapper = (key: string) => {
+  const suiteWrapper = (key: string, trackRenders: boolean) => {
     let wrapper = suiteWrappers.get(key);
     if (!wrapper) {
       // no suite sets a deployment map (analysis T13)
       wrapper = buildComponentTestWrapper({
         applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+        trackRenders,
       });
       suiteWrappers.set(key, wrapper);
     }
@@ -193,7 +196,8 @@ export function createReactComponentTestRunner(
     const testName = MiroirActivityTracker.testPathName(testNamePath);
     try {
       const container = await mountCase(
-        suiteWrapper(wrapperKey),
+        // #303 T3: render tracking only for a suite that measures renders (other suites: same DOM)
+        suiteWrapper(wrapperKey, !!suite.stepKinds?.includes("measureRendering")),
         Component,
         reviveComponentProps({ ...suite.componentProps, ...(leaf.componentProps ?? {}) }),
       );

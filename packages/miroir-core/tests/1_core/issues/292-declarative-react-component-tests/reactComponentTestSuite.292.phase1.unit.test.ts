@@ -174,6 +174,7 @@ describe("reactComponentTestSuite in the MiroirTest walk", () => {
       component: "C",
       componentProps: { a: 1 },
       caseLabels: ["A", "B"],
+      stepKinds: [], // #303: the leaves have no step
     };
     expect(calls[1]).toEqual({ testNamePath: ["Root", "S", "B"], leaf: leafB, suite: expectedSuite });
     expect(calls[0]).toEqual({ testNamePath: ["Root", "S", "A"], leaf: leafA, suite: expectedSuite });

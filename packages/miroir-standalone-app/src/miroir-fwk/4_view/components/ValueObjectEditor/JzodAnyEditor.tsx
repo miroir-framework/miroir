@@ -19,6 +19,7 @@ import { FileSelector } from "../Themes/FileSelector.js";
 import { useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 import { JzodAnyEditorProps } from "./JzodElementEditorInterface";
 import { JzodElementEditor } from "./JzodElementEditor";
+import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodAnyEditor");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -40,6 +41,9 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
 ) => {
   JzodAnyEditorRenderCount++;
   const context = useMiroirContextService();
+  const trackedRender = useTrackedRender(
+    editorNavigationKey(props.currentDeploymentUuid, props.currentApplicationSection),
+  );
   const {
     // name,
     // listKey,
@@ -260,6 +264,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
   //   </ThemedStatusText>)
   // }
   if (format === "file") {
+    trackedRender.end("JzodAnyEditor", formikRootLessListKey);
     return (
       <div key={rootLessListKey}>
         {/* fomat = "file" */}
@@ -302,6 +307,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
   }
 
 
+  trackedRender.end("JzodAnyEditor", formikRootLessListKey);
   return (
     <div key={rootLessListKey}>
       {/* <ThemedOnScreenHelper label="JzodAnyEditor" data={rootLessListKey} /> */}

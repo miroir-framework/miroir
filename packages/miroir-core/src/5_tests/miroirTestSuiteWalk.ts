@@ -1,5 +1,6 @@
 import type {
   MiroirTestSuite,
+  ReactComponentTestStep,
   ReactComponentTestSuite,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
@@ -45,6 +46,22 @@ function miroirTestNodeLabel(node: MiroirTestNode): string {
 }
 
 /**
+ * Distinct step kinds used by the leaves of a `reactComponentTestSuite`, in order of first use
+ * (#303). "Does the suite contain a step kind" is `reactComponentTestSuiteStepKinds(suite).includes(kind)`.
+ */
+export function reactComponentTestSuiteStepKinds(
+  suite: Pick<ReactComponentTestSuite, "miroirTests">,
+): ReactComponentTestStep["step"][] {
+  const kinds = new Set<ReactComponentTestStep["step"]>();
+  for (const leaf of suite.miroirTests) {
+    for (const step of leaf.steps ?? []) {
+      kinds.add(step.step);
+    }
+  }
+  return [...kinds];
+}
+
+/**
  * The context passed to the component test runner with each leaf of a `reactComponentTestSuite`
  * (#292, analysis T3). `caseLabels` lists every leaf, whatever the filter.
  */
@@ -60,6 +77,7 @@ function reactComponentTestSuiteContext(
     component: suite.component,
     componentProps: suite.componentProps ?? {},
     caseLabels: suite.miroirTests.map((leaf) => leaf.miroirTestLabel),
+    stepKinds: reactComponentTestSuiteStepKinds(suite),
   };
 }
 

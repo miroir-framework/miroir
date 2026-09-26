@@ -47,6 +47,7 @@ import {
 } from "../Themes/index";
 import { JzodLiteralEditorProps } from "./JzodElementEditorInterface";
 import { isPrimaryUnionDiscriminatorField } from "./unionDiscriminatorField.js";
+import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodLiteralEditor");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -328,6 +329,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
     currentApplication,
     applicationDeploymentMap,
     currentDeploymentUuid,
+    currentApplicationSection,
     typeCheckKeyMap,
     readOnly,
     hasPathError,
@@ -335,6 +337,9 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
   }
 ) => {
   JzodLiteralEditorRenderCount++;
+  const trackedRender = useTrackedRender(
+    editorNavigationKey(currentDeploymentUuid, currentApplicationSection),
+  );
   let error: JSX.Element | undefined = undefined;
 
   const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
@@ -529,6 +534,7 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
   // );
   // Memoize discriminator values for better rendering performance
 
+  trackedRender.end("JzodLiteralEditor", formikRootLessListKey);
   return error ? (
     <>{error}</>
   ) : (
