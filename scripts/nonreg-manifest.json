@@ -22,17 +22,14 @@
     {
       "id": "unit-301-agent-tooling",
       "tier": "unit",
-      "title": "#301 — agent tooling: skill copies in sync, AGENTS.md, session setup",
+      "title": "Repo scripts (scripts/tests): #301 agent tooling",
       "requires": "none",
       "argv": [
         "python",
         "-m",
         "pytest",
         "-q",
-        "scripts/tests/test_agent_skills_layout.py",
-        "scripts/tests/test_agent_sync_skills.py",
-        "scripts/tests/test_agent_instructions.py",
-        "scripts/tests/test_agent_session_setup.py"
+        "scripts/tests"
       ]
     },
     {

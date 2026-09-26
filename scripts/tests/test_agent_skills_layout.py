@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 from pathlib import Path
 
@@ -70,3 +71,17 @@ def test_personal_installs_are_ignored_by_git() -> None:
         assert not _ignored(f"{base}/miroir-new-skill/SKILL.md")
         for name in _lock_keys():
             assert not _ignored(f"{base}/{name}/SKILL.md"), name
+
+
+def test_skill_cross_references_resolve() -> None:
+    tracked = {p.name for p in AGENTS_SKILLS.iterdir() if p.is_dir()}
+    broken = []
+    for skill_md in AGENTS_SKILLS.glob("*/*.md"):
+        text = skill_md.read_text(encoding="utf-8")
+        for name in re.findall(r'Skill tool with "([a-z0-9-]+)"', text):
+            if name not in tracked:
+                broken.append(f"{skill_md.parent.name}: skill {name}")
+        for name, file in re.findall(r"`([a-z0-9-]+)/([A-Za-z0-9_-]+\.md)`", text):
+            if name in tracked and not (AGENTS_SKILLS / name / file).is_file():
+                broken.append(f"{skill_md.parent.name}: {name}/{file}")
+    assert broken == []

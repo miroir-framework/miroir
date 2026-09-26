@@ -40,7 +40,7 @@ See [AGENTS.md, "Running the application"](../../AGENTS.md#running-the-applicati
 | Location | Content | Tracked |
 |---|---|---|
 | `.agents/skills/miroir-*` | Miroir skills (feature analysis, TDD plan, queries, transformers, …) | yes, canonical |
-| `.agents/skills/<core>` | Shared core from [`skills-lock.json`](../../skills-lock.json): `grilling`, `tdd`, `unslop`, `writing-for-agents`, `handoff`, `diagnosing-bugs` | yes |
+| `.agents/skills/<core>` | Shared core from [`skills-lock.json`](../../skills-lock.json): `grilling`, `tdd`, `unslop`, `writing-for-agents`, `handoff`, `diagnosing-bugs`, `codebase-design` (vocabulary the `tdd` skill relies on) | yes |
 | `.claude/skills/` | Copies of the two rows above, for Claude Code | yes, generated |
 | anything else in `.agents/skills/` or `.claude/skills/` | Your personal installs | no (gitignored) |
 

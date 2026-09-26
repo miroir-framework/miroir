@@ -1,4 +1,4 @@
-"""Ensure `release_tag_lib` imports resolve when pytest is run from the repo root."""
+"""Make modules in scripts/ importable when pytest is run from the repo root."""
 
 from __future__ import annotations
 

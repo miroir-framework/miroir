@@ -65,7 +65,7 @@ Goal: lock today's facts so later slices change them deliberately.
 **Validation:** `python3 -m pytest scripts/tests -k agent_skills_layout -v`
 
 ### Realization
-Locked the 5 `miroir-*` skills in `.agents/skills`, lock keys ↔ directories, and the absence of Miroir skills in `.claude/skills`. `scripts/tests/` also holds #223 release tests that no longer collect (`release_tag_lib` moved to `ci/release/`); agent tests are therefore run by file (`test_agent_*.py`), never as the whole folder.
+Locked the 5 `miroir-*` skills in `.agents/skills`, lock keys ↔ directories, and the absence of Miroir skills in `.claude/skills`. `scripts/tests/` also held ten #223 tests for `scripts/release_tag.py` / `release_tag_lib`, which were never committed (the tests landed alone in 6841fcc) and are declared obsolete by `docs/reference/release-process.md` (superseded by `ci/release/`); they could not be collected, so agent tests were first run by file. Follow-up (after review): those orphan tests were removed and CI / nonreg run the whole `scripts/tests` folder.
 
 ## Slice 1 — Miroir skills visible to Claude (tracer bullet)
 
@@ -182,3 +182,8 @@ Goal: an agent that needs a broad architecture view builds the graph with one co
 
 ### Realization
 `docs/contributing/development-setup.md` written (was a placeholder): human setup, instructions, skills table, personal installs via `npx skills add … -g`, session setup, graphify. Nonreg: `unit-301-agent-tooling` step in `scripts/nonreg-manifest.json`. `npm run nonreg:unit`: 34/34 passed in 453 s.
+
+## Follow-ups after review
+
+- Upstream `tdd` delegates its deep-module vocabulary to the `codebase-design` skill, dropped in Slice 3; `codebase-design` rejoined the shared core (lock, `.gitignore`, docs). `miroir-analysis-to-tdd-plan` pointed at `tdd/deep-modules.md`, `interface-design.md`, `refactoring.md`, which upstream no longer ships: now points at `codebase-design` and states the Miroir refactor-checkpoint override explicitly. `test_skill_cross_references_resolve` guards `Skill tool with "<name>"` and `<skill>/<file>.md` references across tracked skills.
+- Orphan #223 tests removed (see Slice 0 realization); `npm run release:tag` still points at the missing `scripts/release_tag.py` (legacy flow, left for the maintainer to retire).

@@ -71,6 +71,7 @@ test-results/
 !.agents/skills/writing-for-agents/
 !.agents/skills/handoff/
 !.agents/skills/diagnosing-bugs/
+!.agents/skills/codebase-design/
 .claude/skills/*
 !.claude/skills/miroir-*/
 !.claude/skills/grilling/
@@ -79,3 +80,4 @@ test-results/
 !.claude/skills/writing-for-agents/
 !.claude/skills/handoff/
 !.claude/skills/diagnosing-bugs/
+!.claude/skills/codebase-design/

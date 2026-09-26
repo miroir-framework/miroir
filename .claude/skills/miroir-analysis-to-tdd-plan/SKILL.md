@@ -16,9 +16,9 @@ This skill **leverages the generic `tdd` skill's wisdom** (`.agents/skills/tdd/`
 - **Red → Green → Refactor**, one behavior at a time. Never write all tests first (horizontal slicing produces crap tests).
 - **Tracer bullet first**: the first slice proves the thinnest end-to-end path.
 - **Good vs bad tests** (`tdd/tests.md`): tests verify behavior through public interfaces, survive internal refactors, describe WHAT not HOW. One logical assertion per test.
-- **Deep modules** (`tdd/deep-modules.md`): small interface, deep implementation. Shallow pass-through modules are a smell.
-- **Interface design for testability** (`tdd/interface-design.md`): accept dependencies, return results, small surface.
-- **Refactor pass after green** (`tdd/refactoring.md`), never while RED.
+- **Deep modules** (`codebase-design` skill): small interface, deep implementation. Shallow pass-through modules are a smell.
+- **Interface design for testability** (`codebase-design` skill: seams, interfaces): accept dependencies, return results, small surface.
+- **Refactor only after green**, never while RED. (The upstream `tdd` skill defers refactoring to review; Miroir plans keep a refactor checkpoint in every slice, see § Miroir override 5.)
 
 ## Miroir overrides (the `tdd` skill alone is wrong here)
 
@@ -33,7 +33,7 @@ The `tdd` skill's "public interface" means TS/JS signatures only. In Miroir the 
 - **Favor applicative interfaces whenever the behavior can be expressed as model data.** A new Report/Query/Runner asset is interface; a new exported TS function is a last resort.
 - Lock applicative contracts (JSON shapes, uuids, `menuItemScope`-style marker fields, endpoint action payload schemas) in **Slice 0** before any code changes.
 - Interface changes to core schemas imply the build chain: edit assets in `miroir-test-app_deployment-miroir` → `npm run build -w miroir-test-app_deployment-miroir` → `npm run devBuild -w miroir-core` (regenerates `miroirFundamentalType.ts`). Plan this explicitly in the slice that changes a schema.
-- Code-level interfaces still follow `tdd/interface-design.md`.
+- Code-level interfaces still follow the `codebase-design` vocabulary (deep modules, seams).
 
 ### 3. MiroirTest whenever possible; vitest for internals only
 
@@ -69,7 +69,7 @@ Slice 0 is the only exception to "observable behavior": when modifying existing 
 ### 5. Refactoring is planned, not hoped for — the corpus's second weakness
 
 - The analysis's **"Current state (misaligned)"** subsections are the refactor backlog: each misalignment must appear in the plan either as a slice's refactor checkpoint or as an explicit non-goal.
-- Every slice ends with a **Refactor checkpoint**: duplication extraction, module deepening, dead code revealed by the slice (see `tdd/refactoring.md`).
+- Every slice ends with a **Refactor checkpoint**: duplication extraction, module deepening, dead code revealed by the slice (deepening moves: `codebase-design` skill, `DEEPENING.md`).
 - The final slice includes a **cleanup pass**: migrate still-valuable issue-scoped assertions into feature-named suites and delete the `issues/<NNN>-*` test directory per `docs/contributing/testing.md` (#238 rule).
 
 ## Execution model — human-in-the-loop by default
