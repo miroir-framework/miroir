@@ -10,6 +10,8 @@
  *   only component leaf is inside a `reactComponentTestSuite`;
  * - `miroir-test-app_deployment-miroir` exports `miroirTest_<name>` for the 7 names, and
  *   `defaultMiroirMetaModel.tests` holds the 7 uuids and not `JzodElementEditor_ComponentTestSuite`;
+ * - (#303) the only other instance with component leaves is `JzodTestPattern_ComponentTestSuite`,
+ *   exported and listed in `defaultMiroirMetaModel.tests`;
  * - (Slice 5, Slice 6) every child is a `reactComponentTestSuite`, and every leaf has `steps`,
  *   only the attributes of the leaf schema (no legacy reference to a TypeScript case), and no
  *   `custom` step.
@@ -51,6 +53,11 @@ const expectedInstances: Record<string, string> = {
   JzodAnyEditor: "ec601bcc-a27d-450d-9c37-bdd6a12a1575",
 };
 const instanceName = (editor: string) => `${editor}_ComponentTestSuite`;
+
+/** Component test instances added after #292, not per-editor: name to uuid (#303 plan). */
+const laterComponentInstances: Record<string, string> = {
+  JzodTestPattern_ComponentTestSuite: "26ef2886-2cd8-4f91-b846-1525b24d5f41",
+};
 
 /** The attributes of `miroirTestForReactComponent` since #292 M1. */
 const REACT_COMPONENT_LEAF_ATTRIBUTES = ["miroirTestType", "miroirTestLabel", "skip", "componentProps", "steps"];
@@ -97,9 +104,16 @@ describe("per-editor component test MiroirTest instances", () => {
         editor,
       ).toEqual([editor]);
     }
-    // No other instance of the folder holds a component leaf (the combined instance is gone).
+    // No other instance of the folder holds a component leaf (the combined instance is gone), except
+    // the instances added after #292.
+    expect(
+      allInstances
+        .filter((instance) => Object.values(laterComponentInstances).includes(instance.uuid))
+        .map((instance) => [instance.name, instance.uuid]),
+    ).toEqual(Object.entries(laterComponentInstances));
     const otherComponentInstances = allInstances
       .filter((instance) => !Object.values(expectedInstances).includes(instance.uuid))
+      .filter((instance) => !Object.values(laterComponentInstances).includes(instance.uuid))
       .filter((instance) => componentLeafLabels(instance.definition).length > 0)
       .map((instance) => instance.name);
     expect(otherComponentInstances).toEqual([]);
@@ -184,5 +198,9 @@ describe("per-editor component test MiroirTest instances", () => {
       expect(testUuids).toContain(uuid);
     }
     expect(testNames).not.toContain("JzodElementEditor_ComponentTestSuite");
+    for (const [name, uuid] of Object.entries(laterComponentInstances)) {
+      expect(exports[`miroirTest_${name}`]?.uuid, name).toBe(uuid);
+      expect(testUuids).toContain(uuid);
+    }
   });
 });

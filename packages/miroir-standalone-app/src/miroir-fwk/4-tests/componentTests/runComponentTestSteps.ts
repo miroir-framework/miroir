@@ -154,6 +154,27 @@ function valueAtPath(value: unknown, path: readonly (string | number)[]): unknow
   return current;
 }
 
+/**
+ * A copy of `value` without the sub-values at the dot paths of `ignorePaths` (#303 T1). A numeric
+ * segment indexes an array; an ignored array item is removed. A missing path is left as is.
+ */
+function withoutIgnoredPaths(value: unknown, ignorePaths: readonly string[]): unknown {
+  const copy: unknown = structuredClone(value);
+  for (const ignorePath of ignorePaths) {
+    const segments = ignorePath.split(".");
+    const parent = valueAtPath(copy, segments.slice(0, -1));
+    const last = segments[segments.length - 1];
+    if (Array.isArray(parent) && /^\d+$/.test(last)) {
+      parent.splice(Number(last), 1);
+      continue;
+    }
+    if (isPlainObject(parent)) {
+      delete parent[last];
+    }
+  }
+  return copy;
+}
+
 /** The `value` of a form element, as the old `(element as HTMLInputElement).value` reads. */
 function elementValue(element: HTMLElement): unknown {
   return (element as HTMLInputElement).value;
@@ -195,17 +216,22 @@ export async function runComponentTestSteps(
     if (step.path !== undefined) {
       actual = valueAtPath(actual, step.path);
     }
+    let expected: unknown = step.expectedValue;
+    if (step.ignorePaths !== undefined) {
+      actual = withoutIgnoredPaths(actual, step.ignorePaths);
+      expected = withoutIgnoredPaths(expected, step.ignorePaths);
+    }
     const options = renderedOptions(env);
     if (Object.keys(options).length > 0 && isPlainObject(actual)) {
       actual = { ...actual, $options: options };
     }
     env.log.info("expectRenderedValues", step.label, actual);
     try {
-      env.expect(actual, "rendered values").toEqual(step.expectedValue);
+      env.expect(actual, "rendered values").toEqual(expected);
     } catch (error) {
       throw new RenderedValuesMismatch(
         error instanceof Error ? error.message : String(error),
-        step.expectedValue,
+        expected,
         actual,
       );
     }
@@ -416,6 +442,10 @@ export async function runComponentTestSteps(
         return;
       }
       await waitUntil(env, () => checkElement(step), step.timeout);
+    },
+    measureRendering: async () => {
+      // #303 Slice 4 implements the measurement; the schema carries the step since Slice 1 (T8)
+      throw new Error("not implemented");
     },
   };
 

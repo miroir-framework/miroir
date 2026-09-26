@@ -2,7 +2,7 @@
 
 > Vertical TDD slices, RED then GREEN, integration-first per `docs/contributing/testing.md`. Tests render the real `JzodElementEditor` through the real MiroirTest walk (`runMiroirTests._runMiroirTestSuite`) and the real component test runner, with the real render insight registry. No mocks. The applicative interface is the MiroirTest JSON (new instances, new step, new fields); vitest files are used only where noted, with a one-line reason. Slice 1 is the tracer: the test pattern displays from JSON.
 
-**Resume note (2026-09-26):** Slice 0 done (baselines saved, R4 = real rendering defect, R5 = caused by `--bail=1` in `testByFile`, not by the entry). Next: Slice 1. Open point for the user: keep or drop `--bail=1` for the component entry (Slice 1 GREEN note).
+**Resume note (2026-09-26):** Slices 0-1 done. The MiroirTest schema carries `ignorePaths`, `measureRendering` (handler: `not implemented`) and `runOnDemand` (not honored yet); `JzodTestPattern_ComponentTestSuite` is wired with one display leaf (entry: 8 instances, 69 leaves). Next: Slice 2 (interaction leaves). Open point for the user: keep or drop `--bail=1` for the component entry (Slice 1 GREEN note; default: keep, document in Slice 7).
 
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/303
 Working branch: to be created from `origin/_integration` (256e625 at plan time) when implementation starts.
@@ -21,7 +21,7 @@ Working branch: to be created from `origin/_integration` (256e625 at plan time) 
 | Slice | Title | Complexity | Status | Primary proof |
 |---|---|---|---|---|
 | 0 | Baselines and probe checks | S | ✅ DONE | baseline table; R4 / R5 decided |
-| 1 | Tracer: test pattern displayed (`ignorePaths`) | M | ⬜ pending | `-t "JzodTestPattern"` display leaf green |
+| 1 | Tracer: test pattern displayed (`ignorePaths`) | M | ✅ DONE | `-t "JzodTestPattern"` 1 passed (1.6 s); full entry 71 passed (69 leaves + 2 checks), 33.8 s |
 | 2 | Test pattern interactions | S | ⬜ pending | `-t "JzodTestPattern"` all leaves green |
 | 3 | Every editor reports its renders | M | ⬜ pending | `renderInsightCoverage.303.phase3` |
 | 4 | `measureRendering` step, measurements in the test result | L | ⬜ pending | `measureRendering.303.phase4` + tracker carries `assertionMeasurements` |
@@ -122,7 +122,7 @@ Deviation: none in scope; the Slice 1 R5 item changes (see Slice 1 GREEN).
 
 ## Slice 1 — Tracer: test pattern displayed
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Goal: a maintainer runs `-t "JzodTestPattern"` and sees the pattern render with its value checked, from JSON only.
 
@@ -144,6 +144,36 @@ Goal: a maintainer runs `-t "JzodTestPattern"` and sees the pattern render with 
 - `… miroir-component-tests -t "JzodTestPattern"` green; full entry green with 69 leaves.
 - `componentMiroirTests.consistency` green; modelValidation of `miroir-test-app_deployment-miroir` (part of its build).
 - tsc: no new error against Slice 0.
+
+### Realization
+
+**RED observed.**
+- Counts updated first: vitest entry `EXPECTED_INSTANCE_COUNT` 8 / `EXPECTED_LEAF_COUNT` 69; `componentMiroirTests.consistency` 8 instances; `componentTestInstances.292.phase1` gets a `laterComponentInstances` list (`JzodTestPattern_ComponentTestSuite` → `26ef2886-…`): the "no other instance holds a component leaf" check allows it, and the export / `defaultMiroirMetaModel.tests` check requires it.
+- Instance `26ef2886-2cd8-4f91-b846-1525b24d5f41.json` (generated once from the Slice 0 draft, 2-space JSON like the other instances; the draft's 21 attributes unchanged). One leaf `JzodTestPattern: every editor type displays its value`: `expectRenderedValues {field:"testField", ignorePaths:[aLiteral, testField, aReference, anEmptyArray, anEmptyRecord, aNestedObject.level1.level2.items.1.tags]}`, then 5 `expectElement`: `byDisplayValue "fixed"` (literal), `byDisplayValue "root"` + `fieldName testField.aReference.label`, the add buttons of `anEmptyArray`, `anEmptyRecord` (`addRecordEntry`) and `items.1.tags`. `expectedValue` keeps the true value of the ignored branches (bigint as string, date as displayed), so removing an entry of `ignorePaths` after the extractor fix is the only change needed.
+- `-t "JzodTestPattern"`: 1 failed, `step 1 (expectRenderedValues "initial"): … First difference at path: ["aReference","children"]`; the rebuilt value matched analysis §3.3 exactly (stray `testField: {aLiteral}`, `aReference: {label:"root"}`, empty containers and `items[1].tags` absent).
+- With the old Entity / EntityVersion restored, `componentMiroirTests.consistency` fails its `jzodTypeCheck` case on the new instance (`ignorePaths` unknown).
+
+**GREEN.**
+- Schema (T8), same edit in the Entity and its EntityVersion (`51c647fe-…`): `reactComponentTestSuite.runOnDemand?: boolean`; `expectRenderedValues.ignorePaths?: string[]`; step `measureRendering {step, label?, iterations: number, mode: "remount"|"update"|"both", updateProps?: record<any>}` appended to `reactComponentTestStep`. `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core` (generated `miroirFundamentalType.ts` / `miroirFundamentalJzodSchema.ts` updated).
+- Interpreter (`runComponentTestSteps.ts`): `withoutIgnoredPaths(value, ignorePaths)` next to `valueAtPath` removes each dot path (numeric segment on an array: the item is spliced) from a `structuredClone` of the actual value (after `path`, before `$options`) and of `expectedValue`; the mismatch reports the stripped values. `measureRendering` handler throws `not implemented`: a temporary step gave `step 1 (measureRendering): not implemented` (reverted).
+- Wiring: `miroirTest_JzodTestPattern_ComponentTestSuite` in `index.ts`, `index.d.ts`, `src/Model.ts` (import + `defaultMiroirMetaModel.tests`).
+- Non-vacuity (reverted): `aString` "hellox" in `expectedValue` → step 1 fails; `byDisplayValue "rootx"` → `step 3 (expectElement "aReference root label"): no element matches target …`.
+
+**Validation.**
+| Command | Result |
+|---|---|
+| `… miroir-component-tests -t "JzodTestPattern"` | 1 passed, 70 skipped; leaf 1.6 s |
+| `… miroir-component-tests` | 71 passed (2 checks + 69 leaves); 33.8 s (tests 28.0 s) vs 41.3 s at Slice 0 (machine variance) |
+| `componentMiroirTests.consistency` | 6 passed |
+| `componentTestInstances.292.phase1` / `componentTestSchema.292.phase1` / `legacyRemoved.292.phase6` / `componentTestSteps.292.phase2` | 5 / 11 / 9 / 14 passed |
+| `npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts` | 160 passed |
+| `npm run test -w miroir-core -- ''` | 156 files passed, 1 skipped; 2024 tests passed, 1 skipped |
+| tsc miroir-core / miroir-react / miroir-standalone-app | 0 / 0 / 1 (the baseline `JzodElementEditorHooks.ts(528,59)`) |
+
+**Deviations.**
+- The Validation line "modelValidation … (part of its build)" is wrong: `npm run build -w miroir-test-app_deployment-miroir` is `tsup` only; modelValidation was run separately (`testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts`).
+- `runOnDemand` is in the schema but not honored (Slice 5). No entry change for R5 (bail stays, user input still open).
+- R4 defect (`aReference` children not rendered) unchanged; recorded in the instance `description`; issue to open in Slice 7.
 
 ---
 

@@ -41,9 +41,12 @@ const MIROIR_TEST_DATA_FOLDER = join(
   "packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b",
 );
 
-/** Expected content of the folder: 7 per-editor instances, 68 leaves (#292 Slice 0 baseline). */
-const EXPECTED_INSTANCE_COUNT = 7;
-const EXPECTED_LEAF_COUNT = 68;
+/**
+ * Expected content of the folder: 7 per-editor instances, 68 leaves (#292 Slice 0 baseline), plus
+ * the test pattern instance `JzodTestPattern_ComponentTestSuite` (#303).
+ */
+const EXPECTED_INSTANCE_COUNT = 8;
+const EXPECTED_LEAF_COUNT = 69;
 
 type ComponentTestSuiteInstance = { uuid: string; name: string; definition: MiroirTestSuite };
 
