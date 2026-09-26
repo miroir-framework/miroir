@@ -147,3 +147,7 @@ docs/contributing/
 | C. Not in cloud | Local only |
 
 All options add a `.graphifyignore` (exclude `.agents/`, `.claude/`, `dist/`, `node_modules/`, generated files).
+
+## Implementation
+
+See [tdd-implementation-plan.md](tdd-implementation-plan.md).

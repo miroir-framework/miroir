@@ -15,20 +15,20 @@ Out (non-goals, from analysis): content changes to Miroir skills beyond the `que
 - Issue: https://github.com/miroir-framework/miroir/issues/301
 - Analysis: [./analysis.md](./analysis.md)
 - CI gate: [../../../.github/workflows/pr-checks.yml](../../../.github/workflows/pr-checks.yml)
-- Branch: `claude/project-thread-k0ox0g` → PR into `aba`
+- Branch: `claude/project-thread-k0ox0g` → PR into `_integration` (created from `aba` on 2026-09-26, replaces it as integration branch)
 
 ## Progress summary
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize current layout | ⬜ pending | `scripts/tests/test_agent_skills_layout.py` |
-| 1 | Miroir skills visible to Claude (sync + check) | ⬜ pending | `test_sync_agent_skills.py`, CI step |
-| 2 | Miroir skill naming cleanup | ⬜ pending | layout test, sync `--check` |
-| 3 | Lean third-party baseline | ⬜ pending | layout test, `.gitignore` test |
-| 4 | Instruction files (AGENTS.md, CLAUDE.md) | ⬜ pending | `test_agent_instructions.py` |
-| 5 | Session setup script + SessionStart hook | ⬜ pending | `test_agent_session_setup.py`, fresh cloud session |
-| 6 | graphify on demand | ⬜ pending | `--graphify` run, `.graphifyignore` test |
-| 7 | Docs, nonreg, AC checklist | ⬜ pending | `npm run nonreg:unit` |
+| 0 | Characterize current layout | ✅ DONE | `test_agent_skills_layout.py` |
+| 1 | Miroir skills visible to Claude (sync + check) | ✅ DONE | `test_agent_sync_skills.py`, CI step |
+| 2 | Miroir skill naming cleanup | ✅ DONE | layout test, sync `--check` |
+| 3 | Lean third-party baseline | ✅ DONE | layout + `.gitignore` tests |
+| 4 | Instruction files (AGENTS.md, CLAUDE.md) | ✅ DONE | `test_agent_instructions.py` |
+| 5 | Session setup script + SessionStart hook | ✅ DONE | `test_agent_session_setup.py`, hook dry run |
+| 6 | graphify on demand | ✅ DONE | `--graphify` run, `.graphifyignore` test |
+| 7 | Docs, nonreg, AC checklist | ✅ DONE | nonreg step `unit-301-agent-tooling` |
 
 ## Locked implementation defaults
 
@@ -56,7 +56,7 @@ Out (non-goals, from analysis): content changes to Miroir skills beyond the `que
 
 ## Slice 0 — Characterize current layout
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Goal: lock today's facts so later slices change them deliberately.
 
@@ -65,26 +65,26 @@ Goal: lock today's facts so later slices change them deliberately.
 **Validation:** `python3 -m pytest scripts/tests -k agent_skills_layout -v`
 
 ### Realization
-_(pending)_
+Locked the 5 `miroir-*` skills in `.agents/skills`, lock keys ↔ directories, and the absence of Miroir skills in `.claude/skills`. `scripts/tests/` also holds #223 release tests that no longer collect (`release_tag_lib` moved to `ci/release/`); agent tests are therefore run by file (`test_agent_*.py`), never as the whole folder.
 
 ## Slice 1 — Miroir skills visible to Claude (tracer bullet)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Goal: a Claude session on this repo lists every `miroir-*` skill.
 
-- RED: `scripts/tests/test_sync_agent_skills.py`, on a temp tree: (a) sync copies allow-listed skill dirs from `.agents/skills` to `.claude/skills` byte-identically; (b) sync removes a `.claude/skills` dir no longer allow-listed; (c) `--check` exits 1 and names the drifting skill when a copied file differs; (d) non-allow-listed dirs in `.agents/skills` (personal installs) are ignored.
+- RED: `scripts/tests/test_agent_sync_skills.py`, on a temp tree: (a) sync copies allow-listed skill dirs from `.agents/skills` to `.claude/skills` byte-identically; (b) sync removes a `.claude/skills` dir no longer allow-listed; (c) `--check` exits 1 and names the drifting skill when a copied file differs; (d) non-allow-listed dirs in `.agents/skills` (personal installs) are ignored.
 - GREEN: `scripts/sync_agent_skills.py` (`sync(root)`, `check(root) -> list[str]`, CLI). Run it on the repo. Invert the Slice 0 assertion. Add a `sync_agent_skills.py --check` step to `pr-checks.yml` (before `npm ci`, it needs only Python).
 - Refactor checkpoint: single allow-list function shared by sync and check.
 
 **Validation:** pytest as above; `python3 scripts/sync_agent_skills.py --check`; start a fresh cloud session on the branch and confirm `miroir-feature-analysis` is listed.
 
 ### Realization
-_(pending)_
+`scripts/sync_agent_skills.py` (`tracked_skill_names`, `sync`, `check`). Stale-copy removal is limited to the `miroir-` namespace so personal installs in `.claude/skills` survive. PR checks gained two Python-only steps before `npm ci`: `--check` and the agent pytest files. Deviation: the sync also copied the not-yet-dropped lock skills (removed in Slice 3). Confirmed live: after the commit, this cloud session listed the `miroir-*` skills.
 
 ## Slice 2 — Miroir skill naming cleanup
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Goal: every Miroir-owned skill carries the `miroir-` prefix; no duplicate query skill.
 
@@ -97,11 +97,11 @@ Goal: every Miroir-owned skill carries the `miroir-` prefix; no duplicate query 
 **Validation:** pytest; `sync_agent_skills.py --check`.
 
 ### Realization
-_(pending)_
+`git mv` to `miroir-assess-evolution-quality`; `create-skill` and `query-editor` removed. `query-editor` was not a clean superset: its unique value was the MiroirTest-based workflow, but it pointed at the transformer suite. `miroir-edit-queries` (SKILL, README, examples, implementation) referenced deleted vitest files (`queries.unit.test.ts`, `resolveQueryTemplates.unit.test.ts`) and removed `specificLoggersConfig_*.json`; rewritten to MiroirTest suites `queries_library` / `resolveQueryTemplates` (verified: 18 tests pass) and the `scope-query` log preset. `.github/skills/README.md` now indexes the two feature-workflow skills.
 
 ## Slice 3 — Lean third-party baseline
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Goal: contributors and agents get only Miroir skills + the core set; personal installs never get committed.
 
@@ -112,11 +112,11 @@ Goal: contributors and agents get only Miroir skills + the core set; personal in
 **Validation:** pytest; `git ls-files .agents .claude | wc -l` recorded in Realization (expected well under 100).
 
 ### Realization
-_(pending)_
+29 third-party skills dropped from both folders and from `skills-lock.json`; `.gitignore` allow-lists `miroir-*` + core. Tracked skill files: 681 → 68 (≈12 MB → 760 KB). Tests use `git check-ignore --no-index`. Found: `miroir-analysis-to-tdd-plan` references `tdd/deep-modules.md`, `interface-design.md`, `refactoring.md`, which the upstream `tdd` skill no longer ships (pre-existing, left as is).
 
 ## Slice 4 — Instruction files
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Goal: an agent reads a short `AGENTS.md` that tells it where it works and how to verify, whatever the agent.
 
@@ -127,11 +127,11 @@ Goal: an agent reads a short `AGENTS.md` that tells it where it works and how to
 **Validation:** pytest; manual read-through of the moved sections in `docs/`.
 
 ### Realization
-_(pending)_
+`AGENTS.md` 21.6 KB → ~12 KB. New section 'Working here as an agent'. Moved: PK helpers → `defining-entities.md` (completed with FK/serialization helpers), Library data folders → `data-architecture-deployments.md`, logger pattern → `code-style.md`. Fixed stale facts found on the way: `test-expect.ts` path, removed `specificLoggersConfig_*.json` (→ log presets), duplicate `miroir-mcp` in build order. `.cursor/rules/prefer-python-scripts.mdc` folded in and removed.
 
 ## Slice 5 — Session setup script + SessionStart hook
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Goal: a cloud session starts with dependencies installed and core packages built, and prints what state it is in.
 
@@ -142,11 +142,11 @@ Goal: a cloud session starts with dependencies installed and core packages built
 **Validation:** pytest; `python3 scripts/agent_session_setup.py --dry-run` in this container; fresh cloud session on the branch shows the status lines and a working `npm run test -w miroir-core -- ''`.
 
 ### Realization
-_(pending)_
+`scripts/agent_session_setup.py` (`plan_steps`, `status_lines`, `Environment`). Step output goes to stderr so the SessionStart hook injects only the 5-line status into the agent context. Verified: removing `miroir-store-bundled/dist` → script rebuilds it (7 s); hook command is a no-op without `CLAUDE_CODE_REMOTE=true`. PostgreSQL 16 is installed in the cloud image but not running; the script reports it and does not start it.
 
 ## Slice 6 — graphify on demand
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Goal: an agent that needs a broad architecture view builds the graph with one command.
 
@@ -157,11 +157,11 @@ Goal: an agent that needs a broad architecture view builds the graph with one co
 **Validation:** run `--graphify` in the cloud; record build time, node count, and that a DomainController query no longer surfaces graphify's own code.
 
 ### Realization
-_(pending)_
+`--graphify` plan steps + `.graphifyignore` (`.agents/`, `.claude/`, `docs-OLD/`, `test-results/`, `tmp/`; graphify already skips `node_modules`, `dist`). Measured: 31 158 → 19 925 nodes, 60 s → 41 s, 83 MB → 52 MB, no graphify self-matches in queries. Generated `miroirFundamentalType.ts` kept in the graph (type nodes are useful).
 
 ## Slice 7 — Docs, nonreg, acceptance
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 - Fill `docs/contributing/development-setup.md`: human setup, agent setup (cloud and local, per agent), optional skills with install commands, graphify.
 - Add the agent script tests to `scripts/nonreg-manifest.json` (unit tier).
@@ -181,4 +181,4 @@ _(pending)_
 | 6 Agent choice | `CLAUDE.md` / `copilot-instructions.md` include check; `.agents/skills` canonical |
 
 ### Realization
-_(pending)_
+`docs/contributing/development-setup.md` written (was a placeholder): human setup, instructions, skills table, personal installs via `npx skills add … -g`, session setup, graphify. Nonreg: `unit-301-agent-tooling` step in `scripts/nonreg-manifest.json`. `npm run nonreg:unit`: 34/34 passed in 453 s.
