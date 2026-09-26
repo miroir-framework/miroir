@@ -18,7 +18,7 @@ Related: [analysis](./analysis.md) · issue https://github.com/miroir-framework/
 | 0 | Baseline | ✅ DONE | component entry 74 passed / 15 skipped (45 s) |
 | 1 | Literal in place, no stray keys | ✅ DONE | pattern leaves without `aLiteral`, `testField`; component entry 74 passed |
 | 2 | Empty containers read as `[]` / `{}` | ✅ DONE | pattern leaves without `anEmptyArray`, `anEmptyRecord`, `items.1.tags`; component entry 74 passed |
-| 3 | File `any` field read | ⬜ pending | pattern leaves without `anAnyFile` |
+| 3 | File `any` field read (and `aReference`) | ✅ DONE | pattern leaves without `ignorePaths`; component entry 74 passed |
 | 4 | Docs, nonreg, AC | ⬜ pending | nonreg filesystem profile |
 
 ## Locked implementation defaults
@@ -101,7 +101,7 @@ Pattern suite; component entry; tsc.
 
 ## Slice 3 — File `any` field read
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **RED.** Remove `anAnyFile` from `ignorePaths` and the "Select File" `expectElement`.
 
@@ -110,6 +110,14 @@ Pattern suite; component entry; tsc.
 ### Validation
 
 Pattern suite; component entry; tsc.
+
+### Realization
+
+- RED: `anAnyFile` was absent from every rebuilt value so far (Slice 1 output).
+- GREEN: `hiddenValueInputProps` in `renderedValueMarkers.ts`, rendered by the `MlAnyEditor` file branch as `<input type="hidden" readOnly …>`; the extractor's generic input pass parses inputs flagged `data-ml-json`. A loaded file (object value) is not exercised by the pattern.
+- Deviation (D6 moot): the #304 thread found that `aReference` renders its children on `_integration` since #296 (the #303 probe used an older miroir-core build). `aReference` and its root-label `expectElement` are removed too, so `ignorePaths` is gone from the 4 leaves (the key is dropped, not left empty). The #304 branch `304-BUG-recursive-schemaReference-array-items` edits the same arrays: whichever merges second resolves a one-line conflict per leaf to this state.
+- The instance `description` is rewritten: it described the ignored branches.
+- Component entry 74 passed / 15 skipped; consistency 6 passed; tsc 0.
 
 ---
 

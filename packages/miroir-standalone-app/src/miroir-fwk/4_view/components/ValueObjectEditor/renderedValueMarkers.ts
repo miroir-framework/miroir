@@ -24,3 +24,15 @@ export function emptyContainerMarker(
 ): Record<string, string> {
   return isEmpty ? { [EMPTY_CONTAINER_ATTRIBUTE]: kind, [ML_NAME_ATTRIBUTE]: formikName } : {};
 }
+
+/**
+ * The props of a hidden input carrying `value` under `formikName`, for an editor that renders no
+ * form field (the file `any` editor): a string as is, any other value as JSON flagged with
+ * `ML_JSON_ATTRIBUTE`.
+ */
+export function hiddenValueInputProps(formikName: string, value: unknown): Record<string, string> {
+  if (value === undefined || typeof value === "string") {
+    return { name: formikName, value: value ?? "" };
+  }
+  return { name: formikName, value: JSON.stringify(value), [ML_JSON_ATTRIBUTE]: "true" };
+}

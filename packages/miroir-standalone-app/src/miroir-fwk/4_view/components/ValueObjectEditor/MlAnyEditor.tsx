@@ -16,6 +16,7 @@ import { cleanLevel } from "../../constants";
 import { useCurrentModelEnvironment } from "../../ReduxHooks";
 import { ThemedStatusText } from "../Themes/BasicComponents";
 import { FileSelector } from "../Themes/FileSelector.js";
+import { hiddenValueInputProps } from "./renderedValueMarkers";
 import { useMlElementEditorHooks } from "./MlElementEditorHooks";
 import { MlAnyEditorProps } from "./MlElementEditorInterface";
 import { MlElementEditor } from "./MlElementEditor";
@@ -287,6 +288,7 @@ export const MlAnyEditor: React.FC<MlAnyEditorProps> = (
           labelElement={labelElement ?? <>{name}</>}
           editor={ */}
         {label}
+        <input type="hidden" readOnly {...hiddenValueInputProps(formikRootLessListKey, currentValueObjectAtKey)} />
         <FileSelector
           title=""
           buttonLabel={"Select File"}

@@ -68,6 +68,7 @@ import { DocumentOutlineContextProvider } from "../../4_view/components/ValueObj
 import { MlElementEditor } from "../../4_view/components/ValueObjectEditor/MlElementEditor.js";
 import {
   EMPTY_CONTAINER_ATTRIBUTE,
+  ML_JSON_ATTRIBUTE,
   ML_NAME_ATTRIBUTE,
 } from "../../4_view/components/ValueObjectEditor/renderedValueMarkers.js";
 import { cleanLevel } from "../../4_view/constants.js";
@@ -1332,6 +1333,9 @@ export function extractValuesFromRenderedElements(
     }
     if (htmlInput.type === "checkbox") {
       value = htmlInput.checked;
+    }
+    if (htmlInput.getAttribute(ML_JSON_ATTRIBUTE) === "true") {
+      value = JSON.parse(value); // #305 D5: a non-string value carried by a hidden input
     }
     log.debug("extractValuesFromRenderedElements: setting input value", name, "=", value);
     values[name] = value;
