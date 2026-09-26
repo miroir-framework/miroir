@@ -289,6 +289,7 @@ export declare const miroirTest_JzodSimpleTypeEditor_ComponentTestSuite: any;
 export declare const miroirTest_JzodUnionEditor_ComponentTestSuite: any;
 export declare const miroirTest_JzodAnyEditor_ComponentTestSuite: any;
 export declare const miroirTest_JzodTestPattern_ComponentTestSuite: any;
+export declare const miroirTest_JzodEditorRenderPerformance_ComponentTestSuite: any;
 export declare const transformerMenuV1: any;
 export declare const transformer_spreadSheetToJzodSchema_json: any;
 export declare const transformer_ifThenElse_json: any;

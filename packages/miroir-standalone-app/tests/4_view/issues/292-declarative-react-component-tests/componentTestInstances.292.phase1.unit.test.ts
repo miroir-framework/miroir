@@ -10,8 +10,9 @@
  *   only component leaf is inside a `reactComponentTestSuite`;
  * - `miroir-test-app_deployment-miroir` exports `miroirTest_<name>` for the 7 names, and
  *   `defaultMiroirMetaModel.tests` holds the 7 uuids and not `JzodElementEditor_ComponentTestSuite`;
- * - (#303) the only other instance with component leaves is `JzodTestPattern_ComponentTestSuite`,
- *   exported and listed in `defaultMiroirMetaModel.tests`;
+ * - (#303) the only other instances with component leaves are `JzodTestPattern_ComponentTestSuite`
+ *   and `JzodEditorRenderPerformance_ComponentTestSuite`, exported and listed in
+ *   `defaultMiroirMetaModel.tests`;
  * - (Slice 5, Slice 6) every child is a `reactComponentTestSuite`, and every leaf has `steps`,
  *   only the attributes of the leaf schema (no legacy reference to a TypeScript case), and no
  *   `custom` step.
@@ -57,6 +58,7 @@ const instanceName = (editor: string) => `${editor}_ComponentTestSuite`;
 /** Component test instances added after #292, not per-editor: name to uuid (#303 plan). */
 const laterComponentInstances: Record<string, string> = {
   JzodTestPattern_ComponentTestSuite: "26ef2886-2cd8-4f91-b846-1525b24d5f41",
+  JzodEditorRenderPerformance_ComponentTestSuite: "2da30877-d248-44bd-9786-5c091b1bc8fc",
 };
 
 /** The attributes of `miroirTestForReactComponent` since #292 M1. */

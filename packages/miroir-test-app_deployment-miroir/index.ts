@@ -337,6 +337,7 @@ export { default as miroirTest_JzodSimpleTypeEditor_ComponentTestSuite } from ".
 export { default as miroirTest_JzodUnionEditor_ComponentTestSuite } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/de517cd6-31a8-46d2-ac09-3a5162b630a7.json" with { type: "json" };
 export { default as miroirTest_JzodAnyEditor_ComponentTestSuite } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/ec601bcc-a27d-450d-9c37-bdd6a12a1575.json" with { type: "json" };
 export { default as miroirTest_JzodTestPattern_ComponentTestSuite } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/26ef2886-2cd8-4f91-b846-1525b24d5f41.json" with { type: "json" };
+export { default as miroirTest_JzodEditorRenderPerformance_ComponentTestSuite } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/2da30877-d248-44bd-9786-5c091b1bc8fc.json" with { type: "json" };
 
 // ################################################################################################
 // Miroir Data - TestConfiguration (parentUuid = entityTestConfiguration = 675ccd46)

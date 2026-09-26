@@ -8,6 +8,11 @@
  * `[<instance name>, <child label>]`, through `runMiroirTests._runMiroirTestSuite`, with
  * `rethrowComponentTestFailures: true` so that a failing case fails its vitest test.
  *
+ * A `reactComponentTestSuite` with `runOnDemand: true` (#303: `JzodEditorRenderPerformance`) runs only
+ * when `MIROIR_COMPONENT_PERF=1`; otherwise it is registered as `describe.skip(<child label>)` with one
+ * `it.skip` per leaf label, so that the default run does not pay for it and `-t` still shows it
+ * (skipped).
+ *
  * The component test driver does not use React `act` (analysis §5.3), so `IS_REACT_ACT_ENVIRONMENT`
  * is set to `false` in a `beforeAll`: RTL's own `beforeAll` (registered by `tests/setup.ts`) sets it
  * to `true` after module scope.
@@ -16,6 +21,7 @@
  * ```bash
  * npm run testByFile -w miroir-standalone-app -- miroir-component-tests
  * npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "JzodArrayEditor"
+ * MIROIR_COMPONENT_PERF=1 npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "JzodEditorRenderPerformance"
  * ```
  */
 import { readdirSync, readFileSync } from "node:fs";
@@ -44,10 +50,19 @@ const MIROIR_TEST_DATA_FOLDER = join(
 /**
  * Expected content of the folder: 7 per-editor instances, 68 leaves (#292 Slice 0 baseline), plus
  * the test pattern instance `JzodTestPattern_ComponentTestSuite` (#303: 1 display leaf, Slice 1, and 3
- * interaction leaves, Slice 2).
+ * interaction leaves, Slice 2), plus the render-performance instance
+ * `JzodEditorRenderPerformance_ComponentTestSuite` (#303 Slice 5: 15 leaves, `runOnDemand`).
+ *
+ * `EXPECTED_LEAF_COUNT` counts every leaf of the folder, on-demand ones included (it checks the
+ * folder content, not what the run executes); `EXPECTED_ON_DEMAND_LEAF_COUNT` is the part under a
+ * `runOnDemand` suite, skipped unless `MIROIR_COMPONENT_PERF=1`.
  */
-const EXPECTED_INSTANCE_COUNT = 8;
-const EXPECTED_LEAF_COUNT = 72;
+const EXPECTED_INSTANCE_COUNT = 9;
+const EXPECTED_LEAF_COUNT = 87;
+const EXPECTED_ON_DEMAND_LEAF_COUNT = 15;
+
+/** On-demand suites (`runOnDemand: true`) run only with this environment variable set to `1`. */
+const RUN_ON_DEMAND_SUITES = process.env.MIROIR_COMPONENT_PERF === "1";
 
 type ComponentTestSuiteInstance = { uuid: string; name: string; definition: MiroirTestSuite };
 
@@ -119,6 +134,16 @@ describe("entry checks", () => {
         0,
       ),
     ).toBe(EXPECTED_LEAF_COUNT);
+    expect(
+      componentTestSuiteInstances.reduce(
+        (count, instance) =>
+          count +
+          instance.definition.miroirTests
+            .filter((child: any) => child.runOnDemand === true)
+            .reduce((childCount: number, child: any) => childCount + reactComponentLeafCount(child), 0),
+        0,
+      ),
+    ).toBe(EXPECTED_ON_DEMAND_LEAF_COUNT);
   });
 });
 
@@ -129,6 +154,14 @@ for (const instance of componentTestSuiteInstances) {
       throw new Error(
         `${instance.name}: expected one sub-suite per editor, found a ${child.miroirTestType} leaf at the top level`,
       );
+    }
+    if (child.miroirTestType === "reactComponentTestSuite" && child.runOnDemand && !RUN_ON_DEMAND_SUITES) {
+      describe.skip(`${child.miroirTestLabel} (runOnDemand: set MIROIR_COMPONENT_PERF=1 to run)`, () => {
+        for (const leaf of child.miroirTests) {
+          it.skip(leaf.miroirTestLabel, () => {});
+        }
+      });
+      continue;
     }
     describe(child.miroirTestLabel, async () => {
       await runMiroirTests._runMiroirTestSuite(

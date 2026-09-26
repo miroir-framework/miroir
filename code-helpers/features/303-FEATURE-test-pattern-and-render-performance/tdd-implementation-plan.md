@@ -2,7 +2,7 @@
 
 > Vertical TDD slices, RED then GREEN, integration-first per `docs/contributing/testing.md`. Tests render the real `JzodElementEditor` through the real MiroirTest walk (`runMiroirTests._runMiroirTestSuite`) and the real component test runner, with the real render insight registry. No mocks. The applicative interface is the MiroirTest JSON (new instances, new step, new fields); vitest files are used only where noted, with a one-line reason. Slice 1 is the tracer: the test pattern displays from JSON.
 
-**Resume note (2026-09-26):** Slices 0-4 done. The MiroirTest schema carries `ignorePaths`, `measureRendering` and `runOnDemand` (not honored yet); `JzodTestPattern_ComponentTestSuite` has one display leaf and three interaction leaves (entry: 8 instances, 72 leaves, about 40 s) and, since Slice 4, `anAnyFile` (any + `display.any.format: "file"`, under `ignorePaths`), so it reaches `JzodAnyEditor`. Every JzodElementEditor component reports timed renders through `useTrackedRender`; the runner turns tracking on for a suite whose `stepKinds` contains `measureRendering`. `measureRendering` (Slice 4): `env.remount()` / `env.rerender(propsOverride)` on the case's React root; per-component samples from registry snapshot deltas, aggregated (`count` = samples, `minMs`, `medianMs`, `maxMs`, `totalMs`, plus a `(total)` row) into the runner `ok` result `measurements` → `TestAssertionResult.assertionMeasurements` (kept by the tracker and by `generateTestReport`'s `fullAssertionsResults`), logged as a table (info, logger `runReactComponentTest`); `createReactComponentTestRunner({…, iterationsOverride})`. Next: Slice 5 (performance suite, `runOnDemand`). Open point for the user: keep or drop `--bail=1` for the component entry (Slice 1 GREEN note; default: keep, document in Slice 7).
+**Resume note (2026-09-26):** Slices 0-5 done. The MiroirTest schema carries `ignorePaths`, `measureRendering` and `runOnDemand`. `JzodTestPattern_ComponentTestSuite` (`26ef2886`) has one display leaf and three interaction leaves, with `anAnyFile` (any + `display.any.format: "file"`, under `ignorePaths`) reaching `JzodAnyEditor`. Every JzodElementEditor component reports timed renders through `useTrackedRender`; the runner turns tracking on for a suite whose `stepKinds` contains `measureRendering`. `measureRendering` (Slice 4, `componentTests/measureRendering.ts`): remount / rerender, per-component `count`/`minMs`/`medianMs`/`maxMs`/`totalMs` + `(total)` into `assertionMeasurements`, logged at info (logger `runReactComponentTest`, visible with `VITE_MIROIR_LOG_CONFIG=catch-all-detailed`); `createReactComponentTestRunner({…, iterationsOverride})`. Slice 5: `JzodEditorRenderPerformance_ComponentTestSuite` (`2da30877`, `runOnDemand`, 15 leaves: 14 single types + pattern copy); the vitest entry skips it (`describe.skip` + `it.skip` per leaf) unless `MIROIR_COMPONENT_PERF=1` (entry: 9 instances, 87 leaves of which 15 on demand; default 74 passed / 15 skipped, 42.7 s; perf run 13.5 s). Next: Slice 6 (iterations field and measurement table in Miroir Tests). Open points for the user: keep or drop `--bail=1` for the component entry (default: keep, document in Slice 7); whether Miroir Tests "Run all" should skip `runOnDemand` suites (today it runs them, about 8 s more).
 
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/303
 Working branch: to be created from `origin/_integration` (256e625 at plan time) when implementation starts.
@@ -25,7 +25,7 @@ Working branch: to be created from `origin/_integration` (256e625 at plan time) 
 | 2 | Test pattern interactions | S | ✅ DONE | `-t "JzodTestPattern"` 4 passed (1.7 / 2.1 / 1.6 / 3.4 s); full entry 74 passed (72 leaves + 2 checks), 40.5 s |
 | 3 | Every editor reports its renders | M | ✅ DONE | `renderInsightCoverage.303.phase3` 4 passed (10 editor ids timed); full entry 74 passed, 45.4 s; tracking overhead on the pattern ≈ +5 % (R1) |
 | 4 | `measureRendering` step, measurements in the test result | L | ✅ DONE | `measureRendering.303.phase4` 5 passed (tracker and `generateTestReport` rows carry `assertionMeasurements`: remount / update, count 2 at N=2, 1 with `iterationsOverride` 1); full entry 74 passed, 42.8 s |
-| 5 | Render-performance suite, on-demand gating | M | ⬜ pending | `MIROIR_COMPONENT_PERF=1 … -t "JzodEditorRenderPerformance"`; default entry skips it |
+| 5 | Render-performance suite, on-demand gating | M | ✅ DONE | `MIROIR_COMPONENT_PERF=1 … -t "JzodEditorRenderPerformance"` 15 passed, 74 skipped, 13.5 s (tests 7.6 s); default entry 74 passed, 15 skipped, 42.7 s |
 | 6 | Miroir Tests: iterations override and measurement table | M | ⬜ pending | `renderPerformanceRunControls.303.phase6` + app check |
 | 7 | Docs, nonreg, cleanup, AC | S | ⬜ pending | nonreg `--only` steps; AC checklist |
 
@@ -335,7 +335,7 @@ Slice 6 note: the app's `ComponentTestSandbox.prepareComponentTests` must pass `
 
 ## Slice 5 — Render-performance suite, on-demand gating
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Goal: a maintainer runs the performance suite and gets one measurement block per editor and for the pattern; the default run does not pay for it.
 
@@ -353,6 +353,42 @@ Goal: a maintainer runs the performance suite and gets one measurement block per
 
 - `… miroir-component-tests` (suite skipped, duration within Slice 2 + 1 s).
 - `MIROIR_COMPONENT_PERF=1 … -t "JzodEditorRenderPerformance"` green; duration recorded (expected about 20–25 s at N=3, analysis §3.4).
+
+### Realization
+
+**RED observed.** Counts first: the entry expects 9 instances / 87 leaves, `componentMiroirTests.consistency` 9 instances, `componentTestInstances.292.phase1` gets `JzodEditorRenderPerformance_ComponentTestSuite: 2da30877-…` in `laterComponentInstances`. Before the instance: consistency `expected [ …(8) ] to have a length of 9 but got 8`; 292.phase1 `expected [ [ …(2) ] ] to deeply equal [ [ …(2) ], [ …(2) ] ]`.
+
+**GREEN.**
+- Instance `2da30877-…` (`JzodEditorRenderPerformance_ComponentTestSuite`): one `reactComponentTestSuite` `JzodEditorRenderPerformance`, `runOnDemand: true`, component `JzodElementEditor`, suite `componentProps` = the common keys (label, name, listKey, rootLess*). 15 leaves `JzodEditorRenderPerformance: <type>`, each with its own `rawJzodSchema` / `initialFormState` and one step `{measureRendering, iterations 3, mode both, updateProps {initialFormState: <other value>}}`. Props from the #292 instances (string / number / bigint / boolean / uuid: SimpleType; enum; literal; array; tuple: the Array suite's tuple leaf; record / object: the Object suite; union: string | number | object, `42` → `{a, b}` (a branch switch); any: `{type:"any", display.any.format:"file"}`, `""` → `{applicationName:"loaded file"}`, so that `JzodAnyEditor` is measured). Date has no #292 leaf: the pattern's `aDate` value. Literal: a literal has one valid value, so `updateProps` repeats it (the update measures a re-render with equal props). The pattern leaf copies the `componentProps` of `26ef2886-…` (update: aString, aNumber, aBoolean, anEnum, anArray, aTuple, aRecord, aSimpleUnion, the deep leaf changed); the duplication is stated in the instance `description` (refactor checkpoint).
+- Wiring: `index.ts` / `index.d.ts` export `miroirTest_JzodEditorRenderPerformance_ComponentTestSuite`, `src/Model.ts` lists it in `defaultMiroirMetaModel.tests`; `npm run build -w miroir-test-app_deployment-miroir` (no schema change, no `devBuild`).
+- Entry (`miroir-component-tests.unit.test.tsx`): a `reactComponentTestSuite` with `runOnDemand` and `MIROIR_COMPONENT_PERF !== "1"` is registered as `describe.skip("<label> (runOnDemand: set MIROIR_COMPONENT_PERF=1 to run)")` with one `it.skip` per leaf label (the walk is not called), so the default run reports 15 skipped and `-t "JzodEditorRenderPerformance"` lists them.
+- **`EXPECTED_LEAF_COUNT` decision:** it counts every leaf of the folder, on-demand ones included (87: it checks the folder content, not what runs); a new `EXPECTED_ON_DEMAND_LEAF_COUNT = 15` checks the part under `runOnDemand` suites. Both are in the "loads 9 component test instances with 87 leaves" check.
+- **Other entries unaffected:** `npm run testMiroir -w miroir-core -- --suites JzodEditorRenderPerformance_ComponentTestSuite --mode unit`: 15 passed in 10 ms (no runner registered → each leaf recorded skipped in the tracker, as the other component instances). The nonreg component step runs the entry without the variable → skipped.
+- **App (read, no change):** nothing in miroir-standalone-app `src` reads `runOnDemand`; `RunMiroirTestSuiteButton` / `RunAllMiroirTestsButton` call `runMiroirTests._runMiroirTestSuite`, which walks the suite like any other. Consequence: Miroir Tests **"Run all"** (component tests checked, the default) also runs the performance suite (about 8 s of tests in jsdom). Left as is (the plan says the app runs it normally when launched); open point for the user whether "Run all" should skip `runOnDemand` suites.
+- **Logging:** the measurement tables are `info` (logger `runReactComponentTest`); the default log preset (`catch-all`, WARN) hides them. Shown with `VITE_MIROIR_LOG_CONFIG=catch-all-detailed` (to document in Slice 7).
+
+Pattern leaf table (catch-all-detailed, N=3, ms):
+```
+component               | mode    | count | min    | median | max
+JzodElementEditor       | remount | 3     | 276.92 | 287.58 | 324.93
+JzodArrayEditor         | remount | 3     | 34.52  | 38.59  | 39.20
+JzodUnionEditor         | remount | 3     | 14.47  | 15.51  | 19.37
+JzodAnyEditor           | remount | 3     | 9.72   | 10.35  | 10.66
+(total)                 | remount | 3     | 365.00 | 381.71 | 434.71
+(total)                 | update  | 3     | 31.04  | 38.39  | 40.38
+```
+Single editors: `(total)` remount median 11.7-34.9 ms (array highest), update 0.6-18.3 ms; `JzodAnyEditor` remount 10.4 / update 8.5, `JzodEnumEditor` 5.2 / 0.3, `JzodLiteralEditor` 4.4 / 0.2, `JzodUnionEditor` 7.0 / 0.6.
+
+**Validation.**
+| Command | Result |
+|---|---|
+| `npm run testByFile -w miroir-standalone-app -- miroir-component-tests` | 74 passed, 15 skipped (89); 42.7 s (tests 37.0 s) vs Slice 4 42.8 s |
+| `MIROIR_COMPONENT_PERF=1 … miroir-component-tests -t "JzodEditorRenderPerformance"` | 15 passed, 74 skipped; 13.5 s (tests 7.6 s), below the expected 20-25 s. Per leaf: 0.21-0.52 s for single editors, 3.4 s for the pattern |
+| same with `VITE_MIROIR_LOG_CONFIG=catch-all-detailed` | 15 passed, 15 tables logged; 13.5 s |
+| `… miroir-component-tests -t "JzodEditorRenderPerformance"` (no variable) | all skipped, the 15 perf leaves listed under the `(runOnDemand: …)` describe |
+| `componentMiroirTests.consistency` / `componentTestInstances.292.phase1` | 6 / 5 passed |
+| modelValidation (`npx vitest run tests/modelValidation.unit.test.ts` in miroir-test-app_deployment-miroir; `testByFile -w miroir-standalone-app -- modelValidation` finds no file) | 161 passed (160 + the new instance) |
+| tsc miroir-standalone-app / miroir-test-app_deployment-miroir | 1 (baseline `JzodElementEditorHooks.ts(528,59)`) / 0; the 3 edited test files type-check (temporary tsconfig, deleted) |
 
 ---
 

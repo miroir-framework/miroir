@@ -3,7 +3,7 @@
  * analysis §5.7).
  *
  * For every instance of the Miroir deployment folder that holds a `reactComponentTest` leaf (the
- * 7 per-editor instances of #292 and the test pattern instance of #303):
+ * 7 per-editor instances of #292, the test pattern and the render-performance instances of #303):
  * - it passes `jzodTypeCheck` against the MiroirTest Entity `mlSchema` and the EntityVersion
  *   `mlSchema`;
  * - its leaf labels are unique over all the instances and start with `<child label>: `, the child
@@ -134,8 +134,8 @@ const schemas: [string, JzodElement][] = [
 
 // ################################################################################################
 describe("componentMiroirTests consistency", () => {
-  it("the 8 component test instances pass jzodTypeCheck against the Entity and EntityVersion mlSchemas", () => {
-    expect(componentTestInstances.map((instance) => instance.name)).toHaveLength(8);
+  it("the 9 component test instances pass jzodTypeCheck against the Entity and EntityVersion mlSchemas", () => {
+    expect(componentTestInstances.map((instance) => instance.name)).toHaveLength(9);
     const failures: string[] = [];
     for (const instance of componentTestInstances) {
       for (const [schemaName, schema] of schemas) {
