@@ -341,7 +341,7 @@ const modelIcons: Record<string, string> = {
   // ApplicationModelBranch: "application-model-branch",
   EndpointVersion: "endpoint-version",
   RunnerVersion: "runner-version",
-  JzodSchema: "jzod-schema",
+  MlSchema: "ml-schema",
   SelfApplication: "self-application",
   SelfApplicationVersion: "self-application-version",
   SelfApplicationModelBranch: "self-application-model-branch",

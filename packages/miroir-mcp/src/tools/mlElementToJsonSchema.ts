@@ -7,12 +7,12 @@ import {
 import type { McpToolDescriptionProperty } from "./mcpHandlersForEndpoint.js";
 import {
   jsonSchemaRefPointer,
-  normalizeJzodConversionOptions,
+  normalizeMlConversionOptions,
   sanitizeJsonSchemaDefKey,
   schemaReferenceKey,
-  type JzodConversionOptions,
-  type NormalizedJzodConversionOptions,
-} from "./jzodConversionContext.js";
+  type MlConversionOptions,
+  type NormalizedMlConversionOptions,
+} from "./mlConversionContext.js";
 
 function looseObject(description: string): McpToolDescriptionProperty {
   return {
@@ -25,8 +25,8 @@ function looseObject(description: string): McpToolDescriptionProperty {
 }
 
 function childOptions(
-  options: NormalizedJzodConversionOptions,
-): NormalizedJzodConversionOptions {
+  options: NormalizedMlConversionOptions,
+): NormalizedMlConversionOptions {
   return {
     ...options,
     depth: options.depth + 1,
@@ -85,16 +85,16 @@ function finalizeRootMcpInputSchema(
  * emitted as JSON Schema `$ref` / `$defs` entries so recursive Miroir types are not
  * combinatorially inlined (see #248).
  */
-export function jzodElementToJsonSchema(
+export function mlElementToJsonSchema(
   mlElement: MlElement,
   propertyName?: string,
   propertyNameMapping?: Record<string, string>,
-  conversionOptions?: JzodConversionOptions,
+  conversionOptions?: MlConversionOptions,
 ): McpToolDescriptionProperty | any {
   const ownsDefs = conversionOptions?.defs === undefined;
-  const options = normalizeJzodConversionOptions(conversionOptions);
+  const options = normalizeMlConversionOptions(conversionOptions);
 
-  const result = jzodElementToJsonSchemaInner(
+  const result = mlElementToJsonSchemaInner(
     mlElement,
     propertyName,
     propertyNameMapping,
@@ -107,11 +107,11 @@ export function jzodElementToJsonSchema(
   return result;
 }
 
-function jzodElementToJsonSchemaInner(
+function mlElementToJsonSchemaInner(
   mlElement: MlElement,
   propertyName: string | undefined,
   propertyNameMapping: Record<string, string> | undefined,
-  options: NormalizedJzodConversionOptions,
+  options: NormalizedMlConversionOptions,
 ): McpToolDescriptionProperty | any {
   if (options.depth >= options.maxDepth) {
     return looseObject("");
@@ -159,7 +159,7 @@ function jzodElementToJsonSchemaInner(
           ref.context || {},
           defaultMiroirModelEnvironment,
         );
-        options.defs[defKey] = jzodElementToJsonSchemaInner(
+        options.defs[defKey] = mlElementToJsonSchemaInner(
           resolvedSchema,
           propertyName,
           propertyNameMapping,
@@ -181,7 +181,7 @@ function jzodElementToJsonSchemaInner(
 
       if (mlElement.definition) {
         for (const [key, value] of Object.entries(mlElement.definition)) {
-          properties[key] = jzodElementToJsonSchemaInner(
+          properties[key] = mlElementToJsonSchemaInner(
             value as any,
             key,
             propertyNameMapping,
@@ -208,7 +208,7 @@ function jzodElementToJsonSchemaInner(
       return {
         type: "array",
         description,
-        items: jzodElementToJsonSchemaInner(
+        items: mlElementToJsonSchemaInner(
           mlElement.definition,
           undefined,
           propertyNameMapping,
@@ -252,7 +252,7 @@ function jzodElementToJsonSchemaInner(
       return {
         type: "object",
         description,
-        additionalProperties: jzodElementToJsonSchemaInner(
+        additionalProperties: mlElementToJsonSchemaInner(
           mlElement.definition,
           undefined,
           propertyNameMapping,
@@ -265,7 +265,7 @@ function jzodElementToJsonSchemaInner(
         throw new Error("Tuple definition missing or invalid");
       }
       const prefixItems = mlElement.definition.map((item: MlElement) =>
-        jzodElementToJsonSchemaInner(item as any, undefined, propertyNameMapping, childOptions(options)),
+        mlElementToJsonSchemaInner(item as any, undefined, propertyNameMapping, childOptions(options)),
       );
       return {
         type: "array",
@@ -281,7 +281,7 @@ function jzodElementToJsonSchemaInner(
       }
 
       const convertedMembers = mlElement.definition.map((member: MlElement) =>
-        jzodElementToJsonSchemaInner(member as any, undefined, propertyNameMapping, childOptions(options)),
+        mlElementToJsonSchemaInner(member as any, undefined, propertyNameMapping, childOptions(options)),
       );
 
       const isDiscriminated = !!(mlElement as any).discriminator;
@@ -307,13 +307,13 @@ function jzodElementToJsonSchemaInner(
       }
       return {
         allOf: [
-          jzodElementToJsonSchemaInner(
+          mlElementToJsonSchemaInner(
             intersection.left,
             propertyName,
             propertyNameMapping,
             childOptions(options),
           ),
-          jzodElementToJsonSchemaInner(
+          mlElementToJsonSchemaInner(
             intersection.right,
             propertyName,
             propertyNameMapping,
@@ -327,7 +327,7 @@ function jzodElementToJsonSchemaInner(
       if (!mlElement.definition) {
         return looseObject(description);
       }
-      return jzodElementToJsonSchemaInner(
+      return mlElementToJsonSchemaInner(
         mlElement.definition,
         propertyName,
         propertyNameMapping,
@@ -356,7 +356,7 @@ function jzodElementToJsonSchemaInner(
     case "map":
     case "promise":
     case "set": {
-      throw new Error(`Unsupported Jzod type for MCP tool description: ${mlElement.type}`);
+      throw new Error(`Unsupported ML type for MCP tool description: ${mlElement.type}`);
     }
 
     default:

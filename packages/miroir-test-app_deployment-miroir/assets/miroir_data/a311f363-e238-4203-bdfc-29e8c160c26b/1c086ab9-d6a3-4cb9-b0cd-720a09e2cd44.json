@@ -8,7 +8,7 @@
   "description": "Migrated from UnitTest b2e3f4a5-c6d7-4e8f-9a0b-1c2d3e4f5a6b (Feature #196 Phase 5)",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "jzod.mlsToCopilotKitParameter",
+    "miroirTestLabel": "mls.mlsToCopilotKitParameter",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",

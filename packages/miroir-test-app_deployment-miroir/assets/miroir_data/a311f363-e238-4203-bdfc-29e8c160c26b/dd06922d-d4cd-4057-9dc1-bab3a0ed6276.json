@@ -30,7 +30,7 @@
             "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
             "name": "miroirFundamentalMlSchema",
-            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "defaultLabel": "The ML Schema of Miroir Fundamental Schemas",
             "definition": {
               "type": "schemaReference",
               "definition": {
@@ -69,7 +69,7 @@
             "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
             "name": "miroirFundamentalMlSchema",
-            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "defaultLabel": "The ML Schema of Miroir Fundamental Schemas",
             "definition": {
               "type": "schemaReference",
               "definition": {
@@ -115,7 +115,7 @@
             "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
             "name": "miroirFundamentalMlSchema",
-            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "defaultLabel": "The ML Schema of Miroir Fundamental Schemas",
             "definition": {
               "type": "schemaReference",
               "definition": {
@@ -172,7 +172,7 @@
             "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
             "name": "miroirFundamentalMlSchema",
-            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "defaultLabel": "The ML Schema of Miroir Fundamental Schemas",
             "definition": {
               "type": "schemaReference",
               "definition": {
@@ -232,7 +232,7 @@
             "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
             "name": "miroirFundamentalMlSchema",
-            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "defaultLabel": "The ML Schema of Miroir Fundamental Schemas",
             "definition": {
               "type": "schemaReference",
               "definition": {
@@ -299,7 +299,7 @@
             "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
             "name": "miroirFundamentalMlSchema",
-            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "defaultLabel": "The ML Schema of Miroir Fundamental Schemas",
             "definition": {
               "type": "schemaReference",
               "definition": {
@@ -402,7 +402,7 @@
             "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
             "name": "miroirFundamentalMlSchema",
-            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "defaultLabel": "The ML Schema of Miroir Fundamental Schemas",
             "definition": {
               "type": "schemaReference",
               "definition": {
@@ -490,7 +490,7 @@
             "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
             "name": "miroirFundamentalMlSchema",
-            "defaultLabel": "The Jzod Schema of Miroir Fundamental Schemas",
+            "defaultLabel": "The ML Schema of Miroir Fundamental Schemas",
             "definition": {
               "type": "schemaReference",
               "definition": {

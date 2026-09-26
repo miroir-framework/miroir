@@ -425,7 +425,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
     //   { a: "US", b: "USA", c: "United States" },
     //   { a: "DE", b: "DEU", c: "Germany" },
     // ];
-    // const newEntityJzodSchema: MlObject = {
+    // const newEntityMlSchema: MlObject = {
     //   type: "object",
     //   definition: Object.assign(
     //     {},

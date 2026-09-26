@@ -166,7 +166,7 @@ const selectEntityDefinitionsFromReduxState = createSelector(
 );
 
 // ################################################################################################
-const selectJzodSchemasFromReduxState = createSelector(
+const selectMlSchemasFromReduxState = createSelector(
   [
     selectCurrentReduxDeploymentsStateFromReduxState,
     selectApplicationDeploymentMap,
@@ -451,7 +451,7 @@ export const selectModelForDeploymentFromReduxState: () => (
       selectApplicationVersionsFromReduxState,
       selectEntitiesFromReduxState,
       selectEntityDefinitionsFromReduxState,
-      selectJzodSchemasFromReduxState,
+      selectMlSchemasFromReduxState,
       selectMenusFromReduxState,
       selectReportsFromReduxState,
       selectRunnersFromReduxState,

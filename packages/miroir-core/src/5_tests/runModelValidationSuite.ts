@@ -94,7 +94,7 @@ export function buildModelValidationRunnableSuites(
           name: label,
           run: () => {
             const check = checkModelValidationInstance(
-              group.jzodSchema,
+              group.mlSchema,
               instance,
               path,
               group.modelEnv ?? modelEnv,

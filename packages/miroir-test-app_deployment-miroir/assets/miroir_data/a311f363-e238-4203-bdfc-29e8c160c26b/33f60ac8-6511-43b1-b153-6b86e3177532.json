@@ -7504,7 +7504,7 @@
             "miroirTests": [
               {
                 "miroirTestType": "transformerTest",
-                "miroirTestLabel": "ansiColumnsToMlSchema converts basic column types to a Jzod object schema",
+                "miroirTestLabel": "ansiColumnsToMlSchema converts basic column types to a ML object schema",
                 "transformerName": "ansiColumnsToMlSchema",
                 "transformer": {
                   "transformerType": "ansiColumnsToMlSchema",

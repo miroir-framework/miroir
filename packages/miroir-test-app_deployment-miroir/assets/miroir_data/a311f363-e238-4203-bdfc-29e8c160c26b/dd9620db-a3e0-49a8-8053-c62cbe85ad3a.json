@@ -8,7 +8,7 @@
   "description": "Migrated from UnitTest 37b822d5-b37a-42cb-9753-43d12ab5b9f0 (Feature #196 Phase 5)",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "jzod.buildAnyKeyMap",
+    "miroirTestLabel": "mls.buildAnyKeyMap",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",

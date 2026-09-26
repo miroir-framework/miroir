@@ -146,7 +146,7 @@ export interface MiroirReactContext {
   // session information
   viewParams: ViewParams;
   // ###################################################################################################
-  // Miroir meta-model — per-deployment jzod schemas (Feature 198)
+  // Miroir meta-model — per-deployment ML schemas (Feature 198)
   schemasPerDeployment: Record<Uuid, MlSchema>;
   setSchemaForDeployment: (deploymentUuid: Uuid, schema: MlSchema) => void;
   clearSchemaForDeployment: (deploymentUuid: Uuid) => void;

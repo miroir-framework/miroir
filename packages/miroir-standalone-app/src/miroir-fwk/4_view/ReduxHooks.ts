@@ -27,7 +27,7 @@ import {
   getReduxDeploymentsStateIndex,
   computeSchemaRevision,
   miroirFundamentalMlSchema,
-  selectEntityUuidFromJzodAttribute,
+  selectEntityUuidFromMlAttribute,
   type ApplicationDeploymentMap,
   type Deployment,
   type LocalCacheExtractor,
@@ -499,7 +499,7 @@ export function useLocalCacheInstancesForJzodAttribute(
   applicationSection: ApplicationSection | undefined,
   mlSchema: MlPlainAttribute | undefined
 ): EntityInstance[] {
-  const entityUuid = selectEntityUuidFromJzodAttribute(mlSchema);
+  const entityUuid = selectEntityUuidFromMlAttribute(mlSchema);
   const miroirEntities = useSelector((state: ReduxStateWithUndoRedo) =>
     selectInstanceArrayForDeploymentSectionEntity(state, applicationDeploymentMap,{
       queryType: "localCacheEntityInstancesExtractor",

@@ -3,7 +3,7 @@ export const miroirFundamentalMlSchema = {
   "parentName": "MlSchema",
   "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
   "name": "miroirFundamentalMlSchema",
-  "defaultLabel": "The Jzod Schema of fundamental Miroir Datatypes. Those are fundamental Jzod schemas that are needed before further Jzod Schemas can be loaded from the datastore.",
+  "defaultLabel": "The ML Schema of fundamental Miroir Datatypes. Those are fundamental ML schemas that are needed before further ML Schemas can be loaded from the datastore.",
   "definition": {
     "type": "schemaReference",
     "context": {
@@ -786,7 +786,7 @@ export const miroirFundamentalMlSchema = {
         "discriminator": "type",
         "tag": {
           "value": {
-            "description": "The type of a Jzod element.",
+            "description": "The type of a ML element.",
             "initializeTo": {
               "initializeToType": "value",
               "value": {
@@ -15194,7 +15194,7 @@ export const miroirFundamentalMlSchema = {
           }
         }
       },
-      "jzodObjectOrReference": {
+      "mlObjectOrReference": {
         "type": "union",
         "discriminator": "type",
         "definition": [
@@ -15284,7 +15284,7 @@ export const miroirFundamentalMlSchema = {
           "definition": {
             "type": "schemaReference",
             "context": {
-              "jzodObjectOrReference": {
+              "mlObjectOrReference": {
                 "type": "union",
                 "discriminator": "type",
                 "definition": [
@@ -15306,7 +15306,7 @@ export const miroirFundamentalMlSchema = {
               }
             },
             "definition": {
-              "relativePath": "jzodObjectOrReference"
+              "relativePath": "mlObjectOrReference"
             },
             "optional": true,
             "tag": {
@@ -30413,7 +30413,7 @@ export const miroirFundamentalMlSchema = {
       "___________________________________applicative_transformers______________________________________": {
         "type": "never"
       },
-      "transformerForBuildPlusRuntime_spreadSheetToJzodSchema": {
+      "transformerForBuildPlusRuntime_spreadSheetToMlSchema": {
         "type": "object",
         "extend": [
           {
@@ -30579,7 +30579,7 @@ export const miroirFundamentalMlSchema = {
           }
         }
       },
-      "transformerForBuildPlusRuntime_ansiColumnsToJzodSchema": {
+      "transformerForBuildPlusRuntime_ansiColumnsToMlSchema": {
         "type": "object",
         "extend": [
           {
@@ -30917,35 +30917,6 @@ export const miroirFundamentalMlSchema = {
               }
             },
             "description": "Schema context for reference resolution (referenceName / referencePath operands)."
-          }
-        }
-      },
-      "transformerForBuildPlusRuntime_ansiColumnsToMlSchema": {
-        "type": "object",
-        "extend": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "transformerForBuildPlusRuntime_optional_Abstract"
-            },
-            "context": {}
-          }
-        ],
-        "definition": {
-          "transformerType": {
-            "type": "literal",
-            "definition": "ansiColumnsToMlSchema"
-          },
-          "applyTo": {
-            "type": "schemaReference",
-            "optional": true,
-            "definition": {
-              "relativePath": "coreTransformerForBuildPlusRuntime",
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-            },
-            "context": {}
           }
         }
       },
@@ -31807,7 +31778,7 @@ export const miroirFundamentalMlSchema = {
         "discriminator": "type",
         "tag": {
           "value": {
-            "description": "The type of a Jzod element.",
+            "description": "The type of a ML element.",
             "initializeTo": {
               "initializeToType": "value",
               "value": {
@@ -36059,7 +36030,7 @@ export const miroirFundamentalMlSchema = {
         "discriminator": "type",
         "tag": {
           "value": {
-            "description": "The type of a Jzod element.",
+            "description": "The type of a ML element.",
             "initializeTo": {
               "initializeToType": "value",
               "value": {

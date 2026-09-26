@@ -61,9 +61,9 @@ if (runThis) {
   });
 
   describe("processCapabilities.273.phase0 — config schemas have a features key", () => {
-    it("miroirConfigClient and miroirConfigServer Jzod schema blocks have a features property", () => {
+    it("miroirConfigClient and miroirConfigServer ML schema blocks have a features property", () => {
       const src = readSource(
-        "0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts",
+        "0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchema.ts",
       );
       const clientBlock = schemaBlock(src, "miroirConfigClient", "miroirConfigServer");
       const serverBlock = schemaBlock(src, "miroirConfigServer", "miroirConfig");

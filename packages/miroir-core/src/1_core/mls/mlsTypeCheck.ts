@@ -42,7 +42,7 @@ import { resolveConditionalSchema, type ResolveConditionalSchemaError } from "./
 import { TransformerFailure } from "../../0_interfaces/2_domain/DomainElement";
 
 // export const miroirFundamentalMlSchema2 = miroirFundamentalMlSchema;
-// import { miroirFundamentalMlSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalMlSchema";
+// import { miroirFundamentalMlSchema } from "../tmp/src/0_interfaces/1_core/bootstrapMlSchemas/miroirFundamentalMlSchema";
 
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlsTypeCheck");

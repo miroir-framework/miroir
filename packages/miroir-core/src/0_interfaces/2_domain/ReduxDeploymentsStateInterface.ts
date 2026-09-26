@@ -2,7 +2,7 @@ import { z } from "zod";
 import { entityInstance, type MlElement } from "../1_core/preprocessor-generated/miroirFundamentalType";
 
 // ################################################################################################
-export const jzodEntityIdSchema: MlElement = {
+export const mlEntityIdSchema: MlElement = {
   type: "union",
   definition: [
     { type: "number" },
@@ -12,7 +12,7 @@ export const jzodEntityIdSchema: MlElement = {
 export const zEntityIdSchema = z.union([z.number(), z.string()]);
 
 // ################################################################################################
-export const jzodDictionarySchema: MlElement = {
+export const mlDictionarySchema: MlElement = {
   type: "record",
   definition: {
     type: "schemaReference",
@@ -27,7 +27,7 @@ export type MiroirDictionary = z.infer<typeof zDictionarySchema>;
 
 // ################################################################################################
 // #214 Option C′ — segment header sits beside EntityAdapter ids/entities (not per instance).
-export const jzodLocalCacheSegmentHeaderSchema: MlElement = {
+export const mlLocalCacheSegmentHeaderSchema: MlElement = {
   type: "object",
   definition: {
     kind: { type: "enum", definition: ["full", "partial"] },
@@ -46,12 +46,12 @@ export const zLocalCacheSegmentHeaderSchema = z.object({
 });
 
 // ################################################################################################
-export const jzodEntityStateSchema: MlElement = {
+export const mlEntityStateSchema: MlElement = {
   type: "object",
   definition: {
     ids: { type: "array", definition: { type: "string" } },
-    entities: jzodDictionarySchema,
-    segment: { ...jzodLocalCacheSegmentHeaderSchema, optional: true },
+    entities: mlDictionarySchema,
+    segment: { ...mlLocalCacheSegmentHeaderSchema, optional: true },
   }
 }
 export const zEntityStateSchema = z.object({
@@ -62,9 +62,9 @@ export const zEntityStateSchema = z.object({
 export type ZEntityState = z.infer<typeof zEntityStateSchema>; //not used
 
 // ################################################################################################
-export const jzodReduxDeploymentState: MlElement = {
+export const mlReduxDeploymentState: MlElement = {
   type: "record",
-  definition: jzodEntityStateSchema
+  definition: mlEntityStateSchema
   // definition: {
   //   type: "schemaReference",
   //   definition: {

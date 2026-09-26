@@ -191,7 +191,7 @@ Canonical layout reference: `docs/reference/data-architecture-deployments.md`.
 - Model history (EntityVersion snapshots written by `freezeApplicationVersion`) is optional and never needed to define or use an Entity; see `docs/reference/versioning.md`.
 - The Jzod schemas are used to generate TypeScript types and Zod validation schemas.
 - Application / deployment Jzod assets live under `packages/miroir-test-app_deployment-*/assets/` (not under `miroir-core/src/assets/`, which only holds leftover fixtures such as `miroirAdmin/` and `test1_model/`).
-- Generated TypeScript types from Jzod schemas are written to `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/` (mainly `miroirFundamentalType.ts`). Generator helpers live in `packages/miroir-core/src/0_interfaces/1_core/bootstrapJzodSchemas/`.
+- Generated TypeScript types from Jzod schemas are written to `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/` (mainly `miroirFundamentalType.ts`). Generator helpers live in `packages/miroir-core/src/0_interfaces/1_core/bootstrapMlSchemas/`.
 - Run `npm run devBuild -w miroir-core` to produce TS types (and then build)
 - TS Types from miroir-core are exported through a large `index.ts` (1200+ lines)
 

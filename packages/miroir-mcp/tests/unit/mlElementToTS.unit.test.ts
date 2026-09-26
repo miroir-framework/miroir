@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { jzodElementToTS } from '../../src/tools/jzodElementToTS.js';
+import { mlElementToTS } from '../../src/tools/mlElementToTS.js';
 
-describe('jzodElementToTS', () => {
+describe('mlElementToTS', () => {
   it('should convert uuid type to string', () => {
     const mlElement = {
       type: 'uuid',
@@ -12,7 +12,7 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(mlElement as any);
+    const result = mlElementToTS(mlElement as any);
 
     expect(result).toBe('string');
   });
@@ -27,7 +27,7 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(mlElement as any);
+    const result = mlElementToTS(mlElement as any);
 
     expect(result).toBe('string');
   });
@@ -42,7 +42,7 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(mlElement as any);
+    const result = mlElementToTS(mlElement as any);
 
     expect(result).toBe('boolean');
   });
@@ -57,7 +57,7 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(mlElement as any);
+    const result = mlElementToTS(mlElement as any);
 
     expect(result).toBe('number');
   });
@@ -72,7 +72,7 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(mlElement as any);
+    const result = mlElementToTS(mlElement as any);
 
     expect(result).toBe('Date');
   });
@@ -88,7 +88,7 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(mlElement as any);
+    const result = mlElementToTS(mlElement as any);
 
     expect(result).toBe('"active"');
   });
@@ -99,7 +99,7 @@ describe('jzodElementToTS', () => {
       definition: 42,
     };
 
-    const result = jzodElementToTS(mlElement as any);
+    const result = mlElementToTS(mlElement as any);
 
     expect(result).toBe('42');
   });
@@ -115,7 +115,7 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(mlElement as any);
+    const result = mlElementToTS(mlElement as any);
 
     expect(result).toBe('"model" | "data"');
   });
@@ -143,7 +143,7 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(mlElement as any);
+    const result = mlElementToTS(mlElement as any);
 
     expect(result).toBe(`{
   uuid: string;
@@ -175,7 +175,7 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(mlElement as any);
+    const result = mlElementToTS(mlElement as any);
 
     expect(result).toBe(`{
   name: string;
@@ -196,7 +196,7 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(mlElement as any);
+    const result = mlElementToTS(mlElement as any);
 
     expect(result).toBe('string[]');
   });
@@ -222,7 +222,7 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(mlElement as any);
+    const result = mlElementToTS(mlElement as any);
 
     expect(result).toBe(`{
   uuid: string;
@@ -243,7 +243,7 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(mlElement as any);
+    const result = mlElementToTS(mlElement as any);
 
     expect(result).toBe('Record<string, string>');
   });
@@ -261,7 +261,7 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(mlElement as any);
+    const result = mlElementToTS(mlElement as any);
 
     expect(result).toBe(`Record<string, {
   count: number;
@@ -291,7 +291,7 @@ describe('jzodElementToTS', () => {
       ],
     };
 
-    const result = jzodElementToTS(mlElement as any);
+    const result = mlElementToTS(mlElement as any);
 
     expect(result).toBe('[string, number]');
   });
@@ -309,7 +309,7 @@ describe('jzodElementToTS', () => {
       ],
     };
 
-    const result = jzodElementToTS(mlElement as any);
+    const result = mlElementToTS(mlElement as any);
 
     expect(result).toBe('string | number');
   });
@@ -333,7 +333,7 @@ describe('jzodElementToTS', () => {
       ],
     };
 
-    const result = jzodElementToTS(mlElement as any);
+    const result = mlElementToTS(mlElement as any);
 
     expect(result).toBe('"active" | "inactive" | "pending"');
   });
@@ -369,7 +369,7 @@ describe('jzodElementToTS', () => {
       ],
     };
 
-    const result = jzodElementToTS(mlElement as any);
+    const result = mlElementToTS(mlElement as any);
 
     expect(result).toBe(`{
   type: "success";
@@ -389,7 +389,7 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(mlElement as any);
+    const result = mlElementToTS(mlElement as any);
 
     expect(result).toBe('"model" | "data"');
   });
@@ -415,7 +415,7 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(mlElement as any);
+    const result = mlElementToTS(mlElement as any);
 
     expect(result).toBe(`{
   user: {
@@ -437,7 +437,7 @@ describe('jzodElementToTS', () => {
       },
     };
 
-    const result = jzodElementToTS(mlElement as any);
+    const result = mlElementToTS(mlElement as any);
 
     expect(result).toBe('number[][]');
   });

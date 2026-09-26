@@ -16,7 +16,7 @@ import { resolveMlSchemaReferenceInContext } from "./mlsResolveSchemaReferenceIn
 import type { ResolveBuildTransformersTo, Step } from "../../2_domain/Transformers";
 
 // export const miroirFundamentalMlSchema2 = miroirFundamentalMlSchema;
-// import { miroirFundamentalMlSchema } from "../tmp/src/0_interfaces/1_core/bootstrapJzodSchemas/miroirFundamentalMlSchema";
+// import { miroirFundamentalMlSchema } from "../tmp/src/0_interfaces/1_core/bootstrapMlSchemas/miroirFundamentalMlSchema";
 
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlsUnfoldSchemaOnce");

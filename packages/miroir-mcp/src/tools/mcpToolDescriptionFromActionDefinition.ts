@@ -1,6 +1,6 @@
 import { getEndpointActions, type EndpointDefinition } from "miroir-core";
 import type { McpToolDescription } from "./mcpHandlersForEndpoint.js";
-import { jzodElementToJsonSchema } from "./jzodElementToJsonSchema.js";
+import { mlElementToJsonSchema } from "./mlElementToJsonSchema.js";
 
 /**
  * Generates an MCP tool description from an action definition in an endpoint.
@@ -38,7 +38,7 @@ export function mcpToolDescriptionFromActionDefinition(
   };
 
   // Convert the entire payload object using the recursive function
-  const inputSchema = jzodElementToJsonSchema(
+  const inputSchema = mlElementToJsonSchema(
     payload,
     undefined,
     propertyNameMapping

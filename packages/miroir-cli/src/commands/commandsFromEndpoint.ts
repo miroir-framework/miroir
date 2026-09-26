@@ -95,10 +95,10 @@ export type CliRequestHandlers = Record<string, CliCommandHandler<any>>;
 // ################################################################################################
 
 /**
- * Helper function to convert a Jzod payload schema to a Zod schema
+ * Helper function to convert a ML payload schema to a Zod schema
  */
-function jzodPayloadToZodSchema(jzodPayload: MlObject): ZodTypeAny {
-  const resolvedMlSchema = resolveAllReferences(jzodPayload);
+function mlPayloadToZodSchema(mlPayload: MlObject): ZodTypeAny {
+  const resolvedMlSchema = resolveAllReferences(mlPayload);
   
   const zodTextAndSchema: ZodTextAndZodSchema = jzodToZodTextAndZodSchema(
     resolvedMlSchema as any,
@@ -110,7 +110,7 @@ function jzodPayloadToZodSchema(jzodPayload: MlObject): ZodTypeAny {
 }
 
 /**
- * Recursively resolves all schema references in a Jzod schema element
+ * Recursively resolves all schema references in a ML schema element
  */
 function resolveAllReferences(element: MlElement): MlElement {
   if (!element || typeof element !== 'object') {
@@ -171,16 +171,16 @@ function resolveAllReferences(element: MlElement): MlElement {
 }
 
 /**
- * Extract CLI command options from Jzod schema
+ * Extract CLI command options from ML schema
  */
-function extractCommandOptions(jzodPayload: MlObject): CliCommandOption[] {
+function extractCommandOptions(mlPayload: MlObject): CliCommandOption[] {
   const options: CliCommandOption[] = [];
   
-  if (jzodPayload.type !== 'object' || !jzodPayload.definition) {
+  if (mlPayload.type !== 'object' || !mlPayload.definition) {
     return options;
   }
 
-  for (const [name, schema] of Object.entries(jzodPayload.definition)) {
+  for (const [name, schema] of Object.entries(mlPayload.definition)) {
     const schemaElement = schema as MlElement;
     const isRequired = !schemaElement.optional;
     const description = (schemaElement as any).tag?.value?.description || 
@@ -337,7 +337,7 @@ function cliCommandEntry(endpoint: EndpointDefinition, actionType: string): CliC
     throw new Error(`Payload definition not found for action type: ${actionType}`);
   }
 
-  const jzodPayload = actionDef.actionParameters.payload;
+  const mlPayload = actionDef.actionParameters.payload;
   const commandName = actionType;
   const actionDescription =
     actionDef.actionParameters.actionType.tag?.value?.description ||
@@ -348,9 +348,9 @@ function cliCommandEntry(endpoint: EndpointDefinition, actionType: string): CliC
     commandDescription: {
       name: commandName,
       description: actionDescription,
-      options: extractCommandOptions(jzodPayload as MlObject),
+      options: extractCommandOptions(mlPayload as MlObject),
     },
-    payloadZodSchema: jzodPayloadToZodSchema(jzodPayload as MlObject),
+    payloadZodSchema: mlPayloadToZodSchema(mlPayload as MlObject),
     actionEnvelope: {
       actionType: actionType,
       actionLabel: `CLI: ${actionType.replace(/([A-Z])/g, " $1").trim()}`,

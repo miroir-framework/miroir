@@ -757,7 +757,7 @@
         "discriminator": "type",
         "tag": {
           "value": {
-            "description": "The type of a Jzod element.",
+            "description": "The type of a ML element.",
             "initializeTo": {
               "initializeToType": "value",
               "value": {

@@ -19,7 +19,7 @@ export const MIROIR_TEST_SUITE_REGISTRY_NAMES = [
   "mlsToMls_Summary",
   "mlsTransitiveDependencySet",
   "mlsTypeCheck",
-  "jzodUnion_RecursiveUnfold",
+  "mlUnion_RecursiveUnfold",
   "mlUnionResolvedTypeForArray",
   "mlUnionResolvedTypeForObject",
   "localizeMlSchemaReferenceContext",
@@ -56,7 +56,7 @@ export const MIROIR_TEST_SUITE_REGISTRY: Record<string, MiroirTestSuiteLoader> =
           name === "alterObject"
             ? deployment.miroirTest_alterObject_atPath
             : name === "mlsTypeCheck"
-              ? deployment.miroirTest_jzodTypeCheck_TransformerTestSuite
+              ? deployment.miroirTest_mlsTypeCheck_TransformerTestSuite
               : name === "menu"
                 ? deployment.miroirTest_menu_build
                 : name === "metaModelTransformers"

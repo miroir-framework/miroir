@@ -13,7 +13,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/145
 Working branch: `claude/rename-jzod-to-ml-2ucg0f` → draft PR against `aba`
 
-**Resume note:** Slices 0–3 DONE; baseline on `aba` @ `256e625` is green (miroir-core `tsc`; vitest 156 files / 2023 tests passed, 1 skipped).
+**Resume note:** Slices 0–4 DONE; baseline on `aba` @ `256e625` is green (miroir-core `tsc`; vitest 156 files / 2023 tests passed, 1 skipped).
 
 ---
 
@@ -39,7 +39,7 @@ migrate deployments stored outside the repository (clean break, see analysis D6)
 | 1 | ML definitions: `mlElement` & co (tracer) | ✅ DONE | guard rule D; `modelValidation` all deployments; `devBuild`; `tsc` all packages |
 | 2 | Schema-tool modules `1_core/mls/` | ✅ DONE (with 3) | guard scope `1_core/`; MiroirTest functionCallTest suites (unit) |
 | 3 | Transformers `mlsTypeCheck`, `ansiColumnsToMlSchema` | ✅ DONE (merged into 2) | guard scope transformer assets; `miroirCoreTransformers` unit + integ (filesystem) |
-| 4 | Remaining miroir-core and non-UI packages | ⬜ | guard scope `packages/` minus standalone-app; `tsc` per package; nonreg unit |
+| 4 | Remaining miroir-core and non-UI packages | ✅ DONE | guard scope `packages/` minus standalone-app; `tsc` per package; nonreg unit |
 | 5 | Standalone-app UI (editors, labels, component tests) | ⬜ | guard scope `packages/`; component-test nonreg steps |
 | 6 | Docs, agent files, repo-wide guard, final nonreg | ⬜ | guard repo-wide; `nonreg:filesystem` + indexedDb; AC checklist |
 
@@ -350,7 +350,7 @@ npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation
 
 ## Slice 4 — Remaining miroir-core and non-UI packages
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -379,6 +379,33 @@ Slice gate over every touched package, plus deployment `modelValidation` (4 pack
 (or its vitest script) and `npm run build` of touched library packages.
 
 ### Realization
+
+- `git mv`: `0_interfaces/1_core/JzodSchemaDefinition.ts` → `MlSchemaDefinition.ts`, `bootstrapJzodSchemas/` →
+  `bootstrapMlSchemas/` with `getMiroirFundamentalMlSchema.ts` / `getMiroirFundamentalMlSchemaHelpers.ts`; miroir-mcp
+  `src/tools/mlConversionContext.ts`, `mlElementToJsonSchema.ts`, `mlElementToTS.ts` and their unit tests.
+- Token map [`slice4-map.json`](./slice4-map.json) (148 entries, 919 replacements in 88 files), e.g.
+  `miroirFundamentalJzodSchemaUuid` → `miroirFundamentalMlSchemaUuid`, `miroirJzodSchemaBootstrap` →
+  `miroirMlSchemaBootstrap`, `lenientValidateJzod` → `lenientValidateMl`, `DEFAULT_JZOD_CONVERSION_MAX_DEPTH` →
+  `DEFAULT_ML_CONVERSION_MAX_DEPTH`, `jzodPayload` → `mlPayload`, and the deployment's MiroirTest exports
+  (`miroirTest_mlsToCopilotKitParameter`, `miroirTest_mlsToJsonSchema`, `miroirTest_mlsTransitiveDependencySet`, …).
+  These exports fix the red CI of the Slice 2 commit: `miroirCoreTestSuiteRegistry.ts` builds
+  `` `miroirTest_${name}` `` from the renamed suite names, which a token rename cannot see.
+- `jzodSchema` → `mlSchema` in the model-validation tools (`ModelValidationTools*.ts`, `runModelValidationSuite.ts`,
+  designer `modelValidation` test). Kept for Slice 5: the AI entity proposal's legacy `jzodSchema` input field.
+- Behavior change: the Entity-name keyed maps now use the Entity's real name `MlSchema` (`1_core/Model.ts` icon
+  `"ml-schema"`, deployment-miroir `defaultMiroirMetaModelEntityNameToAttributeName`). The old `JzodSchema` key never
+  matched, so the MlSchema instances were not validated from `metaModel.mlSchemas`; deployment-miroir
+  `modelValidation` goes from 159 to 160 tests, all passing.
+- Prose: "Jzod schema/element/type…" → "ML …" in comments, error messages (`Unsupported ML type…`), the AI system
+  prompt, labels of Report `8b22e84e` and schema assets, the MlSchema Entity description, test snapshot JSONs, and the
+  MiroirTest labels `jzod.*` → `mls.*` (with the three unit tests that assert `mls.mergePositionBased`).
+- Guard: rule "P ml-packages" (`packages/` minus standalone-app, any token but the UI component names and their
+  `miroirTest_*_ComponentTestSuite` exports, which are Slice 5); `jzodToZod` added to the external exports; `jzod-ts`
+  allowed as the package name in comments.
+- Validation: guard OK; build; `tsc` 16 packages, only the two `aba` errors; `modelValidation` 160/51/183/34; miroir-core
+  vitest 2 023 passed; `nonreg:unit` 34/34. Not in the gate: miroir-mcp unit 75/76 and miroir-ai `miroirTools` fail
+  on assertions unrelated to naming (`applicationSection` now includes `modelVersion`; the tool registry exports 3
+  tools, not 5), inferred pre-existing.
 
 ---
 

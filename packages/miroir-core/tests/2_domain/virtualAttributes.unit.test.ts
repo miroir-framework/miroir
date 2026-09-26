@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { miroirJzodSchemaBootstrap } from "miroir-test-app_deployment-miroir";
+import { miroirMlSchemaBootstrap } from "miroir-test-app_deployment-miroir";
 import { entityBook } from "miroir-test-app_deployment-library";
 
 const RUN_TEST = process.env.RUN_TEST;
@@ -9,15 +9,15 @@ const shouldRun =
   RUN_TEST === "virtualAttributes" ||
   RUN_TEST === "virtualAttributes.unit.test";
 
-type JzodTagValueDefinition = Record<string, unknown>;
+type MlTagValueDefinition = Record<string, unknown>;
 
-function jzodTagValueDefinition(): JzodTagValueDefinition {
-  const bootstrap = miroirJzodSchemaBootstrap as {
+function mlTagValueDefinition(): MlTagValueDefinition {
+  const bootstrap = miroirMlSchemaBootstrap as {
     definition: {
       context: {
         mlBaseObject: {
           definition: {
-            tag: { definition: { value: { definition: JzodTagValueDefinition } } };
+            tag: { definition: { value: { definition: MlTagValueDefinition } } };
           };
         };
       };
@@ -26,9 +26,9 @@ function jzodTagValueDefinition(): JzodTagValueDefinition {
   return bootstrap.definition.context.mlBaseObject.definition.tag.definition.value.definition;
 }
 
-describe.skipIf(!shouldRun)("virtual attributes — Jzod tag and Book citation", () => {
-  it("jzod attribute tags declare virtualAttribute with the transformer editor pattern", () => {
-    const virtualAttribute = jzodTagValueDefinition().virtualAttribute as {
+describe.skipIf(!shouldRun)("virtual attributes — ML tag and Book citation", () => {
+  it("ML attribute tags declare virtualAttribute with the transformer editor pattern", () => {
+    const virtualAttribute = mlTagValueDefinition().virtualAttribute as {
       type: string;
       optional?: boolean;
       tag?: { value?: { ifThenElseMMLS?: { mmlsReference?: unknown } } };

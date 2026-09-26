@@ -84,7 +84,7 @@
       "name": "MlSchema",
       "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       "conceptLevel": "Model",
-      "description": "Common Jzod Schema definitions, available to all Entity definitions"
+      "description": "Common ML Schema definitions, available to all Entity definitions"
     },
     {
       "uuid": "73bb0c69-e636-4e3b-a230-51f25469c089",
@@ -537,7 +537,7 @@
           "definition": {
             "type": "schemaReference",
             "context": {
-              "jzodObjectOrReference": {
+              "mlObjectOrReference": {
                 "type": "union",
                 "definition": [
                   {
@@ -558,7 +558,7 @@
               }
             },
             "definition": {
-              "relativePath": "jzodObjectOrReference"
+              "relativePath": "mlObjectOrReference"
             },
             "optional": true,
             "tag": {
@@ -3250,7 +3250,7 @@
             "tag": {
               "value": {
                 "id": 12,
-                "defaultLabel": "Jzod Schema",
+                "defaultLabel": "ML Schema",
                 "editable": true
               }
             }
@@ -4396,7 +4396,7 @@
       "parentName": "MlSchema",
       "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
       "name": "mlMiroirBootstrapSchema",
-      "defaultLabel": "The Jzod Schema for Miroir Jzod Schemas. Parses itself.",
+      "defaultLabel": "The ML Schema for Miroir ML Schemas. Parses itself.",
       "definition": {
         "type": "schemaReference",
         "context": {
@@ -5406,8 +5406,8 @@
       "uuid": "a97756cf-dd93-42b9-a021-91a629b187b9",
       "parentName": "MlSchema",
       "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
-      "name": "transformerJzodSchema",
-      "defaultLabel": "The Jzod Schema for Miroir Transformers: build objects & other values on the fly from a given set of parameters.",
+      "name": "transformerMlSchema",
+      "defaultLabel": "The ML Schema for Miroir Transformers: build objects & other values on the fly from a given set of parameters.",
       "definition": {
         "type": "schemaReference",
         "context": {
@@ -5928,7 +5928,7 @@
               "interface": {
                 "type": "object",
                 "definition": {
-                  "actionJzodObjectSchema": {
+                  "actionMlObjectSchema": {
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
@@ -6319,8 +6319,8 @@
       "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       "parentName": "Report",
       "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-      "name": "JzodSchemaList",
-      "defaultLabel": "Jzod Schemas",
+      "name": "MlSchemaList",
+      "defaultLabel": "ML Schemas",
       "definition": {
         "reportParameters": {},
         "extractorTemplates": {
@@ -6336,7 +6336,7 @@
         "section": {
           "type": "objectListReportSection",
           "definition": {
-            "label": "Jzod Schemas",
+            "label": "ML Schemas",
             "parentName": "MlSchema",
             "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
             "fetchedDataReference": "mlSchemas",

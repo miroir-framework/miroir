@@ -1,7 +1,7 @@
 export {
-  getMiroirFundamentalJzodSchema,
-  miroirFundamentalJzodSchemaUuid,
-} from "./0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema";
+  getMiroirFundamentalMlSchema,
+  miroirFundamentalMlSchemaUuid,
+} from "./0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchema";
 
 export {
   ClientEnvironment,
@@ -309,8 +309,8 @@ export {
   mlMap,
   MlObject,
   mlObject,
-  JzodObjectOrReference,
-  jzodObjectOrReference,
+  MlObjectOrReference,
+  mlObjectOrReference,
   MlPlainAttribute,
   mlPlainAttribute,
   MlPromise,
@@ -547,9 +547,9 @@ export {
   EntityInstanceWithNameSchema
 } from "./0_interfaces/1_core/Instance.js";
 // export {
-//   JzodSchemaDefinition,
-//   jzodSchemaDefinitionSchema,
-// } from "./0_interfaces/1_core/JzodSchemaDefinition.js";
+//   MlSchemaDefinition,
+//   mlSchemaDefinitionSchema,
+// } from "./0_interfaces/1_core/MlSchemaDefinition.js";
 export {
   MlUnionResolvedTypeForArrayReturnTypeOK, MlUnionResolvedTypeForObjectReturnTypeOK,
   MlUnionResolvedTypeReturnType, MlUnionResolvedTypeReturnTypeError, SelectUnionBranchFromDiscriminatorReturnType,
@@ -640,8 +640,8 @@ export {
   TransformerReturnType
 } from "./0_interfaces/2_domain/DomainElement.js";
 export {
-  RecordOfJzodElement,
-  RecordOfJzodObject
+  RecordOfMlElement,
+  RecordOfMlObject
 } from "./0_interfaces/2_domain/DomainStateQuerySelectorInterface.js";
 export {
   AsyncBoxedExtractorOrQueryRunnerMap,
@@ -1123,8 +1123,8 @@ export {
 export {
   // selectCurrentDeploymentModel,
   selectEntityInstances,
-  selectEntityInstancesFromJzodAttribute,
-  selectEntityUuidFromJzodAttribute,
+  selectEntityInstancesFromMlAttribute,
+  selectEntityUuidFromMlAttribute,
   selectReportDefinitionFromReportUuid
 } from "./2_domain/DomainDataAccess.js";
 export {
@@ -1134,7 +1134,7 @@ export {
   extractEntityInstanceUuidIndexFromListQueryAndDomainState,
   extractWithExtractorOrCombinerReturningObjectOrObjectListFromDomainState,
   getDomainStateExtractorRunnerMap,
-  // getDomainStateJzodSchemaExtractorRunnerMapDEFUNCT,
+  // getDomainStateMlSchemaExtractorRunnerMapDEFUNCT,
   getExtractorRunnerParamsForDomainState,
   GetExtractorRunnerParamsForDomainState,
   GetQueryRunnerParamsForDomainState,
@@ -1220,12 +1220,12 @@ export {
   getMultipleEntityInstancesIndexNonHook as getMultipleEntityInstancesUuidIndexNonHook
 } from "./2_domain/ReduxDeploymentsStateQueryExecutor.js";
 export {
-  // extractEntityJzodSchemaFromReduxDeploymentsState,
+  // extractEntityMlSchemaFromReduxDeploymentsState,
   GetExtractorRunnerParamsForReduxDeploymentsState,
   getExtractorRunnerParamsForReduxDeploymentsState,
   GetQueryRunnerParamsForReduxDeploymentsState,
   getQueryRunnerParamsForReduxDeploymentsState,
-  // getReduxDeploymentsStateJzodSchemaSelectorMap,
+  // getReduxDeploymentsStateMlSchemaSelectorMap,
   getReduxDeploymentsStateSelectorMap,
   runQueryFromReduxDeploymentsState,
   selectEntityInstanceFromReduxDeploymentsState,
@@ -1235,7 +1235,7 @@ export {
 export {
   getQueryTemplateRunnerParamsForReduxDeploymentsState,
   GetQueryTemplateRunnerParamsForReduxDeploymentsState,
-  // getReduxDeploymentsStateJzodSchemaSelectorTemplateMap,
+  // getReduxDeploymentsStateMlSchemaSelectorTemplateMap,
   getReduxDeploymentsStateSelectorTemplateMap,
   runQueryTemplateFromReduxDeploymentsState
 } from "./2_domain/ReduxDeploymentsStateQueryTemplateSelectors.js";
@@ -1553,7 +1553,7 @@ export {
 } from "./5_tests/FunctionCallTestTools.js";
 export {
   listQueryRunnerFixtureRefs,
-  queryRunnerTestJzodSchema,
+  queryRunnerTestMlSchema,
   resolveQueryRunnerFixture,
   runMiroirQueryRunnerTestInMemory,
 } from "./5_tests/QueryRunnerTestTools.js";
@@ -1707,7 +1707,7 @@ export {
   resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite,
   runMiroirRunnerTest as runMiroirRunnerTestInMemory,
   runRunnerTestCompositeAction,
-  runnerTestJzodSchema,
+  runnerTestMlSchema,
 } from "./5_tests/RunnerTestTools.js";
 export {
   composeIntegTestbedResetParams,
@@ -1857,8 +1857,8 @@ export {
   type MiroirTestStorageType,
 } from "./5_tests/parseMiroirTestCliConfig.js";
 // // Bootstrap-only schema fixtures (legacy test entities removed from deployment)
-// export { default as entityDefinitionTransformerTest } from "./0_interfaces/1_core/bootstrapJzodSchemas/fixtures/entityDefinitionTransformerTest.json" assert { type: "json" };
-// export { default as entityDefinitionUnitTest } from "./0_interfaces/1_core/bootstrapJzodSchemas/fixtures/entityDefinitionUnitTest.json" assert { type: "json" };
+// export { default as entityDefinitionTransformerTest } from "./0_interfaces/1_core/bootstrapMlSchemas/fixtures/entityDefinitionTransformerTest.json" assert { type: "json" };
+// export { default as entityDefinitionUnitTest } from "./0_interfaces/1_core/bootstrapMlSchemas/fixtures/entityDefinitionUnitTest.json" assert { type: "json" };
 
 
 const entityDefinitionBundleV1 = require("../src/assets/miroirAdmin/model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/01a051d8-d43c-430d-a98e-739048f54942.json"); //assert { type: "json" };

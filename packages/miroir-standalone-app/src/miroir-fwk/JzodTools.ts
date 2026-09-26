@@ -48,12 +48,12 @@ export function getCurrentEnumJzodSchemaResolver(
                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
                   relativePath:
                     definition == "string"
-                      ? "jzodAttributeStringWithValidations"
+                      ? "mlAttributeStringWithValidations"
                       : definition == "number"
-                      ? "jzodAttributeNumberWithValidations"
+                      ? "mlAttributeNumberWithValidations"
                       : definition == "date"
-                      ? "jzodAttributeDateWithValidations"
-                      : "jzodAttribute",
+                      ? "mlAttributeDateWithValidations"
+                      : "mlAttribute",
                 },
               },
               currentMiroirModel

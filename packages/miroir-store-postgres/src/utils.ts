@@ -81,9 +81,9 @@ export function fromMiroirPresentModelToSequelizeEntityDefinition(
   const mlSchema = resolveMlSchemaForSequelize(entity);
   const idAttribute: string | string[] = entity.idAttribute ?? "uuid";
   const pkAttributes: string[] = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
-  const jzodObjectAttributes = mlSchema.definition;
+  const mlObjectAttributes = mlSchema.definition;
   const result = Object.fromEntries(
-    Object.entries(jzodObjectAttributes)
+    Object.entries(mlObjectAttributes)
       .filter(([, schema]) => !isVirtualAttribute(schema))
       .map((a: [string, MlElement]) => {
       return [

@@ -8,7 +8,7 @@
   "description": "Migrated from UnitTest eca25c60-7dfb-4e1d-a718-1e639695404b (Feature #196 Phase 5)",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "jzod.mlsTransitiveDependencySet",
+    "miroirTestLabel": "mls.mlsTransitiveDependencySet",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",

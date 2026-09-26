@@ -46,7 +46,7 @@ type BoundTree = {
   children: Record<string, BoundTree>;
 };
 
-type JzodElementLike = {
+type MlElementLike = {
   type: string;
   nullable?: boolean;
   optional?: boolean;
@@ -143,7 +143,7 @@ function requiredPropertyNames(schema: Record<string, unknown>): Set<string> {
   return new Set(schema.required.filter((name): name is string => typeof name === "string"));
 }
 
-function withOptionalFlag(element: JzodElementLike, optional: boolean): JzodElementLike {
+function withOptionalFlag(element: MlElementLike, optional: boolean): MlElementLike {
   if (!optional) {
     return element;
   }
@@ -236,7 +236,7 @@ function convertSchema(
   schema: unknown,
   bound: BoundTree | undefined,
   transformerPath: string[],
-): JzodElementLike {
+): MlElementLike {
   const derefed = flattenAllOf(doc, deref(doc, schema));
   const alternatives = (derefed.oneOf ?? derefed.anyOf) as unknown[] | undefined;
   if (Array.isArray(alternatives) && alternatives.length > 0) {
@@ -274,7 +274,7 @@ function convertSchema(
       !Array.isArray(derefed.properties)
         ? (derefed.properties as Record<string, unknown>)
         : {};
-    const definition: Record<string, JzodElementLike> = {};
+    const definition: Record<string, MlElementLike> = {};
     const requiredNames = requiredPropertyNames(derefed);
     if (!isEmptyBound(bound)) {
       for (const [key, childBound] of Object.entries(bound!.children)) {

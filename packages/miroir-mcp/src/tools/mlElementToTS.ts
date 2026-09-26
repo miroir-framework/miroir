@@ -8,11 +8,11 @@ import {
 /**
  * Recursively converts a MlElement to a TypeScript type string.
  * 
- * @param mlElement - The Jzod schema element to convert
+ * @param mlElement - The ML schema element to convert
  * @param indentLevel - Current indentation level for nested structures
  * @returns A well-formatted TypeScript type string
  */
-export function jzodElementToTS(
+export function mlElementToTS(
   mlElement: MlElement,
   indentLevel: number = 0
 ): string {
@@ -57,7 +57,7 @@ export function jzodElementToTS(
       );
       
       // Recursively convert the resolved schema
-      return jzodElementToTS(resolvedSchema, indentLevel);
+      return mlElementToTS(resolvedSchema, indentLevel);
     }
 
     case 'object': {
@@ -67,7 +67,7 @@ export function jzodElementToTS(
 
       const properties: string[] = [];
       for (const [key, value] of Object.entries(mlElement.definition)) {
-        const valueType = jzodElementToTS(value as any, indentLevel + 1);
+        const valueType = mlElementToTS(value as any, indentLevel + 1);
         const optional = (value as any).optional ? '?' : '';
         
         // Check if value type is multi-line (contains newline)
@@ -86,7 +86,7 @@ export function jzodElementToTS(
         throw new Error('Array definition missing item type');
       }
       
-      const itemType = jzodElementToTS(mlElement.definition, indentLevel);
+      const itemType = mlElementToTS(mlElement.definition, indentLevel);
       
       // Only wrap in parentheses if it contains a union (|) but not an object (which starts with {)
       if (itemType.includes('|') && !itemType.startsWith('{')) {
@@ -101,7 +101,7 @@ export function jzodElementToTS(
         throw new Error('Record definition missing value type');
       }
       
-      const valueType = jzodElementToTS(mlElement.definition, indentLevel);
+      const valueType = mlElementToTS(mlElement.definition, indentLevel);
       return `Record<string, ${valueType}>`;
     }
 
@@ -111,7 +111,7 @@ export function jzodElementToTS(
       }
       
       const itemTypes = mlElement.definition.map((item: MlElement) => 
-        jzodElementToTS(item as any, indentLevel)
+        mlElementToTS(item as any, indentLevel)
       );
       
       return `[${itemTypes.join(', ')}]`;
@@ -123,7 +123,7 @@ export function jzodElementToTS(
       }
       
       const memberTypes = mlElement.definition.map((member: MlElement) => 
-        jzodElementToTS(member as any, indentLevel)
+        mlElementToTS(member as any, indentLevel)
       );
       
       return memberTypes.join(' | ');
@@ -153,7 +153,7 @@ export function jzodElementToTS(
     case "map":
     case "promise":
     case "set": {
-      throw new Error(`Unsupported Jzod type for TypeScript conversion: ${mlElement.type}`);
+      throw new Error(`Unsupported ML type for TypeScript conversion: ${mlElement.type}`);
     }
 
     default:

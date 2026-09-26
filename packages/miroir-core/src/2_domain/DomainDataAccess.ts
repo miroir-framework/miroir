@@ -39,7 +39,7 @@ export function selectEntityInstances(parentUuid:string | undefined):EntitiesDom
 }
 
 // ################################################################################################
-export function selectEntityInstancesFromJzodAttribute(
+export function selectEntityInstancesFromMlAttribute(
   mlSchema: MlPlainAttribute | undefined
 ): EntitiesDomainStateEntityInstanceArraySelector {
   return (domainState: EntitiesDomainState): EntityInstance[] => {
@@ -55,7 +55,7 @@ export function selectEntityInstancesFromJzodAttribute(
 }
 
 // ################################################################################################
-export function selectEntityUuidFromJzodAttribute(mlSchema:MlPlainAttribute | undefined):Uuid | undefined{
+export function selectEntityUuidFromMlAttribute(mlSchema:MlPlainAttribute | undefined):Uuid | undefined{
   // return mlSchema?.tag?.value?.targetEntity;
   return mlSchema?.tag?.value?.foreignKeyParams?.targetEntity;
 }

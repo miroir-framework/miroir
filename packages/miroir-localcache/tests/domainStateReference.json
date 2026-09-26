@@ -45,7 +45,7 @@
           "name": "MlSchema",
           "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
           "conceptLevel": "Model",
-          "description": "Common Jzod Schema definitions, available to all Entity definitions"
+          "description": "Common ML Schema definitions, available to all Entity definitions"
         },
         "7990c0c9-86c3-40a1-a121-036c91b55ed7": {
           "uuid": "7990c0c9-86c3-40a1-a121-036c91b55ed7",
@@ -186,7 +186,7 @@
               "definition": {
                 "type": "schemaReference",
                 "context": {
-                  "jzodObjectOrReference": {
+                  "mlObjectOrReference": {
                     "type": "union",
                     "definition": [
                       {
@@ -207,7 +207,7 @@
                   }
                 },
                 "definition": {
-                  "relativePath": "jzodObjectOrReference"
+                  "relativePath": "mlObjectOrReference"
                 },
                 "optional": true,
                 "tag": {
@@ -1339,7 +1339,7 @@
                 "tag": {
                   "value": {
                     "id": 7,
-                    "defaultLabel": "Jzod Schema",
+                    "defaultLabel": "ML Schema",
                     "editable": true
                   }
                 }
@@ -1649,8 +1649,8 @@
           "uuid": "8b22e84e-9374-4121-b2a7-d13d947a0ba2",
           "parentName": "Report",
           "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-          "name": "JzodSchemaList",
-          "defaultLabel": "List of Jzod Schemas",
+          "name": "MlSchemaList",
+          "defaultLabel": "List of ML Schemas",
           "definition": {
             "type": "objectListReportSection",
             "definition": {
@@ -1708,8 +1708,8 @@
           "uuid": "04f8773e-1c9d-4e5a-853e-1f94982f2e94",
           "parentName": "MlSchema",
           "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
-          "name": "jzodBootstrapSchema",
-          "defaultLabel": "The Jzod Schema of all Jzod Schemas. Comes from the @miroir-framework/jzod library. Parses itself.",
+          "name": "mlBootstrapSchema",
+          "defaultLabel": "The ML Schema of all ML Schemas, as defined by the @miroir-framework/jzod library. Parses itself.",
           "definition": {
             "type": "object",
             "definition": {
@@ -1732,7 +1732,7 @@
                   }
                 }
               },
-              "jzodAttribute": {
+              "mlAttribute": {
                 "type": "object",
                 "definition": {
                   "optional": {
@@ -1751,7 +1751,7 @@
                   }
                 }
               },
-              "jzodAttributeStringWithValidations": {
+              "mlAttributeStringWithValidations": {
                 "type": "object",
                 "definition": {
                   "optional": {
@@ -1819,13 +1819,13 @@
                   {
                     "type": "schemaReference",
                     "definition": {
-                      "relativePath": "jzodAttribute"
+                      "relativePath": "mlAttribute"
                     }
                   },
                   {
                     "type": "schemaReference",
                     "definition": {
-                      "relativePath": "jzodAttributeStringWithValidations"
+                      "relativePath": "mlAttributeStringWithValidations"
                     }
                   },
                   {
@@ -1878,7 +1878,7 @@
                   }
                 ]
               },
-              "jzodElementSetSchema": {
+              "mlElementSetSchema": {
                 "type": "record",
                 "definition": {
                   "type": "schemaReference",
@@ -1928,14 +1928,14 @@
                     "definition": {
                       "type": "schemaReference",
                       "definition": {
-                        "relativePath": "jzodAttribute"
+                        "relativePath": "mlAttribute"
                       }
                     }
                   },
                   "returns": {
                     "type": "schemaReference",
                     "definition": {
-                      "relativePath": "jzodAttribute"
+                      "relativePath": "mlAttribute"
                     },
                     "optional": true
                   }
@@ -2069,7 +2069,7 @@
           "parentName": "MlSchema",
           "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
           "name": "mlMiroirBootstrapSchema",
-          "defaultLabel": "The Jzod Schema for Miroir Jzod Schemas. Parses itself.",
+          "defaultLabel": "The ML Schema for Miroir ML Schemas. Parses itself.",
           "definition": {
             "type": "schemaReference",
             "context": {
@@ -2127,7 +2127,7 @@
                   }
                 }
               },
-              "jzodAttribute": {
+              "mlAttribute": {
                 "type": "object",
                 "extend": {
                   "type": "schemaReference",
@@ -2179,7 +2179,7 @@
                   }
                 }
               },
-              "jzodAttributeDateWithValidations": {
+              "mlAttributeDateWithValidations": {
                 "type": "object",
                 "extend": {
                   "type": "schemaReference",
@@ -2245,7 +2245,7 @@
                   }
                 }
               },
-              "jzodAttributeNumberWithValidations": {
+              "mlAttributeNumberWithValidations": {
                 "type": "object",
                 "extend": {
                   "type": "schemaReference",
@@ -2315,7 +2315,7 @@
                   }
                 }
               },
-              "jzodAttributeStringWithValidations": {
+              "mlAttributeStringWithValidations": {
                 "type": "object",
                 "extend": {
                   "type": "schemaReference",
@@ -2362,28 +2362,28 @@
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                      "relativePath": "jzodAttribute"
+                      "relativePath": "mlAttribute"
                     }
                   },
                   {
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                      "relativePath": "jzodAttributeDateWithValidations"
+                      "relativePath": "mlAttributeDateWithValidations"
                     }
                   },
                   {
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                      "relativePath": "jzodAttributeNumberWithValidations"
+                      "relativePath": "mlAttributeNumberWithValidations"
                     }
                   },
                   {
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                      "relativePath": "jzodAttributeStringWithValidations"
+                      "relativePath": "mlAttributeStringWithValidations"
                     }
                   },
                   {

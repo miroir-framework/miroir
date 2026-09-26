@@ -2,8 +2,8 @@
 """Exact-token renamer used by the #145 slices (not part of the product).
 
 Replaces whole identifiers only: a token matches when it is not preceded or followed by [A-Za-z0-9_$].
-Scans tracked files under the given path prefixes, skipping the excluded prefixes of the ML nomenclature guard,
-and optionally `git mv`s files whose basename contains a renamed token.
+Scans tracked files under the given path prefixes, skipping the excluded prefixes of the ML nomenclature guard.
+It edits file contents only: files whose name contains a renamed token are moved beforehand with `git mv`.
 
 Usage:
   python3 rename_tokens.py --map map.json [--paths packages/ docs/] [--skip file ...] [--dry-run]

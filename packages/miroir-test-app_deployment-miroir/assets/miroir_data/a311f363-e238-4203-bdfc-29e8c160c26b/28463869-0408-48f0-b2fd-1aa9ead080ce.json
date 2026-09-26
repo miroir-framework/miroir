@@ -8,7 +8,7 @@
   "description": "Migrated from UnitTest 912863b2-08d6-4e57-9bdd-9c35b1948403 (Feature #196 Phase 5)",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "jzod.mlObjectFlatten",
+    "miroirTestLabel": "mls.mlObjectFlatten",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",

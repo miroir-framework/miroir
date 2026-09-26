@@ -23,7 +23,7 @@ export type ModelValidationInstanceModule = { default: any };
 
 export type ModelValidationGroup = {
   groupName: string;
-  jzodSchema: MlElement;
+  mlSchema: MlElement;
   /** Path / uuid keyed modules, typically from import.meta.glob or MetaModel arrays. */
   instances: Record<string, ModelValidationInstanceModule>;
   filterByName?: string[];
@@ -125,7 +125,7 @@ export function modelValidationSuite(
     const attributeName = entityNameToAttributeName[entityName] ?? entityName;
     return {
       groupName: entityName,
-      jzodSchema: entityDefinitions[entityName]?.mlSchema as unknown as MlElement,
+      mlSchema: entityDefinitions[entityName]?.mlSchema as unknown as MlElement,
       instances: modelValidationInstancesArrayToRecord(
         ((metaModel as any)[attributeName] as readonly any[] | undefined) ?? [],
       ),
@@ -156,7 +156,7 @@ export function buildModelValidationPlanFromGroups(
 // ================================================================================================
 
 export function checkModelValidationInstance(
-  jzodSchema: MlElement,
+  mlSchema: MlElement,
   instance: any,
   fallbackPath: string,
   modelEnv: MiroirModelEnvironment,
@@ -164,7 +164,7 @@ export function checkModelValidationInstance(
   const label = buildModelValidationInstanceLabel(instance, fallbackPath);
   const filter = buildModelValidationVitestNameFilter(instance, fallbackPath);
   const result = mlsTypeCheck(
-    jzodSchema,
+    mlSchema,
     instance,
     [],
     [],

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { jzodElementToJsonSchema } from '../../src/tools/jzodElementToJsonSchema';
+import { mlElementToJsonSchema } from '../../src/tools/mlElementToJsonSchema';
 
-describe('jzodElementToJsonSchema', () => {
+describe('mlElementToJsonSchema', () => {
   it('should convert uuid type to string', () => {
     const mlElement = {
       type: 'uuid',
@@ -12,7 +12,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(mlElement as any);
+    const result = mlElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'string',
@@ -30,7 +30,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(mlElement as any);
+    const result = mlElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'string',
@@ -48,7 +48,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(mlElement as any);
+    const result = mlElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'boolean',
@@ -66,7 +66,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(mlElement as any);
+    const result = mlElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'string',
@@ -88,7 +88,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(mlElement as any, 'applicationSection');
+    const result = mlElementToJsonSchema(mlElement as any, 'applicationSection');
     const defKey = 'fe9b7d99-f216-44de-bb6e-60e1a1ebb739_applicationSection';
 
     // Root must be type:object for MCP/Cursor (#248); non-object defs are wrapped via allOf.
@@ -132,7 +132,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(mlElement as any);
+    const result = mlElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'object',
@@ -175,7 +175,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(mlElement as any);
+    const result = mlElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'object',
@@ -225,7 +225,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(mlElement as any);
+    const result = mlElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'array',
@@ -265,7 +265,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(mlElement as any);
+    const result = mlElementToJsonSchema(mlElement as any);
     const entityInstanceKey = 'fe9b7d99-f216-44de-bb6e-60e1a1ebb739_entityInstance';
 
     expect(result.type).toBe('array');
@@ -294,7 +294,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(mlElement as any);
+    const result = mlElementToJsonSchema(mlElement as any);
     const defKey = '_myString';
 
     expect(result.type).toBe('object');
@@ -332,7 +332,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(mlElement as any);
+    const result = mlElementToJsonSchema(mlElement as any);
     const sectionKey = 'fe9b7d99-f216-44de-bb6e-60e1a1ebb739_applicationSection';
 
     expect(result.type).toBe('object');
@@ -358,7 +358,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(mlElement as any);
+    const result = mlElementToJsonSchema(mlElement as any);
     const collectionKey = 'fe9b7d99-f216-44de-bb6e-60e1a1ebb739_entityInstanceCollection';
 
     // Root $ref expanded once so inputSchema.type is object (#248 cause 2).
@@ -400,7 +400,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(mlElement as any);
+    const result = mlElementToJsonSchema(mlElement as any);
     const entityInstanceKey = 'fe9b7d99-f216-44de-bb6e-60e1a1ebb739_entityInstance';
 
     expect(result.type).toBe('object');
@@ -421,7 +421,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(mlElement as any);
+    const result = mlElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'number',
@@ -439,7 +439,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(mlElement as any);
+    const result = mlElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'string',
@@ -459,7 +459,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(mlElement as any);
+    const result = mlElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'string',
@@ -474,7 +474,7 @@ describe('jzodElementToJsonSchema', () => {
       definition: 42,
     };
 
-    const result = jzodElementToJsonSchema(mlElement as any);
+    const result = mlElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'number',
@@ -501,7 +501,7 @@ describe('jzodElementToJsonSchema', () => {
       },
     };
 
-    const result = jzodElementToJsonSchema(mlElement as any);
+    const result = mlElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'object',
@@ -541,7 +541,7 @@ describe('jzodElementToJsonSchema', () => {
       ],
     };
 
-    const result = jzodElementToJsonSchema(mlElement as any);
+    const result = mlElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'array',
@@ -592,7 +592,7 @@ describe('jzodElementToJsonSchema', () => {
       ],
     };
 
-    const result = jzodElementToJsonSchema(mlElement as any);
+    const result = mlElementToJsonSchema(mlElement as any);
 
     expect(result).toEqual({
       type: 'array',
@@ -636,7 +636,7 @@ describe('jzodElementToJsonSchema', () => {
         ],
       };
 
-      const result = jzodElementToJsonSchema(mlElement as any);
+      const result = mlElementToJsonSchema(mlElement as any);
 
       expect(result).toEqual({
         anyOf: [
@@ -684,7 +684,7 @@ describe('jzodElementToJsonSchema', () => {
         ],
       };
 
-      const result = jzodElementToJsonSchema(mlElement as any);
+      const result = mlElementToJsonSchema(mlElement as any);
 
       expect(result).toEqual({
         anyOf: [
@@ -724,7 +724,7 @@ describe('jzodElementToJsonSchema', () => {
         ],
       };
 
-      const result = jzodElementToJsonSchema(mlElement as any);
+      const result = mlElementToJsonSchema(mlElement as any);
 
       expect(result).toEqual({
         anyOf: [
@@ -803,7 +803,7 @@ describe('jzodElementToJsonSchema', () => {
         discriminator: 'type',
       };
 
-      const result = jzodElementToJsonSchema(mlElement as any);
+      const result = mlElementToJsonSchema(mlElement as any);
 
       expect(result).toEqual({
         oneOf: [
@@ -882,7 +882,7 @@ describe('jzodElementToJsonSchema', () => {
         },
       };
 
-      const result = jzodElementToJsonSchema(mlElement as any);
+      const result = mlElementToJsonSchema(mlElement as any);
 
       expect(result.type).toBe('object');
       expect(result.properties.id.type).toBe('string');
@@ -917,7 +917,7 @@ describe('jzodElementToJsonSchema', () => {
         ],
       };
 
-      const result = jzodElementToJsonSchema(mlElement as any);
+      const result = mlElementToJsonSchema(mlElement as any);
 
       expect(result).toEqual({
         anyOf: [
@@ -959,7 +959,7 @@ describe('jzodElementToJsonSchema', () => {
         ],
       };
 
-      const result = jzodElementToJsonSchema(mlElement as any);
+      const result = mlElementToJsonSchema(mlElement as any);
 
       expect(result).toEqual({
         anyOf: [
@@ -1002,7 +1002,7 @@ describe('jzodElementToJsonSchema', () => {
         ],
       };
 
-      const result = jzodElementToJsonSchema(mlElement as any);
+      const result = mlElementToJsonSchema(mlElement as any);
       const sectionKey = 'fe9b7d99-f216-44de-bb6e-60e1a1ebb739_applicationSection';
 
       expect(result.anyOf).toHaveLength(2);
@@ -1030,8 +1030,8 @@ describe('jzodElementToJsonSchema', () => {
         },
       };
 
-      expect(() => jzodElementToJsonSchema(mlElement as any)).not.toThrow();
-      const result = jzodElementToJsonSchema(mlElement as any);
+      expect(() => mlElementToJsonSchema(mlElement as any)).not.toThrow();
+      const result = mlElementToJsonSchema(mlElement as any);
       const defKey = "fe9b7d99-f216-44de-bb6e-60e1a1ebb739_mlElement";
       expect(result.type).toBe("object");
       expect(result.$defs[defKey]).toBeDefined();
@@ -1049,7 +1049,7 @@ describe('jzodElementToJsonSchema', () => {
         },
       };
 
-      const result = jzodElementToJsonSchema(mlElement as any);
+      const result = mlElementToJsonSchema(mlElement as any);
       expect(result.type).toBe("object");
       expect(result.$ref).toBeUndefined();
       expect(result.properties || result.allOf).toBeTruthy();
@@ -1064,14 +1064,14 @@ describe('jzodElementToJsonSchema', () => {
         },
       };
 
-      expect(() => jzodElementToJsonSchema(mlElement as any)).not.toThrow();
-      const result = jzodElementToJsonSchema(mlElement as any);
+      expect(() => mlElementToJsonSchema(mlElement as any)).not.toThrow();
+      const result = mlElementToJsonSchema(mlElement as any);
       const serialized = JSON.stringify(result);
       // Pre-$ref this class of schema expanded to tens of MB; budget matches #248 provisional gate.
       expect(serialized.length).toBeLessThan(512 * 1024);
     });
 
-    it("converts Jzod any type to a generic object instead of throwing", () => {
+    it("converts ML any type to a generic object instead of throwing", () => {
       const mlElement = {
         type: "any",
         tag: {
@@ -1081,7 +1081,7 @@ describe('jzodElementToJsonSchema', () => {
         },
       };
 
-      const result = jzodElementToJsonSchema(mlElement as any);
+      const result = mlElementToJsonSchema(mlElement as any);
 
       expect(result.type).toBe("object");
       expect(result.description).toBe("Opaque model payload");

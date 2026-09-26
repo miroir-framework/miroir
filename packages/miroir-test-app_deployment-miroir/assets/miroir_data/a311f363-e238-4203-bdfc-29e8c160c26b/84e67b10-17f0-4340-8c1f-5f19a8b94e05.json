@@ -8,7 +8,7 @@
   "description": "Migrated from UnitTest c6d1a001-0001-4000-8000-000000000001 (Feature #196 Phase 5)",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "jzod.selectUnionBranchFromDiscriminator",
+    "miroirTestLabel": "mls.selectUnionBranchFromDiscriminator",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",

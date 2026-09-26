@@ -79,7 +79,7 @@ import {
   sqlSelectExpression,
   sqlWith,
 } from "./SqlQueryBuilder";
-import { getAttributeTypesFromMlSchema, jzodToPostgresTypeMap } from "./mlSchema";
+import { getAttributeTypesFromMlSchema, mlToPostgresTypeMap } from "./mlSchema";
 import { SqlQuerySelectExpressionSchema } from "../generated";
 
 
@@ -5442,8 +5442,8 @@ function sqlStringForConstantAsExtractorTransformer(
         };
       } else {
         // scalar or array of scalars
-        // if (!Object.hasOwn(jzodToPostgresTypeMap, (actionRuntimeTransformer.valueMlSchema as any).definition.type)) {
-        if (!(jzodToPostgresTypeMap as any)[(actionRuntimeTransformer.valueMlSchema as any).definition.type]) {
+        // if (!Object.hasOwn(mlToPostgresTypeMap, (actionRuntimeTransformer.valueMlSchema as any).definition.type)) {
+        if (!(mlToPostgresTypeMap as any)[(actionRuntimeTransformer.valueMlSchema as any).definition.type]) {
           return new Domain2ElementFailed({
             queryFailure: "QueryNotExecutable",
             query: actionRuntimeTransformer as any,
@@ -5452,7 +5452,7 @@ function sqlStringForConstantAsExtractorTransformer(
               actionRuntimeTransformer.valueMlSchema.type,
           });
         }
-        // const sqlTargetType = (jzodToPostgresTypeMap as any)[actionRuntimeTransformer.valueMlSchema.type].sqlTargetType;
+        // const sqlTargetType = (mlToPostgresTypeMap as any)[actionRuntimeTransformer.valueMlSchema.type].sqlTargetType;
         if (Array.isArray(actionRuntimeTransformer.value)) {
           return {
             // type: "table",

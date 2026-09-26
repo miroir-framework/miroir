@@ -9,7 +9,7 @@ import type { PostgresDataTypes } from "./Postgres";
 export { getAttributeTypesFromMlSchema };
 
 // TODO: refactor with getConstantSqlTypeMap?
-export const jzodToPostgresTypeMap: Record<
+export const mlToPostgresTypeMap: Record<
   MlEnumAttributeTypes,
   { targetType: "json" | "scalar"; sqlTargetType: PostgresDataTypes }
 > = mlsToSqlAttributeTypeMap as Record<

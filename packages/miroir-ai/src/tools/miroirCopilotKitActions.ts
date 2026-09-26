@@ -59,7 +59,7 @@ if (!firstLendingActionPayload || firstLendingActionPayload.type !== "object") {
   throw new Error("Lending endpoint action parameters payload type is not 'object' for endpoint: " + "212f2784-5b68-43b2-8ee0-89b1c6fdd0de");
 }
 
-// const lendDocumentActionJzodParameters = Object.entries(endpointDefinition[0].definition.actions[0].actionParameters.payload.definition);
+// const lendDocumentActionMlParameters = Object.entries(endpointDefinition[0].definition.actions[0].actionParameters.payload.definition);
 const lendDocumentActionCopilotKitParameters = mlsToCopilotKitParameter(
   "payload",
   firstLendingActionPayload
@@ -75,7 +75,7 @@ const lendDocumentActionJsonSchema = mlsToJsonSchema(
 //       ...(value as any), // TODO: fix type!
 //     }))
 //   : [];
-// // const lendDocumentActionJsonSchemaParameters = lendDocumentActionJzodParameters.map(([key, value]) =>
+// // const lendDocumentActionJsonSchemaParameters = lendDocumentActionMlParameters.map(([key, value]) =>
 // //     mlsToJsonSchema(
 // //       value,
 // //       (endpointDefinition[0].definition.actions[0].actionParameters.payload as MlObject)

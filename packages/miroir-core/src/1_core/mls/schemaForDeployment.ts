@@ -1,6 +1,6 @@
 import { getEndpointActions } from "../../0_interfaces/1_core/endpointDefinition.js";
 import type { Uuid } from "../../0_interfaces/1_core/EntityVersion";
-import { applyDeploymentDomainActionCarryOn } from "../../0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchemaHelpers";
+import { applyDeploymentDomainActionCarryOn } from "../../0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchemaHelpers";
 import { miroirFundamentalMlSchema } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalMlSchema";
 import type {
   Action,

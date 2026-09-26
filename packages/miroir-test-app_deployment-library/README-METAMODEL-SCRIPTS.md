@@ -63,7 +63,7 @@ All paths are automatically resolved to absolute paths during script execution.
    - Endpoints
    - Menus
    - Reports
-   - JzodSchemas
+   - MlSchemas
    - Queries (StoredQueries)
    - ApplicationVersions
 4. **Assembles the MetaModel** - Combines all elements into the standard MetaModel structure
@@ -104,7 +104,7 @@ The script queries these Miroir meta-model entities:
 - Menu: `dde4c883-ae6d-47c3-b6df-26bc6e3c1842`
 - Report: `3f2baa83-3ef7-45ce-82ea-6a43f7a8c916`
 - Endpoint: `3d8da4d4-8f76-4bb4-9212-14869d81c00c`
-- JzodSchema: `5e81e1b9-38be-487c-b3e5-53796c57fccf`
+- MlSchema: `5e81e1b9-38be-487c-b3e5-53796c57fccf`
 - QueryVersion: `e4320b9e-ab45-4abe-85d8-359604b3c62f`
 - ApplicationVersion: `c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24`
 

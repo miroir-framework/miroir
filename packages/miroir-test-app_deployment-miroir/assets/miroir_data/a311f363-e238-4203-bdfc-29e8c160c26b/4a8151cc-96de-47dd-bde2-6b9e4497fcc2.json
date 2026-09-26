@@ -2,17 +2,17 @@
   "uuid": "4a8151cc-96de-47dd-bde2-6b9e4497fcc2",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "jzodUnion_RecursiveUnfold",
+  "name": "mlUnion_RecursiveUnfold",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Migrated from UnitTest c6d1a002-0002-4000-8000-000000000002 (Feature #196 Phase 5)",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "jzodUnion_RecursiveUnfold",
+    "miroirTestLabel": "mlUnion_RecursiveUnfold",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",
-        "miroirTestLabel": "jzodUnion_RecursiveUnfold returns basic types at the root of the union",
+        "miroirTestLabel": "mlUnion_RecursiveUnfold returns basic types at the root of the union",
         "functionRef": {
           "module": "miroir-core/1_core/mls/mlUnion_RecursivelyUnfold",
           "export": "mlUnion_recursivelyUnfold"
@@ -59,7 +59,7 @@
       },
       {
         "miroirTestType": "functionCallTest",
-        "miroirTestLabel": "jzodUnion_RecursiveUnfold returns basic types in sub-unions",
+        "miroirTestLabel": "mlUnion_RecursiveUnfold returns basic types in sub-unions",
         "functionRef": {
           "module": "miroir-core/1_core/mls/mlUnion_RecursivelyUnfold",
           "export": "mlUnion_recursivelyUnfold"
@@ -111,7 +111,7 @@
       },
       {
         "miroirTestType": "functionCallTest",
-        "miroirTestLabel": "jzodUnion_RecursiveUnfold returns reference definitions for references present at the root of the union",
+        "miroirTestLabel": "mlUnion_RecursiveUnfold returns reference definitions for references present at the root of the union",
         "functionRef": {
           "module": "miroir-core/1_core/mls/mlUnion_RecursivelyUnfold",
           "export": "mlUnion_recursivelyUnfold"
@@ -161,7 +161,7 @@
       },
       {
         "miroirTestType": "functionCallTest",
-        "miroirTestLabel": "jzodUnion_RecursiveUnfold returns reference definitions for references present in sub-unions",
+        "miroirTestLabel": "mlUnion_RecursiveUnfold returns reference definitions for references present in sub-unions",
         "functionRef": {
           "module": "miroir-core/1_core/mls/mlUnion_RecursivelyUnfold",
           "export": "mlUnion_recursivelyUnfold"
@@ -222,7 +222,7 @@
       },
       {
         "miroirTestType": "functionCallTest",
-        "miroirTestLabel": "jzodUnion_RecursiveUnfold returns reference definitions for references present in sub-unions with multiple levels",
+        "miroirTestLabel": "mlUnion_RecursiveUnfold returns reference definitions for references present in sub-unions with multiple levels",
         "functionRef": {
           "module": "miroir-core/1_core/mls/mlUnion_RecursivelyUnfold",
           "export": "mlUnion_recursivelyUnfold"
@@ -294,7 +294,7 @@
       },
       {
         "miroirTestType": "functionCallTest",
-        "miroirTestLabel": "jzodUnion_RecursiveUnfold expand a reference definition when reference is itself a union",
+        "miroirTestLabel": "mlUnion_RecursiveUnfold expand a reference definition when reference is itself a union",
         "functionRef": {
           "module": "miroir-core/1_core/mls/mlUnion_RecursivelyUnfold",
           "export": "mlUnion_recursivelyUnfold"
@@ -355,7 +355,7 @@
       },
       {
         "miroirTestType": "functionCallTest",
-        "miroirTestLabel": "jzodUnion_RecursiveUnfold returns error when reference is not found in context",
+        "miroirTestLabel": "mlUnion_RecursiveUnfold returns error when reference is not found in context",
         "functionRef": {
           "module": "miroir-core/1_core/mls/mlUnion_RecursivelyUnfold",
           "export": "mlUnion_recursivelyUnfold"
@@ -403,7 +403,7 @@
       },
       {
         "miroirTestType": "functionCallTest",
-        "miroirTestLabel": "jzodUnion_RecursiveUnfold expand a reference definition with discriminator when reference is itself a union with discriminator",
+        "miroirTestLabel": "mlUnion_RecursiveUnfold expand a reference definition with discriminator when reference is itself a union with discriminator",
         "functionRef": {
           "module": "miroir-core/1_core/mls/mlUnion_RecursivelyUnfold",
           "export": "mlUnion_recursivelyUnfold"
@@ -509,7 +509,7 @@
       },
       {
         "miroirTestType": "functionCallTest",
-        "miroirTestLabel": "jzodUnion_RecursiveUnfold expands the mlElement definition",
+        "miroirTestLabel": "mlUnion_RecursiveUnfold expands the mlElement definition",
         "functionRef": {
           "module": "miroir-core/1_core/mls/mlUnion_RecursivelyUnfold",
           "export": "mlUnion_recursivelyUnfold"
@@ -1521,7 +1521,7 @@
       },
       {
         "miroirTestType": "functionCallTest",
-        "miroirTestLabel": "jzodUnion_RecursiveUnfold should handle circular references without infinite recursion",
+        "miroirTestLabel": "mlUnion_RecursiveUnfold should handle circular references without infinite recursion",
         "functionRef": {
           "module": "miroir-core/1_core/mls/mlUnion_RecursivelyUnfold",
           "export": "mlUnion_recursivelyUnfold"
@@ -1582,7 +1582,7 @@
       },
       {
         "miroirTestType": "functionCallTest",
-        "miroirTestLabel": "jzodUnion_RecursiveUnfold should handle nested circular references without infinite recursion",
+        "miroirTestLabel": "mlUnion_RecursiveUnfold should handle nested circular references without infinite recursion",
         "functionRef": {
           "module": "miroir-core/1_core/mls/mlUnion_RecursivelyUnfold",
           "export": "mlUnion_recursivelyUnfold"
@@ -1672,7 +1672,7 @@
       },
       {
         "miroirTestType": "functionCallTest",
-        "miroirTestLabel": "jzodUnion_RecursiveUnfold should handle deeply nested circular references without infinite recursion",
+        "miroirTestLabel": "mlUnion_RecursiveUnfold should handle deeply nested circular references without infinite recursion",
         "functionRef": {
           "module": "miroir-core/1_core/mls/mlUnion_RecursivelyUnfold",
           "export": "mlUnion_recursivelyUnfold"

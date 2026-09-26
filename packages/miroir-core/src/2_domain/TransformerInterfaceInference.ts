@@ -14,7 +14,7 @@ function isTransformerExpression(
   return typeof transformer === "object" && !Array.isArray(transformer) && "transformerType" in transformer;
 }
 
-function jzodSchemasEquivalent(a: MlElement, b: MlElement): boolean {
+function mlSchemasEquivalent(a: MlElement, b: MlElement): boolean {
   return safeStringify(a) === safeStringify(b);
 }
 
@@ -40,7 +40,7 @@ export function inferTransformerOutputTypeFromSchema(
     if (
       options?.rowEntityUuid &&
       options.rowMlSchema &&
-      jzodSchemasEquivalent(resultSchema, options.rowMlSchema)
+      mlSchemasEquivalent(resultSchema, options.rowMlSchema)
     ) {
       return options.rowEntityUuid;
     }

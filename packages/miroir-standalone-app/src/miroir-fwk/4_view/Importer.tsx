@@ -126,7 +126,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   // ##############################################################################################
   // const actionHandlerCreateApplication: ActionHandler = useMemo(()=> ({
   //   interface: {
-  //     actionJzodObjectSchema: {
+  //     actionMlObjectSchema: {
   //       type: "object",
   //       definition: {
   //         newApplicationName: {
@@ -298,7 +298,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   };
 
   //   // ############################################################################################
-  //   const actionEffectiveParamsCreateEntity /** parsed by actionHandlerCreateEntity.interface.actionJzodObjectSchema */ = {
+  //   const actionEffectiveParamsCreateEntity /** parsed by actionHandlerCreateEntity.interface.actionMlObjectSchema */ = {
   //     currentApplicationName: "Paris",
   //     currentApplicationUuid: props.currentApplicationUuid,
   //     currentDeploymentUuid: props.currentDeploymentUuid,
@@ -340,7 +340,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   // const actionHandlerCreateFountainEntity: CompositeActionTemplate = {
   //   //   actionType: "compositeActionSequence",
   //   //   // interface: {
-  //   //   //   actionJzodObjectSchema: {
+  //   //   //   actionMlObjectSchema: {
   //   //   //     type: "object",
   //   //   //     definition: {
   //   //   //       newEntityName: {
@@ -1774,7 +1774,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   // const [formHelperState, setformHelperState] = useMiroirContextformHelperState(); // NOT USED
 
   // const [rawSchema, setRawSchema] = useState<MlElement>(
-  //   actionHandlerCreateApplication.interface.actionJzodObjectSchema
+  //   actionHandlerCreateApplication.interface.actionMlObjectSchema
   // );
 
   // const currentModel: MetaModel = useCurrentModel(

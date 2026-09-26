@@ -493,7 +493,7 @@ describe("runMiroirTestSuite", () => {
   it("requires vitest.expect before registering suite tests", async () => {
     const emptySuite: MiroirTestSuite = {
       miroirTestType: "miroirTestSuite",
-      miroirTestLabel: "jzod.mergePositionBased",
+      miroirTestLabel: "mls.mergePositionBased",
       miroirTests: [],
     };
     const vitestWithoutExpect = {

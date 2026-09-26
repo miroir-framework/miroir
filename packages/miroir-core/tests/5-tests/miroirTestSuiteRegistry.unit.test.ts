@@ -19,7 +19,7 @@ describe("miroirTestSuiteRegistry (Phase 2)", () => {
   it("loads deployment export via dynamic import", async () => {
     const suiteExport = await loadMiroirCoreTestSuite("mergePositionBased");
     expect(suiteExport.miroirTestType).toBe("miroirTestSuite");
-    expect(suiteExport.miroirTestLabel).toBe("jzod.mergePositionBased");
+    expect(suiteExport.miroirTestLabel).toBe("mls.mergePositionBased");
   });
 
   it("throws for unknown suite keys", async () => {

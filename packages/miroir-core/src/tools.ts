@@ -614,7 +614,7 @@ export function setValueAtPath(obj: any, path: string, value: any): any {
   return result;
 }
 
-// Extract schema for a given path from a jzod schema
+// Extract schema for a given path from a ML schema
 export function getSchemaAtPath(schema: any, path: string): any {
   if (!path || !schema) return schema;
   
@@ -626,7 +626,7 @@ export function getSchemaAtPath(schema: any, path: string): any {
       return undefined;
     }
     
-    // Handle jzod schema structure
+    // Handle ML schema structure
     if (current.type === 'object' && current.definition) {
       current = current.definition[part];
     } else if (current.definition && current.definition[part]) {

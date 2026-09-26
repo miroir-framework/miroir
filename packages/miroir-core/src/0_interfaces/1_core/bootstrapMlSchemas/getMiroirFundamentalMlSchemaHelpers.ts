@@ -15,18 +15,18 @@ import type { MlElement, MlReference, MlUnion, MlSchema } from "../preprocessor-
 
 // const customChalk = new Chalk({level: 1})
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "getMiroirFundamentalJzodSchemaHelpers");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "getMiroirFundamentalMlSchemaHelpers");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {
   log = logger;
 });
 
-export const miroirFundamentalJzodSchemaUuid = "fe9b7d99-f216-44de-bb6e-60e1a1ebb739";
+export const miroirFundamentalMlSchemaUuid = "fe9b7d99-f216-44de-bb6e-60e1a1ebb739";
 
 export const coreTransformerForBuildPlusRuntimeCarryOnSchemaReference: MlReference = {
   type: "schemaReference",
   definition: {
-    absolutePath: miroirFundamentalJzodSchemaUuid,
+    absolutePath: miroirFundamentalMlSchemaUuid,
     relativePath: "coreTransformerForBuildPlusRuntime",
   },
 };
@@ -34,7 +34,7 @@ export const coreTransformerForBuildPlusRuntimeCarryOnSchemaReference: MlReferen
 export const coreTransformerForBuildPlusRuntimeForArrayCarryOnSchemaReference: MlReference = {
   type: "schemaReference",
   definition: {
-    absolutePath: miroirFundamentalJzodSchemaUuid,
+    absolutePath: miroirFundamentalMlSchemaUuid,
     relativePath: "coreTransformerForBuildPlusRuntimeWithoutArray",
   },
 };
@@ -334,9 +334,9 @@ export function makeReferencesAbsolute(mlSchema: any /** MlElement */, absoluteP
 }
 
 // ################################################################################################
-export function getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchemaDefinitionContext: any) {
+export function getExtendedSchemas(mlSchemaMlMiroirBootstrapSchemaDefinitionContext: any) {
   const result = [
-    ...Object.keys(jzodSchemajzodMiroirBootstrapSchemaDefinitionContext),
+    ...Object.keys(mlSchemaMlMiroirBootstrapSchemaDefinitionContext),
     "applicationSection",
     "shippingBox",
     "entityDefinitionRoot",
@@ -376,7 +376,7 @@ export function resolveReferencesWithCarryOn(
       ? resolvedAbsolutePath.context[ref.definition?.relativePath ?? ""]
       : undefined;
   const resultWithAbsoluteReferences = result
-    ? (makeReferencesAbsolute(result, miroirFundamentalJzodSchemaUuid) as any)
+    ? (makeReferencesAbsolute(result, miroirFundamentalMlSchemaUuid) as any)
     : result;
   if (resultWithAbsoluteReferences) {
     // log.info(
@@ -387,7 +387,7 @@ export function resolveReferencesWithCarryOn(
     return resultWithAbsoluteReferences;
   } else {
     throw new Error(
-      "getMiroirFundamentalJzodSchema resolveReferencesWithCarryOn resolve reference could not find reference " +
+      "getMiroirFundamentalMlSchema resolveReferencesWithCarryOn resolve reference could not find reference " +
         JSON.stringify(ref) +
         " in " +
         Object.keys(localizedResolutionStore)
@@ -399,45 +399,45 @@ export function resolveReferencesWithCarryOn(
 export const getDependencySet = (
   mlSchemaMlMiroirBootstrapSchema: any,
   context: MlReference,
-  absoluteMiroirFundamentalJzodSchema: any /** miroirFundamentalMlSchema with absolute references */,
+  absoluteMiroirFundamentalMlSchema: any /** miroirFundamentalMlSchema with absolute references */,
   elementName: string,
-  addJzodElementsToDependencySet: boolean = true,
+  addMlElementsToDependencySet: boolean = true,
 ) : MlReference => {
   const _t0 = Date.now();
   log.info("########################################## Calculating", elementName, "DependencySet...");
 
-  const jzodElementDependencySet = mlsTransitiveDependencySet(
+  const mlElementDependencySet = mlsTransitiveDependencySet(
     context,
     elementName,
     true, // includeExtend
   );
-  // log.info("getDependencySet before hack:", Array.from(jzodElementDependencySet.keys()).length);
-  // log.info("Forcing jzod schema definition into jzodElementDependencySet...");
-  if (addJzodElementsToDependencySet) {
-    log.info("Adding jzod schema definition into jzodElementDependencySet...");
+  // log.info("getDependencySet before hack:", Array.from(mlElementDependencySet.keys()).length);
+  // log.info("Forcing ML schema definition into mlElementDependencySet...");
+  if (addMlElementsToDependencySet) {
+    log.info("Adding ML schema definition into mlElementDependencySet...");
     Object.keys((mlSchemaMlMiroirBootstrapSchema as any).definition.context).forEach((key) => {
-      jzodElementDependencySet.add(key);
+      mlElementDependencySet.add(key);
     });
   }
 
   // log.info(
-  //   "jzodElementDependencySet",
-  //   Array.from(jzodElementDependencySet.keys()).length,
-  //   JSON.stringify(Array.from(jzodElementDependencySet.keys()), null, 2),
+  //   "mlElementDependencySet",
+  //   Array.from(mlElementDependencySet.keys()).length,
+  //   JSON.stringify(Array.from(mlElementDependencySet.keys()), null, 2),
   // );
-  const jzodElementDependenciesJzodReference: MlReference = {
+  const mlElementDependenciesMlReference: MlReference = {
     type: "schemaReference",
     context: Object.fromEntries(
-      Array.from(jzodElementDependencySet.keys()).map((key) => {
-        if (!absoluteMiroirFundamentalJzodSchema.definition.context[key]) {
+      Array.from(mlElementDependencySet.keys()).map((key) => {
+        if (!absoluteMiroirFundamentalMlSchema.definition.context[key]) {
           throw new Error(
-            `jzodElementDependenciesJzodReference failed, Key ${key} not found in miroirFundamentalMlSchema.context, existing keys are: ${Object.keys(
-              absoluteMiroirFundamentalJzodSchema.definition.context,
+            `mlElementDependenciesMlReference failed, Key ${key} not found in miroirFundamentalMlSchema.context, existing keys are: ${Object.keys(
+              absoluteMiroirFundamentalMlSchema.definition.context,
             )}`,
           );
         }
 
-        return [key, (absoluteMiroirFundamentalJzodSchema.definition as any).context[key]];
+        return [key, (absoluteMiroirFundamentalMlSchema.definition as any).context[key]];
       }),
     ),
     definition: {
@@ -445,13 +445,13 @@ export const getDependencySet = (
     },
   };
   // log.info(
-  //   "getMiroirFundamentalJzodSchema jzodElement_extendedSchemas",
-  //   jzodElement_extendedSchemas.length,
-  //   JSON.stringify(jzodElement_extendedSchemas, null, 2),
+  //   "getMiroirFundamentalMlSchema mlElement_extendedSchemas",
+  //   mlElement_extendedSchemas.length,
+  //   JSON.stringify(mlElement_extendedSchemas, null, 2),
   // );
 
   log.info(`########################################## Calculating ${elementName} DependencySet DONE, took ${Date.now() - _t0}ms.`);
-  return jzodElementDependenciesJzodReference;
+  return mlElementDependenciesMlReference;
 };
 
 
@@ -524,7 +524,7 @@ export function createLocalizedInnerResolutionStoreForExtendedSchemas(
       resolveReferencesWithCarryOn,
       result, // convertedReferences: we want to accumulate converted references across extended schemas to avoid re-converting same absolute references across multiple extended schemas
     );
-    result[forgeCarryOnReferenceName(miroirFundamentalJzodSchemaUuid, e, "extend", prefix)] =
+    result[forgeCarryOnReferenceName(miroirFundamentalMlSchemaUuid, e, "extend", prefix)] =
       appliedLimitedCarryOnResult.resultSchema;
   });
   log.info(`createLocalizedInnerResolutionStoreForExtendedSchemas(${prefix}) took ${Date.now() - _t0}ms, ${extendedSchemas.length} schemas`);
@@ -585,12 +585,12 @@ export function createLocalizedInnerResolutionStoreWithCarryOn(
       Object.assign(sharedConvertedReferences, schemaWithCarryOn.resolvedReferences);
     }
     resultEntries.push([
-      forgeCarryOnReferenceName(miroirFundamentalJzodSchemaUuid, entryName, undefined, prefix),
+      forgeCarryOnReferenceName(miroirFundamentalMlSchemaUuid, entryName, undefined, prefix),
       // TODO: add inner references to environment!!!!
       schemaWithCarryOn.hasBeenApplied ? schemaWithCarryOn.resultSchema : {
         type: "schemaReference",
         definition: {
-          absolutePath: miroirFundamentalJzodSchemaUuid,
+          absolutePath: miroirFundamentalMlSchemaUuid,
           relativePath: entryName,
         },
       }
@@ -622,7 +622,7 @@ export function createLocalizedInnerResolutionStoreWithCarryOn(
 /**
  * checks that entries in the domainActionDependencySet are present in the context of the carryOnSchemaReference
  * @param element 
- * @param absoluteMiroirFundamentalJzodSchema 
+ * @param absoluteMiroirFundamentalMlSchema 
  * @param carryOnSchemaReference 
  * @param dependencySet 
  * @param prefix 
@@ -633,7 +633,7 @@ export function createLocalizedInnerResolutionStoreWithCarryOn(
 export function getCarryOnSchemaBuilder(
   element: MlElement,
   dependencySet: Set<string>,
-  absoluteMiroirFundamentalJzodSchema: any, /** miroirFundamentalMlSchema with absolute references */
+  absoluteMiroirFundamentalMlSchema: any, /** miroirFundamentalMlSchema with absolute references */
   carryOnSchemaReference: MlReference,
   carryOnSchemaReferenceForArray: MlReference,
   carryOnSchemaDiscriminator: undefined | string | string[] = undefined,
@@ -642,21 +642,21 @@ export function getCarryOnSchemaBuilder(
   convertedReferences?: Record<string, MlElement>, // converted reference lookup
 ) {
   const _tStart = Date.now();
-  if (absoluteMiroirFundamentalJzodSchema.definition.context == undefined) {
+  if (absoluteMiroirFundamentalMlSchema.definition.context == undefined) {
     throw new Error(
       `Key context not found in miroirFundamentalMlSchema.context, existing keys are: ${Object.keys(
-        absoluteMiroirFundamentalJzodSchema.definition
+        absoluteMiroirFundamentalMlSchema.definition
       )}`
     );
   }
 
   // checks that entries in the domainActionDependencySet are present in the context of the carryOnSchemaReference
-  const dependenciesJzodReference: MlReference = {
+  const dependenciesMlReference: MlReference = {
     type: "schemaReference",
     context: Object.fromEntries(
       Array.from(dependencySet.keys()).map((key) => {
         // if (key.startsWith(prefix)) {
-        //   // return [key, absoluteMiroirFundamentalJzodSchema.definition.context[key]];
+        //   // return [key, absoluteMiroirFundamentalMlSchema.definition.context[key]];
         //   return [
         //     key,
         //     {
@@ -664,18 +664,18 @@ export function getCarryOnSchemaBuilder(
         //     },
         //     // {
         //     //   type: "schemaReference",
-        //     //   definition: { absolutePath: miroirFundamentalJzodSchemaUuid, relativePath: key },
+        //     //   definition: { absolutePath: miroirFundamentalMlSchemaUuid, relativePath: key },
         //     // },
         //   ];
         // }
-        if (!absoluteMiroirFundamentalJzodSchema.definition.context[key]) {
+        if (!absoluteMiroirFundamentalMlSchema.definition.context[key]) {
           throw new Error(
             `Key ${key} not found in miroirFundamentalMlSchema.context when building dependenciesInnerResolutionStore, existing keys are: ${Object.keys(
-              absoluteMiroirFundamentalJzodSchema.definition.context
+              absoluteMiroirFundamentalMlSchema.definition.context
             )}`
           );
         }
-        return [key, (absoluteMiroirFundamentalJzodSchema.definition as any).context[key]];
+        return [key, (absoluteMiroirFundamentalMlSchema.definition as any).context[key]];
       })
     ),
     definition: {
@@ -691,12 +691,12 @@ export function getCarryOnSchemaBuilder(
   // convert plain references found in domainAction to carryOn-bearing schemas
   const _t1 = Date.now();
   const localizedInnerResolutionStorePlainReferences = createLocalizedInnerResolutionStoreWithCarryOn(
-    dependenciesJzodReference,
+    dependenciesMlReference,
     carryOnSchemaReference,
     carryOnSchemaReferenceForArray,
     carryOnSchemaDiscriminator,
     resolveReferencesWithCarryOn.bind(undefined, {
-      [miroirFundamentalJzodSchemaUuid]: dependenciesJzodReference,
+      [miroirFundamentalMlSchemaUuid]: dependenciesMlReference,
     }),
     prefix,
     alwaysPropagate,
@@ -722,7 +722,7 @@ export function getCarryOnSchemaBuilder(
     undefined, // reference prefix
     undefined, // reference suffix
     resolveReferencesWithCarryOn.bind(undefined, {
-      [miroirFundamentalJzodSchemaUuid]: dependenciesJzodReference,
+      [miroirFundamentalMlSchemaUuid]: dependenciesMlReference,
     }), // resolveReference
     convertedReferences as any, // cast to avoid using generated MlElement type in this function (that would be a recursive reference)
   );
@@ -737,72 +737,72 @@ export function getCarryOnSchemaBuilder(
 
 
 // ##############################################################################################
-export const getJzodElementWithCarryOnContextDEFUNCT = (
+export const getMlElementWithCarryOnContextDEFUNCT = (
   prefix: string,
   transformerForBuildPlusRuntimeCarryOnSchemaReference: MlReference,
   transformerForBuildPlusRuntimeForArrayCarryOnSchemaReference: MlReference,
-  jzodElement_extendedSchemas: string[],
-  jzodElementDependenciesJzodReference: MlReference,
+  mlElement_extendedSchemas: string[],
+  mlElementDependenciesMlReference: MlReference,
   skipAlreadyProducedKeys?: Set<string>,
 ) => {
   const _tStart = Date.now();
-  log.info("########################################## getJzodElementWithCarryOnContext start:", prefix);
+  log.info("########################################## getMlElementWithCarryOnContext start:", prefix);
   // Filter extended schemas: skip those whose output key is already covered by domainAction stores
   const effectiveExtendedSchemas = skipAlreadyProducedKeys
-    ? jzodElement_extendedSchemas.filter(
-        (e) => !skipAlreadyProducedKeys.has(forgeCarryOnReferenceName(miroirFundamentalJzodSchemaUuid, e, "extend", prefix))
+    ? mlElement_extendedSchemas.filter(
+        (e) => !skipAlreadyProducedKeys.has(forgeCarryOnReferenceName(miroirFundamentalMlSchemaUuid, e, "extend", prefix))
       )
-    : jzodElement_extendedSchemas;
+    : mlElement_extendedSchemas;
   const _t0 = Date.now();
-  const jzodElementLocalizedInnerResolutionStoreForExtendedSchemas =
+  const mlElementLocalizedInnerResolutionStoreForExtendedSchemas =
     createLocalizedInnerResolutionStoreForExtendedSchemas(
-      jzodElementDependenciesJzodReference,
-      jzodElement_extendedSchemas,// effectiveExtendedSchemas, // filtered extendedSchemas
+      mlElementDependenciesMlReference,
+      mlElement_extendedSchemas,// effectiveExtendedSchemas, // filtered extendedSchemas
       transformerForBuildPlusRuntimeCarryOnSchemaReference,
       transformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
       "transformerType", // mlElementTemplateSchemaDiscriminator
       resolveReferencesWithCarryOn.bind(undefined, {
-        [miroirFundamentalJzodSchemaUuid]: jzodElementDependenciesJzodReference,
+        [miroirFundamentalMlSchemaUuid]: mlElementDependenciesMlReference,
       }),
       prefix, // prefix
       true, // alwaysPropagate
     );
   log.info(
-    `  getJzodElementWithCarryOnContext extendedSchemas(${prefix}): ${jzodElement_extendedSchemas.length} total, ${effectiveExtendedSchemas.length} computed (${jzodElement_extendedSchemas.length - effectiveExtendedSchemas.length} skipped), took ${Date.now() - _t0}ms`,
+    `  getMlElementWithCarryOnContext extendedSchemas(${prefix}): ${mlElement_extendedSchemas.length} total, ${effectiveExtendedSchemas.length} computed (${mlElement_extendedSchemas.length - effectiveExtendedSchemas.length} skipped), took ${Date.now() - _t0}ms`,
   );
   const _t1 = Date.now();
-  const jzodElementLocalizedInnerResolutionStorePlainReferences =
+  const mlElementLocalizedInnerResolutionStorePlainReferences =
     createLocalizedInnerResolutionStoreWithCarryOn(
-      jzodElementDependenciesJzodReference,
-      // jzodElement_extendedSchemas, //effectiveExtendedSchemas, // filtered extendedSchemas
+      mlElementDependenciesMlReference,
+      // mlElement_extendedSchemas, //effectiveExtendedSchemas, // filtered extendedSchemas
       transformerForBuildPlusRuntimeCarryOnSchemaReference,
       transformerForBuildPlusRuntimeForArrayCarryOnSchemaReference,
       "transformerType", // mlElementTemplateSchemaDiscriminator
       resolveReferencesWithCarryOn.bind(undefined, {
-        [miroirFundamentalJzodSchemaUuid]: jzodElementDependenciesJzodReference,
+        [miroirFundamentalMlSchemaUuid]: mlElementDependenciesMlReference,
       }),
       prefix, // prefix
       true, // alwaysPropagate
       // Skip coreTransformer* entries AND entries already covered by domainAction stores
       // (key: string, _defn: MlElement) =>
       //   key.startsWith("coreTransformer") ||
-      //   (skipAlreadyProducedKeys?.has(forgeCarryOnReferenceName(miroirFundamentalJzodSchemaUuid, key, undefined, prefix)) ?? false),
+      //   (skipAlreadyProducedKeys?.has(forgeCarryOnReferenceName(miroirFundamentalMlSchemaUuid, key, undefined, prefix)) ?? false),
     );
   log.info(
-    `  getJzodElementWithCarryOnContext plainRefs(${prefix}): ${Object.keys(jzodElementLocalizedInnerResolutionStorePlainReferences).length} computed, took ${Date.now() - _t1}ms`,
+    `  getMlElementWithCarryOnContext plainRefs(${prefix}): ${Object.keys(mlElementLocalizedInnerResolutionStorePlainReferences).length} computed, took ${Date.now() - _t1}ms`,
   );
-  const jzodElementWithCarryOnContext = {
-    ...jzodElementLocalizedInnerResolutionStoreForExtendedSchemas,
-    ...jzodElementLocalizedInnerResolutionStorePlainReferences,
+  const mlElementWithCarryOnContext = {
+    ...mlElementLocalizedInnerResolutionStoreForExtendedSchemas,
+    ...mlElementLocalizedInnerResolutionStorePlainReferences,
   };
   log.info(
-    `########################################## getJzodElementWithCarryOnContext ${prefix} DONE: ${Object.keys(jzodElementWithCarryOnContext).length} entries, total took ${Date.now() - _tStart}ms`,
+    `########################################## getMlElementWithCarryOnContext ${prefix} DONE: ${Object.keys(mlElementWithCarryOnContext).length} entries, total took ${Date.now() - _tStart}ms`,
   );
-  return jzodElementWithCarryOnContext;
+  return mlElementWithCarryOnContext;
 };
 
 const deploymentDomainActionTemplateKey = forgeCarryOnReferenceName(
-  miroirFundamentalJzodSchemaUuid,
+  miroirFundamentalMlSchemaUuid,
   "domainAction",
   undefined,
   "miroirTemplate_",
@@ -818,13 +818,13 @@ export function applyDeploymentDomainActionCarryOn(
   const absoluteContext = Object.fromEntries(
     Object.entries(baseSchema.definition.context).map(([key, value]) => [
       key,
-      makeReferencesAbsolute(value, miroirFundamentalJzodSchemaUuid, true),
+      makeReferencesAbsolute(value, miroirFundamentalMlSchemaUuid, true),
     ]),
   ) as Record<string, MlElement>;
 
   const extendedDomainActionAbsolute = makeReferencesAbsolute(
     extendedDomainAction,
-    miroirFundamentalJzodSchemaUuid,
+    miroirFundamentalMlSchemaUuid,
     true,
   ) as MlElement;
 

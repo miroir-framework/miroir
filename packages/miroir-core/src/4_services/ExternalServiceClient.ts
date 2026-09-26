@@ -191,7 +191,7 @@ function substitutePath(
   return path;
 }
 
-function jzodTypeName(schema: unknown): string | undefined {
+function mlTypeName(schema: unknown): string | undefined {
   if (!schema || typeof schema !== "object") {
     return undefined;
   }
@@ -221,8 +221,8 @@ type LenientValidationResult =
   | { status: "ok"; value: unknown; strippedKeys: string[] }
   | { status: "error"; error: string };
 
-function lenientValidateJzod(schema: unknown, value: unknown, path: string): LenientValidationResult {
-  const typeName = jzodTypeName(schema);
+function lenientValidateMl(schema: unknown, value: unknown, path: string): LenientValidationResult {
+  const typeName = mlTypeName(schema);
   if (!typeName) {
     return { status: "ok", value, strippedKeys: [] };
   }
@@ -240,7 +240,7 @@ function lenientValidateJzod(schema: unknown, value: unknown, path: string): Len
         strippedKeys.push(path ? `${path}.${key}` : key);
         continue;
       }
-      const child = lenientValidateJzod(definition[key], record[key], path ? `${path}.${key}` : key);
+      const child = lenientValidateMl(definition[key], record[key], path ? `${path}.${key}` : key);
       if (child.status === "error") {
         return child;
       }
@@ -264,7 +264,7 @@ function lenientValidateJzod(schema: unknown, value: unknown, path: string): Len
     const next: unknown[] = [];
     const strippedKeys: string[] = [];
     for (let i = 0; i < value.length; i++) {
-      const child = lenientValidateJzod(itemSchema, value[i], `${path}[${i}]`);
+      const child = lenientValidateMl(itemSchema, value[i], `${path}[${i}]`);
       if (child.status === "error") {
         return child;
       }
@@ -806,7 +806,7 @@ async function fetchExternalServiceOperation(
     );
   }
 
-  const validated = lenientValidateJzod(operation.responseSchema, body, "");
+  const validated = lenientValidateMl(operation.responseSchema, body, "");
   if (validated.status === "error") {
     log.warn("external service response validation failed", {
       actionType,

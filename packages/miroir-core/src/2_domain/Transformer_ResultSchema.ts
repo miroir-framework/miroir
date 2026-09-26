@@ -162,10 +162,10 @@ function buildMlSchemaTransformerContext(
 /**
  * 
  * @param transformer - The reference transformer
- * @param context - The jzod schema corresponding to refrences potentially used by the transformer
- * @param fallback - The fallback jzod schema
+ * @param context - The ML schema corresponding to refrences potentially used by the transformer
+ * @param fallback - The fallback ML schema
  * @param transformerType - The type of the transformer
- * @returns The expected jzod schema of the result of the transformer execution
+ * @returns The expected ML schema of the result of the transformer execution
  */
 function resolveReferenceSchema(
   transformer: ReferenceTransformer,
@@ -249,9 +249,9 @@ function resolveReferenceSchema(
 /**
  * 
  * @param transformer - The accessDynamicPath transformer
- * @param context - The jzod schema corresponding to refrences potentially used by the transformer
+ * @param context - The ML schema corresponding to refrences potentially used by the transformer
  * @param transformerDefinitions - The set of existing transformer definitions
- * @returns The expected jzod schema of the result of the transformer execution
+ * @returns The expected ML schema of the result of the transformer execution
  */
 function resolveAccessDynamicPathSchema(
   transformer: CoreTransformerForBuildPlusRuntime_accessDynamicPath,
@@ -329,11 +329,11 @@ function resolveAccessDynamicPathSchema(
 /**
  * 
  * @param definition - The definition of the record transformer
- * @param context - The jzod schema corresponding to refrences potentially used by the transformer
+ * @param context - The ML schema corresponding to refrences potentially used by the transformer
  * @param transformerDefinitions - The set of existing transformer definitions
  * @param threadContext - Whether to thread the context
  * @param transformerType - The type of the transformer
- * @returns The expected jzod schema of the result of the transformer execution
+ * @returns The expected ML schema of the result of the transformer execution
  */
 function resolveRecordTransformerDefinitionSchema(
   definition: Record<string, CoreTransformerForBuildPlusRuntime> | undefined,
@@ -375,9 +375,9 @@ function resolveRecordTransformerDefinitionSchema(
  * 
  * @param transformerType - The type of the transformer
  * @param applyToTransformer - The applyTo transformer
- * @param applyToSchema - The expected jzod schema of the result of the applyTo transformer execution
+ * @param applyToSchema - The expected ML schema of the result of the applyTo transformer execution
  * @param expectedRootType - The expected root type of the applyTo schema
- * @param expectedSchema - The expected jzod schema of the result of the applyTo transformer execution
+ * @param expectedSchema - The expected ML schema of the result of the applyTo transformer execution
  */
 function validateApplyToSchemaShape(
   transformerType: string,
@@ -415,7 +415,7 @@ function referenceBindingFromTransformerOrEmpty(
  * 
  * @param schema - The schema to validate
  * @param expectedRootType - The expected root type of the schema
- * @param expectedSchema - The expected jzod schema of the result of the schema execution
+ * @param expectedSchema - The expected ML schema of the result of the schema execution
  * @param details - The details of the schema
  * @returns The failed transformer interface from definition
  */
@@ -453,11 +453,11 @@ function requireSchemaRootType(
 /**
  * 
  * @param operand - The operand
- * @param context - The jzod schema corresponding to refrences potentially used by the operand
+ * @param context - The ML schema corresponding to refrences potentially used by the operand
  * @param transformerDefinitions - The set of existing transformer definitions
  * @param parentTransformerType - The type of the parent transformer
  * @param operandKey - The key of the operand
- * @returns The expected jzod schema of the result of the operand execution
+ * @returns The expected ML schema of the result of the operand execution
  */
 function resolveOperandSchema(
   operand: CoreTransformerForBuildPlusRuntime,
@@ -480,7 +480,7 @@ function resolveOperandSchema(
 /**
  * 
  * @param operand - The operand
- * @param context - The jzod schema corresponding to refrences potentially used by the operand
+ * @param context - The ML schema corresponding to refrences potentially used by the operand
  * @param transformerDefinitions - The set of existing transformer definitions
  * @param parentTransformerType - The type of the parent transformer
  * @param operandKey - The key of the operand
@@ -630,10 +630,10 @@ function resolveApplyToArrayElementSchema(
 /**
  * 
  * @param applyTo - The applyTo transformer
- * @param context - The jzod schema corresponding to refrences potentially used by the applyTo transformer
+ * @param context - The ML schema corresponding to refrences potentially used by the applyTo transformer
  * @param transformerDefinitions - The set of existing transformer definitions
  * @param parentTransformerType - The type of the parent transformer
- * @returns The expected jzod schema of the result of the applyTo transformer execution
+ * @returns The expected ML schema of the result of the applyTo transformer execution
  */
 function resolveApplyToObjectSchema(
   applyTo: CoreTransformerForBuildPlusRuntime | undefined,
@@ -684,7 +684,7 @@ function resolveApplyToObjectSchema(
 /**
  * 
  * @param predicate - The predicate
- * @param context - The jzod schema corresponding to refrences potentially used by the predicate
+ * @param context - The ML schema corresponding to refrences potentially used by the predicate
  * @param transformerDefinitions - The set of existing transformer definitions
  * @param parentTransformerType - The type of the parent transformer
  * @returns The failed transformer interface from definition
@@ -707,9 +707,9 @@ function resolveListPredicateBoolean(
 /**
  * 
  * @param caseTransformer - The case transformer
- * @param context - The jzod schema corresponding to refrences potentially used by the case transformer
+ * @param context - The ML schema corresponding to refrences potentially used by the case transformer
  * @param transformerDefinitions - The set of existing transformer definitions
- * @returns The expected jzod schema of the result of the case transformer execution
+ * @returns The expected ML schema of the result of the case transformer execution
  */
 function resolveCaseBranchSchemas(
   caseTransformer: CoreTransformerForBuildPlusRuntime_case,
@@ -756,11 +756,11 @@ function resolveCaseBranchSchemas(
 /**
  * @description
  * This function, given a transformer, a context for used references and the set of existing transformer definitions,
- * returns the expected jzod schema for the transformer result.
+ * returns the expected ML schema for the transformer result.
  * @param transformer - The transformer
- * @param context - The jzod schema corresponding to refrences potentially used by the transformer
+ * @param context - The ML schema corresponding to refrences potentially used by the transformer
  * @param transformerDefinitions - The set of existing transformer definitions
- * @returns The expected jzod schema of the result of the transformer execution
+ * @returns The expected ML schema of the result of the transformer execution
  */
 export function resolveTransformerResultSchema(
   transformer: CoreTransformerForBuildPlusRuntime,

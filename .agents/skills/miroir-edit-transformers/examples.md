@@ -120,7 +120,7 @@ export const miroirCoreTransformers: TransformerDefinition[] = [
 ```
 
 #### 4. Schema Registration
-**File**: `packages/miroir-core/src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts`
+**File**: `packages/miroir-core/src/0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchema.ts`
 
 ```ts
 // In miroirTransformersForBuild section:
@@ -159,7 +159,7 @@ const domainActionDependencySet = [
 // In headerForZodImports:
 const headerForZodImports = {
   // ... other entries
-  transformerForBuild_returnValue: `import { transformerForBuild_returnValue } from "../0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.js";`,
+  transformerForBuild_returnValue: `import { transformerForBuild_returnValue } from "../0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchema.js";`,
 };
 
 // In transformerForBuild section:

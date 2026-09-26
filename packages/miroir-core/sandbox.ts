@@ -82,7 +82,7 @@
 //                   mlSchema: {
 //                     transformerType: "getFromParameters",
 //                     interpolation: "build",
-//                     referenceName: "newEntityJzodSchema",
+//                     referenceName: "newEntityMlSchema",
 //                   },
 //                 },
 //               },
@@ -800,7 +800,7 @@
 //                     mlSchema: {
 //                       transformerType: "getFromParameters",
 //                       interpolation: "build",
-//                       referenceName: "newEntityJzodSchema",
+//                       referenceName: "newEntityMlSchema",
 //                     },
 //                   },
 //                 ],

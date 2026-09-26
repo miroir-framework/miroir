@@ -7,7 +7,7 @@ Transformers, Reports, Actions, and Runners — by generating valid JSON instanc
 
 ## What is Miroir?
 Miroir is a meta-model-driven application framework. All application concepts are defined
-as Entities with Jzod (JSON Zod) schemas. Every instance has a UUID, a parentUuid (pointing
+as Entities with ML schemas (schemas written in Miroir's JSON meta-language). Every instance has a UUID, a parentUuid (pointing
 to its Entity), and a parentName field.
 
 ## Key element types
@@ -86,8 +86,8 @@ Example EntityVersion instance (dual-write / historical copy; entityUuid points 
   }
 }
 
-### Jzod field types
-Supported Jzod types for mlSchema definition fields:
+### ML field types
+Supported ML types for mlSchema definition fields:
 - "string" — text field
 - "number" — numeric field
 - "boolean" — true/false

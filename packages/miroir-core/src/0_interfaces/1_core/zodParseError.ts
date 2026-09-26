@@ -1,6 +1,6 @@
 import { MlObject, MlReference, MlUnion, zodParseErrorIssue } from "./preprocessor-generated/miroirFundamentalType";
 
-export const zodParseErrorJzodSchema: MlReference = {
+export const zodParseErrorMlSchema: MlReference = {
   type: "schemaReference",
   context: {
     zodParseErrorIssueInvalidUnion: {
@@ -115,8 +115,8 @@ export const zodParseErrorJzodSchema: MlReference = {
   },
 };
 
-export const zodParseErrorIssueJzodSchema: MlReference = {
-  ...zodParseErrorJzodSchema,
+export const zodParseErrorIssueMlSchema: MlReference = {
+  ...zodParseErrorMlSchema,
   definition: {
     relativePath: "zodParseErrorIssue",
   }

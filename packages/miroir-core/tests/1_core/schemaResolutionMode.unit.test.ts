@@ -6,7 +6,7 @@ import {
   deployment_Library_DO_NO_USE,
 } from "miroir-test-app_deployment-library";
 
-import * as schemaHelpers from "../../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchemaHelpers";
+import * as schemaHelpers from "../../src/0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchemaHelpers";
 import {
   clearSchemaCacheForTests,
   getMiroirFundamentalSchemaForDeployment,

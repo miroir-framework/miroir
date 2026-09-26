@@ -285,7 +285,7 @@ function buildInstanceLabel(instance: any, fallbackPath: string): string {
 
 function describeEntityGroup(
   groupName: string,
-  jzodSchema: MlElement,
+  mlSchema: MlElement,
   instances: Record<string, { default: any }>,
   modelEnv: MiroirModelEnvironment,
 ): void {
@@ -298,7 +298,7 @@ function describeEntityGroup(
       const label = buildInstanceLabel(instance, path);
       it(label, () => {
         const result = mlsTypeCheck(
-          jzodSchema,
+          mlSchema,
           instance,
           [], // currentValuePath
           [], // currentTypePath

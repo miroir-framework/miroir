@@ -117,7 +117,7 @@ describe("generateMiroirEntity tool", () => {
     expect(schemaDef.title.optional).toBeUndefined();
   });
 
-  it("maps enum attributes to jzod enum type", async () => {
+  it("maps enum attributes to ML enum type", async () => {
     const result = await callHandler({
       entityName: "Status",
       attributes: [

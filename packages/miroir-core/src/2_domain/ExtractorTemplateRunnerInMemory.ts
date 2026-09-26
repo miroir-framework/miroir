@@ -22,10 +22,10 @@ import {
 } from "./AsyncQuerySelectors";
 import { cleanLevel } from "./constants";
 import {
-  // selectEntityJzodSchemaFromDomainStateNewForTemplate,
-  // selectFetchQueryJzodSchemaFromDomainStateNewForTemplate,
-  // selectJzodSchemaByDomainModelQueryFromDomainStateNewForTemplate,
-  // selectJzodSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
+  // selectEntityMlSchemaFromDomainStateNewForTemplate,
+  // selectFetchQueryMlSchemaFromDomainStateNewForTemplate,
+  // selectMlSchemaByDomainModelQueryFromDomainStateNewForTemplate,
+  // selectMlSchemaBySingleSelectQueryFromDomainStateNewForTemplate,
 } from "./DomainStateQueryTemplateSelector";
 import { ExtractorRunnerInMemory } from "./ExtractorRunnerInMemory";
 import {

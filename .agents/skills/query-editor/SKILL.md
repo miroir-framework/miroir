@@ -122,7 +122,7 @@ In `packages/miroir-core/src/2_domain/Transformers.ts`:
 
 #### Step 6: Register Schema Types (CRITICAL)
 
-In `packages/miroir-core/src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts`:
+In `packages/miroir-core/src/0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchema.ts`:
 
 - Add `transformerForBuild_<name>` entry in `miroirTransformersForBuild` section
 - Add `transformerForBuildPlusRuntime_<name>` entry in `miroirTransformersForBuildPlusRuntime` section
@@ -168,7 +168,7 @@ documentation is in folder `docs-OLD\transformers`
    - Add to `miroirCoreTransformers` array
 
 4. **Schema Registration** (CRITICAL - often forgotten!)
-   - Location: `packages/miroir-core/src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts`
+   - Location: `packages/miroir-core/src/0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchema.ts`
    - Add both `transformerForBuild_<name>` and `transformerForBuildPlusRuntime_<name>` entries
    - Add to `domainActionDependencySet` array
 
@@ -394,7 +394,7 @@ export const handleTransformer_<name> = (
 | Transformer definitions (data) | `packages/miroir-core/src/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/*.json` |
 | Transformer exports | `packages/miroir-core/src/2_domain/Transformers.ts` |
 | Transformer implementations | `packages/miroir-core/src/2_domain/TransformersForRuntime.ts` |
-| **Schema registration (CRITICAL)** | `packages/miroir-core/src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts` |
+| **Schema registration (CRITICAL)** | `packages/miroir-core/src/0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchema.ts` |
 | Transformer tools | `packages/miroir-core/src/2_domain/Transformer_tools.ts` |
 | Test suite (unit) | `npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit` |
 | Test suite (integ) | `packages/miroir-standalone-app/tests/miroir-core-tests.integ.test.ts` (via `testMiroir`) |
@@ -461,7 +461,7 @@ const sqlStringFor<Name>Transformer: ITransformerHandler = function (
   definedContextEntries: Record<string, SqlContextEntry>,
   newSqlElementsDefinedByThisTransformer: Record<string, SqlContextEntry>,
   currentSqlTable: string,
-  queryType: ExtractorRunnerParamsForJzodSchema<...>["queryType"],
+  queryType: ExtractorRunnerParamsForMlSchema<...>["queryType"],
   currentApplicationUuid: string,
   currentDeploymentUuid: string,
   emulatedServerConfig: EmulatedServerConfig,
@@ -578,7 +578,7 @@ If integration tests fail after adding SQL support:
 
 #### "Element transformerForBuildPlusRuntime_<name> not found in context"
 
-**Cause**: Missing schema registration in `getMiroirFundamentalJzodSchema.ts`
+**Cause**: Missing schema registration in `getMiroirFundamentalMlSchema.ts`
 
 **Solution**: Add both entries to the schema file:
 
@@ -629,7 +629,7 @@ Before submitting (library-implemented transformer):
 - [ ] Handler registered in `applicationTransformerDefinitions`
 - [ ] Transformer exported in `Transformers.ts`
 - [ ] Transformer added to `miroirCoreTransformers` array
-- [ ] **Schema entries added to `getMiroirFundamentalJzodSchema.ts`** (CRITICAL)
+- [ ] **Schema entries added to `getMiroirFundamentalMlSchema.ts`** (CRITICAL)
 - [ ] `devBuild` run successfully
 - [ ] Unit tests pass
 - [ ] **SQL implementation added to `SqlGenerator.ts`** (for database execution)

@@ -70,7 +70,7 @@ export function measurePerformance<T extends (...args: any[]) => any>(
         `Avg: ${(metrics.totalTime / metrics.callCount).toFixed(2)}ms,`,
         `Min: ${metrics.minDuration.toFixed(2)}ms,`,
         `Max: ${metrics.maxDuration.toFixed(2)}ms`,
-        `Jzod Schema:`, mlSchema ?? "N/A",
+        `ML Schema:`, mlSchema ?? "N/A",
       );
     }
     

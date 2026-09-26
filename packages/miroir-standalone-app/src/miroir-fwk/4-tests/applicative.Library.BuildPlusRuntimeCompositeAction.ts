@@ -74,7 +74,7 @@ const fileData: { [k: string]: any }[] = [
   { a: "US", b: "USA", c: "United States" },
   { a: "DE", b: "DEU", c: "Germany" },
 ];
-const newEntityJzodSchema: MlObject = {
+const newEntityMlSchema: MlObject = {
   type: "object",
   definition: Object.assign(
     {},
@@ -142,7 +142,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
         newEntityUuid,
         newEntityName,
         newEntityDefinitionUuid,
-        newEntityJzodSchema,
+        newEntityMlSchema,
         createEntity_newEntityListReportUuid,
         createEntity_newEntityDetailsReportUuid,
         defaultInstanceDetailsReportUuid,
@@ -255,7 +255,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                 //     mlSchema: {
                 //       transformerType: "getFromParameters",
                 //       interpolation: "build",
-                //       referenceName: "newEntityJzodSchema",
+                //       referenceName: "newEntityMlSchema",
                 //     },
                 //   },
                 //   newEntityListReport: {
@@ -967,7 +967,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                         mlSchema: {
                           transformerType: "getFromParameters",
                           interpolation: "build",
-                          referenceName: "newEntityJzodSchema",
+                          referenceName: "newEntityMlSchema",
                         },
                       },
                     ],

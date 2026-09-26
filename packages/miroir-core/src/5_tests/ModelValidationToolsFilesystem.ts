@@ -98,7 +98,7 @@ export function buildModelValidationGroupsFromFilesystem(
     }
     groups.push({
       groupName: entity.name,
-      jzodSchema: entity.mlSchema as unknown as MlElement,
+      mlSchema: entity.mlSchema as unknown as MlElement,
       instances,
     });
   }
@@ -130,7 +130,7 @@ export function buildModelValidationGroupsFromFilesystem(
     }
     groups.push({
       groupName: appEntity.name,
-      jzodSchema: appEntity.mlSchema as unknown as MlElement,
+      mlSchema: appEntity.mlSchema as unknown as MlElement,
       instances,
     });
   }

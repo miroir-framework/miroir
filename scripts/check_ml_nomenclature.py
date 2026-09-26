@@ -58,6 +58,7 @@ EXTERNAL_EXPORTS = {
     "jzodToTsCode",
     "jzodToZodTextAndTsTypeAliases",
     "jzodToZodTextAndZodSchemaForTsGeneration",
+    "jzodToZod",
 }
 
 # Prose and build-orchestration files, where the bare words "Jzod" / "jzod" (the project, the sibling repo) are
@@ -129,6 +130,13 @@ ENFORCED_RULES: list[Rule] = [
             }
         ),
     ),
+    # Slice 4: every package but the standalone app; the UI components (and their MiroirTest suites) are slice 5.
+    Rule(
+        "P ml-packages",
+        paths=("packages/",),
+        exclude=("packages/miroir-standalone-app/",),
+        token_re=re.compile(r"(?!(?:miroirTest_)?Jzod[A-Za-z]*(?:Editor|Display|Tools|Button)).*"),
+    ),
     Rule(
         "M ml-schema-tools (MiroirTest and transformer keys)",
         paths=("",),
@@ -156,6 +164,9 @@ def is_allowed(rel: str, line: str, start: int, token: str) -> bool:
         return True
     # `@miroir-framework/jzod` and `@miroir-framework/jzod-ts`, in imports, deps and paths.
     if line[max(0, start - len(PACKAGE_PREFIX)) : start] == PACKAGE_PREFIX and token.lower() == "jzod":
+        return True
+    # the sibling package named in comments: "jzod-ts"
+    if token == "jzod" and line[start + 4 : start + 7] == "-ts":
         return True
     if rel.endswith(PROSE_SUFFIXES) and token in PROJECT_WORDS:
         return True
@@ -230,6 +241,8 @@ def self_test() -> int:
         ("packages/miroir-core/scripts/generate-ts-types.ts", 'relativePath: "jzodElement",', ["jzodElement"]),
         ("packages/a/src/x.ts", 'relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement"', ["miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement"]),
         ("build-all.sh", '(cd "$SCRIPT_DIR/../../jzod-ts" && npm run build)', []),
+        ("packages/a/src/x.ts", "// the MlElement from jzod-ts", []),
+        ("packages/a/src/x.ts", "// a jzod schema", ["jzod"]),
     ]
     failures = 0
     for rel, line, expected in samples:
