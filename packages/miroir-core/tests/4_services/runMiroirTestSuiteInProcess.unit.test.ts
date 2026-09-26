@@ -132,14 +132,14 @@ describe("runMiroirTestSuiteInProcess (B2)", () => {
   });
 
   // Nested suites are tracked through the event service.
-  const eventServices: MiroirEventService[] = [];
+  const disposables: { destroy(): void }[] = [];
   function trackerWithEventService(): MiroirActivityTracker {
     const tracker = new MiroirActivityTracker();
-    eventServices.push(new MiroirEventService(tracker));
+    disposables.push(tracker, new MiroirEventService(tracker));
     return tracker;
   }
   afterEach(() => {
-    eventServices.splice(0).forEach((service) => service.destroy());
+    disposables.splice(0).forEach((disposable) => disposable.destroy());
   });
 
   // #287: a single-suite run starts from an empty suite path, so the sub-suites sit at depth 1.
