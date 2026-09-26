@@ -71,6 +71,24 @@ describe("extractValuesFromRenderedElements, open combobox", () => {
     expect(values).toEqual({ testField: "value2" });
   });
 
+  it("an open combobox whose name contains a quote and a backslash is read from its state tracker (PR #293 review)", () => {
+    const name = 'TESTSECTION.a"b\\c';
+    const root = attach("", "root");
+    const input = document.createElement("input");
+    input.setAttribute("role", "combobox");
+    input.name = name;
+    input.value = "";
+    const stateTracker = document.createElement("div");
+    stateTracker.setAttribute("data-testid", `themed-select-state-${name}`);
+    stateTracker.setAttribute("data-test-is-open", "true");
+    stateTracker.setAttribute("data-test-selected-value", "value2");
+    root.append(input, stateTracker);
+
+    const values = extractValuesFromRenderedElements(expect, undefined, root, "TESTSECTION", "initial");
+
+    expect(values).toEqual({ 'a"b\\c': "value2" });
+  });
+
   it("a closed combobox is read from its input, as before", () => {
     const root = attach(
       themedSelectMarkup({ name: "TESTSECTION.testField", inputValue: "value2", isOpen: false, selectedValue: "value2" }),

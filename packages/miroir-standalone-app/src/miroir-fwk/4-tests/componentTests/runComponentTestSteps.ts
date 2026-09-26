@@ -96,6 +96,26 @@ async function waitForAttributeValue(
   await waitUntil(env, () => checkAttribute(resolveTarget(env, target, elements), attribute, value), timeout);
 }
 
+const optionSeparator = "-option-";
+const selectStateTestIdPrefix = "themed-select-state-";
+
+/**
+ * The formik name of an option whose `aria-label` is `<formik name>-option-<value>`. Both the name
+ * and the value may contain `-option-`, so the name is the longest rendered select name (from the
+ * `themed-select-state-<name>` trackers) that the label starts with, followed by the separator.
+ * Without such a select, the label is split at its first separator.
+ */
+export function optionFormikName(ariaLabel: string, selectNames: readonly string[]): string | undefined {
+  const selectName = selectNames
+    .filter((name) => ariaLabel.startsWith(name + optionSeparator))
+    .reduce<string | undefined>((longest, name) => (!longest || name.length > longest.length ? name : longest), undefined);
+  if (selectName !== undefined) {
+    return selectName;
+  }
+  const separator = ariaLabel.indexOf(optionSeparator);
+  return separator < 0 ? undefined : ariaLabel.slice(0, separator);
+}
+
 /**
  * The option lists rendered in the sandbox, by field (T8): `[role="option"]` elements whose
  * `aria-label` is `<formik name>-option-<value>` (`ThemedSelectWithPortal`), grouped by the formik
@@ -104,13 +124,14 @@ async function waitForAttributeValue(
 function renderedOptions(env: ComponentTestEnvironment): Record<string, string[]> {
   const options: Record<string, string[]> = {};
   const prefix = `${testSectionName}.`;
+  const selectNames = Array.from(
+    env.sandboxElement.querySelectorAll<HTMLElement>(`[data-testid^="${selectStateTestIdPrefix}"]`),
+  ).map((tracker) => (tracker.getAttribute("data-testid") ?? "").slice(selectStateTestIdPrefix.length));
   for (const option of Array.from(env.sandboxElement.querySelectorAll<HTMLElement>('[role="option"]'))) {
-    const ariaLabel = option.getAttribute("aria-label") ?? "";
-    const separator = ariaLabel.indexOf("-option-");
-    if (separator < 0) {
+    const formikName = optionFormikName(option.getAttribute("aria-label") ?? "", selectNames);
+    if (formikName === undefined) {
       continue;
     }
-    const formikName = ariaLabel.slice(0, separator);
     const field = formikName.startsWith(prefix) ? formikName.slice(prefix.length) : formikName;
     (options[field] ??= []).push(option.textContent?.trim() ?? "");
   }

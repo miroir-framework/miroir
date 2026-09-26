@@ -872,7 +872,12 @@ export function extractValuesFromRenderedElements(
     if (input.getAttribute("role") !== "combobox" || !input.name) {
       return undefined;
     }
-    const stateTracker = query(`[data-testid="themed-select-state-${input.name}"]`);
+    // The name is compared as an attribute value, not put in the selector: a field name may contain
+    // characters (`"`, `\`) that some DOM selector parsers reject even when escaped.
+    const stateTrackerTestId = `themed-select-state-${input.name}`;
+    const stateTracker = queryAll('[data-testid^="themed-select-state-"]').find(
+      (element) => element.getAttribute("data-testid") === stateTrackerTestId,
+    );
     if (stateTracker?.getAttribute("data-test-is-open") !== "true") {
       return undefined;
     }

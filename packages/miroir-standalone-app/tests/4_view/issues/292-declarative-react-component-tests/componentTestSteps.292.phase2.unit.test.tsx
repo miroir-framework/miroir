@@ -23,6 +23,7 @@ import {
 } from "miroir-core";
 
 import { createReactComponentTestRunner } from "../../../../src/miroir-fwk/4-tests/componentTests/runReactComponentTest";
+import { optionFormikName } from "../../../../src/miroir-fwk/4-tests/componentTests/runComponentTestSteps";
 
 const enumCaseLabel = "FixtureEnum: case";
 
@@ -288,5 +289,29 @@ describe("componentTestSteps.292.phase2: props and suite wrapper lifetime", () =
     });
     expect(result.status).toBe("error");
     expect(result.message).toContain('reactComponentTest "Probe: first" has no steps');
+  });
+});
+
+// ################################################################################################
+describe("componentTestSteps.292.phase2: option field names (PR #293 review)", () => {
+  it("a field name containing -option- is taken whole, from the rendered select names", () => {
+    expect(optionFormikName("TESTSECTION.a-option-b-option-value1", ["TESTSECTION.a-option-b"])).toBe(
+      "TESTSECTION.a-option-b",
+    );
+  });
+
+  it("the longest matching select name wins", () => {
+    expect(
+      optionFormikName("TESTSECTION.a-option-b-option-value1", ["TESTSECTION.a", "TESTSECTION.a-option-b"]),
+    ).toBe("TESTSECTION.a-option-b");
+  });
+
+  it("an option value containing -option- does not change the field name", () => {
+    expect(optionFormikName("TESTSECTION.f-option-x-option-y", ["TESTSECTION.f"])).toBe("TESTSECTION.f");
+  });
+
+  it("without a matching select, the label is split at its first separator; without a separator, undefined", () => {
+    expect(optionFormikName("TESTSECTION.f-option-v", [])).toBe("TESTSECTION.f");
+    expect(optionFormikName("no separator", [])).toBeUndefined();
   });
 });
