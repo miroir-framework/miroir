@@ -171,8 +171,10 @@ The `columns` Entity (`39e5c7a1-…`) follows the same pattern with a four-attri
 Helpers live in `packages/miroir-core/src/1_core/Entity/EntityPrimaryKey.ts`:
 
 - `getEntityPrimaryKeyAttribute` / `getEntityPrimaryKeyAttributes`
-- `getInstancePrimaryKeyValue`
+- `getInstancePrimaryKeyValue` — PK value as a string (serialized for composite keys)
 - `entityHasUuidPrimaryKey` / `entityHasCompositePrimaryKey`
+- `serializeCompositeKeyValue` / `parseCompositeKeyValue` — composite key serialization (`|` separator, `\` escaping)
+- `getForeignKeyValue` / `instanceMatchesForeignKey` — FK resolution and matching; the FK attribute may be `string | string[]`
 
 **Implication:** some flows (especially “create new instance” UX) may be disabled or constrained when UUID generation is not applicable — treat create carefully for externally keyed entities.
 

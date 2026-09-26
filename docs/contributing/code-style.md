@@ -19,6 +19,19 @@ Follow these coding conventions when contributing to Miroir Framework.
 - Avoid `useEffect` when possible
 - No publish-subscribe patterns within React
 
+## Logging
+
+Each file has its own logger, named after the file (`DomainController.ts` → `DomainController`):
+
+```typescript
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DomainController")
+).then((logger: LoggerInterface) => {log = logger});
+```
+
+then `log.debug(...)`, `log.info(...)`, etc. Log levels are selected with `VITE_MIROIR_LOG_CONFIG_FILENAME`, set to a preset name (`catch-all`, `scope-query`, `scope-persistence`, …, in `packages/miroir-standalone-app/config/logging/`) or a path to a config JSON; see [Logger config options](../reference/testing.md#logger-config-options). Bare `console.*` is reserved for the cases allow-listed by `scripts/check_bare_console.py`.
+
 ## Naming Conventions
 
 (Content to be added)

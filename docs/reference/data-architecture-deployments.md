@@ -34,6 +34,19 @@ Each deployment package under `packages/miroir-test-app_deployment-*/assets/` us
 
 Only **`miroir-test-app_deployment-miroir`** currently ships a `{prefix}_modelVersion/` tree (`miroir_modelVersion/`).
 
+### Example: the Library application
+
+`packages/miroir-test-app_deployment-library/assets/`: model in `library_model/` (Entity rows for `Author`, `Book`, `Country`, `Publisher`, `User`, `LendingHistoryItem` under `library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/`), data in `library_data/<entity uuid>/`:
+
+| Entity | Data folder |
+|---|---|
+| Author | `library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/` |
+| Book | `library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/` |
+| Country | `library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4/` |
+| Publisher | `library_data/a027c379-8468-43a5-ba4d-bf618be25cab/` |
+| User | `library_data/ca794e28-b2dc-45b3-8137-00151557eea8/` |
+| LendingHistoryItem | `library_data/e81078f3-2de7-4301-bd79-d3a156aec149/` |
+
 ---
 
 ## MiroirConfig Structure
