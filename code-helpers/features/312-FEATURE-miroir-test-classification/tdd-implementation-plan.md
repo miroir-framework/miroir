@@ -301,3 +301,15 @@ npm run nonreg:unit
 - Tracer narrative: `testMiroir -w miroir-core -- --tags ml-union --mode unit` runs the 6 `ml-union` suites (36 tests). In the app, Miroir Tests → click `editor (9)` → the header reads `Miroir Tests Available (9 of 66)` and Run All Unit Tests runs the 9 editor suites (covered by `MiroirTestListDisplay.unit`; not run in a browser).
 - Deviation: a nonreg step was needed after all. `unit-miroir-core` runs the MiroirTest catalog, not the miroir-core vitest files, so new step `unit-312-miroir-test-tags` runs `miroirTestTags.unit`, `testMiroirLauncher.tags` and `getColumnDefinitionsFromEntityAttributes` (PASS, 12.8 s); the chips run in the existing `unit-MiroirTestListDisplay`.
 - No `issues/312-*` test directory was created, nothing to migrate.
+
+## Review fixes (PR #314)
+
+Three Greptile findings, each verified then fixed with a test:
+
+| Finding | Fix | Test |
+|---|---|---|
+| A selected tag absent from a new list filtered out every test, with no chip left to clear it | `MiroirTestListDisplay` derives `activeTags` (selected tags present in the list) and uses them for the filter, the header and `aria-pressed` | `MiroirTestListDisplay.unit`: "ignores a selected tag that the new list no longer carries" (RED: header read `0 of 2`) |
+| `--tags ""` did not override `MIROIR_TEST_TAGS` | `parseMiroirTestCliArgs` keeps `[]` for an empty `--tags`; `miroirTestCliConfigToEnv` writes `MIROIR_TEST_TAGS` whenever tags are set, so `""` clears the inherited value in the vitest process | `miroirTestTags.unit` and `testMiroirLauncher.tags.unit` (RED: "No suite carries any of the tags transformer") |
+| A transformer-integration suite known only to the folder catalog would be refused by the core integ entry | `validateMiroirCoreIntegTestLaunch` also accepts `listCliTransformerIntegrationSuiteKeysFromFolders()`, the keys the launcher routes there | `miroirCoreIntegTestLaunch.unit`: "knows every transformer integration suite the launcher routes here". Latent today: the only such suite, `miroirCoreTransformers`, is mixed unit+integ, so the test also passed before the fix |
+
+Validation: the four touched test files pass; `tsc` miroir-core and standalone-app clean on the touched files; `npm run test -w miroir-core -- ''` 2056 passed, 1 skipped; `pytest scripts/tests` 35 passed, 2 skipped; skills sync check OK.

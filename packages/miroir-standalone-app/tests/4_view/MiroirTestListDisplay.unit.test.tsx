@@ -185,4 +185,21 @@ describe('MiroirTestListDisplay tag chips (#312)', () => {
       'EntityPrimaryKey,miroirCoreTransformers,runner_return_document',
     );
   });
+
+  it('ignores a selected tag that the new list no longer carries', () => {
+    const { rerender } = render(
+      <MiroirTestListDisplay miroirTests={threeTests()} gridType="ag-grid" useSnackBar={false} />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'runner (1)' }));
+
+    const withoutRunner = threeTests().slice(1);
+    rerender(<MiroirTestListDisplay miroirTests={withoutRunner} gridType="ag-grid" useSnackBar={false} />);
+
+    expect(screen.getByText('Miroir Tests Available (2)')).toBeInTheDocument();
+    expect(screen.queryAllByRole('button', { pressed: true })).toEqual([]);
+    expect(screen.getByRole('button', { name: 'Run All Unit Tests' })).toHaveAttribute(
+      'data-suites',
+      'EntityPrimaryKey,miroirCoreTransformers',
+    );
+  });
 });

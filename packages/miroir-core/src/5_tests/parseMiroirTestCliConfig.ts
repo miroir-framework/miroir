@@ -211,7 +211,8 @@ export function parseMiroirTestCliArgs(
     } else if (arg === "--filter" || arg === "-f") {
       result.filter = parseFilterJson(argv[++index]);
     } else if (arg === "--tags") {
-      result.tags = splitTags(argv[++index]);
+      // `--tags ""` gives [], which overrides MIROIR_TEST_TAGS: no tag filter.
+      result.tags = splitSuiteKeys(argv[++index]);
     }
   }
 
@@ -277,7 +278,8 @@ export function miroirTestCliConfigToEnv(config: MiroirTestCliConfig): NodeJS.Pr
   if (config.filter !== undefined) {
     env.MIROIR_TEST_FILTER = JSON.stringify(config.filter);
   }
-  if (config.tags?.length) {
+  if (config.tags !== undefined) {
+    // An empty value clears a MIROIR_TEST_TAGS inherited by the vitest process.
     env.MIROIR_TEST_TAGS = config.tags.join(",");
   }
   return env;

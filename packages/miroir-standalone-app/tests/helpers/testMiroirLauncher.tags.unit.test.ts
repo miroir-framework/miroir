@@ -84,6 +84,21 @@ describe("testMiroirLauncher --tags (#312)", () => {
     expect(spawnedSuites(spawnEnv)).toEqual(["domain_controller_data_crud"]);
   });
 
+  it("an empty --tags overrides MIROIR_TEST_TAGS", () => {
+    process.env.MIROIR_TEST_TAGS = "transformer";
+    const { vitestEntry, spawnEnv } = resolveVitestEntry(process.env, [
+      "--suites",
+      "runner_create_entity",
+      "--tags",
+      "",
+      "--mode",
+      "integ",
+    ]);
+    expect(vitestEntry).toBe("miroir-runner-tests.integ.test");
+    expect(spawnedSuites(spawnEnv)).toEqual(["runner_create_entity"]);
+    expect(spawnEnv.MIROIR_TEST_TAGS).toBe("");
+  });
+
   it("refuses tags that select both core and runner suites", () => {
     const runnerKeys = listCliRunnerIntegrationSuiteKeysFromFolders();
     expect(runnerKeys).toContain("runner_create_entity");

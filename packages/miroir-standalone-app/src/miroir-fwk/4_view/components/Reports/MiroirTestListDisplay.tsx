@@ -134,15 +134,20 @@ const MiroirTestListDisplayContent = (props: MiroirTestListDisplayProps) => {
     [miroirTests],
   );
   const tagCounts = useMemo(() => listMiroirTestTagCounts(allSortedInstances), [allSortedInstances]);
+  // A selected tag absent from the current list has no chip to clear it: ignore it.
+  const activeTags = useMemo(
+    () => selectedTags.filter((tag) => tagCounts.some((tagCount) => tagCount.tag === tag)),
+    [selectedTags, tagCounts],
+  );
   // #312: the selected tags restrict the list and what Run All runs; none selected means all.
   const sortedInstances = useMemo(
-    () => filterMiroirTestInstancesByTags(allSortedInstances, selectedTags),
-    [allSortedInstances, selectedTags],
+    () => filterMiroirTestInstancesByTags(allSortedInstances, activeTags),
+    [allSortedInstances, activeTags],
   );
 
   const toggleTag = (tag: string) =>
-    setSelectedTags((current) =>
-      current.includes(tag) ? current.filter((selected) => selected !== tag) : [...current, tag],
+    setSelectedTags(
+      activeTags.includes(tag) ? activeTags.filter((selected) => selected !== tag) : [...activeTags, tag],
     );
 
   const { runner: runnerRegistry, transformer: transformerRegistry } = useMemo(
@@ -199,7 +204,7 @@ const MiroirTestListDisplayContent = (props: MiroirTestListDisplayProps) => {
         }}
       >
         <span>
-          {selectedTags.length > 0
+          {activeTags.length > 0
             ? `Miroir Tests Available (${sortedInstances.length} of ${allSortedInstances.length})`
             : `Miroir Tests Available (${sortedInstances.length})`}
         </span>
@@ -212,7 +217,7 @@ const MiroirTestListDisplayContent = (props: MiroirTestListDisplayProps) => {
       {tagCounts.length > 0 && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
           {tagCounts.map(({ tag, count }) => {
-            const selected = selectedTags.includes(tag);
+            const selected = activeTags.includes(tag);
             return (
               <button
                 key={tag}

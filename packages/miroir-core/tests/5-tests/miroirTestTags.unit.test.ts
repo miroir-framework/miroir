@@ -59,6 +59,12 @@ describe("MiroirTest tags: CLI config", () => {
     ).toEqual(["data"]);
   });
 
+  it("an empty --tags clears MIROIR_TEST_TAGS, also for the vitest process", () => {
+    const config = parseMiroirTestCliConfig({ MIROIR_TEST_TAGS: "tools" }, ["--tags", ""], ["mustache"]);
+    expect(config.tags).toEqual([]);
+    expect(miroirTestCliConfigToEnv(config).MIROIR_TEST_TAGS).toBe("");
+  });
+
   it("writes MIROIR_TEST_TAGS back for the vitest process", () => {
     const env = miroirTestCliConfigToEnv({
       suiteKeys: ["mustache"],
