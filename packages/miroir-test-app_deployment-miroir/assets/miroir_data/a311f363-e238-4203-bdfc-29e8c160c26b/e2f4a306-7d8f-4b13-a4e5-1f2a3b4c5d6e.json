@@ -6,6 +6,11 @@
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "name": "domain_controller_composite_pk_crud",
   "description": "DomainController composite-PK Data CRUD action integration tests (Feature 197). Owned by the Miroir meta-application; Library is only the runTarget/testbed. Lifecycle: session testBedModelAndInstances (TestEntityCompositePK, idAttribute [region, code]).",
+  "tags": [
+    "domain-controller",
+    "data",
+    "primary-key"
+  ],
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "domainController.compositePK.data.crud",

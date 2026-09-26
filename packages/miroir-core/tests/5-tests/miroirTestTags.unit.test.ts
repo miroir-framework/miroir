@@ -14,7 +14,10 @@ import {
   resolveCliSuiteKeysFromCatalog,
   resolveMonorepoRoot,
 } from "../../src/5_tests/loadApplicationMiroirTestsFromFolders";
-import { getMiroirTestAllowedTags } from "../../src/5_tests/miroirTestTags";
+import {
+  getMiroirTestAllowedTags,
+  getMiroirTestInstanceTags,
+} from "../../src/5_tests/miroirTestTags";
 import { checkModelValidationInstance } from "../../src/5_tests/ModelValidationTools";
 import {
   miroirTestCliConfigToEnv,
@@ -135,5 +138,26 @@ describe("MiroirTest tags: vocabulary from the MiroirTest Entity", () => {
     expect(() => resolveCliSuiteKeysFromCatalog([], unitKeys, catalog, ["mcp"])).toThrow(
       /No suite carries any of the tags mcp/,
     );
+  });
+});
+
+describe("MiroirTest tags: every test is tagged", () => {
+  const allowedTags = getMiroirTestAllowedTags(loadMiroirTestEntityFromFolders(repoRoot)) ?? [];
+  const instances = loadApplicationMiroirTestsFromFolders(repoRoot);
+
+  it("every MiroirTest instance has at least one tag", () => {
+    const untagged = instances
+      .filter((instance) => getMiroirTestInstanceTags(instance).length === 0)
+      .map((instance) => instance.name);
+    expect(untagged).toEqual([]);
+  });
+
+  it("every tag of every MiroirTest instance is allowed by the MiroirTest Entity", () => {
+    const unknown = instances.flatMap((instance) =>
+      getMiroirTestInstanceTags(instance)
+        .filter((tag) => !allowedTags.includes(tag))
+        .map((tag) => `${instance.name}: ${tag}`),
+    );
+    expect(unknown).toEqual([]);
   });
 });

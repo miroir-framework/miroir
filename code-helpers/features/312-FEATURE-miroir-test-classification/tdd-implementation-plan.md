@@ -15,7 +15,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/312
 Working branch: `claude/project-thread-4gyfzk` (from `_integration`)
 
-**Resume note:** Slices 1–2 DONE.
+**Resume note:** Slices 1–3 DONE.
 
 ---
 
@@ -37,7 +37,7 @@ This plan does **not** tag leaves, add all-of matching, tag other Entities, chan
 |---|---|---|---|
 | 1 | Tracer: `--tags` selects a tagged unit suite | ✅ | `miroirTestTags.unit.test.ts` + `testMiroir --tags tools` |
 | 2 | Unknown tags rejected, from the Entity vocabulary | ✅ | `miroirTestTags.unit.test.ts` (CLI errors) |
-| 3 | Every MiroirTest tagged | ⬜ | guard test over the folder catalog + `modelValidation` |
+| 3 | Every MiroirTest tagged | ✅ | guard test over the folder catalog + `modelValidation` |
 | 4 | `--tags` in the standalone-app launcher | ⬜ | `testMiroirLauncher` test |
 | 5 | Tags in the Miroir Tests page | ⬜ | `MiroirTestListDisplay.unit.test.tsx` + grid column test |
 | 6 | Docs, nonreg, AC | ⬜ | `nonreg:unit` + tracer narrative |
@@ -173,7 +173,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ## Slice 3 — Every MiroirTest tagged
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** every one of the 66 tests can be found by tag, and a new untagged test is caught.
 
@@ -194,7 +194,9 @@ npm run testMiroir -w miroir-core -- --tags ml-union --mode unit   # the 6 ml-un
 
 ### Realization
 
-_(pending)_
+- Guard tests added to `miroirTestTags.unit.test.ts` (every instance tagged; every tag allowed by the live Entity). RED: 65 untagged instances.
+- A scratch script inserted `"tags"` after `"description"` in the 65 remaining files per `tag-assignment.md` (65 files, +260 lines, no other line touched).
+- Validation: `miroirTestTags.unit` 13/13; `modelValidation` miroir 162/162, library 183/183; `testMiroir -w miroir-core -- --tags ml-union --mode unit` ran the 6 `ml-union` suites, 36 tests.
 
 ---
 
