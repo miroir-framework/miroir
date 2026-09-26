@@ -21,7 +21,7 @@ import {
   requiredVirtualAttributeNames,
   type ApplicationDeploymentMap,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
-  type JzodObject,
+  type MlObject,
   type ObjectInstanceReportSection,
   type ReportSection,
   type SyncQueryTemplateRunnerParams,
@@ -265,9 +265,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     );
   }, [currentMiroirModelEnvironment, currentReportTargetEntity, instance]);
 
-  const currentFlattenedReportSectionTargetEntityMlSchema: JzodObject | undefined =
+  const currentFlattenedReportSectionTargetEntityMlSchema: MlObject | undefined =
     currentReportTargetEntity
-      ? (entityWithResolvedMLSchema(currentReportTargetEntity).mlSchema as JzodObject)
+      ? (entityWithResolvedMLSchema(currentReportTargetEntity).mlSchema as MlObject)
       : undefined;
 
   // ##############################################################################################

@@ -12,7 +12,7 @@
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",
-        "miroirTestLabel": "should throw an error when jzodElement has no type",
+        "miroirTestLabel": "should throw an error when mlElement has no type",
         "functionRef": {
           "module": "miroir-store-postgres/1_core/mlSchema",
           "export": "getAttributeTypesFromJzodSchema"
@@ -26,7 +26,7 @@
       },
       {
         "miroirTestType": "functionCallTest",
-        "miroirTestLabel": "should throw an error when jzodElement type is not object",
+        "miroirTestLabel": "should throw an error when mlElement type is not object",
         "functionRef": {
           "module": "miroir-store-postgres/1_core/mlSchema",
           "export": "getAttributeTypesFromJzodSchema"
@@ -60,7 +60,7 @@
       },
       {
         "miroirTestType": "functionCallTest",
-        "miroirTestLabel": "should return attribute types for valid jzodElement",
+        "miroirTestLabel": "should return attribute types for valid mlElement",
         "functionRef": {
           "module": "miroir-store-postgres/1_core/mlSchema",
           "export": "getAttributeTypesFromJzodSchema"

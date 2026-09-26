@@ -83,7 +83,7 @@ interface EntityVersion {
   externalDataSource?: { kind?: "sql" | "http"; endpoint?: string; schema?: string; tableName?: string };
   defaultInstanceDetailsReportUuid?: string;
   viewAttributes?: string[];
-  mlSchema: JzodObject;            // deep copy of the Entity's mlSchema
+  mlSchema: MlObject;            // deep copy of the Entity's mlSchema
 }
 ```
 

@@ -11,7 +11,7 @@ import {
   transformer_extended_apply_wrapper,
   type CoreTransformerForBuildPlusRuntime,
   type EntityPrimaryKeySource,
-  type JzodElement,
+  type MlElement,
   type TransformerReturnType,
 } from "miroir-core";
 
@@ -159,7 +159,7 @@ export function getListTransformationFailure(
   return null;
 }
 
-const ANY_SCHEMA: JzodElement = { type: "any" };
+const ANY_SCHEMA: MlElement = { type: "any" };
 
 /**
  * Declared display schema for list-transformer results.
@@ -170,8 +170,8 @@ const ANY_SCHEMA: JzodElement = { type: "any" };
 export function resolveListTransformationResultDisplaySchema(
   elementTransformer: CoreTransformerForBuildPlusRuntime,
   transformationResult: TransformerReturnType<any>,
-  rowMlSchema?: JzodElement,
-): JzodElement {
+  rowMlSchema?: MlElement,
+): MlElement {
   if (rowMlSchema) {
     const typed = resolveTransformerResultSchema(
       buildRowMapListTransformer(elementTransformer),
@@ -182,5 +182,5 @@ export function resolveListTransformationResultDisplaySchema(
     }
   }
 
-  return (valueToJzod(transformationResult, "arrayAsArray") ?? ANY_SCHEMA) as JzodElement;
+  return (valueToJzod(transformationResult, "arrayAsArray") ?? ANY_SCHEMA) as MlElement;
 }

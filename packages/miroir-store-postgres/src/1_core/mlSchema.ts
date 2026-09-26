@@ -1,4 +1,4 @@
-import type { JzodEnumAttributeTypes } from "miroir-core";
+import type { MlEnumAttributeTypes } from "miroir-core";
 import {
   getAttributeTypesFromJzodSchema,
   jzodToSqlAttributeTypeMap,
@@ -10,9 +10,9 @@ export { getAttributeTypesFromJzodSchema };
 
 // TODO: refactor with getConstantSqlTypeMap?
 export const jzodToPostgresTypeMap: Record<
-  JzodEnumAttributeTypes,
+  MlEnumAttributeTypes,
   { targetType: "json" | "scalar"; sqlTargetType: PostgresDataTypes }
 > = jzodToSqlAttributeTypeMap as Record<
-  JzodEnumAttributeTypes,
+  MlEnumAttributeTypes,
   { targetType: "json" | "scalar"; sqlTargetType: PostgresDataTypes }
 >;

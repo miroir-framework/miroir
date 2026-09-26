@@ -28,7 +28,7 @@ import {
   Uuid,
   type ApplicationDeploymentMap,
   type CoreTransformerForBuildPlusRuntime,
-  type JzodElement,
+  type MlElement,
   type MiroirModelEnvironment,
 } from "miroir-core";
 import {
@@ -79,7 +79,7 @@ export interface TypedValueObjectEditorProps {
   // zoom functionality
   zoomInPath?: string; // Optional path like "x.y.z" to zoom into a subset of the instance
   // established on the basis of the report section target entity schema, does not take zoomInPath into account!
-  formValueMLSchema: JzodElement;
+  formValueMLSchema: MlElement;
   formikValuePathAsString: string; 
   // 
   application: Uuid,

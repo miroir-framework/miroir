@@ -2,7 +2,7 @@ import type {
   CoreTransformerForBuildPlusRuntime,
   InputOutputPayloadType,
   InputOutputType,
-  JzodElement,
+  MlElement,
   TransformerDefinition,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { defaultTransformerInput } from "../0_interfaces/1_core/Transformer";
@@ -22,8 +22,8 @@ import { applicationTransformerDefinitions } from "./TransformersForRuntime";
 
 type TypedTransformer = CoreTransformerForBuildPlusRuntime & { transformerType: string };
 
-const ANY_SCHEMA = { type: "any" } as JzodElement;
-const UNDEFINED_SCHEMA = { type: "undefined" } as JzodElement;
+const ANY_SCHEMA = { type: "any" } as MlElement;
+const UNDEFINED_SCHEMA = { type: "undefined" } as MlElement;
 
 function isTypedTransformer(
   value: unknown,
@@ -45,27 +45,27 @@ function isTypedTransformer(
  */
 export function liftInputOutputTypeToMlSchema(
   type: InputOutputType,
-  entityMlSchemas?: Record<string, JzodElement>,
-): JzodElement {
+  entityMlSchemas?: Record<string, MlElement>,
+): MlElement {
   if (typeof type === "object") {
     const payload = type.payload ?? "any";
     const inner = liftPayloadToMlSchema(payload, entityMlSchemas);
-    return { type: type.type, definition: inner } as JzodElement;
+    return { type: type.type, definition: inner } as MlElement;
   }
   if (type === "object") {
-    return { type: "object", nonStrict: true, definition: {} } as JzodElement;
+    return { type: "object", nonStrict: true, definition: {} } as MlElement;
   }
   if (type === "array") {
-    return { type: "array", definition: ANY_SCHEMA } as JzodElement;
+    return { type: "array", definition: ANY_SCHEMA } as MlElement;
   }
   if (type === "any" || type === "undefined" || type === "bigint" || type === "number" || type === "string" || type === "boolean") {
-    return { type } as JzodElement;
+    return { type } as MlElement;
   }
   const entitySchema = entityMlSchemas?.[type.toLowerCase()] ?? entityMlSchemas?.[type];
   if (entitySchema) {
     return entitySchema;
   }
-  return { type: "object", definition: {} } as JzodElement;
+  return { type: "object", definition: {} } as MlElement;
 }
 
 /**
@@ -76,10 +76,10 @@ export function liftInputOutputTypeToMlSchema(
  */
 function liftPayloadToMlSchema(
   payload: InputOutputPayloadType,
-  entityMlSchemas?: Record<string, JzodElement>,
-): JzodElement {
+  entityMlSchemas?: Record<string, MlElement>,
+): MlElement {
   if (payload === "any" || payload === "bigint" || payload === "number" || payload === "string" || payload === "boolean") {
-    return { type: payload } as JzodElement;
+    return { type: payload } as MlElement;
   }
   return liftInputOutputTypeToMlSchema(payload, entityMlSchemas);
 }
@@ -91,8 +91,8 @@ function liftPayloadToMlSchema(
  */
 export function getDeclaredInputMlSchema(
   definition: TransformerDefinition,
-  entityMlSchemas?: Record<string, JzodElement>,
-): JzodElement | undefined {
+  entityMlSchemas?: Record<string, MlElement>,
+): MlElement | undefined {
   const inputOutput = definition.transformerInterface.inputOutput;
   if (inputOutput?.input !== undefined) {
     return liftInputOutputTypeToMlSchema(inputOutput.input, entityMlSchemas);
@@ -100,7 +100,7 @@ export function getDeclaredInputMlSchema(
   return undefined;
 }
 
-function consumesPipedInput(acceptedInput: JzodElement | undefined): boolean {
+function consumesPipedInput(acceptedInput: MlElement | undefined): boolean {
   if (!acceptedInput) {
     return false;
   }
@@ -112,15 +112,15 @@ function consumesPipedInput(acceptedInput: JzodElement | undefined): boolean {
  * @param schema - The array schema to unwrap.
  * @returns The element schema.
  */
-function unwrapArrayElement(schema: JzodElement): JzodElement | undefined {
+function unwrapArrayElement(schema: MlElement): MlElement | undefined {
   if (schema.type !== "array") {
     return undefined;
   }
   if (Array.isArray(schema.definition)) {
-    return schema.definition[0] as JzodElement | undefined;
+    return schema.definition[0] as MlElement | undefined;
   }
   if (schema.definition && typeof schema.definition === "object" && "type" in schema.definition) {
-    return schema.definition as JzodElement;
+    return schema.definition as MlElement;
   }
   return undefined;
 }
@@ -136,7 +136,7 @@ function resolveOutputSchema(
   transformer: TypedTransformer,
   context: TransformerResultSchemaContext,
   transformerDefinitions: Record<string, TransformerDefinition>,
-): JzodElement | undefined {
+): MlElement | undefined {
   const resolved = resolveTransformerResultSchema(transformer, context, transformerDefinitions);
   if (!isFailedTransformerInterfaceFromDefinition(resolved)) {
     return resolved;
@@ -165,7 +165,7 @@ export function checkTransformerMlSchemaCompatibility(
   given: TransformerMlSchemaGivenTypes,
   context: TransformerResultSchemaContext = {},
   transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
-  entityMlSchemas?: Record<string, JzodElement>,
+  entityMlSchemas?: Record<string, MlElement>,
 ): TransformerMlSchemaCompatibility {
   const nodes: TransformerMlSchemaNodeReport[] = [];
   if (isTypedTransformer(transformer)) {
@@ -202,11 +202,11 @@ export function checkTransformerMlSchemaCompatibility(
 function checkNode(
   transformer: TypedTransformer,
   path: (string | number)[],
-  givenInput: JzodElement,
-  expectedOutput: JzodElement | undefined,
+  givenInput: MlElement,
+  expectedOutput: MlElement | undefined,
   context: TransformerResultSchemaContext,
   transformerDefinitions: Record<string, TransformerDefinition>,
-  entityMlSchemas: Record<string, JzodElement> | undefined,
+  entityMlSchemas: Record<string, MlElement> | undefined,
   nodes: TransformerMlSchemaNodeReport[],
 ): TransformerMlSchemaNodeReport {
   const definition = transformerDefinitions[transformer.transformerType];
@@ -263,10 +263,10 @@ function isDefinitionRecord(value: unknown): value is Record<string, unknown> {
 
 function listElementGivenInput(
   record: Record<string, unknown>,
-  parentGivenInput: JzodElement,
+  parentGivenInput: MlElement,
   context: TransformerResultSchemaContext,
   transformerDefinitions: Record<string, TransformerDefinition>,
-): JzodElement {
+): MlElement {
   const applyToOutput = isTypedTransformer(record.applyTo)
     ? resolveOutputSchema(record.applyTo, context, transformerDefinitions)
     : parentGivenInput;
@@ -305,11 +305,11 @@ function bindApplyToAsOuterContext(
 function walkChildren(
   transformer: TypedTransformer,
   path: (string | number)[],
-  parentGivenInput: JzodElement,
-  parentExpectedOutput: JzodElement | undefined,
+  parentGivenInput: MlElement,
+  parentExpectedOutput: MlElement | undefined,
   context: TransformerResultSchemaContext,
   transformerDefinitions: Record<string, TransformerDefinition>,
-  entityMlSchemas: Record<string, JzodElement> | undefined,
+  entityMlSchemas: Record<string, MlElement> | undefined,
   nodes: TransformerMlSchemaNodeReport[],
 ): void {
   const record = transformer as unknown as Record<string, unknown>;
@@ -409,10 +409,10 @@ function walkChildren(
 function walkIndependentDefinition(
   definition: Record<string, unknown>,
   path: (string | number)[],
-  parentGivenInput: JzodElement,
+  parentGivenInput: MlElement,
   context: TransformerResultSchemaContext,
   transformerDefinitions: Record<string, TransformerDefinition>,
-  entityMlSchemas: Record<string, JzodElement> | undefined,
+  entityMlSchemas: Record<string, MlElement> | undefined,
   nodes: TransformerMlSchemaNodeReport[],
 ): void {
   for (const [stepName, step] of Object.entries(definition)) {
@@ -435,13 +435,13 @@ function walkIndependentDefinition(
 function walkDataflowDefinition(
   definition: Record<string, unknown>,
   path: (string | number)[],
-  parentGivenInput: JzodElement,
+  parentGivenInput: MlElement,
   context: TransformerResultSchemaContext,
   transformerDefinitions: Record<string, TransformerDefinition>,
-  entityMlSchemas: Record<string, JzodElement> | undefined,
+  entityMlSchemas: Record<string, MlElement> | undefined,
   nodes: TransformerMlSchemaNodeReport[],
 ): void {
-  let previousOutput: JzodElement | undefined;
+  let previousOutput: MlElement | undefined;
   const accumulated: TransformerResultSchemaContext = { ...context };
   for (const [stepName, step] of Object.entries(definition)) {
     if (!isTypedTransformer(step)) {
@@ -485,7 +485,7 @@ function walkDataflowDefinition(
 
 export interface FormatMlSchemaTypeLabelOptions {
   /** Resolver returning a display name for an object schema (e.g. entity name). */
-  schemaNameResolver?: (schema: JzodElement) => string | undefined;
+  schemaNameResolver?: (schema: MlElement) => string | undefined;
 }
 
 /**
@@ -495,7 +495,7 @@ export interface FormatMlSchemaTypeLabelOptions {
  * @returns The formatted label.
  */
 export function formatMlSchemaTypeLabel(
-  schema: JzodElement | undefined,
+  schema: MlElement | undefined,
   options?: FormatMlSchemaTypeLabelOptions,
 ): string {
   if (!schema || typeof schema !== "object" || !("type" in schema)) {
@@ -507,7 +507,7 @@ export function formatMlSchemaTypeLabel(
       return inner ? `array<${formatMlSchemaTypeLabel(inner, options)}>` : "array";
     }
     case "record":
-      return `record<${formatMlSchemaTypeLabel((schema as { definition?: JzodElement }).definition, options)}>`;
+      return `record<${formatMlSchemaTypeLabel((schema as { definition?: MlElement }).definition, options)}>`;
     case "object": {
       const name = options?.schemaNameResolver?.(schema) ?? "object";
       const keys = Object.keys(schema.definition ?? {});

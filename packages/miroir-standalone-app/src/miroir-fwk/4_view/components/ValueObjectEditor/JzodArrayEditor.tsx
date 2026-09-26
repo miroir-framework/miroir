@@ -4,9 +4,9 @@ import {
   entityMLSchema,
   foldableElementTypes,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
-  JzodArray,
-  JzodElement,
-  JzodTuple,
+  MlArray,
+  MlElement,
+  MlTuple,
   LoggerInterface,
   MiroirLoggerFactory,
   ReduxDeploymentsState,
@@ -14,8 +14,8 @@ import {
   resolvePathOnObject,
   findEntityFromUuid,
   SyncBoxedExtractorOrQueryRunnerMap,
-  type JzodPlainAttribute,
-  type JzodReference,
+  type MlPlainAttribute,
+  type MlReference,
   type KeyMapEntry,
   type MiroirModelEnvironment,
   type Uuid,
@@ -61,7 +61,7 @@ import { getFoldedDisplayValue } from "./JzodElementEditorHooks";
 import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
 import { valueToJzod } from "@miroir-framework/jzod";
 import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
-// import { JzodUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+// import { MlUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodElementEditor");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -155,7 +155,7 @@ interface ProgressiveArrayItemProps {
   rootLessListKeyArray: (string | number)[];
   anyRootLessListKey: string | undefined;
   reportSectionPathAsString: string;
-  // currentArrayElementRawDefinitionDEFUNCT: JzodElement | undefined;
+  // currentArrayElementRawDefinitionDEFUNCT: MlElement | undefined;
   typeCheckKeyMap?: Record<string, KeyMapEntry>;
   usedIndentLevel: number;
   currentApplication: Uuid;
@@ -412,17 +412,17 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     ? typeCheckKeyMap[rootLessListKey]
     : undefined;
 
-  const currentRawJzodSchema: JzodElement | undefined = insideAny ? { type: "any" } : currentTypeCheckKeyMap?.rawSchema;
-  const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined = useMemo(
+  const currentRawJzodSchema: MlElement | undefined = insideAny ? { type: "any" } : currentTypeCheckKeyMap?.rawSchema;
+  const localResolvedElementJzodSchemaBasedOnValue: MlElement | undefined = useMemo(
     () => {
       if (insideAny) {
-        return valueToJzod(currentValue) as JzodElement;
+        return valueToJzod(currentValue) as MlElement;
       }
       if (currentTypeCheckKeyMap?.resolvedSchema) {
         return currentTypeCheckKeyMap.resolvedSchema;
       }
       if (currentValue !== undefined && currentValue !== null) {
-        return valueToJzod(currentValue) as JzodElement;
+        return valueToJzod(currentValue) as MlElement;
       }
       return undefined;
     },
@@ -456,9 +456,9 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   );
 
   const foldableItemsCount = useMemo(() => {
-    return localResolvedElementJzodSchemaBasedOnValue?.type === "tuple" // for array type, the resolvedSchema is a JzodTuple
-      ? (localResolvedElementJzodSchemaBasedOnValue as JzodTuple).definition.filter(
-        (item: JzodElement) => foldableElementTypes.includes(item.type)
+    return localResolvedElementJzodSchemaBasedOnValue?.type === "tuple" // for array type, the resolvedSchema is a MlTuple
+      ? (localResolvedElementJzodSchemaBasedOnValue as MlTuple).definition.filter(
+        (item: MlElement) => foldableElementTypes.includes(item.type)
       ).length : 0
   }, [localResolvedElementJzodSchemaBasedOnValue]);
 
@@ -473,11 +473,11 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     async (e:any) => {
       e.stopPropagation();
       e.preventDefault();
-      let schema: JzodElement | undefined = currentRawJzodSchema;
+      let schema: MlElement | undefined = currentRawJzodSchema;
 
       if (schema?.type === "schemaReference") {
         schema = resolveJzodSchemaReferenceInContext(
-          schema as JzodReference,
+          schema as MlReference,
           {},
           currentMiroirModelEnvironment
         );
@@ -509,7 +509,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         currentValue,
       );
 
-      let newItemSchema: JzodElement | undefined = insideAny?{ type: "string"}:(schema as any)?.definition;
+      let newItemSchema: MlElement | undefined = insideAny?{ type: "string"}:(schema as any)?.definition;
 
       if ((schema as any).definition?.tag?.value?.ifThenElseMMLS?.parentUuid?.defaultValuePath) {
         const entityPath = (schema as any).definition?.tag?.value?.ifThenElseMMLS?.parentUuid?.defaultValuePath;
@@ -684,8 +684,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       <>
         {!reportContext.isNodeFolded(rootLessListKeyArray) &&
           (itemsOrder as number[])
-            .map((i: number): [number, JzodElement] => [i, arrayValueObject[i]])
-            .map((attributeParam: [number, JzodElement]) => {
+            .map((i: number): [number, MlElement] => [i, arrayValueObject[i]])
+            .map((attributeParam: [number, MlElement]) => {
               const index: number = attributeParam[0];
               const attributeRootLessListKey: string =
                 rootLessListKey.length > 0 ? rootLessListKey + "." + index : "" + index;
@@ -701,7 +701,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               //   "typeCheckKeyMap",
               //   typeCheckKeyMap,
               // );
-              // const currentArrayElementRawDefinitionDEFUNCT: JzodElement | undefined =
+              // const currentArrayElementRawDefinitionDEFUNCT: MlElement | undefined =
               //   typeCheckKeyMap &&
               //   typeCheckKeyMap[rootLessListKey]?.rawSchema &&
               //   typeCheckKeyMap[rootLessListKey]?.rawSchema.type !== "any" &&
@@ -730,7 +730,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               //     // JSON.stringify(typeCheckKeyMap, null, 2)
               //   );
               // }
-              // const currentArrayElementRawDefinition: JzodElement | undefined = attributeTypeCheckKeyMap.rawSchema;
+              // const currentArrayElementRawDefinition: MlElement | undefined = attributeTypeCheckKeyMap.rawSchema;
               return (
                 <ProgressiveArrayItem
                   key={rootLessListKey + "." + index}

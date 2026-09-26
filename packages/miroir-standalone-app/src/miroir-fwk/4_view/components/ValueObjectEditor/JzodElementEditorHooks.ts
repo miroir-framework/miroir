@@ -5,7 +5,7 @@ import { valueToJzod } from "@miroir-framework/jzod";
 import {
   EntityInstance,
   EntityInstancesUuidIndex,
-  JzodElement,
+  MlElement,
   KeyMapEntry,
   LoggerInterface,
   MetaModel,
@@ -27,7 +27,7 @@ import {
   type MiroirModelEnvironment,
   type TransformerReturnType,
   type Uuid,
-  type JzodObject,
+  type MlObject,
 } from "miroir-core";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-react";
 import { packageName } from "../../../../constants";
@@ -73,7 +73,7 @@ export interface JzodElementEditorHooks {
   setCodeMirrorIsValidJson: React.Dispatch<React.SetStateAction<boolean>>;
   displayAsStructuredElement: boolean;
   setDisplayAsStructuredElement: React.Dispatch<React.SetStateAction<boolean>>;
-  localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined;
+  localResolvedElementJzodSchemaBasedOnValue: MlElement | undefined;
   // uuid, objects, arrays
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>
   definedOptionalAttributes: Set<string>;
@@ -88,10 +88,10 @@ export interface JzodElementEditorHooks {
 // ##############################################################################################
 export function getItemsOrder(
   currentValue: any,
-  rawMLSchema: JzodElement | undefined,
-  flattenedMLSchema: JzodObject | undefined,
-  resolvedMLSchema: JzodElement | undefined,
-  resolvedSchemaReference?: JzodElement | undefined,
+  rawMLSchema: MlElement | undefined,
+  flattenedMLSchema: MlObject | undefined,
+  resolvedMLSchema: MlElement | undefined,
+  resolvedSchemaReference?: MlElement | undefined,
 ) {
   // log.info(
   //   "getItemsOrder",
@@ -252,16 +252,16 @@ export function useJzodElementEditorHooks(
   // ################################################################################################
   // value schema
   // Memoize to prevent infinite re-renders when used in useMemo dependencies
-  const localResolvedElementJzodSchemaBasedOnValue: JzodElement | undefined = useMemo(
+  const localResolvedElementJzodSchemaBasedOnValue: MlElement | undefined = useMemo(
     () => {
       if (insideAny) {
-        return valueToJzod(currentValueObjectAtKey) as JzodElement;
+        return valueToJzod(currentValueObjectAtKey) as MlElement;
       }
       if (currentTypecheckKeyMap?.resolvedSchema) {
         return currentTypecheckKeyMap.resolvedSchema;
       }
       if (currentValueObjectAtKey !== undefined && currentValueObjectAtKey !== null) {
-        return valueToJzod(currentValueObjectAtKey) as JzodElement;
+        return valueToJzod(currentValueObjectAtKey) as MlElement;
       }
       return undefined;
     },
@@ -418,19 +418,19 @@ export function useJzodElementEditorHooks(
   // );
 
   // ######################### optional attributes #########################
-  const typeCheckMapJzodObjectFlattenedSchema: JzodObject | undefined =
+  const typeCheckMapJzodObjectFlattenedSchema: MlObject | undefined =
     typeCheckKeyMap !== undefined &&
     typeCheckKeyMap[rootLessListKey] !== undefined &&
     typeCheckKeyMap[rootLessListKey].jzodObjectFlattenedSchema !== undefined
       ? typeCheckKeyMap[rootLessListKey].jzodObjectFlattenedSchema
       : undefined;
 
-  const typeCheckKeyMapChosenUnionBranchObjectSchema: JzodObject | undefined = // defined when rawSchema.type == "union" && resolvedElementJzodSchema.type == "object"
+  const typeCheckKeyMapChosenUnionBranchObjectSchema: MlObject | undefined = // defined when rawSchema.type == "union" && resolvedElementJzodSchema.type == "object"
     typeCheckKeyMap !== undefined &&
     typeCheckKeyMap[rootLessListKey] !== undefined &&
     typeCheckKeyMap[rootLessListKey].chosenUnionBranchRawSchema !== undefined &&
     typeCheckKeyMap[rootLessListKey].chosenUnionBranchRawSchema?.type == "object"
-      ? typeCheckKeyMap[rootLessListKey].chosenUnionBranchRawSchema as JzodObject
+      ? typeCheckKeyMap[rootLessListKey].chosenUnionBranchRawSchema as MlObject
       : undefined;
 
   const undefinedOptionalAttributes: string[] = useMemo(() => {
@@ -591,7 +591,7 @@ export function useJzodElementEditorHooks(
  * @param currentValue - The current data value to resolve the display path on
  * @returns The display value if found and valid, null otherwise
  */
-export function getFoldedDisplayValue(schema: JzodElement | undefined, currentValue: any): any {
+export function getFoldedDisplayValue(schema: MlElement | undefined, currentValue: any): any {
   if (!schema || !currentValue) {
     return null;
   }

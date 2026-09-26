@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type {
-  JzodElement,
+  MlElement,
   TransformerDefinition,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { applicationTransformerDefinitions } from "../../src/2_domain/TransformersForRuntime";
@@ -27,7 +27,7 @@ function getMlSchemaRootType(definition: TransformerDefinition): string | undefi
   if (!resultSchema || resultSchema.returns !== "mlSchema") {
     return undefined;
   }
-  const schema = resultSchema.definition as JzodElement;
+  const schema = resultSchema.definition as MlElement;
   return typeof schema === "object" && schema !== null && "type" in schema
     ? String(schema.type)
     : undefined;

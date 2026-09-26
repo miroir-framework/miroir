@@ -216,7 +216,7 @@ export declare const menuDefaultMiroir: any;
 export declare const menuApplicationModelScopeTemplate: any;
 export declare const miroirJzodSchemaBootstrap: any;
 export declare const transformerJzodSchema: any;
-export declare const jzodSchemajzodMiroirBootstrapSchema: any;
+export declare const mlSchemaMlMiroirBootstrapSchema: any;
 export declare const test_createEntityAndReportFromSpreadsheetAndUpdateMenu: any;
 export declare const miroirTest_adminTransformers: any;
 export declare const miroirTest_alterObject_atPath: any;

@@ -24,8 +24,8 @@ import {
   mStringify,
   transformer_extended_apply_wrapper,
   type CoreTransformerForBuildPlusRuntime,
-  type JzodElement,
-  type JzodUnion,
+  type MlElement,
+  type MlUnion,
   type TransformerReturnType
 } from "miroir-core";
 
@@ -300,7 +300,7 @@ FoldUnfoldAllObjectAttributesOrArrayItems.displayName = "FoldUnfoldAllObjectAttr
  * Generates a concise, human-readable label for a union branch type,
  * used as the display text in the union type selector dropdown.
  */
-function generateUnionBranchLabel(type: string, branches: JzodElement[]): string {
+function generateUnionBranchLabel(type: string, branches: MlElement[]): string {
   if (branches.length === 0) return type;
   const branch = branches[0] as any;
   const multi = branches.length > 1 ? ` (${branches.length})` : "";
@@ -346,7 +346,7 @@ function generateUnionBranchLabel(type: string, branches: JzodElement[]): string
 }
 
 /**
- * Converts a summarized JzodElement into a compact single-line tooltip string.
+ * Converts a summarized MlElement into a compact single-line tooltip string.
  * Intended for use in the union type selector star button title attribute.
  * depth=1 means: show the current element fully + show keys of immediate child objects.
  */
@@ -487,15 +487,15 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       const selectedType = event.target.value;
       log.info("handleUnionTypeChange selectedType", selectedType, "formikRootLessListKey", formikRootLessListKey);
 
-      let matchingBranch: JzodElement | undefined;
+      let matchingBranch: MlElement | undefined;
       if (currentKeyMap?.rawSchema?.type === "any" || innerInsideAny) {
         matchingBranch = ANY_IMPLICIT_UNION_BRANCHES.find(
-          (branch: JzodElement) => branch.type === selectedType
+          (branch: MlElement) => branch.type === selectedType
         );
       } else {
         if (!currentKeyMap?.recursivelyUnfoldedUnionSchema) return;
         matchingBranch = currentKeyMap.recursivelyUnfoldedUnionSchema.result.find(
-          (branch: JzodElement) => branch.type === selectedType
+          (branch: MlElement) => branch.type === selectedType
         );
       }
 
@@ -787,16 +787,16 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   
   // JzodObjectEditor / JzodArrayEditor header (for container-type union values)
   const unionTypeDataForControls = useMemo(() => {
-    let branches: JzodElement[];
+    let branches: MlElement[];
     if (currentKeyMap?.rawSchema?.type === "union") {
       if (!currentKeyMap.recursivelyUnfoldedUnionSchema) return null;
-      branches = currentKeyMap.recursivelyUnfoldedUnionSchema.result as JzodElement[];
+      branches = currentKeyMap.recursivelyUnfoldedUnionSchema.result as MlElement[];
     } else if (currentKeyMap?.rawSchema?.type === "any" || innerInsideAny) {
       branches = ANY_IMPLICIT_UNION_BRANCHES;
     } else {
       return null;
     }
-    const unionOptions = Array.from(new Set(branches.map((t: JzodElement) => t.type)) || []);
+    const unionOptions = Array.from(new Set(branches.map((t: MlElement) => t.type)) || []);
     if (unionOptions.length <= 1) return null;
 
     const currentType = (() => {
@@ -806,11 +806,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       return typeof currentValueObjectAtKey;
     })();
 
-    const branchesByType = new Map<string, JzodElement[]>();
+    const branchesByType = new Map<string, MlElement[]>();
     for (const branch of branches) {
       const t = (branch as any).type as string;
       if (!branchesByType.has(t)) branchesByType.set(t, []);
-      branchesByType.get(t)!.push(branch as JzodElement);
+      branchesByType.get(t)!.push(branch as MlElement);
     }
 
     const selectOptions = unionOptions.map((type: string) => ({
@@ -822,7 +822,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
 
     const unionTooltip = (() => {
       if (!currentApplicationModelEnvironment.miroirFundamentalJzodSchema) return `${unionOptions.length} types`;
-      const summaries = branches.map((branch: JzodElement) => {
+      const summaries = branches.map((branch: MlElement) => {
         const s = jzodToJzod_Summary(
           branch,
           currentApplicationModelEnvironment.miroirFundamentalJzodSchema!,
@@ -1354,7 +1354,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               "muiSelector" ? (
                 <>
                   <JsonDisplayHelper debug={true}
-                    componentName="JzodElement Editor for uuid"
+                    componentName="MlElement Editor for uuid"
                     elements={[{
                       label: `JzodElementEditor: ${props.rootLessListKey}`,
                       data: {
@@ -1416,7 +1416,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               <div>
                 <JsonDisplayHelper
                   debug={true}
-                  componentName="JzodElement Editor for uuid"
+                  componentName="MlElement Editor for uuid"
                   elements={[
                     {
                       label: `JzodElementEditor: ${props.rootLessListKey}`,

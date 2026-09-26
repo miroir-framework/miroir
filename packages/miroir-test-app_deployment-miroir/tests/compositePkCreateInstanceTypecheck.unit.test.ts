@@ -6,7 +6,7 @@
  */
 import { describe, expect, it } from "vitest";
 
-import type { EntityVersion, JzodElement, MiroirModelEnvironment } from "miroir-core";
+import type { EntityVersion, MlElement, MiroirModelEnvironment } from "miroir-core";
 import { defaultMiroirModelEnvironment, getInnermostTypeCheckError, jzodTypeCheck } from "miroir-core";
 
 import { entityDefinitionMiroirTest } from "miroir-test-app_deployment-miroir";
@@ -15,7 +15,7 @@ import suite from "../assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/e2
 describe("composite_pk createInstance objects typecheck (UI path)", () => {
   it("validates createInstance.objects[0] when reduxDeploymentsState is present", () => {
     const schema = (entityDefinitionMiroirTest as unknown as EntityVersion)
-      .mlSchema as unknown as JzodElement;
+      .mlSchema as unknown as MlElement;
     const modelEnv = defaultMiroirModelEnvironment as MiroirModelEnvironment;
 
     // Empty object is truthy enough for jzodTypeCheck to invoke resolveConditionalSchema

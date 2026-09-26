@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type {
   CoreTransformerForBuildPlusRuntime,
-  JzodElement,
+  MlElement,
   TransformerDefinition,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
@@ -13,16 +13,16 @@ import {
 } from "../../src/2_domain/TransformerMlSchemaCheck";
 import { applicationTransformerDefinitions } from "../../src/2_domain/TransformersForRuntime";
 
-const stringSchema = { type: "string" } as JzodElement;
-const numberSchema = { type: "number" } as JzodElement;
+const stringSchema = { type: "string" } as MlElement;
+const numberSchema = { type: "number" } as MlElement;
 const bookSchema = {
   type: "object",
   definition: {
     uuid: { type: "uuid" },
     name: { type: "string" },
   },
-} as JzodElement;
-const bookArraySchema = { type: "array", definition: bookSchema } as JzodElement;
+} as MlElement;
+const bookArraySchema = { type: "array", definition: bookSchema } as MlElement;
 
 const mustache: CoreTransformerForBuildPlusRuntime = {
   interpolation: "runtime",
@@ -313,7 +313,7 @@ describe("checkTransformerMlSchemaCompatibility — nested + Proposal B (#251)",
     } as CoreTransformerForBuildPlusRuntime;
     const report = checkTransformerMlSchemaCompatibility(mapped, {
       input: bookArraySchema,
-      output: { type: "array", definition: { type: "any" } } as JzodElement,
+      output: { type: "array", definition: { type: "any" } } as MlElement,
     });
     expect(report.status).toBe("incompatible");
     const elementNode = report.nodes.find(
@@ -333,7 +333,7 @@ describe("checkTransformerMlSchemaCompatibility — nested + Proposal B (#251)",
     };
     const report = checkTransformerMlSchemaCompatibility(expr, {
       input: bookSchema,
-      output: { type: "boolean" } as JzodElement,
+      output: { type: "boolean" } as MlElement,
     });
     expect(report.nodes.find((n) => n.path.length === 0)?.failures).toEqual([]);
     const left = report.nodes.find((n) => n.path.length === 1 && n.path[0] === "left");
@@ -357,7 +357,7 @@ describe("checkTransformerMlSchemaCompatibility — nested + Proposal B (#251)",
     };
     const report = checkTransformerMlSchemaCompatibility(branched, {
       input: bookSchema,
-      output: { type: "any" } as JzodElement,
+      output: { type: "any" } as MlElement,
     });
     const paths = report.nodes.map((n) => n.path.join("."));
     expect(paths).toEqual(
@@ -378,7 +378,7 @@ describe("checkTransformerMlSchemaCompatibility — nested + Proposal B (#251)",
     };
     const report = checkTransformerMlSchemaCompatibility(concat, {
       input: bookArraySchema,
-      output: { type: "array", definition: { type: "any" } } as JzodElement,
+      output: { type: "array", definition: { type: "any" } } as MlElement,
     });
     const list0 = report.nodes.find((n) => n.path[0] === "lists" && n.path[1] === 0);
     expect(list0).toBeDefined();
@@ -426,7 +426,7 @@ describe("checkTransformerMlSchemaCompatibility — nested + Proposal B (#251)",
     };
     const report = checkTransformerMlSchemaCompatibility(built, {
       input: bookSchema,
-      output: { type: "object", nonStrict: true, definition: {} } as JzodElement,
+      output: { type: "object", nonStrict: true, definition: {} } as MlElement,
     });
     const first = report.nodes.find((n) => n.path[0] === "definition" && n.path[1] === "first");
     expect(first?.givenInput).toEqual(bookSchema);
@@ -452,7 +452,7 @@ describe("checkTransformerMlSchemaCompatibility — nested + Proposal B (#251)",
     };
     const report = checkTransformerMlSchemaCompatibility(flow, {
       input: bookSchema,
-      output: { type: "object", nonStrict: true, definition: {} } as JzodElement,
+      output: { type: "object", nonStrict: true, definition: {} } as MlElement,
     });
     expect(report.status).toBe("incompatible");
     const first = report.nodes.find((n) => n.path[0] === "definition" && n.path[1] === "first");
@@ -478,12 +478,12 @@ describe("formatMlSchemaTypeLabel (#251)", () => {
         e: { type: "string" },
         f: { type: "date" },
       },
-    } as JzodElement;
+    } as MlElement;
     expect(formatMlSchemaTypeLabel(wideSchema)).toBe("object{a, b, c, d, e, f}");
   });
 
   it("uses the provided schema name resolver for object types", () => {
-    const resolveName = (schema: JzodElement) =>
+    const resolveName = (schema: MlElement) =>
       JSON.stringify(schema) === JSON.stringify(bookSchema) ? "Book" : undefined;
     expect(formatMlSchemaTypeLabel(bookSchema, { schemaNameResolver: resolveName })).toBe(
       "Book{uuid, name}",

@@ -59,7 +59,7 @@
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodObject"
+              "relativePath": "mlObject"
             },
             "optional": true,
             "tag": {
@@ -74,7 +74,7 @@
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodReference"
+              "relativePath": "mlReference"
             },
             "optional": true,
             "tag": {
@@ -89,7 +89,7 @@
             "type": "schemaReference",
             "definition": {
               "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-              "relativePath": "jzodArray"
+              "relativePath": "mlArray"
             },
             "optional": true,
             "tag": {

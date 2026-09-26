@@ -1,8 +1,8 @@
 import type { Uuid } from "../../0_interfaces/1_core/EntityVersion";
 import {
-  JzodElement,
-  JzodObject,
-  JzodReference,
+  MlElement,
+  MlObject,
+  MlReference,
   MlSchema,
   MetaModel,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -30,9 +30,9 @@ export function resolveSchemaReferenceInContextTransformer<T extends MiroirModel
   contextResults?: Record<string, any>,
   reduxDeploymentsState?: ReduxDeploymentsState | undefined,
   deploymentUuid?: Uuid,
-): JzodElement {
+): MlElement {
   return resolveJzodSchemaReferenceInContext(
-    transformer.jzodReference,
+    transformer.mlReference,
     transformer.relativeReferenceJzodContext || {},
     modelEnvironment,
   );
@@ -46,22 +46,22 @@ export function resolveSchemaReferenceInContextTransformer<T extends MiroirModel
  * 
  * TODO: inappropriate interface, passing the testSchema and the testSchema.context separately is redundant.
  * resolveJzodSchemaReferenceInContext should take a relativeReferenceJzodContext, and add to it the
- * local context found in the jzodReference
+ * local context found in the mlReference
  * 
  * 
- * @param jzodReference 
+ * @param mlReference 
  * @param relativeReferenceJzodContext 
  * @param miroirEnvironment 
  * @returns 
  */
 export function resolveJzodSchemaReferenceInContext<T extends MiroirModelEnvironment>(
-  jzodReference: JzodReference | JzodObject | (JzodReference | JzodObject | undefined)[],
-  relativeReferenceJzodContext: { [k: string]: JzodElement } = {},
+  mlReference: MlReference | MlObject | (MlReference | MlObject | undefined)[],
+  relativeReferenceJzodContext: { [k: string]: MlElement } = {},
   miroirEnvironment: T,
-): JzodElement {
-  if (Array.isArray(jzodReference)) {
+): MlElement {
+  if (Array.isArray(mlReference)) {
     // Aggregate resolved items into an object with keys as indices
-    const resolvedItems = jzodReference.map((ref, idx) => {
+    const resolvedItems = mlReference.map((ref, idx) => {
       if (ref === undefined) return undefined;
       return resolveJzodSchemaReferenceInContext(
         ref,
@@ -73,7 +73,7 @@ export function resolveJzodSchemaReferenceInContext<T extends MiroirModelEnviron
     if (resolvedItems.every(item => item && item.type === "object" && typeof item.definition === "object")) {
       const mergedDefinition = Object.assign(
         {},
-        ...resolvedItems.map(item => (item as JzodObject).definition)
+        ...resolvedItems.map(item => (item as MlObject).definition)
       );
     return { type: "object", definition: mergedDefinition };
     } else {
@@ -83,23 +83,23 @@ export function resolveJzodSchemaReferenceInContext<T extends MiroirModelEnviron
       );
     }
   }
-  if (jzodReference.type == "object") {
+  if (mlReference.type == "object") {
     throw new Error(
       "resolveJzodSchemaReferenceInContext can not handle object reference " +
-        JSON.stringify(jzodReference)
+        JSON.stringify(mlReference)
     );
   }
-  if ((!jzodReference.definition || !jzodReference.definition?.absolutePath) && !relativeReferenceJzodContext) {
+  if ((!mlReference.definition || !mlReference.definition?.absolutePath) && !relativeReferenceJzodContext) {
     throw new Error(
       "resolveJzodSchemaReferenceInContext can not handle complex / unexisting reference " +
-        JSON.stringify(jzodReference) +
+        JSON.stringify(mlReference) +
         " for empty relative reference: " +
         JSON.stringify(relativeReferenceJzodContext)
     );
   }
   // log.info(
   //   "resolveJzodSchemaReferenceInContext called for reference",
-  //   JSON.stringify(jzodReference, null, 2),
+  //   JSON.stringify(mlReference, null, 2),
   // );
   const absoluteReferences = miroirEnvironment.currentModel
     ? [
@@ -108,23 +108,23 @@ export function resolveJzodSchemaReferenceInContext<T extends MiroirModelEnviron
         ...((miroirEnvironment.miroirMetaModel as any)?.jzodSchemas || []),
       ] // very inefficient!
     : [miroirEnvironment.miroirFundamentalJzodSchema];
-  const absoluteReferenceTargetJzodSchema: { [k: string]: JzodElement } = jzodReference?.definition
+  const absoluteReferenceTargetJzodSchema: { [k: string]: MlElement } = mlReference?.definition
     .absolutePath
-    ? (absoluteReferences.find((s: MlSchema) => s.uuid == jzodReference?.definition.absolutePath)
+    ? (absoluteReferences.find((s: MlSchema) => s.uuid == mlReference?.definition.absolutePath)
         ?.definition.context ?? {})
-    : (relativeReferenceJzodContext ?? jzodReference);
+    : (relativeReferenceJzodContext ?? mlReference);
 
-  const targetJzodSchema: JzodElement | undefined = jzodReference?.definition.relativePath
-    ? absoluteReferenceTargetJzodSchema[jzodReference?.definition.relativePath]
+  const targetJzodSchema: MlElement | undefined = mlReference?.definition.relativePath
+    ? absoluteReferenceTargetJzodSchema[mlReference?.definition.relativePath]
     : { type: "object", definition: absoluteReferenceTargetJzodSchema };
 
 
   // log.info(
   //   "resolveJzodSchemaReferenceInContext for reference",
   //   "absolutePath",
-  //   jzodReference.definition.absolutePath,
+  //   mlReference.definition.absolutePath,
   //   "relativePath",
-  //   jzodReference.definition.relativePath,
+  //   mlReference.definition.relativePath,
   //   "relativeReferenceJzodContext",
   //   Object.keys(relativeReferenceJzodContext??{}),
   //   "result",
@@ -134,7 +134,7 @@ export function resolveJzodSchemaReferenceInContext<T extends MiroirModelEnviron
   if (!targetJzodSchema) {
     throw new Error(
       "resolveJzodSchemaReferenceInContext could not resolve reference " +
-        JSON.stringify(jzodReference.definition) +
+        JSON.stringify(mlReference.definition) +
         " absoluteReferences keys " +
         JSON.stringify(absoluteReferences.map(r => r.uuid)) +
         " current Model " + Object.keys(miroirEnvironment.currentModel??{}) + 
@@ -148,11 +148,11 @@ export function resolveJzodSchemaReferenceInContext<T extends MiroirModelEnviron
 
 // ################################################################################################
 export function recursiveResolveJzodSchemaReferenceInContext<T extends MiroirModelEnvironment>(
-  jzodReference: JzodReference | JzodObject | (JzodReference | JzodObject | undefined)[],
-  relativeReferenceJzodContext: { [k: string]: JzodElement } = {},
+  mlReference: MlReference | MlObject | (MlReference | MlObject | undefined)[],
+  relativeReferenceJzodContext: { [k: string]: MlElement } = {},
   miroirEnvironment: T,
-): JzodElement {
-  const resolved = resolveJzodSchemaReferenceInContext(jzodReference, relativeReferenceJzodContext, miroirEnvironment);
+): MlElement {
+  const resolved = resolveJzodSchemaReferenceInContext(mlReference, relativeReferenceJzodContext, miroirEnvironment);
   if (resolved.type === "schemaReference") {
     return recursiveResolveJzodSchemaReferenceInContext(resolved, relativeReferenceJzodContext, miroirEnvironment);
   }
@@ -164,28 +164,28 @@ export function recursiveResolveJzodSchemaReferenceInContext<T extends MiroirMod
 // refactor / merge with resolveJzodSchemaReferenceInContext.
 export function resolveJzodSchemaReference(
   miroirFundamentalJzodSchema: MlSchema,
-  jzodReference?: JzodReference,
+  mlReference?: MlReference,
   currentModel?: MetaModel,
-  relativeReferenceJzodContext?: JzodObject | JzodReference,
-): JzodElement {
+  relativeReferenceJzodContext?: MlObject | MlReference,
+): MlElement {
   // const fundamentalJzodSchemas = miroirFundamentalJzodSchema.definition.context
   const absoluteReferences = (currentModel
     ? [miroirFundamentalJzodSchema, ...((currentModel as any)?.jzodSchemas || [])] // very inefficient!
     : [miroirFundamentalJzodSchema]
   )
-  const absoluteReferenceTargetJzodSchema: JzodObject | JzodReference | undefined = jzodReference?.definition
+  const absoluteReferenceTargetJzodSchema: MlObject | MlReference | undefined = mlReference?.definition
     .absolutePath
     ? {
         type: "object",
         definition:
-          absoluteReferences.find((s: MlSchema) => s.uuid == jzodReference?.definition.absolutePath)?.definition.context ?? {},
+          absoluteReferences.find((s: MlSchema) => s.uuid == mlReference?.definition.absolutePath)?.definition.context ?? {},
       }
-    : relativeReferenceJzodContext ?? jzodReference;
-  const targetJzodSchema = jzodReference?.definition.relativePath
+    : relativeReferenceJzodContext ?? mlReference;
+  const targetJzodSchema = mlReference?.definition.relativePath
     ? absoluteReferenceTargetJzodSchema?.type == "object" && absoluteReferenceTargetJzodSchema?.definition
-      ? absoluteReferenceTargetJzodSchema?.definition[jzodReference?.definition.relativePath]
+      ? absoluteReferenceTargetJzodSchema?.definition[mlReference?.definition.relativePath]
       : absoluteReferenceTargetJzodSchema?.type == "schemaReference" && absoluteReferenceTargetJzodSchema?.context
-      ? absoluteReferenceTargetJzodSchema?.context[jzodReference?.definition.relativePath]
+      ? absoluteReferenceTargetJzodSchema?.context[mlReference?.definition.relativePath]
       : undefined
     : absoluteReferenceTargetJzodSchema;
 
@@ -193,7 +193,7 @@ export function resolveJzodSchemaReference(
   if (!targetJzodSchema) {
     log.error(
       "resolveJzodSchemaReference failed for mlSchema",
-      jzodReference,
+      mlReference,
       "result",
       targetJzodSchema,
       " absoluteReferences", 
@@ -205,7 +205,7 @@ export function resolveJzodSchemaReference(
       "rootJzodSchema",
       relativeReferenceJzodContext
     );
-    throw new Error("resolveJzodSchemaReference could not resolve reference " + JSON.stringify(jzodReference) + " absoluteReferences" + absoluteReferences);
+    throw new Error("resolveJzodSchemaReference could not resolve reference " + JSON.stringify(mlReference) + " absoluteReferences" + absoluteReferences);
   }
 
   return targetJzodSchema;

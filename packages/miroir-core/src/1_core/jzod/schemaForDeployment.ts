@@ -4,11 +4,11 @@ import { applyDeploymentDomainActionCarryOn } from "../../0_interfaces/1_core/bo
 import { miroirFundamentalJzodSchema } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 import type {
   Action,
-  JzodElement,
-  JzodLiteral,
-  JzodObject,
-  JzodReference,
-  JzodUnion,
+  MlElement,
+  MlLiteral,
+  MlObject,
+  MlReference,
+  MlUnion,
   MetaModel,
   MlSchema,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -76,19 +76,19 @@ function shouldBuildExtendedSchema(model: MetaModel, mode: SchemaResolutionMode)
   return hasAppSpecificEndpoints(model);
 }
 
-function actionTypeKeyFromLiteral(actionType: JzodLiteral | undefined): string | undefined {
+function actionTypeKeyFromLiteral(actionType: MlLiteral | undefined): string | undefined {
   if (actionType?.type === "literal") {
     return actionType.definition;
   }
   return undefined;
 }
 
-function actionTypeKeyFromDomainActionBranch(branch: JzodElement): string | undefined {
+function actionTypeKeyFromDomainActionBranch(branch: MlElement): string | undefined {
   if (branch.type === "schemaReference") {
-    return (branch as JzodReference).definition.relativePath;
+    return (branch as MlReference).definition.relativePath;
   }
   if (branch.type === "object") {
-    const objectDefinition = (branch as JzodObject).definition as Action["actionParameters"];
+    const objectDefinition = (branch as MlObject).definition as Action["actionParameters"];
     return actionTypeKeyFromLiteral(objectDefinition.actionType);
   }
   return undefined;
@@ -96,15 +96,15 @@ function actionTypeKeyFromDomainActionBranch(branch: JzodElement): string | unde
 
 function buildAppActionBranches(
   appEndpoints: MetaModel["endpoints"],
-  existingDomainActionBranches: JzodElement[],
-): JzodElement[] {
+  existingDomainActionBranches: MlElement[],
+): MlElement[] {
   const existingActionTypes = new Set(
     existingDomainActionBranches
       .map(actionTypeKeyFromDomainActionBranch)
       .filter((key): key is string => key !== undefined),
   );
 
-  const branches: JzodElement[] = [];
+  const branches: MlElement[] = [];
   for (const endpoint of appEndpoints) {
     for (const action of getEndpointActions(endpoint) ?? []) {
       const actionParameters = action.actionParameters;
@@ -121,7 +121,7 @@ function buildAppActionBranches(
       branches.push({
         type: "object",
         definition: actionParameters,
-      } satisfies JzodObject);
+      } satisfies MlObject);
     }
   }
   return branches;
@@ -130,12 +130,12 @@ function buildAppActionBranches(
 function buildExtendedSchema(model: MetaModel): MlSchema {
   const baseSchema = miroirFundamentalJzodSchema as MlSchema & { definition: any };
   const appEndpoints = getAppSpecificEndpoints(model);
-  const staticDomainAction = baseSchema.definition.context.domainAction as JzodUnion;
+  const staticDomainAction = baseSchema.definition.context.domainAction as MlUnion;
   const appActionBranches = buildAppActionBranches(
     appEndpoints,
     staticDomainAction.definition,
   );
-  const extendedDomainAction: JzodUnion = {
+  const extendedDomainAction: MlUnion = {
     ...staticDomainAction,
     definition: [...staticDomainAction.definition, ...appActionBranches],
   };

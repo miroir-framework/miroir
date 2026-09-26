@@ -1,4 +1,4 @@
-import type { JzodElement } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import type { MlElement } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 /**
  * A row from information_schema.columns as returned by a postgres query or CSV export.
@@ -57,7 +57,7 @@ export const postgresDataTypeToJzodTypeMap: Record<string, string> = {
  */
 export function ansiColumnsToJzodSchema(
   columns: InformationSchemaColumn[]
-): { type: "object"; definition: Record<string, JzodElement> } {
+): { type: "object"; definition: Record<string, MlElement> } {
   const sortedColumns = [...columns].sort(
     (a, b) => Number(a.ordinal_position) - Number(b.ordinal_position)
   );

@@ -14,7 +14,7 @@ import {
   type CompositeActionSequenceTemplate,
   type DomainControllerInterface,
   type Entity,
-  type JzodObject,
+  type MlObject,
   type MiroirModelEnvironment,
   type MultistepStep,
   type Report,
@@ -191,7 +191,7 @@ export type MultistepReportHostContextValue = {
   stepBag: Record<string, any>;
   isViewerPaging: boolean;
   reportSectionPath: (string | number)[];
-  resolvedInputSchema?: JzodObject;
+  resolvedInputSchema?: MlObject;
   captureStepBagFromFormikValues: (values: Record<string, any>) => void;
   mergeStepBagFromFormikValues: (values: Record<string, any>) => void;
 };
@@ -300,7 +300,7 @@ export function allGatedStepsAllowFinish(
   stepBag: Record<string, any>,
   modelEnvironment: MiroirModelEnvironment,
   listRoot: boolean,
-  resolvedSchemasByIndex?: (JzodObject | undefined)[],
+  resolvedSchemasByIndex?: (MlObject | undefined)[],
 ): boolean {
   if (steps.length === 0) {
     return false;
@@ -400,7 +400,7 @@ function requiredFieldIsEmpty(value: unknown): boolean {
 }
 
 function objectSchemaAllowsNext(
-  schema: JzodObject | undefined,
+  schema: MlObject | undefined,
   value: Record<string, unknown> | undefined,
   modelEnvironment: MiroirModelEnvironment,
 ): boolean {
@@ -441,7 +441,7 @@ export function currentStepAllowsNext(
   modelEnvironment: MiroirModelEnvironment,
   instanceBagKey?: string,
   inputBagKey?: string,
-  resolvedInputSchema?: JzodObject,
+  resolvedInputSchema?: MlObject,
 ): boolean {
   if (!section) {
     return false;
@@ -449,7 +449,7 @@ export function currentStepAllowsNext(
   if (section.type === "inputReportSection") {
     const prefix = section.definition?.inputPrefix;
     const schema = (resolvedInputSchema ??
-      section.definition?.inputMLSchema) as JzodObject | undefined;
+      section.definition?.inputMLSchema) as MlObject | undefined;
     const key =
       inputBagKey ??
       (typeof prefix === "string" && prefix.length > 0 ? prefix : undefined);
@@ -465,7 +465,7 @@ export function currentStepAllowsNext(
     if (!entity) {
       return true;
     }
-    const schema = entityWithResolvedMLSchema(entity).mlSchema as JzodObject | undefined;
+    const schema = entityWithResolvedMLSchema(entity).mlSchema as MlObject | undefined;
     return objectSchemaAllowsNext(schema, value as Record<string, unknown>, modelEnvironment);
   }
   return true;
@@ -605,7 +605,7 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
     [isViewerPaging, rootSection, stepIndex, currentChild],
   );
 
-  const resolvedInputSchema = useMemo<JzodObject | undefined>(() => {
+  const resolvedInputSchema = useMemo<MlObject | undefined>(() => {
     if (!isMultistepStepEnvelope(currentChild) || !currentChild.inputSchemaFromBag) {
       return undefined;
     }
@@ -623,7 +623,7 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
     if (!result || result instanceof TransformerFailure) {
       return undefined;
     }
-    return result as JzodObject;
+    return result as MlObject;
   }, [
     context.miroirContext.miroirActivityTracker,
     currentChild,
@@ -932,7 +932,7 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
       if (!result || result instanceof TransformerFailure) {
         return undefined;
       }
-      return result as JzodObject;
+      return result as MlObject;
     });
 
     if (

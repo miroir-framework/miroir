@@ -15,7 +15,7 @@ import {
   DomainElementSuccess,
   EntityInstance,
   EntityInstancesUuidIndex,
-  JzodObject,
+  MlObject,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
@@ -1037,7 +1037,7 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
                 label={props.currentEntity?.name ?? "No Entity Found!"}
                 defaultFormValuesObject={dialogFormObject ?? props.defaultFormValuesObject}
                 entity={presentModelSource ?? {} as Entity}
-                mlSchema={presentModelSource?.mlSchema as JzodObject}
+                mlSchema={presentModelSource?.mlSchema as MlObject}
                 foreignKeyObjects={props.foreignKeyObjects}
                 currentApplication={props.application}
                 applicationDeploymentMap={props.applicationDeploymentMap}
@@ -1061,7 +1061,7 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
                 currentMiroirModel={miroirMetaModel}
                 defaultFormValuesObject={dialogFormObject ?? props.defaultFormValuesObject}
                 deleteObjectdialogFormIsOpen={deleteDialogFormIsOpen}
-                mlSchema={presentModelSource?.mlSchema as JzodObject}
+                mlSchema={presentModelSource?.mlSchema as MlObject}
                 foreignKeyObjects={props.foreignKeyObjects}
                 isOpen={deleteDialogFormIsOpen} // redundant with deleteObjectdialogFormIsOpen?
                 isAttributes={true}

@@ -6,7 +6,7 @@ import { PageContainer } from "../components/Page/PageContainer";
 
 import {
   Domain2ElementFailed,
-  JzodObject,
+  MlObject,
   LoggerInterface,
   MiroirLoggerFactory,
   defaultMetaModelEnvironment,
@@ -55,10 +55,10 @@ export { emptyObject };
 
 // const pageLabel = "Tools";
 
-export const defaultObject: JzodObject = {
+export const defaultObject: MlObject = {
   type: "object",
   definition: {}
-} as JzodObject
+} as MlObject
 
 
 // ################################################################################################

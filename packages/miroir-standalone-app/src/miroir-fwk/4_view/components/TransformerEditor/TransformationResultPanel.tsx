@@ -7,7 +7,7 @@ import {
   defaultSelfApplicationDeploymentMap,
   defaultTransformerInput,
   safeStringify,
-  type JzodElement,
+  type MlElement,
   type TransformerReturnType
 } from 'miroir-core';
 
@@ -37,7 +37,7 @@ export function hasDisplayableTransformationResult(
 
 const TransformationResultValueEditor: React.FC<{
   transformationResult: TransformerReturnType<any>;
-  transformationResultSchema?: JzodElement;
+  transformationResultSchema?: MlElement;
   inputApplication: Uuid;
   inputDeploymentUuid: Uuid;
 }> = React.memo(({ transformationResult, transformationResultSchema, inputApplication, inputDeploymentUuid }) => {
@@ -50,7 +50,7 @@ const TransformationResultValueEditor: React.FC<{
     <TypedValueObjectEditorWithFormik
       labelElement={<div>target:</div>}
       initialValueObject={initialValueObject}
-      formValueMLSchema={transformationResultSchema ?? ({ type: "any" } as JzodElement)}
+      formValueMLSchema={transformationResultSchema ?? ({ type: "any" } as MlElement)}
       formikValuePathAsString="transformationResult"
       application={inputApplication}
       applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
@@ -78,7 +78,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 // ################################################################################################
 export const TransformationResultPanel: React.FC<{
   transformationResult: TransformerReturnType<any>;
-  transformationResultSchema?: JzodElement;
+  transformationResultSchema?: MlElement;
   showAllInstances: boolean;
   inputSelectorMode: "instance" | "here" | "none";
   inputApplication: Uuid;
@@ -86,7 +86,7 @@ export const TransformationResultPanel: React.FC<{
 }> =
   // React.memo<{
   //   transformationResult: any;
-  //   transformationResultSchema?: JzodElement;
+  //   transformationResultSchema?: MlElement;
   //   // transformationError: string | null;
   //   transformationError: TransformerFailure | null;
   //   selectedEntityInstance: EntityInstance | undefined;

@@ -1,7 +1,7 @@
 import {
-  JzodElement,
-  JzodObject,
-  JzodReference
+  MlElement,
+  MlObject,
+  MlReference
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
@@ -12,9 +12,9 @@ const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLe
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
-export type JzodReferenceResolutionFunction = (schema: JzodReference) => JzodElement | undefined;
+export type JzodReferenceResolutionFunction = (schema: MlReference) => MlElement | undefined;
 
-// function forgeIdFromReference(r:JzodReference) {
+// function forgeIdFromReference(r:MlReference) {
 // ################################################################################################
 export function forgeCarryOnReferenceName(
   absolutePath: string,
@@ -34,17 +34,17 @@ export function forgeCarryOnReferenceName(
 
 // ################################################################################################
 export function applyLimitedCarryOnSchema(
-  baseSchema: JzodElement,
-  carryOnSchema: JzodElement,
-  carryOnSchemaForArray: JzodElement,
+  baseSchema: MlElement,
+  carryOnSchema: MlElement,
+  carryOnSchemaForArray: MlElement,
   carryOnSchemaDiscriminator: undefined | string | string[] = undefined,
   alwaysPropagate: boolean = true,
   carryOnPrefix: string,
   localReferencePrefix?: string | undefined,
   suffixForReferences?: string | undefined,
   resolveJzodReference?: JzodReferenceResolutionFunction, // non-converted reference lookup
-  convertedReferences?: Record<string, JzodElement>, // converted reference lookup
-): { resultSchema: JzodElement; hasBeenApplied: boolean; resolvedReferences?: Record<string, JzodElement> } {
+  convertedReferences?: Record<string, MlElement>, // converted reference lookup
+): { resultSchema: MlElement; hasBeenApplied: boolean; resolvedReferences?: Record<string, MlElement> } {
   return applyLimitedCarryOnSchemaOnLevel(
     baseSchema,
     carryOnSchema,
@@ -62,9 +62,9 @@ export function applyLimitedCarryOnSchema(
 
 // ################################################################################################
 export interface ApplyCarryOnSchemaOnLevelReturnType {
-  resultSchema: JzodElement;
+  resultSchema: MlElement;
   hasBeenApplied: boolean;
-  resolvedReferences?: Record<string, JzodElement>;
+  resolvedReferences?: Record<string, MlElement>;
 }
 
 // ################################################################################################
@@ -127,9 +127,9 @@ export function mergePositionBased(
  * @returns transformed @param baseSchema joined with @param carryOnSchema
  */
 export function applyLimitedCarryOnSchemaOnLevel(
-  baseSchema: JzodElement,
-  carryOnSchema: JzodElement,
-  carryOnSchemaForArray: JzodElement,
+  baseSchema: MlElement,
+  carryOnSchema: MlElement,
+  carryOnSchemaForArray: MlElement,
   carryOnSchemaDiscriminator: undefined | string | string[] | (string | string[])[] = undefined,
   alwaysPropagate: boolean = true,
   applyOnFirstLevel: boolean,
@@ -137,19 +137,19 @@ export function applyLimitedCarryOnSchemaOnLevel(
   localReferencePrefix?: string | undefined,
   suffixForReferences?: string | undefined,
   resolveJzodReference?: JzodReferenceResolutionFunction, // non-converted reference lookup
-  convertedReferences?: Record<string, JzodElement>, // converted reference lookup
+  convertedReferences?: Record<string, MlElement>, // converted reference lookup
   skipObjectAttributesOnFirstLevel?: string[],
 ): ApplyCarryOnSchemaOnLevelReturnType
 {
   /**
-   * jzodBaseObject.tag is {type: "any"} by default but can be subtyped to any concrete type
+   * mlBaseObject.tag is {type: "any"} by default but can be subtyped to any concrete type
    * and shall then be applied the carryOn type
-   * jzodBaseObject.tag is only indirectly taken into account during the translation to Zod,
-   * through inheritance of jzodBaseObject. It is then viewed as any JzodObject attribute.
+   * mlBaseObject.tag is only indirectly taken into account during the translation to Zod,
+   * through inheritance of mlBaseObject. It is then viewed as any MlObject attribute.
    *
-   * But jzodBaseObject.tag presents a specific problem when applying a carryOn schema.
-   * jzodBaseObject.tag gives the concrete type for the tag attribute of a JzodElement
-   * there is no attribute giving the metatype of the jzodBaseObject.tag attribute, which is JzodElement
+   * But mlBaseObject.tag presents a specific problem when applying a carryOn schema.
+   * mlBaseObject.tag gives the concrete type for the tag attribute of a MlElement
+   * there is no attribute giving the metatype of the mlBaseObject.tag attribute, which is MlElement
    * this metaTag attribute shall be interpreted and replaced by the concrete extra attribute during
    * the translation to Zod / TS. (???)
    *
@@ -233,8 +233,8 @@ export function applyLimitedCarryOnSchemaOnLevel(
       break;
     }
     case "record": {
-      // const convertedSubSchemas: JzodElement[] = [];
-      const convertedSubSchemasReferences: Record<string, JzodElement> = {};
+      // const convertedSubSchemas: MlElement[] = [];
+      const convertedSubSchemasReferences: Record<string, MlElement> = {};
       const convertedSubSchema = applyLimitedCarryOnSchemaOnLevel(
         baseSchema.definition,
         carryOnSchema,
@@ -311,8 +311,8 @@ export function applyLimitedCarryOnSchemaOnLevel(
       break;
     }
     case "set": {
-      // const convertedSubSchemas: JzodElement[] = [];
-      const convertedSubSchemasReferences: Record<string, JzodElement> = {};
+      // const convertedSubSchemas: MlElement[] = [];
+      const convertedSubSchemasReferences: Record<string, MlElement> = {};
       const convertedSubSchema = applyLimitedCarryOnSchemaOnLevel(
         baseSchema.definition,
         carryOnSchema,
@@ -374,8 +374,8 @@ export function applyLimitedCarryOnSchemaOnLevel(
       break;
     }
     case "array": {
-      // const convertedSubSchemas: JzodElement[] = [];
-      const convertedSubSchemasReferences: Record<string, JzodElement> = {};
+      // const convertedSubSchemas: MlElement[] = [];
+      const convertedSubSchemasReferences: Record<string, MlElement> = {};
       const convertedSubSchema = applyLimitedCarryOnSchemaOnLevel(
         baseSchema.definition,
         carryOnSchema,
@@ -432,9 +432,9 @@ export function applyLimitedCarryOnSchemaOnLevel(
       break;
     }
     case "tuple": {
-      const convertedSubSchemas: JzodElement[] = [];
+      const convertedSubSchemas: MlElement[] = [];
       const convertedSubSchemasHasBeenApplied: boolean[] = [];
-      const convertedSubSchemasReferences: Record<string, JzodElement> = {};
+      const convertedSubSchemasReferences: Record<string, MlElement> = {};
       for (const subSchema of baseSchema.definition) {
         const convertedSubSchema = applyLimitedCarryOnSchemaOnLevel(
           subSchema,
@@ -507,7 +507,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
       // most domainAction/modelAction branches) is independently re-discovered/re-converted once
       // per branch instead of once total, violating this function's own "at most once" contract
       // (see docstring above) and dominating the cost of large unions like domainAction/modelAction.
-      const unionAccumulatedReferences: Record<string, JzodElement> = {};
+      const unionAccumulatedReferences: Record<string, MlElement> = {};
       const subConvertedSchemas = baseSchema.definition
         // .filter((e) => !flatDiscriminators.includes(e))
         .map((e) => {
@@ -579,9 +579,9 @@ export function applyLimitedCarryOnSchemaOnLevel(
       break;
     }
     case "object": {
-      const convertedSubSchemas: Record<string, JzodElement> = {};
+      const convertedSubSchemas: Record<string, MlElement> = {};
       const convertedSubSchemasHasBeenApplied: boolean[] = [];
-      const convertedSubSchemasReferences: Record<string, JzodElement> = {};
+      const convertedSubSchemasReferences: Record<string, MlElement> = {};
       const objectEntries = Object.entries(baseSchema.definition);
       const filteredObjectEntries = skipObjectAttributesOnFirstLevel
         ? applyOnFirstLevel
@@ -637,9 +637,9 @@ export function applyLimitedCarryOnSchemaOnLevel(
             // #200: same sibling-sharing fix as the "union" case above (see comment there) —
             // each extend-array element must see prior siblings' converted references.
             : (() => {
-                const extendAccumulatedReferences: Record<string, JzodElement> = {};
-                return (baseSchema.extend as (JzodObject | JzodReference)[]).map(
-                  (e: JzodObject | JzodReference): ApplyCarryOnSchemaOnLevelReturnType => {
+                const extendAccumulatedReferences: Record<string, MlElement> = {};
+                return (baseSchema.extend as (MlObject | MlReference)[]).map(
+                  (e: MlObject | MlReference): ApplyCarryOnSchemaOnLevelReturnType => {
                     const converted = applyLimitedCarryOnSchemaOnLevel(
                       e,
                       carryOnSchema,
@@ -695,8 +695,8 @@ export function applyLimitedCarryOnSchemaOnLevel(
                 // extend: baseSchema.extend,
                 extend: convertedExtendResults
                   ? (convertedExtendResults.map((e) => e.resultSchema) as (
-                      | JzodReference
-                      | JzodObject
+                      | MlReference
+                      | MlObject
                     )[])
                   : undefined,
                 // extra: baseSchema.extra,
@@ -721,8 +721,8 @@ export function applyLimitedCarryOnSchemaOnLevel(
             tag: convertedTag,
             extend: convertedExtendResults
               ? (convertedExtendResults.map((e) => e.resultSchema) as (
-                  | JzodReference
-                  | JzodObject
+                  | MlReference
+                  | MlObject
                 )[])
               : undefined,
             definition: convertedSubSchemas,
@@ -760,11 +760,11 @@ export function applyLimitedCarryOnSchemaOnLevel(
 
       // if absolute reference, resolve (eager) and add to local context after running carryOnType on it
       // reference resolution is necessarily lazy, because only the name of the reference is used for now
-      let convertedContextSubSchemas: Record<string, JzodElement> = undefined as any;
-      // let convertedContextSubSchemas: Record<string, JzodElement> = {};
+      let convertedContextSubSchemas: Record<string, MlElement> = undefined as any;
+      // let convertedContextSubSchemas: Record<string, MlElement> = {};
       let convertedContextSubSchemasHasBeenApplied: boolean[] = [];
-      const convertedContextSubSchemasReferences: Record<string, JzodElement> = {};
-      const convertedAbosulteReferences: Record<string, JzodElement> = {};
+      const convertedContextSubSchemasReferences: Record<string, MlElement> = {};
+      const convertedAbosulteReferences: Record<string, MlElement> = {};
       let resultReferenceDefinition = undefined;
 
       // treating context
@@ -846,7 +846,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
                 JSON.stringify(baseSchema.definition)
             );
           }
-          const newConvertedReferences: Record<string, JzodElement> = {
+          const newConvertedReferences: Record<string, MlElement> = {
             ...convertedReferences,
             ...convertedContextSubSchemasReferences,
             [localReferenceName]: { type: "never" },

@@ -9,7 +9,7 @@ import {
   DomainElementString,
   DomainElementSuccess,
   EntityInstance,
-  JzodElement,
+  MlElement,
   Transformer,
   Transformer_contextOrParameterReferenceTO_REMOVE,
   TransformerDefinition,
@@ -186,7 +186,7 @@ export const defaultTransformers = { // TODO: should it be exported? Should'nt i
 // ################################################################################################
 export function getDefaultValueForJzodSchemaWithResolution(
   step: Step,
-  mlSchema: JzodElement,
+  mlSchema: MlElement,
   rootObject: any | undefined, // Optional parameter for backward compatibility
   rootLessListKey: string,
   currentDefaultValue: any = undefined,
@@ -199,7 +199,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
   transformerParams: Record<string, any> = {},
   contextResults?: Record<string, any>,
   reduxDeploymentsState?: ReduxDeploymentsState | undefined,
-  relativeReferenceJzodContext?: { [k: string]: JzodElement }
+  relativeReferenceJzodContext?: { [k: string]: MlElement }
 ): any {
   let effectiveSchemaOrError = resolveConditionalSchema(
     step,
@@ -248,7 +248,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
     );
     return undefined; // or propagate error as needed
   }
-  let effectiveSchema: JzodElement = effectiveSchemaOrError as JzodElement;
+  let effectiveSchema: MlElement = effectiveSchemaOrError as MlElement;
 
   if (effectiveSchema.optional && !forceOptional) {
     // log.info(
@@ -497,8 +497,8 @@ export function getDefaultValueForJzodSchemaWithResolution(
       return {};
     }
     case "schemaReference": {
-      // HACK: to avoid infinite loop, detect meta-reference "jzodElement"
-      if (effectiveSchema.definition.relativePath == "jzodElement") {
+      // HACK: to avoid infinite loop, detect meta-reference "mlElement"
+      if (effectiveSchema.definition.relativePath == "mlElement") {
         return { type: "any"}
       }
       const localContext = effectiveSchema.context
@@ -592,7 +592,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
 // ################################################################################################
 export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends MiroirModelEnvironment>(
   step: Step,
-  mlSchema: JzodElement,
+  mlSchema: MlElement,
   rootObject: any = undefined,
   rootLessListKey: string,
   currentDefaultValue: any = undefined,
@@ -605,7 +605,7 @@ export function getDefaultValueForJzodSchemaWithResolutionNonHook<T extends Miro
   transformerParams: Record<string, any> = {},
   contextResults?: Record<string, any>,
   reduxDeploymentsState?: ReduxDeploymentsState | undefined,
-  relativeReferenceJzodContext?: { [k: string]: JzodElement }
+  relativeReferenceJzodContext?: { [k: string]: MlElement }
 ): any {
   log.info(
     "getDefaultValueForJzodSchemaWithResolutionNonHook called with",

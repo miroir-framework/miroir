@@ -11,7 +11,7 @@ import type {
   Domain2QueryReturnType,
   DomainElementSuccess,
   EntityInstancesUuidIndex,
-  JzodObject,
+  MlObject,
   LoggerInterface,
   MetaModel,
   MiroirModelEnvironment,
@@ -1438,7 +1438,7 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
         },
         {
         },
-      ) as JzodObject}
+      ) as MlObject}
       : (runner.definition as any).formMLSchema;
 
   const initialFormValue = useMemo(

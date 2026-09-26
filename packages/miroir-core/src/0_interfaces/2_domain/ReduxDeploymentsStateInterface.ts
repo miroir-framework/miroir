@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { entityInstance, type JzodElement } from "../1_core/preprocessor-generated/miroirFundamentalType";
+import { entityInstance, type MlElement } from "../1_core/preprocessor-generated/miroirFundamentalType";
 
 // ################################################################################################
-export const jzodEntityIdSchema: JzodElement = {
+export const jzodEntityIdSchema: MlElement = {
   type: "union",
   definition: [
     { type: "number" },
@@ -12,7 +12,7 @@ export const jzodEntityIdSchema: JzodElement = {
 export const zEntityIdSchema = z.union([z.number(), z.string()]);
 
 // ################################################################################################
-export const jzodDictionarySchema: JzodElement = {
+export const jzodDictionarySchema: MlElement = {
   type: "record",
   definition: {
     type: "schemaReference",
@@ -27,7 +27,7 @@ export type MiroirDictionary = z.infer<typeof zDictionarySchema>;
 
 // ################################################################################################
 // #214 Option C′ — segment header sits beside EntityAdapter ids/entities (not per instance).
-export const jzodLocalCacheSegmentHeaderSchema: JzodElement = {
+export const jzodLocalCacheSegmentHeaderSchema: MlElement = {
   type: "object",
   definition: {
     kind: { type: "enum", definition: ["full", "partial"] },
@@ -46,7 +46,7 @@ export const zLocalCacheSegmentHeaderSchema = z.object({
 });
 
 // ################################################################################################
-export const jzodEntityStateSchema: JzodElement = {
+export const jzodEntityStateSchema: MlElement = {
   type: "object",
   definition: {
     ids: { type: "array", definition: { type: "string" } },
@@ -62,7 +62,7 @@ export const zEntityStateSchema = z.object({
 export type ZEntityState = z.infer<typeof zEntityStateSchema>; //not used
 
 // ################################################################################################
-export const jzodReduxDeploymentState: JzodElement = {
+export const jzodReduxDeploymentState: MlElement = {
   type: "record",
   definition: jzodEntityStateSchema
   // definition: {

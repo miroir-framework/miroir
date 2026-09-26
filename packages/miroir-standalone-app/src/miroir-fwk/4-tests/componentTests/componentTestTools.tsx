@@ -12,7 +12,7 @@ import {
   DomainController,
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
-  JzodElement,
+  MlElement,
   jzodTypeCheck,
   LocalCacheInterface,
   LoggerInterface,
@@ -205,7 +205,7 @@ export interface JzodElementEditorProps_Test {
   rootLessListKey: string;
   rootLessListKeyArray: string[];
   initialFormState: any;
-  rawJzodSchema: JzodElement | undefined;
+  rawJzodSchema: MlElement | undefined;
   // isPerformanceTest?: boolean;
 }
 
@@ -261,7 +261,7 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
     );
     // log.debug("currentMiroirModel", currentMiroirModel);
 
-    const effectiveRawJzodSchema: JzodElement | undefined = useMemo(() => {
+    const effectiveRawJzodSchema: MlElement | undefined = useMemo(() => {
       // log.debug("getJzodElementEditorForTest", "rawJzodSchema", rawJzodSchema);
       return rawJzodSchema != undefined
         ? { type: "object", definition: { [rootLessListKey]: rawJzodSchema } }

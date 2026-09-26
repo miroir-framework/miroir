@@ -41,7 +41,7 @@ The simplest library transformer - returns a constant value.
             "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "jzodElement"
+              "relativePath": "mlElement"
             }
           },
           "value": {
@@ -129,7 +129,7 @@ transformerForBuild_returnValue: {
   definition: {
     transformerType: { type: "literal", definition: "returnValue" },
     interpolation: { type: "literal", definition: "buildTime" },
-    mlSchema: jzodElement.optional(),
+    mlSchema: mlElement.optional(),
     value: { type: "any" }
   }
 },
@@ -140,7 +140,7 @@ transformerForBuildPlusRuntime_returnValue: {
   definition: {
     transformerType: { type: "literal", definition: "returnValue" },
     interpolation: { type: "enum", definition: ["buildTime", "runtime"] },
-    mlSchema: jzodElement.optional(),
+    mlSchema: mlElement.optional(),
     value: { type: "any" }
   }
 },

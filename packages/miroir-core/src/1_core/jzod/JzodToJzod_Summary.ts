@@ -1,6 +1,6 @@
-import type { JzodElement, MlSchema } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { MlElement, MlSchema } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-// ── Classification of JzodElement fields for JzodElementEditor use ──────────
+// ── Classification of MlElement fields for JzodElementEditor use ──────────
 //
 // Tag fields (tag.value.*):
 //   ESSENTIAL (kept): defaultLabel, description, foreignKeyParams, formValidation
@@ -10,9 +10,9 @@ import type { JzodElement, MlSchema } from "../../0_interfaces/1_core/preprocess
 // Type-level fields:
 //   ESSENTIAL: type, optional, nullable, description, definition for all container/leaf types,
 //     nonStrict/partial for objects, discriminator for unions, validations for string/number/date
-//   NON-ESSENTIAL: JzodReference.context (bulk internal), JzodPlainAttribute.coerce (technical),
-//     JzodUnion.optInDiscriminator (technical matching detail),
-//     JzodFunction/JzodLazy/JzodPromise (not editable)
+//   NON-ESSENTIAL: MlReference.context (bulk internal), MlPlainAttribute.coerce (technical),
+//     MlUnion.optInDiscriminator (technical matching detail),
+//     MlFunction/MlLazy/MlPromise (not editable)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
@@ -30,7 +30,7 @@ function stripTagValue(tagValue: Record<string, any>): Record<string, any> | und
 }
 
 /**
- * Builds the base summary fields common to all JzodElement types.
+ * Builds the base summary fields common to all MlElement types.
  * Includes: type, optional, nullable, description, and stripped tag.
  */
 function buildBase(el: any): any {
@@ -46,14 +46,14 @@ function buildBase(el: any): any {
 }
 
 /**
- * Returns the minimal (type-only) representation for a child JzodElement
+ * Returns the minimal (type-only) representation for a child MlElement
  * when the depth budget is exhausted (depth <= 0).
  *
  * Leaf types with intrinsic value (literal, enum) keep their definition
  * since without it the type tells nothing useful. References keep their path.
  * All other container types return just { type }.
  */
-function minimalSummary(el: JzodElement): any {
+function minimalSummary(el: MlElement): any {
   const e = el as any;
   switch (e.type) {
     case "literal":
@@ -68,7 +68,7 @@ function minimalSummary(el: JzodElement): any {
 }
 
 /**
- * Produces a summary of a JzodElement schema containing only information
+ * Produces a summary of a MlElement schema containing only information
  * directly useful for human understanding during value editing in JzodElementEditor.
  *
  * - Strips all view-related and meta tag fields (see classification above).
@@ -77,13 +77,13 @@ function minimalSummary(el: JzodElement): any {
  * - Leaf types (literal, enum, string/number/date with validations) are always fully shown.
  * - schemaReference.context is always dropped (bulk, internal resolution data).
  *
- * @param jzodSchema - The JzodElement to summarize.
+ * @param jzodSchema - The MlElement to summarize.
  * @param miroirFundamentalJzodSchema - Schema registry (reserved for future reference resolution).
  * @param depth - Recursion budget: 0 = current element + type-only child stubs;
  *                1 (default) = current element + children at depth=0; N = N levels deep.
  */
 export function jzodToJzod_Summary(
-  jzodSchema: JzodElement,
+  jzodSchema: MlElement,
   miroirFundamentalJzodSchema: MlSchema,
   depth: number = 1,
 ): any {
@@ -99,7 +99,7 @@ export function jzodToJzod_Summary(
       return { ...base, definition: el.definition };
 
     // ── Plain scalar types ────────────────────────────────────────────────────
-    // Includes JzodPlainAttribute ("any","bigint","boolean","never","uuid","undefined","unknown","void")
+    // Includes MlPlainAttribute ("any","bigint","boolean","never","uuid","undefined","unknown","void")
     // and JzodAttributePlain{String,Number,Date}WithValidations ("string","number","date").
     // coerce is intentionally omitted (technical parsing detail).
     case "any":
@@ -122,7 +122,7 @@ export function jzodToJzod_Summary(
     case "object": {
       if (!el.definition) return base;
       const allDef: Record<string, any> = {};
-      for (const [k, v] of Object.entries(el.definition as Record<string, JzodElement>)) {
+      for (const [k, v] of Object.entries(el.definition as Record<string, MlElement>)) {
         allDef[k] = depth <= 0
           ? minimalSummary(v)
           : jzodToJzod_Summary(v, miroirFundamentalJzodSchema, depth - 1);
@@ -146,15 +146,15 @@ export function jzodToJzod_Summary(
     case "promise": {
       if (!el.definition) return base;
       const childSummary = depth <= 0
-        ? minimalSummary(el.definition as JzodElement)
-        : jzodToJzod_Summary(el.definition as JzodElement, miroirFundamentalJzodSchema, depth - 1);
+        ? minimalSummary(el.definition as MlElement)
+        : jzodToJzod_Summary(el.definition as MlElement, miroirFundamentalJzodSchema, depth - 1);
       return { ...base, definition: childSummary };
     }
 
     // ── Multi-child container types ────────────────────────────────────────────
     case "tuple": {
       if (!el.definition) return base;
-      const items = (el.definition as JzodElement[]).map((item) =>
+      const items = (el.definition as MlElement[]).map((item) =>
         depth <= 0
           ? minimalSummary(item)
           : jzodToJzod_Summary(item, miroirFundamentalJzodSchema, depth - 1)
@@ -164,7 +164,7 @@ export function jzodToJzod_Summary(
 
     case "union": {
       if (!el.definition) return base;
-      const branches = (el.definition as JzodElement[]).map((item) =>
+      const branches = (el.definition as MlElement[]).map((item) =>
         depth <= 0
           ? minimalSummary(item)
           : jzodToJzod_Summary(item, miroirFundamentalJzodSchema, depth - 1)
@@ -187,18 +187,18 @@ export function jzodToJzod_Summary(
     case "intersection": {
       if (!el.definition) return base;
       const leftSummary = depth <= 0
-        ? minimalSummary(el.definition.left as JzodElement)
-        : jzodToJzod_Summary(el.definition.left as JzodElement, miroirFundamentalJzodSchema, depth - 1);
+        ? minimalSummary(el.definition.left as MlElement)
+        : jzodToJzod_Summary(el.definition.left as MlElement, miroirFundamentalJzodSchema, depth - 1);
       const rightSummary = depth <= 0
-        ? minimalSummary(el.definition.right as JzodElement)
-        : jzodToJzod_Summary(el.definition.right as JzodElement, miroirFundamentalJzodSchema, depth - 1);
+        ? minimalSummary(el.definition.right as MlElement)
+        : jzodToJzod_Summary(el.definition.right as MlElement, miroirFundamentalJzodSchema, depth - 1);
       return { ...base, definition: { left: leftSummary, right: rightSummary } };
     }
 
     // ── Map ───────────────────────────────────────────────────────────────────
     case "map": {
       if (!el.definition) return base;
-      const [keyEl, valEl] = el.definition as [JzodElement, JzodElement];
+      const [keyEl, valEl] = el.definition as [MlElement, MlElement];
       const keySummary = depth <= 0
         ? minimalSummary(keyEl)
         : jzodToJzod_Summary(keyEl, miroirFundamentalJzodSchema, depth - 1);

@@ -22,7 +22,7 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { defaultMiroirModelEnvironment, jzodTypeCheck, type JzodElement } from "miroir-core";
+import { defaultMiroirModelEnvironment, jzodTypeCheck, type MlElement } from "miroir-core";
 
 import { resolveRepoRoot } from "../helpers/integrationTestProfiles.js";
 
@@ -127,7 +127,7 @@ const fixtureSuites = {
 };
 
 const componentTestInstances = loadComponentTestInstances();
-const schemas: [string, JzodElement][] = [
+const schemas: [string, MlElement][] = [
   ["Entity", readJson(MIROIR_TEST_ENTITY_PATH).mlSchema],
   ["EntityVersion", readJson(MIROIR_TEST_ENTITY_VERSION_PATH).mlSchema],
 ];

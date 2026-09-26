@@ -11,7 +11,7 @@ import { entityReport } from "miroir-test-app_deployment-miroir";
 
 import {
   EntityInstance,
-  JzodPlainAttribute,
+  MlPlainAttribute,
   Report
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -40,7 +40,7 @@ export function selectEntityInstances(parentUuid:string | undefined):EntitiesDom
 
 // ################################################################################################
 export function selectEntityInstancesFromJzodAttribute(
-  mlSchema: JzodPlainAttribute | undefined
+  mlSchema: MlPlainAttribute | undefined
 ): EntitiesDomainStateEntityInstanceArraySelector {
   return (domainState: EntitiesDomainState): EntityInstance[] => {
     // log.info('selectEntityInstances for entityUuid', parentUuid, 'existing entities:', Object.keys(domainState))
@@ -55,7 +55,7 @@ export function selectEntityInstancesFromJzodAttribute(
 }
 
 // ################################################################################################
-export function selectEntityUuidFromJzodAttribute(mlSchema:JzodPlainAttribute | undefined):Uuid | undefined{
+export function selectEntityUuidFromJzodAttribute(mlSchema:MlPlainAttribute | undefined):Uuid | undefined{
   // return mlSchema?.tag?.value?.targetEntity;
   return mlSchema?.tag?.value?.foreignKeyParams?.targetEntity;
 }

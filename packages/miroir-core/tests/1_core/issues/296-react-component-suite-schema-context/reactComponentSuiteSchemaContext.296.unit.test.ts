@@ -33,14 +33,14 @@ import {
   jzodTypeCheck,
   resolveJzodSchemaReferenceInContext,
   type Entity,
-  type JzodElement,
+  type MlElement,
   type MiroirModelEnvironment,
   type ResolvedJzodSchemaReturnType,
 } from "miroir-core";
 
 // ################################################################################################
-const miroirTestMlSchema: JzodElement = entityWithResolvedMLSchema(entityMiroirTest as Entity)
-  .mlSchema as JzodElement;
+const miroirTestMlSchema: MlElement = entityWithResolvedMLSchema(entityMiroirTest as Entity)
+  .mlSchema as MlElement;
 
 /** Type-checks `instance` the way `TypedValueObjectEditor` does. */
 function typeCheckLikeTheEditor(instance: any): ResolvedJzodSchemaReturnType {

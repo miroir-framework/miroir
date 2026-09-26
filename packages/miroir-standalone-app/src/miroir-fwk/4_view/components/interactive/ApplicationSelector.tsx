@@ -1,5 +1,5 @@
 import {
-  type JzodObject,
+  type MlObject,
   type LoggerInterface,
   MiroirLoggerFactory,
   defaultSelfApplicationDeploymentMap,
@@ -53,7 +53,7 @@ export const ApplicationSelector: FC<{
   const formLabel = "Select Application to delete";
 
   // ##############################################################################################
-  const formMLSchema: JzodObject = useMemo(
+  const formMLSchema: MlObject = useMemo(
     () => ({
       type: "object",
       definition: {
@@ -195,7 +195,7 @@ export const ApplicationSelector: FC<{
         }}
       /> */}
       <TypedValueObjectEditorWithFormik
-        formValueMLSchema={formMLSchema.definition[formikValuePathAsString] as JzodObject}
+        formValueMLSchema={formMLSchema.definition[formikValuePathAsString] as MlObject}
         formikValuePathAsString={formikValuePathAsString}
         formLabel={formLabel}
         valueObjectEditMode="update"

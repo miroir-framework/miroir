@@ -1,12 +1,12 @@
 import equal from "fast-deep-equal";
 
 import type {
-  JzodElement,
-  JzodObject,
+  MlElement,
+  MlObject,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 /**
- * Issue #250 — mlSchema (JzodElement AST) structural subtyping under the Liskov
+ * Issue #250 — mlSchema (MlElement AST) structural subtyping under the Liskov
  * Substitution Principle: every value accepted by `potentialSubtype` is also
  * accepted by `potentialSupertype`, so the former may be used wherever the latter
  * is expected.
@@ -35,17 +35,17 @@ import type {
  * through `schemaReference` / `lazy`, which are never recursed into.
  */
 export function isMlSchemaSubtype(
-  potentialSubtype: JzodElement,
-  potentialSupertype: JzodElement,
+  potentialSubtype: MlElement,
+  potentialSupertype: MlElement,
 ): boolean {
   return isSubtype(potentialSubtype, potentialSupertype);
 }
 
-type CoreSchema = JzodElement;
+type CoreSchema = MlElement;
 
-const ANY_SCHEMA: JzodElement = { type: "any" } as JzodElement;
+const ANY_SCHEMA: MlElement = { type: "any" } as MlElement;
 
-function isSubtype(a: JzodElement, b: JzodElement): boolean {
+function isSubtype(a: MlElement, b: MlElement): boolean {
   const aBranches = normalizeToBranches(a);
   const bBranches = normalizeToBranches(b);
 
@@ -62,7 +62,7 @@ function isSubtype(a: JzodElement, b: JzodElement): boolean {
  * Matches `jzodTypeCheck`: `optional` and `nullable` each accept both `null`
  * and `undefined` (see null/undefined handling at the top of that function).
  */
-function normalizeToBranches(schema: JzodElement): CoreSchema[] {
+function normalizeToBranches(schema: MlElement): CoreSchema[] {
   const admitsNullOrUndefined =
     schema.optional === true || schema.nullable === true;
 
@@ -81,11 +81,11 @@ function normalizeToBranches(schema: JzodElement): CoreSchema[] {
   return result;
 }
 
-function stripOptionalNullable(schema: JzodElement): CoreSchema {
+function stripOptionalNullable(schema: MlElement): CoreSchema {
   if (schema.optional === undefined && schema.nullable === undefined) {
     return schema;
   }
-  const { optional: _o, nullable: _n, ...rest } = schema as JzodElement & {
+  const { optional: _o, nullable: _n, ...rest } = schema as MlElement & {
     optional?: boolean;
     nullable?: boolean;
   };
@@ -296,8 +296,8 @@ function primitiveConstraintsOk(a: CoreSchema, b: CoreSchema): boolean {
 }
 
 function objectSubtypeOfRecord(
-  objectSchema: JzodObject,
-  recordValueSchema: JzodElement,
+  objectSchema: MlObject,
+  recordValueSchema: MlElement,
 ): boolean {
   // cannot flatten `extend` without a model environment
   if (objectSchema.extend !== undefined) {
@@ -325,7 +325,7 @@ function objectSubtypeOfRecord(
  * strict by default (a value may not carry attributes outside the schema
  * definition) unless the schema is `nonStrict`.
  */
-function isObjectSubtype(a: JzodObject, b: JzodObject): boolean {
+function isObjectSubtype(a: MlObject, b: MlObject): boolean {
   // Without a model environment we cannot flatten `extend`: beyond full identity
   // (already handled by the equality fast-path), conservatively reject.
   if (a.extend !== undefined || b.extend !== undefined) {
@@ -354,7 +354,7 @@ function isObjectSubtype(a: JzodObject, b: JzodObject): boolean {
   }
 
   for (const [key, bProp] of Object.entries(bDef)) {
-    const bEffective: JzodElement = bPartial ? { ...bProp, optional: true } : bProp;
+    const bEffective: MlElement = bPartial ? { ...bProp, optional: true } : bProp;
     const aProp = aDef[key];
     if (aProp === undefined) {
       if (aNonStrict) {
@@ -371,7 +371,7 @@ function isObjectSubtype(a: JzodObject, b: JzodObject): boolean {
       }
       return false;
     }
-    const aEffective: JzodElement = aPartial ? { ...aProp, optional: true } : aProp;
+    const aEffective: MlElement = aPartial ? { ...aProp, optional: true } : aProp;
     if (!isSubtype(aEffective, bEffective)) {
       return false;
     }

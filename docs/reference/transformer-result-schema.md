@@ -24,10 +24,10 @@ const schema = resolveTransformerResultSchema(transformer, context);
 | Parameter | Type | Role |
 |-----------|------|------|
 | `transformer` | `CoreTransformerForBuildPlusRuntime` | Transformer instance graph to infer |
-| `context` | `Record<string, JzodElement>` | Schemas for names already resolved in the surrounding composition |
+| `context` | `Record<string, MlElement>` | Schemas for names already resolved in the surrounding composition |
 | `transformerDefinitions` | `Record<string, TransformerDefinition>` (optional) | Defaults to `applicationTransformerDefinitions` |
 
-**Return value:** a `JzodElement` on success, or `FailedTransformerInterfaceFromDefinition` (`status: "error"`) when inference fails. Use `isFailedTransformerInterfaceFromDefinition()` to distinguish.
+**Return value:** a `MlElement` on success, or `FailedTransformerInterfaceFromDefinition` (`status: "error"`) when inference fails. Use `isFailedTransformerInterfaceFromDefinition()` to distinguish.
 
 ---
 

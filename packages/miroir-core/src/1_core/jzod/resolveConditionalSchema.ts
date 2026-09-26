@@ -2,7 +2,7 @@
 import { Uuid } from '../../0_interfaces/1_core/EntityVersion';
 import {
   EntityVersion,
-  JzodElement,
+  MlElement,
   type TransformerForBuildPlusRuntime_resolveConditionalSchema
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
@@ -22,7 +22,7 @@ export type ResolveConditionalSchemaError =
   | { error: 'INVALID_PARENT_UUID_CONFIG', details: string }
   | { error: 'PARENT_NOT_FOUND', details: string };
 
-export type ResolveConditionalSchemaResult = JzodElement | ResolveConditionalSchemaError;
+export type ResolveConditionalSchemaResult = MlElement | ResolveConditionalSchemaError;
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "resolveConditionalSchema");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -66,7 +66,7 @@ export function resolveConditionalSchema(
   // activityTracker: MiroirActivityTrackerInterface | undefined,
   step: Step,
   transformerPath: string[],
-  mlSchema: JzodElement,
+  mlSchema: MlElement,
   rootObject: any, // Changed from currentDefaultValue to rootObject
   currentValuePath: string[],
   modelEnvironment: MiroirModelEnvironment,
@@ -75,7 +75,7 @@ export function resolveConditionalSchema(
   reduxDeploymentsState: ReduxDeploymentsState | undefined = undefined,
   context: 'defaultValue' | 'typeCheck' = 'typeCheck' // New parameter for context
 ): ResolveConditionalSchemaResult {
-  let effectiveSchema: JzodElement = mlSchema;
+  let effectiveSchema: MlElement = mlSchema;
   // log.info(
   //   "resolveConditionalSchema called with mlSchema",
   //   mlSchema,

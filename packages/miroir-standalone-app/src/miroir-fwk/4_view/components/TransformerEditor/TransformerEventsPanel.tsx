@@ -4,7 +4,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   type EventFilter,
-  type JzodElement,
+  type MlElement,
   type MiroirEvent,
   type MiroirEventLog,
   type TransformerEvent,
@@ -114,11 +114,11 @@ const DisplayTransformerEvent: React.FC<{
   , [activity.transformerParams]);
 
   log.debug("Displayed parameters", displayedParameters);
-  const parametersSchema: JzodElement = useMemo(() => {
+  const parametersSchema: MlElement = useMemo(() => {
     if (!displayedParameters || !isExpanded) {
-      return { type: "any" } as JzodElement;
+      return { type: "any" } as MlElement;
     }
-    return (valueToJzod(displayedParameters) ?? { type: "any" }) as JzodElement;
+    return (valueToJzod(displayedParameters) ?? { type: "any" }) as MlElement;
   }, [displayedParameters, isExpanded]);
 
   return (

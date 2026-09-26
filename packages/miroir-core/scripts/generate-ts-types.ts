@@ -39,7 +39,7 @@ import {
   entityTest,
   entityTransformerDefinition,
   instanceEndpointVersionV1,
-  jzodSchemajzodMiroirBootstrapSchema,
+  mlSchemaMlMiroirBootstrapSchema,
   localCacheEndpointVersionV1,
   modelEndpointVersionV1,
   persistenceEndpointVersionV1,
@@ -373,7 +373,7 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         queryEndpointVersionV1,
         persistenceEndpointVersionV1,
         testEndpointVersionV1,
-        jzodSchemajzodMiroirBootstrapSchema,
+        mlSchemaMlMiroirBootstrapSchema,
         transformerJzodSchema,
         [],//[transformerMenuV1],
         entityApplicationForAdmin,
@@ -461,9 +461,9 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
       if (!miroirFundamentalJzodSchema.definition.context) {
         throw new Error("miroir-core miroirFundamentalJzodSchema.context is undefined");
       }
-      const preExtendedSchemas: string[] = getExtendedSchemas(jzodSchemajzodMiroirBootstrapSchema.definition.context);
+      const preExtendedSchemas: string[] = getExtendedSchemas(mlSchemaMlMiroirBootstrapSchema.definition.context);
       const mlElementTemplateExtendedSchemas: string[] = getExtendedSchemasWithCarryOn(
-        jzodSchemajzodMiroirBootstrapSchema,
+        mlSchemaMlMiroirBootstrapSchema,
         miroirFundamentalJzodSchemaUuid
       );
 
@@ -522,7 +522,7 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
       const generateTypeAnotationsForSchema = Object.keys(extendedZodSchema.context).filter(
         (e) =>
           ![
-            // "jzodObject",
+            // "mlObject",
             "entityInstance",
             "entityAttributeUntypedCore",
             "entityAttributeCore",
@@ -557,7 +557,7 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         type: "schemaReference",
         context: nonExtendedJzodSchemaContext,
         definition: {
-          relativePath: "jzodElement",
+          relativePath: "mlElement",
         },
       };
 

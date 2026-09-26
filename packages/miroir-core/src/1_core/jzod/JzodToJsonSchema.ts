@@ -1,4 +1,4 @@
-import type { JzodElement } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { MlElement } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 // ################################################################################################
 export interface JsonSchema {
@@ -17,15 +17,15 @@ export interface JsonSchema {
   nullable?: boolean;
 }
 
-export type JzodToJsonSchemaContext = { [k: string]: JzodElement };
+export type JzodToJsonSchemaContext = { [k: string]: MlElement };
 
 // ################################################################################################
 /**
- * Convert a JzodElement to a JSON Schema definition.
- * Context maps reference names to their JzodElement definitions, used to resolve schemaReference elements.
+ * Convert a MlElement to a JSON Schema definition.
+ * Context maps reference names to their MlElement definitions, used to resolve schemaReference elements.
  */
 export function jzodToJsonSchema(
-  element: JzodElement,
+  element: MlElement,
   context: JzodToJsonSchemaContext = {},
 ): JsonSchema {
   if (!element) {
@@ -83,7 +83,7 @@ export function jzodToJsonSchema(
     }
 
     case "array": {
-      const castElement = element as { type: "array"; definition: JzodElement; optional?: boolean };
+      const castElement = element as { type: "array"; definition: MlElement; optional?: boolean };
       return withMeta({
         type: "array",
         items: jzodToJsonSchema(castElement.definition, context),
@@ -93,7 +93,7 @@ export function jzodToJsonSchema(
     case "object": {
       const castElement = element as {
         type: "object";
-        definition: { [k: string]: JzodElement };
+        definition: { [k: string]: MlElement };
         optional?: boolean;
         nonStrict?: boolean;
         partial?: boolean;
@@ -117,7 +117,7 @@ export function jzodToJsonSchema(
     }
 
     case "record": {
-      const castElement = element as { type: "record"; definition: JzodElement; optional?: boolean };
+      const castElement = element as { type: "record"; definition: MlElement; optional?: boolean };
       return withMeta({
         type: "object",
         additionalProperties: jzodToJsonSchema(castElement.definition, context),
@@ -125,14 +125,14 @@ export function jzodToJsonSchema(
     }
 
     case "union": {
-      const castElement = element as { type: "union"; definition: JzodElement[]; optional?: boolean };
+      const castElement = element as { type: "union"; definition: MlElement[]; optional?: boolean };
       return withMeta({
         anyOf: castElement.definition.map((d) => jzodToJsonSchema(d, context)),
       });
     }
 
     case "intersection": {
-      const castElement = element as { type: "intersection"; definition: { left: JzodElement; right: JzodElement }; optional?: boolean };
+      const castElement = element as { type: "intersection"; definition: { left: MlElement; right: MlElement }; optional?: boolean };
       return withMeta({
         allOf: [
           jzodToJsonSchema(castElement.definition.left, context),
@@ -144,7 +144,7 @@ export function jzodToJsonSchema(
     case "schemaReference": {
       const castElement = element as {
         type: "schemaReference";
-        context?: { [k: string]: JzodElement };
+        context?: { [k: string]: MlElement };
         definition: { relativePath: string; absolutePath?: string; eager?: boolean };
         optional?: boolean;
       };
@@ -163,12 +163,12 @@ export function jzodToJsonSchema(
     }
 
     case "lazy": {
-      const castElement = element as { type: "lazy"; definition: JzodElement; optional?: boolean };
+      const castElement = element as { type: "lazy"; definition: MlElement; optional?: boolean };
       return jzodToJsonSchema(castElement.definition, context);
     }
 
     case "tuple": {
-      const castElement = element as { type: "tuple"; definition: JzodElement[]; optional?: boolean };
+      const castElement = element as { type: "tuple"; definition: MlElement[]; optional?: boolean };
       return withMeta({
         type: "array",
         items: castElement.definition.map((d) => jzodToJsonSchema(d, context)),

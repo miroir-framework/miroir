@@ -908,7 +908,7 @@
       },
       {
         "miroirTestType": "functionCallTest",
-        "miroirTestLabel": "should convert Author CSV columns to a JzodObject mlSchema",
+        "miroirTestLabel": "should convert Author CSV columns to a MlObject mlSchema",
         "functionRef": {
           "module": "miroir-core/1_core/ansiColumnsToJzodSchema",
           "export": "ansiColumnsToJzodSchema"

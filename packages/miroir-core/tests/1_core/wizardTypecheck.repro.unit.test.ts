@@ -9,7 +9,7 @@ import {
   defaultMiroirModelEnvironment,
   getInnermostTypeCheckError,
   jzodTypeCheck,
-  type JzodElement,
+  type MlElement,
   type MiroirModelEnvironment,
 } from "miroir-core";
 
@@ -17,7 +17,7 @@ import wizardReport from "../../../miroir-test-app_deployment-miroir/assets/miro
 
 describe("wizard typecheck repro", () => {
   it("ConnectExternalServiceWizard report passes jzodTypeCheck against the report schema", () => {
-    const reportSchema: JzodElement = {
+    const reportSchema: MlElement = {
       type: "schemaReference",
       definition: {
         absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",

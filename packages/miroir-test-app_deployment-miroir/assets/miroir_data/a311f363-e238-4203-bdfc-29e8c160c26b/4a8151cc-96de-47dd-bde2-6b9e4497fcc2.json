@@ -396,7 +396,7 @@
               "error"
             ],
             "expectedValue": {
-              "__miroirMatchPattern": "^Error while recursively unfolding JzodUnion"
+              "__miroirMatchPattern": "^Error while recursively unfolding MlUnion"
             }
           }
         ]
@@ -509,7 +509,7 @@
       },
       {
         "miroirTestType": "functionCallTest",
-        "miroirTestLabel": "jzodUnion_RecursiveUnfold expands the jzodElement definition",
+        "miroirTestLabel": "jzodUnion_RecursiveUnfold expands the mlElement definition",
         "functionRef": {
           "module": "miroir-core/1_core/jzod/jzodUnion_RecursivelyUnfold",
           "export": "jzodUnion_recursivelyUnfold"
@@ -523,7 +523,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodArray"
+                  "relativePath": "mlArray"
                 },
                 "context": {}
               },
@@ -531,7 +531,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodPlainAttribute"
+                  "relativePath": "mlPlainAttribute"
                 },
                 "context": {}
               },
@@ -539,7 +539,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodAttributePlainDateWithValidations"
+                  "relativePath": "mlAttributePlainDateWithValidations"
                 },
                 "context": {}
               },
@@ -547,7 +547,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodAttributePlainNumberWithValidations"
+                  "relativePath": "mlAttributePlainNumberWithValidations"
                 },
                 "context": {}
               },
@@ -555,7 +555,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodAttributePlainStringWithValidations"
+                  "relativePath": "mlAttributePlainStringWithValidations"
                 },
                 "context": {}
               },
@@ -563,7 +563,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodEnum"
+                  "relativePath": "mlEnum"
                 },
                 "context": {}
               },
@@ -571,7 +571,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodFunction"
+                  "relativePath": "mlFunction"
                 },
                 "context": {}
               },
@@ -579,7 +579,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodLazy"
+                  "relativePath": "mlLazy"
                 },
                 "context": {}
               },
@@ -587,7 +587,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodLiteral"
+                  "relativePath": "mlLiteral"
                 },
                 "context": {}
               },
@@ -595,7 +595,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodIntersection"
+                  "relativePath": "mlIntersection"
                 },
                 "context": {}
               },
@@ -603,7 +603,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodMap"
+                  "relativePath": "mlMap"
                 },
                 "context": {}
               },
@@ -611,7 +611,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodObject"
+                  "relativePath": "mlObject"
                 },
                 "context": {}
               },
@@ -619,7 +619,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodPromise"
+                  "relativePath": "mlPromise"
                 },
                 "context": {}
               },
@@ -627,7 +627,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodRecord"
+                  "relativePath": "mlRecord"
                 },
                 "context": {}
               },
@@ -635,7 +635,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodReference"
+                  "relativePath": "mlReference"
                 },
                 "context": {}
               },
@@ -643,7 +643,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodSet"
+                  "relativePath": "mlSet"
                 },
                 "context": {}
               },
@@ -651,7 +651,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodTuple"
+                  "relativePath": "mlTuple"
                 },
                 "context": {}
               },
@@ -659,7 +659,7 @@
                 "type": "schemaReference",
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodUnion"
+                  "relativePath": "mlUnion"
                 },
                 "context": {}
               }
@@ -682,7 +682,7 @@
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodBaseObject"
+                  "relativePath": "mlBaseObject"
                 },
                 "context": {}
               },
@@ -700,7 +700,7 @@
                   "type": "schemaReference",
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "jzodElement"
+                    "relativePath": "mlElement"
                   },
                   "context": {}
                 }
@@ -713,7 +713,7 @@
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodBaseObject"
+                  "relativePath": "mlBaseObject"
                 },
                 "context": {}
               },
@@ -767,7 +767,7 @@
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodBaseObject"
+                  "relativePath": "mlBaseObject"
                 },
                 "context": {}
               },
@@ -792,7 +792,7 @@
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "jzodAttributeDateValidations"
+                      "relativePath": "mlAttributeDateValidations"
                     },
                     "context": {}
                   }
@@ -806,7 +806,7 @@
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodBaseObject"
+                  "relativePath": "mlBaseObject"
                 },
                 "context": {}
               },
@@ -831,7 +831,7 @@
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "jzodAttributeNumberValidations"
+                      "relativePath": "mlAttributeNumberValidations"
                     },
                     "context": {}
                   }
@@ -845,7 +845,7 @@
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodBaseObject"
+                  "relativePath": "mlBaseObject"
                 },
                 "context": {}
               },
@@ -870,7 +870,7 @@
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "jzodAttributeStringValidations"
+                      "relativePath": "mlAttributeStringValidations"
                     },
                     "context": {}
                   }
@@ -884,7 +884,7 @@
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodBaseObject"
+                  "relativePath": "mlBaseObject"
                 },
                 "context": {}
               },
@@ -913,7 +913,7 @@
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodBaseObject"
+                  "relativePath": "mlBaseObject"
                 },
                 "context": {}
               },
@@ -936,7 +936,7 @@
                         "type": "schemaReference",
                         "definition": {
                           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "jzodElement"
+                          "relativePath": "mlElement"
                         },
                         "context": {}
                       }
@@ -945,7 +945,7 @@
                       "type": "schemaReference",
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "jzodElement"
+                        "relativePath": "mlElement"
                       },
                       "optional": true,
                       "context": {}
@@ -961,7 +961,7 @@
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodBaseObject"
+                  "relativePath": "mlBaseObject"
                 },
                 "context": {}
               },
@@ -979,7 +979,7 @@
                   "type": "schemaReference",
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "jzodFunction"
+                    "relativePath": "mlFunction"
                   },
                   "context": {}
                 }
@@ -992,7 +992,7 @@
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodBaseObject"
+                  "relativePath": "mlBaseObject"
                 },
                 "context": {}
               },
@@ -1018,7 +1018,7 @@
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodBaseObject"
+                  "relativePath": "mlBaseObject"
                 },
                 "context": {}
               },
@@ -1039,7 +1039,7 @@
                       "type": "schemaReference",
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "jzodElement"
+                        "relativePath": "mlElement"
                       },
                       "context": {}
                     },
@@ -1047,7 +1047,7 @@
                       "type": "schemaReference",
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "jzodElement"
+                        "relativePath": "mlElement"
                       },
                       "context": {}
                     }
@@ -1062,7 +1062,7 @@
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodBaseObject"
+                  "relativePath": "mlBaseObject"
                 },
                 "context": {}
               },
@@ -1083,7 +1083,7 @@
                       "type": "schemaReference",
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "jzodElement"
+                        "relativePath": "mlElement"
                       },
                       "context": {}
                     },
@@ -1091,7 +1091,7 @@
                       "type": "schemaReference",
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "jzodElement"
+                        "relativePath": "mlElement"
                       },
                       "context": {}
                     }
@@ -1106,7 +1106,7 @@
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodBaseObject"
+                  "relativePath": "mlBaseObject"
                 },
                 "context": {}
               },
@@ -1132,7 +1132,7 @@
                           "type": "schemaReference",
                           "definition": {
                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "jzodReference"
+                            "relativePath": "mlReference"
                           },
                           "context": {}
                         },
@@ -1140,7 +1140,7 @@
                           "type": "schemaReference",
                           "definition": {
                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "jzodObject"
+                            "relativePath": "mlObject"
                           },
                           "context": {}
                         }
@@ -1157,7 +1157,7 @@
                             "type": "schemaReference",
                             "definition": {
                               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "jzodReference"
+                              "relativePath": "mlReference"
                             },
                             "context": {}
                           },
@@ -1165,7 +1165,7 @@
                             "type": "schemaReference",
                             "definition": {
                               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "jzodObject"
+                              "relativePath": "mlObject"
                             },
                             "context": {}
                           }
@@ -1202,7 +1202,7 @@
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "jzodElement"
+                      "relativePath": "mlElement"
                     },
                     "context": {}
                   }
@@ -1216,7 +1216,7 @@
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodBaseObject"
+                  "relativePath": "mlBaseObject"
                 },
                 "context": {}
               },
@@ -1234,7 +1234,7 @@
                   "type": "schemaReference",
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "jzodElement"
+                    "relativePath": "mlElement"
                   },
                   "context": {}
                 }
@@ -1247,7 +1247,7 @@
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodBaseObject"
+                  "relativePath": "mlBaseObject"
                 },
                 "context": {}
               },
@@ -1265,7 +1265,7 @@
                   "type": "schemaReference",
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "jzodElement"
+                    "relativePath": "mlElement"
                   },
                   "context": {}
                 }
@@ -1278,7 +1278,7 @@
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodBaseObject"
+                  "relativePath": "mlBaseObject"
                 },
                 "context": {}
               },
@@ -1299,7 +1299,7 @@
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "jzodElement"
+                      "relativePath": "mlElement"
                     },
                     "context": {}
                   }
@@ -1333,7 +1333,7 @@
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodBaseObject"
+                  "relativePath": "mlBaseObject"
                 },
                 "context": {}
               },
@@ -1351,7 +1351,7 @@
                   "type": "schemaReference",
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "jzodElement"
+                    "relativePath": "mlElement"
                   },
                   "context": {}
                 }
@@ -1364,7 +1364,7 @@
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodBaseObject"
+                  "relativePath": "mlBaseObject"
                 },
                 "context": {}
               },
@@ -1384,7 +1384,7 @@
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "jzodElement"
+                      "relativePath": "mlElement"
                     },
                     "context": {}
                   }
@@ -1398,7 +1398,7 @@
                 "definition": {
                   "eager": true,
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "jzodBaseObject"
+                  "relativePath": "mlBaseObject"
                 },
                 "context": {}
               },
@@ -1486,7 +1486,7 @@
                     "type": "schemaReference",
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "jzodElement"
+                      "relativePath": "mlElement"
                     },
                     "context": {}
                   }
@@ -1496,24 +1496,24 @@
           ],
           "expandedReferences": {
             "__miroirJsonSet": [
-              "jzodArray",
-              "jzodPlainAttribute",
-              "jzodAttributePlainDateWithValidations",
-              "jzodAttributePlainNumberWithValidations",
-              "jzodAttributePlainStringWithValidations",
-              "jzodEnum",
-              "jzodFunction",
-              "jzodLazy",
-              "jzodLiteral",
-              "jzodIntersection",
-              "jzodMap",
-              "jzodObject",
-              "jzodPromise",
-              "jzodRecord",
-              "jzodReference",
-              "jzodSet",
-              "jzodTuple",
-              "jzodUnion"
+              "mlArray",
+              "mlPlainAttribute",
+              "mlAttributePlainDateWithValidations",
+              "mlAttributePlainNumberWithValidations",
+              "mlAttributePlainStringWithValidations",
+              "mlEnum",
+              "mlFunction",
+              "mlLazy",
+              "mlLiteral",
+              "mlIntersection",
+              "mlMap",
+              "mlObject",
+              "mlPromise",
+              "mlRecord",
+              "mlReference",
+              "mlSet",
+              "mlTuple",
+              "mlUnion"
             ]
           },
           "discriminator": "type"

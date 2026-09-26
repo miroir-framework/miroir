@@ -6,7 +6,7 @@ import {
   entity,
   entityInstance,
   entityInstancesUuidIndex,
-  jzodElement,
+  mlElement,
   metaModel,
   deployment
 } from "miroir-core";
@@ -103,7 +103,7 @@ export const tableComponentRowSchema = z.object({
   displayedValue: z.any(),
   deploymentUuid: z.string().uuid(),
   rawValue: entityInstance,
-  mlSchema: z.record(jzodElement),
+  mlSchema: z.record(mlElement),
   foreignKeyObjects: z.record(entityInstancesUuidIndex)
 })
 

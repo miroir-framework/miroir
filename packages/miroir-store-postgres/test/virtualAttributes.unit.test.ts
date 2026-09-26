@@ -5,7 +5,7 @@ import {
   applyMlSchemaColumnChanges,
   type Entity,
   type ExtractorInstancesByEntity,
-  type JzodElement,
+  type MlElement,
   type MiroirModelEnvironment,
 } from "miroir-core";
 import entityBookJson from "../../miroir-test-app_deployment-library/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json" with { type: "json" };
@@ -64,7 +64,7 @@ describe("virtual attributes — Sequelize columns from Book mlSchema", () => {
   });
 
   it("keeps a virtual addColumn on Entity mlSchema but not as a Sequelize column", () => {
-    const virtualDefinition: JzodElement = {
+    const virtualDefinition: MlElement = {
       type: "string",
       optional: true,
       tag: {
@@ -76,7 +76,7 @@ describe("virtual attributes — Sequelize columns from Book mlSchema", () => {
           },
         },
       },
-    } as JzodElement;
+    } as MlElement;
     const nextMlSchema = applyMlSchemaColumnChanges(entityBook.mlSchema, {
       addColumns: [{ name: "shelfLabel", definition: virtualDefinition }],
     });

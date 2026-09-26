@@ -1,6 +1,6 @@
 
 import {
-  JzodElement
+  MlElement
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 // NOTE: removed circular dependency import of transformer_extended_apply_wrapper
@@ -30,5 +30,5 @@ export type ResolveConditionalSchemaError =
   | { error: 'NO_DEPLOYMENT_UUID' }
   | { error: 'INVALID_PARENT_UUID_CONFIG', details: string };
 
-export type ResolveConditionalSchemaResult = JzodElement | ResolveConditionalSchemaError;
+export type ResolveConditionalSchemaResult = MlElement | ResolveConditionalSchemaError;
 

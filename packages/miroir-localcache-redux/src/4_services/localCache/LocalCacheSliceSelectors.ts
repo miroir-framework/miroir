@@ -344,7 +344,7 @@ export function applyDomainStateQueryTemplateSelector<ResultType>( // TODO: memo
 //   applicationDeploymentMap: ApplicationDeploymentMap,
 //   params: ExtractorTemplateRunnerParamsForJzodSchema<QueryType, DomainState>,
 //   modelEnvironment: MiroirModelEnvironment
-// ) => RecordOfJzodElement | JzodElement | undefined { 
+// ) => RecordOfJzodElement | MlElement | undefined { 
 //   return createSelector(
 //     [
 //       selectDomainStateFromReduxState, 
@@ -366,7 +366,7 @@ export function applyDomainStateQueryTemplateSelector<ResultType>( // TODO: memo
 //   applicationDeploymentMap: ApplicationDeploymentMap,
 //   params: ExtractorTemplateRunnerParamsForJzodSchema<QueryTemplateType, ReduxDeploymentsState>,
 //   modelEnvironment: MiroirModelEnvironment
-// ) => RecordOfJzodElement | JzodElement | undefined { 
+// ) => RecordOfJzodElement | MlElement | undefined { 
 //   return createSelector(
 //     [
 //       selectCurrentReduxDeploymentsStateFromReduxState,
@@ -387,7 +387,7 @@ export function applyDomainStateQueryTemplateSelector<ResultType>( // TODO: memo
 //   applicationDeploymentMap: ApplicationDeploymentMap,
 //   params: ExtractorRunnerParamsForJzodSchema<QueryType, ReduxDeploymentsState>,
 //   modelEnvironment: MiroirModelEnvironment
-// ) => RecordOfJzodElement | JzodElement | undefined { 
+// ) => RecordOfJzodElement | MlElement | undefined { 
 //   return createSelector(
 //     [
 //       selectCurrentReduxDeploymentsStateFromReduxState,

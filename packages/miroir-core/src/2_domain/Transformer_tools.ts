@@ -1,31 +1,31 @@
-import { JzodElement, JzodObject, TransformerDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { MlElement, MlObject, TransformerDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export function substituteTransformerReferencesInJzodElement<T>(
-  // jzodElement: JzodObject,
-  jzodElement: any,
+  // mlElement: MlObject,
+  mlElement: any,
   newReference: Record<string, string>,
 ): T {
-  if (jzodElement == null || jzodElement == undefined) {
-    return jzodElement;
+  if (mlElement == null || mlElement == undefined) {
+    return mlElement;
   }
-  if (typeof jzodElement == "object") {
-    if (Array.isArray(jzodElement)) {
-      return jzodElement.map((v) => substituteTransformerReferencesInJzodElement(v, newReference)) as T;
+  if (typeof mlElement == "object") {
+    if (Array.isArray(mlElement)) {
+      return mlElement.map((v) => substituteTransformerReferencesInJzodElement(v, newReference)) as T;
     }
-    if (jzodElement.type == "schemaReference") {
+    if (mlElement.type == "schemaReference") {
       return {
-        ...jzodElement,
+        ...mlElement,
         definition: {
-          ...jzodElement.definition,
+          ...mlElement.definition,
           relativePath:
-            Object.hasOwn(newReference, jzodElement.definition.relativePath)
-              ? newReference[jzodElement.definition.relativePath]
-              : jzodElement.definition.relativePath,
+            Object.hasOwn(newReference, mlElement.definition.relativePath)
+              ? newReference[mlElement.definition.relativePath]
+              : mlElement.definition.relativePath,
         },
       };
     } else {
       return Object.fromEntries(
-        Object.entries(jzodElement).map(([key, value]) => {
+        Object.entries(mlElement).map(([key, value]) => {
           if (Array.isArray(value)) {
             return [
               key,
@@ -40,24 +40,24 @@ export function substituteTransformerReferencesInJzodElement<T>(
       ) as T;
     }
   }
-  return jzodElement;
+  return mlElement;
 }
 
 // ################################################################################################
 /**
  * 
- * @param transformerDefinition - The transformer definition to convert to a JzodElement.
+ * @param transformerDefinition - The transformer definition to convert to a MlElement.
  * @param target - The target environment to convert the transformer to.
  * @param referenceMap - A map of reference paths to the transformer definition.
  * @param optionalInterpolation - Whether to include the optional interpolation in the transformer definition.
- * @returns The transformer definition as a JzodElement.
+ * @returns The transformer definition as a MlElement.
  */
 export function transformerInterfaceFromDefinition(
   transformerDefinition: TransformerDefinition,
   target: "build" | "buildPlusRuntime" | "coreBuildPlusRuntime",
   referenceMap: Record<string, string> = {},
   optionalInterpolation: boolean = false
-): JzodElement {
+): MlElement {
   let relativePath
   let innerReferenceRelativePath:
     | "transformerForBuild"
@@ -85,7 +85,7 @@ export function transformerInterfaceFromDefinition(
   }
 
   const transformerParameterSchema = transformerDefinition.transformerInterface.transformerParameterSchema;
-  const newApplyTo: JzodElement = (// TODO: allow using a transformer in place of a value for applyTo
+  const newApplyTo: MlElement = (// TODO: allow using a transformer in place of a value for applyTo
     transformerParameterSchema
       .transformerDefinition.definition as any
   ).applyTo?{
@@ -100,12 +100,12 @@ export function transformerInterfaceFromDefinition(
     // ],
   }: { type: "never"};
 
-  const newDefinition = substituteTransformerReferencesInJzodElement<JzodObject>(
+  const newDefinition = substituteTransformerReferencesInJzodElement<MlObject>(
     transformerParameterSchema.transformerDefinition,
     referenceMap
   ).definition;
 
-  const result: JzodElement = {
+  const result: MlElement = {
     type: "object",
     extend: transformerParameterSchema.transformerDefinition.extend
       ? [

@@ -36,7 +36,7 @@
               "type": "schemaReference",
               "definition": {
                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "jzodElement"
+                "relativePath": "mlElement"
               }
             },
             "description": "Schema context for reference resolution (referenceName / referencePath operands)."
@@ -53,7 +53,7 @@
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "jzodElement"
+              "relativePath": "mlElement"
             }
           },
           {

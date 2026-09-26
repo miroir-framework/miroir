@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import {
   InitApplicationParameters,
-  JzodObject,
+  MlObject,
   MiroirConfigClient,
   StoreUnitConfiguration,
   TestCompositeActionParams,
@@ -74,7 +74,7 @@ const fileData: { [k: string]: any }[] = [
   { a: "US", b: "USA", c: "United States" },
   { a: "DE", b: "DEU", c: "Germany" },
 ];
-const newEntityJzodSchema: JzodObject = {
+const newEntityJzodSchema: MlObject = {
   type: "object",
   definition: Object.assign(
     {},

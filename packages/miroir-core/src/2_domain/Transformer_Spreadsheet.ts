@@ -48,7 +48,7 @@ import { TransformerDefinition } from "../0_interfaces/1_core/preprocessor-gener
 //         type: "schemaReference",
 //         definition: {
 //           absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-//           relativePath: "jzodElement",
+//           relativePath: "mlElement",
 //         },
 //       }
 //     },

@@ -1,18 +1,18 @@
-import { JzodElement, JzodObject, JzodReference } from "@miroir-framework/jzod-ts";
+import type { MlElement, MlObject, MlReference } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 /**
- * Recursively collects all JzodReference elements found
- * within the provided JzodElement definition. It specifically
+ * Recursively collects all MlReference elements found
+ * within the provided MlElement definition. It specifically
  * checks the "extend" clause within JzodObjects.
  *
- * @param element The root JzodElement to search within.
- * @returns Array of discovered JzodReference elements.
+ * @param element The root MlElement to search within.
+ * @returns Array of discovered MlReference elements.
  */
 export function JzodSchemaReferencesList(
-  element: JzodElement,
+  element: MlElement,
   includeExtend: boolean = true
-): JzodReference[] {
-  const refs: JzodReference[] = [];
+): MlReference[] {
+  const refs: MlReference[] = [];
 
   traverseJzodSchemaForRefs(element, refs, includeExtend);
   return refs;
@@ -20,8 +20,8 @@ export function JzodSchemaReferencesList(
 
 // ################################################################################################
 function traverseJzodSchemaForRefs(
-  node: JzodElement,
-  refs: JzodReference[] | Set<JzodReference>,
+  node: MlElement,
+  refs: MlReference[] | Set<MlReference>,
   includeExtend: boolean = true
 ): void {
   switch (node.type) {
@@ -45,7 +45,7 @@ function traverseJzodSchemaForRefs(
       if (node.extend && includeExtend) {
         // refs.push(node.extend);
         if (Array.isArray(node.extend)) {
-          node.extend.forEach((ref: JzodReference | JzodObject | undefined) => {
+          node.extend.forEach((ref: MlReference | MlObject | undefined) => {
             if (ref) {
               traverseJzodSchemaForRefs(ref, refs, includeExtend);
             }
@@ -107,17 +107,17 @@ function traverseJzodSchemaForRefs(
 
 // ## ################################################################################
 export function JzodSchemaReferencesSet(
-  element: JzodElement,
+  element: MlElement,
   includeExtend: boolean = true
-): Set<JzodReference> {
-  const refs: Set<JzodReference> = new Set<JzodReference>();
+): Set<MlReference> {
+  const refs: Set<MlReference> = new Set<MlReference>();
   traverseJzodSchemaForRefs(element, refs, includeExtend);
   return refs;
 }
 
 // ################################################################################################
 export function jzodTransitiveDependencySet(
-  miroirFundamentalJzodSchema: JzodReference,
+  miroirFundamentalJzodSchema: MlReference,
   contextElementName: string,
   includeExtend: boolean = false,
   filterPrefix?: string
@@ -130,7 +130,7 @@ export function jzodTransitiveDependencySet(
     throw new Error("miroirFundamentalJzodSchema.context is not defined");
   }
 
-  function visit(element: string, path: string[], miroirFundamentalJzodSchema: JzodReference) {
+  function visit(element: string, path: string[], miroirFundamentalJzodSchema: MlReference) {
     // console.log(
     //   "############## visting",
     //   element,
@@ -158,7 +158,7 @@ export function jzodTransitiveDependencySet(
     visitedSet.add(element);
     const localRefs: (string | undefined)[] = Array.from(
       JzodSchemaReferencesSet(miroirFundamentalJzodSchema.context[element], includeExtend).values()
-    ).map((ref: JzodReference) => ref.definition.relativePath);
+    ).map((ref: MlReference) => ref.definition.relativePath);
 
     // console.log("jzodTransitiveDependencySet for element",element,"found localRefs", localRefs);
     for (const ref of localRefs) {

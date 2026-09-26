@@ -9,7 +9,7 @@ import {
   DomainControllerInterface,
   getEndpointActions,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
-  JzodObject,
+  MlObject,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
@@ -226,15 +226,15 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
             (action) => action.actionParameters.actionType.definition === selectedActionName
           );
 
-          const currentActionParametersMMLSchema:JzodObject = useMemo(() => {
+          const currentActionParametersMMLSchema:MlObject = useMemo(() => {
             return {
               type: 'object',
               definition: currentAction?.actionParameters || {}
-            } as JzodObject;
+            } as MlObject;
           }, [currentAction]);
 
           log.info('EndpointActionCaller: currentActionParametersMMLSchema', currentActionParametersMMLSchema);
-          const endpointActionCallerFormikSchema: JzodObject = useMemo(() => ({
+          const endpointActionCallerFormikSchema: MlObject = useMemo(() => ({
             type: "object",
             definition: {
               [formikPath_EndpointActionCaller]: {
@@ -479,7 +479,7 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
                 {formikContext.values[formikPath_EndpointActionCaller] && (
                   <TypedValueObjectEditor
                     labelElement={<span>select Application</span>}
-                    formValueMLSchema={endpointActionCallerFormikSchema.definition[formikPath_EndpointActionCaller] as JzodObject}
+                    formValueMLSchema={endpointActionCallerFormikSchema.definition[formikPath_EndpointActionCaller] as MlObject}
                     formikValuePathAsString={formikPath_EndpointActionCaller}
                     deploymentUuid={deployment_Miroir.uuid} // dummy deployment for application selection
                     application={innerSelectedApplicationUuid}

@@ -4,9 +4,9 @@
 // import {
 //   ApplicationSection,
 //   Entity,
-//   JzodElement,
-//   JzodObject,
-//   JzodRecord,
+//   MlElement,
+//   MlObject,
+//   MlRecord,
 //   LoggerInterface,
 //   MiroirLoggerFactory,
 //   Uuid
@@ -32,8 +32,8 @@
 //   applicationSection?: ApplicationSection,
 //   entityUuid?: Uuid,
 //   element: any,
-//   elementJzodSchema: JzodElement, // used only for displaying error messages
-//   resolvedElementJzodSchema: JzodElement,
+//   elementJzodSchema: MlElement, // used only for displaying error messages
+//   resolvedElementJzodSchema: MlElement,
 //   currentReportDeploymentSectionEntities?: Entity[],
 //   currentEnumJzodSchemaResolver: JzodEnumSchemaToJzodElementResolver,
 // }
@@ -104,10 +104,10 @@
 //                             path={props.path+'.'+attribute[0]}
 //                             applicationSection={props.applicationSection}
 //                             deploymentUuid={props.deploymentUuid}
-//                             elementJzodSchema={(props.resolvedElementJzodSchema as JzodRecord).definition}
+//                             elementJzodSchema={(props.resolvedElementJzodSchema as MlRecord).definition}
 //                             entityUuid={props.entityUuid}
 //                             currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
-//                             resolvedElementJzodSchema={(props.resolvedElementJzodSchema as JzodRecord).definition}
+//                             resolvedElementJzodSchema={(props.resolvedElementJzodSchema as MlRecord).definition}
 //                             element={attribute[1]}
 //                             currentReportDeploymentSectionEntities={props.currentReportDeploymentSectionEntities}
 //                           ></JzodElementDisplay>
@@ -168,11 +168,11 @@
 //                             path={props.path + '.' + attribute[0]}
 //                             applicationSection={props.applicationSection}
 //                             deploymentUuid={props.deploymentUuid}
-//                             elementJzodSchema={(props.resolvedElementJzodSchema as JzodObject)?.definition[attribute[0]]}
+//                             elementJzodSchema={(props.resolvedElementJzodSchema as MlObject)?.definition[attribute[0]]}
 //                             entityUuid={props.entityUuid}
 //                             // rootJzodSchema={props.rootJzodSchema}
 //                             currentEnumJzodSchemaResolver={props.currentEnumJzodSchemaResolver}
-//                             resolvedElementJzodSchema={(props.resolvedElementJzodSchema as JzodObject).definition[attribute[0]]}
+//                             resolvedElementJzodSchema={(props.resolvedElementJzodSchema as MlObject).definition[attribute[0]]}
 //                             element={attribute[1]}
 //                             name={attribute[0]}
 //                             currentReportDeploymentSectionEntities={props.currentReportDeploymentSectionEntities}

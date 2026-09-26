@@ -15,7 +15,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
-import type { JzodObject } from "../../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import type { MlObject } from "../../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { TransformerFailure } from "../../../../src/0_interfaces/2_domain/DomainElement.js";
 import { jzodTypeCheck } from "../../../../src/1_core/jzod/jzodTypeCheck.js";
 import { defaultMetaModelEnvironment } from "../../../../src/1_core/Model.js";
@@ -332,7 +332,7 @@ function simpleGetOpenApi(operationId: string, path: string): Record<string, unk
       endpointUuid: ENDPOINT_UUID,
     });
     const schema = upsertedEndpoint(result).definition.externalService.operations[0]
-      .responseSchema as JzodObject;
+      .responseSchema as MlObject;
     const metadataOnly = {
       id: "5BQpOaeNsOzzq4l3PFUQMd",
       name: "Ex-yu",

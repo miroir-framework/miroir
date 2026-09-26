@@ -1,6 +1,6 @@
 import {
-  JzodElement,
-  JzodObject,
+  MlElement,
+  MlObject,
   MlSchema,
   MetaModel,
   MiroirLoggerFactory,
@@ -14,9 +14,9 @@ let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerNa
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 // #####################################################################################################
-export type JzodObjectRecord = { [k: string]: JzodObject };
-export type JzodElementRecord = { [k: string]: JzodElement };
-export type JzodEnumSchemaToJzodElementResolver = (type: string, definition?: any) => JzodElement;
+export type JzodObjectRecord = { [k: string]: MlObject };
+export type JzodElementRecord = { [k: string]: MlElement };
+export type JzodEnumSchemaToJzodElementResolver = (type: string, definition?: any) => MlElement;
 
 export function getCurrentEnumJzodSchemaResolver(
   currentMiroirModel: MetaModel,
@@ -34,7 +34,7 @@ export function getCurrentEnumJzodSchemaResolver(
                 type: "schemaReference",
                 definition: {
                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  relativePath: "jzodArray",
+                  relativePath: "mlArray",
                 },
               },
               currentMiroirModel
@@ -65,7 +65,7 @@ export function getCurrentEnumJzodSchemaResolver(
                 type: "schemaReference",
                 definition: {
                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  relativePath: "jzodEnum",
+                  relativePath: "mlEnum",
                 },
               },
               currentMiroirModel
@@ -77,7 +77,7 @@ export function getCurrentEnumJzodSchemaResolver(
                 type: "schemaReference",
                 definition: {
                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  relativePath: "jzodUnion",
+                  relativePath: "mlUnion",
                 },
               },
               currentMiroirModel
@@ -89,7 +89,7 @@ export function getCurrentEnumJzodSchemaResolver(
                 type: "schemaReference",
                 definition: {
                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  relativePath: "jzodRecord",
+                  relativePath: "mlRecord",
                 },
               },
               currentMiroirModel
@@ -101,7 +101,7 @@ export function getCurrentEnumJzodSchemaResolver(
                 type: "schemaReference",
                 definition: {
                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  relativePath: "jzodObject",
+                  relativePath: "mlObject",
                 },
               },
               currentMiroirModel
@@ -113,7 +113,7 @@ export function getCurrentEnumJzodSchemaResolver(
                 type: "schemaReference",
                 definition: {
                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  relativePath: "jzodFunction",
+                  relativePath: "mlFunction",
                 },
               },
               currentMiroirModel
@@ -125,7 +125,7 @@ export function getCurrentEnumJzodSchemaResolver(
                 type: "schemaReference",
                 definition: {
                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  relativePath: "jzodLazy",
+                  relativePath: "mlLazy",
                 },
               },
               currentMiroirModel
@@ -137,7 +137,7 @@ export function getCurrentEnumJzodSchemaResolver(
                 type: "schemaReference",
                 definition: {
                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  relativePath: "jzodLiteral",
+                  relativePath: "mlLiteral",
                 },
               },
               currentMiroirModel
@@ -149,7 +149,7 @@ export function getCurrentEnumJzodSchemaResolver(
                 type: "schemaReference",
                 definition: {
                   absolutePath: "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  relativePath: "jzodReference",
+                  relativePath: "mlReference",
                 },
               },
               currentMiroirModel

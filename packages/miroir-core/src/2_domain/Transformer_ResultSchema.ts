@@ -26,7 +26,7 @@ import {
   CoreTransformerForBuildPlusRuntime_numericOp,
   CoreTransformerForBuildPlusRuntime_returnValue,
   CoreTransformerForBuildPlusRuntime_stringOp,
-  JzodElement,
+  MlElement,
   TransformerDefinition,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
@@ -42,7 +42,7 @@ import {
 import { applicationTransformerDefinitions } from "./TransformersForRuntime";
 import type { TransformerReturnType } from "../0_interfaces/2_domain/DomainElement";
 
-export type TransformerResultSchemaContext = Record<string, JzodElement>;
+export type TransformerResultSchemaContext = Record<string, MlElement>;
 
 export type {
   FailedTransformerInterfaceFromDefinition,
@@ -70,7 +70,7 @@ function isTypedTransformer(
   );
 }
 
-function getSchemaType(schema: JzodElement): string | undefined {
+function getSchemaType(schema: MlElement): string | undefined {
   if (typeof schema === "object" && schema !== null && "type" in schema) {
     return String((schema as { type: unknown }).type);
   }
@@ -131,7 +131,7 @@ function buildMlSchemaTransformerContext(
   transformer: TypedTransformer,
   context: TransformerResultSchemaContext,
   transformerDefinitions: Record<string, TransformerDefinition>,
-  attributeNames: Record<string, JzodElement>,
+  attributeNames: Record<string, MlElement>,
 ): TransformerResultSchemaContext | FailedTransformerInterfaceFromDefinition {
   const derivationContext = { ...context };
 
@@ -170,7 +170,7 @@ function buildMlSchemaTransformerContext(
 function resolveReferenceSchema(
   transformer: ReferenceTransformer,
   context: TransformerResultSchemaContext,
-  fallback: JzodElement,
+  fallback: MlElement,
   transformerType: "getFromContext" | "getFromParameters",
 ): ResolveTransformerResultSchemaReturnType {
   const binding = referenceBindingFromTransformer(transformer);
@@ -193,7 +193,7 @@ function resolveReferenceSchema(
 
   if (transformer.referencePath?.length) {
     const rootKey = transformer.referencePath[0];
-    let current: JzodElement | undefined = context[rootKey];
+    let current: MlElement | undefined = context[rootKey];
     if (!current) {
       return failTransformerResultSchema(
         "contextMissingReference",
@@ -226,7 +226,7 @@ function resolveReferenceSchema(
           },
         );
       }
-      current = (current as { definition: Record<string, JzodElement> }).definition[segment];
+      current = (current as { definition: Record<string, MlElement> }).definition[segment];
       if (!current) {
         return failTransformerResultSchema(
           "contextPathNotFound",
@@ -258,7 +258,7 @@ function resolveAccessDynamicPathSchema(
   context: TransformerResultSchemaContext,
   transformerDefinitions: Record<string, TransformerDefinition>,
 ): ResolveTransformerResultSchemaReturnType {
-  let current: ResolveTransformerResultSchemaReturnType = undefined as unknown as JzodElement;
+  let current: ResolveTransformerResultSchemaReturnType = undefined as unknown as MlElement;
 
   for (const [index, segment] of transformer.objectAccessPath.entries()) {
     if (typeof segment === "string") {
@@ -298,7 +298,7 @@ function resolveAccessDynamicPathSchema(
           },
         );
       }
-      current = next as JzodElement;
+      current = next as MlElement;
     } else {
       const resolvedSegment = resolveTransformerResultSchema(segment, context, transformerDefinitions);
       if (propagateFailure(resolvedSegment)) {
@@ -346,7 +346,7 @@ function resolveRecordTransformerDefinitionSchema(
     return { type: "object", definition: {} };
   }
 
-  const objectDefinition: Record<string, JzodElement> = {};
+  const objectDefinition: Record<string, MlElement> = {};
   const stepContext = { ...context };
 
   for (const [key, nestedTransformer] of Object.entries(definition)) {
@@ -382,9 +382,9 @@ function resolveRecordTransformerDefinitionSchema(
 function validateApplyToSchemaShape(
   transformerType: string,
   applyToTransformer: TypedTransformer,
-  applyToSchema: JzodElement,
+  applyToSchema: MlElement,
   expectedRootType: string,
-  expectedSchema: JzodElement,
+  expectedSchema: MlElement,
 ): FailedTransformerInterfaceFromDefinition | undefined {
   return requireSchemaRootType(applyToSchema, expectedRootType, expectedSchema, {
     transformerType,
@@ -420,9 +420,9 @@ function referenceBindingFromTransformerOrEmpty(
  * @returns The failed transformer interface from definition
  */
 function requireSchemaRootType(
-  schema: JzodElement,
+  schema: MlElement,
   expectedRootType: string,
-  expectedSchema: JzodElement,
+  expectedSchema: MlElement,
   details: {
     transformerType: string;
     typePath: (string | number)[];
@@ -524,40 +524,40 @@ function boolExprOperatorRequiresBooleanOperands(operator: CoreTransformerForBui
   return operator === "&&" || operator === "||" || operator === "!";
 }
 
-function isObjectLikeSchema(schema: JzodElement): boolean {
+function isObjectLikeSchema(schema: MlElement): boolean {
   const root = getSchemaType(schema);
   return root === "object" || root === "record";
 }
 
-function getObjectDefinitionMap(schema: JzodElement): Record<string, JzodElement> | undefined {
+function getObjectDefinitionMap(schema: MlElement): Record<string, MlElement> | undefined {
   if (typeof schema !== "object" || schema === null || !("definition" in schema)) {
     return undefined;
   }
   if (getSchemaType(schema) === "object") {
     const definition = (schema as { definition: unknown }).definition;
     if (typeof definition === "object" && definition !== null && !Array.isArray(definition)) {
-      return definition as Record<string, JzodElement>;
+      return definition as Record<string, MlElement>;
     }
   }
   return undefined;
 }
 
-function unwrapArrayElementSchema(schema: JzodElement): JzodElement {
+function unwrapArrayElementSchema(schema: MlElement): MlElement {
   if (
     getSchemaType(schema) === "array" &&
     typeof schema === "object" &&
     schema !== null &&
     "definition" in schema
   ) {
-    return (schema as { definition: JzodElement }).definition;
+    return (schema as { definition: MlElement }).definition;
   }
   return { type: "any" };
 }
 
-function buildUnionSchema(schemas: JzodElement[]): JzodElement {
+function buildUnionSchema(schemas: MlElement[]): MlElement {
   const nonFailed = schemas.filter(
     (schema) => !isFailedTransformerInterfaceFromDefinition(schema),
-  ) as JzodElement[];
+  ) as MlElement[];
   if (nonFailed.length === 0) {
     return { type: "any" };
   }
@@ -567,7 +567,7 @@ function buildUnionSchema(schemas: JzodElement[]): JzodElement {
   return { type: "union", definition: nonFailed };
 }
 
-function mergeObjectSchemas(base: JzodElement, overlay: JzodElement): JzodElement {
+function mergeObjectSchemas(base: MlElement, overlay: MlElement): MlElement {
   const baseDefinition = getObjectDefinitionMap(base) ?? {};
   const overlayDefinition = getObjectDefinitionMap(overlay) ?? {};
   return {
@@ -716,7 +716,7 @@ function resolveCaseBranchSchemas(
   context: TransformerResultSchemaContext,
   transformerDefinitions: Record<string, TransformerDefinition>,
 ): ResolveTransformerResultSchemaReturnType {
-  const branchSchemas: JzodElement[] = [];
+  const branchSchemas: MlElement[] = [];
 
   for (const [index, whenClause] of caseTransformer.whens.entries()) {
     const thenSchema = resolveOperandSchema(
@@ -835,7 +835,7 @@ export function resolveTransformerResultSchema(
     case "returnValue": {
       const returnValueTransformer = transformer as CoreTransformerForBuildPlusRuntime_returnValue;
       if (returnValueTransformer.mlSchema) {
-        return returnValueTransformer.mlSchema as JzodElement;
+        return returnValueTransformer.mlSchema as MlElement;
       }
       break;
     }
@@ -1126,7 +1126,7 @@ export function resolveTransformerResultSchema(
     }
     case "concatLists": {
       const concatListsTransformer = transformer as CoreTransformerForBuildPlusRuntime_concatLists;
-      const elementSchemas: JzodElement[] = [];
+      const elementSchemas: MlElement[] = [];
 
       for (const [index, listTransformer] of concatListsTransformer.lists.entries()) {
         if (!isTypedTransformer(listTransformer as CoreTransformerForBuildPlusRuntime)) {
@@ -1255,7 +1255,7 @@ export function resolveTransformerResultSchema(
     }
     case "mergeIntoObject": {
       const mergeTransformer = transformer as CoreTransformerForBuildPlusRuntime_mergeIntoObject;
-      let baseSchema: JzodElement = { type: "object", definition: {} };
+      let baseSchema: MlElement = { type: "object", definition: {} };
 
       if (mergeTransformer.applyTo && isTypedTransformer(mergeTransformer.applyTo)) {
         const applyToSchema = resolveApplyToObjectSchema(
@@ -1295,7 +1295,7 @@ export function resolveTransformerResultSchema(
     case "createObjectFromPairs": {
       const pairsTransformer =
         transformer as CoreTransformerForBuildPlusRuntime_createObjectFromPairs;
-      const objectDefinition: Record<string, JzodElement> = {};
+      const objectDefinition: Record<string, MlElement> = {};
 
       for (const [index, pair] of pairsTransformer.definition.entries()) {
         const key =
@@ -1325,7 +1325,7 @@ export function resolveTransformerResultSchema(
       const constantTransformer =
         transformer as CoreTransformerForBuildPlusRuntime_constantAsExtractor;
       if (constantTransformer.valueJzodSchema) {
-        return constantTransformer.valueJzodSchema as JzodElement;
+        return constantTransformer.valueJzodSchema as MlElement;
       }
       break;
     }

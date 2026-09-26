@@ -258,7 +258,7 @@ export { default as menuApplicationModelScopeTemplate } from "./assets/miroir_da
 export { default as miroirJzodSchemaBootstrap } from "./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json" with { type: "json" };
 export { default as transformerJzodSchema } from "./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/a97756cf-dd93-42b9-a021-91a629b187b9.json" with { type: "json" };
 // Alias
-export { default as jzodSchemajzodMiroirBootstrapSchema } from "./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json" with { type: "json" };
+export { default as mlSchemaMlMiroirBootstrapSchema } from "./assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json" with { type: "json" };
 
 // ################################################################################################
 // Miroir Data - Test (parentUuid = entityTest = c37625c7)
@@ -438,13 +438,13 @@ export { default as applicationVersionInitialMiroirVersionCrossEntityDefinitionR
 export { default as commitInitialCommit } from "./assets/miroir_data/73bb0c69-e636-4e3b-a230-51f25469c089/e91d93fc-9165-4966-a15d-3989cab9a994.json" with { type: "json" };
 
 export { default as entityTheme } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/bdcf956a-771d-40a1-a878-06e0bf6efd3e.json" with { type: "json" };
-import type { JzodObject } from "miroir-core";
+import type { MlObject } from "miroir-core";
 import { default as entityVersionTheme } from "./assets/miroir_modelVersion/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/31b88b03-f301-44f9-a6bf-934ed0576ee0.json" with { type: "json" };
 export { entityVersionTheme };
 /** @deprecated Use entityVersionTheme */
 export { entityVersionTheme as entityDefinitionTheme };
-export const miroirThemeSchemaJson: JzodObject = entityVersionTheme.mlSchema as any;
-export const tableThemeSchemaJson: JzodObject = entityVersionTheme.mlSchema.definition.definition.definition.table as any;
+export const miroirThemeSchemaJson: MlObject = entityVersionTheme.mlSchema as any;
+export const tableThemeSchemaJson: MlObject = entityVersionTheme.mlSchema.definition.definition.definition.table as any;
 // export const tableThemeSchemaJson = (entityVersionTheme as any).mlSchema.definition.definition.table;
 export { default as defaultStoredMiroirTheme } from "./assets/miroir_data/bdcf956a-771d-40a1-a878-06e0bf6efd3e/919803c4-979d-4d7c-9cec-e54d37bdac09.json" with { type: "json" };
 export { default as darkStoredMiroirTheme } from "./assets/miroir_data/bdcf956a-771d-40a1-a878-06e0bf6efd3e/b327b9c0-7355-42ac-b44b-b6d8b0320e0f.json" with { type: "json" };

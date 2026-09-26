@@ -7,7 +7,7 @@ import type {
   EntityVersion,
   EntityInstance,
   InstanceCUDAction,
-  JzodObject,
+  MlObject,
   ModelActionCreateEntity,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { produceEvolutionTraceEvent } from "../../src/2_domain/evolutionTraceWriter.js";
@@ -63,7 +63,7 @@ const mockEntityDefinition: EntityVersion = {
   parentUuid: ENTITYDEF_PARENT_UUID,
   name: "TestEntity",
   entityUuid: ENTITY_UUID,
-  mlSchema: { type: "object", definition: {} } as JzodObject,
+  mlSchema: { type: "object", definition: {} } as MlObject,
 };
 
 const mockInstance: EntityInstance = {
