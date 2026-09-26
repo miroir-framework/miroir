@@ -1,4 +1,15 @@
-import type { MiroirTestForReactComponent } from "../1_core/preprocessor-generated/miroirFundamentalType";
+import type {
+  MiroirTestForReactComponent,
+  MiroirTestLeaf,
+} from "../1_core/preprocessor-generated/miroirFundamentalType";
+
+/**
+ * Any leaf reached by the MiroirTest walk: a `MiroirTestLeaf` of a plain `miroirTestSuite`, or a
+ * `reactComponentTest` leaf of a `reactComponentTestSuite`. The schema accepts a
+ * `reactComponentTest` leaf only in a `reactComponentTestSuite` (#294), so it is not a
+ * `MiroirTestLeaf`.
+ */
+export type MiroirTestAnyLeaf = MiroirTestLeaf | MiroirTestForReactComponent;
 
 export type TestSuiteListFilter = string[] | { [x: string]: TestSuiteListFilter };
 

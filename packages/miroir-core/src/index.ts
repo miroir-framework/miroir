@@ -1760,6 +1760,7 @@ export {
   type RunMiroirTestSuiteInProcessParams,
 } from "./5_tests/runMiroirTestSuiteInProcess.js";
 export type {
+  MiroirTestAnyLeaf,
   MiroirTestRunFilter,
   ReactComponentTestRunner,
   ReactComponentTestRunnerResult,

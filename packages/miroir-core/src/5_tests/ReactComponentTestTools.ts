@@ -28,7 +28,8 @@ export const REACT_COMPONENT_TEST_NO_SUITE_MESSAGE =
  * - No runner registered: the leaf is recorded as skipped and nothing is thrown (miroir-core
  *   generic entry, where vitest then reports the leaf as passed).
  * - A leaf outside a `reactComponentTestSuite` (no suite context from the walk) is recorded as an
- *   `error` and does not reach the runner (#292 M1).
+ *   `error` and does not reach the runner (#292 M1). The schema rejects this placement (#294); the
+ *   check stays for instances that were not validated.
  * - Otherwise the runner is called with the leaf and the suite context built by the walk (#292),
  *   and its `ok` / `error` is recorded.
  *

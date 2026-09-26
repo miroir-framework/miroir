@@ -6858,14 +6858,6 @@ export const miroirFundamentalJzodSchema = {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "relativePath": "miroirTestForReactComponent",
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-            },
-            "context": {}
           }
         ]
       },
@@ -8520,12 +8512,6 @@ export const miroirFundamentalJzodSchema = {
                     "type": "schemaReference",
                     "definition": {
                       "relativePath": "miroirTestForAction"
-                    }
-                  },
-                  {
-                    "type": "schemaReference",
-                    "definition": {
-                      "relativePath": "miroirTestForReactComponent"
                     }
                   }
                 ]

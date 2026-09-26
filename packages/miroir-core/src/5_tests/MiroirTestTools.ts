@@ -33,6 +33,7 @@ import { runMiroirQueryRunnerTestInMemory } from "./QueryRunnerTestTools";
 import { runMiroirRunnerTest } from "./RunnerTestTools";
 import { runMiroirReactComponentTest } from "./ReactComponentTestTools.js";
 import type {
+  MiroirTestAnyLeaf,
   MiroirTestRunFilter,
   ReactComponentTestSuiteContext,
 } from "../0_interfaces/5-tests/miroirTestTypes";
@@ -120,7 +121,7 @@ export type MiroirTestExecutionOptions = {
        * is not called (#286). Run all passes `["reactComponentTest"]` when its "Include component
        * tests" checkbox is off.
        */
-      excludeMiroirTestTypes?: MiroirTestLeaf["miroirTestType"][];
+      excludeMiroirTestTypes?: MiroirTestAnyLeaf["miroirTestType"][];
     }
   | {
       executionMode: "integration";
@@ -134,7 +135,7 @@ export function miroirTestTypeExcludedMessage(miroirTestType: string): string {
   return `${miroirTestType} leaves are excluded from this run (excludeMiroirTestTypes)`;
 }
 
-function miroirTestLeafLabel(leaf: MiroirTestLeafExecutable): string {
+function miroirTestLeafLabel(leaf: MiroirTestAnyLeaf): string {
   return leaf.miroirTestLabel;
 }
 
@@ -143,7 +144,7 @@ export type RunMiroirTest = (
   localVitest: VitestNamespace,
   testNamePath: string[],
   filter: MiroirTestRunFilter | undefined,
-  leaf: MiroirTestLeaf,
+  leaf: MiroirTestAnyLeaf,
   modelEnvironment: MiroirModelEnvironment,
   miroirActivityTracker: MiroirActivityTrackerInterface,
   parentTrackingId: string | undefined,
@@ -169,7 +170,7 @@ export async function runMiroirTest(
   localVitest: VitestNamespace,
   testNamePath: string[],
   filter: MiroirTestRunFilter | undefined,
-  leaf: MiroirTestLeaf,
+  leaf: MiroirTestAnyLeaf,
   modelEnvironment: MiroirModelEnvironment,
   miroirActivityTracker: MiroirActivityTrackerInterface,
   _parentTrackingId: string | undefined,
@@ -324,7 +325,7 @@ export async function runMiroirTest(
       );
     default: {
       const _exhaustive: never = leaf;
-      throw new Error(`Unknown miroirTestType: ${(_exhaustive as MiroirTestLeaf).miroirTestType}`);
+      throw new Error(`Unknown miroirTestType: ${(_exhaustive as MiroirTestAnyLeaf).miroirTestType}`);
     }
   }
 }

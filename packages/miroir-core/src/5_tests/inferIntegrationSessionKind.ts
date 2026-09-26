@@ -1,9 +1,9 @@
 import type {
   MiroirTestForTransformer,
-  MiroirTestLeaf,
   MiroirTestSuite,
   ReactComponentTestSuite,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { MiroirTestAnyLeaf } from "../0_interfaces/5-tests/miroirTestTypes";
 import type { IntegrationTestSessionKind } from "./IntegrationTestBootstrap.js";
 
 export type MiroirTestSuiteUiExecutionMode = "unit" | "integration" | "mixed";
@@ -15,10 +15,10 @@ export type MiroirTestSuiteExecutionCapabilities = {
   uiExecutionMode: MiroirTestSuiteUiExecutionMode;
 };
 
-export function walkMiroirTestLeaves(suite: MiroirTestSuite): MiroirTestLeaf[] {
-  const leaves: MiroirTestLeaf[] = [];
+export function walkMiroirTestLeaves(suite: MiroirTestSuite): MiroirTestAnyLeaf[] {
+  const leaves: MiroirTestAnyLeaf[] = [];
 
-  function visit(node: MiroirTestLeaf | MiroirTestSuite | ReactComponentTestSuite): void {
+  function visit(node: MiroirTestAnyLeaf | MiroirTestSuite | ReactComponentTestSuite): void {
     // A `reactComponentTestSuite` holds `reactComponentTest` leaves (#292).
     if (node.miroirTestType === "miroirTestSuite" || node.miroirTestType === "reactComponentTestSuite") {
       for (const child of node.miroirTests) {
@@ -40,7 +40,7 @@ export function transformerTestLeafRequiresIntegration(leaf: MiroirTestForTransf
   return leaf.integrationTestExpectedValue !== undefined;
 }
 
-function miroirTestLeafSupportsUnitExecution(leaf: MiroirTestLeaf): boolean {
+function miroirTestLeafSupportsUnitExecution(leaf: MiroirTestAnyLeaf): boolean {
   switch (leaf.miroirTestType) {
     case "runnerTest":
     case "actionTest":
@@ -58,7 +58,7 @@ function miroirTestLeafSupportsUnitExecution(leaf: MiroirTestLeaf): boolean {
   }
 }
 
-function miroirTestLeafRequiresIntegrationExecution(leaf: MiroirTestLeaf): boolean {
+function miroirTestLeafRequiresIntegrationExecution(leaf: MiroirTestAnyLeaf): boolean {
   switch (leaf.miroirTestType) {
     case "runnerTest":
     case "actionTest":

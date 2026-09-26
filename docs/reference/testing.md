@@ -113,7 +113,7 @@ is a `MiroirTestDefinition` whose `definition` field is a `MiroirTestSuite` tree
 | `functionCallTest` | Direct TypeScript function call with expected result |
 | `queryTest` | Query/extractor runner with fixture |
 | `runnerTest` | Composite action runner test |
-| `reactComponentTest` | Renders the component of its parent `reactComponentTestSuite` with the suite's `componentProps` shallow-merged under its own `componentProps`, then runs its declarative `steps`. The step interpreter lives in the standalone app, not in miroir-core (#286, #292, see [JzodElementEditor component tests](#jzodelementeditor-component-tests)) |
+| `reactComponentTest` | Renders the component of its parent `reactComponentTestSuite` with the suite's `componentProps` shallow-merged under its own `componentProps`, then runs its declarative `steps`. Accepted only in a `reactComponentTestSuite` (#294). The step interpreter lives in the standalone app, not in miroir-core (#286, #292, see [JzodElementEditor component tests](#jzodelementeditor-component-tests)) |
 | `miroirTestSuite` | Nested grouping (recurses) |
 | `reactComponentTestSuite` | Grouping of `reactComponentTest` leaves only. `component` names the rendered component in the app's component registry; optional `componentProps` are the default props of its leaves (#292) |
 
@@ -827,7 +827,7 @@ In `componentProps`, the tagged value `{"$bigint": "<digits>"}` is replaced by `
 
 Leaf labels are `<editor>: <case>`. `componentMiroirTests.consistency` checks that every instance passes `jzodTypeCheck` against the MiroirTest Entity and EntityVersion `mlSchema`, that no leaf label is used twice, that every leaf label starts with `<child label>: `, and that every leaf has `steps`.
 
-A `reactComponentTest` leaf placed directly under a `miroirTestSuite` is recorded as `error` ("reactComponentTest must be a leaf of a reactComponentTestSuite"); the runner is not called.
+A `reactComponentTest` leaf is accepted only in the `miroirTests` of a `reactComponentTestSuite`. Placed directly under a `miroirTestSuite`, it is a schema error: `modelValidation` rejects the instance (#294). An instance that was not validated still gets a runtime check: such a leaf is recorded as `error` ("reactComponentTest must be a leaf of a reactComponentTestSuite") and the runner is not called.
 
 **How a case runs**
 

@@ -7,7 +7,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/292
 Working branch: `292-REFACTOR-declarative-react-component-tests`, created from `aba` at `34a6c0c0b`.
 
-**Resume note (2026-09-26):** all slices 0-8 are ✅ DONE and committed. All 68 JzodElementEditor cases run from declarative steps in 7 per-editor MiroirTest instances; `componentTestRef`, the manifest, the registry, the generator, the per-editor TS files and the `custom` step are removed (M1, M2). tsc matches the Slice 0 baseline; the full nonreg (`test-results/nonreg/20260925T150724Z`) has only the 2 Slice 0 baseline failures; the browser checks were confirmed by the user. Open follow-up, not in this issue: make a `reactComponentTest` leaf outside a `reactComponentTestSuite` a schema error (today a runtime error, Slice 6 deviation 1).
+**Resume note (2026-09-26):** all slices 0-8 are ✅ DONE and committed. All 68 JzodElementEditor cases run from declarative steps in 7 per-editor MiroirTest instances; `componentTestRef`, the manifest, the registry, the generator, the per-editor TS files and the `custom` step are removed (M1, M2). tsc matches the Slice 0 baseline; the full nonreg (`test-results/nonreg/20260925T150724Z`) has only the 2 Slice 0 baseline failures; the browser checks were confirmed by the user. Follow-up, not in this issue: make a `reactComponentTest` leaf outside a `reactComponentTestSuite` a schema error (a runtime error here, Slice 6 deviation 1). Done in #294: `miroirTestForReactComponent` is no longer a member of the `miroirTestLeaf` union, so this placement is a schema error; the runtime guard stays for unvalidated input.
 
 ---
 
