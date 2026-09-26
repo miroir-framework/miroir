@@ -407,20 +407,25 @@ describe("Array component suite in the MiroirTestDisplay sandbox", () => {
     const secondSandbox = within(secondPanel).getByTestId("component-test-sandbox");
 
     // For each case start, the sandbox that receives the new case container.
+    // Recorded at appendChild rather than with a MutationObserver: happy-dom holds an observer's listener through
+    // a WeakRef, so a garbage collection during the run silently stops the reports.
     const containerParents: string[] = [];
-    const observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        for (const node of mutation.addedNodes) {
-          if (node instanceof HTMLElement && node.getAttribute("data-testid") === "component-test-container") {
-            containerParents.push(
-              mutation.target === firstSandbox ? "first" : mutation.target === secondSandbox ? "second" : "other",
-            );
-          }
+    const recordContainerAppends = (sandbox: HTMLElement, name: string): (() => void) => {
+      const appendChild = sandbox.appendChild;
+      sandbox.appendChild = function <T extends Node>(node: T): T {
+        if (node instanceof HTMLElement && node.getAttribute("data-testid") === "component-test-container") {
+          containerParents.push(name);
         }
-      }
-    });
-    observer.observe(firstSandbox, { childList: true });
-    observer.observe(secondSandbox, { childList: true });
+        return appendChild.call(sandbox, node) as T;
+      };
+      return () => {
+        sandbox.appendChild = appendChild;
+      };
+    };
+    const stopRecording = [
+      recordContainerAppends(firstSandbox, "first"),
+      recordContainerAppends(secondSandbox, "second"),
+    ];
 
     const savedDomConfig = { ...getDomConfig() };
     try {
@@ -438,7 +443,7 @@ describe("Array component suite in the MiroirTestDisplay sandbox", () => {
       });
     } finally {
       configureDom(savedDomConfig);
-      observer.disconnect();
+      stopRecording.forEach((stop) => stop());
     }
 
     expect(arrayResults(firstResults!).filter((result) => result.testResult === "ok")).toHaveLength(12);
