@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import {
   defaultMetaModelEnvironment,
   MiroirActivityTracker,
+  MiroirEventService,
   runMiroirTests,
   runMiroirTestSuiteInProcess,
   type MiroirTestSuite,
@@ -54,6 +55,39 @@ function mockSuite(): MiroirTestSuite {
   };
 }
 
+function mustacheLeaf(miroirTestLabel: string): MiroirTestSuite["miroirTests"][number] {
+  return {
+    miroirTestType: "functionCallTest",
+    miroirTestLabel,
+    functionRef: {
+      module: "miroir-core/1_core/mustache",
+      export: "extractDoubleBracePatterns",
+    },
+    arguments: ["Hello {{ name }}!"],
+    expectedValue: [{ content: "name", start: 6, end: 15 }],
+  };
+}
+
+/** A suite with two sub-suites, like a component test instance with one sub-suite per editor (#287). */
+function suiteWithTwoSubSuites(): MiroirTestSuite {
+  return {
+    miroirTestType: "miroirTestSuite",
+    miroirTestLabel: "outer",
+    miroirTests: [
+      {
+        miroirTestType: "miroirTestSuite",
+        miroirTestLabel: "subA",
+        miroirTests: [mustacheLeaf("a one"), mustacheLeaf("a two")],
+      },
+      {
+        miroirTestType: "miroirTestSuite",
+        miroirTestLabel: "subB",
+        miroirTests: [mustacheLeaf("b one")],
+      },
+    ],
+  };
+}
+
 describe("runMiroirTestSuiteInProcess (B2)", () => {
   it("runs two unit leaves and records results on the tracker without vitest.test", async () => {
     const tracker = new MiroirActivityTracker();
@@ -95,5 +129,68 @@ describe("runMiroirTestSuiteInProcess (B2)", () => {
     const results = suiteTestResults(tracker, "inProcess.demo");
     expect(Object.keys(results)).not.toContain("leaf one");
     expect(Object.keys(results)).toContain("leaf two");
+  });
+
+  // Nested suites are tracked through the event service.
+  const eventServices: MiroirEventService[] = [];
+  function trackerWithEventService(): MiroirActivityTracker {
+    const tracker = new MiroirActivityTracker();
+    eventServices.push(new MiroirEventService(tracker));
+    return tracker;
+  }
+  afterEach(() => {
+    eventServices.splice(0).forEach((service) => service.destroy());
+  });
+
+  // #287: a single-suite run starts from an empty suite path, so the sub-suites sit at depth 1.
+  it("runs the leaves of the one sub-suite a filter names, and skips its siblings", async () => {
+    const tracker = trackerWithEventService();
+
+    await runMiroirTestSuiteInProcess({
+      runMiroirTests,
+      expect: createMinimalExpect(),
+      testSuitePath: [],
+      miroirTestSuite: suiteWithTwoSubSuites(),
+      filter: { testList: { outer: { subA: ["a two"] } } },
+      modelEnvironment: defaultMetaModelEnvironment,
+      miroirActivityTracker: tracker,
+      executionOptions: { executionMode: "unit" },
+    });
+
+    const subAResults = suiteTestResults(tracker, "subA");
+    expect(Object.keys(subAResults)).toEqual(["a two"]);
+    expect(subAResults["a two"]?.testResult).toBe("ok");
+    // In-process runs record no result for skipped leaves.
+    expect(() => suiteTestResults(tracker, "subB")).toThrow(/TestSuite not found: subB/);
+  });
+
+  it("still throws when a filter key names no sub-suite", async () => {
+    await expect(
+      runMiroirTestSuiteInProcess({
+        runMiroirTests,
+        expect: createMinimalExpect(),
+        testSuitePath: [],
+        miroirTestSuite: suiteWithTwoSubSuites(),
+        filter: { testList: { outer: { subTypo: ["a two"] } } },
+        modelEnvironment: defaultMetaModelEnvironment,
+        miroirActivityTracker: trackerWithEventService(),
+        executionOptions: { executionMode: "unit" },
+      }),
+    ).rejects.toThrow(/MiroirTest filter matched no tests in suite/);
+  });
+
+  it("still throws when one filter key names a sub-suite and another names nothing", async () => {
+    await expect(
+      runMiroirTestSuiteInProcess({
+        runMiroirTests,
+        expect: createMinimalExpect(),
+        testSuitePath: [],
+        miroirTestSuite: suiteWithTwoSubSuites(),
+        filter: { testList: { outer: { subA: ["a two"], subTypo: [] } } },
+        modelEnvironment: defaultMetaModelEnvironment,
+        miroirActivityTracker: trackerWithEventService(),
+        executionOptions: { executionMode: "unit" },
+      }),
+    ).rejects.toThrow(/MiroirTest filter matched no tests in suite/);
   });
 });

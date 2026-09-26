@@ -63,6 +63,26 @@ function reactComponentTestSuiteContext(
   };
 }
 
+/**
+ * The filter for a nested suite that an object filter does not name, when every key of that
+ * filter names a child of the current suite (#287). It selects no leaf, so the nested suite
+ * records its leaves as skipped instead of throwing on the sibling's key. When a key names no
+ * child, returns `undefined`: the nested suites keep the filter and report the unknown key.
+ */
+function unnamedSiblingSuiteFilter(
+  innerTestList: TestSuiteListFilter | undefined,
+  childLabels: readonly string[],
+): MiroirTestRunFilter | undefined {
+  if (!innerTestList || Array.isArray(innerTestList) || typeof innerTestList !== "object") {
+    return undefined;
+  }
+  const filterKeys = Object.keys(innerTestList);
+  if (filterKeys.length === 0 || !filterKeys.every((key) => childLabels.includes(key))) {
+    return undefined;
+  }
+  return { testList: [] };
+}
+
 export type RunMiroirTestSuiteWalkParams = {
   localVitest: VitestNamespace;
   testSuitePath: string[];
@@ -127,6 +147,7 @@ export async function runMiroirTestSuiteWalk(
     },
   );
   const innerFilter: { testList: TestSuiteListFilter | undefined } = { testList: innerTestList };
+  const siblingSuiteFilter = unnamedSiblingSuiteFilter(innerTestList, availableLeafLabels);
   const selectedTests = allTests.filter((entry) =>
     isMiroirTestLeafSelected(miroirTestNodeLabel(entry), innerFilter?.testList),
   );
@@ -149,11 +170,12 @@ export async function runMiroirTestSuiteWalk(
     const isSkipped = !selectedTests.includes(node) || !!shouldSkipSuite;
 
     if (node.miroirTestType === "miroirTestSuite" || node.miroirTestType === "reactComponentTestSuite") {
+      const nestedFilter = siblingSuiteFilter && isSkipped ? siblingSuiteFilter : innerFilter;
       const nestedParams: RunMiroirTestSuiteWalkParams = {
         ...params,
         testSuitePath: [...testSuitePath, node.miroirTestLabel],
         miroirTestSuite: node,
-        filter: innerFilter,
+        filter: nestedFilter,
         parentSkip: shouldSkipSuite,
       };
 
@@ -185,7 +207,7 @@ export async function runMiroirTestSuiteWalk(
         localVitest,
         nestedParams.testSuitePath,
         node,
-        innerFilter,
+        nestedFilter,
         modelEnvironment,
         miroirActivityTracker,
         parentTrackingId,
