@@ -391,6 +391,25 @@
                     }
                   }
                 }
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "anEmptyArray alone",
+                "field": "testField.anEmptyArray",
+                "expectedValue": []
+              },
+              {
+                "step": "expectRenderedValues",
+                "label": "anEmptyRecord alone",
+                "field": "testField.anEmptyRecord",
+                "expectedValue": {}
+              },
+              {
+                "step": "expectElement",
+                "label": "anAnyFile file selector",
+                "target": {
+                  "byText": "Select File"
+                }
               }
             ]
           },

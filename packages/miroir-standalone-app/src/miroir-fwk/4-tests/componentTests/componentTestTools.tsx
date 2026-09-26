@@ -855,7 +855,7 @@ export function extractValuesFromRenderedElements(
   const labelRegex = label ? new RegExp(`^${label}\\.`) : null;
   const removeLabelPrefix = (str: string) => (labelRegex ? str.replace(labelRegex, "") : str);
   /** #305 D3: whether `name` is the field under test or lies under it; any name when no `label` is given. */
-  const isUnderLabel = (name: string) => !label || name === label || name.startsWith(`${label}.`);
+  const isUnderLabel = (name: string) => !label || (!!name && (name === label || name.startsWith(`${label}.`)));
 
   // Helper function to check for combobox options
   const checkForComboboxOptions = (
@@ -1141,6 +1141,7 @@ export function extractValuesFromRenderedElements(
     if (element.tagName === "INPUT") {
       const input = element as HTMLInputElement;
       const elementName = input.name || input.id;
+      if (!isUnderLabel(input.name) && !isUnderLabel(input.id)) return; // #305 D3
       const name = removeLabelPrefix(elementName);
 
       // log.debug("extractValuesFromRenderedElements: processing TestId miroirInput (self)", {
@@ -1182,6 +1183,7 @@ export function extractValuesFromRenderedElements(
       );
       // return (element as any).value;
       // const elementName = input?.id || input.name;
+      if (!isUnderLabel(element.id) && !isUnderLabel(element.getAttribute("name") ?? "")) return; // #305 D3
       const name = removeLabelPrefix(element.id);
       values[name] = (element as any).value;
       return;
@@ -1192,6 +1194,7 @@ export function extractValuesFromRenderedElements(
     //   input.outerHTML
     // );
     const elementName = input.id || input.name;
+    if (!isUnderLabel(input.name) && !isUnderLabel(input.id)) return; // #305 D3
     const name = removeLabelPrefix(elementName);
 
     // log.debug("extractValuesFromRenderedElements: processing miroirInput (child)", {
@@ -1717,6 +1720,7 @@ export function extractValuesFromRenderedElements(
     const select = element as HTMLSelectElement;
     if (!select.name && !select.id) return;
 
+    if (!isUnderLabel(select.name) && !isUnderLabel(select.id)) return; // #305 D3
     const name = removeLabelPrefix(select.name || select.id);
     if (!name || values[name] !== undefined) return; // Skip if already processed or no name
 

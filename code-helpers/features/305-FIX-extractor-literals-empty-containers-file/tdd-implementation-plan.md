@@ -138,3 +138,12 @@ Pattern suite; component entry; tsc.
 - Docs: `docs/reference/testing.md` (`expectRenderedValues` reading rules: prefix filter, markers; test pattern without `ignorePaths`; the ignored-branches table replaced by one sentence), `docs/contributing/testing.md` (link text).
 - `npm run nonreg:filesystem`, snapshot `test-results/nonreg/20260926T211532Z`: 65 passed, 7 failed. Known on a clean base: `integ-transformer-miroirCoreTransformers`, `appstack-uiIntegrationTestLauncher.integ`, `appstack-MiroirTestDisplayIntegrationLaunch`, `appstack-MiroirTestListIntegrationLaunch`. Container only: `unit-301-agent-tooling` (`No module named pytest`), `unit-275-cursor-sdk` (`jzodToCopilotKitParameter is not a function`: the name is not in the current source, a stale package build). Passed: `appstack-miroir-component-tests`, `unit-286-…`, `unit-292-…`, `unit-303-…`.
 - No issue-scoped test directory was created, so there is nothing to clean up.
+
+---
+
+## Review follow-up (Greptile on PR #310)
+
+- P1, empty array as the field under test: `expectRenderedValues {field: "testField.anEmptyArray", expectedValue: []}` rebuilt `{}`. Adding this step to the display leaf also showed that a narrower `field` read every value of the pattern: the `miroirInput` passes and the first select pass did not check the prefix. Fix: `isUnderLabel` (on the name or the id) guards those passes too, and `checkRenderedValues` returns `[]` when nothing was read and the field's own editor carries the empty-array marker.
+- P2, file selector coverage: the `expectElement byText "Select File"` check is back in the display leaf, next to the hidden-input comparison.
+- The display leaf gains 3 steps: `anEmptyArray alone` (`[]`), `anEmptyRecord alone` (`{}`), `anAnyFile file selector`.
+- Component entry 74 passed / 15 skipped; nonreg steps `unit-286`, `unit-292`, `unit-303`, `appstack-274` passed (filesystem); `extractValuesFromRenderedElements.test` 4 passed; tsc 0.
