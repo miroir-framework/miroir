@@ -11,6 +11,7 @@ Sibling repos, linked locally only when regenerating types from schemas: **jzod*
 ## Working here as an agent
 
 - **Integration branch: `_integration`.** Branch from it and open PRs against it; `main` is the default branch.
+- **Session setup:** `python scripts/agent_session_setup.py` installs dependencies and builds what the tests below need, skipping what is already there, then prints the session state. Claude Code cloud sessions run it automatically at start (`.claude/settings.json`). `--dry-run` shows what it would do.
 - **Pre-push gate** (what `.github/workflows/pr-checks.yml` runs on every PR):
   ```bash
   python scripts/sync_agent_skills.py --check
