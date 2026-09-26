@@ -2,7 +2,7 @@
 
 > Vertical TDD slices, RED then GREEN, integration-first per `docs/contributing/testing.md`. Tests render the real `JzodElementEditor` through the real MiroirTest walk (`runMiroirTests._runMiroirTestSuite`) and the real component test runner, with the real render insight registry. No mocks. The applicative interface is the MiroirTest JSON (new instances, new step, new fields); vitest files are used only where noted, with a one-line reason. Slice 1 is the tracer: the test pattern displays from JSON.
 
-**Resume note (2026-09-26):** Slices 0-3 done. The MiroirTest schema carries `ignorePaths`, `measureRendering` (handler: `not implemented`) and `runOnDemand` (not honored yet); `JzodTestPattern_ComponentTestSuite` is wired with one display leaf and three interaction leaves (entry: 8 instances, 72 leaves, about 40 s). Every JzodElementEditor component reports timed renders through `useTrackedRender` (ids: `JzodElementEditor`, `JzodUnionEditor`, `JzodElementStringEditor`, `JzodEnumEditor`, `JzodLiteralEditor`, `JzodAnyEditor`, `JzodArrayEditor` / `JzodTupleEditor`, `JzodObjectEditor` / `JzodRecordEditor`); the runner turns tracking on for a suite whose `stepKinds` (walk context, `reactComponentTestSuiteStepKinds`) contains `measureRendering`. Next: Slice 4 (`measureRendering` step). Note for Slice 5: the pattern does not reach `JzodAnyEditor` (only `any` + `display.any.format` does). Open point for the user: keep or drop `--bail=1` for the component entry (Slice 1 GREEN note; default: keep, document in Slice 7).
+**Resume note (2026-09-26):** Slices 0-4 done. The MiroirTest schema carries `ignorePaths`, `measureRendering` and `runOnDemand` (not honored yet); `JzodTestPattern_ComponentTestSuite` has one display leaf and three interaction leaves (entry: 8 instances, 72 leaves, about 40 s) and, since Slice 4, `anAnyFile` (any + `display.any.format: "file"`, under `ignorePaths`), so it reaches `JzodAnyEditor`. Every JzodElementEditor component reports timed renders through `useTrackedRender`; the runner turns tracking on for a suite whose `stepKinds` contains `measureRendering`. `measureRendering` (Slice 4): `env.remount()` / `env.rerender(propsOverride)` on the case's React root; per-component samples from registry snapshot deltas, aggregated (`count` = samples, `minMs`, `medianMs`, `maxMs`, `totalMs`, plus a `(total)` row) into the runner `ok` result `measurements` → `TestAssertionResult.assertionMeasurements` (kept by the tracker and by `generateTestReport`'s `fullAssertionsResults`), logged as a table (info, logger `runReactComponentTest`); `createReactComponentTestRunner({…, iterationsOverride})`. Next: Slice 5 (performance suite, `runOnDemand`). Open point for the user: keep or drop `--bail=1` for the component entry (Slice 1 GREEN note; default: keep, document in Slice 7).
 
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/303
 Working branch: to be created from `origin/_integration` (256e625 at plan time) when implementation starts.
@@ -24,7 +24,7 @@ Working branch: to be created from `origin/_integration` (256e625 at plan time) 
 | 1 | Tracer: test pattern displayed (`ignorePaths`) | M | ✅ DONE | `-t "JzodTestPattern"` 1 passed (1.6 s); full entry 71 passed (69 leaves + 2 checks), 33.8 s |
 | 2 | Test pattern interactions | S | ✅ DONE | `-t "JzodTestPattern"` 4 passed (1.7 / 2.1 / 1.6 / 3.4 s); full entry 74 passed (72 leaves + 2 checks), 40.5 s |
 | 3 | Every editor reports its renders | M | ✅ DONE | `renderInsightCoverage.303.phase3` 4 passed (10 editor ids timed); full entry 74 passed, 45.4 s; tracking overhead on the pattern ≈ +5 % (R1) |
-| 4 | `measureRendering` step, measurements in the test result | L | ⬜ pending | `measureRendering.303.phase4` + tracker carries `assertionMeasurements` |
+| 4 | `measureRendering` step, measurements in the test result | L | ✅ DONE | `measureRendering.303.phase4` 5 passed (tracker and `generateTestReport` rows carry `assertionMeasurements`: remount / update, count 2 at N=2, 1 with `iterationsOverride` 1); full entry 74 passed, 42.8 s |
 | 5 | Render-performance suite, on-demand gating | M | ⬜ pending | `MIROIR_COMPONENT_PERF=1 … -t "JzodEditorRenderPerformance"`; default entry skips it |
 | 6 | Miroir Tests: iterations override and measurement table | M | ⬜ pending | `renderPerformanceRunControls.303.phase6` + app check |
 | 7 | Docs, nonreg, cleanup, AC | S | ⬜ pending | nonreg `--only` steps; AC checklist |
@@ -272,7 +272,7 @@ Goal: with performance display on, every JzodElementEditor component shows up in
 
 ## Slice 4 — `measureRendering` step, measurements in the test result
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Goal: a leaf with `measureRendering` produces per-component min / median / max for each mode, visible in the tracker results.
 
@@ -293,6 +293,43 @@ Goal: a leaf with `measureRendering` produces per-component min / median / max f
 - `npm run testByFile -w miroir-standalone-app -- measureRendering.303.phase4`.
 - `npm run test -w miroir-core -- ''` (result type change).
 - tsc miroir-core, miroir-standalone-app; full component entry green.
+
+### Realization
+
+**Pre-step (coordinator decision; deviation from the Slices 1-2 scope).** The pattern did not reach `JzodAnyEditor` (Slice 3 deviation). `26ef2886-…` gets `anAnyFile: {type:"any", tag.value.display.any.format:"file"}` (after `anAny`), value `""`. The extractor reads nothing for it (RED: `First difference at path: ["anAnyFile"]`), so `anAnyFile` joins `ignorePaths` in the 4 leaves (the `expectedValue`s keep `anAnyFile: ""`) and the display leaf gets `expectElement {byText:"Select File"}` (the `FileSelector` button). Non-vacuity (reverted): `"Select Filex"` → `step 7 (expectElement "anAnyFile file selector"): no element matches target`. `-t "JzodTestPattern"` 4 passed (1.9 / 2.2 / 1.5 / 3.6 s). `renderInsightCoverage.303.phase3` now expects `JzodAnyEditor` among the pattern's timed ids too (4 passed).
+
+**RED observed.** `measureRendering.303.phase4.unit.test.tsx`: an Enum `reactComponentTestSuite` (props of `JzodEnumEditor_ComponentTestSuite`) with `{measureRendering, iterations 2, mode both, updateProps {initialFormState:"value3"}}` then `expectElement` on the combobox value, run through `runMiroirTests._runMiroirTestSuite` inside an async `describe` (as the vitest entry) with a real `MiroirActivityTracker` and the runner registered in that `describe`'s `beforeAll`; tests registered after the walk read the tracker. Failed with `step 1 (measureRendering): not implemented`.
+
+**GREEN.**
+- miroir-core: `testAssertionResult` (`TestInterface.ts`) gains optional `assertionMeasurements: {mode: "remount"|"update", componentId, count, minMs, medianMs, maxMs, totalMs}[]`; `npm run devBuild -w miroir-core`. `ComponentRenderMeasurement` (exported) is derived from the generated type (`miroirTestTypes.ts`); `ReactComponentTestRunnerResult` `ok` gains `measurements?`; `runMiroirReactComponentTest` copies them into `assertionMeasurements`; `npm run build -w miroir-core` (the vitest run reads `dist`: the first GREEN run failed on an empty `assertionMeasurements` until this rebuild). `MiroirActivityTracker.setTestAssertionResult` stores the result object as is, and `generateTestReport` keeps it in `fullAssertionsResults`: no change needed there, the test checks both.
+- `componentTestEnvironment.ts`: `mountComponent` also returns `render(element)` (same root, `flushSync`); `ComponentTestEnvironment` gains `remount()` / `rerender(propsOverride?)`, given by the runner (`caseControls`), rejecting otherwise.
+- Runner: the case keeps its root, element builder and props; `remount` unmounts and mounts the same element **in the same container** with a new root (deviation from T4's "fresh container": `env.container`, the steps' query root, stays valid); `rerender` renders the leaf props with the override shallow-merged (revived), both then `waitForProgressiveRendering`. `host.iterationsOverride` → `runComponentTestSteps(env, steps, {iterationsOverride})`, which now returns `{measurements}`. A leaf with measurements logs `formatMeasurementTable` (info, logger `runReactComponentTest`) and returns `{status:"ok", measurements}`.
+- `componentTests/measureRendering.ts`: `runMeasureRendering(env, step, iterations)` (`resetAll`, then per mode — `remount` before `update` — and iteration: act, wait, snapshot delta) and the pure helpers next to it: `renderTotalsByComponent` (formik paths folded), `iterationSamples`, `aggregateRenderSamples`, `formatMeasurementTable`. The handler in `runComponentTestSteps.ts` is one line (`iterationsOverride ?? step.iterations`). Failure only (D9) on: iterations not a positive integer, `remount` / `rerender` throwing, more `ErrorFallbackComponent` fallbacks ("Something went wrong in") than before the step (a pre-existing one, like the pattern's `aReference` R4 defect, does not fail the step), or a mode without any sample.
+- Choices (T5 read closely): `count` is the number of samples (iterations in which the component rendered), not the number of renders; a sample is the component's summed render time over the iteration (every instance and re-render). T5's "root total" is a `(total)` row summing every component per iteration. `update` starts with `updateProps` and alternates with the leaf props; the test checks it (N=2 ends on `value2`, N=1 on `value3`; non-vacuity: expecting `value2` at N=1 fails with `received "value3"`). Measurements of several `measureRendering` steps in a leaf are concatenated.
+
+Log sample (full-debug config), N=2:
+```
+component         | mode    | count | min ms | median ms | max ms
+JzodElementEditor | remount | 2     | 13.67  | 16.14     | 18.61
+JzodObjectEditor  | remount | 2     | 0.33   | 0.40      | 0.46
+JzodEnumEditor    | remount | 2     | 4.53   | 6.46      | 8.39
+(total)           | remount | 2     | 18.52  | 22.99     | 27.46
+JzodElementEditor | update  | 2     | 0.92   | 1.06      | 1.20
+…
+```
+(`JzodObjectEditor` is the test component's `TESTSECTION` wrapper.)
+
+**Validation.**
+| Command | Result |
+|---|---|
+| `npm run testByFile -w miroir-standalone-app -- measureRendering.303.phase4` | 5 passed (2 walk leaves 0.4 / 0.2 s + 3 checks) |
+| `npm run test -w miroir-core -- ''` | 156 files passed, 1 skipped; 2027 tests passed, 1 skipped |
+| tsc miroir-core / miroir-react / miroir-standalone-app | 0 / 0 / 1 (the baseline `JzodElementEditorHooks.ts(528,59)`); the 303 test files also type-check (temporary tsconfig including them, deleted) |
+| `… miroir-component-tests` | 74 passed; 42.8 s (tests 36.5 s) |
+| `renderInsightCoverage.303.phase3` | 4 passed |
+| also: `componentMiroirTests.consistency` / modelValidation / `componentTestSteps.292.phase2` / `componentTestTargets.292.phase3` / `RenderInsight` (11 files) / `componentTestSandbox.286` | 6 / 160 / 14 / 6 / 48 / 5 passed |
+
+Slice 6 note: the app's `ComponentTestSandbox.prepareComponentTests` must pass `iterationsOverride` in the host of `createReactComponentTestRunner`; the table can read `fullAssertionsResults[<leaf>].assertionMeasurements`.
 
 ---
 

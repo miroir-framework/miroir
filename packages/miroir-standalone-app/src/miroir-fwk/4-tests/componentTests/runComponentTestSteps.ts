@@ -1,4 +1,4 @@
-import type { ReactComponentTestStep, ReactComponentTestTarget } from "miroir-core";
+import type { ComponentRenderMeasurement, ReactComponentTestStep, ReactComponentTestTarget } from "miroir-core";
 
 import {
   componentTestAct,
@@ -6,6 +6,7 @@ import {
   type ComponentTestEnvironment,
 } from "./componentTestEnvironment.js";
 import { describeTarget, queryAllTarget, resolveTarget } from "./componentTestTargets.js";
+import { runMeasureRendering } from "./measureRendering.js";
 import {
   extractValuesFromRenderedElements,
   formikFieldName,
@@ -180,13 +181,25 @@ function elementValue(element: HTMLElement): unknown {
   return (element as HTMLInputElement).value;
 }
 
+export interface ComponentTestStepsOptions {
+  /** Replaces the `iterations` of every `measureRendering` step (#303 T7, one run of the app). */
+  iterationsOverride?: number;
+}
+
+export interface ComponentTestStepsResult {
+  /** Measurements of the `measureRendering` steps, in step order (#303 T5); empty without such steps. */
+  measurements: ComponentRenderMeasurement[];
+}
+
 // ################################################################################################
 /** Runs `steps` in order against the mounted case of `env`. */
 export async function runComponentTestSteps(
   env: ComponentTestEnvironment,
   steps: readonly ReactComponentTestStep[],
-): Promise<void> {
+  options: ComponentTestStepsOptions = {},
+): Promise<ComponentTestStepsResult> {
   const context: ComponentTestStepContext = { elements: {} };
+  const measurements: ComponentRenderMeasurement[] = [];
   let user: ReturnType<ComponentTestEnvironment["userEvent"]["setup"]> | undefined;
   const userSession = () => (user ??= env.userEvent.setup());
 
@@ -443,9 +456,8 @@ export async function runComponentTestSteps(
       }
       await waitUntil(env, () => checkElement(step), step.timeout);
     },
-    measureRendering: async () => {
-      // #303 Slice 4 implements the measurement; the schema carries the step since Slice 1 (T8)
-      throw new Error("not implemented");
+    measureRendering: async (step) => {
+      measurements.push(...(await runMeasureRendering(env, step, options.iterationsOverride ?? step.iterations)));
     },
   };
 
@@ -465,4 +477,5 @@ export async function runComponentTestSteps(
       );
     }
   }
+  return { measurements };
 }

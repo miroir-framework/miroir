@@ -20,6 +20,34 @@ export const testAssertionResult: JzodElement = {
       type: "any",
       description: "The actual value of the assertion",
     },
+    assertionMeasurements: {
+      type: "array",
+      optional: true,
+      description:
+        "Render measurements of a reactComponentTest leaf with measureRendering steps (#303): one entry per component and mode, never a pass / fail criterion",
+      definition: {
+        type: "object",
+        definition: {
+          mode: {
+            type: "enum",
+            description: "remount: unmount then mount the case; update: new props on the mounted case",
+            definition: ["remount", "update"],
+          },
+          componentId: {
+            type: "string",
+            description: "Render insight component id (formik paths folded); \"(total)\" sums every component",
+          },
+          count: {
+            type: "number",
+            description: "Number of samples: iterations in which the component rendered",
+          },
+          minMs: { type: "number" },
+          medianMs: { type: "number" },
+          maxMs: { type: "number" },
+          totalMs: { type: "number" },
+        },
+      },
+    },
   },
 };
 export const testAssertionsResults: JzodElement = {

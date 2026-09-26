@@ -21,10 +21,13 @@ import {
   createComponentTestEnvironment,
   mountComponent,
   waitForProgressiveRendering,
+  type ComponentTestCaseControls,
+  type MountedComponent,
 } from "./componentTestEnvironment.js";
 import { componentRegistry as defaultComponentRegistry, type ComponentRegistry } from "./componentRegistry.js";
 import { reviveComponentProps } from "./componentTestTargets.js";
 import { buildComponentTestWrapper, type ComponentTestWrapper } from "./componentTestTools.js";
+import { formatMeasurementTable } from "./measureRendering.js";
 import { ComponentTestStepError, runComponentTestSteps } from "./runComponentTestSteps.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "runReactComponentTest");
@@ -40,6 +43,8 @@ export interface ComponentTestSandboxHost {
   portalElement?: HTMLElement;
   /** Components of the `reactComponentTestSuite` nodes (#292). Defaults to `componentRegistry`. */
   componentRegistry?: ComponentRegistry;
+  /** Replaces the `iterations` of every `measureRendering` step of the run (#303 T7). */
+  iterationsOverride?: number;
 }
 
 /**
@@ -67,7 +72,9 @@ export type ClosableReactComponentTestRunner = ReactComponentTestRunner & {
  *    the wrapped component into it.
  * 4. It runs the steps (`runComponentTestSteps`) with a fresh `ComponentTestEnvironment`, a thrown
  *    error becoming an `error` result (with the expected and actual values of a failed
- *    `expectRenderedValues`).
+ *    `expectRenderedValues`). The environment's `remount` / `rerender` act on the case's React
+ *    root (#303 T4); the measurements of `measureRendering` steps (iterations replaced by
+ *    `host.iterationsOverride` when set) go in the `ok` result and in the log, as a table.
  * 5. After the suite's last case (the last of `suite.caseLabels`), it destroys the suite
  *    wrapper's `MiroirEventService`; `endRun()` does the same for
  *    any wrapper still open when the run ends (a filtered run need not reach the suite's last
@@ -95,19 +102,49 @@ export function createReactComponentTestRunner(
     })();
 
   const suiteWrappers = new Map<string, ComponentTestWrapper>();
-  let currentCase: { unmount: () => void; container: HTMLElement } | undefined;
+  /** The mounted case: its container, its React root, and its element for given props. */
+  let currentCase:
+    | {
+        container: HTMLElement;
+        mounted: MountedComponent | undefined;
+        element: (props: Record<string, any>) => React.ReactElement;
+        props: Record<string, any>;
+      }
+    | undefined;
 
   const unmountCurrentCase = () => {
     if (!currentCase) {
       return;
     }
-    const { unmount, container } = currentCase;
+    const { mounted, container } = currentCase;
     currentCase = undefined;
     try {
-      unmount();
+      mounted?.unmount();
     } finally {
       container.remove();
     }
+  };
+
+  /** `remount` / `rerender` of the mounted case (#303 T4). */
+  const caseControls: ComponentTestCaseControls = {
+    remount: async () => {
+      if (!currentCase) {
+        throw new Error("no mounted case to remount");
+      }
+      const mountedCase = currentCase;
+      mountedCase.mounted?.unmount();
+      mountedCase.mounted = undefined;
+      mountedCase.mounted = mountComponent(mountedCase.element(mountedCase.props), mountedCase.container);
+      await waitForProgressiveRendering(mountedCase.container);
+    },
+    rerender: async (propsOverride) => {
+      if (!currentCase?.mounted) {
+        throw new Error("no mounted case to rerender");
+      }
+      const props = { ...currentCase.props, ...reviveComponentProps(propsOverride ?? {}) };
+      currentCase.mounted.render(currentCase.element(props));
+      await waitForProgressiveRendering(currentCase.container);
+    },
   };
 
   const destroySuiteWrapper = (key: string) => {
@@ -131,17 +168,17 @@ export function createReactComponentTestRunner(
     sandboxElement.appendChild(container);
 
     const { Wrapper } = wrapper;
-    currentCase = { container, unmount: () => undefined };
-    currentCase.unmount = mountComponent(
+    const element = (elementProps: Record<string, any>) => (
       <ComponentTestModeContext.Provider value={componentTestSandboxMode}>
         <Wrapper>
           <PortalContainerProvider portalElement={portalElement}>
-            <Component {...props} />
+            <Component {...elementProps} />
           </PortalContainerProvider>
         </Wrapper>
-      </ComponentTestModeContext.Provider>,
-      container,
-    ).unmount;
+      </ComponentTestModeContext.Provider>
+    );
+    currentCase = { container, mounted: undefined, element, props };
+    currentCase.mounted = mountComponent(element(props), container);
     await waitForProgressiveRendering(container);
     return container;
   };
@@ -201,11 +238,16 @@ export function createReactComponentTestRunner(
         Component,
         reviveComponentProps({ ...suite.componentProps, ...(leaf.componentProps ?? {}) }),
       );
-      await runComponentTestSteps(
-        createComponentTestEnvironment({ testName, container, sandboxElement, portalElement, log }),
+      const { measurements } = await runComponentTestSteps(
+        createComponentTestEnvironment({ testName, container, sandboxElement, portalElement, log, caseControls }),
         leaf.steps,
+        { iterationsOverride: host.iterationsOverride },
       );
-      return { status: "ok" };
+      if (measurements.length === 0) {
+        return { status: "ok" };
+      }
+      log.info(`render measurements of ${testName}\n${formatMeasurementTable(measurements)}`);
+      return { status: "ok", measurements };
     } catch (error) {
       return failure(testName, error);
     } finally {

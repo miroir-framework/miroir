@@ -2,6 +2,7 @@ import type {
   MiroirTestForReactComponent,
   MiroirTestLeaf,
   ReactComponentTestStep,
+  TestAssertionResult,
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 
 /**
@@ -19,8 +20,18 @@ export type MiroirTestRunFilter = {
   match?: RegExp;
 };
 
+/**
+ * Render measurement of one component (formik paths folded) for one `measureRendering` mode
+ * (#303 T5), as carried by `TestAssertionResult.assertionMeasurements`.
+ */
+export type ComponentRenderMeasurement = NonNullable<TestAssertionResult["assertionMeasurements"]>[number];
+
 export type ReactComponentTestRunnerResult =
-  | { status: "ok" }
+  | {
+      status: "ok";
+      /** Measurements of the leaf's `measureRendering` steps (#303), absent when it has none. */
+      measurements?: ComponentRenderMeasurement[];
+    }
   | { status: "error"; message: string; expected?: unknown; actual?: unknown };
 
 /**

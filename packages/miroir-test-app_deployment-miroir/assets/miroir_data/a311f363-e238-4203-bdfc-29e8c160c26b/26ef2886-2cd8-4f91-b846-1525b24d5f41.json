@@ -5,7 +5,7 @@
   "name": "JzodTestPattern_ComponentTestSuite",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Issue #303: JzodElementEditor test pattern, one object exercising every editor type (no foreign key, no reference to another application's instances). The display leaf compares the whole rendered value, except the branches of ignorePaths that the extractor reads wrongly (#303 analysis 3.3), each checked by an expectElement instead. Three interaction leaves (#303 Slice 2) edit a deep leaf and the enum, switch the simple union from number to string, and add / delete an array item, rename a record entry and add the absent optional attribute; each ends with the same whole-value comparison (same ignorePaths) so that a side effect on another editor is caught. aReference children are not rendered (the local context of the schemaReference is not passed to array items, #303 Slice 0). Edited by hand.",
+  "description": "Issue #303: JzodElementEditor test pattern, one object exercising every editor type (no foreign key, no reference to another application's instances). The display leaf compares the whole rendered value, except the branches of ignorePaths that the extractor reads wrongly (#303 analysis 3.3), each checked by an expectElement instead. Three interaction leaves (#303 Slice 2) edit a deep leaf and the enum, switch the simple union from number to string, and add / delete an array item, rename a record entry and add the absent optional attribute; each ends with the same whole-value comparison (same ignorePaths) so that a side effect on another editor is caught. aReference children are not rendered (the local context of the schemaReference is not passed to array items, #303 Slice 0). anAnyFile (any with display.any.format file, #303 Slice 4) renders JzodAnyEditor's file selector, which the extractor does not read: it is under ignorePaths and checked by an expectElement on its button. Edited by hand.",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "JzodTestPattern_ComponentTestSuite",
@@ -158,6 +158,18 @@
               "anAny": {
                 "type": "any"
               },
+              "anAnyFile": {
+                "type": "any",
+                "tag": {
+                  "value": {
+                    "display": {
+                      "any": {
+                        "format": "file"
+                      }
+                    }
+                  }
+                }
+              },
               "aReference": {
                 "type": "schemaReference",
                 "context": {
@@ -262,6 +274,7 @@
                 1
               ]
             },
+            "anAnyFile": "",
             "aReference": {
               "label": "root",
               "children": [
@@ -311,7 +324,8 @@
                   "aReference",
                   "anEmptyArray",
                   "anEmptyRecord",
-                  "aNestedObject.level1.level2.items.1.tags"
+                  "aNestedObject.level1.level2.items.1.tags",
+                  "anAnyFile"
                 ],
                 "expectedValue": {
                   "aString": "hello",
@@ -352,6 +366,7 @@
                       1
                     ]
                   },
+                  "anAnyFile": "",
                   "aReference": {
                     "label": "root",
                     "children": [
@@ -427,6 +442,13 @@
                   "field": "testField.aNestedObject.level1.level2.items.1.tags",
                   "action": "add"
                 }
+              },
+              {
+                "step": "expectElement",
+                "label": "anAnyFile file selector",
+                "target": {
+                  "byText": "Select File"
+                }
               }
             ]
           },
@@ -459,7 +481,8 @@
                   "aReference",
                   "anEmptyArray",
                   "anEmptyRecord",
-                  "aNestedObject.level1.level2.items.1.tags"
+                  "aNestedObject.level1.level2.items.1.tags",
+                  "anAnyFile"
                 ],
                 "expectedValue": {
                   "aString": "hello",
@@ -500,6 +523,7 @@
                       1
                     ]
                   },
+                  "anAnyFile": "",
                   "aReference": {
                     "label": "root",
                     "children": [
@@ -585,7 +609,8 @@
                   "aReference",
                   "anEmptyArray",
                   "anEmptyRecord",
-                  "aNestedObject.level1.level2.items.1.tags"
+                  "aNestedObject.level1.level2.items.1.tags",
+                  "anAnyFile"
                 ],
                 "expectedValue": {
                   "aString": "hello",
@@ -626,6 +651,7 @@
                       1
                     ]
                   },
+                  "anAnyFile": "",
                   "aReference": {
                     "label": "root",
                     "children": [
@@ -704,7 +730,8 @@
                   "aReference",
                   "anEmptyArray",
                   "anEmptyRecord",
-                  "aNestedObject.level1.level2.items.1.tags"
+                  "aNestedObject.level1.level2.items.1.tags",
+                  "anAnyFile"
                 ],
                 "expectedValue": {
                   "aString": "hello",
@@ -745,6 +772,7 @@
                       1
                     ]
                   },
+                  "anAnyFile": "",
                   "aReference": {
                     "label": "root",
                     "children": [

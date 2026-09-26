@@ -48,7 +48,20 @@ export interface ComponentTestEnvironment {
   sandboxElement: HTMLElement;
   portalElement: HTMLElement;
   log: LoggerInterface;
+  /**
+   * Unmounts the case and mounts the same element again, in the same container with a new React
+   * root, then waits for progressive rendering (#303 T4, `measureRendering` mode `remount`).
+   */
+  remount: () => Promise<void>;
+  /**
+   * Renders the case again in its React root with `propsOverride` shallow-merged over the leaf's
+   * props (none: the leaf's own props), then waits for progressive rendering (#303 T4, mode `update`).
+   */
+  rerender: (propsOverride?: Record<string, any>) => Promise<void>;
 }
+
+/** The `remount` / `rerender` of the mounted case, given by the runner. */
+export type ComponentTestCaseControls = Pick<ComponentTestEnvironment, "remount" | "rerender">;
 
 // ################################################################################################
 /**
@@ -127,16 +140,22 @@ export const componentTestFireEvent: typeof fireEvent = (() => {
 // ################################################################################################
 export interface MountedComponent {
   unmount: () => void;
+  /** Renders `element` in the same React root, synchronously, without `act` (#303 T4). */
+  render: (element: ReactElement) => void;
 }
 
 /** Renders `element` into `target` with its own React root, synchronously, without `act`. */
 export function mountComponent(element: ReactElement, target: HTMLElement): MountedComponent {
   const root = createRoot(target);
-  flushSync(() => {
-    root.render(element);
-  });
+  const render = (nextElement: ReactElement) => {
+    flushSync(() => {
+      root.render(nextElement);
+    });
+  };
+  render(element);
   return {
     unmount: () => root.unmount(),
+    render,
   };
 }
 
@@ -174,7 +193,10 @@ export function createComponentTestEnvironment(params: {
   sandboxElement: HTMLElement;
   portalElement: HTMLElement;
   log: LoggerInterface;
+  /** Given by the runner for a mounted case; without it, `remount` / `rerender` reject. */
+  caseControls?: ComponentTestCaseControls;
 }): ComponentTestEnvironment {
+  const noCase = () => Promise.reject(new Error("no mounted case to remount or rerender"));
   return {
     expect: createThrowingExpect(params.testName),
     view: within(params.sandboxElement),
@@ -186,5 +208,7 @@ export function createComponentTestEnvironment(params: {
     sandboxElement: params.sandboxElement,
     portalElement: params.portalElement,
     log: params.log,
+    remount: params.caseControls?.remount ?? noCase,
+    rerender: params.caseControls?.rerender ?? noCase,
   };
 }

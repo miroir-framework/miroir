@@ -31,7 +31,8 @@ export const REACT_COMPONENT_TEST_NO_SUITE_MESSAGE =
  *   `error` and does not reach the runner (#292 M1). The schema rejects this placement (#294); the
  *   check stays for instances that were not validated.
  * - Otherwise the runner is called with the leaf and the suite context built by the walk (#292),
- *   and its `ok` / `error` is recorded.
+ *   and its `ok` / `error` is recorded; the `measurements` of an `ok` result (leaf with
+ *   `measureRendering` steps, #303) become the `assertionMeasurements` of the assertion result.
  *
  * An `error` is rethrown only when `rethrowComponentTestFailures` is set, so that one failing case
  * does not end a UI run.
@@ -94,7 +95,12 @@ export async function runMiroirReactComponentTest(
 
   const testAssertionResult: TestAssertionResult =
     runnerResult.status === "ok"
-      ? { assertionName, assertionResult: "ok" }
+      ? {
+          assertionName,
+          assertionResult: "ok",
+          // #303 T5: measurements of the leaf's measureRendering steps, for the tracker and the app display
+          ...(runnerResult.measurements ? { assertionMeasurements: runnerResult.measurements } : {}),
+        }
       : {
           assertionName,
           assertionResult: "error",

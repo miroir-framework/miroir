@@ -38,13 +38,15 @@ const TEST_PATTERN_INSTANCE_FILE = join(
 );
 
 /**
- * The editor components that the test pattern renders (analysis T2, plan Slice 3 RED), except
- * `JzodAnyEditor`: the pattern's `anAny` (object value) renders through `JzodObjectEditor`
- * (inside any); `JzodElementEditor` renders `JzodAnyEditor` only for an `any` schema with
- * `tag.value.display.any.format` (the app's file-bundle fields), checked by `anyFileCase`.
+ * The editor components that the test pattern renders (analysis T2, plan Slice 3 RED). The
+ * pattern's `anAny` (object value) renders through `JzodObjectEditor` (inside any);
+ * `JzodElementEditor` renders `JzodAnyEditor` only for an `any` schema with
+ * `tag.value.display.any.format` (the app's file-bundle fields): the pattern's `anAnyFile` since
+ * #303 Slice 4, and the separate `anyFileSuite` case.
  */
 const EXPECTED_PATTERN_COMPONENT_IDS = [
   "JzodElementEditor",
+  "JzodAnyEditor",
   "JzodEnumEditor",
   "JzodLiteralEditor",
   "JzodElementStringEditor",
