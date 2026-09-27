@@ -98,7 +98,9 @@ describe.skipIf(!shouldRunPhase0Stable)("phase0 stable", () => {
       definition: { externalService: { securityScheme: { type: string } } };
     };
     expect(parsed.definition.externalService.securityScheme.type).toBe("oauth2AuthorizationCode");
-    expect(createHash("sha256").update(raw).digest("hex")).toBe(SPOTIFY_ENDPOINT_SHA256);
+    // Hash with LF endings: a Windows checkout with core.autocrlf has CRLF in the working tree.
+    const lf = raw.toString("utf8").replace(/\r\n/g, "\n");
+    expect(createHash("sha256").update(lf).digest("hex")).toBe(SPOTIFY_ENDPOINT_SHA256);
   });
 
   it("allGatedStepsAllowFinish rejects when only the first of two inputReportSection steps is filled", () => {
