@@ -74,7 +74,8 @@ export function failedLeafActivityForRun(
 export async function exportFailedRunIfNeeded(params: {
   runId: string | undefined;
   activities: Iterable<MiroirActivity>;
-  events?: Iterable<MiroirEvent>;
+  /** A function is only called when a failed run is actually exported. */
+  events?: Iterable<MiroirEvent> | (() => Iterable<MiroirEvent> | undefined);
   onFailedRunExport?: (bundle: RunExportBundle) => void | Promise<void>;
 }): Promise<void> {
   if (!params.runId || !params.onFailedRunExport) {
@@ -87,7 +88,7 @@ export async function exportFailedRunIfNeeded(params: {
     buildRunExportBundle({
       runId: params.runId,
       activities: params.activities,
-      events: params.events,
+      events: typeof params.events === "function" ? params.events() : params.events,
     }),
   );
 }

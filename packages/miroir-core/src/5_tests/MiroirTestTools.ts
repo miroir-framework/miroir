@@ -481,7 +481,7 @@ export const runMiroirTests: RunMiroirTests = {
       await exportFailedRunIfNeeded({
         runId,
         activities: miroirActivityTracker.getActivityIndex().values(),
-        events: MiroirLoggerFactory.getStartedEventService()?.getAllEvents(),
+        events: () => MiroirLoggerFactory.getStartedEventService()?.getAllEvents(),
         onFailedRunExport: executionOptions?.onFailedRunExport,
       });
     }
