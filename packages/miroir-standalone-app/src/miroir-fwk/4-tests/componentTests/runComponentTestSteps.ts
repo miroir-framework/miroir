@@ -9,7 +9,6 @@ import { describeTarget, queryAllTarget, resolveTarget } from "./componentTestTa
 import { runMeasureRendering } from "./measureRendering.js";
 import {
   extractValuesFromRenderedElements,
-  formikFieldName,
   formValuesToJSON,
   testSectionName,
 } from "./componentTestTools.js";
@@ -141,11 +140,11 @@ export function optionFormikName(ariaLabel: string, selectNames: readonly string
 /**
  * The option lists rendered in the sandbox, by field (T8): `[role="option"]` elements whose
  * `aria-label` is `<formik name>-option-<value>` (`ThemedSelectWithPortal`), grouped by the formik
- * name without its `TESTSECTION.` prefix, texts in DOM order.
+ * name without the environment's `fieldNamePrefix`, texts in DOM order.
  */
 function renderedOptions(env: ComponentTestEnvironment): Record<string, string[]> {
   const options: Record<string, string[]> = {};
-  const prefix = `${testSectionName}.`;
+  const prefix = env.fieldNamePrefix;
   const selectNames = Array.from(
     env.sandboxElement.querySelectorAll<HTMLElement>(`[data-testid^="${selectStateTestIdPrefix}"]`),
   ).map((tracker) => (tracker.getAttribute("data-testid") ?? "").slice(selectStateTestIdPrefix.length));
@@ -154,7 +153,7 @@ function renderedOptions(env: ComponentTestEnvironment): Record<string, string[]
     if (formikName === undefined) {
       continue;
     }
-    const field = formikName.startsWith(prefix) ? formikName.slice(prefix.length) : formikName;
+    const field = prefix && formikName.startsWith(prefix) ? formikName.slice(prefix.length) : formikName;
     (options[field] ??= []).push(option.textContent?.trim() ?? "");
   }
   return options;
@@ -250,7 +249,7 @@ export async function runComponentTestSteps<ExtraStep extends AnyStep = never>(
 
   /** `expectRenderedValues` once: throws `StepValuesMismatch` when the values differ. */
   const checkRenderedValues = (step: StepOf<"expectRenderedValues">): void => {
-    const fieldName = step.field === undefined ? testSectionName : formikFieldName(step.field);
+    const fieldName = step.field === undefined ? testSectionName : env.formikFieldName(step.field);
     const extracted = extractValuesFromRenderedElements(
       env.expect,
       step.filter === undefined ? undefined : [...step.filter],

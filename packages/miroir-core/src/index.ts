@@ -481,6 +481,8 @@ export {
   reportTestStep,
   ReportTestCompositeActionStep,
   reportTestCompositeActionStep,
+  ReportTestFakeHttpResponse,
+  reportTestFakeHttpResponse,
   ReportTestExpectActionResultStep,
   reportTestExpectActionResultStep,
   ReactComponentTestStep,
@@ -1425,6 +1427,7 @@ export {
   setPersistRotatedSecret,
   type PersistRotatedSecret,
 } from "./4_services/ExternalServiceClient.js";
+export { outboundFetch, setOutboundFetch, type OutboundFetch } from "./1_core/OutboundFetch.js";
 export {
   boundPathsForOperation,
   listConvertibleGetOperations,
@@ -1791,6 +1794,7 @@ export {
   runReportTestExpectActionResultStep,
   type ReportTestActionContext,
 } from "./5_tests/ReportTestTools.js";
+export { createFakeOutboundFetch, type FakeOutboundFetch } from "./5_tests/FakeHttpResponses.js";
 export {
   createInProcessVitestStub,
   runMiroirTestSuiteInProcess,

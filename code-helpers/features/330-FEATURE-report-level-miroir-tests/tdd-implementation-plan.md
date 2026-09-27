@@ -16,7 +16,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Follow-up: https://github.com/miroir-framework/miroir/issues/333 (stored values in UI steps)
 Working branch: `claude/report-level-miroir-tests-0lnny6` (from `_integration`, PR against `_integration`)
 
-**Resume note:** Slices 0 to 4 done 2026-09-27; Slice 5 next.
+**Resume note:** Slices 0 to 5 done 2026-09-27; Slice 6 next.
 
 ---
 
@@ -42,7 +42,7 @@ This plan does **not** cover stored values in UI steps (#333), an in-memory mode
 | 2 | Check steps: run a query, assert on its result | ✅ | leaf "the store holds the displayed Book" + failure-report vitest |
 | 3 | Edit and save through the UI, checked in the store | ✅ | leaf "saves an edited title" + idle-wait vitest |
 | 4 | Invalid input is not saved | ✅ | leaf "does not save an invalid value" |
-| 5 | Fake HTTP, and the wizard's first steps | ⬜ | `report.connectExternalServiceWizard` leaf "reads an OpenAPI document by URL" + undeclared-request vitest |
+| 5 | Fake HTTP, and the wizard's first steps | ✅ | `report.connectExternalServiceWizard` leaf "reads an OpenAPI document by URL" + undeclared-request vitest |
 | 6 | Wizard Finish persists the Endpoint and Report | ⬜ | leaf "public service: Finish creates Endpoint and Report" |
 | 7 | Wizard branches; 284 UI tests deleted | ⬜ | branch leaves + coverage table all covered |
 | 8 | Report tests in the app | ⬜ | launcher registry test + in-app run |
@@ -359,7 +359,7 @@ npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesyst
 
 ## Slice 5 — Fake HTTP, and the wizard's first steps
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -371,7 +371,7 @@ A test author can declare external HTTP responses in a Report test, so a Report 
 
 **Test 1:** MiroirTest `report.connectExternalServiceWizard` (`6446d8b1-…`, `miroir_data/a311f363-…/`): `miroirTestSuite` with the Library `runTarget`; `reportTestSuite` on `dbd94bfe-…` (application Miroir, section `data`) with `fakeHttpResponses` serving an OpenAPI document at `https://fake-service.example/openapi.json` (the document of the 284 fake server, copied into the instance); leaf **"reads an OpenAPI document by URL"**: pick the Library application, name the endpoint, give the document URL, `click` `multistep-next`, `expectElement` on the step label "Base URL".
 
-**Test 2 (vitest, justified):** `fakeHttp.330.phase5.integ.test.ts` runs the suite with a URL that has no declared response and asserts the leaf fails with a message naming the method and URL. Not reachable through MiroirTest: asserts a failure.
+**Test 2 (vitest, justified):** `fakeHttp.330.slice5.integ.test.tsx` runs the suite with a URL that has no declared response and asserts the leaf fails with a message naming the method and URL. Not reachable through MiroirTest: asserts a failure.
 
 ### 5.2 GREEN
 
@@ -389,7 +389,7 @@ The 284 TS tests' `fakeExternalServiceServer` stays until Slice 7; if its OpenAP
 ```bash
 npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core
 npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites report.connectExternalServiceWizard --mode integ
-RUN_TEST=fakeHttp npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem fakeHttp.330.phase5
+npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem fakeHttp.330.slice5
 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284.phase1
 npm run test -w miroir-core -- ''
 npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
@@ -398,7 +398,19 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+- **Proof:** `report.connectExternalServiceWizard` leaf "reads an OpenAPI document by URL" passes: it picks Library in the application picker, names the endpoint, gives `https://fake-service.example/openapi.json`, clicks Next, and the wizard shows the "Base URL" step, which it reaches only when `prepareOpenApiDocument` read the document. `fakeHttp.330.slice5` runs the same leaf with the response declared for another URL: the leaf is recorded as `error` with `no fake HTTP response declared for GET https://fake-service.example/openapi.json`.
+- **Fetch seam:** `1_core/OutboundFetch.ts` (`outboundFetch`, `setOutboundFetch`), used at the four call sites. It is in `1_core`, not `4_services` as planned: `DomainController` (layer 3) may not import a layer 4 implementation, which the `miroir/layers` lint rule enforces. `5_tests/FakeHttpResponses.ts` builds the fake: it matches the method and the exact URL, sends a string body as is and any other body as JSON, and records then rejects an undeclared request. After the steps, an undeclared request fails the leaf even if every step passed; when a step failed too, the message names the request first, then the step.
+- **Deviations:**
+  - The fake is installed for each leaf, before the mount, and restored in `finally`, not once for the suite: the runner is called per leaf and has no suite hook, and this keeps leaves apart.
+  - `status` is optional in `fakeHttpResponses` (default 200).
+  - On a server that is not emulated, the runner returns a new `skipped` result (`REPORT_TEST_FAKE_HTTP_NEEDS_EMULATED_SERVER`), which `ReportTestTools` records as skipped with that message.
+  - Component-test targets prefix field names with `TESTSECTION.`, while a Report form uses raw names (`name.endpointName`). The component test environment takes a `fieldNamePrefix` (default `TESTSECTION.`), and the Report runner passes `""`.
+  - The session's Miroir store holds only the bootstrap Reports (`miroirModelInitializeDataInstances`, 13), without the wizard: the Report fell back to the default Report. The Report test entry (`tests/helpers/reportTestEntry.ts`) now creates the missing Miroir Reports from `miroir_data` before each leaf, after the session's Miroir model reset.
+  - The application picker lists the keys of the context's `applicationDeploymentMap`, which RootComponent fills in the app; the test context held Miroir and Admin only. `MiroirContextReactProvider` takes a new test-only `testingApplicationDeploymentMap`, and the runner gives it the session's map.
+  - The leaf enters text with `change`, as `wizardWalk.284` does, not `type`. With `type` (one key at a time, no delay) the wizard inputs lost characters (`discogsPublic` became `dsosublic`). Inferred cause, not verified: the Report's Formik re-initializes from the step bag, which a validation merges in a queued microtask, so a key that lands between the two is overwritten. Not fixed here; whether a person typing fast can hit it is not checked.
+- **Refactor checkpoint:** the OpenAPI document is copied from `twoGetOpenApiDocument()` of `wizardWalk.284` into the MiroirTest instance. Slice 7 keeps the MiroirTest copy; the TS copy goes with `wizardWalk.284`.
+- **Also changed:** `reportTestLauncher.330.slice1` expects both Report suites in the `--tags report` refusal message.
+- **Validation (2026-09-27):** `report.connectExternalServiceWizard` (1 passed), `fakeHttp.330.slice5` (2), `report.bookDetails` (4), `reportTestFailure.330.slice2`, `reportTestLauncher.330.slice1`, `reportIdleWait.330.slice3`, `connectExternalService.284.phase1`, `externalServiceDispatch.integ` (13), `wizardWalk.284` (11), `multistepProcess.274` (19), `multistepLaunch.274` (7), `virtualAttributes.integ`, `runner.lendDocument`, `miroir-component-tests.unit` (74 passed, 15 skipped), miroir-core unit (2083), Miroir model validation (162), tsc for miroir-core, miroir-react and the app, lint, skills sync, `scripts/tests`.
 
 ---
 

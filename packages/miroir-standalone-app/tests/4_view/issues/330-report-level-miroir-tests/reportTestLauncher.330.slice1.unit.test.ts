@@ -99,7 +99,7 @@ describe("testMiroirLauncher and Report suites (#330)", () => {
   it("refuses a tag selection spanning Report and action suites", () => {
     // `report` also tags action.scenario.multistepReportTemplate, an action suite about Reports
     expect(() => resolveVitestEntry(process.env, ["--tags", "report", "--mode", "integ"])).toThrow(
-      /both Report suites \(report\.bookDetails\) and runner \/ action suites \(action\.scenario\.multistepReportTemplate\)/,
+      /both Report suites \(report\.bookDetails, report\.connectExternalServiceWizard\) and runner \/ action suites \(action\.scenario\.multistepReportTemplate\)/,
     );
   });
 });

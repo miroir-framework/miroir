@@ -1,13 +1,21 @@
+import { readdirSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { expect } from "vitest";
 import * as vitest from "vitest";
 
 import {
   ConfigurationService,
+  defaultMiroirModelEnvironment,
   MiroirActivityTracker,
   MiroirEventService,
   MiroirLoggerFactory,
   miroirCoreStartup,
+  type ApplicationDeploymentMap,
+  type DomainControllerInterface,
+  type EntityInstance,
   type LoggerOptions,
+  type MiroirTestExecutionEnvironment,
   type MiroirTestSuite,
   type RunnerTestSessionInterface,
 } from "miroir-core";
@@ -16,6 +24,7 @@ import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+import { entityReport, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 import { env } from "process";
 
 import { createReportTestRunner } from "../../src/miroir-fwk/4-tests/componentTests/runReportTest.js";
@@ -27,6 +36,64 @@ import { createStandaloneAppIntegrationOrchestrator } from "./StandaloneAppInteg
 
 // Same pageLabel as the runner entries: sessions must behave identically.
 const pageLabel = "miroir-runner-tests.integ";
+
+const miroirReportsFolder = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "../../../miroir-test-app_deployment-miroir/assets/miroir_data",
+  entityReport.uuid,
+);
+
+// ################################################################################################
+/**
+ * Creates in the Miroir deployment of the session the Miroir Reports it lacks. The session
+ * bootstraps its Miroir store with a few Reports (`miroirModelInitializeDataInstances`), whereas
+ * the app's Miroir deployment holds all of `miroir_data`: without them, a Report test of a Miroir
+ * Report such as the ConnectExternalServiceWizard would display the default Report.
+ */
+async function seedMissingMiroirReports(
+  domainController: DomainControllerInterface,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+): Promise<void> {
+  const rollback = await domainController.handleAction(
+    {
+      actionType: "rollback",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      payload: { application: selfApplicationMiroir.uuid },
+    },
+    applicationDeploymentMap,
+    defaultMiroirModelEnvironment,
+  );
+  if (rollback?.status !== "ok") {
+    throw new Error(`could not load the Miroir Reports of the session: ${JSON.stringify(rollback)}`);
+  }
+  const sessionReports =
+    domainController.getDomainState()[applicationDeploymentMap[selfApplicationMiroir.uuid]]?.data?.[
+      entityReport.uuid
+    ] ?? {};
+  const missingReports: EntityInstance[] = readdirSync(miroirReportsFolder)
+    .filter((fileName) => fileName.endsWith(".json"))
+    .map((fileName) => JSON.parse(readFileSync(join(miroirReportsFolder, fileName), "utf-8")))
+    .filter((report: EntityInstance) => !sessionReports[report.uuid]);
+  if (missingReports.length === 0) {
+    return;
+  }
+  const creation = await domainController.handleAction(
+    {
+      actionType: "createInstance",
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      payload: {
+        application: selfApplicationMiroir.uuid,
+        applicationSection: "data",
+        objects: missingReports,
+      },
+    },
+    applicationDeploymentMap,
+    defaultMiroirModelEnvironment,
+  );
+  if (creation?.status !== "ok") {
+    throw new Error(`could not create the Miroir Reports of the session: ${JSON.stringify(creation)}`);
+  }
+}
 
 export interface ReportTestEntry {
   miroirConfig: Awaited<ReturnType<typeof loadTestConfigFiles>>["miroirConfig"];
@@ -91,8 +158,8 @@ export async function startReportTestEntry(): Promise<ReportTestEntry> {
   return {
     miroirConfig,
     miroirActivityTracker,
-    createSession: (suiteKey, suite) =>
-      orchestrator.createSession(
+    createSession: (suiteKey, suite) => {
+      const session = orchestrator.createSession(
         createRunnerSuiteSessionParams(
           suiteKey,
           suite,
@@ -100,6 +167,26 @@ export async function startReportTestEntry(): Promise<ReportTestEntry> {
           pageLabel,
           applicationRunnerUuidIndex,
         ),
-      ),
+      );
+      let executionEnvironment: MiroirTestExecutionEnvironment | undefined;
+      return {
+        initSession: async () => {
+          executionEnvironment = await session.initSession();
+          return executionEnvironment;
+        },
+        // the session resets the Miroir model before each leaf, back to the bootstrap Reports
+        beforeEach: async () => {
+          await session.beforeEach();
+          if (!executionEnvironment) {
+            throw new Error("report test session: beforeEach called before initSession");
+          }
+          await seedMissingMiroirReports(
+            executionEnvironment.domainController,
+            executionEnvironment.applicationDeploymentMap,
+          );
+        },
+        teardown: () => session.teardown(),
+      };
+    },
   };
 }

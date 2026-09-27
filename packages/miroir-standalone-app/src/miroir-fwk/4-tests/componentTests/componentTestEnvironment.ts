@@ -18,6 +18,8 @@ import {
   type ThrowingExpect,
 } from "miroir-core";
 
+import { testSectionName } from "./componentTestTools.js";
+
 // ################################################################################################
 // Act-free component test driver (#286, analysis §5.3).
 //
@@ -49,6 +51,14 @@ export interface ComponentTestEnvironment {
   sandboxElement: HTMLElement;
   portalElement: HTMLElement;
   log: LoggerInterface;
+  /**
+   * Prefix of the formik names of the fields the steps address by `rootLessListKey`:
+   * `TESTSECTION.` for a component test (its form root), empty for a Report test, whose form
+   * fields are named from the Report's own values (#330).
+   */
+  fieldNamePrefix: string;
+  /** The formik name of the field at `rootLessListKey`: `fieldNamePrefix` + `rootLessListKey`. */
+  formikFieldName: (rootLessListKey: string) => string;
   /**
    * Unmounts the case and mounts the same element again, in the same container with a new React
    * root, then waits for progressive rendering (#303 T4, `measureRendering` mode `remount`).
@@ -212,8 +222,11 @@ export function createComponentTestEnvironment(params: {
   log: LoggerInterface;
   /** Given by the runner for a mounted case; without it, `remount` / `rerender` reject. */
   caseControls?: ComponentTestCaseControls;
+  /** Default: `TESTSECTION.`, the form root of a component test. */
+  fieldNamePrefix?: string;
 }): ComponentTestEnvironment {
   const noCase = () => Promise.reject(new Error("no mounted case to remount or rerender"));
+  const fieldNamePrefix = params.fieldNamePrefix ?? `${testSectionName}.`;
   return {
     expect: createThrowingExpect(params.testName),
     view: within(params.sandboxElement),
@@ -225,6 +238,8 @@ export function createComponentTestEnvironment(params: {
     sandboxElement: params.sandboxElement,
     portalElement: params.portalElement,
     log: params.log,
+    fieldNamePrefix,
+    formikFieldName: (rootLessListKey) => `${fieldNamePrefix}${rootLessListKey}`,
     remount: params.caseControls?.remount ?? noCase,
     rerender: params.caseControls?.rerender ?? noCase,
   };

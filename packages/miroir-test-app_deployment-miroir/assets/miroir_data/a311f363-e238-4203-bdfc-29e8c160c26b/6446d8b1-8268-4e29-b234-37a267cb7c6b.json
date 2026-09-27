@@ -1,0 +1,221 @@
+{
+  "uuid": "6446d8b1-8268-4e29-b234-37a267cb7c6b",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "name": "report.connectExternalServiceWizard",
+  "description": "The ConnectExternalServiceWizard Report of Miroir, mounted at its route on the Library testbed, with the external service answered by fake HTTP responses: it reads an OpenAPI document by URL.",
+  "tags": [
+    "integ",
+    "ui",
+    "report"
+  ],
+  "issue": "330",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "report.connectExternalServiceWizard",
+    "runTarget": {
+      "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "applicationName": "Library",
+      "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+    },
+    "testbedModel": {
+      "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "applicationName": "Library"
+    },
+    "testbedEntitiesAndInstances": [],
+    "testbedInitApplicationParameters": "libraryTestbedInitParams",
+    "miroirTests": [
+      {
+        "miroirTestType": "reportTestSuite",
+        "miroirTestLabel": "ConnectExternalServiceWizard",
+        "report": {
+          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+          "applicationSection": "data",
+          "reportUuid": "dbd94bfe-b803-4bfd-8bb2-70a5932d5d1a"
+        },
+        "fakeHttpResponses": [
+          {
+            "method": "GET",
+            "url": "https://fake-service.example/openapi.json",
+            "body": {
+              "openapi": "3.0.0",
+              "info": {
+                "title": "WizardTwoGet",
+                "version": "1.0.0"
+              },
+              "paths": {
+                "/releases/{id}": {
+                  "get": {
+                    "operationId": "getRelease",
+                    "parameters": [
+                      {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                          "type": "string"
+                        }
+                      }
+                    ],
+                    "responses": {
+                      "200": {
+                        "description": "ok",
+                        "content": {
+                          "application/json": {
+                            "schema": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "/oneof": {
+                  "get": {
+                    "operationId": "oneOfOnly",
+                    "responses": {
+                      "200": {
+                        "description": "oneof only",
+                        "content": {
+                          "application/json": {
+                            "schema": {
+                              "oneOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "number"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "miroirTests": [
+          {
+            "miroirTestType": "reportTest",
+            "miroirTestLabel": "reads an OpenAPI document by URL",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the Application step",
+                "target": {
+                  "byTestId": "multistep-step-label"
+                },
+                "containsHtml": "Application",
+                "timeout": 15000
+              },
+              {
+                "step": "openSelect",
+                "label": "open the application picker",
+                "field": "application.application"
+              },
+              {
+                "step": "click",
+                "label": "pick Library",
+                "target": {
+                  "byLabelText": "application.application-option-5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Library is picked",
+                "target": {
+                  "widget": "selectState",
+                  "field": "application.application"
+                },
+                "attribute": "data-test-selected-value",
+                "value": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "Next",
+                "target": {
+                  "byTestId": "multistep-next"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the Endpoint name step",
+                "target": {
+                  "byTestId": "multistep-step-label"
+                },
+                "containsHtml": "Endpoint name",
+                "timeout": 5000
+              },
+              {
+                "step": "change",
+                "label": "name the endpoint",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "name.endpointName"
+                },
+                "value": "discogsPublic"
+              },
+              {
+                "step": "click",
+                "label": "Next",
+                "target": {
+                  "byTestId": "multistep-next"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the OpenAPI document step",
+                "target": {
+                  "byTestId": "multistep-step-label"
+                },
+                "containsHtml": "OpenAPI document",
+                "timeout": 5000
+              },
+              {
+                "step": "change",
+                "label": "give the document URL",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "document.url"
+                },
+                "value": "https://fake-service.example/openapi.json"
+              },
+              {
+                "step": "click",
+                "label": "Next",
+                "target": {
+                  "byTestId": "multistep-next"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the Base URL step",
+                "target": {
+                  "byTestId": "multistep-step-label"
+                },
+                "containsHtml": "Base URL",
+                "timeout": 5000
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

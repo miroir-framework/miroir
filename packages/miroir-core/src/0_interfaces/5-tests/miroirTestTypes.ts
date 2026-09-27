@@ -4,6 +4,7 @@ import type {
   MiroirTestForReport,
   MiroirTestLeaf,
   ReactComponentTestStep,
+  ReportTestFakeHttpResponse,
   TestAssertionResult,
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirTestExecutionEnvironment } from "../../5_tests/MiroirTestTools";
@@ -90,6 +91,8 @@ export type ReportTestSuiteContext = {
   };
   /** How long an interaction step waits for the actions it started (T5); runner default when absent. */
   actionTimeoutMs?: number;
+  /** Answers to the outbound HTTP requests of the Report's actions (T9); none: requests go out. */
+  fakeHttpResponses?: ReportTestFakeHttpResponse[];
   /** Labels of every leaf of the suite, in order (the runner releases the suite after the last). */
   caseLabels: string[];
 };
@@ -105,7 +108,9 @@ export function isReportTestSuiteContext(
 
 export type ReportTestRunnerResult =
   | { status: "ok" }
-  | { status: "error"; message: string; expected?: unknown; actual?: unknown };
+  | { status: "error"; message: string; expected?: unknown; actual?: unknown }
+  /** The leaf cannot run in this session (e.g. fake HTTP on a real server); `message` says why. */
+  | { status: "skipped"; message: string };
 
 /**
  * Runs one `reportTest` leaf against the integration session of its run (#330). miroir-core cannot

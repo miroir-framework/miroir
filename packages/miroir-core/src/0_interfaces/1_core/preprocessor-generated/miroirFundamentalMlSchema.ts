@@ -7192,6 +7192,24 @@ export const miroirFundamentalMlSchema = {
               }
             }
           },
+          "fakeHttpResponses": {
+            "type": "array",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Fake HTTP responses",
+                "description": "Answers to the outbound HTTP requests of the Report's actions (external services), so the suite runs without a network; a request with no answer fails the leaf, naming its method and URL (#330)"
+              }
+            },
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "reportTestFakeHttpResponse",
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+              },
+              "context": {}
+            }
+          },
           "miroirTests": {
             "type": "array",
             "definition": {
@@ -8584,6 +8602,68 @@ export const miroirFundamentalMlSchema = {
           }
         }
       },
+      "reportTestFakeHttpResponse": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "defaultLabel": "Fake HTTP response",
+            "description": "The answer to one outbound HTTP request of a Report test (#330)"
+          }
+        },
+        "definition": {
+          "method": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Method",
+                "description": "HTTP method of the request, e.g. GET"
+              }
+            }
+          },
+          "url": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "URL",
+                "description": "Full URL of the request, query string included"
+              }
+            }
+          },
+          "status": {
+            "type": "number",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Status",
+                "description": "HTTP status of the answer; 200 when absent"
+              }
+            }
+          },
+          "headers": {
+            "type": "record",
+            "optional": true,
+            "definition": {
+              "type": "string"
+            },
+            "tag": {
+              "value": {
+                "defaultLabel": "Headers",
+                "description": "Headers of the answer; a body that is not a string also gets content-type application/json"
+              }
+            }
+          },
+          "body": {
+            "type": "any",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Body",
+                "description": "Body of the answer: a string as is, any other value as JSON"
+              }
+            }
+          }
+        }
+      },
       "miroirTestDefinition": {
         "type": "object",
         "extend": {
@@ -9155,6 +9235,22 @@ export const miroirFundamentalMlSchema = {
                       "value": {
                         "defaultLabel": "Action timeout (ms)",
                         "description": "How long an interaction step waits for the actions it started; 10000 when absent (#330)"
+                      }
+                    }
+                  },
+                  "fakeHttpResponses": {
+                    "type": "array",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Fake HTTP responses",
+                        "description": "Answers to the outbound HTTP requests of the Report's actions (external services), so the suite runs without a network; a request with no answer fails the leaf, naming its method and URL (#330)"
+                      }
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "reportTestFakeHttpResponse"
                       }
                     }
                   },
@@ -10499,6 +10595,68 @@ export const miroirFundamentalMlSchema = {
                   },
                   "miroirTestLabel": {
                     "type": "string"
+                  }
+                }
+              },
+              "reportTestFakeHttpResponse": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Fake HTTP response",
+                    "description": "The answer to one outbound HTTP request of a Report test (#330)"
+                  }
+                },
+                "definition": {
+                  "method": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Method",
+                        "description": "HTTP method of the request, e.g. GET"
+                      }
+                    }
+                  },
+                  "url": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "URL",
+                        "description": "Full URL of the request, query string included"
+                      }
+                    }
+                  },
+                  "status": {
+                    "type": "number",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Status",
+                        "description": "HTTP status of the answer; 200 when absent"
+                      }
+                    }
+                  },
+                  "headers": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "string"
+                    },
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Headers",
+                        "description": "Headers of the answer; a body that is not a string also gets content-type application/json"
+                      }
+                    }
+                  },
+                  "body": {
+                    "type": "any",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Body",
+                        "description": "Body of the answer: a string as is, any other value as JSON"
+                      }
+                    }
                   }
                 }
               }

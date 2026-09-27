@@ -101,6 +101,7 @@ function leafSuiteContext(
         suitePath,
         report: suite.report,
         ...(suite.actionTimeoutMs !== undefined ? { actionTimeoutMs: suite.actionTimeoutMs } : {}),
+        ...(suite.fakeHttpResponses !== undefined ? { fakeHttpResponses: suite.fakeHttpResponses } : {}),
         caseLabels: suite.miroirTests.map((leaf) => leaf.miroirTestLabel),
       };
     case "miroirTestSuite":

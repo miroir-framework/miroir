@@ -18,6 +18,7 @@ import { packageName } from "../constants.js";
 import { resolveSecret, type ResolveSecretResult } from "./SecretStore.js";
 import { cleanLevel } from "./constants.js";
 import { MiroirLoggerFactory } from "./MiroirLoggerFactory.js";
+import { outboundFetch } from "../1_core/OutboundFetch.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(
   packageName,
@@ -351,7 +352,7 @@ async function resolveClientCredentialsToken(
   }
   let response: Response;
   try {
-    response = await fetch(scheme.tokenUrl, {
+    response = await outboundFetch(scheme.tokenUrl, {
       method: "POST",
       headers: {
         Authorization: `Basic ${toBase64(`${clientId}:${clientSecret}`)}`,
@@ -482,7 +483,7 @@ async function resolveAuthorizationCodeToken(
   }
   let response: Response;
   try {
-    response = await fetch(scheme.tokenUrl, {
+    response = await outboundFetch(scheme.tokenUrl, {
       method: "POST",
       headers: {
         Authorization: `Basic ${toBase64(`${clientId}:${clientSecret}`)}`,
@@ -737,7 +738,7 @@ async function fetchExternalServiceOperation(
 
   const doFetch = async (): Promise<Response | Action2Error> => {
     try {
-      return await fetch(url, {
+      return await outboundFetch(url, {
         method: operation.method,
         headers,
       });

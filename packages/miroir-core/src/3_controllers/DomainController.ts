@@ -142,6 +142,7 @@ import {
   summarizeRollbackInstanceCollections,
 } from "../4_services/rollbackLog.js";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
+import { outboundFetch } from "../1_core/OutboundFetch.js";
 import { packageName } from "../constants";
 
 import {
@@ -4115,7 +4116,7 @@ export class DomainController implements DomainControllerInterface {
       }
       try {
         // PR #285 P1: never follow redirects — a 3xx could land on a private/loopback host.
-        const response = await fetch(url, { redirect: "manual" });
+        const response = await outboundFetch(url, { redirect: "manual" });
         if (response.status >= 300 && response.status < 400) {
           return new Action2Error(
             "InvalidAction",

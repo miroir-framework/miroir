@@ -1,7 +1,6 @@
 import type { ReactComponentTestTarget, ReactComponentTestTextMatch } from "miroir-core";
 
 import type { ComponentTestEnvironment } from "./componentTestEnvironment.js";
-import { formikFieldName } from "./componentTestTools.js";
 
 // ################################################################################################
 // Targets of the declarative component test steps (#292, analysis T6, §5.4) and the revival of
@@ -46,7 +45,7 @@ function widgetElements(env: ComponentTestEnvironment, target: ReactComponentTes
   if (target.field === undefined) {
     throw new Error(`widget "${target.widget}" needs a field`);
   }
-  const fieldName = formikFieldName(target.field);
+  const fieldName = env.formikFieldName(target.field);
   switch (target.widget) {
     case "combobox":
       // the union type select of a field is its union type input (`MlElementEditor.tsx`)
@@ -73,7 +72,7 @@ function widgetElements(env: ComponentTestEnvironment, target: ReactComponentTes
         throw new Error(`widget "recordEntryName" needs an entry, in ${describeTarget(target)}`);
       }
       // the name input of a record entry (`MlObjectEditor.tsx`, `formikRootLessListKey + "-NAME"`)
-      return env.view.queryAllByRole("textbox", { name: `${formikFieldName(`${target.field}.${target.entry}`)}-NAME` });
+      return env.view.queryAllByRole("textbox", { name: `${env.formikFieldName(`${target.field}.${target.entry}`)}-NAME` });
     }
     default:
       throw new Error(`unknown widget ${JSON.stringify(target.widget)}, in ${describeTarget(target)}`);
@@ -108,7 +107,7 @@ function arrayButtonElements(
         throw new Error(`widget "arrayButton" with action "${target.action}" needs an index, in ${describeTarget(target)}`);
       }
       const suffix = target.action === "duplicate" ? "duplicateArrayItem" : "removeArrayItem";
-      return env.view.queryAllByRole("button", { name: `${formikFieldName(`${target.field}.${target.index}`)}-${suffix}` });
+      return env.view.queryAllByRole("button", { name: `${env.formikFieldName(`${target.field}.${target.index}`)}-${suffix}` });
     }
     default:
       throw new Error(
@@ -143,7 +142,7 @@ function objectButtonElements(
     case "duplicate": {
       const suffix = target.action === "remove" ? "removeOptionalAttributeOrRecordEntry" : "duplicateRecordEntry";
       return env.view.queryAllByRole("button", {
-        name: `${formikFieldName(`${target.field}.${needsAttribute()}`)}-${suffix}`,
+        name: `${env.formikFieldName(`${target.field}.${needsAttribute()}`)}-${suffix}`,
       });
     }
     default:
@@ -176,7 +175,7 @@ export function queryAllTarget(
   if (target.name !== undefined && target.byRole === undefined) {
     throw new Error(`"name" refines "byRole" only, in ${describeTarget(target)}`);
   }
-  return refine(locatorMatches(env, target, locators[0], elements), target);
+  return refine(env, locatorMatches(env, target, locators[0], elements), target);
 }
 
 function hasRefinement(target: ReactComponentTestTarget): boolean {
@@ -187,12 +186,12 @@ function hasRefinement(target: ReactComponentTestTarget): boolean {
  * Keeps the matches whose `name` is `F(fieldName)`, whose `name` starts with `F(fieldNamePrefix)`,
  * and whose `id` is `id`, when given.
  */
-function refine(matches: HTMLElement[], target: ReactComponentTestTarget): HTMLElement[] {
+function refine(env: ComponentTestEnvironment, matches: HTMLElement[], target: ReactComponentTestTarget): HTMLElement[] {
   return matches.filter((element) => {
     const name = (element as HTMLInputElement).name ?? "";
     return (
-      (target.fieldName === undefined || name === formikFieldName(target.fieldName)) &&
-      (target.fieldNamePrefix === undefined || name.startsWith(formikFieldName(target.fieldNamePrefix))) &&
+      (target.fieldName === undefined || name === env.formikFieldName(target.fieldName)) &&
+      (target.fieldNamePrefix === undefined || name.startsWith(env.formikFieldName(target.fieldNamePrefix))) &&
       (target.id === undefined || element.id === target.id)
     );
   });

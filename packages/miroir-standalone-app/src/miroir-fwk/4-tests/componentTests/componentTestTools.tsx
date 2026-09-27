@@ -478,6 +478,8 @@ export interface MiroirTestProvidersProps {
   /** Seeds the context's application deployment map with this application (tests only). */
   testingApplication?: string;
   testingDeploymentUuid?: string;
+  /** The other deployments the context starts with, see `MiroirContextReactProvider` (#330). */
+  testingApplicationDeploymentMap?: ApplicationDeploymentMap;
   /** Render insight tracking (#303), see `BuildComponentTestWrapperOptions.trackRenders`. */
   trackRenders?: boolean;
   /**
@@ -525,6 +527,7 @@ function MiroirTestContext(
       domainController={props.domainController}
       testingApplication={props.testingApplication}
       testingDeploymentUuid={props.testingDeploymentUuid}
+      testingApplicationDeploymentMap={props.testingApplicationDeploymentMap}
       initialShowPerformanceDisplay={props.trackRenders ?? false}
       deploymentUuidToReportsEntitiesMapping={props.deploymentUuidToReportsEntitiesMapping}
     >

@@ -1037,6 +1037,7 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
               type="button"
               variant="outlined"
               disabled={stepIndex === 0 && visitedStepIds.length <= 1}
+              data-testid="multistep-back"
               onClick={handleBack}
             >
               Back
@@ -1061,6 +1062,7 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
                     currentChild.stepId === "outcome" &&
                     stepBag.review?.probeSucceeded === false)
                 }
+                data-testid="multistep-finish"
                 onClick={handleFinish}
               >
                 Finish

@@ -244,6 +244,12 @@ export function MiroirContextReactProvider(props: {
   testingApplication?: Uuid; // for tests only! Yuck!
   testingDeploymentUuid?: Uuid; // for tests only! Yuck!
   /**
+   * For tests only: the deployments the context starts with, besides Miroir, Admin and the
+   * testing application. The report test runner gives the session's deployments, which
+   * RootComponent would set in the app (#330).
+   */
+  testingApplicationDeploymentMap?: ApplicationDeploymentMap;
+  /**
    * Initial value of `showPerformanceDisplay` (render insight tracking), overriding the
    * `sessionStorage` value. Used by component tests that measure renders (#303), so that
    * no `sessionStorage` write leaks into the app session.
@@ -266,6 +272,7 @@ export function MiroirContextReactProvider(props: {
     props.testingApplication && props.testingDeploymentUuid
       ? {
           ...defaultSelfApplicationDeploymentMap,
+          ...props.testingApplicationDeploymentMap,
           [props.testingApplication]: props.testingDeploymentUuid,
         }
       : undefined,

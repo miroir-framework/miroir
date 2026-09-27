@@ -13,7 +13,7 @@
 | File | Case | What it proves | Covered by |
 |---|---|---|---|
 | `wizardWalk.284.integ.test.tsx` L392 | `launcher-connect-external-service` | The home launcher button navigates to the wizard Report of the Miroir application | |
-| `wizardWalk.284.integ.test.tsx` L410 | `wizard-report-mounts-multistep-host` | The wizard mounts the multistep host on its first step (Application) | |
+| `wizardWalk.284.integ.test.tsx` L410 | `wizard-report-mounts-multistep-host` | The wizard mounts the multistep host on its first step (Application) | `report.connectExternalServiceWizard` "reads an OpenAPI document by URL" (step 1) |
 | `wizardWalk.284.integ.test.tsx` L419 | `picker-lists-fixture-application-only` | The application picker lists the target application and not Miroir or Admin | |
 | `wizardWalk.284.integ.test.tsx` L462 | `document-invalid-stays-with-parser-message` | An invalid OpenAPI document keeps the step, with the parser message | |
 | `wizardWalk.284.integ.test.tsx` L478 | `document-valid-lists-convertible-hides-oneof` | A valid document lists convertible operations and hides `oneOf`-only ones | |

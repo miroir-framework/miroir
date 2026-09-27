@@ -47,7 +47,8 @@ export const REPORT_TEST_NO_SUITE_MESSAGE = "reportTest must be a leaf of a repo
  * - A leaf outside a `reportTestSuite` (no suite context from the walk) is recorded as an `error`
  *   and does not reach the runner.
  * - Otherwise the runner is called with the leaf and the suite context built by the walk, and its
- *   `ok` / `error` is recorded; an `error` then fails the vitest test, as a `runnerTest` does.
+ *   `ok` / `error` is recorded; an `error` then fails the vitest test, as a `runnerTest` does. A
+ *   `skipped` result is recorded as skipped, with the runner's reason.
  */
 export async function runMiroirReportTest(
   localVitest: VitestNamespace,
@@ -112,6 +113,15 @@ export async function runMiroirReportTest(
         message: error instanceof Error ? error.message : String(error),
       };
     }
+  }
+
+  if (runnerResult.status === "skipped") {
+    miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, {
+      assertionName,
+      assertionResult: "skipped",
+      assertionActualValue: runnerResult.message,
+    });
+    return;
   }
 
   const testAssertionResult: TestAssertionResult =

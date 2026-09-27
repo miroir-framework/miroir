@@ -5,11 +5,14 @@ import {
   MiroirActivityTracker,
   MiroirContext,
   MiroirLoggerFactory,
+  createFakeOutboundFetch,
   defaultMiroirModelEnvironment,
   runReportTestCompositeActionStep,
   runReportTestExpectActionResultStep,
+  setOutboundFetch,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
+  type FakeOutboundFetch,
   type LoggerInterface,
   type MiroirActivityTrackerInterface,
   type MiroirEventService,
@@ -117,10 +120,21 @@ async function refreshLocalCache(
   }
 }
 
+/** Result message of a leaf whose suite declares `fakeHttpResponses`, on a real server (T9). */
+export const REPORT_TEST_FAKE_HTTP_NEEDS_EMULATED_SERVER =
+  "fake HTTP responses need an emulated server: on a real server the requests go out from the server process";
+
+function undeclaredRequestsMessage(fakeFetch: FakeOutboundFetch): string {
+  return `no fake HTTP response declared for ${fakeFetch.undeclaredRequests.join(", ")}`;
+}
+
 /** Throws the error of a failed action or assertion step, with its compared values if any. */
 function throwOnError(outcome: ReportTestRunnerResult): void {
   if (outcome.status === "ok") {
     return;
+  }
+  if (outcome.status === "skipped") {
+    throw new Error(outcome.message);
   }
   if (outcome.expected !== undefined || outcome.actual !== undefined) {
     throw new StepValuesMismatch(outcome.message, outcome.expected, outcome.actual);
@@ -155,7 +169,11 @@ function actionStepHandlers(actionContext: ReportTestActionContext) {
  * 3. It runs the leaf's steps (`runComponentTestSteps`), a thrown error becoming an `error`
  *    result. The action and assertion steps run through the session's DomainController and share
  *    the leaf's kept results (`runReportTestCompositeActionStep`,
- *    `runReportTestExpectActionResultStep`).
+ *    `runReportTestExpectActionResultStep`). After each interaction step, it waits for the actions
+ *    the step started (T5).
+ * 4. When the suite declares `fakeHttpResponses`, the outbound fetch answers them during the leaf
+ *    (T9); a request with no declared answer fails the leaf, naming its method and URL. On a real
+ *    server the leaf is skipped.
  *
  * Each case is unmounted when its steps end: a mounted Report would react to the testbed reset
  * of the next leaf (its queries then fail on the emptied store).
@@ -200,8 +218,12 @@ export function createReportTestRunner(host: ReportTestSandboxHost): ClosableRep
     return container;
   };
 
-  const failure = (testName: string, error: unknown): ReportTestRunnerResult => {
-    const message = error instanceof Error ? error.message : String(error);
+  const failure = (testName: string, error: unknown, fakeFetch?: FakeOutboundFetch): ReportTestRunnerResult => {
+    const stepMessage = error instanceof Error ? error.message : String(error);
+    // an undeclared request is the cause of the step failure that follows it
+    const message = fakeFetch?.undeclaredRequests.length
+      ? `${undeclaredRequestsMessage(fakeFetch)}, then ${stepMessage}`
+      : stepMessage;
     log.info("report test failed", testName, message);
     if (error instanceof ComponentTestStepError && error.hasComparedValues) {
       return { status: "error", message, expected: error.expected, actual: error.actual };
@@ -231,6 +253,14 @@ export function createReportTestRunner(host: ReportTestSandboxHost): ClosableRep
         message: `application ${suite.report.application} of suite "${suite.suitePath.join(" > ")}" has no deployment in this session`,
       };
     }
+    // the fake replaces the fetch of this process; on a real server, the requests go out from the server
+    if (suite.fakeHttpResponses && !internalMiroirConfig.client.emulateServer) {
+      return { status: "skipped", message: REPORT_TEST_FAKE_HTTP_NEEDS_EMULATED_SERVER };
+    }
+    const fakeFetch = suite.fakeHttpResponses ? createFakeOutboundFetch(suite.fakeHttpResponses) : undefined;
+    if (fakeFetch) {
+      setOutboundFetch(fakeFetch.fetch);
+    }
     try {
       await refreshLocalCache(domainController, applicationDeploymentMap, [
         selfApplicationMiroir.uuid,
@@ -254,6 +284,7 @@ export function createReportTestRunner(host: ReportTestSandboxHost): ClosableRep
             domainController={domainController}
             testingApplication={suite.report.application}
             testingDeploymentUuid={deploymentUuid}
+            testingApplicationDeploymentMap={applicationDeploymentMap}
             offerReportsAndEntities
           >
             <PortalContainerProvider portalElement={portalElement}>
@@ -284,15 +315,22 @@ export function createReportTestRunner(host: ReportTestSandboxHost): ClosableRep
         settle: () => waitAfterUserInteraction(container),
       });
       await runComponentTestSteps(
-        createComponentTestEnvironment({ testName, container, sandboxElement, portalElement, log }),
+        // the fields of a Report are named from its own form values, without a test section
+        createComponentTestEnvironment({ testName, container, sandboxElement, portalElement, log, fieldNamePrefix: "" }),
         leaf.steps,
         { extraStepHandlers: actionStepHandlers(actionContext), afterInteraction },
       );
+      if (fakeFetch?.undeclaredRequests.length) {
+        return { status: "error", message: undeclaredRequestsMessage(fakeFetch) };
+      }
       return { status: "ok" };
     } catch (error) {
-      return failure(testName, error);
+      return failure(testName, error, fakeFetch);
     } finally {
       unmountCurrentCase();
+      if (fakeFetch) {
+        setOutboundFetch(undefined);
+      }
     }
   };
 
