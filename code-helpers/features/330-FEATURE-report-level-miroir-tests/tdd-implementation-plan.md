@@ -1,0 +1,523 @@
+# Issue #330 — TDD Implementation Plan
+
+> Vertical TDD slices (RED → GREEN each), integration-first per `docs/contributing/testing.md`:
+> tests exercise the real DomainController, local cache and emulated server of `RunnerTestSession`
+> on the `emulatedServer-filesystem` profile (and the other integ profiles in nonreg),
+> through the applicative interface: MiroirTest instances of the new `reportTestSuite` kind,
+> which mount real Reports (`BookDetails`, `ConnectExternalServiceWizard`) at their real route.
+> No mocks. The tracer bullet proves one Report mounted from the testbed store and checked from a MiroirTest.
+>
+> **Execution model:** human-in-the-loop. No slice contains a commit step — commits happen
+> only when the user explicitly asks. Each slice ends with its Validation commands; on
+> success its Realization summary is appended and its Status flips to ✅ DONE.
+> (A's standing flow for sizeable work is one green commit per slice, on request.)
+
+Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/330
+Follow-up: https://github.com/miroir-framework/miroir/issues/333 (stored values in UI steps)
+Working branch: `claude/report-level-miroir-tests-0lnny6` (from `_integration`, PR against `_integration`)
+
+**Resume note:** plan written 2026-09-27; no slice started.
+
+---
+
+## Scope
+
+- New MiroirTest node `reportTestSuite` and leaf `reportTest`, in the MiroirTest Entity and its EntityVersion, with the component-test steps plus `compositeAction` and `expectActionResult`.
+- Core dispatch to an app-registered report test runner; runner-kind integration session; mode tags `integ` + `ui`.
+- App runner that mounts a Report through `PageDispatcher` under a `MemoryRouter`, with the session's DomainController and LocalCache, and waits for started actions after each interaction.
+- Fetch seam in miroir-core and suite-level `fakeHttpResponses`.
+- Two MiroirTests: `report.bookDetails` and `report.connectExternalServiceWizard`; deletion of the two 284 UI tests they replace.
+- In-app launch under "Run Integration Tests"; nonreg steps; "Report tests" docs section.
+
+This plan does **not** cover stored values in UI steps (#333), an in-memory mode (rejected, D2), Report-level locators (later), a skill for Report tests (later, D21), the other TS tests that mount Reports (later, unscheduled), or fake HTTP on `realServer-*` profiles (T9).
+
+---
+
+## Progress summary
+
+| Slice | Title | Status | Primary proof |
+|---|---|---|---|
+| 0 | Baseline and 284 coverage inventory | ⬜ | nonreg baseline + `wizard-coverage.md` |
+| 1 | Tracer: a MiroirTest mounts `BookDetails` from the testbed store | ⬜ | `report.bookDetails` leaf "displays the Book" |
+| 2 | Check steps: run a query, assert on its result | ⬜ | leaf "the store holds the displayed Book" + failure-report vitest |
+| 3 | Edit and save through the UI, checked in the store | ⬜ | leaf "saves an edited title" + idle-wait vitest |
+| 4 | Invalid input is not saved | ⬜ | leaf "does not save an invalid value" |
+| 5 | Fake HTTP, and the wizard's first steps | ⬜ | `report.connectExternalServiceWizard` leaf "reads an OpenAPI document by URL" + undeclared-request vitest |
+| 6 | Wizard Finish persists the Endpoint and Report | ⬜ | leaf "public service: Finish creates Endpoint and Report" |
+| 7 | Wizard branches; 284 UI tests deleted | ⬜ | branch leaves + coverage table all covered |
+| 8 | Report tests in the app | ⬜ | launcher registry test + in-app run |
+| 9 | Nonreg, docs, cleanup, AC | ⬜ | nonreg steps + tracer narrative |
+
+---
+
+## Locked implementation defaults
+
+Binding for this plan (analysis decision record, D1–D21 and T1–T12). Deviations go into the slice's Realization.
+
+| Decision | Choice |
+|---|---|
+| D1 / T1 | New node `reportTestSuite` (`report: { application, applicationSection, reportUuid, instanceUuid? }`, `actionTimeoutMs?`, `fakeHttpResponses?`, `miroirTests`) and leaf `reportTest` (`instanceUuid?`, `steps`), inside a `miroirTestSuite` that carries `runTarget` and the testbed fields. Entity row and EntityVersion `51c647fe-…` identical. |
+| D2 / D8 / D9 / T3 | Real store only; runner-kind session (`RunnerTestSession`); testbed reset before each leaf. |
+| D3 / D11 / T6 / T7 | Steps `compositeAction` (stores `returnedDomainElement` under `nameGivenToResult`) and `expectActionResult` (`compositeRunTestAssertion`, run with stored results as action parameters), anywhere in `steps`. |
+| D4 / D18 / T10 | vitest first (Slices 1–7), app in Slice 8 via `ComponentTestSandbox`. |
+| D5 / T4 | Mount `PageDispatcher` in a `MemoryRouter` at `/?page=report&…`; providers from the session DomainController and `getLocalCache()`. |
+| D7 | Instance names `report.<reportName>`, tags include `integ`, `ui`; cases are leaves (e.g. "saves an edited title") rather than one instance per variant, since they share the Report and testbed. |
+| D10 / D16 / T5 | Every interaction step flushes, waits until no `action` activity is running in `MiroirActivityTracker`, repeats until stable; `actionTimeoutMs` default 10 000; error names the running actions. |
+| D12 / T8 | Existing locators; new test ids `typed-value-object-editor-submit`, `multistep-back`, `multistep-finish` (`multistep-next` exists). |
+| D14 / T9 | Module-level fetch seam in miroir-core `4_services` used by the 4 call sites; fake answers declared responses, fails undeclared ones; https public fake host; suites with `fakeHttpResponses` skipped on `realServer-*`. |
+| D15 / T2 | `ConfigurationService.registerReportTestRunner`; core arm requires integration mode and `runnerTestContext`; no runner → skipped with message. |
+| D17 | Literal values in UI steps; #333 owns the extension. |
+| D19 / T12 | `wizardWalk.284` and `multistepBranch.284` deleted in Slice 7 once `wizard-coverage.md` shows every case covered. |
+| D20 / T11 | Nonreg `integ-report.bookDetails`, `integ-report.connectExternalServiceWizard`, shaped like `integ-runner.*`. |
+| D21 | "Report tests" section in `docs/reference/testing.md` (Slice 9). |
+
+---
+
+## Allocated UUIDs / keys
+
+| Artefact | Value |
+|---|---|
+| MiroirTest `report.bookDetails` (Library, `library_model/a311f363-…/`) | `4edb680b-4686-4d9a-bb96-40fa9f945b24` |
+| MiroirTest `report.connectExternalServiceWizard` (Miroir, `miroir_data/a311f363-…/`) | `6446d8b1-8268-4e29-b234-37a267cb7c6b` |
+| Report under test: `BookDetails` | `c3503412-3d8a-43ef-a168-aa36e975e606` |
+| Report under test: `ConnectExternalServiceWizard` | `dbd94bfe-b803-4bfd-8bb2-70a5932d5d1a` |
+| Book edited by `report.bookDetails` | a Book of the Library playfield seed, e.g. Ubik `03ffcae1-b83f-4970-b3d9-04780d3d0780` (confirmed in Slice 1) |
+| Nonreg steps | `integ-report.bookDetails`, `integ-report.connectExternalServiceWizard` |
+| Test ids | `typed-value-object-editor-submit`, `multistep-back`, `multistep-finish` |
+| Fake external host | `https://fake-service.example` |
+| Issue-scoped vitest folder | `packages/miroir-standalone-app/tests/4_view/issues/330-report-level-miroir-tests/` |
+
+---
+
+## Test execution conventions
+
+| Purpose | Command |
+|---|---|
+| Report MiroirTests (integ, filesystem) | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites report.bookDetails --mode integ` |
+| Issue vitest | `RUN_TEST=<name> npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem <file-stem>` |
+| Component tests (regression) | `npm run testByFile -w miroir-standalone-app -- miroir-component-tests.unit` |
+| Core unit | `npm run test -w miroir-core -- ''` |
+| MiroirTest guards (names, tags) | `npm run test -w miroir-core -- miroirTestNaming miroirTestTags` |
+| Deployment validation | `npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts` (and `-library`) |
+| Schema rebuild | `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core` (`./build-all.sh` if `devBuild` says "jzodObject not found") |
+| MiroirTest JSON rebuild | `npm run build -w miroir-test-app_deployment-miroir` / `-w miroir-test-app_deployment-library` |
+| Type check | `npx tsc --noEmit --skipLibCheck -p packages/<pkg>/tsconfig.json` (miroir-core, miroir-standalone-app) |
+| Lint | `npm run lint` |
+| Nonreg | `npm run nonreg:unit -- --runner shared`, `npm run nonreg:filesystem -- --runner shared` |
+
+---
+
+## Slice 0 — Baseline and 284 coverage inventory
+
+**Status:** ⬜ pending
+
+### Goal
+
+Record what passes today on the suites later slices touch, and list every case of the two 284 UI tests so Slice 7 can prove it covers them.
+
+### 0.1 Baseline
+
+Run the steps touching the refactored code (`buildComponentTestWrapper`, the runner session, the MiroirTest walk, the mode-tag and session-kind functions) and keep the result as the reference: component tests, `integ-runner.*`, `appstack-284-openapi-connection-wizard`, `integ-action-284-*`. Pre-existing failures are recorded, not fixed.
+
+### 0.2 Coverage inventory
+
+`code-helpers/features/330-FEATURE-report-level-miroir-tests/wizard-coverage.md`: one row per `it` / test key of `wizardWalk.284.integ.test.tsx` and `multistepBranch.284.integ.test.tsx`, extracted by a Python script (not by eye), with columns "what it proves" and "covered by" (empty at this point).
+
+### Validation
+
+```bash
+npm run nonreg -- --runner shared --tier default --profile emulatedServer-filesystem --only integ-runner.lendDocument,integ-runner.returnDocument,integ-runner.freezeApplicationVersion,integ-runner.dropEntity,appstack-miroir-component-tests,unit-286-react-component-miroir-tests,unit-292-declarative-react-component-tests,unit-284-openapi-connection-wizard,integ-action-284-openapi-connection-wizard,integ-action-284-openapi-connection-wizard-auth,appstack-284-openapi-connection-wizard
+python3 code-helpers/features/330-FEATURE-report-level-miroir-tests/list_wizard_cases.py   # script kept next to the inventory until Slice 9
+```
+
+### Realization
+
+<Appended on completion.>
+
+---
+
+## Slice 1 — Tracer: a MiroirTest mounts `BookDetails` from the testbed store
+
+**Status:** ⬜ pending
+
+### Goal
+
+A test author can write a `reportTestSuite` that mounts a Report from the testbed store and checks what it displays with the existing component-test steps.
+
+**Layers cut:** MiroirTest Entity schema → generated types → core walk and `"reportTest"` arm, mode tags, session kind → app report test runner (providers, `MemoryRouter`, `PageDispatcher`) → Library MiroirTest instance.
+
+### 1.1 RED
+
+**Test:** MiroirTest `report.bookDetails` (`4edb680b-…`), enclosing `miroirTestSuite` with the Library `runTarget` and playfield of `runner.lendDocument`, one `reportTestSuite` on `BookDetails` with `instanceUuid` of the chosen Book, one leaf **"displays the Book"**: `expectElement` on the Book's name (`byDisplayValue` or `byText`). Tags `integ`, `ui`, `report`, `issue: "330"`.
+
+Behavior asserted:
+- `testMiroir --suites report.bookDetails --mode integ` runs the leaf and it passes with the name read from the testbed store (not from fixtures).
+- `miroirTestSuiteModeTags` gives `["integ", "ui"]` for it (the tag guard in `miroirTestTags.unit.test.ts` fails if the instance carries other mode tags).
+
+RED today: the Entity schema rejects `reportTestSuite`; there is no arm and no runner.
+
+### 1.2 GREEN
+
+- Schema (T1): `reportTestSuite`, `miroirTestForReport`, `reportTestStep` (for now: `reactComponentTestStep` only) in the Entity row and EntityVersion; `miroirTestSuite.miroirTests` accepts `reportTestSuite`. Rebuild the deployment, `devBuild` miroir-core.
+- Core (T2, T3): `MiroirTestAnyLeaf` gains the leaf; the walk builds a `ReportTestSuiteContext` (suite path, `report`, `actionTimeoutMs`, `fakeHttpResponses`, case labels) like `ReactComponentTestSuiteContext`; `runMiroirTest` arm `"reportTest"`; `ConfigurationService.registerReportTestRunner`; `miroirTestLeafRequiresIntegrationExecution`, `inferIntegrationSessionKind` (→ `"runner"`), `classifyApplicationMiroirTestCliLaunchKind` (→ `"runner-integration"`), `miroirTestSuiteModeTags` (→ `["integ", "ui"]`).
+- App (T4): split `buildComponentTestWrapper` so the provider stack takes a DomainController and a LocalCache; `createReportTestRunner` mounts `PageDispatcher` in `MemoryRouter` at the report URL with the session's DomainController and `getLocalCache()`, then runs the steps with `runComponentTestSteps`; register it in the runner integ entries (`miroir-runner-tests[-shared].integ.test.ts`).
+- The launcher must pass the `runnerTestContext` to the leaf; the suite has no `runnerTest` leaf, so `resolvedRunner` stays undefined.
+
+### 1.3 Refactor checkpoint
+
+- One provider-stack function used by component suites and report suites; the fixture LocalCache becomes the component suites' input, not a hidden default.
+- Check `ReportPage.tsx` is still imported somewhere; if only by tests, note it for Slice 9 (not removed here).
+- Risk from the analysis §5: if `PageContainer` needs providers the stack lacks, add them; if the sidebar drags in too much, mount `ReportDisplay` under the same URL and record the deviation.
+
+### Validation
+
+```bash
+npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core
+npm run build -w miroir-test-app_deployment-library
+npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites report.bookDetails --mode integ
+npm run test -w miroir-core -- ''
+npm run testByFile -w miroir-standalone-app -- miroir-component-tests.unit
+npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts
+npm run testByFile -w miroir-test-app_deployment-library -- tests/modelValidation.unit.test.ts
+npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+npm run lint
+```
+
+### Realization
+
+<Appended on completion.>
+
+---
+
+## Slice 2 — Check steps: run a query, assert on its result
+
+**Status:** ⬜ pending
+
+### Goal
+
+A test author can run an action or query at any point of a Report test and assert on its result, with the Runner tests' assertion semantics.
+
+**Layers cut:** schema (`reportTestStep` gains `compositeAction`, `expectActionResult`) → generated types → app runner step handlers (T6, T7) → MiroirTest instance.
+
+### 2.1 RED
+
+**Test 1:** new leaf of `report.bookDetails`, **"the store holds the displayed Book"**: `expectElement` on the name, then `compositeAction` (`compositeRunBoxedQueryAction` on the Book by uuid, `nameGivenToResult: "book"`), then `expectActionResult` comparing `book.name` to the displayed value.
+
+**Test 2 (vitest, justified):** `reportTestFailure.330.phase2.integ.test.ts` runs the `report.bookDetails` suite with a copy of that leaf whose expected name is wrong, and asserts the leaf is recorded as `error` with the assertion label, the expected value and the actual value. Not reachable through MiroirTest: a MiroirTest cannot assert that another MiroirTest fails.
+
+### 2.2 GREEN
+
+- Schema: the two step kinds, reusing `compositeActionTemplate` and `compositeRunTestAssertion` by reference. Rebuild + `devBuild`.
+- Runner: a per-leaf result record; `compositeAction` runs through `handleCompositeActionTemplate` with session `testParams` and the record as parameters, stores the last `returnedDomainElement`; `expectActionResult` runs a one-element `compositeActionSequence` with the record as parameters and turns a failed assertion into the leaf's error (label, expected, actual).
+- An `Action2Error` from a `compositeAction` fails the step with its message.
+
+### 2.3 Refactor checkpoint
+
+If Runner tests and report tests now build the same "sequence of assertions over a context" in two places, extract one helper in miroir-core `5_tests` used by both.
+
+### Validation
+
+```bash
+npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core && npm run build -w miroir-test-app_deployment-library
+npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites report.bookDetails --mode integ
+RUN_TEST=reportTestFailure npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem reportTestFailure.330.phase2
+npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites runner.lendDocument --mode integ
+npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+```
+
+### Realization
+
+<Appended on completion.>
+
+---
+
+## Slice 3 — Edit and save through the UI, checked in the store
+
+**Status:** ⬜ pending
+
+### Goal
+
+A test author can edit an instance in a Report, press its submit button, and check that the store holds the new value, without adding any wait of their own.
+
+**Layers cut:** view (`TypedValueObjectEditor` test id; instance-section submit if §3.6 is confirmed) → app runner (idle wait, T5) → core (`MiroirActivityTracker` query) → MiroirTest instance.
+
+### 3.1 RED
+
+**Test 1:** leaf **"saves an edited title"** of `report.bookDetails`: `type` a new name in the name field, `click` `byTestId: typed-value-object-editor-submit`, `compositeAction` query of the Book, `expectActionResult` on the new name. No explicit wait step.
+
+**Test 2 (vitest, justified):** `reportIdleWait.330.phase3.unit.test.ts` drives the idle waiter over a real `MiroirActivityTracker`: it resolves after a tracked action settles, keeps waiting when a second action starts while the first runs, and rejects after `actionTimeoutMs` with a message naming the still-running `actionType` / `actionLabel`. Not reachable through MiroirTest: the timeout path needs an action that never settles.
+
+Expected first run of Test 1: fails at the store check, confirming §3.6 (the nested Formik in `ReportSectionEntityInstance` swallows the submit). If it passes, §3.6 was wrong: record that in the Realization and the analysis history.
+
+### 3.2 GREEN
+
+- `data-testid="typed-value-object-editor-submit"` on the submit button (both the `ActionButtonWithSnackbar` and the plain button branches).
+- Idle waiter (T5) in the app runner, run after every interaction step; `actionTimeoutMs` from the suite context.
+- If §3.6 is confirmed: make the non-multistep instance section submit reach `onEditValueObjectFormSubmit` (the nested Formik's `onSubmit`, or no nested Formik for this branch), keeping the multistep branch (#274) unchanged. Its own regression proof is Test 1; the #274 tests (`multistepProcess.274`, `multistepLaunch.274`) must stay green.
+
+### 3.3 Refactor checkpoint
+
+The idle waiter belongs next to the component step runner, as one function; `runComponentTestSteps` gets an optional "after interaction" hook rather than a report-specific branch.
+
+### Validation
+
+```bash
+npm run build -w miroir-test-app_deployment-library
+npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites report.bookDetails --mode integ
+RUN_TEST=reportIdleWait npm run testByFile -w miroir-standalone-app -- reportIdleWait.330.phase3
+npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepProcess.274
+npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepLaunch.274
+npm run testByFile -w miroir-standalone-app -- miroir-component-tests.unit
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+```
+
+### Realization
+
+<Appended on completion.>
+
+---
+
+## Slice 4 — Invalid input is not saved
+
+**Status:** ⬜ pending
+
+### Goal
+
+A test author can prove that a Report refuses invalid input: the button is disabled and the store is unchanged.
+
+**Layers cut:** MiroirTest instance only, unless the Report does not disable submit on the chosen invalid input (then view).
+
+### 4.1 RED
+
+**Test:** leaf **"does not save an invalid value"** of `report.bookDetails`: make the Book invalid through the UI (clear the required `name`, or type text in the number field `year`, whichever the editor reports as a field error), `expectElement` on `typed-value-object-editor-submit` with attribute `disabled`, `click` it anyway, `compositeAction` query, `expectActionResult` on the original value.
+
+### 4.2 GREEN
+
+Expected to pass once the right invalid input is found. If neither input disables submit, that is a Report bug: fix it in this slice and record it.
+
+### 4.3 Refactor checkpoint
+
+Leaves of `report.bookDetails` share setup steps; if the same locator appears in three leaves, move the default `instanceUuid` and shared props to the suite.
+
+### Validation
+
+```bash
+npm run build -w miroir-test-app_deployment-library
+npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites report.bookDetails --mode integ
+```
+
+### Realization
+
+<Appended on completion.>
+
+---
+
+## Slice 5 — Fake HTTP, and the wizard's first steps
+
+**Status:** ⬜ pending
+
+### Goal
+
+A test author can declare external HTTP responses in a Report test, so a Report that reads an external service runs without a network; an undeclared request fails the test with its method and URL.
+
+**Layers cut:** miroir-core `4_services` fetch seam used by `DomainController.handlePrepareOpenApiDocument` and `ExternalServiceClient` → schema (`fakeHttpResponses`) → app runner (install and restore the fake, `realServer-*` skip) → view (test ids `multistep-back`, `multistep-finish`) → Miroir MiroirTest instance.
+
+### 5.1 RED
+
+**Test 1:** MiroirTest `report.connectExternalServiceWizard` (`6446d8b1-…`, `miroir_data/a311f363-…/`): `miroirTestSuite` with the Library `runTarget`; `reportTestSuite` on `dbd94bfe-…` (application Miroir, section `data`) with `fakeHttpResponses` serving an OpenAPI document at `https://fake-service.example/openapi.json` (the document of the 284 fake server, copied into the instance); leaf **"reads an OpenAPI document by URL"**: pick the Library application, name the endpoint, give the document URL, `click` `multistep-next`, `expectElement` on the step label "Base URL".
+
+**Test 2 (vitest, justified):** `fakeHttp.330.phase5.integ.test.ts` runs the suite with a URL that has no declared response and asserts the leaf fails with a message naming the method and URL. Not reachable through MiroirTest: asserts a failure.
+
+### 5.2 GREEN
+
+- Fetch seam (T9): module-level fetch with setter in miroir-core `4_services`, used at the four call sites (`DomainController.ts` L4118, `ExternalServiceClient.ts` L354, L485, L740).
+- Schema: `fakeHttpResponses` on `reportTestSuite` (`method`, `url`, `status`, `headers?`, `body`). Rebuild + `devBuild`.
+- Runner: install the fake for the suite, restore after the last case; on `emulateServer === false` record the suite's leaves as skipped with "fake HTTP needs an emulated server".
+- Test ids `multistep-back`, `multistep-finish` in `MultistepReportHost.tsx`.
+
+### 5.3 Refactor checkpoint
+
+The 284 TS tests' `fakeExternalServiceServer` stays until Slice 7; if its OpenAPI document is now duplicated in the MiroirTest instance, note which copy Slice 7 keeps.
+
+### Validation
+
+```bash
+npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core
+npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites report.connectExternalServiceWizard --mode integ
+RUN_TEST=fakeHttp npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem fakeHttp.330.phase5
+npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem connectExternalService.284.phase1
+npm run test -w miroir-core -- ''
+npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+```
+
+### Realization
+
+<Appended on completion.>
+
+---
+
+## Slice 6 — Wizard Finish persists the Endpoint and Report
+
+**Status:** ⬜ pending
+
+### Goal
+
+A test author can walk a multi-step Report to Finish and check, in the store, what Finish created.
+
+**Layers cut:** MiroirTest instance; runner only if Finish's asynchronous start escapes the idle wait (T5 loop).
+
+### 6.1 RED
+
+**Test:** leaf **"public service: Finish creates Endpoint and Report"**: full walk with a public (no auth) service, probe answered by `fakeHttpResponses`, `expectElement` on `probe-outcome` ("Probe succeeded."), `click` `multistep-finish`, then `compositeAction` queries of the Library model's Endpoints and Reports, `expectActionResult` that the Endpoint with the chosen name and its validation Report exist, and that no Entity was created for the probe (the three checks of `wizardWalk.284` "finish-public-creates-endpoint-and-report").
+
+### 6.2 GREEN
+
+Expected to need only the instance. If Finish's result is not in the store when the checks run, fix the idle wait (not the test).
+
+### 6.3 Refactor checkpoint
+
+None expected; record in `wizard-coverage.md` which rows this leaf covers.
+
+### Validation
+
+```bash
+npm run build -w miroir-test-app_deployment-miroir
+npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites report.connectExternalServiceWizard --mode integ
+```
+
+### Realization
+
+<Appended on completion.>
+
+---
+
+## Slice 7 — Wizard branches; 284 UI tests deleted
+
+**Status:** ⬜ pending
+
+### Goal
+
+The wizard's branches (authentication schemes, secret handling, failed probe, invalid document URL) are tested by the MiroirTest, and the two TS UI tests it replaces are gone.
+
+**Layers cut:** MiroirTest instance → nonreg manifest → deleted TS tests.
+
+### 7.1 RED
+
+**Test:** one leaf per uncovered row of `wizard-coverage.md` (e.g. "custom token secret never reaches the step bag", "failed probe keeps the review step", "insecure document URL is refused", "authenticated branch shows the scheme step"). A row only reachable by inspecting React state (e.g. the step bag's text) uses `expectElement` on the existing test ids (`multistep-step-bag`).
+
+### 7.2 GREEN
+
+Leaves added until every row has a "covered by" entry; then delete `wizardWalk.284.integ.test.tsx`, `multistepBranch.284.integ.test.tsx` and the nonreg step `appstack-284-openapi-connection-wizard`. `fakeExternalServiceServer` stays if other tests still use it (281, `spotifyApp`, `externalServiceReport`, 284 phases).
+
+### 7.3 Refactor checkpoint
+
+Remove helpers only the deleted files used (e.g. the report upsert helper of the 284 view tests), checked by grep.
+
+### Validation
+
+```bash
+npm run build -w miroir-test-app_deployment-miroir
+npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites report.connectExternalServiceWizard --mode integ
+python3 code-helpers/features/330-FEATURE-report-level-miroir-tests/list_wizard_cases.py --check   # every row covered
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+npm run lint
+```
+
+### Realization
+
+<Appended on completion.>
+
+---
+
+## Slice 8 — Report tests in the app
+
+**Status:** ⬜ pending
+
+### Goal
+
+A developer can run a Report test from the Miroir Tests page ("Run Integration Tests") and watch the Report being driven in the sandbox panel.
+
+**Layers cut:** in-app launcher registry and session creation → `ComponentTestSandbox` registration of the report runner → Miroir Tests UI.
+
+### 8.1 RED
+
+**Test (vitest, justified):** extend `tests/helpers/uiIntegrationTestLauncher.unit.test.ts`: the runner suite registry lists `report.bookDetails` and `report.connectExternalServiceWizard` with a runner-kind session and their playfield. Not reachable through MiroirTest: it tests the launcher itself.
+
+Manual proof: `npm run dev -w miroir-standalone-app`, Miroir Tests, `report.bookDetails`, "Run Integration Tests" on `emulatedServer-indexedDb`: the Report appears in the sandbox, the fields change, the leaves pass.
+
+### 8.2 GREEN
+
+Register report suites in `uiIntegrationTestRunnerSuiteRegistry`; the browser session registers the report runner over the `ComponentTestSandbox` element with the session's DomainController and LocalCache (T10).
+
+### 8.3 Refactor checkpoint
+
+The launcher must not recognise report suites by name (#317 rule): classify by leaf kind.
+
+### Validation
+
+```bash
+RUN_TEST=uiIntegrationTestLauncher npm run testByFile -w miroir-standalone-app -- uiIntegrationTestLauncher.unit
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+# manual: in-app run as described in 8.1, screenshot in the Realization
+```
+
+### Realization
+
+<Appended on completion.>
+
+---
+
+## Slice 9 — Nonreg, docs, cleanup, AC
+
+**Status:** ⬜ pending
+
+### Goal
+
+Report tests run in non-regression, are documented, and the issue-scoped leftovers are gone.
+
+### 9.1 Nonreg
+
+`scripts/nonreg-manifest.json`: `integ-report.bookDetails` and `integ-report.connectExternalServiceWizard`, shaped like `integ-runner.lendDocument` (`--profile {profile}`, same `shared` group, `requires` as the runner steps). Fresh baseline for the new steps.
+
+### 9.2 Docs
+
+`docs/reference/testing.md`: "Report tests" section (suite and leaf shape, steps, idle wait and `actionTimeoutMs`, `fakeHttpResponses` and the `realServer-*` limit, naming, how to run); the kinds list in "Names and descriptions" gains `report`; the leaf types table gains `reportTest`. `docs/contributing/testing.md`: one line pointing to it.
+
+### 9.3 Cleanup
+
+- Migrate the issue vitest files that still add value (`reportTestFailure`, `reportIdleWait`, `fakeHttp`) to feature-named files next to the component tests, and delete `tests/4_view/issues/330-report-level-miroir-tests/` (#238 rule).
+- Drop `issue: "330"` only if the tag guard asks for it (it is a kept attribute, #315); remove `list_wizard_cases.py` once Slice 7 is done, keep `wizard-coverage.md` as the record.
+- `ReportPage.tsx`: remove if no route or test uses it any more (Slice 1 note).
+
+### 9.4 Tracer narrative
+
+Manual: open `BookDetails` on the chosen Book in the app, change the title, press submit, reload the Report: the new title is shown. Automated equivalent: `report.bookDetails` "saves an edited title".
+
+### 9.5 AC checklist
+
+| Acceptance criterion (issue #330) | Proving test |
+|---|---|
+| A MiroirTest reaches a Report through UI interactions | `report.bookDetails` "displays the Book" |
+| It can run the Report's actions through its buttons | "saves an edited title" |
+| It can check the result of those actions, including persistence | "the store holds the displayed Book", "saves an edited title", "does not save an invalid value" |
+| Target: instance edit Report with validation and persistence | `report.bookDetails` (Slices 1–4) |
+| Target: multi-step `ConnectExternalServiceWizard` | `report.connectExternalServiceWizard` (Slices 5–7) |
+
+### Validation
+
+```bash
+npm run nonreg:filesystem -- --runner shared
+npm run nonreg:unit -- --runner shared
+python scripts/sync_agent_skills.py --check
+python -m pytest scripts/tests -q
+npm run lint
+npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
+npm run test -w miroir-core -- ''
+```
+
+### Realization
+
+<Appended on completion.>
