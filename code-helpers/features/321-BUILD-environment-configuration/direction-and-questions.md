@@ -1,6 +1,6 @@
-# 321 — Proposed direction and open questions (grilling round 1)
+# 321 — Proposed direction and design questions
 
-> Draft direction for per-developer and per-test environment configuration, built on [current-state-inventory.md](current-state-inventory.md), and the first round of decisions for A. `analysis.md` is written once these are settled.
+> Draft direction for per-developer and per-test environment configuration, built on [current-state-inventory.md](current-state-inventory.md), and the design questions put to A, with answers. `analysis.md` is written once they are settled.
 
 ## Proposed direction
 
@@ -15,6 +15,8 @@ Today three things are fused in `packages/miroir-test-app_deployment-*/assets` (
 One resolver reads the selected environment and produces what each runtime needs today (server config, client config, test profile, the boot Admin/Miroir deployments), so the hardcoded `deployment_Admin` store location, the `webMiroirConfigName` constant and the per-profile JSONs all derive from one place. A single command prints the resolved environment (the "one consistent view"), and a check compares the live Admin Deployment rows with the definition and warns on any deviation (for example an application installed from the UI that the definition does not list).
 
 ## Round 1 questions
+
+**Answered 2026-09-27: all recommendations accepted.** On Q7, A has not run Jenkins in a while, does not know which `ci/` scripts are still useful, wants them kept compatible with the new setup as far as possible, and plans a release soon that may need some of them (see round 2, R2-Q1 and R2-Q2).
 
 ❓ **Q1 - Where the live Admin registry lives**: Deployment, AdminApplication, users, rights, secrets and ViewParams rows are written at runtime into tracked `miroir-test-app_deployment-admin/assets/admin_data` (F2, F8). Options: (a) keep as today; (b) move the live Admin data to a gitignored per-environment state directory, the tracked `admin_data` becoming only the seed; (c) move it outside the repo (`~/.miroir/`).
 
@@ -51,3 +53,41 @@ One resolver reads the selected environment and produces what each runtime needs
 ❓ **Q9 - Package naming**: separate framework applications (Miroir, Admin), examples (Library, Designer, Spotify, Postgres) and test fixtures (appForTest) in names and folders, in this issue or later?
 
 ➡️ Later, in a follow-up issue once environments exist, so this issue's diffs stay about configuration and the renames touch fewer config paths.
+
+## Round 2 questions
+
+❓ **R2-Q1 - Which `ci/` pieces to keep**: [inventory §5.5](current-state-inventory.md) splits them in two. The release path is in use: `ci/release/` (release tree, tested by `release-tree.yml`), `ci/docker/build_miroir.sh` + `ci/lib/common.sh` + `docker/miroir-server/Dockerfile` (Docker job of `build-linux-runnables.yml`), and `ci/claude-cloud-env-script.sh`. The Jenkins era is referenced only by itself: `Jenkinsfile`, `ci/build/*.sh`, `ci/tests/config/*.json`, `docker/ci/`, `docker/ci-builder-electronDEFUNCT/`, plus the older root `Dockerfile` / `docker-compose.yml`, which cannot build as written.
+
+➡️ Keep the release path and make it consume a tracked `docker` environment (its seed then comes from the environment instead of the `docker/seed` overlay). Delete the Jenkins-era set and the root `Dockerfile` / `docker-compose.yml`, after the release.
+
+❓ **R2-Q2 - Release timing**: release from `_integration` as it is now, before any #321 change lands, or after?
+
+➡️ Before. #321 first ships only documents and the cleanup waits for the release. Separately, the release Docker image looks like it reads its config from `/miroir/config/` while the Dockerfile puts it in `/miroir/release/` (inventory §4, not run): worth a small fix of its own before the release, which I can do in a separate thread.
+
+❓ **R2-Q3 - Where the files live**: tracked definitions in a top-level `environments/` folder (`dev.json`, `test-filesystem.json`, `test-sql.json`, `test-indexedDb.json`, `test-mongodb.json`, `cloud-agent.json`, `docker.json`), the personal `environments/local.json` gitignored, and environment state in a gitignored `.miroir/<environment>/` at the repo root.
+
+➡️ Yes.
+
+❓ **R2-Q4 - What an environment definition holds**: installed applications (package and SelfApplication uuid), for each its mode (`live` / `copy`) and store backend per section (`admin`, `model`, `data`, `modelVersion`); server settings (URLs, ports, CORS, features); client mode (real or emulated server); log preset; database hosts and users, with passwords only as environment-variable references; the names of expected secrets; `extends` for inheritance. Test-only mechanics (ephemeral run targets, `hostMode: "isolated"`) stay in test code.
+
+➡️ Yes.
+
+❓ **R2-Q5 - Transition from today's configuration files**: the resolver builds `MiroirConfigServer` / `MiroirConfigClient` and the test profile values in memory from the environment. Today's inputs (`--config`, `VITE_MIROIR_TEST_CONFIG_FILENAME`, `--profile`, `webMiroirConfigName`) keep working during the transition with a deprecation warning, and the 39 files are removed slice by slice once nothing reads them.
+
+➡️ Yes; `--profile <name>` becomes an alias of `MIROIR_ENV=test-<name>`.
+
+❓ **R2-Q6 - The Admin application itself in `dev`**: Admin's **model** (Entities, Reports, Menu) stays `live` on the package, so editing Admin from the UI still changes git; Admin's **data** lives in the environment state. Of today's tracked `admin_data`, users, credentials, rights, Bundle, ApplicationVersion and the default ViewParams stay as tracked **seed**; Deployment and AdminApplication rows are **generated** from the environment definition; secrets and a developer's ViewParams changes never go back to git.
+
+➡️ Yes.
+
+❓ **R2-Q7 - First run for an existing checkout**: your current tracked Admin data may list applications you deployed locally. On the first run with the new setup, an `env import` command reads the current Admin Deployment rows and writes the differences into `environments/local.json`; it is run by hand, not automatically.
+
+➡️ Yes.
+
+❓ **R2-Q8 - Reconciliation at startup**: definition → state. Missing deployments are created; a deployment present in the state but absent from the definition (for example installed from the UI while the `local` file could not be written) triggers a warning and is kept. Nothing is deleted automatically; an explicit `env prune` removes extras.
+
+➡️ Yes.
+
+❓ **R2-Q9 - What CI checks**: GitHub Actions runs no integration test today. Add to `pr-checks.yml` a fast `env check` that validates every tracked environment against its ML schema and fails if any tracked file under `packages/*/assets` or `tests/assets` changed during the job; running nonreg in CI stays out of scope.
+
+➡️ Yes.

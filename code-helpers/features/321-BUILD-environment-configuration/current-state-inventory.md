@@ -65,7 +65,8 @@ Code that writes `AdminApplication` + `Deployment` rows into the Admin data sect
 | **miroir-server (dev)** | `--config`, default `../config/miroirConfig.server.json` resolved against the bundle file ([parseServerArgs.ts:23](../../../packages/miroir-core/src/4_services/parseServerArgs.ts), `server.ts:216-218`) | `miroirConfig.server.json`: URLs, CORS, features, root `".."`. No deployments. | hardcoded `deployment_Admin` → `packages/miroir-test-app_deployment-admin/assets` | **yes** |
 | **Web client (Vite)** | hardcoded constant `index.tsx:141`; no env var | `src/assets/miroirConfig-realServer-filesystem-git.json` (active), 4 selectable, `miroirConfig.json` fallback, 1 dead | real-server mode uses only `rootApiUrl`; the server decides stores | via the server |
 | **Electron** | code (`ipcServerSetup.ts:184-191`, `index.tsx:431-454`) + `app.config.json` root (dev `".."`, prod `./resources/miroir-assets`) | `app.config.json`; `assets/{10ff36f2,18db21bf}.json` are unreferenced | dev: git assets; packaged: copied assets | dev: **yes** |
-| **Docker** | Dockerfile copies `miroirConfig.server.docker.json` (root `/data`) | + `docker/seed/` overlay, `docker-entrypoint.sh` seeds `/data` on first run | `/data` (copy) | no. Build looks broken (`build-tsup` script missing, `CMD dist/server.js` vs `release/index.js`), not run |
+| **Docker (release)** | `build-linux-runnables.yml` → `ci/docker/build_miroir.sh` → `docker/miroir-server/Dockerfile`; copies `miroirConfig.server.docker.json` (root `/data`) to `/miroir/release/miroirConfig.server.json` | + `packages/miroir-server/docker/seed/` overlay; `docker-entrypoint.sh` seeds `/data` on first run | `/data` (copy) | no. The server's default config path resolves to `/miroir/config/miroirConfig.server.json` (`new URL("../config/…", import.meta.url)` from `/miroir/release/index.js`), not where the image puts it: looks broken unless `--config` is passed; inferred, not run |
+| **Docker (root `Dockerfile`, `docker-compose.yml`)** | copies the docker config over `config/miroirConfig.server.json` | same seed | `/data` | no. Second, older path: runs `build-tsup` (script missing) and `CMD dist/server.js` (build writes `release/index.js`); inferred, not run |
 | **miroir-cli** | `--config` → `MIROIR_CLI_CONFIG_PATH` → embedded `src/config/defaultConfig.json` | opens only `deploymentStorageConfig` entries | `./tests/assets/*` (does not exist in the package) | no. Filesystem stores likely fail: the schema drops `filesystemDeploymentRootDirectory` (`configSchema.ts:46-55`); inferred, not run |
 | **miroir-mcp standalone** | `MIROIR_MCP_CONFIG_PATH` → `src/config/defaultConfig.json` | own fixture copies under `miroir-mcp/tests/` | tracked copy | its tracked copy |
 | **miroir-mcp in server** | none, uses the server's controller | — | server's | as server |
@@ -112,6 +113,17 @@ The churn continues: commit `bc0b16c` (#312 Slice 4, a `--tags` option for the t
 - Claude cloud: `.claude/settings.json` SessionStart runs `scripts/agent_session_setup.py` (builds packages, reports Postgres state); no profile or env defaults. `ci/claude-cloud-env-script.sh` hardcodes `/home/user/miroir`.
 - `scripts/run-nonreg.py` records each step's `requires` but never skips on it; steps marked `"requires": "none"` that take `{profile}` still need Postgres under the default profile (appstack-273, integ-action-274, appstack-274, 284).
 - Jenkins and `ci/` Docker scripts reference removed `specificLoggersConfig_*` files and absolute paths.
+
+### 5.5 Release and packaging path (what #321 must keep working)
+
+| Piece | Used by | Status |
+|---|---|---|
+| `ci/release/` (`release_version.py`, `release_lib/`, tests) | `release-tree.yml` (manual), `npm run release:tree` | in use; no dependency on runtime configuration |
+| `ci/docker/build_miroir.sh`, `ci/lib/common.sh`, `docker/miroir-server/Dockerfile`, `packages/miroir-server/docker/` | `build-linux-runnables.yml` job `docker` (manual) | in use; config path mismatch above |
+| `npm run build:release -w miroir-server` | `build-linux-runnables.yml` job `server` | in use. The bundle leaves `miroir-test-app_deployment-{admin,miroir,library}` external (`package.json` `build:server`, `-e` flags), so the Library example is a runtime dependency of the server release |
+| `npm run dist -w miroir-standalone-app-electron`, `build-linux.yml`, `build-mac.yml` | manual workflows | in use; Electron copies Admin and Miroir assets into its bundle |
+| `ci/claude-cloud-env-script.sh` | Claude cloud environment setup script | in use |
+| `Jenkinsfile`, `ci/build/*.sh`, `ci/tests/config/*.json`, `docker/ci/`, `docker/ci-builder-electronDEFUNCT/` | only each other (`ci/build/build_server.sh` is mentioned in a comment of `docker/miroir-server/Dockerfile`) | Jenkins era; reference removed log config files and absolute paths |
 
 ## 6. Hardcoded identities and paths (to be absorbed by an environment definition)
 
