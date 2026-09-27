@@ -6,9 +6,11 @@ Rules (all run by default; --rule selects some):
                   save-exact=true. Peer dependencies keep their ranges: they state compatibility, not what is installed.
   classification  build and test tools stay out of `dependencies`, so production installs, `npm audit --omit=dev`
                   and the Electron package never carry them.
-  lockfile        package-lock.json installs the pinned version of every direct dependency, and lists every
+  lockfile        package-lock.json installs the pinned version of every direct dependency, lists every
                   platform binary its packages declare (npm/cli#4828 drops the other platforms' ones), so `npm ci`
-                  alone installs a working tree on every OS.
+                  alone installs a working tree on every OS, and records the integrity hash of every registry
+                  package, so `npm ci` installs the tarballs that were locked (scripts/fill_lockfile_integrity.py
+                  adds missing ones).
   workflows       GitHub workflows and composite actions install with `npm ci`, never `npm install`.
   audit           `npm audit` reports no advisory at or above --level (default high), except the dated entries of
                   dependency-policy/audit-exceptions.json; lower severities are printed, not blocking. Needs the network.
@@ -173,6 +175,13 @@ def _pinned_version(spec: str) -> str | None:
     return version if EXACT_VERSION_RE.match(version) else None
 
 
+def needs_integrity(key: str, entry: dict) -> bool:
+    """Whether a lockfile entry is a registry package without the hash `npm ci` checks its tarball against."""
+    if "node_modules/" not in key or entry.get("link") or entry.get("inBundle") or entry.get("integrity"):
+        return False
+    return not entry.get("resolved", "").startswith(("git", "github:", "file:"))
+
+
 def check_lockfile(root: Path) -> list[Violation]:
     packages = _lock_packages(root)
     internal = workspace_names(root)
@@ -211,6 +220,17 @@ def check_lockfile(root: Path) -> list[Violation]:
                     "development-setup.md, Dependency policy, to regenerate the lockfile",
                 )
             )
+    unchecked = [key for key, entry in packages.items() if needs_integrity(key, entry)]
+    if unchecked:
+        listed = ", ".join(unchecked[:3]) + (", …" if len(unchecked) > 3 else "")
+        violations.append(
+            Violation(
+                "lockfile",
+                "package-lock.json",
+                f"{len(unchecked)} package(s) have no integrity hash, so `npm ci` installs whatever the registry "
+                f"serves ({listed}); run python scripts/fill_lockfile_integrity.py",
+            )
+        )
     return violations
 
 

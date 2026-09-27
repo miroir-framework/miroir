@@ -57,22 +57,20 @@ def repo(tmp_path: Path) -> Path:
             "peerDependencies": {"react": ">=18.0.0", "@mui/material": ">=5.0.0"},
         },
     )
-    _write(
-        tmp_path / "package-lock.json",
-        {
-            "lockfileVersion": 3,
-            "packages": {
-                "": {"name": "miroir-framework"},
-                "node_modules/lerna": {"version": "9.0.5"},
-                "node_modules/typescript": {"name": "@typescript/typescript6", "version": "6.0.3"},
-                "node_modules/zod": {"version": "3.25.76"},
-                "node_modules/vitest": {"version": "3.2.4", "optionalDependencies": {"fsevents": "~2.3.3"}},
-                "node_modules/fsevents": {"version": "2.3.3", "os": ["darwin"], "optional": True},
-                "node_modules/@mui/material": {"version": "5.17.1"},
-                "packages/miroir-react/node_modules/@mui/material": {"version": "5.18.0"},
-            },
-        },
-    )
+    packages = {
+        "": {"name": "miroir-framework"},
+        "node_modules/lerna": {"version": "9.0.5"},
+        "node_modules/typescript": {"name": "@typescript/typescript6", "version": "6.0.3"},
+        "node_modules/zod": {"version": "3.25.76"},
+        "node_modules/vitest": {"version": "3.2.4", "optionalDependencies": {"fsevents": "~2.3.3"}},
+        "node_modules/fsevents": {"version": "2.3.3", "os": ["darwin"], "optional": True},
+        "node_modules/@mui/material": {"version": "5.17.1"},
+        "packages/miroir-react/node_modules/@mui/material": {"version": "5.18.0"},
+    }
+    for key, entry in packages.items():
+        if key:
+            entry["integrity"] = f"sha512-{key}"
+    _write(tmp_path / "package-lock.json", {"lockfileVersion": 3, "packages": packages})
     _write(tmp_path / ".github/workflows/ci.yml", "jobs:\n  a:\n    steps:\n      - run: npm ci\n")
     return tmp_path
 
@@ -213,6 +211,28 @@ def test_a_missing_dependency_is_a_violation(repo: Path) -> None:
     _write(repo / "package-lock.json", lock)
     [violation] = check_lockfile(repo)
     assert "node_modules/lerna lacks 1 package(s) (nx)" in violation.message
+
+
+def test_a_registry_package_without_integrity_is_a_violation(repo: Path) -> None:
+    lock = json.loads((repo / "package-lock.json").read_text(encoding="utf-8"))
+    del lock["packages"]["node_modules/zod"]["integrity"]
+    _write(repo / "package-lock.json", lock)
+    [violation] = check_lockfile(repo)
+    assert violation.message.startswith("1 package(s) have no integrity hash")
+    assert "(node_modules/zod); run python scripts/fill_lockfile_integrity.py" in violation.message
+
+
+def test_workspaces_links_and_git_packages_need_no_integrity(repo: Path) -> None:
+    lock = json.loads((repo / "package-lock.json").read_text(encoding="utf-8"))
+    lock["packages"].update(
+        {
+            "packages/miroir-core": {"name": "miroir-core", "version": "0.5.0"},
+            "node_modules/miroir-core": {"resolved": "packages/miroir-core", "link": True},
+            "node_modules/left-pad": {"version": "1.3.0", "resolved": "git+ssh://git@github.com/a/b.git#" + "0" * 40},
+        }
+    )
+    _write(repo / "package-lock.json", lock)
+    assert check_lockfile(repo) == []
 
 
 @pytest.mark.parametrize(
