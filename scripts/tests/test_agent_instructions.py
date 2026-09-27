@@ -15,7 +15,8 @@ PLACEHOLDER = re.compile(r"[<>{}*]|\.\.\.")
 
 
 def test_agents_md_is_short() -> None:
-    assert AGENTS_MD.stat().st_size <= MAX_AGENTS_MD_BYTES
+    # Measured with LF endings: a Windows checkout with core.autocrlf adds one byte per line.
+    assert len(AGENTS_MD.read_bytes().replace(b"\r\n", b"\n")) <= MAX_AGENTS_MD_BYTES
 
 
 def test_agents_md_repo_paths_exist() -> None:

@@ -84,8 +84,6 @@ const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 const fileName = "PersistenceStoreController.integ.test";
 myConsoleLog(fileName, "received env", JSON.stringify(env, null, 2));
 
-let miroirConfig: any;
-let loggerOptions: any;
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName);
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
@@ -102,8 +100,8 @@ ConfigurationService.configurationService.registerTestImplementation({ expect: e
 
 const { miroirConfig: miroirConfigParam, logConfig: loggerOptionsParam } =
   await loadTestConfigFiles(env);
-miroirConfig = miroirConfigParam;
-loggerOptions = loggerOptionsParam;
+const miroirConfig: any = miroirConfigParam;
+const loggerOptions: any = loggerOptionsParam;
 myConsoleLog("received miroirConfig", JSON.stringify(miroirConfig, null, 2));
 myConsoleLog("received miroirConfig.client", JSON.stringify(miroirConfig.client, null, 2));
 myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));

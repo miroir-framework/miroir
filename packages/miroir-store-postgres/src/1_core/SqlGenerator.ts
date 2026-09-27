@@ -1576,7 +1576,7 @@ function sqlStringForPlusTransformer(
     });
   }
 
-  let preparedStatementParameters: any[] = [];
+  const preparedStatementParameters: any[] = [];
 
   // Evaluate all arguments
   const evaluatedArgs: SqlStringForTransformerElementValue[] = [];
@@ -1763,7 +1763,7 @@ function sqlStringForConcatListsTransformer(
     };
   }
 
-  let preparedStatementParameters: any[] = [];
+  const preparedStatementParameters: any[] = [];
   const evaluatedLists: SqlStringForTransformerElementValue[] = [];
 
   for (let i = 0; i < lists.length; i++) {
@@ -3522,7 +3522,7 @@ function sqlStringForObjectAlterTransformer(
   newPreparedStatementParametersCount += (applyToSql.preparedStatementParameters ?? []).length;
   preparedStatementParameters = [...preparedStatementParameters, ...(applyToSql.preparedStatementParameters ?? [])];
 
-  let newDefinedContextEntries = { ...definedContextEntries };
+  const newDefinedContextEntries = { ...definedContextEntries };
   newDefinedContextEntries[actionRuntimeTransformer.referenceToOuterObject??defaultTransformerInput] = {
     type: "json",
     renameTo: applyToName,
@@ -5309,9 +5309,9 @@ function sqlStringForObjectDynamicAccessTransformer(
   );
   if (baseResult instanceof Domain2ElementFailed) return baseResult;
 
-  let preparedStatementParameters: any[] = [...(baseResult.preparedStatementParameters ?? [])];
-  let extraWith: { name: string; sql: string }[] = [...(baseResult.extraWith ?? [])];
-  let usedContextEntries: string[] = [...(baseResult.usedContextEntries ?? [])];
+  const preparedStatementParameters: any[] = [...(baseResult.preparedStatementParameters ?? [])];
+  const extraWith: { name: string; sql: string }[] = [...(baseResult.extraWith ?? [])];
+  const usedContextEntries: string[] = [...(baseResult.usedContextEntries ?? [])];
 
   // Wrap scalar base in ::jsonb so JSONB -> operator works
   let currentExpr =
@@ -5635,7 +5635,7 @@ function sqlStringForNumericOpTransformer(
     });
   }
 
-  let preparedStatementParameters: any[] = [];
+  const preparedStatementParameters: any[] = [];
 
   const evaluatedArgs: SqlStringForTransformerElementValue[] = [];
   for (const arg of actionRuntimeTransformer.args) {

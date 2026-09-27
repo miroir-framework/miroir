@@ -469,7 +469,7 @@ async function startWebApp(root: Root) {
 
   // In Electron mode, the server-side domain controller is a lightweight IPC proxy that
   // delegates handleAction / handleBoxedExtractorOrQueryAction calls to the main process.
-  let domainControllerForServer: DomainControllerInterface | undefined = isElectron
+  const domainControllerForServer: DomainControllerInterface | undefined = isElectron
     ? (new ElectronServerDomainControllerProxy() as any as DomainControllerInterface)
     : rawDomainControllerForServer;
 

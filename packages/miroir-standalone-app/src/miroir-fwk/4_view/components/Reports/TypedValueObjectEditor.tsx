@@ -115,7 +115,7 @@ export interface TypedValueObjectEditorProps {
   // when displayed in a MlObjectEditFormDialog modal dialog form
   setAddObjectdialogFormIsOpen?: (a:boolean) => void,
 }
- let count = 0;
+ const count = 0;
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################

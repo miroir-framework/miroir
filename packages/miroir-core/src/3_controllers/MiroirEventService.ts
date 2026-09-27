@@ -285,7 +285,7 @@ export class MiroirEventService implements MiroirEventServiceInterface {
     if (!this.eventMap.has(trackingData.activityId)) {
       // copies MiroirEventTrackingData to MiroirEvent
       // Create event based on tracking type
-      let event: MiroirEvent = {
+      const event: MiroirEvent = {
         activity: trackingData,
         eventLogs: [],
         logCounts: {

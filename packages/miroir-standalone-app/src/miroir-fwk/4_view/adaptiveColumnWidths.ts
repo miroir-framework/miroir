@@ -109,7 +109,7 @@ export function calculateAdaptiveColumnWidths(
           calculatedWidth: toolsColumnDef.width,
           type
         };
-      case 'uuid':
+      case 'uuid': {
         // Fixed width based on UUID character count (36 chars + padding)
         // Standard UUID format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx (36 characters)
         const uuidCharCount = 36;
@@ -121,6 +121,7 @@ export function calculateAdaptiveColumnWidths(
         maxWidth = uuidFixedWidth;
         baseWidth = uuidFixedWidth;
         break;
+      }
       case 'name':
         minWidth = 100;
         maxWidth = 250;

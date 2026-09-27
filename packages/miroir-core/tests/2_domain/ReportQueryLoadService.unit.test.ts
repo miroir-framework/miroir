@@ -237,7 +237,7 @@ describe("ReportQueryLoadService segment sufficiency (3.3–3.4)", () => {
       resolveLoad = resolve;
     });
     const executeLoad = vi.fn(() => loadPromise);
-    let sufficient = false;
+    const sufficient = false;
     const service = new ReportQueryLoadService(executeLoad, {
       isSegmentSufficient: () => sufficient,
     });

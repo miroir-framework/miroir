@@ -48,7 +48,6 @@ export const TestUtilsTableComponent = (
 
 
   // const currentEntityDefinition: EntityVersion | undefined = entityInstances.Entity?.find(e=>e?.uuid === props.parentUuid);
-  let instancesToDisplay:EntityInstance[];
 
 
   // const instancesToDisplaySelectorParams: LocalCacheExtractor = useMemo(
@@ -106,7 +105,7 @@ export const TestUtilsTableComponent = (
   log.info("TestUtilsTableComponent currentStoredQueryResults", JSON.stringify(currentStoredQueryResults));
   log.info("TestUtilsTableComponent currentMiroirEntityDefinition",JSON.stringify(props.entityVersion));
 
-  instancesToDisplay = (currentStoredQueryResults as any)?.reportData?.extractorByPrimaryKey;
+  const instancesToDisplay: EntityInstance[] = (currentStoredQueryResults as any)?.reportData?.extractorByPrimaryKey;
   log.info("TestUtilsTableComponent currentStoredQueryResults",JSON.stringify(currentStoredQueryResults, null, 2));
   log.info("TestUtilsTableComponent instancesToDisplay",instancesToDisplay);
   

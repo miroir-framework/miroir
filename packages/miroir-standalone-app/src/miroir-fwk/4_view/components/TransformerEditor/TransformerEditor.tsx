@@ -117,13 +117,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
         typeof (window as any).require === "function"
       ) {
         // Electron fallback
-        try {
-          const { clipboard } = (window as any).require("electron");
-          clipboard.writeText(text);
-        } catch (e) {
-          // ignore and fall through to legacy copy
-          throw e;
-        }
+        const { clipboard } = (window as any).require("electron");
+        clipboard.writeText(text);
       } else {
         // Legacy fallback using execCommand
         const el = document.createElement("textarea");

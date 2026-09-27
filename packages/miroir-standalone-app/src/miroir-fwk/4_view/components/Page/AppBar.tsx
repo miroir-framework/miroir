@@ -118,8 +118,8 @@ const StyledAppBar = styled(
       prop !== "open" && prop !== "width" && prop !== "outlineOpen" && prop !== "outlineWidth",
   },
 )<AppBarProps>(({ theme, open, width = SidebarWidth, outlineOpen, outlineWidth = 300 }) => {
-  let marginLeft = 0;
-  let marginRight = 0;
+  const marginLeft = 0;
+  const marginRight = 0;
 
 
   return {

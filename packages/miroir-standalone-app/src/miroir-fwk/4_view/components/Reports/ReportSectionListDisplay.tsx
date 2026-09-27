@@ -875,7 +875,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       {objectListReportSection &&
       currentReportTargetEntity &&
       currentReportTargetEntity ? (
-        !!tableColumnDefs ? (
+        tableColumnDefs ? (
           <div>
             <div
               style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "10px" }}

@@ -472,7 +472,7 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
   // }
   const flatDiscriminators: string [] = discriminators.flatMap(d => d);
   let i = 0;
-  let chosenDiscriminator = [];
+  const chosenDiscriminator = [];
   let filteredFlattenedUnionChoices: MlObject[] = flattenedUnionChoices;
   let possibleDiscriminators: (string | undefined)[][] = [];
   if (!discriminators || discriminators.length == 0) {
@@ -928,7 +928,7 @@ export function mlsTypeCheck(
   }
 
 
-  let effectiveSchemaOrError: MlElement | ResolveConditionalSchemaError =
+  const effectiveSchemaOrError: MlElement | ResolveConditionalSchemaError =
     currentDefaultValue &&
     currentValuePath &&
     reduxDeploymentsState?

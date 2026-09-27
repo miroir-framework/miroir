@@ -88,8 +88,8 @@ function callUndoRedoReducer(
   // log.info("callUndoRedoReducer called with action", JSON.stringify(action, undefined, 2));
   // log.info("callUndoRedoReducer undoableSliceUpdateActions", JSON.stringify(undoableSliceUpdateActions, undefined, 2));
 
-  let changes: Patch[] = [];
-  let inverseChanges: Patch[] = [];
+  const changes: Patch[] = [];
+  const inverseChanges: Patch[] = [];
   const newPresentModelSnapshot: LocalCacheSliceState = produce(
     presentModelSnapshot,
     (draftState: LocalCacheSliceState) => reducer(draftState, actionBox),
@@ -179,8 +179,8 @@ const callNextReducerWithUndoRedoForModelAction = (
     state;
   // log.info('callNextReducerWithUndoRedo called for', action.type, action.payload.domainAction.actionType, action.payload.domainAction.actionName,'adding Patch to transaction');
 
-  let callChanges: Patch[] = [];
-  let inverseCallChanges: Patch[] = [];
+  const callChanges: Patch[] = [];
+  const inverseCallChanges: Patch[] = [];
   const newPresentModelSnapshot: LocalCacheSliceState = produce(
     presentModelSnapshot,
     (draftState: LocalCacheSliceState) => innerReducer(draftState, action),

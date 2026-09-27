@@ -132,7 +132,7 @@ export function expect(actual: any, testName?: string) {
       if (pass) {
         return { result: true };
       } else {
-        let diffPath = findFirstDiffPath(actual, expected);
+        const diffPath = findFirstDiffPath(actual, expected);
         return {
           result: false,
           message: formatMessage(testName, `Expected ${JSON.stringify(actual)} to equal ${JSON.stringify(expected)}. First difference at path: ${diffPath ? JSON.stringify(diffPath) : 'unknown'}`)
