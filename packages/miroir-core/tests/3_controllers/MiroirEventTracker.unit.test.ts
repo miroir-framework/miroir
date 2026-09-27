@@ -258,12 +258,12 @@ describe('MiroirActivityTracker - Test Results Management', () => {
       ];
 
       expect(() => {
-        // @ts-ignore - Testing invalid input
+        // @ts-expect-error - Testing invalid input
         tracker.setTestAssertionResult(testPath, null);
       }).toThrow('Invalid testAssertionResult or missing assertionName');
 
       expect(() => {
-        // @ts-ignore - Testing invalid input
+        // @ts-expect-error - Testing invalid input
         tracker.setTestAssertionResult(testPath, { assertionResult: 'ok' });
       }).toThrow('Invalid testAssertionResult or missing assertionName');
     });

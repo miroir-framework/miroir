@@ -304,7 +304,7 @@ export async function createDeploymentGetPersistenceStoreController(
   domainController: DomainControllerInterface,
 ):Promise< PersistenceStoreControllerInterface > {
   log.info('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ createDeploymentGetPersistenceStoreController started');
-  let result:any = undefined;
+  const result:any = undefined;
   try {
     const createLocalDeploymentCompositeAction = createDeploymentCompositeAction(
       applicationName,

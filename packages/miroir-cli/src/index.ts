@@ -31,7 +31,7 @@ import {
 const packageName = "miroir-cli";
 const version = "1.0.0";
 
-let log: LoggerInterface = console as any as LoggerInterface;
+const log: LoggerInterface = console as any as LoggerInterface;
 
 const loglevelnext: LoggerFactoryInterface = loglevelNextLog as any as LoggerFactoryInterface;
 

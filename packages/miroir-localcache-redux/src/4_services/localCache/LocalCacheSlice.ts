@@ -653,7 +653,7 @@ function handleInstanceAction(
         break;
       }
       case "deleteInstance": {
-        for (let instance of instanceAction.payload.objects) {
+        for (const instance of instanceAction.payload.objects) {
           try {
             log.debug(
               "localCacheSliceObject handleInstanceAction delete called for instance",

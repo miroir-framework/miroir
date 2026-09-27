@@ -171,7 +171,7 @@ export function getItemsOrder(
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-let count = 0;
+const count = 0;
 
 export function useMlElementEditorHooks(
   rootLessListKey: string,
@@ -194,7 +194,7 @@ export function useMlElementEditorHooks(
     selfApplicationMiroir.uuid,
     applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
   );
-  let dbgInt = 0;
+  const dbgInt = 0;
   
   // ################################################################################################
   // codeMirror state

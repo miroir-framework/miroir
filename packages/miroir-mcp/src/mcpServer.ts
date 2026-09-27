@@ -28,7 +28,7 @@ import { type EndpointToolRegistry } from "./tools/EndpointToolRegistry.js";
 export { MCP_HTTP_ENDPOINT };
 
 const packageName = "miroir-mcp";
-let log: LoggerInterface = console as any as LoggerInterface;
+const log: LoggerInterface = console as any as LoggerInterface;
 
 /** ModelEndpoint uuid — rollback reloads persisted model/data into the local cache. */
 const MODEL_ENDPOINT_UUID = "7947ae40-eb34-4149-887b-15a9021e714e";
