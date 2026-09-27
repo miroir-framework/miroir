@@ -9,7 +9,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/326
 Working branches: PR 1 `claude/build-hardening-81mz9d`, PR 2 `claude/build-hardening-bundles` (D17), both from `_integration`
 
-**Resume note:** Slices 0–7 DONE 2026-09-27 (branch `claude/build-hardening-81mz9d`); next: Slice 8. Lockfiles are regenerated with npm 11 and `--before` (Slice 4 realization).
+**Resume note:** Slices 0–7 and 7b DONE 2026-09-27 (branch `claude/build-hardening-81mz9d`); next: Slice 8. Lockfiles are regenerated with npm 11 and `--before` (Slice 4 realization).
 
 ---
 
@@ -34,6 +34,7 @@ This plan does **not** cut bundle size (D19: separate issue opened in Slice 17 f
 | 5 | 1 | No critical advisory | ✅ | `audit --level critical` exits 0 |
 | 6 | 1 | No high advisory in build and test tooling | ✅ | `audit` lists no high in tooling packages |
 | 7 | 1 | No high advisory at all; audit gate blocking in PR checks | ✅ | `audit` exits 0 on the real repo; `pr-checks.yml` step |
+| 7b | 1 | Every locked package is checked against its hash (added) | ✅ | `lockfile` rule + `test_fill_lockfile_integrity.py` + clean `npm ci` |
 | 8 | 1 | Updates only through reviewed, cooled-down PRs; actions pinned | ⬜ | `actions` rule + `dependabot.yml` test |
 | 9 | 1 | PR 1 wrap-up: gate docs, nonreg step, full nonreg | ⬜ | nonreg:unit + nonreg:filesystem green |
 | 10 | 2 | Vendor sourcemaps restored | ⬜ | `bundleSourcemaps.326.phase10.unit.test.ts` |
@@ -494,6 +495,50 @@ npm run nonreg:unit && npm run nonreg:filesystem
 - Known failures, unchanged by this slice: `miroir-ai` `tests/unit/miroirTools.unit.test.ts` (14 of 19 tests: the tool registry exports 3 tools, the test expects 5; the same first failure as in Slice 3, before any change here), the 6 `LocalCache.unit.test` failures of `miroir-localcache-redux` (Slice 3), and `tsc` on `miroir-localcache-zustand` (`Model.ts`: a `MetaModel` literal lacks 13 properties, which no dependency change affects; inferred, not bisected).
 - Electron: `electron-builder --dir --linux -c.npmRebuild=false` packages the app.
 - Validation: pytest 104 passed; every rule, `audit` included, passes; `./build-all.sh devBuild` and the Electron app build pass; `tsc` clean on `miroir-core`, `miroir-standalone-app`, `miroir-localcache`, `-localcache-redux`, `miroir-server`, `miroir-store-postgres`, `miroir-standalone-app-electron`, `miroir-ai`; `miroir-core` 2078 tests pass; `nonreg:unit` 38/38 and `nonreg:filesystem` 74/74 pass.
+
+---
+
+## Slice 7b — Every locked package is checked against its hash (added during Slice 7)
+
+**Status:** ✅ DONE
+
+### Goal
+
+`npm ci` installs the exact tarballs that were locked: every registry package of `package-lock.json` carries its `integrity` hash, and the `lockfile` rule fails when one does not. Found while relocking in Slice 7: 2051 of 2695 locked packages had neither `resolved` nor `integrity` (2738 of 2786 at Slice 0; the entries relocked in Slices 4 to 7 had regained theirs). Without the hash, `npm ci` checks a tarball only against what the registry says at install time, and asks the registry for every such package.
+
+**Layers cut:** `check_dependency_policy.py` (`lockfile` rule) → new `scripts/fill_lockfile_integrity.py` → `package-lock.json`.
+
+### RED
+
+- `test_a_registry_package_without_integrity_is_a_violation`: an entry without `integrity` gives one `lockfile` violation that counts and names the entries and points to the fill script.
+- `test_workspaces_links_and_git_packages_need_no_integrity`: workspace entries, `link` entries and git references pass.
+- The real repository: `[lockfile] package-lock.json: 2051 package(s) have no integrity hash, …`.
+
+### GREEN
+
+- `needs_integrity(key, entry)` in `check_dependency_policy.py`; the `lockfile` rule reports all such entries as one violation.
+- `scripts/fill_lockfile_integrity.py`: for each such entry, `npm view <name>@<version> dist.tarball dist.integrity` (the entry's `name` for an alias; the user's npm configuration, so it works behind a proxy or a mirror), then writes `resolved` and `integrity` right after `version`, as npm does. Versions are never changed; if the registry does not answer for one package, nothing is written. `--dry-run` reports only. Tests: `scripts/tests/test_fill_lockfile_integrity.py` (7), with a stand-in for `npm view` (the network boundary).
+- Ran it: 2051 entries filled in 330 s, nothing else changed in the lockfile.
+
+### Refactor checkpoint
+
+The fill script reuses `needs_integrity` from the checker, so both agree on which entries need a hash.
+
+### Validation
+
+```bash
+python -m pytest scripts/tests -q
+python scripts/check_dependency_policy.py --rule lockfile
+rm -rf node_modules && npm ci    # verifies every tarball against the lockfile hash
+npx npm@11 install --package-lock-only --before=2026-09-20T00:00:00Z    # npm keeps the filled fields
+```
+
+### Realization
+
+- Tried first: npm's own "old lockfile" inflate (setting `lockfileVersion` to 1 and relocking). It filled most hashes but not those of aliases and packages nested under workspaces, and it dropped `node_modules/@typescript/old`, which `@typescript/typescript6` needs. Rejected for the script.
+- npm 11 relocks the filled lockfile byte for byte; npm 10.9 keeps every hash (it drops only the `libc` fields, as known since Slice 4).
+- Only the entries' `resolved` and `integrity` were added: no version, key or other field changed.
+- Validation: pytest 120 passed; every rule passes, `audit` included; after removing every `node_modules`, `npm ci` verifies each tarball against its hash in 39 s (about 60 s before, when npm fetched each package's registry metadata) and leaves the lockfile unchanged. On the branch with `_integration` merged in: `npm run lint`, `./build-all.sh devBuild`, `tsc` on `miroir-core` and `miroir-standalone-app`, 2078 `miroir-core` tests, `nonreg:unit` 38/38 and `nonreg:filesystem` 74/74 pass.
 
 ---
 
