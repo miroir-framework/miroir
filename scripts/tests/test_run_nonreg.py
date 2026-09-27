@@ -151,3 +151,67 @@ def test_fail_fast_marks_later_steps_not_run(tmp_path: Path):
     _, summary, _ = run_nonreg(tmp_path, manifest, "--tier", "unit", "--fail-fast")
 
     assert [s["status"] for s in summary["steps"]] == ["failed", "not_run"]
+
+
+# ------------------------------------------------------------------------------------------------
+# #318 Slice 2: opt-in timing profile
+
+VITEST_FIXTURE_CONFIG = "scripts/tests/fixtures/vitest-timing/vitest.config.mjs"
+
+# pr-checks runs these tests before `npm ci`: the vitest-backed cases need node_modules.
+requires_vitest = pytest.mark.skipif(
+    not (ROOT / "node_modules" / "vitest").is_dir(),
+    reason="vitest not installed (run npm ci)",
+)
+
+
+@pytest.fixture
+def vitest_fixture_manifest(tmp_path: Path) -> Path:
+    return write_manifest(
+        tmp_path,
+        [
+            {
+                "id": "timed-fixture",
+                "tier": "unit",
+                "title": "vitest fixture with known hook and body times",
+                "argv": ["npx", "vitest", "run", "--config", VITEST_FIXTURE_CONFIG],
+            }
+        ],
+    )
+
+
+@requires_vitest
+def test_timings_split_collect_hooks_and_bodies(tmp_path: Path, vitest_fixture_manifest: Path):
+    code, summary, snap_dir = run_nonreg(tmp_path, vitest_fixture_manifest, "--tier", "unit", "--timings")
+
+    assert code == 0, summary["steps"][0].get("error_tail")
+    timings = json.loads((snap_dir / "timings.json").read_text(encoding="utf-8"))
+    [step] = timings["steps"]
+    assert step["id"] == "timed-fixture"
+    [record] = step["files"]
+    assert record["file"].endswith("timing.fixture.test.mjs")
+    assert record["phases"] == [{"name": "fixture.moduleInit", "ms": 5}]
+
+    [test] = record["tests"]
+    assert test["name"] == "timed > sleeps 100 ms"
+    assert 190 <= test["before_each_ms"] < 400
+    assert 95 <= test["body_ms"] < 300
+    assert 25 <= test["after_each_ms"] < 200
+
+    timed_suite = next(s for s in record["suites"] if s["name"] == "timed")
+    assert 145 <= timed_suite["before_all_ms"] < 400
+    assert 45 <= timed_suite["after_all_ms"] < 250
+
+    assert summary["timings_json"].endswith("timings.json")
+    summary_md = (snap_dir / "summary.md").read_text(encoding="utf-8")
+    assert "### Slowest tests" in summary_md
+
+
+@requires_vitest
+def test_default_run_does_not_enable_the_timing_runner(tmp_path: Path, vitest_fixture_manifest: Path):
+    code, summary, snap_dir = run_nonreg(tmp_path, vitest_fixture_manifest, "--tier", "unit")
+
+    assert code == 0
+    assert "timings_json" not in summary
+    assert sorted(p.name for p in snap_dir.iterdir()) == ["logs", "summary.json", "summary.md"]
+    assert "### Slowest tests" not in (snap_dir / "summary.md").read_text(encoding="utf-8")

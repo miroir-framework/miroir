@@ -173,7 +173,7 @@ Hidden cost: `PersistenceStoreController.initApplicationDeploymentStore` passes 
 |---|---|---:|---|---|
 | 1 | Fix the Postgres launch tests (D6) | about 6 min | low | adopt |
 | 2 | Shared runner, `--no-isolate` groups (D2) | up to about 10 min, once most steps have a descriptor | medium | adopt, opt-in |
-| 3 | `perSuite` reset on read-only suites (D4) | tens of seconds: resets are cheap on filesystem (the 261 transformer tests take about 80 ms each, reset included) | medium | adopt, measure first with D1 |
+| 3 | `perSuite` reset on read-only suites (D4) | measured with D1 (plan Slice 2): the transformer step spends 20.9 s of its 29.3 s in `beforeEach` against 0.19 s of test bodies, so about 20 s there alone, plus about 0.3–0.45 s per read-only integ test elsewhere | medium | adopt |
 | 4 | Lazy `getState()` in `initApplicationDeploymentStore` logging | per reset, to be measured | low | adopt if measured |
 | 5 | Fix the transformer step (D5) | adds about 20 s: the step runs its 261 tests again | low | adopt |
 

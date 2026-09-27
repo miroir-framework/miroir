@@ -13,6 +13,7 @@ import {
 } from "miroir-core";
 import { loadMiroirCoreTestSuiteFromFolders } from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
 import { onFailedRunExport } from "./writeFailedRunExport.js";
+import { timedTestPhase } from "./testTimingPhase.js";
 
 export async function runMiroirCoreTestsFromCLI(
   runMiroirTests: RunMiroirTests,
@@ -22,7 +23,9 @@ export async function runMiroirCoreTestsFromCLI(
   testSession?: RunnerTestSessionInterface,
 ): Promise<void> {
   new MiroirEventService(miroirActivityTracker);
-  const executionEnvironment = await testSession?.initSession();
+  const executionEnvironment = await timedTestPhase("session.init", async () =>
+    testSession?.initSession(),
+  );
 
   if (config.executionMode === "integration" && !executionEnvironment) {
     throw new Error(

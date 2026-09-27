@@ -135,6 +135,7 @@ def run_step(
     profile: str,
     snap_dir: Path,
     dry_run: bool,
+    timings: bool = False,
 ) -> StepResult:
     step_id = step["id"]
     argv = resolve_argv(expand_argv(list(step["argv"]), profile))
@@ -163,6 +164,7 @@ def run_step(
 
     print(f"\n=== [{tier}] {step_id} ===", flush=True)
     print(f"$ {' '.join(argv)}", flush=True)
+    env = timing_env(snap_dir, step_id) if timings else None
     started = time.perf_counter()
     try:
         # Windows: npm/npx resolve to *.cmd; CreateProcess cannot launch .cmd without a shell.
@@ -175,6 +177,7 @@ def run_step(
                 encoding="utf-8",
                 errors="replace",
                 shell=True,
+                env=env,
             )
         else:
             proc = subprocess.run(
@@ -185,6 +188,7 @@ def run_step(
                 encoding="utf-8",
                 errors="replace",
                 shell=False,
+                env=env,
             )
     except OSError as exc:
         result.status = "failed"
@@ -211,7 +215,78 @@ def run_step(
     return result
 
 
-def write_summary_md(summary: dict[str, Any], path: Path) -> None:
+TIMINGS_DIRNAME = "timings"
+SLOWEST_LIMIT = 15
+
+
+def timing_env(snap_dir: Path, step_id: str) -> dict[str, str]:
+    """Env for one step with the opt-in timing profile (#318): vitest configs add the timing runner."""
+    return {
+        **os.environ,
+        "MIROIR_TEST_TIMING": "1",
+        "MIROIR_TEST_TIMING_DIR": str(snap_dir / TIMINGS_DIRNAME / step_id),
+    }
+
+
+def collect_step_timings(snap_dir: Path, results: list[StepResult]) -> dict[str, Any]:
+    """Merge the per-file JSON written by scripts/vitest/timingRunner.mjs into one document."""
+    steps = []
+    for result in results:
+        step_dir = snap_dir / TIMINGS_DIRNAME / result.id
+        files = []
+        if step_dir.is_dir():
+            for path in sorted(step_dir.glob("*.json")):
+                try:
+                    files.append(json.loads(path.read_text(encoding="utf-8")))
+                except (OSError, json.JSONDecodeError) as exc:
+                    files.append({"file": path.name, "error": str(exc)})
+        steps.append({"id": result.id, "status": result.status, "duration_s": result.duration_s, "files": files})
+    return {"steps": steps}
+
+
+def _ms(value: Any) -> float:
+    return float(value) if isinstance(value, (int, float)) else 0.0
+
+
+def timings_markdown(timings: dict[str, Any]) -> list[str]:
+    """Slowest-first tables for summary.md (only written with --timings)."""
+    step_rows = []
+    file_rows = []
+    test_rows = []
+    for step in timings["steps"]:
+        files = [f for f in step["files"] if "error" not in f]
+        hooks_ms = 0.0
+        bodies_ms = 0.0
+        collect_ms = 0.0
+        for record in files:
+            collect_ms += _ms(record.get("collect_ms"))
+            suite_hooks = sum(_ms(s.get("before_all_ms")) + _ms(s.get("after_all_ms")) for s in record.get("suites", []))
+            test_hooks = sum(_ms(t.get("before_each_ms")) + _ms(t.get("after_each_ms")) for t in record.get("tests", []))
+            test_bodies = sum(_ms(t.get("body_ms")) for t in record.get("tests", []))
+            hooks_ms += suite_hooks + test_hooks
+            bodies_ms += test_bodies
+            file_rows.append((suite_hooks + test_hooks, step["id"], record.get("file", "?"), _ms(record.get("collect_ms")), suite_hooks, test_hooks, test_bodies))
+            for test in record.get("tests", []):
+                test_rows.append((_ms(test.get("total_ms")), step["id"], test.get("name", "?"), _ms(test.get("before_each_ms")), _ms(test.get("body_ms")), _ms(test.get("after_each_ms"))))
+        step_rows.append((step.get("duration_s") or 0.0, step["id"], len(files), collect_ms, hooks_ms, bodies_ms))
+
+    def secs(ms: float) -> str:
+        return f"{ms / 1000:.2f}s"
+
+    lines = ["## Timings", "", "### Slowest steps", "", "| Step | Wall | Files | Collect | Hooks | Test bodies |", "|---|---|---|---|---|---|"]
+    for wall, sid, nfiles, collect_ms, hooks_ms, bodies_ms in sorted(step_rows, reverse=True)[:SLOWEST_LIMIT]:
+        lines.append(f"| `{sid}` | {wall}s | {nfiles} | {secs(collect_ms)} | {secs(hooks_ms)} | {secs(bodies_ms)} |")
+    lines += ["", "### Most time in hooks, by test file", "", "| Step | File | Collect | beforeAll+afterAll | beforeEach+afterEach | Test bodies |", "|---|---|---|---|---|---|"]
+    for _, sid, fname, collect_ms, suite_hooks, test_hooks, bodies_ms in sorted(file_rows, reverse=True)[:SLOWEST_LIMIT]:
+        lines.append(f"| `{sid}` | `{fname}` | {secs(collect_ms)} | {secs(suite_hooks)} | {secs(test_hooks)} | {secs(bodies_ms)} |")
+    lines += ["", "### Slowest tests", "", "| Step | Test | Total | beforeEach | Body | afterEach |", "|---|---|---|---|---|---|"]
+    for total, sid, name, before_ms, body_ms, after_ms in sorted(test_rows, reverse=True)[:SLOWEST_LIMIT]:
+        lines.append(f"| `{sid}` | {name} | {secs(total)} | {secs(before_ms)} | {secs(body_ms)} | {secs(after_ms)} |")
+    lines.append("")
+    return lines
+
+
+def write_summary_md(summary: dict[str, Any], path: Path, timings: dict[str, Any] | None = None) -> None:
     lines = [
         f"# Non-reg snapshot `{summary['stamp']}`",
         "",
@@ -250,6 +325,8 @@ def write_summary_md(summary: dict[str, Any], path: Path) -> None:
             f"| {step['status']} | `{step['id']}` | {dur} | {notes} |"
         )
     lines.append("")
+    if timings is not None:
+        lines += timings_markdown(timings)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -466,6 +543,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="Deprecated alias for --compare CURRENT BASELINE",
     )
     p.add_argument(
+        "--timings",
+        action="store_true",
+        help=(
+            "Opt-in timing profile (#318): run vitest with the timing runner and write "
+            "timings.json (collect, hooks, test bodies) plus slowest-first tables in summary.md"
+        ),
+    )
+    p.add_argument(
         "--manifest",
         default=None,
         help="Manifest to run (default: scripts/nonreg-manifest.json)",
@@ -560,7 +645,9 @@ def main(argv: list[str] | None = None) -> int:
             )
             continue
 
-        result = run_step(step, profile=profile, snap_dir=snap_dir, dry_run=args.dry_run)
+        result = run_step(
+            step, profile=profile, snap_dir=snap_dir, dry_run=args.dry_run, timings=args.timings
+        )
         results.append(result)
         if result.status == "failed" and fail_fast:
             aborted = True
@@ -596,10 +683,17 @@ def main(argv: list[str] | None = None) -> int:
         "summary_md": repo_relative(snap_dir / "summary.md"),
     }
 
+    timings: dict[str, Any] | None = None
+    if args.timings:
+        timings = collect_step_timings(snap_dir, results)
+        timings_path = snap_dir / "timings.json"
+        timings_path.write_text(json.dumps(timings, indent=2) + "\n", encoding="utf-8")
+        summary["timings_json"] = repo_relative(timings_path)
+
     summary_json_path = snap_dir / "summary.json"
     summary_md_path = snap_dir / "summary.md"
     summary_json_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
-    write_summary_md(summary, summary_md_path)
+    write_summary_md(summary, summary_md_path, timings)
 
     print_synthetic_report(summary)
 

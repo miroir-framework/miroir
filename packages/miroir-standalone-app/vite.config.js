@@ -9,6 +9,7 @@ import { fileURLToPath } from "url";
 
 import { miroirManualChunkLoadLogger } from "./vite/chunkLoadLoggerPlugin.js";
 import { resolveManualChunk } from "./vite/manualChunks.js";
+import { miroirTestTimingConfig } from "../../scripts/vitest/timing.mjs";
 
 // Resolve certificate paths (same defaults as miroir-server)
 const __viteFilename = fileURLToPath(import.meta.url);
@@ -122,6 +123,8 @@ export default defineConfig({
     }
   },
   test: {
+    // #318: timing runner only when MIROIR_TEST_TIMING=1 (run-nonreg.py --timings)
+    ...miroirTestTimingConfig(),
     root: "tests",
     globals: true,
     watch: false,

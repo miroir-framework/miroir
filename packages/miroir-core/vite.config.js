@@ -5,6 +5,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import commonjs from '@rollup/plugin-commonjs';
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
+import { miroirTestTimingConfig } from "../../scripts/vitest/timing.mjs";
 // import * as path from "path";
 
 const packageRoot = path.dirname(fileURLToPath(import.meta.url));
@@ -52,6 +53,8 @@ export default defineConfig({
     },
   },
   test: {
+    // #318: timing runner only when MIROIR_TEST_TIMING=1 (run-nonreg.py --timings)
+    ...miroirTestTimingConfig(),
     root: "./tests",
     globals: true,
     watch: false,

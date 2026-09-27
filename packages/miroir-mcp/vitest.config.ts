@@ -1,8 +1,11 @@
 import { defineConfig } from "vitest/config";
 import { resolve } from "path";
+import { miroirTestTimingConfig } from "../../scripts/vitest/timing.mjs";
 
 export default defineConfig({
   test: {
+    // #318: timing runner only when MIROIR_TEST_TIMING=1 (run-nonreg.py --timings)
+    ...miroirTestTimingConfig(),
     name: "miroir-mcp",
     globals: true,
     environment: "node",

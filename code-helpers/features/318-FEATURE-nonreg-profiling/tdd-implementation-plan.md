@@ -2,7 +2,7 @@
 
 > Integration-first, no mocks. The harness is tested through its public entry points: `run-nonreg.py` (pytest in `scripts/tests`, which runs the real script on small real manifests), the package launchers (vitest unit tests on the argv/env they produce), and real vitest runs on the filesystem profile. No test file, `RunnerTestSession` or UI launch code changes, except where a slice names it.
 
-**Resume note:** analysis confirmed 2026-09-27. Branch `318-FEATURE-nonreg-profiling`, from `_integration` 76e52aa. Next: Slice 2.
+**Resume note:** analysis confirmed 2026-09-27. Branch `318-FEATURE-nonreg-profiling`, from `_integration` 76e52aa. Next: Slice 3.
 
 ## Scope
 
@@ -22,7 +22,7 @@ Out of scope: changes to the UI test runs; timing trends across runs (#306); ste
 |---|---|---|---|
 | 0 | Characterize the legacy nonreg contract | ✅ DONE | `scripts/tests/test_run_nonreg.py` |
 | 1 | Clean filesystem baseline (D5, D6) | ✅ DONE | the 4 steps pass on `emulatedServer-filesystem` |
-| 2 | Opt-in timing profile (D1) | ⬜ pending | `--timings` writes `timings.json` with hook times; nothing written without it |
+| 2 | Opt-in timing profile (D1) | ✅ DONE | `--timings` writes `timings.json` with hook times; nothing written without it |
 | 3 | Shared runner for testByFile groups (D2) | ⬜ pending | `--runner shared` on the storage group: same per-step verdicts, lower wall time |
 | 4 | Shared runner for runner/action suites (D2) | ⬜ pending | new shared entry: one session per suite, same results as legacy |
 | 5 | `perSuite` reset policy (D4) | ⬜ pending | timing report shows one reset per marked suite; results unchanged |
@@ -124,7 +124,7 @@ Out of scope: changes to the UI test runs; timing trends across runs (#306); ste
 
 ## Slice 2 — Opt-in timing profile (D1)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** `run-nonreg.py --timings` produces, per step, test file and test, the time spent in collect, each hook kind and test bodies, plus a slowest-first section in `summary.md`.
 
@@ -141,6 +141,35 @@ Out of scope: changes to the UI test runs; timing trends across runs (#306); ste
 **Refactor checkpoint:** the argv-append logic becomes one exported function, reused by all launchers.
 
 **Validation:** pytest; the launcher unit tests; `python scripts/run-nonreg.py --tier default --run-all --profile emulatedServer-filesystem --timings` (full timed baseline, kept in the Realization).
+
+### Realization
+
+**Deviation: a vitest *runner*, not a reporter.** Reporter hook events reach the main process through `updateTask`, which is throttled to 100 ms (`@vitest/runner` `sendTasksUpdateThrottled`). That is too coarse for tests of about 80 ms. It also showed that vitest's reported test duration *includes* `beforeEach`/`afterEach`, so the 0.6 s "integ test" of the baseline was mostly reset.
+
+- `scripts/vitest/timingRunner.mjs` subclasses `VitestTestRunner` and measures in the worker:
+  - it adds `runTask` to time the body;
+  - `beforeEach` = try start → body start; `afterEach` = body end → task end;
+  - `beforeAll`/`afterAll` per suite are derived from its first and last child;
+  - collect/setup/prepare come from the file task.
+
+  It writes one JSON per test file into `$MIROIR_TEST_TIMING_DIR`, and exposes `globalThis.__miroirTestTiming.phase()` for named phases.
+- `scripts/vitest/timing.mjs` `miroirTestTimingConfig()` returns `{ runner }` only when `MIROIR_TEST_TIMING=1`, and `{}` otherwise. It is spread into `test` in the configs of the 11 packages nonreg runs: miroir-core, standalone-app, both local caches, 5 deployment packages, miroir-mcp and miroir-ai. No launcher argv changes were needed.
+- `tests/helpers/testTimingPhase.ts` `timedTestPhase("session.init", …)` wraps `initSession()` in both CLI helpers. Without the runner it only calls `initSession()`.
+- `run-nonreg.py --timings` sets the two env vars per step and writes `timings.json` plus three slowest-first tables in `summary.md` (steps, files by hook time, tests). It adds `timings_json` to `summary.json` only with the flag.
+- Proof:
+  - `scripts/tests/fixtures/vitest-timing` has known sleeps (beforeAll 150, beforeEach 200, body 100, afterEach 30, afterAll 50 ms), and the pytest checks each within its bounds.
+  - Without `--timings`, the same fixture step writes no timing artifacts.
+  - The vitest-backed cases skip when `node_modules/vitest` is absent, because pr-checks runs pytest before `npm ci`.
+
+First measurements (4 steps, filesystem):
+
+| Step | Wall | Collect | Hooks | Test bodies |
+|---|---|---|---|---|
+| `integ-transformer-miroirCoreTransformers` (261 tests) | 29.3 s | 5.4 s | **20.9 s** (beforeEach) | 0.19 s |
+| `integ-action-domain_controller_model_crud` (8 tests) | 14.3 s | 6.6 s (session.init 0.04 s) | 3.6 s | 0.58 s |
+| `appstack-ExtractorPersistenceStoreRunner.integ` (11 tests) | 13.8 s | 7.7 s | 3.7 s | 0.06 s |
+
+Resets are about 85–99 % of integ test time. Slice 5 is worth more than the analysis estimated.
 
 ---
 

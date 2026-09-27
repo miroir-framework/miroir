@@ -14,6 +14,7 @@ import {
   type RunnerTestSessionInterface,
   type VitestNamespace,
 } from "miroir-core";
+import { timedTestPhase } from "./testTimingPhase.js";
 import { onFailedRunExport } from "./writeFailedRunExport.js";
 import {
   listCliRunnerIntegrationSuiteKeysFromFolders,
@@ -43,7 +44,10 @@ export async function runMiroirRunnerTestsFromCLI(
   miroirActivityTracker: MiroirActivityTracker,
   testSession: RunnerTestSessionInterface,
 ): Promise<void> {
-  const executionEnvironment: MiroirTestExecutionEnvironment = await testSession.initSession();
+  const executionEnvironment: MiroirTestExecutionEnvironment = await timedTestPhase(
+    "session.init",
+    () => testSession.initSession(),
+  );
   const executionOptions: MiroirTestExecutionOptions = {
     executionMode: "integration",
     executionEnvironment,
