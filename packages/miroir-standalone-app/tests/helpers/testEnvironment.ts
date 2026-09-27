@@ -1,10 +1,10 @@
 /**
  * #321: the test environment of a test run. Every store of a test environment (`environments/test-*.json`)
  * is a copy in .miroir/<environment>/ or a database named after the environment; the filesystem copies are
- * wiped and seeded from the package assets once per test file (vitest isolates modules per file), so no
- * test writes into tracked files.
+ * wiped and seeded from the package assets once per test file, so no test writes into tracked files.
  */
 import { isTestEnvironment, MiroirLoggerFactory, type LoggerInterface, type MiroirConfigClient } from "miroir-core";
+import { expect } from "vitest";
 import {
   environmentClientConfig,
   environmentRealServerClientConfig,
@@ -38,8 +38,20 @@ export type TestEnvironment = {
   miroirConfig: MiroirConfigClient;
 };
 
-/** Test environments already seeded by this test file. */
-const seededTestEnvironments = new Set<string>();
+/**
+ * Test environments already seeded by the running test file. A run that shares modules between test files
+ * (nonreg shared runner, --no-isolate) keeps this module: a test file must not start from what an earlier
+ * one left, so the record belongs to one test file.
+ */
+let seededTestEnvironments = { testFile: "", names: new Set<string>() };
+
+function seededByCurrentTestFile(): Set<string> {
+  const testFile = expect.getState().testPath ?? "";
+  if (seededTestEnvironments.testFile !== testFile) {
+    seededTestEnvironments = { testFile, names: new Set() };
+  }
+  return seededTestEnvironments.names;
+}
 
 /**
  * The test environment MIROIR_ENV names (set by `--profile`, or directly). A MIROIR_ENV that is not
@@ -61,9 +73,10 @@ export function selectedTestEnvironment(env: NodeJS.ProcessEnv): string | undefi
 export function openTestEnvironment(name: string, env: NodeJS.ProcessEnv = process.env): TestEnvironment {
   const resolved = resolveEnvironmentFromFiles({ cwd: resolveRepoRoot(), env: { MIROIR_ENV: name } });
   const runEnv = { ...process.env, ...env };
-  if (!seededTestEnvironments.has(name)) {
+  const seeded = seededByCurrentTestFile();
+  if (!seeded.has(name)) {
     const seed = seedEnvironmentState(resolved, { reseed: true });
-    seededTestEnvironments.add(name);
+    seeded.add(name);
     log.info(`environment ${name} seeded in .miroir/${name}:`, seed.seeded.join(", "));
     for (const warning of missingConnectionPasswords(resolved, runEnv)) {
       log.warn(warning);

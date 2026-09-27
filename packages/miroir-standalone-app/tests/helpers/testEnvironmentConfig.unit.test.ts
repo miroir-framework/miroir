@@ -2,7 +2,7 @@
 // (set by --profile emulatedServer-filesystem): every section is a copy in .miroir/<environment>/,
 // seeded from the package assets, so no test writes into tracked files.
 // vitest, not MiroirTest: this is test-launcher wiring that reads files and environment variables.
-import { existsSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -10,6 +10,7 @@ import type { MiroirConfigForClientStub } from "miroir-core";
 
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { resolveRepoRoot } from "./integrationTestProfiles.js";
+import { openTestEnvironment } from "./testEnvironment.js";
 
 const ENTITY_DEPLOYMENT = "7959d814-400c-4e80-988f-a00fe582ab98";
 const ENTITY_MIROIR_USER = "d20d09e5-0685-4fc7-b9bd-fcfa3845127a";
@@ -38,6 +39,24 @@ describe("test configuration from a test environment", () => {
     expect(readdirSync(path.join(adminData, ENTITY_MIROIR_USER)).length).toBeGreaterThan(0);
     expect(existsSync(path.join(adminData, ENTITY_DEPLOYMENT))).toBe(true);
     expect(readdirSync(path.join(adminData, ENTITY_DEPLOYMENT))).toEqual([]);
+  });
+
+  it("each test file starts from a fresh seed, also when test files share their modules (nonreg --no-isolate)", () => {
+    const leftByATest = path.join(resolveRepoRoot(), ".miroir/test-filesystem/admin/data/left-by-a-test.json");
+    openTestEnvironment("test-filesystem");
+    writeFileSync(leftByATest, "{}");
+    openTestEnvironment("test-filesystem");
+    expect(existsSync(leftByATest)).toBe(true);
+
+    const testPath = expect.getState().testPath;
+    try {
+      // the next test file of a run that shares modules between files
+      expect.setState({ testPath: `${testPath}.next` });
+      openTestEnvironment("test-filesystem");
+      expect(existsSync(leftByATest)).toBe(false);
+    } finally {
+      expect.setState({ testPath });
+    }
   });
 
   it("a MIROIR_ENV that is not a test environment selects nothing: tests never run on dev or local", async () => {
