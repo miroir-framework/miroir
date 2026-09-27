@@ -395,7 +395,6 @@
     "which-typed-array",
     "xtend",
     "yaml",
-    "zod",
     "zod-to-json-schema",
     "zwitch"
   ],
