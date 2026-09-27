@@ -16,12 +16,17 @@ export type MiroirTestModeTag = (typeof MIROIR_TEST_MODE_TAGS)[number];
 
 /**
  * #316: the mode tags a suite must carry, from what it can run.
- * `ui` for React component suites (run in jsdom), otherwise `unit` and / or `integ`
- * from its CLI launch kind.
+ * `ui` for React component suites (run in jsdom), `integ` and `ui` for Report suites (a Report
+ * mounted on an integration session, #330), otherwise `unit` and / or `integ` from its CLI
+ * launch kind.
  */
 export function miroirTestSuiteModeTags(suite: MiroirTestSuite): MiroirTestModeTag[] {
-  if (walkMiroirTestLeaves(suite).some((leaf) => leaf.miroirTestType === "reactComponentTest")) {
+  const leaves = walkMiroirTestLeaves(suite);
+  if (leaves.some((leaf) => leaf.miroirTestType === "reactComponentTest")) {
     return ["ui"];
+  }
+  if (leaves.some((leaf) => leaf.miroirTestType === "reportTest")) {
+    return ["integ", "ui"];
   }
   switch (classifyApplicationMiroirTestCliLaunchKind(suite)) {
     case "unit":

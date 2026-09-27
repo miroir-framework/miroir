@@ -101,7 +101,7 @@ Favor integration tests over unit tests and avoid mocking. Entity-backed tests u
 # Rebuild the deployment after MiroirTest JSON changes
 npm run build -w miroir-test-app_deployment-miroir
 
-# MiroirTest by <kind>.<subject>: fn query tr action runner ui
+# MiroirTest by <kind>.<subject>: fn query tr action runner ui report
 npm run testMiroir -w miroir-core -- --suites fn.mlsToJsonSchema --mode unit
 npm run testMiroir -w miroir-standalone-app -- --suites tr.core --mode integration
 

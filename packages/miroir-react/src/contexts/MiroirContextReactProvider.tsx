@@ -249,6 +249,12 @@ export function MiroirContextReactProvider(props: {
    * no `sessionStorage` write leaks into the app session.
    */
   initialShowPerformanceDisplay?: boolean;
+  /**
+   * The reports and entities by deployment, computed by the host instead of set by RootComponent:
+   * the report test runner mounts a page without RootComponent (#330). When given, it replaces
+   * the value set with `setDeploymentUuidToReportsEntitiesMapping`.
+   */
+  deploymentUuidToReportsEntitiesMapping?: DeploymentUuidToReportsEntitiesMapping;
   children: ReactNode;
 }) {
   const [application, setApplication] = useState(props.testingApplication ?? "");
@@ -274,9 +280,11 @@ export function MiroirContextReactProvider(props: {
     useState<Dispatch<SetStateAction<FoldedStateTree>>>();
 
   const [
-    deploymentUuidToReportsEntitiesMapping,
+    deploymentUuidToReportsEntitiesMappingState,
     setDeploymentUuidToReportsEntitiesMapping,
   ] = useState<DeploymentUuidToReportsEntitiesMapping>({});
+  const deploymentUuidToReportsEntitiesMapping =
+    props.deploymentUuidToReportsEntitiesMapping ?? deploymentUuidToReportsEntitiesMappingState;
   const [schemasPerDeployment, setSchemasPerDeployment] = useState<Record<Uuid, MlSchema>>({});
   const [schemaReloadRequired, setSchemaReloadRequired] = useState(false);
   const schemaRevisionsRef = useRef<Record<Uuid, DeploymentSchemaRevisions>>({});

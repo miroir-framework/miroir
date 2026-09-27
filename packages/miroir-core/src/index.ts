@@ -473,6 +473,12 @@ export {
   miroirTestForReactComponent,
   ReactComponentTestSuite,
   reactComponentTestSuite,
+  MiroirTestForReport,
+  miroirTestForReport,
+  ReportTestSuite,
+  reportTestSuite,
+  ReportTestStep,
+  reportTestStep,
   ReactComponentTestStep,
   reactComponentTestStep,
   ReactComponentTestTarget,
@@ -1560,6 +1566,7 @@ export {
 export {
   classifyMiroirTestSuiteExecutionCapabilities,
   inferIntegrationSessionKind,
+  miroirTestSuiteMountsReport,
   transformerTestLeafRequiresIntegration,
   walkMiroirTestLeaves,
   type MiroirTestSuiteExecutionCapabilities,
@@ -1773,6 +1780,11 @@ export {
   runMiroirReactComponentTest,
 } from "./5_tests/ReactComponentTestTools.js";
 export {
+  REPORT_TEST_NO_RUNNER_MESSAGE,
+  REPORT_TEST_NO_SUITE_MESSAGE,
+  runMiroirReportTest,
+} from "./5_tests/ReportTestTools.js";
+export {
   createInProcessVitestStub,
   runMiroirTestSuiteInProcess,
   type InProcessExpectFn,
@@ -1782,10 +1794,15 @@ export type {
   ComponentRenderMeasurement,
   MiroirTestAnyLeaf,
   MiroirTestRunFilter,
+  MiroirTestLeafSuiteContext,
   ReactComponentTestRunner,
   ReactComponentTestRunnerResult,
   ReactComponentTestSuiteContext,
+  ReportTestRunner,
+  ReportTestRunnerResult,
+  ReportTestSuiteContext,
 } from "./0_interfaces/5-tests/miroirTestTypes";
+export { isReportTestSuiteContext } from "./0_interfaces/5-tests/miroirTestTypes";
 export {
   displayMiroirTestResults,
   miroirTestGlobalTimeOut,

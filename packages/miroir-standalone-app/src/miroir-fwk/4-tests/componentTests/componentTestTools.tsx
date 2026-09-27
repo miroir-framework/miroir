@@ -24,6 +24,7 @@ import {
   PersistenceStoreControllerManager,
   ResolvedMlSchemaReturnType,
   type ApplicationDeploymentMap,
+  type DeploymentUuidToReportsEntitiesMapping,
   type EntityInstance,
 } from "miroir-core";
 import {
@@ -51,6 +52,7 @@ import {
   reportPublisherList,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
+import { adminSelfApplication } from "miroir-test-app_deployment-admin";
 import {
   defaultMiroirMetaModel,
   entityEntity,
@@ -63,6 +65,7 @@ import {
 } from "miroir-test-app_deployment-miroir";
 
 import { packageName } from "../../../constants.js";
+import { deploymentReportsEntitiesMapping } from "../../4_view/components/Page/deploymentReportsEntitiesMapping.js";
 import { ReportPageContextProvider } from "../../4_view/components/Reports/ReportPageContext.js";
 import { DocumentOutlineContextProvider } from "../../4_view/components/ValueObjectEditor/InstanceEditorOutlineContext.js";
 import { MlElementEditor } from "../../4_view/components/ValueObjectEditor/MlElementEditor.js";
@@ -467,6 +470,104 @@ export interface ComponentTestWrapper {
 }
 
 // ################################################################################################
+export interface MiroirTestProvidersProps {
+  /** The local cache read by the components (its redux store). */
+  localCache: LocalCacheInterface;
+  miroirContext: MiroirContext;
+  domainController: DomainControllerInterface;
+  /** Seeds the context's application deployment map with this application (tests only). */
+  testingApplication?: string;
+  testingDeploymentUuid?: string;
+  /** Render insight tracking (#303), see `BuildComponentTestWrapperOptions.trackRenders`. */
+  trackRenders?: boolean;
+  /**
+   * Gives the context the reports and entities of Admin, Miroir and `testingApplication`, read
+   * from the local cache, as RootComponent does in the app: the pages mounted without
+   * RootComponent need them (the report test runner, #330).
+   */
+  offerReportsAndEntities?: boolean;
+  children?: React.ReactNode;
+}
+
+const testTheme = createTheme(testThemeParams);
+const noOutlineAction = () => {};
+
+/**
+ * The providers of the app around a component or a Report under test: theme, local cache store,
+ * Miroir context (on `domainController`), document outline and report page contexts. Used by the
+ * component test wrapper over its fixture local cache and by the report test runner over the
+ * integration session's DomainController and local cache (#330).
+ */
+export function MiroirTestProviders(props: MiroirTestProvidersProps) {
+  return (
+    <ThemeProvider theme={testTheme}>
+      <StyledEngineProvider injectFirst>
+        <LocalCacheProvider store={props.localCache.getInnerStore()}>
+          {props.offerReportsAndEntities ? (
+            <MiroirTestContextWithReports {...props} />
+          ) : (
+            <MiroirTestContext {...props} />
+          )}
+        </LocalCacheProvider>
+      </StyledEngineProvider>
+    </ThemeProvider>
+  );
+}
+
+function MiroirTestContext(
+  props: MiroirTestProvidersProps & {
+    deploymentUuidToReportsEntitiesMapping?: DeploymentUuidToReportsEntitiesMapping;
+  },
+) {
+  return (
+    <MiroirContextReactProvider
+      miroirContext={props.miroirContext}
+      domainController={props.domainController}
+      testingApplication={props.testingApplication}
+      testingDeploymentUuid={props.testingDeploymentUuid}
+      initialShowPerformanceDisplay={props.trackRenders ?? false}
+      deploymentUuidToReportsEntitiesMapping={props.deploymentUuidToReportsEntitiesMapping}
+    >
+      <DocumentOutlineContextProvider
+        isOutlineOpen={true}
+        onToggleOutline={noOutlineAction}
+        onNavigateToPath={noOutlineAction}
+      >
+        <ReportPageContextProvider>{props.children}</ReportPageContextProvider>
+      </DocumentOutlineContextProvider>
+    </MiroirContextReactProvider>
+  );
+}
+
+/** `MiroirTestContext` with the reports and entities RootComponent computes in the app (#330). */
+function MiroirTestContextWithReports(props: MiroirTestProvidersProps) {
+  if (!props.testingApplication || !props.testingDeploymentUuid) {
+    throw new Error("MiroirTestProviders: offerReportsAndEntities needs testingApplication and testingDeploymentUuid");
+  }
+  const currentApplication = props.testingApplication;
+  const currentDeployment = props.testingDeploymentUuid;
+  const applicationDeploymentMap = useMemo(
+    () => ({ ...defaultSelfApplicationDeploymentMap, [currentApplication]: currentDeployment }),
+    [currentApplication, currentDeployment],
+  );
+  const miroirMetaModel = useCurrentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap);
+  const adminAppModel = useCurrentModel(adminSelfApplication.uuid, defaultSelfApplicationDeploymentMap);
+  const currentModel = useCurrentModel(currentApplication, applicationDeploymentMap);
+  const mapping = useMemo(
+    () =>
+      deploymentReportsEntitiesMapping({
+        miroirMetaModel,
+        adminAppModel,
+        currentApplication,
+        currentDeployment,
+        currentModel,
+      }),
+    [miroirMetaModel, adminAppModel, currentApplication, currentDeployment, currentModel],
+  );
+  return <MiroirTestContext {...props} deploymentUuidToReportsEntitiesMapping={mapping} />;
+}
+
+// ################################################################################################
 /**
  * Builds the providers of a component test over its own `LocalCache`, loaded with the Miroir
  * meta-model and the Library fixtures. Does not register any test implementation.
@@ -496,7 +597,6 @@ export function buildComponentTestWrapper(
         rootApiUrl: "http://localhost:3080",
       },
     }) as ReturnType<MiroirContext["extendMiroirConfigWithExtraDeploymentConfiguration"]>;
-  const theme = createTheme(testThemeParams);
   const handleAction = createRecordingFunction();
 
   const persistenceSaga:PersistenceReduxSaga  = new PersistenceReduxSaga({
@@ -677,9 +777,6 @@ export function buildComponentTestWrapper(
     localCache.getInnerStore().getState()
   );
 
-  const handleToggleOutline = () => {};
-  const handleNavigateToPath = (path: string[]) => {};
-
   if (options.wireLocalCacheCompositeAction) {
     persistenceSaga.run(localCache as any);
   }
@@ -744,37 +841,24 @@ export function buildComponentTestWrapper(
     } as any);
 
     return (
-      <ThemeProvider theme={theme}>
-        <StyledEngineProvider injectFirst>
-          <LocalCacheProvider store={localCache.getInnerStore()}>
-            <MiroirContextReactProvider
-              miroirContext={miroirContext}
-              domainController={domainController}
-              testingApplication={
-                options.wireLocalCacheCompositeAction
-                  ? selfApplicationLibrary.uuid
-                  : undefined
-              }
-              testingDeploymentUuid={deployment_Library_DO_NO_USE.uuid}
-              initialShowPerformanceDisplay={trackRenders}
-            >
-              <DocumentOutlineContextProvider
-                isOutlineOpen={true}
-                onToggleOutline={handleToggleOutline}
-                onNavigateToPath={handleNavigateToPath}
-              >
-                <ReportPageContextProvider>
-                  {options.wireLocalCacheCompositeAction ? (
-                    <MemoryRouter>{props.children}</MemoryRouter>
-                  ) : (
-                    props.children
-                  )}
-                </ReportPageContextProvider>
-              </DocumentOutlineContextProvider>
-            </MiroirContextReactProvider>
-          </LocalCacheProvider>
-        </StyledEngineProvider>
-      </ThemeProvider>
+      <MiroirTestProviders
+        localCache={localCache}
+        miroirContext={miroirContext}
+        domainController={domainController}
+        testingApplication={
+          options.wireLocalCacheCompositeAction
+            ? selfApplicationLibrary.uuid
+            : undefined
+        }
+        testingDeploymentUuid={deployment_Library_DO_NO_USE.uuid}
+        trackRenders={trackRenders}
+      >
+        {options.wireLocalCacheCompositeAction ? (
+          <MemoryRouter>{props.children}</MemoryRouter>
+        ) : (
+          props.children
+        )}
+      </MiroirTestProviders>
     );
   };
   return { Wrapper, localCache, miroirEventService, applicationDeploymentMap };

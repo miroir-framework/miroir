@@ -27,6 +27,15 @@ const appConfigState = {
   hasLoadedConfigurations: false
 };
 
+/**
+ * Marks the configurations as loaded, so that pages do not fetch them on mount. For hosts that
+ * open the stores and load the local cache themselves: the report test runner, whose integration
+ * session did it (#330).
+ */
+export function markPageConfigurationsLoaded(): void {
+  appConfigState.hasLoadedConfigurations = true;
+}
+
 export interface UsePageConfigurationOptions {
   /**
    * Whether to automatically fetch configurations when the page mounts

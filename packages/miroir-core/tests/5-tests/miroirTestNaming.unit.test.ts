@@ -20,6 +20,7 @@ const UUID = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
 function kindFromLeaves(suite: MiroirTestSuite): string {
   const types = new Set(walkMiroirTestLeaves(suite).map((leaf) => leaf.miroirTestType));
   if (types.has("reactComponentTest")) return "ui";
+  if (types.has("reportTest")) return "report";
   if (types.has("runnerTest")) return "runner";
   if (types.has("actionTest")) return "action";
   if (types.has("queryTest")) return "query";

@@ -28,7 +28,6 @@ import {
   EntityInstancesUuidIndex,
   getApplicationSection,
   getQueryRunnerParamsForReduxDeploymentsState,
-  getReportsAndEntitiesForDeploymentUuid,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
@@ -44,7 +43,6 @@ import {
   adminSelfApplication,
   defaultAdminViewParams,
   deployment_Admin,
-  deployment_Miroir,
   entityDeployment
 } from "miroir-test-app_deployment-admin";
 
@@ -64,6 +62,7 @@ import { MiroirThemeProvider, useMiroirTheme, type MiroirThemeOption } from '../
 import { RenderInsightHeader } from "../RenderInsightHeader.js";
 import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
+import { deploymentReportsEntitiesMapping } from './deploymentReportsEntitiesMapping.js';
 
 import { JsonDisplayHelper } from 'miroir-react';
 import { defaultStoredMiroirTheme, selfApplicationMiroir } from 'miroir-test-app_deployment-miroir';
@@ -326,25 +325,14 @@ export const RootComponent = (props: RootComponentProps) => {
   // ##############################################################################################
   const currentDeployment = (applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap)[currentApplication];  
   const deploymentUuidToReportsEntitiesMapping = useMemo(
-    () => (
-      {
-        [deployment_Admin.uuid]: getReportsAndEntitiesForDeploymentUuid(
-          adminSelfApplication.uuid,// deployment_Admin.uuid,
-          miroirMetaModel, 
-          adminAppModel,
-        ),
-        [deployment_Miroir.uuid]: getReportsAndEntitiesForDeploymentUuid(
-          selfApplicationMiroir.uuid,// deployment_Miroir.uuid,
-          miroirMetaModel, 
-          miroirMetaModel, 
-        ),
-        [currentDeployment]: getReportsAndEntitiesForDeploymentUuid(
-          currentApplication,
-          miroirMetaModel, 
-          currentModel,
-        ),
-      }
-    ),
+    () =>
+      deploymentReportsEntitiesMapping({
+        miroirMetaModel,
+        adminAppModel,
+        currentApplication,
+        currentDeployment,
+        currentModel,
+      }),
     [miroirMetaModel, adminAppModel, currentApplication, currentModel]
   );
 

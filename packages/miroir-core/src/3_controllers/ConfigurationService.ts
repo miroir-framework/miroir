@@ -5,7 +5,7 @@ import { StorageType } from "../0_interfaces/1_core/StorageConfiguration";
 import { TestImplementation } from "../0_interfaces/1_core/TestImplementation";
 import { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import type { ReactComponentTestRunner } from "../0_interfaces/5-tests/miroirTestTypes";
+import type { ReactComponentTestRunner, ReportTestRunner } from "../0_interfaces/5-tests/miroirTestTypes";
 import { AdminStoreFactoryRegister, PersistenceStoreAdminSectionFactory, PersistenceStoreSectionFactory, StoreSectionFactoryRegister } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
@@ -40,6 +40,8 @@ export class ConfigurationServiceInner {
   public testImplementation: TestImplementation | undefined = undefined;
   /** Runs `reactComponentTest` leaves; registered by the app or its component test entry (#286). */
   public reactComponentTestRunner: ReactComponentTestRunner | undefined = undefined;
+  /** Runs `reportTest` leaves; registered by the app's integration test entries or its sandbox (#330). */
+  public reportTestRunner: ReportTestRunner | undefined = undefined;
 
   constructor() {}
 
@@ -90,6 +92,14 @@ export class ConfigurationServiceInner {
    */
   public registerReactComponentTestRunner(runner: ReactComponentTestRunner | undefined) {
     this.reactComponentTestRunner = runner;
+  }
+
+  /**
+   * Registers the runner of `reportTest` leaves (#330), or removes it with `undefined`.
+   * With no runner, those leaves are recorded as skipped.
+   */
+  public registerReportTestRunner(runner: ReportTestRunner | undefined) {
+    this.reportTestRunner = runner;
   }
 }
 

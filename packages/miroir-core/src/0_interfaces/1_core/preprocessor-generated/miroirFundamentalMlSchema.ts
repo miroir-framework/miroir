@@ -7036,6 +7036,14 @@ export const miroirFundamentalMlSchema = {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
                   },
                   "context": {}
+                },
+                {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "reportTestSuite",
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                  },
+                  "context": {}
                 }
               ]
             }
@@ -7091,6 +7099,105 @@ export const miroirFundamentalMlSchema = {
               "type": "schemaReference",
               "definition": {
                 "relativePath": "miroirTestForReactComponent",
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+              },
+              "context": {}
+            }
+          }
+        }
+      },
+      "reportTestSuite": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "defaultLabel": "Report test suite",
+            "description": "A suite of reportTest leaves on one Report, mounted at its route with the integration session's DomainController and local cache (#330)",
+            "display": {
+              "displayedAttributeValueWhenFolded": "miroirTestLabel"
+            }
+          }
+        },
+        "definition": {
+          "miroirTestType": {
+            "type": "literal",
+            "definition": "reportTestSuite"
+          },
+          "miroirTestLabel": {
+            "type": "string"
+          },
+          "skip": {
+            "type": "boolean",
+            "optional": true
+          },
+          "report": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "Report",
+                "description": "The Report under test and where it is displayed (#330)"
+              }
+            },
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Application",
+                    "description": "Application owning the Report; its deployment comes from the session's application deployment map"
+                  }
+                }
+              },
+              "applicationSection": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                },
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Application section",
+                    "description": "Section given in the Report's route"
+                  }
+                },
+                "context": {}
+              },
+              "reportUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Report",
+                    "description": "Uuid of the Report under test"
+                  }
+                }
+              },
+              "instanceUuid": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Instance",
+                    "description": "instanceUuid route parameter, for an instance details Report; a leaf may override it"
+                  }
+                }
+              }
+            }
+          },
+          "actionTimeoutMs": {
+            "type": "number",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Action timeout (ms)",
+                "description": "How long an interaction step waits for the actions it started; 10000 when absent (#330)"
+              }
+            }
+          },
+          "miroirTests": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "miroirTestForReport",
                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
               },
               "context": {}
@@ -7249,6 +7356,66 @@ export const miroirFundamentalMlSchema = {
             "type": "string"
           }
         }
+      },
+      "miroirTestForReport": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "defaultLabel": "Report test",
+            "description": "Mounts the Report of its reportTestSuite and runs steps: UI interactions and checks, actions and assertions on their results (#330)",
+            "display": {
+              "displayedAttributeValueWhenFolded": "miroirTestLabel"
+            }
+          }
+        },
+        "definition": {
+          "skip": {
+            "type": "boolean",
+            "optional": true
+          },
+          "instanceUuid": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Instance",
+                "description": "Overrides the suite's report.instanceUuid for this leaf"
+              }
+            }
+          },
+          "steps": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "reportTestStep",
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+              },
+              "context": {}
+            }
+          },
+          "miroirTestType": {
+            "type": "literal",
+            "definition": "reportTest"
+          },
+          "miroirTestLabel": {
+            "type": "string"
+          }
+        }
+      },
+      "reportTestStep": {
+        "type": "schemaReference",
+        "tag": {
+          "value": {
+            "defaultLabel": "Report test step",
+            "description": "A step of a reportTest leaf: a component test step (#330; Slice 2 adds action and assertion steps)"
+          }
+        },
+        "definition": {
+          "relativePath": "reactComponentTestStep",
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+        },
+        "context": {}
       },
       "reactComponentTestTextMatch": {
         "type": "union",
@@ -8754,6 +8921,12 @@ export const miroirFundamentalMlSchema = {
                           "definition": {
                             "relativePath": "reactComponentTestSuite"
                           }
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "reportTestSuite"
+                          }
                         }
                       ]
                     }
@@ -8809,6 +8982,102 @@ export const miroirFundamentalMlSchema = {
                       "type": "schemaReference",
                       "definition": {
                         "relativePath": "miroirTestForReactComponent"
+                      }
+                    }
+                  }
+                }
+              },
+              "reportTestSuite": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Report test suite",
+                    "description": "A suite of reportTest leaves on one Report, mounted at its route with the integration session's DomainController and local cache (#330)",
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "miroirTestLabel"
+                    }
+                  }
+                },
+                "definition": {
+                  "miroirTestType": {
+                    "type": "literal",
+                    "definition": "reportTestSuite"
+                  },
+                  "miroirTestLabel": {
+                    "type": "string"
+                  },
+                  "skip": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "report": {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Report",
+                        "description": "The Report under test and where it is displayed (#330)"
+                      }
+                    },
+                    "definition": {
+                      "application": {
+                        "type": "uuid",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Application",
+                            "description": "Application owning the Report; its deployment comes from the session's application deployment map"
+                          }
+                        }
+                      },
+                      "applicationSection": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "applicationSection"
+                        },
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Application section",
+                            "description": "Section given in the Report's route"
+                          }
+                        }
+                      },
+                      "reportUuid": {
+                        "type": "uuid",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Report",
+                            "description": "Uuid of the Report under test"
+                          }
+                        }
+                      },
+                      "instanceUuid": {
+                        "type": "uuid",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Instance",
+                            "description": "instanceUuid route parameter, for an instance details Report; a leaf may override it"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "actionTimeoutMs": {
+                    "type": "number",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Action timeout (ms)",
+                        "description": "How long an interaction step waits for the actions it started; 10000 when absent (#330)"
+                      }
+                    }
+                  },
+                  "miroirTests": {
+                    "type": "array",
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "miroirTestForReport"
                       }
                     }
                   }
@@ -8962,6 +9231,62 @@ export const miroirFundamentalMlSchema = {
                   "miroirTestLabel": {
                     "type": "string"
                   }
+                }
+              },
+              "miroirTestForReport": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Report test",
+                    "description": "Mounts the Report of its reportTestSuite and runs steps: UI interactions and checks, actions and assertions on their results (#330)",
+                    "display": {
+                      "displayedAttributeValueWhenFolded": "miroirTestLabel"
+                    }
+                  }
+                },
+                "definition": {
+                  "skip": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "instanceUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Instance",
+                        "description": "Overrides the suite's report.instanceUuid for this leaf"
+                      }
+                    }
+                  },
+                  "steps": {
+                    "type": "array",
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "reportTestStep"
+                      }
+                    }
+                  },
+                  "miroirTestType": {
+                    "type": "literal",
+                    "definition": "reportTest"
+                  },
+                  "miroirTestLabel": {
+                    "type": "string"
+                  }
+                }
+              },
+              "reportTestStep": {
+                "type": "schemaReference",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Report test step",
+                    "description": "A step of a reportTest leaf: a component test step (#330; Slice 2 adds action and assertion steps)"
+                  }
+                },
+                "definition": {
+                  "relativePath": "reactComponentTestStep"
                 }
               },
               "reactComponentTestTextMatch": {

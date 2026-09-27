@@ -2,6 +2,7 @@ import type {
   MiroirTestSuite,
   ReactComponentTestStep,
   ReactComponentTestSuite,
+  ReportTestSuite,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import type {
@@ -15,8 +16,8 @@ import { packageName } from "../constants.js";
 import { cleanLevel } from "../3_controllers/constants.js";
 import type {
   MiroirTestAnyLeaf,
+  MiroirTestLeafSuiteContext,
   MiroirTestRunFilter,
-  ReactComponentTestSuiteContext,
   TestSuiteListFilter,
 } from "../0_interfaces/5-tests/miroirTestTypes";
 import { miroirTestGlobalTimeOut } from "./MiroirTransformerTestTools.js";
@@ -35,11 +36,25 @@ function miroirTestLeafLabel(leaf: MiroirTestAnyLeaf): string {
   return leaf.miroirTestLabel;
 }
 
-/** A child of a `miroirTestSuite`, or a `reactComponentTest` leaf of a `reactComponentTestSuite` (#294). */
-type MiroirTestNode = MiroirTestAnyLeaf | MiroirTestSuite | ReactComponentTestSuite;
+/**
+ * A child of a `miroirTestSuite`, a `reactComponentTest` leaf of a `reactComponentTestSuite` (#294),
+ * or a `reportTest` leaf of a `reportTestSuite` (#330).
+ */
+type MiroirTestNode = MiroirTestAnyLeaf | MiroirTestSuite | ReactComponentTestSuite | ReportTestSuite;
+
+/** The suite nodes the walk descends into. */
+type MiroirTestSuiteNode = MiroirTestSuite | ReactComponentTestSuite | ReportTestSuite;
+
+function isMiroirTestSuiteNode(node: MiroirTestNode): node is MiroirTestSuiteNode {
+  return (
+    node.miroirTestType === "miroirTestSuite" ||
+    node.miroirTestType === "reactComponentTestSuite" ||
+    node.miroirTestType === "reportTestSuite"
+  );
+}
 
 function miroirTestNodeLabel(node: MiroirTestNode): string {
-  if (node.miroirTestType === "miroirTestSuite" || node.miroirTestType === "reactComponentTestSuite") {
+  if (isMiroirTestSuiteNode(node)) {
     return node.miroirTestLabel;
   }
   return miroirTestLeafLabel(node);
@@ -62,24 +77,35 @@ export function reactComponentTestSuiteStepKinds(
 }
 
 /**
- * The context passed to the component test runner with each leaf of a `reactComponentTestSuite`
- * (#292, analysis T3). `caseLabels` lists every leaf, whatever the filter.
+ * The context passed to the runner of the suite's leaves: for a `reactComponentTestSuite`, to the
+ * component test runner (#292, analysis T3); for a `reportTestSuite`, to the report test runner
+ * (#330, analysis T2). `caseLabels` lists every leaf, whatever the filter.
  */
-function reactComponentTestSuiteContext(
-  suite: MiroirTestSuite | ReactComponentTestSuite,
+function leafSuiteContext(
+  suite: MiroirTestSuiteNode,
   suitePath: string[],
-): ReactComponentTestSuiteContext | undefined {
-  if (suite.miroirTestType !== "reactComponentTestSuite") {
-    return undefined;
+): MiroirTestLeafSuiteContext | undefined {
+  switch (suite.miroirTestType) {
+    case "reactComponentTestSuite":
+      return {
+        suitePath,
+        component: suite.component,
+        componentProps: suite.componentProps ?? {},
+        caseLabels: suite.miroirTests.map((leaf) => leaf.miroirTestLabel),
+        stepKinds: reactComponentTestSuiteStepKinds(suite),
+        ...(suite.runOnDemand ? { runOnDemand: true as const } : {}),
+      };
+    case "reportTestSuite":
+      return {
+        suiteKind: "reportTestSuite",
+        suitePath,
+        report: suite.report,
+        ...(suite.actionTimeoutMs !== undefined ? { actionTimeoutMs: suite.actionTimeoutMs } : {}),
+        caseLabels: suite.miroirTests.map((leaf) => leaf.miroirTestLabel),
+      };
+    case "miroirTestSuite":
+      return undefined;
   }
-  return {
-    suitePath,
-    component: suite.component,
-    componentProps: suite.componentProps ?? {},
-    caseLabels: suite.miroirTests.map((leaf) => leaf.miroirTestLabel),
-    stepKinds: reactComponentTestSuiteStepKinds(suite),
-    ...(suite.runOnDemand ? { runOnDemand: true as const } : {}),
-  };
 }
 
 /**
@@ -105,8 +131,8 @@ function unnamedSiblingSuiteFilter(
 export type RunMiroirTestSuiteWalkParams = {
   localVitest: VitestNamespace;
   testSuitePath: string[];
-  /** A `reactComponentTestSuite` is walked like a nested suite (#292). */
-  miroirTestSuite: MiroirTestSuite | ReactComponentTestSuite;
+  /** A `reactComponentTestSuite` (#292) or a `reportTestSuite` (#330) is walked like a nested suite. */
+  miroirTestSuite: MiroirTestSuiteNode;
   filter: MiroirTestRunFilter | undefined;
   modelEnvironment: MiroirModelEnvironment;
   miroirActivityTracker: MiroirActivityTrackerInterface;
@@ -154,7 +180,7 @@ export async function runMiroirTestSuiteWalk(
   const shouldSkipSuite = miroirTestSuite.skip || parentSkip;
 
   const allTests: MiroirTestNode[] = miroirTestSuite.miroirTests;
-  const suiteContext = reactComponentTestSuiteContext(miroirTestSuite, testSuitePath);
+  const suiteContext = leafSuiteContext(miroirTestSuite, testSuitePath);
   const availableLeafLabels = allTests.map(miroirTestNodeLabel);
   const { testList: innerTestList } = resolveSuiteInnerFilter(
     filter,
@@ -188,7 +214,7 @@ export async function runMiroirTestSuiteWalk(
     const label = miroirTestNodeLabel(node);
     const isSkipped = !selectedTests.includes(node) || !!shouldSkipSuite;
 
-    if (node.miroirTestType === "miroirTestSuite" || node.miroirTestType === "reactComponentTestSuite") {
+    if (isMiroirTestSuiteNode(node)) {
       const nestedFilter = siblingSuiteFilter && isSkipped ? siblingSuiteFilter : innerFilter;
       const nestedParams: RunMiroirTestSuiteWalkParams = {
         ...params,

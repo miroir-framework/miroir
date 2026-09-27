@@ -154,8 +154,9 @@ A MiroirTest `name` is its suite key (`--suites`, `--filter` root keys, the Miro
 | `action` | actions on a DomainController or an action scenario (`actionTest`) | `action.domainController.dataCrud.compositePk`, `action.scenario.evolutionTrace` |
 | `runner` | a Runner (`runnerTest`) | `runner.lendDocument`, `runner.mcp.getInstances` |
 | `ui` | React components (`reactComponentTest`) | `ui.mlElementEditor.array` |
+| `report` | a Report mounted at its route on an integration session (`reportTest`) | `report.bookDetails` |
 
-When leaf types mix, the first kind in the order `ui`, `runner`, `action`, `query`, `fn`, `tr` wins. The name says what is tested, never the issue it came from (that is `issue`) nor how it runs (that is the mode tag). The root `definition.miroirTestLabel` equals the name; inner labels are free. The deployment export of an instance is `miroirTest_` followed by the name with `.` replaced by `_` (`miroirTest_tr_core`).
+When leaf types mix, the first kind in the order `ui`, `report`, `runner`, `action`, `query`, `fn`, `tr` wins. The name says what is tested, never the issue it came from (that is `issue`) nor how it runs (that is the mode tag). The root `definition.miroirTestLabel` equals the name; inner labels are free. The deployment export of an instance is `miroirTest_` followed by the name with `.` replaced by `_` (`miroirTest_tr_core`).
 
 `description` is one sentence ending with a period: what is exercised, against what. No issue numbers, uuids, history (migrated, phase, slice) or setup notes: setup notes go in this document ([Integration suite notes](#notable-catalog-suites)).
 
@@ -165,7 +166,7 @@ Guard: `packages/miroir-core/tests/5-tests/miroirTestNaming.unit.test.ts` checks
 
 Every MiroirTest instance carries `tags` (#312), next to `name` and `description`: one mode tag, then one to three tags saying what the test exercises, main area first. They select tests (`--tags`, the tag chips of the Miroir Tests page) and sort them (the Tags column of the Miroir Tests grid).
 
-**Mode tags** (#316) say how the suite runs and are derived from its leaves (`miroirTestSuiteModeTags`): `ui` for a suite with `reactComponentTest` leaves, `unit` for a suite that runs in the unit launcher, `integ` for a suite that needs an integration session (runner, action, or transformer leaves with `integrationTestExpectedValue`). `tr.core` carries both `unit` and `integ`. The guard in `miroirTestTags.unit.test.ts` fails when an instance's mode tags differ from the derived ones, so a new test only needs the right leaves and the matching tag. `--tags ui --mode unit` on `miroir-core` runs every component suite.
+**Mode tags** (#316) say how the suite runs and are derived from its leaves (`miroirTestSuiteModeTags`): `ui` for a suite with `reactComponentTest` leaves, `integ` and `ui` for a suite with `reportTest` leaves (a Report mounted on an integration session), `unit` for a suite that runs in the unit launcher, `integ` for a suite that needs an integration session (runner, action, or transformer leaves with `integrationTestExpectedValue`). `tr.core` carries both `unit` and `integ`. The guard in `miroirTestTags.unit.test.ts` fails when an instance's mode tags differ from the derived ones, so a new test only needs the right leaves and the matching tag. `--tags ui --mode unit` on `miroir-core` runs every component suite.
 
 The allowed values are the `enum` inside the `tags` array schema of the MiroirTest Entity (`miroir_model/16dbfe28-…/a311f363-….json`), in this order:
 
@@ -389,9 +390,14 @@ npm run testMiroir -w miroir-standalone-app -- \
 npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql --suites runner.returnDocument --mode integ
 
-# By tag: the integration-capable suites carrying the tag. Core (transformer) suites and
-# runner / action suites run in different vitest entries, so a tag selection that spans
-# both is refused: narrow the tags or add --suites.
+# Report integ (#330): the Report mounted at its route, in a DOM entry
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-filesystem --suites report.bookDetails --mode integ
+
+# By tag: the integration-capable suites carrying the tag. Core (transformer) suites,
+# runner / action suites and Report suites (reportTest leaves) run in different vitest
+# entries, so a tag or --suites selection that spans two of them is refused: narrow the tags
+# or add --suites. Without --suites (or with *), the Report suites are left out, with a warning.
 npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-filesystem --tags domain-controller --mode integ
 
