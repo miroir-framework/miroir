@@ -9,7 +9,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/326
 Working branches: PR 1 `claude/build-hardening-81mz9d`, PR 2 `claude/build-hardening-bundles` (D17), both from `_integration`
 
-**Resume note:** PR 1 (Slices 0–9 and 7b) DONE 2026-09-27 on `claude/build-hardening-81mz9d` (PR #334). PR 2 on `claude/build-hardening-bundles`, branched from PR 1's head: Slices 10 to 13 DONE; next: Slice 14. Lockfiles are regenerated with npm 11 and `--before` (Slice 4 realization).
+**Resume note:** PR 1 (Slices 0–9 and 7b) DONE 2026-09-27 on `claude/build-hardening-81mz9d` (PR #334). PR 2 on `claude/build-hardening-bundles`, branched from PR 1's head: Slices 10 to 15 DONE (draft PR #335, stacked on #334); next: Slice 16. Lockfiles are regenerated with npm 11 and `--before` (Slice 4 realization).
 
 ---
 
@@ -41,7 +41,7 @@ This plan does **not** cut bundle size (D19: separate issue opened in Slice 17 f
 | 11 | 2 | Tracer: the build prints and writes the attribution report | ✅ | `bundleReport.326.phase11.unit.test.ts` + `bundleReportCore.326.phase11.unit.test.ts` |
 | 12 | 2 | Allowlist and eager budget guards | ✅ | `test_check_bundle_policy.py` + real report exits 0 |
 | 13 | 2 | Electron main bundled with esbuild, traced and guarded | ✅ | esbuild metafile report + `electron-builder --dir` content check |
-| 14 | 2 | Bundle guards run on PRs | ⬜ | `bundle` job in `pr-checks.yml` |
+| 14 | 2 | Bundle guards run on PRs | ✅ | `bundle` job in `pr-checks.yml` |
 | 15 | 2 | Sourcemaps kept out of the Electron package | ✅ | asar / resources listing has no `.map` |
 | 16 | 2 | On-demand coverage tour | ⬜ | `coverage-report.json` from a real tour |
 | 17 | 2 | Docs, size issue, #286 guard folded, cleanup, AC | ⬜ | AC checklist |
@@ -821,7 +821,7 @@ xvfb-run -a release/linux-unpacked/miroir-standalone-app-electron --no-sandbox  
 
 ## Slice 14 — Bundle guards run on PRs
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -842,6 +842,13 @@ Job `bundle`: checkout with history, a first step computing `git diff --name-onl
 Push the branch; the `bundle` job runs green on the PR; a throwaway commit adding an unlisted dependency import (reverted) turns it red. Both runs linked in the Realization.
 
 ### Realization
+
+- `.github/workflows/pr-checks.yml` gained two jobs:
+  - `bundle-paths` ("bundle guards needed?"): checkout with `fetch-depth: 2`, then `git diff --name-only HEAD^1 HEAD` (on a `pull_request` run, HEAD is the merge commit and HEAD^1 the base) matched against `packages/`, `package-lock.json`, `scripts/check_bundle_policy.py` and the workflow itself; a manual `workflow_dispatch` run always passes. **Deviations:** a separate gate job instead of a first step, so a skipped `bundle` job shows as skipped rather than as a green job that did nothing; the checker and the workflow file join the paths D20 named, so a change to the guard itself is checked.
+  - `bundle` ("bundle report + guards"): `npm ci`, then the packages the two apps import in five `npm run build` lines, each after the ones it needs (`miroir-mcp` and `miroir-ai` import `miroir-test-app_deployment-library`, `miroir-diagram-class` imports `miroir-react`); then both apps (each prints its report), both guards in one step that runs both before failing, and `actions/upload-artifact` (SHA-pinned v4, `include-hidden-files` for `dist/.vite`, 14 days, also when a guard fails) with the reports, the treemap and every `.map`. **Deviation:** not `./build-all.sh devBuild`, which also builds packages the apps do not import and the server binary; the generated types are committed, so `build` is enough.
+- Tests: `scripts/tests/test_check_bundle_policy.py` gained 9 cases. The gate's own script, read from the workflow, runs on a two-commit repository for 6 changed paths and for a manual run; two more read the job graph and the steps (both guards, `npm ci`, the artifact paths). 9 failed before the workflow change.
+- Replay of the job's build and guard steps from empty `dist` folders in the cloud session: packages 1 min 4 s, standalone app 1 min 56 s, Electron main 4 s, both guards 0 violations.
+- On GitHub (draft PR #335, stacked on #334): [run 36345779727](https://github.com/miroir-framework/miroir/actions/runs/36345779727) green, `bundle` job 3 min 28 s, the same eager gzip sizes as locally (2,709,170 and 4,749,138 bytes, so the baselines hold across machines), artifact `bundle-reports` 23.5 MB, 392 files. A throwaway commit removing `zod` from the standalone policy, reverted next: [run 36346058620](https://github.com/miroir-framework/miroir/actions/runs/36346058620) red with `[allowlist] zod is new in the build and loads with the page (packages/miroir-standalone-app/src/index.tsx → miroir-core → zod)`, the Electron guard still run, the artifact still uploaded.
 
 ---
 
