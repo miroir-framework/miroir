@@ -10,6 +10,7 @@
     "external-service",
     "transformer"
   ],
+  "issue": "267",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "externalServiceSync",

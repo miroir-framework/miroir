@@ -9,6 +9,7 @@
   "tags": [
     "report"
   ],
+  "issue": "274",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "multistepReports.274",

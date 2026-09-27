@@ -10,6 +10,7 @@
     "versioning",
     "model"
   ],
+  "issue": "9",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "evolutionTrace.WP1",

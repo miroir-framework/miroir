@@ -8441,6 +8441,20 @@ export const miroirFundamentalMlSchema = {
               ]
             }
           },
+          "issue": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Issue",
+                "description": "The GitHub issue this test was written for, as its number (for example \"312\").",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
           "definition": {
             "type": "schemaReference",
             "context": {

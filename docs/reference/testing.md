@@ -154,6 +154,10 @@ The tags of each existing test: [`code-helpers/features/312-FEATURE-miroir-test-
 - **Adding a tag:** add the value to the enum in the Entity row **and** in its EntityVersion (`miroir_modelVersion/54b9c72f-…/51c647fe-….json`), then `npm run build -w miroir-test-app_deployment-miroir` and `npm run devBuild -w miroir-core` (the generated `MiroirTestDefinition.tags` is a union of the values). The CLI and the instance editor read the values from the Entity.
 - **Guard:** `packages/miroir-core/tests/5-tests/miroirTestTags.unit.test.ts` fails on an instance without tags or with a tag the Entity does not allow. Model validation does not check enum values yet (#313).
 
+### Issue
+
+A MiroirTest instance may carry an optional `issue`: the number, as a string, of the GitHub issue the test was written for (for example `"303"`). It is informative only: nothing selects or runs tests by it. Tests migrated from the former TransformerTest and UnitTest entities carry `"196"`, the migration issue, since their original issue is not recorded. It is left out when no issue can be identified.
+
 ---
 
 ## Discovery, selection, and execution
@@ -1443,7 +1447,7 @@ await session.teardown();
 1. Create a `MiroirTestDefinition` JSON in the owning application's MiroirTest folder:
    - Miroir app: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-…/<uuid>.json`
    - Other apps: that app's **model** section `…/<app>_model/a311f363-…/<uuid>.json`
-2. Set `name` to the CLI / UI suite key (e.g. `myNewSuite`), and `tags` to one to three values of the [tag vocabulary](#tags), main area first.
+2. Set `name` to the CLI / UI suite key (e.g. `myNewSuite`), and `tags` to one to three values of the [tag vocabulary](#tags), main area first. Set `issue` to the GitHub issue number the test is written for, when there is one ([Issue](#issue)).
 3. CLI discovery scans `packages/miroir-test-app_deployment-*/assets/*/<MiroirTest uuid>` (`discoverApplicationMiroirTestSourceFolders`). Test runners load the suite with `loadMiroirCoreTestSuiteFromFolders` / `loadMiroirTestSuiteFromCatalog`. Runner `runnerRef` lookup uses sibling Runner folders (`loadApplicationRunnerUuidIndexFromFolders`).
 4. Optional: export `miroirTest_myNewSuite` from the deployment package `index.ts` if other TypeScript wants a named import. Rebuild that package.
 5. Validate schema: `VITE_TEST_MODE=true npx vitest run tests/4_services/miroirTest.schema.unit.test.ts -w miroir-core`.

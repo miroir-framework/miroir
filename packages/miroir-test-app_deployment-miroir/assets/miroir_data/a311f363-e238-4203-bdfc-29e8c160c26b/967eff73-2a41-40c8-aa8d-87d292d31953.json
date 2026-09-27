@@ -10,6 +10,7 @@
     "runner",
     "versioning"
   ],
+  "issue": "225",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "runner.freezeApplicationVersion",

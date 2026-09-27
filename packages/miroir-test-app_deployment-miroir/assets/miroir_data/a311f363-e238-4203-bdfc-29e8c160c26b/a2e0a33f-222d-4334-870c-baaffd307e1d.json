@@ -11,6 +11,7 @@
     "mcp",
     "data"
   ],
+  "issue": "253",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "runner.mcpGetInstances",

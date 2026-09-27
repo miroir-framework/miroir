@@ -9,6 +9,7 @@
   "tags": [
     "transformer"
   ],
+  "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "adminTransformers",

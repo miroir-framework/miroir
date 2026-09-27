@@ -9,6 +9,7 @@
   "tags": [
     "editor"
   ],
+  "issue": "286",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "MlObjectEditor_ComponentTestSuite",

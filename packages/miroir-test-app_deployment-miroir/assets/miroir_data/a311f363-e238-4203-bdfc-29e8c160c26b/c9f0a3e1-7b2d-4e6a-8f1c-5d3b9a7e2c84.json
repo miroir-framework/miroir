@@ -9,6 +9,7 @@
   "tags": [
     "transformer"
   ],
+  "issue": "249",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "transformerInterfaceCheck",

@@ -11,6 +11,7 @@
     "model",
     "primary-key"
   ],
+  "issue": "197",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "domainController.nonUuidPK.model.crud",
