@@ -66,7 +66,7 @@ describe("MiroirTest naming", () => {
     expect(wrong).toEqual([]);
   });
 
-  it("UI launch kinds follow the name: action.domainController.*, action.scenario.*, runner.*", () => {
+  it("UI launch kinds follow the name: action.domainController.*, action.scenario.*, runner.*, report.*", () => {
     const wrong = catalog
       .map((entry) => ({
         name: entry.suiteKey,
@@ -79,7 +79,9 @@ describe("MiroirTest naming", () => {
             ? kind !== "actionTest"
             : name.startsWith("runner.")
               ? kind !== "runnerTest"
-              : false,
+              : name.startsWith("report.")
+                ? kind !== "reportTest"
+                : false,
       );
     expect(wrong).toEqual([]);
   });

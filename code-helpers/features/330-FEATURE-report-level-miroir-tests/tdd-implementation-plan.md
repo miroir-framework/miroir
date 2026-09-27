@@ -16,7 +16,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Follow-up: https://github.com/miroir-framework/miroir/issues/333 (stored values in UI steps)
 Working branch: `claude/report-level-miroir-tests-0lnny6` (from `_integration`, PR against `_integration`)
 
-**Resume note:** Slices 0 to 7 done 2026-09-27; Slice 8 next.
+**Resume note:** Slices 0 to 8 done 2026-09-27; Slice 9 next.
 
 ---
 
@@ -45,7 +45,7 @@ This plan does **not** cover stored values in UI steps (#333), an in-memory mode
 | 5 | Fake HTTP, and the wizard's first steps | ✅ | `report.connectExternalServiceWizard` leaf "reads an OpenAPI document by URL" + undeclared-request vitest |
 | 6 | Wizard Finish persists the Endpoint and Report | ✅ | leaf "public service: Finish creates Endpoint and Report" |
 | 7 | Wizard branches; 284 UI tests deleted | ✅ | branch leaves + coverage table all covered (`wizardWalk.284` deleted, `multistepBranch.284` kept) |
-| 8 | Report tests in the app | ⬜ | launcher registry test + in-app run |
+| 8 | Report tests in the app | ✅ | launcher registry test + `reportTestInApp.330.slice8` (the Miroir Tests display drives the wizard in its sandbox) |
 | 9 | Nonreg, docs, cleanup, AC | ⬜ | nonreg steps + tracer narrative |
 
 ---
@@ -507,7 +507,7 @@ npm run lint
 
 ## Slice 8 — Report tests in the app
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -539,7 +539,13 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+- **Proof:** `reportTestInApp.330.slice8.integ.test.tsx` renders the `MiroirTestDisplay` of `report.connectExternalServiceWizard` under a `MiroirContextReactProvider` whose domain controller serves the Miroir Reports of `miroir_data`, as the app's local cache does. It clicks "Run report.connectExternalServiceWizard Integration Tests" (filter: "the application picker lists Library, not Miroir or Admin"): the sandbox panel opens with its close button disabled, the wizard's Application step appears in it, the run passes, then the runner is unregistered and the close button enabled again. Only the browser launcher environment is replaced, by the Node one on the launch profile, as in `MiroirTestDisplayIntegrationLaunch`. With `readAppMiroirReports` returning nothing, the leaf fails ("no element matches target multistep-step-label"): the session has no wizard Report.
+- **Classification by leaves (8.3):** `inferUiIntegrationRunnerSuiteKind` returns the new kind `reportTest` for an action session whose suite mounts Reports (`miroirTestSuiteMountsReport`), before the name stopgap; the registry union gains `UiIntegrationReportTestSuiteEntry`. `miroirTestNaming` requires `report.*` names to have that kind.
+- **Launcher:** the request takes `prepareReportTests(session)` and `miroirReports()`. `runUiIntegrationTestSuite` refuses a `reportTest` suite without `prepareReportTests` (`REPORT_TESTS_NEED_A_SANDBOX_MESSAGE`, e.g. from a CLI-like caller); for such a suite it calls `prepareReportTests` with the session's tracker, event service and the app's Miroir Reports before `initSession`, and the returned release before `teardown`.
+- **Sandbox:** `ComponentTestSandboxProvider.prepareReportTests` loads the component test chunk, checks the shared run lock, and registers the report test runner over its sandbox (`registerReportTests` in `componentTests/index.ts`); its release ends the run and unregisters the runner. The Report of each leaf is unmounted when the leaf ends. The displays pass it to their integration Run buttons (single suite and Run all); no `useEffect` added.
+- **Deviation (T10):** the runner uses the session's DomainController and LocalCache as in the vitest entry; what the app adds is the Miroir Reports. The session bootstraps 13 Miroir Reports and resets them before each leaf, so the runner now creates the missing ones itself at the start of each leaf (`seedMissingMiroirReports`, host option `miroirReports`), in the app from the Run button (`4-tests/appMiroirReports.ts`, read at click time from the app's domain state) and in vitest from `miroir_data` (`reportTestEntry.ts`, whose `beforeEach` seeding moved into the runner).
+- **Manual browser run:** not in this commit. The proof above drives the same display, Run button, launcher, sandbox provider and runner in jsdom; the Chromium run is tried next and its result recorded in Slice 9's Realization.
+- **Validation (2026-09-27):** skills sync; scripts pytest 45; tsc core, react, app; lint; miroir-core unit 2084 (+1 skipped); `uiIntegrationTestLauncher.unit` 21 (3 new: the two Report suites on an action session with their playfield, classification by leaves, refusal without a sandbox); `MiroirTestDisplay.unit` 5; `MiroirTestListDisplay.unit` 7; `renderPerformanceRunControls.303.phase6` 3; component tests 74 (+15 skipped); `reportTestLauncher.330.slice1` 5; on `emulatedServer-filesystem`: `componentTestSandbox.286.phase4` 5, `runAllComponentTests.286.phase6` 3, `MiroirTestDisplayIntegrationLaunch` 1, `MiroirTestListIntegrationLaunch` 1, `reportTestInApp.330.slice8` 1 (also on `emulatedServer-indexedDb`), `reportTestFailure.330.slice2` 2, `fakeHttp.330.slice5` 3, `report.bookDetails` 4, `report.connectExternalServiceWizard` 8, `runner.lendDocument` 1.
 
 ---
 

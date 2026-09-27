@@ -14,6 +14,7 @@ import {
 } from 'miroir-core';
 
 import { useMiroirContextService, useSnackbar } from 'miroir-react';
+import { readAppMiroirReports } from '../../../4-tests/appMiroirReports.js';
 import { useSelectedApplicationRunnerUuidIndex } from '../../../4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js';
 import { packageName } from '../../../../constants.js';
 import {
@@ -30,7 +31,10 @@ import {
   resolveUiIntegrationRunnerSuiteKey,
 } from '../../../4-tests/miroirTestSuiteUiExecution.js';
 import type { UiIntegrationTestLauncherEnvironment } from '../../../4-tests/uiIntegrationTestLauncher.js';
-import type { UiIntegrationTestRunTargetMode } from '../../../4-tests/uiIntegrationTestLauncherTypes.js';
+import type {
+  UiIntegrationTestRunRequest,
+  UiIntegrationTestRunTargetMode,
+} from '../../../4-tests/uiIntegrationTestLauncherTypes.js';
 import { useIntegTestRunCoordinator } from '../../../4-tests/useIntegTestRunCoordinator.js';
 import { ActionButtonWithSnackbar } from '../../components/Page/ActionButtonWithSnackbar.js';
 import { cleanLevel } from '../../constants.js';
@@ -72,6 +76,8 @@ interface RunAllMiroirTestsButtonProps {
    * test run: releases the suite wrappers and the run lock).
    */
   afterRun?: () => void;
+  /** #330: mounts the Reports of the integration runs of suites with `reportTest` leaves. */
+  prepareReportTests?: UiIntegrationTestRunRequest['prepareReportTests'];
   [key: string]: unknown;
 }
 
@@ -130,6 +136,8 @@ async function runLaunchableIntegrationBatch(params: {
   integrationProfileName?: string;
   integrationRunTargetMode?: UiIntegrationTestRunTargetMode;
   runnerUuidIndex?: Record<string, Runner>;
+  prepareReportTests?: UiIntegrationTestRunRequest['prepareReportTests'];
+  miroirReports?: UiIntegrationTestRunRequest['miroirReports'];
 }): Promise<{ resultsBySuiteKey: MiroirTestSuiteResultsMap; failures: string[] }> {
   const sortedLaunchable = selectLaunchableIntegrationInstances(params.miroirTests);
   if (sortedLaunchable.length === 0) {
@@ -175,6 +183,8 @@ async function runLaunchableIntegrationBatch(params: {
           runTargetMode: params.integrationRunTargetMode ?? DEFAULT_UI_INTEGRATION_RUN_TARGET_MODE,
           hostMode: 'isolated',
           runnerUuidIndex: params.runnerUuidIndex,
+          prepareReportTests: params.prepareReportTests,
+          miroirReports: params.miroirReports,
         },
         batchEnv,
       );
@@ -204,6 +214,7 @@ export const RunAllMiroirTestsButton: React.FC<RunAllMiroirTestsButtonProps> = (
   integrationRunTargetMode,
   beforeRun,
   afterRun,
+  prepareReportTests,
   ...buttonProps
 }) => {
   // #286: unit mode only. When unchecked, `reactComponentTest` leaves are recorded as skipped.
@@ -272,6 +283,12 @@ export const RunAllMiroirTestsButton: React.FC<RunAllMiroirTestsButtonProps> = (
       integrationProfileName,
       integrationRunTargetMode,
       runnerUuidIndex,
+      prepareReportTests,
+      miroirReports: () =>
+        readAppMiroirReports(
+          miroirContextService.domainController,
+          miroirContextService.applicationDeploymentMap,
+        ),
     });
 
     if (onTestComplete) {

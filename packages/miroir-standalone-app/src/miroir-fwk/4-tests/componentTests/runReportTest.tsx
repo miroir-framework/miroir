@@ -12,6 +12,7 @@ import {
   setOutboundFetch,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
+  type EntityInstance,
   type FakeOutboundFetch,
   type LoggerInterface,
   type MiroirActivityTrackerInterface,
@@ -23,7 +24,7 @@ import {
   type ReportTestRunnerResult,
   type ReportTestSuiteContext,
 } from "miroir-core";
-import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { entityReport, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../../4_view/constants.js";
@@ -65,6 +66,60 @@ export interface ReportTestSandboxHost {
   /** Tracker and event service of the integration session (those of its DomainController). */
   miroirActivityTracker: MiroirActivityTrackerInterface;
   miroirEventService: MiroirEventService;
+  /**
+   * The Miroir Reports of the app (all of `miroir_data`). The session bootstraps its Miroir store
+   * with a few Reports only (`miroirModelInitializeDataInstances`): before each leaf, the runner
+   * creates those the session lacks, or a Report test of a Miroir Report such as the
+   * ConnectExternalServiceWizard would display the default Report.
+   */
+  miroirReports?: () => readonly EntityInstance[];
+}
+
+// ################################################################################################
+/** Creates in the session's Miroir deployment the Reports of `miroirReports` it lacks. */
+async function seedMissingMiroirReports(
+  domainController: DomainControllerInterface,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  miroirReports: readonly EntityInstance[],
+): Promise<void> {
+  const rollback = await domainController.handleAction(
+    {
+      actionType: "rollback",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      payload: { application: selfApplicationMiroir.uuid },
+    },
+    applicationDeploymentMap,
+    defaultMiroirModelEnvironment,
+  );
+  if (rollback?.status !== "ok") {
+    throw new Error(`could not load the Miroir Reports of the session: ${JSON.stringify(rollback)}`);
+  }
+  const sessionReports =
+    domainController.getDomainState()[applicationDeploymentMap[selfApplicationMiroir.uuid]]?.data?.[
+      entityReport.uuid
+    ] ?? {};
+  const missingReports = miroirReports.filter(
+    (report) => report.uuid !== undefined && !sessionReports[report.uuid],
+  );
+  if (missingReports.length === 0) {
+    return;
+  }
+  const creation = await domainController.handleAction(
+    {
+      actionType: "createInstance",
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      payload: {
+        application: selfApplicationMiroir.uuid,
+        applicationSection: "data",
+        objects: [...missingReports],
+      },
+    },
+    applicationDeploymentMap,
+    defaultMiroirModelEnvironment,
+  );
+  if (creation?.status !== "ok") {
+    throw new Error(`could not create the Miroir Reports of the session: ${JSON.stringify(creation)}`);
+  }
 }
 
 /** The runner and `close()`, which releases the portal element and the DOM configuration. */
@@ -262,6 +317,10 @@ export function createReportTestRunner(host: ReportTestSandboxHost): ClosableRep
       setOutboundFetch(fakeFetch.fetch);
     }
     try {
+      if (host.miroirReports) {
+        // the session resets its Miroir model before each leaf, back to the bootstrap Reports
+        await seedMissingMiroirReports(domainController, applicationDeploymentMap, host.miroirReports());
+      }
       await refreshLocalCache(domainController, applicationDeploymentMap, [
         selfApplicationMiroir.uuid,
         suite.report.application,

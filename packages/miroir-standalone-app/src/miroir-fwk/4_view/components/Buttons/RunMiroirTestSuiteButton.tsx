@@ -21,7 +21,11 @@ import {
   DEFAULT_UI_INTEGRATION_PROFILE_NAME,
   DEFAULT_UI_INTEGRATION_RUN_TARGET_MODE,
 } from "../../../4-tests/integrationTestProfileAssets.js";
-import type { UiIntegrationTestRunTargetMode } from "../../../4-tests/uiIntegrationTestLauncherTypes.js";
+import type {
+  UiIntegrationTestRunRequest,
+  UiIntegrationTestRunTargetMode,
+} from "../../../4-tests/uiIntegrationTestLauncherTypes.js";
+import { readAppMiroirReports } from "../../../4-tests/appMiroirReports.js";
 import { setLastUiIntegrationTestRunResult } from "../../../4-tests/uiIntegrationTestRunState.js";
 import { miroirTestDefinitionHasReactComponentTest } from "../../../4-tests/miroirTestSuiteUiExecution.js";
 import { useIntegTestRunCoordinator } from "../../../4-tests/useIntegTestRunCoordinator.js";
@@ -69,6 +73,8 @@ interface RunMiroirTestSuiteButtonProps {
    * test run: releases the suite wrappers and the run lock).
    */
   afterRun?: () => void;
+  /** #330: mounts the Reports of an integration run of a suite with `reportTest` leaves. */
+  prepareReportTests?: UiIntegrationTestRunRequest["prepareReportTests"];
   [key: string]: unknown;
 }
 
@@ -106,6 +112,7 @@ export const RunMiroirTestSuiteButton: React.FC<RunMiroirTestSuiteButtonProps> =
   integrationRunTargetMode,
   beforeRun,
   afterRun,
+  prepareReportTests,
   iterationsOverride,
   ...buttonProps
 }) => {
@@ -194,6 +201,12 @@ export const RunMiroirTestSuiteButton: React.FC<RunMiroirTestSuiteButtonProps> =
         hostMode: "isolated",
         filter: testFilter,
         runnerUuidIndex,
+        prepareReportTests,
+        miroirReports: () =>
+          readAppMiroirReports(
+            miroirContextService.domainController,
+            miroirContextService.applicationDeploymentMap,
+          ),
       },
       await loadBrowserUiIntegrationTestLauncherEnvironment(),
     );

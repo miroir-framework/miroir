@@ -256,6 +256,7 @@ const MiroirTestListDisplayContent = (props: MiroirTestListDisplayProps) => {
             runMode="integration"
             integrationProfileName={integrationPreferences.profileName}
             integrationRunTargetMode={integrationPreferences.runTargetMode}
+            prepareReportTests={componentTestSandbox?.prepareReportTests}
             label="Run All Integration Tests"
             disabled={!integrationProfileBrowserLaunchable}
             title={

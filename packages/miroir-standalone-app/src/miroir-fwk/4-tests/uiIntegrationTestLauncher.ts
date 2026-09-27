@@ -43,6 +43,9 @@ import type {
   UiIntegrationTestRunTargetMode,
 } from "./uiIntegrationTestLauncherTypes.js";
 
+export const REPORT_TESTS_NEED_A_SANDBOX_MESSAGE =
+  "a suite of reportTest leaves needs the app's component test sandbox to mount its Reports";
+
 export type UiIntegrationTestLauncherEnvironment = {
   createOrchestrator: () => MiroirTestIntegrationOrchestrator;
   loadConfigForProfile: (profileName: string) => Promise<{
@@ -183,6 +186,7 @@ async function runRunnerOrActionIntegrationSuite(
   runTarget: TestbedUuids,
   sessionKind: "runner" | "action",
   hostMode: NonNullable<UiIntegrationTestRunRequest["hostMode"]>,
+  prepareReportTests: UiIntegrationTestRunRequest["prepareReportTests"],
 ): Promise<UiIntegrationTestRunResult> {
   const { miroirConfig, logConfig } = await environment.loadConfigForProfile(request.profileName);
   await assertRealServerReachableIfNeeded(request, environment, miroirConfig);
@@ -206,7 +210,14 @@ async function runRunnerOrActionIntegrationSuite(
   );
 
   let success = false;
+  let releaseReportTests: (() => void) | undefined;
   try {
+    // #330: the Reports of the suite mount in the app's sandbox, driven by this session
+    releaseReportTests = await prepareReportTests?.({
+      miroirActivityTracker: trackerBundle.miroirActivityTracker,
+      miroirEventService: trackerBundle.miroirEventService,
+      ...(request.miroirReports ? { miroirReports: request.miroirReports } : {}),
+    });
     const executionEnvironment = await testSession.initSession();
     await runMiroirTestSuiteInProcess({
       runMiroirTests,
@@ -227,7 +238,11 @@ async function runRunnerOrActionIntegrationSuite(
       request.suiteKey,
     );
   } finally {
-    await testSession.teardown();
+    try {
+      releaseReportTests?.();
+    } finally {
+      await testSession.teardown();
+    }
   }
 
   let testSuiteResults: TestSuiteResult | undefined;
@@ -371,6 +386,9 @@ export async function runUiIntegrationTestSuite(
       `Suite "${request.suiteKey}" is not a UI-launchable runner/action integration suite`,
     );
   }
+  if (suiteEntry.kind === "reportTest" && !request.prepareReportTests) {
+    throw new Error(`${REPORT_TESTS_NEED_A_SANDBOX_MESSAGE} (suite "${request.suiteKey}")`);
+  }
   const runTarget = resolveUiIntegrationTestRunTarget(
     request.runTargetMode,
     request.suiteDefinition,
@@ -384,6 +402,7 @@ export async function runUiIntegrationTestSuite(
       runTarget,
       sessionKind,
       hostMode,
+      suiteEntry.kind === "reportTest" ? request.prepareReportTests : undefined,
     ),
   );
 }

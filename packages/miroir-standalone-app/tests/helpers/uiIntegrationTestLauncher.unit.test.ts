@@ -17,7 +17,10 @@ import {
 
 import {
   isUiIntegrationSuiteRunSuccessful,
+  REPORT_TESTS_NEED_A_SANDBOX_MESSAGE,
   resolveUiIntegrationTestRunTarget,
+  runUiIntegrationTestSuite,
+  type UiIntegrationTestLauncherEnvironment,
 } from "../../src/miroir-fwk/4-tests/uiIntegrationTestLauncher.js";
 import { libraryTestbedInitParams } from "../../src/miroir-fwk/4-tests/uiIntegrationPlayfieldSeeds.js";
 import { appForTestTestbedInitParams } from "../../src/miroir-fwk/4-tests/uiIntegrationAppForTestPlayfieldSeed.js";
@@ -531,5 +534,61 @@ describe("isUiIntegrationSuiteRunSuccessful (B3)", () => {
         "tr.core",
       ),
     ).toBe(true);
+  });
+});
+
+
+describe("Report suites in the UI launcher (#330 Slice 8)", () => {
+  const context = { miroirConfig: {} as never };
+  const runTarget = {
+    applicationUuid: "5af03c98-fe5e-490b-b08f-e1230971c57f",
+    deploymentUuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+    applicationName: "Library",
+  };
+
+  it("lists report.bookDetails and report.connectExternalServiceWizard as Report suites on an action session with their playfield", () => {
+    for (const key of ["report.bookDetails", "report.connectExternalServiceWizard"] as const) {
+      const entry = runnerSuiteEntryFromFolders(key);
+      expect(entry.kind, key).toBe("reportTest");
+      expect(resolveUiIntegrationOrchestratorSessionKind(entry), key).toBe("action");
+      const params = buildUiIntegrationOrchestratorCreateSessionParams(
+        entry,
+        context,
+        "test",
+        runTarget,
+        {},
+        applicationRunnerUuidIndex,
+      );
+      expect(params.kind, key).toBe("action");
+      if (params.kind !== "action") {
+        continue;
+      }
+      const seed = params.sessionSpecificOptions.integTestbedResetParams;
+      expect(seed.testbedInitApplicationParameters, key).toEqual(libraryTestbedInitParams);
+      expect((seed.testbedModel.reports ?? []).map((report) => report.name), key).toEqual(["BookDetails"]);
+      expect((seed.testbedModel.menus ?? []).map((menu) => menu.uuid), key).toEqual([
+        "dd168e5a-2a21-4d2d-a443-032c6d15eb22",
+      ]);
+    }
+  });
+
+  it("recognises a Report suite by its leaves, not by its name", () => {
+    const suite = runnerSuiteEntryFromFolders("report.bookDetails").suiteDefinition;
+    expect(uiIntegrationRunnerSuiteEntryFromDefinition("any.name", suite)?.kind).toBe("reportTest");
+  });
+
+  it("refuses a Report suite when the app gives no sandbox to mount its Reports", async () => {
+    const suite = runnerSuiteEntryFromFolders("report.bookDetails").suiteDefinition;
+    await expect(
+      runUiIntegrationTestSuite(
+        {
+          suiteKey: "report.bookDetails",
+          suiteDefinition: suite,
+          profileName: "emulatedServer-indexedDb",
+          runTargetMode: "pinned",
+        },
+        {} as UiIntegrationTestLauncherEnvironment,
+      ),
+    ).rejects.toThrow(REPORT_TESTS_NEED_A_SANDBOX_MESSAGE);
   });
 });
