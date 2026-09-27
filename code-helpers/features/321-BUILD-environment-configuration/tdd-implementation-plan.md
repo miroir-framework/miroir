@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Inventory: [`./current-state-inven
 Related: #323 (server bundle ignores `--config`; Slice 3 must not rely on `--config`)
 Working branch: `claude/environment-configuration-7z5rjb` (from `_integration`)
 
-**Resume note:** approved by A 2026-09-27. Slices 0–8 DONE (5 in two commits: 5a environments for every profile, 5b test Admin copy and emulated profile files removed; 8 in 8a web client, 8b realServer profiles, plus a harness fix). Next: Slice 9.
+**Resume note:** approved by A 2026-09-27. Slices 0–8 DONE (5 in two commits: 5a environments for every profile, 5b test Admin copy and emulated profile files removed; 8 in 8a web client, 8b realServer profiles, plus a harness fix; 9 cloud sessions and PR checks). Next: Slice 10.
 
 ---
 
@@ -43,7 +43,7 @@ This plan does **not** touch the release path, Docker, Electron, miroir-cli or s
 | 6 | Reconciliation, deviation warnings, `check` / `import` / `prune` | ✅ | `miroirEnvReconcile.321.phase6.integ.test.ts` |
 | 7 | UI installs land in state and are recorded in `local.json` | ✅ | MiroirTest `runner.deployApplication` + `recordInstalls.321.phase7.integ.test.ts` |
 | 8 | Web client config from the environment | ✅ | `viteEnvironmentConfig.321.phase8` + `realServerTestEnvironment.321.phase8` + manual run |
-| 9 | Cloud sessions and CI | ⬜ | pytest for `agent_session_setup.py`, `pr-checks.yml` run |
+| 9 | Cloud sessions and CI | ✅ | pytest for `agent_session_setup.py`, `pr-checks.yml` run |
 | 10 | Remove dead configuration and drifted Admin copies | ⬜ | modelValidation + `nonreg:unit` + guard |
 | 11 | Nonreg, docs, cleanup, AC | ⬜ | nonreg tiers + tracer narrative |
 
@@ -523,7 +523,7 @@ npm run build -w miroir-standalone-app
 
 ## Slice 9 — Cloud sessions and CI
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -548,6 +548,12 @@ python scripts/sync_agent_skills.py --check
 ```
 
 ### Realization
+
+- `environments/cloud-agent.json` extends `dev` with `features.ai` off; `dev` already runs on filesystem stores, so the environment needs no Postgres.
+- `scripts/agent_session_setup.py --cloud-agent` writes `environments/local.json` = `{ "extends": "cloud-agent" }` when it is absent and never touches an existing one. The Claude Code SessionStart hook (`.claude/settings.json`) passes `--cloud-agent`. **Deviation from 9.2:** without the flag the script writes nothing, so a developer who runs it on their own machine keeps `dev` (or their own `local.json`); the plan wrote the file unconditionally.
+- The third build group gains `miroir-env` (same list as `pr-checks.yml`); the session status prints the selected environment and its source (`MIROIR_ENV`, `local.json`, default).
+- `pr-checks.yml` builds `miroir-env` and runs `npm run miroir-env -- check --strict --tracked-clean` after the unit tests; AGENTS.md's pre-push gate lists the same command.
+- Proof: 6 new tests in `scripts/tests/test_agent_session_setup.py` (write when absent, keep an existing file, only with `--cloud-agent`, dry run writes nothing, the hook passes the flag, `pr-checks.yml` builds `miroir-env` and runs the check); `pytest scripts/tests` 58 passed, 2 skipped; the check passes in a clean worktree of the branch and, in a working tree with untracked files under a package's `assets/`, reports them. The PR check job ran green on 6b11093 with the new step.
 
 ---
 
