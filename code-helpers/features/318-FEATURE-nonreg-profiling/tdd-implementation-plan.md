@@ -2,7 +2,7 @@
 
 > Integration-first, no mocks. The harness is tested through its public entry points: `run-nonreg.py` (pytest in `scripts/tests`, which runs the real script on small real manifests), the package launchers (vitest unit tests on the argv/env they produce), and real vitest runs on the filesystem profile. No test file, `RunnerTestSession` or UI launch code changes, except where a slice names it.
 
-**Resume note:** analysis confirmed 2026-09-27. Branch `318-FEATURE-nonreg-profiling`, from `_integration` 76e52aa. Next: Slice 6.
+**Resume note:** analysis confirmed 2026-09-27. Branch `318-FEATURE-nonreg-profiling`, from `_integration` 76e52aa. Next: Slice 7.
 
 ## Scope
 
@@ -26,7 +26,7 @@ Out of scope: changes to the UI test runs; timing trends across runs (#306); ste
 | 3 | Shared runner for testByFile groups (D2) | ✅ DONE | `--runner shared` on the storage group: same per-step verdicts, lower wall time |
 | 4 | Shared runner for runner/action suites (D2) | ✅ DONE | new shared entry: one session per suite, same results as legacy |
 | 5 | `perSuite` reset policy (D4) | ✅ DONE | timing report shows one reset per marked suite; results unchanged |
-| 6 | Lazy store-state logging | ⬜ pending | reset time before/after, from `--timings` |
+| 6 | Lazy store-state logging | ⏭ DROPPED (measured, no gain) | reset time before/after, from `--timings` |
 | 7 | Migrate descriptors, docs, compare full runs | ⬜ pending | legacy vs shared `nonreg:filesystem` on the same verdicts |
 
 ## Locked implementation defaults
@@ -291,7 +291,7 @@ Resets are about 85–99 % of integ test time. Slice 5 is worth more than the an
 
 ## Slice 6 — Lazy store-state logging
 
-**Status:** ⬜ pending
+**Status:** ⏭ DROPPED
 
 **Goal:** `initApplicationDeploymentStore` no longer reads the whole store to build a log message that WARN level discards.
 
@@ -300,6 +300,10 @@ Resets are about 85–99 % of integ test time. Slice 5 is worth more than the an
 **GREEN:** build the `getState()` argument only when info logging is enabled (`PersistenceStoreController.ts:446,460`).
 
 **Validation:** the same measurement after the change (in the Realization); `npm run test -w miroir-core -- ''`; `nonreg:filesystem`.
+
+### Realization
+
+Dropped after measuring. A temporary probe around the two `getState()` calls, on `domain_controller_model_crud` (`emulatedServer-filesystem`): 20 calls took 15 ms in total, against 3.4 s of `beforeEach` (427 ms per test). The change would also alter behaviour: `MiroirLogger.info` pushes its arguments to the event log of the current activity whatever the console level, so skipping the call below INFO would remove these entries from the events the UI shows and from failed-run exports. Not worth it on filesystem; it may be worth re-measuring on Postgres, where `getState()` reads the database.
 
 ---
 
