@@ -138,7 +138,8 @@ function validateCiSqlBackendConfiguration(
   }
 
   const hasPostgresHost = Boolean(env.MIROIR_TEST_POSTGRES_HOST?.trim());
-  const hasProfileConfig = Boolean(env.MIROIR_ENV?.trim() || env.VITE_MIROIR_TEST_CONFIG_FILENAME?.trim());
+  // #321: a profile selects its test environment through MIROIR_ENV
+  const hasProfileConfig = Boolean(env.MIROIR_ENV?.trim());
   if (!hasPostgresHost && !hasProfileConfig) {
     return (
       `CI requires MIROIR_TEST_POSTGRES_HOST or testMiroir --profile ${DEFAULT_PROFILE_KEY} ` +

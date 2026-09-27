@@ -55,6 +55,8 @@ Every application instance reads a `MiroirConfigClient` at startup. There are tw
 
 What the process can do is a separate snapshot. See [Process capabilities](process-capabilities.md) for the synoptic (what each flag enables, where to set it, product-shape defaults).
 
+**Where it comes from (#321).** Run from this repository, the server, the web client and the tests derive their configuration from an **environment** (`environments/*.json`, selected by `MIROIR_ENV`, then `environments/local.json`, then `dev`): which applications are installed, and where each section lives. The Admin data of a running environment, including the Deployment and AdminApplication rows the environment implies, is in the gitignored `.miroir/<environment>/`; the tracked `miroir-test-app_deployment-admin/assets/admin_data` is only its seed. See [Environments](environments.md). The configuration files described below remain for the release binary, the Docker image and Electron.
+
 ### 1. Remote Server (`emulateServer: false`)
 
 ```json

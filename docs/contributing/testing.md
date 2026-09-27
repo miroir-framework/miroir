@@ -14,7 +14,7 @@ npm run devBuild -w miroir-core   # includes generated types
 Integration tests need a reachable store when using SQL/ MongoDB configs:
 
 - **MiroirTest integ** (`testMiroir`): configure via `MIROIR_TEST_*` (default Postgres host `localhost`).
-- **App-stack integ** (`testByFile`): configure via `miroirConfig.test-*.json` files and `VITE_MIROIR_TEST_CONFIG_FILENAME`. Check `filesystemDeploymentRootDirectory` in the chosen config matches your machine.
+- **App-stack integ** (`testByFile`): pick the store with `--profile` (`emulatedServer-filesystem`, `emulatedServer-sql`, …), which selects a test environment (`environments/test-*.json`, see [Environments](../reference/environments.md)). Its stores are copies in `.miroir/<environment>/`, so no test writes tracked files. For sql, set `MIROIR_POSTGRES_PASSWORD`.
 
 ---
 

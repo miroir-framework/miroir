@@ -15,7 +15,7 @@ Miroir has these test layers:
 | **MiroirTest integration** | `miroir-standalone-app` | `testMiroir` (`MIROIR_TEST_*`) | `IntegrationTestSession` — direct PersistenceStoreController / domainController |
 | **App-stack integration** | `miroir-standalone-app` | `testByFile` (`VITE_MIROIR_*`) | `setupMiroirTest` — emulated or real HTTPS server |
 
-**MiroirTest** suites (transformer, function-call, query, runner) are defined as deployment JSON entities and share runners in `miroir-core`. **App-stack** tests are hand-written Vitest files that exercise `DomainController`, persistence stores, extractors, and React views against a full client/server stack configured via JSON files under `tests/miroirConfig.test-*.json`.
+**MiroirTest** suites (transformer, function-call, query, runner) are defined as deployment JSON entities and share runners in `miroir-core`. **App-stack** tests are hand-written Vitest files that exercise `DomainController`, persistence stores, extractors, and React views against a full client/server stack configured by the test environment their profile selects (`environments/test-*.json`, [Environments](environments.md)).
 
 ### Parameter surface (argv preferred)
 
@@ -27,7 +27,7 @@ Miroir has these test layers:
 | Tags | `--tags` | `MIROIR_TEST_TAGS` |
 | Mode | `--mode` / `-m` | `MIROIR_TEST_MODE` |
 | Filter | `--filter` / `-f` | `MIROIR_TEST_FILTER` |
-| Config preset | `--profile` / `-p` | `VITE_MIROIR_TEST_CONFIG_FILENAME` + related |
+| Config preset | `--profile` / `-p` | `MIROIR_ENV` (the profile's test environment, [Environments](environments.md)) + `MIROIR_TEST_CLIENT` |
 | Real-server store backend | `--storage` / `-S` (`sql` \| `filesystem` \| `indexedDb` \| `mongodb`) | `MIROIR_TEST_STORAGE` (set by `testByFile` when `--storage` is used) |
 
 ### Repo-wide non-regression (`npm run nonreg`)
@@ -671,13 +671,14 @@ npm run testByFile -w miroir-standalone-app -- \
 
 | Variable | Purpose |
 |----------|---------|
-| `VITE_MIROIR_TEST_CONFIG_FILENAME` | Path to a `miroirConfig.test-*.json` file (must have `.json` extension) |
+| `MIROIR_ENV` | Test environment of the run (`test-filesystem`, `test-sql`, …), set by `--profile`; its stores are copies in `.miroir/<environment>/` or databases named after it ([Environments](environments.md)). A value that is not `test-*` is ignored with a warning |
+| `MIROIR_TEST_CLIENT` | `emulatedServer` (default) or `realServer` (set by the `realServer-*` profiles): the client emulates the server, or calls a running `miroir-server` with the stores of the test environment |
 | `VITE_MIROIR_LOG_CONFIG_FILENAME` | Log preset **name** (`catch-all`, `scope-query`, …) or path to a config JSON. Defaults to `catch-all` when unset |
 | `MIROIR_TEST_STORAGE` | Set by `testByFile` when `--storage` / `--profile realServer-*` is used (Vitest child reads this after flags are stripped) |
 
-`npm run testByFile` sets `VITE_TEST_MODE=true` automatically. Explicit `VITE_MIROIR_*` still override `--profile` defaults (legacy); prefer argv going forward.
+`npm run testByFile` sets `VITE_TEST_MODE=true` automatically. A `VITE_MIROIR_TEST_CONFIG_FILENAME` left in the shell is dropped with a warning: the profile's environment decides.
 
-For **real-server** configs (`miroirConfig.test-realServer-*.json`), the dev server must be running at `https://localhost:3080` and Node must trust the mkcert CA:
+For the **real-server** profiles (`realServer-*`), a `miroir-server` must be running at `https://localhost:3080` and Node must trust the mkcert CA:
 
 ```bash
 export NODE_EXTRA_CA_CERTS="$(mkcert -CAROOT)/rootCA.pem"
@@ -685,18 +686,16 @@ export NODE_EXTRA_CA_CERTS="$(mkcert -CAROOT)/rootCA.pem"
 
 See [HTTPS setup for developers](../guides/https-setup-developer.md).
 
-### Config file catalogue
+### Test environments
 
-Emulated-server tests run on the test environments `environments/test-{sql,filesystem,indexedDb,mongodb}.json` (state in `.miroir/<environment>/`, see `docs/reference/data-architecture-deployments.md`). The realServer configs live in `packages/miroir-standalone-app/tests/`.
+Every profile selects a test environment (`environments/test-{sql,filesystem,indexedDb,mongodb}.json`, state in `.miroir/<environment>/`, see [Environments](environments.md)). There are no per-profile configuration files.
 
-| Config file | Mode | Backends exercised |
-|-------------|------|-------------------|
-| `miroirConfig.test-realServer-sql.json` | Real HTTPS server | Postgres via running `miroir-server` |
-| `miroirConfig.test-realServer-filesystem.json` | Real HTTPS server | Filesystem via running server |
-| `miroirConfig.test-realServer-indexedDb.json` | Real HTTPS server | IndexedDB via running server |
-| `miroirConfig.test-realServer-mongodb.json` | Real HTTPS server | MongoDB via running server |
+| Profile | Environment | Client |
+|---------|-------------|--------|
+| `emulatedServer-<storage>` | `test-<storage>` | emulates the server in-process (`RestClientStub`) |
+| `realServer-<storage>` | `test-<storage>` | calls a running `miroir-server` (`MIROIR_TEST_CLIENT=realServer`) with the stores of the test environment |
 
-Before first run, check `filesystemDeploymentRootDirectory` inside the chosen config — it must point at your local `packages/` directory (paths in the checked-in files are developer-specific).
+The filesystem root of every environment is the repository root: no path in a test environment depends on the machine.
 
 ### Logger config options
 
@@ -1339,7 +1338,7 @@ npm run testMiroir -w miroir-standalone-app
 ```
 npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
   vitest → DomainController.integ.Data.CRUD.test.tsx  [top-level module setup]
-    loadTestConfigFiles(VITE_MIROIR_TEST_CONFIG_FILENAME, VITE_MIROIR_LOG_CONFIG_FILENAME)
+    loadTestConfigFiles(process.env)   # MIROIR_ENV → test environment, VITE_MIROIR_LOG_CONFIG_FILENAME
     miroirAppStartup + store section startups
     beforeAll:
       DomainControllerIntegrationTestSession.initSession()
@@ -1353,14 +1352,14 @@ npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
         composite-action tree executed step-by-step via domainController
 ```
 
-**Characteristics:** JSON config files (`miroirConfig.test-*.json`); full client/server stack with optional `RestClientStub` emulated HTTPS; tests defined inline as `TestCompositeActionParams` records; per-file `beforeAll`/`afterAll`; no `MIROIR_TEST_*` validation layer.
+**Characteristics:** configuration derived from the profile's test environment; full client/server stack with optional `RestClientStub` emulated HTTPS; tests defined inline as `TestCompositeActionParams` records; per-file `beforeAll`/`afterAll`; no `MIROIR_TEST_*` validation layer.
 
 #### Side-by-side comparison
 
 | | MiroirTest (`testMiroir`) | App-stack (`testByFile`) |
 |--|--------------------------|--------------------------|
 | **Vitest entry** | Single file per family (`miroir-core-tests.integ.test.ts`) | One file per test suite |
-| **Configuration** | `MIROIR_TEST_*` env vars | `VITE_MIROIR_TEST_CONFIG_FILENAME` + `VITE_MIROIR_LOG_CONFIG_FILENAME` |
+| **Configuration** | `MIROIR_TEST_*` env vars | `--profile` → `MIROIR_ENV` (test environment) + `VITE_MIROIR_LOG_CONFIG_FILENAME` |
 | **Test definition** | `MiroirTest` deployment JSON | Inline TypeScript (`testActions`, `it()`) |
 | **Bootstrap** | `IntegrationTestSession` via orchestrator | `DomainControllerIntegrationTestSession` / `AppStackIntegrationTestSession` / `RunnerTestSession` |
 | **HTTP layer** | None (direct PersistenceStoreController) | `RestClientStub` when `emulateServer: true` |
@@ -1418,7 +1417,8 @@ npm run testMiroir -w miroir-core
 | `tests/utils/fileTools.ts` | `loadTestConfigFiles` for app-stack tests |
 | `src/miroir-fwk/4-tests/setupMiroirTest.ts` | `setupMiroirTest` (public); deprecated `setupMiroirTestAnd*` wrappers |
 | `src/miroir-fwk/4-tests/runTestOrTestSuite.ts` | Composite-action test tree runner |
-| `tests/miroirConfig.test-*.json` | App-stack store/backend presets |
+| `tests/helpers/integrationTestProfiles.ts` | Profiles → test environment (`MIROIR_ENV`) and client (`MIROIR_TEST_CLIENT`) |
+| `tests/helpers/testEnvironment.ts` | `openTestEnvironment`: seeds the copies of a test environment, derives its client configuration |
 | `scripts/test-miroir-runner.ts` | `testMiroir` launcher — routes core vs runner integ |
 
 #### App-stack integration test files
@@ -1646,7 +1646,7 @@ Checks performed:
 - All suite keys exist in the registry
 - `--mode unit` on argv is inconsistent with the integration entry
 - Store type env vars are valid values
-- **CI:** when sql store backends are used, `MIROIR_TEST_POSTGRES_HOST` or profile config (`VITE_MIROIR_TEST_CONFIG_FILENAME`) must be set
+- **CI:** when sql store backends are used, `MIROIR_TEST_POSTGRES_HOST` or a profile (`MIROIR_ENV`) must be set
 - MongoDB connection string present when any store uses mongodb
 - `bundledDeploymentData` supplied when admin store is `bundled`
 - Admin asset subdirectories (`admin/`, `admin_model/`, `admin_data/`) exist on disk when admin is filesystem
