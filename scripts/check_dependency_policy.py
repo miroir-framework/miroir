@@ -10,16 +10,21 @@ Rules (all run by default; --rule selects some):
                   platform binary its packages declare (npm/cli#4828 drops the other platforms' ones), so `npm ci`
                   alone installs a working tree on every OS.
   workflows       GitHub workflows and composite actions install with `npm ci`, never `npm install`.
+  audit           `npm audit` reports no advisory at or above --level (default high), except the dated entries of
+                  dependency-policy/audit-exceptions.json; lower severities are printed, not blocking. Needs the network.
 
-Run: python scripts/check_dependency_policy.py [--rule NAME]...
+Run: python scripts/check_dependency_policy.py [--rule NAME]... [--level high|critical] [--audit-json FILE]
+
 Plan: code-helpers/features/326-BUILD-build-hardening/tdd-implementation-plan.md
 """
 
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import json
 import re
+import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -35,6 +40,9 @@ BUILD_AND_TEST_TOOLS = ("electron", "electron-builder", "happy-dom", "vite", "vi
 BUILD_AND_TEST_TOOL_PREFIXES = ("vite-plugin-", "@vitejs/", "@vitest/")
 
 NPM_INSTALL_RE = re.compile(r"\bnpm\s+(install|i|add)\b")
+
+SEVERITIES = ("info", "low", "moderate", "high", "critical")
+EXCEPTIONS_FILE = Path("dependency-policy") / "audit-exceptions.json"
 
 
 @dataclass(frozen=True)
@@ -225,6 +233,70 @@ def check_workflows(root: Path) -> list[Violation]:
 
 
 # --------------------------------------------------------------------------------------------------------------------
+# audit
+
+
+def run_npm_audit(root: Path) -> dict:
+    result = subprocess.run(["npm", "audit", "--json"], cwd=root, capture_output=True, text=True, shell=sys.platform == "win32")
+    try:
+        return json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return {"error": {"summary": (result.stderr or result.stdout).strip()[:500] or f"exit code {result.returncode}"}}
+
+
+def _advisory_id(via: dict) -> str:
+    url = via.get("url", "")
+    return url.rsplit("/", 1)[-1] if url else str(via.get("source", "?"))
+
+
+def advisories(audit: dict) -> list[dict]:
+    """One entry per (package, advisory) npm reports as a root cause; entries npm only propagates to parents are skipped."""
+    found: dict[tuple[str, str], dict] = {}
+    for vulnerability in audit.get("vulnerabilities", {}).values():
+        for via in vulnerability.get("via", []):
+            if isinstance(via, dict):
+                package = via.get("name", vulnerability.get("name", "?"))
+                advisory = _advisory_id(via)
+                found[(package, advisory)] = {
+                    "package": package,
+                    "advisory": advisory,
+                    "severity": via.get("severity", "info"),
+                    "range": via.get("range", ""),
+                    "title": via.get("title", ""),
+                }
+    return sorted(found.values(), key=lambda a: (-SEVERITIES.index(a["severity"]), a["package"], a["advisory"]))
+
+
+def check_audit(root: Path, audit: dict, level: str, today: dt.date) -> tuple[list[Violation], list[str]]:
+    """Violations (blocking advisories, expired exceptions) and printed notes (lower severities, accepted, unused)."""
+    if "error" in audit:
+        raise RuntimeError(f"npm audit failed: {audit['error'].get('summary', audit['error'])}")
+    blocking = SEVERITIES[SEVERITIES.index(level):]
+    path = root / EXCEPTIONS_FILE
+    exceptions = _load_json(path).get("exceptions", []) if path.is_file() else []
+    live = {(e["package"], e["advisory"]): e for e in exceptions if dt.date.fromisoformat(e["expires"]) >= today}
+    violations = [
+        Violation("audit", EXCEPTIONS_FILE.as_posix(), f"exception for {e['package']} {e['advisory']} expired on {e['expires']}")
+        for e in exceptions
+        if dt.date.fromisoformat(e["expires"]) < today
+    ]
+    notes: list[str] = []
+    used: set[tuple[str, str]] = set()
+    for advisory in advisories(audit):
+        key = (advisory["package"], advisory["advisory"])
+        line = f"{advisory['severity']} {advisory['package']} {advisory['range']} {advisory['advisory']}: {advisory['title']}"
+        if advisory["severity"] not in blocking:
+            notes.append(f"not blocking: {line}")
+        elif key in live:
+            used.add(key)
+            notes.append(f"accepted until {live[key]['expires']}: {line}")
+        else:
+            violations.append(Violation("audit", advisory["package"], line))
+    notes.extend(f"unused exception, remove it: {package} {advisory}" for package, advisory in live if (package, advisory) not in used)
+    return violations, notes
+
+
+# --------------------------------------------------------------------------------------------------------------------
 # CLI
 
 RULES: dict[str, Callable[[Path], list[Violation]]] = {
@@ -237,11 +309,26 @@ RULES: dict[str, Callable[[Path], list[Violation]]] = {
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
-    parser.add_argument("--rule", action="append", choices=list(RULES), help="rule to run (repeatable); default: all")
+    parser.add_argument("--rule", action="append", choices=[*RULES, "audit"], help="rule to run (repeatable); default: all")
+    parser.add_argument("--level", choices=("high", "critical"), default="high", help="lowest blocking audit severity")
+    parser.add_argument("--audit-json", type=Path, help="read `npm audit --json` output from this file instead of running it")
     parser.add_argument("--root", type=Path, default=ROOT, help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
 
-    violations = [violation for rule in args.rule or RULES for violation in RULES[rule](args.root)]
+    violations: list[Violation] = []
+    for rule in args.rule or [*RULES, "audit"]:
+        if rule != "audit":
+            violations.extend(RULES[rule](args.root))
+            continue
+        audit = _load_json(args.audit_json) if args.audit_json else run_npm_audit(args.root)
+        try:
+            found, notes = check_audit(args.root, audit, args.level, dt.date.today())
+        except RuntimeError as error:
+            print(error, file=sys.stderr)
+            return 2
+        for note in notes:
+            print(note)
+        violations.extend(found)
     for violation in violations:
         print(violation)
     if violations:

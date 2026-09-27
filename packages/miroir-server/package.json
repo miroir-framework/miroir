@@ -73,7 +73,6 @@
     "@types/node": "18.19.80",
     "@vercel/ncc": "0.38.4",
     "babel-loader": "10.0.0",
-    "concurrently": "7.6.0",
     "nodemon": "3.1.14",
     "ts-loader": "9.5.4",
     "ts-node": "10.9.2",

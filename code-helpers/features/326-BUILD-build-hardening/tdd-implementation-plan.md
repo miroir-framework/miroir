@@ -31,7 +31,7 @@ This plan does **not** cut bundle size (D19: separate issue opened in Slice 17 f
 | 2 | 1 | The release writes exact internal versions | ✅ | `ci/release/tests` new test |
 | 3 | 1 | Build tools leave runtime `dependencies` | ✅ | `classification` rule + `npm audit --omit=dev` drop |
 | 4 | 1 | `npm ci` works everywhere from the lockfile alone | ✅ | `workflows` rule + clean `npm ci` + tsup/vite build on Linux |
-| 5 | 1 | No critical advisory | ⬜ | `audit --level critical` exits 0 |
+| 5 | 1 | No critical advisory | ✅ | `audit --level critical` exits 0 |
 | 6 | 1 | No high advisory in build and test tooling | ⬜ | `audit` lists no high in tooling packages |
 | 7 | 1 | No high advisory at all; audit gate blocking in PR checks | ⬜ | `audit` exits 0 on the real repo; `pr-checks.yml` step |
 | 8 | 1 | Updates only through reviewed, cooled-down PRs; actions pinned | ⬜ | `actions` rule + `dependabot.yml` test |
@@ -342,7 +342,7 @@ python -m pytest scripts/tests -q
 
 ## Slice 5 — No critical advisory
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -379,6 +379,18 @@ python -m pytest ci/release/tests -q
 ```
 
 ### Realization
+
+- Rule `audit` (`--level high|critical`, `--audit-json FILE`): one entry per (package, GHSA id) that npm reports as a root cause; exceptions from `dependency-policy/audit-exceptions.json` (`package`, `advisory`, `reason`, `expires`); an expired exception fails, an unused one is printed; lower severities print as "not blocking"; an `npm audit` error exits 2. Fixture `scripts/tests/fixtures/audit-2026-09-27.json`: the Slice 0 audit trimmed to `vitest`, `@vitest/mocker`, `shell-quote`, `undici`. 9 new pytest cases. The rule is not in the default static set of PR checks yet (Slice 7).
+- RED on the real repo at `--level critical`: `handlebars`, `shell-quote`, `tar`, `vitest`.
+- Fixes (npm 11, `--before=2026-09-20`, so nothing younger than 7 days):
+  - `lerna` 9.0.5 → 10.0.1: `tar` 7.5.8 → 7.5.22, `nx` 22.5.3 → 23.2.1, the conventional-changelog chain, `pacote` 21.4.0 → 21.5.1 under `@npmcli/arborist`; 169 entries removed, 40 added, 88 changed in the lockfile.
+  - `vitest` 3.2.4 → 3.2.7 in all 17 manifests that declare it (**deviation:** the latest 3.2.x instead of the first fixed 3.2.6; still v3, so no `--poolOptions` change). The moderate GHSA-82fw-gwwq-j7x9 needs 4.1.11 and stays non-blocking (D24).
+  - `handlebars` 4.7.8 → 4.7.9 (`npm update handlebars`, in range of `conventional-changelog-writer`).
+  - `shell-quote`: **removed** with its only parent, `concurrently` 7.6.0, a `miroir-server` devDependency no script uses. `concurrently` 9.2.4 would pull `shell-quote` 1.9.0 if it is ever needed again.
+- `lerna` 10 with `ci/release`: `npx lerna ls --json` lists the 5 public packages, `lerna ls --since origin/_integration` answers, `lerna version --help` rc 0, `ci/release/tests` 15 passed. `nx` 23 pins `yaml` 2.9.0; the root override keeps 2.8.4.
+- `dependency-policy/README.md` started: the reasons for the two root overrides (`rxjs`, `yaml`) and when to remove them.
+- Audit after the slice: critical 4 → 0; high 50 → 44 (all) and 23 → 22 (production).
+- Validation: pytest 104 passed; static rules rc 0; `--rule audit --level critical` rc 0; `npm ci` rc 0, lockfile unchanged; `./build-all.sh devBuild` rc 0 (194 s); `tsc` miroir-core and miroir-server rc 0; miroir-core tests 2078 passed; nonreg:unit 38/38 (612 s).
 
 ---
 

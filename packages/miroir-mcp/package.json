@@ -75,6 +75,6 @@
     "copyfiles": "2.4.1",
     "cross-env": "7.0.3",
     "tsup": "8.5.1",
-    "vitest": "3.2.4"
+    "vitest": "3.2.7"
   }
 }

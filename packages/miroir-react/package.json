@@ -48,6 +48,6 @@
     "miroir-test-app_deployment-admin": "*",
     "miroir-test-app_deployment-library": "*",
     "tsup": "8.5.1",
-    "vitest": "3.2.4"
+    "vitest": "3.2.7"
   }
 }

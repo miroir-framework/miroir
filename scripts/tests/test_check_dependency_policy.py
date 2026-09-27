@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import datetime as dt
 import json
 import subprocess
 import sys
@@ -9,10 +10,21 @@ from pathlib import Path
 
 import pytest
 
-from check_dependency_policy import check_classification, check_lockfile, check_specs, check_workflows, main, spec_problem
+from check_dependency_policy import (
+    check_audit,
+    check_classification,
+    check_lockfile,
+    check_specs,
+    check_workflows,
+    main,
+    spec_problem,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts" / "check_dependency_policy.py"
+# Real `npm audit --json` output of 2026-09-27 (Slice 0), trimmed to vitest, @vitest/mocker, shell-quote and undici.
+AUDIT = json.loads((Path(__file__).parent / "fixtures" / "audit-2026-09-27.json").read_text(encoding="utf-8"))
+TODAY = dt.date(2026, 9, 27)
 
 
 def _write(path: Path, content: dict | str) -> None:
@@ -221,6 +233,66 @@ def test_npm_install_in_a_composite_action_is_a_violation(repo: Path) -> None:
 def test_npm_ci_and_comments_pass(repo: Path) -> None:
     _write(repo / ".github/workflows/ci.yml", "# npm install used to run here\njobs:\n  a:\n    steps:\n      - run: npm ci  # not npm install\n")
     assert check_workflows(repo) == []
+
+
+def _exceptions(repo: Path, *entries: dict) -> None:
+    _write(repo / "dependency-policy" / "audit-exceptions.json", {"exceptions": list(entries)})
+
+
+def test_critical_and_high_advisories_block_naming_package_severity_and_advisory(repo: Path) -> None:
+    violations, _ = check_audit(repo, AUDIT, "high", TODAY)
+    assert sorted(str(v).split(":")[0] for v in violations) == [
+        "[audit] shell-quote",
+        "[audit] shell-quote",
+        "[audit] undici",
+        "[audit] undici",
+        "[audit] undici",
+        "[audit] vitest",
+    ]
+    assert any(v.message.startswith("critical vitest <3.2.6 GHSA-5xrq-8626-4rwp") for v in violations)
+
+
+def test_lower_severities_are_printed_not_blocking(repo: Path) -> None:
+    violations, notes = check_audit(repo, AUDIT, "high", TODAY)
+    assert not [v for v in violations if v.message.startswith(("moderate", "low"))]
+    assert "not blocking: moderate @vitest/mocker >=2.1.0 <4.1.11 GHSA-82fw-gwwq-j7x9" in "\n".join(notes)
+
+
+def test_level_critical_blocks_only_critical(repo: Path) -> None:
+    violations, _ = check_audit(repo, AUDIT, "critical", TODAY)
+    assert sorted(v.where for v in violations) == ["shell-quote", "vitest"]
+
+
+def test_a_live_exception_accepts_its_advisory(repo: Path) -> None:
+    _exceptions(repo, {"package": "vitest", "advisory": "GHSA-5xrq-8626-4rwp", "reason": "test", "expires": "2026-12-01"})
+    violations, notes = check_audit(repo, AUDIT, "critical", TODAY)
+    assert [v.where for v in violations] == ["shell-quote"]
+    assert any(n.startswith("accepted until 2026-12-01: critical vitest") for n in notes)
+
+
+def test_an_expired_exception_is_a_violation(repo: Path) -> None:
+    _exceptions(repo, {"package": "vitest", "advisory": "GHSA-5xrq-8626-4rwp", "reason": "test", "expires": "2026-09-26"})
+    violations, _ = check_audit(repo, AUDIT, "critical", TODAY)
+    assert "exception for vitest GHSA-5xrq-8626-4rwp expired on 2026-09-26" in [v.message for v in violations]
+    assert "vitest" in [v.where for v in violations]
+
+
+def test_an_unused_exception_is_reported(repo: Path) -> None:
+    _exceptions(repo, {"package": "xlsx", "advisory": "GHSA-4r6h-8v6p-xvw6", "reason": "test", "expires": "2026-12-01"})
+    _, notes = check_audit(repo, AUDIT, "high", TODAY)
+    assert "unused exception, remove it: xlsx GHSA-4r6h-8v6p-xvw6" in notes
+
+
+def test_an_npm_audit_error_exits_2(repo: Path, tmp_path: Path) -> None:
+    error = tmp_path / "audit-error.json"
+    _write(error, {"error": {"code": "ENOTFOUND", "summary": "request to registry failed"}})
+    assert main(["--root", str(repo), "--rule", "audit", "--audit-json", str(error)]) == 2
+
+
+def test_cli_audit_from_a_file(repo: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    fixture = Path(__file__).parent / "fixtures" / "audit-2026-09-27.json"
+    assert main(["--root", str(repo), "--rule", "audit", "--level", "critical", "--audit-json", str(fixture)]) == 1
+    assert "[audit] vitest: critical vitest <3.2.6 GHSA-5xrq-8626-4rwp" in capsys.readouterr().out
 
 
 @pytest.mark.parametrize("rule", ["specs", "classification", "lockfile", "workflows"])
