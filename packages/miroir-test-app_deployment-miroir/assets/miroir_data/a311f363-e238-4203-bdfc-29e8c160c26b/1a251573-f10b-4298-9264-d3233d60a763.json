@@ -10,6 +10,7 @@
     "menu",
     "transformer"
   ],
+  "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "menu.build",

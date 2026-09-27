@@ -10,6 +10,7 @@
     "editor",
     "performance"
   ],
+  "issue": "303",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "MlEditorRenderPerformance_ComponentTestSuite",

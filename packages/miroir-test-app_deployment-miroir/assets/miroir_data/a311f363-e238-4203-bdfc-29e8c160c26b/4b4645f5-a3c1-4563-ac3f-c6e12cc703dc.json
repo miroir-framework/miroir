@@ -10,6 +10,7 @@
     "runner",
     "model"
   ],
+  "issue": "197",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "runner.createEntity",

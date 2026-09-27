@@ -9,6 +9,7 @@
   "tags": [
     "query"
   ],
+  "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "resolveQueryTemplates.unit.test",

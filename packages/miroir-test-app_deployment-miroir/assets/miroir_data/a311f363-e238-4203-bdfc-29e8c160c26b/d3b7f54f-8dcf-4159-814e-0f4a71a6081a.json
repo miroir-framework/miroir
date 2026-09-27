@@ -9,6 +9,7 @@
   "tags": [
     "tools"
   ],
+  "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "alterObject.atPath",

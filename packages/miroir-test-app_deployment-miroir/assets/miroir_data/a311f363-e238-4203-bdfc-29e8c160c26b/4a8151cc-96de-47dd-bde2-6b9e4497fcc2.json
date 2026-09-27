@@ -10,6 +10,7 @@
     "ml-schema",
     "ml-union"
   ],
+  "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "mlUnion_RecursiveUnfold",

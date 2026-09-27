@@ -10,6 +10,7 @@
     "ml-schema",
     "ml-conversion"
   ],
+  "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "ansiColumnsToMlSchema",

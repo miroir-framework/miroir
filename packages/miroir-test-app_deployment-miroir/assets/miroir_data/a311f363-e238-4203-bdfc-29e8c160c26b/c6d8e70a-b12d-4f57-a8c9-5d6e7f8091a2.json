@@ -10,6 +10,7 @@
     "domain-controller",
     "model"
   ],
+  "issue": "197",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "domainController.model.undoRedo",

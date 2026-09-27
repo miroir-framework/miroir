@@ -9,6 +9,7 @@
   "tags": [
     "query"
   ],
+  "issue": "82",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "virtualAttributes",

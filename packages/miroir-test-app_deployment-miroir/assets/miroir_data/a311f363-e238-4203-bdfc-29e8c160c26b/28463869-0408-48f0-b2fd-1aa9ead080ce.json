@@ -9,6 +9,7 @@
   "tags": [
     "ml-schema"
   ],
+  "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "mls.mlObjectFlatten",

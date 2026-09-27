@@ -9,6 +9,7 @@
   "tags": [
     "primary-key"
   ],
+  "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "EntityPrimaryKey",

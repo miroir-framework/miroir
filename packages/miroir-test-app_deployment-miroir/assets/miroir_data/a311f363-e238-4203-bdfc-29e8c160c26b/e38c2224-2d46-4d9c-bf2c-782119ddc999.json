@@ -10,6 +10,7 @@
     "ml-schema",
     "ml-reference"
   ],
+  "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "localizeReferenceContext",
