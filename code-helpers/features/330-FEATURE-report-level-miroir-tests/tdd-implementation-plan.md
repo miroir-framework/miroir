@@ -16,7 +16,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Follow-up: https://github.com/miroir-framework/miroir/issues/333 (stored values in UI steps)
 Working branch: `claude/report-level-miroir-tests-0lnny6` (from `_integration`, PR against `_integration`)
 
-**Resume note:** Slices 0 to 3 done 2026-09-27; Slice 4 next.
+**Resume note:** Slices 0 to 4 done 2026-09-27; Slice 5 next.
 
 ---
 
@@ -41,7 +41,7 @@ This plan does **not** cover stored values in UI steps (#333), an in-memory mode
 | 1 | Tracer: a MiroirTest mounts `BookDetails` from the testbed store | ✅ | `report.bookDetails` leaf "displays the Book" |
 | 2 | Check steps: run a query, assert on its result | ✅ | leaf "the store holds the displayed Book" + failure-report vitest |
 | 3 | Edit and save through the UI, checked in the store | ✅ | leaf "saves an edited title" + idle-wait vitest |
-| 4 | Invalid input is not saved | ⬜ | leaf "does not save an invalid value" |
+| 4 | Invalid input is not saved | ✅ | leaf "does not save an invalid value" |
 | 5 | Fake HTTP, and the wizard's first steps | ⬜ | `report.connectExternalServiceWizard` leaf "reads an OpenAPI document by URL" + undeclared-request vitest |
 | 6 | Wizard Finish persists the Endpoint and Report | ⬜ | leaf "public service: Finish creates Endpoint and Report" |
 | 7 | Wizard branches; 284 UI tests deleted | ⬜ | branch leaves + coverage table all covered |
@@ -319,7 +319,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ## Slice 4 — Invalid input is not saved
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -348,7 +348,12 @@ npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesyst
 
 ### Realization
 
-<Appended on completion.>
+- **Proof:** `report.bookDetails` leaf "does not save an invalid value" passes: it clears the year field, finds `typed-value-object-editor-submit` with the `disabled` attribute, clicks it anyway, reads the Book with a `storage` query and finds the year still 1988.
+- **Which input:** clearing the name does not make the Book invalid (an empty string is a `string`). Clearing the year does: Formik stores `""` for an empty number input, which fails the `number` type check, and the editor already showed that type error above the form. Nothing else is invalid through this Report: the Book Entity has no `formValidation` transformer and the author and publisher are selects.
+- **Report bug, fixed here:** the submit stayed enabled with a type error. The first run without the `disabled` check submitted the empty year (`updateInstance` ran) and failed at the store check. `TypedValueObjectEditor` takes a new `submitRequiresValidType` prop: when set, a value whose type check fails disables the submit button and blocks the form submit, as a `validationTransformer` error does. The type check memo moved above the submit gating; nothing else changed in it. Only the non-multistep instance section of `ReportSectionEntityInstance` sets it; runners, the multistep branch and the other editors keep submitting as before, since their type check may fail on values they accept today (not checked).
+- **Not changed:** clearing an optional number sets `""` rather than removing the attribute. If that changes, this leaf needs another invalid input.
+- **Refactor checkpoint:** `instanceUuid` was already at the suite (Slice 1). The `storage` query of the Book is copied into three leaves; the schema has no shared steps, so it stays copied.
+- **Validation (2026-09-27):** `report.bookDetails` (4 passed), `miroir-component-tests.unit`, `multistepProcess.274`, `multistepLaunch.274`, `virtualAttributes.integ`, `runner.lendDocument`, app tsc, lint, Library model validation.
 
 ---
 

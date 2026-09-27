@@ -112,6 +112,8 @@ export interface TypedValueObjectEditorProps {
   onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>; // callbacks indexed by rootLessListKey for selective field observation
   // optional validation transformer: receives form values as params, must return true (valid) or a string error message (invalid)
   validationTransformer?: CoreTransformerForBuildPlusRuntime;
+  // when true, the submit is disabled while the edited value does not match formValueMLSchema (#330)
+  submitRequiresValidType?: boolean;
   // when displayed in a MlObjectEditFormDialog modal dialog form
   setAddObjectdialogFormIsOpen?: (a:boolean) => void,
 }
@@ -311,50 +313,6 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
     context.miroirContext?.miroirActivityTracker,
   ]);
 
-  const isFormValid = !validationError;
-
-  // ##############################################################################################
-  // Field-level validation errors (collected from individual editors via FieldValidationContext)
-  const { fieldErrors } = useFieldValidationContext();
-  const hasFieldErrors = Object.keys(fieldErrors).length > 0;
-  const isFormAndFieldsValid = isFormValid && !hasFieldErrors;
-
-  const onSubmit = useCallback(
-    async (e: React.FormEvent<HTMLFormElement>) => {
-      log.info("TypedValueObjectEditor onSubmit called", e, formikValuePathAsString);
-      // Block submission when validation transformer indicates invalid form
-      if (validationError) {
-        e.preventDefault();
-        log.info("TypedValueObjectEditor form submit blocked by validationTransformer:", validationError);
-        return false;
-      }
-      // Block submission when field-level validation errors exist
-      if (hasFieldErrors) {
-        e.preventDefault();
-        log.info("TypedValueObjectEditor form submit blocked by field-level validation errors:", fieldErrors);
-        return false;
-      }
-      // e.preventDefault();
-      if (useActionButton) {
-        e.preventDefault();
-        log.info("TypedValueObjectEditor form submit prevented (useActionButton=true)");
-        return false;
-      }
-      await formik.handleSubmit(e);
-      if (props.setAddObjectdialogFormIsOpen) {
-        log.info("TypedValueObjectEditor closing AddObjectdialogForm after submit");
-        props.setAddObjectdialogFormIsOpen(false); // close the dialog form after submit
-        log.info("TypedValueObjectEditor closing AddObjectdialogForm after submit DONE");
-      } else {
-        log.info(
-          "TypedValueObjectEditor no setAddObjectdialogFormIsOpen prop, not closing dialog form"
-        );
-      }
-    },
-    [formik, formikValuePathAsString, useActionButton, props.setAddObjectdialogFormIsOpen, validationError, hasFieldErrors, fieldErrors]
-  );
-
-  let typeError: JSX.Element | undefined = undefined;
   const mlsTypeCheckResult: ResolvedMlSchemaReturnType | undefined = useMemo(() => {
     let result: ResolvedMlSchemaReturnType | undefined = undefined;
     try {
@@ -398,6 +356,61 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
     reduxDeploymentsState,
     valueObject,
   ]);
+
+  // #330: with submitRequiresValidType, a value that does not match its schema is not submitted
+  const typeErrorBlocksSubmit =
+    !!props.submitRequiresValidType &&
+    mlsTypeCheckResult !== undefined &&
+    mlsTypeCheckResult.status != "ok";
+  const isFormValid = !validationError && !typeErrorBlocksSubmit;
+
+  // ##############################################################################################
+  // Field-level validation errors (collected from individual editors via FieldValidationContext)
+  const { fieldErrors } = useFieldValidationContext();
+  const hasFieldErrors = Object.keys(fieldErrors).length > 0;
+  const isFormAndFieldsValid = isFormValid && !hasFieldErrors;
+
+  const onSubmit = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      log.info("TypedValueObjectEditor onSubmit called", e, formikValuePathAsString);
+      // Block submission when validation transformer indicates invalid form
+      if (validationError) {
+        e.preventDefault();
+        log.info("TypedValueObjectEditor form submit blocked by validationTransformer:", validationError);
+        return false;
+      }
+      // Block submission when field-level validation errors exist
+      if (hasFieldErrors) {
+        e.preventDefault();
+        log.info("TypedValueObjectEditor form submit blocked by field-level validation errors:", fieldErrors);
+        return false;
+      }
+      if (typeErrorBlocksSubmit) {
+        e.preventDefault();
+        log.info("TypedValueObjectEditor form submit blocked: the value does not match its schema");
+        return false;
+      }
+      // e.preventDefault();
+      if (useActionButton) {
+        e.preventDefault();
+        log.info("TypedValueObjectEditor form submit prevented (useActionButton=true)");
+        return false;
+      }
+      await formik.handleSubmit(e);
+      if (props.setAddObjectdialogFormIsOpen) {
+        log.info("TypedValueObjectEditor closing AddObjectdialogForm after submit");
+        props.setAddObjectdialogFormIsOpen(false); // close the dialog form after submit
+        log.info("TypedValueObjectEditor closing AddObjectdialogForm after submit DONE");
+      } else {
+        log.info(
+          "TypedValueObjectEditor no setAddObjectdialogFormIsOpen prop, not closing dialog form"
+        );
+      }
+    },
+    [formik, formikValuePathAsString, useActionButton, props.setAddObjectdialogFormIsOpen, validationError, hasFieldErrors, fieldErrors, typeErrorBlocksSubmit]
+  );
+
+  let typeError: JSX.Element | undefined = undefined;
   // log.info(
   //   "TypedValueObjectEditor mlsTypeCheck done for render",
   //   navigationCount,
@@ -501,6 +514,10 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
         }
         if (hasFieldErrors) {
           log.info("TypedValueObjectEditor ActionButtonWithSnackbar submit blocked by field-level errors:", fieldErrors);
+          return Promise.resolve(ACTION_OK);
+        }
+        if (typeErrorBlocksSubmit) {
+          log.info("TypedValueObjectEditor ActionButtonWithSnackbar submit blocked: the value does not match its schema");
           return Promise.resolve(ACTION_OK);
         }
         formik.setFieldValue(lastSubmitButtonClicked, formikValuePathAsString);

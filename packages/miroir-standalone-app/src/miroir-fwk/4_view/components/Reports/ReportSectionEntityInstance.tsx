@@ -665,6 +665,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           <TypedValueObjectEditor
             formValueMLSchema={currentFlattenedReportSectionTargetEntityMlSchema}
             formikValuePathAsString={formikValuePathAsString}
+            submitRequiresValidType // an instance that does not match its Entity is not saved (#330)
             // 
             valueObjectEditMode={props.valueObjectEditMode}
             labelElement={labelElement}
