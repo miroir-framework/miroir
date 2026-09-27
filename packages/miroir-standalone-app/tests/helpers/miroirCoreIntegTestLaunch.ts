@@ -83,10 +83,10 @@ export function formatMiroirCoreIntegTestUsage(): string {
     "  MIROIR_TEST_FILTER='{\"<suite name>\":[\"<leaf miroirTestLabel>\"]}'   JSON filter (see testing.md#filtering-miroirtest-cases)",
     "",
     "Example with profile (no manual MIROIR_TEST_POSTGRES_HOST):",
-    `  npm run testMiroir -w miroir-standalone-app -- --profile ${DEFAULT_PROFILE_KEY} --suites miroirCoreTransformers --mode integ`,
+    `  npm run testMiroir -w miroir-standalone-app -- --profile ${DEFAULT_PROFILE_KEY} --suites tr.core --mode integ`,
     "",
     "Example (explicit env — sql test app + filesystem admin):",
-    "  MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \\",
+    "  MIROIR_TEST_SUITES=tr.core MIROIR_TEST_MODE=integ \\",
     "    MIROIR_TEST_POSTGRES_HOST=192.168.1.160 npm run testMiroir -w miroir-standalone-app",
   ].join("\n");
 }

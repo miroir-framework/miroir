@@ -7,7 +7,7 @@ import type { MiroirTestDefinition } from 'miroir-core';
 import { miroirTest_runner_returnDocument } from 'miroir-test-app_deployment-library';
 import {
   miroirTest_EntityPrimaryKey,
-  miroirTest_miroirCoreTransformers,
+  miroirTest_tr_core,
 } from 'miroir-test-app_deployment-miroir';
 
 import {
@@ -199,7 +199,7 @@ describe('RunAllMiroirTestsButton runMode (T2)', () => {
         miroirTests={[
           asMiroirTest(miroirTest_runner_returnDocument),
           asMiroirTest(miroirTest_EntityPrimaryKey),
-          asMiroirTest(miroirTest_miroirCoreTransformers),
+          asMiroirTest(miroirTest_tr_core),
         ]}
         useSnackBar={true}
         runMode="integration"
@@ -217,7 +217,7 @@ describe('RunAllMiroirTestsButton runMode (T2)', () => {
     const suiteKeys = runUiIntegrationTestSuiteMock.mock.calls.map(
       (call) => (call[0] as { suiteKey: string }).suiteKey,
     );
-    expect(suiteKeys).toEqual(['miroirCoreTransformers', 'runner.returnDocument']);
+    expect(suiteKeys).toEqual(['runner.returnDocument', 'tr.core']);
   });
 
   it('disables integration batch while coordinator holds a run', () => {
@@ -255,7 +255,7 @@ describe('RunAllMiroirTestsButton runMode (T2)', () => {
       <RunAllMiroirTestsButton
         miroirTests={[
           asMiroirTest(miroirTest_runner_returnDocument),
-          asMiroirTest(miroirTest_miroirCoreTransformers),
+          asMiroirTest(miroirTest_tr_core),
         ]}
         useSnackBar={true}
         runMode="integration"

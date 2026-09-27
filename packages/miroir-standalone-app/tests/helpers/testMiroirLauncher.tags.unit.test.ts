@@ -66,7 +66,7 @@ describe("testMiroirLauncher --tags (#312)", () => {
     ]);
     expect(vitestEntry).toBe("miroir-core-tests.integ.test");
     const suites = spawnedSuites(spawnEnv);
-    expect(suites).toContain("miroirCoreTransformers");
+    expect(suites).toContain("tr.core");
     for (const suite of suites) {
       expect(transformerIntegKeys, suite).toContain(suite);
     }
@@ -104,6 +104,6 @@ describe("testMiroirLauncher --tags (#312)", () => {
     expect(runnerKeys).toContain("runner.createEntity");
     expect(() =>
       resolveVitestEntry(process.env, ["--tags", "transformer,runner", "--mode", "integ"]),
-    ).toThrow(/both core suites .*miroirCoreTransformers.* and runner suites .*runner.createEntity/);
+    ).toThrow(/both core suites .*tr.core.* and runner suites .*runner.createEntity/);
   });
 });

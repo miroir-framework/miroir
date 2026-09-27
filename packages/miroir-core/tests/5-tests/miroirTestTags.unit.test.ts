@@ -82,13 +82,13 @@ describe("MiroirTest tags: selection over the folder catalog", () => {
   it("selects the suites carrying a tag when no suite is named", () => {
     expect(resolveCliSuiteKeysFromCatalog([], unitKeys, catalog, ["tools"])).toContain("mustache");
     expect(resolveCliSuiteKeysFromCatalog([], unitKeys, catalog, ["tools"])).not.toContain(
-      "miroirCoreTransformers",
+      "tr.core",
     );
   });
 
   it("intersects tags with named suites", () => {
     expect(
-      resolveCliSuiteKeysFromCatalog(["mustache", "miroirCoreTransformers"], unitKeys, catalog, [
+      resolveCliSuiteKeysFromCatalog(["mustache", "tr.core"], unitKeys, catalog, [
         "tools",
       ]),
     ).toEqual(["mustache"]);

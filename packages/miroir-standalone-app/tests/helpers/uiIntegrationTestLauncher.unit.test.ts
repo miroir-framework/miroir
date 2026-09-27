@@ -450,14 +450,14 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
 });
 
 describe("uiIntegrationTestTransformerSuiteRegistry (B7)", () => {
-  it("lists and resolves miroirCoreTransformers", async () => {
+  it("lists and resolves tr.core", async () => {
     const {
       listUiIntegrationTransformerSuiteKeys,
       resolveUiIntegrationTransformerSuite,
     } = await import("../../src/miroir-fwk/4-tests/uiIntegrationTestTransformerSuiteRegistry.js");
-    expect(listUiIntegrationTransformerSuiteKeys()).toContain("miroirCoreTransformers");
-    const entry = resolveUiIntegrationTransformerSuite("miroirCoreTransformers");
-    expect(entry.suiteDefinition.miroirTestLabel).toBe("miroirCoreTransformers");
+    expect(listUiIntegrationTransformerSuiteKeys()).toContain("tr.core");
+    const entry = resolveUiIntegrationTransformerSuite("tr.core");
+    expect(entry.suiteDefinition.miroirTestLabel).toBe("tr.core");
   });
 });
 
@@ -528,7 +528,7 @@ describe("isUiIntegrationSuiteRunSuccessful (B3)", () => {
             },
           }),
         } as never,
-        "miroirCoreTransformers",
+        "tr.core",
       ),
     ).toBe(true);
   });

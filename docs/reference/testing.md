@@ -44,7 +44,7 @@ npm run nonreg -- --tier full --run-all
 | Tier | Contents |
 |------|----------|
 | `unit` | MiroirTest unit suites via `testMiroir -w miroir-core -- --mode unit` + `RunAllMiroirTestsButton`, `MiroirTestListDisplay`, `MiroirTestDisplay` + LocalCache memory measure (pure `localCacheMemoryMeasure` / attributed + static redux/zustand images) |
-| `default` | `unit` + deployment `modelValidation` for **miroir**, **admin**, **library** (right after miroir-core unit) + MiroirTest integ (`miroirCoreTransformers`, `runner.lendDocument`, `runner.returnDocument`, `action.domainController.*`) + curated app-stack (PersistenceStoreController, extractors, UI launcher/list/display proofs, MlElementEditor component tests through `miroir-component-tests`) |
+| `default` | `unit` + deployment `modelValidation` for **miroir**, **admin**, **library** (right after miroir-core unit) + MiroirTest integ (`tr.core`, `runner.lendDocument`, `runner.returnDocument`, `action.domainController.*`) + curated app-stack (PersistenceStoreController, extractors, UI launcher/list/display proofs, MlElementEditor component tests through `miroir-component-tests`) |
 | `full` | `default` + deployment `modelValidation` for **postgres** |
 
 Modes: `--run-all` (continue after failures; default) or `--fail-fast`.
@@ -200,9 +200,9 @@ PLATFORM files are the vitest tests that have **no MiroirTest equivalent**: CLI/
 | `runner.createEntity`, `runner.dropEntity` | Ephemeral run target (no `suite.runTarget`); `initialModel` from the `emptyApplicationModel` parameter bank; do not seed the remapped library model onto the run target playfield |
 | `runner.freezeApplicationVersion` | Owned by the Miroir meta-application; `appForTest` (Publisher + Country) is the run target / testbed |
 
-`miroirCoreTransformers` is a **mixed** suite: many leaves are unit-safe; leaves with `integrationTestExpectedValue` need an integ session (runtime SQL / store). Other catalog suites are unit-safe unless they declare integ expectations.
+`tr.core` is a **mixed** suite: many leaves are unit-safe; leaves with `integrationTestExpectedValue` need an integ session (runtime SQL / store). Other catalog suites are unit-safe unless they declare integ expectations.
 
-**External services (#267):** MiroirTest suite keys `externalServiceSync` (unit, `miroir-core` — `transformerTest` for `syncExternalServiceSchema`) and `action.scenario.externalServiceSync` (integration, `miroir-standalone-app` — lands synced operations + entity). End-to-end HTTP against a fake Spotify server is **PLATFORM** vitest (`externalServiceQuery`, `externalServiceGuards`, `externalServiceDispatch`, `externalServiceReport`, `spotifyApp` under `tests/3_controllers/` and `tests/4_view/`); nonreg step `externalServices-spotify`. Opt-in live Spotify: `tests/external-services/spotifyLive.integ.test.ts` (`LIVE_SPOTIFY_CLIENT_ID` + `LIVE_SPOTIFY_CLIENT_SECRET` + `LIVE_SPOTIFY_REFRESH_TOKEN` obtained once via `packages/miroir-test-app_deployment-spotify/scripts/get_spotify_refresh_token.py` and registered via the in-process `registerSecrets` **test hatch** as `spotifyRefreshToken`; those `LIVE_SPOTIFY_*` vars are **not** D6 import aliases and are not a production launch channel; OAuth2 refresh-token grant at accounts.spotify.com; not in nonreg).
+**External services (#267):** MiroirTest suite keys `tr.syncExternalServiceSchema` (unit, `miroir-core` — `transformerTest` for `syncExternalServiceSchema`) and `action.scenario.externalServiceSync` (integration, `miroir-standalone-app` — lands synced operations + entity). End-to-end HTTP against a fake Spotify server is **PLATFORM** vitest (`externalServiceQuery`, `externalServiceGuards`, `externalServiceDispatch`, `externalServiceReport`, `spotifyApp` under `tests/3_controllers/` and `tests/4_view/`); nonreg step `externalServices-spotify`. Opt-in live Spotify: `tests/external-services/spotifyLive.integ.test.ts` (`LIVE_SPOTIFY_CLIENT_ID` + `LIVE_SPOTIFY_CLIENT_SECRET` + `LIVE_SPOTIFY_REFRESH_TOKEN` obtained once via `packages/miroir-test-app_deployment-spotify/scripts/get_spotify_refresh_token.py` and registered via the in-process `registerSecrets` **test hatch** as `spotifyRefreshToken`; those `LIVE_SPOTIFY_*` vars are **not** D6 import aliases and are not a production launch channel; OAuth2 refresh-token grant at accounts.spotify.com; not in nonreg).
 
 **Persistent named secrets (#270):** PLATFORM vitest under `tests/**/issues/270-persistent-named-secrets/` (`secrets.270`, `secretsService.270`, `secretsHttp.270` unit/guard, `secretsRedact.270`, `secretsHydrate.270`, `secretsImport.270`, `secretsOauthCache.270`). Nonreg steps `unit-270-persistent-secrets` (core + MCP) and `appstack-270-persistent-secrets` (standalone-app hydrate + import, pinned to `emulatedServer-filesystem`). Production launch uses wrapping key `MIROIR_SECRETS_MASTER_KEY` / `--secrets-master-key` ([how to generate it](./authentication.md#generate-the-wrapping-key)); tests use the dummy `test-secrets-master`. `--secret` / `MIROIR_SECRET_*` / AI key env vars are bootstrap import only.
 
@@ -319,7 +319,7 @@ This file:
 4. Calls `testSession.initSession()` to bootstrap the store.
 5. Calls `runMiroirCoreTestsFromCLI` to run the requested suites.
 
-`scripts/test-miroir-runner.ts` routes to this entry when all requested suite keys are in the miroir-core registry (e.g. `miroirCoreTransformers`).
+`scripts/test-miroir-runner.ts` routes to this entry when all requested suite keys are in the miroir-core registry (e.g. `tr.core`).
 
 ### Via `testMiroir` (preferred)
 
@@ -327,7 +327,7 @@ Use **`--profile`** so one preset sets both `VITE_MIROIR_*` (app-stack / runner)
 
 | Kind | Suite key (`--suites`) | Session | Typical profile |
 |------|------------------------|---------|-----------------|
-| **Transformer** | `miroirCoreTransformers` | `IntegrationTestSession` (synthetic `testApplication`) | `emulatedServer-sql` |
+| **Transformer** | `tr.core` | `IntegrationTestSession` (synthetic `testApplication`) | `emulatedServer-sql` |
 | **Runner** | `runner.lendDocument`, `runner.returnDocument`, `runner.createEntity`, `runner.dropEntity`, `runner.freezeApplicationVersion` | `RunnerTestSession` (library / Miroir entity runners) | `emulatedServer-sql` (freeze runner also green on `emulatedServer-filesystem`) |
 | **Action** | `action.domainController.dataCrud`, `action.domainController.modelCrud`, `action.domainController.dataCrud.compositePk`, `action.domainController.{modelCrud,dataCrud}.nonUuidPk`, `action.domainController.dataCrud.noParentUuid`, `action.domainController.modelUndoRedo`, `action.domainController.freezeApplicationVersion` (all Miroir `miroir_data`) | `RunnerTestSession` + `libraryPlayfieldSeed` (`actionTest` leaves); Library is `runTarget`/testbed | `emulatedServer-sql` (also green on `emulatedServer-filesystem` for freeze) |
 
@@ -335,7 +335,7 @@ Use **`--profile`** so one preset sets both `VITE_MIROIR_*` (app-stack / runner)
 ```bash
 # Transformer integ
 npm run testMiroir -w miroir-standalone-app -- \
-  --profile emulatedServer-sql --suites miroirCoreTransformers --mode integ
+  --profile emulatedServer-sql --suites tr.core --mode integ
 
 # Runner integ
 npm run testMiroir -w miroir-standalone-app -- \
@@ -388,20 +388,20 @@ npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql --suites runner.returnDocument --mode integ \
   --filter '{"runner.returnDocument":["Return Book Test Composite Action"]}'
 
-# One transformer leaf — nested labels under miroirCoreTransformers
+# One transformer leaf — nested labels under tr.core
 npm run testMiroir -w miroir-standalone-app -- \
-  --profile emulatedServer-sql --suites miroirCoreTransformers --mode integ \
-  --filter '{"miroirCoreTransformers":{"runtimeTransformerTests":{"plus":["plus with empty args fails"]}}}'
+  --profile emulatedServer-sql --suites tr.core --mode integ \
+  --filter '{"tr.core":{"runtimeTransformerTests":{"plus":["plus with empty args fails"]}}}'
 ```
 
 Legacy explicit-env form (still supported):
 
 ```bash
-MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integration \
+MIROIR_TEST_SUITES=tr.core MIROIR_TEST_MODE=integration \
   MIROIR_TEST_POSTGRES_HOST=localhost \
   npm run testMiroir -w miroir-standalone-app
 
-npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
+npm run testMiroir -w miroir-standalone-app -- --suites tr.core --mode integration
 ```
 
 See [Integration test profiles](#integration-test-profiles) for the full catalog and CI matrix.
@@ -459,7 +459,7 @@ jobs:
         run: |
           npm run testMiroir -w miroir-standalone-app -- \
             --profile ${{ matrix.profile }} \
-            --suites miroirCoreTransformers --mode integ
+            --suites tr.core --mode integ
       - name: Runner MiroirTest integ
         run: |
           npm run testMiroir -w miroir-standalone-app -- \
@@ -550,18 +550,18 @@ When the test application store is `sql`, the admin section of the test store us
 
 ```bash
 # Default (sql test app, filesystem admin)
-MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
+MIROIR_TEST_SUITES=tr.core MIROIR_TEST_MODE=integ \
   MIROIR_TEST_POSTGRES_HOST=localhost \
   npm run testMiroir -w miroir-standalone-app
 
 # Filesystem app + filesystem admin (no Postgres)
-MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
+MIROIR_TEST_SUITES=tr.core MIROIR_TEST_MODE=integ \
   MIROIR_TEST_APP_STORE_TYPE=filesystem \
   MIROIR_TEST_APP_FILESYSTEM_ROOT=/tmp/miroir-test \
   npm run testMiroir -w miroir-standalone-app
 
 # MongoDB app + filesystem admin
-MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
+MIROIR_TEST_SUITES=tr.core MIROIR_TEST_MODE=integ \
   MIROIR_TEST_APP_STORE_TYPE=mongodb \
   MIROIR_TEST_MONGODB_CONNECTION_STRING=mongodb://localhost:27017 \
   npm run testMiroir -w miroir-standalone-app
@@ -824,7 +824,7 @@ Identity under projection uses `resolveProjectionIdentityFields` → `getEntityP
 |------|----------------|-------|
 | `miroir-component-tests.unit.test.tsx` | In-memory `LocalCache`; no `--profile` | ML editor components, run from the 9 component MiroirTest instances: 7 per-editor instances (`ui.mlElementEditor.enum`, …), the test pattern and the on-demand render-performance suite (#286, #292, #303) |
 | `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` | Node emulated SQL via mocked launcher environment | `MiroirTestDisplay` launches integration and shows the result inspector |
-| `MiroirTestListIntegrationLaunch.integ.test.tsx` | Node emulated SQL via mocked launcher environment | List **Run All Integration Tests** batch for `miroirCoreTransformers` (filtered leaf) |
+| `MiroirTestListIntegrationLaunch.integ.test.tsx` | Node emulated SQL via mocked launcher environment | List **Run All Integration Tests** batch for `tr.core` (filtered leaf) |
 | `MlElementEditorReactCodeMirror.test.tsx` | — | CodeMirror sub-editor (currently commented out) |
 | `ReportPage.integ.test.tsx` | Uses shared React test tools | Report rendering smoke tests |
 | `gridPagination.unit.test.tsx` | In-memory `LocalCache`; real Library deployment assets | Client pagination primitives, viewport height (D2-c), prop contracts |
@@ -1107,7 +1107,7 @@ The browser profile remains **`emulatedServer-indexedDb`**; this Vitest test use
 
 ##### `MiroirTestListIntegrationLaunch.integ.test.tsx` — list integ batch
 
-RTL coverage for list **Run All Integration Tests**. It runs one filtered `miroirCoreTransformers` leaf (`plus with empty args fails`) and asserts transformer `sessionKind` + inspector success.
+RTL coverage for list **Run All Integration Tests**. It runs one filtered `tr.core` leaf (`plus with empty args fails`) and asserts transformer `sessionKind` + inspector success.
 
 ```bash
 npm run testByFile -w miroir-standalone-app -- \
@@ -1489,11 +1489,11 @@ Playfield **model + instances** belong on the suite or a `TestConfiguration`, no
 
 | Name | Example | Used in |
 |------|---------|---------|
-| **Suite key** (`name`) | `runner.returnDocument`, `action.domainController.dataCrud`, `miroirCoreTransformers` | `--suites`, `MIROIR_TEST_SUITES`, UI |
-| **Suite `miroirTestLabel`** | `runner.returnDocument`, `miroirCoreTransformers`, nested `plus` | display; **nested** `--filter` keys only |
+| **Suite key** (`name`) | `runner.returnDocument`, `action.domainController.dataCrud`, `tr.core` | `--suites`, `MIROIR_TEST_SUITES`, UI |
+| **Suite `miroirTestLabel`** | `runner.returnDocument`, `tr.core`, nested `plus` | display; **nested** `--filter` keys only |
 | **Leaf `miroirTestLabel`** | `Return Book Test Composite Action`, `plus with empty args fails` | `--filter` **values**, UI leaf checkboxes |
 
-`--suites` and catalog-root `--filter` keys are instance `name`. Nested `--filter` keys stay `miroirTestLabel` (inline suites have no `name`). For **transformer** suites such as `miroirCoreTransformers` the name and root label usually match; nest intermediate suite labels in the filter JSON.
+`--suites` and catalog-root `--filter` keys are instance `name`. Nested `--filter` keys stay `miroirTestLabel` (inline suites have no `name`). For **transformer** suites such as `tr.core` the name and root label usually match; nest intermediate suite labels in the filter JSON.
 
 Find labels in the MiroirTest JSON under `definition.miroirTestLabel` (suite) and each leaf’s `miroirTestLabel`.
 
@@ -1550,8 +1550,8 @@ npm run testMiroir -w miroir-standalone-app -- \
 
 ```bash
 npm run testMiroir -w miroir-standalone-app -- \
-  --profile emulatedServer-sql --suites miroirCoreTransformers --mode integ \
-  --filter '{"miroirCoreTransformers":{"runtimeTransformerTests":{"plus":["plus with empty args fails"]}}}'
+  --profile emulatedServer-sql --suites tr.core --mode integ \
+  --filter '{"tr.core":{"runtimeTransformerTests":{"plus":["plus with empty args fails"]}}}'
 ```
 
 Nest objects for intermediate suite labels; use a string array for the leaf list at the innermost level. Labels come from that suite’s JSON (`miroirTestLabel`).
@@ -1639,8 +1639,8 @@ List **Run All Unit Tests** never launches integration sessions. List/details in
 ### Manual checklist (webApp)
 
 1. Miroir deployment → Miroir Tests **list** → **Run All Unit Tests** completes; label is unambiguous (not “Run All Miroir Tests”).
-2. Same list → profile `emulatedServer-indexedDb` → **Run All Integration Tests** runs launchable suites only (expect `miroirCoreTransformers` and/or `runner.returnDocument` when present in the fetched list).
-3. Details `miroirCoreTransformers` → both unit and integ buttons; run unit then integ.
+2. Same list → profile `emulatedServer-indexedDb` → **Run All Integration Tests** runs launchable suites only (expect `tr.core` and/or `runner.returnDocument` when present in the fetched list).
+3. Details `tr.core` → both unit and integ buttons; run unit then integ.
 4. Details `runner.returnDocument` → integ only (no unit button).
 5. Details unit-only suite (e.g. `EntityPrimaryKey`) → unit only.
 
@@ -1651,7 +1651,7 @@ Both use the same **Run Integration Tests** affordance (details button, or list 
 | Suite (instance name) | Session | What to select | Browser profile |
 |-----------------------|---------|----------------|-----------------|
 | `runner.returnDocument` (label `runner.returnDocument`) | `RunnerTestSession` | Ephemeral or pinned run target | `emulatedServer-indexedDb` (default) or `realServer-*` |
-| `miroirCoreTransformers` | `IntegrationTestSession` / `RealServerTransformerTestSession` | Ephemeral or pinned `testApplication` identity | `emulatedServer-indexedDb` or `realServer-sql` (server up) |
+| `tr.core` | `IntegrationTestSession` / `RealServerTransformerTestSession` | Ephemeral or pinned `testApplication` identity | `emulatedServer-indexedDb` or `realServer-sql` (server up) |
 
 **Runner**
 
@@ -1662,12 +1662,12 @@ Both use the same **Run Integration Tests** affordance (details button, or list 
 
 **Transformer**
 
-1. Open **miroirCoreTransformers** (or use the list batch).
+1. Open **tr.core** (or use the list batch).
 2. Choose profile **`emulatedServer-indexedDb`** or **`realServer-sql`** (requires `miroir-server` at `https://localhost:3080`).
 3. Choose ephemeral or pinned identity.
 4. Click **Run Integration Tests** — inspector should show `sessionKind: transformer`.
 
-Mixed suites (e.g. `miroirCoreTransformers`) show separate unit and integration actions when both leaf kinds are present.
+Mixed suites (e.g. `tr.core`) show separate unit and integration actions when both leaf kinds are present.
 
 Browser-supported profiles:
 

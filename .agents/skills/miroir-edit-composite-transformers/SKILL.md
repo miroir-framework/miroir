@@ -20,8 +20,8 @@ This skill guides the creation and modification of **Composite** Miroir Transfor
 **BEFORE starting any transformer work, verify current test state:**
 
 ```bash
-npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
-npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
+npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
+npm run testMiroir -w miroir-standalone-app -- --suites tr.core --mode integration
 ```
 
 If tests are failing, inform the user of the baseline state before proceeding.
@@ -57,19 +57,19 @@ Much simpler than library transformers - only JSON changes!
 ### Step 1: Run Pre-flight Tests ✅
 Establish baseline before any changes.
 ```bash
-npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
+npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
 ```
 
 ### Step 2: Write Test Cases First (TDD) 📝
 Add test cases to the test suite:
 - **File**: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json`
-- **Suite name**: `miroirCoreTransformers`
+- **Suite name**: `tr.core`
 - Use the test case template from `template-test-case.json`
 
 ### Step 3: Run Tests (Expect Failure) ❌
 Verify the test fails before implementation:
 ```bash
-npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
+npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
 ```
 
 ### Step 4: Create TransformerDefinition JSON 📄
@@ -89,8 +89,8 @@ In `packages/miroir-core/src/2_domain/Transformers.ts`:
 ### Step 6: Run Tests (Expect Success) ✅
 Verify everything works:
 ```bash
-npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
-npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
+npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
+npm run testMiroir -w miroir-standalone-app -- --suites tr.core --mode integration
 ```
 
 **Note**: No devBuild needed! Composite transformers don't require type generation.
@@ -106,7 +106,7 @@ Documentation is in folder `docs-OLD/transformers`
 |------|---------|-------------|
 | `miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/<uuid>.json` | TransformerDefinition | New JSON file with `transformerImplementationType: "transformer"` |
 | `2_domain/Transformers.ts` | Export/Registration | Import JSON, export constant, add to array |
-| `miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` | Test cases (`miroirTest_miroirCoreTransformers`) | New `miroirTest` leaf objects |
+| `miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` | Test cases (`miroirTest_tr_core`) | New `miroirTest` leaf objects |
 
 **That's it!** Only 3 files to modify - no TypeScript code, no schema registration, no devBuild!
 
@@ -453,12 +453,12 @@ Access nested object properties.
 
 ### Run Specific Tests Only
 ```bash
-npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit --filter '{"miroirCoreTransformers":["specific test case name"]}'
+npm run testMiroir -w miroir-core -- --suites tr.core --mode unit --filter '{"tr.core":["specific test case name"]}'
 ```
 
 ### Enable Debug Logging
 ```bash
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
 ```
 
 ---

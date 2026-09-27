@@ -78,7 +78,7 @@ describe("testMiroirLauncher profile (Gap D1)", () => {
       "--profile",
       "emulatedServer-sql",
       "--suites",
-      "miroirCoreTransformers",
+      "tr.core",
       "--mode",
       "integ",
     ]);

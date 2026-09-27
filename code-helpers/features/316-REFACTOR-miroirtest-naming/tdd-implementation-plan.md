@@ -13,7 +13,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Rename map: [`./rename-map.md`](./
 Prerequisites: [`../312-FEATURE-miroir-test-classification/`](../312-FEATURE-miroir-test-classification/) ✅, #315 ✅
 Working branch: `316-REFACTOR-miroirtest-naming`
 
-**Resume note:** Slices 0–3 DONE.
+**Resume note:** Slices 0–4 DONE.
 
 ---
 
@@ -36,7 +36,7 @@ This plan does **not** rename inner suite and test labels (later pass), derive t
 | 1 | Select tests by mode: `unit` / `integ` / `ui` tags (tracer) | ✅ | mode-tag guard + `testMiroir --tags ui` |
 | 2 | Naming guard + rename UI component suites | ✅ | naming guard, `--suites ui.mlElementEditor.array` |
 | 3 | Rename runner and action suites (+ D13 stopgap, nonreg ids) | ✅ | naming guard, runner-kind test, nonreg integ steps |
-| 4 | Rename transformer suites | ⬜ | naming guard, `--suites tr.core --mode integ` |
+| 4 | Rename transformer suites | ✅ | naming guard, `--suites tr.core --mode integ` |
 | 5 | Rename function and query suites (+ D14 registry keys) | ⬜ | naming guard with empty legacy list |
 | 6 | Docs, skills, nonreg baseline, cleanup, AC | ⬜ | `nonreg:filesystem`, AC checklist |
 
@@ -233,7 +233,7 @@ The tests key on uuid, not name, so they stay valid through the rename.
 
 ## Slice 4 — Transformer suites renamed
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** `--suites tr.core --mode integ` and `--mode unit` run the core transformer catalog under its new name, as do the other 10 transformer suites.
 
@@ -250,7 +250,12 @@ The tests key on uuid, not name, so they stay valid through the rename.
 - rebuild, modelValidation, typechecks, `npm run nonreg:unit`
 
 ### Realization
-_(pending)_
+- Five old names are also code names: `miroirCoreTransformers` and `adminTransformers` (transformer catalogs in `Transformers.ts`), `resolveConditionalSchema`, `resolveSchemaReferenceInContext`, `unfoldSchemaOnce`, `defaultValueForMLSchema` (functions, TransformerDefinitions, transformer types, logger names). The quoted pass was run, then reverted where it hit code names: `resolveConditionalSchema.ts` logger, `transformerResultSchema.inventory` test, the TransformerDefinition assets, `docs/reference/transformers.md`, `transformer-result-schema.md`, the dependent-types proposal, `transformerName`/`transformerType` in two test fixtures, and "Add to `miroirCoreTransformers` array" in the transformer skills. The script gained `--identifiers-only` for such names (Slice 5 needs it from the start).
+- Bare suite-key uses of `miroirCoreTransformers` fixed by hand in tests (filter keys → `"tr.core": {`, button names, `MIROIR_TEST_SUITES=`), docs and `manual_tests.sh`; the transformer UI registry key is `"tr.core"`.
+- D14 for transformers: `MIROIR_TEST_SUITE_REGISTRY_NAMES` keys renamed, the `mlsTypeCheck` / `menu` / `metaModelTransformers` alias branches removed; the export lookup applies D12 (`.` → `_`). Only `alterObject` remains (Slice 5).
+- The "Did you mean" label hint in `loadApplicationMiroirTestsFromFolders.unit` now uses a synthetic instance: no real root label differs from its name any more.
+- Sort-order updates in three standalone tests (`tr.core` now sorts after `runner.*`).
+- Validation: core unit 2072 passed, issue guards 14, `testMiroir -w miroir-core -- --suites tr.core,tr.mlsTypeCheck,tr.menuBuild,tr.metaModel.extractAttributes --mode unit` 305 passed, `--suites tr.core --mode integ` on filesystem 261 passed, deployment-miroir modelValidation 162, typechecks, 19 touched standalone test files (`MiroirTestDisplayIntegrationLaunch` fails on Postgres ECONNREFUSED, the known environment failure).
 
 ---
 

@@ -102,7 +102,7 @@ npm run build -w miroir-test-app_deployment-miroir
 
 # MiroirTest, selected by instance name
 npm run testMiroir -w miroir-core -- --suites mustache,alterObject_atPath --mode unit
-npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
+npm run testMiroir -w miroir-standalone-app -- --suites tr.core --mode integration
 
 # PLATFORM vitest by file name (optional RUN_TEST)
 RUN_TEST=Transformer_ResultSchema.failures npm run testByFile -w miroir-core -- Transformer_ResultSchema.failures

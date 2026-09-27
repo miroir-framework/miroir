@@ -2,10 +2,10 @@
   "uuid": "1a251573-f10b-4298-9264-d3233d60a763",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "menu_build",
+  "name": "tr.menuBuild",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Migrated from UnitTest e7f2a1b4-3c5d-4e6f-8a9b-0c1d2e3f4a5b (Feature #196 Phase 5)",
+  "description": "Menu built from its parts by transformers.",
   "tags": [
     "unit",
     "menu",
@@ -14,7 +14,7 @@
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "menu.build",
+    "miroirTestLabel": "tr.menuBuild",
     "miroirTests": [
       {
         "miroirTestType": "transformerTest",

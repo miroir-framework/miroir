@@ -82,12 +82,12 @@ The workflows are **fundamentally different** enough that maintaining separate s
 3. `Transformers.ts` - Export + registration
 4. `getMiroirFundamentalMlSchema.ts` - Schema registration (2 entries + dependency)
 5. `generate-ts-types.ts` - Type generation (4 entries)
-6. `a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` - Tests (`miroirTest_miroirCoreTransformers`)
+6. `a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` - Tests (`miroirTest_tr_core`)
 
 ### Composite Transformers (3 files)
 1. `a557419d-a288-4fb8-8a1e-971c86c113b8/<uuid>.json` - Definition with composition
 2. `Transformers.ts` - Export + registration
-3. `a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` - Tests (`miroirTest_miroirCoreTransformers`)
+3. `a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` - Tests (`miroirTest_tr_core`)
 
 ## Skill Invocation Examples
 
@@ -160,10 +160,10 @@ Both skills share the same test infrastructure:
 
 ```bash
 # Unit tests (in-memory)
-npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
+npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
 
 # Integration tests (database)
-npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
+npm run testMiroir -w miroir-standalone-app -- --suites tr.core --mode integration
 ```
 
 **Key difference:**

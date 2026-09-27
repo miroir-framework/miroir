@@ -141,23 +141,23 @@ describe("applicationMiroirTestCatalog", () => {
       actionSuiteInstance("action.domainController.dataCrud"),
       actionSuiteInstance("brand_new_integ_suite"),
       unitTransformerInstance("EntityPrimaryKey"),
-      mixedTransformerInstance("miroirCoreTransformers"),
+      mixedTransformerInstance("tr.core"),
     ]);
 
-    expect(listCliUnitSuiteKeys(catalog)).toEqual(["EntityPrimaryKey", "miroirCoreTransformers"]);
+    expect(listCliUnitSuiteKeys(catalog)).toEqual(["EntityPrimaryKey", "tr.core"]);
     expect(listCliRunnerIntegrationSuiteKeys(catalog)).toEqual([
       "action.domainController.dataCrud",
       "brand_new_integ_suite",
       "runner.returnDocument",
     ]);
-    expect(listCliTransformerIntegrationSuiteKeys(catalog)).toEqual(["miroirCoreTransformers"]);
+    expect(listCliTransformerIntegrationSuiteKeys(catalog)).toEqual(["tr.core"]);
   });
 
   it("builds UI registries from the selected application's instances", () => {
     const registries = buildUiIntegrationSuiteRegistriesFromMiroirTests([
       runnerSuiteInstance("runner.returnDocument"),
       actionSuiteInstance("brand_new_integ_suite"),
-      mixedTransformerInstance("miroirCoreTransformers"),
+      mixedTransformerInstance("tr.core"),
       unitTransformerInstance("EntityPrimaryKey"),
     ]);
 
@@ -166,18 +166,18 @@ describe("applicationMiroirTestCatalog", () => {
       "runner.returnDocument",
     ]);
     expect(registries.runner.brand_new_integ_suite.kind).toBe("actionTest");
-    expect(Object.keys(registries.transformer)).toEqual(["miroirCoreTransformers"]);
+    expect(Object.keys(registries.transformer)).toEqual(["tr.core"]);
     expect(registries.runner.EntityPrimaryKey).toBeUndefined();
   });
 
   it("resolves --suites tokens by instance name or uuid only", () => {
     const catalog = buildApplicationMiroirTestCatalog([
-      unitTransformerInstance("menu_build"),
+      unitTransformerInstance("tr.menuBuild"),
       runnerSuiteInstance("runner.returnDocument"),
     ]);
     expect(resolveApplicationMiroirTestSuiteKey(catalog, "menu")).toBeUndefined();
     expect(resolveApplicationMiroirTestSuiteKey(catalog, "mlsTypeCheck")).toBeUndefined();
-    expect(resolveApplicationMiroirTestSuiteKey(catalog, "menu_build")).toBe("menu_build");
+    expect(resolveApplicationMiroirTestSuiteKey(catalog, "tr.menuBuild")).toBe("tr.menuBuild");
     expect(
       resolveApplicationMiroirTestSuiteKey(catalog, "00000000-0000-4000-8000-000000000001"),
     ).toBe("runner.returnDocument");
@@ -185,10 +185,10 @@ describe("applicationMiroirTestCatalog", () => {
 
   it("loads a suite definition from the catalog by name only", () => {
     const catalog = buildApplicationMiroirTestCatalog([
-      unitTransformerInstance("menu_build"),
+      unitTransformerInstance("tr.menuBuild"),
       runnerSuiteInstance("runner.returnDocument"),
     ]);
-    expect(loadMiroirTestSuiteFromCatalog(catalog, "menu_build").miroirTestLabel).toBe("menu_build");
+    expect(loadMiroirTestSuiteFromCatalog(catalog, "tr.menuBuild").miroirTestLabel).toBe("tr.menuBuild");
     expect(loadMiroirTestSuiteFromCatalog(catalog, "runner.returnDocument").miroirTestType).toBe(
       "miroirTestSuite",
     );

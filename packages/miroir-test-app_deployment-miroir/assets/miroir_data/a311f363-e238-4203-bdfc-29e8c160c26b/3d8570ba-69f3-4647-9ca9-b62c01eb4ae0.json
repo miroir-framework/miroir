@@ -2,10 +2,10 @@
   "uuid": "3d8570ba-69f3-4647-9ca9-b62c01eb4ae0",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "defaultValueForMLSchema",
+  "name": "tr.defaultValueForMlSchema",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Migrated from TransformerTest 753afec9-f786-4f51-8c46-bd022551a8dd (Feature #196 Phase 5)",
+  "description": "defaultValueForMLSchema transformer on optional and required ML schemas.",
   "tags": [
     "unit",
     "ml-schema"
@@ -13,7 +13,7 @@
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "defaultValueForMLSchema",
+    "miroirTestLabel": "tr.defaultValueForMlSchema",
     "miroirTests": [
       {
         "miroirTestType": "transformerTest",

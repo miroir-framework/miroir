@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { miroirTest_runner_returnDocument } from "miroir-test-app_deployment-library";
-import { miroirTest_miroirCoreTransformers } from "miroir-test-app_deployment-miroir";
+import { miroirTest_tr_core } from "miroir-test-app_deployment-miroir";
 import {
   classifyMiroirTestSuiteExecutionCapabilities,
   inferIntegrationSessionKind,
@@ -63,9 +63,9 @@ describe("uiIntegrationTestLauncherTypes (B0)", () => {
 });
 
 describe("inferIntegrationSessionKind via miroir-core (B0 smoke)", () => {
-  it("routes runner.returnDocument and miroirCoreTransformers", () => {
+  it("routes runner.returnDocument and tr.core", () => {
     expect(inferIntegrationSessionKind(suiteDefinition(miroirTest_runner_returnDocument))).toBe("runner");
-    expect(inferIntegrationSessionKind(suiteDefinition(miroirTest_miroirCoreTransformers))).toBe(
+    expect(inferIntegrationSessionKind(suiteDefinition(miroirTest_tr_core))).toBe(
       "transformer",
     );
   });
@@ -77,7 +77,7 @@ describe("inferIntegrationSessionKind via miroir-core (B0 smoke)", () => {
     ).toBe("integration");
     expect(
       classifyMiroirTestSuiteExecutionCapabilities(
-        suiteDefinition(miroirTest_miroirCoreTransformers),
+        suiteDefinition(miroirTest_tr_core),
       ).uiExecutionMode,
     ).toBe("mixed");
   });

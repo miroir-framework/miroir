@@ -9,7 +9,7 @@ import type {
 import { miroirTest_runner_returnDocument } from 'miroir-test-app_deployment-library';
 import {
   miroirTest_EntityPrimaryKey,
-  miroirTest_miroirCoreTransformers,
+  miroirTest_tr_core,
 } from 'miroir-test-app_deployment-miroir';
 
 import { resetUiIntegrationTestRunPreferencesForTests } from '../../src/miroir-fwk/4-tests/uiIntegrationTestRunPreferences.js';
@@ -92,7 +92,7 @@ describe('MiroirTestListDisplay dual bar (T3)', () => {
         miroirTests={[
           asMiroirTest(miroirTest_runner_returnDocument),
           asMiroirTest(miroirTest_EntityPrimaryKey),
-          asMiroirTest(miroirTest_miroirCoreTransformers),
+          asMiroirTest(miroirTest_tr_core),
         ]}
         gridType="ag-grid"
         useSnackBar={false}
@@ -153,7 +153,7 @@ describe('MiroirTestListDisplay tag chips (#312)', () => {
   const threeTests = () => [
     asMiroirTest(miroirTest_runner_returnDocument),
     asMiroirTest(miroirTest_EntityPrimaryKey),
-    asMiroirTest(miroirTest_miroirCoreTransformers),
+    asMiroirTest(miroirTest_tr_core),
   ];
 
   it('shows one chip per tag present, alphabetical, with its count', () => {
@@ -189,7 +189,7 @@ describe('MiroirTestListDisplay tag chips (#312)', () => {
     expect(screen.getByText('Miroir Tests Available (3)')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Run All Unit Tests' })).toHaveAttribute(
       'data-suites',
-      'EntityPrimaryKey,miroirCoreTransformers,runner.returnDocument',
+      'EntityPrimaryKey,runner.returnDocument,tr.core',
     );
   });
 
@@ -206,7 +206,7 @@ describe('MiroirTestListDisplay tag chips (#312)', () => {
     expect(screen.queryAllByRole('button', { pressed: true })).toEqual([]);
     expect(screen.getByRole('button', { name: 'Run All Unit Tests' })).toHaveAttribute(
       'data-suites',
-      'EntityPrimaryKey,miroirCoreTransformers',
+      'EntityPrimaryKey,tr.core',
     );
   });
 });

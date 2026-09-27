@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 
 import { MIROIR_TEST_SUITE_REGISTRY_NAMES } from "../../src/5_tests/miroirCoreTestSuiteRegistry";
 import { MIROIR_RUNNER_TEST_SUITE_REGISTRY_NAMES } from "../../src/5_tests/parseMiroirRunnerTestCLIConfig";
+import type { MiroirTestDefinition } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
+  buildApplicationMiroirTestCatalog,
   listCliRunnerIntegrationSuiteKeys,
   listCliUnitSuiteKeys,
   resolveApplicationMiroirTestSuiteKey,
@@ -10,6 +12,7 @@ import {
 } from "../../src/5_tests/applicationMiroirTestCatalog";
 import {
   APPLICATION_MIROIR_TEST_SOURCE_FOLDERS_LEGACY,
+  ENTITY_MIROIR_TEST_UUID,
 } from "../../src/5_tests/applicationMiroirTestFolders";
 import {
   discoverApplicationMiroirTestSourceFolders,
@@ -47,9 +50,9 @@ describe("loadApplicationMiroirTestsFromFolders", () => {
     expect(catalog.length).toBeGreaterThanOrEqual(45);
     const leftoverSnapshotToName: Record<string, string> = {
       alterObject: "alterObject_atPath",
-      mlsTypeCheck: "mlsTypeCheck_TransformerTestSuite",
-      menu: "menu_build",
-      metaModelTransformers: "metaModelTransformersTest",
+      mlsTypeCheck: "tr.mlsTypeCheck",
+      menu: "tr.menuBuild",
+      metaModelTransformers: "tr.metaModel.extractAttributes",
     };
     for (const key of MIROIR_TEST_SUITE_REGISTRY_NAMES) {
       const targetName = leftoverSnapshotToName[key] ?? key;
@@ -82,10 +85,10 @@ describe("loadApplicationMiroirTestsFromFolders", () => {
   it("rejects Table C leftover aliases and points label tokens at instance name", () => {
     const catalog = loadApplicationMiroirTestCatalog();
     const leftoverAliases: Array<[string, string]> = [
-      ["menu", "menu_build"],
-      ["mlsTypeCheck", "mlsTypeCheck_TransformerTestSuite"],
+      ["menu", "tr.menuBuild"],
+      ["mlsTypeCheck", "tr.mlsTypeCheck"],
       ["alterObject", "alterObject_atPath"],
-      ["metaModelTransformers", "metaModelTransformersTest"],
+      ["metaModelTransformers", "tr.metaModel.extractAttributes"],
     ];
     for (const [token, targetName] of leftoverAliases) {
       expect(resolveApplicationMiroirTestSuiteKey(catalog, token), token).toBeUndefined();
@@ -93,8 +96,32 @@ describe("loadApplicationMiroirTestsFromFolders", () => {
         targetName,
       );
     }
+    // Root labels equal names (#316 D11), so the label hint needs a synthetic instance.
+    const labelledCatalog = buildApplicationMiroirTestCatalog([
+      {
+        uuid: "00000000-0000-4000-8000-000000000316",
+        parentUuid: ENTITY_MIROIR_TEST_UUID,
+        name: "tr.mlsTypeCheck",
+        definition: {
+          miroirTestType: "miroirTestSuite",
+          miroirTestLabel: "legacy.mlsTypeCheckLabel",
+          miroirTests: [
+            {
+              miroirTestType: "transformerTest",
+              miroirTestLabel: "leaf",
+              transformerName: "t",
+              transformer: { transformerType: "identity" },
+              unitTestExpectedValue: {},
+            },
+          ],
+        },
+      } as unknown as MiroirTestDefinition,
+    ]);
+    expect(() =>
+      resolveApplicationMiroirTestSuiteKeys(labelledCatalog, ["legacy.mlsTypeCheckLabel"]),
+    ).toThrow(/Did you mean "tr.mlsTypeCheck"/);
     expect(() => resolveApplicationMiroirTestSuiteKeys(catalog, ["mlsTypeCheck"])).toThrow(
-      /Did you mean "mlsTypeCheck_TransformerTestSuite"/,
+      /Unknown suite key "mlsTypeCheck". Use instance name. Available:/,
     );
     expect(() => resolveApplicationMiroirTestSuiteKeys(catalog, ["menu"])).toThrow(
       /Unknown suite key "menu". Use instance name. Available:/,

@@ -6,7 +6,7 @@
  * Harness: the Slice 4 one. `MiroirContextReactProvider` and `LocalCacheProvider` over a real
  * `LocalCache` seeded with the Miroir meta-model. No launch mocks, no Postgres, no `--profile`.
  * The list is narrowed to the 7 per-editor component test instances (#292, e.g.
- * `ui.mlElementEditor.enum`) and the small transformer suite `resolveConditionalSchema`
+ * `ui.mlElementEditor.enum`) and the small transformer suite `tr.resolveConditionalSchema`
  * (5 `transformerTest` leaves). Results are read from the list's `onTestComplete`.
  * `registerComponentTests` (the entry of the component test chunk) is wrapped in a `vi.fn` to count
  * its calls. The expected component leaves of each instance come from its JSON.
@@ -81,7 +81,7 @@ const MIROIR_TEST_DATA_FOLDER = join(
 );
 /** Transformer suite run next to the component suite: 5 `transformerTest` leaves. */
 const TRANSFORMER_SUITE_UUID = "10bd8532-8d3e-40ca-a029-b43a38d11ea0";
-const TRANSFORMER_SUITE_NAME = "resolveConditionalSchema";
+const TRANSFORMER_SUITE_NAME = "tr.resolveConditionalSchema";
 const TRANSFORMER_SUITE_LEAF_COUNT = 5;
 /** Longer than the `waitFor` of `runAll`, so a slow run fails on the wait, with its message. */
 const RUN_ALL_TEST_TIMEOUT = 300_000;

@@ -2,10 +2,10 @@
   "uuid": "10bd8532-8d3e-40ca-a029-b43a38d11ea0",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "resolveConditionalSchema",
+  "name": "tr.resolveConditionalSchema",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Migrated from TransformerTest 3f025c6c-982d-47ed-8061-50009788773a (Feature #196 Phase 5)",
+  "description": "resolveConditionalSchema transformer, including its error cases.",
   "tags": [
     "unit",
     "ml-schema"
@@ -13,7 +13,7 @@
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "resolveConditionalSchema",
+    "miroirTestLabel": "tr.resolveConditionalSchema",
     "miroirTests": [
       {
         "miroirTestType": "transformerTest",

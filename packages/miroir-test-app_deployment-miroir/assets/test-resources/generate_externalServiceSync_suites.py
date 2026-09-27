@@ -93,13 +93,13 @@ def main() -> None:
         "uuid": "f4e5dde0-3dba-493b-a208-04494dbbb2f5",
         "parentName": "MiroirTest",
         "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-        "name": "externalServiceSync",
+        "name": "tr.syncExternalServiceSchema",
         "selfApplication": MIROIR_APP,
         "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
         "description": "Slice 6 unit transformerTest for syncExternalServiceSchema. openApiDocument is the committed Spotify get-playlist excerpt (assets/test-resources/spotifyOpenApiExcerpt.get-playlist.json), passed as transformerParams.",
         "definition": {
             "miroirTestType": "miroirTestSuite",
-            "miroirTestLabel": "externalServiceSync",
+            "miroirTestLabel": "tr.syncExternalServiceSchema",
             "miroirTests": [
                 transformer_leaf(
                     "sync get-playlist produces compositeActionSequence with operation and SpotifyPlaylist entity",

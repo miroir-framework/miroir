@@ -69,16 +69,16 @@ A specialized skill for creating and updating **Library-Implemented** Miroir Tra
 | `Transformers.ts` | Import + export + array entry |
 | `getMiroirFundamentalMlSchema.ts` | 2 schema entries + 1 dependency |
 | `generate-ts-types.ts` | 4 type generation entries |
-| `33f60ac8-6511-43b1-b153-6b86e3177532.json` | Test cases (`miroirTest_miroirCoreTransformers`) |
+| `33f60ac8-6511-43b1-b153-6b86e3177532.json` | Test cases (`miroirTest_tr_core`) |
 
 ## Test Commands
 
 ```bash
 # Unit tests (in-memory execution)
-npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
+npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
 
 # Integration tests (PostgreSQL execution)
-npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
+npm run testMiroir -w miroir-standalone-app -- --suites tr.core --mode integration
 
 # devBuild to generate types
 npm run devBuild -w miroir-core
@@ -104,7 +104,7 @@ miroir-edit-transformers/
 | `2_domain/Transformers.ts` | Exports and registration |
 | `0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchema.ts` | Schema registration |
 | `scripts/generate-ts-types.ts` | Type generation config |
-| `miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` | Test suite (`miroirTest_miroirCoreTransformers`) |
+| `miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` | Test suite (`miroirTest_tr_core`) |
 
 ## Common Pitfalls
 

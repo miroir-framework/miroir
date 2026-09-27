@@ -31,14 +31,14 @@ function baseContext(overrides: {
   }>;
 }) {
   const env = overrides.env ?? {
-    MIROIR_TEST_SUITES: "miroirCoreTransformers",
+    MIROIR_TEST_SUITES: "tr.core",
     MIROIR_TEST_MODE: "integ",
   };
   return {
     env,
     argv: overrides.argv ?? [],
     config: {
-      suiteKeys: ["miroirCoreTransformers"],
+      suiteKeys: ["tr.core"],
       executionMode: "integration" as const,
       filter: undefined,
       ...overrides.config,
@@ -69,7 +69,7 @@ describe("miroirCoreIntegTestLaunch", () => {
 
       const env = {
         ...process.env,
-        MIROIR_TEST_SUITES: "miroirCoreTransformers",
+        MIROIR_TEST_SUITES: "tr.core",
         MIROIR_TEST_MODE: "integ",
       };
 
@@ -93,7 +93,7 @@ describe("miroirCoreIntegTestLaunch", () => {
       baseContext({
         env: {
           CI: "true",
-          MIROIR_TEST_SUITES: "miroirCoreTransformers",
+          MIROIR_TEST_SUITES: "tr.core",
           MIROIR_TEST_MODE: "integ",
         },
       }),
@@ -106,7 +106,7 @@ describe("miroirCoreIntegTestLaunch", () => {
       baseContext({
         env: {
           CI: "true",
-          MIROIR_TEST_SUITES: "miroirCoreTransformers",
+          MIROIR_TEST_SUITES: "tr.core",
           MIROIR_TEST_MODE: "integ",
           VITE_MIROIR_TEST_CONFIG_FILENAME:
             "./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json",
@@ -125,7 +125,7 @@ describe("miroirCoreIntegTestLaunch", () => {
     const errors = validateMiroirCoreIntegTestLaunch(
       baseContext({
         env: {
-          MIROIR_TEST_SUITES: "miroirCoreTransformers",
+          MIROIR_TEST_SUITES: "tr.core",
           MIROIR_TEST_MODE: "unit",
         },
         config: { executionMode: "unit" },
@@ -156,7 +156,7 @@ describe("miroirCoreIntegTestLaunch", () => {
     const errors = validateMiroirCoreIntegTestLaunch(
       baseContext({
         env: {
-          MIROIR_TEST_SUITES: "miroirCoreTransformers",
+          MIROIR_TEST_SUITES: "tr.core",
           MIROIR_TEST_MODE: "integ",
           MIROIR_TEST_APP_STORE_TYPE: "mongodb",
         },
@@ -171,7 +171,7 @@ describe("miroirCoreIntegTestLaunch", () => {
     const errors = validateMiroirCoreIntegTestLaunch(
       baseContext({
         env: {
-          MIROIR_TEST_SUITES: "miroirCoreTransformers",
+          MIROIR_TEST_SUITES: "tr.core",
           MIROIR_TEST_MODE: "integ",
           MIROIR_TEST_ADMIN_STORE_TYPE: "bundled",
         },

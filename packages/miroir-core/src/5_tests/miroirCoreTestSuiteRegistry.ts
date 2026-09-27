@@ -4,11 +4,11 @@ export type MiroirTestSuiteLoader = () => Promise<{ default: MiroirTestSuite }>;
 
 /** @deprecated Use `listCliUnitSuiteKeys(loadApplicationMiroirTestCatalog())`. Last hardcoded snapshot. */
 export const MIROIR_TEST_SUITE_REGISTRY_NAMES = [
-  "adminTransformers",
+  "tr.admin.duplicateApplicationModel",
   "alterObject",
   "ansiColumnsToMlSchema",
   "buildAnyKeyMap",
-  "defaultValueForMLSchema",
+  "tr.defaultValueForMlSchema",
   "EntityPrimaryKey",
   "getAttributeTypesFromMlSchema",
   "mlObjectFlatten",
@@ -18,27 +18,27 @@ export const MIROIR_TEST_SUITE_REGISTRY_NAMES = [
   "mlsToJsonSchema",
   "mlsToMls_Summary",
   "mlsTransitiveDependencySet",
-  "mlsTypeCheck",
+  "tr.mlsTypeCheck",
   "mlUnion_RecursiveUnfold",
   "mlUnionResolvedTypeForArray",
   "mlUnionResolvedTypeForObject",
   "localizeMlSchemaReferenceContext",
-  "menu",
+  "tr.menuBuild",
   "mergePositionBased",
-  "metaModelTransformers",
-  "miroirCoreTransformers",
+  "tr.metaModel.extractAttributes",
+  "tr.core",
   "modelUpdates",
   "mustache",
-  "pilot_transformer_plus",
+  "tr.resolveConditionalSchema.build",
   "queries_library",
-  "resolveConditionalSchema",
+  "tr.resolveConditionalSchema",
   "resolveQueryTemplates",
-  "resolveSchemaReferenceInContext",
+  "tr.resolveSchemaReferenceInContext",
   "selectUnionBranchFromDiscriminator",
   "tools",
   "transformerInterfaceCheck",
   "transformerResultSchema",
-  "unfoldSchemaOnce",
+  "tr.unfoldSchemaOnce",
   "unionArrayChoices",
   "unionObjectChoices",
   "virtualAttributes",
@@ -55,13 +55,7 @@ export const MIROIR_TEST_SUITE_REGISTRY: Record<string, MiroirTestSuiteLoader> =
         const instance =
           name === "alterObject"
             ? deployment.miroirTest_alterObject_atPath
-            : name === "mlsTypeCheck"
-              ? deployment.miroirTest_mlsTypeCheck_TransformerTestSuite
-              : name === "menu"
-                ? deployment.miroirTest_menu_build
-                : name === "metaModelTransformers"
-                  ? deployment.miroirTest_metaModelTransformersTest
-                  : deployment[`miroirTest_${name}`];
+            : (deployment as unknown as Record<string, { definition: unknown }>)[`miroirTest_${name.replaceAll(".", "_")}`];
         return { default: instance.definition as MiroirTestSuite };
       };
       return acc;

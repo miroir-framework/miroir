@@ -124,7 +124,7 @@ Runs in `miroir-standalone-app`, not `miroir-core`. Prefer **`--profile`** / **`
 
 | Kind | Command |
 |------|---------|
-| **Transformer** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites miroirCoreTransformers --mode integ` |
+| **Transformer** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites tr.core --mode integ` |
 | **Runner** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites runner.returnDocument --mode integ` |
 | **Freeze runner** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites runner.freezeApplicationVersion --mode integ` |
 | **By tag** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --tags domain-controller --mode integ` |
@@ -132,7 +132,7 @@ Runs in `miroir-standalone-app`, not `miroir-core`. Prefer **`--profile`** / **`
 Legacy env form:
 
 ```bash
-MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
+MIROIR_TEST_SUITES=tr.core MIROIR_TEST_MODE=integ \
   MIROIR_TEST_POSTGRES_HOST=localhost \
   npm run testMiroir -w miroir-standalone-app
 ```
@@ -225,7 +225,7 @@ Requires Postgres (Node emulated SQL via test mocks). Full detail: [reference/te
 npm run testByFile -w miroir-core -- miroir-core-tests.unit.test
 
 # Integration entry directly
-MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
+MIROIR_TEST_SUITES=tr.core MIROIR_TEST_MODE=integ \
   npm run testByFile -w miroir-standalone-app -- miroir-core-tests.integ.test
 ```
 

@@ -2,10 +2,10 @@
   "uuid": "33f60ac8-6511-43b1-b153-6b86e3177532",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "miroirCoreTransformers",
+  "name": "tr.core",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Migrated from TransformerTest a5b4be38-78e3-4f31-9e9b-8ab0b71d4993 (Feature #196 Phase 5)",
+  "description": "Core transformer catalog, build and runtime leaves, in memory and against the store.",
   "tags": [
     "unit",
     "integ",
@@ -14,7 +14,7 @@
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "miroirCoreTransformers",
+    "miroirTestLabel": "tr.core",
     "miroirTests": [
       {
         "miroirTestType": "miroirTestSuite",

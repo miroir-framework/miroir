@@ -20,7 +20,7 @@ function listAllUiIntegrationSuiteKeys(
 
 /**
  * Suite key for UI launcher: instance `name` when set
- * (e.g. `runner.returnDocument`, `miroirCoreTransformers`), not `miroirTestLabel`.
+ * (e.g. `runner.returnDocument`, `tr.core`), not `miroirTestLabel`.
  */
 export function resolveUiIntegrationRunnerSuiteKey(
   miroirTest: MiroirTestDefinition,

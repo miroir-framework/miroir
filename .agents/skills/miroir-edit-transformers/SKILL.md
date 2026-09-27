@@ -20,8 +20,8 @@ This skill guides the creation and modification of **Library-Implemented** Miroi
 **BEFORE starting any transformer work, verify current test state:**
 
 ```bash
-npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
-npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
+npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
+npm run testMiroir -w miroir-standalone-app -- --suites tr.core --mode integration
 ```
 
 If tests are failing, inform the user of the baseline state before proceeding.
@@ -37,19 +37,19 @@ Follow these steps in order for creating or modifying a library-implemented tran
 ### Step 1: Run Pre-flight Tests ✅
 Establish baseline before any changes.
 ```bash
-npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
+npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
 ```
 
 ### Step 2: Write Test Cases First (TDD) 📝
 Add test cases to the test suite:
-- **File**: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` (`miroirTest_miroirCoreTransformers`)
-- **Suite name**: `miroirCoreTransformers`
+- **File**: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` (`miroirTest_tr_core`)
+- **Suite name**: `tr.core`
 - Use the test case template from `template-test-case.json`
 
 ### Step 3: Run Tests (Expect Failure) ❌
 Verify the test fails before implementation:
 ```bash
-npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
+npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
 ```
 
 ### Step 4: Create TransformerDefinition JSON 📄
@@ -221,7 +221,7 @@ File: `packages/miroir-core/scripts/generate-ts-types.ts`
 Generate types and verify everything works:
 ```bash
 npm run build -w miroir-test-app_deployment-library
-npm run devBuild -w miroir-core && npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit && npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
+npm run devBuild -w miroir-core && npm run testMiroir -w miroir-core -- --suites tr.core --mode unit && npm run testMiroir -w miroir-standalone-app -- --suites tr.core --mode integration
 ```
 
 ### Step 9: Create or Update Documentation 📚
@@ -238,7 +238,7 @@ Documentation is in folder `docs-OLD/transformers`
 | `2_domain/Transformers.ts` | Export/Registration | Import JSON, export constant, add to array |
 | `0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchema.ts` | Schema registration | 2 transformer entries + 1 dependency entry |
 | `scripts/generate-ts-types.ts` | Pre-generated types | 4 transformer entries |
-| `miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` | Test cases (`miroirTest_miroirCoreTransformers`) | New `miroirTest` leaf objects |
+| `miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` | Test cases (`miroirTest_tr_core`) | New `miroirTest` leaf objects |
 | `miroir-store-postgres/src/1_core/SqlGenerator.ts` | SQL implementation (optional) | `sqlStringFor<Name>Transformer` function + registration in `sqlTransformerImplementations`, then rebuild with `npm run build -w miroir-store-postgres` |
 
 ---
@@ -368,12 +368,12 @@ return {
 
 ### Run Specific Tests Only
 ```bash
-npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit --filter '{"miroirCoreTransformers":["specific test case name"]}'
+npm run testMiroir -w miroir-core -- --suites tr.core --mode unit --filter '{"tr.core":["specific test case name"]}'
 ```
 
 ### Enable Debug Logging
 ```bash
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
 ```
 
 ---

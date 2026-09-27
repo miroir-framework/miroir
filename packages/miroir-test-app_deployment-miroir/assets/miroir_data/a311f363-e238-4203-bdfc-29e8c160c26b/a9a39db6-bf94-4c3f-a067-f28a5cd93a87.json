@@ -2,10 +2,10 @@
   "uuid": "a9a39db6-bf94-4c3f-a067-f28a5cd93a87",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "metaModelTransformersTest",
+  "name": "tr.metaModel.extractAttributes",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Migrated from TransformerTest 0edff2d8-4870-4df1-9a1b-0f5ca6cb4a39 (Feature #196 Phase 5)",
+  "description": "Meta-model transformers that extract Entity attributes from EntityDefinitions.",
   "tags": [
     "unit",
     "transformer"
@@ -13,7 +13,7 @@
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "metaModelTransformersTest",
+    "miroirTestLabel": "tr.metaModel.extractAttributes",
     "miroirTests": [
       {
         "miroirTestType": "miroirTestSuite",

@@ -49,7 +49,7 @@ beforeAll(() => {
 });
 
 describe(`runUiIntegrationTestSuite transformer ${profileName}`, () => {
-  it(`runs miroirCoreTransformers leaf against live miroir-server (${storage}, ephemeral)`, async () => {
+  it(`runs tr.core leaf against live miroir-server (${storage}, ephemeral)`, async () => {
     // First profile in scope: realServer-sql only.
     if (profileName !== "realServer-sql") {
       console.warn(
@@ -73,11 +73,11 @@ describe(`runUiIntegrationTestSuite transformer ${profileName}`, () => {
       throw error;
     }
 
-    const { suiteDefinition } = resolveUiIntegrationTransformerSuite("miroirCoreTransformers");
+    const { suiteDefinition } = resolveUiIntegrationTransformerSuite("tr.core");
 
     const result = await runUiIntegrationTestSuiteInNode(
       {
-        suiteKey: "miroirCoreTransformers",
+        suiteKey: "tr.core",
         suiteDefinition,
         profileName,
         runTargetMode: "ephemeral",
@@ -88,7 +88,7 @@ describe(`runUiIntegrationTestSuite transformer ${profileName}`, () => {
     );
 
     expect(result).toMatchObject({
-      suiteKey: "miroirCoreTransformers",
+      suiteKey: "tr.core",
       sessionKind: "transformer",
       profileName,
       hostMode: "isolated",

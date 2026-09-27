@@ -8,7 +8,7 @@ import { miroirTest_runner_returnDocument } from 'miroir-test-app_deployment-lib
 import {
   miroirTest_EntityPrimaryKey,
   miroirTest_action_domainController_dataCrud,
-  miroirTest_miroirCoreTransformers,
+  miroirTest_tr_core,
 } from 'miroir-test-app_deployment-miroir';
 
 import {
@@ -111,11 +111,11 @@ describe('MiroirTestDisplay capability chrome (T4)', () => {
     expect(screen.queryByText('Integration run settings')).not.toBeInTheDocument();
   });
 
-  it('shows both buttons for miroirCoreTransformers (mixed)', () => {
+  it('shows both buttons for tr.core (mixed)', () => {
     render(
       <MiroirTestDisplay
-        miroirTest={asMiroirTest(miroirTest_miroirCoreTransformers)}
-        testLabel="miroirCoreTransformers"
+        miroirTest={asMiroirTest(miroirTest_tr_core)}
+        testLabel="tr.core"
         gridType="ag-grid"
         useSnackBar={false}
       />,
@@ -123,10 +123,10 @@ describe('MiroirTestDisplay capability chrome (T4)', () => {
 
     expect(screen.getByText('mixed')).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Run miroirCoreTransformers Unit Tests' }),
+      screen.getByRole('button', { name: 'Run tr.core Unit Tests' }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Run miroirCoreTransformers Integration Tests' }),
+      screen.getByRole('button', { name: 'Run tr.core Integration Tests' }),
     ).toBeEnabled();
     expect(screen.getByText('Integration run settings')).toBeInTheDocument();
   });
@@ -136,15 +136,15 @@ describe('MiroirTestDisplay capability chrome (T4)', () => {
 
     render(
       <MiroirTestDisplay
-        miroirTest={asMiroirTest(miroirTest_miroirCoreTransformers)}
-        testLabel="miroirCoreTransformers"
+        miroirTest={asMiroirTest(miroirTest_tr_core)}
+        testLabel="tr.core"
         gridType="ag-grid"
         useSnackBar={false}
       />,
     );
 
     const integButton = screen.getByRole('button', {
-      name: 'Run miroirCoreTransformers Integration Tests',
+      name: 'Run tr.core Integration Tests',
     });
     expect(integButton).toBeDisabled();
     expect(integButton).toHaveAttribute(

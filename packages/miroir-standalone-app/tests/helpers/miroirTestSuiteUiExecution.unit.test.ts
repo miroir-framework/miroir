@@ -8,7 +8,7 @@ import type {
 import { miroirTest_runner_returnDocument } from 'miroir-test-app_deployment-library';
 import {
   miroirTest_EntityPrimaryKey,
-  miroirTest_miroirCoreTransformers,
+  miroirTest_tr_core,
   miroirTest_runner_createEntity,
   miroirTest_runner_dropEntity,
 } from 'miroir-test-app_deployment-miroir';
@@ -68,7 +68,7 @@ describe('miroirTestSuiteUiExecution (B5)', () => {
 
   it('classifies transformer suite as mixed', () => {
     expect(
-      resolveMiroirTestSuiteUiExecutionMode(suiteDefinition(miroirTest_miroirCoreTransformers)),
+      resolveMiroirTestSuiteUiExecutionMode(suiteDefinition(miroirTest_tr_core)),
     ).toBe('mixed');
   });
 
@@ -93,9 +93,9 @@ describe('miroirTestSuiteUiExecution (B5)', () => {
     expect(isSupportedInstance(asMiroirTest(miroirTest_runner_dropEntity))).toBe(true);
   });
 
-  it('marks miroirCoreTransformers instance as UI integration supported (B7)', () => {
-    expect(isSupportedKey('miroirCoreTransformers')).toBe(true);
-    expect(isSupportedInstance(asMiroirTest(miroirTest_miroirCoreTransformers))).toBe(true);
+  it('marks tr.core instance as UI integration supported (B7)', () => {
+    expect(isSupportedKey('tr.core')).toBe(true);
+    expect(isSupportedInstance(asMiroirTest(miroirTest_tr_core))).toBe(true);
   });
 
   it('returns badge colors for each execution mode', () => {
@@ -110,16 +110,16 @@ describe('classifyMiroirTestListExecutionCapabilities (T1)', () => {
     const caps = classifyList([
       asMiroirTest(miroirTest_runner_returnDocument),
       asMiroirTest(miroirTest_EntityPrimaryKey),
-      asMiroirTest(miroirTest_miroirCoreTransformers),
+      asMiroirTest(miroirTest_tr_core),
     ]);
 
     expect(caps.hasUnitLeaves).toBe(true);
     expect(caps.hasIntegrationLeaves).toBe(true);
-    expect(caps.unitSuiteKeys).toEqual(['EntityPrimaryKey', 'miroirCoreTransformers']);
-    expect(caps.integrationSuiteKeys).toEqual(['miroirCoreTransformers', 'runner.returnDocument']);
+    expect(caps.unitSuiteKeys).toEqual(['EntityPrimaryKey', 'tr.core']);
+    expect(caps.integrationSuiteKeys).toEqual(['runner.returnDocument', 'tr.core']);
     expect(caps.launchableIntegrationSuiteKeys).toEqual([
-      'miroirCoreTransformers',
       'runner.returnDocument',
+      'tr.core',
     ]);
   });
 

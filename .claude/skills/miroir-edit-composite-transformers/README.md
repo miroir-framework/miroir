@@ -65,7 +65,7 @@ A specialized skill for creating and updating **Composite** Miroir Transformers 
 |------|--------------|
 | `a557419d-a288-4fb8-8a1e-971c86c113b8/<uuid>.json` | TransformerDefinition with composition |
 | `Transformers.ts` | Import + export + array entry |
-| `33f60ac8-6511-43b1-b153-6b86e3177532.json` | Test cases (`miroirTest_miroirCoreTransformers`) |
+| `33f60ac8-6511-43b1-b153-6b86e3177532.json` | Test cases (`miroirTest_tr_core`) |
 
 **Only 3 files!** Much simpler than library transformers.
 
@@ -73,10 +73,10 @@ A specialized skill for creating and updating **Composite** Miroir Transformers 
 
 ```bash
 # Unit tests (in-memory execution)
-npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
+npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
 
 # Integration tests (PostgreSQL execution)
-npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
+npm run testMiroir -w miroir-standalone-app -- --suites tr.core --mode integration
 ```
 
 **Note**: No devBuild command needed!
@@ -113,7 +113,7 @@ miroir-edit-composite-transformers/
 |----------|---------|
 | `miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/*.json` | Transformer definitions |
 | `2_domain/Transformers.ts` | Exports and registration |
-| `miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` | Test suite (`miroirTest_miroirCoreTransformers`) |
+| `miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` | Test suite (`miroirTest_tr_core`) |
 
 ## Common Patterns
 

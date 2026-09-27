@@ -4,7 +4,7 @@ import {
   miroirTest_runner_lendDocument,
   miroirTest_runner_returnDocument,
 } from "miroir-test-app_deployment-library";
-import { miroirTest_miroirCoreTransformers } from "miroir-test-app_deployment-miroir";
+import { miroirTest_tr_core } from "miroir-test-app_deployment-miroir";
 
 import type {
   MiroirTestDefinition,
@@ -27,7 +27,7 @@ function runnerReturnDocumentSuite(): MiroirTestSuite {
 }
 
 function miroirCoreTransformersSuite(): MiroirTestSuite {
-  return (miroirTest_miroirCoreTransformers as MiroirTestDefinition).definition as MiroirTestSuite;
+  return (miroirTest_tr_core as MiroirTestDefinition).definition as MiroirTestSuite;
 }
 
 describe("walkMiroirTestLeaves (B0)", () => {
@@ -99,7 +99,7 @@ describe("inferIntegrationSessionKind (B0)", () => {
     expect(inferIntegrationSessionKind(suiteGetter())).toBe("runner");
   });
 
-  it("returns transformer for miroirCoreTransformers suite", () => {
+  it("returns transformer for tr.core suite", () => {
     expect(inferIntegrationSessionKind(miroirCoreTransformersSuite())).toBe("transformer");
   });
 
@@ -176,7 +176,7 @@ describe("classifyMiroirTestSuiteExecutionCapabilities (B0)", () => {
     });
   });
 
-  it("marks miroirCoreTransformers as mixed (unit + integration transformer leaves)", () => {
+  it("marks tr.core as mixed (unit + integration transformer leaves)", () => {
     const caps = classifyMiroirTestSuiteExecutionCapabilities(miroirCoreTransformersSuite());
 
     expect(caps.integrationSessionKind).toBe("transformer");

@@ -4,11 +4,11 @@ export const RETURN_BOOK_LEAF = 'Return Book Test Composite Action';
 export const RUNNER_RETURN_DOCUMENT_SUITE_KEY = 'runner.returnDocument';
 /** Display / `miroirTestLabel` only — catalog-root `--filter` keys use the suite key. */
 export const RUNNER_RETURN_DOCUMENT_LABEL = 'runner.returnDocument';
-export const TRANSFORMER_SUITE_KEY = 'miroirCoreTransformers';
+export const TRANSFORMER_SUITE_KEY = 'tr.core';
 
 export const TRANSFORMER_LEAF_FILTER = {
   testList: {
-    miroirCoreTransformers: {
+    "tr.core": {
       runtimeTransformerTests: {
         plus: ['plus with empty args fails'],
       },

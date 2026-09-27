@@ -90,10 +90,12 @@ def rewrite_instance(path: Path, entry: dict, description: str | None) -> None:
     path.write_text(text, encoding="utf-8")
 
 
-def rename_in_text(text: str, entries: list[dict]) -> tuple[str, int]:
+def rename_in_text(text: str, entries: list[dict], identifiers_only: set[str] = frozenset()) -> tuple[str, int]:
     count = 0
     by_old = {entry["oldName"]: entry["newName"] for entry in entries}
     alternation = "|".join(re.escape(old) for old in sorted(by_old, key=len, reverse=True))
+    quotable = [old for old in by_old if old not in identifiers_only]
+    quoted_alternation = "|".join(re.escape(old) for old in sorted(quotable, key=len, reverse=True)) or "(?!)"
 
     def identifier(match: re.Match) -> str:
         nonlocal count
@@ -107,7 +109,7 @@ def rename_in_text(text: str, entries: list[dict]) -> tuple[str, int]:
         count += 1
         return f"{match.group(1)}{by_old[match.group(2)]}{match.group(1)}"
 
-    text = re.sub(rf"([\"'`])({alternation})\1", quoted, text)
+    text = re.sub(rf"([\"'`])({quoted_alternation})\1", quoted, text)
 
     def suites(match: re.Match) -> str:
         tokens = match.group(2).split(",")
@@ -162,6 +164,16 @@ def main() -> int:
     parser.add_argument("--descriptions", help="JSON file: uuid -> new description")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--report-bare", action="store_true")
+    parser.add_argument(
+        "--quoted-in",
+        default="",
+        help="comma-separated repo-relative files where --identifiers-only names are still replaced when quoted",
+    )
+    parser.add_argument(
+        "--identifiers-only",
+        default="",
+        help="comma-separated old names that collide with code names: only miroirTest_ identifiers are renamed",
+    )
     args = parser.parse_args()
 
     kinds = set(args.kinds.split(","))
@@ -176,7 +188,11 @@ def main() -> int:
     touched = {}
     for path in files:
         original = path.read_text(encoding="utf-8")
-        renamed, count = rename_in_text(original, entries)
+        rel = str(path.relative_to(REPO))
+        identifiers_only = set(filter(None, args.identifiers_only.split(",")))
+        if rel in set(filter(None, args.quoted_in.split(","))):
+            identifiers_only = set()
+        renamed, count = rename_in_text(original, entries, identifiers_only)
         if count:
             touched[str(path.relative_to(REPO))] = count
             if not args.dry_run:

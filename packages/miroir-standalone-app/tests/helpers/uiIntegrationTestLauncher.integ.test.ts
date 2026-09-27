@@ -66,22 +66,22 @@ describe("runUiIntegrationTestSuite (B3)", () => {
 });
 
 describe("runUiIntegrationTestSuite transformer (B7)", () => {
-  it("runs one miroirCoreTransformers integ leaf via in-process launcher", async () => {
+  it("runs one tr.core integ leaf via in-process launcher", async () => {
     const { resolveUiIntegrationTransformerSuite } = await import(
       "../../src/miroir-fwk/4-tests/uiIntegrationTestTransformerSuiteRegistry.js"
     );
-    const { suiteDefinition } = resolveUiIntegrationTransformerSuite("miroirCoreTransformers");
+    const { suiteDefinition } = resolveUiIntegrationTransformerSuite("tr.core");
 
     const result = await runUiIntegrationTestSuiteInNode(
       {
-        suiteKey: "miroirCoreTransformers",
+        suiteKey: "tr.core",
         suiteDefinition,
         profileName: "emulatedServer-sql",
         runTargetMode: "pinned",
         hostMode: "isolated",
         filter: {
           testList: {
-            miroirCoreTransformers: {
+            "tr.core": {
               runtimeTransformerTests: {
                 plus: ["plus with empty args fails"],
               },
@@ -92,7 +92,7 @@ describe("runUiIntegrationTestSuite transformer (B7)", () => {
       vitestExpect,
     );
 
-    expect(result.suiteKey).toBe("miroirCoreTransformers");
+    expect(result.suiteKey).toBe("tr.core");
     expect(result.sessionKind).toBe("transformer");
     expect(result.profileName).toBe("emulatedServer-sql");
     expect(result.hostMode).toBe("isolated");

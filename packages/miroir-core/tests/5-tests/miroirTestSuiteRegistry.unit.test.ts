@@ -8,10 +8,10 @@ import {
 describe("miroirTestSuiteRegistry (Phase 2)", () => {
   it("lists registered suite keys", () => {
     expect(listMiroirTestSuiteKeys()).toContain("mergePositionBased");
-    expect(listMiroirTestSuiteKeys()).toContain("pilot_transformer_plus");
+    expect(listMiroirTestSuiteKeys()).toContain("tr.resolveConditionalSchema.build");
     expect(listMiroirTestSuiteKeys()).toContain("mustache");
     expect(listMiroirTestSuiteKeys()).toContain("queries_library");
-    expect(listMiroirTestSuiteKeys()).toContain("adminTransformers");
+    expect(listMiroirTestSuiteKeys()).toContain("tr.admin.duplicateApplicationModel");
     expect(listMiroirTestSuiteKeys()).toContain("alterObject");
     expect(listMiroirTestSuiteKeys().length).toBeGreaterThanOrEqual(30);
   });

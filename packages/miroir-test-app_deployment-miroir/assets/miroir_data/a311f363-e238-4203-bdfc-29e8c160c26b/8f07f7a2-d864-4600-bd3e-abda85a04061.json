@@ -2,10 +2,10 @@
   "uuid": "8f07f7a2-d864-4600-bd3e-abda85a04061",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "adminTransformers",
+  "name": "tr.admin.duplicateApplicationModel",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Phase 3d pilot — nested transformer suite migrated from transformerTest_adminTransformers",
+  "description": "duplicateApplicationModel admin transformer, run in memory.",
   "tags": [
     "unit",
     "transformer"
@@ -13,7 +13,7 @@
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "adminTransformers",
+    "miroirTestLabel": "tr.admin.duplicateApplicationModel",
     "miroirTests": [
       {
         "miroirTestType": "miroirTestSuite",
