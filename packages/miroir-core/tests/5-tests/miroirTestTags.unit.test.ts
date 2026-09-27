@@ -167,3 +167,26 @@ describe("MiroirTest tags: every test is tagged", () => {
     expect(unknown).toEqual([]);
   });
 });
+
+describe("MiroirTest issue", () => {
+  const instances = loadApplicationMiroirTestsFromFolders(repoRoot);
+
+  it("an instance with an issue passes model validation against the MiroirTest EntityVersion", () => {
+    const testPattern = miroirTestInstanceNamed("MlTestPattern_ComponentTestSuite");
+    expect(testPattern.issue).toBe("303");
+    const check = checkModelValidationInstance(
+      readJson(miroirTestEntityVersionPath).mlSchema as MlElement,
+      testPattern,
+      "MlTestPattern_ComponentTestSuite",
+      defaultMiroirModelEnvironment,
+    );
+    expect(check.status).toBe("ok");
+  });
+
+  it("every issue, when present, is a GitHub issue number", () => {
+    const malformed = instances
+      .filter((instance: any) => instance.issue !== undefined && !/^[1-9]\d*$/.test(instance.issue))
+      .map((instance: any) => `${instance.name}: ${instance.issue}`);
+    expect(malformed).toEqual([]);
+  });
+});
