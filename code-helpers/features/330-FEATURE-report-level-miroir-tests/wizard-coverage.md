@@ -8,24 +8,31 @@
 - **`document-upload-fills-text` needs a file upload.** The component-test steps have no file-input step; covering it needs a new step kind (file name, type, inline content) or keeping the case elsewhere. Decided in Slice 7.
 - **`launcher-connect-external-service` starts on another Report** (the home Report's launcher button, then navigation). With the real route (D5), a leaf can mount the home Report, click the button and check the wizard mounted, without the `navigate` mock the TS test uses.
 
+## Outcome (Slice 7)
+
+- `wizardWalk.284` is deleted: every row above is covered by a leaf of `report.connectExternalServiceWizard`. `multistepBranch.284` is kept, and nonreg step `appstack-284-openapi-connection-wizard` now runs it alone.
+- The upload row uses a new component test step, `uploadFile` (file name, text content, MIME type).
+- The Report leaves walk the real wizard where `wizardWalk.284` mounted cut-down copies of it (the secret case mounted the Custom token step alone). Walking the scheme branch found two bugs, fixed in Slice 7: the `scheme` and `secretsClient` branch tests used a transformer that does not exist (`equals`, now `boolExpr` `==`), so Next on Scheme did nothing; and the host showed that failure as an empty message. Checking that the token is in no text of the page found it in the hidden page-parameters dump of `ReportViewWithEditor`, now redacted like the step bag.
+- A `customToken` user still passes through the Client credentials secrets step: a branch has two targets for three schemes (#338).
+
 ## Cases
 
 | File | Case | What it proves | Covered by |
 |---|---|---|---|
-| `wizardWalk.284.integ.test.tsx` L392 | `launcher-connect-external-service` | The home launcher button navigates to the wizard Report of the Miroir application | |
+| `wizardWalk.284.integ.test.tsx` L392 | `launcher-connect-external-service` | The home launcher button navigates to the wizard Report of the Miroir application | `report.connectExternalServiceWizard` suite "Home launcher", "the launcher button opens the wizard" (mounts the home Report, clicks the button, the wizard's Application step shows; no `navigate` mock) |
 | `wizardWalk.284.integ.test.tsx` L410 | `wizard-report-mounts-multistep-host` | The wizard mounts the multistep host on its first step (Application) | `report.connectExternalServiceWizard` "reads an OpenAPI document by URL" (step 1) |
-| `wizardWalk.284.integ.test.tsx` L419 | `picker-lists-fixture-application-only` | The application picker lists the target application and not Miroir or Admin | |
-| `wizardWalk.284.integ.test.tsx` L462 | `document-invalid-stays-with-parser-message` | An invalid OpenAPI document keeps the step, with the parser message | |
-| `wizardWalk.284.integ.test.tsx` L478 | `document-valid-lists-convertible-hides-oneof` | A valid document lists convertible operations and hides `oneOf`-only ones | |
-| `wizardWalk.284.integ.test.tsx` L493 | `document-upload-fills-text` | Uploading a file fills the document text | |
-| `wizardWalk.284.integ.test.tsx` L516 | `cleared-url-does-not-override-pasted-document` | After a refused URL, clearing it lets a pasted document through | |
-| `wizardWalk.284.integ.test.tsx` L535 | `document-private-url-refused` | A private or loopback document URL is refused | |
+| `wizardWalk.284.integ.test.tsx` L419 | `picker-lists-fixture-application-only` | The application picker lists the target application and not Miroir or Admin | `report.connectExternalServiceWizard` "the application picker lists Library, not Miroir or Admin" |
+| `wizardWalk.284.integ.test.tsx` L462 | `document-invalid-stays-with-parser-message` | An invalid OpenAPI document keeps the step, with the parser message | `report.connectExternalServiceWizard` "an empty or unparsable document keeps the step, with the parser message" (empty, then truncated JSON) |
+| `wizardWalk.284.integ.test.tsx` L478 | `document-valid-lists-convertible-hides-oneof` | A valid document lists convertible operations and hides `oneOf`-only ones | `report.connectExternalServiceWizard` "a private document URL is refused; once cleared, a pasted document goes through" (step bag: `convertibleOperationIds` is `["getRelease"]`) |
+| `wizardWalk.284.integ.test.tsx` L493 | `document-upload-fills-text` | Uploading a file fills the document text | `report.connectExternalServiceWizard` "an uploaded file fills the document text" (new `uploadFile` step) |
+| `wizardWalk.284.integ.test.tsx` L516 | `cleared-url-does-not-override-pasted-document` | After a refused URL, clearing it lets a pasted document through | `report.connectExternalServiceWizard` "a private document URL is refused; once cleared, a pasted document goes through" |
+| `wizardWalk.284.integ.test.tsx` L535 | `document-private-url-refused` | A private or loopback document URL is refused | `report.connectExternalServiceWizard` "a private document URL is refused; once cleared, a pasted document goes through" |
 | `wizardWalk.284.integ.test.tsx` L549 | `public-path-skips-secrets` | A public service goes from Authentication to Operations without secret steps | `report.connectExternalServiceWizard` "public service: Finish creates Endpoint and Report" (Next on Authentication shows Operations) |
-| `wizardWalk.284.integ.test.tsx` L568 | `secrets-absent-from-bag-and-formik-dump` | A custom token never appears in the step bag or the form values | |
+| `wizardWalk.284.integ.test.tsx` L568 | `secrets-absent-from-bag-and-formik-dump` | A custom token never appears in the step bag or the form values | `report.connectExternalServiceWizard` "a custom token reaches neither the step bag nor the page" (walks the real scheme branch; the token is in no text of the page, the Formik debug dump being off) |
 | `wizardWalk.284.integ.test.tsx` L635 | `finish-public-creates-endpoint-and-report` | Finish on a public service creates the Endpoint and its Report, and no Entity | `report.connectExternalServiceWizard` "public service: Finish creates Endpoint and Report" (checked in the store, Menu link counted) |
-| `multistepBranch.284.integ.test.tsx` L404 | `false-branch-skips-secret-finish` | The false branch skips the secret step and Finish succeeds (branch fixture Report) | |
-| `multistepBranch.284.integ.test.tsx` L428 | `back-from-review-to-choice` | Back from review returns to the choice step on the visited path (branch fixture Report) | |
-| `multistepBranch.284.integ.test.tsx` L449 | `onNext-error-stays-with-inner-message` | An `onNext` error keeps the step and shows the inner message (branch fixture Report) | |
-| `multistepBranch.284.integ.test.tsx` L481 | `bare-section-back-is-index-minus-one` | Back on a Report without branches goes to the previous index (`reportMultistepCountryCreate`) | |
-| `multistepBranch.284.integ.test.tsx` L518 | `dynamic-schema-gates-next` | A step schema built from the bag blocks Next until its required field is set (branch fixture Report) | |
-| `multistepBranch.284.integ.test.tsx` L538 | `cancel-dialog-text-and-secret-bag-redaction` | The cancel dialog text, and the secret redacted from the bag (branch fixture Report) | |
+| `multistepBranch.284.integ.test.tsx` L404 | `false-branch-skips-secret-finish` | The false branch skips the secret step and Finish succeeds (branch fixture Report) | kept: `multistepBranch.284` (branch fixture Report, not the wizard) |
+| `multistepBranch.284.integ.test.tsx` L428 | `back-from-review-to-choice` | Back from review returns to the choice step on the visited path (branch fixture Report) | kept: `multistepBranch.284` (branch fixture Report, not the wizard) |
+| `multistepBranch.284.integ.test.tsx` L449 | `onNext-error-stays-with-inner-message` | An `onNext` error keeps the step and shows the inner message (branch fixture Report) | kept: `multistepBranch.284` (branch fixture Report, not the wizard) |
+| `multistepBranch.284.integ.test.tsx` L481 | `bare-section-back-is-index-minus-one` | Back on a Report without branches goes to the previous index (`reportMultistepCountryCreate`) | kept: `multistepBranch.284` (`reportMultistepCountryCreate`, not the wizard) |
+| `multistepBranch.284.integ.test.tsx` L518 | `dynamic-schema-gates-next` | A step schema built from the bag blocks Next until its required field is set (branch fixture Report) | kept: `multistepBranch.284` (branch fixture Report, not the wizard) |
+| `multistepBranch.284.integ.test.tsx` L538 | `cancel-dialog-text-and-secret-bag-redaction` | The cancel dialog text, and the secret redacted from the bag (branch fixture Report) | kept: `multistepBranch.284` (branch fixture Report, not the wizard) |

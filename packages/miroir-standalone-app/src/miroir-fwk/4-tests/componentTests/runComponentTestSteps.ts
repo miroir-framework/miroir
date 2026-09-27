@@ -205,6 +205,21 @@ function isEmptyArrayEditor(env: ComponentTestEnvironment, fieldName: string): b
   );
 }
 
+const shortTextLength = 200;
+
+/** `text` cut to `shortTextLength` characters, for an error message. */
+function shortText(text: string | null): string {
+  const value = text ?? "";
+  return value.length > shortTextLength ? `${value.slice(0, shortTextLength)}…` : value;
+}
+
+/** `<tag data-testid="…">` and the start of the text of `element`, for an error message. */
+function describeElement(element: HTMLElement): string {
+  const testId = element.getAttribute("data-testid");
+  const tag = `<${element.tagName.toLowerCase()}${testId === null ? "" : ` data-testid="${testId}"`}>`;
+  return `${tag} ${JSON.stringify(shortText(element.textContent))}`;
+}
+
 /** The `value` of a form element, as the old `(element as HTMLInputElement).value` reads. */
 function elementValue(element: HTMLElement): unknown {
   return (element as HTMLInputElement).value;
@@ -298,7 +313,12 @@ export async function runComponentTestSteps<ExtraStep extends AnyStep = never>(
     if (step.present === false) {
       const matches = queryAllTarget(env, step.target, context.elements);
       if (matches.length > 0) {
-        throw new Error(`expected no element to match target ${describeTarget(step.target)}, found ${matches.length}`);
+        throw new Error(
+          `expected no element to match target ${describeTarget(step.target)}, found ${matches.length}: ${matches
+            .slice(0, 3)
+            .map(describeElement)
+            .join(", ")}`,
+        );
       }
       return;
     }
@@ -342,7 +362,10 @@ export async function runComponentTestSteps<ExtraStep extends AnyStep = never>(
       env.expect(element, "element checked").not.toBeChecked();
     }
     if (step.containsHtml !== undefined) {
-      env.expect(element, "element html").toContainHTML(step.containsHtml);
+      // the element's text in the message: the matcher's own message does not show it
+      env.expect(element, `element html (text ${JSON.stringify(shortText(element.textContent))})`).toContainHTML(
+        step.containsHtml,
+      );
     }
     if (step.attribute !== undefined) {
       checkAttribute(element, step.attribute.name, step.attribute.value);
@@ -406,6 +429,11 @@ export async function runComponentTestSteps<ExtraStep extends AnyStep = never>(
     },
     keyboard: async (step) => {
       await interact(() => userSession().keyboard(step.keys));
+    },
+    uploadFile: async (step) => {
+      const element = resolve(step.target);
+      const file = new File([step.content], step.fileName, { type: step.mimeType ?? "" });
+      await interact(() => userSession().upload(element, file));
     },
     waitForAttribute: async (step) => {
       await waitForAttributeValue(

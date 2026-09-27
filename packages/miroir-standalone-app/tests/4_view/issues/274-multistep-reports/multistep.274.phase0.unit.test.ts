@@ -309,7 +309,9 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
     );
   });
 
-  it("ReportSectionEntityInstance still uses a no-op Formik onSubmit", () => {
+  // #330 Slice 3: the nested Formik's submit, a no-op until then, passes the edited instance to the
+  // Report form's submit (`ReportFormSubmitContext`).
+  it("ReportSectionEntityInstance submits its nested Formik through the Report form", () => {
     const source = readFileSync(
       join(
         REPO_ROOT,
@@ -318,7 +320,7 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
       "utf8",
     );
 
-    expect(source).toMatch(/<Formik[\s\S]*?onSubmit=\{\(\) => \{\}\}/);
+    expect(source).toMatch(/<Formik[\s\S]*?onSubmit=\{submitNestedFormValues\}/);
   });
 
   const requiredNameInputSection: ReportSection = {

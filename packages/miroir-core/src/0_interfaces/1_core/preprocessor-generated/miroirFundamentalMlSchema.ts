@@ -7885,6 +7885,43 @@ export const miroirFundamentalMlSchema = {
             "type": "object",
             "tag": {
               "value": {
+                "defaultLabel": "uploadFile",
+                "description": "Uploads a file of the given name and text content into the file input target (user-event)"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "uploadFile"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "target": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "reactComponentTestTarget",
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                },
+                "context": {}
+              },
+              "fileName": {
+                "type": "string"
+              },
+              "content": {
+                "type": "string"
+              },
+              "mimeType": {
+                "type": "string",
+                "optional": true
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
                 "defaultLabel": "waitForAttribute",
                 "description": "Waits until an attribute of the target equals value"
               }
@@ -9888,6 +9925,41 @@ export const miroirFundamentalMlSchema = {
                       },
                       "keys": {
                         "type": "string"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "uploadFile",
+                        "description": "Uploads a file of the given name and text content into the file input target (user-event)"
+                      }
+                    },
+                    "definition": {
+                      "step": {
+                        "type": "literal",
+                        "definition": "uploadFile"
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "target": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "reactComponentTestTarget"
+                        }
+                      },
+                      "fileName": {
+                        "type": "string"
+                      },
+                      "content": {
+                        "type": "string"
+                      },
+                      "mimeType": {
+                        "type": "string",
+                        "optional": true
                       }
                     }
                   },

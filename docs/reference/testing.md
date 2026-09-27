@@ -1009,6 +1009,7 @@ Every step has a `step` kind and an optional `label` (required for `expectRender
 | `type` | `target`, `text` | `userEvent.type` | `{"step": "type", "target": {"widget": "combobox", "field": "testField"}, "text": "value3"}` |
 | `clear` | `target` | `userEvent.clear` | `{"step": "clear", "target": {"widget": "combobox", "field": "testField"}}` |
 | `keyboard` | `keys` | `userEvent.keyboard` on the focused element | `{"step": "keyboard", "keys": "{Enter}"}` |
+| `uploadFile` | `target`, `fileName`, `content` (the file's text), `mimeType?` | `userEvent.upload` of that file into the file input `target` | `{"step": "uploadFile", "target": {"byTestId": "openapi-document-upload"}, "fileName": "openapi.json", "content": "{}", "mimeType": "application/json"}` |
 | `waitForAttribute` | `target`, `attribute`, `value`, `timeout?` (default 1000 ms) | Waits until the attribute of the target equals `value` | `{"step": "waitForAttribute", "target": {"widget": "selectState", "field": "testField"}, "attribute": "data-test-selected-value", "value": "value3"}` |
 | `openSelect` | `field`, `select?` | Clicks the combobox, then waits until its state tracker has `data-test-is-open="true"` (1000 ms) | `{"step": "openSelect", "field": "testField"}` |
 | `filterSelect` | `field`, `text`, `select?` | Clears the combobox and types `text`, then waits until `data-test-filter-text` equals `text` (1000 ms) | `{"step": "filterSelect", "field": "testField", "text": "value3"}` |

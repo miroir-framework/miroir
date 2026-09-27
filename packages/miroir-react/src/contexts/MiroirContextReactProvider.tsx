@@ -264,7 +264,7 @@ export function MiroirContextReactProvider(props: {
   children: ReactNode;
 }) {
   const [application, setApplication] = useState(props.testingApplication ?? "");
-  // Test harness (e.g. #284 wizardWalk): seed the map with the testing application so pickers
+  // Test harness (e.g. the #330 Report MiroirTests): seed the map with the testing application so pickers
   // that read applicationDeploymentMap keys (D22) see the fixture app, not only Miroir/Admin.
   const [applicationDeploymentMap, setApplicationDeploymentMap] = useState<
     ApplicationDeploymentMap | undefined

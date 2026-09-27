@@ -42,6 +42,8 @@ def main() -> int:
     if "--check" in sys.argv:
         return check()
     for file_name in FILES:
+        if not (TEST_DIR / file_name).exists():  # wizardWalk.284 was deleted in Slice 7
+            continue
         for key, line in list_cases(TEST_DIR / file_name):
             print(f"| `{file_name}` L{line} | `{key}` | | |")
     return 0

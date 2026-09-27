@@ -1654,12 +1654,12 @@
     {
       "id": "appstack-284-openapi-connection-wizard",
       "tier": "default",
-      "title": "#284 — OpenAPI connection wizard (branching host + home walk)",
+      "title": "#284 — OpenAPI connection wizard (branching host)",
       "requires": "none",
       "argv": [
         "bash",
         "-c",
-        "npm run testByFile -w miroir-standalone-app -- --profile {profile} multistepBranch.284 && npm run testByFile -w miroir-standalone-app -- --profile {profile} wizardWalk.284"
+        "npm run testByFile -w miroir-standalone-app -- --profile {profile} multistepBranch.284"
       ]
     },
     {

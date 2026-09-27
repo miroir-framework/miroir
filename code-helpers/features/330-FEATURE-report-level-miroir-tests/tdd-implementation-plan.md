@@ -16,7 +16,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Follow-up: https://github.com/miroir-framework/miroir/issues/333 (stored values in UI steps)
 Working branch: `claude/report-level-miroir-tests-0lnny6` (from `_integration`, PR against `_integration`)
 
-**Resume note:** Slices 0 to 6 done 2026-09-27; Slice 7 next.
+**Resume note:** Slices 0 to 7 done 2026-09-27; Slice 8 next.
 
 ---
 
@@ -44,7 +44,7 @@ This plan does **not** cover stored values in UI steps (#333), an in-memory mode
 | 4 | Invalid input is not saved | ✅ | leaf "does not save an invalid value" |
 | 5 | Fake HTTP, and the wizard's first steps | ✅ | `report.connectExternalServiceWizard` leaf "reads an OpenAPI document by URL" + undeclared-request vitest |
 | 6 | Wizard Finish persists the Endpoint and Report | ✅ | leaf "public service: Finish creates Endpoint and Report" |
-| 7 | Wizard branches; 284 UI tests deleted | ⬜ | branch leaves + coverage table all covered |
+| 7 | Wizard branches; 284 UI tests deleted | ✅ | branch leaves + coverage table all covered (`wizardWalk.284` deleted, `multistepBranch.284` kept) |
 | 8 | Report tests in the app | ⬜ | launcher registry test + in-app run |
 | 9 | Nonreg, docs, cleanup, AC | ⬜ | nonreg steps + tracer narrative |
 
@@ -459,7 +459,7 @@ npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesyst
 
 ## Slice 7 — Wizard branches; 284 UI tests deleted
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -491,7 +491,17 @@ npm run lint
 
 ### Realization
 
-<Appended on completion.>
+- **Proof:** `report.connectExternalServiceWizard` has 8 leaves in two suites, all passing on `emulatedServer-filesystem`. New in this slice: "the application picker lists Library, not Miroir or Admin", "an empty or unparsable document keeps the step, with the parser message", "a private document URL is refused; once cleared, a pasted document goes through" (it also checks the step bag keeps `getRelease` and not the `oneOf` operation), "an uploaded file fills the document text", "a custom token reaches neither the step bag nor the page", and a second suite on the home Report, "the launcher button opens the wizard" (a real route change in the `MemoryRouter`, no `navigate` mock). `list_wizard_cases.py --check` passes: every row of `wizard-coverage.md` is covered or kept.
+- **Deleted:** `wizardWalk.284.integ.test.tsx`, and `getMlEditorTestLocalCache` that only it used. **Kept (deviation from 7.2, per the Slice 0 finding):** `multistepBranch.284`, which tests the multistep host on a branch fixture Report, not the wizard; nonreg step `appstack-284-openapi-connection-wizard` runs it alone. The wizard suite joins nonreg in Slice 9.
+- **New component test step:** `uploadFile` (`target`, `fileName`, `content`, `mimeType?`, `userEvent.upload`), in the MiroirTest Entity and EntityVersion schemas (types regenerated) and `docs/reference/testing.md`. The upload case had no step to express it.
+- **Bugs found and fixed (the leaves walk the real wizard, where `wizardWalk.284` mounted the Custom token step alone):**
+  - Next on the Scheme step did nothing: the `scheme` and `secretsClient` branch tests of the wizard used `transformerType: "equals"`, which does not exist. They now use `boolExpr` with `==`. No authenticated service could pass the Scheme step.
+  - `MultistepReportHost` showed that branch failure as an empty message, so nothing appeared: a `TransformerFailure` without `failureMessage` has an empty `message`, and `??` kept it. It now uses `||` and falls back to "Branch test failed.".
+  - The token was in the page: the hidden `report-query-pageparams` dump of `ReportViewWithEditor` holds the step bag unredacted. It now goes through `omitSecretKeysFromBagDump` for multistep Reports, like the Formik debug dump.
+- **Known, not fixed (#338):** a `customToken` user passes through the Client credentials secrets step, since a branch has two targets for three schemes. The leaf asserts this detour and names the issue, so it fails when the wizard is fixed.
+- **Runner messages:** a failed `containsHtml` check shows the element's text, and a failed `present: false` check describes the matching elements (tag, test id, text): both were needed to find the bugs above.
+- **Stale contract test fixed:** `multistep.274.phase0` "ReportSectionEntityInstance still uses a no-op Formik onSubmit" pinned the behaviour Slice 3 fixed; it now checks the nested Formik submits through `submitNestedFormValues`. Slices 3 to 6 did not run it (it is in `nonreg:unit`).
+- **Validation (2026-09-27):** skills sync; scripts pytest 45; `list_wizard_cases.py --check`; tsc core, react, app; lint; miroir-core unit 2083 (+1 skipped); Miroir model validation 162; component tests 74 (+15 skipped); `multistep.274.phase0` 16; `componentTestSchema.292` 11; `componentTestSteps.292` 14; `uiIntegrationTestLauncher.unit` 18; `reportTestLauncher.330.slice1` 5; `reportIdleWait.330.slice3` 6; on `emulatedServer-filesystem`: `reportTestFailure.330.slice2` 2, `fakeHttp.330.slice5` 3 (its copy of the suite now includes the home launcher suite), `report.bookDetails` 4, `report.connectExternalServiceWizard` 8, `runner.lendDocument` 1, `multistepBranch.284` 6, `multistepProcess.274` 19, `multistepLaunch.274` 7, `connectExternalService.284.phase1` 1, `externalServiceDispatch.integ` 13, `virtualAttributes.integ` 3.
 
 ---
 

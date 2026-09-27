@@ -443,7 +443,12 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   return (
     <>
       <pre data-testid="report-query-pageparams" hidden>
-        {JSON.stringify(reportInterpreterPageParams)}
+        {/* the step bag of a multistep Report is in the page params: its secrets stay out of the page */}
+        {JSON.stringify(
+          props.reportDefinition?.type === "multistep"
+            ? omitSecretKeysFromBagDump(reportInterpreterPageParams)
+            : reportInterpreterPageParams,
+        )}
       </pre>
       {/* <span>ReportViewWithEditor generalEditMode: {generalEditMode ? "true" : "false"}</span> */}
       <Box sx={{ position: "relative" }}>
