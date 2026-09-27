@@ -8,7 +8,7 @@ Related docs: [`docs/internals/code-splitting.md`](../../../docs/internals/code-
 Key sources: [`packages/miroir-standalone-app/vite.config.js`](../../../packages/miroir-standalone-app/vite.config.js), [`packages/miroir-standalone-app/vite/`](../../../packages/miroir-standalone-app/vite/), [`packages/miroir-standalone-app-electron/package.json`](../../../packages/miroir-standalone-app-electron/package.json), [`.github/workflows/`](../../../.github/workflows/), [`ci/release/release_lib/lerna_ops.py`](../../../ci/release/release_lib/lerna_ops.py)
 
 **Document role:** analysis and decision record. The decisions were settled with A in two grilling rounds (Q1 to Q26) in the project thread on 2026-09-27; `D<n>` below is `Q<n>` there.
-**Status:** decisions confirmed, D4 revised after grilling (see D4). Implementation per [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md).
+**Status:** decisions confirmed (D4 revised after grilling: vendored tarball). Implementation per [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md).
 
 All measurements below were taken on 2026-09-27 in a cloud container, after `./build-all.sh devBuild` on `_integration` (`a4a17be` for the tree, `576bec5` for the build); sizes did not change between the two.
 
@@ -21,7 +21,7 @@ All measurements below were taken on 2026-09-27 in a cloud container, after `./b
 | D1 | What blocks the release | **Critical/high fixes, exact pinning and lockfile enforcement.** Bundle tracing and guards land in this issue but do not block. Size cuts found by tracing get their own issues. |
 | D2 | Audit scope | **Dev tooling and shipped code, in every workspace package** (including `miroir-homepage`, `miroir-sandbox`). |
 | D3 | Lerna | **Upgrade 9 → 10, keep it** (`ci/release` uses `lerna version`, `lerna ls --since`). |
-| D4 | xlsx (no fixed version on npm) | **Revised after grilling, pending A's pick**: remove `xlsx` with its two unused files (recommended), or SheetJS 0.20.3 as a CDN or vendored tarball. See D4 below. |
+| D4 | xlsx (no fixed version on npm) | **SheetJS 0.20.3 vendored as a tarball in the repo**, installed from a `file:` path (revised after grilling, see D4 below). |
 | D5 | undici 5.29 under `@cursor/sdk` | **Root `overrides` to a fixed undici**, verify the Cursor path; if it breaks, a dated audit exception rather than dropping the SDK. |
 | D6 | Third-party specs | **Exact versions** in `dependencies`, `devDependencies`, root `overrides`; `save-exact=true` in a root `.npmrc`. **Peer dependencies keep ranges.** |
 | D7 | Internal `miroir-*` specs | **`*` at dev time; the release rewrites them to the exact version** instead of `^<version>`. |
@@ -49,16 +49,16 @@ All measurements below were taken on 2026-09-27 in a cloud container, after `./b
 
 ### D4 — xlsx
 
-**Status:** Accepted in grilling as D4-b, then reopened with A on 2026-09-27 (decision card in the thread) because of two facts found while writing this analysis (§3.1).
+**Status:** Accepted in grilling as D4-b, reopened on 2026-09-27 (decision card in the thread) because of two facts found while writing this analysis (§3.1); A chose D4-c.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
-| **D4-a. Remove** ★ | Delete `xlsx` from `miroir-standalone-app`, `Importer.tsx` and `ImportEntityFromSpreadsheetRunner.tsx` | Nothing ships or runs this code today (§3.1); no network or binary added | Spreadsheet import must re-add SheetJS when revived |
+| D4-a. Remove (recommended on the card) | Delete `xlsx` from `miroir-standalone-app`, `Importer.tsx` and `ImportEntityFromSpreadsheetRunner.tsx` | Nothing ships or runs this code today (§3.1); no network or binary added | Spreadsheet import must re-add SheetJS when revived |
 | D4-b. CDN tarball | `"xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"` | Official SheetJS distribution, same API | The cloud-session proxy returns 403 for `cdn.sheetjs.com`, so `npm ci` fails in agent sessions until the environment's network policy allows it |
-| D4-c. Vendored tarball | Commit the 0.20.3 tarball, `"xlsx": "file:…"` | Works in every environment | Binary in git; manual upgrades |
+| **D4-c. Vendored tarball** ★ | Commit the 0.20.3 tarball, `"xlsx": "file:…"` | Works in every environment | Binary in git; manual upgrades |
 | D4-d. Replace library | `exceljs` or `read-excel-file` | Maintained on npm | Rewrites a disabled feature for no current user |
 
-**Decision:** D4-a recommended; the implementation plan follows whichever option A picks.
+**Decision:** D4-c. Keeps the disabled spreadsheet import compiling and installable in every environment. The tarball itself must come from `cdn.sheetjs.com`, which the cloud-session proxy blocks: A supplies it or allows the host once.
 
 ### D6 / D7 — Version specifications
 

@@ -9,7 +9,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/326
 Working branches: PR 1 `claude/build-hardening-81mz9d`, PR 2 `claude/build-hardening-bundles` (D17), both from `_integration`
 
-**Resume note:** plan written 2026-09-27; no slice started. D4 (xlsx) waits on A's pick; Slice 7 follows it.
+**Resume note:** Slice 0 DONE 2026-09-27. D4 settled on a vendored tarball; Slice 7 needs the tarball from A (cloud proxy blocks `cdn.sheetjs.com`).
 
 ---
 
@@ -26,7 +26,7 @@ This plan does **not** cut bundle size (D19: separate issue opened in Slice 17 f
 
 | Slice | PR | Title | Status | Primary proof |
 |---|---|---|---|---|
-| 0 | 1 | Baseline: audit, specs, build sizes, nonreg | ⬜ | `baseline.json` + nonreg:unit / nonreg:filesystem results |
+| 0 | 1 | Baseline: audit, specs, build sizes, nonreg | ✅ | `baseline.json` + nonreg:unit / nonreg:filesystem results |
 | 1 | 1 | Tracer: a floating spec fails the check; every spec pinned | ⬜ | `test_check_dependency_policy.py` specs rules + real repo exits 0 |
 | 2 | 1 | The release writes exact internal versions | ⬜ | `ci/release/tests` new test |
 | 3 | 1 | Build tools leave runtime `dependencies` | ⬜ | `classification` rule + `npm audit --omit=dev` drop |
@@ -55,7 +55,7 @@ Copied from the analysis decision record (`D<n>` = grilling `Q<n>`); binding for
 |---|---|
 | D2 Audit scope | dev tooling and shipped code, every workspace package |
 | D3 Lerna | 9 → 10, kept |
-| D4 xlsx | **open**: remove with `Importer.tsx` and `ImportEntityFromSpreadsheetRunner.tsx` (recommended), CDN tarball, or vendored tarball |
+| D4 xlsx | SheetJS 0.20.3 tarball committed under `dependency-policy/vendor/`, `"xlsx": "file:../../dependency-policy/vendor/xlsx-0.20.3.tgz"` in `miroir-standalone-app` |
 | D5 undici | root `overrides` to a fixed version; dated exception if the Cursor path breaks |
 | D6 Third-party specs | exact in `dependencies`, `devDependencies`, `optionalDependencies`, root `overrides`; peers keep ranges; root `.npmrc` `save-exact=true` |
 | D7 Internal specs | `*` at dev time; release writes the exact product version |
@@ -117,7 +117,7 @@ Run `./build-all.sh devBuild` before any baseline or nonreg run in a cloud sessi
 
 ## Slice 0 — Baseline
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -136,6 +136,13 @@ npm audit --json > /tmp/audit-before.json; npm run nonreg:unit; npm run nonreg:f
 ```
 
 ### Realization
+
+2026-09-27, tree `f4fc620` (= `_integration` `a4a17be` + the two docs), after `./build-all.sh devBuild` (206 s). [`baseline.json`](./baseline.json) holds the numbers:
+- `npm audit`: 4 critical, 50 high, 25 moderate, 19 low (98), same as the issue.
+- Specs: 343 `^`, 120 `*`/range, 37 exact, 2 aliases. The draft `specs` rule counts 338 manifest violations plus the missing `.npmrc`.
+- Standalone build: 387 JS chunks, 27.07 MB raw / 6.23 MB gzip; eager closure 7 chunks, 10.40 MB raw / 2.71 MB gzip.
+- `npm run nonreg:unit`: 38/38 passed (583 s). `npm run nonreg:filesystem`: 74/74 passed (1310 s). The earlier Postgres-bound failures (memory `nonreg-filesystem-env-failures`) no longer occur.
+- Problem met: nonreg rewrites 8 tracked files and adds 2 under `packages/miroir-standalone-app/tests/assets/admin_data/` (the #321 problem). Every later nonreg run is followed by `git checkout -- packages/miroir-standalone-app/tests/assets/admin_data && git clean -fdq packages/miroir-standalone-app/tests/assets/admin_data`.
 
 ---
 
@@ -371,7 +378,7 @@ npm run nonreg:unit && npm run nonreg:filesystem
 
 ## Slice 7 — No high advisory at all; the audit gate blocks PRs
 
-**Status:** ⬜ pending (waits for D4)
+**Status:** ⬜ pending (needs the SheetJS tarball)
 
 ### Goal
 
@@ -387,7 +394,7 @@ Real-repo `--rule audit` is RED on the remaining highs: `http-proxy-middleware`,
 
 - Exact bumps, overrides where needed (each documented, see Slice 5 refactor).
 - `undici`: exact root override to the first fixed version; verify the Cursor path (`npm run test -w miroir-ai`, and `assertCursorSdkPackaged` in the Electron build). If it breaks, revert the override and add a dated exception (D5).
-- `xlsx`: per A's D4 pick (recommended: delete `Importer.tsx`, `ImportEntityFromSpreadsheetRunner.tsx`, the commented-out entry in `RunnersList.tsx` lines 55–58, and the dependency).
+- `xlsx`: commit `xlsx-0.20.3.tgz` (from `https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz`, supplied by A or fetched once the host is allowed) under `dependency-policy/vendor/`, record its SHA-512 in `dependency-policy/README.md`, and point the `miroir-standalone-app` spec at it; `npx tsc` on the standalone app proves `Importer.tsx` and `ImportEntityFromSpreadsheetRunner.tsx` still compile.
 - `pr-checks.yml`: step `python3 scripts/check_dependency_policy.py` (all rules, audit included) after `npm ci`.
 
 ### Refactor checkpoint
