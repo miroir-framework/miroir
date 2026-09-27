@@ -9,7 +9,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/326
 Working branches: PR 1 `claude/build-hardening-81mz9d`, PR 2 `claude/build-hardening-bundles` (D17), both from `_integration`
 
-**Resume note:** PR 1 (Slices 0–9 and 7b) DONE 2026-09-27 on `claude/build-hardening-81mz9d` (PR #334). PR 2 on `claude/build-hardening-bundles`, branched from PR 1's head: Slices 10 to 15 DONE (draft PR #335, stacked on #334); next: Slice 16. Lockfiles are regenerated with npm 11 and `--before` (Slice 4 realization).
+**Resume note:** PR 1 (Slices 0–9 and 7b) DONE 2026-09-27 on `claude/build-hardening-81mz9d` (PR #334). PR 2 on `claude/build-hardening-bundles`, branched from PR 1's head: Slices 10 to 16 DONE (draft PR #335, stacked on #334); next: Slice 17. Lockfiles are regenerated with npm 11 and `--before` (Slice 4 realization).
 
 ---
 
@@ -43,7 +43,7 @@ This plan does **not** cut bundle size (D19: separate issue opened in Slice 17 f
 | 13 | 2 | Electron main bundled with esbuild, traced and guarded | ✅ | esbuild metafile report + `electron-builder --dir` content check |
 | 14 | 2 | Bundle guards run on PRs | ✅ | `bundle` job in `pr-checks.yml` |
 | 15 | 2 | Sourcemaps kept out of the Electron package | ✅ | asar / resources listing has no `.map` |
-| 16 | 2 | On-demand coverage tour | ⬜ | `coverage-report.json` from a real tour |
+| 16 | 2 | On-demand coverage tour | ✅ | `coverageTour.326.phase16.integ.test.ts` on a real tour + `coverageCore.326.phase16.unit.test.ts` |
 | 17 | 2 | Docs, size issue, #286 guard folded, cleanup, AC | ⬜ | AC checklist |
 
 ---
@@ -885,7 +885,7 @@ cd packages/miroir-standalone-app-electron && npx electron-builder --dir --linux
 
 ## Slice 16 — On-demand coverage tour
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -904,13 +904,21 @@ Tour steps: home page, a Library report with a grid, an instance editor, Runners
 ### Validation
 
 ```bash
-npm run build -w miroir-standalone-app && npm run build:server -w miroir-server
-NODE_ENV=development node packages/miroir-server/release/index.js &
-npx tsx packages/miroir-standalone-app/scripts/coverage-tour.ts
-RUN_TEST=coverageTour.326.phase16 npm run testByFile -w miroir-standalone-app -- coverageTour.326.phase16
+npm run build -w miroir-standalone-app && npm run build:release -w miroir-server
+npm run coverageTour -w miroir-standalone-app -- --serve        # add --browser <chromium> when playwright-core's is not installed
+npm run testByFile -w miroir-standalone-app -- coverageCore.326.phase16
+MIROIR_COVERAGE_TOUR=1 MIROIR_TOUR_BROWSER=/opt/pw-browsers/chromium npm run testByFile -w miroir-standalone-app -- coverageTour.326.phase16
 ```
 
 ### Realization
+
+- `packages/miroir-standalone-app/scripts/coverage-tour.mjs`, run by `npm run coverageTour -w miroir-standalone-app`. **Deviation:** a Node ES module like the Electron `bundle-main.mjs`, not `coverage-tour.ts` through `tsx`: it only imports the plain JS of `vite/`. Options: `--serve` (copies `dist/` into the server release, starts it in production mode with authentication off on the repository's `certs/` or a one-day self-signed certificate made with `openssl`, stops it at the end), `--url` (a server already running, default `https://localhost:3080`, the address the client is built for), `--browser` or `MIROIR_TOUR_BROWSER`, `--out` (default `dist/.vite/coverage-report.json`), `--headed`. Exit 0, 1 when a page was not reached (the report is still written, with a screenshot per missed page next to it), 2 when the tour cannot run (no build, no server release, port taken, a served chunk that is not this build's).
+- `playwright-core` 1.63.0, pinned devDependency of `miroir-standalone-app` (published 2026-09-04, relocked with `--before`; one lockfile entry, no dependency, no install script, no browser download). The browser is `--browser`, else the Chromium playwright-core installs (`npx playwright-core install chromium`), else the installed Chrome. In the cloud container its Chromium build differs from 1.63's, hence `MIROIR_TOUR_BROWSER=/opt/pw-browsers/chromium`.
+- Tour (D26), each page checked by what it shows: home page (`Fetch configurations`, then "The Library Application" in the Application combobox), Library Books grid, the Book editor dialog from the grid's first edit button (`Book details`), Runners, the Miroir Tests report, the model diagram (an `svg`), the Copilot sidebar. After the home page it navigates inside the app (`history.pushState` + `popstate`, or clicks), so the page loads once and each chunk is counted once; a report URL opened directly lacks the Library configuration. When the home page fails the other pages are marked "not tried" instead of timing out one by one.
+- `vite/coverageCore.js` (pure): `executedMask` (V8 block coverage, inner ranges override outer), `sourceIndexByOffset` (a VLQ decoder of the source map, no dependency), `addChunkCoverage` (every character attributed to its package with the Slice 11 `attributeModule`; Vite's virtual `__vite-browser-external` and `__vite-optional-peer-dep:…` named as in the bundle report), `buildCoverageReport` (packages sorted by loaded code that never ran). `resolveFrom` is now exported by `bundleReportCore.js`. Sizes are characters of minified code, the unit of V8 offsets and source map columns.
+- The script refuses a served chunk whose text differs from `dist/assets` (a server serving an older build), and a chunk without source map.
+- Tests: `coverageCore.326.phase16.unit.test.ts`, 7 cases, one of them on a real esbuild bundle (two npm packages and an app file) run in the test process under `node:inspector` precise coverage. `coverageTour.326.phase16.integ.test.ts`, 3 cases (every D26 page visited and exit 0, `react-dom` partly ran, `mongodb` shipped and never ran), skipped unless `MIROIR_COVERAGE_TOUR=1` like the `MIROIR_COMPONENT_PERF` suite; about 30 s with `--serve`.
+- First tour of today's build: 7 of 7 pages; 28 of 387 chunks loaded, 11.9 M characters, of which 6.4 M ran (54 %); the whole build is 27.0 M. Most loaded code that never ran: `ag-grid-community` 987 k loaded, 36 % ran; `miroir-core` 1,569 k, 66 %; the app 560 k, 43 %; `bn.js` 306 k, 10 % (the `crypto` polyfill); `mermaid` 358 k, 37 %; `@glideapps/glide-data-grid` 185 k, 5 %; `@codemirror/view` 187 k, 9 %; `@copilotkit/react-core` 195 k, 18 %. 27 packages load and never run (micromark and remark extensions, Radix helpers, `d3-ease`, …). Shipped and never loaded: `@shikijs/langs` 7.4 M in 235 chunks, `sequelize` 488 k, `mongodb` 428 k, `miroir-store-mongodb` 181 k, `miroir-store-postgres` 124 k, `bson` 74 k. These feed the size issue of Slice 17.
 
 ---
 

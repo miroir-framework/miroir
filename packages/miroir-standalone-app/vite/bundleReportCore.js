@@ -206,7 +206,7 @@ export function condensedChain(chain, packageOfPath) {
  * @param {string} base
  * @param {string} path
  */
-function resolveFrom(base, path) {
+export function resolveFrom(base, path) {
   if (path.startsWith("<") || /^[a-z][a-z-]+:/i.test(path)) {
     return path;
   }
