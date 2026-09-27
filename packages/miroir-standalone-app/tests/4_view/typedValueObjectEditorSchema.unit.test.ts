@@ -5,13 +5,13 @@ import { getMiroirFundamentalSchemaForDeployment, mlsTypeCheck } from "miroir-co
 import {
   defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,
-  miroirTest_runner_return_document,
+  miroirTest_runner_returnDocument,
 } from "miroir-test-app_deployment-library";
 
 import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 /**
  * TypedValueObjectEditor resolves the ML schema against useCurrentModelEnvironment(application, …).
- * Model-section Library instances (e.g. runner_return_document) must use the Library application so
+ * Model-section Library instances (e.g. runner.returnDocument) must use the Library application so
  * getMiroirFundamentalSchemaForDeployment extends actionTemplate with lendDocument.
  */
 describe("TypedValueObjectEditor schema resolution (Feature 198)", () => {
@@ -34,10 +34,10 @@ describe("TypedValueObjectEditor schema resolution (Feature 198)", () => {
     },
   };
 
-  it("runner_return_document MiroirTest validates when model environment uses Library deployment schema", () => {
+  it("runner.returnDocument MiroirTest validates when model environment uses Library deployment schema", () => {
     const result = mlsTypeCheck(
       miroirTestDefinitionSchema,
-      miroirTest_runner_return_document,
+      miroirTest_runner_returnDocument,
       [],
       [],
       libraryModelEnvironment,

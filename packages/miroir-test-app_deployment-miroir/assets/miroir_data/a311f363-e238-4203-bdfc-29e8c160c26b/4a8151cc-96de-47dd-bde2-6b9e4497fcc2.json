@@ -2,18 +2,19 @@
   "uuid": "4a8151cc-96de-47dd-bde2-6b9e4497fcc2",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "mlUnion_RecursiveUnfold",
+  "name": "fn.mlUnion.recursivelyUnfold",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Migrated from UnitTest c6d1a002-0002-4000-8000-000000000002 (Feature #196 Phase 5)",
+  "description": "mlUnion_RecursiveUnfold on root and nested unions and references.",
   "tags": [
+    "unit",
     "ml-schema",
     "ml-union"
   ],
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "mlUnion_RecursiveUnfold",
+    "miroirTestLabel": "fn.mlUnion.recursivelyUnfold",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",

@@ -2,11 +2,12 @@
   "uuid": "1c086ab9-d6a3-4cb9-b0cd-720a09e2cd44",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "mlsToCopilotKitParameter",
+  "name": "fn.mlsToCopilotKitParameter",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Migrated from UnitTest b2e3f4a5-c6d7-4e8f-9a0b-1c2d3e4f5a6b (Feature #196 Phase 5)",
+  "description": "mlsToCopilotKitParameter conversion of ML schemas to CopilotKit parameters.",
   "tags": [
+    "unit",
     "ml-schema",
     "ml-conversion",
     "ai"
@@ -14,7 +15,7 @@
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "mls.mlsToCopilotKitParameter",
+    "miroirTestLabel": "fn.mlsToCopilotKitParameter",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",

@@ -2,18 +2,19 @@
   "uuid": "b1000bf2-4067-4881-9ac9-fa4911fb3a67",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "MlSchemaReferencesSet",
+  "name": "fn.mlSchemaReferences.set",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Migrated from UnitTest e2f3a4b5-c6d7-4e8f-9a01-b2c3d4e5f6a7 (Feature #196 Phase 5)",
+  "description": "MlSchemaReferencesSet detection of schema references in ML schemas.",
   "tags": [
+    "unit",
     "ml-schema",
     "ml-reference"
   ],
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "mls.MlSchemaReferencesSet",
+    "miroirTestLabel": "fn.mlSchemaReferences.set",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",

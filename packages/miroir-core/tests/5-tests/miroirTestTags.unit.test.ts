@@ -17,6 +17,8 @@ import {
 import {
   getMiroirTestAllowedTags,
   getMiroirTestInstanceTags,
+  MIROIR_TEST_MODE_TAGS,
+  miroirTestSuiteModeTags,
 } from "../../src/5_tests/miroirTestTags";
 import { checkModelValidationInstance } from "../../src/5_tests/ModelValidationTools";
 import {
@@ -46,28 +48,28 @@ function miroirTestInstanceNamed(name: string): any {
 
 describe("MiroirTest tags: CLI config", () => {
   it("reads --tags from argv, trimmed", () => {
-    const config = parseMiroirTestCliConfig({}, ["--tags", "tools, data"], ["mustache"]);
+    const config = parseMiroirTestCliConfig({}, ["--tags", "tools, data"], ["fn.mustache.extractDoubleBracePatterns"]);
     expect(config.tags).toEqual(["tools", "data"]);
   });
 
   it("falls back to MIROIR_TEST_TAGS, argv wins", () => {
-    expect(parseMiroirTestCliConfig({ MIROIR_TEST_TAGS: "tools" }, [], ["mustache"]).tags).toEqual([
+    expect(parseMiroirTestCliConfig({ MIROIR_TEST_TAGS: "tools" }, [], ["fn.mustache.extractDoubleBracePatterns"]).tags).toEqual([
       "tools",
     ]);
     expect(
-      parseMiroirTestCliConfig({ MIROIR_TEST_TAGS: "tools" }, ["--tags", "data"], ["mustache"]).tags,
+      parseMiroirTestCliConfig({ MIROIR_TEST_TAGS: "tools" }, ["--tags", "data"], ["fn.mustache.extractDoubleBracePatterns"]).tags,
     ).toEqual(["data"]);
   });
 
   it("an empty --tags clears MIROIR_TEST_TAGS, also for the vitest process", () => {
-    const config = parseMiroirTestCliConfig({ MIROIR_TEST_TAGS: "tools" }, ["--tags", ""], ["mustache"]);
+    const config = parseMiroirTestCliConfig({ MIROIR_TEST_TAGS: "tools" }, ["--tags", ""], ["fn.mustache.extractDoubleBracePatterns"]);
     expect(config.tags).toEqual([]);
     expect(miroirTestCliConfigToEnv(config).MIROIR_TEST_TAGS).toBe("");
   });
 
   it("writes MIROIR_TEST_TAGS back for the vitest process", () => {
     const env = miroirTestCliConfigToEnv({
-      suiteKeys: ["mustache"],
+      suiteKeys: ["fn.mustache.extractDoubleBracePatterns"],
       executionMode: "unit",
       tags: ["tools", "data"],
     });
@@ -80,35 +82,35 @@ describe("MiroirTest tags: selection over the folder catalog", () => {
   const unitKeys = listCliUnitSuiteKeysFromFolders(repoRoot);
 
   it("selects the suites carrying a tag when no suite is named", () => {
-    expect(resolveCliSuiteKeysFromCatalog([], unitKeys, catalog, ["tools"])).toContain("mustache");
+    expect(resolveCliSuiteKeysFromCatalog([], unitKeys, catalog, ["tools"])).toContain("fn.mustache.extractDoubleBracePatterns");
     expect(resolveCliSuiteKeysFromCatalog([], unitKeys, catalog, ["tools"])).not.toContain(
-      "miroirCoreTransformers",
+      "tr.core",
     );
   });
 
   it("intersects tags with named suites", () => {
     expect(
-      resolveCliSuiteKeysFromCatalog(["mustache", "miroirCoreTransformers"], unitKeys, catalog, [
+      resolveCliSuiteKeysFromCatalog(["fn.mustache.extractDoubleBracePatterns", "tr.core"], unitKeys, catalog, [
         "tools",
       ]),
-    ).toEqual(["mustache"]);
+    ).toEqual(["fn.mustache.extractDoubleBracePatterns"]);
   });
 
   it("leaves the selection alone without tags", () => {
-    expect(resolveCliSuiteKeysFromCatalog(["mustache"], unitKeys, catalog)).toEqual(["mustache"]);
+    expect(resolveCliSuiteKeysFromCatalog(["fn.mustache.extractDoubleBracePatterns"], unitKeys, catalog)).toEqual(["fn.mustache.extractDoubleBracePatterns"]);
   });
 });
 
 describe("MiroirTest tags: schema", () => {
   it("a tagged instance passes model validation against the MiroirTest EntityVersion", () => {
-    const mustache = miroirTestInstanceNamed("mustache");
-    expect(mustache.tags).toEqual(["tools"]);
+    const mustache = miroirTestInstanceNamed("fn.mustache.extractDoubleBracePatterns");
+    expect(mustache.tags).toEqual(["unit", "tools"]);
     const entityVersion = readJson(miroirTestEntityVersionPath);
     expect(entityVersion.entityUuid ?? ENTITY_MIROIR_TEST_UUID).toBe(ENTITY_MIROIR_TEST_UUID);
     const check = checkModelValidationInstance(
       entityVersion.mlSchema as MlElement,
       mustache,
-      "mustache",
+      "fn.mustache.extractDoubleBracePatterns",
       defaultMiroirModelEnvironment,
     );
     expect(check.status).toBe("ok");
@@ -123,7 +125,7 @@ describe("MiroirTest tags: vocabulary from the MiroirTest Entity", () => {
   it("reads the allowed tags from the live Entity row, in declaration order", () => {
     expect(miroirTestEntity.uuid).toBe(ENTITY_MIROIR_TEST_UUID);
     const allowed = getMiroirTestAllowedTags(miroirTestEntity);
-    expect(allowed).toHaveLength(20);
+    expect(allowed).toHaveLength(23);
     expect(allowed?.slice(0, 3)).toEqual(["transformer", "ml-schema", "ml-union"]);
     expect(allowed).toContain("tools");
   });
@@ -172,12 +174,12 @@ describe("MiroirTest issue", () => {
   const instances = loadApplicationMiroirTestsFromFolders(repoRoot);
 
   it("an instance with an issue passes model validation against the MiroirTest EntityVersion", () => {
-    const testPattern = miroirTestInstanceNamed("MlTestPattern_ComponentTestSuite");
+    const testPattern = miroirTestInstanceNamed("ui.mlElementEditor.allTypesPattern");
     expect(testPattern.issue).toBe("303");
     const check = checkModelValidationInstance(
       readJson(miroirTestEntityVersionPath).mlSchema as MlElement,
       testPattern,
-      "MlTestPattern_ComponentTestSuite",
+      "ui.mlElementEditor.allTypesPattern",
       defaultMiroirModelEnvironment,
     );
     expect(check.status).toBe("ok");
@@ -188,5 +190,42 @@ describe("MiroirTest issue", () => {
       .filter((instance: any) => instance.issue !== undefined && !/^[1-9]\d*$/.test(instance.issue))
       .map((instance: any) => `${instance.name}: ${instance.issue}`);
     expect(malformed).toEqual([]);
+  });
+});
+
+describe("MiroirTest mode tags (#316)", () => {
+  const catalog = loadApplicationMiroirTestCatalog(repoRoot);
+
+  it("the MiroirTest Entity allows unit, integ and ui, identically in its EntityVersion", () => {
+    const allowed = getMiroirTestAllowedTags(loadMiroirTestEntityFromFolders(repoRoot));
+    expect(allowed).toEqual(expect.arrayContaining([...MIROIR_TEST_MODE_TAGS]));
+    expect(getMiroirTestAllowedTags(readJson(miroirTestEntityVersionPath))).toEqual(allowed);
+  });
+
+  it("every MiroirTest instance carries exactly the mode tags derived from its leaves, first", () => {
+    const wrong = catalog
+      .map((entry) => {
+        const expected = miroirTestSuiteModeTags(entry.suiteDefinition);
+        const tags = getMiroirTestInstanceTags(entry.instance);
+        return { name: entry.suiteKey, expected, actual: tags.slice(0, expected.length), tags };
+      })
+      .filter(
+        (row) =>
+          row.expected.join(",") !== row.actual.join(",") ||
+          row.tags.filter((tag) => (MIROIR_TEST_MODE_TAGS as readonly string[]).includes(tag)).length !==
+            row.expected.length,
+      );
+    expect(wrong).toEqual([]);
+  });
+
+  it("--tags ui selects exactly the suites with reactComponentTest leaves", () => {
+    const uiSuites = catalog
+      .filter((entry) => miroirTestSuiteModeTags(entry.suiteDefinition).includes("ui"))
+      .map((entry) => entry.suiteKey)
+      .sort();
+    expect(uiSuites.length).toBeGreaterThan(0);
+    expect(
+      resolveCliSuiteKeysFromCatalog([], listCliUnitSuiteKeysFromFolders(repoRoot), catalog, ["ui"]).sort(),
+    ).toEqual(uiSuites);
   });
 });

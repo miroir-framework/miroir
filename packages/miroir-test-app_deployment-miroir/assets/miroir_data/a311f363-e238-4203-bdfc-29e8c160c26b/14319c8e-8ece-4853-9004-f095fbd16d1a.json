@@ -2,18 +2,19 @@
   "uuid": "14319c8e-8ece-4853-9004-f095fbd16d1a",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "unionObjectChoices",
+  "name": "fn.mlsTypeCheck.unionObjectChoices",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Migrated from UnitTest c6d1a003-0003-4000-8000-000000000003 (Feature #196 Phase 5)",
+  "description": "unionObjectChoices on flat, nested and referenced unions.",
   "tags": [
+    "unit",
     "ml-schema",
     "ml-union"
   ],
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "unionObjectChoices",
+    "miroirTestLabel": "fn.mlsTypeCheck.unionObjectChoices",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",

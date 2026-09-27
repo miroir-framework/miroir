@@ -2,18 +2,19 @@
   "uuid": "02a34783-d8fa-4f3c-8978-5edc2658dcbf",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "resolveSchemaReferenceInContext",
+  "name": "tr.resolveSchemaReferenceInContext",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Migrated from TransformerTest b9e7f4d5-6543-4a1b-9c8d-987654321fed (Feature #196 Phase 5)",
+  "description": "resolveSchemaReferenceInContext transformer on simple and recursive references.",
   "tags": [
+    "unit",
     "ml-schema",
     "ml-reference"
   ],
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "resolveSchemaReferenceInContext",
+    "miroirTestLabel": "tr.resolveSchemaReferenceInContext",
     "miroirTests": [
       {
         "miroirTestType": "transformerTest",

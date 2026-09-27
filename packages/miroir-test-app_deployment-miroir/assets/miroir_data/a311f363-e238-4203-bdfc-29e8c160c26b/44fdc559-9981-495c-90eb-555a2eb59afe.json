@@ -2,17 +2,18 @@
   "uuid": "44fdc559-9981-495c-90eb-555a2eb59afe",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "mergePositionBased",
+  "name": "fn.mlsToMls.mergePositionBased",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Migrated from UnitTest eb3d1b00-a43d-4188-97ac-7d0f65706480 (Feature #196 Phase 5)",
+  "description": "mergePositionBased on undefined, scalar and array values.",
   "tags": [
+    "unit",
     "tools"
   ],
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "mls.mergePositionBased",
+    "miroirTestLabel": "fn.mlsToMls.mergePositionBased",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",

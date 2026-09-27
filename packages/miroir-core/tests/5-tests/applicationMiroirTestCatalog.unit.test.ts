@@ -108,88 +108,88 @@ function mixedTransformerInstance(name: string): MiroirTestDefinition {
 
 describe("applicationMiroirTestCatalog", () => {
   it("uses instance name as the suite key", () => {
-    expect(suiteKeyFromMiroirTestInstance(runnerSuiteInstance("runner_return_document"))).toBe(
-      "runner_return_document",
+    expect(suiteKeyFromMiroirTestInstance(runnerSuiteInstance("runner.returnDocument"))).toBe(
+      "runner.returnDocument",
     );
   });
 
   it("infers runner vs domain-controller vs action kinds", () => {
-    const runnerSuite = runnerSuiteInstance("runner_return_document").definition as MiroirTestSuite;
-    const dcSuite = actionSuiteInstance("domain_controller_data_crud").definition as MiroirTestSuite;
-    const actionSuite = actionSuiteInstance("evolutionTraceWP1").definition as MiroirTestSuite;
+    const runnerSuite = runnerSuiteInstance("runner.returnDocument").definition as MiroirTestSuite;
+    const dcSuite = actionSuiteInstance("action.domainController.dataCrud").definition as MiroirTestSuite;
+    const actionSuite = actionSuiteInstance("action.scenario.evolutionTrace").definition as MiroirTestSuite;
 
-    expect(inferUiIntegrationRunnerSuiteKind(runnerSuite, "runner_return_document")).toBe(
+    expect(inferUiIntegrationRunnerSuiteKind(runnerSuite, "runner.returnDocument")).toBe(
       "runnerTest",
     );
-    expect(inferUiIntegrationRunnerSuiteKind(dcSuite, "domain_controller_data_crud")).toBe(
+    expect(inferUiIntegrationRunnerSuiteKind(dcSuite, "action.domainController.dataCrud")).toBe(
       "domainControllerTest",
     );
-    expect(inferUiIntegrationRunnerSuiteKind(actionSuite, "evolutionTraceWP1")).toBe("actionTest");
+    expect(inferUiIntegrationRunnerSuiteKind(actionSuite, "action.scenario.evolutionTrace")).toBe("actionTest");
   });
 
   it("treats any integ suite as UI-launchable without a hardcoded registry", () => {
     const unregistered = actionSuiteInstance("brand_new_integ_suite");
     expect(isUiIntegrationLaunchableSuite(unregistered.definition as MiroirTestSuite)).toBe(true);
     expect(
-      isUiIntegrationLaunchableSuite(unitTransformerInstance("EntityPrimaryKey").definition as MiroirTestSuite),
+      isUiIntegrationLaunchableSuite(unitTransformerInstance("fn.entityPrimaryKey").definition as MiroirTestSuite),
     ).toBe(false);
   });
 
   it("builds CLI key lists from the instance catalog, including suites absent from legacy registries", () => {
     const catalog = buildApplicationMiroirTestCatalog([
-      runnerSuiteInstance("runner_return_document"),
-      actionSuiteInstance("domain_controller_data_crud"),
+      runnerSuiteInstance("runner.returnDocument"),
+      actionSuiteInstance("action.domainController.dataCrud"),
       actionSuiteInstance("brand_new_integ_suite"),
-      unitTransformerInstance("EntityPrimaryKey"),
-      mixedTransformerInstance("miroirCoreTransformers"),
+      unitTransformerInstance("fn.entityPrimaryKey"),
+      mixedTransformerInstance("tr.core"),
     ]);
 
-    expect(listCliUnitSuiteKeys(catalog)).toEqual(["EntityPrimaryKey", "miroirCoreTransformers"]);
+    expect(listCliUnitSuiteKeys(catalog)).toEqual(["fn.entityPrimaryKey", "tr.core"]);
     expect(listCliRunnerIntegrationSuiteKeys(catalog)).toEqual([
+      "action.domainController.dataCrud",
       "brand_new_integ_suite",
-      "domain_controller_data_crud",
-      "runner_return_document",
+      "runner.returnDocument",
     ]);
-    expect(listCliTransformerIntegrationSuiteKeys(catalog)).toEqual(["miroirCoreTransformers"]);
+    expect(listCliTransformerIntegrationSuiteKeys(catalog)).toEqual(["tr.core"]);
   });
 
   it("builds UI registries from the selected application's instances", () => {
     const registries = buildUiIntegrationSuiteRegistriesFromMiroirTests([
-      runnerSuiteInstance("runner_return_document"),
+      runnerSuiteInstance("runner.returnDocument"),
       actionSuiteInstance("brand_new_integ_suite"),
-      mixedTransformerInstance("miroirCoreTransformers"),
-      unitTransformerInstance("EntityPrimaryKey"),
+      mixedTransformerInstance("tr.core"),
+      unitTransformerInstance("fn.entityPrimaryKey"),
     ]);
 
     expect(Object.keys(registries.runner).sort()).toEqual([
       "brand_new_integ_suite",
-      "runner_return_document",
+      "runner.returnDocument",
     ]);
     expect(registries.runner.brand_new_integ_suite.kind).toBe("actionTest");
-    expect(Object.keys(registries.transformer)).toEqual(["miroirCoreTransformers"]);
+    expect(Object.keys(registries.transformer)).toEqual(["tr.core"]);
     expect(registries.runner.EntityPrimaryKey).toBeUndefined();
   });
 
   it("resolves --suites tokens by instance name or uuid only", () => {
     const catalog = buildApplicationMiroirTestCatalog([
-      unitTransformerInstance("menu_build"),
-      runnerSuiteInstance("runner_return_document"),
+      unitTransformerInstance("tr.menuBuild"),
+      runnerSuiteInstance("runner.returnDocument"),
     ]);
     expect(resolveApplicationMiroirTestSuiteKey(catalog, "menu")).toBeUndefined();
     expect(resolveApplicationMiroirTestSuiteKey(catalog, "mlsTypeCheck")).toBeUndefined();
-    expect(resolveApplicationMiroirTestSuiteKey(catalog, "menu_build")).toBe("menu_build");
+    expect(resolveApplicationMiroirTestSuiteKey(catalog, "tr.menuBuild")).toBe("tr.menuBuild");
     expect(
       resolveApplicationMiroirTestSuiteKey(catalog, "00000000-0000-4000-8000-000000000001"),
-    ).toBe("runner_return_document");
+    ).toBe("runner.returnDocument");
   });
 
   it("loads a suite definition from the catalog by name only", () => {
     const catalog = buildApplicationMiroirTestCatalog([
-      unitTransformerInstance("menu_build"),
-      runnerSuiteInstance("runner_return_document"),
+      unitTransformerInstance("tr.menuBuild"),
+      runnerSuiteInstance("runner.returnDocument"),
     ]);
-    expect(loadMiroirTestSuiteFromCatalog(catalog, "menu_build").miroirTestLabel).toBe("menu_build");
-    expect(loadMiroirTestSuiteFromCatalog(catalog, "runner_return_document").miroirTestType).toBe(
+    expect(loadMiroirTestSuiteFromCatalog(catalog, "tr.menuBuild").miroirTestLabel).toBe("tr.menuBuild");
+    expect(loadMiroirTestSuiteFromCatalog(catalog, "runner.returnDocument").miroirTestType).toBe(
       "miroirTestSuite",
     );
     expect(() => loadMiroirTestSuiteFromCatalog(catalog, "menu")).toThrow(

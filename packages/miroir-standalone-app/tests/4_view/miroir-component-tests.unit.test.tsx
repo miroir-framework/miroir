@@ -2,7 +2,7 @@
  * Issues #286, #292: React component tests run as MiroirTests.
  *
  * Loads every MiroirTest instance of the Miroir deployment folder that holds a `reactComponentTest`
- * leaf (one instance per editor since #292, e.g. `MlEnumEditor_ComponentTestSuite`), registers
+ * leaf (one instance per editor since #292, e.g. `ui.mlElementEditor.enum`), registers
  * the component test runner, and runs each child of each instance root (a `reactComponentTestSuite`
  * or a legacy plain sub-suite) inside `describe(<child label>)` with the path
  * `[<instance name>, <child label>]`, through `runMiroirTests._runMiroirTestSuite`, with
@@ -49,9 +49,9 @@ const MIROIR_TEST_DATA_FOLDER = join(
 
 /**
  * Expected content of the folder: 7 per-editor instances, 68 leaves (#292 Slice 0 baseline), plus
- * the test pattern instance `MlTestPattern_ComponentTestSuite` (#303: 1 display leaf, Slice 1, and 3
+ * the test pattern instance `ui.mlElementEditor.allTypesPattern` (#303: 1 display leaf, Slice 1, and 3
  * interaction leaves, Slice 2), plus the render-performance instance
- * `MlEditorRenderPerformance_ComponentTestSuite` (#303 Slice 5: 15 leaves, `runOnDemand`).
+ * `ui.mlElementEditor.renderPerformance` (#303 Slice 5: 15 leaves, `runOnDemand`).
  *
  * `EXPECTED_LEAF_COUNT` counts every leaf of the folder, on-demand ones included (it checks the
  * folder content, not what the run executes); `EXPECTED_ON_DEMAND_LEAF_COUNT` is the part under a

@@ -43,7 +43,7 @@ Rules:
 
 | Name | Example | Used in |
 |------|---------|---------|
-| **Suite key** (`name`) | `runner_return_document` | `--suites`, `MIROIR_TEST_SUITES`, UI |
+| **Suite key** (`name`) | `runner.returnDocument` | `--suites`, `MIROIR_TEST_SUITES`, UI |
 | **Suite `miroirTestLabel`** | `runner.returnDocument` | display; **nested** `--filter` keys only |
 | **Leaf `miroirTestLabel`** | `Return Book Test Composite Action` | `--filter` **values**, UI leaf checkboxes |
 
@@ -78,13 +78,13 @@ Default `npm run nonreg` includes deployment `modelValidation` for **miroir**, *
 
 ```bash
 # Preferred — argv
-npm run testMiroir -w miroir-core -- --suites mustache --mode unit
+npm run testMiroir -w miroir-core -- --suites fn.mustache.extractDoubleBracePatterns --mode unit
 
 # Legacy — env (still supported)
-MIROIR_TEST_SUITES=mustache MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
+MIROIR_TEST_SUITES=fn.mustache.extractDoubleBracePatterns MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
 
 # Multiple suites
-npm run testMiroir -w miroir-core -- --suites alterObject_atPath,EntityPrimaryKey --mode unit
+npm run testMiroir -w miroir-core -- --suites fn.tools.alterObjectAtPath,fn.entityPrimaryKey --mode unit
 
 # Every unit suite carrying a tag
 npm run testMiroir -w miroir-core -- --tags ml-union --mode unit
@@ -124,15 +124,15 @@ Runs in `miroir-standalone-app`, not `miroir-core`. Prefer **`--profile`** / **`
 
 | Kind | Command |
 |------|---------|
-| **Transformer** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites miroirCoreTransformers --mode integ` |
-| **Runner** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites runner_return_document --mode integ` |
-| **Freeze runner** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites runner_freeze_application_version --mode integ` |
+| **Transformer** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites tr.core --mode integ` |
+| **Runner** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites runner.returnDocument --mode integ` |
+| **Freeze runner** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites runner.freezeApplicationVersion --mode integ` |
 | **By tag** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --tags domain-controller --mode integ` |
 
 Legacy env form:
 
 ```bash
-MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
+MIROIR_TEST_SUITES=tr.core MIROIR_TEST_MODE=integ \
   MIROIR_TEST_POSTGRES_HOST=localhost \
   npm run testMiroir -w miroir-standalone-app
 ```
@@ -148,7 +148,7 @@ DomainController, persistence-store, and extractor tests use JSON config files:
 ```bash
 # DomainController data CRUD — preferred MiroirTest action suite
 npm run testMiroir -w miroir-standalone-app -- \
-  --profile emulatedServer-sql --suites domain_controller_data_crud --mode integ
+  --profile emulatedServer-sql --suites action.domainController.dataCrud --mode integ
 
 # Deprecated imperative Data CRUD (parity harness — keep green; do not delete yet)
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
@@ -179,7 +179,7 @@ Full catalogue: [reference/testing.md](../reference/testing.md#running-app-stack
 
 ### MlElementEditor component tests
 
-The ML schema editor cases are MiroirTests (#286) written as declarative JSON (#292). There is one instance per editor (`MlEnumEditor_ComponentTestSuite`, `MlArrayEditor_ComponentTestSuite`, `MlLiteralEditor_ComponentTestSuite`, `MlObjectEditor_ComponentTestSuite`, `MlSimpleTypeEditor_ComponentTestSuite`, `MlUnionEditor_ComponentTestSuite`, `MlAnyEditor_ComponentTestSuite`; 68 cases in all), plus the test pattern `MlTestPattern_ComponentTestSuite` (one object with every editor type, 4 cases) and the render-performance suite `MlEditorRenderPerformance_ComponentTestSuite` (15 cases with a `measureRendering` step, `runOnDemand`) (#303). Each instance has one `reactComponentTestSuite` node, which names the rendered component and its default props, and one `reactComponentTest` leaf per case, with its own props and a list of steps (`click`, `change`, `selectOption`, `expectRenderedValues`, `expectElement`, …). The vitest entry `tests/4_view/miroir-component-tests.unit.test.tsx` runs them:
+The ML schema editor cases are MiroirTests (#286) written as declarative JSON (#292). There is one instance per editor (`ui.mlElementEditor.enum`, `ui.mlElementEditor.array`, `ui.mlElementEditor.literal`, `ui.mlElementEditor.object`, `ui.mlElementEditor.simpleType`, `ui.mlElementEditor.union`, `ui.mlElementEditor.any`; 68 cases in all), plus the test pattern `ui.mlElementEditor.allTypesPattern` (one object with every editor type, 4 cases) and the render-performance suite `ui.mlElementEditor.renderPerformance` (15 cases with a `measureRendering` step, `runOnDemand`) (#303). Each instance has one `reactComponentTestSuite` node, which names the rendered component and its default props, and one `reactComponentTest` leaf per case, with its own props and a list of steps (`click`, `change`, `selectOption`, `expectRenderedValues`, `expectElement`, …). The vitest entry `tests/4_view/miroir-component-tests.unit.test.tsx` runs them:
 
 ```bash
 # The 72 default cases, plus 2 entry checks; the 15 on-demand cases are skipped.
@@ -225,7 +225,7 @@ Requires Postgres (Node emulated SQL via test mocks). Full detail: [reference/te
 npm run testByFile -w miroir-core -- miroir-core-tests.unit.test
 
 # Integration entry directly
-MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
+MIROIR_TEST_SUITES=tr.core MIROIR_TEST_MODE=integ \
   npm run testByFile -w miroir-standalone-app -- miroir-core-tests.integ.test
 ```
 
@@ -289,8 +289,8 @@ VITE_TEST_MODE=true npx vitest run tests/4_services/miroirTest.schema.unit.test.
 
 ## Adding or migrating tests
 
-1. Create or edit a `MiroirTest` JSON instance in the application's MiroirTest folder (set `name` to the suite key).
-2. Optional: export `miroirTest_<name>` from the deployment package `index.ts` if other TypeScript wants a named import.
+1. Create or edit a `MiroirTest` JSON instance in the application's MiroirTest folder. Name it `<kind>.<subject>[.<variant>]` (`fn`, `query`, `tr`, `action`, `runner`, `ui`), set the root `miroirTestLabel` to the same value, write a one-sentence `description`, and put its mode tag (`unit`, `integ` or `ui`) first in `tags`. Rules: [Names and descriptions](../reference/testing.md#names-and-descriptions).
+2. Optional: export `miroirTest_<name with . replaced by _>` from the deployment package `index.ts` if other TypeScript wants a named import.
 3. Rebuild the deployment package if you added a named export.
 4. Run `tests/4_services/miroirTest.schema.unit.test.ts` to validate JSON shape.
 5. Run the new suite with `testMiroir` (`--suites <name>`). TypeScript files that have no MiroirTest entity are PLATFORM — launch those with `testByFile`.

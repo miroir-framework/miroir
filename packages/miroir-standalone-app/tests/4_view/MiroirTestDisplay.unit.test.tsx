@@ -4,11 +4,11 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
 import type { MiroirTestDefinition } from 'miroir-core';
-import { miroirTest_runner_return_document } from 'miroir-test-app_deployment-library';
+import { miroirTest_runner_returnDocument } from 'miroir-test-app_deployment-library';
 import {
-  miroirTest_EntityPrimaryKey,
-  miroirTest_domain_controller_data_crud,
-  miroirTest_miroirCoreTransformers,
+  miroirTest_fn_entityPrimaryKey,
+  miroirTest_action_domainController_dataCrud,
+  miroirTest_tr_core,
 } from 'miroir-test-app_deployment-miroir';
 
 import {
@@ -57,11 +57,11 @@ afterEach(() => {
 });
 
 describe('MiroirTestDisplay capability chrome (T4)', () => {
-  it('shows integ-only chrome for runner_return_document', () => {
+  it('shows integ-only chrome for runner.returnDocument', () => {
     render(
       <MiroirTestDisplay
-        miroirTest={asMiroirTest(miroirTest_runner_return_document)}
-        testLabel="runner_return_document"
+        miroirTest={asMiroirTest(miroirTest_runner_returnDocument)}
+        testLabel="runner.returnDocument"
         gridType="ag-grid"
         useSnackBar={false}
       />,
@@ -70,15 +70,15 @@ describe('MiroirTestDisplay capability chrome (T4)', () => {
     expect(screen.getByText('integration')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Unit Tests/i })).not.toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Run runner_return_document Integration Tests' }),
+      screen.getByRole('button', { name: 'Run runner.returnDocument Integration Tests' }),
     ).toBeEnabled();
     expect(screen.getByText('Integration run settings')).toBeInTheDocument();
   });
 
-  it('enables integ button for domain_controller_data_crud action suite', () => {
+  it('enables integ button for action.domainController.dataCrud action suite', () => {
     render(
       <MiroirTestDisplay
-        miroirTest={asMiroirTest(miroirTest_domain_controller_data_crud)}
+        miroirTest={asMiroirTest(miroirTest_action_domainController_dataCrud)}
         testLabel="domainController.data.crud"
         gridType="ag-grid"
         useSnackBar={false}
@@ -93,11 +93,11 @@ describe('MiroirTestDisplay capability chrome (T4)', () => {
     ).toBeEnabled();
   });
 
-  it('shows unit-only chrome for EntityPrimaryKey', () => {
+  it('shows unit-only chrome for fn.entityPrimaryKey', () => {
     render(
       <MiroirTestDisplay
-        miroirTest={asMiroirTest(miroirTest_EntityPrimaryKey)}
-        testLabel="EntityPrimaryKey"
+        miroirTest={asMiroirTest(miroirTest_fn_entityPrimaryKey)}
+        testLabel="fn.entityPrimaryKey"
         gridType="ag-grid"
         useSnackBar={false}
       />,
@@ -105,17 +105,17 @@ describe('MiroirTestDisplay capability chrome (T4)', () => {
 
     expect(screen.getByText('unit')).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Run EntityPrimaryKey Unit Tests' }),
+      screen.getByRole('button', { name: 'Run fn.entityPrimaryKey Unit Tests' }),
     ).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Integration Tests/i })).not.toBeInTheDocument();
     expect(screen.queryByText('Integration run settings')).not.toBeInTheDocument();
   });
 
-  it('shows both buttons for miroirCoreTransformers (mixed)', () => {
+  it('shows both buttons for tr.core (mixed)', () => {
     render(
       <MiroirTestDisplay
-        miroirTest={asMiroirTest(miroirTest_miroirCoreTransformers)}
-        testLabel="miroirCoreTransformers"
+        miroirTest={asMiroirTest(miroirTest_tr_core)}
+        testLabel="tr.core"
         gridType="ag-grid"
         useSnackBar={false}
       />,
@@ -123,10 +123,10 @@ describe('MiroirTestDisplay capability chrome (T4)', () => {
 
     expect(screen.getByText('mixed')).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Run miroirCoreTransformers Unit Tests' }),
+      screen.getByRole('button', { name: 'Run tr.core Unit Tests' }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Run miroirCoreTransformers Integration Tests' }),
+      screen.getByRole('button', { name: 'Run tr.core Integration Tests' }),
     ).toBeEnabled();
     expect(screen.getByText('Integration run settings')).toBeInTheDocument();
   });
@@ -136,15 +136,15 @@ describe('MiroirTestDisplay capability chrome (T4)', () => {
 
     render(
       <MiroirTestDisplay
-        miroirTest={asMiroirTest(miroirTest_miroirCoreTransformers)}
-        testLabel="miroirCoreTransformers"
+        miroirTest={asMiroirTest(miroirTest_tr_core)}
+        testLabel="tr.core"
         gridType="ag-grid"
         useSnackBar={false}
       />,
     );
 
     const integButton = screen.getByRole('button', {
-      name: 'Run miroirCoreTransformers Integration Tests',
+      name: 'Run tr.core Integration Tests',
     });
     expect(integButton).toBeDisabled();
     expect(integButton).toHaveAttribute(

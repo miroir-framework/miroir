@@ -1,5 +1,5 @@
 /**
- * Repro for UI typecheck on domain_controller_composite_pk_crud createInstance.objects[0].
+ * Repro for UI typecheck on action.domainController.dataCrud.compositePk createInstance.objects[0].
  * modelValidation skips resolveConditionalSchema (no reduxDeploymentsState); the UI does not.
  * InstanceEndpoint createInstance.objects used to tag ifThenElseMMLS → compositeActionTemplate,
  * which made plain entity instances fail with "no discriminator values found (actionType)".

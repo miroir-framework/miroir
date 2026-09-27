@@ -45,13 +45,13 @@ const shouldRun =
   });
 
   it("composeUiIntegrationTestbedResetParams preserves Library registry init by reference", () => {
-    const entry = runnerSuiteEntryFromFolders("runner_lend_document");
+    const entry = runnerSuiteEntryFromFolders("runner.lendDocument");
     const composed = composeUiIntegrationTestbedResetParams(entry);
     expect(composed?.testbedInitApplicationParameters).toBe(libraryTestbedInitParams);
   });
 
   it("composeUiIntegrationTestbedResetParams preserves appForTest registry init by reference", () => {
-    const entry = runnerSuiteEntryFromFolders("runner_freeze_application_version");
+    const entry = runnerSuiteEntryFromFolders("runner.freezeApplicationVersion");
     const composed = composeUiIntegrationTestbedResetParams(entry);
     expect(composed?.testbedInitApplicationParameters).toBe(appForTestTestbedInitParams);
   });
@@ -60,7 +60,7 @@ const shouldRun =
     const resetIntegTestbedMock = vi
       .spyOn(miroirCore, "resetIntegTestbed")
       .mockResolvedValue(undefined);
-    const entry = runnerSuiteEntryFromFolders("runner_lend_document");
+    const entry = runnerSuiteEntryFromFolders("runner.lendDocument");
     const composed = composeUiIntegrationTestbedResetParams(entry);
     expect(composed).toBeDefined();
 

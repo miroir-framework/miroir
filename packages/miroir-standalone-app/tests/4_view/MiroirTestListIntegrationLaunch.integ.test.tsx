@@ -16,7 +16,7 @@ import {
   type MiroirTestDefinition,
 } from 'miroir-core';
 import { MiroirContextReactProvider } from 'miroir-react';
-import { miroirTest_miroirCoreTransformers } from 'miroir-test-app_deployment-miroir';
+import { miroirTest_tr_core } from 'miroir-test-app_deployment-miroir';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirMongoDbStoreSectionStartup } from 'miroir-store-mongodb';
@@ -61,7 +61,7 @@ function renderMiroirTestListDisplay(renderKey = 'initial') {
     >
       <MiroirTestListDisplay
         key={renderKey}
-        miroirTests={[asMiroirTest(miroirTest_miroirCoreTransformers)]}
+        miroirTests={[asMiroirTest(miroirTest_tr_core)]}
         gridType="glide-data-grid"
         useSnackBar={true}
       />
@@ -93,7 +93,7 @@ beforeEach(() => {
 });
 
 describe('MiroirTestListDisplay integration launch (T5)', () => {
-  it('runs one miroirCoreTransformers integ leaf via Run All Integration Tests', async () => {
+  it('runs one tr.core integ leaf via Run All Integration Tests', async () => {
     renderMiroirTestListDisplay();
 
     const integrationButton = screen.getByRole('button', {
@@ -124,7 +124,7 @@ describe('MiroirTestListDisplay integration launch (T5)', () => {
     const inspector = document.getElementById('integration-test-inspector');
     expect(inspector).toBeInTheDocument();
     expect(inspector).toHaveTextContent(/Result: passed/);
-    expect(inspector).toHaveTextContent(/Suite: miroirCoreTransformers/);
+    expect(inspector).toHaveTextContent(/Suite: tr.core/);
     expect(inspector).toHaveTextContent(/Session: transformer/);
     expect(inspector).toHaveTextContent(/Profile: emulatedServer-indexedDb/);
   }, 240_000);

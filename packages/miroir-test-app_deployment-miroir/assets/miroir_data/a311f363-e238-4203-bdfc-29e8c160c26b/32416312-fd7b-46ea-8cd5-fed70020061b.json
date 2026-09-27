@@ -2,18 +2,19 @@
   "uuid": "32416312-fd7b-46ea-8cd5-fed70020061b",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "mlsTransitiveDependencySet",
+  "name": "fn.mlSchemaReferences.transitiveDependencySet",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Migrated from UnitTest eca25c60-7dfb-4e1d-a718-1e639695404b (Feature #196 Phase 5)",
+  "description": "mlsTransitiveDependencySet on direct, single-level and transitive references.",
   "tags": [
+    "unit",
     "ml-schema",
     "ml-reference"
   ],
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "mls.mlsTransitiveDependencySet",
+    "miroirTestLabel": "fn.mlSchemaReferences.transitiveDependencySet",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",

@@ -232,7 +232,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
 
   // ##############################################################################################
   // Use the report's application for schema resolution (getMiroirFundamentalSchemaForDeployment).
-  // Model-section instances (e.g. runner_return_document MiroirTest) need the deployment-extended schema
+  // Model-section instances (e.g. runner.returnDocument MiroirTest) need the deployment-extended schema
   // (lendDocument / returnDocument on actionTemplate), not the static Miroir-only schema.
   const currentApplication: Uuid = application;
   // const currentApplication: Uuid = applicationSection == "data" ? application : selfApplicationMiroir.uuid;

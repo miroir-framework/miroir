@@ -4,9 +4,10 @@
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "name": "runner_mcp_get_instances",
-  "description": "Issue #253 — mcpToolRunner getInstances via MCP tools/call; payload includes seeded book1.",
+  "name": "runner.mcp.getInstances",
+  "description": "getInstances through the MCP tool runner (tools/call): the payload holds the seeded book1.",
   "tags": [
+    "integ",
     "runner",
     "mcp",
     "data"
@@ -14,7 +15,7 @@
   "issue": "253",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "runner.mcpGetInstances",
+    "miroirTestLabel": "runner.mcp.getInstances",
     "runTarget": {
       "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
       "applicationName": "Library",

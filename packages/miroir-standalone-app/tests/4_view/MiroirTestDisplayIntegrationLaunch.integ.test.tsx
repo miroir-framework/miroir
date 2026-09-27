@@ -7,7 +7,7 @@ import { expect as vitestExpect } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { miroirTest_runner_return_document } from 'miroir-test-app_deployment-library';
+import { miroirTest_runner_returnDocument } from 'miroir-test-app_deployment-library';
 import {
   ConfigurationService,
   MiroirActivityTracker,
@@ -53,7 +53,7 @@ function renderMiroirTestDisplay(renderKey = 'initial') {
       <ReportPageContextProvider>
         <MiroirTestDisplay
           key={renderKey}
-          miroirTest={miroirTest_runner_return_document as never}
+          miroirTest={miroirTest_runner_returnDocument as never}
           testLabel={RUNNER_RETURN_DOCUMENT_LABEL}
           gridType="glide-data-grid"
         />
@@ -98,7 +98,7 @@ describe('MiroirTestDisplay integration launch (B6-d1)', () => {
       () => {
         const lastRun = getLastUiIntegrationTestRunResult();
         expect(lastRun?.success).toBe(true);
-        expect(lastRun?.suiteKey).toBe('runner_return_document');
+        expect(lastRun?.suiteKey).toBe('runner.returnDocument');
       },
       { timeout: 180_000 },
     );
@@ -108,7 +108,7 @@ describe('MiroirTestDisplay integration launch (B6-d1)', () => {
     const inspector = document.getElementById('integration-test-inspector');
     expect(inspector).toBeInTheDocument();
     expect(inspector).toHaveTextContent(/Result: passed/);
-    expect(inspector).toHaveTextContent(/Suite: runner_return_document/);
+    expect(inspector).toHaveTextContent(/Suite: runner.returnDocument/);
     expect(inspector).toHaveTextContent(/Profile: emulatedServer-indexedDb/);
     expect(inspector).toHaveTextContent(/Run target: Library/);
     expect(inspector).toHaveTextContent(/Assertions: \d+\/\d+ passed/);

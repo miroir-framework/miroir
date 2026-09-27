@@ -4,14 +4,14 @@ import {
   defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,
   lendDocument,
-  miroirTest_runner_lend_document,
-  miroirTest_runner_return_document,
+  miroirTest_runner_lendDocument,
+  miroirTest_runner_returnDocument,
   returnDocument,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
 import {
-  miroirTest_runner_create_entity,
-  miroirTest_runner_drop_entity,
+  miroirTest_runner_createEntity,
+  miroirTest_runner_dropEntity,
   RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
 } from "miroir-test-app_deployment-miroir";
 import {
@@ -41,11 +41,11 @@ const getFromParameters = (referenceName: string) => ({
 });
 
 function runnerLendDocumentSuite(): MiroirTestSuite {
-  return (miroirTest_runner_lend_document as MiroirTestDefinition).definition as MiroirTestSuite;
+  return (miroirTest_runner_lendDocument as MiroirTestDefinition).definition as MiroirTestSuite;
 }
 
 function runnerReturnDocumentSuite(): MiroirTestSuite {
-  return (miroirTest_runner_return_document as MiroirTestDefinition).definition as MiroirTestSuite;
+  return (miroirTest_runner_returnDocument as MiroirTestDefinition).definition as MiroirTestSuite;
 }
 
 function runnerLibrarySuites(): MiroirTestSuite[] {
@@ -110,9 +110,9 @@ describe("runnerTest tools", () => {
   });
 
   it("runner create/drop entity leaves declare skipRunTargetPlayfieldReset", () => {
-    const createSuite = (miroirTest_runner_create_entity as MiroirTestDefinition)
+    const createSuite = (miroirTest_runner_createEntity as MiroirTestDefinition)
       .definition as MiroirTestSuite;
-    const dropSuite = (miroirTest_runner_drop_entity as MiroirTestDefinition)
+    const dropSuite = (miroirTest_runner_dropEntity as MiroirTestDefinition)
       .definition as MiroirTestSuite;
     expect(resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite(createSuite)).toBe(true);
     expect(resolveDefaultApplicationNameFromMiroirTestSuite(createSuite)).toBe(
@@ -138,7 +138,7 @@ describe("runnerTest tools", () => {
     expect(returnDocument.uuid).toBe("98a38a84-e702-4540-a056-c7676a193a2b");
   });
 
-  it("runner_lend_document / runner_return_document leaves are inline runnerTests without fixtureRef", () => {
+  it("runner.lendDocument / runner.returnDocument leaves are inline runnerTests without fixtureRef", () => {
     for (const suite of runnerLibrarySuites()) {
       for (const test of suite.miroirTests) {
         const leaf = test as MiroirTestForRunner;
@@ -148,7 +148,7 @@ describe("runnerTest tools", () => {
     }
   });
 
-  it("runner_lend_document leaf encodes getFromParameters transformers in JSON", () => {
+  it("runner.lendDocument leaf encodes getFromParameters transformers in JSON", () => {
     const leaf = runnerLibraryLeaf(runnerLendDocumentSuite());
     const lendParams = leaf.testParams!.lendDocument as {
       payload: Record<string, { referenceName: string }>;
@@ -159,8 +159,8 @@ describe("runnerTest tools", () => {
   });
 
   it.each([
-    ["runner_lend_document", runnerLendDocumentSuite],
-    ["runner_return_document", runnerReturnDocumentSuite],
+    ["runner.lendDocument", runnerLendDocumentSuite],
+    ["runner.returnDocument", runnerReturnDocumentSuite],
   ])("%s suite exposes suite-level testParams (R6-A)", (_name, suiteGetter) => {
     const suite = suiteGetter();
     expect(suite.testParams).toBeDefined();
@@ -313,8 +313,8 @@ describe("runnerTest tools", () => {
   });
 
   // ##############################################################################################
-  it("runner_create_entity suite omits runTarget and uses emptyApplicationModel initialModel", () => {
-    const suite = (miroirTest_runner_create_entity as MiroirTestDefinition)
+  it("runner.createEntity suite omits runTarget and uses emptyApplicationModel initialModel", () => {
+    const suite = (miroirTest_runner_createEntity as MiroirTestDefinition)
       .definition as MiroirTestSuite;
     expect(suite.runTarget).toBeUndefined();
     expect(suite.miroirTests).toHaveLength(2);
@@ -329,7 +329,7 @@ describe("runnerTest tools", () => {
 
   // ##############################################################################################
   it("resolveRunnerTestLeaf builds createEntity suite with ephemeral runTarget + empty model", () => {
-    const suite = (miroirTest_runner_create_entity as MiroirTestDefinition)
+    const suite = (miroirTest_runner_createEntity as MiroirTestDefinition)
       .definition as MiroirTestSuite;
     const leaf = suite.miroirTests[0] as MiroirTestForRunner;
     const runTarget = getTestbedUuidsForTestSuite({
@@ -364,8 +364,8 @@ describe("runnerTest tools", () => {
     expect(createEntityParams.application).toBe(runTarget.applicationUuid);
   });
 
-  it("runner_drop_entity suite omits runTarget and preRunner embeds createEntity sequence", () => {
-    const suite = (miroirTest_runner_drop_entity as MiroirTestDefinition)
+  it("runner.dropEntity suite omits runTarget and preRunner embeds createEntity sequence", () => {
+    const suite = (miroirTest_runner_dropEntity as MiroirTestDefinition)
       .definition as MiroirTestSuite;
     expect(suite.runTarget).toBeUndefined();
     expect(suite.miroirTests).toHaveLength(1);
@@ -383,7 +383,7 @@ describe("runnerTest tools", () => {
   });
 
   it("resolveRunnerTestLeaf builds dropEntity leaf with create+drop params expanded", () => {
-    const suite = (miroirTest_runner_drop_entity as MiroirTestDefinition)
+    const suite = (miroirTest_runner_dropEntity as MiroirTestDefinition)
       .definition as MiroirTestSuite;
     const leaf = suite.miroirTests[0] as MiroirTestForRunner;
     const runTarget = getTestbedUuidsForTestSuite({

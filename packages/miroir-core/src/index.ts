@@ -1606,7 +1606,10 @@ export {
   getMiroirTestAllowedTags,
   getMiroirTestInstanceTags,
   listMiroirTestTagCounts,
+  MIROIR_TEST_MODE_TAGS,
   miroirTestInstanceHasAnyTag,
+  miroirTestSuiteModeTags,
+  type MiroirTestModeTag,
 } from "./5_tests/miroirTestTags.js";
 export {
   describeIntegrationTestSession,

@@ -41,7 +41,7 @@ Entity (Book, mlSchema)
 | Browse / diagnose an external DB catalogue | `conceptLevel: "External"` + `externalDataSource` | Postgres app `tables`, `columns`, `schemata` |
 | Match an external natural key (not UUID) | `idAttribute: "<attr>"` | Non-UUID PK entities / tests |
 | Match a multi-column natural key | `idAttribute: ["a","b",…]` | Postgres `tables`, `columns` |
-| Import / sync instances that omit `parentUuid` | Optional `parentUuid`; resolve from action context | `domain_controller_no_parent_uuid_crud` |
+| Import / sync instances that omit `parentUuid` | Optional `parentUuid`; resolve from action context | `action.domainController.dataCrud.noParentUuid` |
 | Reflect a PK-less table | Explicit PK-less handling; refresh flushes cache | External tables without PK |
 
 ---
@@ -199,7 +199,7 @@ Helpers live in `packages/miroir-core/src/1_core/Entity/EntityPrimaryKey.ts`:
 - Composite keys are **serialized** to a single string for LocalCache / filesystem / IndexedDB indexing (`|` separator, `\` escaping).
 - SQL stores use multi-column `WHERE` / primary-key columns.
 - Combiner FK attributes may be `string | string[]` for multi-attribute joins.
-- Prefer MiroirTest suite `domain_controller_composite_pk_crud` for regression ([testing reference](../../reference/testing.md)).
+- Prefer MiroirTest suite `action.domainController.dataCrud.compositePk` for regression ([testing reference](../../reference/testing.md)).
 
 ---
 
@@ -217,7 +217,7 @@ Helpers live in `packages/miroir-core/src/1_core/Entity/EntityPrimaryKey.ts`:
 2. Else parent from the surrounding action / collection context  
 3. Else fail with an explicit error (`FailedToResolveParentUuid`)  
 
-**Regression:** MiroirTest suite `domain_controller_no_parent_uuid_crud`.
+**Regression:** MiroirTest suite `action.domainController.dataCrud.noParentUuid`.
 
 **Authoring tip:** for greenfield Library-style models, keep `parentUuid` on instances — it remains the simplest debugging story. Omit it only when an integration requires it.
 

@@ -1,7 +1,7 @@
 /**
  * Issue #303 Slice 3: every MlElementEditor component reports its renders (analysis T2, T3).
  *
- * The test pattern of `MlTestPattern_ComponentTestSuite` (its suite `componentProps` and display
+ * The test pattern of `ui.mlElementEditor.allTypesPattern` (its suite `componentProps` and display
  * leaf, read from the instance JSON) is run through `createReactComponentTestRunner` with a suite
  * context whose `stepKinds` contains `measureRendering`: the runner then builds the suite wrapper
  * with `trackRenders` (`initialShowPerformanceDisplay` on `MiroirContextReactProvider`), and every
@@ -63,7 +63,7 @@ const displayLeaf: MiroirTestForReactComponent = patternSuite.miroirTests[0];
 
 function suiteContext(stepKinds: ReactComponentTestSuiteContext["stepKinds"]): ReactComponentTestSuiteContext {
   return {
-    suitePath: ["MlTestPattern_ComponentTestSuite", patternSuite.miroirTestLabel],
+    suitePath: ["ui.mlElementEditor.allTypesPattern", patternSuite.miroirTestLabel],
     component: patternSuite.component,
     componentProps: patternSuite.componentProps ?? {},
     caseLabels: [displayLeaf.miroirTestLabel],

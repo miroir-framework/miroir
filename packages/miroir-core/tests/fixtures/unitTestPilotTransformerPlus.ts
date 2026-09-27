@@ -5,7 +5,7 @@ export const unitTestPilotTransformerPlus: UnitTestDefinition = {
   uuid: "b03eb707-4f51-4ac3-a6ab-e7b8484a5c22",
   parentName: "UnitTest",
   parentUuid: "a1bc5288-c982-4ff3-8316-4a2400fe9323",
-  name: "pilot_transformer_plus",
+  name: "tr.resolveConditionalSchema.build",
   selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   branch: "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   description:

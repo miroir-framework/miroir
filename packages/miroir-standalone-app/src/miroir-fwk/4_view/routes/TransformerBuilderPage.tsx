@@ -39,7 +39,7 @@ import { TransformerEditor } from "../components/TransformerEditor/TransformerEd
 import {
   entityMiroirTest,
   entityTransformerDefinition,
-  miroirTest_resolveConditionalSchema,
+  miroirTest_tr_resolveConditionalSchema,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
 // ################################################################################################
@@ -140,7 +140,7 @@ export const TransformerBuilderPage: React.FC<any> = (
                 extractorOrCombinerType: "extractorByPrimaryKey",
                 applicationSection: "data",
                 parentUuid: entityMiroirTest.uuid,
-                instanceUuid: miroirTest_resolveConditionalSchema.uuid,
+                instanceUuid: miroirTest_tr_resolveConditionalSchema.uuid,
               },
             },
           }, // as BoxedExtractorOrCombinerReturningObject,
@@ -368,7 +368,7 @@ export const TransformerBuilderPage: React.FC<any> = (
   //   // resolvedTestResultsMlSchema,
   //   // (resolvedTestResultsMlSchema as any)?.element,
   // );
-  // const testSuiteKey = "resolveConditionalSchema";
+  // const testSuiteKey = "tr.resolveConditionalSchema";
 
   return (
     <ReportPageContextProvider>

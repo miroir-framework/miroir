@@ -4,16 +4,17 @@
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "name": "evolutionTraceWP1",
-  "description": "WP1 end-to-end evolution trace tracer bullet (Feature 9 Phase 8). Evolution history is stored in the evolving application's model section.",
+  "name": "action.scenario.evolutionTrace",
+  "description": "End-to-end model evolution trace, stored in the evolving application's model section.",
   "tags": [
+    "integ",
     "versioning",
     "model"
   ],
   "issue": "9",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "evolutionTrace.WP1",
+    "miroirTestLabel": "action.scenario.evolutionTrace",
     "runTarget": {
       "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
       "applicationName": "Library",

@@ -419,9 +419,9 @@
       ]
     },
     {
-      "id": "integ-transformer-miroirCoreTransformers",
+      "id": "integ-tr.core",
       "tier": "default",
-      "title": "MiroirTest integ \u2014 miroirCoreTransformers",
+      "title": "MiroirTest integ \u2014 tr.core",
       "requires": "postgres",
       "argv": [
         "npm",
@@ -433,15 +433,15 @@
         "--profile",
         "{profile}",
         "--suites",
-        "miroirCoreTransformers",
+        "tr.core",
         "--mode",
         "integ"
       ]
     },
     {
-      "id": "integ-runner-runner_lend_document",
+      "id": "integ-runner.lendDocument",
       "tier": "default",
-      "title": "MiroirTest integ \u2014 runner_lend_document",
+      "title": "MiroirTest integ \u2014 runner.lendDocument",
       "requires": "postgres",
       "argv": [
         "npm",
@@ -453,15 +453,15 @@
         "--profile",
         "{profile}",
         "--suites",
-        "runner_lend_document",
+        "runner.lendDocument",
         "--mode",
         "integ"
       ]
     },
     {
-      "id": "integ-runner-runner_return_document",
+      "id": "integ-runner.returnDocument",
       "tier": "default",
-      "title": "MiroirTest integ \u2014 runner_return_document",
+      "title": "MiroirTest integ \u2014 runner.returnDocument",
       "requires": "postgres",
       "argv": [
         "npm",
@@ -473,15 +473,15 @@
         "--profile",
         "{profile}",
         "--suites",
-        "runner_return_document",
+        "runner.returnDocument",
         "--mode",
         "integ"
       ]
     },
     {
-      "id": "integ-runner-runner_mcp_get_instances",
+      "id": "integ-runner.mcp.getInstances",
       "tier": "default",
-      "title": "MiroirTest integ \u2014 runner_mcp_get_instances",
+      "title": "MiroirTest integ \u2014 runner.mcp.getInstances",
       "requires": "postgres",
       "argv": [
         "npm",
@@ -493,15 +493,15 @@
         "--profile",
         "{profile}",
         "--suites",
-        "runner_mcp_get_instances",
+        "runner.mcp.getInstances",
         "--mode",
         "integ"
       ]
     },
     {
-      "id": "integ-runner-runner_mcp_lend_document",
+      "id": "integ-runner.mcp.lendDocument",
       "tier": "default",
-      "title": "MiroirTest integ \u2014 runner_mcp_lend_document",
+      "title": "MiroirTest integ \u2014 runner.mcp.lendDocument",
       "requires": "postgres",
       "argv": [
         "npm",
@@ -513,15 +513,15 @@
         "--profile",
         "{profile}",
         "--suites",
-        "runner_mcp_lend_document",
+        "runner.mcp.lendDocument",
         "--mode",
         "integ"
       ]
     },
     {
-      "id": "integ-action-domain_controller_data_crud",
+      "id": "integ-action.domainController.dataCrud",
       "tier": "default",
-      "title": "MiroirTest integ \u2014 domain_controller_data_crud (actionTest)",
+      "title": "MiroirTest integ \u2014 action.domainController.dataCrud (actionTest)",
       "requires": "postgres",
       "argv": [
         "npm",
@@ -533,15 +533,15 @@
         "--profile",
         "{profile}",
         "--suites",
-        "domain_controller_data_crud",
+        "action.domainController.dataCrud",
         "--mode",
         "integ"
       ]
     },
     {
-      "id": "integ-action-domain_controller_model_crud",
+      "id": "integ-action.domainController.modelCrud",
       "tier": "default",
-      "title": "MiroirTest integ \u2014 domain_controller_model_crud (actionTest)",
+      "title": "MiroirTest integ \u2014 action.domainController.modelCrud (actionTest)",
       "requires": "postgres",
       "argv": [
         "npm",
@@ -553,15 +553,15 @@
         "--profile",
         "{profile}",
         "--suites",
-        "domain_controller_model_crud",
+        "action.domainController.modelCrud",
         "--mode",
         "integ"
       ]
     },
     {
-      "id": "integ-action-domain_controller_composite_pk_crud",
+      "id": "integ-action.domainController.dataCrud.compositePk",
       "tier": "default",
-      "title": "MiroirTest integ \u2014 domain_controller_composite_pk_crud (actionTest)",
+      "title": "MiroirTest integ \u2014 action.domainController.dataCrud.compositePk (actionTest)",
       "requires": "postgres",
       "argv": [
         "npm",
@@ -573,15 +573,15 @@
         "--profile",
         "{profile}",
         "--suites",
-        "domain_controller_composite_pk_crud",
+        "action.domainController.dataCrud.compositePk",
         "--mode",
         "integ"
       ]
     },
     {
-      "id": "integ-action-domain_controller_non_uuid_pk_model_crud",
+      "id": "integ-action.domainController.modelCrud.nonUuidPk",
       "tier": "default",
-      "title": "MiroirTest integ \u2014 domain_controller_non_uuid_pk_model_crud (actionTest)",
+      "title": "MiroirTest integ \u2014 action.domainController.modelCrud.nonUuidPk (actionTest)",
       "requires": "postgres",
       "argv": [
         "npm",
@@ -593,15 +593,15 @@
         "--profile",
         "{profile}",
         "--suites",
-        "domain_controller_non_uuid_pk_model_crud",
+        "action.domainController.modelCrud.nonUuidPk",
         "--mode",
         "integ"
       ]
     },
     {
-      "id": "integ-action-domain_controller_non_uuid_pk_data_crud",
+      "id": "integ-action.domainController.dataCrud.nonUuidPk",
       "tier": "default",
-      "title": "MiroirTest integ \u2014 domain_controller_non_uuid_pk_data_crud (actionTest)",
+      "title": "MiroirTest integ \u2014 action.domainController.dataCrud.nonUuidPk (actionTest)",
       "requires": "postgres",
       "argv": [
         "npm",
@@ -613,15 +613,15 @@
         "--profile",
         "{profile}",
         "--suites",
-        "domain_controller_non_uuid_pk_data_crud",
+        "action.domainController.dataCrud.nonUuidPk",
         "--mode",
         "integ"
       ]
     },
     {
-      "id": "integ-action-domain_controller_no_parent_uuid_crud",
+      "id": "integ-action.domainController.dataCrud.noParentUuid",
       "tier": "default",
-      "title": "MiroirTest integ \u2014 domain_controller_no_parent_uuid_crud (actionTest)",
+      "title": "MiroirTest integ \u2014 action.domainController.dataCrud.noParentUuid (actionTest)",
       "requires": "postgres",
       "argv": [
         "npm",
@@ -633,15 +633,15 @@
         "--profile",
         "{profile}",
         "--suites",
-        "domain_controller_no_parent_uuid_crud",
+        "action.domainController.dataCrud.noParentUuid",
         "--mode",
         "integ"
       ]
     },
     {
-      "id": "integ-action-domain_controller_model_undo_redo",
+      "id": "integ-action.domainController.modelUndoRedo",
       "tier": "default",
-      "title": "MiroirTest integ \u2014 domain_controller_model_undo_redo (actionTest)",
+      "title": "MiroirTest integ \u2014 action.domainController.modelUndoRedo (actionTest)",
       "requires": "postgres",
       "argv": [
         "npm",
@@ -653,15 +653,15 @@
         "--profile",
         "{profile}",
         "--suites",
-        "domain_controller_model_undo_redo",
+        "action.domainController.modelUndoRedo",
         "--mode",
         "integ"
       ]
     },
     {
-      "id": "integ-action-domain_controller_application_version_freeze",
+      "id": "integ-action.domainController.freezeApplicationVersion",
       "tier": "default",
-      "title": "MiroirTest integ \u2014 domain_controller_application_version_freeze (actionTest)",
+      "title": "MiroirTest integ \u2014 action.domainController.freezeApplicationVersion (actionTest)",
       "requires": "postgres",
       "argv": [
         "npm",
@@ -673,15 +673,15 @@
         "--profile",
         "{profile}",
         "--suites",
-        "domain_controller_application_version_freeze",
+        "action.domainController.freezeApplicationVersion",
         "--mode",
         "integ"
       ]
     },
     {
-      "id": "integ-runner-runner_freeze_application_version",
+      "id": "integ-runner.freezeApplicationVersion",
       "tier": "default",
-      "title": "MiroirTest integ \u2014 runner_freeze_application_version (runnerTest, filesystem)",
+      "title": "MiroirTest integ \u2014 runner.freezeApplicationVersion (runnerTest, filesystem)",
       "requires": "none",
       "argv": [
         "npm",
@@ -693,15 +693,15 @@
         "--profile",
         "emulatedServer-filesystem",
         "--suites",
-        "runner_freeze_application_version",
+        "runner.freezeApplicationVersion",
         "--mode",
         "integ"
       ]
     },
     {
-      "id": "integ-runner-runner_drop_entity",
+      "id": "integ-runner.dropEntity",
       "tier": "default",
-      "title": "MiroirTest integ — runner_drop_entity (skipReset, no playfield)",
+      "title": "MiroirTest integ — runner.dropEntity (skipReset, no playfield)",
       "requires": "postgres",
       "argv": [
         "npm",
@@ -713,20 +713,20 @@
         "--profile",
         "{profile}",
         "--suites",
-        "runner_drop_entity",
+        "runner.dropEntity",
         "--mode",
         "integ"
       ]
     },
     {
-      "id": "integ-action-evolutionTraceWP1",
+      "id": "integ-action.scenario.evolutionTrace",
       "tier": "default",
-      "title": "MiroirTest integ — evolutionTraceWP1 (actionTest)",
+      "title": "MiroirTest integ — action.scenario.evolutionTrace (actionTest)",
       "requires": "postgres",
       "argv": [
         "bash",
         "-c",
-        "MIROIR_EVOLUTION_TRACE=1 npm run testMiroir -w miroir-standalone-app -- --profile {profile} --suites evolutionTraceWP1 --mode integ"
+        "MIROIR_EVOLUTION_TRACE=1 npm run testMiroir -w miroir-standalone-app -- --profile {profile} --suites action.scenario.evolutionTrace --mode integ"
       ]
     },
     {
@@ -910,7 +910,7 @@
       "argv": [
         "bash",
         "-c",
-        "npm run testMiroir -w miroir-core -- --suites externalServiceSync --mode unit && npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites externalServiceSyncExecute --mode integ && npm run testByFile -w miroir-core -- serverSecrets && npm run testByFile -w miroir-core -- externalServiceHttpStoreSkip && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceQuery && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceGuards && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceDispatch && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceReport && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem spotifyApp"
+        "npm run testMiroir -w miroir-core -- --suites tr.syncExternalServiceSchema --mode unit && npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites action.scenario.externalServiceSync --mode integ && npm run testByFile -w miroir-core -- serverSecrets && npm run testByFile -w miroir-core -- externalServiceHttpStoreSkip && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceQuery && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceGuards && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceDispatch && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceReport && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem spotifyApp"
       ]
     },
     {
@@ -1007,7 +1007,7 @@
       ]
     },
     {
-      "id": "integ-action-274-multistep-reports",
+      "id": "integ-action.scenario.multistepReportTemplate",
       "tier": "default",
       "title": "#274 — multistep Reports (MiroirTest Finish integ)",
       "requires": "none",
@@ -1021,7 +1021,7 @@
         "--profile",
         "{profile}",
         "--suites",
-        "multistepReports.274",
+        "action.scenario.multistepReportTemplate",
         "--mode",
         "integ"
       ]
@@ -1133,12 +1133,12 @@
     {
       "id": "unit-312-miroir-test-tags",
       "tier": "unit",
-      "title": "#312 \u2014 MiroirTest tags: CLI selection, Entity vocabulary, every test tagged, launcher routing, Tags column",
+      "title": "#312 / #316 \u2014 MiroirTest tags and names: CLI selection, Entity vocabulary, mode tags, naming guards, launcher routing, Tags column",
       "requires": "none",
       "argv": [
         "bash",
         "-c",
-        "npm run testByFile -w miroir-core -- miroirTestTags.unit && npm run testByFile -w miroir-standalone-app -- testMiroirLauncher.tags getColumnDefinitionsFromEntityAttributes"
+        "npm run testByFile -w miroir-core -- miroirTestTags.unit miroirTestNaming.unit && npm run testByFile -w miroir-standalone-app -- testMiroirLauncher.tags getColumnDefinitionsFromEntityAttributes"
       ]
     },
     {

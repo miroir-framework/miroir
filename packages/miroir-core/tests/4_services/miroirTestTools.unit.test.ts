@@ -17,10 +17,10 @@ import {
   runMiroirTests,
   runMiroirTestSuite,
 } from "../../src";
-import { miroirTest_runner_return_document } from "miroir-test-app_deployment-library";
+import { miroirTest_runner_returnDocument } from "miroir-test-app_deployment-library";
 import {
-  miroirTest_pilot_transformer_plus,
-  miroirTest_queries_library,
+  miroirTest_tr_resolveConditionalSchema_build,
+  miroirTest_query_library_instances,
 } from "miroir-test-app_deployment-miroir";
 import type {
   MiroirTestForFunctionCall,
@@ -40,7 +40,7 @@ function mockTracker() {
 
 describe("Miroir transformer leaf helpers", () => {
   it("uses miroirTestLabel for assertion naming on pilot leaf", () => {
-    const suite = (miroirTest_pilot_transformer_plus as MiroirTestDefinition)
+    const suite = (miroirTest_tr_resolveConditionalSchema_build as MiroirTestDefinition)
       .definition as MiroirTestSuite;
     const leaf = suite.miroirTests[0] as MiroirTestForTransformer;
     expect(miroirTransformerAssertionName(leaf)).toBe(
@@ -163,7 +163,7 @@ describe("runMiroirTestInMemory — functionCallTest", () => {
     };
     await runMiroirTest(
       vitest,
-      ["mustache"],
+      ["fn.mustache.extractDoubleBracePatterns"],
       undefined,
       leaf,
       defaultMetaModelEnvironment,
@@ -194,7 +194,7 @@ describe("runMiroirTestInMemory — functionCallTest", () => {
     };
     await runMiroirTest(
       vitest,
-      ["mustache"],
+      ["fn.mustache.extractDoubleBracePatterns"],
       undefined,
       leaf,
       defaultMetaModelEnvironment,
@@ -228,7 +228,7 @@ describe("runMiroirTestInMemory — functionCallTest", () => {
     };
     await runMiroirTest(
       vitest,
-      ["EntityPrimaryKey"],
+      ["fn.entityPrimaryKey"],
       undefined,
       leaf,
       defaultMetaModelEnvironment,
@@ -259,7 +259,7 @@ describe("runMiroirTestInMemory — functionCallTest", () => {
     await expect(
       runMiroirTest(
         vitest,
-        ["mustache"],
+        ["fn.mustache.extractDoubleBracePatterns"],
         undefined,
         leaf,
         defaultMetaModelEnvironment,
@@ -285,7 +285,7 @@ describe("runMiroirTestInMemory — queryTest", () => {
   it("executes first queries_library scenario", async () => {
     const tracker = mockTracker();
     const leaf = (
-      (miroirTest_queries_library as MiroirTestDefinition).definition as MiroirTestSuite
+      (miroirTest_query_library_instances as MiroirTestDefinition).definition as MiroirTestSuite
     ).miroirTests[0] as MiroirTestForQuery;
     await runMiroirTest(
       vitest,
@@ -308,7 +308,7 @@ describe("runMiroirTestInMemory — queryTest", () => {
 
   it("rejects integration mode for queryTest leaves", async () => {
     const leaf = (
-      (miroirTest_queries_library as MiroirTestDefinition).definition as MiroirTestSuite
+      (miroirTest_query_library_instances as MiroirTestDefinition).definition as MiroirTestSuite
     ).miroirTests[0] as MiroirTestForQuery;
     await expect(
       runMiroirTest(
@@ -330,7 +330,7 @@ describe("runMiroirTestInMemory — queryTest", () => {
 describe("runMiroirTestInMemory — runnerTest", () => {
   it("requires executionMode integration", async () => {
     const leaf = (
-      (miroirTest_runner_return_document as MiroirTestDefinition).definition as MiroirTestSuite
+      (miroirTest_runner_returnDocument as MiroirTestDefinition).definition as MiroirTestSuite
     ).miroirTests[0] as MiroirTestForRunner;
     await expect(
       runMiroirTest(
@@ -447,7 +447,7 @@ describe("runMiroirTestInMemory — transformerTest", () => {
   it("executes pilot resolveConditionalSchema build test", async () => {
     const tracker = mockTracker();
     const leaf = (
-      (miroirTest_pilot_transformer_plus as MiroirTestDefinition).definition as MiroirTestSuite
+      (miroirTest_tr_resolveConditionalSchema_build as MiroirTestDefinition).definition as MiroirTestSuite
     ).miroirTests[0] as MiroirTestForTransformer;
     await runMiroirTest(
       vitest,
@@ -470,7 +470,7 @@ describe("runMiroirTestInMemory — transformerTest", () => {
 
   it("requires executionEnvironment.domainController when executionMode is integration", async () => {
     const leaf = (
-      (miroirTest_pilot_transformer_plus as MiroirTestDefinition).definition as MiroirTestSuite
+      (miroirTest_tr_resolveConditionalSchema_build as MiroirTestDefinition).definition as MiroirTestSuite
     ).miroirTests[0] as MiroirTestForTransformer;
     await expect(
       runMiroirTest(

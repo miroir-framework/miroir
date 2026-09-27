@@ -6,12 +6,12 @@ This is the first document in a series of **action-workflow** notes. Each note t
 
 **Audience:** someone new to the framework who has a log dump and wants a consistent picture of who talks to whom.
 
-**Grounding run:** MiroirTest leaf `Refresh all Instances` in suite `domainController.data.crud` (`domain_controller_data_crud`), profile `emulatedServer-sql`. Reproduce with:
+**Grounding run:** MiroirTest leaf `Refresh all Instances` in suite `domainController.data.crud` (`action.domainController.dataCrud`), profile `emulatedServer-sql`. Reproduce with:
 
 ```bash
 npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql \
-  --suites domain_controller_data_crud \
+  --suites action.domainController.dataCrud \
   --mode integ \
   --filter '{"domainController.data.crud":["Refresh all Instances"]}'
 ```
