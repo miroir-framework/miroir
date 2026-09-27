@@ -935,14 +935,18 @@ export {
 } from "./1_core/mls/MlsToMls_Summary";
 export type { JsonSchema, MlsToJsonSchemaContext } from "./1_core/mls/MlsToJsonSchema";
 export {
+  applicationAssetsDirectory,
   deriveEnvironmentDeployments,
   ENVIRONMENT_STATE_ROOT,
+  environmentSectionMode,
+  environmentSections,
   REQUIRED_ENVIRONMENT_APPLICATIONS,
   resolveEnvironment,
   type EnvironmentDefinition,
   type EnvironmentDeployment,
   type EnvironmentDeploymentsResult,
   type EnvironmentResolution,
+  type EnvironmentSectionName,
 } from "./1_core/environment/Environment";
 export { mlsToJsonSchema } from "./1_core/mls/MlsToJsonSchema";
 export {

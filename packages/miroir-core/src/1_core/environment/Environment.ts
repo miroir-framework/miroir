@@ -43,10 +43,39 @@ export type EnvironmentDeploymentsResult =
   | { status: "ok"; deployments: EnvironmentDeployment[] }
   | { status: "error"; errors: string[] };
 
-type SectionName = "model" | "data" | "modelVersion";
+export type EnvironmentSectionName = "admin" | "model" | "data" | "modelVersion";
 
-function sectionsOf(application: MiroirEnvironmentApplication): SectionName[] {
-  return application.sections?.modelVersion ? ["model", "data", "modelVersion"] : ["model", "data"];
+/** The store sections of an installed application: admin, model, data, and modelVersion when declared. */
+export function environmentSections(application: MiroirEnvironmentApplication): EnvironmentSectionName[] {
+  return application.sections?.modelVersion ? ["admin", "model", "data", "modelVersion"] : ["admin", "model", "data"];
+}
+
+/** A section's own mode when overridden, else the application's; `admin` always follows the application. */
+export function environmentSectionMode(
+  application: MiroirEnvironmentApplication,
+  section: EnvironmentSectionName,
+): MiroirEnvironmentSectionMode {
+  return (section === "admin" ? undefined : application.sections?.[section]?.mode) ?? application.mode;
+}
+
+function environmentSectionStore(
+  application: MiroirEnvironmentApplication,
+  section: EnvironmentSectionName,
+): MiroirEnvironmentStoreType {
+  return (section === "admin" ? undefined : application.sections?.[section]?.store) ?? application.store;
+}
+
+/**
+ * Where a section lives in the application package (repository-relative): what a `live` section
+ * opens and what a `copy` section is seeded from.
+ */
+export function applicationAssetsDirectory(
+  applicationKey: string,
+  application: MiroirEnvironmentApplication,
+  section: EnvironmentSectionName,
+): string {
+  const assets = `packages/${application.package}/assets`;
+  return section === "admin" ? assets : `${assets}/${application.assetPrefix ?? applicationKey}_${section}`;
 }
 
 function sectionDirectory(
@@ -54,11 +83,10 @@ function sectionDirectory(
   applicationKey: string,
   application: MiroirEnvironmentApplication,
   mode: MiroirEnvironmentSectionMode,
-  section: SectionName | "admin",
+  section: EnvironmentSectionName,
 ): string {
   if (mode === "live") {
-    const assets = `packages/${application.package}/assets`;
-    return section === "admin" ? assets : `${assets}/${application.assetPrefix ?? applicationKey}_${section}`;
+    return applicationAssetsDirectory(applicationKey, application, section);
   }
   const state = `${ENVIRONMENT_STATE_ROOT}/${environmentName}/${applicationKey}`;
   return section === "admin" ? state : `${state}/${section}`;
@@ -70,7 +98,7 @@ function sectionConfiguration(
   application: MiroirEnvironmentApplication,
   mode: MiroirEnvironmentSectionMode,
   store: MiroirEnvironmentStoreType,
-  section: SectionName | "admin",
+  section: EnvironmentSectionName,
 ): StoreSectionConfiguration | string {
   const where = `application "${applicationKey}", section "${section}"`;
   if (store !== "filesystem") {
@@ -99,10 +127,9 @@ export function deriveEnvironmentDeployments(
       continue;
     }
     const configuration: Record<string, StoreSectionConfiguration> = {};
-    for (const section of ["admin", ...sectionsOf(application)] as const) {
-      const override = section === "admin" ? undefined : application.sections?.[section];
-      const mode = override?.mode ?? application.mode;
-      const store = override?.store ?? application.store;
+    for (const section of environmentSections(application)) {
+      const mode = environmentSectionMode(application, section);
+      const store = environmentSectionStore(application, section);
       if (mode === "live" && store !== "filesystem") {
         errors.push(`application "${applicationKey}", section "${section}": mode "live" needs store "filesystem", got "${store}"`);
         continue;
@@ -180,9 +207,8 @@ function environmentRuleErrors(name: string, environment: MiroirEnvironment): st
       if (!application) {
         continue;
       }
-      for (const section of ["admin", ...sectionsOf(application)] as const) {
-        const override = section === "admin" ? undefined : application.sections?.[section];
-        if ((override?.mode ?? application.mode) === "live") {
+      for (const section of environmentSections(application)) {
+        if (environmentSectionMode(application, section) === "live") {
           errors.push(
             `environment "${name}": application "${applicationKey}", section "${section}" is live; test environments use copy only`,
           );

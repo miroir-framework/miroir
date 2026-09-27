@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Inventory: [`./current-state-inven
 Related: #323 (server bundle ignores `--config`; Slice 3 must not rely on `--config`)
 Working branch: `claude/environment-configuration-7z5rjb` (from `_integration`)
 
-**Resume note:** approved by A 2026-09-27. Slices 0–2 DONE.
+**Resume note:** approved by A 2026-09-27. Slices 0–3 DONE.
 
 ---
 
@@ -37,7 +37,7 @@ This plan does **not** touch the release path, Docker, Electron, miroir-cli or s
 | 0 | Characterize tracked writes and today's deployment map | ✅ | `scripts/tests/test_tracked_assets_guard.py`, `unit-321-tracked-assets` baseline |
 | 1 | Tracer: `miroir-env show` resolves `dev` | ✅ | MiroirTest `fn.environment.deriveDeployments` + `miroirEnvCli.321.phase1.unit.test.ts` |
 | 2 | Personal environment: `local.json`, `MIROIR_ENV`, `extends` | ✅ | `fn.environment.resolveEnvironment` (merge leaves) + CLI test |
-| 3 | Server boots from the environment, Admin data in state | ⬜ | `serverBootFromEnvironment.321.phase3.integ.test.ts` |
+| 3 | Server boots from the environment, Admin data in state | ✅ | `miroir-env/tests/openEnvironment.321.phase3.integ.test.ts` |
 | 4 | Tests run on `test-filesystem` without tracked writes | ⬜ | `nonreg:filesystem` + tracked-assets guard clean |
 | 5 | `test-sql`, `test-indexedDb`, `test-mongodb`; profile JSONs and test Admin copy retired | ⬜ | `nonreg:default` (Postgres) + guard |
 | 6 | Reconciliation, deviation warnings, `check` / `import` / `prune` | ⬜ | `miroirEnvReconcile.321.phase6.integ.test.ts` |
@@ -236,7 +236,7 @@ git check-ignore environments/local.json .miroir/x
 
 ## Slice 3 — Server boots from the environment, Admin data in state
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -273,6 +273,19 @@ npm run nonreg:unit
 ```
 
 ### Realization
+
+- `environments/dev.json`: Admin `sections.data.mode = "copy"`, so Admin data lives in `.miroir/dev/admin/data`; Admin's model and every other application stay `live`.
+- miroir-core `Environment.ts` exports `environmentSections`, `environmentSectionMode` and `applicationAssetsDirectory` (the package location a `live` section opens and a `copy` section is seeded from).
+- miroir-env `seedEnvironmentState(resolved, { reseed? })` copies every missing `copy` filesystem section from the package assets. For Admin data it keeps the Deployment and AdminApplication entity directories but not their rows (`GENERATED_ADMIN_ENTITIES`): a filesystem data section knows its entities by their directories.
+- miroir-env `environmentAdminRows` generates one Deployment row (configuration from the definition) and one AdminApplication row (name and labels from the application's SelfApplication row in its package) per installed application. `openEnvironmentBootDeployments` opens Admin and Miroir, and refuses other uuids than `defaultSelfApplicationDeploymentMap`'s. `reconcileEnvironmentDeployments` creates missing rows, rewrites differing ones (D15, reported as `changes`), opens the other deployments, and opens Deployment rows absent from the definition with a warning. Rows go through `createInstance` / `updateInstance`, not file writes, so the same code serves other stores later.
+- miroir-env `environmentServerConfig` builds the `MiroirConfigServer` (URLs, CORS, features; filesystem root = repository root).
+- `server.ts`: without `--config` and with an `environments/` folder above the working directory, the server seeds the state, takes its settings from the environment, opens the boot deployments, imports secrets, then reconciles and opens the rest, printing changes and warnings. Otherwise (release binary, Docker, explicit `--config`) the previous path is unchanged. `miroir-env` is bundled into the release by ncc (not an `-e` external), so the Docker image needs nothing new.
+- Deviation from 3.2: the Deployment and AdminApplication rows stay in `admin/assets/admin_data/` instead of a `git mv` to `bootstrap/`. The release path (Docker seed, Electron copy, `deployment_Admin` / `deployment_Miroir` for the fallback boot) and about fifteen unit tests (`access.262`, `access.264`, `authentication.71`, `versioningModes.reportRouting`, …) read them there; excluding them from the seed gives the same result. Slice 10 revisits them with the other drifted Admin copies.
+- Deviation from 3.1: the boot test lives in `miroir-env` (devDependencies `miroir-localcache-redux`, `miroir-store-filesystem`), next to the code it covers, not in `miroir-standalone-app`. It boots a real DomainController on filesystem stores in a temporary checkout, and checks the seed, the generated rows, the opened deployments, that a MiroirRight creation and a ViewParams update change nothing under `packages/`, that a second boot keeps the state, and the warning for a Deployment the definition no longer installs.
+- 3.3: `miroir-core/src/ApplicationDeploymentAdmin.ts` (unreferenced) removed. `defaultDeployments` unchanged: it still backs the fallback boot.
+- Known gap until Slice 7: in development, applications installed from the UI get the path prefix `miroir-server/tests/tmp`, now resolved against the repository root (`<repo>/miroir-server/tests/tmp/`, ignored by the existing `tmp*/` rule); their Deployment rows land in `.miroir/dev/admin/data` and are opened with a warning at the next boot.
+- The Slice 1 characterization test now expects Admin data in `.miroir/dev/admin/data`.
+- Checked by hand: `NODE_ENV=development node packages/miroir-server/release/index.js` from the repository root seeds `admin/data`, creates the 4 AdminApplication and 4 Deployment rows, serves `/capabilities`, and leaves `git status` clean. A UI deploy was not exercised (no browser in the cloud session).
 
 ---
 

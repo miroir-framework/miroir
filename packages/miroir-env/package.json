@@ -24,6 +24,8 @@
     "miroir-core": "*"
   },
   "devDependencies": {
+    "miroir-localcache-redux": "*",
+    "miroir-store-filesystem": "*",
     "tsup": "^8.0.1"
   }
 }

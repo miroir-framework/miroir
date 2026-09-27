@@ -1,6 +1,6 @@
 {
   "name": "dev",
-  "description": "Default local development environment: every application edited live in its package assets.",
+  "description": "Default local development environment: application models and data edited live in their package assets, except Admin data (installed applications, users, rights, secrets, view settings), kept in .miroir/dev/.",
   "server": {
     "rootApiUrl": "https://localhost:3080",
     "mcpUrl": "https://localhost:4080",
@@ -31,7 +31,8 @@
       "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
       "deployment": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
       "store": "filesystem",
-      "mode": "live"
+      "mode": "live",
+      "sections": { "data": { "mode": "copy" } }
     },
     "library": {
       "package": "miroir-test-app_deployment-library",

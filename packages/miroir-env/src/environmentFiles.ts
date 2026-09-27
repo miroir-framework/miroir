@@ -62,6 +62,18 @@ export function findRepositoryRoot(start: string): string {
   return directory;
 }
 
+/** True when a repository root with an environments/ folder is found above `cwd`. */
+export function hasEnvironmentDefinitions(cwd: string): boolean {
+  try {
+    return existsSync(path.join(findRepositoryRoot(cwd), ENVIRONMENTS_DIRECTORY));
+  } catch (error) {
+    if (error instanceof EnvironmentError) {
+      return false;
+    }
+    throw error;
+  }
+}
+
 function environmentsDirectory(repositoryRoot: string): string {
   return path.join(repositoryRoot, ENVIRONMENTS_DIRECTORY);
 }

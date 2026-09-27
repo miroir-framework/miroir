@@ -10,7 +10,7 @@ import { describe, expect, it } from "vitest";
 import { packageDirectory, repositoryRoot, run, temporaryRepository } from "./cliTestSupport";
 
 describe("miroir-env show", () => {
-  it("resolves dev to the model, data and modelVersion sections the dev server opens today", async () => {
+  it("resolves dev to the sections the dev server opened before #321, Admin data aside", async () => {
     const result = await run(["show", "--json", "--name", "dev"], repositoryRoot);
     expect(result.stderr).toBe("");
     expect(result.exitCode).toBe(0);
@@ -27,6 +27,9 @@ describe("miroir-env show", () => {
       ),
     );
     expect(Object.keys(shownByUuid).sort()).toEqual(Object.keys(today).sort());
+    // Slice 3: Admin data leaves the package assets for the environment state
+    const ADMIN_DEPLOYMENT = "18db21bf-f8d3-4f6a-8296-84b69f6dc48b";
+    today[ADMIN_DEPLOYMENT].configuration.data = { emulatedServerType: "filesystem", directory: ".miroir/dev/admin/data" };
     for (const [uuid, row] of Object.entries(today)) {
       const { admin: _ignoredAdmin, ...sections } = row.configuration;
       const { admin: _derivedAdmin, ...shownSections } = shownByUuid[uuid].configuration;
