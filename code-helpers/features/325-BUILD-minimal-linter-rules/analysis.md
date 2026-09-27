@@ -108,7 +108,7 @@ Violation counts with `@eslint/js` + `typescript-eslint` recommended + `react-ho
 |---|---|
 | Config | `eslint.config.mjs` |
 | Layering rule and its RuleTester test | `eslint-rules/miroir-layers.mjs`, `eslint-rules/miroir-layers.test.mjs` |
-| Scripts | `npm run lint`, `npm run test:lint-rules` (root `package.json`) |
+| Script | `npm run lint` (root `package.json`): the rule's test, then ESLint on `packages/` |
 | Dev dependencies (root) | `eslint` 9, `@eslint/js` 9, `typescript-eslint` 8, `eslint-plugin-react-hooks` 7 |
 
 ## 5. Follow-ups
