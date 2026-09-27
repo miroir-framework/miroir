@@ -137,7 +137,12 @@ export interface MiroirEventServiceInterface {
  * Service for capturing and managing logs associated with specific action executions
  */
 export class MiroirEventService implements MiroirEventServiceInterface {
-  public events: Map<string, MiroirEvent> = new Map(); // TODO: make private! should be accessed only via selectors / hooks
+  // written only here, so the sorted cache below stays valid
+  private eventMap: Map<string, MiroirEvent> = new Map();
+  /** Read-only view; should be accessed only via selectors / hooks */
+  get events(): ReadonlyMap<string, MiroirEvent> {
+    return this.eventMap;
+  }
   public eventEntries: Map<string, MiroirEventLog> = new Map();
   private eventSubscribers: Set<(events: MiroirEvent[]) => void> = new Set();
   // newest first; reset when an event is added or removed (log lines and status updates keep startTime)
@@ -177,7 +182,7 @@ export class MiroirEventService implements MiroirEventServiceInterface {
     // Create log entry based on tracking type
     let logEntry: MiroirEventLog;
 
-    const currentEvent = this.events.get(currentActivityId);
+    const currentEvent = this.eventMap.get(currentActivityId);
 
     switch (currentActivityData.activityType) {
       case "action": {
@@ -277,7 +282,7 @@ export class MiroirEventService implements MiroirEventServiceInterface {
 
     // ##############################################################################################
   pushEventFromActivity(trackingData: MiroirActivity) {
-    if (!this.events.has(trackingData.activityId)) {
+    if (!this.eventMap.has(trackingData.activityId)) {
       // copies MiroirEventTrackingData to MiroirEvent
       // Create event based on tracking type
       let event: MiroirEvent = {
@@ -293,11 +298,11 @@ export class MiroirEventService implements MiroirEventServiceInterface {
         },
       } as MiroirEvent;
 
-      this.events.set(trackingData.activityId, event);
+      this.eventMap.set(trackingData.activityId, event);
       this.sortedEvents = undefined;
     } else {
       // Update existing action status/timing and transformer results
-      const existing = this.events.get(trackingData.activityId)!;
+      const existing = this.eventMap.get(trackingData.activityId)!;
       existing.activity.endTime = trackingData.endTime;
       existing.activity.status = trackingData.status;
       // Update transformer-specific fields if they exist
@@ -314,7 +319,7 @@ export class MiroirEventService implements MiroirEventServiceInterface {
 
   // // ##############################################################################################
   // pushEventFromActivity(trackingData: MiroirActivity): void {
-  //   const existing = this.events.get(trackingData.activityId);
+  //   const existing = this.eventMap.get(trackingData.activityId);
   //   if (!existing) {
   //     // TODO: use trackingData.activityType to discriminate event type
   //     if (trackingData.activityType == "action") {
@@ -323,21 +328,21 @@ export class MiroirEventService implements MiroirEventServiceInterface {
   //         eventLogs: [],
   //         logCounts: { trace: 0, debug: 0, info: 0, warn: 0, error: 0, total: 0 },
   //       };
-  //       this.events.set(trackingData.activityId, event);
+  //       this.eventMap.set(trackingData.activityId, event);
   //     } else if (trackingData.activityType == "testSuite" || trackingData.activityType == "test" || trackingData.activityType == "testAssertion") {
   //       const event: TestEvent = {
   //         activity: trackingData,
   //         eventLogs: [],
   //         logCounts: { trace: 0, debug: 0, info: 0, warn: 0, error: 0, total: 0 },
   //       };
-  //       this.events.set(trackingData.activityId, event);
+  //       this.eventMap.set(trackingData.activityId, event);
   //     } else if (trackingData.activityType == "transformer") {
   //       const event: TransformerEvent = {
   //         activity: trackingData,
   //         eventLogs: [],
   //         logCounts: { trace: 0, debug: 0, info: 0, warn: 0, error: 0, total: 0 },
   //       };
-  //       this.events.set(trackingData.activityId, event);
+  //       this.eventMap.set(trackingData.activityId, event);
   //     }
   //   } else {
   //     // Update existing event with completion data
@@ -396,7 +401,7 @@ export class MiroirEventService implements MiroirEventServiceInterface {
   }
 
   getEvent(eventId: string): MiroirEvent | undefined {
-    return this.events.get(eventId);
+    return this.eventMap.get(eventId);
   }
 
   /**
@@ -405,7 +410,7 @@ export class MiroirEventService implements MiroirEventServiceInterface {
    */
   getAllEvents(): MiroirEvent[] {
     if (!this.sortedEvents) {
-      this.sortedEvents = Array.from(this.events.values()).sort(
+      this.sortedEvents = Array.from(this.eventMap.values()).sort(
         (a, b) => b.activity.startTime - a.activity.startTime
       );
     }
@@ -482,7 +487,7 @@ export class MiroirEventService implements MiroirEventServiceInterface {
   }
 
   clear(): void {
-    this.events.clear();
+    this.eventMap.clear();
     this.eventEntries.clear();
     this.sortedEvents = undefined;
     this.notifySubscribers();
@@ -531,7 +536,7 @@ export class MiroirEventService implements MiroirEventServiceInterface {
   private cleanup(): void {
     const now = Date.now();
     const actionsToRemove: string[] = [];
-    this.events.forEach((event, eventId) => {
+    this.eventMap.forEach((event, eventId) => {
       if (
         event.activity.status !== "running" &&
         event.activity.startTime < now - this.MAX_AGE_MS
@@ -540,13 +545,13 @@ export class MiroirEventService implements MiroirEventServiceInterface {
       }
     });
     actionsToRemove.forEach((eventId) => {
-      const actionLogs = this.events.get(eventId);
+      const actionLogs = this.eventMap.get(eventId);
       if (actionLogs) {
         // Remove all log entries for this action
         actionLogs.eventLogs.forEach((log) => {
           this.eventEntries.delete(log.logId);
         });
-        this.events.delete(eventId);
+        this.eventMap.delete(eventId);
         this.sortedEvents = undefined;
       }
     });
