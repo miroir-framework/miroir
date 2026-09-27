@@ -1,3 +1,7 @@
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { listMiroirTestSuiteKeys } from "miroir-core";
@@ -8,6 +12,7 @@ import {
   assertMiroirCoreIntegTestLaunchReady,
   formatMiroirCoreIntegTestUsage,
   formatProfileLaunchHint,
+  prepareMiroirCoreIntegTestLaunchDirectories,
   validateMiroirCoreIntegTestLaunch,
 } from "./miroirCoreIntegTestLaunch.js";
 import { resolveTestSessionForIntegOptionsFromEnv } from "./IntegrationTestSession.js";
@@ -221,5 +226,34 @@ describe("miroirCoreIntegTestLaunch", () => {
     );
     expect(errors).toEqual([]);
     expect(listMiroirTestSuiteKeys().length).toBeGreaterThan(0);
+  });
+
+  it("#318: prepares the gitignored filesystem root so a fresh checkout validates", () => {
+    const missingRoot = path.join(
+      fs.mkdtempSync(path.join(os.tmpdir(), "miroir-318-")),
+      "tmp-not-yet-created",
+    );
+    const context = baseContext({
+      env: {
+        MIROIR_TEST_SUITES: "miroirCoreTransformers",
+        MIROIR_TEST_MODE: "integ",
+        MIROIR_TEST_APP_STORE_TYPE: "filesystem",
+      },
+    });
+    const withMissingRoot = {
+      ...context,
+      testSessionOptions: {
+        ...context.testSessionOptions,
+        filesystemDeploymentRootDirectory: missingRoot,
+      },
+    };
+
+    expect(validateMiroirCoreIntegTestLaunch(withMissingRoot).join("\n")).toContain(
+      "Parent directory for test app filesystem root does not exist",
+    );
+
+    prepareMiroirCoreIntegTestLaunchDirectories(withMissingRoot.testSessionOptions);
+
+    expect(validateMiroirCoreIntegTestLaunch(withMissingRoot)).toEqual([]);
   });
 });

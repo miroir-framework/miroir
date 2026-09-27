@@ -11,6 +11,7 @@ const ENV_KEYS = [
   "VITE_MIROIR_LOG_CONFIG_FILENAME",
   "VITE_TEST_MODE",
   "MIROIR_TEST_STORAGE",
+  "MIROIR_TEST_PROFILE",
 ] as const;
 
 describe("testByFileLauncher profile (Gap D5)", () => {
@@ -117,6 +118,17 @@ describe("testByFileLauncher profile (Gap D5)", () => {
 
     expect(spawnEnv.VITE_TEST_MODE).toBe("true");
     expect(spawnEnv.VITE_MIROIR_TEST_CONFIG_FILENAME).toBeUndefined();
+    expect(spawnEnv.MIROIR_TEST_PROFILE).toBeUndefined();
+  });
+
+  it("#318: --profile names the launch profile for tests that load a profile by name", () => {
+    const { spawnEnv } = prepareTestByFileLaunch(process.env, [
+      "--profile",
+      "emulatedServer-filesystem",
+      "uiIntegrationTestLauncher.integ",
+    ]);
+
+    expect(spawnEnv.MIROIR_TEST_PROFILE).toBe("emulatedServer-filesystem");
   });
 
   it("respectExistingEnv: pre-set VITE_MIROIR_TEST_CONFIG_FILENAME is kept", () => {

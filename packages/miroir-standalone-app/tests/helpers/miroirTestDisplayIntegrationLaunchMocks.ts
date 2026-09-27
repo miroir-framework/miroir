@@ -38,8 +38,9 @@ vi.mock(
       './runUiIntegrationTestSuiteInNode.js'
     );
     const { expect } = await import('vitest');
+    const { resolveLaunchProfileName } = await import('./launchProfileName.js');
 
-    const NODE_INTEGRATION_PROFILE = 'emulatedServer-sql';
+    const NODE_INTEGRATION_PROFILE = resolveLaunchProfileName();
 
     return {
       loadBrowserUiIntegrationTestLauncherEnvironment: async () => {

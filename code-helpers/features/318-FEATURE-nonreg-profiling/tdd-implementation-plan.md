@@ -2,7 +2,7 @@
 
 > Integration-first, no mocks. The harness is tested through its public entry points: `run-nonreg.py` (pytest in `scripts/tests`, which runs the real script on small real manifests), the package launchers (vitest unit tests on the argv/env they produce), and real vitest runs on the filesystem profile. No test file, `RunnerTestSession` or UI launch code changes, except where a slice names it.
 
-**Resume note:** analysis confirmed 2026-09-27. Branch `318-FEATURE-nonreg-profiling`, from `_integration` 76e52aa. Next: Slice 1.
+**Resume note:** analysis confirmed 2026-09-27. Branch `318-FEATURE-nonreg-profiling`, from `_integration` 76e52aa. Next: Slice 2.
 
 ## Scope
 
@@ -21,7 +21,7 @@ Out of scope: changes to the UI test runs; timing trends across runs (#306); ste
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize the legacy nonreg contract | ✅ DONE | `scripts/tests/test_run_nonreg.py` |
-| 1 | Clean filesystem baseline (D5, D6) | ⬜ pending | the 4 steps pass on `emulatedServer-filesystem` |
+| 1 | Clean filesystem baseline (D5, D6) | ✅ DONE | the 4 steps pass on `emulatedServer-filesystem` |
 | 2 | Opt-in timing profile (D1) | ⬜ pending | `--timings` writes `timings.json` with hook times; nothing written without it |
 | 3 | Shared runner for testByFile groups (D2) | ⬜ pending | `--runner shared` on the storage group: same per-step verdicts, lower wall time |
 | 4 | Shared runner for runner/action suites (D2) | ⬜ pending | new shared entry: one session per suite, same results as legacy |
@@ -92,7 +92,7 @@ Out of scope: changes to the UI test runs; timing trends across runs (#306); ste
 
 ## Slice 1 — Clean filesystem baseline (D5, D6)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** `nonreg:filesystem` no longer runs 0 transformer tests and no longer reaches Postgres.
 
@@ -107,6 +107,18 @@ Out of scope: changes to the UI test runs; timing trends across runs (#306); ste
 **Refactor checkpoint:** one helper, `resolveLaunchProfileName(env)`, shared by both test files.
 
 **Validation:** the 4 steps above on `emulatedServer-filesystem`; the launcher unit tests; `tsc` on miroir-standalone-app.
+
+### Realization
+
+- D5: `prepareMiroirCoreIntegTestLaunchDirectories(testSessionOptions)` (`tests/helpers/miroirCoreIntegTestLaunch.ts`) creates the parent of the filesystem test-app root. `miroir-core-tests.integ.test.ts` calls it before the validation.
+  - Deviation from the plan: it lives in the entry helper, not in `prepareTestMiroirLaunch`. The launcher does not know the resolved app root, and the entry is CLI-only, so this is still harness level.
+  - Proof: after `rm -rf tests/tmp`, `miroirCoreTransformers` runs 261 tests and all pass (before: 0 run, launch error). There is a new unit test in `miroirCoreIntegTestLaunch.unit.test.ts`.
+- D6:
+  - `testByFileLauncher` sets `MIROIR_TEST_PROFILE` from `--profile`. This env var is new: nothing used it before.
+  - `tests/helpers/launchProfileName.ts` (`resolveLaunchProfileName`, default `emulatedServer-sql`) is used by `uiIntegrationTestLauncher.integ.test.ts` and by the Display/List launch mocks. There are 3 mock files, not 2: `miroirTestListIntegrationLaunchMocks.ts` also hardcoded sql.
+  - The `Profile: emulatedServer-indexedDb` assertions stay as they are: they check the UI preference, not the profile Node loads.
+  - On filesystem: `uiIntegrationTestLauncher.integ` 11 s, `MiroirTestDisplayIntegrationLaunch` 12 s, `MiroirTestListIntegrationLaunch` 9 s, all passed (before: ECONNREFUSED, and 190 s timeouts for the last two).
+  - Without `--profile` the tests still load `emulatedServer-sql`, as before.
 
 ---
 

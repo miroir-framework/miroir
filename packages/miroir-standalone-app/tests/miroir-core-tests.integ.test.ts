@@ -14,7 +14,10 @@ import {
   resolveCliSuiteKeysFromCatalog,
 } from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
 import { runMiroirCoreTestsFromCLI } from "./helpers/runMiroirCoreTestsFromCLI.js";
-import { assertMiroirCoreIntegTestLaunchReady } from "./helpers/miroirCoreIntegTestLaunch.js";
+import {
+  assertMiroirCoreIntegTestLaunchReady,
+  prepareMiroirCoreIntegTestLaunchDirectories,
+} from "./helpers/miroirCoreIntegTestLaunch.js";
 import { resolveTestSessionForIntegOptionsFromEnv } from "./helpers/IntegrationTestSession.js";
 import { createStandaloneAppIntegrationOrchestrator } from "./helpers/StandaloneAppIntegrationOrchestrator.js";
 
@@ -38,6 +41,7 @@ const config = {
 };
 const testSessionOptions = resolveTestSessionForIntegOptionsFromEnv(process.env);
 const miroirActivityTracker = new MiroirActivityTracker();
+prepareMiroirCoreIntegTestLaunchDirectories(testSessionOptions);
 assertMiroirCoreIntegTestLaunchReady({
   env: process.env,
   argv,

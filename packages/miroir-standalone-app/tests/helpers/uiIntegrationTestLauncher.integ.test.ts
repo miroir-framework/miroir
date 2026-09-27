@@ -10,7 +10,10 @@ import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 
 import { miroirAppStartup } from "../../src/startup.js";
 import { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
+import { resolveLaunchProfileName } from "./launchProfileName.js";
 import { runUiIntegrationTestSuiteInNode } from "./runUiIntegrationTestSuiteInNode.js";
+
+const LAUNCH_PROFILE_NAME = resolveLaunchProfileName();
 
 const RETURN_BOOK_LEAF = "Return Book Test Composite Action";
 
@@ -34,7 +37,7 @@ describe("runUiIntegrationTestSuite (B3)", () => {
       {
         suiteKey: "runner_return_document",
         suiteDefinition,
-        profileName: "emulatedServer-sql",
+        profileName: LAUNCH_PROFILE_NAME,
         runTargetMode: "pinned",
         hostMode: "isolated",
         filter: {
@@ -49,12 +52,12 @@ describe("runUiIntegrationTestSuite (B3)", () => {
     expect(result).toMatchObject({
       suiteKey: "runner_return_document",
       sessionKind: "runner",
-      profileName: "emulatedServer-sql",
+      profileName: LAUNCH_PROFILE_NAME,
       hostMode: "isolated",
       runTargetMode: "pinned",
       success: true,
       inspector: {
-        profileName: "emulatedServer-sql",
+        profileName: LAUNCH_PROFILE_NAME,
         sessionKind: "runner",
         runTargetMode: "pinned",
         hostMode: "isolated",
@@ -76,7 +79,7 @@ describe("runUiIntegrationTestSuite transformer (B7)", () => {
       {
         suiteKey: "miroirCoreTransformers",
         suiteDefinition,
-        profileName: "emulatedServer-sql",
+        profileName: LAUNCH_PROFILE_NAME,
         runTargetMode: "pinned",
         hostMode: "isolated",
         filter: {
@@ -94,7 +97,7 @@ describe("runUiIntegrationTestSuite transformer (B7)", () => {
 
     expect(result.suiteKey).toBe("miroirCoreTransformers");
     expect(result.sessionKind).toBe("transformer");
-    expect(result.profileName).toBe("emulatedServer-sql");
+    expect(result.profileName).toBe(LAUNCH_PROFILE_NAME);
     expect(result.hostMode).toBe("isolated");
     expect(result.runTargetMode).toBe("pinned");
     expect(result.inspector.sessionKind).toBe("transformer");

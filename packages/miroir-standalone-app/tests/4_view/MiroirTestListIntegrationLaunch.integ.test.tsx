@@ -86,7 +86,7 @@ beforeEach(() => {
   resetUiIntegrationTestRunPreferencesForTests();
   resetLastUiIntegrationTestRunResultForTests();
   resetCapturedUiIntegrationRunResults();
-  // Keep UI on browser-launchable default; Node env mock loads emulatedServer-sql.
+  // Keep UI on browser-launchable default; Node env mock loads the launch profile (#318).
   setUiIntegrationTestRunPreferences({
     runTargetMode: 'pinned',
   });
