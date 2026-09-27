@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { miroirTest_runner_return_document } from "miroir-test-app_deployment-library";
+import { miroirTest_runner_returnDocument } from "miroir-test-app_deployment-library";
 import {
-  miroirTest_domain_controller_model_undo_redo,
+  miroirTest_action_domainController_modelUndoRedo,
 } from "miroir-test-app_deployment-miroir";
 import {
   indexApplicationMiroirTestsByKey,
@@ -53,30 +53,30 @@ function runnerSuiteEntryFromFolders(suiteKey: string): UiIntegrationRunnerSuite
 }
 
 function runnerReturnDocumentSuite(): MiroirTestSuite {
-  return (miroirTest_runner_return_document as MiroirTestDefinition).definition as MiroirTestSuite;
+  return (miroirTest_runner_returnDocument as MiroirTestDefinition).definition as MiroirTestSuite;
 }
 
 describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
-  it("lists runner_lend_document, runner_return_document, runner_create_entity, runner_drop_entity, and domain_controller action suites", () => {
+  it("lists runner.lendDocument, runner.returnDocument, runner.createEntity, runner.dropEntity, and action.domainController suites", () => {
     const keys = listUiIntegrationRunnerSuiteKeys();
-    expect(keys).toContain("runner_lend_document");
-    expect(keys).toContain("runner_return_document");
-    expect(keys).toContain("runner_mcp_get_instances");
-    expect(keys).toContain("runner_mcp_lend_document");
-    expect(keys).toContain("runner_create_entity");
-    expect(keys).toContain("runner_drop_entity");
-    expect(keys).toContain("domain_controller_data_crud");
-    expect(keys).toContain("domain_controller_model_crud");
+    expect(keys).toContain("runner.lendDocument");
+    expect(keys).toContain("runner.returnDocument");
+    expect(keys).toContain("runner.mcp.getInstances");
+    expect(keys).toContain("runner.mcp.lendDocument");
+    expect(keys).toContain("runner.createEntity");
+    expect(keys).toContain("runner.dropEntity");
+    expect(keys).toContain("action.domainController.dataCrud");
+    expect(keys).toContain("action.domainController.modelCrud");
   });
 
   it("registry entries use discriminated union kinds", () => {
-    expect(UI_INTEGRATION_RUNNER_SUITE_REGISTRY.runner_lend_document.kind).toBe("runnerTest");
-    expect(UI_INTEGRATION_RUNNER_SUITE_REGISTRY.runner_return_document.kind).toBe("runnerTest");
-    expect(UI_INTEGRATION_RUNNER_SUITE_REGISTRY.runner_create_entity.kind).toBe("runnerTest");
-    expect(UI_INTEGRATION_RUNNER_SUITE_REGISTRY.domain_controller_data_crud.kind).toBe(
+    expect(UI_INTEGRATION_RUNNER_SUITE_REGISTRY["runner.lendDocument"].kind).toBe("runnerTest");
+    expect(UI_INTEGRATION_RUNNER_SUITE_REGISTRY["runner.returnDocument"].kind).toBe("runnerTest");
+    expect(UI_INTEGRATION_RUNNER_SUITE_REGISTRY["runner.createEntity"].kind).toBe("runnerTest");
+    expect(UI_INTEGRATION_RUNNER_SUITE_REGISTRY["action.domainController.dataCrud"].kind).toBe(
       "domainControllerTest",
     );
-    expect(UI_INTEGRATION_RUNNER_SUITE_REGISTRY.evolutionTraceWP1.kind).toBe("actionTest");
+    expect(UI_INTEGRATION_RUNNER_SUITE_REGISTRY["action.scenario.evolutionTrace"].kind).toBe("actionTest");
   });
 
   it("buildUiIntegrationOrchestratorCreateSessionParams distinguishes runner vs action kinds", () => {
@@ -87,7 +87,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       applicationName: "Library",
     };
     const runnerParams = buildUiIntegrationOrchestratorCreateSessionParams(
-      runnerSuiteEntryFromFolders("runner_lend_document"),
+      runnerSuiteEntryFromFolders("runner.lendDocument"),
       context,
       "test",
       runTarget,
@@ -104,7 +104,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
     }
 
     const actionParams = buildUiIntegrationOrchestratorCreateSessionParams(
-      runnerSuiteEntryFromFolders("domain_controller_data_crud"),
+      runnerSuiteEntryFromFolders("action.domainController.dataCrud"),
       context,
       "test",
       runTarget,
@@ -121,18 +121,18 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
   it("resolveUiIntegrationOrchestratorSessionKind maps registry entry kinds", () => {
     expect(
       resolveUiIntegrationOrchestratorSessionKind(
-        UI_INTEGRATION_RUNNER_SUITE_REGISTRY.runner_return_document,
+        UI_INTEGRATION_RUNNER_SUITE_REGISTRY["runner.returnDocument"],
       ),
     ).toBe("runner");
     expect(
       resolveUiIntegrationOrchestratorSessionKind(
-        UI_INTEGRATION_RUNNER_SUITE_REGISTRY.domain_controller_data_crud,
+        UI_INTEGRATION_RUNNER_SUITE_REGISTRY["action.domainController.dataCrud"],
       ),
     ).toBe("action");
   });
 
   it("composes undo_redo playfield from suite JSON plus suite init ref", () => {
-    const entry = runnerSuiteEntryFromFolders("domain_controller_model_undo_redo");
+    const entry = runnerSuiteEntryFromFolders("action.domainController.modelUndoRedo");
     expect(Object.prototype.hasOwnProperty.call(entry, "integTestbedResetParams")).toBe(false);
 
     const context = { miroirConfig: {} as never };
@@ -154,7 +154,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       return;
     }
     const seed = params.sessionSpecificOptions.integTestbedResetParams;
-    const suite = (miroirTest_domain_controller_model_undo_redo as MiroirTestDefinition)
+    const suite = (miroirTest_action_domainController_modelUndoRedo as MiroirTestDefinition)
       .definition as MiroirTestSuite;
     expect(seed.testbedModel).toEqual(suite.testbedModel);
     expect(seed.testbedEntitiesAndInstances).toEqual(suite.testbedEntitiesAndInstances);
@@ -170,10 +170,10 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
     };
     const expectedEntityNames = ["Author", "Book", "Publisher", "User"];
     for (const key of [
-      "runner_lend_document",
-      "runner_return_document",
-      "runner_mcp_get_instances",
-      "runner_mcp_lend_document",
+      "runner.lendDocument",
+      "runner.returnDocument",
+      "runner.mcp.getInstances",
+      "runner.mcp.lendDocument",
     ] as const) {
       const entry = runnerSuiteEntryFromFolders(key);
       expect(Object.prototype.hasOwnProperty.call(entry, "integTestbedResetParams"), key).toBe(
@@ -230,7 +230,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
     }
   });
 
-  it("model_crud / freeze / evolutionTraceWP1 compose the Miroir Publisher+Country TestConfiguration seed and drop registry playfield", () => {
+  it("model_crud / freeze / action.scenario.evolutionTrace compose the Miroir Publisher+Country TestConfiguration seed and drop registry playfield", () => {
     const context = { miroirConfig: {} as never };
     const runTarget = {
       applicationUuid: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
@@ -239,9 +239,9 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
     };
     const expectedEntityNames = ["Country", "Publisher"];
     for (const key of [
-      "domain_controller_model_crud",
-      "domain_controller_application_version_freeze",
-      "evolutionTraceWP1",
+      "action.domainController.modelCrud",
+      "action.domainController.freezeApplicationVersion",
+      "action.scenario.evolutionTrace",
     ] as const) {
       const entry = runnerSuiteEntryFromFolders(key);
       expect(Object.prototype.hasOwnProperty.call(entry, "integTestbedResetParams"), key).toBe(
@@ -289,23 +289,23 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       applicationName: "Library",
     };
     const expectedByKey: Record<string, { entityNames: string[]; modelEntityNames: string[] }> = {
-      domain_controller_data_crud: {
+      "action.domainController.dataCrud": {
         entityNames: ["Author", "Book", "Publisher"],
         modelEntityNames: ["Author", "Book", "Publisher"],
       },
-      domain_controller_composite_pk_crud: {
+      "action.domainController.dataCrud.compositePk": {
         entityNames: ["TestEntityCompositePK"],
         modelEntityNames: ["TestEntityCompositePK"],
       },
-      domain_controller_non_uuid_pk_model_crud: {
+      "action.domainController.modelCrud.nonUuidPk": {
         entityNames: ["Publisher"],
         modelEntityNames: ["Publisher"],
       },
-      domain_controller_non_uuid_pk_data_crud: {
+      "action.domainController.dataCrud.nonUuidPk": {
         entityNames: ["TestEntityCodeNumber"],
         modelEntityNames: ["TestEntityCodeNumber"],
       },
-      domain_controller_no_parent_uuid_crud: {
+      "action.domainController.dataCrud.noParentUuid": {
         entityNames: ["Publisher", "TestEntityNoParentUuid"],
         modelEntityNames: ["Publisher", "TestEntityNoParentUuid"],
       },
@@ -352,7 +352,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       deploymentUuid: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
       applicationName: "appForTest",
     };
-    const entry = runnerSuiteEntryFromFolders("runner_freeze_application_version");
+    const entry = runnerSuiteEntryFromFolders("runner.freezeApplicationVersion");
     expect(Object.prototype.hasOwnProperty.call(entry, "integTestbedResetParams")).toBe(false);
     expect(entry.suiteDefinition.testbedInitApplicationParameters).toBe(
       "appForTestTestbedInitParams",
@@ -424,7 +424,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       deploymentUuid: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
       applicationName: "Library",
     };
-    for (const key of ["runner_create_entity", "runner_drop_entity"] as const) {
+    for (const key of ["runner.createEntity", "runner.dropEntity"] as const) {
       const entry = runnerSuiteEntryFromFolders(key);
       expect(
         Object.prototype.hasOwnProperty.call(entry, "integTestbedResetParams"),
@@ -501,7 +501,7 @@ describe("isUiIntegrationSuiteRunSuccessful (B3)", () => {
         {
           getTestAssertionsResults: () => ({}),
         } as never,
-        "runner_return_document",
+        "runner.returnDocument",
       ),
     ).toBe(false);
   });

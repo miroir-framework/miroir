@@ -4,8 +4,8 @@
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "name": "runner_drop_entity",
-  "description": "DropEntity runner integration tests (Feature #197 Step 2). Owned by Miroir meta-application. Ephemeral runTarget (no suite.runTarget); preRunner creates Author via createEntity sequence then dropEntity removes it; do not seed remapped library model onto the runTarget playfield.",
+  "name": "runner.dropEntity",
+  "description": "dropEntity runner removing an Entity created beforehand, on an ephemeral run target.",
   "tags": [
     "integ",
     "runner",

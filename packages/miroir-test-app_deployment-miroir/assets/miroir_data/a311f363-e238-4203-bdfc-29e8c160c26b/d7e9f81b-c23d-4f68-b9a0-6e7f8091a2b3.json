@@ -4,8 +4,8 @@
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "name": "domain_controller_application_version_freeze",
-  "description": "DomainController freezeApplicationVersion action integration tests (#216, #227). Owned by the Miroir meta-application; Library is only the runTarget/testbed. Lifecycle: session testBedModelAndInstances (Publisher+Country). Covers EntityVersion freeze/migration plus Query, Report, Menu, Endpoint, Runner, Theme, and TransformerDefinition version snapshots. Duplicate versionName rejection remains unit-covered (actionTest cannot express expected Action failure).",
+  "name": "action.domainController.freezeApplicationVersion",
+  "description": "freezeApplicationVersion through DomainController actions: EntityVersion freeze and migration after Entity changes, and version snapshots of Queries, Reports, Menus, Endpoints, Runners, Themes and transformers.",
   "tags": [
     "integ",
     "domain-controller",
@@ -14,7 +14,7 @@
   "issue": "216",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "domainController.applicationVersion.freeze",
+    "miroirTestLabel": "action.domainController.freezeApplicationVersion",
     "runTarget": {
       "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
       "applicationName": "Library",

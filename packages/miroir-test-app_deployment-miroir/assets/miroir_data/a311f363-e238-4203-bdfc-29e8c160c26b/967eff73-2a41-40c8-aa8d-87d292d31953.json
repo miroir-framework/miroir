@@ -4,8 +4,8 @@
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "name": "runner_freeze_application_version",
-  "description": "freezeApplicationVersion runner integration tests (#225 Phase 2). Owned by Miroir meta-application; appForTest (Publisher+Country) is the runTarget/testbed. Leaves: V1 baseline freeze; V1→alter→V2 via runner.",
+  "name": "runner.freezeApplicationVersion",
+  "description": "freezeApplicationVersion runner: a baseline V1 freeze, then V2 after altering Publisher.",
   "tags": [
     "integ",
     "runner",

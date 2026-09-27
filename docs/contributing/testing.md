@@ -43,7 +43,7 @@ Rules:
 
 | Name | Example | Used in |
 |------|---------|---------|
-| **Suite key** (`name`) | `runner_return_document` | `--suites`, `MIROIR_TEST_SUITES`, UI |
+| **Suite key** (`name`) | `runner.returnDocument` | `--suites`, `MIROIR_TEST_SUITES`, UI |
 | **Suite `miroirTestLabel`** | `runner.returnDocument` | display; **nested** `--filter` keys only |
 | **Leaf `miroirTestLabel`** | `Return Book Test Composite Action` | `--filter` **values**, UI leaf checkboxes |
 
@@ -125,8 +125,8 @@ Runs in `miroir-standalone-app`, not `miroir-core`. Prefer **`--profile`** / **`
 | Kind | Command |
 |------|---------|
 | **Transformer** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites miroirCoreTransformers --mode integ` |
-| **Runner** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites runner_return_document --mode integ` |
-| **Freeze runner** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites runner_freeze_application_version --mode integ` |
+| **Runner** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites runner.returnDocument --mode integ` |
+| **Freeze runner** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites runner.freezeApplicationVersion --mode integ` |
 | **By tag** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --tags domain-controller --mode integ` |
 
 Legacy env form:
@@ -148,7 +148,7 @@ DomainController, persistence-store, and extractor tests use JSON config files:
 ```bash
 # DomainController data CRUD — preferred MiroirTest action suite
 npm run testMiroir -w miroir-standalone-app -- \
-  --profile emulatedServer-sql --suites domain_controller_data_crud --mode integ
+  --profile emulatedServer-sql --suites action.domainController.dataCrud --mode integ
 
 # Deprecated imperative Data CRUD (parity harness — keep green; do not delete yet)
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \

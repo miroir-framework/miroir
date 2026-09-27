@@ -15,24 +15,24 @@ import {
   type TestConfigurationPlayfield,
 } from "../../src/5_tests/resolveSuitePlayfieldSeed.js";
 import {
-  miroirTest_domain_controller_application_version_freeze,
-  miroirTest_domain_controller_composite_pk_crud,
-  miroirTest_domain_controller_data_crud,
-  miroirTest_domain_controller_model_crud,
-  miroirTest_domain_controller_model_undo_redo,
-  miroirTest_domain_controller_no_parent_uuid_crud,
-  miroirTest_domain_controller_non_uuid_pk_data_crud,
-  miroirTest_domain_controller_non_uuid_pk_model_crud,
-  miroirTest_evolutionTraceWP1,
+  miroirTest_action_domainController_freezeApplicationVersion,
+  miroirTest_action_domainController_dataCrud_compositePk,
+  miroirTest_action_domainController_dataCrud,
+  miroirTest_action_domainController_modelCrud,
+  miroirTest_action_domainController_modelUndoRedo,
+  miroirTest_action_domainController_dataCrud_noParentUuid,
+  miroirTest_action_domainController_dataCrud_nonUuidPk,
+  miroirTest_action_domainController_modelCrud_nonUuidPk,
+  miroirTest_action_scenario_evolutionTrace,
   miroirTest_mustache,
-  miroirTest_runner_create_entity,
-  miroirTest_runner_drop_entity,
-  miroirTest_runner_freeze_application_version,
+  miroirTest_runner_createEntity,
+  miroirTest_runner_dropEntity,
+  miroirTest_runner_freezeApplicationVersion,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
 import {
-  miroirTest_runner_lend_document,
-  miroirTest_runner_return_document,
+  miroirTest_runner_lendDocument,
+  miroirTest_runner_returnDocument,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
 
@@ -97,12 +97,12 @@ function loadTestConfiguration(path: string): TestConfigurationPlayfield {
 
 (shouldRun ? describe : describe.skip)("resolveSuitePlayfieldSeed", () => {
   it("returns null for skipRunTargetPlayfieldReset suites", () => {
-    expect(resolveSuitePlayfieldSeed(suiteDefinition(miroirTest_runner_create_entity))).toBeNull();
-    expect(resolveSuitePlayfieldSeed(suiteDefinition(miroirTest_runner_drop_entity))).toBeNull();
+    expect(resolveSuitePlayfieldSeed(suiteDefinition(miroirTest_runner_createEntity))).toBeNull();
+    expect(resolveSuitePlayfieldSeed(suiteDefinition(miroirTest_runner_dropEntity))).toBeNull();
   });
 
-  it("returns inline testbedModel and empty instances from domain_controller_model_undo_redo", () => {
-    const suite = suiteDefinition(miroirTest_domain_controller_model_undo_redo);
+  it("returns inline testbedModel and empty instances from action.domainController.modelUndoRedo", () => {
+    const suite = suiteDefinition(miroirTest_action_domainController_modelUndoRedo);
     expect(resolveSuitePlayfieldSeed(suite)).toEqual({
       testbedModel: {
         applicationUuid: LIBRARY_APPLICATION_UUID,
@@ -177,66 +177,66 @@ function loadTestConfiguration(path: string): TestConfigurationPlayfield {
 
   it("integ suites have inline playfield, a TestConfiguration uuid, or neither (skipReset)", () => {
     const definitions: Record<string, MiroirTestSuite> = {
-      runner_lend_document: suiteDefinition(miroirTest_runner_lend_document),
-      runner_return_document: suiteDefinition(miroirTest_runner_return_document),
-      runner_create_entity: suiteDefinition(miroirTest_runner_create_entity),
-      runner_drop_entity: suiteDefinition(miroirTest_runner_drop_entity),
-      runner_freeze_application_version: suiteDefinition(
-        miroirTest_runner_freeze_application_version,
+      "runner.lendDocument": suiteDefinition(miroirTest_runner_lendDocument),
+      "runner.returnDocument": suiteDefinition(miroirTest_runner_returnDocument),
+      "runner.createEntity": suiteDefinition(miroirTest_runner_createEntity),
+      "runner.dropEntity": suiteDefinition(miroirTest_runner_dropEntity),
+      "runner.freezeApplicationVersion": suiteDefinition(
+        miroirTest_runner_freezeApplicationVersion,
       ),
-      domain_controller_data_crud: suiteDefinition(miroirTest_domain_controller_data_crud),
-      domain_controller_model_crud: suiteDefinition(miroirTest_domain_controller_model_crud),
-      domain_controller_composite_pk_crud: suiteDefinition(
-        miroirTest_domain_controller_composite_pk_crud,
+      "action.domainController.dataCrud": suiteDefinition(miroirTest_action_domainController_dataCrud),
+      "action.domainController.modelCrud": suiteDefinition(miroirTest_action_domainController_modelCrud),
+      "action.domainController.dataCrud.compositePk": suiteDefinition(
+        miroirTest_action_domainController_dataCrud_compositePk,
       ),
-      domain_controller_non_uuid_pk_model_crud: suiteDefinition(
-        miroirTest_domain_controller_non_uuid_pk_model_crud,
+      "action.domainController.modelCrud.nonUuidPk": suiteDefinition(
+        miroirTest_action_domainController_modelCrud_nonUuidPk,
       ),
-      domain_controller_non_uuid_pk_data_crud: suiteDefinition(
-        miroirTest_domain_controller_non_uuid_pk_data_crud,
+      "action.domainController.dataCrud.nonUuidPk": suiteDefinition(
+        miroirTest_action_domainController_dataCrud_nonUuidPk,
       ),
-      domain_controller_no_parent_uuid_crud: suiteDefinition(
-        miroirTest_domain_controller_no_parent_uuid_crud,
+      "action.domainController.dataCrud.noParentUuid": suiteDefinition(
+        miroirTest_action_domainController_dataCrud_noParentUuid,
       ),
-      domain_controller_model_undo_redo: suiteDefinition(
-        miroirTest_domain_controller_model_undo_redo,
+      "action.domainController.modelUndoRedo": suiteDefinition(
+        miroirTest_action_domainController_modelUndoRedo,
       ),
-      domain_controller_application_version_freeze: suiteDefinition(
-        miroirTest_domain_controller_application_version_freeze,
+      "action.domainController.freezeApplicationVersion": suiteDefinition(
+        miroirTest_action_domainController_freezeApplicationVersion,
       ),
-      evolutionTraceWP1: suiteDefinition(miroirTest_evolutionTraceWP1),
+      "action.scenario.evolutionTrace": suiteDefinition(miroirTest_action_scenario_evolutionTrace),
     };
     const inlinePlayfieldKeys = new Set([
-      "domain_controller_model_undo_redo",
-      "domain_controller_data_crud",
-      "domain_controller_composite_pk_crud",
-      "domain_controller_non_uuid_pk_model_crud",
-      "domain_controller_non_uuid_pk_data_crud",
-      "domain_controller_no_parent_uuid_crud",
-      "runner_freeze_application_version",
+      "action.domainController.modelUndoRedo",
+      "action.domainController.dataCrud",
+      "action.domainController.dataCrud.compositePk",
+      "action.domainController.modelCrud.nonUuidPk",
+      "action.domainController.dataCrud.nonUuidPk",
+      "action.domainController.dataCrud.noParentUuid",
+      "runner.freezeApplicationVersion",
     ]);
     const uuidPlayfieldKeys = new Set([
-      "runner_lend_document",
-      "runner_return_document",
-      "domain_controller_model_crud",
-      "domain_controller_application_version_freeze",
-      "evolutionTraceWP1",
+      "runner.lendDocument",
+      "runner.returnDocument",
+      "action.domainController.modelCrud",
+      "action.domainController.freezeApplicationVersion",
+      "action.scenario.evolutionTrace",
     ]);
     expect(Object.keys(definitions).sort()).toEqual([
-      "domain_controller_application_version_freeze",
-      "domain_controller_composite_pk_crud",
-      "domain_controller_data_crud",
-      "domain_controller_model_crud",
-      "domain_controller_model_undo_redo",
-      "domain_controller_no_parent_uuid_crud",
-      "domain_controller_non_uuid_pk_data_crud",
-      "domain_controller_non_uuid_pk_model_crud",
-      "evolutionTraceWP1",
-      "runner_create_entity",
-      "runner_drop_entity",
-      "runner_freeze_application_version",
-      "runner_lend_document",
-      "runner_return_document",
+      "action.domainController.dataCrud",
+      "action.domainController.dataCrud.compositePk",
+      "action.domainController.dataCrud.noParentUuid",
+      "action.domainController.dataCrud.nonUuidPk",
+      "action.domainController.freezeApplicationVersion",
+      "action.domainController.modelCrud",
+      "action.domainController.modelCrud.nonUuidPk",
+      "action.domainController.modelUndoRedo",
+      "action.scenario.evolutionTrace",
+      "runner.createEntity",
+      "runner.dropEntity",
+      "runner.freezeApplicationVersion",
+      "runner.lendDocument",
+      "runner.returnDocument",
     ]);
     for (const [name, definition] of Object.entries(definitions)) {
       if (inlinePlayfieldKeys.has(name)) {
@@ -279,7 +279,7 @@ function loadTestConfiguration(path: string): TestConfigurationPlayfield {
   });
 
   it("lend and return suite JSON reference the uuid and have no inline playfield", () => {
-    for (const instance of [miroirTest_runner_lend_document, miroirTest_runner_return_document]) {
+    for (const instance of [miroirTest_runner_lendDocument, miroirTest_runner_returnDocument]) {
       const suite = suiteDefinition(instance);
       expect(playfieldFieldsOn(suite), suite.miroirTestLabel).toEqual(["testConfiguration"]);
       expect(suite.testConfiguration).toBe(LIBRARY_DOCUMENT_CONFIG_UUID);
@@ -313,7 +313,7 @@ function loadTestConfiguration(path: string): TestConfigurationPlayfield {
       BOOK_ENDPOINT_UUID,
       LENDING_ENDPOINT_UUID,
     ]);
-    for (const instance of [miroirTest_runner_lend_document, miroirTest_runner_return_document]) {
+    for (const instance of [miroirTest_runner_lendDocument, miroirTest_runner_returnDocument]) {
       const suite = suiteDefinition(instance);
       expect(resolveSuitePlayfieldSeed(suite, getTestConfiguration), suite.miroirTestLabel).toEqual({
         testbedModel: loaded.testbedModel,
@@ -331,9 +331,9 @@ function loadTestConfiguration(path: string): TestConfigurationPlayfield {
     `${MIROIR_PUBLISHER_COUNTRY_CONFIG_UUID}.json`,
   );
   const suiteInstances = [
-    miroirTest_domain_controller_model_crud,
-    miroirTest_domain_controller_application_version_freeze,
-    miroirTest_evolutionTraceWP1,
+    miroirTest_action_domainController_modelCrud,
+    miroirTest_action_domainController_freezeApplicationVersion,
+    miroirTest_action_scenario_evolutionTrace,
   ];
 
   it("instance lives under miroir_data TestConfiguration with Miroir selfApplication", () => {
@@ -351,7 +351,7 @@ function loadTestConfiguration(path: string): TestConfigurationPlayfield {
     );
   });
 
-  it("model_crud, freeze, and evolutionTraceWP1 suite JSON reference the uuid and have no inline playfield", () => {
+  it("model_crud, freeze, and action.scenario.evolutionTrace suite JSON reference the uuid and have no inline playfield", () => {
     for (const instance of suiteInstances) {
       const suite = suiteDefinition(instance);
       expect(playfieldFieldsOn(suite), suite.miroirTestLabel).toEqual(["testConfiguration"]);
@@ -388,11 +388,11 @@ function loadTestConfiguration(path: string): TestConfigurationPlayfield {
 
 (shouldRun ? describe : describe.skip)("unique DC suite-owned inline playfields", () => {
   const suiteInstances = [
-    miroirTest_domain_controller_data_crud,
-    miroirTest_domain_controller_composite_pk_crud,
-    miroirTest_domain_controller_non_uuid_pk_model_crud,
-    miroirTest_domain_controller_non_uuid_pk_data_crud,
-    miroirTest_domain_controller_no_parent_uuid_crud,
+    miroirTest_action_domainController_dataCrud,
+    miroirTest_action_domainController_dataCrud_compositePk,
+    miroirTest_action_domainController_modelCrud_nonUuidPk,
+    miroirTest_action_domainController_dataCrud_nonUuidPk,
+    miroirTest_action_domainController_dataCrud_noParentUuid,
   ];
   const libraryEntityDir = join(
     REPO_ROOT,
@@ -414,7 +414,7 @@ function loadTestConfiguration(path: string): TestConfigurationPlayfield {
   });
 
   it("data_crud inlines Author/Book/Publisher instances as a slice, not defaultLibraryAppModel", () => {
-    const seed = resolveSuitePlayfieldSeed(suiteDefinition(miroirTest_domain_controller_data_crud));
+    const seed = resolveSuitePlayfieldSeed(suiteDefinition(miroirTest_action_domainController_dataCrud));
     expect(seed).not.toBeNull();
     if (seed === null) {
       return;
@@ -446,7 +446,7 @@ function loadTestConfiguration(path: string): TestConfigurationPlayfield {
 
   it("composite / non-uuid / no-parent suites inline the synthetic entities and known instances", () => {
     const composite = resolveSuitePlayfieldSeed(
-      suiteDefinition(miroirTest_domain_controller_composite_pk_crud),
+      suiteDefinition(miroirTest_action_domainController_dataCrud_compositePk),
     );
     expect(composite?.testbedEntitiesAndInstances.map((entry) => entry.entity.uuid)).toEqual([
       COMPOSITE_PK_UUID,
@@ -461,7 +461,7 @@ function loadTestConfiguration(path: string): TestConfigurationPlayfield {
     ]);
 
     const nonUuidModel = resolveSuitePlayfieldSeed(
-      suiteDefinition(miroirTest_domain_controller_non_uuid_pk_model_crud),
+      suiteDefinition(miroirTest_action_domainController_modelCrud_nonUuidPk),
     );
     expect(nonUuidModel?.testbedEntitiesAndInstances.map((entry) => entry.entity.uuid)).toEqual([
       PUBLISHER_UUID,
@@ -469,7 +469,7 @@ function loadTestConfiguration(path: string): TestConfigurationPlayfield {
     expect(nonUuidModel?.testbedEntitiesAndInstances[0].instances.length).toBe(3);
 
     const nonUuidData = resolveSuitePlayfieldSeed(
-      suiteDefinition(miroirTest_domain_controller_non_uuid_pk_data_crud),
+      suiteDefinition(miroirTest_action_domainController_dataCrud_nonUuidPk),
     );
     expect(nonUuidData?.testbedEntitiesAndInstances.map((entry) => entry.entity.uuid)).toEqual([
       CODE_NUMBER_UUID,
@@ -481,7 +481,7 @@ function loadTestConfiguration(path: string): TestConfigurationPlayfield {
     ).toEqual([1, 2, 3]);
 
     const noParent = resolveSuitePlayfieldSeed(
-      suiteDefinition(miroirTest_domain_controller_no_parent_uuid_crud),
+      suiteDefinition(miroirTest_action_domainController_dataCrud_noParentUuid),
     );
     expect(noParent?.testbedEntitiesAndInstances.map((entry) => entry.entity.uuid)).toEqual([
       PUBLISHER_UUID,
@@ -510,8 +510,8 @@ function loadTestConfiguration(path: string): TestConfigurationPlayfield {
 });
 
 (shouldRun ? describe : describe.skip)("freeze suite inline appForTest playfield", () => {
-  it("runner_freeze_application_version JSON has inline playfield and no testConfiguration", () => {
-    const suite = suiteDefinition(miroirTest_runner_freeze_application_version);
+  it("runner.freezeApplicationVersion JSON has inline playfield and no testConfiguration", () => {
+    const suite = suiteDefinition(miroirTest_runner_freezeApplicationVersion);
     expect(playfieldFieldsOn(suite)).toEqual(["testbedModel", "testbedEntitiesAndInstances"]);
     expect(suite.testConfiguration).toBeUndefined();
     expect(suite.testConfiguration).not.toBe(RESERVED_UNUSED_CONFIG_UUID);
@@ -519,7 +519,7 @@ function loadTestConfiguration(path: string): TestConfigurationPlayfield {
 
   it("resolveSuitePlayfieldSeed returns the appForTest Publisher+Country slice without a loader", () => {
     const seed = resolveSuitePlayfieldSeed(
-      suiteDefinition(miroirTest_runner_freeze_application_version),
+      suiteDefinition(miroirTest_runner_freezeApplicationVersion),
     );
     expect(seed).not.toBeNull();
     if (seed === null) {

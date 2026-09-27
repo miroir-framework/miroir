@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import type { MiroirTestDefinition } from 'miroir-core';
-import { miroirTest_runner_return_document } from 'miroir-test-app_deployment-library';
+import { miroirTest_runner_returnDocument } from 'miroir-test-app_deployment-library';
 import {
   miroirTest_EntityPrimaryKey,
   miroirTest_miroirCoreTransformers,
@@ -197,7 +197,7 @@ describe('RunAllMiroirTestsButton runMode (T2)', () => {
     render(
       <RunAllMiroirTestsButton
         miroirTests={[
-          asMiroirTest(miroirTest_runner_return_document),
+          asMiroirTest(miroirTest_runner_returnDocument),
           asMiroirTest(miroirTest_EntityPrimaryKey),
           asMiroirTest(miroirTest_miroirCoreTransformers),
         ]}
@@ -217,7 +217,7 @@ describe('RunAllMiroirTestsButton runMode (T2)', () => {
     const suiteKeys = runUiIntegrationTestSuiteMock.mock.calls.map(
       (call) => (call[0] as { suiteKey: string }).suiteKey,
     );
-    expect(suiteKeys).toEqual(['miroirCoreTransformers', 'runner_return_document']);
+    expect(suiteKeys).toEqual(['miroirCoreTransformers', 'runner.returnDocument']);
   });
 
   it('disables integration batch while coordinator holds a run', () => {
@@ -225,7 +225,7 @@ describe('RunAllMiroirTestsButton runMode (T2)', () => {
 
     render(
       <RunAllMiroirTestsButton
-        miroirTests={[asMiroirTest(miroirTest_runner_return_document)]}
+        miroirTests={[asMiroirTest(miroirTest_runner_returnDocument)]}
         useSnackBar={true}
         runMode="integration"
         label="Run All Integration Tests"
@@ -254,7 +254,7 @@ describe('RunAllMiroirTestsButton runMode (T2)', () => {
     render(
       <RunAllMiroirTestsButton
         miroirTests={[
-          asMiroirTest(miroirTest_runner_return_document),
+          asMiroirTest(miroirTest_runner_returnDocument),
           asMiroirTest(miroirTest_miroirCoreTransformers),
         ]}
         useSnackBar={true}

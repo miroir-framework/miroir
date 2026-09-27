@@ -64,9 +64,9 @@ describe("loadApplicationMiroirTestsFromFolders", () => {
     for (const key of MIROIR_RUNNER_TEST_SUITE_REGISTRY_NAMES) {
       expect(runnerKeys, key).toContain(key);
     }
-    expect(unitKeys).not.toContain("runner_lend_document");
-    expect(runnerKeys).toContain("runner_lend_document");
-    expect(runnerKeys).toContain("runner_return_document");
+    expect(unitKeys).not.toContain("runner.lendDocument");
+    expect(runnerKeys).toContain("runner.lendDocument");
+    expect(runnerKeys).toContain("runner.returnDocument");
   });
 
   it("loads suite JSON from application folders, including library runner suites", () => {
@@ -74,7 +74,7 @@ describe("loadApplicationMiroirTestsFromFolders", () => {
     expect(unitSuite.miroirTestType).toBe("miroirTestSuite");
     expect(unitSuite.miroirTestLabel).toBe("mls.mergePositionBased");
 
-    const lendSuite = loadMiroirCoreTestSuiteFromFolders("runner_lend_document");
+    const lendSuite = loadMiroirCoreTestSuiteFromFolders("runner.lendDocument");
     expect(lendSuite.miroirTestLabel).toBe("runner.lendDocument");
     expect(lendSuite.testbedInitApplicationParameters).toBe("libraryTestbedInitParams");
   });
@@ -86,7 +86,6 @@ describe("loadApplicationMiroirTestsFromFolders", () => {
       ["mlsTypeCheck", "mlsTypeCheck_TransformerTestSuite"],
       ["alterObject", "alterObject_atPath"],
       ["metaModelTransformers", "metaModelTransformersTest"],
-      ["runner.returnDocument", "runner_return_document"],
     ];
     for (const [token, targetName] of leftoverAliases) {
       expect(resolveApplicationMiroirTestSuiteKey(catalog, token), token).toBeUndefined();
@@ -96,9 +95,6 @@ describe("loadApplicationMiroirTestsFromFolders", () => {
     }
     expect(() => resolveApplicationMiroirTestSuiteKeys(catalog, ["mlsTypeCheck"])).toThrow(
       /Did you mean "mlsTypeCheck_TransformerTestSuite"/,
-    );
-    expect(() => resolveApplicationMiroirTestSuiteKeys(catalog, ["runner.returnDocument"])).toThrow(
-      /Did you mean "runner_return_document"/,
     );
     expect(() => resolveApplicationMiroirTestSuiteKeys(catalog, ["menu"])).toThrow(
       /Unknown suite key "menu". Use instance name. Available:/,

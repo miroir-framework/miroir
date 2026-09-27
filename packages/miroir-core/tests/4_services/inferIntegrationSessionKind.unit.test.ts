@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  miroirTest_runner_lend_document,
-  miroirTest_runner_return_document,
+  miroirTest_runner_lendDocument,
+  miroirTest_runner_returnDocument,
 } from "miroir-test-app_deployment-library";
 import { miroirTest_miroirCoreTransformers } from "miroir-test-app_deployment-miroir";
 
@@ -19,11 +19,11 @@ import {
 } from "../../src/5_tests/inferIntegrationSessionKind";
 
 function runnerLendDocumentSuite(): MiroirTestSuite {
-  return (miroirTest_runner_lend_document as MiroirTestDefinition).definition as MiroirTestSuite;
+  return (miroirTest_runner_lendDocument as MiroirTestDefinition).definition as MiroirTestSuite;
 }
 
 function runnerReturnDocumentSuite(): MiroirTestSuite {
-  return (miroirTest_runner_return_document as MiroirTestDefinition).definition as MiroirTestSuite;
+  return (miroirTest_runner_returnDocument as MiroirTestDefinition).definition as MiroirTestSuite;
 }
 
 function miroirCoreTransformersSuite(): MiroirTestSuite {
@@ -93,8 +93,8 @@ describe("transformerTestLeafRequiresIntegration (B0)", () => {
 
 describe("inferIntegrationSessionKind (B0)", () => {
   it.each([
-    ["runner_lend_document", runnerLendDocumentSuite],
-    ["runner_return_document", runnerReturnDocumentSuite],
+    ["runner.lendDocument", runnerLendDocumentSuite],
+    ["runner.returnDocument", runnerReturnDocumentSuite],
   ])("returns runner for %s suite", (_name, suiteGetter) => {
     expect(inferIntegrationSessionKind(suiteGetter())).toBe("runner");
   });
@@ -163,8 +163,8 @@ describe("inferIntegrationSessionKind (B0)", () => {
 
 describe("classifyMiroirTestSuiteExecutionCapabilities (B0)", () => {
   it.each([
-    ["runner_lend_document", runnerLendDocumentSuite],
-    ["runner_return_document", runnerReturnDocumentSuite],
+    ["runner.lendDocument", runnerLendDocumentSuite],
+    ["runner.returnDocument", runnerReturnDocumentSuite],
   ])("marks %s as integration-only", (_name, suiteGetter) => {
     const caps = classifyMiroirTestSuiteExecutionCapabilities(suiteGetter());
 

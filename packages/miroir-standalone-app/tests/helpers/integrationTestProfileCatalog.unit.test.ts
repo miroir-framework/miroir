@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { miroirTest_runner_return_document } from "miroir-test-app_deployment-library";
+import { miroirTest_runner_returnDocument } from "miroir-test-app_deployment-library";
 
 import {
   isUiIntegrationProfileLaunchableInBrowser,
@@ -60,21 +60,21 @@ describe("resolveUiIntegrationRunnerSuiteKey (B6-d0)", () => {
 
     expect(
       resolveUiIntegrationRunnerSuiteKey(
-        miroirTest_runner_return_document as never,
+        miroirTest_runner_returnDocument as never,
         UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
         UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY,
       ),
-    ).toBe("runner_return_document");
+    ).toBe("runner.returnDocument");
     expect(
       isUiIntegrationRunnerSuiteSupportedForInstance(
-        miroirTest_runner_return_document as never,
+        miroirTest_runner_returnDocument as never,
         UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
         UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY,
       ),
     ).toBe(true);
 
     const renamed = {
-      ...miroirTest_runner_return_document,
+      ...miroirTest_runner_returnDocument,
       name: "other-name",
     };
     expect(

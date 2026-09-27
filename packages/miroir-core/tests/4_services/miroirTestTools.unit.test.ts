@@ -17,7 +17,7 @@ import {
   runMiroirTests,
   runMiroirTestSuite,
 } from "../../src";
-import { miroirTest_runner_return_document } from "miroir-test-app_deployment-library";
+import { miroirTest_runner_returnDocument } from "miroir-test-app_deployment-library";
 import {
   miroirTest_pilot_transformer_plus,
   miroirTest_queries_library,
@@ -330,7 +330,7 @@ describe("runMiroirTestInMemory — queryTest", () => {
 describe("runMiroirTestInMemory — runnerTest", () => {
   it("requires executionMode integration", async () => {
     const leaf = (
-      (miroirTest_runner_return_document as MiroirTestDefinition).definition as MiroirTestSuite
+      (miroirTest_runner_returnDocument as MiroirTestDefinition).definition as MiroirTestSuite
     ).miroirTests[0] as MiroirTestForRunner;
     await expect(
       runMiroirTest(

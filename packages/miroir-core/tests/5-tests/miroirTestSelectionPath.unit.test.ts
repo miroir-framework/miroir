@@ -76,7 +76,7 @@ describe("MiroirTest selection path", () => {
       .map((file) => posixRel(STANDALONE_TESTS, file));
     expect(
       [...new Set([...present, ...deprecatedTwins])].sort(),
-      "integ twins run via testMiroir (runner_create_entity / runner_drop_entity / runner_lend_document / runner_return_document)",
+      "integ twins run via testMiroir (runner.createEntity / runner.dropEntity / runner.lendDocument / runner.returnDocument)",
     ).toEqual([]);
   });
 });

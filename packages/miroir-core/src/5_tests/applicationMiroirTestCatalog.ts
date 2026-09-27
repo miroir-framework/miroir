@@ -55,7 +55,8 @@ export function inferUiIntegrationRunnerSuiteKind(
     return "runnerTest";
   }
   if (sessionKind === "action") {
-    if (suiteKey?.startsWith("domain_controller_")) {
+    // #316 stopgap: recognised by name until #317 derives it from the definition.
+    if (suiteKey?.startsWith("action.domainController.")) {
       return "domainControllerTest";
     }
     return "actionTest";

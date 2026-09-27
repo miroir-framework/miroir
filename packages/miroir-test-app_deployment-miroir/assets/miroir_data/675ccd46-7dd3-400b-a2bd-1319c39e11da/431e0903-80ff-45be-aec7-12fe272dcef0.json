@@ -4,7 +4,7 @@
   "parentUuid": "675ccd46-7dd3-400b-a2bd-1319c39e11da",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "name": "libraryPublisherAndCountry",
-  "description": "Shared Miroir playfield seed for domain_controller_model_crud, domain_controller_application_version_freeze, and evolutionTraceWP1 (Publisher and Country instances; Library applicationUuid/name).",
+  "description": "Shared Miroir playfield seed for action.domainController.modelCrud, action.domainController.freezeApplicationVersion, and action.scenario.evolutionTrace (Publisher and Country instances; Library applicationUuid/name).",
   "testbedModel": {
     "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
     "applicationName": "Library",

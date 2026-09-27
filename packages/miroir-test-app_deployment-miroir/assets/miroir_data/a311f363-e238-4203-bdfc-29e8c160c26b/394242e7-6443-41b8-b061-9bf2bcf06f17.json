@@ -2,10 +2,10 @@
   "uuid": "394242e7-6443-41b8-b061-9bf2bcf06f17",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "externalServiceSyncExecute",
+  "name": "action.scenario.externalServiceSync",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Slice 3 actionTest: operations-only landing plus createEntity re-sync (filesystem and postgres). Proves landing only — no HTTP.",
+  "description": "External service sync composite action: lands the service operations without creating Entities, then a re-sync upserts the Entity mlSchema from the response schema.",
   "tags": [
     "integ",
     "external-service",
@@ -14,7 +14,7 @@
   "issue": "267",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "externalServiceSyncExecute",
+    "miroirTestLabel": "action.scenario.externalServiceSync",
     "runTarget": {
       "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
       "applicationName": "Library",

@@ -4,8 +4,8 @@
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
   "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "name": "multistepReports.274",
-  "description": "Issue #274 Slice 1 — Finish template with suite step bag creates Country Testland.",
+  "name": "action.scenario.multistepReportTemplate",
+  "description": "Finish step of a multistep Report template: the suite step bag creates the Country Testland.",
   "tags": [
     "integ",
     "report"
@@ -13,7 +13,7 @@
   "issue": "274",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "multistepReports.274",
+    "miroirTestLabel": "action.scenario.multistepReportTemplate",
     "runTarget": {
       "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
       "applicationName": "Library",

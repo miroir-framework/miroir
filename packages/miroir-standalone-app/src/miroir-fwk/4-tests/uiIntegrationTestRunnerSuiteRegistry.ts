@@ -19,35 +19,35 @@ import {
 import {
   lendDocumentRunner,
   mcpLendDocumentRunner,
-  miroirTest_runner_lend_document,
-  miroirTest_runner_mcp_lend_document,
-  miroirTest_runner_return_document,
+  miroirTest_runner_lendDocument,
+  miroirTest_runner_mcp_lendDocument,
+  miroirTest_runner_returnDocument,
   returnDocumentRunner,
 } from "miroir-test-app_deployment-library";
 import {
-  miroirTest_domain_controller_application_version_freeze,
-  miroirTest_domain_controller_composite_pk_crud,
-  miroirTest_domain_controller_data_crud,
-  miroirTest_domain_controller_model_crud,
-  miroirTest_domain_controller_model_undo_redo,
-  miroirTest_domain_controller_no_parent_uuid_crud,
-  miroirTest_domain_controller_non_uuid_pk_data_crud,
-  miroirTest_domain_controller_non_uuid_pk_model_crud,
-  miroirTest_evolutionTraceWP1,
-  miroirTest_runner_create_entity,
-  miroirTest_runner_drop_entity,
-  miroirTest_runner_freeze_application_version,
-  miroirTest_runner_mcp_get_instances,
+  miroirTest_action_domainController_freezeApplicationVersion,
+  miroirTest_action_domainController_dataCrud_compositePk,
+  miroirTest_action_domainController_dataCrud,
+  miroirTest_action_domainController_modelCrud,
+  miroirTest_action_domainController_modelUndoRedo,
+  miroirTest_action_domainController_dataCrud_noParentUuid,
+  miroirTest_action_domainController_dataCrud_nonUuidPk,
+  miroirTest_action_domainController_modelCrud_nonUuidPk,
+  miroirTest_action_scenario_evolutionTrace,
+  miroirTest_runner_createEntity,
+  miroirTest_runner_dropEntity,
+  miroirTest_runner_freezeApplicationVersion,
+  miroirTest_runner_mcp_getInstances,
   RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
 } from "miroir-test-app_deployment-miroir";
 
 import { getTestConfigurationFromIndex } from "./testConfigurationInstanceIndex.js";
 import { getTestbedInitApplicationParametersFromRef } from "./testbedInitApplicationParametersIndex.js";
 
-export const RUNNER_CREATE_ENTITY_SUITE_KEY = miroirTest_runner_create_entity.name;
-// export const RUNNER_DROP_ENTITY_SUITE_KEY = miroirTest_runner_drop_entity.name;
+export const RUNNER_CREATE_ENTITY_SUITE_KEY = miroirTest_runner_createEntity.name;
+// export const RUNNER_DROP_ENTITY_SUITE_KEY = miroirTest_runner_dropEntity.name;
 export const RUNNER_FREEZE_APPLICATION_VERSION_SUITE_KEY =
-  miroirTest_runner_freeze_application_version.name;
+  miroirTest_runner_freezeApplicationVersion.name;
 
 /**
  * @deprecated Last hardcoded snapshot. CLI uses `loadApplicationRunnerUuidIndexFromFolders()`;
@@ -235,94 +235,94 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY_LEGACY: Record<
   string,
   UiIntegrationRunnerSuiteEntry
 > = {
-  [miroirTest_runner_lend_document.name]: {
+  [miroirTest_runner_lendDocument.name]: {
     kind: "runnerTest",
-    suiteDefinition: (miroirTest_runner_lend_document as MiroirTestDefinition)
+    suiteDefinition: (miroirTest_runner_lendDocument as MiroirTestDefinition)
       .definition as MiroirTestSuite,
   },
   // ###############################################################################
-  [miroirTest_runner_return_document.name]: {
+  [miroirTest_runner_returnDocument.name]: {
     kind: "runnerTest",
-    suiteDefinition: (miroirTest_runner_return_document as MiroirTestDefinition)
+    suiteDefinition: (miroirTest_runner_returnDocument as MiroirTestDefinition)
       .definition as MiroirTestSuite,
   },
   // ###############################################################################
-  [miroirTest_runner_create_entity.name]: {
+  [miroirTest_runner_createEntity.name]: {
     kind: "runnerTest",
-    suiteDefinition: (miroirTest_runner_create_entity as MiroirTestDefinition)
+    suiteDefinition: (miroirTest_runner_createEntity as MiroirTestDefinition)
       .definition as MiroirTestSuite,
   },
   // ###############################################################################
-  [miroirTest_runner_mcp_get_instances.name]: {
+  [miroirTest_runner_mcp_getInstances.name]: {
     kind: "runnerTest",
-    suiteDefinition: (miroirTest_runner_mcp_get_instances as MiroirTestDefinition)
+    suiteDefinition: (miroirTest_runner_mcp_getInstances as MiroirTestDefinition)
       .definition as MiroirTestSuite,
   },
   // ###############################################################################
-  [miroirTest_runner_mcp_lend_document.name]: {
+  [miroirTest_runner_mcp_lendDocument.name]: {
     kind: "runnerTest",
-    suiteDefinition: (miroirTest_runner_mcp_lend_document as MiroirTestDefinition)
+    suiteDefinition: (miroirTest_runner_mcp_lendDocument as MiroirTestDefinition)
       .definition as MiroirTestSuite,
   },
   // ###############################################################################
-  [miroirTest_runner_drop_entity.name]: {
+  [miroirTest_runner_dropEntity.name]: {
     kind: "runnerTest",
-    suiteDefinition: (miroirTest_runner_drop_entity as MiroirTestDefinition)
+    suiteDefinition: (miroirTest_runner_dropEntity as MiroirTestDefinition)
       .definition as MiroirTestSuite,
   },
   // ###############################################################################
-  [miroirTest_runner_freeze_application_version.name]: {
+  [miroirTest_runner_freezeApplicationVersion.name]: {
     kind: "runnerTest",
-    suiteDefinition: (miroirTest_runner_freeze_application_version as MiroirTestDefinition)
+    suiteDefinition: (miroirTest_runner_freezeApplicationVersion as MiroirTestDefinition)
       .definition as MiroirTestSuite,
   },
   // ###############################################################################
-  [miroirTest_domain_controller_data_crud.name]: {
+  [miroirTest_action_domainController_dataCrud.name]: {
     kind: "domainControllerTest",
-    suiteDefinition: miroirTest_domain_controller_data_crud.definition as MiroirTestSuite,
+    suiteDefinition: miroirTest_action_domainController_dataCrud.definition as MiroirTestSuite,
   },
   // ###############################################################################
-  [miroirTest_domain_controller_model_crud.name]: {
+  [miroirTest_action_domainController_modelCrud.name]: {
     kind: "domainControllerTest",
-    suiteDefinition: miroirTest_domain_controller_model_crud.definition as MiroirTestSuite,
+    suiteDefinition: miroirTest_action_domainController_modelCrud.definition as MiroirTestSuite,
   },
   // ###############################################################################
-  [miroirTest_domain_controller_composite_pk_crud.name]: {
+  [miroirTest_action_domainController_dataCrud_compositePk.name]: {
     kind: "domainControllerTest",
-    suiteDefinition: miroirTest_domain_controller_composite_pk_crud.definition as MiroirTestSuite,
+    suiteDefinition: miroirTest_action_domainController_dataCrud_compositePk.definition as MiroirTestSuite,
   },
   // ###############################################################################
-  [miroirTest_domain_controller_non_uuid_pk_model_crud.name]: {
+  [miroirTest_action_domainController_modelCrud_nonUuidPk.name]: {
     kind: "domainControllerTest",
     suiteDefinition:
-      miroirTest_domain_controller_non_uuid_pk_model_crud.definition as MiroirTestSuite,
+      miroirTest_action_domainController_modelCrud_nonUuidPk.definition as MiroirTestSuite,
   },
   // ###############################################################################
-  [miroirTest_domain_controller_non_uuid_pk_data_crud.name]: {
+  [miroirTest_action_domainController_dataCrud_nonUuidPk.name]: {
     kind: "domainControllerTest",
     suiteDefinition:
-      miroirTest_domain_controller_non_uuid_pk_data_crud.definition as MiroirTestSuite,
+      miroirTest_action_domainController_dataCrud_nonUuidPk.definition as MiroirTestSuite,
   },
   // ###############################################################################
-  [miroirTest_domain_controller_no_parent_uuid_crud.name]: {
+  [miroirTest_action_domainController_dataCrud_noParentUuid.name]: {
     kind: "domainControllerTest",
-    suiteDefinition: miroirTest_domain_controller_no_parent_uuid_crud.definition as MiroirTestSuite,
+    suiteDefinition: miroirTest_action_domainController_dataCrud_noParentUuid.definition as MiroirTestSuite,
   },
   // ###############################################################################
-  [miroirTest_domain_controller_model_undo_redo.name]: {
+  [miroirTest_action_domainController_modelUndoRedo.name]: {
     kind: "domainControllerTest",
-    suiteDefinition: miroirTest_domain_controller_model_undo_redo.definition as MiroirTestSuite,
+    suiteDefinition: miroirTest_action_domainController_modelUndoRedo.definition as MiroirTestSuite,
   },
   // ###############################################################################
-  [miroirTest_domain_controller_application_version_freeze.name]: {
+  [miroirTest_action_domainController_freezeApplicationVersion.name]: {
     kind: "domainControllerTest",
     suiteDefinition:
-      miroirTest_domain_controller_application_version_freeze.definition as MiroirTestSuite,
+      miroirTest_action_domainController_freezeApplicationVersion.definition as MiroirTestSuite,
   },
   // ###############################################################################
-  [miroirTest_evolutionTraceWP1.name]: {
+  [miroirTest_action_scenario_evolutionTrace.name]: {
     kind: "actionTest",
-    suiteDefinition: miroirTest_evolutionTraceWP1.definition as MiroirTestSuite,
+    suiteDefinition: miroirTest_action_scenario_evolutionTrace.definition as MiroirTestSuite,
   },
 };
 

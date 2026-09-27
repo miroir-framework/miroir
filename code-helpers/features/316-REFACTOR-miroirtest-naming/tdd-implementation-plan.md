@@ -13,7 +13,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Rename map: [`./rename-map.md`](./
 Prerequisites: [`../312-FEATURE-miroir-test-classification/`](../312-FEATURE-miroir-test-classification/) ✅, #315 ✅
 Working branch: `316-REFACTOR-miroirtest-naming`
 
-**Resume note:** Slices 0–2 DONE.
+**Resume note:** Slices 0–3 DONE.
 
 ---
 
@@ -35,7 +35,7 @@ This plan does **not** rename inner suite and test labels (later pass), derive t
 | 0 | Characterize names, kinds and name-driven behavior | ✅ | `miroirTestNaming.316.phase0.unit.test.ts` |
 | 1 | Select tests by mode: `unit` / `integ` / `ui` tags (tracer) | ✅ | mode-tag guard + `testMiroir --tags ui` |
 | 2 | Naming guard + rename UI component suites | ✅ | naming guard, `--suites ui.mlElementEditor.array` |
-| 3 | Rename runner and action suites (+ D13 stopgap, nonreg ids) | ⬜ | naming guard, runner-kind test, nonreg integ steps |
+| 3 | Rename runner and action suites (+ D13 stopgap, nonreg ids) | ✅ | naming guard, runner-kind test, nonreg integ steps |
 | 4 | Rename transformer suites | ⬜ | naming guard, `--suites tr.core --mode integ` |
 | 5 | Rename function and query suites (+ D14 registry keys) | ⬜ | naming guard with empty legacy list |
 | 6 | Docs, skills, nonreg baseline, cleanup, AC | ⬜ | `nonreg:filesystem`, AC checklist |
@@ -197,7 +197,7 @@ The tests key on uuid, not name, so they stay valid through the rename.
 
 ## Slice 3 — Runner and action suites renamed
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** the 18 integration suites run under their new names from the CLI, the Miroir Tests menu and the nonreg manifest, and DomainController suites still launch as `domainControllerTest`.
 
@@ -222,7 +222,12 @@ The tests key on uuid, not name, so they stay valid through the rename.
 - `npm run nonreg:filesystem`
 
 ### Realization
-_(pending)_
+- `rename_miroir_tests.py --kinds action,runner` + 18 descriptions, then `rename_bare_distinctive.py` for the distinctive old names left unquoted (docs, comments, `.name` keys). The generator `generate_externalServiceSync_suites.py` keeps its `actionLabel` `externalServiceSyncExecute` (not a suite name).
+- D13 stopgap in `applicationMiroirTestCatalog.ts`; 16 nonreg step ids renamed (evolution step fixed by hand to `integ-action.scenario.evolutionTrace`).
+- Maintenance notes dropped from descriptions moved to `docs/reference/testing.md` ("Integration suite notes").
+- Existing tests adjusted where the quoted-name pass made label-vs-name tests contradictory (`miroirTestFilter`, `loadApplicationMiroirTestsFromFolders`, `miroirTestSuiteUiExecution`), plus order-insensitive comparisons after the new names sort differently; fixed a duplicate `);` in `RunnerTestSession.unit.test.ts` already broken on `_integration`.
+- Pre-existing failure, out of scope: `runner.createEntity` > "Create Entity with reports" queries `EntityVersion` on the ephemeral, deliberately unversioned run target (`Runner.ts`), so `entityDefs` fails. The suite's definition is unchanged by the rename.
+- Validation: core unit 2072 passed, typechecks (core, standalone-app, both deployments), 14 touched standalone test files, integ `runner.createEntity,action.domainController.dataCrud` 7/8 (the failure above); `nonreg:filesystem` result recorded in the next commit.
 
 ---
 

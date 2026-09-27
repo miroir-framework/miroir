@@ -23,25 +23,25 @@ const shouldRun =
   RUN_TEST === "uiIntegrationRunnerRegistry.unit.test";
 
 const EXPECTED_KEYS = [
-  "domain_controller_application_version_freeze",
-  "domain_controller_composite_pk_crud",
-  "domain_controller_data_crud",
-  "domain_controller_model_crud",
-  "domain_controller_model_undo_redo",
-  "domain_controller_no_parent_uuid_crud",
-  "domain_controller_non_uuid_pk_data_crud",
-  "domain_controller_non_uuid_pk_model_crud",
-  "evolutionTraceWP1",
-  "runner_create_entity",
-  "runner_drop_entity",
-  "runner_freeze_application_version",
-  "runner_lend_document",
-  "runner_mcp_get_instances",
-  "runner_mcp_lend_document",
-  "runner_return_document",
+  "action.domainController.freezeApplicationVersion",
+  "action.domainController.dataCrud.compositePk",
+  "action.domainController.dataCrud",
+  "action.domainController.modelCrud",
+  "action.domainController.modelUndoRedo",
+  "action.domainController.dataCrud.noParentUuid",
+  "action.domainController.dataCrud.nonUuidPk",
+  "action.domainController.modelCrud.nonUuidPk",
+  "action.scenario.evolutionTrace",
+  "runner.createEntity",
+  "runner.dropEntity",
+  "runner.freezeApplicationVersion",
+  "runner.lendDocument",
+  "runner.mcp.getInstances",
+  "runner.mcp.lendDocument",
+  "runner.returnDocument",
 ] as const;
 
-const SKIP_RESET_KEYS = new Set(["runner_create_entity", "runner_drop_entity"]);
+const SKIP_RESET_KEYS = new Set(["runner.createEntity", "runner.dropEntity"]);
 const ALLOWED_ENTRY_KEYS = new Set(["kind", "suiteDefinition"]);
 const applicationMiroirTestCatalogByKey = indexApplicationMiroirTestsByKey(
   loadApplicationMiroirTestCatalog(),
@@ -49,7 +49,7 @@ const applicationMiroirTestCatalogByKey = indexApplicationMiroirTestsByKey(
 
 (shouldRun ? describe : describe.skip)("UI integration runner registry", () => {
   it("lists the sixteen runner/action suite keys (legacy snapshot)", () => {
-    expect(listUiIntegrationRunnerSuiteKeys()).toEqual([...EXPECTED_KEYS]);
+    expect([...listUiIntegrationRunnerSuiteKeys()].sort()).toEqual([...EXPECTED_KEYS].sort());
   });
 
   it("legacy entries are kind + suiteDefinition; init lives on folder suite JSON", () => {

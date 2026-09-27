@@ -27,7 +27,7 @@ import {
 import {
   defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,
-  miroirTest_runner_return_document,
+  miroirTest_runner_returnDocument,
   returnDocument,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
@@ -96,7 +96,7 @@ const runnerLibraryDocumentPlayfieldSeed = composeIntegTestbedResetParams(
 );
 
 function runnerReturnDocumentSuite(): MiroirTestSuite {
-  return (miroirTest_runner_return_document as MiroirTestDefinition).definition as MiroirTestSuite;
+  return (miroirTest_runner_returnDocument as MiroirTestDefinition).definition as MiroirTestSuite;
 }
 
 function runnerLibraryRunTarget() {
@@ -622,7 +622,6 @@ describe("RunnerTestSession (Gap E R)", () => {
       expect.objectContaining({
         grantAccessTo: undefined,
       }),
-    );
     );
   });
 });

@@ -6,7 +6,7 @@ import type {
   MiroirTestDefinition,
   MiroirTestForTransformer,
 } from 'miroir-core';
-import { miroirTest_runner_return_document } from 'miroir-test-app_deployment-library';
+import { miroirTest_runner_returnDocument } from 'miroir-test-app_deployment-library';
 import {
   miroirTest_EntityPrimaryKey,
   miroirTest_miroirCoreTransformers,
@@ -90,7 +90,7 @@ describe('MiroirTestListDisplay dual bar (T3)', () => {
     render(
       <MiroirTestListDisplay
         miroirTests={[
-          asMiroirTest(miroirTest_runner_return_document),
+          asMiroirTest(miroirTest_runner_returnDocument),
           asMiroirTest(miroirTest_EntityPrimaryKey),
           asMiroirTest(miroirTest_miroirCoreTransformers),
         ]}
@@ -137,7 +137,7 @@ describe('MiroirTestListDisplay dual bar (T3)', () => {
   it('shows integ-only chrome when the list has launchable integ and no unit suites', () => {
     render(
       <MiroirTestListDisplay
-        miroirTests={[asMiroirTest(miroirTest_runner_return_document)]}
+        miroirTests={[asMiroirTest(miroirTest_runner_returnDocument)]}
         gridType="ag-grid"
         useSnackBar={false}
       />,
@@ -151,7 +151,7 @@ describe('MiroirTestListDisplay dual bar (T3)', () => {
 
 describe('MiroirTestListDisplay tag chips (#312)', () => {
   const threeTests = () => [
-    asMiroirTest(miroirTest_runner_return_document),
+    asMiroirTest(miroirTest_runner_returnDocument),
     asMiroirTest(miroirTest_EntityPrimaryKey),
     asMiroirTest(miroirTest_miroirCoreTransformers),
   ];
@@ -181,7 +181,7 @@ describe('MiroirTestListDisplay tag chips (#312)', () => {
     expect(screen.queryByRole('button', { name: 'Run All Unit Tests' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Run All Integration Tests' })).toHaveAttribute(
       'data-suites',
-      'runner_return_document',
+      'runner.returnDocument',
     );
 
     fireEvent.click(screen.getByRole('button', { name: 'runner (1)' }));
@@ -189,7 +189,7 @@ describe('MiroirTestListDisplay tag chips (#312)', () => {
     expect(screen.getByText('Miroir Tests Available (3)')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Run All Unit Tests' })).toHaveAttribute(
       'data-suites',
-      'EntityPrimaryKey,miroirCoreTransformers,runner_return_document',
+      'EntityPrimaryKey,miroirCoreTransformers,runner.returnDocument',
     );
   });
 

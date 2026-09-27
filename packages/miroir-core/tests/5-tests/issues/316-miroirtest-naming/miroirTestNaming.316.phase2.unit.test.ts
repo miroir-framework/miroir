@@ -10,7 +10,7 @@ import {
 } from "../../../../src/5_tests/loadApplicationMiroirTestsFromFolders";
 import { kindFromLeaves, loadRenameMap, type MiroirTestKind } from "./miroirTestKind.316";
 
-const PENDING_KINDS: MiroirTestKind[] = ["fn", "query", "tr", "action", "runner"];
+const PENDING_KINDS: MiroirTestKind[] = ["fn", "query", "tr"];
 
 const repoRoot = resolveMonorepoRoot();
 const kindByUuid = new Map(loadRenameMap(repoRoot).map((entry) => [entry.uuid, entry.kind]));

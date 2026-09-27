@@ -4,8 +4,8 @@
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
   "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "name": "runner_lend_document",
-  "description": "library runner integration tests — lendDocument",
+  "name": "runner.lendDocument",
+  "description": "lendDocument runner of the Library application.",
   "tags": [
     "integ",
     "runner",

@@ -4,10 +4,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
 import type { MiroirTestDefinition } from 'miroir-core';
-import { miroirTest_runner_return_document } from 'miroir-test-app_deployment-library';
+import { miroirTest_runner_returnDocument } from 'miroir-test-app_deployment-library';
 import {
   miroirTest_EntityPrimaryKey,
-  miroirTest_domain_controller_data_crud,
+  miroirTest_action_domainController_dataCrud,
   miroirTest_miroirCoreTransformers,
 } from 'miroir-test-app_deployment-miroir';
 
@@ -57,11 +57,11 @@ afterEach(() => {
 });
 
 describe('MiroirTestDisplay capability chrome (T4)', () => {
-  it('shows integ-only chrome for runner_return_document', () => {
+  it('shows integ-only chrome for runner.returnDocument', () => {
     render(
       <MiroirTestDisplay
-        miroirTest={asMiroirTest(miroirTest_runner_return_document)}
-        testLabel="runner_return_document"
+        miroirTest={asMiroirTest(miroirTest_runner_returnDocument)}
+        testLabel="runner.returnDocument"
         gridType="ag-grid"
         useSnackBar={false}
       />,
@@ -70,15 +70,15 @@ describe('MiroirTestDisplay capability chrome (T4)', () => {
     expect(screen.getByText('integration')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Unit Tests/i })).not.toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Run runner_return_document Integration Tests' }),
+      screen.getByRole('button', { name: 'Run runner.returnDocument Integration Tests' }),
     ).toBeEnabled();
     expect(screen.getByText('Integration run settings')).toBeInTheDocument();
   });
 
-  it('enables integ button for domain_controller_data_crud action suite', () => {
+  it('enables integ button for action.domainController.dataCrud action suite', () => {
     render(
       <MiroirTestDisplay
-        miroirTest={asMiroirTest(miroirTest_domain_controller_data_crud)}
+        miroirTest={asMiroirTest(miroirTest_action_domainController_dataCrud)}
         testLabel="domainController.data.crud"
         gridType="ag-grid"
         useSnackBar={false}
