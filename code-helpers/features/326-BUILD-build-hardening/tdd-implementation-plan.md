@@ -42,7 +42,7 @@ This plan does **not** cut bundle size (D19: separate issue opened in Slice 17 f
 | 12 | 2 | Allowlist and eager budget guards | ✅ | `test_check_bundle_policy.py` + real report exits 0 |
 | 13 | 2 | Electron main bundled with esbuild, traced and guarded | ✅ | esbuild metafile report + `electron-builder --dir` content check |
 | 14 | 2 | Bundle guards run on PRs | ⬜ | `bundle` job in `pr-checks.yml` |
-| 15 | 2 | Sourcemaps kept out of the Electron package | ⬜ | asar / resources listing has no `.map` |
+| 15 | 2 | Sourcemaps kept out of the Electron package | ✅ | asar / resources listing has no `.map` |
 | 16 | 2 | On-demand coverage tour | ⬜ | `coverage-report.json` from a real tour |
 | 17 | 2 | Docs, size issue, #286 guard folded, cleanup, AC | ⬜ | AC checklist |
 
@@ -847,7 +847,7 @@ Push the branch; the `bundle` job runs green on the PR; a throwaway commit addin
 
 ## Slice 15 — Sourcemaps kept out of the Electron package
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -868,6 +868,11 @@ cd packages/miroir-standalone-app-electron && npx electron-builder --dir --linux
 ```
 
 ### Realization
+
+- `packages/miroir-standalone-app-electron/package.json`, `build`: `files` is `["dist/**/*", "!**/*.map", "!dist/bundle-report.json", "package.json"]`; the `extraResources` entry for `../miroir-standalone-app/dist` filters `["**/*", "!**/*.map", "!.vite/**"]` (the Vite manifest, the report and the treemap). The build output keeps them all, and the CI artifact of Slice 14 carries them.
+- **Deviation:** `!**/*.map` rather than `!dist/**/*.map`: electron-builder applies `files` to the shipped `node_modules` too, and `@cursor/sdk`, `pg-protocol` and `pg-cloudflare` carried 145 maps (712 kB). The esbuild bundle keeps external `.map` files (no inline maps), so nothing else changed there.
+- Test: `electronBundle.326.phase13.unit.test.ts` gained `electronPackage.326.phase15`, 2 cases on the `build` config (RED first, 6/6 after).
+- Package (`electron-builder --dir --linux -c.npmRebuild=false`): no `.map` in `release/linux-unpacked` nor in `app.asar`, no `.vite`; `app.asar` 108 MB → 57 MB, `resources/app` (the standalone `dist`) 108 MB → 32 MB; whole unpacked app 395 MB, most of it the Electron runtime. Smoke start under `xvfb-run`: `IPC server ready`, stores opened, queries answered.
 
 ---
 

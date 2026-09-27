@@ -3,7 +3,10 @@
  * build writes `packages/miroir-standalone-app-electron/dist/bundle-report.json` in the format
  * of the standalone app's report, so the same guard checks what the Electron app ships (D14, D15).
  *
- * Not reachable through MiroirTest: it reads the Electron build output. Run after the build:
+ * Slice 15: the package electron-builder makes leaves out the source maps and the reports, which
+ * stay in the build output and the CI artifact (D21).
+ *
+ * Not reachable through MiroirTest: it reads the Electron build output and package.json. Run after the build:
  * ```bash
  * npm run build -w miroir-standalone-app-electron
  * npm run testByFile -w miroir-standalone-app -- electronBundle.326.phase13
@@ -63,5 +66,20 @@ describe("electronBundle.326.phase13", () => {
   it("keeps Electron and the native modules outside the bundle", () => {
     expect(report.externals).toEqual(expect.arrayContaining(["electron", "classic-level", "pg", "@cursor/sdk"]));
     expect(names.has("classic-level")).toBe(false);
+  });
+});
+
+type ElectronBuilderConfig = { files: string[]; extraResources: { from: string; filter: string[] }[] };
+
+describe("electronPackage.326.phase15", () => {
+  const build: ElectronBuilderConfig = JSON.parse(readFileSync(join(electronRoot, "package.json"), "utf-8")).build;
+
+  it("leaves every source map, and the main process report, out of the package", () => {
+    expect(build.files).toEqual(["dist/**/*", "!**/*.map", "!dist/bundle-report.json", "package.json"]);
+  });
+
+  it("leaves the standalone app's source maps and reports out of the package", () => {
+    const standalone = build.extraResources.find((entry) => entry.from === "../miroir-standalone-app/dist")!;
+    expect(standalone.filter).toEqual(["**/*", "!**/*.map", "!.vite/**"]);
   });
 });

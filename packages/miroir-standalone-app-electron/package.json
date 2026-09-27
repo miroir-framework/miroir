@@ -52,6 +52,8 @@
     },
     "files": [
       "dist/**/*",
+      "!**/*.map",
+      "!dist/bundle-report.json",
       "package.json"
     ],
     "extraResources": [
@@ -59,7 +61,9 @@
         "from": "../miroir-standalone-app/dist",
         "to": "app",
         "filter": [
-          "**/*"
+          "**/*",
+          "!**/*.map",
+          "!.vite/**"
         ]
       },
       {
