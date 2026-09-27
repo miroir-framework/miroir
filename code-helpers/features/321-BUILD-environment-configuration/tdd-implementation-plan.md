@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Inventory: [`./current-state-inven
 Related: #323 (server bundle ignores `--config`; Slice 3 must not rely on `--config`)
 Working branch: `claude/environment-configuration-7z5rjb` (from `_integration`)
 
-**Resume note:** approved by A 2026-09-27. Slices 0–8 DONE (5 in two commits: 5a environments for every profile, 5b test Admin copy and emulated profile files removed; 8 in 8a web client, 8b realServer profiles, plus a harness fix; 9 cloud sessions and PR checks). Next: Slice 10.
+**Resume note:** approved by A 2026-09-27. Slices 0–8 DONE (5 in two commits: 5a environments for every profile, 5b test Admin copy and emulated profile files removed; 8 in 8a web client, 8b realServer profiles, plus a harness fix; 9 cloud sessions and PR checks; 10 in 10a in-app realServer profiles, 10b CI and configuration files, 10c Admin copies). Next: Slice 11.
 
 ---
 
@@ -44,7 +44,7 @@ This plan does **not** touch the release path, Docker, Electron, miroir-cli or s
 | 7 | UI installs land in state and are recorded in `local.json` | ✅ | MiroirTest `runner.deployApplication` + `recordInstalls.321.phase7.integ.test.ts` |
 | 8 | Web client config from the environment | ✅ | `viteEnvironmentConfig.321.phase8` + `realServerTestEnvironment.321.phase8` + manual run |
 | 9 | Cloud sessions and CI | ✅ | pytest for `agent_session_setup.py`, `pr-checks.yml` run |
-| 10 | Remove dead configuration and drifted Admin copies | ⬜ | modelValidation + `nonreg:unit` + guard |
+| 10 | Remove dead configuration and drifted Admin copies | ✅ | modelValidation + `nonreg:unit` + guard |
 | 11 | Nonreg, docs, cleanup, AC | ⬜ | nonreg tiers + tracer narrative |
 
 ---
@@ -559,7 +559,7 @@ python scripts/sync_agent_skills.py --check
 
 ## Slice 10 — Remove dead configuration and drifted Admin copies
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -584,6 +584,11 @@ python scripts/tracked_assets_guard.py --baseline HEAD
 ```
 
 ### Realization
+
+- **10a, in-app realServer profiles.** The four `miroirConfig.browser-realServer-*.json` pointed the server at the tracked Admin data and carried a database password. `vite.config.js` injects `__MIROIR_TEST_CLIENT_CONFIGS__` (`vite/environmentConfig.js` `webTestClientConfigs`): each `realServer-<storage>` profile gets the client configuration of `test-<storage>`, without passwords, in every Vite run (vitest runs too, with the environments' URLs); a served client seeds the copies missing from `.miroir/test-*/` and calls the server over HTTP without certificates. `integrationTestProfileAssets.ts` reads the global; a bundle built without it lists no realServer profile. For `realServer-sql` the server needs `PGPASSWORD` (or `~/.pgpass`), since the browser sends no password (`docs/reference/testing.md`). Proof: `viteEnvironmentConfig.321.phase8` (7 tests) and `integrationTestProfileAssets.unit` (Admin under `.miroir/test-<storage>/`, no password); the Electron runtime configuration in `index.tsx` is untouched (release scope).
+- **10b, CI and configuration files.** Removed, each checked unreferenced with `git grep`: `Jenkinsfile` (it builds `miroir-server-msw-stub` and runs test files that no longer exist), `docker/ci-builder-electronDEFUNCT/`, `ci/tests/config/`, `tests/miroirConfig.test-docker-realServer-sql.json`, `src/assets/miroirConfig-plain-no-dataflow-config.json`, the Deployment copies in `miroir-standalone-app-electron/assets/`. `ci/build/test_core.sh` now passes `--profile emulatedServer-<storage>`. **Deviation:** kept `ci/build/*.sh` and `docker/ci/` (A: keep the `ci` scripts compatible, a release is coming) and the root `Dockerfile` / `docker-compose.yml` (the container path of `docs/guides/build-it-yourself.md`); the release keeps `miroirConfig.server*.json`. Proof: `pytest ci/release/tests` 15/15, `pytest scripts/tests` 58 passed.
+- **10c, Admin copies.** Removed: `miroir-core/tests/test_assets/` (Admin copy with dead paths, two unread images) and `admin_data/` of library, postgres (a MongoDB-era Library Deployment row) and spotify (duplicates of `assets/deployment`). **Deviation:** `miroir-mcp/tests/assets/admin_*` stays: the miroir-mcp tests and the binary's embedded `defaultConfig.json` open it as their Admin store, so it moves with the runtime adoption of environments by miroir-mcp (follow-up). Its tests write no tracked file (checked: `git status` clean after a full run). Proof: miroir-env 35/35, Admin `modelValidation` 51/51, miroir-mcp 90/92 (the two failures, `mlElementToTS` applicationSection and `endpointToolRegistry` hot-reload on a store without `modelVersion`, are in code this branch does not touch), miroir-core 2101/2104 locally: the two failures are the layout guards reporting the stray untracked `miroir_data/54b9c72f…` folder, left in the working tree by the Slice 8 incident and awaiting A.
+- Left for Slice 11: `VITE_MIROIR_TEST_CONFIG_FILENAME` in docs (`docs/contributing/testing.md`, `docs/reference/testing.md`), `test-miroir-runner.ts` and `miroirCoreIntegTestLaunch.ts`.
 
 ---
 
