@@ -64,6 +64,7 @@ ALL_PACKAGES=(
   miroir-test-app_deployment-miroir
   miroir-test-app_deployment-admin
   miroir-core
+  miroir-env
   miroir-localcache-redux
   miroir-localcache-zustand
   miroir-localcache
@@ -89,6 +90,7 @@ STAGE_OPTIONAL_JZOD_TS=(jzod-ts)
 STAGE_DEPLOY_BOOTSTRAP=(miroir-test-app_deployment-miroir miroir-test-app_deployment-admin)
 STAGE_CORE=(miroir-core)
 STAGE_CACHES_STORES=(
+  miroir-env
   miroir-localcache-redux
   miroir-localcache-zustand
   miroir-localcache

@@ -348,6 +348,12 @@ export {
   MiroirConfigForRestClient,
   miroirConfigForRestClient,
   MiroirConfigServer,
+  MiroirEnvironment,
+  miroirEnvironment,
+  MiroirEnvironmentApplication,
+  miroirEnvironmentApplication,
+  MiroirEnvironmentSectionMode,
+  MiroirEnvironmentStoreType,
   // MiroirCustomQueryParams,
   // miroirCustomQueryParams,
   MiroirFundamentalType,
@@ -928,6 +934,12 @@ export {
   mlsToMls_Summary
 } from "./1_core/mls/MlsToMls_Summary";
 export type { JsonSchema, MlsToJsonSchemaContext } from "./1_core/mls/MlsToJsonSchema";
+export {
+  deriveEnvironmentDeployments,
+  ENVIRONMENT_STATE_ROOT,
+  type EnvironmentDeployment,
+  type EnvironmentDeploymentsResult,
+} from "./1_core/environment/Environment";
 export { mlsToJsonSchema } from "./1_core/mls/MlsToJsonSchema";
 export {
   getAttributeTypesFromMlSchema,

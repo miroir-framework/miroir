@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Inventory: [`./current-state-inven
 Related: #323 (server bundle ignores `--config`; Slice 3 must not rely on `--config`)
 Working branch: `claude/environment-configuration-7z5rjb` (from `_integration`)
 
-**Resume note:** approved by A 2026-09-27. Slice 0 DONE.
+**Resume note:** approved by A 2026-09-27. Slices 0–1 DONE.
 
 ---
 
@@ -35,7 +35,7 @@ This plan does **not** touch the release path, Docker, Electron, miroir-cli or s
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize tracked writes and today's deployment map | ✅ | `scripts/tests/test_tracked_assets_guard.py`, `unit-321-tracked-assets` baseline |
-| 1 | Tracer: `miroir-env show` resolves `dev` | ⬜ | MiroirTest `fn.environment.resolveEnvironment` + `miroirEnvCli.321.phase1.unit.test.ts` |
+| 1 | Tracer: `miroir-env show` resolves `dev` | ✅ | MiroirTest `fn.environment.resolveEnvironment` + `miroirEnvCli.321.phase1.unit.test.ts` |
 | 2 | Personal environment: `local.json`, `MIROIR_ENV`, `extends` | ⬜ | `fn.environment.resolveEnvironment` (merge leaves) + CLI test |
 | 3 | Server boots from the environment, Admin data in state | ⬜ | `serverBootFromEnvironment.321.phase3.integ.test.ts` |
 | 4 | Tests run on `test-filesystem` without tracked writes | ⬜ | `nonreg:filesystem` + tracked-assets guard clean |
@@ -146,7 +146,7 @@ python scripts/tracked_assets_guard.py check   # clean on a fresh checkout
 
 ## Slice 1 — Tracer: `miroir-env show` resolves `dev`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -183,6 +183,13 @@ npm run test -w miroir-core -- ''
 ```
 
 ### Realization
+
+- ML schema: `miroirEnvironmentStoreType`, `miroirEnvironmentSectionMode`, `miroirEnvironmentSectionOverride`, `miroirEnvironmentApplication`, `miroirEnvironment` in `getMiroirFundamentalMlSchema.ts`, placed after the `miroirConfig` union, not between `miroirConfigServer` and `miroirConfig`: `cursorSdk.275.phase0` slices the source text between those two keys. Types and Zod validators exported from `miroir-core`.
+- `deriveEnvironmentDeployments(environment, environmentName)` in `miroir-core/src/1_core/environment/Environment.ts` returns `{ status: "ok", deployments } | { status: "error", errors }`. The `admin` section is derived by rule (`packages/<package>/assets` for `live`, `.miroir/<env>/<app>` for `copy`); non-filesystem stores return an error until Slice 5.
+- MiroirTest `fn.environment.deriveDeployments` (7 `functionCallTest` leaves, tags `unit`, `tools`: no new tag, to keep the MiroirTest Entity and its EntityVersion untouched). Registered in `FunctionCallTestRegistry.ts`, exported from the deployment's `index.ts`, the hand-maintained `index.d.ts` stub and `src/Model.ts`. Descriptions cannot contain `#321` (naming guard).
+- Package `packages/miroir-env` (tsup, ESM, bin `miroir-env`; `moduleResolution: bundler` like miroir-store-filesystem, because NodeNext cannot follow miroir-core's extensionless d.ts re-exports). `findRepositoryRoot` walks up to the first `package.json` with `workspaces`. `miroir-env show [--json] [--name]`; schema errors exit 2 with `file: path: message`.
+- `environments/dev.json` with miroir, admin, library, designer, all `live` (Admin data still live: behaviour unchanged until Slice 3). Root script `npm run miroir-env`; `build-all.sh` builds `miroir-env` in the stores stage.
+- `npm install` rewrote `package-lock.json` (dropped `libc` fields) and removed the Linux rollup binary: restored the lock by hand (only the two `miroir-env` entries added), reran `npm ci` and the rollup install from `agent_session_setup.py`.
 
 ---
 

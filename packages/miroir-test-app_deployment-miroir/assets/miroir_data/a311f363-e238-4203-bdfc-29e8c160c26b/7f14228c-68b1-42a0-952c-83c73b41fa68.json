@@ -1,0 +1,318 @@
+{
+  "uuid": "7f14228c-68b1-42a0-952c-83c73b41fa68",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "fn.environment.deriveDeployments",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Deployment configurations derived from an environment definition: live sections on package assets, copy sections in .miroir/<environment>/.",
+  "tags": [
+    "unit",
+    "tools"
+  ],
+  "issue": "321",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "fn.environment.deriveDeployments",
+    "miroirTests": [
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "live filesystem sections point at the package assets",
+        "functionRef": {
+          "module": "miroir-core/1_core/environment/Environment",
+          "export": "deriveEnvironmentDeployments"
+        },
+        "arguments": [
+          {
+            "applications": {
+              "library": {
+                "package": "miroir-test-app_deployment-library",
+                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                "store": "filesystem",
+                "mode": "live"
+              }
+            }
+          },
+          "dev"
+        ],
+        "expectedValue": {
+          "status": "ok",
+          "deployments": [
+            {
+              "applicationKey": "library",
+              "package": "miroir-test-app_deployment-library",
+              "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+              "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              "configuration": {
+                "admin": {
+                  "emulatedServerType": "filesystem",
+                  "directory": "packages/miroir-test-app_deployment-library/assets"
+                },
+                "model": {
+                  "emulatedServerType": "filesystem",
+                  "directory": "packages/miroir-test-app_deployment-library/assets/library_model"
+                },
+                "data": {
+                  "emulatedServerType": "filesystem",
+                  "directory": "packages/miroir-test-app_deployment-library/assets/library_data"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "a declared modelVersion section is derived like the others",
+        "functionRef": {
+          "module": "miroir-core/1_core/environment/Environment",
+          "export": "deriveEnvironmentDeployments"
+        },
+        "arguments": [
+          {
+            "applications": {
+              "miroir": {
+                "package": "miroir-test-app_deployment-miroir",
+                "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+                "deployment": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+                "store": "filesystem",
+                "mode": "live",
+                "sections": {
+                  "modelVersion": {}
+                }
+              }
+            }
+          },
+          "dev"
+        ],
+        "expectedValue": {
+          "status": "ok",
+          "deployments": [
+            {
+              "applicationKey": "miroir",
+              "package": "miroir-test-app_deployment-miroir",
+              "deployment": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+              "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              "configuration": {
+                "admin": {
+                  "emulatedServerType": "filesystem",
+                  "directory": "packages/miroir-test-app_deployment-miroir/assets"
+                },
+                "model": {
+                  "emulatedServerType": "filesystem",
+                  "directory": "packages/miroir-test-app_deployment-miroir/assets/miroir_model"
+                },
+                "data": {
+                  "emulatedServerType": "filesystem",
+                  "directory": "packages/miroir-test-app_deployment-miroir/assets/miroir_data"
+                },
+                "modelVersion": {
+                  "emulatedServerType": "filesystem",
+                  "directory": "packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "assetPrefix replaces the application key in live directory names",
+        "functionRef": {
+          "module": "miroir-core/1_core/environment/Environment",
+          "export": "deriveEnvironmentDeployments"
+        },
+        "arguments": [
+          {
+            "applications": {
+              "library": {
+                "package": "miroir-test-app_deployment-library",
+                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                "store": "filesystem",
+                "mode": "live",
+                "assetPrefix": "lib"
+              }
+            }
+          },
+          "dev"
+        ],
+        "expectedValue": {
+          "status": "ok",
+          "deployments": [
+            {
+              "applicationKey": "library",
+              "package": "miroir-test-app_deployment-library",
+              "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+              "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              "configuration": {
+                "admin": {
+                  "emulatedServerType": "filesystem",
+                  "directory": "packages/miroir-test-app_deployment-library/assets"
+                },
+                "model": {
+                  "emulatedServerType": "filesystem",
+                  "directory": "packages/miroir-test-app_deployment-library/assets/lib_model"
+                },
+                "data": {
+                  "emulatedServerType": "filesystem",
+                  "directory": "packages/miroir-test-app_deployment-library/assets/lib_data"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "a copy section lives in the environment state directory",
+        "functionRef": {
+          "module": "miroir-core/1_core/environment/Environment",
+          "export": "deriveEnvironmentDeployments"
+        },
+        "arguments": [
+          {
+            "applications": {
+              "admin": {
+                "package": "miroir-test-app_deployment-admin",
+                "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                "deployment": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+                "store": "filesystem",
+                "mode": "live",
+                "sections": {
+                  "data": {
+                    "mode": "copy"
+                  }
+                }
+              }
+            }
+          },
+          "dev"
+        ],
+        "expectedValue": {
+          "status": "ok",
+          "deployments": [
+            {
+              "applicationKey": "admin",
+              "package": "miroir-test-app_deployment-admin",
+              "deployment": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+              "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+              "configuration": {
+                "admin": {
+                  "emulatedServerType": "filesystem",
+                  "directory": "packages/miroir-test-app_deployment-admin/assets"
+                },
+                "model": {
+                  "emulatedServerType": "filesystem",
+                  "directory": "packages/miroir-test-app_deployment-admin/assets/admin_model"
+                },
+                "data": {
+                  "emulatedServerType": "filesystem",
+                  "directory": ".miroir/dev/admin/data"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "a copy application lives entirely in the state directory of its environment",
+        "functionRef": {
+          "module": "miroir-core/1_core/environment/Environment",
+          "export": "deriveEnvironmentDeployments"
+        },
+        "arguments": [
+          {
+            "applications": {
+              "library": {
+                "package": "miroir-test-app_deployment-library",
+                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                "store": "filesystem",
+                "mode": "copy"
+              }
+            }
+          },
+          "test-filesystem"
+        ],
+        "expectedValue": {
+          "status": "ok",
+          "deployments": [
+            {
+              "applicationKey": "library",
+              "package": "miroir-test-app_deployment-library",
+              "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+              "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              "configuration": {
+                "admin": {
+                  "emulatedServerType": "filesystem",
+                  "directory": ".miroir/test-filesystem/library"
+                },
+                "model": {
+                  "emulatedServerType": "filesystem",
+                  "directory": ".miroir/test-filesystem/library/model"
+                },
+                "data": {
+                  "emulatedServerType": "filesystem",
+                  "directory": ".miroir/test-filesystem/library/data"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "an application set to null is not installed",
+        "functionRef": {
+          "module": "miroir-core/1_core/environment/Environment",
+          "export": "deriveEnvironmentDeployments"
+        },
+        "arguments": [
+          {
+            "applications": {
+              "library": null
+            }
+          },
+          "dev"
+        ],
+        "expectedValue": {
+          "status": "ok",
+          "deployments": []
+        }
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "live needs the filesystem store",
+        "functionRef": {
+          "module": "miroir-core/1_core/environment/Environment",
+          "export": "deriveEnvironmentDeployments"
+        },
+        "arguments": [
+          {
+            "applications": {
+              "library": {
+                "package": "miroir-test-app_deployment-library",
+                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                "store": "sql",
+                "mode": "live"
+              }
+            }
+          },
+          "dev"
+        ],
+        "expectedValue": {
+          "status": "error",
+          "errors": [
+            "application \"library\", section \"admin\": mode \"live\" needs store \"filesystem\", got \"sql\"",
+            "application \"library\", section \"model\": mode \"live\" needs store \"filesystem\", got \"sql\"",
+            "application \"library\", section \"data\": mode \"live\" needs store \"filesystem\", got \"sql\""
+          ]
+        }
+      }
+    ]
+  }
+}

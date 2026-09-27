@@ -1954,6 +1954,160 @@ export function getMiroirFundamentalMlSchema(
             },
           ],
         },
+        miroirEnvironmentStoreType: {
+          type: "enum",
+          definition: ["filesystem", "indexedDb", "sql", "mongodb"],
+        },
+        miroirEnvironmentSectionMode: {
+          type: "enum",
+          definition: ["live", "copy"],
+        },
+        miroirEnvironmentSectionOverride: {
+          type: "object",
+          definition: {
+            mode: {
+              type: "schemaReference",
+              optional: true,
+              definition: {
+                absolutePath: miroirFundamentalMlSchemaUuid,
+                relativePath: "miroirEnvironmentSectionMode",
+              },
+            },
+            store: {
+              type: "schemaReference",
+              optional: true,
+              definition: {
+                absolutePath: miroirFundamentalMlSchemaUuid,
+                relativePath: "miroirEnvironmentStoreType",
+              },
+            },
+          },
+        },
+        miroirEnvironmentApplication: {
+          type: "object",
+          definition: {
+            package: { type: "string" },
+            assetPrefix: { type: "string", optional: true },
+            selfApplication: { type: "uuid" },
+            deployment: { type: "uuid" },
+            store: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalMlSchemaUuid,
+                relativePath: "miroirEnvironmentStoreType",
+              },
+            },
+            mode: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalMlSchemaUuid,
+                relativePath: "miroirEnvironmentSectionMode",
+              },
+            },
+            sections: {
+              type: "object",
+              optional: true,
+              definition: {
+                model: {
+                  type: "schemaReference",
+                  optional: true,
+                  definition: {
+                    absolutePath: miroirFundamentalMlSchemaUuid,
+                    relativePath: "miroirEnvironmentSectionOverride",
+                  },
+                },
+                data: {
+                  type: "schemaReference",
+                  optional: true,
+                  definition: {
+                    absolutePath: miroirFundamentalMlSchemaUuid,
+                    relativePath: "miroirEnvironmentSectionOverride",
+                  },
+                },
+                modelVersion: {
+                  type: "schemaReference",
+                  optional: true,
+                  definition: {
+                    absolutePath: miroirFundamentalMlSchemaUuid,
+                    relativePath: "miroirEnvironmentSectionOverride",
+                  },
+                },
+              },
+            },
+          },
+        },
+        miroirEnvironment: {
+          type: "object",
+          definition: {
+            name: { type: "string", optional: true },
+            extends: { type: "string", optional: true },
+            description: { type: "string", optional: true },
+            server: {
+              type: "object",
+              optional: true,
+              definition: {
+                rootApiUrl: { type: "string", optional: true },
+                mcpUrl: { type: "string", optional: true },
+                corsAllowedOrigins: { type: "array", optional: true, definition: { type: "string" } },
+              },
+            },
+            client: {
+              type: "object",
+              optional: true,
+              definition: {
+                mode: { type: "enum", optional: true, definition: ["realServer", "emulatedServer"] },
+              },
+            },
+            features: {
+              type: "object",
+              optional: true,
+              definition: {
+                ai: { type: "boolean", optional: true },
+                mcp: { type: "boolean", optional: true },
+                cursor: { type: "boolean", optional: true },
+                designerTools: { type: "boolean", optional: true },
+              },
+            },
+            logPreset: { type: "string", optional: true },
+            connections: {
+              type: "object",
+              optional: true,
+              definition: {
+                postgres: {
+                  type: "object",
+                  optional: true,
+                  definition: {
+                    host: { type: "string" },
+                    port: { type: "number", optional: true },
+                    user: { type: "string", optional: true },
+                    database: { type: "string", optional: true },
+                    passwordEnv: { type: "string", optional: true },
+                  },
+                },
+                mongodb: {
+                  type: "object",
+                  optional: true,
+                  definition: {
+                    url: { type: "string" },
+                  },
+                },
+              },
+            },
+            secrets: { type: "array", optional: true, definition: { type: "string" } },
+            applications: {
+              type: "record",
+              optional: true,
+              definition: {
+                type: "schemaReference",
+                nullable: true,
+                definition: {
+                  absolutePath: miroirFundamentalMlSchemaUuid,
+                  relativePath: "miroirEnvironmentApplication",
+                },
+              },
+            },
+          },
+        },
         commit: {
           type: "object",
           definition: {

@@ -1,0 +1,51 @@
+{
+  "name": "dev",
+  "description": "Default local development environment: every application edited live in its package assets.",
+  "server": {
+    "rootApiUrl": "https://localhost:3080",
+    "mcpUrl": "https://localhost:4080",
+    "corsAllowedOrigins": [
+      "http://localhost:5173",
+      "https://localhost:5173",
+      "https://localhost:3000"
+    ]
+  },
+  "client": { "mode": "realServer" },
+  "features": { "ai": true, "mcp": true },
+  "logPreset": "catch-all",
+  "connections": {
+    "postgres": { "host": "localhost", "port": 5432, "user": "postgres", "passwordEnv": "MIROIR_POSTGRES_PASSWORD" },
+    "mongodb": { "url": "mongodb://localhost:27017/" }
+  },
+  "applications": {
+    "miroir": {
+      "package": "miroir-test-app_deployment-miroir",
+      "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+      "deployment": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+      "store": "filesystem",
+      "mode": "live",
+      "sections": { "modelVersion": {} }
+    },
+    "admin": {
+      "package": "miroir-test-app_deployment-admin",
+      "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+      "deployment": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+      "store": "filesystem",
+      "mode": "live"
+    },
+    "library": {
+      "package": "miroir-test-app_deployment-library",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+      "store": "filesystem",
+      "mode": "live"
+    },
+    "designer": {
+      "package": "miroir-test-app_deployment-designer",
+      "selfApplication": "880831db-4f76-40b1-97c0-6a2f3f4ffccb",
+      "deployment": "f0359240-e849-4546-8158-75f4a8ae5831",
+      "store": "filesystem",
+      "mode": "live"
+    }
+  }
+}
