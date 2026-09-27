@@ -971,10 +971,10 @@ Every step has a `step` kind and an optional `label` (required for `expectRender
 
 The step reads the values of the form elements rendered in the case container and the portal element, with `extractValuesFromRenderedElements`:
 
-1. The extractor reads the fields under `F(field)` when `field` is given, under `TESTSECTION` otherwise, and strips that prefix from the keys. `label` is passed to it as the name of the step, and `filter` and `detectOptions` as they are. An open combobox reads as its committed value (`data-test-selected-value` of its state tracker), not as the text typed in it.
-2. The array-valued entries of the result (the extractor's option lists) are dropped, and `formValuesToJSON` turns the dotted keys into nested values. Numeric segments become array indexes, so an array field read with `field` gives an array.
+1. The extractor reads the fields under `F(field)` when `field` is given, under `TESTSECTION` otherwise, and strips that prefix from the keys. `label` is passed to it as the name of the step, and `filter` and `detectOptions` as they are. An open combobox reads as its committed value (`data-test-selected-value` of its state tracker), not as the text typed in it. Inputs whose name is outside that prefix are not read. Values with no form field of their own are read from markers the editors render (#305, `ValueObjectEditor/renderedValueMarkers.ts`): an empty array / object / record editor root strictly under the prefix carries `data-ml-empty-container` (`array` or `object`) and `data-ml-name`, and reads as `[]` / `{}`; the file `any` editor renders a hidden input with its value, JSON-parsed when flagged `data-ml-json`; the read-only literal input carries its form name.
+2. The non-empty array-valued entries of the result (the extractor's option lists) are dropped, and `formValuesToJSON` turns the dotted keys into nested values. Numeric segments become array indexes, so an array field read with `field` gives an array.
 3. With `path` (an array of keys and indexes), only the value at `path` is compared.
-4. With `ignorePaths` (an array of dot paths, e.g. `"aNestedObject.level1.items.1.tags"`), each path is removed from a copy of the value and from `expectedValue` before the comparison; a numeric segment on an array removes the item. It is for branches the extractor cannot read yet: each ignored branch should get an `expectElement` check in the same leaf (#303).
+4. With `ignorePaths` (an array of dot paths, e.g. `"aNestedObject.level1.items.1.tags"`), each path is removed from a copy of the value and from `expectedValue` before the comparison; a numeric segment on an array removes the item. It is for branches the extractor cannot read: each ignored branch should get an `expectElement` check in the same leaf (#303). The test pattern needs none since #305.
 5. When the value is an object and option lists are rendered, the key `$options` is added: `{"<field>": ["<option text>", …]}`, built from the `[role="option"]` elements whose `aria-label` is `<form field name>-option-<value>`, the field name without its `TESTSECTION.` prefix, the texts in DOM order.
 6. The value is logged, then compared with `expectedValue` by `toEqual`. Keys whose value is `undefined` are ignored.
 
@@ -1042,23 +1042,14 @@ Open one of the component instances in the Miroir Tests report and click the uni
 
 | Leaf | Checks |
 |---|---|
-| `MlTestPattern: every editor type displays its value` | One `expectRenderedValues` on `testField` over the whole value, with `ignorePaths`, then one `expectElement` per ignored branch |
+| `MlTestPattern: every editor type displays its value` | One `expectRenderedValues` on `testField` over the whole value |
 | `MlTestPattern: a deep leaf and the enum can be edited` | `change` on `aNestedObject.level1.level2.leaf`, `selectOption` on `anEnum` |
 | `MlTestPattern: the simple union switches from number to string` | union type selector, then `aSimpleUnion` is `""` |
 | `MlTestPattern: array items, record entries and optional attributes can be added, removed and renamed` | `clickArrayButton` add / delete, `renameRecordEntry`, `clickObjectButton addOptionalAttribute` |
 
-Every interaction leaf ends with the display leaf's whole-value comparison (same `ignorePaths`, expected value with the edits), so an edit that changes another editor's value fails. A leaf takes about 1.5 to 3.5 s in happy-dom.
+Every interaction leaf ends with the display leaf's whole-value comparison (expected value with the edits), so an edit that changes another editor's value fails. A leaf takes about 1.5 to 3.5 s in happy-dom.
 
-Branches under `ignorePaths`, and why: the extractor (`extractValuesFromRenderedElements`) reads them wrongly. The `expectedValue` keeps their true value, so that removing an entry from `ignorePaths` is the only change once the extractor is fixed (follow-up of #303).
-
-| Ignored path | What the extractor returns | Checked instead by |
-|---|---|---|
-| `aLiteral` | its value under a stray `testField: {aLiteral: "fixed"}` subtree | `expectElement byDisplayValue "fixed"` |
-| `testField` | the stray subtree above | (same) |
-| `aReference` | `{label: "root"}`: the `children` of the recursive `schemaReference` are not rendered (the reference's local `context` is not passed to the array items: an editor defect, follow-up of #303) | `expectElement byDisplayValue "root"` on `testField.aReference.label` |
-| `anEmptyArray`, `anEmptyRecord` | absent | `expectElement` on their add buttons |
-| `aNestedObject.level1.level2.items.1.tags` (an empty array) | absent | `expectElement` on its add button |
-| `anAnyFile` | nothing: `MlAnyEditor` renders a file selector, not a form field | `expectElement byText "Select File"` |
+Every branch is compared, the literal, the empty containers, the recursive `schemaReference` and the file `any` field included (#305; until then they were under `ignorePaths`, see [#303 analysis §3.3](../../code-helpers/features/303-FEATURE-test-pattern-and-render-performance/analysis.md)).
 
 Values that are compared as displayed: `aBigint` as a string, `aDate` as `YYYY-MM-DD`.
 

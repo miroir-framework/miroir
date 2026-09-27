@@ -13,6 +13,10 @@ import {
   formValuesToJSON,
   testSectionName,
 } from "./componentTestTools.js";
+import {
+  EMPTY_CONTAINER_ATTRIBUTE,
+  ML_NAME_ATTRIBUTE,
+} from "../../4_view/components/ValueObjectEditor/renderedValueMarkers.js";
 
 // ################################################################################################
 // Interpreter of the declarative component test steps (#292, analysis §5.3, §5.4).
@@ -176,6 +180,15 @@ function withoutIgnoredPaths(value: unknown, ignorePaths: readonly string[]): un
   return copy;
 }
 
+/** Whether the editor of the form field `fieldName` is an empty array editor (#305 D4 marker). */
+function isEmptyArrayEditor(env: ComponentTestEnvironment, fieldName: string): boolean {
+  return [env.container, env.portalElement].some((root) =>
+    Array.from(root?.querySelectorAll(`[${EMPTY_CONTAINER_ATTRIBUTE}="array"]`) ?? []).some(
+      (element) => element.getAttribute(ML_NAME_ATTRIBUTE) === fieldName,
+    ),
+  );
+}
+
 /** The `value` of a form element, as the old `(element as HTMLInputElement).value` reads. */
 function elementValue(element: HTMLElement): unknown {
   return (element as HTMLInputElement).value;
@@ -212,20 +225,26 @@ export async function runComponentTestSteps(
 
   /** `expectRenderedValues` once: throws `RenderedValuesMismatch` when the values differ. */
   const checkRenderedValues = (step: StepOf<"expectRenderedValues">): void => {
+    const fieldName = step.field === undefined ? testSectionName : formikFieldName(step.field);
     const extracted = extractValuesFromRenderedElements(
       env.expect,
       step.filter === undefined ? undefined : [...step.filter],
       env.container,
-      step.field === undefined ? testSectionName : formikFieldName(step.field),
+      fieldName,
       step.label,
       step.detectOptions ?? false,
       env.portalElement,
     );
-    // array-valued entries are the extractor's option lists, replaced by `$options` (T8)
+    // non-empty array-valued entries are the extractor's option lists, replaced by `$options` (T8);
+    // an empty array is an empty array editor (#305 D4), option lists are never empty
     const fieldValues = Object.fromEntries(
-      Object.entries(extracted).filter(([, value]) => !Array.isArray(value)),
+      Object.entries(extracted).filter(([, value]) => !Array.isArray(value) || value.length === 0),
     );
-    let actual: unknown = formValuesToJSON(fieldValues);
+    // #305: the field under test is itself an empty array editor: an empty map rebuilds as `{}`
+    let actual: unknown =
+      Object.keys(fieldValues).length === 0 && isEmptyArrayEditor(env, fieldName)
+        ? []
+        : formValuesToJSON(fieldValues);
     if (step.path !== undefined) {
       actual = valueAtPath(actual, step.path);
     }

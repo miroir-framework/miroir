@@ -564,6 +564,7 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
             <input
               type="text"
               id={rootLessListKey}
+              name={formikRootLessListKey}
               form={"form." + name}
               value={formik.getFieldProps(formikRootLessListKey).value}
               readOnly

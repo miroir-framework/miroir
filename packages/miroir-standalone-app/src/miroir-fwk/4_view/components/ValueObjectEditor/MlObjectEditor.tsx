@@ -68,6 +68,7 @@ import {
 import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, MlElementEditor } from "./MlElementEditor";
 import { getFoldedDisplayValue, useMlElementEditorHooks } from "./MlElementEditorHooks";
 import { MlObjectEditorProps } from "./MlElementEditorInterface";
+import { emptyContainerMarker, isPlainObjectValue } from "./renderedValueMarkers";
 import {
   findPathAnnotation,
   TransformerTitleRowAnnotations,
@@ -1354,6 +1355,11 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
       id={unitTestLabel ? unitTestAnchorId(unitTestLabel) : rootLessListKey}
       key={rootLessListKey}
       style={isHighlightedUnitTest ? HIGHLIGHTED_UNIT_TEST_STYLE : undefined}
+      {...emptyContainerMarker(
+        "object",
+        formikRootLessListKey,
+        isPlainObjectValue(currentValueObjectAtKey) && Object.keys(currentValueObjectAtKey).length === 0,
+      )}
     >
       <JsonDisplayHelper
         debug={true}
