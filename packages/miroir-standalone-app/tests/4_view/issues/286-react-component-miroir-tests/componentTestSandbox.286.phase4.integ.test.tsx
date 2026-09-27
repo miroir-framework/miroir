@@ -84,9 +84,9 @@ const MIROIR_TEST_DATA_FOLDER = join(
 );
 
 const arraySuite = "MlArrayEditor";
-/** #292: the Array cases have their own MiroirTest instance, `MlArrayEditor_ComponentTestSuite`. */
+/** #292: the Array cases have their own MiroirTest instance, `ui.mlElementEditor.array`. */
 const componentTestSuiteInstanceUuid = "1b71d68b-7dc9-468c-a251-4fa7889f20f4";
-const componentTestSuiteInstanceName = "MlArrayEditor_ComponentTestSuite";
+const componentTestSuiteInstanceName = "ui.mlElementEditor.array";
 
 function loadComponentTestSuiteInstance(): MiroirTestDefinition {
   for (const fileName of readdirSync(MIROIR_TEST_DATA_FOLDER)) {

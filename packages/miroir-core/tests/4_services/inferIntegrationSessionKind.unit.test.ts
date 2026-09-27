@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  miroirTest_runner_lend_document,
-  miroirTest_runner_return_document,
+  miroirTest_runner_lendDocument,
+  miroirTest_runner_returnDocument,
 } from "miroir-test-app_deployment-library";
-import { miroirTest_miroirCoreTransformers } from "miroir-test-app_deployment-miroir";
+import { miroirTest_tr_core } from "miroir-test-app_deployment-miroir";
 
 import type {
   MiroirTestDefinition,
@@ -19,15 +19,15 @@ import {
 } from "../../src/5_tests/inferIntegrationSessionKind";
 
 function runnerLendDocumentSuite(): MiroirTestSuite {
-  return (miroirTest_runner_lend_document as MiroirTestDefinition).definition as MiroirTestSuite;
+  return (miroirTest_runner_lendDocument as MiroirTestDefinition).definition as MiroirTestSuite;
 }
 
 function runnerReturnDocumentSuite(): MiroirTestSuite {
-  return (miroirTest_runner_return_document as MiroirTestDefinition).definition as MiroirTestSuite;
+  return (miroirTest_runner_returnDocument as MiroirTestDefinition).definition as MiroirTestSuite;
 }
 
 function miroirCoreTransformersSuite(): MiroirTestSuite {
-  return (miroirTest_miroirCoreTransformers as MiroirTestDefinition).definition as MiroirTestSuite;
+  return (miroirTest_tr_core as MiroirTestDefinition).definition as MiroirTestSuite;
 }
 
 describe("walkMiroirTestLeaves (B0)", () => {
@@ -93,13 +93,13 @@ describe("transformerTestLeafRequiresIntegration (B0)", () => {
 
 describe("inferIntegrationSessionKind (B0)", () => {
   it.each([
-    ["runner_lend_document", runnerLendDocumentSuite],
-    ["runner_return_document", runnerReturnDocumentSuite],
+    ["runner.lendDocument", runnerLendDocumentSuite],
+    ["runner.returnDocument", runnerReturnDocumentSuite],
   ])("returns runner for %s suite", (_name, suiteGetter) => {
     expect(inferIntegrationSessionKind(suiteGetter())).toBe("runner");
   });
 
-  it("returns transformer for miroirCoreTransformers suite", () => {
+  it("returns transformer for tr.core suite", () => {
     expect(inferIntegrationSessionKind(miroirCoreTransformersSuite())).toBe("transformer");
   });
 
@@ -163,8 +163,8 @@ describe("inferIntegrationSessionKind (B0)", () => {
 
 describe("classifyMiroirTestSuiteExecutionCapabilities (B0)", () => {
   it.each([
-    ["runner_lend_document", runnerLendDocumentSuite],
-    ["runner_return_document", runnerReturnDocumentSuite],
+    ["runner.lendDocument", runnerLendDocumentSuite],
+    ["runner.returnDocument", runnerReturnDocumentSuite],
   ])("marks %s as integration-only", (_name, suiteGetter) => {
     const caps = classifyMiroirTestSuiteExecutionCapabilities(suiteGetter());
 
@@ -176,7 +176,7 @@ describe("classifyMiroirTestSuiteExecutionCapabilities (B0)", () => {
     });
   });
 
-  it("marks miroirCoreTransformers as mixed (unit + integration transformer leaves)", () => {
+  it("marks tr.core as mixed (unit + integration transformer leaves)", () => {
     const caps = classifyMiroirTestSuiteExecutionCapabilities(miroirCoreTransformersSuite());
 
     expect(caps.integrationSessionKind).toBe("transformer");

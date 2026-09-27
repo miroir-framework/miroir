@@ -123,13 +123,13 @@ function miroirTestInstanceOf(child: any): any {
     uuid: "761d4ed2-1a5c-4901-a9d9-897dbec0b27f",
     parentName: "MiroirTest",
     parentUuid: "a311f363-e238-4203-bdfc-29e8c160c26b",
-    name: "MlEnumEditor_ComponentTestSuite",
+    name: "ui.mlElementEditor.enum",
     selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     branch: "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
     description: "Issue #292 schema fixture",
     definition: {
       miroirTestType: "miroirTestSuite",
-      miroirTestLabel: "MlEnumEditor_ComponentTestSuite",
+      miroirTestLabel: "ui.mlElementEditor.enum",
       miroirTests: [child],
     },
   };

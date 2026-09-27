@@ -4,10 +4,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import type { MiroirTestDefinition } from 'miroir-core';
-import { miroirTest_runner_return_document } from 'miroir-test-app_deployment-library';
+import { miroirTest_runner_returnDocument } from 'miroir-test-app_deployment-library';
 import {
-  miroirTest_EntityPrimaryKey,
-  miroirTest_miroirCoreTransformers,
+  miroirTest_fn_entityPrimaryKey,
+  miroirTest_tr_core,
 } from 'miroir-test-app_deployment-miroir';
 
 import {
@@ -177,7 +177,7 @@ describe('RunAllMiroirTestsButton runMode (T2)', () => {
   it('defaults to unit and calls _runMiroirTestSuite with executionMode unit', async () => {
     render(
       <RunAllMiroirTestsButton
-        miroirTests={[asMiroirTest(miroirTest_EntityPrimaryKey)]}
+        miroirTests={[asMiroirTest(miroirTest_fn_entityPrimaryKey)]}
         useSnackBar={true}
         label="Run All Unit Tests"
       />,
@@ -197,9 +197,9 @@ describe('RunAllMiroirTestsButton runMode (T2)', () => {
     render(
       <RunAllMiroirTestsButton
         miroirTests={[
-          asMiroirTest(miroirTest_runner_return_document),
-          asMiroirTest(miroirTest_EntityPrimaryKey),
-          asMiroirTest(miroirTest_miroirCoreTransformers),
+          asMiroirTest(miroirTest_runner_returnDocument),
+          asMiroirTest(miroirTest_fn_entityPrimaryKey),
+          asMiroirTest(miroirTest_tr_core),
         ]}
         useSnackBar={true}
         runMode="integration"
@@ -217,7 +217,7 @@ describe('RunAllMiroirTestsButton runMode (T2)', () => {
     const suiteKeys = runUiIntegrationTestSuiteMock.mock.calls.map(
       (call) => (call[0] as { suiteKey: string }).suiteKey,
     );
-    expect(suiteKeys).toEqual(['miroirCoreTransformers', 'runner_return_document']);
+    expect(suiteKeys).toEqual(['runner.returnDocument', 'tr.core']);
   });
 
   it('disables integration batch while coordinator holds a run', () => {
@@ -225,7 +225,7 @@ describe('RunAllMiroirTestsButton runMode (T2)', () => {
 
     render(
       <RunAllMiroirTestsButton
-        miroirTests={[asMiroirTest(miroirTest_runner_return_document)]}
+        miroirTests={[asMiroirTest(miroirTest_runner_returnDocument)]}
         useSnackBar={true}
         runMode="integration"
         label="Run All Integration Tests"
@@ -254,8 +254,8 @@ describe('RunAllMiroirTestsButton runMode (T2)', () => {
     render(
       <RunAllMiroirTestsButton
         miroirTests={[
-          asMiroirTest(miroirTest_runner_return_document),
-          asMiroirTest(miroirTest_miroirCoreTransformers),
+          asMiroirTest(miroirTest_runner_returnDocument),
+          asMiroirTest(miroirTest_tr_core),
         ]}
         useSnackBar={true}
         runMode="integration"

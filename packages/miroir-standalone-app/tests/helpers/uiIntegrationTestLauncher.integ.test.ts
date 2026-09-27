@@ -30,19 +30,19 @@ beforeAll(() => {
 });
 
 describe("runUiIntegrationTestSuite (B3)", () => {
-  it("runs runner_return_document Return Book leaf via in-process launcher", async () => {
-    const suiteDefinition = UI_INTEGRATION_RUNNER_SUITE_REGISTRY["runner_return_document"].suiteDefinition;
+  it("runs runner.returnDocument Return Book leaf via in-process launcher", async () => {
+    const suiteDefinition = UI_INTEGRATION_RUNNER_SUITE_REGISTRY["runner.returnDocument"].suiteDefinition;
 
     const result = await runUiIntegrationTestSuiteInNode(
       {
-        suiteKey: "runner_return_document",
+        suiteKey: "runner.returnDocument",
         suiteDefinition,
         profileName: LAUNCH_PROFILE_NAME,
         runTargetMode: "pinned",
         hostMode: "isolated",
         filter: {
           testList: {
-            runner_return_document: [RETURN_BOOK_LEAF],
+            "runner.returnDocument": [RETURN_BOOK_LEAF],
           },
         },
       },
@@ -50,7 +50,7 @@ describe("runUiIntegrationTestSuite (B3)", () => {
     );
 
     expect(result).toMatchObject({
-      suiteKey: "runner_return_document",
+      suiteKey: "runner.returnDocument",
       sessionKind: "runner",
       profileName: LAUNCH_PROFILE_NAME,
       hostMode: "isolated",
@@ -69,22 +69,22 @@ describe("runUiIntegrationTestSuite (B3)", () => {
 });
 
 describe("runUiIntegrationTestSuite transformer (B7)", () => {
-  it("runs one miroirCoreTransformers integ leaf via in-process launcher", async () => {
+  it("runs one tr.core integ leaf via in-process launcher", async () => {
     const { resolveUiIntegrationTransformerSuite } = await import(
       "../../src/miroir-fwk/4-tests/uiIntegrationTestTransformerSuiteRegistry.js"
     );
-    const { suiteDefinition } = resolveUiIntegrationTransformerSuite("miroirCoreTransformers");
+    const { suiteDefinition } = resolveUiIntegrationTransformerSuite("tr.core");
 
     const result = await runUiIntegrationTestSuiteInNode(
       {
-        suiteKey: "miroirCoreTransformers",
+        suiteKey: "tr.core",
         suiteDefinition,
         profileName: LAUNCH_PROFILE_NAME,
         runTargetMode: "pinned",
         hostMode: "isolated",
         filter: {
           testList: {
-            miroirCoreTransformers: {
+            "tr.core": {
               runtimeTransformerTests: {
                 plus: ["plus with empty args fails"],
               },
@@ -95,7 +95,7 @@ describe("runUiIntegrationTestSuite transformer (B7)", () => {
       vitestExpect,
     );
 
-    expect(result.suiteKey).toBe("miroirCoreTransformers");
+    expect(result.suiteKey).toBe("tr.core");
     expect(result.sessionKind).toBe("transformer");
     expect(result.profileName).toBe(LAUNCH_PROFILE_NAME);
     expect(result.hostMode).toBe("isolated");

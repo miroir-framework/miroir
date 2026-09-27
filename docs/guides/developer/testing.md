@@ -20,9 +20,9 @@ Legacy `UnitTest` and `TransformerTest` entities remain in the deployment for ba
 | Mode | Launcher | Vitest entry | Typical suites |
 |------|----------|-------------|----------------|
 | **Unit** | `testMiroir` | `miroir-core-tests.unit.test.ts` | Catalog unit suites (`--suites`) |
-| **MiroirTest integ** | `testMiroir` | `miroir-core-tests.integ.test.ts` | `miroirCoreTransformers`, etc. via `MIROIR_TEST_*` |
+| **MiroirTest integ** | `testMiroir` | `miroir-core-tests.integ.test.ts` | `tr.core`, etc. via `MIROIR_TEST_*` |
 | **App-stack integ** | `testByFile` | Per-file (`DomainController.integ.*`, storage, view) | DomainController CRUD (Data.CRUD deprecated), PersistenceStoreController (incl. attribute projection), extractors |
-| **Runner / Action integ** | `testMiroir` + `VITE_MIROIR_*` | `miroir-runner-tests.integ.test.ts` | `runner_lend_document`, `runner_return_document`, `domain_controller_data_crud` |
+| **Runner / Action integ** | `testMiroir` + `VITE_MIROIR_*` | `miroir-runner-tests.integ.test.ts` | `runner.lendDocument`, `runner.returnDocument`, `action.domainController.dataCrud` |
 
 The UI always runs **unit** mode.
 
@@ -39,10 +39,10 @@ packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203
 Each file is a `MiroirTestDefinition` with a nested `miroirTestSuite` tree. Leaf kinds:
 
 - `transformerTest` — transformer build/runtime assertions
-- `functionCallTest` — direct function invocation (e.g. `mergePositionBased`, `mustache` helpers)
+- `functionCallTest` — direct function invocation (e.g. `fn.mlsToMls.mergePositionBased`, `fn.mustache.extractDoubleBracePatterns` helpers)
 - `queryTest` — query/extractor runner with fixture
 - `runnerTest` — composite action runner test
-- `miroirTestSuite` — nested grouping (e.g. `adminTransformers`, `miroirCoreTransformers`)
+- `miroirTestSuite` — nested grouping (e.g. `tr.admin.duplicateApplicationModel`, `tr.core`)
 
 Field naming uses `miroirTestType`, `miroirTestLabel`, `miroirTests`.
 
@@ -54,21 +54,21 @@ Field naming uses `miroirTestType`, `miroirTestLabel`, `miroirTests`.
 
 | Name | Example | Used in |
 |------|---------|---------|
-| **Suite key** (`name`) | `runner_return_document` | `--suites`, `MIROIR_TEST_SUITES`, UI |
+| **Suite key** (`name`) | `runner.returnDocument` | `--suites`, `MIROIR_TEST_SUITES`, UI |
 | **Suite `miroirTestLabel`** | `runner.returnDocument` | display; **nested** `--filter` keys only |
 | **Leaf `miroirTestLabel`** | `Return Book Test Composite Action` | `--filter` **values**, UI leaf checkboxes |
 
 ```bash
 # Preferred — argv
-npm run testMiroir -w miroir-core -- --suites mustache --mode unit
+npm run testMiroir -w miroir-core -- --suites fn.mustache.extractDoubleBracePatterns --mode unit
 
 # Filter to specific test labels
-npm run testMiroir -w miroir-core -- --suites mustache --mode unit \
-  --filter '{"mustache":["should extract patterns with double braces"]}'
+npm run testMiroir -w miroir-core -- --suites fn.mustache.extractDoubleBracePatterns --mode unit \
+  --filter '{"fn.mustache.extractDoubleBracePatterns":["should extract patterns with double braces"]}'
 
 # Legacy — env (still supported; argv wins when both are set)
-MIROIR_TEST_SUITES=mustache MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
-MIROIR_TEST_SUITES=alterObject_atPath,EntityPrimaryKey MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
+MIROIR_TEST_SUITES=fn.mustache.extractDoubleBracePatterns MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
+MIROIR_TEST_SUITES=fn.tools.alterObjectAtPath,fn.entityPrimaryKey MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
 MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
 ```
 
@@ -90,20 +90,20 @@ MiroirTest integration runs in `miroir-standalone-app` via `testMiroir`. Prefer 
 
 | Kind | `--suites` | Session | Example |
 |------|------------|---------|---------|
-| **Transformer** | `miroirCoreTransformers` | `IntegrationTestSession` | see below |
-| **Runner** | `runner_lend_document`, `runner_return_document` | `RunnerTestSession` | see below |
+| **Transformer** | `tr.core` | `IntegrationTestSession` | see below |
+| **Runner** | `runner.lendDocument`, `runner.returnDocument` | `RunnerTestSession` | see below |
 
 ```bash
 # Transformer integ
 npm run testMiroir -w miroir-standalone-app -- \
-  --profile emulatedServer-sql --suites miroirCoreTransformers --mode integ
+  --profile emulatedServer-sql --suites tr.core --mode integ
 
 # Runner integ
 npm run testMiroir -w miroir-standalone-app -- \
-  --profile emulatedServer-sql --suites runner_return_document --mode integ
+  --profile emulatedServer-sql --suites runner.returnDocument --mode integ
 
 # Legacy — explicit env (transformer)
-MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
+MIROIR_TEST_SUITES=tr.core MIROIR_TEST_MODE=integ \
   MIROIR_TEST_POSTGRES_HOST=localhost \
   npm run testMiroir -w miroir-standalone-app
 ```
@@ -115,15 +115,15 @@ Invalid configuration prints a full usage message before any test runs. See [ref
 Filter by suite key (`name`) at the catalog root; nested keys stay `miroirTestLabel`:
 
 ```bash
-# Runner — catalog-root key is runner_return_document
+# Runner — catalog-root key is runner.returnDocument
 npm run testMiroir -w miroir-standalone-app -- \
-  --suites runner_return_document --mode integ --profile emulatedServer-sql \
-  --filter '{"runner_return_document":["Return Book Test Composite Action"]}'
+  --suites runner.returnDocument --mode integ --profile emulatedServer-sql \
+  --filter '{"runner.returnDocument":["Return Book Test Composite Action"]}'
 
 # Transformer — nested suite labels
 npm run testMiroir -w miroir-standalone-app -- \
-  --profile emulatedServer-sql --suites miroirCoreTransformers --mode integ \
-  --filter '{"miroirCoreTransformers":{"runtimeTransformerTests":{"plus":["plus with empty args fails"]}}}'
+  --profile emulatedServer-sql --suites tr.core --mode integ \
+  --filter '{"tr.core":{"runtimeTransformerTests":{"plus":["plus with empty args fails"]}}}'
 ```
 
 Details: [Filtering MiroirTest cases](../../reference/testing.md#filtering-miroirtest-cases).
@@ -137,7 +137,7 @@ DomainController, persistence-store, extractor, and UI-launcher Node proofs are 
 ```bash
 # Preferred Data CRUD — MiroirTest action suite
 npm run testMiroir -w miroir-standalone-app -- \
-  --profile emulatedServer-sql --suites domain_controller_data_crud --mode integ
+  --profile emulatedServer-sql --suites action.domainController.dataCrud --mode integ
 
 # Deprecated imperative Data CRUD (parity harness — keep green)
 npm run testByFile -w miroir-standalone-app -- \
@@ -157,7 +157,7 @@ Swap the profile / config file to exercise filesystem, IndexedDB, or MongoDB bac
 
 Common filters: `DomainController.integ`, `PersistenceStoreController.integ`, `ExtractorPersistenceStoreRunner.integ`, `ReportPage.integ`, `BlobEditorField.integ`, `miroir-component-tests`, `MiroirTestDisplayIntegrationLaunch.integ`.
 
-**MlElementEditor component tests.** The schema editor cases are MiroirTests (#286) written as declarative JSON steps (#292): one instance per editor (`MlEnumEditor_ComponentTestSuite`, `MlObjectEditor_ComponentTestSuite`, …), 68 `reactComponentTest` leaves in all. The vitest entry `tests/4_view/miroir-component-tests.unit.test.tsx` runs them over an in-memory `LocalCache`, with no profile:
+**MlElementEditor component tests.** The schema editor cases are MiroirTests (#286) written as declarative JSON steps (#292): one instance per editor (`ui.mlElementEditor.enum`, `ui.mlElementEditor.object`, …), 68 `reactComponentTest` leaves in all. The vitest entry `tests/4_view/miroir-component-tests.unit.test.tsx` runs them over an in-memory `LocalCache`, with no profile:
 
 ```bash
 npm run testByFile -w miroir-standalone-app -- miroir-component-tests
@@ -189,8 +189,8 @@ Full catalogue, config matrix, and architecture comparison with `testMiroir`: [r
 
 | Suite | How to launch integ in the UI |
 |-------|-------------------------------|
-| **`runner_return_document`** | Open suite → profile `emulatedServer-indexedDb` or `realServer-*` → ephemeral/pinned → **Run Integration Tests** |
-| **`miroirCoreTransformers`** | Open suite → profile **`emulatedServer-indexedDb`** → ephemeral/pinned → **Run Integration Tests** |
+| **`runner.returnDocument`** | Open suite → profile `emulatedServer-indexedDb` or `realServer-*` → ephemeral/pinned → **Run Integration Tests** |
+| **`tr.core`** | Open suite → profile **`emulatedServer-indexedDb`** → ephemeral/pinned → **Run Integration Tests** |
 
 CLI equivalents and Node proofs: [reference/testing.md — Running tests in the UI](../../reference/testing.md#running-tests-in-the-ui) and [UI launcher Node proofs](../../reference/testing.md#ui-launcher-node-proofs-testshelpers).
 
@@ -200,8 +200,8 @@ Legacy **Unit Test** / **Transformer Test** reports still exist; prefer **Miroir
 
 ## Writing new tests
 
-1. Add a `MiroirTest` JSON instance in the application's MiroirTest folder (RFC 4122 v4 UUID as filename; set `name` to the suite key).
-2. Optional: export `miroirTest_<name>` from the deployment package `index.ts` if other TypeScript wants a named import.
+1. Add a `MiroirTest` JSON instance in the application's MiroirTest folder (RFC 4122 v4 UUID as filename). Its `name` is the suite key, `<kind>.<subject>[.<variant>]` with kind `fn`, `query`, `tr`, `action`, `runner` or `ui`; see [Names and descriptions](../../reference/testing.md#names-and-descriptions).
+2. Optional: export `miroirTest_<name with . replaced by _>` from the deployment package `index.ts` if other TypeScript wants a named import.
 3. Rebuild that package if you added a named export: `npm run build -w miroir-test-app_deployment-miroir`.
 4. Validate schema: run `tests/4_services/miroirTest.schema.unit.test.ts`.
 5. Run: `npm run testMiroir -w miroir-core -- --suites myNewSuite --mode unit`. TypeScript files that have no MiroirTest entity are PLATFORM — launch those with `testByFile`.

@@ -1,5 +1,5 @@
 import { inferIntegrationSessionKind, type MiroirTestDefinition, type MiroirTestSuite } from "miroir-core";
-import { miroirTest_miroirCoreTransformers } from "miroir-test-app_deployment-miroir";
+import { miroirTest_tr_core } from "miroir-test-app_deployment-miroir";
 
 export type UiIntegrationTransformerSuiteEntry = {
   suiteDefinition: MiroirTestSuite;
@@ -13,8 +13,8 @@ export const UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY_LEGACY: Record<
   string,
   UiIntegrationTransformerSuiteEntry
 > = {
-  miroirCoreTransformers: {
-    suiteDefinition: (miroirTest_miroirCoreTransformers as MiroirTestDefinition)
+  "tr.core": {
+    suiteDefinition: (miroirTest_tr_core as MiroirTestDefinition)
       .definition as MiroirTestSuite,
   },
 };

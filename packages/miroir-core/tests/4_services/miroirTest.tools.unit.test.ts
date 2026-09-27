@@ -39,7 +39,7 @@ describe("runMiroirTest (Phase 1)", () => {
     };
     await runMiroirTest(
       vitest,
-      ["mustache"],
+      ["fn.mustache.extractDoubleBracePatterns"],
       undefined,
       {
         miroirTestType: "functionCallTest",
@@ -69,7 +69,7 @@ describe("runMiroirTest (Phase 1)", () => {
     await expect(
       runMiroirTest(
         vitest,
-        ["mustache"],
+        ["fn.mustache.extractDoubleBracePatterns"],
         undefined,
         {
           miroirTestType: "functionCallTest",

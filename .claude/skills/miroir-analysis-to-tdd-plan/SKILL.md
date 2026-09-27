@@ -88,7 +88,7 @@ Use [plan-template.md](plan-template.md). Required sections, in order:
 3. **Related links** — issue URL, `analysis.md`, prerequisite plans, working branch.
 4. **Progress summary** — `| Slice | Title | Status | Primary proof |` table, updated as slices land.
 5. **Locked implementation defaults** — the analysis's decision record copied as the plan's binding defaults; deviations discovered during implementation are recorded in the slice's *Realization* (see #229).
-6. **Allocated UUIDs / keys** — every new model element's uuid and every MiroirTest suite key, allocated up front.
+6. **Allocated UUIDs / keys** — every new model element's uuid and every MiroirTest suite key (`<kind>.<subject>[.<variant>]`, see `docs/reference/testing.md` "Names and descriptions"), allocated up front.
 7. **Test execution conventions** — command table (`testMiroir`, `testByFile`, `modelValidation`, schema rebuild, `tsc` per touched package).
 8. **Slice 0** — characterization (when touching existing behavior).
 9. **Slices 1…N** — each: `**Status:**` line / Goal / **RED** (exact test file or suite + behavior assertions) / **GREEN** (minimal implementation notes) / **Refactor checkpoint** / **Validation** (exact commands — mandatory). On success: append **Realization** (what was done, deviations, problems met & solved) and flip Status to ✅ DONE. No `**Commit:**` lines — see Execution model.

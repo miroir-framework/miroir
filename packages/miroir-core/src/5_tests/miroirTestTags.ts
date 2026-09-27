@@ -5,7 +5,36 @@
 import type {
   Entity,
   MiroirTestDefinition,
+  MiroirTestSuite,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { classifyApplicationMiroirTestCliLaunchKind } from "./applicationMiroirTestCatalog.js";
+import { walkMiroirTestLeaves } from "./inferIntegrationSessionKind.js";
+
+/** #316: the tags stating the modes a suite supports, in this order on every instance. */
+export const MIROIR_TEST_MODE_TAGS = ["unit", "integ", "ui"] as const;
+export type MiroirTestModeTag = (typeof MIROIR_TEST_MODE_TAGS)[number];
+
+/**
+ * #316: the mode tags a suite must carry, from what it can run.
+ * `ui` for React component suites (run in jsdom), otherwise `unit` and / or `integ`
+ * from its CLI launch kind.
+ */
+export function miroirTestSuiteModeTags(suite: MiroirTestSuite): MiroirTestModeTag[] {
+  if (walkMiroirTestLeaves(suite).some((leaf) => leaf.miroirTestType === "reactComponentTest")) {
+    return ["ui"];
+  }
+  switch (classifyApplicationMiroirTestCliLaunchKind(suite)) {
+    case "unit":
+      return ["unit"];
+    case "mixed-unit-transformer":
+      return ["unit", "integ"];
+    case "runner-integration":
+    case "transformer-integration":
+      return ["integ"];
+    default:
+      return [];
+  }
+}
 
 /** The tags of a MiroirTest instance, `[]` when it has none. */
 export function getMiroirTestInstanceTags(instance: MiroirTestDefinition): string[] {

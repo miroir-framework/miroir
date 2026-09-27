@@ -2,17 +2,18 @@
   "uuid": "de517cd6-31a8-46d2-ac09-3a5162b630a7",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "MlUnionEditor_ComponentTestSuite",
+  "name": "ui.mlElementEditor.union",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Issues #286, #292: MlUnionEditor React component tests (MlElementEditor), one MiroirTest instance per editor. Edited by hand.",
+  "description": "MlElementEditor on unions: renders the value of the matching branch, switches branch through the type selector, and places the selector for object values.",
   "tags": [
+    "ui",
     "editor"
   ],
   "issue": "286",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "MlUnionEditor_ComponentTestSuite",
+    "miroirTestLabel": "ui.mlElementEditor.union",
     "miroirTests": [
       {
         "miroirTestType": "reactComponentTestSuite",

@@ -93,7 +93,7 @@ Failures include `typePath`, optional `transformerPath` / `innerError` for neste
 
 | Purpose | Command |
 |---------|---------|
-| Full MiroirTest suite (37 cases) | `npm run testMiroir -w miroir-core -- --suites transformerResultSchema --mode unit` |
+| Full MiroirTest suite (37 cases) | `npm run testMiroir -w miroir-core -- --suites fn.transformer.resultSchema --mode unit` |
 | Failure inventory (PLATFORM, 41 cases) | `RUN_TEST=Transformer_ResultSchema.failures npm run testByFile -w miroir-core -- Transformer_ResultSchema.failures` |
 | Nonreg step | `npm run nonreg -- --only unit-transformerResultSchema` |
 

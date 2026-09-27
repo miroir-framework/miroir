@@ -21,13 +21,13 @@ RUN_TEST=mlsToMls_Summary.unit.test npm run testByFile -w miroir-core mlsToMls_S
 RUN_TEST=resolveConditionalSchema.test npm run testByFile -w miroir-core -- 'resolveConditionalSchema.test'
 
 # Integration (Postgres) — miroir-standalone-app (not miroir-core)
-npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
+npm run testMiroir -w miroir-standalone-app -- --suites tr.core --mode integration
 
 # new core transformer tests
 # Integration (Postgres)
-MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ MIROIR_TEST_POSTGRES_HOST=192.168.1.160 npm run testMiroir -w miroir-standalone-app
+MIROIR_TEST_SUITES=tr.core MIROIR_TEST_MODE=integ MIROIR_TEST_POSTGRES_HOST=192.168.1.160 npm run testMiroir -w miroir-standalone-app
 # Unit (no Postgres)
-MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
+MIROIR_TEST_SUITES=tr.core MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
 
 # go back to the original directory
 cd -

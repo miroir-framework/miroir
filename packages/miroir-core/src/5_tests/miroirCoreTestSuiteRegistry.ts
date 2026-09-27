@@ -4,44 +4,44 @@ export type MiroirTestSuiteLoader = () => Promise<{ default: MiroirTestSuite }>;
 
 /** @deprecated Use `listCliUnitSuiteKeys(loadApplicationMiroirTestCatalog())`. Last hardcoded snapshot. */
 export const MIROIR_TEST_SUITE_REGISTRY_NAMES = [
-  "adminTransformers",
-  "alterObject",
-  "ansiColumnsToMlSchema",
-  "buildAnyKeyMap",
-  "defaultValueForMLSchema",
-  "EntityPrimaryKey",
-  "getAttributeTypesFromMlSchema",
-  "mlObjectFlatten",
-  "MlSchemaReferencesList",
-  "MlSchemaReferencesSet",
-  "mlsToCopilotKitParameter",
-  "mlsToJsonSchema",
-  "mlsToMls_Summary",
-  "mlsTransitiveDependencySet",
-  "mlsTypeCheck",
-  "mlUnion_RecursiveUnfold",
-  "mlUnionResolvedTypeForArray",
-  "mlUnionResolvedTypeForObject",
-  "localizeMlSchemaReferenceContext",
-  "menu",
-  "mergePositionBased",
-  "metaModelTransformers",
-  "miroirCoreTransformers",
-  "modelUpdates",
-  "mustache",
-  "pilot_transformer_plus",
-  "queries_library",
-  "resolveConditionalSchema",
-  "resolveQueryTemplates",
-  "resolveSchemaReferenceInContext",
-  "selectUnionBranchFromDiscriminator",
-  "tools",
-  "transformerInterfaceCheck",
-  "transformerResultSchema",
-  "unfoldSchemaOnce",
-  "unionArrayChoices",
-  "unionObjectChoices",
-  "virtualAttributes",
+  "tr.admin.duplicateApplicationModel",
+  "fn.tools.alterObjectAtPath",
+  "fn.ansiColumnsToMlSchema",
+  "fn.mlsTypeCheck.buildAnyKeyMap",
+  "tr.defaultValueForMlSchema",
+  "fn.entityPrimaryKey",
+  "fn.postgres.attributeTypesFromMlSchema",
+  "fn.mlObjectFlatten",
+  "fn.mlSchemaReferences.list",
+  "fn.mlSchemaReferences.set",
+  "fn.mlsToCopilotKitParameter",
+  "fn.mlsToJsonSchema",
+  "fn.mlsToMls.summary",
+  "fn.mlSchemaReferences.transitiveDependencySet",
+  "tr.mlsTypeCheck",
+  "fn.mlUnion.recursivelyUnfold",
+  "fn.mlsTypeCheck.unionResolvedTypeForArray",
+  "fn.mlsTypeCheck.unionResolvedTypeForObject",
+  "fn.mlsUnfoldSchemaOnce.localizeReferenceContext",
+  "tr.menuBuild",
+  "fn.mlsToMls.mergePositionBased",
+  "tr.metaModel.extractAttributes",
+  "tr.core",
+  "fn.modelUpdate",
+  "fn.mustache.extractDoubleBracePatterns",
+  "tr.resolveConditionalSchema.build",
+  "query.library.instances",
+  "tr.resolveConditionalSchema",
+  "fn.templates.resolveQueryTemplates",
+  "tr.resolveSchemaReferenceInContext",
+  "fn.mlsTypeCheck.selectUnionBranchFromDiscriminator",
+  "fn.tools.pathsAndMerges",
+  "fn.transformer.interfaceCheck",
+  "fn.transformer.resultSchema",
+  "tr.unfoldSchemaOnce",
+  "fn.mlsTypeCheck.unionArrayChoices",
+  "fn.mlsTypeCheck.unionObjectChoices",
+  "query.virtualAttributes",
 ] as const;
 
 export type MiroirTestSuiteKey = (typeof MIROIR_TEST_SUITE_REGISTRY_NAMES)[number];
@@ -52,16 +52,9 @@ export const MIROIR_TEST_SUITE_REGISTRY: Record<string, MiroirTestSuiteLoader> =
   return MIROIR_TEST_SUITE_REGISTRY_NAMES.reduce(
     (acc, name) => {
       acc[name] = async () => {
-        const instance =
-          name === "alterObject"
-            ? deployment.miroirTest_alterObject_atPath
-            : name === "mlsTypeCheck"
-              ? deployment.miroirTest_mlsTypeCheck_TransformerTestSuite
-              : name === "menu"
-                ? deployment.miroirTest_menu_build
-                : name === "metaModelTransformers"
-                  ? deployment.miroirTest_metaModelTransformersTest
-                  : deployment[`miroirTest_${name}`];
+        const instance = (deployment as unknown as Record<string, { definition: unknown }>)[
+          `miroirTest_${name.replaceAll(".", "_")}`
+        ];
         return { default: instance.definition as MiroirTestSuite };
       };
       return acc;

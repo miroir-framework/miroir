@@ -20,12 +20,12 @@ describe("parseMiroirTestCliConfig (Phase 2)", () => {
   it("reads suite keys and mode from env", () => {
     const config = parseMiroirTestCliConfig(
       {
-        MIROIR_TEST_SUITES: "mergePositionBased,tools",
+        MIROIR_TEST_SUITES: "fn.mlsToMls.mergePositionBased,fn.tools.pathsAndMerges",
         MIROIR_TEST_MODE: "unit",
       },
       [],
     );
-    expect(config.suiteKeys).toEqual(["mergePositionBased", "tools"]);
+    expect(config.suiteKeys).toEqual(["fn.mlsToMls.mergePositionBased", "fn.tools.pathsAndMerges"]);
     expect(config.executionMode).toBe("unit");
     expect(miroirCoreTestVitestEntry(config.executionMode)).toBe("miroir-core-tests.unit.test");
   });
@@ -36,9 +36,9 @@ describe("parseMiroirTestCliConfig (Phase 2)", () => {
         MIROIR_TEST_SUITES: "legacy_suite",
         MIROIR_TEST_MODE: "unit",
       },
-      ["--suites", "mergePositionBased", "--mode", "integration"],
+      ["--suites", "fn.mlsToMls.mergePositionBased", "--mode", "integration"],
     );
-    expect(config.suiteKeys).toEqual(["mergePositionBased"]);
+    expect(config.suiteKeys).toEqual(["fn.mlsToMls.mergePositionBased"]);
     expect(config.executionMode).toBe("integration");
     expect(miroirCoreTestVitestEntry(config.executionMode)).toBe("miroir-core-tests.integ.test");
   });
@@ -46,22 +46,22 @@ describe("parseMiroirTestCliConfig (Phase 2)", () => {
   it("parses filter JSON from env and argv (normalizes shorthand to testList)", () => {
     const fromEnv = parseMiroirTestCliConfig(
       {
-        MIROIR_TEST_FILTER: '{"mergePositionBased":["merges two undefineds into undefined"]}',
+        MIROIR_TEST_FILTER: '{"fn.mlsToMls.mergePositionBased":["merges two undefineds into undefined"]}',
       },
       [],
     );
     expect(fromEnv.filter).toEqual({
       testList: {
-        mergePositionBased: ["merges two undefineds into undefined"],
+        "fn.mlsToMls.mergePositionBased": ["merges two undefineds into undefined"],
       },
     });
 
     const fromArgv = parseMiroirTestCliConfig(
       {},
-      ["--filter", '{"mustache":["case 1"]}'],
+      ["--filter", '{"fn.mustache.extractDoubleBracePatterns":["case 1"]}'],
     );
     expect(fromArgv.filter).toEqual({
-      testList: { mustache: ["case 1"] },
+      testList: { "fn.mustache.extractDoubleBracePatterns": ["case 1"] },
     });
   });
 
@@ -99,7 +99,7 @@ describe("parseMiroirTestCliConfig (Phase 2)", () => {
     const all = listMiroirTestSuiteKeys();
     expect(resolveMiroirTestSuiteKeys([])).toEqual(all);
     expect(resolveMiroirTestSuiteKeys(["*"])).toEqual(all);
-    expect(resolveMiroirTestSuiteKeys(["mustache"])).toEqual(["mustache"]);
+    expect(resolveMiroirTestSuiteKeys(["fn.mustache.extractDoubleBracePatterns"])).toEqual(["fn.mustache.extractDoubleBracePatterns"]);
   });
 
   it("parseMiroirTestCliArgs supports short flags", () => {
@@ -114,18 +114,18 @@ describe("parseMiroirTestCliConfig (Phase 2)", () => {
 
   it("miroirTestCliConfigToEnv round-trips core fields", () => {
     const env = miroirTestCliConfigToEnv({
-      suiteKeys: ["mergePositionBased"],
+      suiteKeys: ["fn.mlsToMls.mergePositionBased"],
       executionMode: "integration",
       filter: {
         testList: {
-          mergePositionBased: ["merges two undefineds into undefined"],
+          "fn.mlsToMls.mergePositionBased": ["merges two undefineds into undefined"],
         },
       },
     });
-    expect(env.MIROIR_TEST_SUITES).toBe("mergePositionBased");
+    expect(env.MIROIR_TEST_SUITES).toBe("fn.mlsToMls.mergePositionBased");
     expect(env.MIROIR_TEST_MODE).toBe("integration");
     expect(env.MIROIR_TEST_FILTER).toBe(
-      '{"testList":{"mergePositionBased":["merges two undefineds into undefined"]}}',
+      '{"testList":{"fn.mlsToMls.mergePositionBased":["merges two undefineds into undefined"]}}',
     );
   });
 

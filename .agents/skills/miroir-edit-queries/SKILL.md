@@ -30,8 +30,8 @@ There are two main query types:
 **BEFORE starting any query work, verify current test state to avoid investigating unrelated issues:**
 
 ```bash
-npm run testMiroir -w miroir-core -- --suites queries_library,resolveQueryTemplates --mode unit
-npm run testMiroir -w miroir-standalone-app -- --suites queries_library --mode integration
+npm run testMiroir -w miroir-core -- --suites query.library.instances,fn.templates.resolveQueryTemplates --mode unit
+npm run testMiroir -w miroir-standalone-app -- --suites query.library.instances --mode integration
 ```
 
 If tests are failing, inform the user of the baseline state before proceeding.
@@ -44,7 +44,7 @@ Query tests are **MiroirTest** instances (see `docs/reference/testing.md`), not 
 
 | Suite (`--suites` name) | File | Leaves |
 |---|---|---|
-| `queries_library` | `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/a7a74c51-f24e-43d6-bd62-ba3ebcded97d.json` | `queryTest` |
+| `query.library.instances` | `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/a7a74c51-f24e-43d6-bd62-ba3ebcded97d.json` | `queryTest` |
 | `resolveQueryTemplates` | `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/40fd4dae-037c-4b1b-ad33-204d15e90dba.json` | template resolution |
 
 After editing a MiroirTest JSON file, rebuild the deployment package before running:
@@ -57,14 +57,14 @@ npm run build -w miroir-test-app_deployment-miroir
 
 ```bash
 # Unit (in-memory, fast)
-npm run testMiroir -w miroir-core -- --suites queries_library --mode unit
+npm run testMiroir -w miroir-core -- --suites query.library.instances --mode unit
 
 # Integration (runs in miroir-standalone-app against a store profile)
-npm run testMiroir -w miroir-standalone-app -- --suites queries_library --mode integration
+npm run testMiroir -w miroir-standalone-app -- --suites query.library.instances --mode integration
 
 # Only some leaves: catalog-root key = suite name, values = miroirTestLabel
-npm run testMiroir -w miroir-core -- --suites queries_library --mode unit \
-  --filter '{"queries_library":["select Authors with values filter (multiple values) (extractorInstancesByEntity)"]}'
+npm run testMiroir -w miroir-core -- --suites query.library.instances --mode unit \
+  --filter '{"query.library.instances":["select Authors with values filter (multiple values) (extractorInstancesByEntity)"]}'
 ```
 
 Store-level PLATFORM tests (no MiroirTest entity) remain vitest files, run by file name:
@@ -79,7 +79,7 @@ Store-level PLATFORM tests (no MiroirTest entity) remain vitest files, run by fi
 Run the pre-flight commands above.
 
 ### Step 2: Write the Test First
-Add a `queryTest` leaf to the `queries_library` suite file. Shape of a leaf:
+Add a `queryTest` leaf to the `query.library.instances` suite file. Shape of a leaf:
 
 ```json
 {
@@ -104,8 +104,8 @@ Copy an existing leaf close to what you need; the suite file shows the templated
 ### Step 3: Run the Test (Expect Failure)
 ```bash
 npm run build -w miroir-test-app_deployment-miroir
-npm run testMiroir -w miroir-core -- --suites queries_library --mode unit \
-  --filter '{"queries_library":["my new query test"]}'
+npm run testMiroir -w miroir-core -- --suites query.library.instances --mode unit \
+  --filter '{"query.library.instances":["my new query test"]}'
 ```
 
 ### Step 4: Implement/Fix the Query
@@ -334,7 +334,7 @@ runtimeTransformers: {
 
 | Purpose | Path |
 |---------|------|
-| Query tests (MiroirTest `queries_library`) | `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/a7a74c51-f24e-43d6-bd62-ba3ebcded97d.json` |
+| Query tests (MiroirTest `query.library.instances`) | `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/a7a74c51-f24e-43d6-bd62-ba3ebcded97d.json` |
 | Template resolution tests (MiroirTest `resolveQueryTemplates`) | `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/40fd4dae-037c-4b1b-ad33-204d15e90dba.json` |
 | Extractor integration tests | `packages/miroir-standalone-app/tests/4_storage/ExtractorPersistenceStoreRunner.integ.test.tsx` |
 | Template integration tests | `packages/miroir-standalone-app/tests/4_storage/ExtractorTemplatePersistenceStoreRunner.integ.test.tsx` |
@@ -509,7 +509,7 @@ Commonly used UUIDs from the Library example application:
 ### Enable Debug Logging
 
 ```bash
-VITE_MIROIR_LOG_CONFIG_FILENAME=scope-query npm run testMiroir -w miroir-core -- --suites queries_library --mode unit
+VITE_MIROIR_LOG_CONFIG_FILENAME=scope-query npm run testMiroir -w miroir-core -- --suites query.library.instances --mode unit
 ```
 
 ### Check Query Resolution
@@ -566,7 +566,7 @@ Before submitting query changes:
 - [ ] Test case(s) written first (TDD)
 - [ ] Both `queryTemplate` and `query` provided (when applicable)
 - [ ] `assertions` defined with expected results
-- [ ] Unit tests pass: `npm run testMiroir -w miroir-core -- --suites queries_library --mode unit`
+- [ ] Unit tests pass: `npm run testMiroir -w miroir-core -- --suites query.library.instances --mode unit`
 - [ ] Query template resolution tested (if using templates)
 - [ ] Integration tests pass on at least one storage backend
 
@@ -739,6 +739,6 @@ applyTransformer: {
 
 - See [implementation.md](implementation.md) for detailed query execution architecture
 - See [miroir-edit-transformers](../miroir-edit-transformers/SKILL.md) for transformer work used inside queries
-- See existing leaves in the `queries_library` suite for more patterns
+- See existing leaves in the `query.library.instances` suite for more patterns
 - Review the `resolveQueryTemplates` suite for template resolution examples
 - Check [ExtractorByEntityReturningObjectListTools.md](../../packages/miroir-core/src/2_domain/ExtractorByEntityReturningObjectListTools.md) for filter/orderBy details

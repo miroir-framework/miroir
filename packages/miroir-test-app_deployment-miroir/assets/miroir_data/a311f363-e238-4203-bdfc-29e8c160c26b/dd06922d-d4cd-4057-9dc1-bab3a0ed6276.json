@@ -2,18 +2,19 @@
   "uuid": "dd06922d-d4cd-4057-9dc1-bab3a0ed6276",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "unfoldSchemaOnce",
+  "name": "tr.unfoldSchemaOnce",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Migrated from TransformerTest e8b5d1a2-9473-4f6c-b2e8-7f8a5c6d9e0f (Feature #196 Phase 5)",
+  "description": "unfoldSchemaOnce transformer on literal, reference, object, array and recursive schemas.",
   "tags": [
+    "unit",
     "ml-schema",
     "ml-reference"
   ],
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "unfoldSchemaOnce",
+    "miroirTestLabel": "tr.unfoldSchemaOnce",
     "miroirTests": [
       {
         "miroirTestType": "transformerTest",

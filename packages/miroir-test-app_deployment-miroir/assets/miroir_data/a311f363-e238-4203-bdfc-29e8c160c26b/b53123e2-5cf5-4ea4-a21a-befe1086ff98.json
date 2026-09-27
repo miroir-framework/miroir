@@ -2,18 +2,19 @@
   "uuid": "b53123e2-5cf5-4ea4-a21a-befe1086ff98",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "mlsToMls_Summary",
+  "name": "fn.mlsToMls.summary",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Migrated from UnitTest bb95b2da-3ca9-4149-be5f-d3da9c7deef1 (Feature #196 Phase 5)",
+  "description": "mlsToMls_Summary stripping of non-essential tag fields.",
   "tags": [
+    "unit",
     "ml-schema",
     "ml-conversion"
   ],
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "mls.mlsToMls_Summary",
+    "miroirTestLabel": "fn.mlsToMls.summary",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",

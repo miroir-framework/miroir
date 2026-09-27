@@ -42,7 +42,7 @@ describe("testMiroirLauncher profile (Gap D1)", () => {
       "--profile",
       "emulatedServer-sql",
       "--suites",
-      "runner_return_document",
+      "runner.returnDocument",
       "--mode",
       "integ",
     ]);
@@ -62,7 +62,7 @@ describe("testMiroirLauncher profile (Gap D1)", () => {
       "--profile",
       "emulatedServer-sql",
       "--suites",
-      "runner_return_document",
+      "runner.returnDocument",
       "--mode",
       "integ",
     ]);
@@ -79,7 +79,7 @@ describe("testMiroirLauncher profile (Gap D1)", () => {
       "--profile",
       "emulatedServer-sql",
       "--suites",
-      "miroirCoreTransformers",
+      "tr.core",
       "--mode",
       "integ",
     ]);
@@ -105,7 +105,7 @@ describe("testMiroirLauncher profile (Gap D1)", () => {
       "--profile",
       "emulatedServer-sql",
       "--suites",
-      "runner_return_document",
+      "runner.returnDocument",
       "--mode",
       "integ",
     ]);
@@ -121,7 +121,7 @@ describe("testMiroirLauncher profile (Gap D1)", () => {
 
     const { spawnEnv } = resolveVitestEntry(process.env, [
       "--suites",
-      "runner_return_document",
+      "runner.returnDocument",
       "--mode",
       "integ",
     ]);
@@ -133,10 +133,10 @@ describe("testMiroirLauncher profile (Gap D1)", () => {
 
 describe("testMiroirLauncher shared runner (#318)", () => {
   it("routes runner suites to the shared entry only with --shared", () => {
-    const legacy = resolveVitestEntry({}, ["--suites", "runner_return_document", "--mode", "integ"]);
+    const legacy = resolveVitestEntry({}, ["--suites", "runner.returnDocument", "--mode", "integ"]);
     const shared = resolveVitestEntry({}, [
       "--suites",
-      "runner_return_document,domain_controller_data_crud",
+      "runner.returnDocument,action.domainController.dataCrud",
       "--mode",
       "integ",
       "--shared",
@@ -144,7 +144,7 @@ describe("testMiroirLauncher shared runner (#318)", () => {
 
     expect(legacy.vitestEntry).toBe("miroir-runner-tests.integ.test");
     expect(shared.vitestEntry).toBe("miroir-runner-tests-shared.integ.test");
-    expect(shared.spawnEnv.MIROIR_TEST_SUITES).toBe("runner_return_document,domain_controller_data_crud");
+    expect(shared.spawnEnv.MIROIR_TEST_SUITES).toBe("runner.returnDocument,action.domainController.dataCrud");
   });
 
   it("forwards only reporter and outputFile arguments to vitest", () => {

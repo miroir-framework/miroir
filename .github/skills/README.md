@@ -137,16 +137,16 @@ Comprehensive guide explaining:
 
 ## Testing Commands
 
-Transformer skills use **MiroirTest** suites (suite key `miroirCoreTransformers` for the main transformer catalog):
+Transformer skills use **MiroirTest** suites (suite key `tr.core` for the main transformer catalog):
 
 ```bash
 # Preferred — MiroirTest CLI
-npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
-npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode integration
+npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
+npm run testMiroir -w miroir-core -- --suites tr.core --mode integration
 
 # Per-file vitest (legacy selective gate)
-npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
-npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
+npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
+npm run testMiroir -w miroir-standalone-app -- --suites tr.core --mode integration
 
 # devBuild (only for library transformers)
 npm run devBuild -w miroir-core

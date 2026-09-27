@@ -2,17 +2,18 @@
   "uuid": "a7a74c51-f24e-43d6-bd62-ba3ebcded97d",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "queries_library",
+  "name": "query.library.instances",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Phase 3c pilot — library query-runner tests migrated from unitTest_suite_queries_library",
+  "description": "Library queries run against the domain state, including their error cases.",
   "tags": [
+    "unit",
     "query"
   ],
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "queries.library",
+    "miroirTestLabel": "query.library.instances",
     "miroirTests": [
       {
         "miroirTestType": "queryTest",

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { miroirTest_runner_return_document } from "miroir-test-app_deployment-library";
-import { miroirTest_miroirCoreTransformers } from "miroir-test-app_deployment-miroir";
+import { miroirTest_runner_returnDocument } from "miroir-test-app_deployment-library";
+import { miroirTest_tr_core } from "miroir-test-app_deployment-miroir";
 import {
   classifyMiroirTestSuiteExecutionCapabilities,
   inferIntegrationSessionKind,
@@ -21,8 +21,8 @@ function suiteDefinition(instance: { definition: unknown }): MiroirTestSuite {
 describe("uiIntegrationTestLauncherTypes (B0)", () => {
   it("accepts a minimal run request shape", () => {
     const request: UiIntegrationTestRunRequest = {
-      suiteKey: "runner_return_document",
-      suiteDefinition: suiteDefinition(miroirTest_runner_return_document),
+      suiteKey: "runner.returnDocument",
+      suiteDefinition: suiteDefinition(miroirTest_runner_returnDocument),
       profileName: "emulatedServer-sql",
       runTargetMode: "ephemeral",
       hostMode: "isolated",
@@ -33,7 +33,7 @@ describe("uiIntegrationTestLauncherTypes (B0)", () => {
 
   it("accepts a minimal run result shape", () => {
     const result: UiIntegrationTestRunResult = {
-      suiteKey: "runner_return_document",
+      suiteKey: "runner.returnDocument",
       sessionKind: "runner",
       runTarget: {
         applicationUuid: "5af03c98-fe5e-490b-b08f-e1230971c57f",
@@ -63,21 +63,21 @@ describe("uiIntegrationTestLauncherTypes (B0)", () => {
 });
 
 describe("inferIntegrationSessionKind via miroir-core (B0 smoke)", () => {
-  it("routes runner_return_document and miroirCoreTransformers", () => {
-    expect(inferIntegrationSessionKind(suiteDefinition(miroirTest_runner_return_document))).toBe("runner");
-    expect(inferIntegrationSessionKind(suiteDefinition(miroirTest_miroirCoreTransformers))).toBe(
+  it("routes runner.returnDocument and tr.core", () => {
+    expect(inferIntegrationSessionKind(suiteDefinition(miroirTest_runner_returnDocument))).toBe("runner");
+    expect(inferIntegrationSessionKind(suiteDefinition(miroirTest_tr_core))).toBe(
       "transformer",
     );
   });
 
   it("classifies execution capabilities for UI badges", () => {
     expect(
-      classifyMiroirTestSuiteExecutionCapabilities(suiteDefinition(miroirTest_runner_return_document))
+      classifyMiroirTestSuiteExecutionCapabilities(suiteDefinition(miroirTest_runner_returnDocument))
         .uiExecutionMode,
     ).toBe("integration");
     expect(
       classifyMiroirTestSuiteExecutionCapabilities(
-        suiteDefinition(miroirTest_miroirCoreTransformers),
+        suiteDefinition(miroirTest_tr_core),
       ).uiExecutionMode,
     ).toBe("mixed");
   });

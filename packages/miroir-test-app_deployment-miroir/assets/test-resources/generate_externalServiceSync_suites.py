@@ -93,13 +93,13 @@ def main() -> None:
         "uuid": "f4e5dde0-3dba-493b-a208-04494dbbb2f5",
         "parentName": "MiroirTest",
         "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-        "name": "externalServiceSync",
+        "name": "tr.syncExternalServiceSchema",
         "selfApplication": MIROIR_APP,
         "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
         "description": "Slice 6 unit transformerTest for syncExternalServiceSchema. openApiDocument is the committed Spotify get-playlist excerpt (assets/test-resources/spotifyOpenApiExcerpt.get-playlist.json), passed as transformerParams.",
         "definition": {
             "miroirTestType": "miroirTestSuite",
-            "miroirTestLabel": "externalServiceSync",
+            "miroirTestLabel": "tr.syncExternalServiceSchema",
             "miroirTests": [
                 transformer_leaf(
                     "sync get-playlist produces compositeActionSequence with operation and SpotifyPlaylist entity",
@@ -334,13 +334,13 @@ def main() -> None:
         "uuid": "394242e7-6443-41b8-b061-9bf2bcf06f17",
         "parentName": "MiroirTest",
         "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-        "name": "externalServiceSyncExecute",
+        "name": "action.scenario.externalServiceSync",
         "selfApplication": MIROIR_APP,
         "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-        "description": "Slice 6 actionTest: execute the generated compositeActionSequence on the Library playfield. Proves landing only — no HTTP.",
+        "description": "External service sync composite action: lands the service operations without creating Entities, then a re-sync upserts the Entity mlSchema from the response schema.",
         "definition": {
             "miroirTestType": "miroirTestSuite",
-            "miroirTestLabel": "externalServiceSyncExecute",
+            "miroirTestLabel": "action.scenario.externalServiceSync",
             "runTarget": {
                 "applicationUuid": LIBRARY_APP,
                 "applicationName": "Library",
@@ -544,7 +544,7 @@ def main() -> None:
         json.dumps(integ_suite, indent=2) + "\n",
         encoding="utf-8",
     )
-    print("wrote externalServiceSync and externalServiceSyncExecute suites")
+    print("wrote externalServiceSync and action.scenario.externalServiceSync suites")
 
 
 if __name__ == "__main__":

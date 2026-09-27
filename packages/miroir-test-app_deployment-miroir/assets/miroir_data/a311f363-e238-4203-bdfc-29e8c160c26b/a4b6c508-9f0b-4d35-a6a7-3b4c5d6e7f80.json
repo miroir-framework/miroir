@@ -4,9 +4,10 @@
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "name": "domain_controller_non_uuid_pk_data_crud",
-  "description": "DomainController non-UUID PK Data CRUD action integration tests (Feature 197). Owned by the Miroir meta-application; Library is only the runTarget/testbed. Lifecycle: session testBedModelAndInstances (TestEntityCodeNumber, idAttribute code).",
+  "name": "action.domainController.dataCrud.nonUuidPk",
+  "description": "Instance create, read, update and delete through DomainController actions on an Entity whose primary key is a non-uuid code.",
   "tags": [
+    "integ",
     "domain-controller",
     "data",
     "primary-key"
@@ -14,7 +15,7 @@
   "issue": "197",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "domainController.nonUuidPK.data.crud",
+    "miroirTestLabel": "action.domainController.dataCrud.nonUuidPk",
     "runTarget": {
       "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
       "applicationName": "Library",

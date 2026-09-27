@@ -11,22 +11,22 @@ export const MIROIR_RUNNER_TEST_VITEST_ENTRY = "miroir-runner-tests.integ.test" 
  * Last hardcoded snapshot of runner / action suite keys.
  */
 export const MIROIR_RUNNER_TEST_SUITE_REGISTRY_NAMES = [
-  "runner_lend_document",
-  "runner_return_document",
-  "runner_create_entity",
-  "runner_drop_entity",
-  "domain_controller_data_crud",
-  "domain_controller_model_crud",
-  "domain_controller_composite_pk_crud",
-  "domain_controller_non_uuid_pk_model_crud",
-  "domain_controller_non_uuid_pk_data_crud",
-  "domain_controller_no_parent_uuid_crud",
-  "domain_controller_model_undo_redo",
-  "domain_controller_application_version_freeze",
-  "evolutionTraceWP1",
-  "runner_freeze_application_version",
-  "runner_mcp_get_instances",
-  "runner_mcp_lend_document",
+  "runner.lendDocument",
+  "runner.returnDocument",
+  "runner.createEntity",
+  "runner.dropEntity",
+  "action.domainController.dataCrud",
+  "action.domainController.modelCrud",
+  "action.domainController.dataCrud.compositePk",
+  "action.domainController.modelCrud.nonUuidPk",
+  "action.domainController.dataCrud.nonUuidPk",
+  "action.domainController.dataCrud.noParentUuid",
+  "action.domainController.modelUndoRedo",
+  "action.domainController.freezeApplicationVersion",
+  "action.scenario.evolutionTrace",
+  "runner.freezeApplicationVersion",
+  "runner.mcp.getInstances",
+  "runner.mcp.lendDocument",
 ] as const;
 
 function listRunnerTestSuiteKeys(): string[] {

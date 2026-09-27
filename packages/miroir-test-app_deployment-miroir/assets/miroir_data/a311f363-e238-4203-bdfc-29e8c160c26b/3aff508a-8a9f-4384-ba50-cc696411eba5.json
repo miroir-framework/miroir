@@ -2,17 +2,18 @@
   "uuid": "3aff508a-8a9f-4384-ba50-cc696411eba5",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "mlsTypeCheck_TransformerTestSuite",
+  "name": "tr.mlsTypeCheck",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Migrated from TransformerTest f8e3c7a1-2b9d-4e6f-8c2a-5d7b9e4f1a8c (Feature #196 Phase 5)",
+  "description": "mlsTypeCheck transformer on literal, primitive, reference and object ML schemas.",
   "tags": [
+    "unit",
     "ml-schema"
   ],
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "mlsTypeCheck",
+    "miroirTestLabel": "tr.mlsTypeCheck",
     "miroirTests": [
       {
         "miroirTestType": "transformerTest",

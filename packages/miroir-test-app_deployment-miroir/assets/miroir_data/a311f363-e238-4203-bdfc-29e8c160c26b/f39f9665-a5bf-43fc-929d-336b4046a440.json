@@ -2,18 +2,19 @@
   "uuid": "f39f9665-a5bf-43fc-929d-336b4046a440",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "mlUnionResolvedTypeForArray",
+  "name": "fn.mlsTypeCheck.unionResolvedTypeForArray",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Migrated from UnitTest c6d1a005-0005-4000-8000-000000000005 (Feature #196 Phase 5)",
+  "description": "mlUnionResolvedTypeForArray choice of the array branch of a union.",
   "tags": [
+    "unit",
     "ml-schema",
     "ml-union"
   ],
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "mlUnionResolvedTypeForArray",
+    "miroirTestLabel": "fn.mlsTypeCheck.unionResolvedTypeForArray",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",

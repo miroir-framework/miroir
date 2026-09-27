@@ -129,7 +129,7 @@ export function isUiIntegrationSuiteRunSuccessful(
     return false;
   }
   // Nested transformer suites store leaves under testsSuiteResults, not only
-  // top-level testsResults (runner_return_document is flat; miroirCoreTransformers is nested).
+  // top-level testsResults (runner.returnDocument is flat; tr.core is nested).
   const leafResults = collectLeafTestResults(suiteResult);
   if (leafResults.length === 0) {
     return false;

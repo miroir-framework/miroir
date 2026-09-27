@@ -28,15 +28,15 @@ import {
 } from "miroir-test-app_deployment-library";
 
 import {
-  miroirTest_domain_controller_application_version_freeze,
-  miroirTest_domain_controller_composite_pk_crud,
-  miroirTest_domain_controller_data_crud,
-  miroirTest_domain_controller_model_crud,
-  miroirTest_domain_controller_model_undo_redo,
-  miroirTest_domain_controller_no_parent_uuid_crud,
-  miroirTest_domain_controller_non_uuid_pk_data_crud,
-  miroirTest_domain_controller_non_uuid_pk_model_crud,
-  miroirTest_evolutionTraceWP1,
+  miroirTest_action_domainController_freezeApplicationVersion,
+  miroirTest_action_domainController_dataCrud_compositePk,
+  miroirTest_action_domainController_dataCrud,
+  miroirTest_action_domainController_modelCrud,
+  miroirTest_action_domainController_modelUndoRedo,
+  miroirTest_action_domainController_dataCrud_noParentUuid,
+  miroirTest_action_domainController_dataCrud_nonUuidPk,
+  miroirTest_action_domainController_modelCrud_nonUuidPk,
+  miroirTest_action_scenario_evolutionTrace,
 } from "miroir-test-app_deployment-miroir";
 
 export * from "../../src/miroir-fwk/4-tests/uiIntegrationPlayfieldSeeds.js";
@@ -55,15 +55,15 @@ export const ENTITY_COMPOSITE_PK_UUID = "44691d2c-d7c1-48e0-8363-71c51195e104";
 export const ENTITY_DEFINITION_COMPOSITE_PK_UUID = "fbec9082-5cdf-4877-bd78-66a434a8eebf";
 
 export const domainControllerIntegTests: MiroirTestDefinition[] = [
-  miroirTest_domain_controller_data_crud,
-  miroirTest_domain_controller_model_crud,
-  miroirTest_domain_controller_composite_pk_crud,
-  miroirTest_domain_controller_non_uuid_pk_model_crud,
-  miroirTest_domain_controller_non_uuid_pk_data_crud,
-  miroirTest_domain_controller_no_parent_uuid_crud,
-  miroirTest_domain_controller_model_undo_redo,
-  miroirTest_domain_controller_application_version_freeze,
-  miroirTest_evolutionTraceWP1,
+  miroirTest_action_domainController_dataCrud,
+  miroirTest_action_domainController_modelCrud,
+  miroirTest_action_domainController_dataCrud_compositePk,
+  miroirTest_action_domainController_modelCrud_nonUuidPk,
+  miroirTest_action_domainController_dataCrud_nonUuidPk,
+  miroirTest_action_domainController_dataCrud_noParentUuid,
+  miroirTest_action_domainController_modelUndoRedo,
+  miroirTest_action_domainController_freezeApplicationVersion,
+  miroirTest_action_scenario_evolutionTrace,
 ];
 
 export const domainControllerIntegTestNames: string[] = domainControllerIntegTests.map((test) => {

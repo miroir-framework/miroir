@@ -2,17 +2,18 @@
   "uuid": "bdf83d4d-f4dd-42c9-b2d6-41311d979083",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "mustache",
+  "name": "fn.mustache.extractDoubleBracePatterns",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Phase 3b pilot — extractDoubleBracePatterns functionCallTest suite",
+  "description": "extractDoubleBracePatterns on mustache templates.",
   "tags": [
+    "unit",
     "tools"
   ],
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "mustache.extractDoubleBracePatterns",
+    "miroirTestLabel": "fn.mustache.extractDoubleBracePatterns",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",

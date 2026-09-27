@@ -4,9 +4,10 @@
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
   "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "name": "runner_mcp_lend_document",
-  "description": "Issue #253 — mcpToolRunner lendDocument via MCP tools/call; success also queries LendingHistoryItem.",
+  "name": "runner.mcp.lendDocument",
+  "description": "lendDocument through the MCP tool runner (tools/call): success records a LendingHistoryItem, a missing book returns an error.",
   "tags": [
+    "integ",
     "runner",
     "mcp",
     "data"
@@ -14,7 +15,7 @@
   "issue": "253",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "runner.mcpLendDocument",
+    "miroirTestLabel": "runner.mcp.lendDocument",
     "runTarget": {
       "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
       "applicationName": "Library",
