@@ -656,7 +656,7 @@ function getCreateApplicationActionTemplate(
         },
         prefix: {
           transformerType: "getFromParameters",
-          referencePath: ["filesystemDeploymentRootDirectory"],
+          referencePath: ["environmentAppsDirectory"],
         },
         testSelfApplication: {
           transformerType: "createObject",

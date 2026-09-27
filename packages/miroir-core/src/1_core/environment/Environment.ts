@@ -27,6 +27,14 @@ export function isTestEnvironment(name: string): boolean {
 }
 
 /**
+ * Where the applications installed at runtime (Runners deployApplication, createApplication) put
+ * their stores: `.miroir/<environment>/apps`, relative to the repository root.
+ */
+export function environmentAppsDirectory(environmentName: string): string {
+  return `${ENVIRONMENT_STATE_ROOT}/${environmentName}/apps`;
+}
+
+/**
  * An environment definition as written in a file: any field may be partial, since it is merged
  * over the environment it extends. `null` removes an inherited entry.
  */

@@ -745,6 +745,45 @@
       }
     },
     {
+      "id": "integ-runner.deployApplication",
+      "tier": "default",
+      "title": "MiroirTest integ \u2014 runner.deployApplication",
+      "requires": "postgres",
+      "argv": [
+        "npm",
+        "run",
+        "testMiroir",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "--suites",
+        "runner.deployApplication",
+        "--mode",
+        "integ"
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "runner.deployApplication"
+        ]
+      }
+    },
+    {
       "id": "integ-runner.mcp.lendDocument",
       "tier": "default",
       "title": "MiroirTest integ \u2014 runner.mcp.lendDocument",

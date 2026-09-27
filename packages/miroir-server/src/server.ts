@@ -86,6 +86,7 @@ import {
   hasEnvironmentDefinitions,
   openEnvironmentBootDeployments,
   reconcileEnvironmentDeployments,
+  recordInstallsOf,
   resolveEnvironmentFromFiles,
   seedEnvironmentState,
   type ResolvedEnvironment,
@@ -580,6 +581,11 @@ async function openRegisteredDeployments(): Promise<{
 
 const { applicationDeploymentMap } = await openRegisteredDeployments();
 
+// applications installed or dropped from now on are recorded in environments/local.json
+if (resolvedEnvironment) {
+  recordInstallsOf(domainController, resolvedEnvironment, (line) => console.log(`[miroir-env] ${line}`));
+}
+
 setPersistRotatedSecret(async (args) => {
   await persistRotatedSecretRow(domainController, args, applicationDeploymentMap);
 });
@@ -1015,7 +1021,10 @@ if (existsSync(certFile) && existsSync(keyFile)) {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const http = await import('http');
   http.createServer(app).listen(restPortFromConfig, () => {
-    myLogger.info("templateEvaluationParams", templateEvaluationParams);
+    myLogger.info("templateEvaluationParams", {
+      ...templateEvaluationParams,
+      ...(miroirConfig.environment ? { environmentAppsDirectory: miroirConfig.environment.appsDirectory } : {}),
+    });
     myLogger.info(`Server running in ${getMiroirEnvironmentMode()} mode`);
     myLogger.info(`Server accesses filesystem deployment root directory at: ${filesystemDeploymentRootDirectory}`);
     myLogger.info(`HTTP server listening on port ${restPortFromConfig} (no TLS — run setup-https to enable HTTPS)`);

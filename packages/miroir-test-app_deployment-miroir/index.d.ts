@@ -280,6 +280,7 @@ export declare const miroirTest_runner_dropEntity: any;
 export declare const miroirTest_runner_freezeApplicationVersion: any;
 export declare const testConfiguration_libraryPublisherAndCountry: any;
 export declare const miroirTest_runner_mcp_getInstances: any;
+export declare const miroirTest_runner_deployApplication: any;
 export declare const miroirTest_fn_mlsTypeCheck_unionArrayChoices: any;
 export declare const miroirTest_fn_mlsTypeCheck_unionObjectChoices: any;
 export declare const miroirTest_query_virtualAttributes: any;

@@ -7,9 +7,11 @@ import {
   ENTITY_ADMIN_APPLICATION_UUID,
   ENVIRONMENT_STATE_ROOT,
   ENTITY_DEPLOYMENT_UUID,
+  environmentAppsDirectory,
   environmentSectionMode,
   environmentSections,
   type MiroirConfigClient,
+  type MiroirConfigEnvironment,
   type MiroirConfigServer,
   type StoreSectionConfiguration,
   type StoreUnitConfiguration,
@@ -168,6 +170,11 @@ export function describeEnvironmentStateStatus(state: EnvironmentStateStatus): s
   }
 }
 
+/** The environment a configuration comes from, and where the applications installed at runtime go. */
+function configEnvironment(resolved: ResolvedEnvironment): MiroirConfigEnvironment {
+  return { name: resolved.name, appsDirectory: environmentAppsDirectory(resolved.name) };
+}
+
 /** The server configuration of an environment; the filesystem root is the repository root. */
 export function environmentServerConfig(resolved: ResolvedEnvironment): MiroirConfigServer {
   const server = resolved.environment.server;
@@ -182,6 +189,7 @@ export function environmentServerConfig(resolved: ResolvedEnvironment): MiroirCo
       filesystemDeploymentRootDirectory: resolved.repositoryRoot,
       ...(server.corsAllowedOrigins ? { corsAllowedOrigins: server.corsAllowedOrigins } : {}),
     },
+    environment: configEnvironment(resolved),
     ...(resolved.environment.features ? { features: resolved.environment.features } : {}),
   };
   return config as MiroirConfigServer;
@@ -258,6 +266,7 @@ export function environmentClientConfig(resolved: ResolvedEnvironment, env: Node
       filesystemDeploymentRootDirectory: resolved.repositoryRoot,
       deploymentStorageConfig,
     },
+    environment: configEnvironment(resolved),
     ...(resolved.environment.features ? { features: resolved.environment.features } : {}),
   };
   return config as MiroirConfigClient;

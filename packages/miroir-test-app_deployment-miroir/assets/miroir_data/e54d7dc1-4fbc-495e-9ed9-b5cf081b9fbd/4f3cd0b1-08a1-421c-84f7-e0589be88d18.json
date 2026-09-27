@@ -376,25 +376,8 @@
       "payload": {
         "templates": {
           "prefix": {
-            "transformerType": "ifThenElse",
-            "if": {
-              "transformerType": "boolExpr",
-              "operator": "==",
-              "left": {
             "transformerType": "getFromParameters",
-                "safe": true,
-                "referencePath": ["env", "NODE_ENV"]
-              },
-              "right": "development"
-            },
-            "then": {
-              "transformerType": "getFromParameters",
-              "referencePath": ["devRelativePathPrefix"]
-            },
-            "else": {
-              "transformerType": "getFromParameters",
-              "referencePath": ["prodRelativePathPrefix"]
-            }
+            "referencePath": ["environmentAppsDirectory"]
           },
           "testApplicationModelBranchUuid": {
             "transformerType": "generateUuid"

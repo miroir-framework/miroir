@@ -15898,6 +15898,17 @@ export const miroirFundamentalMlSchema = {
           }
         }
       },
+      "miroirConfigEnvironment": {
+        "type": "object",
+        "definition": {
+          "name": {
+            "type": "string"
+          },
+          "appsDirectory": {
+            "type": "string"
+          }
+        }
+      },
       "miroirConfigForClientStub": {
         "type": "object",
         "definition": {
@@ -15962,6 +15973,14 @@ export const miroirFundamentalMlSchema = {
               }
             ]
           },
+          "environment": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirConfigEnvironment"
+            }
+          },
           "features": {
             "type": "object",
             "optional": true,
@@ -16020,6 +16039,14 @@ export const miroirFundamentalMlSchema = {
                   }
                 }
               }
+            }
+          },
+          "environment": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirConfigEnvironment"
             }
           },
           "features": {

@@ -36,4 +36,5 @@ export {
   type EnvironmentReconciliation,
 } from "./openEnvironment.js";
 export { importExtras, inspectEnvironmentState, pruneExtras, type StateInspection } from "./stateCommands.js";
+export { changesDeployments, recordInstalledApplications, recordInstallsOf } from "./recordInstalls.js";
 export { changedAssetFiles } from "./trackedAssets.js";

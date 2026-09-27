@@ -57,7 +57,7 @@ export type StateInspection = {
   findings: Finding[];
 };
 
-function readRows(directory: string): AdminRow[] {
+export function readRows(directory: string): AdminRow[] {
   if (!existsSync(directory)) {
     return [];
   }
@@ -223,8 +223,34 @@ function moveStateConfiguration(configuration: StoreUnitConfiguration, from: str
   ) as StoreUnitConfiguration;
 }
 
-function localFile(resolved: ResolvedEnvironment): string {
+export function localFile(resolved: ResolvedEnvironment): string {
   return path.join(resolved.repositoryRoot, ENVIRONMENTS_DIRECTORY, `${LOCAL_ENVIRONMENT}.json`);
+}
+
+/**
+ * The entry of environments/local.json recording an extra deployment, under a key not in `taken`
+ * (added to it): the short form when its stores are the live layout of a package, else the
+ * deployment with its configuration.
+ */
+export function localApplicationEntry(
+  resolved: ResolvedEnvironment,
+  extra: ExtraDeployment,
+  taken: Set<string>,
+  configuration: StoreUnitConfiguration = extra.deployment.configuration as StoreUnitConfiguration,
+): { key: string; application: MiroirEnvironmentApplication; description: string } {
+  const short = packageApplication(resolved, extra.deployment, taken);
+  const slug = extra.label.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "") || "application";
+  const key = short?.key ?? uniqueKey(slug, extra.deployment.uuid, taken);
+  taken.add(key);
+  return {
+    key,
+    application: short?.application ?? {
+      selfApplication: extra.deployment.selfApplication,
+      deployment: extra.deployment.uuid,
+      configuration,
+    },
+    description: `${key}: deployment ${extra.deployment.uuid} (${extra.label}), ${short ? `package ${short.application.package}` : "given configuration"}`,
+  };
 }
 
 /**
@@ -270,16 +296,15 @@ export function importExtras(
   const applications = { ...((local.applications ?? {}) as Record<string, unknown>) };
   const taken = new Set([...Object.keys(resolved.environment.applications ?? {}), ...Object.keys(applications)]);
   for (const extra of inspection.extras) {
-    const short = packageApplication(resolved, extra.deployment, taken);
-    const key = short?.key ?? uniqueKey(extra.label.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "") || "application", extra.deployment.uuid, taken);
     const configuration = extra.deployment.configuration as StoreUnitConfiguration;
-    applications[key] = short?.application ?? {
-      selfApplication: extra.deployment.selfApplication,
-      deployment: extra.deployment.uuid,
-      configuration: copyState && extra.source === "state" ? moveStateConfiguration(configuration, fromState, toState) : configuration,
-    };
-    taken.add(key);
-    lines.push(`  ${key}: deployment ${extra.deployment.uuid} (${extra.label}), ${short ? `package ${short.application.package}` : "given configuration"}`);
+    const entry = localApplicationEntry(
+      resolved,
+      extra,
+      taken,
+      copyState && extra.source === "state" ? moveStateConfiguration(configuration, fromState, toState) : configuration,
+    );
+    applications[entry.key] = entry.application;
+    lines.push(`  ${entry.description}`);
   }
   local.applications = applications;
 

@@ -348,6 +348,8 @@ export {
   MiroirConfigForRestClient,
   miroirConfigForRestClient,
   MiroirConfigServer,
+  MiroirConfigEnvironment,
+  miroirConfigEnvironment,
   MiroirEnvironment,
   miroirEnvironment,
   MiroirEnvironmentApplication,
@@ -624,6 +626,7 @@ export {
   EntitiesDomainStateReducer,
   EntitiesDomainStateTransformer,
   EntityInstancesUuidIndexEntityInstanceArraySelector,
+  InstanceActionListener,
   LocalCacheInfo
 } from "./0_interfaces/2_domain/DomainControllerInterface.js";
 export {
@@ -940,6 +943,7 @@ export type { JsonSchema, MlsToJsonSchemaContext } from "./1_core/mls/MlsToJsonS
 export {
   applicationAssetsDirectory,
   deriveEnvironmentDeployments,
+  environmentAppsDirectory,
   ENVIRONMENT_STATE_ROOT,
   environmentSectionMode,
   environmentSections,

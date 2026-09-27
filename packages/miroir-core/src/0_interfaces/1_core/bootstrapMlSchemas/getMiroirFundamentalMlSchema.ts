@@ -1817,6 +1817,17 @@ export function getMiroirFundamentalMlSchema(
             },
           },
         },
+        miroirConfigEnvironment: {
+          type: "object",
+          definition: {
+            name: {
+              type: "string",
+            },
+            appsDirectory: {
+              type: "string",
+            },
+          },
+        },
         miroirConfigForClientStub: {
           type: "object",
           definition: {
@@ -1881,6 +1892,14 @@ export function getMiroirFundamentalMlSchema(
                 },
               ],
             },
+            environment: {
+              type: "schemaReference",
+              optional: true,
+              definition: {
+                absolutePath: miroirFundamentalMlSchemaUuid,
+                relativePath: "miroirConfigEnvironment",
+              },
+            },
             features: {
               type: "object",
               optional: true,
@@ -1927,6 +1946,14 @@ export function getMiroirFundamentalMlSchema(
                     },
                   },
                 },
+              },
+            },
+            environment: {
+              type: "schemaReference",
+              optional: true,
+              definition: {
+                absolutePath: miroirFundamentalMlSchemaUuid,
+                relativePath: "miroirConfigEnvironment",
               },
             },
             features: {

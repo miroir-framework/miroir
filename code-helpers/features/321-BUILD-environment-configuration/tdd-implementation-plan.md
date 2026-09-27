@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Inventory: [`./current-state-inven
 Related: #323 (server bundle ignores `--config`; Slice 3 must not rely on `--config`)
 Working branch: `claude/environment-configuration-7z5rjb` (from `_integration`)
 
-**Resume note:** approved by A 2026-09-27. Slices 0–6 DONE (5 in two commits: 5a environments for every profile, 5b test Admin copy and emulated profile files removed). Next: Slice 7.
+**Resume note:** approved by A 2026-09-27. Slices 0–7 DONE (5 in two commits: 5a environments for every profile, 5b test Admin copy and emulated profile files removed). Next: Slice 8.
 
 ---
 
@@ -41,7 +41,7 @@ This plan does **not** touch the release path, Docker, Electron, miroir-cli or s
 | 4 | Tests run on `test-filesystem` without tracked writes | ✅ | `nonreg:filesystem` + tracked-assets guard clean; `testEnvironmentConfig.321.phase4.unit.test.ts` |
 | 5 | `test-sql`, `test-indexedDb`, `test-mongodb`; profile JSONs and test Admin copy retired | ✅ | `nonreg:default` (Postgres) + guard |
 | 6 | Reconciliation, deviation warnings, `check` / `import` / `prune` | ✅ | `miroirEnvReconcile.321.phase6.integ.test.ts` |
-| 7 | UI installs land in state and are recorded in `local.json` | ⬜ | Runner `deployApplication` integ test on `test-filesystem` |
+| 7 | UI installs land in state and are recorded in `local.json` | ✅ | MiroirTest `runner.deployApplication` + `recordInstalls.321.phase7.integ.test.ts` |
 | 8 | Web client config from the environment | ⬜ | `vite.config` environment test + manual run |
 | 9 | Cloud sessions and CI | ⬜ | pytest for `agent_session_setup.py`, `pr-checks.yml` run |
 | 10 | Remove dead configuration and drifted Admin copies | ⬜ | modelValidation + `nonreg:unit` + guard |
@@ -283,7 +283,7 @@ npm run nonreg:unit
 - Deviation from 3.2: the Deployment and AdminApplication rows stay in `admin/assets/admin_data/` instead of a `git mv` to `bootstrap/`. The release path (Docker seed, Electron copy, `deployment_Admin` / `deployment_Miroir` for the fallback boot) and about fifteen unit tests (`access.262`, `access.264`, `authentication.71`, `versioningModes.reportRouting`, …) read them there; excluding them from the seed gives the same result. Slice 10 revisits them with the other drifted Admin copies.
 - Deviation from 3.1: the boot test lives in `miroir-env` (devDependencies `miroir-localcache-redux`, `miroir-store-filesystem`), next to the code it covers, not in `miroir-standalone-app`. It boots a real DomainController on filesystem stores in a temporary checkout, and checks the seed, the generated rows, the opened deployments, that a MiroirRight creation and a ViewParams update change nothing under `packages/`, that a second boot keeps the state, and the warning for a Deployment the definition no longer installs.
 - 3.3: `miroir-core/src/ApplicationDeploymentAdmin.ts` (unreferenced) removed. `defaultDeployments` unchanged: it still backs the fallback boot.
-- Known gap until Slice 7: in development, applications installed from the UI get the path prefix `miroir-server/tests/tmp`, now resolved against the repository root (`<repo>/miroir-server/tests/tmp/`, ignored by the existing `tmp*/` rule); their Deployment rows land in `.miroir/dev/admin/data` and are opened with a warning at the next boot.
+- Known gap until Slice 7: in development, applications installed from the UI get the path prefix `miroir-server/tests/tmp`, now resolved against the repository root (`<repo>/miroir-server/tests/tmp/`, ignored by the existing `tmp*/` rule); their Deployment rows land in `.miroir/dev/admin/data` and are opened with a warning at the next boot. Closed by Slice 7.
 - The Slice 1 characterization test now expects Admin data in `.miroir/dev/admin/data`.
 - Checked by hand: `NODE_ENV=development node packages/miroir-server/release/index.js` from the repository root seeds `admin/data`, creates the 4 AdminApplication and 4 Deployment rows, serves `/capabilities`, and leaves `git status` clean. A UI deploy was not exercised (no browser in the cloud session).
 
@@ -444,7 +444,7 @@ npm run miroir-env -- check --strict --tracked-clean
 
 ## Slice 7 — UI installs land in state and are recorded in `local.json`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -474,6 +474,15 @@ npm run nonreg:filesystem
 
 ### Realization
 
+- Configuration: new `miroirConfigEnvironment` (`name`, `appsDirectory`) and an optional `environment` in `miroirConfigClient` and `miroirConfigServer`, placed before `features` (`cursorSdk.275.phase0` reads the keys after `features`). `environmentServerConfig` and `environmentClientConfig` set it; `environmentAppsDirectory(name)` (Environment.ts) gives `.miroir/<name>/apps`.
+- `templateEvaluationParams.environmentAppsDirectory`: a DomainController whose configuration names an environment passes that environment's apps directory to every template it evaluates. Configurations naming none (release, `ci/`) keep the `NODE_ENV` default (`miroir-server/tests/tmp` in dev, `.` otherwise). The Runners `deployApplication` and `createApplication` read `prefix` from it; the layout under the prefix is unchanged (`admin`, `<name>-model`, `<name>-data`). `Runner_CreateApplication.tsx` (not reachable from the UI) reads the same parameter.
+- 7.3 deviation: `devRelativePathPrefix` / `prodRelativePathPrefix` are no longer template parameters, but the constants stay in `tools.ts` as that default.
+- Left for Slice 8: in the web client against a real server, the browser DomainController evaluates the Runner templates with the client configuration, which names no environment yet (it is one of `src/assets/miroirConfig*.json`). Until Slice 8 gives the client its environment, a UI install there keeps the `NODE_ENV` default path. The server records the installed application in `local.json` whatever its path. Tests and server-side Runners (MCP) already use the environment.
+- Recording: `DomainControllerInterface.addInstanceActionListener`, called after an instance action changed a store (a failing listener is logged, the action still succeeds). miroir-server registers miroir-env's `recordInstallsOf` once the start has reconciled Admin data, since rows missing before that are not drops. On a change to Deployment rows of Admin data, `recordInstalledApplications` aligns `environments/local.json` with the Admin data of the state: it records the deployments the definition does not install (same entries as `import`), removes the applications whose Deployment row is gone, and writes `null` for one the extended environment installs.
+- Deviation: with a tracked environment selected, the server never creates `local.json`. Creating it would select `local` at the next start, whose state would have to be copied from `.miroir/<env>` while the server still writes there. The server logs a hint to run `miroir-env import` instead; `test-*` environments record nothing.
+- Test harness fix: runner MiroirTest leaves ignored failed assertions. A composite action records a failed assertion in the activity tracker and still returns ok, and only the MCP branch of `runMiroirRunnerTest` read the tracker. Both branches now fail the leaf, looking assertions up by their `testLabel`. On the filesystem profile, `runner.lendDocument`, `returnDocument`, `mcp.getInstances`, `dropEntity` and `freezeApplicationVersion` still pass. `runner.createEntity` "with reports" fails with `EntityNotFound` on the EntityVersion extractor before and after this slice; it is not in nonreg.
+- Tests: MiroirTest `runner.deployApplication` (RED first: the stores landed at the repository root, `./Library-model`). Its expected directories use `{{{environmentAppsDirectory}}}`, because `{{ }}` HTML-escapes `/`. `recordInstalls.321.phase7.integ.test.ts` covers the configurations, the listener filter, recording under `local`, the hint under `dev`, and `test-*`. nonreg step `integ-runner.deployApplication` joins the shared runner group.
+
 ---
 
 ## Slice 8 — Web client config from the environment
@@ -490,7 +499,7 @@ npm run nonreg:filesystem
 
 ### 8.2 GREEN
 
-- `vite.config.js` resolves the environment and injects the client config; `index.tsx` reads it; `webMiroirConfigName` and the six statically imported `src/assets/miroirConfig*.json` go away (the in-browser emulated modes become a `client.mode: "emulatedServer"` environment only if A still uses them; decided at this slice).
+- `vite.config.js` resolves the environment and injects the client config, `environment` included (Slice 7: UI installs then go to its apps directory); `index.tsx` reads it; `webMiroirConfigName` and the six statically imported `src/assets/miroirConfig*.json` go away (the in-browser emulated modes become a `client.mode: "emulatedServer"` environment only if A still uses them; decided at this slice).
 
 ### Validation
 

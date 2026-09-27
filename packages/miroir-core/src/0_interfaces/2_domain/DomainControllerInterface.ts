@@ -10,6 +10,7 @@ import {
   DomainAction,
   EntityInstance,
   EntityInstancesUuidIndex,
+  InstanceAction,
   MetaModel,
   ModelAction,
   RunBoxedQueryTemplateAction,
@@ -30,6 +31,16 @@ export const CUDActionNamesArray = ["create", "update", "delete"] as const;
 export const CUDActionNameSchema = z.enum(CUDActionNamesArray);
 
 export type CUDActionName = z.infer<typeof CUDActionNameSchema>;
+
+// #############################################################################################
+/**
+ * Called after an instance action changed a store (create, update, delete), with the action as
+ * persisted. Server-side code outside the action flow uses it, e.g. to record installs (#321).
+ */
+export type InstanceActionListener = (
+  action: InstanceAction,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+) => void;
 
 // #############################################################################################
 export interface LocalCacheInfo {
@@ -218,4 +229,6 @@ export interface DomainControllerInterface {
   getPersistenceStoreAccessMode(): "local" | "remote";
   getLocalCache(): LocalCacheInterface; // TODO: this is a temporary solution to allow the use of the local cache in the webapp.
   setProcessCapabilities(snapshot: ProcessCapabilities): void;
+  /** Registers a listener of the instance actions that changed a store; returns its removal. */
+  addInstanceActionListener(listener: InstanceActionListener): () => void;
 }
