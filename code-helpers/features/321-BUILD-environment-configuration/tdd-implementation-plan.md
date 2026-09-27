@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Inventory: [`./current-state-inven
 Related: #323 (server bundle ignores `--config`; Slice 3 must not rely on `--config`)
 Working branch: `claude/environment-configuration-7z5rjb` (from `_integration`)
 
-**Resume note:** approved by A 2026-09-27. Slices 0–8 DONE (5 in two commits: 5a environments for every profile, 5b test Admin copy and emulated profile files removed; 8 in 8a web client, 8b realServer profiles, plus a harness fix; 9 cloud sessions and PR checks; 10 in 10a in-app realServer profiles, 10b CI and configuration files, 10c Admin copies). Next: Slice 11.
+**Resume note:** approved by A 2026-09-27. Slices 0–8 DONE (5 in two commits: 5a environments for every profile, 5b test Admin copy and emulated profile files removed; 8 in 8a web client, 8b realServer profiles, plus a harness fix; 9 cloud sessions and PR checks; 10 in 10a in-app realServer profiles, 10b CI and configuration files, 10c Admin copies; 11 in 11.1 nonreg, 11.2 docs, 11.3 test names, 11.4 acceptance). Slices 0–11 DONE: the plan is complete.
 
 ---
 
@@ -35,17 +35,17 @@ This plan does **not** touch the release path, Docker, Electron, miroir-cli or s
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize tracked writes and today's deployment map | ✅ | `scripts/tests/test_tracked_assets_guard.py`, `unit-321-tracked-assets` baseline |
-| 1 | Tracer: `miroir-env show` resolves `dev` | ✅ | MiroirTest `fn.environment.deriveDeployments` + `miroirEnvCli.321.phase1.unit.test.ts` |
+| 1 | Tracer: `miroir-env show` resolves `dev` | ✅ | MiroirTest `fn.environment.deriveDeployments` + `miroirEnvShow.unit.test.ts` |
 | 2 | Personal environment: `local.json`, `MIROIR_ENV`, `extends` | ✅ | `fn.environment.resolveEnvironment` (merge leaves) + CLI test |
-| 3 | Server boots from the environment, Admin data in state | ✅ | `miroir-env/tests/openEnvironment.321.phase3.integ.test.ts` |
-| 4 | Tests run on `test-filesystem` without tracked writes | ✅ | `nonreg:filesystem` + tracked-assets guard clean; `testEnvironmentConfig.321.phase4.unit.test.ts` |
+| 3 | Server boots from the environment, Admin data in state | ✅ | `miroir-env/tests/serverBootFromEnvironment.integ.test.ts` |
+| 4 | Tests run on `test-filesystem` without tracked writes | ✅ | `nonreg:filesystem` + tracked-assets guard clean; `testEnvironmentConfig.unit.test.ts` |
 | 5 | `test-sql`, `test-indexedDb`, `test-mongodb`; profile JSONs and test Admin copy retired | ✅ | `nonreg:default` (Postgres) + guard |
-| 6 | Reconciliation, deviation warnings, `check` / `import` / `prune` | ✅ | `miroirEnvReconcile.321.phase6.integ.test.ts` |
-| 7 | UI installs land in state and are recorded in `local.json` | ✅ | MiroirTest `runner.deployApplication` + `recordInstalls.321.phase7.integ.test.ts` |
-| 8 | Web client config from the environment | ✅ | `viteEnvironmentConfig.321.phase8` + `realServerTestEnvironment.321.phase8` + manual run |
+| 6 | Reconciliation, deviation warnings, `check` / `import` / `prune` | ✅ | `miroirEnvReconcile.integ.test.ts` |
+| 7 | UI installs land in state and are recorded in `local.json` | ✅ | MiroirTest `runner.deployApplication` + `recordInstalls.integ.test.ts` |
+| 8 | Web client config from the environment | ✅ | `viteEnvironmentConfig.unit` + `realServerTestEnvironment.unit` + manual run |
 | 9 | Cloud sessions and CI | ✅ | pytest for `agent_session_setup.py`, `pr-checks.yml` run |
 | 10 | Remove dead configuration and drifted Admin copies | ✅ | modelValidation + `nonreg:unit` + guard |
-| 11 | Nonreg, docs, cleanup, AC | ⬜ | nonreg tiers + tracer narrative |
+| 11 | Nonreg, docs, cleanup, AC | ✅ | `nonreg:filesystem` 78/78 (shared runner) + `unit-321-tracked-assets` + `docs/reference/environments.md` |
 
 ---
 
@@ -594,7 +594,7 @@ python scripts/tracked_assets_guard.py --baseline HEAD
 
 ## Slice 11 — Nonreg, docs, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### 11.1 Nonreg
 
@@ -624,9 +624,18 @@ Automated equivalent: `serverBootFromEnvironment` + `miroirEnvReconcile` + the S
 
 | Criterion | Proven by | Status |
 |---|---|---|
-| Each developer sets their own environment (installed apps, stores) without affecting others | Slices 2, 3, 7 | ⬜ |
-| Local deploys and Admin edits cause no tracked changes | Slice 3 test, guard | ⬜ |
-| Live model editing kept | Slice 3 (`live` model sections), tracer step 4 | ⬜ |
-| One consistent view of the configuration | `miroir-env show` (Slice 1) | ⬜ |
-| Explicit, reproducible test environments locally and in cloud sessions | Slices 4, 5, 9 | ⬜ |
-| Deviations warn the user; CI fails on them | Slices 5, 6, 9 | ⬜ |
+| Each developer sets their own environment (installed apps, stores) without affecting others | Slices 2, 3, 7 | ✅ `environmentSelection.unit` (`local.json`, `MIROIR_ENV`, `extends`), `recordInstalls.integ` (an install lands in `.miroir/<env>/apps/` and `local.json`) |
+| Local deploys and Admin edits cause no tracked changes | Slice 3 test, guard | ✅ `serverBootFromEnvironment.integ` (Admin data in `.miroir/<env>/admin/`), `unit-321-tracked-assets` green at the end of `nonreg:filesystem` |
+| Live model editing kept | Slice 3 (`live` model sections), tracer step 4 | ✅ `serverBootFromEnvironment.integ` (Admin's model stays `live` in its package folder); `dev` keeps every application model `live` |
+| One consistent view of the configuration | `miroir-env show` (Slice 1) | ✅ `miroirEnvShow.unit`; the server log, the web client and the nonreg snapshot (`environment.json`) use the same resolution |
+| Explicit, reproducible test environments locally and in cloud sessions | Slices 4, 5, 9 | ✅ `testEnvironments.unit`, `testEnvironmentConfig.unit` (a test without a test environment fails), `test_agent_session_setup.py` (`cloud-agent`) |
+| Deviations warn the user; CI fails on them | Slices 5, 6, 9 | ✅ `miroirEnvReconcile.integ` (warning, error under `--strict` / `CI`); `pr-checks.yml` and nonreg run `check --strict` |
+
+### Realization
+
+- **11.1, nonreg.** Every tier starts with `unit-321-environment-before`: it records the asset files already changed (a developer's own edits, `tracked-assets-before.json`) and `miroir-env show --json` (`environment.json`) in the snapshot directory; step arguments take a `{snapshot_dir}` placeholder (`run-nonreg.py` `expand_argv`). Every tier ends with `unit-321-tracked-assets`: `tracked_assets_guard.py check --since` the recorded list, then `miroir-env check --strict`. **Deviations:** no separate `integ-321-server-boot` step, because `unit-321-miroir-env` (Slice 6) runs every miroir-env test, `serverBootFromEnvironment.integ` included; the last step compares with the start of the run instead of `--tracked-clean`, so a developer's uncommitted asset edits do not fail nonreg (`pr-checks.yml` keeps `--tracked-clean`). Tiers: unit 41 steps, default 37, full 1. Proof: 3 new tests in `scripts/tests` (placeholder, first and last steps of every tier, missing snapshot).
+- **11.2, docs.** New `docs/reference/environments.md` (environments of the repository, selection, file format, state directory, commands, deviations, web client, first run). `testing.md` replaces its configuration-file catalogue with test environments; `build-it-yourself.md` gains "Choose your environment"; `data-architecture-deployments.md` says where deployments come from; `docs/index.md` and `AGENTS.md` link the page. `analysis.md` status: implemented.
+- **11.3, test names.** `git mv` of the issue-scoped tests: `miroirEnvShow.unit` (phase1), `environmentSelection.unit` (phase2), `serverBootFromEnvironment.integ` (phase3), `testEnvironments.unit` (phase4), `miroirEnvReconcile.integ` (phase6), `recordInstalls.integ` (phase7) in miroir-env; `testEnvironmentConfig.unit`, `realServerTestEnvironment.unit`, `viteEnvironmentConfig.unit` in `miroir-standalone-app/tests/helpers`. `VITE_MIROIR_TEST_CONFIG_FILENAME` is gone: `loadTestConfigFiles` accepts only a test environment and otherwise fails with the command to run; `miroirCoreIntegTestLaunch.ts` and `test-miroir-runner.ts` read `MIROIR_ENV`.
+- **Fix found by the tracer:** `npm run miroir-env` printed nothing when the command was started through a link (`node_modules/.bin`, `npx`): the entry-point test compared the module URL with the link path. `isEntryPoint` also compares with the resolved path (test "miroir-env started through a link").
+- **11.4, acceptance.** The tracer narrative runs through its automated equivalents: `miroirEnvShow.unit` (step 1), `environmentSelection.unit` and `serverBootFromEnvironment.integ` (step 2), `recordInstalls.integ` and the Slice 7 runner test (step 3), the `live` sections of `dev` (step 4), `nonreg:filesystem` with the guard (step 5). The client of step 2 was checked by hand in headless Chromium at Slice 8 (a `dev` server, Library instances shown, no tracked change); the UI install of step 3 was not run by hand. `nonreg:filesystem` with the shared runner, in a clean worktree of f7915fb: 78/78 passed (1154 s), `unit-321-tracked-assets` green, snapshot `environment.json` = `local` from `environments/local.json`. `miroir-env check --strict --tracked-clean` is ok on the working tree once the two stray `miroir_data/` folders of the Slice 8 incident were deleted (A's OK), after which miroir-core `miroirModelVersionLayout` and `versioningModes.assetsLayout` pass (15/15). PR checks green on 62a6321.
+- Follow-ups, outside this plan: miroir-mcp (its tests and the binary's `defaultConfig.json`) opens `miroir-mcp/tests/assets/admin_*` instead of an environment; two miroir-mcp tests fail before and after this branch (`mlElementToTS` applicationSection, `endpointToolRegistry` hot-reload); #323 (the server bundle ignores `--config`).
