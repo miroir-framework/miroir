@@ -16100,7 +16100,8 @@ export const miroirFundamentalMlSchema = {
         "type": "object",
         "definition": {
           "package": {
-            "type": "string"
+            "type": "string",
+            "optional": true
           },
           "assetPrefix": {
             "type": "string",
@@ -16114,6 +16115,7 @@ export const miroirFundamentalMlSchema = {
           },
           "store": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "miroirEnvironmentStoreType"
@@ -16121,6 +16123,7 @@ export const miroirFundamentalMlSchema = {
           },
           "mode": {
             "type": "schemaReference",
+            "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "miroirEnvironmentSectionMode"
@@ -16154,6 +16157,14 @@ export const miroirFundamentalMlSchema = {
                   "relativePath": "miroirEnvironmentSectionOverride"
                 }
               }
+            }
+          },
+          "configuration": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "storeUnitConfiguration"
             }
           }
         }

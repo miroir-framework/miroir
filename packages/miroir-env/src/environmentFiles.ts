@@ -126,6 +126,29 @@ export function selectEnvironment(
   return { name: DEFAULT_ENVIRONMENT, source: "default" };
 }
 
+/** Resolves and derives every definition: the names that are valid, and the errors of the others. */
+export function validateEnvironmentDefinitions(definitions: Record<string, EnvironmentDefinition>): {
+  valid: string[];
+  errors: string[];
+} {
+  const valid: string[] = [];
+  const errors: string[] = [];
+  for (const name of Object.keys(definitions).sort()) {
+    const resolution = resolveEnvironment(definitions, name);
+    if (resolution.status === "error") {
+      errors.push(...resolution.errors);
+      continue;
+    }
+    const derived = deriveEnvironmentDeployments(resolution.environment, name);
+    if (derived.status === "error") {
+      errors.push(...derived.errors.map((error) => `environment "${name}": ${error}`));
+      continue;
+    }
+    valid.push(name);
+  }
+  return { valid, errors };
+}
+
 export function resolveEnvironmentFromFiles(options: {
   cwd: string;
   env: Record<string, string | undefined>;

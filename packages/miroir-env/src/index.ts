@@ -9,21 +9,31 @@ export {
   readEnvironmentDefinitions,
   resolveEnvironmentFromFiles,
   selectEnvironment,
+  validateEnvironmentDefinitions,
   type EnvironmentSelection,
   type ResolvedEnvironment,
 } from "./environmentFiles.js";
 export {
+  describeEnvironmentStateStatus,
   environmentClientConfig,
   environmentServerConfig,
+  environmentStateDirectory,
+  environmentStateStatus,
   GENERATED_ADMIN_ENTITIES,
   missingConnectionPasswords,
   seedEnvironmentState,
   type SeedReport,
 } from "./environmentState.js";
 export {
+  compareAdminRows,
   environmentAdminRows,
+  type AdminRowsComparison,
+  type EnvironmentAdminRows,
+} from "./adminRows.js";
+export {
   openEnvironmentBootDeployments,
   reconcileEnvironmentDeployments,
-  type EnvironmentAdminRows,
   type EnvironmentReconciliation,
 } from "./openEnvironment.js";
+export { importExtras, inspectEnvironmentState, pruneExtras, type StateInspection } from "./stateCommands.js";
+export { changedAssetFiles } from "./trackedAssets.js";

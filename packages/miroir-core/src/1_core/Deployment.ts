@@ -129,6 +129,41 @@ export type CreateDeploymentCompositeActionOptions = {
   grantAccessTo?: { miroirUserUuid: string };
 };
 
+/** Labels of an Admin row: `defaultLabel` and `description` are optional. */
+export type AdminRowLabels = { name: string; defaultLabel?: string; description?: string };
+
+/** The AdminApplication row that registers an application in Admin data. */
+export function adminApplicationRow(selfApplication: Uuid, labels: AdminRowLabels): AdminApplication {
+  return {
+    uuid: selfApplication,
+    parentName: entityApplicationForAdmin.name,
+    parentUuid: entityApplicationForAdmin.uuid,
+    name: labels.name,
+    defaultLabel: labels.defaultLabel ?? labels.name,
+    ...(labels.description ? { description: labels.description } : {}),
+    selfApplication,
+  } as AdminApplication;
+}
+
+/** The Deployment row that tells Admin where the stores of an application are. */
+export function deploymentRow(
+  deployment: Uuid,
+  selfApplication: Uuid,
+  configuration: StoreUnitConfiguration,
+  labels: AdminRowLabels,
+): Deployment {
+  return {
+    uuid: deployment,
+    parentName: entityDeployment.name,
+    parentUuid: entityDeployment.uuid,
+    name: labels.name,
+    defaultLabel: labels.defaultLabel ?? labels.name,
+    ...(labels.description ? { description: labels.description } : {}),
+    selfApplication,
+    configuration,
+  } as Deployment;
+}
+
 export function createDeploymentCompositeAction(
   applicationName: string,
   newDeploymentUuid: Uuid,
@@ -167,15 +202,11 @@ export function createDeploymentCompositeAction(
       application: adminSelfApplication.uuid,
       applicationSection: "data",
       objects: [
-        {
-          uuid: applicationUuid,
-          parentName: entityApplicationForAdmin.name,
-          parentUuid: entityApplicationForAdmin.uuid,
+        adminApplicationRow(applicationUuid, {
           name: applicationName,
           defaultLabel: `The ${applicationName} Application.`,
           description: `This Application contains the ${applicationName} model and data.`,
-          selfApplication: applicationUuid,
-        } as AdminApplication,
+        }),
       ],
     },
   });
@@ -188,16 +219,11 @@ export function createDeploymentCompositeAction(
       application: adminSelfApplication.uuid,
       applicationSection: "data",
       objects: [
-        {
-          uuid: newDeploymentUuid,
-          parentName: "Deployment",
-          parentUuid: entityDeployment.uuid,
+        deploymentRow(newDeploymentUuid, applicationUuid, newDeploymentConfiguration, {
           name: `Deployment of application ${applicationName}`,
           defaultLabel: `The deployment of application ${applicationName}`,
           description: `The description of deployment of application ${applicationName}`,
-          selfApplication: applicationUuid,
-          configuration: newDeploymentConfiguration,
-        } as Deployment,
+        }),
       ],
     },
   });

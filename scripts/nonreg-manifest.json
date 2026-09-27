@@ -1739,6 +1739,33 @@
       ]
     },
     {
+      "id": "unit-321-miroir-env",
+      "tier": "unit",
+      "title": "#321 \u2014 environments: miroir-env commands, server boot from an environment, check / import / prune",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "test",
+        "-w",
+        "miroir-env"
+      ]
+    },
+    {
+      "id": "unit-321-miroir-env-check",
+      "tier": "unit",
+      "title": "#321 \u2014 miroir-env check --strict: every definition valid, the selected environment state in line with it",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "miroir-env",
+        "--",
+        "check",
+        "--strict"
+      ]
+    },
+    {
       "id": "full-postgres-modelValidation",
       "tier": "full",
       "title": "Deployment modelValidation \u2014 postgres",

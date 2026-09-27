@@ -1986,12 +1986,14 @@ export function getMiroirFundamentalMlSchema(
         miroirEnvironmentApplication: {
           type: "object",
           definition: {
-            package: { type: "string" },
+            // package, store and mode are required unless configuration is given (checked by the resolver)
+            package: { type: "string", optional: true },
             assetPrefix: { type: "string", optional: true },
             selfApplication: { type: "uuid" },
             deployment: { type: "uuid" },
             store: {
               type: "schemaReference",
+              optional: true,
               definition: {
                 absolutePath: miroirFundamentalMlSchemaUuid,
                 relativePath: "miroirEnvironmentStoreType",
@@ -1999,6 +2001,7 @@ export function getMiroirFundamentalMlSchema(
             },
             mode: {
               type: "schemaReference",
+              optional: true,
               definition: {
                 absolutePath: miroirFundamentalMlSchemaUuid,
                 relativePath: "miroirEnvironmentSectionMode",
@@ -2032,6 +2035,16 @@ export function getMiroirFundamentalMlSchema(
                     relativePath: "miroirEnvironmentSectionOverride",
                   },
                 },
+              },
+            },
+            // the stores of an application installed outside the package layout (UI installs,
+            // imported deployments), used as given; paths are relative to the repository root
+            configuration: {
+              type: "schemaReference",
+              optional: true,
+              definition: {
+                absolutePath: miroirFundamentalMlSchemaUuid,
+                relativePath: "storeUnitConfiguration",
               },
             },
           },

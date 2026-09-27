@@ -524,6 +524,156 @@
             "application \"library\", section \"data\": store \"mongodb\" needs connections.mongodb"
           ]
         }
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "an application configuration is used as given",
+        "functionRef": {
+          "module": "miroir-core/1_core/environment/Environment",
+          "export": "deriveEnvironmentDeployments"
+        },
+        "arguments": [
+          {
+            "applications": {
+              "spotify": {
+                "selfApplication": "0a9a3b8e-3210-4c3e-8a6f-321000000001",
+                "deployment": "0a9a3b8e-3210-4c3e-8a6f-321000000002",
+                "configuration": {
+                  "admin": {
+                    "emulatedServerType": "filesystem",
+                    "directory": ".miroir/dev/apps/spotify"
+                  },
+                  "model": {
+                    "emulatedServerType": "filesystem",
+                    "directory": ".miroir/dev/apps/spotify/model"
+                  },
+                  "data": {
+                    "emulatedServerType": "filesystem",
+                    "directory": ".miroir/dev/apps/spotify/data"
+                  }
+                }
+              }
+            }
+          },
+          "dev"
+        ],
+        "expectedValue": {
+          "status": "ok",
+          "deployments": [
+            {
+              "applicationKey": "spotify",
+              "deployment": "0a9a3b8e-3210-4c3e-8a6f-321000000002",
+              "selfApplication": "0a9a3b8e-3210-4c3e-8a6f-321000000001",
+              "configuration": {
+                "admin": {
+                  "emulatedServerType": "filesystem",
+                  "directory": ".miroir/dev/apps/spotify"
+                },
+                "model": {
+                  "emulatedServerType": "filesystem",
+                  "directory": ".miroir/dev/apps/spotify/model"
+                },
+                "data": {
+                  "emulatedServerType": "filesystem",
+                  "directory": ".miroir/dev/apps/spotify/data"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "an application configuration wins over store and mode",
+        "functionRef": {
+          "module": "miroir-core/1_core/environment/Environment",
+          "export": "deriveEnvironmentDeployments"
+        },
+        "arguments": [
+          {
+            "applications": {
+              "library": {
+                "package": "miroir-test-app_deployment-library",
+                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                "store": "filesystem",
+                "mode": "live",
+                "configuration": {
+                  "admin": {
+                    "emulatedServerType": "sql",
+                    "connectionString": "postgres://postgres@localhost:5432/postgres",
+                    "schema": "library_admin"
+                  },
+                  "model": {
+                    "emulatedServerType": "sql",
+                    "connectionString": "postgres://postgres@localhost:5432/postgres",
+                    "schema": "library"
+                  },
+                  "data": {
+                    "emulatedServerType": "sql",
+                    "connectionString": "postgres://postgres@localhost:5432/postgres",
+                    "schema": "library"
+                  }
+                }
+              }
+            }
+          },
+          "dev"
+        ],
+        "expectedValue": {
+          "status": "ok",
+          "deployments": [
+            {
+              "applicationKey": "library",
+              "package": "miroir-test-app_deployment-library",
+              "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+              "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              "configuration": {
+                "admin": {
+                  "emulatedServerType": "sql",
+                  "connectionString": "postgres://postgres@localhost:5432/postgres",
+                  "schema": "library_admin"
+                },
+                "model": {
+                  "emulatedServerType": "sql",
+                  "connectionString": "postgres://postgres@localhost:5432/postgres",
+                  "schema": "library"
+                },
+                "data": {
+                  "emulatedServerType": "sql",
+                  "connectionString": "postgres://postgres@localhost:5432/postgres",
+                  "schema": "library"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "without configuration, package, store and mode are required",
+        "functionRef": {
+          "module": "miroir-core/1_core/environment/Environment",
+          "export": "deriveEnvironmentDeployments"
+        },
+        "arguments": [
+          {
+            "applications": {
+              "spotify": {
+                "selfApplication": "0a9a3b8e-3210-4c3e-8a6f-321000000001",
+                "deployment": "0a9a3b8e-3210-4c3e-8a6f-321000000002",
+                "store": "filesystem"
+              }
+            }
+          },
+          "dev"
+        ],
+        "expectedValue": {
+          "status": "error",
+          "errors": [
+            "application \"spotify\": package, mode required unless the application gives its configuration"
+          ]
+        }
       }
     ]
   }

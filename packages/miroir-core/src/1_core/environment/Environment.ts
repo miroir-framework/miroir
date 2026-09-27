@@ -38,7 +38,8 @@ export type EnvironmentResolution =
 
 export type EnvironmentDeployment = {
   applicationKey: string;
-  package: string;
+  /** Absent for an application that gives its configuration and names no package. */
+  package?: string;
   deployment: string;
   selfApplication: string;
   configuration: StoreUnitConfiguration;
@@ -55,18 +56,38 @@ export function environmentSections(application: MiroirEnvironmentApplication): 
   return application.sections?.modelVersion ? ["admin", "model", "data", "modelVersion"] : ["admin", "model", "data"];
 }
 
-/** A section's own mode when overridden, else the application's; `admin` always follows the application. */
+/** An application derived from its package: package, store and mode are given. */
+type PackageApplication = MiroirEnvironmentApplication & {
+  package: string;
+  store: MiroirEnvironmentStoreType;
+  mode: MiroirEnvironmentSectionMode;
+};
+
+const PACKAGE_APPLICATION_FIELDS = ["package", "store", "mode"] as const;
+
+/**
+ * The fields an application misses to be derived from its package: none when it gives its
+ * configuration (an application installed outside the package layout, used as given).
+ */
+export function missingApplicationFields(application: MiroirEnvironmentApplication): string[] {
+  return application.configuration ? [] : PACKAGE_APPLICATION_FIELDS.filter((field) => application[field] === undefined);
+}
+
+/**
+ * A section's own mode when overridden, else the application's; `admin` always follows the
+ * application. Undefined for an application that gives its configuration.
+ */
 export function environmentSectionMode(
   application: MiroirEnvironmentApplication,
   section: EnvironmentSectionName,
-): MiroirEnvironmentSectionMode {
+): MiroirEnvironmentSectionMode | undefined {
+  if (application.configuration) {
+    return undefined;
+  }
   return (section === "admin" ? undefined : application.sections?.[section]?.mode) ?? application.mode;
 }
 
-function environmentSectionStore(
-  application: MiroirEnvironmentApplication,
-  section: EnvironmentSectionName,
-): MiroirEnvironmentStoreType {
+function environmentSectionStore(application: PackageApplication, section: EnvironmentSectionName): MiroirEnvironmentStoreType {
   return (section === "admin" ? undefined : application.sections?.[section]?.store) ?? application.store;
 }
 
@@ -76,7 +97,7 @@ function environmentSectionStore(
  */
 export function applicationAssetsDirectory(
   applicationKey: string,
-  application: MiroirEnvironmentApplication,
+  application: { package: string; assetPrefix?: string },
   section: EnvironmentSectionName,
 ): string {
   const assets = `packages/${application.package}/assets`;
@@ -86,7 +107,7 @@ export function applicationAssetsDirectory(
 function sectionDirectory(
   environmentName: string,
   applicationKey: string,
-  application: MiroirEnvironmentApplication,
+  application: PackageApplication,
   mode: MiroirEnvironmentSectionMode,
   section: EnvironmentSectionName,
 ): string {
@@ -119,7 +140,7 @@ function sectionConfiguration(
   environment: MiroirEnvironment,
   environmentName: string,
   applicationKey: string,
-  application: MiroirEnvironmentApplication,
+  application: PackageApplication,
   mode: MiroirEnvironmentSectionMode,
   store: MiroirEnvironmentStoreType,
   section: EnvironmentSectionName,
@@ -166,7 +187,8 @@ function sectionConfiguration(
 /**
  * The Deployment configurations of every application installed in an environment.
  * `live` sections point at the application package's assets (edits become git diffs);
- * `copy` sections live in the environment state directory `.miroir/<environmentName>/`.
+ * `copy` sections live in the environment state directory `.miroir/<environmentName>/`;
+ * an application that gives its configuration keeps it as given.
  */
 export function deriveEnvironmentDeployments(
   environment: MiroirEnvironment,
@@ -179,28 +201,38 @@ export function deriveEnvironmentDeployments(
     if (!application) {
       continue;
     }
+    const identity = {
+      applicationKey,
+      ...(application.package ? { package: application.package } : {}),
+      deployment: application.deployment,
+      selfApplication: application.selfApplication,
+    };
+    if (application.configuration) {
+      deployments.push({ ...identity, configuration: application.configuration });
+      continue;
+    }
+    const missing = missingApplicationFields(application);
+    if (missing.length > 0) {
+      errors.push(`application "${applicationKey}": ${missing.join(", ")} required unless the application gives its configuration`);
+      continue;
+    }
+    const packageApplication = application as PackageApplication;
     const configuration: Record<string, StoreSectionConfiguration> = {};
     for (const section of environmentSections(application)) {
-      const mode = environmentSectionMode(application, section);
-      const store = environmentSectionStore(application, section);
+      const mode = environmentSectionMode(packageApplication, section)!;
+      const store = environmentSectionStore(packageApplication, section);
       if (mode === "live" && store !== "filesystem") {
         errors.push(`application "${applicationKey}", section "${section}": mode "live" needs store "filesystem", got "${store}"`);
         continue;
       }
-      const result = sectionConfiguration(environment, environmentName, applicationKey, application, mode, store, section);
+      const result = sectionConfiguration(environment, environmentName, applicationKey, packageApplication, mode, store, section);
       if (typeof result === "string") {
         errors.push(result);
         continue;
       }
       configuration[section] = result;
     }
-    deployments.push({
-      applicationKey,
-      package: application.package,
-      deployment: application.deployment,
-      selfApplication: application.selfApplication,
-      configuration: configuration as StoreUnitConfiguration,
-    });
+    deployments.push({ ...identity, configuration: configuration as StoreUnitConfiguration });
   }
 
   return errors.length > 0 ? { status: "error", errors } : { status: "ok", deployments };
@@ -248,6 +280,21 @@ function extendsChain(definitions: Record<string, EnvironmentDefinition>, name: 
   return chain;
 }
 
+/** Applications that neither give their configuration nor package, store and mode (merged, unvalidated input). */
+function applicationFieldErrors(name: string, applications: unknown): string[] {
+  if (!isPlainObject(applications)) {
+    return [];
+  }
+  return Object.entries(applications).flatMap(([applicationKey, application]) =>
+    isPlainObject(application)
+      ? missingApplicationFields(application as MiroirEnvironmentApplication).map(
+          (field) =>
+            `environment "${name}": applications.${applicationKey}.${field}: required unless the application gives its configuration`,
+        )
+      : [],
+  );
+}
+
 function environmentRuleErrors(name: string, environment: MiroirEnvironment): string[] {
   const errors: string[] = [];
   for (const required of REQUIRED_ENVIRONMENT_APPLICATIONS) {
@@ -255,9 +302,16 @@ function environmentRuleErrors(name: string, environment: MiroirEnvironment): st
       errors.push(`environment "${name}" must install application "${required}"`);
     }
   }
+  errors.push(...applicationFieldErrors(name, environment.applications));
   if (isTestEnvironment(name)) {
     for (const [applicationKey, application] of Object.entries(environment.applications ?? {})) {
       if (!application) {
+        continue;
+      }
+      if (application.configuration) {
+        errors.push(
+          `environment "${name}": application "${applicationKey}" gives its configuration; test environments derive every store from the definition`,
+        );
         continue;
       }
       for (const section of environmentSections(application)) {
@@ -296,7 +350,10 @@ export function resolveEnvironment(
   if (!parsed.success) {
     return {
       status: "error",
-      errors: parsed.error.issues.map((issue) => `environment "${name}": ${issue.path.join(".") || "(root)"}: ${issue.message}`),
+      errors: [
+        ...parsed.error.issues.map((issue) => `environment "${name}": ${issue.path.join(".") || "(root)"}: ${issue.message}`),
+        ...applicationFieldErrors(name, merged.applications),
+      ],
     };
   }
 

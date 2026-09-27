@@ -79,8 +79,10 @@ import {
 } from "miroir-test-app_deployment-admin";
 
 import {
+  describeEnvironmentStateStatus,
   EnvironmentError,
   environmentServerConfig,
+  environmentStateStatus,
   hasEnvironmentDefinitions,
   openEnvironmentBootDeployments,
   reconcileEnvironmentDeployments,
@@ -247,6 +249,10 @@ let miroirConfig: MiroirConfigServer;
 if (resolvedEnvironment) {
   const { name, source, files } = resolvedEnvironment;
   console.log(`  environment: ${name}, selected by ${source}, defined by ${files.join(" <- ")}`);
+  const state = environmentStateStatus(resolvedEnvironment);
+  if (state.status === "changed") {
+    console.log(`  environment ${describeEnvironmentStateStatus(state)}`);
+  }
   const seed = seedEnvironmentState(resolvedEnvironment);
   if (seed.seeded.length > 0) {
     console.log(`  environment state seeded from package assets: ${seed.seeded.join(", ")}`);

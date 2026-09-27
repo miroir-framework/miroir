@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Inventory: [`./current-state-inven
 Related: #323 (server bundle ignores `--config`; Slice 3 must not rely on `--config`)
 Working branch: `claude/environment-configuration-7z5rjb` (from `_integration`)
 
-**Resume note:** approved by A 2026-09-27. Slices 0–5 DONE (5 in two commits: 5a environments for every profile, 5b test Admin copy and emulated profile files removed). Next: Slice 6.
+**Resume note:** approved by A 2026-09-27. Slices 0–6 DONE (5 in two commits: 5a environments for every profile, 5b test Admin copy and emulated profile files removed). Next: Slice 7.
 
 ---
 
@@ -40,7 +40,7 @@ This plan does **not** touch the release path, Docker, Electron, miroir-cli or s
 | 3 | Server boots from the environment, Admin data in state | ✅ | `miroir-env/tests/openEnvironment.321.phase3.integ.test.ts` |
 | 4 | Tests run on `test-filesystem` without tracked writes | ✅ | `nonreg:filesystem` + tracked-assets guard clean; `testEnvironmentConfig.321.phase4.unit.test.ts` |
 | 5 | `test-sql`, `test-indexedDb`, `test-mongodb`; profile JSONs and test Admin copy retired | ✅ | `nonreg:default` (Postgres) + guard |
-| 6 | Reconciliation, deviation warnings, `check` / `import` / `prune` | ⬜ | `miroirEnvReconcile.321.phase6.integ.test.ts` |
+| 6 | Reconciliation, deviation warnings, `check` / `import` / `prune` | ✅ | `miroirEnvReconcile.321.phase6.integ.test.ts` |
 | 7 | UI installs land in state and are recorded in `local.json` | ⬜ | Runner `deployApplication` integ test on `test-filesystem` |
 | 8 | Web client config from the environment | ⬜ | `vite.config` environment test + manual run |
 | 9 | Cloud sessions and CI | ⬜ | pytest for `agent_session_setup.py`, `pr-checks.yml` run |
@@ -403,7 +403,7 @@ Delivered in two commits: 5a (every profile store is an environment) and 5b (the
 
 ## Slice 6 — Reconciliation, deviation warnings, `check` / `import` / `prune`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -430,6 +430,15 @@ npm run miroir-env -- check --strict --tracked-clean
 ```
 
 ### Realization
+
+- Schema: an environment application may give its `configuration` (a `storeUnitConfiguration`, repository-relative, used as given) instead of `package`, `store` and `mode`, which become optional. The resolver requires them when no configuration is given (`applications.<key>.<field>: required unless the application gives its configuration`) and refuses a given configuration in `test-*` environments. This is how `import` records a deployment that does not follow a package layout, and how Slice 7 will record UI installs. MiroirTest: +3 leaves in `fn.environment.resolveEnvironment`, +3 in `fn.environment.deriveDeployments`.
+- `miroir-env/src/adminRows.ts`: the rows a definition implies (`environmentAdminRows`) and `compareAdminRows` (rows to create, rows to rewrite, deployments the definition does not install), shared by the server reconciliation (`openEnvironment.ts`) and `check`. An application without a package takes its labels from its AdminApplication row already in Admin data. Row shapes come from the new miroir-core `adminApplicationRow` / `deploymentRow`, which `createDeploymentCompositeAction` now uses too (6.3).
+- `check [--strict] [--tracked-clean]`: validates every definition of `environments/`, prints where the state stands (`env.lock.json`), then reads the filesystem Admin data of the selected environment: rows the next start creates or rewrites (info), deployments it does not install (warning), and deployments written into the package Admin data before #321, no longer opened (warning, D14). `--strict` or `CI` turns warnings into errors (exit 1); `--tracked-clean` fails on changed asset files (same scope as `scripts/tracked_assets_guard.py`). With Admin data on another store, the comparison is left to the server (info).
+- `import [--dry-run]` records those deployments in `environments/local.json`: the short form (`package`, `store: filesystem`, `mode: live`) when the stores are a package's live layout (checked by deriving it back), the given configuration otherwise. When it creates `local.json` (extending the selected environment), it copies `.miroir/<selected>` to `.miroir/local` and moves the recorded paths along, since the state directory follows the environment name. Refused for `test-*` environments, and when `local.json` exists but another environment is selected.
+- `prune [--dry-run]` deletes those deployments: Deployment rows, AdminApplication rows no other deployment uses, and their stores inside `.miroir/<env>/`; stores elsewhere (package assets, databases, a store a defined application uses) are left in place and listed. Legacy rows in the package Admin data are never deleted.
+- `seedEnvironmentState` writes `.miroir/<env>/env.lock.json` (definition hash, files, deployments); `show` and the server start report a definition changed since the last start and which applications differ.
+- nonreg: unit steps `unit-321-miroir-env` (miroir-env vitest) and `unit-321-miroir-env-check` (`check --strict`, D6).
+- Deviations: `import` records only deployments the definition does not install; a row that differs from the definition is rewritten at the next start (D15), so importing it would record a transient state. D15 row 4 (a shell variable that differs from the selected test environment) was realized with the profiles in Slice 5a; row 5 is `--tracked-clean`.
 
 ---
 

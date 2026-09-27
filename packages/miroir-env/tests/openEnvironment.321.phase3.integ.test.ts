@@ -2,9 +2,7 @@
 // .miroir/<environment>/, the Deployment and AdminApplication rows are generated from the
 // definition, and writes to Admin data (rights, ViewParams) leave the package assets untouched.
 // vitest, not MiroirTest: this is boot wiring on a real DomainController and filesystem stores.
-import { createHash } from "node:crypto";
-import { cpSync, existsSync, mkdtempSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -15,96 +13,19 @@ import {
   defaultSelfApplicationDeploymentMap,
   ENTITY_ADMIN_APPLICATION_UUID,
   ENTITY_DEPLOYMENT_UUID,
-  MiroirActivityTracker,
-  MiroirContext,
   miroirCoreStartup,
-  MiroirEventService,
-  PersistenceStoreControllerManager,
   type DomainControllerInterface,
 } from "miroir-core";
-import { setupMiroirDomainController } from "miroir-localcache-redux";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 
-import {
-  environmentServerConfig,
-  openEnvironmentBootDeployments,
-  reconcileEnvironmentDeployments,
-  resolveEnvironmentFromFiles,
-  seedEnvironmentState,
-  type ResolvedEnvironment,
-} from "../src/index";
-import { repositoryRoot } from "./cliTestSupport";
+import { boot, contentHashes, readRows, temporaryCheckout } from "./bootTestSupport";
 
-const PACKAGES = [
-  "miroir-test-app_deployment-miroir",
-  "miroir-test-app_deployment-admin",
-  "miroir-test-app_deployment-library",
-  "miroir-test-app_deployment-designer",
-];
 const ENTITY_MIROIR_RIGHT = "a6136fc7-949b-4d64-9f13-dd3afce1ab3c";
 const ENTITY_VIEW_PARAMS = "b9765b7c-b614-4126-a0e2-634463f99937";
 const ENTITY_MIROIR_USER = "d20d09e5-0685-4fc7-b9bd-fcfa3845127a";
 const DEFAULT_VIEW_PARAMS = "441cb6fd-2728-4a16-b170-ebceec1ce6c2";
 const DESIGNER_DEPLOYMENT = "f0359240-e849-4546-8158-75f4a8ae5831";
 const ADMIN_APPLICATION = "55af124e-8c05-4bae-a3ef-0933d41daa92";
-
-/** A repository root holding the tracked dev environment and a copy of the packages it installs. */
-function temporaryCheckout(): string {
-  const root = mkdtempSync(path.join(tmpdir(), "miroir-env-boot-"));
-  writeFileSync(path.join(root, "package.json"), JSON.stringify({ name: "r", workspaces: ["packages/*"] }));
-  cpSync(path.join(repositoryRoot, "environments/dev.json"), path.join(root, "environments/dev.json"));
-  for (const name of PACKAGES) {
-    cpSync(path.join(repositoryRoot, "packages", name, "assets"), path.join(root, "packages", name, "assets"), {
-      recursive: true,
-    });
-  }
-  return root;
-}
-
-function contentHashes(directory: string): Record<string, string> {
-  const hashes: Record<string, string> = {};
-  const walk = (current: string) => {
-    for (const entry of readdirSync(current)) {
-      const file = path.join(current, entry);
-      if (statSync(file).isDirectory()) {
-        walk(file);
-      } else {
-        hashes[path.relative(directory, file)] = createHash("sha256").update(readFileSync(file)).digest("hex");
-      }
-    }
-  };
-  walk(directory);
-  return hashes;
-}
-
-function readRows(directory: string): Record<string, any> {
-  if (!existsSync(directory)) {
-    return {};
-  }
-  return Object.fromEntries(
-    readdirSync(directory).map((file) => [file.replace(/\.json$/, ""), JSON.parse(readFileSync(path.join(directory, file), "utf-8"))]),
-  );
-}
-
-async function boot(root: string) {
-  const resolved = resolveEnvironmentFromFiles({ cwd: root, env: {} });
-  const seed = seedEnvironmentState(resolved);
-  const miroirConfig = environmentServerConfig(resolved);
-  const activityTracker = new MiroirActivityTracker();
-  const miroirContext = new MiroirContext(activityTracker, new MiroirEventService(activityTracker), miroirConfig);
-  const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
-    ConfigurationService.configurationService.adminStoreFactoryRegister,
-    ConfigurationService.configurationService.StoreSectionFactoryRegister,
-    miroirConfig.server.filesystemDeploymentRootDirectory,
-  );
-  const domainController = await setupMiroirDomainController(miroirContext, {
-    persistenceStoreAccessMode: "local",
-    localPersistenceStoreControllerManager: persistenceStoreControllerManager,
-  });
-  await openEnvironmentBootDeployments(domainController, resolved);
-  const reconciliation = await reconcileEnvironmentDeployments(domainController, resolved);
-  return { resolved, seed, domainController, persistenceStoreControllerManager, reconciliation };
-}
 
 async function persist(
   domainController: DomainControllerInterface,
@@ -210,7 +131,7 @@ describe("server boot from the dev environment", () => {
     expect(readRows(path.join(adminData, ENTITY_VIEW_PARAMS))[DEFAULT_VIEW_PARAMS].sidebarWidth).toBe(321);
     expect(second.reconciliation.changes).toEqual([]);
     expect(second.reconciliation.warnings).toEqual([
-      `deployment ${DESIGNER_DEPLOYMENT} (Designer) is in the Admin data of environment "dev" but not in its definition; opened anyway`,
+      `deployment ${DESIGNER_DEPLOYMENT} (Designer) is in the Admin data of environment "dev" but not in its definition: it is opened anyway; record it with "miroir-env import" or remove it with "miroir-env prune"`,
     ]);
     expect(second.reconciliation.opened).toContain(DESIGNER_DEPLOYMENT);
     expect(contentHashes(path.join(root, "packages"))).toEqual(packagesBefore);
