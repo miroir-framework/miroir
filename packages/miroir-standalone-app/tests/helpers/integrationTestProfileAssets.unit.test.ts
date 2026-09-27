@@ -77,6 +77,13 @@ describe("integrationTestProfileAssets (B5/B6-b/B6-c)", () => {
     expect(adminStore?.admin?.emulatedServerType).toBe("filesystem");
     expect(adminStore?.model?.emulatedServerType).toBe("filesystem");
     expect(adminStore?.data?.emulatedServerType).toBe("filesystem");
+    // #321: the stores of the test-sql environment, never the tracked Admin data; no password in the browser
+    expect(adminStore?.data).toMatchObject({ directory: ".miroir/test-sql/admin/data" });
+    const libraryData = miroirConfig.client?.serverConfig?.storeSectionConfiguration?.[
+      "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+    ]?.data as { connectionString: string; schema: string };
+    expect(libraryData.connectionString).toBe("postgres://postgres@localhost:5432/postgres");
+    expect(libraryData.schema).toBe("test_sql_library");
   });
 
   it.each([
@@ -98,6 +105,10 @@ describe("integrationTestProfileAssets (B5/B6-b/B6-c)", () => {
           "18db21bf-f8d3-4f6a-8296-84b69f6dc48b"
         ];
       expect(adminStore?.admin?.emulatedServerType).toBe("filesystem");
+      // #321: the stores of the test environment of the profile's storage
+      expect(adminStore?.data).toMatchObject({
+        directory: `.miroir/test-${expectedServerType}/admin/data`,
+      });
 
       const libraryStore =
         miroirConfig.client?.serverConfig?.storeSectionConfiguration?.[

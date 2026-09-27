@@ -8,7 +8,7 @@ import * as path from "path";
 import { fileURLToPath } from "url";
 
 import { miroirManualChunkLoadLogger } from "./vite/chunkLoadLoggerPlugin.js";
-import { webClientEnvironment } from "./vite/environmentConfig.js";
+import { MIROIR_TEST_CLIENT_CONFIGS, webClientEnvironment, webTestClientConfigs } from "./vite/environmentConfig.js";
 import { resolveManualChunk } from "./vite/manualChunks.js";
 import { miroirTestTimingConfig } from "../../scripts/vitest/timing.mjs";
 
@@ -44,11 +44,22 @@ function selectedWebClientEnvironment(command, mode) {
   return web;
 }
 
+/**
+ * #321: the realServer-* profiles of in-app test runs open the stores of the test environments; a
+ * served client seeds the missing copies. vitest runs get the same configurations, with the URLs of
+ * the environments.
+ */
+function realServerTestClientConfigs(command, mode) {
+  const served = command === "serve" && mode !== "test";
+  const configs = webTestClientConfigs({ cwd: __viteDirname, httpOnly: served && !certsReady, seed: served });
+  return { [MIROIR_TEST_CLIENT_CONFIGS]: JSON.stringify(configs) };
+}
+
 export default defineConfig(({ command, mode }) => {
   const web = selectedWebClientEnvironment(command, mode);
   const apiBase = web?.rootApiUrl ?? (certsReady ? 'https://localhost:3080' : 'http://localhost:3080');
   return {
-    define: web?.define ?? {},
+    define: { ...(web?.define ?? {}), ...realServerTestClientConfigs(command, mode) },
     // Absolute path so `root` does not depend on process cwd (npm -w, CI, or
     // an editor launching Vite from the repo root). On Windows only, normalize
     // drive-letter case: Vite's html-proxy cache compares root to HTML module

@@ -10,7 +10,12 @@ import { afterEach, describe, expect, it } from "vitest";
 import type { MiroirConfigForRestClient } from "miroir-core";
 
 import viteConfig from "../../vite.config.js";
-import { MIROIR_CLIENT_CONFIG, webClientEnvironment } from "../../vite/environmentConfig.js";
+import {
+  MIROIR_CLIENT_CONFIG,
+  MIROIR_TEST_CLIENT_CONFIGS,
+  webClientEnvironment,
+  webTestClientConfigs,
+} from "../../vite/environmentConfig.js";
 import { resolveRepoRoot } from "./integrationTestProfiles.js";
 
 const ADMIN_DEPLOYMENT = "18db21bf-f8d3-4f6a-8296-84b69f6dc48b";
@@ -80,6 +85,44 @@ describe("the web client configuration comes from the selected environment", () 
     expect(web.warnings).toEqual([
       'environment "test-sql" runs its client on an emulated server (tests): the web client calls its server at https://localhost:3080 instead',
     ]);
+  });
+
+  it("the realServer-* profiles of in-app test runs open the stores of the test environments (Slice 10)", async () => {
+    const configs = webTestClientConfigs({ cwd: repositoryRoot, httpOnly: false, seed: false });
+    expect(Object.keys(configs).sort()).toEqual([
+      "realServer-filesystem",
+      "realServer-indexedDb",
+      "realServer-mongodb",
+      "realServer-sql",
+    ]);
+    for (const [profile, config] of Object.entries(configs)) {
+      const client = config.client as MiroirConfigForRestClient;
+      const storage = profile.replace("realServer-", "");
+      expect(config.environment?.name).toBe(`test-${storage}`);
+      expect(client.serverConfig.storeSectionConfiguration[ADMIN_DEPLOYMENT].data).toEqual({
+        emulatedServerType: "filesystem",
+        directory: `.miroir/test-${storage}/admin/data`,
+      });
+      expect(JSON.stringify(config)).not.toContain("miroir-test-app_deployment-admin/assets");
+    }
+    const httpOnly = webTestClientConfigs({ cwd: repositoryRoot, httpOnly: true, seed: false });
+    expect((httpOnly["realServer-sql"].client as MiroirConfigForRestClient).serverConfig.rootApiUrl).toBe(
+      "http://localhost:3080",
+    );
+
+    // every Vite run injects them, vitest runs included (with the environments' URLs)
+    process.env.MIROIR_ENV = "dev";
+    const testConfig = await (viteConfig as any)({ command: "serve", mode: "test" });
+    expect(JSON.parse(testConfig.define[MIROIR_TEST_CLIENT_CONFIGS])).toEqual(configs);
+  });
+
+  it("the in-app test runner reads the injected realServer configurations, not configuration files", () => {
+    const source = readFileSync(
+      path.join(repositoryRoot, "packages/miroir-standalone-app/src/miroir-fwk/4-tests/integrationTestProfileAssets.ts"),
+      "utf-8",
+    );
+    expect(source).toContain(MIROIR_TEST_CLIENT_CONFIGS);
+    expect(source).not.toMatch(/miroirConfig\.browser-realServer/);
   });
 
   it("index.tsx reads the injected configuration, not configuration files of its own", () => {
