@@ -471,7 +471,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
         });
       }
 
-      let foreignKeyObjects: Record<string, any> = {};
+      const foreignKeyObjects: Record<string, any> = {};
       for (const attribute of Object.entries(currentObjectPresentEntity.mlSchema.definition) ?? []) {
         log.debug("selectEntityInstanceFromObjectQueryAndDomainState checking attribute", attribute);
         if (attribute[1].type != "uuid" || !querySelectorParams.foreignKeysForTransformer?.includes(attribute[0])) continue;

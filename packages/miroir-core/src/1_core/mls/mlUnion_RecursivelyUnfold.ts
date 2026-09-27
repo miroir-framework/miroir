@@ -19,7 +19,7 @@ export const mlUnion_recursivelyUnfold = <T extends MiroirModelEnvironment>(
     // TODO: handle case when resolved reference is itself a reference
     // TODO: handle case when resolved reference is itself union with references (is that done?)
 
-    let result: MlElement[] = mlUnion.definition.filter(
+    const result: MlElement[] = mlUnion.definition.filter(
       (a: MlElement) => a.type != "schemaReference" && a.type != "union"
     );
 

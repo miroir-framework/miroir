@@ -444,7 +444,7 @@ export const RootComponent = (props: RootComponentProps) => {
 
     // Helper function to escape CSS selectors
     const escapeCSS = (str: string) => {
-      return str.replace(/[!"#$%&'()*+,.\/:;<=>?@[\\\]^`{|}~\s]/g, "\\$&");
+      return str.replace(/[!"#$%&'()*+,./:;<=>?@[\\\]^`{|}~\s]/g, "\\$&");
     };
 
     // Try multiple strategies to find the element

@@ -129,7 +129,7 @@ function PageContent(): React.JSX.Element {
 
   log.debug("[PageDispatcher] render: wildcardPath=", wildcardPath, "page=", page, "search=", searchParams.toString());
 
-  const intended = `/?${searchParams.toString()}` || "/?page=home";
+  const intended = searchParams.toString() ? `/?${searchParams.toString()}` : "/?page=home";
   const hasToken = isUsableBearerToken(getAuthToken());
   if (page === "login" && getAuthenticationEnabled() && hasToken) {
     return <Navigate to={searchParams.get("return") || "/?page=home"} replace />;

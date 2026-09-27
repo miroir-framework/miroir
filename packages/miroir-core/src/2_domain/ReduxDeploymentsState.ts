@@ -21,7 +21,7 @@ export function getReduxDeploymentsStateIndex(
 //#########################################################################################
 export function getLocalCacheIndexEntityUuid(localCacheIndex: string): Uuid {
   const base = stripLocalCacheSegmentSuffix(localCacheIndex);
-  const entityUuid = new RegExp(/\_([0-9a-fA-F\-]+)$/).exec(base);
+  const entityUuid = new RegExp(/_([0-9a-fA-F-]+)$/).exec(base);
   if (entityUuid) {
     return entityUuid[1];
   } else {
@@ -30,7 +30,7 @@ export function getLocalCacheIndexEntityUuid(localCacheIndex: string): Uuid {
 }
 //#########################################################################################
 export function getLocalCacheIndexDeploymentUuid(localCacheIndex: string): Uuid {
-  const deploymentUuid = new RegExp(/^([0-9a-fA-F\-]+)\_/).exec(localCacheIndex);
+  const deploymentUuid = new RegExp(/^([0-9a-fA-F-]+)_/).exec(localCacheIndex);
   if (deploymentUuid) {
     return deploymentUuid[1];
   } else {
@@ -41,7 +41,7 @@ export function getLocalCacheIndexDeploymentUuid(localCacheIndex: string): Uuid 
 export function getLocalCacheIndexDeploymentSection(localCacheIndex: string): Uuid {
   const base = stripLocalCacheSegmentSuffix(localCacheIndex);
   const deploymentSection = new RegExp(
-    /^[0-9a-fA-F\-]+_([^_]+)_[0-9a-fA-F\-]+$/
+    /^[0-9a-fA-F-]+_([^_]+)_[0-9a-fA-F-]+$/
   ).exec(base);
   if (deploymentSection) {
     return deploymentSection[1];

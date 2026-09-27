@@ -66,7 +66,7 @@ export function UserAccountMenu(): React.JSX.Element | null {
           onClick={() => {
             closeMenu();
             setAuthToken(undefined);
-            const intended = `/?${searchParams.toString()}` || "/?page=home";
+            const intended = searchParams.toString() ? `/?${searchParams.toString()}` : "/?page=home";
             navigate(
               nextPageWhenAuthGate({
                 enabled: true,

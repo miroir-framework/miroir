@@ -271,7 +271,7 @@ export const reportSectionsFormValue = (
       };
     }
     case "inputReportSection":  {
-      let queryParametersDefaultValue = reportSection.definition.inputMLSchema
+      const queryParametersDefaultValue = reportSection.definition.inputMLSchema
         ? getDefaultValueForMlSchemaWithResolutionNonHook(
             "build",
             reportSection.definition.inputMLSchema,

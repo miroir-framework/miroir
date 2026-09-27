@@ -168,7 +168,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
   // const convertedTag = baseSchema.tag;
   const castTag = (baseSchema as any).tag as any;
 
-  let convertedTag:any = castTag?.value?{
+  const convertedTag:any = castTag?.value?{
     ...castTag,
     value: {...castTag.value, isTemplate: true}
   }: castTag;
@@ -762,7 +762,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
       // reference resolution is necessarily lazy, because only the name of the reference is used for now
       let convertedContextSubSchemas: Record<string, MlElement> = undefined as any;
       // let convertedContextSubSchemas: Record<string, MlElement> = {};
-      let convertedContextSubSchemasHasBeenApplied: boolean[] = [];
+      const convertedContextSubSchemasHasBeenApplied: boolean[] = [];
       const convertedContextSubSchemasReferences: Record<string, MlElement> = {};
       const convertedAbosulteReferences: Record<string, MlElement> = {};
       let resultReferenceDefinition = undefined;

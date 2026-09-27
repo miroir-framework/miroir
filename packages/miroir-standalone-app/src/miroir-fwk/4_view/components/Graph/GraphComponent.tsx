@@ -178,7 +178,7 @@ const renderBarChart = (
   }
 
   // Adjust margins for slanted labels if needed
-  let adjustedMargins = { ...config.margins };
+  const adjustedMargins = { ...config.margins };
   if (actualLabelPresentation === 'slanted') {
     const maxLabelLength = Math.max(...data.data.map(d => d.label.length));
     const estimatedLabelWidth = maxLabelLength * config.fontSize * 0.6;

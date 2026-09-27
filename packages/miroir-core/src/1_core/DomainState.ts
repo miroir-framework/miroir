@@ -4,7 +4,7 @@ import {
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export function DomainInstanceUuidIndexToArray(instances: EntityInstancesUuidIndex): EntityInstance[] {
-  return !!instances ? Object.values(instances) : [];
+  return instances ? Object.values(instances) : [];
 }
 
 // export getEntityInstancesFromDomainState():Instance[] {

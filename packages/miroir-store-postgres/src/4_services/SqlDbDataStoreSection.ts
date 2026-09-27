@@ -39,7 +39,7 @@ export class SqlDbDataStoreSection extends MixedSqlDbInstanceStoreSection implem
 
   // ##############################################################################################
   async getState():Promise<{[uuid:string]:EntityInstanceCollection}>{ // TODO: same implementation as in PersistenceStoreController
-    let result = {};
+    const result = {};
     log.info(this.logHeader,'getState this.getEntityUuids()',this.getEntityUuids());
     
     for (const parentUuid of this.getEntityUuids()) {

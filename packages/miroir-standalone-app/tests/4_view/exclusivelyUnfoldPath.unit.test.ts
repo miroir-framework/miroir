@@ -62,7 +62,7 @@ describe('exclusivelyUnfoldPath', () => {
 
   // ##############################################################################################
   it('handles already folded nodes in the tree', () => {
-    let tree: FoldedStateTree = {
+    const tree: FoldedStateTree = {
       ROOT: {
         branch1: {
           item1: 'folded'

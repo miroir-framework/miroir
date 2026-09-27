@@ -666,8 +666,7 @@ export async function handleBoxedQueryAction(
     "runBoxedQueryAction",
     JSON.stringify(runBoxedQueryAction, null, 2),
   );
-  let queryResult: Domain2QueryReturnType<DomainElementSuccess>;
-  queryResult = await selectorMap.runQuery(
+  const queryResult: Domain2QueryReturnType<DomainElementSuccess> = await selectorMap.runQuery(
     {
       extractor: runBoxedQueryAction.payload.query,
       extractorRunnerMap: selectorMap,
@@ -1098,7 +1097,7 @@ export const runQuery = <StateType>(
   for (const extractor of Object.entries(
     extractorParams?.extractor?.extractors ?? {}
   )) {
-    let result = innerSelectDomainElementFromExtractorOrCombiner(
+    const result = innerSelectDomainElementFromExtractorOrCombiner(
       state,
       context,
       extractorParams.extractor.pageParams ?? {},
@@ -1171,7 +1170,7 @@ export const runQuery = <StateType>(
   for (const combiner of Object.entries(
     extractorParams.extractor.combiners ?? {}
   )) {
-    let result = innerSelectDomainElementFromExtractorOrCombiner(
+    const result = innerSelectDomainElementFromExtractorOrCombiner(
       state,
       context,
       extractorParams.extractor.pageParams ?? {},
@@ -1215,7 +1214,7 @@ export const runQuery = <StateType>(
     Object.entries(
     extractorParams.extractor.runtimeTransformers ?? {}
   )) {
-    let result = applyExtractorTransformerInMemory(
+    const result = applyExtractorTransformerInMemory(
       transformerForBuildPlusRuntime[1],
       modelEnvironment,
       {

@@ -126,7 +126,7 @@ describe("substituteTransformerReferencesInMlElement", () => {
     });
   });
 
-  it("should subtitute schemaReference in real-case createObjectFromPairs transformerDefinition"), () => {
+  it("should subtitute schemaReference in real-case createObjectFromPairs transformerDefinition", () => {
     const result = substituteTransformerReferencesInMlElement(
       transformerDefinition.transformerInterface.transformerParameterSchema.transformerDefinition,
       {"transformer": "transformerForBuild"}
@@ -134,6 +134,16 @@ describe("substituteTransformerReferencesInMlElement", () => {
 
     expect(result).toEqual({
       type: "object",
+      extend: [
+        {
+          type: "schemaReference",
+          definition: {
+            eager: true,
+            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            relativePath: "transformer_orderBy",
+          },
+        },
+      ],
       definition: {
         applyTo: {
           type: "record",
@@ -166,5 +176,5 @@ describe("substituteTransformerReferencesInMlElement", () => {
         },
       },
     });
-  }
+  });
 });

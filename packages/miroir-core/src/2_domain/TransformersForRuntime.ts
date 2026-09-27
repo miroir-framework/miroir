@@ -201,7 +201,7 @@ export function getDefaultValueForMlSchemaWithResolution(
   reduxDeploymentsState?: ReduxDeploymentsState | undefined,
   relativeReferenceMlContext?: { [k: string]: MlElement }
 ): any {
-  let effectiveSchemaOrError = resolveConditionalSchema(
+  const effectiveSchemaOrError = resolveConditionalSchema(
     step,
     [], // transformerPath
     mlSchema,
@@ -248,7 +248,7 @@ export function getDefaultValueForMlSchemaWithResolution(
     );
     return undefined; // or propagate error as needed
   }
-  let effectiveSchema: MlElement = effectiveSchemaOrError as MlElement;
+  const effectiveSchema: MlElement = effectiveSchemaOrError as MlElement;
 
   if (effectiveSchema.optional && !forceOptional) {
     // log.info(
@@ -307,7 +307,7 @@ export function getDefaultValueForMlSchemaWithResolution(
         miroirEnvironment,
         relativeReferenceMlContext
       );
-      let result: Record<string, any> = {};
+      const result: Record<string, any> = {};
 
       // TODO: do not call this when the object has a initializeTo tag!
       Object.entries(resolvedObjectType.definition)
