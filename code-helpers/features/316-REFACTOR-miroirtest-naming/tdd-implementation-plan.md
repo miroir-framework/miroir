@@ -11,9 +11,9 @@
 
 Analysis: [`./analysis.md`](./analysis.md) · Rename map: [`./rename-map.md`](./rename-map.md) · Issue: https://github.com/miroir-framework/miroir/issues/316
 Prerequisites: [`../312-FEATURE-miroir-test-classification/`](../312-FEATURE-miroir-test-classification/) ✅, #315 ✅
-Working branch: `claude/miroirtest-naming-787r3a`
+Working branch: `316-REFACTOR-miroirtest-naming`
 
-**Resume note:** plan written, no slice started.
+**Resume note:** Slice 0 DONE.
 
 ---
 
@@ -32,7 +32,7 @@ This plan does **not** rename inner suite and test labels (later pass), derive t
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize names, kinds and name-driven behavior | ⬜ | `miroirTestNaming.316.phase0.unit.test.ts` |
+| 0 | Characterize names, kinds and name-driven behavior | ✅ | `miroirTestNaming.316.phase0.unit.test.ts` |
 | 1 | Select tests by mode: `unit` / `integ` / `ui` tags (tracer) | ⬜ | mode-tag guard + `testMiroir --tags ui` |
 | 2 | Naming guard + rename UI component suites | ⬜ | naming guard, `--suites ui.mlElementEditor.array` |
 | 3 | Rename runner and action suites (+ D13 stopgap, nonreg ids) | ⬜ | naming guard, runner-kind test, nonreg integ steps |
@@ -103,7 +103,7 @@ Vitest justification: guards check the integrity of the test model itself (every
 
 ## Slice 0 — Characterize names, kinds and name-driven behavior
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** a safety net that fails if the rename loses, duplicates or misclassifies a test.
 
@@ -122,7 +122,8 @@ The tests key on uuid, not name, so they stay valid through the rename.
 - `npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json`
 
 ### Realization
-_(pending)_
+- `rename-map.json` (66 entries: uuid, deployment, kind, oldName, newName) generated from the assets; `miroirTestNaming.316.phase0.unit.test.ts` reads it. 6 tests green: 66 uuids, unique new names, leaf-type kind equals map kind, new name starts with its kind, UI runner kinds (8 / 7 / 3), CLI launch kinds (18 runner-integration, 1 mixed, 47 unit).
+- Finding for Slice 1: only `miroirCoreTransformers` is integration-capable among the 11 transformer suites (`classifyMiroirTestSuiteExecutionCapabilities`: the others have no `integrationTestExpectedValue` and launch as `unit`). The D2 shorthand "transformer → unit + integ" was wrong; see Slice 1.
 
 ---
 
