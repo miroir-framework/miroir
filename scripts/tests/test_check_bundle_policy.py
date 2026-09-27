@@ -1,4 +1,4 @@
-"""Tests for scripts/check_bundle_policy.py (#326 Slice 12).
+"""Tests for scripts/check_bundle_policy.py (#326 Slice 12) and the `bundle` job of pr-checks.yml that runs it (Slice 14).
 
 The fixture `fixtures/bundle_policy/bundle-report.json` is the standalone build's real report trimmed to a few
 packages, chunks and findings; each test copies it, changes one thing, and runs the checker's command line.
@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import copy
 import json
+import os
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -153,3 +155,91 @@ def test_the_command_line_prints_each_violation_and_exits_1(
     output = capsys.readouterr().out
     assert "[allowlist] mongodb is new in the build" in output and "1 violation(s)" in output
 
+
+
+# Slice 14: the `bundle` job of pr-checks.yml.
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+APPS = ("miroir-standalone-app", "miroir-standalone-app-electron")
+
+
+def _pr_checks() -> dict:
+    yaml = pytest.importorskip("yaml")
+    return yaml.safe_load((REPO_ROOT / ".github" / "workflows" / "pr-checks.yml").read_text(encoding="utf-8"))
+
+
+def _step(job: dict, step_id: str) -> dict:
+    return next(step for step in job["steps"] if step.get("id") == step_id)
+
+
+def _git(repo: Path, *args: str) -> None:
+    subprocess.run(["git", *args], cwd=repo, check=True, capture_output=True)
+
+
+def _gate(tmp_path: Path, changed: str, event: str = "pull_request") -> str:
+    """Runs the path gate's script on a two-commit repository whose last commit changes `changed`."""
+    repo = tmp_path / "repo"
+    (repo / Path(changed).parent).mkdir(parents=True, exist_ok=True)
+    _git(tmp_path, "init", "-q", str(repo))
+    _git(repo, "commit", "-q", "--allow-empty", "-m", "base", "--no-gpg-sign")
+    (repo / changed).write_text("changed\n", encoding="utf-8")
+    _git(repo, "add", "-A")
+    _git(repo, "commit", "-q", "-m", "change", "--no-gpg-sign")
+    step = _step(_pr_checks()["jobs"]["bundle-paths"], "paths")
+    output = tmp_path / "github_output"
+    assert step["env"] == {"EVENT_NAME": "${{ github.event_name }}"}
+    env = {**os.environ, "EVENT_NAME": event, "GITHUB_OUTPUT": str(output)}
+    subprocess.run(["bash", "-eo", "pipefail", "-c", step["run"]], cwd=repo, env=env, check=True)
+    return output.read_text(encoding="utf-8").strip()
+
+
+@pytest.fixture
+def git_identity(monkeypatch: pytest.MonkeyPatch) -> None:
+    for name, value in {"GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t", "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t"}.items():
+        monkeypatch.setenv(name, value)
+
+
+@pytest.mark.parametrize(
+    ("changed", "expected"),
+    [
+        ("packages/miroir-core/src/index.ts", "run=true"),
+        ("package-lock.json", "run=true"),
+        ("scripts/check_bundle_policy.py", "run=true"),
+        (".github/workflows/pr-checks.yml", "run=true"),
+        ("docs/guides/why-miroir.md", "run=false"),
+        ("scripts/check_dependency_policy.py", "run=false"),
+    ],
+)
+def test_the_bundle_job_runs_only_when_the_pr_changes_what_it_builds(
+    tmp_path: Path, git_identity: None, changed: str, expected: str
+) -> None:
+    assert _gate(tmp_path, changed) == expected
+
+
+def test_the_bundle_job_always_runs_when_started_by_hand(tmp_path: Path, git_identity: None) -> None:
+    assert _gate(tmp_path, "docs/guides/why-miroir.md", event="workflow_dispatch") == "run=true"
+
+
+def test_the_bundle_job_is_skipped_by_the_gate() -> None:
+    jobs = _pr_checks()["jobs"]
+    assert jobs["bundle"]["needs"] == "bundle-paths"
+    assert jobs["bundle"]["if"] == "needs.bundle-paths.outputs.run == 'true'"
+    assert jobs["bundle-paths"]["outputs"]["run"] == "${{ steps.paths.outputs.run }}"
+
+
+def test_the_bundle_job_guards_both_apps_and_uploads_their_reports() -> None:
+    job = _pr_checks()["jobs"]["bundle"]
+    scripts = "\n".join(step.get("run", "") for step in job["steps"])
+    assert "npm ci" in scripts
+    for app in APPS:
+        assert any(line.strip().startswith("npm run build") and app in line.split() for line in scripts.splitlines())
+        policy = f"packages/{app}/bundle-policy.json"
+        assert (REPO_ROOT / policy).exists()
+        assert f"check_bundle_policy.py packages/{app}/" in scripts and policy in scripts
+    upload = next(step for step in job["steps"] if step.get("uses", "").startswith("actions/upload-artifact@"))
+    paths = upload["with"]["path"]
+    assert "packages/miroir-standalone-app/dist/.vite/bundle-report.*" in paths
+    assert "packages/miroir-standalone-app-electron/dist/bundle-report.json" in paths
+    assert "*.map" in paths
+    assert upload["with"]["include-hidden-files"] is True  # dist/.vite is a hidden directory
+    assert upload["if"] == "${{ !cancelled() }}"  # the reports matter most when a guard fails
