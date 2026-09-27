@@ -120,9 +120,30 @@ is a `MiroirTestDefinition` whose `definition` field is a `MiroirTestSuite` tree
 
 Field naming: `miroirTestType`, `miroirTestLabel`, `miroirTests`. Legacy `unitTest*` / `transformerTest*` fields are frozen.
 
+### Names and descriptions
+
+A MiroirTest `name` is its suite key (`--suites`, `--filter` root keys, the Miroir Tests page, nonreg step ids). It reads `<kind>.<subject>[.<variant>]`: segments separated by `.`, each in camelCase, only letters, digits, `.`, `_`, `-`. The kind is the first segment and follows from the leaf types:
+
+| Kind | Tests | Examples |
+|---|---|---|
+| `fn` | a TypeScript function (`functionCallTest`) | `fn.mlsToJsonSchema`, `fn.mlSchemaReferences.set` |
+| `query` | queries and extractors (`queryTest`) | `query.library.instances`, `query.virtualAttributes` |
+| `tr` | transformers (`transformerTest`) | `tr.core`, `tr.mlsTypeCheck` |
+| `action` | actions on a DomainController or an action scenario (`actionTest`) | `action.domainController.dataCrud.compositePk`, `action.scenario.evolutionTrace` |
+| `runner` | a Runner (`runnerTest`) | `runner.lendDocument`, `runner.mcp.getInstances` |
+| `ui` | React components (`reactComponentTest`) | `ui.mlElementEditor.array` |
+
+When leaf types mix, the first kind in the order `ui`, `runner`, `action`, `query`, `fn`, `tr` wins. The name says what is tested, never the issue it came from (that is `issue`) nor how it runs (that is the mode tag). The root `definition.miroirTestLabel` equals the name; inner labels are free. The deployment export of an instance is `miroirTest_` followed by the name with `.` replaced by `_` (`miroirTest_tr_core`).
+
+`description` is one sentence ending with a period: what is exercised, against what. No issue numbers, uuids, history (migrated, phase, slice) or setup notes: setup notes go in this document ([Integration suite notes](#notable-catalog-suites)).
+
+Guard: `packages/miroir-core/tests/5-tests/miroirTestNaming.unit.test.ts` checks characters, kind prefix, root label and descriptions on every instance.
+
 ### Tags
 
-Every MiroirTest instance carries `tags` (#312), next to `name` and `description`: one to three tags saying what the test exercises, main area first. They select tests (`--tags`, the tag chips of the Miroir Tests page) and sort them (the Tags column of the Miroir Tests grid). How a test runs (leaf kind, unit or integration, owning application) is computed from the definition, so it is not a tag.
+Every MiroirTest instance carries `tags` (#312), next to `name` and `description`: one mode tag, then one to three tags saying what the test exercises, main area first. They select tests (`--tags`, the tag chips of the Miroir Tests page) and sort them (the Tags column of the Miroir Tests grid).
+
+**Mode tags** (#316) say how the suite runs and are derived from its leaves (`miroirTestSuiteModeTags`): `ui` for a suite with `reactComponentTest` leaves, `unit` for a suite that runs in the unit launcher, `integ` for a suite that needs an integration session (runner, action, or transformer leaves with `integrationTestExpectedValue`). `tr.core` carries both `unit` and `integ`. The guard in `miroirTestTags.unit.test.ts` fails when an instance's mode tags differ from the derived ones, so a new test only needs the right leaves and the matching tag. `--tags ui --mode unit` on `miroir-core` runs every component suite.
 
 The allowed values are the `enum` inside the `tags` array schema of the MiroirTest Entity (`miroir_model/16dbfe28-…/a311f363-….json`), in this order:
 
@@ -148,6 +169,9 @@ The allowed values are the `enum` inside the `tags` array schema of the MiroirTe
 | `menu` | Menus |
 | `ai` | AI assistant integration |
 | `tools` | Generic helpers |
+| `unit` | Mode: runs in the unit launcher |
+| `integ` | Mode: needs an integration session |
+| `ui` | Mode: React component suite |
 
 The tags of each existing test: [`code-helpers/features/312-FEATURE-miroir-test-classification/tag-assignment.md`](../../code-helpers/features/312-FEATURE-miroir-test-classification/tag-assignment.md).
 
@@ -253,8 +277,8 @@ npm run testMiroir -w miroir-core -- --suites fn.mustache.extractDoubleBracePatt
   --filter '{"fn.mustache.extractDoubleBracePatterns":["should extract patterns with double braces"]}'
 
 # Legacy — env vars (still supported; argv wins when both are set)
-MIROIR_TEST_SUITES=mustache MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
-MIROIR_TEST_SUITES=alterObject,EntityPrimaryKey MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
+MIROIR_TEST_SUITES=fn.mustache.extractDoubleBracePatterns MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
+MIROIR_TEST_SUITES=fn.tools.alterObjectAtPath,fn.entityPrimaryKey MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
 MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
 ```
 

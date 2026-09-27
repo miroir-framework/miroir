@@ -81,7 +81,7 @@ Default `npm run nonreg` includes deployment `modelValidation` for **miroir**, *
 npm run testMiroir -w miroir-core -- --suites fn.mustache.extractDoubleBracePatterns --mode unit
 
 # Legacy — env (still supported)
-MIROIR_TEST_SUITES=mustache MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
+MIROIR_TEST_SUITES=fn.mustache.extractDoubleBracePatterns MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
 
 # Multiple suites
 npm run testMiroir -w miroir-core -- --suites fn.tools.alterObjectAtPath,fn.entityPrimaryKey --mode unit
@@ -289,8 +289,8 @@ VITE_TEST_MODE=true npx vitest run tests/4_services/miroirTest.schema.unit.test.
 
 ## Adding or migrating tests
 
-1. Create or edit a `MiroirTest` JSON instance in the application's MiroirTest folder (set `name` to the suite key).
-2. Optional: export `miroirTest_<name>` from the deployment package `index.ts` if other TypeScript wants a named import.
+1. Create or edit a `MiroirTest` JSON instance in the application's MiroirTest folder. Name it `<kind>.<subject>[.<variant>]` (`fn`, `query`, `tr`, `action`, `runner`, `ui`), set the root `miroirTestLabel` to the same value, write a one-sentence `description`, and put its mode tag (`unit`, `integ` or `ui`) first in `tags`. Rules: [Names and descriptions](../reference/testing.md#names-and-descriptions).
+2. Optional: export `miroirTest_<name with . replaced by _>` from the deployment package `index.ts` if other TypeScript wants a named import.
 3. Rebuild the deployment package if you added a named export.
 4. Run `tests/4_services/miroirTest.schema.unit.test.ts` to validate JSON shape.
 5. Run the new suite with `testMiroir` (`--suites <name>`). TypeScript files that have no MiroirTest entity are PLATFORM — launch those with `testByFile`.
