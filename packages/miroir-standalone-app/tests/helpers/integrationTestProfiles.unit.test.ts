@@ -15,6 +15,7 @@ const ENV_KEYS = [
   "MIROIR_TEST_POSTGRES_HOST",
   "MIROIR_TEST_ADMIN_SQL_SCHEMA",
   "MIROIR_ENV",
+  "MIROIR_TEST_CLIENT",
   "CI",
 ] as const;
 
@@ -38,16 +39,11 @@ describe("integrationTestProfiles (Gap D0)", () => {
     }
   });
 
-  it("emulated profiles name a test environment, realServer profiles a configuration file (#321)", () => {
+  it("every profile names a test environment; realServer profiles call a running server (#321)", () => {
     for (const profile of Object.values(INTEGRATION_TEST_PROFILES)) {
       expect(profile.logConfigFilename.endsWith(".json")).toBe(true);
-      if (profile.name.startsWith("emulatedServer-")) {
-        expect(profile.environment).toMatch(/^test-/);
-        expect(profile.miroirConfigFilename).toBeUndefined();
-      } else {
-        expect(profile.environment).toBeUndefined();
-        expect(profile.miroirConfigFilename).toContain(`miroirConfig.test-${profile.name}.json`);
-      }
+      expect(profile.environment).toMatch(/^test-/);
+      expect(profile.client).toBe(profile.name.startsWith("realServer-") ? "realServer" : undefined);
     }
   });
 
@@ -67,15 +63,6 @@ describe("integrationTestProfiles (Gap D0)", () => {
   it("throws for unknown profile", () => {
     expect(() => applyIntegrationTestProfile("nope")).toThrow(/Unknown integration test profile: nope/);
     expect(() => applyIntegrationTestProfile("nope")).toThrow(/emulatedServer-sql/);
-  });
-
-  it("respectExistingEnv does not overwrite pre-set VITE_MIROIR_TEST_CONFIG_FILENAME", () => {
-    process.env.VITE_MIROIR_TEST_CONFIG_FILENAME = "/custom/config.json";
-
-    applyIntegrationTestProfile("realServer-sql", { respectExistingEnv: true });
-
-    expect(process.env.VITE_MIROIR_TEST_CONFIG_FILENAME).toBe("/custom/config.json");
-    expect(process.env.VITE_MIROIR_LOG_CONFIG_FILENAME).toContain("config/logging");
   });
 
   it("an environment profile drops a VITE_MIROIR_TEST_CONFIG_FILENAME set in the shell, with a warning (#321)", () => {
@@ -146,20 +133,6 @@ describe("integrationTestProfiles (Gap D0)", () => {
     process.env.MIROIR_ENV = "dev";
     applyIntegrationTestProfile("emulatedServer-filesystem");
     expect(process.env.MIROIR_ENV).toBe("test-filesystem");
-  });
-
-  it("profiles without an environment leave MIROIR_ENV unset (#321)", () => {
-    applyIntegrationTestProfile("realServer-sql");
-
-    expect(process.env.MIROIR_ENV).toBeUndefined();
-  });
-
-  it("respectExistingEnv false: a profile without an environment drops the previous profile's (#321)", () => {
-    applyIntegrationTestProfile("emulatedServer-filesystem", { respectExistingEnv: false });
-    applyIntegrationTestProfile("realServer-sql", { respectExistingEnv: false });
-
-    expect(process.env.MIROIR_ENV).toBeUndefined();
-    expect(process.env.VITE_MIROIR_TEST_CONFIG_FILENAME).toContain("miroirConfig.test-realServer-sql.json");
   });
 
   it("sql, indexedDb and mongodb profiles select their test environment (#321)", () => {

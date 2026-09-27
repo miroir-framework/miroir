@@ -35,11 +35,7 @@ describe("resolveRealServerUiIntegrationProfile", () => {
     expect(
       resolveRealServerUiIntegrationProfile({
         argv: ["--storage", "mongodb"],
-        env: {
-          MIROIR_TEST_STORAGE: "sql",
-          VITE_MIROIR_TEST_CONFIG_FILENAME:
-            "./packages/miroir-standalone-app/tests/miroirConfig.test-realServer-filesystem.json",
-        },
+        env: { MIROIR_TEST_STORAGE: "sql" },
       }),
     ).toEqual({ storage: "mongodb", profileName: "realServer-mongodb" });
   });
@@ -60,18 +56,6 @@ describe("resolveRealServerUiIntegrationProfile", () => {
         env: {},
       }),
     ).toEqual({ storage: "filesystem", profileName: "realServer-filesystem" });
-  });
-
-  it("derives storage from VITE_MIROIR_TEST_CONFIG_FILENAME", () => {
-    expect(
-      resolveRealServerUiIntegrationProfile({
-        argv: [],
-        env: {
-          VITE_MIROIR_TEST_CONFIG_FILENAME:
-            "./packages/miroir-standalone-app/tests/miroirConfig.test-realServer-sql.json",
-        },
-      }),
-    ).toEqual({ storage: "sql", profileName: "realServer-sql" });
   });
 
   it("defaults to sql / realServer-sql", () => {

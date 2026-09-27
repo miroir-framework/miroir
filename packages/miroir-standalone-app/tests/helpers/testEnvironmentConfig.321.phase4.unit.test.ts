@@ -2,7 +2,7 @@
 // (set by --profile emulatedServer-filesystem): every section is a copy in .miroir/<environment>/,
 // seeded from the package assets, so no test writes into tracked files.
 // vitest, not MiroirTest: this is test-launcher wiring that reads files and environment variables.
-import { existsSync, readdirSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -13,7 +13,6 @@ import { resolveRepoRoot } from "./integrationTestProfiles.js";
 
 const ENTITY_DEPLOYMENT = "7959d814-400c-4e80-988f-a00fe582ab98";
 const ENTITY_MIROIR_USER = "d20d09e5-0685-4fc7-b9bd-fcfa3845127a";
-const REAL_SERVER_PROFILE_JSON = "./packages/miroir-standalone-app/tests/miroirConfig.test-realServer-sql.json";
 
 describe("test configuration from a test environment", () => {
   it("MIROIR_ENV=test-filesystem puts every store in .miroir/test-filesystem, seeded from the packages", async () => {
@@ -41,10 +40,20 @@ describe("test configuration from a test environment", () => {
     expect(readdirSync(path.join(adminData, ENTITY_DEPLOYMENT))).toEqual([]);
   });
 
-  it("a MIROIR_ENV that is not a test environment is ignored in favor of the profile file", async () => {
+  it("a MIROIR_ENV that is not a test environment is ignored in favor of the configuration file", async () => {
+    // under the repository (gitignored .miroir/): vitest imports no file outside it
+    const configFile = ".miroir/tests/miroirConfig.phase4.json";
+    mkdirSync(path.join(resolveRepoRoot(), ".miroir/tests"), { recursive: true });
+    writeFileSync(
+      path.join(resolveRepoRoot(), configFile),
+      JSON.stringify({
+        miroirConfigType: "client",
+        client: { emulateServer: false, serverConfig: { rootApiUrl: "https://localhost:3080", storeSectionConfiguration: {} } },
+      }),
+    );
     const { miroirConfig } = await loadTestConfigFiles({
       MIROIR_ENV: "dev",
-      VITE_MIROIR_TEST_CONFIG_FILENAME: REAL_SERVER_PROFILE_JSON,
+      VITE_MIROIR_TEST_CONFIG_FILENAME: configFile,
     });
 
     expect(miroirConfig.client.emulateServer).toBe(false);

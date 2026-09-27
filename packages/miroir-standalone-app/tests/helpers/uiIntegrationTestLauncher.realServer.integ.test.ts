@@ -2,7 +2,7 @@
  * Storage backend is selected via argv (preferred) or env:
  *   --storage sql|filesystem|indexedDb|mongodb   → profile `realServer-<storage>`
  *   --profile realServer-<storage>               → same (via testByFile)
- *   MIROIR_TEST_STORAGE / VITE_MIROIR_TEST_CONFIG_FILENAME (fallback)
+ *   MIROIR_TEST_STORAGE (fallback)
  * Default: sql → `realServer-sql`.
  *
  * Requires: miroir-server at https://localhost:3080 (same shared server as D9).

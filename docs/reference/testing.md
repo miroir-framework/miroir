@@ -472,12 +472,12 @@ Applied by `scripts/test-miroir-runner.ts` and `scripts/test-by-file.ts` via `ap
 | `emulatedServer-filesystem` | `environments/test-filesystem.json` | All store sections on filesystem (no Postgres) |
 | `emulatedServer-indexedDb` | `environments/test-indexedDb.json` | Miroir + library IndexedDB |
 | `emulatedServer-mongodb` | `environments/test-mongodb.json` | Miroir + library MongoDB (databases `test_mongodb_*`) |
-| `realServer-sql` | `miroirConfig.test-realServer-sql.json` | Client REST → live `miroir-server` (Postgres on server) |
-| `realServer-filesystem` | `miroirConfig.test-realServer-filesystem.json` | Client REST → live server (filesystem on server) |
-| `realServer-indexedDb` | `miroirConfig.test-realServer-indexedDb.json` | Client REST → live server (IndexedDB on server) |
-| `realServer-mongodb` | `miroirConfig.test-realServer-mongodb.json` | Client REST → live server (MongoDB on server) |
+| `realServer-sql` | `environments/test-sql.json`, `MIROIR_TEST_CLIENT=realServer` | Client REST → live `miroir-server`, which opens the Postgres stores of `test-sql` |
+| `realServer-filesystem` | `environments/test-filesystem.json`, `MIROIR_TEST_CLIENT=realServer` | Client REST → live server, filesystem stores of `test-filesystem` |
+| `realServer-indexedDb` | `environments/test-indexedDb.json`, `MIROIR_TEST_CLIENT=realServer` | Client REST → live server, IndexedDB stores of `test-indexedDb` |
+| `realServer-mongodb` | `environments/test-mongodb.json`, `MIROIR_TEST_CLIENT=realServer` | Client REST → live server, MongoDB stores of `test-mongodb` |
 
-Transformer session defaults (`MIROIR_TEST_APP_STORE_TYPE`, `MIROIR_TEST_POSTGRES_HOST`, …) are **derived from the profile JSON** (`deriveTestSessionDefaultsFromMiroirConfig`).
+Transformer session defaults (`MIROIR_TEST_APP_STORE_TYPE`, `MIROIR_TEST_POSTGRES_HOST`, …) are **derived from the profile's environment** (`deriveTestSessionDefaultsFromMiroirConfig`).
 
 #### CI matrix example
 

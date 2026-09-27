@@ -7,6 +7,8 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 
+import type { MiroirConfigForRestClient } from "miroir-core";
+
 import viteConfig from "../../vite.config.js";
 import { MIROIR_CLIENT_CONFIG, webClientEnvironment } from "../../vite/environmentConfig.js";
 import { resolveRepoRoot } from "./integrationTestProfiles.js";
@@ -56,7 +58,8 @@ describe("the web client configuration comes from the selected environment", () 
   it("served without certificates, the client calls the server over HTTP like the server listens; a build keeps the environment's URL", () => {
     const env = { MIROIR_ENV: "dev" };
     const url = (command: "serve" | "build", tls: boolean) =>
-      webClientEnvironment({ cwd: repositoryRoot, env, command, tls }).clientConfig.client.serverConfig.rootApiUrl;
+      (webClientEnvironment({ cwd: repositoryRoot, env, command, tls }).clientConfig.client as MiroirConfigForRestClient)
+        .serverConfig.rootApiUrl;
     expect(url("serve", true)).toBe("https://localhost:3080");
     expect(url("serve", false)).toBe("http://localhost:3080");
     expect(url("build", false)).toBe("https://localhost:3080");

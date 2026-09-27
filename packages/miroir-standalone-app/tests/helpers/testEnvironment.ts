@@ -7,6 +7,7 @@
 import { isTestEnvironment, MiroirLoggerFactory, type LoggerInterface, type MiroirConfigClient } from "miroir-core";
 import {
   environmentClientConfig,
+  environmentRealServerClientConfig,
   missingConnectionPasswords,
   resolveEnvironmentFromFiles,
   seedEnvironmentState,
@@ -29,7 +30,11 @@ export const DEFAULT_TEST_ENVIRONMENT = "test-sql";
 export type TestEnvironment = {
   name: string;
   resolved: ResolvedEnvironment;
-  /** Emulated-server client configuration, with the Postgres password from the environment's `passwordEnv`. */
+  /**
+   * Client configuration, with the Postgres password from the environment's `passwordEnv`: the client
+   * emulates the server, or with MIROIR_TEST_CLIENT=realServer (realServer-* profiles) calls a running
+   * miroir-server with the stores of the environment.
+   */
   miroirConfig: MiroirConfigClient;
 };
 
@@ -64,5 +69,9 @@ export function openTestEnvironment(name: string, env: NodeJS.ProcessEnv = proce
       log.warn(warning);
     }
   }
-  return { name, resolved, miroirConfig: environmentClientConfig(resolved, runEnv) };
+  const miroirConfig =
+    runEnv.MIROIR_TEST_CLIENT === "realServer"
+      ? environmentRealServerClientConfig(resolved, runEnv)
+      : environmentClientConfig(resolved, runEnv);
+  return { name, resolved, miroirConfig };
 }

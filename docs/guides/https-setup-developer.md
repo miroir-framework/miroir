@@ -142,9 +142,8 @@ These tests open real HTTPS connections to `localhost:3080`. Make sure `NODE_EXT
 
 ```bash
 NODE_EXTRA_CA_CERTS="$(mkcert -CAROOT)/rootCA.pem" \
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-realServer-filesystem.json \
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
-npm run testByFile -w miroir-standalone-app -- DomainController.integ
+npm run testByFile -w miroir-standalone-app -- --profile realServer-filesystem DomainController.integ
 ```
 
 ---
