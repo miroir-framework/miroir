@@ -2274,6 +2274,8 @@ export class DomainController implements DomainControllerInterface {
                   );
                   return replayActionResult;
                 }
+                // #321: listeners see a committed instance action like a direct one
+                this.notifyInstanceActionListeners(replayAction.payload.instanceAction, applicationDeploymentMap);
                 break;
               }
               // case "modelAction":

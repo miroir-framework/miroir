@@ -33,6 +33,8 @@ import { repositoryRoot, temporaryRepository } from "./cliTestSupport";
 
 const ADMIN_APPLICATION = "55af124e-8c05-4bae-a3ef-0933d41daa92";
 const INSTANCE_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";
+const MODEL_ENDPOINT = "7947ae40-eb34-4149-887b-15a9021e714e";
+const TRANSACTIONAL_INSTANCE_ENDPOINT = "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5";
 const LIBRARY_DEPLOYMENT = "f714bb2f-a12d-4e71-a03b-74dcedea6eb4";
 
 const SCRATCH = {
@@ -69,28 +71,67 @@ async function adminAction(
   expect(result instanceof Action2Error ? result.errorMessage : "ok").toBe("ok");
 }
 
+async function handle(domainController: DomainControllerInterface, action: unknown): Promise<void> {
+  const result = await domainController.handleAction(
+    action as any,
+    defaultSelfApplicationDeploymentMap,
+    defaultMetaModelEnvironment,
+  );
+  expect(result instanceof Action2Error ? result.errorMessage : "ok").toBe("ok");
+}
+
 /** The Admin rows the deployApplication Runner writes, in its order. */
+function scratchRows(appsDirectory: string): EntityInstance[][] {
+  return [
+    [
+      {
+        uuid: SCRATCH.selfApplication,
+        parentName: "AdminApplication",
+        parentUuid: ENTITY_ADMIN_APPLICATION_UUID,
+        name: "Scratch",
+        defaultLabel: "The Scratch Application.",
+        selfApplication: SCRATCH.selfApplication,
+      } as EntityInstance,
+    ],
+    [
+      {
+        uuid: SCRATCH.deployment,
+        parentName: "Deployment",
+        parentUuid: ENTITY_DEPLOYMENT_UUID,
+        name: "Deployment of application Scratch",
+        selfApplication: SCRATCH.selfApplication,
+        configuration: scratchConfiguration(appsDirectory),
+      } as EntityInstance,
+    ],
+  ];
+}
+
 async function installScratch(domainController: DomainControllerInterface, appsDirectory: string): Promise<void> {
-  await adminAction(domainController, "createInstance", [
-    {
-      uuid: SCRATCH.selfApplication,
-      parentName: "AdminApplication",
-      parentUuid: ENTITY_ADMIN_APPLICATION_UUID,
-      name: "Scratch",
-      defaultLabel: "The Scratch Application.",
-      selfApplication: SCRATCH.selfApplication,
-    } as EntityInstance,
-  ]);
-  await adminAction(domainController, "createInstance", [
-    {
-      uuid: SCRATCH.deployment,
-      parentName: "Deployment",
-      parentUuid: ENTITY_DEPLOYMENT_UUID,
-      name: "Deployment of application Scratch",
-      selfApplication: SCRATCH.selfApplication,
-      configuration: scratchConfiguration(appsDirectory),
-    } as EntityInstance,
-  ]);
+  for (const objects of scratchRows(appsDirectory)) {
+    await adminAction(domainController, "createInstance", objects);
+  }
+}
+
+/** The same rows written in a transaction, then committed. */
+async function installScratchInTransaction(
+  domainController: DomainControllerInterface,
+  appsDirectory: string,
+): Promise<void> {
+  for (const objects of scratchRows(appsDirectory)) {
+    await handle(domainController, {
+      actionType: "transactionalInstanceAction",
+      endpoint: TRANSACTIONAL_INSTANCE_ENDPOINT,
+      payload: {
+        application: ADMIN_APPLICATION,
+        instanceAction: {
+          actionType: "createInstance",
+          endpoint: INSTANCE_ENDPOINT,
+          payload: { application: ADMIN_APPLICATION, applicationSection: "data", objects },
+        },
+      },
+    });
+  }
+  await handle(domainController, { actionType: "commit", endpoint: MODEL_ENDPOINT, payload: { application: ADMIN_APPLICATION } });
 }
 
 function readLocal(root: string): any {
@@ -167,6 +208,27 @@ describe("recording the applications a running server installs and drops", () =>
       `  removed scratch (deployment ${SCRATCH.deployment})`,
       "environments/local.json: updated",
       `  removed library (deployment ${LIBRARY_DEPLOYMENT}): null, since dev installs it`,
+    ]);
+  }, 120000);
+
+  it("an install committed from a transaction is recorded too", async () => {
+    const root = temporaryCheckout();
+    writeFileSync(path.join(root, "environments/local.json"), JSON.stringify({ extends: "dev" }));
+    const { resolved, domainController } = await boot(root);
+    const lines: string[] = [];
+    recordInstallsOf(domainController, resolved, (line) => lines.push(line));
+
+    await installScratchInTransaction(domainController, ".miroir/local/apps");
+    expect(readLocal(root).applications).toEqual({
+      scratch: {
+        selfApplication: SCRATCH.selfApplication,
+        deployment: SCRATCH.deployment,
+        configuration: scratchConfiguration(".miroir/local/apps"),
+      },
+    });
+    expect(lines).toEqual([
+      "environments/local.json: updated",
+      `  recorded scratch: deployment ${SCRATCH.deployment} (Scratch), given configuration`,
     ]);
   }, 120000);
 
