@@ -937,8 +937,12 @@ export type { JsonSchema, MlsToJsonSchemaContext } from "./1_core/mls/MlsToJsonS
 export {
   deriveEnvironmentDeployments,
   ENVIRONMENT_STATE_ROOT,
+  REQUIRED_ENVIRONMENT_APPLICATIONS,
+  resolveEnvironment,
+  type EnvironmentDefinition,
   type EnvironmentDeployment,
   type EnvironmentDeploymentsResult,
+  type EnvironmentResolution,
 } from "./1_core/environment/Environment";
 export { mlsToJsonSchema } from "./1_core/mls/MlsToJsonSchema";
 export {

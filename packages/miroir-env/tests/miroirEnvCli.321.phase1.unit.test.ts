@@ -2,44 +2,16 @@
 // vitest, not MiroirTest: file loading, repository-root discovery and CLI exit codes are not
 // reachable through the ML. The resolution rules themselves are the MiroirTest suite
 // fn.environment.deriveDeployments.
-import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
-import { main } from "../src/cli";
-
-const packageDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const repositoryRoot = path.resolve(packageDirectory, "../..");
-
-type RunResult = { exitCode: number; stdout: string; stderr: string };
-
-async function run(argv: string[], cwd: string): Promise<RunResult> {
-  let stdout = "";
-  let stderr = "";
-  const exitCode = await main(argv, {
-    cwd,
-    env: {},
-    stdout: (text) => (stdout += text),
-    stderr: (text) => (stderr += text),
-  });
-  return { exitCode, stdout, stderr };
-}
-
-function temporaryRepository(environments: Record<string, unknown>): string {
-  const root = mkdtempSync(path.join(tmpdir(), "miroir-env-"));
-  writeFileSync(path.join(root, "package.json"), JSON.stringify({ name: "r", workspaces: ["packages/*"] }));
-  mkdirSync(path.join(root, "environments"));
-  for (const [name, definition] of Object.entries(environments)) {
-    writeFileSync(path.join(root, "environments", `${name}.json`), JSON.stringify(definition));
-  }
-  return root;
-}
+import { packageDirectory, repositoryRoot, run, temporaryRepository } from "./cliTestSupport";
 
 describe("miroir-env show", () => {
   it("resolves dev to the model, data and modelVersion sections the dev server opens today", async () => {
-    const result = await run(["show", "--json"], repositoryRoot);
+    const result = await run(["show", "--json", "--name", "dev"], repositoryRoot);
     expect(result.stderr).toBe("");
     expect(result.exitCode).toBe(0);
 
@@ -64,13 +36,13 @@ describe("miroir-env show", () => {
   });
 
   it("finds the repository root from a package subdirectory", async () => {
-    const result = await run(["show", "--json"], path.join(repositoryRoot, "packages/miroir-core"));
+    const result = await run(["show", "--json", "--name", "dev"], path.join(repositoryRoot, "packages/miroir-core"));
     expect(result.exitCode).toBe(0);
     expect(JSON.parse(result.stdout).repositoryRoot).toBe(repositoryRoot);
   });
 
   it("prints a readable view by default", async () => {
-    const result = await run(["show"], repositoryRoot);
+    const result = await run(["show", "--name", "dev"], repositoryRoot);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("environment dev");
     expect(result.stdout).toContain("packages/miroir-test-app_deployment-library/assets/library_model");

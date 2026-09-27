@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Inventory: [`./current-state-inven
 Related: #323 (server bundle ignores `--config`; Slice 3 must not rely on `--config`)
 Working branch: `claude/environment-configuration-7z5rjb` (from `_integration`)
 
-**Resume note:** approved by A 2026-09-27. Slices 0–1 DONE.
+**Resume note:** approved by A 2026-09-27. Slices 0–2 DONE.
 
 ---
 
@@ -35,8 +35,8 @@ This plan does **not** touch the release path, Docker, Electron, miroir-cli or s
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize tracked writes and today's deployment map | ✅ | `scripts/tests/test_tracked_assets_guard.py`, `unit-321-tracked-assets` baseline |
-| 1 | Tracer: `miroir-env show` resolves `dev` | ✅ | MiroirTest `fn.environment.resolveEnvironment` + `miroirEnvCli.321.phase1.unit.test.ts` |
-| 2 | Personal environment: `local.json`, `MIROIR_ENV`, `extends` | ⬜ | `fn.environment.resolveEnvironment` (merge leaves) + CLI test |
+| 1 | Tracer: `miroir-env show` resolves `dev` | ✅ | MiroirTest `fn.environment.deriveDeployments` + `miroirEnvCli.321.phase1.unit.test.ts` |
+| 2 | Personal environment: `local.json`, `MIROIR_ENV`, `extends` | ✅ | `fn.environment.resolveEnvironment` (merge leaves) + CLI test |
 | 3 | Server boots from the environment, Admin data in state | ⬜ | `serverBootFromEnvironment.321.phase3.integ.test.ts` |
 | 4 | Tests run on `test-filesystem` without tracked writes | ⬜ | `nonreg:filesystem` + tracked-assets guard clean |
 | 5 | `test-sql`, `test-indexedDb`, `test-mongodb`; profile JSONs and test Admin copy retired | ⬜ | `nonreg:default` (Postgres) + guard |
@@ -195,7 +195,7 @@ npm run test -w miroir-core -- ''
 
 ## Slice 2 — Personal environment: `local.json`, `MIROIR_ENV`, `extends`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -226,6 +226,11 @@ git check-ignore environments/local.json .miroir/x
 ```
 
 ### Realization
+
+- `resolveEnvironment(definitions, name)` in `Environment.ts` returns `{ status: "ok", chain, environment } | { status: "error", errors }`, `chain` child first. Merge: objects key by key, arrays and scalars replaced, `null` removes the key; `extends` dropped and `name` set. Unknown names, unknown parents and cycles are reported before anything else; the merged result is then validated with the `miroirEnvironment` Zod schema (files are partial overrides, so a single file is not validated alone), then the rules: `REQUIRED_ENVIRONMENT_APPLICATIONS` (`miroir`, `admin`) and no `live` section (the `admin` section included) in a `test-*` environment. Input type `EnvironmentDefinition` (`{ extends?: string } & Record<string, unknown>`).
+- MiroirTest `fn.environment.resolveEnvironment`: 9 leaves.
+- `miroir-env`: `readEnvironmentDefinitions` reads every `environments/*.json` (invalid JSON or a non-object is an error naming the file); `selectEnvironment` picks `--name`, `MIROIR_ENV`, `environments/local.json`, `dev`, in that order, and reports it as `source`. `show` prints `environment <name>, selected by <source>, defined by <file> <- <parent file>`. The Slice 1 tests on the tracked repository now pass `--name dev`, so a developer's `local.json` does not change them; shared helpers in `tests/cliTestSupport.ts`. CLI test `miroirEnvCli.321.phase2.unit.test.ts` (8 tests).
+- `.gitignore`: `environments/local.json`, `.miroir/`.
 
 ---
 

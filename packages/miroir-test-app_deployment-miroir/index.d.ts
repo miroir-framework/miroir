@@ -234,6 +234,7 @@ export declare const miroirTest_fn_mlSchemaReferences_set: any;
 export declare const miroirTest_fn_mlsToCopilotKitParameter: any;
 export declare const miroirTest_fn_mlsToJsonSchema: any;
 export declare const miroirTest_fn_environment_deriveDeployments: any;
+export declare const miroirTest_fn_environment_resolveEnvironment: any;
 export declare const miroirTest_fn_mlsToMls_summary: any;
 export declare const miroirTest_fn_mlSchemaReferences_transitiveDependencySet: any;
 export declare const miroirTest_tr_mlsTypeCheck: any;

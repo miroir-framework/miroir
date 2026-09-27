@@ -20,11 +20,13 @@ const USAGE = `Usage: miroir-env <command> [options]
 
 Commands:
   show [--json] [--name <environment>]   print the resolved environment
+
+Environment selection, first match wins: --name, MIROIR_ENV, environments/local.json, dev.
 `;
 
 function describe(resolved: ResolvedEnvironment): string {
   const lines = [
-    `environment ${resolved.name} (${resolved.source}), from ${resolved.files.join(" <- ")}`,
+    `environment ${resolved.name}, selected by ${resolved.source}, defined by ${resolved.files.join(" <- ")}`,
     `repository root ${resolved.repositoryRoot}`,
   ];
   if (resolved.environment.description) {
@@ -54,7 +56,7 @@ export async function main(argv: string[], io: CliIo): Promise<number> {
     return command === undefined || command === "--help" || command === "-h" ? 0 : 2;
   }
   try {
-    const resolved = resolveEnvironmentFromFiles({ cwd: io.cwd, name: option(args, "--name") });
+    const resolved = resolveEnvironmentFromFiles({ cwd: io.cwd, env: io.env, name: option(args, "--name") });
     io.stdout(args.includes("--json") ? JSON.stringify(resolved, null, 2) + "\n" : describe(resolved));
     return 0;
   } catch (error) {
