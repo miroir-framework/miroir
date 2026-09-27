@@ -56,13 +56,15 @@ One resolver reads the selected environment and produces what each runtime needs
 
 ## Round 2 questions
 
+**Answered 2026-09-27: all recommendations accepted.** A: releasing is not part of this issue, only dev and test configuration; commands are prefixed `miroir-` (`miroir-env show|check|import|prune`).
+
 ❓ **R2-Q1 - Which `ci/` pieces to keep**: [inventory §5.5](current-state-inventory.md) splits them in two. The release path is in use: `ci/release/` (release tree, tested by `release-tree.yml`), `ci/docker/build_miroir.sh` + `ci/lib/common.sh` + `docker/miroir-server/Dockerfile` (Docker job of `build-linux-runnables.yml`), and `ci/claude-cloud-env-script.sh`. The Jenkins era is referenced only by itself: `Jenkinsfile`, `ci/build/*.sh`, `ci/tests/config/*.json`, `docker/ci/`, `docker/ci-builder-electronDEFUNCT/`, plus the older root `Dockerfile` / `docker-compose.yml`, which cannot build as written.
 
 ➡️ Keep the release path and make it consume a tracked `docker` environment (its seed then comes from the environment instead of the `docker/seed` overlay). Delete the Jenkins-era set and the root `Dockerfile` / `docker-compose.yml`, after the release.
 
 ❓ **R2-Q2 - Release timing**: release from `_integration` as it is now, before any #321 change lands, or after?
 
-➡️ Before. #321 first ships only documents and the cleanup waits for the release. Separately, the release Docker image looks like it reads its config from `/miroir/config/` while the Dockerfile puts it in `/miroir/release/` (inventory §4, not run): worth a small fix of its own before the release, which I can do in a separate thread.
+➡️ Before. #321 first ships only documents and the cleanup waits for the release. ~~Separately, the release Docker image looks like it reads its config from `/miroir/config/` while the Dockerfile puts it in `/miroir/release/`.~~ [Correction: wrong. The ncc bundle always reads `release/miroirConfig.server.json`, which is where the Dockerfile puts it; the real defect is that `--config` is ignored by the bundle, see inventory §4.]
 
 ❓ **R2-Q3 - Where the files live**: tracked definitions in a top-level `environments/` folder (`dev.json`, `test-filesystem.json`, `test-sql.json`, `test-indexedDb.json`, `test-mongodb.json`, `cloud-agent.json`, `docker.json`), the personal `environments/local.json` gitignored, and environment state in a gitignored `.miroir/<environment>/` at the repo root.
 
