@@ -9,7 +9,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/326
 Working branches: PR 1 `claude/build-hardening-81mz9d`, PR 2 `claude/build-hardening-bundles` (D17), both from `_integration`
 
-**Resume note:** PR 1 (Slices 0–9 and 7b) DONE 2026-09-27 on `claude/build-hardening-81mz9d` (PR #334). PR 2 on `claude/build-hardening-bundles`, branched from PR 1's head: Slices 10 and 11 DONE; next: Slice 12. Lockfiles are regenerated with npm 11 and `--before` (Slice 4 realization).
+**Resume note:** PR 1 (Slices 0–9 and 7b) DONE 2026-09-27 on `claude/build-hardening-81mz9d` (PR #334). PR 2 on `claude/build-hardening-bundles`, branched from PR 1's head: Slices 10 to 12 DONE; next: Slice 13. Lockfiles are regenerated with npm 11 and `--before` (Slice 4 realization).
 
 ---
 
@@ -39,7 +39,7 @@ This plan does **not** cut bundle size (D19: separate issue opened in Slice 17 f
 | 9 | 1 | PR 1 wrap-up: gate docs, nonreg step, full nonreg | ✅ | nonreg:unit + nonreg:filesystem green |
 | 10 | 2 | Vendor sourcemaps restored | ✅ | `bundleSourcemaps.326.phase10.unit.test.ts` |
 | 11 | 2 | Tracer: the build prints and writes the attribution report | ✅ | `bundleReport.326.phase11.unit.test.ts` + `bundleReportCore.326.phase11.unit.test.ts` |
-| 12 | 2 | Allowlist and eager budget guards | ⬜ | `test_check_bundle_policy.py` + real report exits 0 |
+| 12 | 2 | Allowlist and eager budget guards | ✅ | `test_check_bundle_policy.py` + real report exits 0 |
 | 13 | 2 | Electron main bundled with esbuild, traced and guarded | ⬜ | esbuild metafile report + `electron-builder --dir` content check |
 | 14 | 2 | Bundle guards run on PRs | ⬜ | `bundle` job in `pr-checks.yml` |
 | 15 | 2 | Sourcemaps kept out of the Electron package | ⬜ | asar / resources listing has no `.map` |
@@ -726,7 +726,7 @@ RUN_TEST=bundleReport.326.phase11 npm run testByFile -w miroir-standalone-app --
 
 ## Slice 12 — Allowlist and eager budget guards
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -756,6 +756,16 @@ python scripts/check_bundle_policy.py packages/miroir-standalone-app/dist/.vite/
 ```
 
 ### Realization
+
+- `scripts/check_bundle_policy.py <report> <policy> [--init]`, three rules:
+  - `allowlist`: every npm and workspace package of the build is listed under `eager` (some of its code loads with the page) or `lazy`. A new package, or a `lazy` one that now loads with the page, fails with its import chain. **Deviations:** workspace packages count too (a `miroir-store-*` package reaching the page matters as much as an npm one), and so does each Node built-in the build empties for the browser, named `node:<module> via <importing package>` (D25), when its importer ships. The lists are a ratchet like the budget: a listed package that left the build, or an `eager` one that became lazy, fails until the policy says so; a name in both lists fails.
+  - `forbidden`: no package matching a `forbiddenEager` glob loads with the page, even if listed. The policy holds `@testing-library/*`, the #286 rule.
+  - `budget`: eager gzip above `eagerGzipBaseline` × 1.02 fails with both numbers; below × 0.98 fails and gives the new baseline to write.
+  - `--init` writes the lists and the baseline from the report and keeps `$comment`, `eagerGzipTolerance` and `forbiddenEager` from the existing policy.
+- The report gained `via` on each package and finding: the chain condensed to one step per package (`src/…/Foo.tsx → miroir-core → zod`), which the checker prints; the build's table prints the same string.
+- Tests: `scripts/tests/test_check_bundle_policy.py`, 17 cases on `scripts/tests/fixtures/bundle_policy/bundle-report.json`, the real report trimmed to 10 packages, 3 chunks and 6 findings. Written with the checker; against a checker whose rules are removed, 11 of them fail (the 6 others check `--init`, the passing cases and the missing-report message). No pytest case reads the real build, so `scripts/tests` stays independent of a build; the real check is the Validation below and, from Slice 14, the CI job.
+- `packages/miroir-standalone-app/bundle-policy.json` from today's build (D19): 392 eager and 156 lazy entries, eager gzip baseline 2,709,170 bytes (the same in the two builds of this slice). The eager list includes `miroir-test-app_deployment-admin`, `-library` and `-miroir`, and 7 Node built-ins (`node:fs via miroir-store-indexedDb`, `node:os via colors`, and 5 from the `crypto` polyfill).
+- Validation: `scripts/tests` 138 passed; build passes; the checker passes on the real report (0 violations); `bundleReport.326.phase11` 6/6 and `bundleReportCore.326.phase11` 12/12 after the `via` change; ESLint clean on `vite/`.
 
 ---
 

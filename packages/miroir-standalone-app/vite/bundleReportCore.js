@@ -258,6 +258,7 @@ export function buildBundleReport({ chunks, graph, context, externalized = [] })
   const linksFor = (id, eagerChunk) => (eagerChunk && eagerLinks.has(id) ? eagerLinks : allLinks);
   const chainOf = (id, eagerChunk = eager.has(chunkOfModule.get(id))) =>
     importChain(id, linksFor(id, eagerChunk), context.root);
+  const viaOf = (chain) => condensedChain(chain, (path) => attributeModule(path, context).name);
   const depthOf = (id, eagerChunk) => {
     const links = linksFor(id, eagerChunk);
     let depth = 0;
@@ -296,7 +297,10 @@ export function buildBundleReport({ chunks, graph, context, externalized = [] })
       renderedBytes,
       packages: [...packages.values()]
         .sort((a, b) => b.renderedBytes - a.renderedBytes || a.name.localeCompare(b.name))
-        .map(({ first, ...entry }) => ({ ...entry, chain: chainOf(first, eagerChunk) })),
+        .map(({ first, ...entry }) => {
+          const chain = chainOf(first, eagerChunk);
+          return { ...entry, chain, via: viaOf(chain) };
+        }),
     };
   });
   reportChunks.sort(
@@ -312,8 +316,8 @@ export function buildBundleReport({ chunks, graph, context, externalized = [] })
     packages: packageTotals(reportChunks),
     chunks: reportChunks,
     findings: [
-      ...externalizedFindings(externalized, { attribution, chainOf, chunkOfModule, root: context.root }),
-      ...defeatedDynamicImports(chunks, graph, { chainOf, root: context.root }),
+      ...externalizedFindings(externalized, { attribution, chainOf, viaOf, chunkOfModule, root: context.root }),
+      ...defeatedDynamicImports(chunks, graph, { chainOf, viaOf, root: context.root }),
     ],
   };
 }
@@ -333,32 +337,40 @@ function sizeTotals(chunks) {
 }
 
 /**
- * One line per package over the whole build: `eager` when any of its code loads with the page.
+ * One line per package over the whole build: `eager` when any of its code loads with the page,
+ * with the shortest chain from a chunk of that load kind.
  * @param {ReturnType<typeof buildBundleReport>["chunks"]} chunks
  */
 function packageTotals(chunks) {
   const totals = new Map();
   for (const chunk of chunks) {
-    for (const entry of chunk.packages) {
-      const total = totals.get(entry.name) ?? {
-        name: entry.name,
-        kind: entry.kind,
-        loadKind: "lazy",
-        renderedBytes: 0,
-        eagerRenderedBytes: 0,
-        chunks: 0,
-        chain: entry.chain,
-      };
-      total.renderedBytes += entry.renderedBytes;
+    const eagerChunk = chunk.loadKind !== "lazy";
+    for (const { name, kind, renderedBytes, chain, via } of chunk.packages) {
+      const total = totals.get(name);
+      if (!total) {
+        totals.set(name, {
+          name,
+          kind,
+          loadKind: eagerChunk ? "eager" : "lazy",
+          renderedBytes,
+          eagerRenderedBytes: eagerChunk ? renderedBytes : 0,
+          chunks: 1,
+          chain,
+          via,
+        });
+        continue;
+      }
+      const totalEager = total.loadKind === "eager";
+      if ((eagerChunk && !totalEager) || (eagerChunk === totalEager && chain.length < total.chain.length)) {
+        total.chain = chain;
+        total.via = via;
+      }
+      total.renderedBytes += renderedBytes;
       total.chunks += 1;
-      if (chunk.loadKind !== "lazy") {
+      if (eagerChunk) {
         total.loadKind = "eager";
-        total.eagerRenderedBytes += entry.renderedBytes;
+        total.eagerRenderedBytes += renderedBytes;
       }
-      if (entry.chain.length < total.chain.length) {
-        total.chain = entry.chain;
-      }
-      totals.set(entry.name, total);
     }
   }
   return [...totals.values()].sort((a, b) => b.renderedBytes - a.renderedBytes || a.name.localeCompare(b.name));
@@ -368,7 +380,7 @@ function packageTotals(chunks) {
  * One finding per Node built-in and importing module: Vite replaced the built-in with an empty
  * module, so the importing code cannot work in the browser and usually should not be there.
  */
-function externalizedFindings(externalized, { attribution, chainOf, chunkOfModule, root }) {
+function externalizedFindings(externalized, { attribution, chainOf, viaOf, chunkOfModule, root }) {
   const seen = new Set();
   const findings = [];
   for (const { module, importer } of externalized) {
@@ -377,13 +389,15 @@ function externalizedFindings(externalized, { attribution, chainOf, chunkOfModul
       continue;
     }
     seen.add(key);
+    const chain = chainOf(importer);
     findings.push({
       kind: "externalized-node-module",
       module,
       importer: relativePath(importer, root),
       importerPackage: attribution(importer).name,
       chunk: chunkOfModule.get(importer) ?? null,
-      chain: chainOf(importer),
+      chain,
+      via: viaOf(chain),
     });
   }
   return findings.sort((a, b) => a.module.localeCompare(b.module) || a.importer.localeCompare(b.importer));
@@ -394,7 +408,7 @@ function externalizedFindings(externalized, { attribution, chainOf, chunkOfModul
  * `node_modules` sits in the same chunk as the module, so it splits nothing off: the condition of
  * Vite's "dynamic import will not move module into another chunk" warning.
  */
-function defeatedDynamicImports(chunks, graph, { chainOf, root }) {
+function defeatedDynamicImports(chunks, graph, { chainOf, viaOf, root }) {
   const importers = new Map();
   const dynamicImporters = new Map();
   const add = (map, key, value) => (map.get(key) ?? map.set(key, new Set()).get(key)).add(value);
@@ -415,13 +429,15 @@ function defeatedDynamicImports(chunks, graph, { chainOf, root }) {
       if (staticOnes.length === 0 || !defeated) {
         continue;
       }
+      const chain = chainOf(id);
       findings.push({
         kind: "defeated-dynamic-import",
         module: relativePath(id, root),
         chunk: chunk.file,
         dynamicImporters: dynamicOnes.map((importer) => relativePath(importer, root)).sort(),
         staticImporters: staticOnes.map((importer) => relativePath(importer, root)).sort(),
-        chain: chainOf(id),
+        chain,
+        via: viaOf(chain),
       });
     }
   }

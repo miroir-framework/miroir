@@ -17,7 +17,7 @@ import { gzipSync } from "node:zlib";
 
 import { visualizer } from "rollup-plugin-visualizer";
 
-import { attributeModule, BROWSER_EXTERNAL_ID, buildBundleReport, condensedChain } from "./bundleReportCore.js";
+import { BROWSER_EXTERNAL_ID, buildBundleReport } from "./bundleReportCore.js";
 
 export const BUNDLE_REPORT_FILE = ".vite/bundle-report.json";
 const TREEMAP_FILE = ".vite/bundle-report.html";
@@ -134,8 +134,6 @@ const kB = (bytes) =>
 function reportLines(report, { context, outDir, lazyChunksShown, packagesShown }) {
   const appDir = context.workspaces.find((workspace) => workspace.name === context.app)?.dir;
   const shortPath = (step) => (appDir && step.startsWith(`${appDir}/`) ? step.slice(appDir.length + 1) : step);
-  const packageOfPath = (step) => attributeModule(step, context).name;
-  const chainText = (chain) => condensedChain([shortPath(chain[0]), ...chain.slice(1)], packageOfPath);
   const relativeOut = path.relative(process.cwd(), outDir) || ".";
   const { totals } = report;
   const lines = [
@@ -152,7 +150,7 @@ function reportLines(report, { context, outDir, lazyChunksShown, packagesShown }
   for (const chunk of shown) {
     lines.push("", `  ${chunk.loadKind.padEnd(5)}  ${chunk.file}  ${kB(chunk.rawBytes)}, gzip ${kB(chunk.gzipBytes)}`);
     for (const entry of chunk.packages.slice(0, packagesShown)) {
-      const via = entry.kind === "app" ? "(this app)" : chainText(entry.chain);
+      const via = entry.kind === "app" ? "(this app)" : shortPath(entry.via);
       lines.push(`         ${entry.name.padEnd(packageWidth)}  ${kB(entry.renderedBytes).padStart(11)}  ${via}`);
     }
     if (chunk.packages.length > packagesShown) {
@@ -178,7 +176,7 @@ function reportLines(report, { context, outDir, lazyChunksShown, packagesShown }
     for (const [name, findings] of byPackage) {
       const modules = [...new Set(findings.map((finding) => finding.module))].sort().join(", ");
       const shipped = findings.find((finding) => finding.chunk);
-      const via = shipped ? chainText(shipped.chain) : "(tree-shaken, not shipped)";
+      const via = shipped ? shortPath(shipped.via) : "(tree-shaken, not shipped)";
       lines.push(`    ${name}: ${modules}  ${via}`);
     }
   }

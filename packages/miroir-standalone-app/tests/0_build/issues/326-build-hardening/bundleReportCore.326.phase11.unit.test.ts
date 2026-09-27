@@ -184,6 +184,7 @@ describe("bundleReportCore.326.phase11: report", () => {
         importerPackage: "miroir-store-indexedDb",
         chunk: "index.js",
         chain: ["packages/miroir-standalone-app/src/index.tsx", "packages/miroir-store-indexedDb/dist/index.js"],
+        via: "packages/miroir-standalone-app/src/index.tsx → miroir-store-indexedDb",
       },
     ]);
   });
