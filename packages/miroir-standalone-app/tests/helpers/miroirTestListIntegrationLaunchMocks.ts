@@ -38,9 +38,10 @@ vi.mock(
     );
     const { expect } = await import('vitest');
 
-    // Node list-integ proof uses SQL stores; UI prefs stay on indexedDb so the
+    // Node list-integ proof uses the launch profile's stores (#318, default sql); UI prefs stay on indexedDb so the
     // Run All Integration Tests button remains browser-launchable (same as B6-d1).
-    const NODE_INTEGRATION_PROFILE = 'emulatedServer-sql';
+    const { resolveLaunchProfileName } = await import('./launchProfileName.js');
+    const NODE_INTEGRATION_PROFILE = resolveLaunchProfileName();
 
     return {
       loadBrowserUiIntegrationTestLauncherEnvironment: async () => {

@@ -211,14 +211,9 @@ beforeAll(async () => {
   return Promise.resolve();
 });
 
-let beforEachCount = 0;
 // ################################################################################################
-beforeEach(async () => {
-  beforEachCount++;
-  console.log(
-    "################################################### beforeEach start",
-    beforEachCount,
-  );
+// #318: the tests below only run queries, so the testbed is reset once for the file.
+beforeAll(async () => {
   await resetIntegTestbed({
     domainController,
     applicationDeploymentMap,
@@ -229,11 +224,10 @@ beforeEach(async () => {
     testbedInitApplicationParameters: libraryTestbedInitParams,
     testbedModel: defaultLibraryModelEnvironment.currentModel as any,
   });
+});
+
+beforeEach(async () => {
   document.body.innerHTML = "";
-  console.log(
-    "################################################### beforeEach done",
-    beforEachCount,
-  );
 });
 
 // ##############################################################################################

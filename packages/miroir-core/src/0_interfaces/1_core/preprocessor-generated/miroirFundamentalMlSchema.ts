@@ -6993,6 +6993,20 @@ export const miroirFundamentalMlSchema = {
               }
             ]
           },
+          "testbedReset": {
+            "type": "enum",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Testbed reset",
+                "description": "How often CLI integ runs reset the testbed: perTest (default) or perSuite, for suites whose tests do not modify it (#318). Runs from the UI always reset per test."
+              }
+            },
+            "definition": [
+              "perTest",
+              "perSuite"
+            ]
+          },
           "miroirTests": {
             "type": "array",
             "definition": {
@@ -8701,6 +8715,20 @@ export const miroirFundamentalMlSchema = {
                         "type": "literal",
                         "definition": "appForTestTestbedInitParams"
                       }
+                    ]
+                  },
+                  "testbedReset": {
+                    "type": "enum",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Testbed reset",
+                        "description": "How often CLI integ runs reset the testbed: perTest (default) or perSuite, for suites whose tests do not modify it (#318). Runs from the UI always reset per test."
+                      }
+                    },
+                    "definition": [
+                      "perTest",
+                      "perSuite"
                     ]
                   },
                   "miroirTests": {

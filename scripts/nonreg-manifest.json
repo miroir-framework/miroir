@@ -71,7 +71,21 @@
         "miroir-core",
         "--",
         "authentication.71"
-      ]
+      ],
+      "shared": {
+        "group": "core-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-core",
+          "--"
+        ],
+        "files": [
+          "authentication.71"
+        ]
+      }
     },
     {
       "id": "unit-262-application-access",
@@ -86,7 +100,21 @@
         "miroir-core",
         "--",
         "access.262"
-      ]
+      ],
+      "shared": {
+        "group": "core-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-core",
+          "--"
+        ],
+        "files": [
+          "access.262"
+        ]
+      }
     },
     {
       "id": "unit-264-deployment-access",
@@ -101,7 +129,21 @@
         "miroir-core",
         "--",
         "access.264"
-      ]
+      ],
+      "shared": {
+        "group": "core-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-core",
+          "--"
+        ],
+        "files": [
+          "access.264"
+        ]
+      }
     },
     {
       "id": "unit-transformerResultSchema",
@@ -116,7 +158,21 @@
         "miroir-core",
         "--",
         "transformerResultSchema"
-      ]
+      ],
+      "shared": {
+        "group": "core-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-core",
+          "--"
+        ],
+        "files": [
+          "transformerResultSchema"
+        ]
+      }
     },
     {
       "id": "unit-resolveSuitePlayfieldSeed",
@@ -131,7 +187,21 @@
         "miroir-core",
         "--",
         "resolveSuitePlayfieldSeed"
-      ]
+      ],
+      "shared": {
+        "group": "core-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-core",
+          "--"
+        ],
+        "files": [
+          "resolveSuitePlayfieldSeed"
+        ]
+      }
     },
     {
       "id": "unit-testConfigurationSection",
@@ -146,7 +216,21 @@
         "miroir-core",
         "--",
         "testConfigurationSection"
-      ]
+      ],
+      "shared": {
+        "group": "core-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-core",
+          "--"
+        ],
+        "files": [
+          "testConfigurationSection"
+        ]
+      }
     },
     {
       "id": "default-miroir-modelValidation",
@@ -221,7 +305,22 @@
         "miroir-standalone-app",
         "--",
         "RunAllMiroirTestsButton.unit"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--no-bail"
+        ],
+        "files": [
+          "RunAllMiroirTestsButton.unit"
+        ]
+      }
     },
     {
       "id": "unit-MiroirTestListDisplay",
@@ -236,7 +335,22 @@
         "miroir-standalone-app",
         "--",
         "MiroirTestListDisplay.unit"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--no-bail"
+        ],
+        "files": [
+          "MiroirTestListDisplay.unit"
+        ]
+      }
     },
     {
       "id": "unit-MiroirTestDisplay",
@@ -251,7 +365,22 @@
         "miroir-standalone-app",
         "--",
         "MiroirTestDisplay.unit"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--no-bail"
+        ],
+        "files": [
+          "MiroirTestDisplay.unit"
+        ]
+      }
     },
     {
       "id": "unit-localCacheMemoryMeasure",
@@ -356,7 +485,22 @@
         "miroir-standalone-app",
         "--",
         "tests/4_view/localCacheMonitorGate.unit.test.ts"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--no-bail"
+        ],
+        "files": [
+          "tests/4_view/localCacheMonitorGate.unit.test.ts"
+        ]
+      }
     },
     {
       "id": "unit-localCacheMonitorSummary",
@@ -371,7 +515,22 @@
         "miroir-standalone-app",
         "--",
         "tests/4_view/LocalCacheMonitorSummary.unit.test.tsx"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--no-bail"
+        ],
+        "files": [
+          "tests/4_view/LocalCacheMonitorSummary.unit.test.tsx"
+        ]
+      }
     },
     {
       "id": "unit-localCacheMonitorIndicators",
@@ -386,7 +545,22 @@
         "miroir-standalone-app",
         "--",
         "tests/4_view/localCacheMonitorIndicators.unit.test.ts"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--no-bail"
+        ],
+        "files": [
+          "tests/4_view/localCacheMonitorIndicators.unit.test.ts"
+        ]
+      }
     },
     {
       "id": "unit-localCacheMonitorSession",
@@ -401,7 +575,22 @@
         "miroir-standalone-app",
         "--",
         "tests/4_view/localCacheMonitorSession.unit.test.ts"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--no-bail"
+        ],
+        "files": [
+          "tests/4_view/localCacheMonitorSession.unit.test.ts"
+        ]
+      }
     },
     {
       "id": "unit-localCacheMonitorFootprint",
@@ -456,7 +645,26 @@
         "runner.lendDocument",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "runner.lendDocument"
+        ]
+      }
     },
     {
       "id": "integ-runner.returnDocument",
@@ -476,7 +684,26 @@
         "runner.returnDocument",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "runner.returnDocument"
+        ]
+      }
     },
     {
       "id": "integ-runner.mcp.getInstances",
@@ -496,7 +723,26 @@
         "runner.mcp.getInstances",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "runner.mcp.getInstances"
+        ]
+      }
     },
     {
       "id": "integ-runner.mcp.lendDocument",
@@ -516,7 +762,26 @@
         "runner.mcp.lendDocument",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "runner.mcp.lendDocument"
+        ]
+      }
     },
     {
       "id": "integ-action.domainController.dataCrud",
@@ -536,7 +801,26 @@
         "action.domainController.dataCrud",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "action.domainController.dataCrud"
+        ]
+      }
     },
     {
       "id": "integ-action.domainController.modelCrud",
@@ -556,7 +840,26 @@
         "action.domainController.modelCrud",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "action.domainController.modelCrud"
+        ]
+      }
     },
     {
       "id": "integ-action.domainController.dataCrud.compositePk",
@@ -576,7 +879,26 @@
         "action.domainController.dataCrud.compositePk",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "action.domainController.dataCrud.compositePk"
+        ]
+      }
     },
     {
       "id": "integ-action.domainController.modelCrud.nonUuidPk",
@@ -596,7 +918,26 @@
         "action.domainController.modelCrud.nonUuidPk",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "action.domainController.modelCrud.nonUuidPk"
+        ]
+      }
     },
     {
       "id": "integ-action.domainController.dataCrud.nonUuidPk",
@@ -616,7 +957,26 @@
         "action.domainController.dataCrud.nonUuidPk",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "action.domainController.dataCrud.nonUuidPk"
+        ]
+      }
     },
     {
       "id": "integ-action.domainController.dataCrud.noParentUuid",
@@ -636,7 +996,26 @@
         "action.domainController.dataCrud.noParentUuid",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "action.domainController.dataCrud.noParentUuid"
+        ]
+      }
     },
     {
       "id": "integ-action.domainController.modelUndoRedo",
@@ -656,7 +1035,26 @@
         "action.domainController.modelUndoRedo",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "action.domainController.modelUndoRedo"
+        ]
+      }
     },
     {
       "id": "integ-action.domainController.freezeApplicationVersion",
@@ -676,7 +1074,26 @@
         "action.domainController.freezeApplicationVersion",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "action.domainController.freezeApplicationVersion"
+        ]
+      }
     },
     {
       "id": "integ-runner.freezeApplicationVersion",
@@ -716,7 +1133,26 @@
         "runner.dropEntity",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "runner.dropEntity"
+        ]
+      }
     },
     {
       "id": "integ-action.scenario.evolutionTrace",
@@ -744,7 +1180,24 @@
         "--profile",
         "{profile}",
         "PersistenceStoreController.integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-profile",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--no-bail"
+        ],
+        "files": [
+          "PersistenceStoreController.integ"
+        ]
+      }
     },
     {
       "id": "appstack-ExtractorPersistenceStoreRunner.integ",
@@ -761,7 +1214,24 @@
         "--profile",
         "{profile}",
         "ExtractorPersistenceStoreRunner.integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-profile",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--no-bail"
+        ],
+        "files": [
+          "ExtractorPersistenceStoreRunner.integ"
+        ]
+      }
     },
     {
       "id": "appstack-ExtractorTemplatePersistenceStoreRunner.integ",
@@ -778,7 +1248,24 @@
         "--profile",
         "{profile}",
         "ExtractorTemplatePersistenceStoreRunner.integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-profile",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--no-bail"
+        ],
+        "files": [
+          "ExtractorTemplatePersistenceStoreRunner.integ"
+        ]
+      }
     },
     {
       "id": "appstack-uiIntegrationTestLauncher.integ",
@@ -855,7 +1342,22 @@
         "miroir-standalone-app",
         "--",
         "listDisplayByTransformer.integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--no-bail"
+        ],
+        "files": [
+          "listDisplayByTransformer.integ"
+        ]
+      }
     },
     {
       "id": "unit-listDisplayByTransformer",
@@ -870,7 +1372,22 @@
         "miroir-standalone-app",
         "--",
         "listDisplayByTransformer.unit"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--no-bail"
+        ],
+        "files": [
+          "listDisplayByTransformer.unit"
+        ]
+      }
     },
     {
       "id": "integ-gridPagination",
@@ -885,7 +1402,22 @@
         "miroir-standalone-app",
         "--",
         "gridPagination.integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--no-bail"
+        ],
+        "files": [
+          "gridPagination.integ"
+        ]
+      }
     },
     {
       "id": "unit-gridPagination",
@@ -900,7 +1432,22 @@
         "miroir-standalone-app",
         "--",
         "gridPagination.unit"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--no-bail"
+        ],
+        "files": [
+          "gridPagination.unit"
+        ]
+      }
     },
     {
       "id": "externalServices-spotify",
@@ -1004,7 +1551,22 @@
         "miroir-standalone-app",
         "--",
         "multistep.274.phase0"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--no-bail"
+        ],
+        "files": [
+          "multistep.274.phase0"
+        ]
+      }
     },
     {
       "id": "integ-action.scenario.multistepReportTemplate",
@@ -1024,7 +1586,26 @@
         "action.scenario.multistepReportTemplate",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "action.scenario.multistepReportTemplate"
+        ]
+      }
     },
     {
       "id": "appstack-274-multistep-reports",
@@ -1128,7 +1709,23 @@
         "--",
         "test-by-file.profile.unit",
         "testByFileLaunch.integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--no-bail"
+        ],
+        "files": [
+          "test-by-file.profile.unit",
+          "testByFileLaunch.integ"
+        ]
+      }
     },
     {
       "id": "unit-312-miroir-test-tags",

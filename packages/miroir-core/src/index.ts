@@ -1734,6 +1734,12 @@ export {
   type TestbedInitApplicationParametersRef,
 } from "./5_tests/resolveSuiteTestbedInitApplicationParameters.js";
 export {
+  resolveSuiteTestbedReset,
+  resolveSuitesTestbedReset,
+  withTestbedResetPolicy,
+  type TestbedResetPolicy,
+} from "./5_tests/testbedResetPolicy.js";
+export {
   isRunnerTestRunTargetUuid,
   getTestbedUuidsForTestSuite,
   buildRunnerTestSessionParamBank,

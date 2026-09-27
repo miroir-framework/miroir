@@ -58,11 +58,28 @@ class StepResult:
     log_file: str | None = None
     vitest: dict[str, int] | None = None
     error_tail: str | None = None
+    # Fields only written by --runner shared (#318); absent from legacy summaries.
+    extra: dict[str, Any] = field(default_factory=dict)
+
+
+def step_to_dict(result: StepResult) -> dict[str, Any]:
+    data = asdict(result)
+    extra = data.pop("extra")
+    data.update(extra)
+    return data
 
 
 def load_manifest() -> dict[str, Any]:
     with MANIFEST_PATH.open(encoding="utf-8") as fh:
         return json.load(fh)
+
+
+def repo_relative(path: Path) -> str:
+    """Path relative to the repo root when inside it, else absolute (e.g. --results-root in /tmp)."""
+    try:
+        return str(path.relative_to(ROOT)).replace("\\", "/")
+    except ValueError:
+        return str(path).replace("\\", "/")
 
 
 def expand_argv(argv: list[str], profile: str) -> list[str]:
@@ -121,12 +138,39 @@ def tail_text(text: str, max_lines: int = 40) -> str:
     return "\n".join(lines[-max_lines:])
 
 
+def spawn(argv: list[str], env: dict[str, str] | None) -> subprocess.CompletedProcess[str]:
+    """Run one command from the repo root, capturing combined output."""
+    # Windows: npm/npx resolve to *.cmd; CreateProcess cannot launch .cmd without a shell.
+    if os.name == "nt":
+        return subprocess.run(
+            subprocess.list2cmdline(argv),
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            shell=True,
+            env=env,
+        )
+    return subprocess.run(
+        argv,
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        shell=False,
+        env=env,
+    )
+
+
 def run_step(
     step: dict[str, Any],
     *,
     profile: str,
     snap_dir: Path,
     dry_run: bool,
+    timings: bool = False,
 ) -> StepResult:
     step_id = step["id"]
     argv = resolve_argv(expand_argv(list(step["argv"]), profile))
@@ -145,7 +189,7 @@ def run_step(
 
     log_path = snap_dir / "logs" / f"{step_id}.log"
     log_path.parent.mkdir(parents=True, exist_ok=True)
-    result.log_file = str(log_path.relative_to(ROOT)).replace("\\", "/")
+    result.log_file = repo_relative(log_path)
 
     if dry_run:
         result.status = "skipped"
@@ -155,29 +199,10 @@ def run_step(
 
     print(f"\n=== [{tier}] {step_id} ===", flush=True)
     print(f"$ {' '.join(argv)}", flush=True)
+    env = timing_env(snap_dir, step_id) if timings else None
     started = time.perf_counter()
     try:
-        # Windows: npm/npx resolve to *.cmd; CreateProcess cannot launch .cmd without a shell.
-        if os.name == "nt":
-            proc = subprocess.run(
-                subprocess.list2cmdline(argv),
-                cwd=ROOT,
-                capture_output=True,
-                text=True,
-                encoding="utf-8",
-                errors="replace",
-                shell=True,
-            )
-        else:
-            proc = subprocess.run(
-                argv,
-                cwd=ROOT,
-                capture_output=True,
-                text=True,
-                encoding="utf-8",
-                errors="replace",
-                shell=False,
-            )
+        proc = spawn(argv, env)
     except OSError as exc:
         result.status = "failed"
         result.exit_code = 127
@@ -203,7 +228,314 @@ def run_step(
     return result
 
 
-def write_summary_md(summary: dict[str, Any], path: Path) -> None:
+TIMINGS_DIRNAME = "timings"
+SLOWEST_LIMIT = 15
+
+
+def timing_env(snap_dir: Path, step_id: str) -> dict[str, str]:
+    """Env for one step with the opt-in timing profile (#318): vitest configs add the timing runner."""
+    return {
+        **os.environ,
+        "MIROIR_TEST_TIMING": "1",
+        "MIROIR_TEST_TIMING_DIR": str(snap_dir / TIMINGS_DIRNAME / step_id),
+    }
+
+
+def collect_step_timings(snap_dir: Path, results: list[StepResult]) -> dict[str, Any]:
+    """Merge the per-file JSON written by scripts/vitest/timingRunner.mjs into one document."""
+    steps = []
+    for result in results:
+        step_dir = snap_dir / TIMINGS_DIRNAME / result.id
+        files = []
+        if step_dir.is_dir():
+            for path in sorted(step_dir.glob("*.json")):
+                try:
+                    files.append(json.loads(path.read_text(encoding="utf-8")))
+                except (OSError, json.JSONDecodeError) as exc:
+                    files.append({"file": path.name, "error": str(exc)})
+        steps.append({"id": result.id, "status": result.status, "duration_s": result.duration_s, "files": files})
+    return {"steps": steps}
+
+
+def _ms(value: Any) -> float:
+    return float(value) if isinstance(value, (int, float)) else 0.0
+
+
+def timings_markdown(timings: dict[str, Any]) -> list[str]:
+    """Slowest-first tables for summary.md (only written with --timings)."""
+    step_rows = []
+    file_rows = []
+    test_rows = []
+    for step in timings["steps"]:
+        files = [f for f in step["files"] if "error" not in f]
+        hooks_ms = 0.0
+        bodies_ms = 0.0
+        collect_ms = 0.0
+        for record in files:
+            collect_ms += _ms(record.get("collect_ms"))
+            suite_hooks = sum(_ms(s.get("before_all_ms")) + _ms(s.get("after_all_ms")) for s in record.get("suites", []))
+            test_hooks = sum(_ms(t.get("before_each_ms")) + _ms(t.get("after_each_ms")) for t in record.get("tests", []))
+            test_bodies = sum(_ms(t.get("body_ms")) for t in record.get("tests", []))
+            hooks_ms += suite_hooks + test_hooks
+            bodies_ms += test_bodies
+            file_rows.append((suite_hooks + test_hooks, step["id"], record.get("file", "?"), _ms(record.get("collect_ms")), suite_hooks, test_hooks, test_bodies))
+            for test in record.get("tests", []):
+                test_rows.append((_ms(test.get("total_ms")), step["id"], test.get("name", "?"), _ms(test.get("before_each_ms")), _ms(test.get("body_ms")), _ms(test.get("after_each_ms"))))
+        step_rows.append((step.get("duration_s") or 0.0, step["id"], len(files), collect_ms, hooks_ms, bodies_ms))
+
+    def secs(ms: float) -> str:
+        return f"{ms / 1000:.2f}s"
+
+    lines = ["## Timings", "", "### Slowest steps", "", "| Step | Wall | Files | Collect | Hooks | Test bodies |", "|---|---|---|---|---|---|"]
+    for wall, sid, nfiles, collect_ms, hooks_ms, bodies_ms in sorted(step_rows, reverse=True)[:SLOWEST_LIMIT]:
+        lines.append(f"| `{sid}` | {wall}s | {nfiles} | {secs(collect_ms)} | {secs(hooks_ms)} | {secs(bodies_ms)} |")
+    lines += ["", "### Most time in hooks, by test file", "", "| Step | File | Collect | beforeAll+afterAll | beforeEach+afterEach | Test bodies |", "|---|---|---|---|---|---|"]
+    for _, sid, fname, collect_ms, suite_hooks, test_hooks, bodies_ms in sorted(file_rows, reverse=True)[:SLOWEST_LIMIT]:
+        lines.append(f"| `{sid}` | `{fname}` | {secs(collect_ms)} | {secs(suite_hooks)} | {secs(test_hooks)} | {secs(bodies_ms)} |")
+    lines += ["", "### Slowest tests", "", "| Step | Test | Total | beforeEach | Body | afterEach |", "|---|---|---|---|---|---|"]
+    for total, sid, name, before_ms, body_ms, after_ms in sorted(test_rows, reverse=True)[:SLOWEST_LIMIT]:
+        lines.append(f"| `{sid}` | {name} | {secs(total)} | {secs(before_ms)} | {secs(body_ms)} | {secs(after_ms)} |")
+    lines.append("")
+    return lines
+
+
+# ------------------------------------------------------------------------------------------------
+# Shared runner (#318, opt-in with --runner shared)
+#
+# A step joins a shared group when its manifest entry has
+#   "shared": {"group": "<name>", "argv": [<command prefix>], "files": [<vitest filters>]}
+# or, for MiroirTest runner/action suites run by one entry file (testMiroir --shared),
+#   "shared": {"group": "<name>", "argv": [<command prefix>], "suites": [<suite keys>]}
+# Every member of a group has the same argv prefix. The group runs once:
+#   files:  <argv prefix> --no-isolate --reporter=json --outputFile.json=<report> <all files>
+#   suites: <argv prefix> --reporter=json --outputFile.json=<report> --suites <all suites>
+# and each member's verdict comes from the report entries of its files (path contains a filter)
+# or of its suites (tests whose first describe is the suite key).
+# Members that fail in shared mode re-run alone with their legacy argv (fallback), so a state leak
+# between files never turns into a false failure; the step records both verdicts.
+
+SHARED_DIRNAME = "shared"
+
+
+def plan_shared_groups(steps: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
+    groups: dict[str, list[dict[str, Any]]] = {}
+    for step in steps:
+        shared = step.get("shared")
+        if not shared:
+            continue
+        groups.setdefault(shared["group"], []).append(step)
+    for name, members in groups.items():
+        prefixes = {json.dumps(m["shared"]["argv"]) for m in members}
+        if len(prefixes) > 1:
+            raise ValueError(f"shared group {name!r}: members use different argv prefixes")
+    return groups
+
+
+def _vitest_counts_from_report(entries: list[dict[str, Any]]) -> dict[str, int]:
+    statuses = [a.get("status") for e in entries for a in e.get("assertionResults", [])]
+    return {
+        "tests_failed": statuses.count("failed"),
+        "tests_passed": statuses.count("passed"),
+        "tests_skipped": sum(1 for st in statuses if st in ("skipped", "pending", "todo")),
+        "files_failed": sum(1 for e in entries if e.get("status") != "passed"),
+        "files_passed": sum(1 for e in entries if e.get("status") == "passed"),
+        "files_skipped": 0,
+    }
+
+
+def _matches(path: str, filters: list[str]) -> bool:
+    normalized = path.replace("\\", "/")
+    return any(f in normalized for f in filters)
+
+
+def _entries_by_suite(entries: list[dict[str, Any]], members: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Split file-level report entries into one pseudo-entry per member, by first describe title."""
+    split: list[dict[str, Any]] = []
+    for member in members:
+        suites = set(member["shared"]["suites"])
+        assertions = [
+            a
+            for e in entries
+            for a in e.get("assertionResults", [])
+            if (a.get("ancestorTitles") or [None])[0] in suites
+        ]
+        if not assertions:
+            continue
+        failed = any(a.get("status") == "failed" for a in assertions)
+        split.append(
+            {
+                "member": member["id"],
+                "name": ",".join(sorted(suites)),
+                "status": "failed" if failed else "passed",
+                "assertionResults": assertions,
+                "startTime": 0,
+                "endTime": sum(a.get("duration") or 0 for a in assertions),
+            }
+        )
+    return split
+
+
+def _record_for_suites(record: dict[str, Any], suites: list[str]) -> dict[str, Any]:
+    """The part of a per-file timing record that belongs to the given describe titles."""
+    def belongs(name: str) -> bool:
+        return any(name == k or name.startswith(f"{k} > ") for k in suites)
+
+    return {
+        **record,
+        "phases": [p for p in record.get("phases", []) if any(p.get("name", "").endswith(f" {k}") for k in suites)],
+        "suites": [x for x in record.get("suites", []) if belongs(x.get("name", ""))],
+        "tests": [t for t in record.get("tests", []) if belongs(t.get("name", ""))],
+    }
+
+
+def _distribute_group_timings(snap_dir: Path, group: str, members: list[dict[str, Any]]) -> None:
+    group_dir = snap_dir / TIMINGS_DIRNAME / f"{SHARED_DIRNAME}-{group}"
+    if not group_dir.is_dir():
+        return
+    # Collect, setup, prepare and environment are paid once per file for the whole group: they
+    # go to the first member that owns part of the file, and are 0 for the others.
+    startup_keys = ("collect_ms", "setup_ms", "prepare_ms", "environment_ms")
+    for record_path in sorted(group_dir.glob("*.json")):
+        try:
+            filepath = json.loads(record_path.read_text(encoding="utf-8")).get("filepath", "")
+        except (OSError, json.JSONDecodeError):
+            continue
+        startup_charged = False
+        for member in members:
+            target = snap_dir / TIMINGS_DIRNAME / member["id"]
+            if "suites" in member["shared"]:
+                record = json.loads(record_path.read_text(encoding="utf-8"))
+                part = _record_for_suites(record, member["shared"]["suites"])
+                if not (part["suites"] or part["tests"]):
+                    continue
+                if startup_charged:
+                    part.update({k: 0 for k in startup_keys if k in part})
+                startup_charged = True
+                target.mkdir(parents=True, exist_ok=True)
+                (target / record_path.name).write_text(json.dumps(part, indent=2) + "\n", encoding="utf-8")
+            elif _matches(filepath, member["shared"]["files"]):
+                target.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(record_path, target / record_path.name)
+
+
+def run_shared_group(
+    group: str,
+    members: list[dict[str, Any]],
+    *,
+    profile: str,
+    snap_dir: Path,
+    dry_run: bool,
+    timings: bool,
+) -> dict[str, StepResult]:
+    shared_dir = snap_dir / SHARED_DIRNAME
+    shared_dir.mkdir(parents=True, exist_ok=True)
+    report_path = shared_dir / f"{group}.json"
+    log_path = snap_dir / "logs" / f"{SHARED_DIRNAME}-{group}.log"
+    by_suite = "suites" in members[0]["shared"]
+    report_args = ["--reporter=json", f"--outputFile.json={report_path}"]
+    if by_suite:
+        suites = [k for m in members for k in m["shared"]["suites"]]
+        tail = [*report_args, "--suites", ",".join(suites)]
+    else:
+        files = [f for m in members for f in m["shared"]["files"]]
+        tail = ["--no-isolate", *report_args, *files]
+    argv = resolve_argv(expand_argv(list(members[0]["shared"]["argv"]), profile) + tail)
+
+    def base_result(member: dict[str, Any]) -> StepResult:
+        return StepResult(
+            id=member["id"],
+            title=member["title"],
+            tier=member["tier"],
+            requires=member.get("requires", "none"),
+            status="not_run",
+            argv=argv,
+            log_file=repo_relative(log_path),
+            extra={"mode": "shared", "shared_group": group},
+        )
+
+    if dry_run:
+        log_path.write_text(f"DRY-RUN: {' '.join(argv)}\n", encoding="utf-8")
+        results = {}
+        for member in members:
+            result = base_result(member)
+            result.status = "skipped"
+            result.skip_reason = "dry-run"
+            results[member["id"]] = result
+        return results
+
+    print(f"\n=== [shared] {group}: {', '.join(m['id'] for m in members)} ===", flush=True)
+    print(f"$ {' '.join(argv)}", flush=True)
+    env = timing_env(snap_dir, f"{SHARED_DIRNAME}-{group}") if timings else None
+    started = time.perf_counter()
+    try:
+        proc = spawn(argv, env)
+        combined = (proc.stdout or "") + ("\n" if proc.stderr else "") + (proc.stderr or "")
+        exit_code: int | None = proc.returncode
+    except OSError as exc:
+        combined = f"OSError: {exc}\nargv: {argv}\n"
+        exit_code = 127
+    group_duration = round(time.perf_counter() - started, 3)
+    log_path.write_text(combined, encoding="utf-8")
+
+    entries: list[dict[str, Any]] = []
+    if report_path.is_file():
+        try:
+            entries = json.loads(report_path.read_text(encoding="utf-8")).get("testResults", [])
+        except (OSError, json.JSONDecodeError):
+            entries = []
+    if timings:
+        _distribute_group_timings(snap_dir, group, members)
+    if by_suite:
+        entries = _entries_by_suite(entries, members)
+
+    # A launch that fails while none of its tests failed (teardown, reporting, an unhandled
+    # error) cannot be pinned on one member, so none of its members counts as passed.
+    unexplained_failure = exit_code != 0 and not any(
+        a.get("status") == "failed" for e in entries for a in e.get("assertionResults", [])
+    )
+
+    results: dict[str, StepResult] = {}
+    for member in members:
+        result = base_result(member)
+        result.extra["shared_group_duration_s"] = group_duration
+        result.exit_code = exit_code
+        if by_suite:
+            matched = [e for e in entries if e.get("member") == member["id"]]
+        else:
+            matched = [e for e in entries if _matches(e.get("name", ""), member["shared"]["files"])]
+        result.vitest = _vitest_counts_from_report(matched) if matched else None
+        result.duration_s = round(
+            sum((e.get("endTime", 0) - e.get("startTime", 0)) for e in matched) / 1000, 3
+        )
+        passed = (
+            bool(matched)
+            and all(e.get("status") == "passed" for e in matched)
+            and not unexplained_failure
+        )
+        if passed:
+            result.status = "passed"
+            print(f"PASSED [shared] {member['id']} ({result.duration_s}s)", flush=True)
+            results[member["id"]] = result
+            continue
+        print(f"FAILED [shared] {member['id']}; re-running legacy", flush=True)
+        fallback = run_step(member, profile=profile, snap_dir=snap_dir, dry_run=False, timings=timings)
+        fallback.extra = {
+            "mode": "shared→legacy",
+            "shared_group": group,
+            "shared_status": (
+                "launch-failed" if unexplained_failure else "failed" if matched else "no-results"
+            ),
+            "shared_group_duration_s": group_duration,
+        }
+        if fallback.status == "passed":
+            # Passes alone, fails in the group: files interfere through shared module state.
+            fallback.extra["shared_state_leak_suspected"] = True
+        results[member["id"]] = fallback
+    print(f"shared group {group} done in {group_duration}s", flush=True)
+    return results
+
+
+def write_summary_md(summary: dict[str, Any], path: Path, timings: dict[str, Any] | None = None) -> None:
     lines = [
         f"# Non-reg snapshot `{summary['stamp']}`",
         "",
@@ -242,6 +574,8 @@ def write_summary_md(summary: dict[str, Any], path: Path) -> None:
             f"| {step['status']} | `{step['id']}` | {dur} | {notes} |"
         )
     lines.append("")
+    if timings is not None:
+        lines += timings_markdown(timings)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -457,11 +791,43 @@ def build_parser() -> argparse.ArgumentParser:
         metavar=("CURRENT", "BASELINE"),
         help="Deprecated alias for --compare CURRENT BASELINE",
     )
+    p.add_argument(
+        "--timings",
+        action="store_true",
+        help=(
+            "Opt-in timing profile (#318): run vitest with the timing runner and write "
+            "timings.json (collect, hooks, test bodies) plus slowest-first tables in summary.md"
+        ),
+    )
+    p.add_argument(
+        "--runner",
+        choices=["legacy", "shared"],
+        default="legacy",
+        help=(
+            "legacy (default): one launch per step, as always. shared (#318, opt-in): steps with a "
+            "'shared' descriptor run together per group in one vitest launch; failures re-run legacy"
+        ),
+    )
+    p.add_argument(
+        "--manifest",
+        default=None,
+        help="Manifest to run (default: scripts/nonreg-manifest.json)",
+    )
+    p.add_argument(
+        "--results-root",
+        default=None,
+        help="Directory for snapshots (default: test-results/nonreg)",
+    )
     return p
 
 
 def main(argv: list[str] | None = None) -> int:
+    global MANIFEST_PATH, RESULTS_ROOT
     args = build_parser().parse_args(argv)
+    if args.manifest:
+        MANIFEST_PATH = Path(args.manifest).resolve()
+    if args.results_root:
+        RESULTS_ROOT = Path(args.results_root).resolve()
     manifest = load_manifest()
     profile = args.profile or manifest.get("defaultProfile") or "emulatedServer-sql"
 
@@ -521,9 +887,13 @@ def main(argv: list[str] | None = None) -> int:
     wall_start = time.perf_counter()
     results: list[StepResult] = []
     aborted = False
+    shared_groups = plan_shared_groups(steps) if args.runner == "shared" else {}
+    shared_results: dict[str, StepResult] = {}
 
     for step in steps:
-        if aborted:
+        # A shared group runs all its members at the first one, so a member listed after a
+        # fail-fast abort may already have run: report its real result, not "not_run".
+        if aborted and step["id"] not in shared_results:
             results.append(
                 StepResult(
                     id=step["id"],
@@ -537,7 +907,24 @@ def main(argv: list[str] | None = None) -> int:
             )
             continue
 
-        result = run_step(step, profile=profile, snap_dir=snap_dir, dry_run=args.dry_run)
+        group = step.get("shared", {}).get("group") if args.runner == "shared" else None
+        if group is not None:
+            if step["id"] not in shared_results:
+                shared_results.update(
+                    run_shared_group(
+                        group,
+                        shared_groups[group],
+                        profile=profile,
+                        snap_dir=snap_dir,
+                        dry_run=args.dry_run,
+                        timings=args.timings,
+                    )
+                )
+            result = shared_results[step["id"]]
+        else:
+            result = run_step(
+                step, profile=profile, snap_dir=snap_dir, dry_run=args.dry_run, timings=args.timings
+            )
         results.append(result)
         if result.status == "failed" and fail_fast:
             aborted = True
@@ -560,23 +947,33 @@ def main(argv: list[str] | None = None) -> int:
         "started_at": started_at,
         "finished_at": finished_at,
         "duration_s": duration_s,
-        "manifest": str(MANIFEST_PATH.relative_to(ROOT)).replace("\\", "/"),
+        "manifest": repo_relative(MANIFEST_PATH),
         "git": {
             "commit": _git("rev-parse", "HEAD"),
             "branch": _git("rev-parse", "--abbrev-ref", "HEAD"),
             "dirty": bool(_git("status", "--porcelain")),
         },
         "counts": counts,
-        "steps": [asdict(r) for r in results],
-        "snapshot_dir": str(snap_dir.relative_to(ROOT)).replace("\\", "/"),
-        "summary_json": str((snap_dir / "summary.json").relative_to(ROOT)).replace("\\", "/"),
-        "summary_md": str((snap_dir / "summary.md").relative_to(ROOT)).replace("\\", "/"),
+        "steps": [step_to_dict(r) for r in results],
+        "snapshot_dir": repo_relative(snap_dir),
+        "summary_json": repo_relative(snap_dir / "summary.json"),
+        "summary_md": repo_relative(snap_dir / "summary.md"),
     }
+
+    if args.runner != "legacy":
+        summary["runner"] = args.runner
+
+    timings: dict[str, Any] | None = None
+    if args.timings:
+        timings = collect_step_timings(snap_dir, results)
+        timings_path = snap_dir / "timings.json"
+        timings_path.write_text(json.dumps(timings, indent=2) + "\n", encoding="utf-8")
+        summary["timings_json"] = repo_relative(timings_path)
 
     summary_json_path = snap_dir / "summary.json"
     summary_md_path = snap_dir / "summary.md"
     summary_json_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
-    write_summary_md(summary, summary_md_path)
+    write_summary_md(summary, summary_md_path, timings)
 
     print_synthetic_report(summary)
 

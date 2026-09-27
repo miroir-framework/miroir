@@ -8,7 +8,6 @@ import {
   MiroirActivityTracker,
   MiroirEventService,
   MiroirLoggerFactory,
-  getTestbedUuidsForTestSuite,
   miroirCoreStartup,
   parseMiroirRunnerTestCliConfig,
   runMiroirTests,
@@ -23,10 +22,6 @@ import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { env } from "process";
 import { loglevelnext } from "../src/loglevelnextImporter.js";
 import {
-  buildUiIntegrationOrchestratorCreateSessionParams,
-  uiIntegrationRunnerSuiteEntryFromDefinition,
-} from "../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
-import {
   listCliRunnerIntegrationSuiteKeysFromFolders,
   resolveCliSuiteKeysFromCatalog,
   loadApplicationRunnerUuidIndexFromFolders,
@@ -36,6 +31,7 @@ import {
   loadRunnerOrActionMiroirTestSuite,
   runMiroirRunnerTestsFromCLI,
 } from "./helpers/runMiroirRunnerTestsFromCLI.js";
+import { createRunnerSuiteSessionParams } from "./helpers/runnerSuiteSessionParams.js";
 import { createStandaloneAppIntegrationOrchestrator } from "./helpers/StandaloneAppIntegrationOrchestrator.js";
 import { loadTestConfigFiles } from "./utils/fileTools.js";
 
@@ -92,21 +88,15 @@ if (config.filter?.testList) {
 }
 
 function createSessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
-  const registryEntry = uiIntegrationRunnerSuiteEntryFromDefinition(suiteKey, suite);
-  if (!registryEntry) {
-    throw new Error(`Unknown runner/action suite key: ${suiteKey}`);
-  }
-  const runTarget = getTestbedUuidsForTestSuite({ suite });
-  return buildUiIntegrationOrchestratorCreateSessionParams(
-    registryEntry,
+  return createRunnerSuiteSessionParams(
+    suiteKey,
+    suite,
     {
       miroirConfig,
       miroirActivityTracker,
       miroirEventService,
     },
     pageLabel,
-    runTarget,
-    suite.testParams,
     applicationRunnerUuidIndex,
   );
 }

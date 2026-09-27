@@ -10,9 +10,13 @@ import {
   type RunMiroirTests,
   type RunnerTestSessionInterface,
   type VitestNamespace,
+  resolveSuitesTestbedReset,
+  withTestbedResetPolicy,
 } from "miroir-core";
 import { loadMiroirCoreTestSuiteFromFolders } from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
 import { onFailedRunExport } from "./writeFailedRunExport.js";
+import { timedTestPhase } from "./testTimingPhase.js";
+import { topLevelSuiteName } from "./testbedResetScope.js";
 
 export async function runMiroirCoreTestsFromCLI(
   runMiroirTests: RunMiroirTests,
@@ -22,7 +26,9 @@ export async function runMiroirCoreTestsFromCLI(
   testSession?: RunnerTestSessionInterface,
 ): Promise<void> {
   new MiroirEventService(miroirActivityTracker);
-  const executionEnvironment = await testSession?.initSession();
+  const executionEnvironment = await timedTestPhase("session.init", async () =>
+    testSession?.initSession(),
+  );
 
   if (config.executionMode === "integration" && !executionEnvironment) {
     throw new Error(
@@ -45,8 +51,13 @@ export async function runMiroirCoreTestsFromCLI(
   const loadedSuites: { suiteKey: string; definition: MiroirTestSuite }[] = [];
 
   if (testSession) {
-    vitest.beforeEach(async () => {
-      await testSession!.beforeEach();
+    // #318: suites marked `testbedReset: "perSuite"` reset once per top-level suite.
+    const resetTestbed = withTestbedResetPolicy(
+      resolveSuitesTestbedReset(config.suiteKeys.map((key) => loadMiroirCoreTestSuiteFromFolders(key))),
+      () => testSession!.beforeEach(),
+    );
+    vitest.beforeEach(async (context) => {
+      await resetTestbed(topLevelSuiteName(context.task));
     });
   }
 

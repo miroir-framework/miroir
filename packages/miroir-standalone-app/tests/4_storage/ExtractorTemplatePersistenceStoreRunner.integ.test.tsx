@@ -188,7 +188,8 @@ beforeAll(async () => {
 });
 
 // ################################################################################################
-beforeEach(
+// #318: the tests below only run queries, so the testbed is reset once for the file.
+beforeAll(
   async  () => {
     await resetIntegTestbed({
       domainController,

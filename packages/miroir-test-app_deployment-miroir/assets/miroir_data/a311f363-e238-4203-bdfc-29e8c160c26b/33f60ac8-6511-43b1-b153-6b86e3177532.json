@@ -15,6 +15,7 @@
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "tr.core",
+    "testbedReset": "perSuite",
     "miroirTests": [
       {
         "miroirTestType": "miroirTestSuite",

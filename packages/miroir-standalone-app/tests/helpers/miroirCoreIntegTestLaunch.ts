@@ -28,6 +28,35 @@ export type MiroirCoreIntegTestLaunchContext = {
   testSessionOptions: TestSessionForIntegOptions;
 };
 
+function resolveTestAppFilesystemParentDir(
+  testSessionOptions: TestSessionForIntegOptions,
+): string | undefined {
+  if (testSessionOptions.testApplicationStore.emulatedServerType !== "filesystem") {
+    return undefined;
+  }
+  const filesystemRoot =
+    testSessionOptions.filesystemDeploymentRootDirectory ??
+    resolveDefaultFilesystemDeploymentRoot();
+  const appRoot = path.isAbsolute(testSessionOptions.testApplicationStore.applicationRootDirectory)
+    ? testSessionOptions.testApplicationStore.applicationRootDirectory
+    : path.join(filesystemRoot, testSessionOptions.testApplicationStore.applicationRootDirectory);
+  return path.dirname(appRoot);
+}
+
+/**
+ * #318: create the parent of the filesystem test-app root when absent. The default root
+ * (`tests/tmp`) is gitignored, so a fresh checkout does not have it and the launch
+ * validation would reject an otherwise valid filesystem run.
+ */
+export function prepareMiroirCoreIntegTestLaunchDirectories(
+  testSessionOptions: TestSessionForIntegOptions,
+): void {
+  const parentDir = resolveTestAppFilesystemParentDir(testSessionOptions);
+  if (parentDir) {
+    fs.mkdirSync(parentDir, { recursive: true });
+  }
+}
+
 export function formatProfileLaunchHint(): string {
   return (
     `Tip: run via testMiroir with --profile ${DEFAULT_PROFILE_KEY} to set ` +
@@ -196,17 +225,9 @@ export function validateMiroirCoreIntegTestLaunch(
     }
   }
 
-  if (testSessionOptions.testApplicationStore.emulatedServerType === "filesystem") {
-    const filesystemRoot =
-      testSessionOptions.filesystemDeploymentRootDirectory ??
-      resolveDefaultFilesystemDeploymentRoot();
-    const appRoot = path.isAbsolute(testSessionOptions.testApplicationStore.applicationRootDirectory)
-      ? testSessionOptions.testApplicationStore.applicationRootDirectory
-      : path.join(filesystemRoot, testSessionOptions.testApplicationStore.applicationRootDirectory);
-    const parentDir = path.dirname(appRoot);
-    if (!fs.existsSync(parentDir)) {
-      errors.push(`Parent directory for test app filesystem root does not exist: ${parentDir}`);
-    }
+  const parentDir = resolveTestAppFilesystemParentDir(testSessionOptions);
+  if (parentDir && !fs.existsSync(parentDir)) {
+    errors.push(`Parent directory for test app filesystem root does not exist: ${parentDir}`);
   }
 
   const ciSqlError = validateCiSqlBackendConfiguration(env, testSessionOptions);

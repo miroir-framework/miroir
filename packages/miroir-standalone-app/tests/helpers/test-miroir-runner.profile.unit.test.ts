@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import {
+  forwardedVitestArgs,
   prepareTestMiroirLaunch,
   resolveVitestEntry,
 } from "../../scripts/testMiroirLauncher.js";
@@ -127,5 +128,35 @@ describe("testMiroirLauncher profile (Gap D1)", () => {
 
     expect(spawnEnv.VITE_MIROIR_TEST_CONFIG_FILENAME).toBeUndefined();
     expect(spawnEnv.MIROIR_TEST_POSTGRES_HOST).toBeUndefined();
+  });
+});
+
+describe("testMiroirLauncher shared runner (#318)", () => {
+  it("routes runner suites to the shared entry only with --shared", () => {
+    const legacy = resolveVitestEntry({}, ["--suites", "runner.returnDocument", "--mode", "integ"]);
+    const shared = resolveVitestEntry({}, [
+      "--suites",
+      "runner.returnDocument,action.domainController.dataCrud",
+      "--mode",
+      "integ",
+      "--shared",
+    ]);
+
+    expect(legacy.vitestEntry).toBe("miroir-runner-tests.integ.test");
+    expect(shared.vitestEntry).toBe("miroir-runner-tests-shared.integ.test");
+    expect(shared.spawnEnv.MIROIR_TEST_SUITES).toBe("runner.returnDocument,action.domainController.dataCrud");
+  });
+
+  it("forwards only reporter and outputFile arguments to vitest", () => {
+    expect(
+      forwardedVitestArgs([
+        "--suites",
+        "a",
+        "--shared",
+        "--reporter=json",
+        "--outputFile.json=/tmp/r.json",
+      ]),
+    ).toEqual(["--reporter=json", "--outputFile.json=/tmp/r.json"]);
+    expect(forwardedVitestArgs(["--suites", "a", "--mode", "integ"])).toEqual([]);
   });
 });
