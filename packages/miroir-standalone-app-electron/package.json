@@ -21,7 +21,6 @@
     "dist-linux": "npm run build-electron && electron-builder --linux"
   },
   "dependencies": {
-    "@cursor/sdk": "1.0.31",
     "classic-level": "1.4.1",
     "electron-squirrel-startup": "1.0.1",
     "pg": "8.16.0"

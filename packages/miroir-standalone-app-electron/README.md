@@ -90,7 +90,7 @@ npm run dist-linux  # Linux AppImage
 
 ## Scripts
 
-- `npm run build` / `npm run build-electron` - Type-check, then bundle the main process and preload with esbuild (`scripts/bundle-main.mjs`) into `dist/src/main.js` and `dist/src/preload.js`. Only `electron`, `@cursor/sdk`, `classic-level` and `pg` stay in `node_modules`. The build prints what the bundle contains and writes `dist/bundle-report.json`; `python scripts/check_bundle_policy.py packages/miroir-standalone-app-electron/dist/bundle-report.json packages/miroir-standalone-app-electron/bundle-policy.json` (from the repository root) fails when a package enters the bundle without being added to `bundle-policy.json`.
+- `npm run build` / `npm run build-electron` - Type-check, then bundle the main process and preload with esbuild (`scripts/bundle-main.mjs`) into `dist/src/main.js` and `dist/src/preload.js`. Only `electron`, `@cursor/sdk`, `classic-level` and `pg` stay outside the bundle; the package ships `classic-level` and `pg` (and `electron-squirrel-startup`) in `node_modules`, not the Cursor SDK, which stays off in the packaged app (#275). The build prints what the bundle contains and writes `dist/bundle-report.json`; `python scripts/check_bundle_policy.py packages/miroir-standalone-app-electron/dist/bundle-report.json packages/miroir-standalone-app-electron/bundle-policy.json` (from the repository root) fails when a package enters the bundle without being added to `bundle-policy.json`.
 - `npm run electron` - Run the Electron app in production mode
 - `npm run electron-dev` - Run the Electron app in development mode
 - `npm run pack` - Create unpacked distributables

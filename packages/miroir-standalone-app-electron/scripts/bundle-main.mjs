@@ -24,12 +24,15 @@ import {
 import { bundleReportLines, readWorkspaces } from "../../miroir-standalone-app/vite/bundleReportPlugin.js";
 
 /**
- * Packages left in `node_modules`, each listed in `dependencies` so electron-builder ships it:
+ * Packages left outside the bundle:
  * - `electron`: provided by the Electron runtime.
- * - `@cursor/sdk`: ships native binaries, located at run time (`assertCursorSdkPackaged`).
+ * - `@cursor/sdk`: native binaries, imported dynamically by `miroir-ai` only when the `cursor`
+ *   capability is on. Not in `dependencies`, so the package does not ship it: #275 keeps Cursor off
+ *   in the packaged app, where `assertCursorSdkPackaged` fails loud if someone turns it on, and
+ *   keeps the SDK a dependency of `miroir-ai` alone.
  * - `classic-level`: native module (the Node side of `miroir-store-indexedDb`, through `level`),
- *   found by `node-gyp-build` next to its own files.
- * - `pg`: sequelize loads its dialect driver with a computed `require("pg")`.
+ *   found by `node-gyp-build` next to its own files; in `dependencies`, so electron-builder ships it.
+ * - `pg`: sequelize loads its dialect driver with a computed `require("pg")`; in `dependencies`.
  * `electron-squirrel-startup` is not imported but required at run time by `main.ts`
  * (`createRequire`), so it is in `dependencies` too.
  */
