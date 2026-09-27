@@ -1,10 +1,10 @@
 /**
- * Issue #330 Slice 1: `testMiroir` routes the Report suites (a `reportTest` leaf mounts a Report)
+ * Report tests (#330): `testMiroir` routes the Report suites (a `reportTest` leaf mounts a Report)
  * to their DOM entry, and refuses a selection mixing them with runner / action suites.
  *
  * Run:
  * ```bash
- * npm run testByFile -w miroir-standalone-app -- reportTestLauncher.330.slice1
+ * npm run testByFile -w miroir-standalone-app -- reportTestLauncher.unit
  * ```
  */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -16,7 +16,7 @@ import {
   MIROIR_REPORT_TEST_VITEST_ENTRY,
   MIROIR_RUNNER_TEST_SHARED_VITEST_ENTRY,
   resolveVitestEntry,
-} from "../../../../scripts/testMiroirLauncher.js";
+} from "../../scripts/testMiroirLauncher.js";
 
 const ENV_KEYS = ["MIROIR_TEST_MODE", "MIROIR_TEST_SUITES", "MIROIR_TEST_TAGS"] as const;
 

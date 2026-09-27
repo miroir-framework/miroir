@@ -1,19 +1,19 @@
 /**
- * Issue #330 Slice 3: after an interaction step, a Report test waits for the actions it started
+ * Report tests (#330): after an interaction step, a Report test waits for the actions it started
  * (analysis T5), over a real `MiroirActivityTracker`.
  *
  * Not reachable through a MiroirTest: the timeout needs an action that never settles.
  *
  * Run:
  * ```bash
- * npm run testByFile -w miroir-standalone-app -- reportIdleWait.330.slice3
+ * npm run testByFile -w miroir-standalone-app -- reportTestActionsIdle.unit
  * ```
  */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { MiroirActivityTracker } from "miroir-core";
 
-import { createActionsIdleWaiter } from "../../../../src/miroir-fwk/4-tests/componentTests/waitForActionsIdle.js";
+import { createActionsIdleWaiter } from "../../src/miroir-fwk/4-tests/componentTests/waitForActionsIdle.js";
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));

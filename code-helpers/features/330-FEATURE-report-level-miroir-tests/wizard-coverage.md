@@ -1,6 +1,6 @@
 # #330 — Coverage of the #284 UI tests by Report MiroirTests
 
-> One row per case of the two #284 UI tests (listed by [`list_wizard_cases.py`](list_wizard_cases.py), not by eye). The last column names the `reportTest` leaf, or the kept test, that covers the case. `python3 list_wizard_cases.py --check` fails while a row has no entry. Slice 7 deletes a file only when all its rows are covered (plan, D19 / T12).
+> One row per case of the two #284 UI tests (listed by a script, `list_wizard_cases.py`, not by eye; the script was removed in Slice 9, once every row was filled). The last column names the `reportTest` leaf, or the kept test, that covers the case. Slice 7 deleted a file only when all its rows were covered (plan, D19 / T12).
 
 ## Findings from the inventory (Slice 0)
 

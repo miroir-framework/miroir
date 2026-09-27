@@ -389,20 +389,24 @@ export async function runUiIntegrationTestSuite(
   if (suiteEntry.kind === "reportTest" && !request.prepareReportTests) {
     throw new Error(`${REPORT_TESTS_NEED_A_SANDBOX_MESSAGE} (suite "${request.suiteKey}")`);
   }
+  // #330: a Report suite names its Report's application by uuid, which an ephemeral testbed
+  // (fresh uuids) does not have: it always runs on its pinned targets.
+  const effectiveRequest: UiIntegrationTestRunRequest =
+    suiteEntry.kind === "reportTest" ? { ...request, runTargetMode: "pinned" } : request;
   const runTarget = resolveUiIntegrationTestRunTarget(
-    request.runTargetMode,
-    request.suiteDefinition,
+    effectiveRequest.runTargetMode,
+    effectiveRequest.suiteDefinition,
   );
 
   return coordinator.runExclusive(() =>
     runRunnerOrActionIntegrationSuite(
-      request,
+      effectiveRequest,
       environment,
       suiteEntry,
       runTarget,
       sessionKind,
       hostMode,
-      suiteEntry.kind === "reportTest" ? request.prepareReportTests : undefined,
+      suiteEntry.kind === "reportTest" ? effectiveRequest.prepareReportTests : undefined,
     ),
   );
 }

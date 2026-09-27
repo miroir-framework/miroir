@@ -1,5 +1,5 @@
 /**
- * Issue #330 Slice 8: a Report MiroirTest runs from its display on the Miroir Tests page. "Run …
+ * Report tests (#330): a Report MiroirTest runs from its display on the Miroir Tests page. "Run …
  * Integration Tests" registers the report test runner over the display's sandbox for the run's
  * session, the Report of the leaf mounts in the sandbox panel, and the app's Miroir Reports reach
  * the session (the wizard is a Miroir Report the session does not bootstrap).
@@ -9,7 +9,7 @@
  *
  * Run:
  * ```bash
- * npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem reportTestInApp.330.slice8
+ * npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem reportTestInApp.integ
  * ```
  */
 import { readdirSync, readFileSync } from "node:fs";
@@ -40,20 +40,20 @@ import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { entityReport, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 
-import { resetIntegTestRunCoordinatorForTests } from "../../../../src/miroir-fwk/4-tests/integTestRunCoordinator.js";
+import { resetIntegTestRunCoordinatorForTests } from "../../src/miroir-fwk/4-tests/integTestRunCoordinator.js";
 import {
   resetUiIntegrationTestRunPreferencesForTests,
   setUiIntegrationTestRunPreferences,
-} from "../../../../src/miroir-fwk/4-tests/uiIntegrationTestRunPreferences.js";
+} from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunPreferences.js";
 import {
   getLastUiIntegrationTestRunResult,
   resetLastUiIntegrationTestRunResultForTests,
-} from "../../../../src/miroir-fwk/4-tests/uiIntegrationTestRunState.js";
-import { MiroirTestDisplay } from "../../../../src/miroir-fwk/4_view/components/Reports/MiroirTestDisplay.js";
-import { ReportPageContextProvider } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportPageContext.js";
-import { miroirAppStartup } from "../../../../src/startup.js";
+} from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunState.js";
+import { MiroirTestDisplay } from "../../src/miroir-fwk/4_view/components/Reports/MiroirTestDisplay.js";
+import { ReportPageContextProvider } from "../../src/miroir-fwk/4_view/components/Reports/ReportPageContext.js";
+import { miroirAppStartup } from "../../src/startup.js";
 
-vi.mock("../../../../src/miroir-fwk/4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js", async () => {
+vi.mock("../../src/miroir-fwk/4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js", async () => {
   const { loadApplicationRunnerUuidIndexFromFolders } = await import(
     "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js"
   );
@@ -69,16 +69,16 @@ vi.mock("../../../../src/miroir-fwk/4-tests/useSelectedApplicationMiroirTestSuit
   };
 });
 
-vi.mock("../../../../src/miroir-fwk/4_view/components/Reports/TestExecutionPanel.js", () => ({
+vi.mock("../../src/miroir-fwk/4_view/components/Reports/TestExecutionPanel.js", () => ({
   TestExecutionPanel: () => null,
 }));
 
-vi.mock("../../../../src/miroir-fwk/4-tests/loadBrowserUiIntegrationTestLauncherEnvironment.js", async () => {
+vi.mock("../../src/miroir-fwk/4-tests/loadBrowserUiIntegrationTestLauncherEnvironment.js", async () => {
   const { createNodeUiIntegrationTestLauncherEnvironment } = await import(
-    "../../../helpers/runUiIntegrationTestSuiteInNode.js"
+    "../helpers/runUiIntegrationTestSuiteInNode.js"
   );
   const { expect } = await import("vitest");
-  const { resolveLaunchProfileName } = await import("../../../helpers/launchProfileName.js");
+  const { resolveLaunchProfileName } = await import("../helpers/launchProfileName.js");
   return {
     loadBrowserUiIntegrationTestLauncherEnvironment: async () => {
       const nodeEnv = createNodeUiIntegrationTestLauncherEnvironment(expect);
@@ -95,7 +95,7 @@ const leafLabel = "the application picker lists Library, not Miroir or Admin";
 
 const miroirReportsFolder = join(
   dirname(fileURLToPath(import.meta.url)),
-  "../../../../../miroir-test-app_deployment-miroir/assets/miroir_data",
+  "../../../miroir-test-app_deployment-miroir/assets/miroir_data",
   entityReport.uuid,
 );
 
@@ -142,9 +142,10 @@ beforeEach(() => {
   resetLastUiIntegrationTestRunResultForTests();
 });
 
-describe("Report MiroirTests from the Miroir Tests page (#330 Slice 8)", () => {
+describe("Report MiroirTests from the Miroir Tests page (#330)", () => {
   it("Run Integration Tests drives the wizard in the display's sandbox, then releases it", async () => {
-    setUiIntegrationTestRunPreferences({ runTargetMode: "pinned" });
+    // the default run target of the page, which a Report suite overrides: its Report names Library
+    setUiIntegrationTestRunPreferences({ runTargetMode: "ephemeral" });
     const catalogEntry = indexApplicationMiroirTestsByKey(loadApplicationMiroirTestCatalog())[suiteKey];
     expect(catalogEntry?.uiRunnerKind).toBe("reportTest");
 
@@ -181,6 +182,7 @@ describe("Report MiroirTests from the Miroir Tests page (#330 Slice 8)", () => {
       () => {
         const lastRun = getLastUiIntegrationTestRunResult();
         expect(lastRun?.suiteKey).toBe(suiteKey);
+        expect(lastRun?.runTargetMode).toBe("pinned");
         expect(lastRun?.success).toBe(true);
       },
       { timeout: 180_000 },

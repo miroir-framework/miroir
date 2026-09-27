@@ -16,7 +16,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Follow-up: https://github.com/miroir-framework/miroir/issues/333 (stored values in UI steps)
 Working branch: `claude/report-level-miroir-tests-0lnny6` (from `_integration`, PR against `_integration`)
 
-**Resume note:** Slices 0 to 8 done 2026-09-27; Slice 9 next.
+**Resume note:** all slices done 2026-09-27; PR #336 ready for review.
 
 ---
 
@@ -46,7 +46,7 @@ This plan does **not** cover stored values in UI steps (#333), an in-memory mode
 | 6 | Wizard Finish persists the Endpoint and Report | ✅ | leaf "public service: Finish creates Endpoint and Report" |
 | 7 | Wizard branches; 284 UI tests deleted | ✅ | branch leaves + coverage table all covered (`wizardWalk.284` deleted, `multistepBranch.284` kept) |
 | 8 | Report tests in the app | ✅ | launcher registry test + `reportTestInApp.330.slice8` (the Miroir Tests display drives the wizard in its sandbox) |
-| 9 | Nonreg, docs, cleanup, AC | ⬜ | nonreg steps + tracer narrative |
+| 9 | Nonreg, docs, cleanup, AC | ✅ | nonreg steps + docs + browser run of the wizard suite |
 
 ---
 
@@ -551,7 +551,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ## Slice 9 — Nonreg, docs, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -599,4 +599,11 @@ npm run test -w miroir-core -- ''
 
 ### Realization
 
-<Appended on completion.>
+- **Nonreg:** `integ-report.bookDetails` and `integ-report.connectExternalServiceWizard` (default tier) in their own shared group, `standalone-app-report-suites`: Report suites run in their own DOM entry, and `testMiroir` refuses a selection mixing them with runner suites. `unit-report-tests` (unit tier, shared unit files: `reportTestLauncher.unit`, `reportTestActionsIdle.unit`) and `appstack-report-tests` (default tier: `reportTestFailure.integ`, `reportTestFakeHttp.integ`, `reportTestInApp.integ`). `requires: postgres` like the runner steps, since the default profile is `emulatedServer-sql`; they were run on `emulatedServer-filesystem` only.
+- **Docs:** `docs/reference/testing.md` § Report tests (shape, steps, waiting, fake HTTP and the `realServer-*` limit, session and Miroir Reports, naming, running from the CLI and the app, the two suites, the mechanism tests); the leaf types table gains `reportTest` and `reportTestSuite` (the kinds table has had `report` since Slice 1). `docs/contributing/testing.md`: a Report row in the `testMiroir` table, a pointer to § Report tests, `report` among the kinds of a new test.
+- **Cleanup:** the five issue vitest files moved with `git mv` to `tests/4_view/reportTestLauncher.unit`, `reportTestActionsIdle.unit`, `reportTestFailure.integ`, `reportTestFakeHttp.integ`, `reportTestInApp.integ`; the issue folder is gone. `list_wizard_cases.py` removed; `wizard-coverage.md` stays as the record. `issue: "330"` kept (the tag guard accepts it). `ReportPage.tsx` kept: `TestResultsGrid.tsx` and four tests import it.
+- **Browser run (the Slice 8 manual proof):** miroir-server release build (run from its folder, `--disable-auth`, self-signed certificate) and the Vite client, driven by Playwright in headless Chromium. On the `report.connectExternalServiceWizard` display (MiroirTestDetails Report), "Run Integration Tests" on `emulatedServer-indexedDb` drives the wizard in the sandbox panel ([`slice8-browser-sandbox.png`](slice8-browser-sandbox.png)); 9 of 9 assertions pass ([`slice8-browser-after-run.png`](slice8-browser-after-run.png)). `report.bookDetails` was not run in the browser: its display did not load at the URL tried (a Library MiroirTest on the Miroir details Report).
+- **Bug found by the browser run, fixed:** with the page's default run target, "Ephemeral run (fresh UUID v4)", 7 of the 8 wizard leaves failed: the Library testbed got a fresh uuid, which the suite's Report and leaves do not know. `runUiIntegrationTestSuite` now runs a Report suite on its pinned targets whatever the setting (the inspector shows "Run target mode: pinned"). `reportTestInApp.integ` now starts from the ephemeral setting and checks the pinned mode; without the override it fails ("Library is offered": no such option). Documented in § Report tests.
+- **Tracer narrative (9.4):** not run by hand. In the browser the app's Library store is the repository's `library_data` (the real server on the git filesystem), which the edit would change. Automated equivalent: `report.bookDetails` "saves an edited title".
+- **AC (9.5):** every row is proven by the test named there, all passing on `emulatedServer-filesystem`; the in-app launch adds `reportTestInApp.integ` and the browser run above.
+- **Validation (2026-09-27):** skills sync; scripts pytest 45; lint; tsc core and app; miroir-core unit 2084 (+1 skipped); `reportTestLauncher.unit` 5; `reportTestActionsIdle.unit` 6; `uiIntegrationTestLauncher.unit` 21; on `emulatedServer-filesystem`: `reportTestFailure.integ` 2, `reportTestFakeHttp.integ` 3, `reportTestInApp.integ` 1, and the one-leaf `--filter` example of § Report tests (1 passed, 7 skipped). `npm run nonreg:filesystem -- --runner shared` (unit and default tiers): result below.

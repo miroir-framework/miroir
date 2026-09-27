@@ -1,16 +1,15 @@
 /**
- * Issue #330 Slice 5: a request of a Report to an external service that its suite declares no
- * fake HTTP response for fails the `reportTest` leaf, naming the method and the URL (analysis T9).
+ * Report tests (#330): a failed `expectActionResult` step fails its `reportTest` leaf, which is
+ * recorded as `error` with the step, the assertion label and the compared values.
  *
  * Not reachable through a MiroirTest (a MiroirTest cannot assert that another one fails): this
- * file runs `report.connectExternalServiceWizard` with a fake response for another URL than the
- * one the leaf gives the wizard, without its last step (the wizard stays on the document step),
- * and reads what the tracker recorded. The leaf runs with a non-throwing `expect`, so its failure
- * is recorded without failing the vitest test that runs it.
+ * file runs `report.bookDetails` with a copy of its store-check leaf expecting a wrong name, and
+ * reads what the tracker recorded. The leaf runs with a non-throwing `expect`, so its failure is
+ * recorded without failing the vitest test that runs it.
  *
  * Run:
  * ```bash
- * npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem fakeHttp.330.slice5
+ * npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem reportTestFailure.integ
  * ```
  */
 import "@testing-library/jest-dom";
@@ -31,28 +30,25 @@ import {
   type VitestNamespace,
 } from "miroir-core";
 
-import { startReportTestEntry } from "../../../helpers/reportTestEntry.js";
-import { loadRunnerOrActionMiroirTestSuite } from "../../../helpers/runMiroirRunnerTestsFromCLI.js";
+import { startReportTestEntry } from "../helpers/reportTestEntry.js";
+import { loadRunnerOrActionMiroirTestSuite } from "../helpers/runMiroirRunnerTestsFromCLI.js";
 
-const suiteKey = "report.connectExternalServiceWizard";
-const leafLabel = "reads an OpenAPI document by URL";
-const declaredUrl = "https://fake-service.example/another-document.json";
+const suiteKey = "report.bookDetails";
+const leafLabel = "the store holds the displayed Book";
+const wrongName = "Ubik";
 
-/**
- * `report.connectExternalServiceWizard` whose only fake response is for `declaredUrl`, with its
- * leaf stopping once it has asked the wizard for the next step after the document step.
- */
-function suiteWithoutTheDocumentResponse(): MiroirTestSuite {
+/** `report.bookDetails` with only its store-check leaf, expecting `wrongName`. */
+function suiteExpectingWrongName(): MiroirTestSuite {
   const suite = structuredClone(loadRunnerOrActionMiroirTestSuite(suiteKey));
   const reportSuite = suite.miroirTests[0] as ReportTestSuite;
-  reportSuite.fakeHttpResponses = reportSuite.fakeHttpResponses?.map((response) => ({
-    ...response,
-    url: declaredUrl,
-  }));
   const leaf = reportSuite.miroirTests.find(
     (candidate) => candidate.miroirTestLabel === leafLabel,
   ) as MiroirTestForReport;
-  leaf.steps = leaf.steps.slice(0, -1);
+  for (const step of leaf.steps) {
+    if (step.step === "expectActionResult") {
+      step.assertion.testAssertion.definition.expectedValue = { name: wrongName };
+    }
+  }
   reportSuite.miroirTests = [leaf];
   return suite;
 }
@@ -71,10 +67,10 @@ function recordedAssertions(
 }
 
 const { miroirActivityTracker, createSession } = await startReportTestEntry();
-const suite = suiteWithoutTheDocumentResponse();
+const suite = suiteExpectingWrongName();
 const holder: { value?: MiroirTestExecutionEnvironment } = {};
 
-describe(`${suiteKey} without a response for the document URL`, async () => {
+describe(`${suiteKey} expecting a wrong name`, async () => {
   let session: ReturnType<typeof createSession> | undefined;
 
   vitest.beforeAll(async () => {
@@ -107,16 +103,15 @@ describe(`${suiteKey} without a response for the document URL`, async () => {
     },
   );
 
-  it("records the leaf as error, naming the method and the URL of the request", () => {
-    const recorded = recordedAssertions(
-      miroirActivityTracker,
-      [suiteKey, "ConnectExternalServiceWizard"],
-      leafLabel,
-    );
+  it("records the leaf as error, with the failed step, the assertion label and the compared values", () => {
+    const recorded = recordedAssertions(miroirActivityTracker, [suiteKey, "BookDetails"], leafLabel);
     const leafResult = recorded?.[leafLabel];
     expect(leafResult?.assertionResult).toBe("error");
-    expect(leafResult?.assertionActualValue).toBe(
-      "no fake HTTP response declared for GET https://fake-service.example/openapi.json",
-    );
+    expect(leafResult?.assertionExpectedValue).toEqual({ name: wrongName });
+    expect(leafResult?.assertionActualValue).toEqual({
+      message:
+        'step 3 (expectActionResult "the stored name is the displayed one"): assertion "storedBookName" failed',
+      actual: { name: "The Design of Everyday Things" },
+    });
   });
 });

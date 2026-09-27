@@ -136,9 +136,11 @@ is a `MiroirTestDefinition` whose `definition` field is a `MiroirTestSuite` tree
 | `functionCallTest` | Direct TypeScript function call with expected result |
 | `queryTest` | Query/extractor runner with fixture |
 | `runnerTest` | Composite action runner test |
+| `reportTest` | Mounts the Report of its parent `reportTestSuite` at its route on an integration session, then runs its `steps`: component test steps, actions and queries, and assertions on their results. Accepted only in a `reportTestSuite` (#330, see [Report tests](#report-tests)) |
 | `reactComponentTest` | Renders the component of its parent `reactComponentTestSuite` with the suite's `componentProps` shallow-merged under its own `componentProps`, then runs its declarative `steps`. Accepted only in a `reactComponentTestSuite` (#294). The step interpreter lives in the standalone app, not in miroir-core (#286, #292, see [MlElementEditor component tests](#mlelementeditor-component-tests)) |
 | `miroirTestSuite` | Nested grouping (recurses) |
 | `reactComponentTestSuite` | Grouping of `reactComponentTest` leaves only. `component` names the rendered component in the app's component registry; optional `componentProps` are the default props of its leaves (#292) |
+| `reportTestSuite` | Grouping of `reportTest` leaves only, on one Report: `report` (application, section, Report, optional instance), optional `actionTimeoutMs` and `fakeHttpResponses` (#330) |
 
 Field naming: `miroirTestType`, `miroirTestLabel`, `miroirTests`. Legacy `unitTest*` / `transformerTest*` fields are frozen.
 
@@ -659,6 +661,63 @@ npm run testMiroir -w miroir-standalone-app -- --suites runner.returnDocument --
 ```
 
 Filter rules and common mistakes: [Filtering MiroirTest cases](#filtering-miroirtest-cases).
+
+### Report tests
+
+A Report test mounts a whole Report at its route, drives it as a user would, and checks what its actions did, in the store included (#330). It goes beyond the component tests, which render one component and run no action, and beyond the Runner tests, which run a Runner from given data without its UI.
+
+**Shape.** The root suite carries the `runTarget`, `testConfiguration` and `testbedInitApplicationParameters` of an action suite, and holds `reportTestSuite` nodes. Each names its Report, displayed at the route `?page=report&application=…&deploymentUuid=…&applicationSection=…&reportUuid=…[&instanceUuid=…]`, the deployment coming from the session:
+
+```json
+{
+  "miroirTestType": "reportTestSuite",
+  "miroirTestLabel": "BookDetails",
+  "report": {
+    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+    "applicationSection": "data",
+    "reportUuid": "c3503412-3d8a-43ef-a168-aa36e975e606",
+    "instanceUuid": "e20e276b-619d-4e16-8816-b7ec37b53439"
+  },
+  "miroirTests": [{ "miroirTestType": "reportTest", "miroirTestLabel": "saves an edited title", "steps": ["…"] }]
+}
+```
+
+A `reportTest` leaf holds `steps` and may override `instanceUuid`.
+
+**Steps.**
+
+- The component test steps and targets (see [MlElementEditor component tests](#mlelementeditor-component-tests)). Report forms name their fields without the `TESTSECTION.` prefix: `{"byRole": "textbox", "fieldName": "name"}`.
+- `compositeAction`: runs an action or a query (`action`, a `compositeActionTemplate`) through the session's DomainController, with the session parameters (`testApplicationUuid`, `testApplicationDeploymentUuid`, …) and the results kept by the earlier steps as parameters. Its result is kept under `nameGivenToResult`, or the action's own.
+- `expectActionResult`: runs a `compositeRunTestAssertion` over the kept results, as a Runner test does. A failure names the step, the assertion and the compared values.
+
+**Waiting.** After each interaction step, the test waits until the actions the step started have settled and React has rendered their effects, again while those renders start new actions. It fails after the suite's `actionTimeoutMs` (10000 when absent), naming the actions still running. For what appears later without an action, `expectElement` takes a `timeout`.
+
+**Fake HTTP.** `fakeHttpResponses` answers the outbound requests of the Report's actions (an OpenAPI document, an external service): `method`, full `url`, `status` (200 when absent), `headers`, `body` (JSON unless a string). During each leaf they replace the outbound fetch of miroir-core; a request with no answer fails the leaf, naming its method and URL. On a `realServer-*` profile the requests leave from the server process, which the test cannot answer: a leaf of a suite with `fakeHttpResponses` is recorded as skipped there.
+
+**Session.** Each leaf runs on the action session of its suite, reset before each leaf, with the Report mounted in `PageDispatcher` under a `MemoryRouter`: the Report's own navigation works. The session bootstraps 13 Miroir Reports; before each leaf, the runner creates the other Miroir Reports it is given (from `miroir_data` in vitest, from the app's local cache in the app), so Miroir Reports such as the ConnectExternalServiceWizard can be tested.
+
+**Naming.** `report.<report>` (kind `report`), mode tags `integ` and `ui`.
+
+**Running.** `testMiroir` sends Report suites to their own DOM entry, `tests/miroir-report-tests.integ.test.tsx`, and refuses a selection that mixes them with runner or action suites:
+
+```bash
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-filesystem --suites report.bookDetails --mode integ
+
+# One leaf: root suite → reportTestSuite label → leaf labels
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-filesystem --suites report.connectExternalServiceWizard --mode integ \
+  --filter '{"report.connectExternalServiceWizard":{"ConnectExternalServiceWizard":["an uploaded file fills the document text"]}}'
+```
+
+In the app, "Run Integration Tests" on the suite's display (Miroir Tests page) mounts each Report in the display's sandbox panel while its leaf runs. A Report suite always runs on its pinned targets, whatever the Run target setting: its Report names its application by uuid, which an ephemeral testbed does not have.
+
+| Suite | Report | Covers |
+|---|---|---|
+| `report.bookDetails` | Library BookDetails (instance details) | display, store check, edit saved, invalid value not saved |
+| `report.connectExternalServiceWizard` | Miroir ConnectExternalServiceWizard (multistep), and the home Report's launcher | document by URL, pasted or uploaded, and its errors; refused private URL; custom token kept out of the page; Finish checked in the store |
+
+Tests of the mechanism, in `packages/miroir-standalone-app/tests/4_view/`: `reportTestLauncher.unit` (routing of `testMiroir`), `reportTestActionsIdle.unit` (the wait), `reportTestFailure.integ` (a failed assertion step), `reportTestFakeHttp.integ` (an undeclared request), `reportTestInApp.integ` (the Miroir Tests display drives the wizard).
 
 ---
 
