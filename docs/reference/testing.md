@@ -70,6 +70,28 @@ npm run nonreg -- --compare \
 
 Step list: [`scripts/nonreg-manifest.json`](../../scripts/nonreg-manifest.json). Runner: [`scripts/run-nonreg.py`](../../scripts/run-nonreg.py). Default integ profile: `emulatedServer-sql` (override with `--profile`).
 
+#### Timing profile and shared runner (#318)
+
+Both are opt-in; without the flags a run behaves as before.
+
+- `--timings` runs vitest with a timing runner (`scripts/vitest/timingRunner.mjs`, enabled by `MIROIR_TEST_TIMING=1` in each package config). The snapshot gets `timings.json` (per step and file: collect, setup, `beforeAll` / `beforeEach` / `afterEach` / `afterAll`, test bodies, named phases such as `session.init`) and `summary.md` gets slowest-first tables. Vitest's own test durations include the `beforeEach` / `afterEach` hooks; this profile separates them.
+- `--runner shared` runs the steps that carry a `shared` descriptor in the manifest together, one vitest launch per `group`, which saves about 9 s of launch overhead per step. A `files` group adds `--no-isolate` and the files of its steps to the group's `argv`; a `suites` group passes the MiroirTest suite keys to `testMiroir ... --shared` (entry `miroir-runner-tests-shared.integ.test.ts`: one session per suite). Results are split back per step. A step that fails or has no result in the group re-runs alone in legacy mode: `summary.json` records `mode: "shared→legacy"`, and `shared_state_leak_suspected` when it then passes. `--runner legacy` (the default) ignores the descriptors.
+
+```bash
+python scripts/run-nonreg.py --tier default --profile emulatedServer-filesystem --timings
+python scripts/run-nonreg.py --tier default --profile emulatedServer-filesystem --runner shared
+```
+
+A step joins a group by adding, next to its `argv`:
+
+```json
+"shared": { "group": "standalone-app-profile", "argv": ["npm", "run", "testByFile", "-w", "miroir-standalone-app", "--", "--profile", "{profile}", "--no-bail"], "files": ["PersistenceStoreController.integ"] }
+```
+
+All steps of a group share the same `argv`. Leave out steps whose tests measure the heap or rely on a fresh module graph or environment variables.
+
+**Testbed reset policy:** a MiroirTest suite may declare `"testbedReset": "perSuite"` when none of its tests modify the testbed. CLI integ runs (`testMiroir --mode integ`) then reset the testbed once per suite instead of before every test; absent means `"perTest"`. Runs from the **Miroir Tests** page ignore it and always reset per test. `miroirCoreTransformers` uses it (30 s → 9 s on filesystem). Read-only PLATFORM files reset in `beforeAll` instead (`ExtractorPersistenceStoreRunner.integ`, `ExtractorTemplatePersistenceStoreRunner.integ`).
+
 ### Deployment `modelValidation`
 
 Each deployment package ships a Vitest file `tests/modelValidation.unit.test.ts` that type-checks model and data JSON instances against their entity schemas via `runModelValidationSuite` (`miroir-core`).

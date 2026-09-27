@@ -30,6 +30,7 @@ Sibling repos, linked locally only when regenerating types from schemas: **jzod*
   | `npm run nonreg -- --tier full` | everything, including postgres `modelValidation` | a running PostgreSQL |
 
   Typical use: `nonreg:unit` for any change under `packages/`; `nonreg:filesystem` as well when the change touches stores, local cache, DomainController or actions.
+  Opt-in flags (append after `--`): `--runner shared` runs the steps that have a `shared` manifest descriptor in grouped vitest launches, re-running any failure alone in legacy mode; `--timings` writes `timings.json` with hook and test-body times. See the nonreg section of `docs/reference/testing.md`.
 - **Feature work:** non-trivial features and refactors start with `code-helpers/features/<issue>-<TYPE>-<slug>/analysis.md` then `tdd-implementation-plan.md` (skills `miroir-feature-analysis`, `miroir-analysis-to-tdd-plan`). Move and rename files with `git mv`.
 - **Skills:** Miroir skills are `.agents/skills/miroir-*`, next to a small shared core (`skills-lock.json`). `.agents/skills/` is canonical; `.claude/skills/` holds generated copies, so after editing a skill run `python scripts/sync_agent_skills.py`. Other skills are personal installs and are gitignored (`docs/contributing/development-setup.md`).
 - **Ad-hoc scripts** (diagnostics, repo helpers, one-off tooling) are written in **Python**. Use JS/TS only when the script must run inside a package's Node/Vite/Vitest workflow or import TypeScript modules from the monorepo.
