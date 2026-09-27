@@ -4,7 +4,7 @@
 
 - Issue: https://github.com/miroir-framework/miroir/issues/321
 - Related: [#234 deployment inventory](../234-FEATURE-versioning-modes-and-asset-migration/deployment-inventory.md), [#157 configurable filesystem deployment root](<../157-FEATURE- harden startup sequence & enable admin deployment choice on client - server/PLAN.md>), [data-architecture-deployments.md](../../../docs/reference/data-architecture-deployments.md), [docs/reference/testing.md](../../../docs/reference/testing.md)
-- Snapshot: branch `claude/environment-configuration-7z5rjb`, 2026-09-27 (same tree as `_integration`).
+- Snapshot: `_integration` at `3e1e4ca` (merge of #320), 2026-09-27.
 
 ## 1. Summary
 
@@ -41,7 +41,7 @@ Every tracked `Deployment` row (entity `7959d814`), by location. Paths are relat
 | Location | Rows | Stores | Used by |
 |---|---|---|---|
 | `miroir-test-app_deployment-admin/assets/admin_data` | Admin `18db21bf`, Miroir `10ff36f2`, Library `f714bb2f`, Designer `f0359240` | filesystem, all in `packages/*/assets` (Miroir's `admin` section points at `…-miroir/src/assets`, which does not exist in git and is created at runtime) | dev server, Electron dev, realServer test profiles |
-| `miroir-standalone-app/tests/assets/admin_data` | Admin `18db21bf` (fs `../miroir-standalone-app/tests/assets/*`), Miroir `10ff36f2` and Library `f714bb2f` (indexedDb, `tests/tmp`), Spotify `fd47d115` (fs `tests/tmp`), 3× `testApplication_CreateEntity` (sql) | mixed; **test output** | every emulated test profile (Admin section) |
+| `miroir-standalone-app/tests/assets/admin_data` | Admin `18db21bf` (fs `../miroir-standalone-app/tests/assets/*`), Miroir `10ff36f2` and Spotify `fd47d115` (fs `tests/tmp`), 3× `testApplication_CreateEntity` (sql) | mixed; **test output** | every emulated test profile (Admin section) |
 | `miroir-mcp/tests/assets/admin_data` | Admin, Miroir, Library | fs `miroir-mcp/tests/{assets,tmp}` | miroir-mcp standalone tests |
 | `miroir-core/tests/test_assets/admin_data` | Admin, Miroir, Library | fs, broken paths (`../miroir-test-app_deployment-admin-admin/…`, `test/test_assets/…`) | miroir-core unit fixtures |
 | `miroir-server/docker/seed/…/admin_data` | Library `f714bb2f`, Spotify `fd47d115` | fs, no `..` | Docker image, overlaid on the git Admin data |
@@ -102,7 +102,9 @@ Secrets and credentials:
 
 ### 5.3 Committed test output in the test Admin copy
 
-`miroir-standalone-app/tests/assets/admin_data/7959d814…/`: `10ff36f2` and `f714bb2f` renamed "Deployment of application …" with `tests/tmp/indexedDb-*` stores; `2ae62d8b`, `9d0a5637`, `f3ad7464` (`testApplication_CreateEntity`, sql) with 4 matching AdminApplications in `25d935e7…/` (`01ce212d`, `2ffe2114`, `57621786`, `ac47391c`). `PersistenceStoreController.integ.test.tsx:202-205,268-271` snapshots and restores two fixtures by hand for that reason.
+`miroir-standalone-app/tests/assets/admin_data/7959d814…/`: `10ff36f2` renamed "Deployment of application Miroir" with `tests/tmp` stores; `2ae62d8b`, `9d0a5637`, `f3ad7464` (`testApplication_CreateEntity`, sql) with matching AdminApplications in `25d935e7…/` (`01ce212d`, `2ffe2114`, `57621786`, `ac47391c`).
+
+The churn continues: commit `bc0b16c` (#312 Slice 4, a `--tags` option for the testMiroir launcher) also switched `10ff36f2` from indexedDb to filesystem stores and deleted the Library Deployment `f714bb2f` and AdminApplication `5af03c98` from this copy, which is test-run output committed alongside an unrelated change. `PersistenceStoreController.integ.test.tsx:202-205,268-271` snapshots and restores two fixtures by hand for that reason.
 
 ### 5.4 CI and Claude cloud sessions
 
