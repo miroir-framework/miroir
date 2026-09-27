@@ -56,6 +56,7 @@ import {
 } from "./MlElementEditor";
 import { getFoldedDisplayValue } from "./MlElementEditorHooks";
 import { MlArrayEditorProps } from "./MlElementEditorInterface";
+import { emptyContainerMarker } from "./renderedValueMarkers";
 import { valueToJzod } from "@miroir-framework/jzod";
 import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 // import { MlUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -806,7 +807,11 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
   const titleRowWarning = findPathAnnotation(compatibilityWarnings, rootLessListKeyArray);
 
   return (
-    <div id={rootLessListKey} key={rootLessListKey}>
+    <div
+      id={rootLessListKey}
+      key={rootLessListKey}
+      {...emptyContainerMarker("array", formikRootLessListKey, Array.isArray(currentValue) && currentValue.length === 0)}
+    >
       <JsonDisplayHelper debug={true}
         componentName="MlArrayEditor"
         elements={[{

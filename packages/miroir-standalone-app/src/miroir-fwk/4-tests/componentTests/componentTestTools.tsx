@@ -66,6 +66,11 @@ import { packageName } from "../../../constants.js";
 import { ReportPageContextProvider } from "../../4_view/components/Reports/ReportPageContext.js";
 import { DocumentOutlineContextProvider } from "../../4_view/components/ValueObjectEditor/InstanceEditorOutlineContext.js";
 import { MlElementEditor } from "../../4_view/components/ValueObjectEditor/MlElementEditor.js";
+import {
+  EMPTY_CONTAINER_ATTRIBUTE,
+  ML_JSON_ATTRIBUTE,
+  ML_NAME_ATTRIBUTE,
+} from "../../4_view/components/ValueObjectEditor/renderedValueMarkers.js";
 import { cleanLevel } from "../../4_view/constants.js";
 import { useCurrentModel, useCurrentModelEnvironment } from "../../4_view/ReduxHooks.js";
 import { emptyObject } from "../../4_view/tools/emptyObject.js";
@@ -849,6 +854,8 @@ export function extractValuesFromRenderedElements(
   // Pre-compile regex patterns to avoid recreating them
   const labelRegex = label ? new RegExp(`^${label}\\.`) : null;
   const removeLabelPrefix = (str: string) => (labelRegex ? str.replace(labelRegex, "") : str);
+  /** #305 D3: whether `name` is the field under test or lies under it; any name when no `label` is given. */
+  const isUnderLabel = (name: string) => !label || (!!name && (name === label || name.startsWith(`${label}.`)));
 
   // Helper function to check for combobox options
   const checkForComboboxOptions = (
@@ -1134,6 +1141,7 @@ export function extractValuesFromRenderedElements(
     if (element.tagName === "INPUT") {
       const input = element as HTMLInputElement;
       const elementName = input.name || input.id;
+      if (!isUnderLabel(input.name) && !isUnderLabel(input.id)) return; // #305 D3
       const name = removeLabelPrefix(elementName);
 
       // log.debug("extractValuesFromRenderedElements: processing TestId miroirInput (self)", {
@@ -1175,6 +1183,7 @@ export function extractValuesFromRenderedElements(
       );
       // return (element as any).value;
       // const elementName = input?.id || input.name;
+      if (!isUnderLabel(element.id) && !isUnderLabel(element.getAttribute("name") ?? "")) return; // #305 D3
       const name = removeLabelPrefix(element.id);
       values[name] = (element as any).value;
       return;
@@ -1185,6 +1194,7 @@ export function extractValuesFromRenderedElements(
     //   input.outerHTML
     // );
     const elementName = input.id || input.name;
+    if (!isUnderLabel(input.name) && !isUnderLabel(input.id)) return; // #305 D3
     const name = removeLabelPrefix(elementName);
 
     // log.debug("extractValuesFromRenderedElements: processing miroirInput (child)", {
@@ -1294,6 +1304,7 @@ export function extractValuesFromRenderedElements(
   allInputs.forEach((input: Element) => {
     const htmlInput = input as HTMLInputElement;
     if (!htmlInput.name && !htmlInput.id) return;
+    if (!isUnderLabel(htmlInput.name || htmlInput.id)) return;
 
     const name = removeLabelPrefix(htmlInput.name || htmlInput.id);
 
@@ -1325,6 +1336,9 @@ export function extractValuesFromRenderedElements(
     }
     if (htmlInput.type === "checkbox") {
       value = htmlInput.checked;
+    }
+    if (htmlInput.getAttribute(ML_JSON_ATTRIBUTE) === "true") {
+      value = JSON.parse(value); // #305 D5: a non-string value carried by a hidden input
     }
     log.debug("extractValuesFromRenderedElements: setting input value", name, "=", value);
     values[name] = value;
@@ -1706,6 +1720,7 @@ export function extractValuesFromRenderedElements(
     const select = element as HTMLSelectElement;
     if (!select.name && !select.id) return;
 
+    if (!isUnderLabel(select.name) && !isUnderLabel(select.id)) return; // #305 D3
     const name = removeLabelPrefix(select.name || select.id);
     if (!name || values[name] !== undefined) return; // Skip if already processed or no name
 
@@ -1758,6 +1773,17 @@ export function extractValuesFromRenderedElements(
     }
   });
   // Clean up non-indexed duplicates when indexed versions exist
+  // #305 D4: an empty array / object / record has no form field; its editor root carries a marker.
+  // The field under test itself is left out: the rebuilt value of an empty map is already `{}`.
+  queryAll(`[${EMPTY_CONTAINER_ATTRIBUTE}]`).forEach((element: Element) => {
+    const elementName = element.getAttribute(ML_NAME_ATTRIBUTE);
+    if (!elementName || elementName === label || !isUnderLabel(elementName)) return;
+    const name = removeLabelPrefix(elementName);
+    const hasChildValue = Object.keys(values).some((key) => key === name || key.startsWith(`${name}.`));
+    if (hasChildValue) return;
+    values[name] = element.getAttribute(EMPTY_CONTAINER_ATTRIBUTE) === "array" ? [] : {};
+  });
+
   const fieldsToRemove: string[] = [];
   for (const key in values) {
     // Check if this is a non-indexed field (no dots) that has indexed versions
