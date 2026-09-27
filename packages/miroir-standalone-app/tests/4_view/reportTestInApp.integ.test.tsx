@@ -189,8 +189,10 @@ describe("Report MiroirTests from the Miroir Tests page (#330)", () => {
     );
     expect(JSON.stringify(getLastUiIntegrationTestRunResult()?.testSuiteResults)).toContain(leafLabel);
 
-    // released: the runner is unregistered and the panel can be closed
+    // released: the runner is unregistered and the panel can be closed, once the release renders
     expect(ConfigurationService.configurationService.reportTestRunner).toBeUndefined();
-    expect(screen.getByRole("button", { name: "Close component test sandbox" })).toBeEnabled();
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Close component test sandbox" })).toBeEnabled(),
+    );
   }, 240_000);
 });
