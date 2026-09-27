@@ -2,7 +2,7 @@
 
 > Integration-first, no mocks. The harness is tested through its public entry points: `run-nonreg.py` (pytest in `scripts/tests`, which runs the real script on small real manifests), the package launchers (vitest unit tests on the argv/env they produce), and real vitest runs on the filesystem profile. No test file, `RunnerTestSession` or UI launch code changes, except where a slice names it.
 
-**Resume note:** analysis confirmed 2026-09-27. Branch `318-FEATURE-nonreg-profiling`, from `_integration` 76e52aa. Next: Slice 7.
+**Resume note:** analysis confirmed 2026-09-27. Branch `318-FEATURE-nonreg-profiling`, from `_integration` 76e52aa. All slices done.
 
 ## Scope
 
@@ -27,7 +27,7 @@ Out of scope: changes to the UI test runs; timing trends across runs (#306); ste
 | 4 | Shared runner for runner/action suites (D2) | ✅ DONE | new shared entry: one session per suite, same results as legacy |
 | 5 | `perSuite` reset policy (D4) | ✅ DONE | timing report shows one reset per marked suite; results unchanged |
 | 6 | Lazy store-state logging | ⏭ DROPPED (measured, no gain) | reset time before/after, from `--timings` |
-| 7 | Migrate descriptors, docs, compare full runs | ⬜ pending | legacy vs shared `nonreg:filesystem` on the same verdicts |
+| 7 | Migrate descriptors, docs, compare full runs | ✅ DONE | legacy vs shared `nonreg:filesystem` on the same verdicts |
 
 ## Locked implementation defaults
 
@@ -309,7 +309,7 @@ Dropped after measuring. A temporary probe around the two `getState()` calls, on
 
 ## Slice 7 — Migrate descriptors, docs, full comparison
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** most `testByFile` / `testMiroir` steps have a `shared` descriptor, and a full `--runner shared` run gives the same verdicts as legacy.
 
@@ -329,3 +329,20 @@ Dropped after measuring. A temporary probe around the two `getState()` calls, on
 | No Postgres on filesystem | Slice 1 |
 
 **Validation:** both full runs, `python scripts/sync_agent_skills.py --check`, pytest, the `tsc` checks, `npm run test -w miroir-core -- ''`.
+
+### Realization
+
+- Descriptors added for two unit-tier groups: `core-unit-files` (6 miroir-core testByFile steps) and `standalone-app-unit-files` (13 standalone-app steps). Left legacy: the heap measurements (`localCacheMemory*`, `memoryMeasure*`, `localCacheMonitorFootprint`), `bash -c` chains and steps with their own env, `runner_freeze_application_version` (pinned profile), `evolutionTraceWP1` (env), and `miroirCoreTransformers` (core entry, not the runner entry).
+- Found by the unit run: packages that load `vite-plugin-node-polyfills` (miroir-localcache-redux) get an empty `node:fs` in the worker, so `--timings` crashed there. The timing runner now takes `fs` / `path` from `process.getBuiltinModule`.
+- `AGENTS.md` is 3 bytes under its size budget (`test_agents_md_is_short`), so the flags are documented only in `docs/reference/testing.md`.
+- Full runs, `emulatedServer-filesystem`, same commit, fresh build:
+
+| Run | Verdicts | Wall time |
+|---|---|---|
+| baseline before #318 (2026-09-26) | 68 pass / 4 fail (env) | 28 min |
+| `nonreg:filesystem`, legacy | 74 / 74 pass | 19.6 min (1176 s) |
+| `nonreg:filesystem`, `--runner shared` | 74 / 74 pass, no `shared→legacy` fallback | 15.8 min (946 s) |
+| unit tier, legacy / shared (`--timings`) | same verdicts | 505 s / 411 s |
+
+- AC: timings off by default and legacy default (pytest, slices 0, 2, 3); UI unchanged (no diff under `packages/miroir-standalone-app/src`); reset policy explicit (slice 5); transformer step runs and no Postgres on filesystem (slice 1).
+
