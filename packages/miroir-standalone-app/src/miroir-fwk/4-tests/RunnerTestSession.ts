@@ -425,6 +425,8 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
 
     return {
       domainController,
+      // #330: a Report test installs its fake HTTP answers on both controllers of the session
+      ...(domainControllerForServer ? { domainControllerForServer } : {}),
       applicationDeploymentMap: testApplicationDeploymentMap,
       testApplicationUuid: runTarget.applicationUuid,
       persistenceStoreControllerManager,

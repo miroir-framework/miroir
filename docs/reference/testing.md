@@ -692,7 +692,7 @@ A `reportTest` leaf holds `steps` and may override `instanceUuid`.
 
 **Waiting.** After each interaction step, the test waits until the actions the step started have settled and React has rendered their effects, again while those renders start new actions. It fails after the suite's `actionTimeoutMs` (10000 when absent), naming the actions still running. For what appears later without an action, `expectElement` takes a `timeout`.
 
-**Fake HTTP.** `fakeHttpResponses` answers the outbound requests of the Report's actions (an OpenAPI document, an external service): `method`, full `url`, `status` (200 when absent), `headers`, `body` (JSON unless a string). During each leaf they replace the outbound fetch of miroir-core; a request with no answer fails the leaf, naming its method and URL. On a `realServer-*` profile the requests leave from the server process, which the test cannot answer: a leaf of a suite with `fakeHttpResponses` is recorded as skipped there.
+**Fake HTTP.** `fakeHttpResponses` answers the outbound requests of the Report's actions (an OpenAPI document, an external service): `method`, full `url`, `status` (200 when absent), `headers`, `body` (JSON unless a string). During each leaf they answer the outbound requests of the session's DomainControllers (client and emulated server), not those of the rest of the app; a request with no answer fails the leaf, naming its method and URL. On a `realServer-*` profile the requests leave from the server process, which the test cannot answer: a leaf of a suite with `fakeHttpResponses` is recorded as skipped there.
 
 **Session.** Each leaf runs on the action session of its suite, reset before each leaf, with the Report mounted in `PageDispatcher` under a `MemoryRouter`: the Report's own navigation works. The session bootstraps 13 Miroir Reports; before each leaf, the runner creates the other Miroir Reports it is given (from `miroir_data` in vitest, from the app's local cache in the app), so Miroir Reports such as the ConnectExternalServiceWizard can be tested.
 
@@ -710,7 +710,7 @@ npm run testMiroir -w miroir-standalone-app -- \
   --filter '{"report.connectExternalServiceWizard":{"ConnectExternalServiceWizard":["an uploaded file fills the document text"]}}'
 ```
 
-In the app, "Run Integration Tests" on the suite's display (Miroir Tests page) mounts each Report in the display's sandbox panel while its leaf runs. A Report suite always runs on its pinned targets, whatever the Run target setting: its Report names its application by uuid, which an ephemeral testbed does not have.
+In the app, "Run Integration Tests" on the suite's display (Miroir Tests page) mounts each Report in the display's sandbox panel while its leaf runs. A Report suite always runs on its pinned targets, whatever the Run target setting: its Report names its application by uuid, which an ephemeral testbed does not have. So it runs on an emulated profile only: on a `realServer-*` profile its pinned targets are the server's live deployments, which the session would reset and drop, and the launcher refuses the run.
 
 | Suite | Report | Covers |
 |---|---|---|

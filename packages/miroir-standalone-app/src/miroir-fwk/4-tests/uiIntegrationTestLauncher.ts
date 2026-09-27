@@ -46,6 +46,9 @@ import type {
 export const REPORT_TESTS_NEED_A_SANDBOX_MESSAGE =
   "a suite of reportTest leaves needs the app's component test sandbox to mount its Reports";
 
+export const REPORT_TESTS_NEED_AN_EMULATED_SERVER_MESSAGE =
+  "a suite of reportTest leaves runs on its pinned targets, which on a real server are its live deployments: choose an emulated profile";
+
 export type UiIntegrationTestLauncherEnvironment = {
   createOrchestrator: () => MiroirTestIntegrationOrchestrator;
   loadConfigForProfile: (profileName: string) => Promise<{
@@ -189,6 +192,12 @@ async function runRunnerOrActionIntegrationSuite(
   prepareReportTests: UiIntegrationTestRunRequest["prepareReportTests"],
 ): Promise<UiIntegrationTestRunResult> {
   const { miroirConfig, logConfig } = await environment.loadConfigForProfile(request.profileName);
+  // #330: the session resets its run target before each leaf and drops it at teardown
+  if (prepareReportTests && miroirConfig.client.emulateServer !== true) {
+    throw new Error(
+      `${REPORT_TESTS_NEED_AN_EMULATED_SERVER_MESSAGE} (suite "${request.suiteKey}", profile "${request.profileName}")`,
+    );
+  }
   await assertRealServerReachableIfNeeded(request, environment, miroirConfig);
 
   const trackerBundle = await environment.createActivityTracker(logConfig);
@@ -390,7 +399,7 @@ export async function runUiIntegrationTestSuite(
     throw new Error(`${REPORT_TESTS_NEED_A_SANDBOX_MESSAGE} (suite "${request.suiteKey}")`);
   }
   // #330: a Report suite names its Report's application by uuid, which an ephemeral testbed
-  // (fresh uuids) does not have: it always runs on its pinned targets.
+  // (fresh uuids) does not have: it always runs on its pinned targets, on an emulated profile only.
   const effectiveRequest: UiIntegrationTestRunRequest =
     suiteEntry.kind === "reportTest" ? { ...request, runTargetMode: "pinned" } : request;
   const runTarget = resolveUiIntegrationTestRunTarget(

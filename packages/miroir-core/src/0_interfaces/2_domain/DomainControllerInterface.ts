@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import type { ApplicationDeploymentMap, EndpointApplicationMap } from "../../1_core/Deployment";
 import type { AuthPrincipal } from "../../1_core/authentication/AuthenticationPolicy";
+import type { OutboundFetch } from "../../1_core/OutboundFetch";
 import type { ProcessCapabilities } from "../../1_core/processCapabilities";
 import type { Uuid } from "../1_core/EntityVersion";
 import {
@@ -218,4 +219,6 @@ export interface DomainControllerInterface {
   getPersistenceStoreAccessMode(): "local" | "remote";
   getLocalCache(): LocalCacheInterface; // TODO: this is a temporary solution to allow the use of the local cache in the webapp.
   setProcessCapabilities(snapshot: ProcessCapabilities): void;
+  /** #330: the fetch of this controller's requests to external services; `undefined` restores the global `fetch`. */
+  setOutboundFetch(fetchReplacement: OutboundFetch | undefined): void;
 }

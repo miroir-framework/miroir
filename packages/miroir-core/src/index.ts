@@ -1427,7 +1427,7 @@ export {
   setPersistRotatedSecret,
   type PersistRotatedSecret,
 } from "./4_services/ExternalServiceClient.js";
-export { outboundFetch, setOutboundFetch, type OutboundFetch } from "./1_core/OutboundFetch.js";
+export { outboundFetch, type OutboundFetch } from "./1_core/OutboundFetch.js";
 export {
   boundPathsForOperation,
   listConvertibleGetOperations,

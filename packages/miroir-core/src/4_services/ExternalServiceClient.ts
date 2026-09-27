@@ -18,7 +18,7 @@ import { packageName } from "../constants.js";
 import { resolveSecret, type ResolveSecretResult } from "./SecretStore.js";
 import { cleanLevel } from "./constants.js";
 import { MiroirLoggerFactory } from "./MiroirLoggerFactory.js";
-import { outboundFetch } from "../1_core/OutboundFetch.js";
+import { outboundFetch, type OutboundFetch } from "../1_core/OutboundFetch.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(
   packageName,
@@ -320,6 +320,7 @@ async function resolveClientCredentialsToken(
   actionType: string,
   forceRefresh: boolean,
   principal?: { miroirUserUuid?: string },
+  fetchImpl: OutboundFetch = outboundFetch,
 ): Promise<string | Action2Error> {
   const cacheKey = `${normalizeBaseUrl(scheme.tokenUrl)}|${scheme.clientIdKey}|${oauth2PrincipalCacheScope(principal)}`;
   const cached = oauth2TokenCache.get(cacheKey);
@@ -352,7 +353,7 @@ async function resolveClientCredentialsToken(
   }
   let response: Response;
   try {
-    response = await outboundFetch(scheme.tokenUrl, {
+    response = await fetchImpl(scheme.tokenUrl, {
       method: "POST",
       headers: {
         Authorization: `Basic ${toBase64(`${clientId}:${clientSecret}`)}`,
@@ -437,6 +438,7 @@ async function resolveAuthorizationCodeToken(
   actionType: string,
   forceRefresh: boolean,
   principal?: { miroirUserUuid?: string },
+  fetchImpl: OutboundFetch = outboundFetch,
 ): Promise<string | Action2Error> {
   const tokenUrlError = assertBaseUrlAllowed(scheme.tokenUrl);
   if (tokenUrlError) {
@@ -483,7 +485,7 @@ async function resolveAuthorizationCodeToken(
   }
   let response: Response;
   try {
-    response = await outboundFetch(scheme.tokenUrl, {
+    response = await fetchImpl(scheme.tokenUrl, {
       method: "POST",
       headers: {
         Authorization: `Basic ${toBase64(`${clientId}:${clientSecret}`)}`,
@@ -574,6 +576,7 @@ async function resolveAuthorizationHeader(
   actionType: string,
   forceTokenRefresh: boolean,
   principal?: { miroirUserUuid?: string },
+  fetchImpl: OutboundFetch = outboundFetch,
 ): Promise<string | Action2Error | undefined> {
   const scheme = externalService.securityScheme;
   if (scheme?.type === "none") {
@@ -585,6 +588,7 @@ async function resolveAuthorizationHeader(
       actionType,
       forceTokenRefresh,
       principal,
+      fetchImpl,
     );
     if (token instanceof Action2Error) {
       return token;
@@ -597,6 +601,7 @@ async function resolveAuthorizationHeader(
       actionType,
       forceTokenRefresh,
       principal,
+      fetchImpl,
     );
     if (token instanceof Action2Error) {
       return token;
@@ -631,6 +636,7 @@ export async function executeExternalServiceOperation(
   actionType: string,
   bindings: Record<string, unknown>,
   principal?: { miroirUserUuid?: string },
+  fetchImpl: OutboundFetch = outboundFetch,
 ): Promise<Action2ReturnType> {
   const externalService = getExternalService(endpointInstance);
   if (!externalService) {
@@ -662,6 +668,7 @@ export async function executeExternalServiceOperation(
     actionType,
     bindingStrings(bindings),
     principal,
+    fetchImpl,
   );
 }
 
@@ -671,6 +678,7 @@ export async function executeExternalServiceOperation(
  * @param actionType - The action type to call.
  * @param bindings - The bindings to use for the call.
  * @param principal - The principal to use for the call.
+ * @param fetchImpl - The fetch of the calling DomainController.
  * @returns The result of the call.
  */
 async function fetchExternalServiceOperation(
@@ -678,6 +686,7 @@ async function fetchExternalServiceOperation(
   actionType: string,
   bindings: Record<string, string>,
   principal?: { miroirUserUuid?: string },
+  fetchImpl: OutboundFetch = outboundFetch,
 ): Promise<Action2ReturnType> {
   const operation = externalService.operations.find((op) => op.operationId === actionType);
   if (!operation) {
@@ -725,6 +734,7 @@ async function fetchExternalServiceOperation(
     actionType,
     false,
     principal,
+    fetchImpl,
   );
   if (authorization instanceof Action2Error) {
     return authorization;
@@ -738,7 +748,7 @@ async function fetchExternalServiceOperation(
 
   const doFetch = async (): Promise<Response | Action2Error> => {
     try {
-      return await outboundFetch(url, {
+      return await fetchImpl(url, {
         method: operation.method,
         headers,
       });
@@ -768,6 +778,7 @@ async function fetchExternalServiceOperation(
       actionType,
       true,
       principal,
+      fetchImpl,
     );
     if (refreshedAuthorization instanceof Action2Error) {
       return refreshedAuthorization;

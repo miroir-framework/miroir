@@ -9,7 +9,6 @@ import {
   defaultMiroirModelEnvironment,
   runReportTestCompositeActionStep,
   runReportTestExpectActionResultStep,
-  setOutboundFetch,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type EntityInstance,
@@ -308,13 +307,17 @@ export function createReportTestRunner(host: ReportTestSandboxHost): ClosableRep
         message: `application ${suite.report.application} of suite "${suite.suitePath.join(" > ")}" has no deployment in this session`,
       };
     }
-    // the fake replaces the fetch of this process; on a real server, the requests go out from the server
+    // the fake answers the requests of the session's DomainControllers (client and emulated server)
+    // only, not those of the app around the sandbox; on a real server, they go out from the server
     if (suite.fakeHttpResponses && !internalMiroirConfig.client.emulateServer) {
       return { status: "skipped", message: REPORT_TEST_FAKE_HTTP_NEEDS_EMULATED_SERVER };
     }
     const fakeFetch = suite.fakeHttpResponses ? createFakeOutboundFetch(suite.fakeHttpResponses) : undefined;
+    const sessionDomainControllers = [domainController, executionEnvironment.domainControllerForServer].filter(
+      (controller): controller is DomainControllerInterface => controller !== undefined,
+    );
     if (fakeFetch) {
-      setOutboundFetch(fakeFetch.fetch);
+      sessionDomainControllers.forEach((controller) => controller.setOutboundFetch(fakeFetch.fetch));
     }
     try {
       if (host.miroirReports) {
@@ -388,7 +391,7 @@ export function createReportTestRunner(host: ReportTestSandboxHost): ClosableRep
     } finally {
       unmountCurrentCase();
       if (fakeFetch) {
-        setOutboundFetch(undefined);
+        sessionDomainControllers.forEach((controller) => controller.setOutboundFetch(undefined));
       }
     }
   };

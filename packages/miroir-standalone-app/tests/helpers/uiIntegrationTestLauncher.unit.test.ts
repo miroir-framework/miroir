@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { miroirTest_runner_returnDocument } from "miroir-test-app_deployment-library";
 import {
@@ -18,6 +18,7 @@ import {
 import {
   isUiIntegrationSuiteRunSuccessful,
   REPORT_TESTS_NEED_A_SANDBOX_MESSAGE,
+  REPORT_TESTS_NEED_AN_EMULATED_SERVER_MESSAGE,
   resolveUiIntegrationTestRunTarget,
   runUiIntegrationTestSuite,
   type UiIntegrationTestLauncherEnvironment,
@@ -590,5 +591,33 @@ describe("Report suites in the UI launcher (#330 Slice 8)", () => {
         {} as UiIntegrationTestLauncherEnvironment,
       ),
     ).rejects.toThrow(REPORT_TESTS_NEED_A_SANDBOX_MESSAGE);
+  });
+
+  it("refuses a Report suite on a real-server profile, whose pinned targets are live deployments, before opening a session", async () => {
+    const suite = runnerSuiteEntryFromFolders("report.bookDetails").suiteDefinition;
+    const prepareReportTests = vi.fn(async () => () => {});
+    const createOrchestrator = vi.fn();
+    const environment = {
+      getCoordinator: () => ({ runExclusive: <T>(fn: () => Promise<T>) => fn() }),
+      loadConfigForProfile: async () => ({
+        miroirConfig: { client: { emulateServer: false } },
+        logConfig: {},
+      }),
+      createOrchestrator,
+    } as unknown as UiIntegrationTestLauncherEnvironment;
+    await expect(
+      runUiIntegrationTestSuite(
+        {
+          suiteKey: "report.bookDetails",
+          suiteDefinition: suite,
+          profileName: "realServer-sql",
+          runTargetMode: "ephemeral",
+          prepareReportTests,
+        },
+        environment,
+      ),
+    ).rejects.toThrow(REPORT_TESTS_NEED_AN_EMULATED_SERVER_MESSAGE);
+    expect(createOrchestrator).not.toHaveBeenCalled();
+    expect(prepareReportTests).not.toHaveBeenCalled();
   });
 });
