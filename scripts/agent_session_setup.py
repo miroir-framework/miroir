@@ -48,11 +48,8 @@ BUILD_GROUPS: list[list[str]] = [
 LOCAL_ENVIRONMENT = "environments/local.json"
 CLOUD_AGENT_LOCAL_ENVIRONMENT = '{ "extends": "cloud-agent" }\n'
 
-# package-lock.json omits the Linux rollup binary (npm/cli#4828), so tsup/vite fail on Linux without it.
+# package-lock.json lists it since #326; a node_modules installed from an older lockfile lacks it, and tsup/vite fail.
 ROLLUP_LINUX = "@rollup/rollup-linux-x64-gnu"
-ROLLUP_INSTALL = (
-    'npm install --no-save "' + ROLLUP_LINUX + '@$(node -p \'require("rollup/package.json").version\')"'
-)
 
 
 @dataclass(frozen=True)
@@ -106,10 +103,9 @@ def plan_steps(root: Path, env: Environment, *, graphify: bool = False, cloud_ag
                 write=(LOCAL_ENVIRONMENT, CLOUD_AGENT_LOCAL_ENVIRONMENT),
             )
         )
-    if not (root / "node_modules").is_dir():
+    stale_install = env.linux_x64 and not (root / "node_modules" / ROLLUP_LINUX).is_dir()
+    if not (root / "node_modules").is_dir() or stale_install:
         steps.append(Step("npm ci", "npm ci"))
-    if env.linux_x64 and not (root / "node_modules" / ROLLUP_LINUX).is_dir():
-        steps.append(Step("rollup linux binary", ROLLUP_INSTALL))
     for group in BUILD_GROUPS:
         missing = [p for p in group if not _is_built(root, p)]
         if missing:

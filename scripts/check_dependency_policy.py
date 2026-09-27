@@ -6,6 +6,10 @@ Rules (all run by default; --rule selects some):
                   save-exact=true. Peer dependencies keep their ranges: they state compatibility, not what is installed.
   classification  build and test tools stay out of `dependencies`, so production installs, `npm audit --omit=dev`
                   and the Electron package never carry them.
+  lockfile        package-lock.json installs the pinned version of every direct dependency, and lists every
+                  platform binary its packages declare (npm/cli#4828 drops the other platforms' ones), so `npm ci`
+                  alone installs a working tree on every OS.
+  workflows       GitHub workflows and composite actions install with `npm ci`, never `npm install`.
 
 Run: python scripts/check_dependency_policy.py [--rule NAME]...
 Plan: code-helpers/features/326-BUILD-build-hardening/tdd-implementation-plan.md
@@ -29,6 +33,8 @@ INSTALL_SECTIONS = ("dependencies", "devDependencies", "optionalDependencies")
 # Build and test tools: exact names, then name prefixes. A vite plugin counts because npm installs its `vite` peer.
 BUILD_AND_TEST_TOOLS = ("electron", "electron-builder", "happy-dom", "vite", "vitest")
 BUILD_AND_TEST_TOOL_PREFIXES = ("vite-plugin-", "@vitejs/", "@vitest/")
+
+NPM_INSTALL_RE = re.compile(r"\bnpm\s+(install|i|add)\b")
 
 
 @dataclass(frozen=True)
@@ -135,11 +141,97 @@ def check_classification(root: Path) -> list[Violation]:
 
 
 # --------------------------------------------------------------------------------------------------------------------
+# lockfile
+
+
+def _lock_packages(root: Path) -> dict[str, dict]:
+    return _load_json(root / "package-lock.json").get("packages", {})
+
+
+def _resolve(packages: dict[str, dict], base: str, name: str) -> str | None:
+    """The lockfile key Node resolution finds for `name` required from `base` (a key, or "" for the root)."""
+    while True:
+        key = f"{base}/node_modules/{name}" if base else f"node_modules/{name}"
+        if key in packages:
+            return key
+        if not base:
+            return None
+        parent, sep, _ = base.rpartition("/node_modules/")
+        base = parent if sep else ""
+
+
+def _pinned_version(spec: str) -> str | None:
+    version = spec[4:].rpartition("@")[2] if spec.startswith("npm:") else spec
+    return version if EXACT_VERSION_RE.match(version) else None
+
+
+def check_lockfile(root: Path) -> list[Violation]:
+    packages = _lock_packages(root)
+    internal = workspace_names(root)
+    violations: list[Violation] = []
+    for path in manifest_paths(root):
+        base = "" if path.parent == root else _rel(root, path.parent)
+        manifest = _load_json(path)
+        for section in INSTALL_SECTIONS:
+            for name, spec in manifest.get(section, {}).items():
+                pinned = _pinned_version(spec) if name not in internal else None
+                key = _resolve(packages, base, name) if pinned else None
+                if key and packages[key].get("version") != pinned:
+                    violations.append(
+                        Violation(
+                            "lockfile",
+                            _rel(root, path),
+                            f'{section}.{name} "{spec}" but package-lock.json installs {packages[key].get("version")}',
+                        )
+                    )
+    for key, entry in packages.items():
+        if entry.get("link"):
+            continue
+        missing = [
+            name
+            for section in ("dependencies", "optionalDependencies")
+            for name in entry.get(section, {})
+            if _resolve(packages, key, name) is None
+        ]
+        if missing:
+            listed = ", ".join(missing[:3]) + (", …" if len(missing) > 3 else "")
+            violations.append(
+                Violation(
+                    "lockfile",
+                    "package-lock.json",
+                    f"{key or '<root>'} lacks {len(missing)} package(s) ({listed}); see docs/contributing/"
+                    "development-setup.md, Dependency policy, to regenerate the lockfile",
+                )
+            )
+    return violations
+
+
+# --------------------------------------------------------------------------------------------------------------------
+# workflows
+
+
+def workflow_files(root: Path) -> list[Path]:
+    github = root / ".github"
+    return sorted([*github.glob("workflows/*.yml"), *github.glob("workflows/*.yaml"), *github.glob("actions/*/action.yml")])
+
+
+def check_workflows(root: Path) -> list[Violation]:
+    return [
+        Violation("workflows", f"{_rel(root, path)}:{number}", "installs with `npm install`; use `npm ci`")
+        for path in workflow_files(root)
+        for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1)
+        if not line.lstrip().startswith("#") and NPM_INSTALL_RE.search(line.split(" #", 1)[0])
+    ]
+
+
+# --------------------------------------------------------------------------------------------------------------------
 # CLI
 
 RULES: dict[str, Callable[[Path], list[Violation]]] = {
     "specs": check_specs,
     "classification": check_classification,
+    "lockfile": check_lockfile,
+    "workflows": check_workflows,
 }
 
 

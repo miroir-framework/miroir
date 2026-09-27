@@ -4,10 +4,10 @@ name: Build Miroir Runnables (Linux)
 # downstream jobs restore only what they need. This means:
 #   - Any single failed job can be retried without rebuilding previous stages.
 #   - Jobs at the same level run in parallel.
-#   - npm install is repeated per job but is fast thanks to a shared ~/.npm cache.
-#     Cache key = runner.os + hash of all package.json files (platform-neutral).
-#     The repo's package-lock.json is Windows-generated; it is deleted before every
-#     npm install so Linux/macOS optional deps resolve correctly.
+#   - npm ci is repeated per job but is fast thanks to a shared ~/.npm cache.
+#     Cache key = runner.os + hash of package-lock.json. The lockfile lists every
+#     platform's optional packages (checked by scripts/check_dependency_policy.py,
+#     rule lockfile), so npm ci installs exactly the reviewed versions on Linux (#326).
 #
 # Artifact path convention
 #   Multi-path uploads (several packages/*/dist): common ancestor = packages/
@@ -57,13 +57,12 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('package.json', 'packages/*/package.json') }}
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-
       - name: Install dependencies
         run: |
-          rm -f package-lock.json
-          npm install --no-audit --prefer-dedupe
+          npm ci --no-audit
       - name: Build deployment packages (parallel)
         run: |
           pids=()
@@ -104,13 +103,12 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('package.json', 'packages/*/package.json') }}
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-
       - name: Install dependencies
         run: |
-          rm -f package-lock.json
-          npm install --no-audit --prefer-dedupe
+          npm ci --no-audit
       - name: Restore dist – deployment packages
         uses: actions/download-artifact@v4
         with:
@@ -143,13 +141,12 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('package.json', 'packages/*/package.json') }}
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-
       - name: Install dependencies
         run: |
-          rm -f package-lock.json
-          npm install --no-audit --prefer-dedupe
+          npm ci --no-audit
       - name: Restore dist – deployment packages
         uses: actions/download-artifact@v4
         with:
@@ -218,13 +215,12 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('package.json', 'packages/*/package.json') }}
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-
       - name: Install dependencies
         run: |
-          rm -f package-lock.json
-          npm install --no-audit --prefer-dedupe
+          npm ci --no-audit
       - name: Restore dist – deployment packages
         uses: actions/download-artifact@v4
         with:
@@ -266,13 +262,12 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('package.json', 'packages/*/package.json') }}
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-
       - name: Install dependencies
         run: |
-          rm -f package-lock.json
-          npm install --no-audit --prefer-dedupe
+          npm ci --no-audit
       - name: Restore dist – deployment packages
         uses: actions/download-artifact@v4
         with:
@@ -314,13 +309,12 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('package.json', 'packages/*/package.json') }}
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-
       - name: Install dependencies
         run: |
-          rm -f package-lock.json
-          npm install --no-audit --prefer-dedupe
+          npm ci --no-audit
       - name: Restore dist – deployment packages
         uses: actions/download-artifact@v4
         with:

@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from check_dependency_policy import check_classification, check_specs, main, spec_problem
+from check_dependency_policy import check_classification, check_lockfile, check_specs, check_workflows, main, spec_problem
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts" / "check_dependency_policy.py"
@@ -45,6 +45,23 @@ def repo(tmp_path: Path) -> Path:
             "peerDependencies": {"react": ">=18.0.0", "@mui/material": ">=5.0.0"},
         },
     )
+    _write(
+        tmp_path / "package-lock.json",
+        {
+            "lockfileVersion": 3,
+            "packages": {
+                "": {"name": "miroir-framework"},
+                "node_modules/lerna": {"version": "9.0.5"},
+                "node_modules/typescript": {"name": "@typescript/typescript6", "version": "6.0.3"},
+                "node_modules/zod": {"version": "3.25.76"},
+                "node_modules/vitest": {"version": "3.2.4", "optionalDependencies": {"fsevents": "~2.3.3"}},
+                "node_modules/fsevents": {"version": "2.3.3", "os": ["darwin"], "optional": True},
+                "node_modules/@mui/material": {"version": "5.17.1"},
+                "packages/miroir-react/node_modules/@mui/material": {"version": "5.18.0"},
+            },
+        },
+    )
+    _write(tmp_path / ".github/workflows/ci.yml", "jobs:\n  a:\n    steps:\n      - run: npm ci\n")
     return tmp_path
 
 
@@ -154,7 +171,59 @@ def test_a_runtime_package_named_like_a_tool_passes(repo: Path) -> None:
     assert check_classification(repo) == []
 
 
-@pytest.mark.parametrize("rule", ["specs", "classification"])
+def test_a_lockfile_that_installs_the_pinned_versions_passes(repo: Path) -> None:
+    assert check_lockfile(repo) == []
+
+
+def test_a_pinned_spec_the_lockfile_does_not_install_is_a_violation(repo: Path) -> None:
+    _set(repo, "miroir-core", "dependencies", "zod", "3.25.75")
+    [violation] = check_lockfile(repo)
+    assert violation.message == 'dependencies.zod "3.25.75" but package-lock.json installs 3.25.76'
+
+
+def test_the_nested_copy_counts_for_its_package(repo: Path) -> None:
+    _set(repo, "miroir-react", "dependencies", "@mui/material", "5.17.1")
+    [violation] = check_lockfile(repo)
+    assert violation.where == "packages/miroir-react/package.json"
+
+
+def test_a_missing_platform_package_is_a_violation(repo: Path) -> None:
+    lock = json.loads((repo / "package-lock.json").read_text(encoding="utf-8"))
+    lock["packages"]["node_modules/vitest"]["optionalDependencies"]["@rollup/rollup-linux-x64-gnu"] = "4.59.0"
+    _write(repo / "package-lock.json", lock)
+    [violation] = check_lockfile(repo)
+    assert "node_modules/vitest lacks 1 package(s) (@rollup/rollup-linux-x64-gnu)" in violation.message
+
+
+def test_a_missing_dependency_is_a_violation(repo: Path) -> None:
+    lock = json.loads((repo / "package-lock.json").read_text(encoding="utf-8"))
+    lock["packages"]["node_modules/lerna"]["dependencies"] = {"nx": "22.5.0"}
+    _write(repo / "package-lock.json", lock)
+    [violation] = check_lockfile(repo)
+    assert "node_modules/lerna lacks 1 package(s) (nx)" in violation.message
+
+
+@pytest.mark.parametrize(
+    "command", ["npm install", "npm i --no-audit", "npm install --no-save left-pad", "cd x && npm add y"]
+)
+def test_npm_install_in_a_workflow_is_a_violation(repo: Path, command: str) -> None:
+    _write(repo / ".github/workflows/ci.yml", f"jobs:\n  a:\n    steps:\n      - run: {command}\n")
+    [violation] = check_workflows(repo)
+    assert violation.where == ".github/workflows/ci.yml:4"
+
+
+def test_npm_install_in_a_composite_action_is_a_violation(repo: Path) -> None:
+    _write(repo / ".github/actions/setup/action.yml", "runs:\n  steps:\n    - run: |\n        npm install\n")
+    [violation] = check_workflows(repo)
+    assert violation.where == ".github/actions/setup/action.yml:4"
+
+
+def test_npm_ci_and_comments_pass(repo: Path) -> None:
+    _write(repo / ".github/workflows/ci.yml", "# npm install used to run here\njobs:\n  a:\n    steps:\n      - run: npm ci  # not npm install\n")
+    assert check_workflows(repo) == []
+
+
+@pytest.mark.parametrize("rule", ["specs", "classification", "lockfile", "workflows"])
 def test_this_repository_follows_the_rule(rule: str) -> None:
     result = subprocess.run([sys.executable, str(SCRIPT), "--rule", rule], cwd=REPO_ROOT, capture_output=True, text=True)
     assert result.returncode == 0, result.stdout

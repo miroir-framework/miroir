@@ -47,12 +47,15 @@ def test_nothing_to_do_when_everything_is_present(tmp_path: Path) -> None:
 
 def test_installs_dependencies_when_node_modules_is_missing(tmp_path: Path) -> None:
     steps = plan_steps(_tree(tmp_path, node_modules=False), _env())
-    assert _names(steps)[:2] == ["npm ci", "rollup linux binary"]
+    assert _names(steps)[0] == "npm ci"
+    assert all("npm install" not in step.command for step in steps)
 
 
-def test_rollup_binary_only_on_linux_x64(tmp_path: Path) -> None:
-    steps = plan_steps(_tree(tmp_path, node_modules=False), _env(linux_x64=False))
-    assert "rollup linux binary" not in _names(steps)
+def test_reinstalls_from_the_lockfile_when_the_linux_rollup_binary_is_missing(tmp_path: Path) -> None:
+    root = _tree(tmp_path)
+    (root / "node_modules" / "@rollup" / "rollup-linux-x64-gnu").rmdir()
+    assert [(s.name, s.command) for s in plan_steps(root, _env())] == [("npm ci", "npm ci")]
+    assert plan_steps(root, _env(linux_x64=False)) == []
 
 
 def test_builds_only_packages_without_dist(tmp_path: Path) -> None:

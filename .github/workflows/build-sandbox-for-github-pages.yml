@@ -36,8 +36,7 @@ jobs:
       - name: Build miroir-homepage
         shell: bash
         run: |
-          rm -f package-lock.json
-          npm install
+          npm ci --no-audit
           npm run build -w miroir-homepage
         env:
           VITE_BASE_URL: /miroir/

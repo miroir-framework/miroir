@@ -30,7 +30,7 @@ This plan does **not** cut bundle size (D19: separate issue opened in Slice 17 f
 | 1 | 1 | Tracer: a floating spec fails the check; every spec pinned | ✅ | `test_check_dependency_policy.py` specs rules + real repo exits 0 |
 | 2 | 1 | The release writes exact internal versions | ✅ | `ci/release/tests` new test |
 | 3 | 1 | Build tools leave runtime `dependencies` | ✅ | `classification` rule + `npm audit --omit=dev` drop |
-| 4 | 1 | `npm ci` works everywhere from the lockfile alone | ⬜ | `workflows` rule + clean `npm ci` + tsup/vite build on Linux |
+| 4 | 1 | `npm ci` works everywhere from the lockfile alone | ✅ | `workflows` rule + clean `npm ci` + tsup/vite build on Linux |
 | 5 | 1 | No critical advisory | ⬜ | `audit --level critical` exits 0 |
 | 6 | 1 | No high advisory in build and test tooling | ⬜ | `audit` lists no high in tooling packages |
 | 7 | 1 | No high advisory at all; audit gate blocking in PR checks | ⬜ | `audit` exits 0 on the real repo; `pr-checks.yml` step |
@@ -294,7 +294,7 @@ npm run nonreg:unit
 
 ## Slice 4 — `npm ci` works everywhere from the lockfile alone
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -326,6 +326,17 @@ python -m pytest scripts/tests -q
 ```
 
 ### Realization
+
+- Rule `workflows`: `npm install`, `npm i` or `npm add` in a `run:` line of `.github/workflows/*.yml` or `.github/actions/*/action.yml` fails; comments are ignored. RED on 10 lines (the 9 of the plan plus the rollup step of `pr-checks.yml`).
+- **Added rule `lockfile`** (not in the plan): every dependency and optional dependency of every lockfile entry resolves to an entry (Node resolution), and every exact spec of a manifest is the version the lockfile installs for that package. RED on 5 entries: `rollup`, the three `esbuild` copies and `dmg-builder` lacked their other-platform packages (the lockfile was written on Windows: only `win32-x64` binaries were listed). The spec check would have caught the `rxjs` drift of Slice 3. Without this rule, the next `npm install` on a machine with a `node_modules` (npm/cli#4828) could silently bring the side-install back.
+- Regeneration from an empty `node_modules` (the plan's route) does not work: with a lockfile present, npm keeps its entries and never re-adds missing optional packages, and deleting an entry makes npm drop it rather than re-resolve it. What worked, with npm 11 (`npx npm@11`, which keeps the `libc` fields) and `--before=2026-09-20` so every new version is at least 7 days old (D10):
+  - `npm update rollup esbuild --package-lock-only`: re-resolves them with every platform package: `rollup` 4.59.0 → 4.63.4, `esbuild` 0.25.5 → 0.25.12 and 0.27.2/0.27.3 → 0.27.7, `@types/estree` 1.0.8 → 1.0.9.
+  - `electron-builder` is pinned exactly, so `npm update` leaves it alone: its and `dmg-builder`'s entries were removed and `npm install --package-lock-only` re-resolved `electron-builder` 26.8.1, adding the macOS-only `dmg-license` and its 12 dependencies; nested `yargs` 17.7.2 → 17.7.3.
+  - No other entry changed; 112 entries added. These commands go in the Dependency policy docs (Slice 9).
+- `npm ci --no-audit` replaces `npm install` in `build-linux-runnables.yml` (6 jobs, which also deleted the lockfile first, so every Linux build resolved fresh versions), both composite actions and `build-sandbox-for-github-pages.yml`. The `~/.npm` cache key of `build-linux-runnables.yml` hashes `package-lock.json` instead of the manifests; its header comment is rewritten.
+- `pr-checks.yml`: the rollup side-install step is gone; the policy step runs `specs`, `classification`, `lockfile`, `workflows`.
+- `agent_session_setup.py`: no more side-install. A `node_modules` without the Linux rollup binary (installed from an older lockfile) now triggers `npm ci`; tests updated.
+- Validation: pytest 96 passed; rules `specs`, `classification`, `lockfile`, `workflows` rc 0; `rm -rf node_modules packages/*/node_modules && npm ci` rc 0 (64 s) with no side install: `@rollup/rollup-linux-x64-gnu` and the three `@esbuild/linux-x64` copies installed, the win32 ones skipped, lockfile unchanged; `./build-all.sh devBuild` rc 0 (173 s); `miroir-homepage` and `miroir-sandbox` builds rc 0; `tsc` miroir-core rc 0; miroir-core tests 2078 passed; nonreg:unit 38/38 (637 s).
 
 ---
 

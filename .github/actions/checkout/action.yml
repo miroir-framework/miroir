@@ -1,7 +1,8 @@
 name: Checkout and Install Dependencies
 description: >
-  Checks out the repository, sets up Node.js 24, and installs npm dependencies.
-  optional packages (e.g. @rollup/rollup-linux-x64-gnu) resolve correctly.
+  Checks out the repository, sets up Node.js 24, and installs exactly the
+  package-lock.json versions with npm ci (the lockfile lists every platform's
+  optional packages, e.g. @rollup/rollup-linux-x64-gnu).
 
 runs:
   using: composite
@@ -17,4 +18,4 @@ runs:
     - name: Install dependencies
       shell: bash
       run: |
-        npm install --no-audit --prefer-dedupe
+        npm ci --no-audit

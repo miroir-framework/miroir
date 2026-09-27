@@ -10,7 +10,7 @@ runs:
     - name: Install dependencies
       shell: bash
       run: |
-        npm install --no-audit --prefer-dedupe
+        npm ci --no-audit
 
     # ── Build order per copilot-instructions.md ─────────────────────────
     # 1. Core type definitions (data deployed by miroir & admin test apps)
