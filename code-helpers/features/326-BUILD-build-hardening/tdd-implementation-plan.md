@@ -9,7 +9,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/326
 Working branches: PR 1 `claude/build-hardening-81mz9d`, PR 2 `claude/build-hardening-bundles` (D17), both from `_integration`
 
-**Resume note:** PR 1 (Slices 0–9 and 7b) DONE 2026-09-27 on `claude/build-hardening-81mz9d` (PR #334). PR 2 on `claude/build-hardening-bundles`, branched from PR 1's head: Slice 10 DONE; next: Slice 11. Lockfiles are regenerated with npm 11 and `--before` (Slice 4 realization).
+**Resume note:** PR 1 (Slices 0–9 and 7b) DONE 2026-09-27 on `claude/build-hardening-81mz9d` (PR #334). PR 2 on `claude/build-hardening-bundles`, branched from PR 1's head: Slices 10 and 11 DONE; next: Slice 12. Lockfiles are regenerated with npm 11 and `--before` (Slice 4 realization).
 
 ---
 
@@ -38,7 +38,7 @@ This plan does **not** cut bundle size (D19: separate issue opened in Slice 17 f
 | 8 | 1 | Updates only through reviewed, cooled-down PRs; actions pinned | ✅ | `actions` rule + `dependabot.yml` test |
 | 9 | 1 | PR 1 wrap-up: gate docs, nonreg step, full nonreg | ✅ | nonreg:unit + nonreg:filesystem green |
 | 10 | 2 | Vendor sourcemaps restored | ✅ | `bundleSourcemaps.326.phase10.unit.test.ts` |
-| 11 | 2 | Tracer: the build prints and writes the attribution report | ⬜ | `bundleReport.326.phase11.unit.test.ts` |
+| 11 | 2 | Tracer: the build prints and writes the attribution report | ✅ | `bundleReport.326.phase11.unit.test.ts` + `bundleReportCore.326.phase11.unit.test.ts` |
 | 12 | 2 | Allowlist and eager budget guards | ⬜ | `test_check_bundle_policy.py` + real report exits 0 |
 | 13 | 2 | Electron main bundled with esbuild, traced and guarded | ⬜ | esbuild metafile report + `electron-builder --dir` content check |
 | 14 | 2 | Bundle guards run on PRs | ⬜ | `bundle` job in `pr-checks.yml` |
@@ -660,7 +660,7 @@ npm run testByFile -w miroir-standalone-app -- componentTestChunk.286.phase4
 
 ## Slice 11 — Tracer: the build prints and writes the attribution report
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -696,6 +696,31 @@ RUN_TEST=bundleReport.326.phase11 npm run testByFile -w miroir-standalone-app --
 ```
 
 ### Realization
+
+- RED: `bundleReport.326.phase11.unit.test.ts` (6 cases on the real build) failed: `dist/.vite/bundle-report.json` is missing.
+- GREEN:
+  - `vite/bundleReportCore.js`, pure functions over a plain module graph: package of a module id (the app, another workspace package, an npm package, or `virtual` for bundler helpers and emptied Node built-ins), import chains, load kind from the entry chunk's static imports, the report and its findings.
+  - `vite/bundleReportPlugin.js`: a `resolveId` hook (`enforce: "pre"`) records each Node built-in that Vite empties for the browser, with its importer; `writeBundle` reads each chunk as written (raw and gzip sizes), takes the module graph from `this.getModuleInfo`, writes `dist/.vite/bundle-report.json` and prints the table. `rollup-plugin-visualizer` 7.1.1 (exact devDependency of `miroir-standalone-app`, released 2026-08-14; relocked with npm 11 and `--before`, no new advisory) writes `dist/.vite/bundle-report.html`, a treemap. `VITE_MIROIR_BUNDLE_REPORT=false` turns both off.
+  - `vite.config.js` adds the plugin.
+- Deviations:
+  - Findings come from the module graph rather than from the log. In a production build Vite resolves every Node built-in to the one id `__vite-browser-external`, so the plugin asks the other plugins how each built-in import resolves (`this.resolve`) and records it when it gets that id. This finds 58 (built-in, importer) pairs, the 47 Vite warns about plus 11 `require()` calls in `bn.js` and `readable-stream` copies that Vite empties without a warning.
+  - The defeated dynamic import finding uses Vite 7.3.6's own condition: the module is also imported statically, and one of its `import()` callers outside `node_modules` sits in the same chunk. It finds the 2 modules Vite warns about, `ReportDisplay.tsx` and `uiIntegrationTestRunState.ts`. Vite's warnings stay in the output.
+  - The table prints the entry and eager chunks, then the 15 largest of the 380 lazy chunks and one line for the others, each with its 5 largest packages; the JSON has every chunk and package.
+  - Package sizes are Rollup's rendered length, before minification: they rank packages within a chunk but do not add up to the chunk's file size. Chunk sizes are those of the written files.
+  - Chains: in a chunk loaded with the page, a package's chain starts at an app file also loaded with the page and follows static imports only, when such a chain exists, since that is why the package loads eagerly; otherwise it starts at the nearest app file, fewest `import()` hops first. `import(<path>)` marks a dynamic hop, and a CommonJS wrapper and its module make one step.
+  - `file` is the path in `dist` (`assets/…`), as in the manifest.
+  - Added to the report: `totals`, and `packages[]`, one line per package over the whole build (`eager` when any of its code loads with the page).
+  - Added test `bundleReportCore.326.phase11.unit.test.ts`: 12 cases on module ids and edges copied from the real graph (virtual ids, nested `node_modules`, workspace and Windows paths, chain selection, report); it needs no build.
+- Refactor checkpoint: `resolveManualChunk` now uses the core's `npmPackagesOfId`. The old rules matched a package anywhere on the path (`id.includes("node_modules/@copilotkit")`), so 378 modules nested in another package's `node_modules` (e.g. `@copilotkit/react-core/node_modules/react-markdown`) go with the outer package; the new rules match any package on the path to keep that. On the 13,819 ids of the real graph no module changes chunk; the rebuilt manifest is byte for byte the one built before the refactor, with the same chunk files as the Slice 10 build.
+- What the first report shows (input for the Slice 17 size issue):
+  - Loaded with the page: 7 chunks, 10,381.2 kB, gzip 2,709.2 kB; whole build: 387 chunks, 27,061.6 kB, gzip 6,245.2 kB.
+  - `vendor-copilotkit` (3,032 kB, eager): `refractor`, `katex` and `parse5` come through `@copilotkit/react-ui`; `lucide` and `@copilotkit/web-inspector` are reached only through an `import()` inside `@copilotkit/react-core`, yet load with the page because the manual chunk holds them.
+  - `mermaid-VLURNSYL-*.js` (1,954 kB, eager) is entirely the meta-model deployment `miroir-test-app_deployment-miroir`, statically imported from `src/miroir-fwk/4_view/ModelEnvironmentSync.tsx`.
+  - `index-BuTvIIq4.js` (628 kB, eager) is the `crypto` polyfill: `bn.js`, `elliptic`, `readable-stream`, … via `miroir-core` → `crypto-browserify`.
+  - The Node store drivers (`mongodb`, `sequelize`) are lazy, through the dynamic imports of `IntegrationTestSession.ts`. `miroir-store-indexedDb` imports `fs` in the entry chunk; `colors` (`json-diff`, via `miroir-core`) imports `os`.
+  - The manual chunk rule for `miroir-diagram-class` never matches: Vite resolves that workspace package to `packages/miroir-diagram-class/`, not to a `node_modules/` path.
+- Build time unchanged (107 s).
+- Validation: build passes; `bundleReport.326.phase11` 6/6, `bundleReportCore.326.phase11` 12/12, `bundleSourcemaps.326.phase10` 2/2, `componentTestChunk.286.phase4` 4/4; `tsc` on `miroir-standalone-app` clean; ESLint clean on the changed files; every dependency policy rule passes, `audit` included; the treemap renders in headless Chromium.
 
 ---
 

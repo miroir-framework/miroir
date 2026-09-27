@@ -95,6 +95,7 @@
     "miroir-store-mongodb": "*",
     "miroir-store-postgres": "*",
     "mustache": "4.2.0",
+    "rollup-plugin-visualizer": "7.1.1",
     "sequelize": "6.37.8",
     "ts-loader": "9.5.4",
     "vite": "7.3.6",

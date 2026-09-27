@@ -7,6 +7,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
 
+import { miroirBundleReport } from "./vite/bundleReportPlugin.js";
 import { miroirManualChunkLoadLogger } from "./vite/chunkLoadLoggerPlugin.js";
 import { MIROIR_TEST_CLIENT_CONFIGS, webClientEnvironment, webTestClientConfigs } from "./vite/environmentConfig.js";
 import { resolveManualChunk } from "./vite/manualChunks.js";
@@ -117,6 +118,8 @@ export default defineConfig(({ command, mode }) => {
     },
     plugins: [
       miroirManualChunkLoadLogger(),
+      // #326: prints which packages each chunk holds and why; writes dist/.vite/bundle-report.json
+      miroirBundleReport({ root: path.resolve(__viteDirname, "../.."), app: "miroir-standalone-app" }),
       nodePolyfills({
         include: [ "crypto" ],
         // To exclude specific polyfills, add them to this list. Note: if include is provided, this has no effect
