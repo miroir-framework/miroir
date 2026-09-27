@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { realpathSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 
 import type { StoreSectionConfiguration } from "miroir-core";
@@ -165,7 +166,26 @@ export async function main(argv: string[], io: CliIo): Promise<number> {
   }
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
+/**
+ * Whether the module at `moduleUrl` is the script node was started with. Node resolves the links
+ * of the entry module (import.meta.url is the real path) but not of argv[1]: started through
+ * node_modules/.bin/miroir-env or npx, the two differ unless argv[1] is resolved too.
+ */
+export function isEntryPoint(moduleUrl: string, scriptPath: string | undefined): boolean {
+  if (!scriptPath) {
+    return false;
+  }
+  if (moduleUrl === pathToFileURL(scriptPath).href) {
+    return true;
+  }
+  try {
+    return moduleUrl === pathToFileURL(realpathSync(scriptPath)).href;
+  } catch {
+    return false;
+  }
+}
+
+if (isEntryPoint(import.meta.url, process.argv[1])) {
   main(process.argv.slice(2), {
     cwd: process.cwd(),
     env: process.env,

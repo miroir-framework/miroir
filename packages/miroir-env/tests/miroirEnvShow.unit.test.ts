@@ -2,9 +2,10 @@
 // vitest, not MiroirTest: file loading, repository-root discovery and CLI exit codes are not
 // reachable through the ML. The resolution rules themselves are the MiroirTest suite
 // fn.environment.deriveDeployments.
-import { mkdtempSync, readFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import { packageDirectory, repositoryRoot, run, temporaryRepository } from "./cliTestSupport";
@@ -64,5 +65,21 @@ describe("miroir-env show", () => {
     const result = await run(["show"], mkdtempSync(path.join(tmpdir(), "no-repo-")));
     expect(result.exitCode).toBe(2);
     expect(result.stderr).toContain("repository root");
+  });
+});
+
+describe("miroir-env started through a link", () => {
+  it("runs when started through a symbolic link to its entry point (node_modules/.bin/miroir-env, npx)", async () => {
+    const { isEntryPoint } = await import("../src/cli");
+    const directory = mkdtempSync(path.join(tmpdir(), "miroir-env-bin-"));
+    const entry = path.join(directory, "cli.js");
+    writeFileSync(entry, "");
+    const link = path.join(directory, "miroir-env");
+    symlinkSync(entry, link);
+
+    expect(isEntryPoint(pathToFileURL(entry).href, link)).toBe(true);
+    expect(isEntryPoint(pathToFileURL(entry).href, entry)).toBe(true);
+    expect(isEntryPoint(pathToFileURL(entry).href, path.join(directory, "other.js"))).toBe(false);
+    expect(isEntryPoint(pathToFileURL(entry).href, undefined)).toBe(false);
   });
 });
