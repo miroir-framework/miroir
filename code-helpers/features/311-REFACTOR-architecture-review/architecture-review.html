@@ -1,0 +1,858 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Miroir Architecture Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:wght@500;600&display=swap">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root {
+  --paper: #f3f5f7;
+  --surface: #ffffff;
+  --sunken: #e9edf1;
+  --ink: #16202a;
+  --muted: #5a6572;
+  --faint: #8a95a1;
+  --rule: #d6dce2;
+  --accent: #1d6b62;
+  --accent-soft: #dcefeb;
+  --strong: #0f7a55;
+  --strong-soft: #d8f0e5;
+  --worth: #9a5b06;
+  --worth-soft: #f6e8d2;
+  --spec: #56626f;
+  --spec-soft: #e3e8ed;
+  --leak: #c2352b;
+  --leak-soft: #f8e1de;
+  --deep-bg: #1b2733;
+  --deep-ink: #eef3f7;
+  --deep-faint: #93a3b3;
+  --code-bg: #eaeef2;
+  --shadow: 0 1px 2px rgba(22, 32, 42, .06), 0 4px 18px rgba(22, 32, 42, .05);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #0d1217;
+    --surface: #141b22;
+    --sunken: #1a232c;
+    --ink: #e2e8ee;
+    --muted: #9ba7b3;
+    --faint: #6f7c89;
+    --rule: #28323c;
+    --accent: #4fb3a5;
+    --accent-soft: #15302d;
+    --strong: #45c794;
+    --strong-soft: #123526;
+    --worth: #e3a746;
+    --worth-soft: #3a2a10;
+    --spec: #a3afbb;
+    --spec-soft: #222c36;
+    --leak: #f26a5f;
+    --leak-soft: #3b1714;
+    --deep-bg: #dfe7ee;
+    --deep-ink: #121a22;
+    --deep-faint: #536271;
+    --code-bg: #1d2630;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 22px rgba(0, 0, 0, .25);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #0d1217;
+  --surface: #141b22;
+  --sunken: #1a232c;
+  --ink: #e2e8ee;
+  --muted: #9ba7b3;
+  --faint: #6f7c89;
+  --rule: #28323c;
+  --accent: #4fb3a5;
+  --accent-soft: #15302d;
+  --strong: #45c794;
+  --strong-soft: #123526;
+  --worth: #e3a746;
+  --worth-soft: #3a2a10;
+  --spec: #a3afbb;
+  --spec-soft: #222c36;
+  --leak: #f26a5f;
+  --leak-soft: #3b1714;
+  --deep-bg: #dfe7ee;
+  --deep-ink: #121a22;
+  --deep-faint: #536271;
+  --code-bg: #1d2630;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 22px rgba(0, 0, 0, .25);
+}
+
+html body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+}
+.wrap { max-width: 72rem; margin: 0 auto; padding-inline: 20px; padding-block: 40px 72px; }
+.serif { font-family: "IBM Plex Serif", Georgia, "Times New Roman", serif; }
+.mono, .wrap code { font-family: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace; }
+.wrap code { font-size: .86em; background: var(--code-bg); padding: .08em .35em; border-radius: 3px; overflow-wrap: anywhere; }
+.wrap a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+
+.eyebrow { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.h-page { font-family: "IBM Plex Serif", Georgia, serif; font-weight: 600; font-size: clamp(28px, 4.2vw, 40px); line-height: 1.15; text-wrap: balance; margin: 6px 0 0; }
+.h-area { font-family: "IBM Plex Serif", Georgia, serif; font-weight: 600; font-size: 24px; line-height: 1.25; margin: 0; text-wrap: balance; }
+.h-card { font-family: "IBM Plex Serif", Georgia, serif; font-weight: 600; font-size: 20px; line-height: 1.3; margin: 0; text-wrap: balance; }
+.lede { color: var(--muted); max-width: 65ch; margin: 0; }
+
+.meta { display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 13px; color: var(--muted); }
+.meta b { color: var(--ink); font-weight: 500; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; font-size: 12.5px; color: var(--muted); padding: 12px 14px; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); }
+.legend span.k { display: inline-flex; align-items: center; gap: 8px; }
+.sw { display: inline-block; width: 26px; height: 16px; border-radius: 3px; }
+.sw.mod { border: 1px solid var(--muted); background: var(--surface); }
+.sw.seam { border: 1px dashed var(--muted); background: transparent; }
+.sw.leak { border: 1.5px solid var(--leak); background: var(--leak-soft); }
+.sw.deep { background: var(--deep-bg); border: 3px solid var(--deep-bg); }
+
+.index { width: 100%; border-collapse: collapse; font-size: 14px; }
+.index th { text-align: left; font-weight: 500; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 8px 10px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+.index td { padding: 8px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.index td.id { font-family: "IBM Plex Mono", monospace; color: var(--muted); white-space: nowrap; }
+.wrap .index td a { text-decoration: none; color: var(--ink); }
+.index td a:hover { text-decoration: underline; }
+.index tr.top td { background: var(--accent-soft); }
+.scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+.badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; padding: 2px 9px; border-radius: 999px; white-space: nowrap; line-height: 1.6; }
+.badge.strong { color: var(--strong); background: var(--strong-soft); }
+.badge.worth { color: var(--worth); background: var(--worth-soft); }
+.badge.spec { color: var(--spec); background: var(--spec-soft); }
+.badge.dep { color: var(--muted); background: transparent; border: 1px solid var(--rule); font-family: "IBM Plex Mono", monospace; font-size: 11px; }
+.badge.id { color: var(--accent); background: transparent; border: 1px solid var(--accent); font-family: "IBM Plex Mono", monospace; font-size: 11px; }
+
+.area-head { display: grid; gap: 6px; padding-bottom: 10px; border-bottom: 2px solid var(--ink); }
+
+.card { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; box-shadow: var(--shadow); padding: 22px; display: grid; gap: 18px; scroll-margin-top: 16px; }
+.card.top { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), var(--shadow); }
+.card-head { display: grid; gap: 10px; }
+.badges { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+
+.files { margin: 0; padding: 10px 12px; list-style: none; background: var(--sunken); border-radius: 5px; font-family: "IBM Plex Mono", monospace; font-size: 12px; line-height: 1.7; color: var(--muted); overflow-wrap: anywhere; }
+
+.ba { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
+@media (max-width: 760px) { .ba { grid-template-columns: minmax(0, 1fr); } }
+.pane { border: 1px solid var(--rule); border-radius: 6px; padding: 12px; background: var(--paper); min-width: 0; display: grid; gap: 10px; align-content: start; }
+.pane-label { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+.pane-label .after { color: var(--accent); }
+.pane .mermaid { background: transparent; margin: 0; font-size: 13px; overflow-x: auto; text-align: center; }
+
+.m { border: 1px solid var(--muted); background: var(--surface); border-radius: 4px; padding: 6px 8px; font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; color: var(--ink); line-height: 1.35; min-width: 0; overflow-wrap: anywhere; }
+.m small { display: block; text-transform: none; letter-spacing: 0; font-size: 11px; color: var(--muted); margin-top: 2px; }
+.m.adapter { border-style: dashed; background: transparent; }
+.m.leak { border-color: var(--leak); color: var(--leak); background: var(--leak-soft); }
+.m.leak small { color: var(--leak); }
+.m.miss { border: 1.5px dashed var(--leak); color: var(--leak); background: transparent; }
+.m.deep { background: var(--deep-bg); color: var(--deep-ink); border: 3px solid var(--deep-bg); padding: 10px; }
+.m.deep small { color: var(--deep-faint); }
+.m.faded { opacity: .5; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.chip { font-family: "IBM Plex Sans", sans-serif; text-transform: none; letter-spacing: 0; font-size: 10.5px; padding: 0 6px; border-radius: 3px; border: 1px solid var(--rule); color: var(--muted); background: var(--surface); line-height: 1.6; }
+.chip.leak { border-color: var(--leak); color: var(--leak); background: var(--leak-soft); }
+.chip.miss { border: 1px dashed var(--leak); color: var(--leak); background: transparent; }
+.m.deep .chip { background: transparent; border-color: var(--deep-faint); color: var(--deep-faint); }
+
+/* fan: many sources into one target */
+.fan { display: grid; grid-template-columns: minmax(0, 1.15fr) 22px minmax(0, 1fr); gap: 6px 4px; align-items: center; }
+.fan .src { grid-column: 1; }
+.fan .arr { grid-column: 2; color: var(--faint); display: flex; justify-content: center; }
+.fan .arr.leak { color: var(--leak); }
+.fan .dst { grid-column: 3; align-self: stretch; display: flex; align-items: center; }
+.fan .dst > .m { width: 100%; }
+.via { display: grid; grid-template-columns: minmax(0, 1fr) 22px minmax(0, 1.25fr) 22px minmax(0, .9fr); gap: 6px 4px; align-items: center; }
+.via .col { display: grid; gap: 5px; }
+.via .arr { color: var(--faint); display: flex; justify-content: center; }
+@media (max-width: 560px) {
+  .via { grid-template-columns: minmax(0, 1fr); }
+  .via .col { grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); }
+  .via .arr { transform: rotate(90deg); padding-block: 2px; }
+  .fan { grid-template-columns: minmax(0, 1fr) 18px minmax(0, .8fr); }
+}
+.seamline { border-left: 1.5px dashed var(--muted); align-self: stretch; }
+
+/* stack: cross-section of the modules a call passes through */
+.stack { display: grid; gap: 0; }
+.band { border-left: 4px solid var(--muted); padding: 7px 10px; background: var(--surface); border-bottom: 1px solid var(--paper); font-family: "IBM Plex Mono", monospace; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+.band small { display: block; text-transform: none; letter-spacing: 0; font-family: "IBM Plex Sans", sans-serif; font-size: 11.5px; color: var(--muted); }
+.band.thin { border-left-color: var(--faint); color: var(--muted); padding-block: 5px; }
+.band.leak { border-left-color: var(--leak); color: var(--leak); background: var(--leak-soft); }
+.band.leak small { color: var(--leak); }
+.band.deep { border-left: 10px solid var(--deep-bg); background: var(--deep-bg); color: var(--deep-ink); padding-block: 16px; }
+.band.deep small { color: var(--deep-faint); }
+.band.adapter { border-left-style: dashed; background: transparent; }
+.split { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 6px; margin-top: 6px; }
+.down { text-align: center; color: var(--faint); font-size: 12px; line-height: 1; padding: 2px 0; }
+
+/* collapse: many boxes fold into one deep module */
+.boxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 8px; }
+.items { margin: 6px 0 0; padding: 0; list-style: none; display: grid; gap: 3px; }
+.items li { text-transform: none; letter-spacing: 0; font-family: "IBM Plex Sans", sans-serif; font-size: 11.5px; color: var(--muted); padding-left: 10px; position: relative; }
+.items li::before { content: ""; position: absolute; left: 0; top: .6em; width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
+.items li.leak { color: var(--leak); }
+.m.deep .items li { color: var(--deep-faint); }
+.adapters { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* mass: interface height vs implementation height */
+.mass { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; justify-content: space-around; min-height: 190px; }
+.mod { display: grid; gap: 4px; justify-items: center; width: 118px; }
+.mod .bars { display: flex; flex-direction: column; width: 100%; }
+.mod .iface { background: var(--accent-soft); border: 1px solid var(--accent); color: var(--accent); font-size: 10.5px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 2px 4px; line-height: 1.2; }
+.mod .iface.leak { background: var(--leak-soft); border-color: var(--leak); color: var(--leak); }
+.mod .impl { background: var(--sunken); border: 1px solid var(--muted); border-top: 0; color: var(--muted); font-size: 10.5px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 2px 4px; line-height: 1.2; }
+.mod .impl.deep { background: var(--deep-bg); color: var(--deep-ink); border-color: var(--deep-bg); }
+.mod .name { font-family: "IBM Plex Mono", monospace; font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; text-align: center; overflow-wrap: anywhere; }
+.mass-key { display: flex; gap: 14px; font-size: 11px; color: var(--muted); }
+.mass-key i { display: inline-block; width: 10px; height: 10px; margin-right: 5px; vertical-align: -1px; }
+
+/* matrix: coverage table drawn as a diagram */
+.matrix { border-collapse: collapse; width: 100%; font-size: 11.5px; }
+.matrix th { font-weight: 500; color: var(--muted); text-align: center; padding: 4px 6px; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; }
+.matrix th:first-child { text-align: left; }
+.matrix td { border: 1px solid var(--rule); padding: 4px 6px; text-align: center; background: var(--surface); }
+.matrix td:first-child { text-align: left; font-family: "IBM Plex Mono", monospace; font-size: 10.5px; overflow-wrap: anywhere; }
+.matrix td.yes { color: var(--strong); }
+.matrix td.no { color: var(--leak); background: var(--leak-soft); }
+.matrix td.odd { color: var(--worth); background: var(--worth-soft); }
+.matrix tr.deep td { background: var(--deep-bg); color: var(--deep-ink); border-color: var(--deep-bg); }
+
+.prose { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px 24px; }
+@media (max-width: 760px) { .prose { grid-template-columns: minmax(0, 1fr); } }
+.lbl { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+.prose p { margin: 0; max-width: 65ch; }
+.wins { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+.wins li { font-size: 13px; padding: 3px 10px; border-radius: 4px; background: var(--accent-soft); color: var(--accent); }
+.evidence { list-style: disc; margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 13.5px; color: var(--ink); max-width: 80ch; }
+.evidence li::marker { color: var(--faint); }
+.aside { font-size: 13px; color: var(--muted); display: grid; gap: 4px; }
+.aside b { color: var(--ink); font-weight: 500; }
+
+.flat { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 20px 22px; display: grid; gap: 14px; }
+.flat h3 { font-family: "IBM Plex Serif", Georgia, serif; font-weight: 600; font-size: 17px; margin: 0; }
+.flat ul { list-style: disc; margin: 0; padding-left: 18px; display: grid; gap: 5px; font-size: 14px; max-width: 88ch; }
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px 28px; }
+
+.topcard { background: var(--deep-bg); color: var(--deep-ink); border-radius: 10px; padding: 28px; display: grid; gap: 12px; }
+.topcard .eyebrow { color: var(--deep-faint); }
+.topcard h2 { font-family: "IBM Plex Serif", Georgia, serif; font-weight: 600; font-size: clamp(22px, 3vw, 30px); line-height: 1.2; margin: 0; text-wrap: balance; }
+.topcard p { margin: 0; max-width: 70ch; font-size: 15.5px; }
+.wrap .topcard a { color: var(--deep-ink); }
+.topcard .then { font-size: 13.5px; color: var(--deep-faint); }
+
+.grid { display: grid; }
+.gap-2 { gap: .5rem; } .gap-3 { gap: .75rem; } .gap-5 { gap: 1.25rem; } .gap-6 { gap: 1.5rem; } .gap-12 { gap: 3rem; } .gap-14 { gap: 3.5rem; }
+h1, h2, h3, p { margin: 0; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .card { transition: box-shadow .15s ease; }
+}
+</style>
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  const dark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  mermaid.initialize({ startOnLoad: true, theme: dark ? "dark" : "neutral", securityLevel: "loose" });
+</script>
+</head>
+<body>
+
+<div class="wrap grid gap-12">
+<header class="grid gap-5">
+  <div>
+    <div class="eyebrow">Architecture review · issue #311 · 2026-09-26</div>
+    <h1 class="h-page">miroir-framework/miroir</h1>
+  </div>
+  <div class="meta">
+    <span>Base <b class="mono">_integration @ 78dc552</b></span>
+    <span>History <b>340 commits since 2026-08-26</b></span>
+    <span><b>21</b> candidates: <b>15</b> strong, <b>5</b> worth exploring, <b>1</b> speculative</span>
+  </div>
+  <div class="legend" aria-label="Legend">
+    <span class="k"><span class="sw mod"></span>module</span>
+    <span class="k"><span class="sw seam"></span>adapter at a seam</span>
+    <span class="k"><span class="sw leak"></span>leak or drift</span>
+    <span class="k"><span class="sw deep"></span>deep module</span>
+  </div>
+</header>
+
+<section id="index" class="grid gap-3">
+  <div class="eyebrow">All candidates</div>
+  <div class="scroll-x"><table class="index"><thead><tr><th>ID</th><th>Candidate</th><th>Area</th><th>Strength</th><th>Dependencies</th></tr></thead><tbody><tr class="top"><td class="id">T1</td><td><a href="#T1">One MiroirTest run module: leaf kinds return outcomes, one call returns a report</a></td><td>MiroirTest machinery</td><td><span class="badge strong">Strong</span></td><td class="mono" style="font-size:12px;color:var(--muted)">in-process</td></tr><tr><td class="id">T2</td><td><a href="#T2">One descriptor per MiroirTest instance</a></td><td>MiroirTest machinery</td><td><span class="badge worth">Worth exploring</span></td><td class="mono" style="font-size:12px;color:var(--muted)">in-process</td></tr><tr><td class="id">E1</td><td><a href="#E1">One admission module behind every entry point</a></td><td>Entry points and policies</td><td><span class="badge strong">Strong</span></td><td class="mono" style="font-size:12px;color:var(--muted)">in-process · local-substitutable</td></tr><tr><td class="id">E2</td><td><a href="#E2">One module for secret material</a></td><td>Entry points and policies</td><td><span class="badge strong">Strong</span></td><td class="mono" style="font-size:12px;color:var(--muted)">in-process</td></tr><tr><td class="id">E3</td><td><a href="#E3">Build the external-service client with its dependencies</a></td><td>Entry points and policies</td><td><span class="badge strong">Strong</span></td><td class="mono" style="font-size:12px;color:var(--muted)">mock (fetch) · in-process</td></tr><tr><td class="id">E4</td><td><a href="#E4">One bootstrap from config to a running process</a></td><td>Entry points and policies</td><td><span class="badge worth">Worth exploring</span></td><td class="mono" style="font-size:12px;color:var(--muted)">local-substitutable</td></tr><tr><td class="id">C1</td><td><a href="#C1">One composite-action runner instead of four</a></td><td>DomainController</td><td><span class="badge strong">Strong</span></td><td class="mono" style="font-size:12px;color:var(--muted)">in-process</td></tr><tr><td class="id">C2</td><td><a href="#C2">One persistence port with a local and a remote adapter</a></td><td>DomainController</td><td><span class="badge strong">Strong</span></td><td class="mono" style="font-size:12px;color:var(--muted)">ports &amp; adapters · local-substitutable</td></tr><tr><td class="id">C3</td><td><a href="#C3">Derive one action catalogue from the Endpoint definitions</a></td><td>DomainController</td><td><span class="badge spec">Speculative</span></td><td class="mono" style="font-size:12px;color:var(--muted)">in-process</td></tr><tr><td class="id">Q1</td><td><a href="#Q1">One transformer-kind registry built from the TransformerDefinitions</a></td><td>Queries and Transformers</td><td><span class="badge strong">Strong</span></td><td class="mono" style="font-size:12px;color:var(--muted)">in-process</td></tr><tr><td class="id">Q2</td><td><a href="#Q2">A fetch port for extractors and one query evaluator</a></td><td>Queries and Transformers</td><td><span class="badge strong">Strong</span></td><td class="mono" style="font-size:12px;color:var(--muted)">in-process · local-substitutable</td></tr><tr><td class="id">Q3</td><td><a href="#Q3">Deepen the SQL transformer compiler and make in-memory/SQL parity one test seam</a></td><td>Queries and Transformers</td><td><span class="badge worth">Worth exploring</span></td><td class="mono" style="font-size:12px;color:var(--muted)">local-substitutable</td></tr><tr><td class="id">S1</td><td><a href="#S1">Backends shrink to one section adapter; PersistenceStoreController owns the Entity rules</a></td><td>Persistence stores</td><td><span class="badge strong">Strong</span></td><td class="mono" style="font-size:12px;color:var(--muted)">local-substitutable</td></tr><tr><td class="id">R1</td><td><a href="#R1">A UI-free engine for multistep Reports</a></td><td>Reports and value editors</td><td><span class="badge strong">Strong</span></td><td class="mono" style="font-size:12px;color:var(--muted)">in-process · local-substitutable</td></tr><tr><td class="id">R2</td><td><a href="#R2">One section-tree module and a per-type registry</a></td><td>Reports and value editors</td><td><span class="badge strong">Strong</span></td><td class="mono" style="font-size:12px;color:var(--muted)">in-process</td></tr><tr><td class="id">R3</td><td><a href="#R3">Entity instance commands in one module</a></td><td>Reports and value editors</td><td><span class="badge strong">Strong</span></td><td class="mono" style="font-size:12px;color:var(--muted)">in-process · local-substitutable</td></tr><tr><td class="id">R4</td><td><a href="#R4">An editor-tree session for the ML value editors</a></td><td>Reports and value editors</td><td><span class="badge worth">Worth exploring</span></td><td class="mono" style="font-size:12px;color:var(--muted)">in-process · local-substitutable</td></tr><tr><td class="id">M1</td><td><a href="#M1">One ML-schema context: build the environment once, keep typeCheck and defaults small</a></td><td>Schemas and package interfaces</td><td><span class="badge strong">Strong</span></td><td class="mono" style="font-size:12px;color:var(--muted)">in-process</td></tr><tr><td class="id">M2</td><td><a href="#M2">Build the fundamental schema from the meta-model and the transformer registry</a></td><td>Schemas and package interfaces</td><td><span class="badge strong">Strong</span></td><td class="mono" style="font-size:12px;color:var(--muted)">in-process</td></tr><tr><td class="id">M3</td><td><a href="#M3">Generate each deployment package&#x27;s interface from its asset folders</a></td><td>Schemas and package interfaces</td><td><span class="badge strong">Strong</span></td><td class="mono" style="font-size:12px;color:var(--muted)">in-process</td></tr><tr><td class="id">M4</td><td><a href="#M4">Shrink miroir-core&#x27;s package interface</a></td><td>Schemas and package interfaces</td><td><span class="badge worth">Worth exploring</span></td><td class="mono" style="font-size:12px;color:var(--muted)">in-process</td></tr></tbody></table></div>
+</section>
+
+<section id="candidates" class="grid gap-14">
+  <section class="grid gap-6" id="area-T">
+    <div class="area-head">
+      <div class="eyebrow">T · 2 candidates</div>
+      <h2 class="h-area">MiroirTest machinery</h2>
+      <p class="lede">How a MiroirTest is walked, run, recorded and reported by vitest, the Miroir Tests menu, the UI launcher and nonreg. The hottest area of the month: #252, #286, #287, #292, #303, #304 and #307 all changed it.</p>
+    </div>
+    
+<article id="T1" class="card top">
+  <div class="card-head">
+    <div class="badges"><span class="badge id">T1</span><span class="badge strong">Strong</span><span class="badge dep">in-process</span><span class="badge id" style="border-style:solid">Top recommendation</span></div>
+    <h3 class="h-card">One MiroirTest run module: leaf kinds return outcomes, one call returns a report</h3>
+  </div>
+  <ul class="files"><li>packages/miroir-core/src/5_tests/MiroirTestTools.ts:154-489</li><li>packages/miroir-core/src/5_tests/miroirTestSuiteWalk.ts</li><li>packages/miroir-core/src/5_tests/{FunctionCall,QueryRunner,MiroirTransformer,ReactComponent,Action,Runner}TestTools.ts</li><li>packages/miroir-core/src/3_controllers/DomainController.ts:5329-5390</li><li>packages/miroir-core/src/3_controllers/MiroirActivityTracker.ts:612-1047</li><li>packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Buttons/RunMiroirTestSuiteButton.tsx, RunAllMiroirTestsButton.tsx</li><li>packages/miroir-standalone-app/tests/helpers/uiIntegrationTestLauncher.ts, testResultReport.ts</li></ul>
+  <div class="ba">
+    <div class="pane"><div class="pane-label"><span>Before</span></div><div class="fan"><div class="src" style="grid-row:1"><div class="m ">Run suite button<div class="chips"><span class="chip leak">returns ACTION_OK on failure</span></div></div></div><div class="arr " style="grid-row:1"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:2"><div class="m ">Run all button<div class="chips"><span class="chip">own summariser</span></div></div></div><div class="arr " style="grid-row:2"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:3"><div class="m ">4 vitest entries<div class="chips"><span class="chip">load, run, display ×4</span></div></div></div><div class="arr " style="grid-row:3"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:4"><div class="m ">UI launcher<div class="chips"><span class="chip leak">pass rule #3</span></div></div></div><div class="arr " style="grid-row:4"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:5"><div class="m ">Phase tests<div class="chips"><span class="chip leak">3 private run copies</span></div></div></div><div class="arr " style="grid-row:5"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="dst" style="grid-row:1 / span 5"><div class="m ">_runMiroirTestSuite<small>13 args + shared tracker</small><ul class="items"><li>7 leaf runners</li><li class="leak">each: skip, record, throw</li><li>resetResults() first</li></ul></div></div></div></div>
+    <div class="pane"><div class="pane-label"><span class="after">After</span></div><div class="via"><div class="col"><div class="m adapter">Buttons</div><div class="m adapter">vitest entries</div><div class="m adapter">Launcher</div></div><div class="arr"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="col"><div class="m deep">runMiroirTests<small>(suites, host, options) → report</small><div class="chips"><span class="chip">walk</span><span class="chip">skip</span><span class="chip">outcome per kind</span><span class="chip">record</span><span class="chip">one pass rule</span></div></div></div><div class="arr"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="col"><div class="m adapter">Host adapters<small>vitest · in-process</small></div></div></div></div>
+  </div>
+  <div class="prose">
+    <div><div class="lbl">Problem</div><p>Running a suite takes 11 to 13 positional parameters and leaves results in a shared, mutable activity tracker, while 7 leaf runners each redo skip, record and fail with their own rules.</p></div>
+    <div><div class="lbl">Solution</div><p>Each leaf kind turns (leaf, context) into an outcome; one module walks the suites, decides skips, records outcomes, asks the host adapter (vitest or in-process) whether to fail, and returns one report with one pass rule.</p></div>
+  </div>
+  <div><div class="lbl">Wins</div><ul class="wins"><li>One call, one report</li><li>Pass rule has locality</li><li>New test type: write an outcome</li><li>Host seam gets two adapters</li><li>Phase tests use the interface</li></ul></div>
+  <div><div class="lbl">Evidence</div><ul class="evidence"><li>10 hand-built <code>_runMiroirTestSuite(</code> calls, all passing <code>true</code> and <code>runMiroirTests</code>; phase tests keep 3 private <code>runSuiteInProcess</code> copies (292 phase1, 286 phase2, 286 phase6).</li><li>6 result walkers apply 3 pass rules: passed+skipped=total (<code>MiroirTransformerTestTools.ts:699</code>), passed=total (<code>testResultReport.ts:182</code>), every leaf ok (<code>uiIntegrationTestLauncher.ts:137</code>).</li><li><code>compositeRunTestAssertion</code> records &quot;ok&quot; right after <code>expect(...).toEqual(...)</code> (<code>DomainController.ts:5329-5356</code>), but the browser registers the non-throwing <code>expect</code> from <code>test-expect.ts</code> (<code>index.tsx:226</code>, <code>370</code>), so composite assertions cannot fail in browser runs.</li><li>actionTest and runnerTest call expect before recording, so under vitest a failure is thrown but not recorded (<code>ActionTestTools.ts:166-170</code>, <code>RunnerTestTools.ts:310-311</code>).</li><li><code>displayMiroirTestResults</code> returns early unless the run label equals the suite name (<code>MiroirTransformerTestTools.ts:531</code>).</li></ul></div>
+  <div class="aside">
+    <div><b>Deletion test.</b> The <code>RunMiroirTests</code> struct and its flags are pass-throughs; 7 copies of the leaf protocol and 6 summarisers collapse into one module.</div>
+    <div><b>Risk.</b> vitest registers tests at collection time and its diff output needs its own expect; the component entry&#x27;s <code>-t</code> names must survive. Moving the result tree out of <code>MiroirActivityTracker</code> is a follow-on.</div>
+  </div>
+</article>
+<article id="T2" class="card">
+  <div class="card-head">
+    <div class="badges"><span class="badge id">T2</span><span class="badge worth">Worth exploring</span><span class="badge dep">in-process</span></div>
+    <h3 class="h-card">One descriptor per MiroirTest instance</h3>
+  </div>
+  <ul class="files"><li>packages/miroir-core/src/5_tests/inferIntegrationSessionKind.ts, applicationMiroirTestCatalog.ts</li><li>packages/miroir-standalone-app/src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.ts, uiIntegrationTestTransformerSuiteRegistry.ts</li><li>packages/miroir-standalone-app/src/miroir-fwk/4-tests/resolveUiIntegrationRunnerSuiteKey.ts, miroirTestSuiteUiExecution.ts, runnerTestSuiteResolve.ts</li><li>packages/miroir-standalone-app/tests/helpers/uiIntegrationTestLauncher.ts:179-387</li><li>scripts/testMiroirLauncher.ts</li></ul>
+  <div class="ba">
+    <div class="pane"><div class="pane-label"><span>Before</span></div><div class="fan"><div class="src" style="grid-row:1"><div class="m ">MiroirTestDisplay<div class="chips"><span class="chip">builds registries</span></div></div></div><div class="arr " style="grid-row:1"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:2"><div class="m ">Run all button<div class="chips"><span class="chip">builds registries ×2</span></div></div></div><div class="arr " style="grid-row:2"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:3"><div class="m ">UI launcher<div class="chips"><span class="chip leak">LEGACY fallback</span></div></div></div><div class="arr " style="grid-row:3"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:4"><div class="m ">CLI router<div class="chips"><span class="chip leak">uses the UI registry</span></div></div></div><div class="arr " style="grid-row:4"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="dst" style="grid-row:1 / span 4"><div class="m ">~12 classifiers<small>4 vocabularies, 7 walks</small><ul class="items"><li>inferIntegrationSessionKind</li><li>suite registries ×2</li><li class="leak">resolve…SuiteKey ignores its args</li></ul></div></div></div></div>
+    <div class="pane"><div class="pane-label"><span class="after">After</span></div><div class="via"><div class="col"><div class="m adapter">Display</div><div class="m adapter">Launcher</div><div class="m adapter">CLI</div></div><div class="arr"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="col"><div class="m deep">describeMiroirTest<small>(instance, runnerIndex) → descriptor</small></div></div><div class="arr"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="col"><div class="m ">MiroirTest JSON</div></div></div></div>
+  </div>
+  <div class="prose">
+    <div><div class="lbl">Problem</div><p>&quot;What can this suite do and how is it launched&quot; is answered by 4 vocabularies over 7 tree walks, through about 12 small classifiers.</p></div>
+    <div><div class="lbl">Solution</div><p>One pure module maps an instance and the runner index to a descriptor (key, unit and integration capability, session kind, reset parameters, runner, flags) that the CLI, the displays, the launcher and the entries read.</p></div>
+  </div>
+  <div><div class="lbl">Wins</div><ul class="wins"><li>One table per test type</li><li>One walk instead of seven</li><li>CLI stops borrowing UI registries</li></ul></div>
+  <div><div class="lbl">Evidence</div><ul class="evidence"><li>4 vocabularies: <code>IntegrationTestSessionKind</code>, <code>MiroirTestSuiteUiExecutionMode</code>, <code>ApplicationMiroirTestCliLaunchKind</code>, <code>UiIntegrationRunnerSuiteKind</code>.</li><li><code>resolveUiIntegrationRunnerSuiteKey</code> ignores both registry parameters it receives (25-35), yet 3 callers build registries to pass in.</li><li>Deprecated LEGACY registries are still runtime fallbacks (<code>uiIntegrationTestLauncher.ts:368</code>); the launcher has two near-duplicate bodies (179-254, 256-338).</li><li>Adding <code>reactComponentTest</code> (#286) touched 7 files, then added 2 more UI walks.</li></ul></div>
+  <div class="aside">
+    <div><b>Deletion test.</b> About 12 classifiers are indirection; their logic concentrates in the descriptor.</div>
+    <div><b>Risk.</b> The runner index comes from the local cache in the UI and from folders in the CLI, so it is an input.</div>
+  </div>
+</article>
+  </section>
+  <section class="grid gap-6" id="area-E">
+    <div class="area-head">
+      <div class="eyebrow">E · 4 candidates</div>
+      <h2 class="h-area">Entry points and policies</h2>
+      <p class="lede">Where an action enters a process (HTTP, the emulated server, Electron IPC, MCP, CLI, CopilotKit) and what each entry point applies before dispatch: identity, access, capabilities, secrets. Built by #71, #262, #264, #270, #273 and #267.</p>
+    </div>
+    
+<article id="E1" class="card">
+  <div class="card-head">
+    <div class="badges"><span class="badge id">E1</span><span class="badge strong">Strong</span><span class="badge dep">in-process · local-substitutable</span></div>
+    <h3 class="h-card">One admission module behind every entry point</h3>
+  </div>
+  <ul class="files"><li>packages/miroir-server/src/server.ts:517-717, 847-868</li><li>packages/miroir-core/src/4_services/RestServer.ts:340-505</li><li>packages/miroir-core/src/4_services/RestClientStub.ts:121-175</li><li>packages/miroir-core/src/1_core/authentication/AuthenticationHttp.ts, deploymentUuidFromHttpRequest.ts</li><li>packages/miroir-standalone-app-electron/src/ipcServerSetup.ts:257-336</li><li>packages/miroir-mcp/src/tools/mcpHandlersForEndpoint.ts:205-330</li><li>packages/miroir-cli/src/…/commandsFromEndpoint.ts:220-282</li><li>packages/miroir-ai/src/tools/miroirCopilotKitActions.ts:91-131</li></ul>
+  <div class="ba">
+    <div class="pane"><div class="pane-label"><span>Before</span></div><div class="fan"><div class="src" style="grid-row:1"><div class="m ">HTTP (server.ts)<div class="chips"><span class="chip">full gate</span><span class="chip">6 body shapes</span></div></div></div><div class="arr " style="grid-row:1"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:2"><div class="m leak">RestClientStub<div class="chips"><span class="chip leak">gate copy</span><span class="chip leak">3 body shapes</span></div></div></div><div class="arr leak" style="grid-row:2"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:3"><div class="m leak">CopilotKit route<div class="chips"><span class="chip leak">identity only</span></div></div></div><div class="arr leak" style="grid-row:3"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:4"><div class="m miss">/mcp<div class="chips"><span class="chip miss">no gate</span></div></div></div><div class="arr leak" style="grid-row:4"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:5"><div class="m miss">Electron IPC<div class="chips"><span class="chip miss">no gate</span></div></div></div><div class="arr leak" style="grid-row:5"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:6"><div class="m miss">CLI<div class="chips"><span class="chip miss">no gate</span></div></div></div><div class="arr leak" style="grid-row:6"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="dst" style="grid-row:1 / span 6"><div class="m ">DomainController<small>and store runners</small></div></div></div></div>
+    <div class="pane"><div class="pane-label"><span class="after">After</span></div><div class="via"><div class="col"><div class="m adapter">HTTP</div><div class="m adapter">Stub</div><div class="m adapter">IPC</div><div class="m adapter">MCP · CLI</div><div class="m adapter">CopilotKit</div></div><div class="arr"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="col"><div class="m deep">Admission<small>(action, request facts) → admitted | denied</small><div class="chips"><span class="chip">principal</span><span class="chip">access</span><span class="chip">capability</span><span class="chip">guards</span><span class="chip">deployment + model env</span></div></div></div><div class="arr"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="col"><div class="m ">DomainController</div></div></div></div>
+  </div>
+  <div class="prose">
+    <div><div class="lbl">Problem</div><p>Each entry point chains its own subset of about 12 exported auth and access functions before dispatch, and the chains already disagree.</p></div>
+    <div><div class="lbl">Solution</div><p>One module takes an action plus transport-neutral request facts and owns principal, access, capability, guards, deployment and model environment, then dispatches; Express, the stub, IPC, MCP, CLI and CopilotKit become thin adapters.</p></div>
+  </div>
+  <div><div class="lbl">Wins</div><ul class="wins"><li>Policy has one home</li><li>New entry points inherit the gate</li><li>Stub tests run the production gate</li><li>Test apps leave production packages</li></ul></div>
+  <div><div class="lbl">Evidence</div><ul class="evidence"><li>The full gate is written twice: <code>server.ts:600-642</code> and <code>RestClientStub.ts:121-175</code>. The stub finds the deployment in 3 body locations, the server in 6 (<code>deploymentUuidFromHttpRequest</code>).</li><li><code>/mcp</code> and Electron IPC run no gate; CopilotKit checks identity only (<code>server.ts:853-868</code>); MCP, CLI, IPC and CopilotKit never pass a principal.</li><li>MCP, CLI and CopilotKit build the Library test app&#x27;s <code>getDefaultLibraryModelEnvironmentDEFUNCT</code>, so miroir-mcp, miroir-cli and miroir-ai depend on a test deployment package.</li><li><code>handleMcpAction</code> and <code>handleCliAction</code> are the same function; the openStore loop is copied between cli and mcp.</li><li>miroir-server has no tests; the 20 auth test files cover the pure functions, not the chain.</li></ul></div>
+  <div class="aside">
+    <div><b>Deletion test.</b> No such module exists: the chain is re-derived in each adapter, so creating it concentrates complexity. The directory becomes a seam with two adapters (Admin store, in-memory fixtures).</div>
+    <div><b>Risk.</b> The browser runs a remote DomainController, so where the module sits on each side of the wire needs deciding; also whether the identity directory is reloaded per request or cached.</div>
+  </div>
+</article>
+<article id="E2" class="card">
+  <div class="card-head">
+    <div class="badges"><span class="badge id">E2</span><span class="badge strong">Strong</span><span class="badge dep">in-process</span></div>
+    <h3 class="h-card">One module for secret material</h3>
+  </div>
+  <ul class="files"><li>packages/miroir-core/src/1_core/authentication/AuthenticationPolicy.ts:476-572</li><li>packages/miroir-core/src/1_core/authentication/redactCredentialSecrets.ts</li><li>packages/miroir-core/src/4_services/RestServer.ts:284-305</li><li>packages/miroir-core/src/3_controllers/DomainController.ts:1204-1220</li><li>packages/miroir-core/src/4_services/SecretsService.ts</li><li>packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/MultistepReportHost.tsx:51-58</li></ul>
+  <div class="ba">
+    <div class="pane"><div class="pane-label"><span>Before</span></div><div class="boxes"><div class="m ">Credential guard<small>AuthenticationPolicy:496</small></div><div class="m ">Secret guard<small>AuthenticationPolicy:531</small></div><div class="m ">Enforced at<ul class="items"><li>RestServer</li><li>DomainController</li><li class="leak">not on commit replay</li></ul></div><div class="m leak">Redaction ×3<ul class="items"><li class="">redactCredentialSecrets</li><li class="leak">dead copy, still tested</li><li class="leak">MultistepReportHost list</li></ul></div></div></div>
+    <div class="pane"><div class="pane-label"><span class="after">After</span></div><div class="m deep">Secret material<small>credentials and secrets</small><div class="chips"><span class="chip">write paths</span><span class="chip">one guard</span><span class="chip">redaction keys</span></div></div><div class="adapters"><div class="m adapter">RestServer</div><div class="m adapter">DomainController</div><div class="m adapter">MCP</div><div class="m adapter">UI</div></div></div>
+  </div>
+  <div class="prose">
+    <div><div class="lbl">Problem</div><p>What counts as secret, who may write it and how it is hidden is spread over two near-identical write guards, two enforcement sites and three redaction lists.</p></div>
+    <div><div class="lbl">Solution</div><p>One module owns MiroirUserCredential and MiroirSecret: the only write paths (change password, set, delete, rotate, import), one guard decided inside the process, and one redaction list shared by the server, MCP and the UI.</p></div>
+  </div>
+  <div><div class="lbl">Wins</div><ul class="wins"><li>Secret rules have locality</li><li>Guard holds at the trust seam</li><li>One redaction list everywhere</li><li>Tests hit the write paths</li></ul></div>
+  <div><div class="lbl">Evidence</div><ul class="evidence"><li><code>assertCredentialInstanceMutationAllowed</code> and <code>assertSecretInstanceMutationAllowed</code> are near-identical (<code>AuthenticationPolicy.ts:496-529</code>, <code>531-572</code>), enforced at <code>RestServer.ts:287-305</code> and <code>DomainController.ts:1208-1220</code>.</li><li>The transactional and commit-replay paths skip both guards (comment at <code>RestServer.ts:286</code>, &quot;analysis R11&quot;).</li><li>Redaction lives in <code>redactCredentialSecrets.ts</code> (32 call sites), in a dead copy in <code>AuthenticationPolicy.ts:476-494</code> that a test still covers, and in a third key list in <code>MultistepReportHost.tsx:51-58</code>.</li><li><code>SecretsHttp.ts</code>, planned in the #270 TDD plan, was never built.</li></ul></div>
+  <div class="aside">
+    <div><b>Deletion test.</b> Deleting the dead redaction copy breaks only its test; the two guards and three lists collapse into one module.</div>
+    <div><b>Risk.</b> The commit-replay path must carry enough provenance for the guard to decide.</div>
+  </div>
+</article>
+<article id="E3" class="card">
+  <div class="card-head">
+    <div class="badges"><span class="badge id">E3</span><span class="badge strong">Strong</span><span class="badge dep">mock (fetch) · in-process</span></div>
+    <h3 class="h-card">Build the external-service client with its dependencies</h3>
+  </div>
+  <ul class="files"><li>packages/miroir-core/src/4_services/ExternalServiceClient.ts:32-70, 354, 485, 740</li><li>packages/miroir-core/src/4_services/SecretStore.ts:20-22, SecretsService.ts:132</li><li>packages/miroir-core/src/3_controllers/DomainController.ts:3380-4245</li><li>packages/miroir-core/src/index.ts:1379-1411</li><li>packages/miroir-server/src/server.ts:191, 447, 493</li><li>packages/miroir-standalone-app-electron/src/ipcServerSetup.ts</li></ul>
+  <div class="ba">
+    <div class="pane"><div class="pane-label"><span>Before</span></div><pre class="mermaid">flowchart LR
+  S[&quot;server.ts&quot;] --&gt;|&quot;setKey, hydrate, setSink&quot;| G[(&quot;module globals&quot;)]
+  E[&quot;Electron IPC&quot;] -.-&gt;|&quot;nothing&quot;| G
+  T[&quot;tests&quot;] --&gt;|&quot;6 reset functions&quot;| G
+  DC[&quot;DomainController&quot;] --&gt; X[&quot;executeExternalServiceOperation&quot;]
+  X --&gt; G
+  X --&gt; F[&quot;global fetch&quot;]
+  linkStyle 1 stroke:#c2352b,stroke-width:2px
+  linkStyle 2 stroke:#c2352b,stroke-width:2px</pre></div>
+    <div class="pane"><div class="pane-label"><span class="after">After</span></div><pre class="mermaid">flowchart LR
+  H[&quot;host composition&quot;] --&gt;|&quot;builds&quot;| C[&quot;ExternalServiceClient&quot;]
+  DC[&quot;DomainController&quot;] --&gt; C
+  C --&gt; P{{&quot;fetch port&quot;}}
+  P --&gt; R[&quot;remote service&quot;]
+  P -.-&gt;|&quot;tests&quot;| K[&quot;fake server&quot;]</pre></div>
+  </div>
+  <div class="prose">
+    <div><div class="lbl">Problem</div><p><code>executeExternalServiceOperation</code> is deep, but it reads process-global state (global fetch, 4 module variables, 2 secret maps, the wrapping key) that only server.ts sets up.</p></div>
+    <div><div class="lbl">Solution</div><p>The host builds one client holding fetch, secret resolution, the rotation sink and the token cache; DomainController receives it like its persistence manager, and probes pass a per-call secret overlay.</p></div>
+  </div>
+  <div><div class="lbl">Wins</div><ul class="wins"><li>Tests need no global resets</li><li>Electron gets secrets by construction</li><li>DomainController interface shrinks</li><li>Wizard logic gains locality</li></ul></div>
+  <div><div class="lbl">Evidence</div><ul class="evidence"><li>Six reset and allow functions exist for tests and are exported from the package entry (<code>index.ts:1379-1411</code>); one unit test stubs global fetch.</li><li><code>ipcServerSetup.ts</code> never sets the key, hydrates secrets or registers the rotation sink (<code>server.ts:191, 447, 493</code>), so Electron runs without them (inferred).</li><li>Probe secrets are written into the shared map and restored at 4 sites across awaits (<code>DomainController.ts:3567-3900</code>), visible to concurrent requests (inferred).</li><li><code>principal</code> is threaded through 15 DomainController signatures to reach this one function.</li><li>About 865 lines of external-service code sit inside DomainController (3380-4245).</li></ul></div>
+  <div class="aside">
+    <div><b>Deletion test.</b> The setters and resets disappear; their complexity reappears once, in the composition root.</div>
+    <div><b>Risk.</b> The rotation sink stays a closure, because 4_services cannot import DomainController (#270 plan, P6). <code>fakeExternalServiceServer.ts</code> already serves 7 integration tests as the fetch stand-in.</div>
+  </div>
+</article>
+<article id="E4" class="card">
+  <div class="card-head">
+    <div class="badges"><span class="badge id">E4</span><span class="badge worth">Worth exploring</span><span class="badge dep">local-substitutable</span></div>
+    <h3 class="h-card">One bootstrap from config to a running process</h3>
+  </div>
+  <ul class="files"><li>packages/miroir-server/src/server.ts:186-191, 272-278, 403-447, 819-826</li><li>packages/miroir-standalone-app-electron/src/ipcServerSetup.ts:199-214</li><li>packages/miroir-cli/src/startup/{storeStartup,setup}.ts, packages/miroir-mcp/src/startup/{storeStartup,setup}.ts</li><li>packages/miroir-standalone-app/src/index.tsx:255-335, packages/miroir-sandbox/src/index.tsx:141-190</li><li>packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts:465-492, setupMiroirTest.ts</li><li>packages/miroir-core/src/3_controllers/ConfigurationService.ts:54-61, ActionRunner.ts</li></ul>
+  <div class="ba">
+    <div class="pane"><div class="pane-label"><span>Before</span></div><div class="fan"><div class="src" style="grid-row:1"><div class="m ">server.ts<div class="chips"><span class="chip">secrets</span><span class="chip">capabilities ×2</span></div></div></div><div class="arr " style="grid-row:1"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:2"><div class="m leak">Electron IPC<div class="chips"><span class="chip leak">no secrets</span></div></div></div><div class="arr leak" style="grid-row:2"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:3"><div class="m ">CLI setup<div class="chips"><span class="chip leak">storeStartup copy</span></div></div></div><div class="arr " style="grid-row:3"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:4"><div class="m ">MCP setup<div class="chips"><span class="chip leak">storeStartup copy</span></div></div></div><div class="arr " style="grid-row:4"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:5"><div class="m ">Standalone app<div class="chips"><span class="chip">capabilities</span></div></div></div><div class="arr " style="grid-row:5"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:6"><div class="m ">Test session<div class="chips"><span class="chip leak">only one with mongodb</span></div></div></div><div class="arr " style="grid-row:6"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="dst" style="grid-row:1 / span 6"><div class="m ">Running stack<small>managers, stub, DomainControllers</small></div></div></div></div>
+    <div class="pane"><div class="pane-label"><span class="after">After</span></div><div class="via"><div class="col"><div class="m adapter">server</div><div class="m adapter">Electron</div><div class="m adapter">CLI · MCP</div><div class="m adapter">app · tests</div></div><div class="arr"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="col"><div class="m deep">bootstrap<small>(config, argv, env) → context</small><div class="chips"><span class="chip">backends</span><span class="chip">managers</span><span class="chip">stub</span><span class="chip">capabilities</span><span class="chip">secrets</span></div></div></div><div class="arr"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="col"><div class="m ">Process context</div></div></div></div>
+  </div>
+  <div class="prose">
+    <div><div class="lbl">Problem</div><p>Six hosts hand-wire the same startup (register backends, two managers, the stub, two DomainControllers, setters, secrets, capabilities), and each gets a different subset.</p></div>
+    <div><div class="lbl">Solution</div><p>One module turns (config, argv, env) into a process context (store stack, managers, the stub when emulated, capabilities, secrets); every host calls it and mounts its own transport.</p></div>
+  </div>
+  <div><div class="lbl">Wins</div><ul class="wins"><li>Tests open a stack in one line</li><li>Config errors surface at open</li><li>Host parity by construction</li><li>Store lifecycle has one home</li></ul></div>
+  <div><div class="lbl">Evidence</div><ul class="evidence"><li>125 <code>*StoreSectionStartup(</code> calls: 28 test files and about 10 composition roots.</li><li>cli and mcp <code>storeStartup.ts</code> are identical apart from names; only <code>IntegrationTestSession</code> handles mongodb and bundled.</li><li>Process capabilities are computed 6 times from the same 4 inputs and pushed through 7 <code>setProcessCapabilities</code> calls.</li><li>A config naming an unregistered backend yields an <code>ErrorDataStore</code> that throws &quot;Method not implemented.&quot; at first use (<code>ErrorDataStore.ts:20</code>).</li><li>server.ts re-implements <code>querySecretRowsForPersist</code> and the missing-key check from SecretsService (411-445).</li></ul></div>
+  <div class="aside">
+    <div><b>Deletion test.</b> The 6 hand-rolled roots collapse into one call; the <code>shouldMount*</code> helpers are one-line pass-throughs.</div>
+    <div><b>Risk.</b> Each host has real extras (IPC, identity directory); Vite needs dynamic imports of the Node-only drivers. Overlaps E1 and E3.</div>
+  </div>
+</article>
+  </section>
+  <section class="grid gap-6" id="area-C">
+    <div class="area-head">
+      <div class="eyebrow">C · 3 candidates</div>
+      <h2 class="h-area">DomainController</h2>
+      <p class="lede">The 6,507-line controller: composite actions, persistence routing and action-type dispatch. 24 changes since 2026-08-26.</p>
+    </div>
+    
+<article id="C1" class="card">
+  <div class="card-head">
+    <div class="badges"><span class="badge id">C1</span><span class="badge strong">Strong</span><span class="badge dep">in-process</span></div>
+    <h3 class="h-card">One composite-action runner instead of four</h3>
+  </div>
+  <ul class="files"><li>packages/miroir-core/src/3_controllers/DomainController.ts:4589-4801 (Internal)</li><li>DomainController.ts:4804-5059 (RuntimeCompositeActionDO_NOT_USE)</li><li>DomainController.ts:5062-5222 (BuildPlusRuntimeCompositeAction)</li><li>DomainController.ts:5664-5915 (CompositeActionTemplate), 5935-6472 (test wrappers)</li><li>packages/miroir-core/src/5_tests/CompositeActionTestTools.ts:24-78</li></ul>
+  <div class="ba">
+    <div class="pane"><div class="pane-label"><span>Before</span></div><div class="boxes"><div class="m ">Internal<small>:4589</small><ul class="items"><li>binds labels</li><li>runs assertions</li></ul></div><div class="m leak">Runtime DO_NOT_USE<small>:4804</small><ul class="items"><li class="leak">skips 3 step kinds</li><li>runs assertions</li></ul></div><div class="m ">BuildPlusRuntime<small>:5062</small><ul class="items"><li>delegates to Internal</li></ul></div><div class="m ">Template<small>:5664</small><ul class="items"><li>binds labels</li><li class="leak">rejects assertions</li></ul></div></div></div>
+    <div class="pane"><div class="pane-label"><span class="after">After</span></div><div class="m deep">CompositeRunner<small>(composite, strategy) → result</small><div class="chips"><span class="chip">resolve</span><span class="chip">dispatch step</span><span class="chip">bind by label</span><span class="chip">one error rule</span></div></div><div class="adapters"><div class="m adapter">Runners</div><div class="m adapter">Reports</div><div class="m adapter">Endpoints</div><div class="m adapter">Test hooks</div></div></div>
+  </div>
+  <div class="prose">
+    <div><div class="lbl">Problem</div><p>Four loops re-implement template resolution, per-step dispatch, error wrapping and result binding, and they have drifted apart.</p></div>
+    <div><div class="lbl">Solution</div><p>One runner resolves templates with a strategy chosen up front and executes steps through one dispatch, with one rule for binding and one for errors; test suites become setup and teardown hooks around it.</p></div>
+  </div>
+  <div><div class="lbl">Wins</div><ul class="wins"><li>Composite semantics have one home</li><li>MiroirTests run the production path</li><li>7 methods shrink to about 2</li><li>Unknown steps fail loudly</li></ul></div>
+  <div><div class="lbl">Evidence</div><ul class="evidence"><li>The runtime loop&#x27;s default branch logs and skips <code>compositeRunBoxedQueryTemplateAction</code>, <code>freezeApplicationVersion</code> and <code>connectExternalService</code> (<code>DomainController.ts:5018-5021</code>).</li><li><code>compositeRunTestAssertion</code> runs in two loops (4669, 4976) and is rejected in the template loop (5809-5830).</li><li>Only two loops bind step results by <code>actionLabel</code> (4777-4787, 5903-5909).</li><li><code>testBuildPlusRuntimeCompositeAction</code> runs through one loop alone (6009) and another inside a suite (6232).</li><li><code>handleTestCompositeAction</code> drops the composite result and returns ACTION_OK (5989-6040).</li></ul></div>
+  <div class="aside">
+    <div><b>Deletion test.</b> Three of the four loops delete with no loss except their drift; the remaining runner serves Runners, MultistepReportHost, application endpoints and every MiroirTest.</div>
+    <div><b>Risk.</b> Build and runtime resolution genuinely differ (&quot;WHY BUILD???&quot; at 5097); pin both with MiroirTests before merging the loops.</div>
+  </div>
+</article>
+<article id="C2" class="card">
+  <div class="card-head">
+    <div class="badges"><span class="badge id">C2</span><span class="badge strong">Strong</span><span class="badge dep">ports &amp; adapters · local-substitutable</span></div>
+    <h3 class="h-card">One persistence port with a local and a remote adapter</h3>
+  </div>
+  <ul class="files"><li>packages/miroir-core/src/3_controllers/DomainController.ts:404-408 and 12 call sites</li><li>packages/miroir-core/src/0_interfaces/4-services/PersistenceInterface.ts:114-143</li><li>packages/miroir-core/src/3_controllers/CallUtils.ts:51, 90-97</li><li>packages/miroir-localcache-redux/src/4_services/persistence/PersistenceReduxSaga.ts, sagaTools.ts</li><li>packages/miroir-localcache-{redux,zustand}/src/…/RestPersistenceClientAndRestClient.ts</li><li>packages/miroir-localcache-zustand/src/…/PersistenceAsyncStore.ts</li><li>packages/miroir-react/src/miroir-localcache-imports.ts</li></ul>
+  <div class="ba">
+    <div class="pane"><div class="pane-label"><span>Before</span></div><div class="stack"><div class="band leak">DomainController<small>if accessMode… ×9, picks 1 of 7 methods</small></div><div class="down" aria-hidden="true">&#8595;</div><div class="band thin">PersistenceStoreLocalOrRemoteInterface<small>7 For… methods + bypass</small></div><div class="down" aria-hidden="true">&#8595;</div><div class="band thin">dispatchToReduxStore</div><div class="down" aria-hidden="true">&#8595;</div><div class="band thin">saga + promise action<small>no put, no select</small></div><div class="down" aria-hidden="true">&#8595;</div><div class="split"><div class="m ">PersistenceStoreController</div><div class="m leak">REST client ×2<small>redux, zustand</small></div></div></div></div>
+    <div class="pane"><div class="pane-label"><span class="after">After</span></div><div class="stack"><div class="band ">DomainController<small>one call</small></div><div class="down" aria-hidden="true">&#8595;</div><div class="band deep">Persistence port<small>route, deployment lookup, one error shape</small></div><div class="down" aria-hidden="true">&#8595;</div><div class="split"><div class="m adapter">Local stores</div><div class="m adapter">Remote HTTP<small>RestClient · RestClientStub</small></div></div></div></div>
+  </div>
+  <div class="prose">
+    <div><div class="lbl">Problem</div><p>DomainController picks among 7 persistence methods and branches on access mode, each call then hops through a Redux saga that never touches the cache, and errors come back in two shapes.</p></div>
+    <div><div class="lbl">Solution</div><p>A plain async router in core runs an action and returns one <code>Action2ReturnType</code>, with the store manager as the local adapter and one shared REST client as the remote adapter; the Redux package keeps only cache state and selectors.</p></div>
+  </div>
+  <div><div class="lbl">Wins</div><ul class="wins"><li>7 routing methods become 1</li><li>Failures surface one way</li><li>Two real adapters at the seam</li><li>Two REST client copies become one</li></ul></div>
+  <div><div class="lbl">Evidence</div><ul class="evidence"><li><code>PersistenceReduxSaga.ts</code> (1,172 lines) has no <code>put</code> or <code>select</code>; 4 methods dispatch to Redux only to call PersistenceStoreController or the REST client.</li><li>DomainController chooses among the 7 <code>For…</code> methods at 12 call sites and branches on access mode 9 times.</li><li><code>callLocalCacheAction</code> throws; <code>callPersistenceAction</code> returns an <code>Action2Error</code> (<code>CallUtils.ts:51</code>, <code>90-97</code>).</li><li>openStore failures never surface: the saga returns ACTION_OK (612-639), so the status checks in server, MCP and CLI never fire (reported, not re-checked).</li><li>miroir-localcache-zustand is not wired (adapters are switched by commenting code); its REST client copy (452 vs 463 lines) lacks the redux deploymentUuid guard.</li></ul></div>
+  <div class="aside">
+    <div><b>Deletion test.</b> Removing the saga hop loses no behaviour; the 9 mode branches and the 7-method interface are a mode-flagged pass-through.</div>
+    <div><b>Risk.</b> Query-hop span tracking moves with the router. Decide zustand&#x27;s fate: delete it, or keep it as a second cache adapter with a shared contract suite.</div>
+  </div>
+</article>
+<article id="C3" class="card">
+  <div class="card-head">
+    <div class="badges"><span class="badge id">C3</span><span class="badge spec">Speculative</span><span class="badge dep">in-process</span></div>
+    <h3 class="h-card">Derive one action catalogue from the Endpoint definitions</h3>
+  </div>
+  <ul class="files"><li>packages/miroir-core/src/3_controllers/DomainController.ts:2987-2993, 3082-3121, 4280-4543</li><li>packages/miroir-core/src/4_services/RestServer.ts:391-504</li><li>packages/miroir-localcache-redux/src/…/RestPersistenceClientAndRestClient.ts:56-100</li><li>packages/miroir-core/src/1_core/Deployment.ts:93-105, Instance.ts:6-15</li></ul>
+  <div class="ba">
+    <div class="pane"><div class="pane-label"><span>Before</span></div><div class="fan"><div class="src" style="grid-row:1"><div class="m ">DomainController<div class="chips"><span class="chip">switch ×7</span></div></div></div><div class="arr " style="grid-row:1"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:2"><div class="m ">PersistenceReduxSaga<div class="chips"><span class="chip">switch ×3</span></div></div></div><div class="arr " style="grid-row:2"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:3"><div class="m ">REST clients<div class="chips"><span class="chip">switch ×4</span><span class="chip">30-entry map</span></div></div></div><div class="arr " style="grid-row:3"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:4"><div class="m ">Store controller<div class="chips"><span class="chip">switch ×2</span></div></div></div><div class="arr " style="grid-row:4"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:5"><div class="m ">RestServer<div class="chips"><span class="chip">switch + if-list</span></div></div></div><div class="arr " style="grid-row:5"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="dst" style="grid-row:1 / span 5"><div class="m ">actionType<small>each site keeps its own list</small></div></div></div></div>
+    <div class="pane"><div class="pane-label"><span class="after">After</span></div><div class="via"><div class="col"><div class="m adapter">Endpoint JSON</div><div class="m adapter">core handlers</div></div><div class="arr"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="col"><div class="m deep">Action catalogue<small>actionType → endpoint, app, route, autocommit</small></div></div><div class="arr"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="col"><div class="m ">lookups<small>gateway, runner, port</small></div></div></div></div>
+  </div>
+  <div class="prose">
+    <div><div class="lbl">Problem</div><p>Facts about each action type (endpoint, application, autocommit, where it runs, wire route) are hand-listed in 20 switches over 8 files, while the Endpoint instances already declare their actions.</p></div>
+    <div><div class="lbl">Solution</div><p>A catalogue keyed by action type, built from the Endpoint definitions plus the core handler registrations; each switch becomes a lookup.</p></div>
+  </div>
+  <div><div class="lbl">Wins</div><ul class="wins"><li>New action type: one place</li><li>Callers stop hard-coding endpoints</li><li>Unknown actions fail loudly</li></ul></div>
+  <div><div class="lbl">Evidence</div><ul class="evidence"><li>20 <code>switch</code> statements on <code>actionType</code> on the dispatch path; DomainController alone lists <code>createInstance</code> 8 times.</li><li>A 30-entry <code>actionTypeArgsMap</code> in the REST client (56-100).</li><li>The 6 core endpoint uuids appear as literals 213 times in src and 247 times in tests.</li><li><code>Instance.ts:6-15</code> already derives a list from the Endpoints; dispatch does not use it.</li></ul></div>
+  <div class="aside">
+    <div><b>Deletion test.</b> The complexity reappears in every switch today; the catalogue concentrates it.</div>
+    <div><b>Risk.</b> Overlaps the generated ML action unions, and it builds on E1, C1 and C2.</div>
+  </div>
+</article>
+  </section>
+  <section class="grid gap-6" id="area-Q">
+    <div class="area-head">
+      <div class="eyebrow">Q · 3 candidates</div>
+      <h2 class="h-area">Queries and Transformers</h2>
+      <p class="lede">In-memory and SQL execution of Transformers, Extractors and Combiners.</p>
+    </div>
+    
+<article id="Q1" class="card">
+  <div class="card-head">
+    <div class="badges"><span class="badge id">Q1</span><span class="badge strong">Strong</span><span class="badge dep">in-process</span></div>
+    <h3 class="h-card">One transformer-kind registry built from the TransformerDefinitions</h3>
+  </div>
+  <ul class="files"><li>packages/miroir-core/src/2_domain/TransformersForRuntime.ts:165, 1050, 1112, 3881, 4061</li><li>packages/miroir-core/src/2_domain/Transformers.ts:145-224</li><li>packages/miroir-store-postgres/src/1_core/SqlGenerator.ts:181, 193, 5915</li><li>packages/miroir-core/src/2_domain/Transformer_ResultSchema.ts:834, TransformerEnvironmentBindings.ts, TransformerMlSchemaCheck.ts</li><li>packages/miroir-core/src/0_interfaces/1_core/Transformer.ts:21-37</li><li>packages/miroir-core/tests/2_domain/transformerResultSchema.inventory.unit.test.ts</li></ul>
+  <div class="ba">
+    <div class="pane"><div class="pane-label"><span>Before</span></div><div class="fan"><div class="src" style="grid-row:1"><div class="m ">asset JSON</div></div><div class="arr " style="grid-row:1"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:2"><div class="m ">deployment index.ts, .d.ts</div></div><div class="arr " style="grid-row:2"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:3"><div class="m ">Transformers.ts<div class="chips"><span class="chip">×3 lists</span></div></div></div><div class="arr " style="grid-row:3"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:4"><div class="m ">TransformersForRuntime<div class="chips"><span class="chip leak">by fn-name string</span></div></div></div><div class="arr " style="grid-row:4"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:5"><div class="m ">SqlGenerator<div class="chips"><span class="chip leak">&quot;N/A&quot; / &quot;TODO&quot;</span></div></div></div><div class="arr " style="grid-row:5"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:6"><div class="m ">ResultSchema, Bindings, MlSchemaCheck<div class="chips"><span class="chip leak">scoping ×4</span></div></div></div><div class="arr " style="grid-row:6"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:7"><div class="m ">generate-ts-types<div class="chips"><span class="chip">hand union ×2</span></div></div></div><div class="arr " style="grid-row:7"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="dst" style="grid-row:1 / span 7"><div class="m ">one transformer<small>~15 edits, 3 keys</small></div></div></div></div>
+    <div class="pane"><div class="pane-label"><span class="after">After</span></div><div class="via"><div class="col"><div class="m adapter">pivot<small>def · run · sql</small></div><div class="m adapter">mapList<small>def · run · sql</small></div><div class="m adapter">… 48 kinds</div></div><div class="arr"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="col"><div class="m deep">Transformer kind registry<small>lookup(transformerType)</small></div></div><div class="arr"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="col"><div class="m ">interpreters<small>in-memory, SQL, result schema, generator</small></div></div></div></div>
+  </div>
+  <div class="prose">
+    <div><div class="lbl">Problem</div><p>Adding one transformer means editing about 15 places in about 10 files, keyed three different ways, and the copies drift.</p></div>
+    <div><div class="lbl">Solution</div><p>One registry keyed by each definition&#x27;s <code>transformerType</code>; each kind supplies its definition, in-memory handler, optional SQL compiler, result-schema rule and scoping, and handlers receive one context object.</p></div>
+  </div>
+  <div><div class="lbl">Wins</div><ul class="wins"><li>New transformer: JSON, handler, tests</li><li>Each kind has locality</li><li>Dispatch shrinks to lookup(type)</li><li>Positional-argument bugs disappear</li></ul></div>
+  <div><div class="lbl">Evidence</div><ul class="evidence"><li>The pivot/unpivot commit (04a5e0f) touched 16 files.</li><li><code>applicationTransformerDefinitions</code> is a hand re-keyed copy of <code>miroirTransformers</code>; implementations are looked up by function-name strings, with &quot;N/A&quot; and &quot;TODO&quot; sentinels.</li><li>Slot-scoping rules live in 4 places; only <code>TransformerEnvironmentBindings</code> knows <code>createObjectFromPairs</code>.</li><li>Handlers take up to 12 positional arguments, and the dispatcher passes <code>deploymentUuid</code> into the <code>application</code> slot (<code>TransformersForRuntime.ts:4061</code> against <code>Transformer.ts:35</code>).</li><li>The inventory test compares two hand-written lists, so it checks no code.</li></ul></div>
+  <div class="aside">
+    <div><b>Deletion test.</b> <code>applicationTransformerDefinitions</code>, <code>miroirTransformers</code> and <code>defaultTransformers</code> are re-keyings of the same 48 JSON files: pass-throughs.</div>
+    <div><b>Risk.</b> Bootstrap order: the schema generator imports <code>Transformers.ts</code>. The <code>mls*</code> and admin transformers are keyed differently. M2 builds on this.</div>
+  </div>
+</article>
+<article id="Q2" class="card">
+  <div class="card-head">
+    <div class="badges"><span class="badge id">Q2</span><span class="badge strong">Strong</span><span class="badge dep">in-process · local-substitutable</span></div>
+    <h3 class="h-card">A fetch port for extractors and one query evaluator</h3>
+  </div>
+  <ul class="files"><li>packages/miroir-core/src/0_interfaces/2_domain/ExtractorRunnerInterface.ts:162, 207</li><li>packages/miroir-core/src/2_domain/ExtractorRunnerInMemory.ts, DomainStateQuerySelectors.ts, QuerySelectors.ts, AsyncQuerySelectors.ts</li><li>packages/miroir-localcache-redux/src/…/ReduxDeploymentsStateQuerySelectors.ts:117, 268</li><li>packages/miroir-store-filesystem/src/4_services/FileSystemExtractorRunner.ts</li><li>packages/miroir-store-postgres/src/…/SqlDbQueryRunner.ts:79-107, 526-541, SqlDbQueryTemplateRunner.ts:60</li></ul>
+  <div class="ba">
+    <div class="pane"><div class="pane-label"><span>Before</span></div><div class="mass"><div class="mod"><div class="bars"><div class="iface" style="height:92px">10 members</div><div class="impl" style="height:48px">fetch + own semantics</div></div><div class="name">DomainState adapter</div></div><div class="mod"><div class="bars"><div class="iface leak" style="height:92px">10 members</div><div class="impl" style="height:48px">ignores applyTransformer</div></div><div class="name">Redux adapter (UI)</div></div><div class="mod"><div class="bars"><div class="iface" style="height:92px">10 members</div><div class="impl" style="height:48px">own semantics</div></div><div class="name">Filesystem runner</div></div></div><div class="mass-key"><span><i style="background:var(--accent-soft);border:1px solid var(--accent)"></i>interface</span><span><i style="background:var(--sunken);border:1px solid var(--muted)"></i>implementation</span></div></div>
+    <div class="pane"><div class="pane-label"><span class="after">After</span></div><div class="mass"><div class="mod"><div class="bars"><div class="iface" style="height:24px">2 operations</div><div class="impl" style="height:40px">get by key, list</div></div><div class="name">Fetch port × 6 adapters</div></div><div class="mod"><div class="bars"><div class="iface" style="height:24px">run(query)</div><div class="impl deep" style="height:150px">extractors, combiners, applyTransformer, FK</div></div><div class="name">Query evaluator</div></div></div><div class="mass-key"><span><i style="background:var(--accent-soft);border:1px solid var(--accent)"></i>interface</span><span><i style="background:var(--sunken);border:1px solid var(--muted)"></i>implementation</span></div></div>
+  </div>
+  <div class="prose">
+    <div><div class="lbl">Problem</div><p>The extractor runner interface has 10 members, but adapters differ only in &quot;get one instance&quot; and &quot;get an Entity&#x27;s instances&quot;, so each re-implements extractor semantics and they diverge.</p></div>
+    <div><div class="lbl">Solution</div><p>The seam becomes a 2-operation fetch port with store and state adapters; one evaluator owns extractor and combiner semantics, and query tests run on every adapter.</p></div>
+  </div>
+  <div><div class="lbl">Wins</div><ul class="wins"><li>Seam shrinks from 10 to 2</li><li>applyTransformer works everywhere</li><li>One test leaf, six adapters</li><li>Model environment threaded, never defaulted</li></ul></div>
+  <div><div class="lbl">Evidence</div><ul class="evidence"><li>20 runner-map literals in 3 packages, 16 of them with <code>undefined as any</code> stubs.</li><li><code>extractorByPrimaryKey.applyTransformer</code> is honoured by 3 adapters and ignored by the Redux adapter the UI uses, and by the filesystem runner.</li><li><code>modelEnvironment</code> is replaced by a default at 12 sites in store adapters.</li><li>Every query test suite pins <code>runQueryFromDomainState</code>, so the Redux and async adapters are never run by the shared tests.</li><li>The sync and async evaluators share 131 of 304 lines once <code>async</code>/<code>await</code> is stripped.</li></ul></div>
+  <div class="aside">
+    <div><b>Deletion test.</b> The per-adapter maps and runners are copies; deleting them moves nothing to callers.</div>
+    <div><b>Risk.</b> The sync evaluator is reselect-memoised; merging sync and async must not slow the UI selectors.</div>
+  </div>
+</article>
+<article id="Q3" class="card">
+  <div class="card-head">
+    <div class="badges"><span class="badge id">Q3</span><span class="badge worth">Worth exploring</span><span class="badge dep">local-substitutable</span></div>
+    <h3 class="h-card">Deepen the SQL transformer compiler and make in-memory/SQL parity one test seam</h3>
+  </div>
+  <ul class="files"><li>packages/miroir-store-postgres/src/1_core/SqlGenerator.ts:5996-6012 and 40 sqlStringFor* functions</li><li>packages/miroir-core/src/2_domain/TransformersForRuntime.ts:4081-4164</li><li>packages/miroir-core/src/5_tests/MiroirTransformerTestTools.ts:61-94, 289-460</li><li>.github/workflows/pr-checks.yml, scripts/nonreg-manifest.json</li></ul>
+  <div class="ba">
+    <div class="pane"><div class="pane-label"><span>Before</span></div><pre class="mermaid">flowchart TB
+  L[&quot;test leaf&quot;] --&gt; U[&quot;unit: extended_apply&quot;]
+  L --&gt; I{&quot;integration&quot;}
+  I --&gt;|&quot;postgres&quot;| Q[&quot;SqlDbQueryRunner&quot;]
+  Q --&gt; H[&quot;40 sqlStringFor*: each threads params, context, failures&quot;]
+  I --&gt;|&quot;other stores&quot;| U2[&quot;extended_apply again&quot;]
+  linkStyle 4 stroke:#c2352b,stroke-width:2px</pre></div>
+    <div class="pane"><div class="pane-label"><span class="after">After</span></div><pre class="mermaid">flowchart TB
+  L[&quot;test leaf&quot;] --&gt; X[&quot;composite expansion&quot;]
+  X --&gt; M[&quot;in-memory adapter&quot;]
+  X --&gt; S[&quot;SQL adapter&quot;]
+  S --&gt; B[&quot;compiler builder: params, context, failures&quot;]
+  B --&gt; PG[(&quot;local Postgres stand-in&quot;)]</pre></div>
+  </div>
+  <div class="prose">
+    <div><div class="lbl">Problem</div><p>Each of 40 <code>sqlStringFor*</code> handlers threads placeholder numbering, context bookkeeping and failure checks by hand, and in-memory/SQL parity is checked only when a Postgres server runs.</p></div>
+    <div><div class="lbl">Solution</div><p>Expand composites once, before either interpreter; a compiler builder owns placeholders, context entries, wrapping and failures so each handler states only its SQL shape; the suite&#x27;s SQL path runs against a local Postgres stand-in in the unit tier.</p></div>
+  </div>
+  <div><div class="lbl">Wins</div><ul class="wins"><li>Every PR checks both adapters</li><li>Placeholder rules have locality</li><li>Handlers state SQL shape only</li><li>Composite semantics match</li></ul></div>
+  <div><div class="lbl">Evidence</div><ul class="evidence"><li><code>SqlGenerator.ts</code> has 87 mentions of <code>preparedStatementParametersCount</code>, 64 of <code>usedContextEntries</code> and 58 <code>Domain2ElementFailed</code> checks.</li><li>Composite transformers: in memory their parameters are evaluated into <code>contextResults</code> (4103); in SQL the raw attributes are spread into <code>queryParams</code> (6003).</li><li>None of the 261 transformer test leaves covers a composite; 21 of the 22 leaves with separate expectations differ only in failure shape.</li><li>PR checks run no Postgres; the pivot/unpivot parity bugs were found in review (746ff92).</li></ul></div>
+  <div class="aside">
+    <div><b>Deletion test.</b> Deleting the per-handler plumbing shortens 40 handlers and removes pitfalls the <code>miroir-edit-transformers</code> skill has to warn about.</div>
+    <div><b>Risk.</b> No in-process Postgres stand-in (PGlite, pg-mem) is in the repo yet; JSONB behaviour may differ from production.</div>
+  </div>
+</article>
+  </section>
+  <section class="grid gap-6" id="area-S">
+    <div class="area-head">
+      <div class="eyebrow">S · 1 candidate</div>
+      <h2 class="h-area">Persistence stores</h2>
+      <p class="lede">The five store backends (filesystem, indexedDb, postgres, mongodb, bundled) behind PersistenceStoreController.</p>
+    </div>
+    
+<article id="S1" class="card">
+  <div class="card-head">
+    <div class="badges"><span class="badge id">S1</span><span class="badge strong">Strong</span><span class="badge dep">local-substitutable</span></div>
+    <h3 class="h-card">Backends shrink to one section adapter; PersistenceStoreController owns the Entity rules</h3>
+  </div>
+  <ul class="files"><li>packages/miroir-core/src/4_services/PersistenceStoreController.ts:82-84, 718-750</li><li>packages/miroir-core/src/4_services/PersistenceStoreControllerManager.ts:173-181</li><li>packages/miroir-store-{filesystem,indexedDb,mongodb,postgres}/src/4_services/*EntityStoreSectionMixin.ts</li><li>packages/miroir-store-*/src/4_services/*StoreSection.ts, *ModelStoreSection.ts, *DataStoreSection.ts</li><li>packages/miroir-core/src/1_core/Entity/EntityPrimaryKey.ts</li><li>packages/miroir-standalone-app/tests/4_storage/PersistenceStoreController.integ.test.tsx</li></ul>
+  <div class="ba">
+    <div class="pane"><div class="pane-label"><span>Before</span></div><div class="boxes"><div class="m ">filesystem mixin<ul class="items"><li>Entity lifecycle</li><li>keys: encodeURI + _</li><li>getState ×2</li></ul></div><div class="m ">indexedDb mixin<ul class="items"><li>Entity lifecycle</li><li class="leak">keys: | unescaped</li><li>getState ×2</li></ul></div><div class="m ">mongodb mixin<ul class="items"><li class="leak">dropEntity errors if missing</li><li class="leak">no custom keys</li></ul></div><div class="m ">postgres mixin<ul class="items"><li class="leak">createEntities ignores errors</li><li class="leak">mutates data section</li></ul></div><div class="m adapter">Store controller<small>forwards</small></div></div></div>
+    <div class="pane"><div class="pane-label"><span class="after">After</span></div><div class="m deep">PersistenceStoreController<small>one order, one error policy</small><div class="chips"><span class="chip">Entity lifecycle</span><span class="chip">canonical keys</span><span class="chip">getState</span><span class="chip">in-memory query</span></div></div><div class="adapters"><div class="m adapter">filesystem</div><div class="m adapter">indexedDb</div><div class="m adapter">mongodb</div><div class="m adapter">postgres</div><div class="m adapter">bundled</div><div class="m adapter">in-memory</div></div></div>
+  </div>
+  <div class="prose">
+    <div><div class="lbl">Problem</div><p>Entity lifecycle, primary keys and <code>getState</code> work the same on every backend, yet each backend re-implements them while PersistenceStoreController only forwards.</p></div>
+    <div><div class="lbl">Solution</div><p>PersistenceStoreController owns the Entity lifecycle, key encoding, <code>getState</code> and the fallback in-memory query; each backend supplies open and close, storage spaces, CRUD by canonical key and an optional native query; one contract suite runs against every adapter.</p></div>
+  </div>
+  <div><div class="lbl">Wins</div><ul class="wins"><li>A store fix lands once</li><li>One contract suite, six adapters</li><li>Mongo gets composite keys</li><li>Unit tier covers the stores</li></ul></div>
+  <div><div class="lbl">Evidence</div><ul class="evidence"><li>Four Entity mixins of 166 to 227 lines; any two share 109 to 143 lines, and they already differ on <code>createEntities</code> errors and <code>dropEntity</code> checks.</li><li><code>getState</code> is implemented 10 times (5 stores × model and data).</li><li>Composite keys are encoded three ways: core <code>|</code> with escaping, IndexedDb <code>|</code> without, filesystem <code>encodeURIComponent</code> joined by <code>_</code>.</li><li>The model section is handed the data section, and the sql mixin casts it to mutate its table map (<code>sqlDbEntityStoreSectionMixin.ts:253-263</code>).</li><li>The filesystem, indexedDb, mongodb and bundled packages have no tests; the de facto contract suite needs the whole app and branches on the backend.</li></ul></div>
+  <div class="aside">
+    <div><b>Deletion test.</b> PersistenceStoreController&#x27;s Entity methods delete with no loss today (pass-through); the four mixins&#x27; logic reappears once, inside it.</div>
+    <div><b>Risk.</b> SQL alter-table and sync need a native hook; changing the key encoding renames filesystem files that hold composite keys.</div>
+  </div>
+</article>
+  </section>
+  <section class="grid gap-6" id="area-R">
+    <div class="area-head">
+      <div class="eyebrow">R · 4 candidates</div>
+      <h2 class="h-area">Reports and value editors</h2>
+      <p class="lede">packages/miroir-standalone-app/src/miroir-fwk/4_view: the hottest directory, with 544 file changes since 2026-08-26.</p>
+    </div>
+    
+<article id="R1" class="card">
+  <div class="card-head">
+    <div class="badges"><span class="badge id">R1</span><span class="badge strong">Strong</span><span class="badge dep">in-process · local-substitutable</span></div>
+    <h3 class="h-card">A UI-free engine for multistep Reports</h3>
+  </div>
+  <ul class="files"><li>packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/MultistepReportHost.tsx</li><li>…/Reports/ReportViewWithEditor.tsx:471, 498</li><li>…/Reports/ReportInputSection.tsx, ReportSectionViewWithEditor.tsx, ReportSectionListDisplay.tsx, ReportTools.ts</li></ul>
+  <div class="ba">
+    <div class="pane"><div class="pane-label"><span>Before</span></div><div class="boxes"><div class="m ">MultistepReportHost<ul class="items"><li>8 useState, 2 useRef</li><li>handleNext / Back / Finish</li><li class="leak">wizard special cases ×15</li></ul></div><div class="m leak">ReportViewWithEditor<ul class="items"><li class="leak">writes host during render</li><li class="leak">queueMicrotask in validate</li></ul></div><div class="m ">ReportInputSection<ul class="items"><li class="leak">&quot;document&quot; prefix case</li></ul></div><div class="m ">ListDisplay, Tools<ul class="items"><li>read host context</li></ul></div></div></div>
+    <div class="pane"><div class="pane-label"><span class="after">After</span></div><div class="m deep">Step engine<small>editBag · next · back · finish · cancel</small><div class="chips"><span class="chip">state</span><span class="chip">branching</span><span class="chip">finish gate</span><span class="chip">bag merge</span></div></div><div class="adapters"><div class="m adapter">Host view</div><div class="m adapter">dispatch port</div><div class="m adapter">wizard adapter</div></div></div>
+  </div>
+  <div class="prose">
+    <div><div class="lbl">Problem</div><p>The step state machine (next, back, branch, onNext actions, finish gate, bag merge) lives inside a 1,109-line React component and leaks into five others.</p></div>
+    <div><div class="lbl">Solution</div><p>A UI-free module owns step state and transitions (edit bag, next, back, finish, cancel) with action dispatch and transformer evaluation as ports; the host React component renders state and forwards clicks, and wizard specifics move to Report data or a second adapter.</p></div>
+  </div>
+  <div><div class="lbl">Wins</div><ul class="wins"><li>Steps testable without React</li><li>Wizard rules have locality</li><li>Generic and wizard: two adapters</li><li>8 pieces of state hidden</li></ul></div>
+  <div><div class="lbl">Evidence</div><ul class="evidence"><li>8 <code>useState</code> and 2 <code>useRef</code> hold the state (<code>MultistepReportHost.tsx:562-574</code>).</li><li>The <code>connectExternalService</code> case is written twice with a hard-coded endpoint uuid (164-175, 800-805); 15 references are specific to the #284 wizard.</li><li><code>ReportViewWithEditor</code> writes into the host during render (498) and from Formik <code>validate</code> through <code>queueMicrotask</code> (471).</li><li>Branch and back are tested only through full renders: 4 files, 2,654 lines, 206 <code>fireEvent</code>/<code>waitFor</code> calls.</li></ul></div>
+  <div class="aside">
+    <div><b>Deletion test.</b> Delete the engine and the transitions reappear in the host and in ReportViewWithEditor.</div>
+    <div><b>Risk.</b> The Formik and bag synchronisation timing (the microtask) is subtle.</div>
+  </div>
+</article>
+<article id="R2" class="card">
+  <div class="card-head">
+    <div class="badges"><span class="badge id">R2</span><span class="badge strong">Strong</span><span class="badge dep">in-process</span></div>
+    <h3 class="h-card">One section-tree module and a per-type registry</h3>
+  </div>
+  <ul class="files"><li>packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportTools.ts:20-25, 33, 146, 234</li><li>…/Reports/MultistepReportHost.tsx:225, 438, ReportViewWithEditor.tsx:220, reportInputApplication.ts:26</li><li>…/Reports/ReportSectionViewWithEditor.tsx:309, 401-770</li><li>…/Reports/ReportSectionEntityInstance.tsx:241, 361, ReportSectionListDisplay.tsx:287</li><li>…/Page/RootComponent.tsx:328-355</li></ul>
+  <div class="ba">
+    <div class="pane"><div class="pane-label"><span>Before</span></div><div class="scroll-x"><table class="matrix"><thead><tr><th>walk</th><th>envelope</th><th>grid</th><th>accordion</th></tr></thead><tbody><tr class=""><td>reportSectionsFormSchema</td><td class="yes">yes</td><td class="yes">yes</td><td class="no">throws</td></tr><tr class=""><td>reportSectionsFormValue</td><td class="yes">yes</td><td class="yes">yes</td><td class="odd">{}</td></tr><tr class=""><td>collectStepBagKeys</td><td class="yes">yes</td><td class="yes">yes</td><td class="no">skips</td></tr><tr class=""><td>reportHasUrlParamInputSection</td><td class="no">skips</td><td class="yes">yes</td><td class="no">skips</td></tr><tr class=""><td>seedReportInputApplication…</td><td class="no">skips</td><td class="odd">list only</td><td class="no">skips</td></tr><tr class=""><td>render dispatch</td><td class="odd">list only</td><td class="yes">yes</td><td class="yes">yes</td></tr></tbody></table></div></div>
+    <div class="pane"><div class="pane-label"><span class="after">After</span></div><div class="scroll-x"><table class="matrix"><thead><tr><th>walk</th><th>envelope</th><th>grid</th><th>accordion</th></tr></thead><tbody><tr class="deep"><td>section tree (one walk)</td><td class="">yes</td><td class="">yes</td><td class="">yes</td></tr><tr class=""><td>registry: 16 types</td><td class="yes">descriptor</td><td class="yes">descriptor</td><td class="yes">descriptor</td></tr></tbody></table></div></div>
+  </div>
+  <div class="prose">
+    <div><div class="lbl">Problem</div><p>Six recursive walks cover the 16 section types differently, and every section re-derives its Formik key, target Entity and data from strings.</p></div>
+    <div><div class="lbl">Solution</div><p>A UI-free module walks a Report once and returns, for each section, its path, Formik key, target Entity, initial value, form schema, bag key and URL-parameter needs from a per-type registry; the React dispatcher becomes a lookup.</p></div>
+  </div>
+  <div><div class="lbl">Wins</div><ul class="wins"><li>New section type: one entry</li><li>Report shapes tested without rendering</li><li>Sections get a resolved descriptor</li><li>Walk gaps disappear</li></ul></div>
+  <div><div class="lbl">Evidence</div><ul class="evidence"><li>54 comparisons against section types in 7 source files.</li><li>Accordion sections: one walk throws, one returns <code>{}</code>, three skip them; only the render dispatch handles them.</li><li>The Formik key convention <code>path.join(&quot;_&quot;)</code> is re-derived at 17 sites in 7 files; the target Entity is resolved 5 ways.</li><li><code>seedReportInputApplicationFromPageParams</code> is unit-tested but never called.</li><li><code>ReportTools.ts</code>, meant to be pure, imports from two React component files (20-25).</li></ul></div>
+  <div class="aside">
+    <div><b>Deletion test.</b> Delete it and the 6 walks and 17 key derivations come back.</div>
+    <div><b>Risk.</b> Whether the Report definition stays inside Formik values for inline editing is a separate decision.</div>
+  </div>
+</article>
+<article id="R3" class="card">
+  <div class="card-head">
+    <div class="badges"><span class="badge id">R3</span><span class="badge strong">Strong</span><span class="badge dep">in-process · local-substitutable</span></div>
+    <h3 class="h-card">Entity instance commands in one module</h3>
+  </div>
+  <ul class="files"><li>packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.tsx:309-420</li><li>…/Reports/ReportSectionListDisplay.tsx:494, 549, 567, 608</li><li>…/MarkdownEditorModal.tsx:113-135</li><li>…/scripts.ts:61 (deleteCascade)</li><li>…/Reports/TypedValueObjectEditor.tsx:506, 529-530</li></ul>
+  <div class="ba">
+    <div class="pane"><div class="pane-label"><span>Before</span></div><div class="fan"><div class="src" style="grid-row:1"><div class="m ">ReportViewWithEditor<div class="chips"><span class="chip">wrap if Miroir or model</span></div></div></div><div class="arr " style="grid-row:1"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:2"><div class="m ">ReportSectionListDisplay<div class="chips"><span class="chip leak">wrap if prop = model</span></div></div></div><div class="arr " style="grid-row:2"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:3"><div class="m ">MarkdownEditorModal<div class="chips"><span class="chip leak">always wrap</span></div></div></div><div class="arr " style="grid-row:3"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:4"><div class="m ">deleteCascade<div class="chips"><span class="chip leak">never wrap</span></div></div></div><div class="arr " style="grid-row:4"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="dst" style="grid-row:1 / span 4"><div class="m ">DomainController<small>hand-built actions</small></div></div></div></div>
+    <div class="pane"><div class="pane-label"><span class="after">After</span></div><div class="via"><div class="col"><div class="m adapter">Report views</div><div class="m adapter">Markdown modal</div><div class="m adapter">scripts</div></div><div class="arr"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="col"><div class="m deep">Instance commands<small>(app, Entity, instance, mode)</small><div class="chips"><span class="chip">section</span><span class="chip">transaction rule</span><span class="chip">endpoint</span><span class="chip">guard</span></div></div></div><div class="arr"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="col"><div class="m ">DomainController</div></div></div></div>
+  </div>
+  <div class="prose">
+    <div><div class="lbl">Problem</div><p>Four React components build create, update and delete actions by hand, and each decides differently when to wrap them in a transaction.</p></div>
+    <div><div class="lbl">Solution</div><p>One UI-free module takes (application, Entity, instance, mode) and derives section, transaction rule, endpoint and meta-model guard; the React components call it.</p></div>
+  </div>
+  <div><div class="lbl">Wins</div><ul class="wins"><li>Transaction rule has one home</li><li>Divergent rules unified</li><li>Submit protocol testable without Formik</li><li>Runners can reuse it</li></ul></div>
+  <div><div class="lbl">Evidence</div><ul class="evidence"><li>ReportViewWithEditor wraps for the Miroir deployment or a model-section Entity; ReportSectionListDisplay trusts a prop and hard-codes &quot;model&quot; on update (567).</li><li>MarkdownEditorModal always wraps and edits a path marked &quot;TODO: not always the right path&quot;; <code>deleteCascade</code> never wraps.</li><li>17 endpoint-uuid literals in 7 view files.</li><li>The submit mode travels in two string Formik fields; the async-button branch sets no mode (<code>TypedValueObjectEditor.tsx:506</code>), so a create may go out as <code>updateInstance</code> (inferred).</li></ul></div>
+  <div class="aside">
+    <div><b>Deletion test.</b> Delete it and the rules come back at 4 or more callers.</div>
+    <div><b>Risk.</b> The differing rules may be deliberate: confirm before unifying.</div>
+  </div>
+</article>
+<article id="R4" class="card">
+  <div class="card-head">
+    <div class="badges"><span class="badge id">R4</span><span class="badge worth">Worth exploring</span><span class="badge dep">in-process · local-substitutable</span></div>
+    <h3 class="h-card">An editor-tree session for the ML value editors</h3>
+  </div>
+  <ul class="files"><li>packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/MlElementEditorInterface.ts:24-68</li><li>…/ValueObjectEditor/MlElementEditor.tsx:512, 1069-1098</li><li>…/ValueObjectEditor/MlObjectEditor.tsx:387, 715, 864-880</li><li>…/ValueObjectEditor/MlArrayEditor.tsx:444, MlLiteralEditor.tsx:380, MlEnumEditor.tsx:342</li></ul>
+  <div class="ba">
+    <div class="pane"><div class="pane-label"><span>Before</span></div><div class="stack"><div class="band ">TypedValueObjectEditor</div><div class="down" aria-hidden="true">&#8595;</div><div class="band leak">MlElementEditor<small>29 props out, useSelector(all deployments)</small></div><div class="down" aria-hidden="true">&#8595;</div><div class="band leak">MlObjectEditor<small>28 props out, 18 unchanged, useSelector</small></div><div class="down" aria-hidden="true">&#8595;</div><div class="band thin">MlElementEditor<small>again, per attribute</small></div><div class="down" aria-hidden="true">&#8595;</div><div class="band thin">Array, Literal, Enum editors<small>useSelector each</small></div></div></div>
+    <div class="pane"><div class="pane-label"><span class="after">After</span></div><div class="stack"><div class="band ">TypedValueObjectEditor</div><div class="down" aria-hidden="true">&#8595;</div><div class="band deep">Editor session<small>tree-wide values, defaultValue(schema, path), foreign keys</small></div><div class="down" aria-hidden="true">&#8595;</div><div class="band adapter">Element, Object, Array, Literal, Enum<small>local props only</small></div></div></div>
+  </div>
+  <div class="prose">
+    <div><div class="lbl">Problem</div><p>About 15 values that are the same for a whole editor tree are passed through every recursion level, and every node subscribes to the whole deployments state to compute default values.</p></div>
+    <div><div class="lbl">Solution</div><p>TypedValueObjectEditor provides one session that holds the tree-wide values and answers &quot;default value for this schema at this path&quot;; nodes keep only local props.</p></div>
+  </div>
+  <div><div class="lbl">Wins</div><ul class="wins"><li>Editor interfaces shrink</li><li>Defaults resolved one way</li><li>Fewer store subscriptions</li></ul></div>
+  <div><div class="lbl">Evidence</div><ul class="evidence"><li>MlElementEditor passes 29 props to MlObjectEditor, 23 of them unchanged (1069-1098).</li><li>11 copies of the same <code>useSelector(… presentModelSnapshot …)</code> idiom feed <code>getDefaultValueForMlSchemaWithResolutionNonHook</code> (15 positional parameters, 14 call sites).</li><li>MlElementEditor passes <code>undefined</code> state (512) where MlObjectEditor passes the real one.</li></ul></div>
+  <div class="aside">
+    <div><b>Deletion test.</b> Removes about 15 props per level and 11 selector copies.</div>
+    <div><b>Risk.</b> A context value that changes on each keystroke re-renders the tree: gate it on the #303 render-performance tests. AGENTS.md asks for confirmation before adding a context.</div>
+  </div>
+</article>
+  </section>
+  <section class="grid gap-6" id="area-M">
+    <div class="area-head">
+      <div class="eyebrow">M · 4 candidates</div>
+      <h2 class="h-area">Schemas and package interfaces</h2>
+      <p class="lede">ML schema tooling, the generated types and what miroir-core and the deployment packages export.</p>
+    </div>
+    
+<article id="M1" class="card">
+  <div class="card-head">
+    <div class="badges"><span class="badge id">M1</span><span class="badge strong">Strong</span><span class="badge dep">in-process</span></div>
+    <h3 class="h-card">One ML-schema context: build the environment once, keep typeCheck and defaults small</h3>
+  </div>
+  <ul class="files"><li>packages/miroir-core/src/1_core/mls/mlsTypeCheck.ts:862-939</li><li>packages/miroir-core/src/1_core/mls/MlsUnfoldSchemaOnce.ts:153-220</li><li>packages/miroir-core/src/2_domain/TransformersForRuntime.ts:593-609</li><li>packages/miroir-core/src/5_tests/FunctionCallTestRegistry.ts:111-119</li><li>packages/miroir-localcache-redux/src/…/Model.ts:405-423, packages/miroir-localcache-zustand/src/…/Model.ts:215-232</li><li>packages/miroir-cli/…/commandsFromEndpoint.ts:118-135, packages/miroir-mcp/…/mcpHandlersForEndpoint.ts:108-125</li><li>packages/miroir-standalone-app/…/ValueObjectEditor/MlObjectEditor.tsx:747-749, 864-880</li></ul>
+  <div class="ba">
+    <div class="pane"><div class="pane-label"><span>Before</span></div><div class="fan"><div class="src" style="grid-row:1"><div class="m ">localcache-redux<div class="chips"><span class="chip">builds env</span></div></div></div><div class="arr " style="grid-row:1"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:2"><div class="m ">localcache-zustand<div class="chips"><span class="chip leak">same 16 lines</span></div></div></div><div class="arr " style="grid-row:2"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:3"><div class="m ">CLI, MCP<div class="chips"><span class="chip">build env ×2</span></div></div></div><div class="arr " style="grid-row:3"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:4"><div class="m ">Library, Spotify<div class="chips"><span class="chip">build env ×2</span></div></div></div><div class="arr " style="grid-row:4"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="src" style="grid-row:5"><div class="m ">MlObjectEditor<div class="chips"><span class="chip leak">re-resolves refs</span></div></div></div><div class="arr " style="grid-row:5"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="dst" style="grid-row:1 / span 5"><div class="m ">mlsTypeCheck<small>(schema, value, [], [], env, {}) … 11 args</small></div></div></div></div>
+    <div class="pane"><div class="pane-label"><span class="after">After</span></div><div class="via"><div class="col"><div class="m adapter">UI</div><div class="m adapter">CLI · MCP</div><div class="m adapter">Transformers</div></div><div class="arr"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="col"><div class="m deep">Schema context<small>(deployment, model)</small><div class="chips"><span class="chip">environment</span><span class="chip">endpoint index</span><span class="chip">typeCheck</span><span class="chip">defaultValue</span><span class="chip">resolve</span></div></div></div><div class="arr"><svg width="20" height="12" viewBox="0 0 20 12" aria-hidden="true"><path d="M1 6h15M12 2l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="col"><div class="m ">schema caches</div></div></div></div>
+  </div>
+  <div class="prose">
+    <div><div class="lbl">Problem</div><p>Callers assemble the MiroirModelEnvironment themselves at 11 sites and call recursive workers whose signatures are the public interface.</p></div>
+    <div><div class="lbl">Solution</div><p>A module built from (deployment, model) creates the environment once and exposes typeCheck, defaultValue, resolve and unfold with 2 or 3 arguments, keeping recursion state and resolution context inside.</p></div>
+  </div>
+  <div><div class="lbl">Wins</div><ul class="wins"><li>Callers pass 2 or 3 arguments</li><li>Resolution bugs have locality</li><li>Tests use the real interface</li><li>Redux and zustand copies go</li></ul></div>
+  <div><div class="lbl">Evidence</div><ul class="evidence"><li><code>endpointsByUuid</code> is derived three ways; redux and zustand hold the same 16-line builder.</li><li><code>mlsTypeCheck</code> has 11 positional parameters; 4 of its 5 production callers pass <code>(schema, value, [], [], env, {})</code>.</li><li><code>unfoldMlSchemaOnce</code> receives the fundamental schema twice (directly and inside the environment) and reads each in different places.</li><li>#296 sat at this seam: a relative reference stored by typeCheck was re-resolved by the editor with <code>rawSchema.context ?? {}</code>.</li><li>JSON MiroirTests pin 7 internal helpers of <code>mlsTypeCheck</code> through <code>FunctionCallTestRegistry</code>.</li></ul></div>
+  <div class="aside">
+    <div><b>Deletion test.</b> The 11 builders are copies; hiding the recursion parameters costs 4 of 5 callers nothing.</div>
+    <div><b>Risk.</b> Stored JSON tests call helpers positionally and would need migrating; React memoisation depends on the environment&#x27;s identity.</div>
+  </div>
+</article>
+<article id="M2" class="card">
+  <div class="card-head">
+    <div class="badges"><span class="badge id">M2</span><span class="badge strong">Strong</span><span class="badge dep">in-process</span></div>
+    <h3 class="h-card">Build the fundamental schema from the meta-model and the transformer registry</h3>
+  </div>
+  <ul class="files"><li>packages/miroir-core/src/0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchema.ts:1-12, 280-319</li><li>packages/miroir-core/scripts/generate-ts-types.ts:188-299, 364, 434, 601-602</li><li>packages/miroir-core/src/2_domain/Transformers.ts</li></ul>
+  <div class="ba">
+    <div class="pane"><div class="pane-label"><span>Before</span></div><div class="mass"><div class="mod"><div class="bars"><div class="iface leak" style="height:112px">32 positional any + 9 asset imports + layer-2 import</div><div class="impl" style="height:120px">4,459 lines</div></div><div class="name">getMiroirFundamentalMlSchema</div></div><div class="mod"><div class="bars"><div class="iface" style="height:40px">hand union ×2</div><div class="impl" style="height:48px">swallows errors</div></div><div class="name">generate-ts-types</div></div></div><div class="mass-key"><span><i style="background:var(--accent-soft);border:1px solid var(--accent)"></i>interface</span><span><i style="background:var(--sunken);border:1px solid var(--muted)"></i>implementation</span></div></div>
+    <div class="pane"><div class="pane-label"><span class="after">After</span></div><div class="mass"><div class="mod"><div class="bars"><div class="iface" style="height:26px">(metaModel, registry)</div><div class="impl deep" style="height:190px">4,459 lines, unchanged</div></div><div class="name">Schema builder</div></div><div class="mod"><div class="bars"><div class="iface" style="height:22px">write(schema)</div><div class="impl" style="height:40px">deterministic, fails loudly</div></div><div class="name">Writer</div></div></div><div class="mass-key"><span><i style="background:var(--accent-soft);border:1px solid var(--accent)"></i>interface</span><span><i style="background:var(--sunken);border:1px solid var(--muted)"></i>implementation</span></div></div>
+  </div>
+  <div class="prose">
+    <div><div class="lbl">Problem</div><p><code>getMiroirFundamentalMlSchema</code> takes 32 positional <code>any</code> parameters from its single caller and imports layer-2 code, and the generator writes the transformer union by hand next to the generated one.</p></div>
+    <div><div class="lbl">Solution</div><p>One builder takes (meta-model, transformer registry) and returns the schema; the union comes from the registry; the generator becomes a deterministic writer that fails loudly.</p></div>
+  </div>
+  <div><div class="lbl">Wins</div><ul class="wins"><li>Testable by calling the builder</li><li>One edit per new transformer</li><li>CI catches generation failures</li><li>Generated file stops churning</li></ul></div>
+  <div><div class="lbl">Evidence</div><ul class="evidence"><li>The hand-written union (TS 188-237, Zod 257-299) already misses <code>syncExternalServiceSchema</code>, added in #267.</li><li>Two tests regex the generator&#x27;s source text instead of calling it.</li><li>Generation errors are caught and logged, and the build still exits 0 (601-602).</li><li>The &quot;unchanged, skip writing&quot; check compares against a Promise&#x27;s <code>toString()</code>, so the file is always rewritten (434).</li><li>A timestamp header makes <code>miroirFundamentalType.ts</code> change in 42 commits in a month.</li></ul></div>
+  <div class="aside">
+    <div><b>Deletion test.</b> The hand union is a pure duplicate of <code>Transformers.ts</code>. The 4,459-line body is deep; only its interface is shallow.</div>
+    <div><b>Risk.</b> Extended and carry-on schema order matters; jzod-ts may limit how the union&#x27;s shape is written. Builds on Q1.</div>
+  </div>
+</article>
+<article id="M3" class="card">
+  <div class="card-head">
+    <div class="badges"><span class="badge id">M3</span><span class="badge strong">Strong</span><span class="badge dep">in-process</span></div>
+    <h3 class="h-card">Generate each deployment package&#x27;s interface from its asset folders</h3>
+  </div>
+  <ul class="files"><li>packages/miroir-test-app_deployment-miroir/index.ts, index.d.ts, src/Model.ts, tsup.config.js</li><li>packages/miroir-test-app_deployment-{admin,library,postgres,spotify,appForTest}/index.ts, index.d.ts</li><li>build-all.sh:579-592</li></ul>
+  <div class="ba">
+    <div class="pane"><div class="pane-label"><span>Before</span></div><pre class="mermaid">flowchart LR
+  A[(&quot;assets folders&quot;)] --&gt;|&quot;by hand&quot;| I[&quot;index.ts&quot;]
+  A --&gt;|&quot;by hand&quot;| D[&quot;index.d.ts, 331 any&quot;]
+  A --&gt;|&quot;by hand&quot;| M[&quot;Model.ts lists&quot;]
+  D -.-|&quot;10 names drift&quot;| I
+  I --&gt; C[&quot;miroir-core, UI&quot;]
+  D --&gt; C
+  M --&gt; C
+  linkStyle 3 stroke:#c2352b,stroke-width:2px</pre></div>
+    <div class="pane"><div class="pane-label"><span class="after">After</span></div><pre class="mermaid">flowchart LR
+  A[(&quot;assets folders&quot;)] --&gt; G[&quot;generator&quot;]
+  G --&gt; T[&quot;typed index, MetaModel, bootstrap plan&quot;]
+  T --&gt; C[&quot;miroir-core, UI&quot;]</pre></div>
+  </div>
+  <div class="prose">
+    <div><div class="lbl">Problem</div><p>Each deployment package states its interface by hand three times (index.ts, an index.d.ts that calls itself generated, and lists in Model.ts), and nothing ties the copies together.</p></div>
+    <div><div class="lbl">Solution</div><p>One generator walks <code>assets/{prefix}_model</code>, <code>_modelVersion</code> and <code>_data</code> and writes typed exports, the MetaModel sections and the bootstrap order; Model.ts keeps only the bootstrap policy.</p></div>
+  </div>
+  <div><div class="lbl">Wins</div><ul class="wins"><li>Asset folder is the only edit</li><li>Typed Entities in 40+ files</li><li>No typed-but-undefined names</li><li>One generator, six packages</li></ul></div>
+  <div><div class="lbl">Evidence</div><ul class="evidence"><li><code>index.d.ts</code> opens with &quot;Auto-generated stub declarations&quot;, but no generator exists; index.ts and index.d.ts changed together in all 18 commits that touched either.</li><li>331 of 335 declarations in deployment-miroir&#x27;s <code>index.d.ts</code> are <code>any</code>; Model.ts carries 198 casts.</li><li>10 names are declared but not exported, so they typecheck and are <code>undefined</code> at runtime (e.g. <code>index.d.ts:91</code>, <code>:231</code>).</li><li>A test works around the drift by checking a name in both files (<code>processCapabilitiesDesigner.273.phase7.unit.test.ts:144-147</code>).</li><li>Root cause: a cycle between miroir-core and the deployment packages, broken with <code>dts: false</code> and hand stubs.</li></ul></div>
+  <div class="aside">
+    <div><b>Deletion test.</b> Deleting <code>index.d.ts</code> loses nothing: it copies the interface. Model.ts&#x27;s behaviour earns its keep but should be fed by data.</div>
+    <div><b>Risk.</b> Typed declarations need miroir-core types, which feeds the cycle; the bootstrap order (Entity and EntityVersion first) must become data.</div>
+  </div>
+</article>
+<article id="M4" class="card">
+  <div class="card-head">
+    <div class="badges"><span class="badge id">M4</span><span class="badge worth">Worth exploring</span><span class="badge dep">in-process</span></div>
+    <h3 class="h-card">Shrink miroir-core&#x27;s package interface</h3>
+  </div>
+  <ul class="files"><li>packages/miroir-core/src/index.ts</li><li>packages/miroir-core/package.json (exports &quot;./src/*&quot;)</li><li>packages/miroir-core/tsup.config.js:6-10</li></ul>
+  <div class="ba">
+    <div class="pane"><div class="pane-label"><span>Before</span></div><div class="mass"><div class="mod"><div class="bars"><div class="iface leak" style="height:170px">≈1,500 hand-listed names</div><div class="impl" style="height:14px">no behaviour</div></div><div class="name">miroir-core entry</div></div></div><div class="mass-key"><span><i style="background:var(--accent-soft);border:1px solid var(--accent)"></i>interface</span><span><i style="background:var(--sunken);border:1px solid var(--muted)"></i>implementation</span></div></div>
+    <div class="pane"><div class="pane-label"><span class="after">After</span></div><div class="mass"><div class="mod"><div class="bars"><div class="iface" style="height:60px">curated + export * generated</div><div class="impl" style="height:14px">no behaviour</div></div><div class="name">miroir-core entry</div></div><div class="mod"><div class="bars"><div class="iface" style="height:40px">test harness, fs loaders</div><div class="impl" style="height:14px">no behaviour</div></div><div class="name">miroir-core/testing</div></div></div><div class="mass-key"><span><i style="background:var(--accent-soft);border:1px solid var(--accent)"></i>interface</span><span><i style="background:var(--sunken);border:1px solid var(--muted)"></i>implementation</span></div></div>
+  </div>
+  <div class="prose">
+    <div><div class="lbl">Problem</div><p><code>index.ts</code> hand-lists about 1,500 names from 188 modules, including 441 copied from the generated types, so it changed in 71 of the last 340 commits.</p></div>
+    <div><div class="lbl">Solution</div><p>Re-export the generated types wholesale, move the test harness and filesystem loaders to a testing subpath, and drop <code>./src/*</code> and the unused names.</p></div>
+  </div>
+  <div><div class="lbl">Wins</div><ul class="wins"><li>Schema additions skip the barrel</li><li>Interface shrinks by about half</li><li>Test code leaves the browser entry</li><li>Merge-conflict hot spot goes</li></ul></div>
+  <div><div class="lbl">Evidence</div><ul class="evidence"><li>Every new schema type needs an edit here (#292, #286, #284, #274, #265, #281).</li><li>About 56% of the names are imported by no file (regex count).</li><li>208 test-harness names sit in the browser entry; 10 files deep-import <code>src/*</code> for Node-only test loaders.</li><li><code>Spotify.ts:18</code> imports a generated type from <code>miroir-core/dist</code> because the list is incomplete.</li></ul></div>
+  <div class="aside">
+    <div><b>Deletion test.</b> A pure pass-through: deleting its hand lists removes no behaviour.</div>
+    <div><b>Risk.</b> Five name collisions to settle (e.g. <code>testSuitesResults</code>); check the <code>.d.ts</code> size and tree-shaking.</div>
+  </div>
+</article>
+  </section></section>
+<section id="found" class="grid gap-6">
+  <div class="area-head">
+    <div class="eyebrow">Not deepening, found on the way</div>
+    <h2 class="h-area">Bugs, dead code and drift</h2>
+  </div>
+  <div class="flat">
+    <div class="cols">
+      <div class="grid gap-2"><h3>Bugs confirmed by reading the code</h3><ul><li>Transformer handlers receive <code>deploymentUuid</code> in their <code>application</code> slot: the dispatcher passes 10 positional arguments to a 12-slot type (<code>TransformersForRuntime.ts:4061</code>, <code>Transformer.ts:35</code>).</li><li><code>(transformer.interpolation ?? &quot;build&quot; == &quot;build&quot;)</code> parses as <code>interpolation ?? true</code>, so any interpolation value counts as build (<code>TransformersForRuntime.ts:4242</code>; same pattern at 3946).</li><li><code>generate-ts-types.ts</code> logs generation errors and exits 0 (601-602), and always rewrites the output because it compares with a Promise (434).</li><li>deployment-miroir&#x27;s <code>index.d.ts</code> declares 10 names that <code>index.ts</code> does not export.</li><li><code>compositeRunTestAssertion</code> records &quot;ok&quot; whenever <code>toEqual</code> does not throw (<code>DomainController.ts:5329-5356</code>), and the <code>expect</code> the browser registers never throws (<code>standalone-app/src/index.tsx:226</code>), so composite assertions pass in the Miroir Tests menu whatever the values.</li></ul></div>
+      <div class="grid gap-2"><h3>Reported by the scan, not re-checked</h3><ul><li>openStore failures are swallowed by the saga, which returns ACTION_OK (<code>PersistenceReduxSaga.ts:612-639</code>).</li><li>Caught errors become ACTION_OK for store management, bundle and transactional instance actions and failing queries (<code>DomainController.ts:1113-1130</code>, <code>4406-4485</code>).</li><li>The Redux adapter ignores <code>extractorByPrimaryKey.applyTransformer</code>, which the in-memory, DomainState and SQL adapters honour.</li><li><code>LocalCacheSlice.ts:205-207</code> keeps its Entity-adapter maps at module level, shared by client and server caches in emulated mode.</li><li>UI unit runs abort on the first failing functionCallTest or queryTest (<code>TestFramework</code> has <code>.test</code>).</li></ul></div>
+    </div>
+  </div>
+  <div class="flat">
+    <div class="cols">
+      <div class="grid gap-2"><h3>Delete rather than deepen</h3><ul><li><code>Importer.tsx</code>: 2,150 of its 2,436 lines are comments and nothing renders it.</li><li><code>TestTools.ts</code>: 794 of 1,397 lines are commented out; <code>testSuites</code> and the <code>*DisplayResults</code> functions have no live callers.</li><li><code>FileSystemExtractorRunner.ts</code> and <code>FileSystemExtractorTemplateRunner.ts</code>: not exported, used by one test through a <code>src/</code> path.</li><li>Electron IPC <code>server-action</code> and <code>server-query</code> handlers: nothing sends these messages.</li><li><code>mls/rootLessListKeyMap.ts</code> (marked DEFUNCT, 9 live lines of 224) and <code>mls/getDefaultValueForMlSchema.ts</code> (a layer-1 re-export from layer 2).</li><li><code>redactCredentialSecretsFromValue</code> in <code>AuthenticationPolicy.ts</code>: not exported, still covered by a test.</li><li><code>seedReportInputApplicationFromPageParams</code>: tested, never called. The <code>miroir-localcache</code> package: 0 lines of source.</li></ul></div>
+      <div class="grid gap-2"><h3>Docs and skills drift</h3><ul><li><code>miroir-edit-transformers</code> skill: steps 7A and 7B name <code>transformerForBuild_*</code> entries that no longer exist.</li><li>AGENTS.md calls <code>main</code> the default branch; GitHub&#x27;s default is <code>master</code>.</li><li><code>docs/reference/testing.md</code> places <code>runMiroirCoreTestsFromCLI</code> in miroir-core; it lives in the standalone app&#x27;s <code>tests/helpers</code>.</li><li><code>tests/5-tests</code> and <code>tests/5_tests</code> both exist in miroir-core.</li></ul></div>
+    </div>
+  </div>
+  <div class="flat">
+    <div class="grid gap-2"><h3>Looked at, already deep enough</h3><ul><li><code>ActionRunner.ts</code>: already deep: one function owns the store lifecycle.</li><li><code>AccessPolicy.hasAccess, assertAccessForDeployment</code>: deep, generic and well tested.</li><li><code>ExtractorRunnerInMemory vs SqlDbQueryRunner</code>: a real seam with two adapters; only their wiring repeats (S1, Q2).</li><li><code>Transformer_ResultSchema.ts</code>: a fairly deep abstract interpreter; its problem is registration (Q1).</li><li><code>SqlQueryBuilder.ts</code>: a small, deep query AST.</li><li><code>schemaForDeployment.ts</code>: two functions hiding a cache and a mode policy; it becomes the inside of M1.</li><li><code>listDisplayByTransformer.ts</code>: UI-free and tested through its interface: the pattern R1 to R3 should copy.</li><li><code>MiroirTest orchestrator and sessions</code>: a real seam with browser and Node adapters.</li><li><code>syncExternalServiceSchema.ts</code>: pure OpenAPI-to-ML conversion; the friction is in its caller (E3).</li><li><code>Deployment.ts</code>: pure builders of composite actions.</li></ul></div>
+  </div>
+</section>
+
+<section id="top-recommendation">
+  <div class="topcard">
+    <div class="eyebrow">Top recommendation</div>
+    <h2><a href="#T1">T1: One MiroirTest run module: leaf kinds return outcomes, one call returns a report</a></h2>
+    <p>It is the hottest area of the month, every other candidate here will be verified through MiroirTests, and today a browser run can record &quot;ok&quot; for a failed composite assertion while vitest can throw a failure it never records.</p>
+    <p class="then">Then E2 and E1 (security-relevant policy), C1 (composite runner) and Q1 (transformer registry), which M2 builds on.</p>
+  </div>
+</section>
+</div>
+</body>
+</html>
