@@ -181,7 +181,7 @@ Name-list snapshots (`MIROIR_TEST_SUITE_REGISTRY_NAMES`, `MIROIR_RUNNER_TEST_SUI
 | **MiroirTest** | Deployment JSON entity | `testMiroir` / UI catalog. Suite key = instance `name`. |
 | **PLATFORM** | TypeScript under `tests/` with **no** MiroirTest entity | `testByFile` + optional `RUN_TEST` |
 
-PLATFORM files are the vitest tests that have **no MiroirTest equivalent**: CLI/schema apparatus (`parseMiroirTestCliConfig.unit.test.ts`, `miroirTest.schema.unit.test.ts`), LocalCache memory measure, store-layer integ (`PersistenceStoreController.integ`), view RTL (`ReportPage.integ.test.tsx`, `gridPagination.*`), and similar. `RUN_TEST` applies only to those files. The MlElementEditor component tests are MiroirTests since #286, with one instance per editor since #292 (`MlEnumEditor_ComponentTestSuite`, `MlArrayEditor_ComponentTestSuite`, `MlLiteralEditor_ComponentTestSuite`, `MlObjectEditor_ComponentTestSuite`, `MlSimpleTypeEditor_ComponentTestSuite`, `MlUnionEditor_ComponentTestSuite`, `MlAnyEditor_ComponentTestSuite`; `reactComponentTest` leaves), see [MlElementEditor component tests](#mlelementeditor-component-tests).
+PLATFORM files are the vitest tests that have **no MiroirTest equivalent**: CLI/schema apparatus (`parseMiroirTestCliConfig.unit.test.ts`, `miroirTest.schema.unit.test.ts`), LocalCache memory measure, store-layer integ (`PersistenceStoreController.integ`), view RTL (`ReportPage.integ.test.tsx`, `gridPagination.*`), and similar. `RUN_TEST` applies only to those files. The MlElementEditor component tests are MiroirTests since #286, with one instance per editor since #292 (`ui.mlElementEditor.enum`, `ui.mlElementEditor.array`, `ui.mlElementEditor.literal`, `ui.mlElementEditor.object`, `ui.mlElementEditor.simpleType`, `ui.mlElementEditor.union`, `ui.mlElementEditor.any`; `reactComponentTest` leaves), see [MlElementEditor component tests](#mlelementeditor-component-tests).
 
 ### Notable catalog suites
 
@@ -811,7 +811,7 @@ Identity under projection uses `resolveProjectionIdentityFields` → `getEntityP
 
 | File | Store / config | Focus |
 |------|----------------|-------|
-| `miroir-component-tests.unit.test.tsx` | In-memory `LocalCache`; no `--profile` | ML editor components, run from the 9 component MiroirTest instances: 7 per-editor instances (`MlEnumEditor_ComponentTestSuite`, …), the test pattern and the on-demand render-performance suite (#286, #292, #303) |
+| `miroir-component-tests.unit.test.tsx` | In-memory `LocalCache`; no `--profile` | ML editor components, run from the 9 component MiroirTest instances: 7 per-editor instances (`ui.mlElementEditor.enum`, …), the test pattern and the on-demand render-performance suite (#286, #292, #303) |
 | `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` | Node emulated SQL via mocked launcher environment | `MiroirTestDisplay` launches integration and shows the result inspector |
 | `MiroirTestListIntegrationLaunch.integ.test.tsx` | Node emulated SQL via mocked launcher environment | List **Run All Integration Tests** batch for `miroirCoreTransformers` (filtered leaf) |
 | `MlElementEditorReactCodeMirror.test.tsx` | — | CodeMirror sub-editor (currently commented out) |
@@ -830,15 +830,15 @@ There is one MiroirTest instance per editor, plus the test pattern and the rende
 
 | Instance `name` | uuid | Cases |
 |---|---|---|
-| `MlEnumEditor_ComponentTestSuite` | `761d4ed2-1a5c-4901-a9d9-897dbec0b27f` | 3 |
-| `MlArrayEditor_ComponentTestSuite` | `1b71d68b-7dc9-468c-a251-4fa7889f20f4` | 12 |
-| `MlLiteralEditor_ComponentTestSuite` | `3995a071-b8ae-48d3-a488-6d1fc828b725` | 3 |
-| `MlObjectEditor_ComponentTestSuite` | `da353085-c62b-4aa6-bd54-8813d303dfe5` | 14 |
-| `MlSimpleTypeEditor_ComponentTestSuite` | `590693b6-2125-43fc-89d7-1330ae8318db` | 12 |
-| `MlUnionEditor_ComponentTestSuite` | `de517cd6-31a8-46d2-ac09-3a5162b630a7` | 9 |
-| `MlAnyEditor_ComponentTestSuite` | `ec601bcc-a27d-450d-9c37-bdd6a12a1575` | 15 |
-| `MlTestPattern_ComponentTestSuite` | `26ef2886-2cd8-4f91-b846-1525b24d5f41` | 4 (see [Test pattern](#test-pattern)) |
-| `MlEditorRenderPerformance_ComponentTestSuite` | `2da30877-d248-44bd-9786-5c091b1bc8fc` | 15, on demand (see [Render measurements](#render-measurements-measurerendering)) |
+| `ui.mlElementEditor.enum` | `761d4ed2-1a5c-4901-a9d9-897dbec0b27f` | 3 |
+| `ui.mlElementEditor.array` | `1b71d68b-7dc9-468c-a251-4fa7889f20f4` | 12 |
+| `ui.mlElementEditor.literal` | `3995a071-b8ae-48d3-a488-6d1fc828b725` | 3 |
+| `ui.mlElementEditor.object` | `da353085-c62b-4aa6-bd54-8813d303dfe5` | 14 |
+| `ui.mlElementEditor.simpleType` | `590693b6-2125-43fc-89d7-1330ae8318db` | 12 |
+| `ui.mlElementEditor.union` | `de517cd6-31a8-46d2-ac09-3a5162b630a7` | 9 |
+| `ui.mlElementEditor.any` | `ec601bcc-a27d-450d-9c37-bdd6a12a1575` | 15 |
+| `ui.mlElementEditor.allTypesPattern` | `26ef2886-2cd8-4f91-b846-1525b24d5f41` | 4 (see [Test pattern](#test-pattern)) |
+| `ui.mlElementEditor.renderPerformance` | `2da30877-d248-44bd-9786-5c091b1bc8fc` | 15, on demand (see [Render measurements](#render-measurements-measurerendering)) |
 
 Each instance is exported as `miroirTest_<name>` by `miroir-test-app_deployment-miroir` (`index.ts`, `index.d.ts`) and listed in `defaultMiroirMetaModel.tests` (`src/Model.ts`). The JSON files are edited by hand.
 
@@ -1042,7 +1042,7 @@ Open one of the component instances in the Miroir Tests report and click the uni
 
 ##### Test pattern
 
-`MlTestPattern_ComponentTestSuite` renders one object holding every editor type (22 attributes: string, number, bigint, boolean, date, uuid, present and absent optionals, literal, enum, array, empty array, tuple, record, empty record, simple, mixed and discriminated unions, any, any with `display.any.format: "file"`, a recursive `schemaReference`, a 3-level nested object with an array of objects). No foreign key and no reference to another application's data. Its 4 leaves:
+`ui.mlElementEditor.allTypesPattern` renders one object holding every editor type (22 attributes: string, number, bigint, boolean, date, uuid, present and absent optionals, literal, enum, array, empty array, tuple, record, empty record, simple, mixed and discriminated unions, any, any with `display.any.format: "file"`, a recursive `schemaReference`, a 3-level nested object with an array of objects). No foreign key and no reference to another application's data. Its 4 leaves:
 
 | Leaf | Checks |
 |---|---|
@@ -1079,7 +1079,7 @@ MlAnyEditor           | remount | 3     | 9.72   | 10.35  | 10.66
 (total)                 | update  | 3     | 31.04  | 38.39  | 40.38
 ```
 
-`MlEditorRenderPerformance_ComponentTestSuite` has `runOnDemand: true` and 15 leaves `MlEditorRenderPerformance: <type>`: one per single type (string, number, bigint, boolean, date, uuid, enum, literal, array, tuple, record, object, union, any with `display.any.format: "file"`) and a copy of the test pattern props, each with `{measureRendering, iterations: 3, mode: "both", updateProps: <another value>}`. It takes about 8 s of test time in vitest (0.2 to 0.5 s per single editor, 3.4 s for the pattern), which is why it is not in the default run nor in `npm run nonreg`.
+`ui.mlElementEditor.renderPerformance` has `runOnDemand: true` and 15 leaves `MlEditorRenderPerformance: <type>`: one per single type (string, number, bigint, boolean, date, uuid, enum, literal, array, tuple, record, object, union, any with `display.any.format: "file"`) and a copy of the test pattern props (`rawMlSchema` and `initialFormState` of `ui.mlElementEditor.allTypesPattern`: change both instances together), each with `{measureRendering, iterations: 3, mode: "both", updateProps: <another value>}`. It takes about 8 s of test time in vitest (0.2 to 0.5 s per single editor, 3.4 s for the pattern), which is why it is not in the default run nor in `npm run nonreg`.
 
 **In the app.** For an instance containing a `measureRendering` step, Miroir Tests shows an "Iterations" field (`Render iterations`) next to the unit Run button. Empty: the `iterations` of each step. A number: it replaces them for that run (a value that is not a positive integer fails the step). After the run, one table per leaf (`Render measurements: <leaf>`: Component, Mode, Count, Min / Median / Max ms) appears under the results grid, and in the window opened from the leaf's Result cell.
 

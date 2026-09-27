@@ -23,7 +23,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   entityMiroirTest,
-  miroirTest_MlAnyEditor_ComponentTestSuite,
+  miroirTest_ui_mlElementEditor_any,
 } from "miroir-test-app_deployment-miroir";
 
 import {
@@ -119,14 +119,14 @@ const reactComponentSuite = (label: string) => ({
 });
 
 const instanceWith = (definition: any) => ({
-  ...(miroirTest_MlAnyEditor_ComponentTestSuite as any),
+  ...(miroirTest_ui_mlElementEditor_any as any),
   definition,
 });
 
 // ################################################################################################
 describe("issue 296: MiroirTest editor type-check of a reactComponentTestSuite", () => {
-  it("type-checks the real MlAnyEditor_ComponentTestSuite instance, leaves and steps resolved", () => {
-    const instance: any = miroirTest_MlAnyEditor_ComponentTestSuite;
+  it("type-checks the real ui.mlElementEditor.any instance, leaves and steps resolved", () => {
+    const instance: any = miroirTest_ui_mlElementEditor_any;
     const result = typeCheckLikeTheEditor(instance);
     expectOk(result);
     if (result.status !== "ok") return;

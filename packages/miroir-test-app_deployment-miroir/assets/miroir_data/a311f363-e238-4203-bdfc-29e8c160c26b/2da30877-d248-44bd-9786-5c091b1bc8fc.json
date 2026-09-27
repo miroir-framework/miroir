@@ -2,10 +2,10 @@
   "uuid": "2da30877-d248-44bd-9786-5c091b1bc8fc",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "MlEditorRenderPerformance_ComponentTestSuite",
+  "name": "ui.mlElementEditor.renderPerformance",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Issue #303: MlElementEditor render-performance measurements, run on demand (runOnDemand: the vitest entry skips the suite unless MIROIR_COMPONENT_PERF=1; Miroir Tests runs it when launched). One leaf per single-type editor (string, number, bigint, boolean, date, uuid, enum, literal, array, tuple, record, object, union, any) and one leaf on the test pattern; each leaf is one measureRendering step (3 iterations, remount and update; update alternates the leaf's initialFormState and a different valid value). No timing budget: the step fails only if rendering fails or nothing is measured. Props are copied from the #292 per-editor instances, the date leaf from the test pattern's aDate; the any leaf uses display.any.format file so that MlAnyEditor is measured; the literal leaf updates to the same value (a literal has one valid value). DUPLICATION: the test pattern leaf's rawMlSchema and initialFormState are a copy of the componentProps of MlTestPattern_ComponentTestSuite (26ef2886-2cd8-4f91-b846-1525b24d5f41); change both together. Edited by hand.",
+  "description": "MlElementEditor render time for each single-type editor and the all-types pattern, run on demand (MIROIR_COMPONENT_PERF=1 or from Miroir Tests).",
   "tags": [
     "ui",
     "editor",
@@ -14,7 +14,7 @@
   "issue": "303",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "MlEditorRenderPerformance_ComponentTestSuite",
+    "miroirTestLabel": "ui.mlElementEditor.renderPerformance",
     "miroirTests": [
       {
         "miroirTestType": "reactComponentTestSuite",

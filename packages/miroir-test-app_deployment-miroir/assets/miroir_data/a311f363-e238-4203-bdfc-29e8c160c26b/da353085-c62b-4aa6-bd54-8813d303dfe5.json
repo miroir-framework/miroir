@@ -2,10 +2,10 @@
   "uuid": "da353085-c62b-4aa6-bd54-8813d303dfe5",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "MlObjectEditor_ComponentTestSuite",
+  "name": "ui.mlElementEditor.object",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Issues #286, #292: MlObjectEditor React component tests (MlElementEditor), one MiroirTest instance per editor. Edited by hand.",
+  "description": "MlElementEditor on objects and records: renders attributes, edits them, adds and deletes optional attributes, and adds, renames, deletes and duplicates record entries.",
   "tags": [
     "ui",
     "editor"
@@ -13,7 +13,7 @@
   "issue": "286",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "MlObjectEditor_ComponentTestSuite",
+    "miroirTestLabel": "ui.mlElementEditor.object",
     "miroirTests": [
       {
         "miroirTestType": "reactComponentTestSuite",

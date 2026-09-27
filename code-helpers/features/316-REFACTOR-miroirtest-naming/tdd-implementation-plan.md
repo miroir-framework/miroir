@@ -13,7 +13,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Rename map: [`./rename-map.md`](./
 Prerequisites: [`../312-FEATURE-miroir-test-classification/`](../312-FEATURE-miroir-test-classification/) ✅, #315 ✅
 Working branch: `316-REFACTOR-miroirtest-naming`
 
-**Resume note:** Slices 0–1 DONE.
+**Resume note:** Slices 0–2 DONE.
 
 ---
 
@@ -34,7 +34,7 @@ This plan does **not** rename inner suite and test labels (later pass), derive t
 |---|---|---|---|
 | 0 | Characterize names, kinds and name-driven behavior | ✅ | `miroirTestNaming.316.phase0.unit.test.ts` |
 | 1 | Select tests by mode: `unit` / `integ` / `ui` tags (tracer) | ✅ | mode-tag guard + `testMiroir --tags ui` |
-| 2 | Naming guard + rename UI component suites | ⬜ | naming guard, `--suites ui.mlElementEditor.array` |
+| 2 | Naming guard + rename UI component suites | ✅ | naming guard, `--suites ui.mlElementEditor.array` |
 | 3 | Rename runner and action suites (+ D13 stopgap, nonreg ids) | ⬜ | naming guard, runner-kind test, nonreg integ steps |
 | 4 | Rename transformer suites | ⬜ | naming guard, `--suites tr.core --mode integ` |
 | 5 | Rename function and query suites (+ D14 registry keys) | ⬜ | naming guard with empty legacy list |
@@ -163,7 +163,7 @@ The tests key on uuid, not name, so they stay valid through the rename.
 
 ## Slice 2 — Naming guard + UI component suites renamed
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** `--suites ui.mlElementEditor.array` runs the array editor suite; the grid shows the 9 new names and descriptions.
 
@@ -188,7 +188,10 @@ The tests key on uuid, not name, so they stay valid through the rename.
 - `npm run nonreg:unit`
 
 ### Realization
-_(pending)_
+- Guards in `miroirTestNaming.316.phase2.unit.test.ts`: allowed characters, `<kind>(.camelCase)+` with the kind computed from leaf types, root `miroirTestLabel` = name, one-sentence description without issue / feature / phase / slice / migration words, `#<n>` or uuid. The legacy list is a `PENDING_KINDS` set (shrinks by kind) rather than a list of names. Shared helpers moved to `miroirTestKind.316.ts`.
+- `rename_miroir_tests.py` (this folder) + `descriptions.json` (uuid → description). Run for `ui`: 16 files, 88 replacements (exports, `Model.ts`, docs, component tests), 9 instances. Manual edits where names are composed in code: `componentTestInstances.292.phase1` (`instanceName` now builds `ui.mlElementEditor.<variant>`, `exportName` applies D12), comments in `runAllComponentTests.286.phase6`, a test title in `reactComponentSuiteSchemaContext.296`.
+- Maintenance note lost from the render-performance description ("the test pattern leaf is a copy of `MlTestPattern`'s props, change both together") moved to `docs/reference/testing.md` (Render measurements). Rule for later slices: before shortening a description, keep any maintenance note in the docs.
+- Validation: issue guards + `miroirTestTags` + #296 (33 tests), `testMiroir -w miroir-core -- --suites ui.mlElementEditor.array --mode unit` (12 passed), typechecks (core, standalone-app, deployment-miroir), `nonreg:unit` 38/38 passed.
 
 ---
 

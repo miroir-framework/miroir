@@ -172,12 +172,12 @@ describe("MiroirTest issue", () => {
   const instances = loadApplicationMiroirTestsFromFolders(repoRoot);
 
   it("an instance with an issue passes model validation against the MiroirTest EntityVersion", () => {
-    const testPattern = miroirTestInstanceNamed("MlTestPattern_ComponentTestSuite");
+    const testPattern = miroirTestInstanceNamed("ui.mlElementEditor.allTypesPattern");
     expect(testPattern.issue).toBe("303");
     const check = checkModelValidationInstance(
       readJson(miroirTestEntityVersionPath).mlSchema as MlElement,
       testPattern,
-      "MlTestPattern_ComponentTestSuite",
+      "ui.mlElementEditor.allTypesPattern",
       defaultMiroirModelEnvironment,
     );
     expect(check.status).toBe("ok");

@@ -1,0 +1,11 @@
+{
+  "26ef2886-2cd8-4f91-b846-1525b24d5f41": "MlElementEditor on one object holding every editor type: displays the whole value, edits a deep leaf and the enum, switches a union and adds, removes and renames array items, record entries and optional attributes.",
+  "ec601bcc-a27d-450d-9c37-bdd6a12a1575": "MlElementEditor on any-typed values: shows and hides the type selector, switches between string, number, object and array, and edits any-typed arrays and records.",
+  "1b71d68b-7dc9-468c-a251-4fa7889f20f4": "MlElementEditor on arrays and tuples: renders items in order, reorders, adds and duplicates items, including union item types.",
+  "761d4ed2-1a5c-4901-a9d9-897dbec0b27f": "MlElementEditor on enums: renders the selected value and all options, and updates the form when the selection changes.",
+  "3995a071-b8ae-48d3-a488-6d1fc828b725": "MlElementEditor on literals: renders with and without a label and sets a new value.",
+  "da353085-c62b-4aa6-bd54-8813d303dfe5": "MlElementEditor on objects and records: renders attributes, edits them, adds and deletes optional attributes, and adds, renames, deletes and duplicates record entries.",
+  "2da30877-d248-44bd-9786-5c091b1bc8fc": "MlElementEditor render time for each single-type editor and the all-types pattern, run on demand (MIROIR_COMPONENT_PERF=1 or from Miroir Tests).",
+  "590693b6-2125-43fc-89d7-1330ae8318db": "MlElementEditor on string, number, uuid, boolean and bigint values: renders each value and keeps the form consistent while it is edited.",
+  "de517cd6-31a8-46d2-ac09-3a5162b630a7": "MlElementEditor on unions: renders the value of the matching branch, switches branch through the type selector, and places the selector for object values."
+}

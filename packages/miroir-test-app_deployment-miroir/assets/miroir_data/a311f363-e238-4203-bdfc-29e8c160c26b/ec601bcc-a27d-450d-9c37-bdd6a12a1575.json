@@ -2,10 +2,10 @@
   "uuid": "ec601bcc-a27d-450d-9c37-bdd6a12a1575",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "MlAnyEditor_ComponentTestSuite",
+  "name": "ui.mlElementEditor.any",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Issues #286, #292: MlAnyEditor React component tests (MlElementEditor), one MiroirTest instance per editor. Edited by hand.",
+  "description": "MlElementEditor on any-typed values: shows and hides the type selector, switches between string, number, object and array, and edits any-typed arrays and records.",
   "tags": [
     "ui",
     "editor"
@@ -13,7 +13,7 @@
   "issue": "286",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "MlAnyEditor_ComponentTestSuite",
+    "miroirTestLabel": "ui.mlElementEditor.any",
     "miroirTests": [
       {
         "miroirTestType": "reactComponentTestSuite",

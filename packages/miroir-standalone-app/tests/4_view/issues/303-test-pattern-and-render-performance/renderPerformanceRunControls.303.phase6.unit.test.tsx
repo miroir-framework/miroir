@@ -54,8 +54,8 @@ import {
   entityMenu,
   entityReport,
   entitySelfApplicationVersion,
-  miroirTest_MlEditorRenderPerformance_ComponentTestSuite,
-  miroirTest_MlEnumEditor_ComponentTestSuite,
+  miroirTest_ui_mlElementEditor_renderPerformance,
+  miroirTest_ui_mlElementEditor_enum,
   miroirTest_resolveConditionalSchema,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
@@ -78,8 +78,8 @@ import { MiroirTestListDisplay } from "../../../../src/miroir-fwk/4_view/compone
 import { ReportPageContextProvider } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportPageContext";
 
 // ################################################################################################
-const perfInstance = miroirTest_MlEditorRenderPerformance_ComponentTestSuite as unknown as MiroirTestDefinition;
-const enumInstance = miroirTest_MlEnumEditor_ComponentTestSuite as unknown as MiroirTestDefinition;
+const perfInstance = miroirTest_ui_mlElementEditor_renderPerformance as unknown as MiroirTestDefinition;
+const enumInstance = miroirTest_ui_mlElementEditor_enum as unknown as MiroirTestDefinition;
 const transformerInstance = miroirTest_resolveConditionalSchema as unknown as MiroirTestDefinition;
 const TRANSFORMER_SUITE_LEAF_COUNT = 5;
 const RUN_TEST_TIMEOUT = 300_000;

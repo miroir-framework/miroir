@@ -2,10 +2,10 @@
   "uuid": "590693b6-2125-43fc-89d7-1330ae8318db",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "MlSimpleTypeEditor_ComponentTestSuite",
+  "name": "ui.mlElementEditor.simpleType",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Issues #286, #292: MlSimpleTypeEditor React component tests (MlElementEditor), one MiroirTest instance per editor. Edited by hand.",
+  "description": "MlElementEditor on string, number, uuid, boolean and bigint values: renders each value and keeps the form consistent while it is edited.",
   "tags": [
     "ui",
     "editor"
@@ -13,7 +13,7 @@
   "issue": "286",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "MlSimpleTypeEditor_ComponentTestSuite",
+    "miroirTestLabel": "ui.mlElementEditor.simpleType",
     "miroirTests": [
       {
         "miroirTestType": "reactComponentTestSuite",

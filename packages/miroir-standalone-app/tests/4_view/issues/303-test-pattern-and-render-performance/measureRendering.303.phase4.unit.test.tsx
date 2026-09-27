@@ -2,7 +2,7 @@
  * Issue #303 Slice 4: the `measureRendering` step puts per-component render measurements in the
  * test result (analysis D5, D9, D10, T4, T5, T7).
  *
- * A one-leaf `reactComponentTestSuite` on the Enum schema (props of `MlEnumEditor_ComponentTestSuite`)
+ * A one-leaf `reactComponentTestSuite` on the Enum schema (props of `ui.mlElementEditor.enum`)
  * with `{step: "measureRendering", iterations: 2, mode: "both", updateProps: {initialFormState: "value3"}}`
  * is run through the real MiroirTest walk (`runMiroirTests._runMiroirTestSuite`, as the component
  * test vitest entry does) with the real component test runner and a real `MiroirActivityTracker`.

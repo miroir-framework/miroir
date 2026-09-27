@@ -10,8 +10,8 @@
  *   only component leaf is inside a `reactComponentTestSuite`;
  * - `miroir-test-app_deployment-miroir` exports `miroirTest_<name>` for the 7 names, and
  *   `defaultMiroirMetaModel.tests` holds the 7 uuids and not `MlElementEditor_ComponentTestSuite`;
- * - (#303) the only other instances with component leaves are `MlTestPattern_ComponentTestSuite`
- *   and `MlEditorRenderPerformance_ComponentTestSuite`, exported and listed in
+ * - (#303) the only other instances with component leaves are `ui.mlElementEditor.allTypesPattern`
+ *   and `ui.mlElementEditor.renderPerformance`, exported and listed in
  *   `defaultMiroirMetaModel.tests`;
  * - (Slice 5, Slice 6) every child is a `reactComponentTestSuite`, and every leaf has `steps`,
  *   only the attributes of the leaf schema (no legacy reference to a TypeScript case), and no
@@ -53,12 +53,18 @@ const expectedInstances: Record<string, string> = {
   MlUnionEditor: "de517cd6-31a8-46d2-ac09-3a5162b630a7",
   MlAnyEditor: "ec601bcc-a27d-450d-9c37-bdd6a12a1575",
 };
-const instanceName = (editor: string) => `${editor}_ComponentTestSuite`;
+/** #316: `MlSimpleTypeEditor` → `ui.mlElementEditor.simpleType`. */
+const instanceName = (editor: string) => {
+  const variant = editor.replace(/^Ml/, "").replace(/Editor$/, "");
+  return `ui.mlElementEditor.${variant[0].toLowerCase()}${variant.slice(1)}`;
+};
+/** #316 D12: the deployment export of an instance, dots as underscores. */
+const exportName = (name: string) => `miroirTest_${name.replace(/\./g, "_")}`;
 
 /** Component test instances added after #292, not per-editor: name to uuid (#303 plan). */
 const laterComponentInstances: Record<string, string> = {
-  MlTestPattern_ComponentTestSuite: "26ef2886-2cd8-4f91-b846-1525b24d5f41",
-  MlEditorRenderPerformance_ComponentTestSuite: "2da30877-d248-44bd-9786-5c091b1bc8fc",
+  "ui.mlElementEditor.allTypesPattern": "26ef2886-2cd8-4f91-b846-1525b24d5f41",
+  "ui.mlElementEditor.renderPerformance": "2da30877-d248-44bd-9786-5c091b1bc8fc",
 };
 
 /** The attributes of `miroirTestForReactComponent` since #292 M1. */
@@ -189,7 +195,7 @@ describe("per-editor component test MiroirTest instances", () => {
   it("the deployment package exports the 7 instances and lists them in defaultMiroirMetaModel.tests", () => {
     const exports = deploymentMiroir as Record<string, any>;
     const missingExports = Object.keys(expectedInstances).filter(
-      (editor) => exports[`miroirTest_${instanceName(editor)}`]?.uuid !== expectedInstances[editor],
+      (editor) => exports[exportName(instanceName(editor))]?.uuid !== expectedInstances[editor],
     );
     expect(missingExports).toEqual([]);
     expect(exports["miroirTest_MlElementEditor_ComponentTestSuite"]).toBeUndefined();
@@ -201,7 +207,7 @@ describe("per-editor component test MiroirTest instances", () => {
     }
     expect(testNames).not.toContain("MlElementEditor_ComponentTestSuite");
     for (const [name, uuid] of Object.entries(laterComponentInstances)) {
-      expect(exports[`miroirTest_${name}`]?.uuid, name).toBe(uuid);
+      expect(exports[exportName(name)]?.uuid, name).toBe(uuid);
       expect(testUuids).toContain(uuid);
     }
   });

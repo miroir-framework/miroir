@@ -2,10 +2,10 @@
   "uuid": "3995a071-b8ae-48d3-a488-6d1fc828b725",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "MlLiteralEditor_ComponentTestSuite",
+  "name": "ui.mlElementEditor.literal",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Issues #286, #292: MlLiteralEditor React component tests (MlElementEditor), one MiroirTest instance per editor. Edited by hand.",
+  "description": "MlElementEditor on literals: renders with and without a label and sets a new value.",
   "tags": [
     "ui",
     "editor"
@@ -13,7 +13,7 @@
   "issue": "286",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "MlLiteralEditor_ComponentTestSuite",
+    "miroirTestLabel": "ui.mlElementEditor.literal",
     "miroirTests": [
       {
         "miroirTestType": "reactComponentTestSuite",
