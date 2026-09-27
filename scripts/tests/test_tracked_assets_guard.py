@@ -105,3 +105,15 @@ def test_pre_existing_edit_changed_again_during_the_run_is_reported(
     result = _guard(repo, "check", "--since", str(snapshot), "--json")
     assert result.returncode == 1
     assert json.loads(result.stdout)["changed"] == ["packages/app-admin/assets/admin_data/d/1.json"]
+
+
+def test_check_since_a_missing_snapshot_checks_changes_since_head(repo: Path, tmp_path_factory: pytest.TempPathFactory) -> None:
+    """#321 Slice 11: `run-nonreg.py --only` may run the final check without the first step's snapshot."""
+    missing = tmp_path_factory.mktemp("snap") / "absent.json"
+    _write(repo, "packages/app/assets/app_data/row.json", '{"changed": true}')
+
+    result = _guard(repo, "check", "--since", str(missing))
+
+    assert result.returncode == 1
+    assert "no snapshot" in result.stdout
+    assert "packages/app/assets/app_data/row.json" in result.stdout

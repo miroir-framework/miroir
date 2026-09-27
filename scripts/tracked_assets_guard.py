@@ -7,7 +7,7 @@ state directory. This guard lists what changed in those folders, according to gi
 
   check                       changes since HEAD (exit 1 when any)
   snapshot --output F         record the current changes (a developer's own edits) in F
-  check --since F             only changes made after the snapshot F
+  check --since F             only changes made after the snapshot F (since HEAD when F is absent)
 
 Scope: packages/*/assets/**, packages/*/tests/assets/**, packages/*/tests/test_assets/**.
 Files ignored by git are out of scope.
@@ -85,7 +85,11 @@ def main(argv: list[str] | None = None) -> int:
         print(f"tracked-assets snapshot: {len(current)} pre-existing change(s) recorded in {args.output}")
         return 0
 
-    snapshot = json.loads(args.since.read_text(encoding="utf-8")) if args.since else {}
+    snapshot: dict[str, str] = {}
+    if args.since and args.since.is_file():
+        snapshot = json.loads(args.since.read_text(encoding="utf-8"))
+    elif args.since:
+        print(f"tracked-assets guard: no snapshot at {args.since}, checking changes since HEAD")
     changed = changes_since(current, snapshot)
     if args.json:
         print(json.dumps({"changed": changed}, indent=2))

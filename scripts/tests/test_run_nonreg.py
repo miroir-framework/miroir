@@ -412,3 +412,47 @@ def test_fail_fast_reports_group_members_that_already_ran(tmp_path: Path):
     assert steps["later"]["status"] == "passed"
     assert steps["later"]["mode"] == "shared"
     assert steps["after"]["status"] == "not_run"
+
+
+def test_snapshot_dir_placeholder_expands_to_the_run_snapshot(tmp_path: Path):
+    """#321 Slice 11: a step can write into, and read from, the snapshot of its run."""
+    manifest = write_manifest(
+        tmp_path,
+        [
+            {
+                "id": "writes",
+                "tier": "unit",
+                "title": "writes a file into the snapshot",
+                "requires": "none",
+                "argv": ["python", "-c", "import sys, pathlib; pathlib.Path(sys.argv[1]).write_text('before')", "{snapshot_dir}/before.txt"],
+            },
+            {
+                "id": "reads",
+                "tier": "unit",
+                "title": "reads it back",
+                "requires": "none",
+                "argv": ["python", "-c", "import sys, pathlib; assert pathlib.Path(sys.argv[1]).read_text() == 'before'", "{snapshot_dir}/before.txt"],
+            },
+        ],
+    )
+
+    code, summary, snap_dir = run_nonreg(tmp_path, manifest, "--tier", "unit")
+
+    assert code == 0, summary
+    assert (snap_dir / "before.txt").read_text(encoding="utf-8") == "before"
+    assert summary["steps"][0]["argv"][-1] == (snap_dir / "before.txt").as_posix()
+
+
+def test_every_tier_starts_by_recording_the_environment_and_ends_with_the_tracked_assets_check():
+    """#321 Slice 11: unit steps run in every tier, in manifest order."""
+    steps = json.loads((ROOT / "scripts" / "nonreg-manifest.json").read_text(encoding="utf-8"))["steps"]
+    first, last = steps[0], steps[-1]
+
+    assert first["id"] == "unit-321-environment-before"
+    assert first["tier"] == last["tier"] == "unit"
+    assert "tracked_assets_guard.py snapshot --output {snapshot_dir}/tracked-assets-before.json" in " ".join(first["argv"])
+    assert "miroir-env -- show --json > {snapshot_dir}/environment.json" in " ".join(first["argv"])
+
+    assert last["id"] == "unit-321-tracked-assets"
+    assert "tracked_assets_guard.py check --since {snapshot_dir}/tracked-assets-before.json" in " ".join(last["argv"])
+    assert "miroir-env -- check --strict" in " ".join(last["argv"])

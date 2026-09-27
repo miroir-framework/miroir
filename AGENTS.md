@@ -26,7 +26,7 @@ Sibling repos, linked locally only when regenerating types from schemas: **jzod*
 
   | Command | Runs | Needs |
   |---|---|---|
-  | `npm run nonreg:unit` | 34 unit steps, about 8 min (MiroirTest unit, guards, platform tests) | built packages, pytest |
+  | `npm run nonreg:unit` | 41 unit steps, about 8 min (MiroirTest unit, guards, platform tests) | built packages, pytest |
   | `npm run nonreg:filesystem` | unit + integration on the filesystem profile | built packages only |
   | `npm run nonreg:default` | unit + integration on the default `emulatedServer-sql` profile | a running PostgreSQL |
   | `npm run nonreg -- --tier full` | everything, including postgres `modelValidation` | a running PostgreSQL |
