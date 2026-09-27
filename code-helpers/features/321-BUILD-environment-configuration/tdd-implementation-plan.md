@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Inventory: [`./current-state-inven
 Related: #323 (server bundle ignores `--config`; Slice 3 must not rely on `--config`)
 Working branch: `claude/environment-configuration-7z5rjb` (from `_integration`)
 
-**Resume note:** approved by A 2026-09-27. Slices 0–7 DONE (5 in two commits: 5a environments for every profile, 5b test Admin copy and emulated profile files removed). Next: Slice 8.
+**Resume note:** approved by A 2026-09-27. Slices 0–8 DONE (5 in two commits: 5a environments for every profile, 5b test Admin copy and emulated profile files removed; 8 in 8a web client, 8b realServer profiles, plus a harness fix). Next: Slice 9.
 
 ---
 
@@ -42,7 +42,7 @@ This plan does **not** touch the release path, Docker, Electron, miroir-cli or s
 | 5 | `test-sql`, `test-indexedDb`, `test-mongodb`; profile JSONs and test Admin copy retired | ✅ | `nonreg:default` (Postgres) + guard |
 | 6 | Reconciliation, deviation warnings, `check` / `import` / `prune` | ✅ | `miroirEnvReconcile.321.phase6.integ.test.ts` |
 | 7 | UI installs land in state and are recorded in `local.json` | ✅ | MiroirTest `runner.deployApplication` + `recordInstalls.321.phase7.integ.test.ts` |
-| 8 | Web client config from the environment | ⬜ | `vite.config` environment test + manual run |
+| 8 | Web client config from the environment | ✅ | `viteEnvironmentConfig.321.phase8` + `realServerTestEnvironment.321.phase8` + manual run |
 | 9 | Cloud sessions and CI | ⬜ | pytest for `agent_session_setup.py`, `pr-checks.yml` run |
 | 10 | Remove dead configuration and drifted Admin copies | ⬜ | modelValidation + `nonreg:unit` + guard |
 | 11 | Nonreg, docs, cleanup, AC | ⬜ | nonreg tiers + tracer narrative |
@@ -487,7 +487,7 @@ npm run nonreg:filesystem
 
 ## Slice 8 — Web client config from the environment
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -510,6 +510,14 @@ npm run build -w miroir-standalone-app
 ```
 
 ### Realization
+
+- 8a, web client: `vite/environmentConfig.js` resolves the selected environment (`MIROIR_ENV`, then `environments/local.json`, then `dev`) and gives miroir-env's `environmentRealServerClientConfig`: the server URL, the stores of every installed application (ConfigurationService requires Admin), the `environment` (Slice 7: UI installs go to its apps directory), no `features` (the server owns the process capabilities, #273). `vite.config.js` became a function of `command` and `mode`: it injects the configuration as `__MIROIR_CLIENT_CONFIG__` and points the API proxy at the same server; vitest runs (mode `test`) inject nothing. Served without certificates, the client calls the server over HTTP, as the server then listens; a build keeps the environment's URL. Database passwords never reach the browser. An environment whose client emulates the server (`test-*`) gives a warning: the web client still calls its server.
+- `index.tsx` reads `__MIROIR_CLIENT_CONFIG__` and fails with a message when served without Vite; `webMiroirConfigName` and the six `src/assets/miroirConfig*.json` are gone. Decision (asked on a card, default applied): the in-browser emulated IndexedDB mode is dropped; it can come back as an environment with `client.mode: "emulatedServer"` and IndexedDB stores.
+- Manual run: server and `npm run dev` with `MIROIR_ENV=dev`, headless Chromium on http://localhost:5173/search: the client calls `http://localhost:3080` (no certificates in the session) and shows Library instances; no tracked file changed.
+- 8b, realServer test profiles: `realServer-<storage>` select `test-<storage>` and `MIROIR_TEST_CLIENT=realServer` (a deviation in the shell warns like `MIROIR_ENV`); `openTestEnvironment` then gives the real-server configuration of the environment, database password included (Node only). The four `tests/miroirConfig.test-realServer-*.json` (Admin on the tracked assets) are removed; `resolveRealServerUiIntegrationProfile` no longer reads `VITE_MIROIR_TEST_CONFIG_FILENAME`. `loadTestConfigFiles` still accepts that variable for a hand-written configuration.
+- Harness fix found by the live run (`uiIntegrationTestLauncher.realServer.integ`, profile `realServer-filesystem`, against a `dev` server): `RunnerTestSession` passed `resetMiroirPlatform: undefined` for a real server, which `beforeEachTest` read as "reset the default Miroir deployment", so every leaf wiped and rewrote the server's Miroir deployment, in `dev` the package assets. It now passes `false`. Before the fix the run deleted about 260 tracked Miroir files (restored from git) and left untracked EntityVersion and ApplicationVersion rows in `miroir_data` (`ModelInitializer` writes them to `data`, not `modelVersion`). After it, the same run changes nothing tracked.
+- Also fixed: `RunnerTestSession.unit` had failed since 5b (its configurations had no Admin store); it is not in nonreg.
+- Left for Slice 10: the browser in-app realServer profiles (`src/miroir-fwk/4-tests/miroirConfig.browser-realServer-*.json`) still point Admin at `miroir-test-app_deployment-admin/assets`, which an environment-started server resolves from the repository root. Deriving them from the injected configuration needs a way to give the server the database password, which the browser must not carry.
 
 ---
 
@@ -557,6 +565,7 @@ The repository holds one Admin application and only configuration that something
 - Unreferenced `miroirConfig.test-{docker-*,emulatedServer-mixed_*}.json`, `src/assets/miroirConfig-plain-no-dataflow-config.json`, Electron `assets/{10ff36f2,18db21bf}….json`.
 - `miroir-core/tests/test_assets/` (no reference); stale `admin_data/` in library, postgres, spotify packages.
 - `miroir-mcp/tests/assets/admin*`: its test config seeds from the canonical Admin package through `miroir-env` (runtime adoption of MCP stays a follow-up).
+- Browser in-app realServer profiles `src/miroir-fwk/4-tests/miroirConfig.browser-realServer-*.json` (Slice 8 gap): derive them from the environment or remove them.
 
 ### Validation
 
