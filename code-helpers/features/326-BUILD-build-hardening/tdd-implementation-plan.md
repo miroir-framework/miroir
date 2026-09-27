@@ -32,7 +32,7 @@ This plan does **not** cut bundle size (D19: separate issue opened in Slice 17 f
 | 3 | 1 | Build tools leave runtime `dependencies` | ✅ | `classification` rule + `npm audit --omit=dev` drop |
 | 4 | 1 | `npm ci` works everywhere from the lockfile alone | ✅ | `workflows` rule + clean `npm ci` + tsup/vite build on Linux |
 | 5 | 1 | No critical advisory | ✅ | `audit --level critical` exits 0 |
-| 6 | 1 | No high advisory in build and test tooling | ⬜ | `audit` lists no high in tooling packages |
+| 6 | 1 | No high advisory in build and test tooling | ✅ | `audit` lists no high in tooling packages |
 | 7 | 1 | No high advisory at all; audit gate blocking in PR checks | ⬜ | `audit` exits 0 on the real repo; `pr-checks.yml` step |
 | 8 | 1 | Updates only through reviewed, cooled-down PRs; actions pinned | ⬜ | `actions` rule + `dependabot.yml` test |
 | 9 | 1 | PR 1 wrap-up: gate docs, nonreg step, full nonreg | ⬜ | nonreg:unit + nonreg:filesystem green |
@@ -396,7 +396,7 @@ python -m pytest ci/release/tests -q
 
 ## Slice 6 — No high advisory in build and test tooling
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -426,6 +426,25 @@ npm run nonreg:unit && npm run nonreg:filesystem
 ```
 
 ### Realization
+
+- RED: `--rule audit` listed 32 packages with a high advisory after Slice 5; after this slice, 18 remain (high 44 → 18 over the whole tree), all in the production tree: 13 root causes plus the `chevrotain` / `langium` chain that only carries `lodash-es`. They are Slice 7.
+- Exact bumps (npm 11, `--before=2026-09-20`):
+
+  | Package | From | To | Manifests |
+  |---|---|---|---|
+  | `electron` | 40.6.1 | **44.4.3** | `miroir-standalone-app-electron`, `miroir-standalone-app` |
+  | `electron-builder` | 26.8.1 | 26.15.3 | same two |
+  | `vite` | 7.3.1, and 6.4.1 / 6.4.2 / 6.4.3 | 7.3.6 | 15 manifests, the `vite` 6 ones included (`miroir-homepage`, `miroir-sandbox`, the 7 deployment packages, which use it only through vitest) |
+  | `happy-dom` | 20.7.0 | 20.14.5 | `miroir-localcache`, `-localcache-redux`, `miroir-standalone-app` |
+  | `postcss` | 8.5.6 | 8.5.28 | `miroir-homepage` |
+  | `vite-plugin-node-polyfills` | 0.23.0 | 0.25.0 | `miroir-sandbox` (0.23 does not accept `vite` 7; the lockfile rule caught the stale nested `vite` 6.4.2) |
+
+- **Deviation, Electron major:** a high advisory published after the plan (GHSA-9f4c-93c8-jc8g, sandboxed iframe popup bypass) is fixed only from 41.10.3; Electron 40 is out of support (supported lines: 42, 43, 44). Moved to 44.4.3, the latest line, on a decision card to A (alternatives: 42, or 40 with an exception). The app uses only APIs that exist unchanged in 44 (`protocol.handle`, `net.fetch`, `setWindowOpenHandler`, `contextBridge`, `ipcMain.handle`).
+- In-range transitive updates (`npm update`): `@babel/plugin-transform-modules-systemjs` 7.27.1 → 7.29.8 (and the `@babel/*` 7.29 helpers), `brace-expansion` (1.1.21, 2.1.7, 5.0.12), `browserslist` 4.28.2 → 4.29.0, `flatted` 3.3.3 → 3.4.4, `picomatch` 2.3.2 / 4.0.7, `js-yaml` 3.15.2 under `@istanbuljs/load-nyc-config`, `terser-webpack-plugin` 5.3.16 → 5.6.1 (drops the vulnerable `serialize-javascript` 6).
+- Scoped root overrides where a parent pins the vulnerable version exactly, each documented in `dependency-policy/README.md`: `lerna > js-yaml` 4.3.2, `lerna > pacote` 21.5.1, `nx > smol-toml` 1.7.1. `nx` itself needed no change (its advisories came from these).
+- Electron packaging: `electron-builder --dir --linux` packages Electron 44.4.3 when told to skip the native rebuild (`-c.npmRebuild=false`); with the rebuild it stops at `@electron/rebuild` of the native `classic-level`, because the cloud proxy denies `www.electronjs.org` (Electron headers for node-gyp). That is an environment limit, the same for any Electron version. The rebuild against Electron 44 headers is to check on a machine that reaches that host.
+- The 6 known `LocalCache.unit.test` failures of `miroir-localcache-redux` (Slice 3) are unchanged with `happy-dom` 20.14.5 (40 passed, 6 failed).
+- Validation: pytest 104 passed; static rules and `--rule audit --level critical` pass; `npm ci` leaves the lockfile unchanged; `./build-all.sh` and the homepage, sandbox and Electron app builds pass; `tsc` on `miroir-core` and `miroir-standalone-app` clean; `miroir-core` 2078 tests pass; `nonreg:unit` 38/38 and `nonreg:filesystem` 74/74 pass.
 
 ---
 

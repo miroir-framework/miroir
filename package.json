@@ -13,7 +13,14 @@
   ],
   "overrides": {
     "yaml": "2.8.4",
-    "rxjs": "7.8.2"
+    "rxjs": "7.8.2",
+    "lerna": {
+      "js-yaml": "4.3.2",
+      "pacote": "21.5.1"
+    },
+    "nx": {
+      "smol-toml": "1.7.1"
+    }
   },
   "devDependencies": {
     "@eslint/js": "9.39.5",
