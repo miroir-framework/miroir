@@ -29,7 +29,7 @@ This plan does **not** cut bundle size (D19: separate issue opened in Slice 17 f
 | 0 | 1 | Baseline: audit, specs, build sizes, nonreg | ✅ | `baseline.json` + nonreg:unit / nonreg:filesystem results |
 | 1 | 1 | Tracer: a floating spec fails the check; every spec pinned | ✅ | `test_check_dependency_policy.py` specs rules + real repo exits 0 |
 | 2 | 1 | The release writes exact internal versions | ✅ | `ci/release/tests` new test |
-| 3 | 1 | Build tools leave runtime `dependencies` | ⬜ | `classification` rule + `npm audit --omit=dev` drop |
+| 3 | 1 | Build tools leave runtime `dependencies` | ✅ | `classification` rule + `npm audit --omit=dev` drop |
 | 4 | 1 | `npm ci` works everywhere from the lockfile alone | ⬜ | `workflows` rule + clean `npm ci` + tsup/vite build on Linux |
 | 5 | 1 | No critical advisory | ⬜ | `audit --level critical` exits 0 |
 | 6 | 1 | No high advisory in build and test tooling | ⬜ | `audit` lists no high in tooling packages |
@@ -241,7 +241,7 @@ python -m pytest ci/release/tests -q
 
 ## Slice 3 — Build tools leave runtime `dependencies`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -271,6 +271,24 @@ npm run nonreg:unit
 ```
 
 ### Realization
+
+- Rule `classification` in `check_dependency_policy.py`: exact names `electron`, `electron-builder`, `happy-dom`, `vite`, `vitest`, plus the prefixes `vite-plugin-`, `@vitejs/`, `@vitest/`. **Deviation:** the prefixes were added because `vite-plugin-node` sat in three runtime `dependencies` and npm installs its `vite` peer, so `vite` would have stayed in the production tree. 10 new pytest cases (37 in the file); RED on the real repo with 18 violations.
+- Per entry, `rg` over `src`, `tests`, configs and scripts decided remove or move (**deviation** from "move everything": an entry nothing uses is removed):
+
+  | Package | Removed (unused) | Moved to `devDependencies` |
+  |---|---|---|
+  | `miroir-core` | | `vite` (`vite.config.js`) |
+  | `miroir-localcache`, `miroir-localcache-redux` | `electron`, `electron-builder`, `vite-plugin-node` | `happy-dom` (vitest environment) |
+  | `miroir-server` | `electron`, `electron-builder`, `happy-dom`, `vite` | |
+  | `miroir-store-filesystem` | `electron`, `sequelize` | `vite` (`vite.config.js`) |
+  | `miroir-standalone-app` | `vite-plugin-node` | |
+  | `miroir-standalone-app-electron` | `happy-dom`, `vite` (shipped in the app until now) | |
+
+- Lockfile regenerated with `npx npm@11 install --package-lock-only` (npm 11 keeps the `libc` fields that npm 10.9 drops). With the root override pinned to `rxjs` 7.8.2 in Slice 1, npm 11 now applies it everywhere and removes 22 stale nested copies (`rxjs` 7.8.1 under `@ag-ui/*`, `@copilotkit/*` and `miroir-ai`, duplicated `@copilotkit/shared`, `chalk`, `zod`), which is what the former `^7.8.1` override intended. `miroir-ai`'s own `rxjs` spec follows: 7.8.1 → 7.8.2. No other version changes.
+- `npm audit --omit=dev` (lockfile only): total 73 → 55, high 39 → 23, critical 1 → 0; production packages 1630 → 1335. Gone from the production tree: `electron`, the `electron-builder` family, `happy-dom`, `vite`, `tar`, `postcss`, `extract-zip`, `@xmldom/xmldom`, `js-yaml`, `nanoid`, `tmp`.
+- `pr-checks.yml`: the "Dependency policy" step runs `--rule specs --rule classification`.
+- Validation: pytest 83 passed; checker rc 0; `npm ci` rc 0 with the lockfile unchanged; `./build-all.sh devBuild` rc 0 (180 s); `tsc` rc 0 for miroir-core, -localcache, -localcache-redux, -server, -store-filesystem, -standalone-app-electron, -standalone-app, -ai; Electron app build rc 0; miroir-core tests 2078 passed; nonreg:unit 37/38. The one failure, `unit-301-agent-tooling` (pytest on `scripts/tests`), came from Slice 4's RED tests written into the working tree while nonreg ran; the same pytest on the Slice 3 commit passes (83 passed at the start of the run).
+- Known failures outside PR checks and nonreg, not caused by this slice (inferred: the code under test is unchanged and the packages they use resolve to the same versions): `npm run vitest -w miroir-localcache-redux`, 6 of 46 in `LocalCache.unit.test` "custom idAttribute"; `npm run test -w miroir-ai`, `miroirTools.unit.test` expects 5 tools where `createMiroirCopilotKitActions` returns 3 (two tools are commented out in the source).
 
 ---
 

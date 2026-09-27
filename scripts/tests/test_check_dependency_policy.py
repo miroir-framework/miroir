@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from check_dependency_policy import check_specs, main, spec_problem
+from check_dependency_policy import check_classification, check_specs, main, spec_problem
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts" / "check_dependency_policy.py"
@@ -133,8 +133,28 @@ def test_cli_exit_codes(repo: Path, capsys: pytest.CaptureFixture[str]) -> None:
     assert '[specs] packages/miroir-core/package.json: dependencies.zod "^3.25.76"' in capsys.readouterr().out
 
 
-def test_this_repository_pins_every_spec() -> None:
-    result = subprocess.run(
-        [sys.executable, str(SCRIPT), "--rule", "specs"], cwd=REPO_ROOT, capture_output=True, text=True
+@pytest.mark.parametrize("tool", ["electron", "electron-builder", "happy-dom", "vite", "vitest", "vite-plugin-node", "@vitejs/plugin-react"])
+def test_a_build_or_test_tool_in_dependencies_is_a_violation(repo: Path, tool: str) -> None:
+    _set(repo, "miroir-core", "dependencies", tool, "1.0.0")
+    [violation] = check_classification(repo)
+    assert (violation.where, violation.message) == (
+        "packages/miroir-core/package.json",
+        f"{tool} is a build or test tool: move it to devDependencies",
     )
+
+
+def test_build_and_test_tools_in_dev_dependencies_pass(repo: Path) -> None:
+    _set(repo, "miroir-core", "devDependencies", "vite", "7.3.1")
+    _set(repo, "miroir-core", "devDependencies", "happy-dom", "20.7.0")
+    assert check_classification(repo) == []
+
+
+def test_a_runtime_package_named_like_a_tool_passes(repo: Path) -> None:
+    _set(repo, "miroir-core", "dependencies", "electron-squirrel-startup", "1.0.1")
+    assert check_classification(repo) == []
+
+
+@pytest.mark.parametrize("rule", ["specs", "classification"])
+def test_this_repository_follows_the_rule(rule: str) -> None:
+    result = subprocess.run([sys.executable, str(SCRIPT), "--rule", rule], cwd=REPO_ROOT, capture_output=True, text=True)
     assert result.returncode == 0, result.stdout

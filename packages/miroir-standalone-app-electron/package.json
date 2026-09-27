@@ -25,7 +25,6 @@
   "dependencies": {
     "diff": "8.0.3",
     "electron-squirrel-startup": "1.0.1",
-    "happy-dom": "20.7.0",
     "express": "4.22.1",
     "http-proxy-middleware": "3.0.5",
     "miroir-ai": "*",
@@ -37,8 +36,7 @@
     "miroir-store-indexedDb": "*",
     "miroir-store-mongodb": "*",
     "miroir-store-postgres": "*",
-    "miroir-test-app_deployment-admin": "*",
-    "vite": "7.3.1"
+    "miroir-test-app_deployment-admin": "*"
   },
   "devDependencies": {
     "@types/express": "4.17.25",

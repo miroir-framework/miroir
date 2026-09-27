@@ -45,10 +45,7 @@
     "cors": "2.8.5",
     "cross-fetch": "4.1.0",
     "diff": "8.0.3",
-    "electron": "40.6.1",
-    "electron-builder": "26.8.1",
     "express": "4.22.1",
-    "happy-dom": "20.7.0",
     "http-proxy-middleware": "3.0.5",
     "isomorphic-git": "1.30.3",
     "json-diff": "1.0.6",
@@ -64,8 +61,7 @@
     "miroir-store-postgres": "*",
     "miroir-test-app_deployment-admin": "*",
     "miroir-test-app_deployment-library": "*",
-    "miroir-test-app_deployment-miroir": "*",
-    "vite": "7.3.1"
+    "miroir-test-app_deployment-miroir": "*"
   },
   "devDependencies": {
     "@babel/core": "7.29.0",

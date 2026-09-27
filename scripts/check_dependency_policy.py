@@ -4,6 +4,8 @@
 Rules (all run by default; --rule selects some):
   specs           third-party specs are exact versions; internal miroir-* specs are "*"; the root .npmrc sets
                   save-exact=true. Peer dependencies keep their ranges: they state compatibility, not what is installed.
+  classification  build and test tools stay out of `dependencies`, so production installs, `npm audit --omit=dev`
+                  and the Electron package never carry them.
 
 Run: python scripts/check_dependency_policy.py [--rule NAME]...
 Plan: code-helpers/features/326-BUILD-build-hardening/tdd-implementation-plan.md
@@ -23,6 +25,10 @@ ROOT = Path(__file__).resolve().parent.parent
 
 EXACT_VERSION_RE = re.compile(r"^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$")
 INSTALL_SECTIONS = ("dependencies", "devDependencies", "optionalDependencies")
+
+# Build and test tools: exact names, then name prefixes. A vite plugin counts because npm installs its `vite` peer.
+BUILD_AND_TEST_TOOLS = ("electron", "electron-builder", "happy-dom", "vite", "vitest")
+BUILD_AND_TEST_TOOL_PREFIXES = ("vite-plugin-", "@vitejs/", "@vitest/")
 
 
 @dataclass(frozen=True)
@@ -112,10 +118,28 @@ def check_specs(root: Path) -> list[Violation]:
 
 
 # --------------------------------------------------------------------------------------------------------------------
+# classification
+
+
+def is_build_or_test_tool(name: str) -> bool:
+    return name in BUILD_AND_TEST_TOOLS or name.startswith(BUILD_AND_TEST_TOOL_PREFIXES)
+
+
+def check_classification(root: Path) -> list[Violation]:
+    return [
+        Violation("classification", _rel(root, path), f"{name} is a build or test tool: move it to devDependencies")
+        for path in manifest_paths(root)
+        for name in _load_json(path).get("dependencies", {})
+        if is_build_or_test_tool(name)
+    ]
+
+
+# --------------------------------------------------------------------------------------------------------------------
 # CLI
 
 RULES: dict[str, Callable[[Path], list[Violation]]] = {
     "specs": check_specs,
+    "classification": check_classification,
 }
 
 
