@@ -304,3 +304,55 @@ def test_legacy_runner_ignores_shared_descriptors(tmp_path: Path, shared_manifes
         assert "--no-isolate" not in step["argv"]
     assert not (snap_dir / "shared").exists()
     assert steps_by_id(summary)["leaky"]["status"] == "passed"
+
+
+# ------------------------------------------------------------------------------------------------
+# #318 Slice 4: shared runner for suites that run in one entry file (testMiroir --shared)
+
+SUITES_LAUNCHER = ["node", "scripts/tests/fixtures/vitest-shared/suites-launcher.mjs"]
+
+
+def suites_step(step_id: str, suites: list[str]) -> dict:
+    return {
+        "id": step_id,
+        "tier": "unit",
+        "title": step_id,
+        "argv": [*SUITES_LAUNCHER, "--suites", ",".join(suites)],
+        "shared": {"group": "suites", "argv": SUITES_LAUNCHER, "suites": suites},
+    }
+
+
+@requires_vitest
+def test_shared_suites_group_maps_results_by_describe(tmp_path: Path):
+    manifest = write_manifest(
+        tmp_path,
+        [
+            suites_step("one", ["alpha_suite"]),
+            suites_step("two", ["beta_suite", "gamma_suite"]),
+            suites_step("bad", ["failing"]),
+        ],
+    )
+    code, summary, snap_dir = run_nonreg(
+        tmp_path, manifest, "--tier", "unit", "--runner", "shared", "--timings"
+    )
+
+    steps = steps_by_id(summary)
+    assert steps["one"]["mode"] == "shared"
+    assert steps["one"]["vitest"]["tests_passed"] == 2
+    assert steps["two"]["mode"] == "shared"
+    assert steps["two"]["vitest"]["tests_passed"] == 4
+    assert "--suites" in steps["one"]["argv"]
+    assert steps["one"]["argv"][-1] == "alpha_suite,beta_suite,gamma_suite,failing"
+    assert "--no-isolate" not in steps["one"]["argv"]
+    assert steps["bad"]["status"] == "failed"
+    assert steps["bad"]["mode"] == "shared→legacy"
+    assert code == 1
+
+    timings = {s["id"]: s for s in json.loads((snap_dir / "timings.json").read_text(encoding="utf-8"))["steps"]}
+    two_tests = [t["name"] for f in timings["two"]["files"] for t in f["tests"]]
+    assert sorted(two_tests) == [
+        "beta_suite > first",
+        "beta_suite > second",
+        "gamma_suite > first",
+        "gamma_suite > second",
+    ]

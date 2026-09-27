@@ -3,7 +3,7 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { prepareTestMiroirLaunch } from "./testMiroirLauncher.js";
+import { forwardedVitestArgs, prepareTestMiroirLaunch } from "./testMiroirLauncher.js";
 import { resolveRepoRoot } from "../tests/helpers/integrationTestProfiles.js";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
@@ -23,6 +23,7 @@ const vitestArgs = [
   "run",
   "--poolOptions.threads.singleThread",
   "--reporter=verbose",
+  ...forwardedVitestArgs(argv),
   // vitest root is `tests/` (vite.config.js); pass the entry relative to that root
   `${vitestEntry}.ts`,
 ];

@@ -456,7 +456,26 @@
         "runner_lend_document",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "runner_lend_document"
+        ]
+      }
     },
     {
       "id": "integ-runner-runner_return_document",
@@ -476,7 +495,26 @@
         "runner_return_document",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "runner_return_document"
+        ]
+      }
     },
     {
       "id": "integ-runner-runner_mcp_get_instances",
@@ -496,7 +534,26 @@
         "runner_mcp_get_instances",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "runner_mcp_get_instances"
+        ]
+      }
     },
     {
       "id": "integ-runner-runner_mcp_lend_document",
@@ -516,7 +573,26 @@
         "runner_mcp_lend_document",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "runner_mcp_lend_document"
+        ]
+      }
     },
     {
       "id": "integ-action-domain_controller_data_crud",
@@ -536,7 +612,26 @@
         "domain_controller_data_crud",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "domain_controller_data_crud"
+        ]
+      }
     },
     {
       "id": "integ-action-domain_controller_model_crud",
@@ -556,7 +651,26 @@
         "domain_controller_model_crud",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "domain_controller_model_crud"
+        ]
+      }
     },
     {
       "id": "integ-action-domain_controller_composite_pk_crud",
@@ -576,7 +690,26 @@
         "domain_controller_composite_pk_crud",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "domain_controller_composite_pk_crud"
+        ]
+      }
     },
     {
       "id": "integ-action-domain_controller_non_uuid_pk_model_crud",
@@ -596,7 +729,26 @@
         "domain_controller_non_uuid_pk_model_crud",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "domain_controller_non_uuid_pk_model_crud"
+        ]
+      }
     },
     {
       "id": "integ-action-domain_controller_non_uuid_pk_data_crud",
@@ -616,7 +768,26 @@
         "domain_controller_non_uuid_pk_data_crud",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "domain_controller_non_uuid_pk_data_crud"
+        ]
+      }
     },
     {
       "id": "integ-action-domain_controller_no_parent_uuid_crud",
@@ -636,7 +807,26 @@
         "domain_controller_no_parent_uuid_crud",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "domain_controller_no_parent_uuid_crud"
+        ]
+      }
     },
     {
       "id": "integ-action-domain_controller_model_undo_redo",
@@ -656,7 +846,26 @@
         "domain_controller_model_undo_redo",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "domain_controller_model_undo_redo"
+        ]
+      }
     },
     {
       "id": "integ-action-domain_controller_application_version_freeze",
@@ -676,7 +885,26 @@
         "domain_controller_application_version_freeze",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "domain_controller_application_version_freeze"
+        ]
+      }
     },
     {
       "id": "integ-runner-runner_freeze_application_version",
@@ -716,7 +944,26 @@
         "runner_drop_entity",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "runner_drop_entity"
+        ]
+      }
     },
     {
       "id": "integ-action-evolutionTraceWP1",
@@ -1075,7 +1322,26 @@
         "multistepReports.274",
         "--mode",
         "integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "multistepReports.274"
+        ]
+      }
     },
     {
       "id": "appstack-274-multistep-reports",

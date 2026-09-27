@@ -1,3 +1,6 @@
+// #318 shared runner entry (opt-in: `testMiroir ... --shared`, used by run-nonreg.py --runner shared).
+// Same setup as miroir-runner-tests.integ.test.ts (the legacy default entry), but each suite
+// runs in its own describe with its own session, so several suites share one vitest launch.
 // @vitest-environment node
 import "@testing-library/jest-dom";
 import * as vitest from "vitest";
@@ -27,16 +30,14 @@ import {
   loadApplicationRunnerUuidIndexFromFolders,
 } from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
 import { miroirAppStartup } from "../src/startup.js";
-import {
-  loadRunnerOrActionMiroirTestSuite,
-  runMiroirRunnerTestsFromCLI,
-} from "./helpers/runMiroirRunnerTestsFromCLI.js";
+import { runMiroirRunnerSuitesSharedFromCLI } from "./helpers/runMiroirRunnerSuitesSharedFromCLI.js";
 import { createRunnerSuiteSessionParams } from "./helpers/runnerSuiteSessionParams.js";
 import { createStandaloneAppIntegrationOrchestrator } from "./helpers/StandaloneAppIntegrationOrchestrator.js";
 import { loadTestConfigFiles } from "./utils/fileTools.js";
 
 const applicationRunnerUuidIndex = loadApplicationRunnerUuidIndexFromFolders();
 
+// Same pageLabel as the legacy entry: sessions must behave identically.
 const pageLabel = "miroir-runner-tests.integ";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName("tests", "5-tests", pageLabel);
@@ -79,10 +80,10 @@ miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
 miroirMongoDbStoreSectionStartup(ConfigurationService.configurationService);
 miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
 ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
-log.info("miroir-runner-tests.integ started", JSON.stringify(config, null, 2));
+log.info("miroir-runner-tests-shared.integ started", JSON.stringify(config, null, 2));
 if (config.filter?.testList) {
   log.info(
-    "miroir-runner-tests.integ filter active",
+    "miroir-runner-tests-shared.integ filter active",
     JSON.stringify(config.filter.testList),
   );
 }
@@ -102,18 +103,12 @@ function createSessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
 }
 
 if (config.suiteKeys.length > 0) {
-  const primarySuiteKey = config.suiteKeys[0];
-  const primarySuite = loadRunnerOrActionMiroirTestSuite(primarySuiteKey);
   const orchestrator = createStandaloneAppIntegrationOrchestrator();
-  const testSession = orchestrator.createSession(
-    createSessionParamsForSuite(primarySuiteKey, primarySuite),
-  );
-
-  await runMiroirRunnerTestsFromCLI(
+  await runMiroirRunnerSuitesSharedFromCLI(
     runMiroirTests,
     vitest,
     config,
     miroirActivityTracker,
-    testSession,
+    (suiteKey, suite) => orchestrator.createSession(createSessionParamsForSuite(suiteKey, suite)),
   );
 }

@@ -21,6 +21,19 @@ import { applyIntegrationTestProfile } from "../tests/helpers/integrationTestPro
 
 const ALL_SUITES_JOKER = "*";
 
+/**
+ * #318: opt-in shared entry for runner/action suites. Each suite gets its own session inside
+ * its own `describe`, so several suites can share one vitest launch. The legacy entry
+ * (MIROIR_RUNNER_TEST_VITEST_ENTRY) stays the default.
+ */
+export const MIROIR_RUNNER_TEST_SHARED_VITEST_ENTRY = "miroir-runner-tests-shared.integ.test";
+export const SHARED_RUNNER_FLAG = "--shared";
+
+/** Vitest reporter arguments given to testMiroir, forwarded as is (used by run-nonreg.py --runner shared). */
+export function forwardedVitestArgs(argv: string[]): string[] {
+  return argv.filter((arg) => arg.startsWith("--reporter=") || arg.startsWith("--outputFile"));
+}
+
 function resolveRequestedSuiteKeys(
   env: NodeJS.ProcessEnv,
   argv: string[],
@@ -104,7 +117,9 @@ export function resolveVitestEntry(
       : resolveCliSuiteKeysFromCatalog(runnerConfig.suiteKeys, runnerKeys, catalog),
   };
   return {
-    vitestEntry: MIROIR_RUNNER_TEST_VITEST_ENTRY,
+    vitestEntry: argv.includes(SHARED_RUNNER_FLAG)
+      ? MIROIR_RUNNER_TEST_SHARED_VITEST_ENTRY
+      : MIROIR_RUNNER_TEST_VITEST_ENTRY,
     spawnEnv: {
       ...env,
       ...miroirTestCliConfigToEnv(resolvedRunnerConfig),

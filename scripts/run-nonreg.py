@@ -304,9 +304,13 @@ def timings_markdown(timings: dict[str, Any]) -> list[str]:
 #
 # A step joins a shared group when its manifest entry has
 #   "shared": {"group": "<name>", "argv": [<command prefix>], "files": [<vitest filters>]}
+# or, for MiroirTest runner/action suites run by one entry file (testMiroir --shared),
+#   "shared": {"group": "<name>", "argv": [<command prefix>], "suites": [<suite keys>]}
 # Every member of a group has the same argv prefix. The group runs once:
-#   <argv prefix> --no-isolate --reporter=json --outputFile.json=<report> <all files>
-# and each member's verdict comes from the report entries whose path contains one of its files.
+#   files:  <argv prefix> --no-isolate --reporter=json --outputFile.json=<report> <all files>
+#   suites: <argv prefix> --reporter=json --outputFile.json=<report> --suites <all suites>
+# and each member's verdict comes from the report entries of its files (path contains a filter)
+# or of its suites (tests whose first describe is the suite key).
 # Members that fail in shared mode re-run alone with their legacy argv (fallback), so a state leak
 # between files never turns into a false failure; the step records both verdicts.
 
@@ -344,6 +348,46 @@ def _matches(path: str, filters: list[str]) -> bool:
     return any(f in normalized for f in filters)
 
 
+def _entries_by_suite(entries: list[dict[str, Any]], members: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Split file-level report entries into one pseudo-entry per member, by first describe title."""
+    split: list[dict[str, Any]] = []
+    for member in members:
+        suites = set(member["shared"]["suites"])
+        assertions = [
+            a
+            for e in entries
+            for a in e.get("assertionResults", [])
+            if (a.get("ancestorTitles") or [None])[0] in suites
+        ]
+        if not assertions:
+            continue
+        failed = any(a.get("status") == "failed" for a in assertions)
+        split.append(
+            {
+                "member": member["id"],
+                "name": ",".join(sorted(suites)),
+                "status": "failed" if failed else "passed",
+                "assertionResults": assertions,
+                "startTime": 0,
+                "endTime": sum(a.get("duration") or 0 for a in assertions),
+            }
+        )
+    return split
+
+
+def _record_for_suites(record: dict[str, Any], suites: list[str]) -> dict[str, Any]:
+    """The part of a per-file timing record that belongs to the given describe titles."""
+    def belongs(name: str) -> bool:
+        return any(name == k or name.startswith(f"{k} > ") for k in suites)
+
+    return {
+        **record,
+        "phases": [p for p in record.get("phases", []) if any(p.get("name", "").endswith(f" {k}") for k in suites)],
+        "suites": [x for x in record.get("suites", []) if belongs(x.get("name", ""))],
+        "tests": [t for t in record.get("tests", []) if belongs(t.get("name", ""))],
+    }
+
+
 def _distribute_group_timings(snap_dir: Path, group: str, members: list[dict[str, Any]]) -> None:
     group_dir = snap_dir / TIMINGS_DIRNAME / f"{SHARED_DIRNAME}-{group}"
     if not group_dir.is_dir():
@@ -354,8 +398,13 @@ def _distribute_group_timings(snap_dir: Path, group: str, members: list[dict[str
         except (OSError, json.JSONDecodeError):
             continue
         for member in members:
-            if _matches(filepath, member["shared"]["files"]):
-                target = snap_dir / TIMINGS_DIRNAME / member["id"]
+            target = snap_dir / TIMINGS_DIRNAME / member["id"]
+            if "suites" in member["shared"]:
+                record = json.loads(record_path.read_text(encoding="utf-8"))
+                target.mkdir(parents=True, exist_ok=True)
+                part = _record_for_suites(record, member["shared"]["suites"])
+                (target / record_path.name).write_text(json.dumps(part, indent=2) + "\n", encoding="utf-8")
+            elif _matches(filepath, member["shared"]["files"]):
                 target.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(record_path, target / record_path.name)
 
@@ -373,11 +422,15 @@ def run_shared_group(
     shared_dir.mkdir(parents=True, exist_ok=True)
     report_path = shared_dir / f"{group}.json"
     log_path = snap_dir / "logs" / f"{SHARED_DIRNAME}-{group}.log"
-    files = [f for m in members for f in m["shared"]["files"]]
-    argv = resolve_argv(
-        expand_argv(list(members[0]["shared"]["argv"]), profile)
-        + ["--no-isolate", "--reporter=json", f"--outputFile.json={report_path}", *files]
-    )
+    by_suite = "suites" in members[0]["shared"]
+    report_args = ["--reporter=json", f"--outputFile.json={report_path}"]
+    if by_suite:
+        suites = [k for m in members for k in m["shared"]["suites"]]
+        tail = [*report_args, "--suites", ",".join(suites)]
+    else:
+        files = [f for m in members for f in m["shared"]["files"]]
+        tail = ["--no-isolate", *report_args, *files]
+    argv = resolve_argv(expand_argv(list(members[0]["shared"]["argv"]), profile) + tail)
 
     def base_result(member: dict[str, Any]) -> StepResult:
         return StepResult(
@@ -423,13 +476,18 @@ def run_shared_group(
             entries = []
     if timings:
         _distribute_group_timings(snap_dir, group, members)
+    if by_suite:
+        entries = _entries_by_suite(entries, members)
 
     results: dict[str, StepResult] = {}
     for member in members:
         result = base_result(member)
         result.extra["shared_group_duration_s"] = group_duration
         result.exit_code = exit_code
-        matched = [e for e in entries if _matches(e.get("name", ""), member["shared"]["files"])]
+        if by_suite:
+            matched = [e for e in entries if e.get("member") == member["id"]]
+        else:
+            matched = [e for e in entries if _matches(e.get("name", ""), member["shared"]["files"])]
         result.vitest = _vitest_counts_from_report(matched) if matched else None
         result.duration_s = round(
             sum((e.get("endTime", 0) - e.get("startTime", 0)) for e in matched) / 1000, 3
