@@ -22,7 +22,8 @@ import {
 // Interpreter of the declarative component test steps (#292, analysis §5.3, §5.4).
 //
 // - After each action step (DOM events, typing, widget steps), it awaits `componentTestAct`, then
-//   `waitAfterUserInteraction(container)` (D9). Widget steps also wait for their own
+//   `waitAfterUserInteraction(container)` (D9), then `options.afterInteraction` (a Report test
+//   waits there for the actions the step started, #330). Widget steps also wait for their own
 //   postcondition (e.g. `data-test-is-open`).
 // - A failing step throws a `ComponentTestStepError` whose message is
 //   `step <n> (<kind>[ "<label>"]): <message>`, `n` 1-based (T10). An `expectRenderedValues`
@@ -82,10 +83,15 @@ function stepPrefix(step: AnyStep, index: number): string {
   return `step ${index + 1} (${step.step}${step.label !== undefined ? ` "${step.label}"` : ""})`;
 }
 
-/** Runs `callback` without React `act`, then waits for React to settle (D9). */
-async function runAction(env: ComponentTestEnvironment, callback: () => unknown): Promise<void> {
+/** Runs `callback` without React `act`, then waits for React to settle (D9), then `afterInteraction`. */
+async function runAction(
+  env: ComponentTestEnvironment,
+  callback: () => unknown,
+  afterInteraction: (() => Promise<void>) | undefined,
+): Promise<void> {
   await componentTestAct(callback);
   await waitAfterUserInteraction(env.container);
+  await afterInteraction?.();
 }
 
 /** Retries `check` until it does not throw, for at most `timeout` ms, keeping the last error. */
@@ -213,6 +219,8 @@ export interface ComponentTestStepsOptions<ExtraStep extends AnyStep = never> {
    * steps of a Report test, #330). Their errors are reported like those of the other steps.
    */
   extraStepHandlers?: Record<ExtraStep["step"], (step: ExtraStep) => Promise<void>>;
+  /** Awaited after each action step, once React has settled (a Report test waits for its actions, #330). */
+  afterInteraction?: () => Promise<void>;
 }
 
 export interface ComponentTestStepsResult {
@@ -233,6 +241,7 @@ export async function runComponentTestSteps<ExtraStep extends AnyStep = never>(
   const userSession = () => (user ??= env.userEvent.setup());
 
   const resolve = (target: ReactComponentTestTarget) => resolveTarget(env, target, context.elements);
+  const interact = (callback: () => unknown) => runAction(env, callback, options.afterInteraction);
   const save = (element: HTMLElement, saveAs: string | undefined) => {
     if (saveAs !== undefined) {
       context.elements[saveAs] = element;
@@ -355,16 +364,16 @@ export async function runComponentTestSteps<ExtraStep extends AnyStep = never>(
     click: async (step) => {
       const element = resolve(step.target);
       save(element, step.saveAs);
-      await runAction(env, () => env.fireEvent.click(element));
+      await interact(() => env.fireEvent.click(element));
     },
     change: async (step) => {
       const element = resolve(step.target);
       save(element, step.saveAs);
-      await runAction(env, () => env.fireEvent.change(element, { target: { value: step.value } }));
+      await interact(() => env.fireEvent.change(element, { target: { value: step.value } }));
     },
     clickArrayButton: async (step) => {
       const element = resolve({ widget: "arrayButton", field: step.field, action: step.action, index: step.index });
-      await runAction(env, () => env.fireEvent.click(element));
+      await interact(() => env.fireEvent.click(element));
     },
     clickObjectButton: async (step) => {
       const element = resolve({
@@ -373,31 +382,31 @@ export async function runComponentTestSteps<ExtraStep extends AnyStep = never>(
         action: step.action,
         attribute: step.attribute,
       });
-      await runAction(env, () => env.fireEvent.click(element));
+      await interact(() => env.fireEvent.click(element));
     },
     renameRecordEntry: async (step) => {
       const element = resolve({ widget: "recordEntryName", field: step.field, entry: step.entry });
       await componentTestAct(() => env.fireEvent.change(element, { target: { value: step.newName } }));
-      await runAction(env, () => env.fireEvent.blur(element));
+      await interact(() => env.fireEvent.blur(element));
     },
     submit: async (step) => {
       const element = resolve(step.target);
-      await runAction(env, () => env.fireEvent.submit(element));
+      await interact(() => env.fireEvent.submit(element));
     },
     blur: async (step) => {
       const element = resolve(step.target);
-      await runAction(env, () => env.fireEvent.blur(element));
+      await interact(() => env.fireEvent.blur(element));
     },
     type: async (step) => {
       const element = resolve(step.target);
-      await runAction(env, () => userSession().type(element, step.text));
+      await interact(() => userSession().type(element, step.text));
     },
     clear: async (step) => {
       const element = resolve(step.target);
-      await runAction(env, () => userSession().clear(element));
+      await interact(() => userSession().clear(element));
     },
     keyboard: async (step) => {
-      await runAction(env, () => userSession().keyboard(step.keys));
+      await interact(() => userSession().keyboard(step.keys));
     },
     waitForAttribute: async (step) => {
       await waitForAttributeValue(
@@ -412,7 +421,7 @@ export async function runComponentTestSteps<ExtraStep extends AnyStep = never>(
     openSelect: async (step) => {
       const combobox = resolve({ widget: "combobox", field: step.field, select: step.select });
       const state: ReactComponentTestTarget = { widget: "selectState", field: step.field, select: step.select };
-      await runAction(env, async () => {
+      await interact(async () => {
         env.fireEvent.click(combobox);
         await waitForAttributeValue(env, state, "data-test-is-open", "true", selectOpenTimeout, context.elements);
       });
@@ -420,7 +429,7 @@ export async function runComponentTestSteps<ExtraStep extends AnyStep = never>(
     filterSelect: async (step) => {
       const combobox = resolve({ widget: "combobox", field: step.field, select: step.select });
       const state: ReactComponentTestTarget = { widget: "selectState", field: step.field, select: step.select };
-      await runAction(env, async () => {
+      await interact(async () => {
         await userSession().clear(combobox);
         await userSession().type(combobox, step.text);
         await waitForAttributeValue(env, state, "data-test-filter-text", step.text, selectOpenTimeout, context.elements);
@@ -432,7 +441,7 @@ export async function runComponentTestSteps<ExtraStep extends AnyStep = never>(
       // when a type is chosen, and its detached tracker keeps the last state it rendered.
       const state = resolve({ widget: "selectState", field: step.field, select: step.select });
       const stateIs = (attribute: string, value: string) => () => checkAttribute(state, attribute, value);
-      await runAction(env, async () => {
+      await interact(async () => {
         if (state.getAttribute("data-test-is-open") !== "true") {
           env.fireEvent.click(combobox);
           await waitUntil(env, stateIs("data-test-is-open", "true"), selectOpenTimeout);
@@ -462,7 +471,7 @@ export async function runComponentTestSteps<ExtraStep extends AnyStep = never>(
       const star = resolve({ widget: "unionTypeStar", field: step.field });
       const input: ReactComponentTestTarget = { widget: "unionTypeInput", field: step.field };
       const wasShown = queryAllTarget(env, input, context.elements).length > 0;
-      await runAction(env, async () => {
+      await interact(async () => {
         env.fireEvent.click(star);
         await waitUntil(
           env,

@@ -516,6 +516,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
       variant="contained"
       disabled={!isFormAndFieldsValid}
       style={{ maxWidth: "300px" }}
+      data-testid="typed-value-object-editor-submit"
     />
   ) : (
     <ThemedStyledButton
@@ -524,6 +525,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
       style={{ maxWidth: "300px" }}
       loading={isActionRunning}
       disabled={!isFormAndFieldsValid}
+      data-testid="typed-value-object-editor-submit"
       onClick={(e) => {
         log.info("TypedValueObjectEditor submit button clicked", e);
         formik.setFieldValue(lastSubmitButtonClicked, formikValuePathAsString);

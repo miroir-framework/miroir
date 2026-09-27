@@ -16,7 +16,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Follow-up: https://github.com/miroir-framework/miroir/issues/333 (stored values in UI steps)
 Working branch: `claude/report-level-miroir-tests-0lnny6` (from `_integration`, PR against `_integration`)
 
-**Resume note:** Slices 0 to 2 done 2026-09-27; Slice 3 next.
+**Resume note:** Slices 0 to 3 done 2026-09-27; Slice 4 next.
 
 ---
 
@@ -40,7 +40,7 @@ This plan does **not** cover stored values in UI steps (#333), an in-memory mode
 | 0 | Baseline and 284 coverage inventory | ✅ | nonreg baseline + `wizard-coverage.md` |
 | 1 | Tracer: a MiroirTest mounts `BookDetails` from the testbed store | ✅ | `report.bookDetails` leaf "displays the Book" |
 | 2 | Check steps: run a query, assert on its result | ✅ | leaf "the store holds the displayed Book" + failure-report vitest |
-| 3 | Edit and save through the UI, checked in the store | ⬜ | leaf "saves an edited title" + idle-wait vitest |
+| 3 | Edit and save through the UI, checked in the store | ✅ | leaf "saves an edited title" + idle-wait vitest |
 | 4 | Invalid input is not saved | ⬜ | leaf "does not save an invalid value" |
 | 5 | Fake HTTP, and the wizard's first steps | ⬜ | `report.connectExternalServiceWizard` leaf "reads an OpenAPI document by URL" + undeclared-request vitest |
 | 6 | Wizard Finish persists the Endpoint and Report | ⬜ | leaf "public service: Finish creates Endpoint and Report" |
@@ -266,7 +266,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ## Slice 3 — Edit and save through the UI, checked in the store
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -278,7 +278,7 @@ A test author can edit an instance in a Report, press its submit button, and che
 
 **Test 1:** leaf **"saves an edited title"** of `report.bookDetails`: `type` a new name in the name field, `click` `byTestId: typed-value-object-editor-submit`, `compositeAction` query of the Book, `expectActionResult` on the new name. No explicit wait step.
 
-**Test 2 (vitest, justified):** `reportIdleWait.330.phase3.unit.test.ts` drives the idle waiter over a real `MiroirActivityTracker`: it resolves after a tracked action settles, keeps waiting when a second action starts while the first runs, and rejects after `actionTimeoutMs` with a message naming the still-running `actionType` / `actionLabel`. Not reachable through MiroirTest: the timeout path needs an action that never settles.
+**Test 2 (vitest, justified):** `reportIdleWait.330.slice3.unit.test.ts` drives the idle waiter over a real `MiroirActivityTracker`: it resolves after a tracked action settles, keeps waiting when a second action starts while the first runs, and rejects after `actionTimeoutMs` with a message naming the still-running `actionType` / `actionLabel`. Not reachable through MiroirTest: the timeout path needs an action that never settles.
 
 Expected first run of Test 1: fails at the store check, confirming §3.6 (the nested Formik in `ReportSectionEntityInstance` swallows the submit). If it passes, §3.6 was wrong: record that in the Realization and the analysis history.
 
@@ -297,7 +297,7 @@ The idle waiter belongs next to the component step runner, as one function; `run
 ```bash
 npm run build -w miroir-test-app_deployment-library
 npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites report.bookDetails --mode integ
-RUN_TEST=reportIdleWait npm run testByFile -w miroir-standalone-app -- reportIdleWait.330.phase3
+npm run testByFile -w miroir-standalone-app -- reportIdleWait.330.slice3
 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepProcess.274
 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepLaunch.274
 npm run testByFile -w miroir-standalone-app -- miroir-component-tests.unit
@@ -306,7 +306,14 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+- **Proof:** `report.bookDetails` leaf "saves an edited title" passes: it clears the name field, types a new name, clicks `typed-value-object-editor-submit`, reads the Book with a `storage` query and finds the new name. No wait step. [`reportIdleWait.330.slice3.unit.test.ts`](../../../packages/miroir-standalone-app/tests/4_view/issues/330-report-level-miroir-tests/reportIdleWait.330.slice3.unit.test.ts) (6 tests) drives the idle waiter over a real `MiroirActivityTracker`: it resolves at once without actions, waits for a running action then settles once, keeps waiting for a second action started meanwhile, waits for an action the settle starts, ignores actions started before the case, and fails after the timeout naming `updateInstance "save"`.
+- **§3.6 confirmed.** The first run failed at the store check (step 6, the stored name was still the old one), and the log had no `updateInstance`. The nested Formik that `ReportSectionEntityInstance` has had since #82 (to show virtual attributes without writing them into the Report form) received the submit, and its `onSubmit` was a no-op: `BookDetails` has not saved since #82.
+- **Fix:** `ReportViewWithEditor` offers its submit (`onEditValueObjectFormSubmit` under `handleAsyncAction`) through a new `ReportFormSubmitContext`, and its own Formik `onSubmit` uses the same function. The nested Formik's `onSubmit` passes its values (`lastSubmitButtonClicked`, its `_mode`, the edited instance) to it, with the virtual attributes stripped (`stripVirtualAttributesFromInstance`). The multistep branch (#274) has no nested Formik and is unchanged. Outside a Report form (the #82 test mounts the section alone) the submit only logs a warning. Inferred, not run: the inline Report editor (`InlineReportEditor`), which uses the same section, saves again too.
+- **Idle waiter (T5):** `createActionsIdleWaiter` in `componentTests/waitForActionsIdle.ts`. It counts the `action` activities started since the case mount; after an interaction it returns at once when none started since its last call, else waits until none runs (10 ms polls), settles React (`waitAfterUserInteraction`), and repeats while the settle started new actions. Timeout: `actionTimeoutMs` of the suite, default 10 000 ms, over one call. `runComponentTestSteps` takes it as `options.afterInteraction`, awaited after every interaction step; the component tests pass nothing and are unchanged.
+- **View:** `data-testid="typed-value-object-editor-submit"` on both submit buttons of `TypedValueObjectEditor`; `ThemedButton` forwards `data-testid`.
+- **Deviations:** the leaf `clear`s the field before typing (typing alone appends). The save already passed with the 300 ms settle of `waitAfterUserInteraction` before the waiter existed; the waiter makes it independent of the save's duration. Test 2 is named `slice3`, not `phase3`.
+- **Refactor checkpoint:** done as planned: one function next to the step runner, an optional hook in `runComponentTestSteps`, no Report-specific branch.
+- **Validation (2026-09-27):** the list above, plus `reportTestFailure.330.slice2`, `reportTestLauncher.330.slice1`, `virtualAttributes.integ` (#82), Library model validation, core tsc and lint.
 
 ---
 

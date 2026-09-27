@@ -36,6 +36,7 @@ import {
   configureComponentTestDom,
   createComponentTestEnvironment,
   mountComponent,
+  waitAfterUserInteraction,
   waitForProgressiveRendering,
   type MountedComponent,
 } from "./componentTestEnvironment.js";
@@ -45,6 +46,7 @@ import {
   StepValuesMismatch,
   runComponentTestSteps,
 } from "./runComponentTestSteps.js";
+import { createActionsIdleWaiter, defaultReportTestActionTimeoutMs } from "./waitForActionsIdle.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "runReportTest");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -243,6 +245,7 @@ export function createReportTestRunner(host: ReportTestSandboxHost): ClosableRep
       markPageConfigurationsLoaded();
       const url = reportTestUrl(suite.report, deploymentUuid, leaf.instanceUuid);
       log.info("mounting report", testName, url);
+      const caseStart = Date.now();
       const container = await mountCase(
         <ComponentTestModeContext.Provider value={componentTestSandboxMode}>
           <MiroirTestProviders
@@ -274,10 +277,16 @@ export function createReportTestRunner(host: ReportTestSandboxHost): ClosableRep
         results: {},
         miroirActivityTracker: host.miroirActivityTracker,
       };
+      // an interaction step ends when the actions started since the mount have settled (T5)
+      const afterInteraction = createActionsIdleWaiter(host.miroirActivityTracker, {
+        since: caseStart,
+        timeoutMs: suite.actionTimeoutMs ?? defaultReportTestActionTimeoutMs,
+        settle: () => waitAfterUserInteraction(container),
+      });
       await runComponentTestSteps(
         createComponentTestEnvironment({ testName, container, sandboxElement, portalElement, log }),
         leaf.steps,
-        { extraStepHandlers: actionStepHandlers(actionContext) },
+        { extraStepHandlers: actionStepHandlers(actionContext), afterInteraction },
       );
       return { status: "ok" };
     } catch (error) {

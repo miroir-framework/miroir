@@ -140,7 +140,7 @@ Nonreg runs them as `unit-284-openapi-connection-wizard`, `integ-action-284-open
 - `TypedValueObjectEditor` submit (L521–L534) has no test id and is `disabled={!isFormAndFieldsValid}`: field errors or a failed validation transformer disable it.
 - `ReportViewWithEditor`'s Formik `onSubmit` (L476–L494) calls `onEditValueObjectFormSubmit` (L309–L421), which calls `domainController.handleActionFromUI` with `updateInstance` / `createInstance` (data) or `transactionalInstanceAction` (model). `handleActionFromUI` auto-commits.
 
-### 3.6 Finding: the `BookDetails` instance section may not save (to confirm)
+### 3.6 Finding: the `BookDetails` instance section does not save (confirmed in Slice 3)
 
 `BookDetails` (uuid `c3503412-3d8a-43ef-a168-aa36e975e606`, Library model) is a `list` of one `objectInstanceReportSection` (`book`, extracted by `extractorByPrimaryKey` from `instanceUuid`) and two `objectListReportSection` (`booksOfAuthor`, `booksOfPublisher`), enumerated from the JSON.
 
@@ -155,6 +155,8 @@ For a non-multistep Report, `ReportSectionEntityInstance` wraps the `TypedValueO
 ```
 
 `TypedValueObjectEditor.onSubmit` calls `formik.handleSubmit(e)` (L343) on the nearest Formik, which is this one. **Inferred, not run:** submitting an edited Book in `BookDetails` does not reach `onEditValueObjectFormSubmit`, so nothing is saved. The first red test of the `BookDetails` slice confirms or refutes this. If confirmed, making it save is part of this issue, since D13's first case must pass.
+
+**Confirmed (2026-09-27, Slice 3):** the leaf "saves an edited title" failed at its store check with no `updateInstance` in the log. Fixed by passing the nested Formik's values to the Report form's submit through `ReportFormSubmitContext`, without the virtual attributes (plan, Slice 3 Realization).
 
 ### 3.7 Outbound HTTP
 
@@ -182,7 +184,7 @@ For a non-multistep Report, `ReportSectionEntityInstance` wraps the `TypedValueO
 |---|---|---|
 | `PageContainer` (sidebar, outline) needs contexts the test providers lack | First mount of the tracer slice | Add the missing providers; if the sidebar pulls in too much, mount `ReportDisplay` under the same `MemoryRouter` URL, which keeps real navigation (D5). |
 | An action starts after the idle wait returns (Formik submits asynchronously, `queueMicrotask` in the multistep host) | Flaky checks after submit or Finish | T5 loops flush-then-wait until no new action starts. |
-| `BookDetails` does not save today (§3.6) | Slice with the edit-and-save case | Fix the instance-section submit in that slice. |
+| `BookDetails` does not save today (§3.6) | Slice with the edit-and-save case | Fix the instance-section submit in that slice. Confirmed and fixed in Slice 3. |
 | `usePageConfiguration({ autoFetchOnMount: true })` in `ReportWrapper` fetches configurations through the session | Tracer slice | Acceptable if it succeeds on the emulated server; otherwise a session-level load before mounting. |
 
 ---

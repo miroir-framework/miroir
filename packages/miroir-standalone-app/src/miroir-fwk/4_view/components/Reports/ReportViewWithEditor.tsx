@@ -28,6 +28,7 @@ import { cleanLevel, lastSubmitButtonClicked } from '../../constants.js';
 import { ThemedSpan } from '../Themes/index.js';
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { InlineReportEditor, reportReportDetailsKey } from './InlineReportEditor.js';
+import { ReportFormSubmitContext, type SubmitReportFormValues } from './ReportFormSubmitContext.js';
 import {
   omitSecretKeysFromBagDump,
   useOptionalMultistepReportHost,
@@ -420,6 +421,17 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     [domainController, props]
   );
 
+  // The Formik submit below, also offered to nested Formiks through ReportFormSubmitContext (#330).
+  const submitReportFormValues: SubmitReportFormValues = useCallback(
+    (values: Record<string, any>) =>
+      handleAsyncAction(
+        () => onEditValueObjectFormSubmit(values),
+        "Instance edited successfully",
+        "submit instance edition",
+      ),
+    [handleAsyncAction, onEditValueObjectFormSubmit],
+  );
+
   if (reportDataQueryResults instanceof Domain2ElementFailed) { // should never happen
     throw new Error("ReportView: failed to get report data: " + JSON.stringify(reportDataQueryResults, null, 2));
   }
@@ -459,7 +471,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
             <div>found query failure! {JSON.stringify(reportData, null, 2)}</div>
           ) : // (<>failure</>)
           props.deploymentUuid ? (
-            <>
+            <ReportFormSubmitContext.Provider value={submitReportFormValues}>
               <Formik
                 enableReinitialize={true}
                 initialValues={initialReportSectionsFormValue}
@@ -482,11 +494,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                     //   : values;
 
                     // await onSubmit(values);
-                    handleAsyncAction(
-                      () => onEditValueObjectFormSubmit(values),
-                      "Instance edited successfully",
-                      "submit instance edition",
-                    ).finally(() => setSubmitting(false)); // TODO: make it return Promise, no await because handler should return immediately
+                    submitReportFormValues(values).finally(() => setSubmitting(false)); // TODO: make it return Promise, no await because handler should return immediately
                   } catch (e) {
                     log.error(e);
                     setSubmitting(false);
@@ -576,7 +584,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                   );
                 }}
               </Formik>
-            </>
+            </ReportFormSubmitContext.Provider>
           ) : (
             <ThemedSpan style={{ color: "red" }}>no deployment found!</ThemedSpan>
           )
