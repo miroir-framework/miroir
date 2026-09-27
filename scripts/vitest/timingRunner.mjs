@@ -5,12 +5,17 @@
 //
 // Code under test may add named phases (for example a session init hidden in collect) with
 // `globalThis.__miroirTestTiming?.phase(name, ms)`; it is a no-op when this runner is absent.
-import fs from "node:fs";
-import path from "node:path";
-import { performance } from "node:perf_hooks";
+import importedFs from "node:fs";
+import importedPath from "node:path";
+const { performance } = globalThis;
 
 import { getFn } from "@vitest/runner";
 import { VitestTestRunner } from "vitest/runners";
+
+// Packages using vite-plugin-node-polyfills resolve `node:fs` to an empty stub inside the test
+// worker; the real modules come from the Node runtime itself.
+const fs = process.getBuiltinModule?.("node:fs") ?? importedFs;
+const path = process.getBuiltinModule?.("node:path") ?? importedPath;
 
 const round = (ms) => (ms === undefined ? undefined : Math.round(ms * 10) / 10);
 
