@@ -29,7 +29,9 @@ const loadBool = (key: string, defaultValue: boolean): boolean => {
 const saveBool = (key: string, value: boolean): void => {
   try {
     sessionStorage.setItem(key, JSON.stringify(value));
-  } catch {}
+  } catch {
+    // sessionStorage may be unavailable (private mode, quota); debug state is not persisted then
+  }
 };
 
 // ################################################################################################

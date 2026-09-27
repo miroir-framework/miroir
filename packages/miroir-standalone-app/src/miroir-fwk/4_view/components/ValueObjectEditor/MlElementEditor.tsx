@@ -800,7 +800,7 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
     } else {
       return null;
     }
-    const unionOptions = Array.from(new Set(branches.map((t: MlElement) => t.type)) || []);
+    const unionOptions = Array.from(new Set(branches.map((t: MlElement) => t.type)));
     if (unionOptions.length <= 1) return null;
 
     const currentType = (() => {

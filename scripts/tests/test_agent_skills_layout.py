@@ -39,11 +39,6 @@ def test_claude_folder_has_every_miroir_skill() -> None:
     assert MIROIR_OWNED <= {p.name for p in CLAUDE_SKILLS.iterdir() if p.is_dir()}
 
 
-def test_every_non_locked_skill_is_miroir_prefixed() -> None:
-    present = {p.name for p in AGENTS_SKILLS.iterdir() if p.is_dir()}
-    assert sorted(n for n in present - _lock_keys() if not n.startswith("miroir-")) == []
-
-
 def test_miroir_skill_name_matches_folder() -> None:
     for d in AGENTS_SKILLS.glob("miroir-*"):
         front = (d / "SKILL.md").read_text(encoding="utf-8").split("---")[1]
@@ -74,9 +69,10 @@ def test_personal_installs_are_ignored_by_git() -> None:
 
 
 def test_skill_cross_references_resolve() -> None:
-    tracked = {p.name for p in AGENTS_SKILLS.iterdir() if p.is_dir()}
+    # Only tracked skills: personal installs (gitignored) may reference anything.
+    tracked = {p.name for p in AGENTS_SKILLS.glob("miroir-*")} | _lock_keys()
     broken = []
-    for skill_md in AGENTS_SKILLS.glob("*/*.md"):
+    for skill_md in (md for name in sorted(tracked) for md in (AGENTS_SKILLS / name).glob("*.md")):
         text = skill_md.read_text(encoding="utf-8")
         for name in re.findall(r'Skill tool with "([a-z0-9-]+)"', text):
             if name not in tracked:

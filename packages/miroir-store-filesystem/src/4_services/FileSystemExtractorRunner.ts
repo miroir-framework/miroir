@@ -111,8 +111,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       "runBoxedQueryAction",
       JSON.stringify(runBoxedQueryAction, null, 2)
     );
-    let queryResult: Domain2QueryReturnType<DomainElementSuccess>;
-    queryResult = await this.selectorMap.runQuery(
+    const queryResult: Domain2QueryReturnType<DomainElementSuccess> = await this.selectorMap.runQuery(
       {
         extractor: runBoxedQueryAction.payload.query,
         extractorRunnerMap: this.selectorMap,

@@ -449,7 +449,6 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
   // ##############################################################################################
   // Convert columnDefs to Glide format
   const glideColumns: GridColumn[] = useMemo(() => {
-    let widthSpecs: ColumnWidthSpec[];
 
     // if (calculatedColumnWidths && calculatedColumnWidths.length > 0) {
     //   // Use pre-calculated widths from EntityInstanceGrid
@@ -459,7 +458,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
       log.warn("GlideDataGridComponent: No calculated column widths provided, using simple fallback");
       
       const equalDistributionColumnWidth = Math.floor((containerWidth - toolsColumnDefinition.width) / columnDefs.columnDefs.length);
-      widthSpecs = [
+      const widthSpecs: ColumnWidthSpec[] = [
         // Tools column
         {
           field: toolsColumnDefinition.field || "",

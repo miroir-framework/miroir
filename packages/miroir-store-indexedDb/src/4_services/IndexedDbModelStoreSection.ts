@@ -41,7 +41,7 @@ export class IndexedDbModelStoreSection
   // ##############################################################################################
   // TODO: also implemented in IndexedDbDataStoreSection => mix it up?
   async getState(): Promise<{ [uuid: string]: EntityInstanceCollection }> {
-    let result = {};
+    const result = {};
     log.info(this.logHeader, "getState this.getEntityUuids()", this.getEntityUuids());
 
     for (const parentUuid of this.getEntityUuids()) {

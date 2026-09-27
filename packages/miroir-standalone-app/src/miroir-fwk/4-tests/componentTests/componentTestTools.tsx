@@ -252,7 +252,6 @@ export const getMlElementEditorForTest: (pageLabel: string) => React.FC<MlElemen
     log.debug("getMlElementEditorForTest", "rawMlSchema", rawMlSchema);
     MlElementEditorForTestRenderCount++;
     const context = useMiroirContextService();
-    context.setDeploymentUuid
 
     const currentModel: MetaModel = useCurrentModel(
       deployment_Library_DO_NO_USE.uuid,

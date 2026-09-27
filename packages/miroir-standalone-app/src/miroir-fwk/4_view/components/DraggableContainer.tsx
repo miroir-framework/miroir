@@ -50,7 +50,7 @@ export const DraggableContainer: React.FC<DraggableContainerProps> = ({
   const [position, setPosition] = React.useState(() => {
     // Load position from sessionStorage
     const saved = sessionStorage.getItem(storageKey);
-    let result = saved ? JSON.parse(saved) : defaultPosition;
+    const result = saved ? JSON.parse(saved) : defaultPosition;
     
     // Ensure the timeline stays within viewport bounds
     const viewport = { width: window.innerWidth, height: window.innerHeight };

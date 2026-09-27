@@ -82,8 +82,8 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 });
 
 // Performance tracking for unfoldMlSchemaOnce - legacy approach
-let totalUnfoldTime = 0;
-let unfoldCallCount = 0;
+const totalUnfoldTime = 0;
+const unfoldCallCount = 0;
 
 // Editable attribute name component with local state management
 // const EditableAttributeName = React.memo(({
@@ -560,7 +560,7 @@ function renumberTagValueIds(obj: Record<string, any>, keyOrder: string[]): Reco
 // ##############################################################################################
 // ##############################################################################################
 // ##############################################################################################
-let count = 0;
+const count = 0;
 export function MlObjectEditor(props: MlObjectEditorProps) {
 
   const {
@@ -975,7 +975,7 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
           currentTypeCheckKeyMap?.rawSchema,
         ["definition", attributeName]
       );
-      const newAttributeValue = !!currentMiroirFundamentalMlSchema
+      const newAttributeValue = currentMiroirFundamentalMlSchema
         ? getDefaultValueForMlSchemaWithResolutionNonHook(
             "build",
             newAttributeType,

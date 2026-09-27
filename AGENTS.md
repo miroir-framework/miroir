@@ -12,14 +12,15 @@ Sibling repos, linked locally only when regenerating types from schemas: **jzod*
 
 - **Integration branch: `_integration`.** Branch from it and open PRs against it; `main` is the default branch.
 - **Session setup:** `python scripts/agent_session_setup.py` installs dependencies and builds what the tests below need, skipping what is already there, then prints the session state. Claude Code cloud sessions run it automatically at start (`.claude/settings.json`). `--dry-run` shows what it would do.
-- **Pre-push gate** (what `.github/workflows/pr-checks.yml` runs on every PR):
+- **Pre-push gate** (what `.github/workflows/pr-checks.yml` runs per PR):
   ```bash
   python scripts/sync_agent_skills.py --check
   python -m pytest scripts/tests -q
+  npm run lint
   npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
   npm run test -w miroir-core -- ''
   ```
-  Also typecheck every other package you touched (`npx tsc --noEmit --skipLibCheck -p packages/<pkg>/tsconfig.json`). Never run `tsc` from the repo root: the root `tsconfig.json` has no `include` and loads the whole monorepo.
+  Also typecheck other packages you touched (`npx tsc --noEmit --skipLibCheck -p packages/<pkg>/tsconfig.json`). Never run `tsc` from the repo root: the root `tsconfig.json` has no `include` and loads the whole monorepo.
 - **Non-regression** (`scripts/run-nonreg.py`, steps in `scripts/nonreg-manifest.json`, snapshots in `test-results/nonreg/`):
 
   | Command | Runs | Needs |
@@ -32,7 +33,7 @@ Sibling repos, linked locally only when regenerating types from schemas: **jzod*
   Typical use: `nonreg:unit` for any change under `packages/`; `nonreg:filesystem` as well when the change touches stores, local cache, DomainController or actions.
 - **Feature work:** non-trivial features and refactors start with `code-helpers/features/<issue>-<TYPE>-<slug>/analysis.md` then `tdd-implementation-plan.md` (skills `miroir-feature-analysis`, `miroir-analysis-to-tdd-plan`). Move and rename files with `git mv`.
 - **Skills:** Miroir skills are `.agents/skills/miroir-*`, next to a small shared core (`skills-lock.json`). `.agents/skills/` is canonical; `.claude/skills/` holds generated copies, so after editing a skill run `python scripts/sync_agent_skills.py`. Other skills are personal installs and are gitignored (`docs/contributing/development-setup.md`).
-- **Ad-hoc scripts** (diagnostics, repo helpers, one-off tooling) are written in **Python**. Use JS/TS only when the script must run inside a package's Node/Vite/Vitest workflow or import TypeScript modules from the monorepo.
+- **Ad-hoc scripts** (diagnostics, repo helpers, one-off tooling) are in **Python**. Use JS/TS only when the script must run inside a package's Node/Vite/Vitest workflow or import TypeScript modules from the monorepo.
 - **Code graph (optional):** when `graphify-out/graph.json` exists, `graphify query "<question>"`, `graphify path "<A>" "<B>"` and `graphify explain "<concept>"` answer broad cross-package questions with a scoped subgraph; after modifying code, refresh it with `graphify update .`. It is not built by default; `python scripts/agent_session_setup.py --graphify` installs and builds it (about 40 seconds). For focused questions, search the code directly.
 
 ## Architecture: layered (clean / hexagonal)

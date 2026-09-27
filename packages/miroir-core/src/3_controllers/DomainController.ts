@@ -4595,7 +4595,7 @@ export class DomainController implements DomainControllerInterface {
     principal?: AuthPrincipal,
   ): Promise<Action2ReturnType> {
     const localActionParams = { ...actionParamValues };
-    let localContext: Record<string, any> = { ...actionParamValues };
+    const localContext: Record<string, any> = { ...actionParamValues };
     let lastPayloadResult: Action2ReturnType = ACTION_OK;
 
     const sequenceToExecute = expandResolvableResetAndinitializeDeploymentCompositeAction(
@@ -4808,7 +4808,7 @@ export class DomainController implements DomainControllerInterface {
     actionParamValues: Record<string, any>,
   ): Promise<Action2VoidReturnType> {
     const localActionParams = { ...actionParamValues };
-    let localContext: Record<string, any> = { ...actionParamValues };
+    const localContext: Record<string, any> = { ...actionParamValues };
 
     // log.info(
     //   "handleRuntimeCompositeAction compositeActionSequence",
@@ -5142,7 +5142,7 @@ export class DomainController implements DomainControllerInterface {
       ...resolvedCompositeActionTemplates, // TODO: remove, evaluated templates are available only at runtime!
     };
 
-    let localContext: Record<string, any> = {
+    const localContext: Record<string, any> = {
       ...actionParamValues,
       ...resolvedCompositeActionTemplates,
     };
@@ -5719,7 +5719,7 @@ export class DomainController implements DomainControllerInterface {
       ),
     );
 
-    let localContext: Record<string, any> = {
+    const localContext: Record<string, any> = {
       ...actionParamValues,
       ...actionContext,
       ...resolved.resolvedCompositeActionTemplates,
@@ -5940,7 +5940,7 @@ export class DomainController implements DomainControllerInterface {
     actionParamValues: Record<string, any>,
   ): Promise<Action2VoidReturnType> {
     const localActionParams = { ...actionParamValues };
-    let localContext: Record<string, any> = { ...actionParamValues };
+    const localContext: Record<string, any> = { ...actionParamValues };
 
     log.debug(
       "handleTestCompositeAction testAction",
@@ -6423,7 +6423,7 @@ export class DomainController implements DomainControllerInterface {
     actionParamValues: Record<string, any>,
   ): Promise<Action2VoidReturnType> {
     const localActionParams = { ...actionParamValues };
-    let localContext: Record<string, any> = { ...actionParamValues };
+    const localContext: Record<string, any> = { ...actionParamValues };
 
     log.info(
       "handleTestCompositeActionTemplateSuite resolving testAction",

@@ -65,7 +65,7 @@ vi.mock('miroir-core', async (importOriginal) => {
     runMiroirTests: {
       ...actual.runMiroirTests,
       _runMiroirTestSuite: (...args: unknown[]) =>
-        runMiroirTestSuiteMock.apply(undefined, args as never),
+        runMiroirTestSuiteMock(...args),
     },
   };
 });

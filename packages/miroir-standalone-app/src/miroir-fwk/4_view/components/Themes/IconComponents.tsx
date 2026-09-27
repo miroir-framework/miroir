@@ -766,7 +766,7 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
   // Render based on icon type
   const renderIcon = () => {
     switch (resolvedIcon.type) {
-      case 'symbol':
+      case 'symbol': {
         // Check if we should render with superimposed letter
         if (resolvedIcon.superImpose?.letter) {
           return (
@@ -809,6 +809,7 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
           />
         );
       
+      }
       case 'emoji':
         return (
           <span 
@@ -871,7 +872,7 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
           </span>
         );
       
-      default:
+      default: {
         const fallbackIconName = materialSymbolsIconMap[fallback] || fallback;
         const defaultSymbolStyles: React.CSSProperties = {
           fontSize: sizeMap[size],
@@ -893,6 +894,7 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
             {...rest}
           />
         );
+      }
     }
   };
 

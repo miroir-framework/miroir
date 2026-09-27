@@ -40,7 +40,7 @@ export class FileSystemDataStoreSection extends MixedFileSystemInstanceStoreSect
   // ##############################################################################################
   // TODO: also implemented in IndexedDbDataStoreSection => factor out
   async getState(): Promise<{ [uuid: string]: EntityInstanceCollection }> {
-    let result = {};
+    const result = {};
     log.info(this.logHeader, "getState this.getEntityUuids()", this.getEntityUuids());
 
     for (const parentUuid of this.getEntityUuids()) {

@@ -50,9 +50,6 @@ import {
 // ################################################################################################
 const pageLabel = "Runner_ExternalEntity.integ.test";
 
-let miroirConfig: any;
-let loggerOptions: LoggerOptions;
-
 const myConsoleLog = (...args: any[]) => console.log(pageLabel, ...args);
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName("tests", "5-tests", pageLabel);
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -69,8 +66,8 @@ miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
 ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
 
 const { miroirConfig: miroirConfigParam, logConfig } = await loadTestConfigFiles(env);
-miroirConfig = miroirConfigParam;
-loggerOptions = logConfig;
+const miroirConfig: any = miroirConfigParam;
+const loggerOptions: LoggerOptions = logConfig;
 myConsoleLog("received miroirConfig", JSON.stringify(miroirConfig, null, 2));
 myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
 const miroirActivityTracker = new MiroirActivityTracker();
