@@ -1,5 +1,7 @@
 // Minimal lint rules for the miroir monorepo (#325). Every rule here is an error and the codebase passes it.
 // Rules that still have violations are switched off below with their count, so they can be enabled one at a time.
+// Existing rules-of-hooks and miroir/layers violations are counted per file in eslint-suppressions.json: a new
+// violation fails, and after a fix `npm run lint` asks for `npx eslint packages --prune-suppressions`.
 // Run: npm run lint
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
@@ -17,7 +19,7 @@ export default tseslint.config(
     ],
   },
   {
-    files: ["packages/*/src/**/*.{ts,tsx}", "packages/*/tests/**/*.{ts,tsx}"],
+    files: ["packages/*/{src,test,tests}/**/*.{ts,tsx}"],
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     plugins: { "react-hooks": reactHooks, miroir: { rules: { layers: miroirLayers } } },
     linterOptions: { reportUnusedDisableDirectives: "off" },
@@ -37,7 +39,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ["packages/*/tests/**/*.{ts,tsx}", "packages/*/src/**/*.{test,spec}.{ts,tsx}"],
+    files: ["packages/*/{test,tests}/**/*.{ts,tsx}", "packages/*/src/**/*.{test,spec}.{ts,tsx}"],
     rules: {
       // A committed `.only` silently skips every other test in the file.
       "no-restricted-properties": [
@@ -52,54 +54,12 @@ export default tseslint.config(
   },
   {
     // `declare global { var ... }` requires `var`.
-    files: ["packages/*/{src,tests}/**/*.d.ts"],
+    files: ["packages/*/{src,test,tests}/**/*.d.ts"],
     rules: { "no-var": "off" },
   },
   {
     // Legacy JSON loading through require(); not worth rewriting in a lint change.
     files: ["packages/miroir-core/src/index.ts"],
     rules: { "@typescript-eslint/no-require-imports": "off" },
-  },
-  {
-    // Known rules-of-hooks violations (72 in 14 files, #325). Remove a file once it is fixed; never add one.
-    files: [
-      "packages/miroir-localcache-zustand/src/react/hooks.ts",
-      "packages/miroir-standalone-app/src/miroir-fwk/4_view/ReduxHooks.ts",
-      "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/EndpointActionCaller.tsx",
-      "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/JsonObjectEditFormDialog.tsx",
-      "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportHooks.ts",
-      "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditor.tsx",
-      "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/FormComponents.tsx",
-      "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/TransformerEditor/TransformerEditor.tsx",
-      "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/BlobEditorField.tsx",
-      "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/MlElementEditor.tsx",
-      "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/MlElementEditorReactCodeMirror.tsx",
-      "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/MlObjectEditor.tsx",
-      "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ModelDiagramPage.tsx",
-      "packages/miroir-standalone-app/src/miroir-fwk/4_view/tools/renderPerformanceMeasure.tsx",
-    ],
-    rules: { "react-hooks/rules-of-hooks": "off" },
-  },
-  {
-    // Known upward imports (26 in 16 files, #325). Remove a file once it is fixed; never add one.
-    files: [
-      "packages/miroir-core/src/0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchema.ts",
-      "packages/miroir-core/src/0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchemaHelpers.ts",
-      "packages/miroir-core/src/1_core/Deployment.ts",
-      "packages/miroir-core/src/1_core/Menu.ts",
-      "packages/miroir-core/src/1_core/localCache/partialMutationGuard.ts",
-      "packages/miroir-core/src/1_core/localCache/reportQueryLoadSegment.ts",
-      "packages/miroir-core/src/1_core/mls/getDefaultValueForMlSchema.ts",
-      "packages/miroir-core/src/1_core/mls/mlsResolveSchemaReferenceInContext.ts",
-      "packages/miroir-core/src/1_core/mls/mlsTypeCheck.ts",
-      "packages/miroir-core/src/1_core/mls/resolveConditionalSchema.ts",
-      "packages/miroir-core/src/2_domain/ResolveCompositeActionTemplate.ts",
-      "packages/miroir-core/src/2_domain/TransformerInterfaceInference.ts",
-      "packages/miroir-core/src/3_controllers/DomainController.ts",
-      "packages/miroir-core/src/3_controllers/MiroirEventService.ts",
-      "packages/miroir-store-postgres/src/1_core/SqlGenerator.ts",
-      "packages/miroir-store-postgres/src/1_core/SqlQueryBuilder.ts",
-    ],
-    rules: { "miroir/layers": "off" },
   },
 );

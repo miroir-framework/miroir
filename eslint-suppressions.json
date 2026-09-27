@@ -1,0 +1,152 @@
+{
+  "packages/miroir-core/src/0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchema.ts": {
+    "miroir/layers": {
+      "count": 3
+    }
+  },
+  "packages/miroir-core/src/0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchemaHelpers.ts": {
+    "miroir/layers": {
+      "count": 3
+    }
+  },
+  "packages/miroir-core/src/1_core/Deployment.ts": {
+    "miroir/layers": {
+      "count": 1
+    }
+  },
+  "packages/miroir-core/src/1_core/Menu.ts": {
+    "miroir/layers": {
+      "count": 1
+    }
+  },
+  "packages/miroir-core/src/1_core/localCache/partialMutationGuard.ts": {
+    "miroir/layers": {
+      "count": 1
+    }
+  },
+  "packages/miroir-core/src/1_core/localCache/reportQueryLoadSegment.ts": {
+    "miroir/layers": {
+      "count": 1
+    }
+  },
+  "packages/miroir-core/src/1_core/mls/getDefaultValueForMlSchema.ts": {
+    "miroir/layers": {
+      "count": 1
+    }
+  },
+  "packages/miroir-core/src/1_core/mls/mlsResolveSchemaReferenceInContext.ts": {
+    "miroir/layers": {
+      "count": 1
+    }
+  },
+  "packages/miroir-core/src/1_core/mls/mlsTypeCheck.ts": {
+    "miroir/layers": {
+      "count": 1
+    }
+  },
+  "packages/miroir-core/src/1_core/mls/resolveConditionalSchema.ts": {
+    "miroir/layers": {
+      "count": 1
+    }
+  },
+  "packages/miroir-core/src/2_domain/ResolveCompositeActionTemplate.ts": {
+    "miroir/layers": {
+      "count": 1
+    }
+  },
+  "packages/miroir-core/src/2_domain/TransformerInterfaceInference.ts": {
+    "miroir/layers": {
+      "count": 1
+    }
+  },
+  "packages/miroir-core/src/3_controllers/DomainController.ts": {
+    "miroir/layers": {
+      "count": 6
+    }
+  },
+  "packages/miroir-core/src/3_controllers/MiroirEventService.ts": {
+    "miroir/layers": {
+      "count": 1
+    }
+  },
+  "packages/miroir-localcache-zustand/src/react/hooks.ts": {
+    "react-hooks/rules-of-hooks": {
+      "count": 2
+    }
+  },
+  "packages/miroir-standalone-app/src/miroir-fwk/4_view/ReduxHooks.ts": {
+    "react-hooks/rules-of-hooks": {
+      "count": 1
+    }
+  },
+  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/EndpointActionCaller.tsx": {
+    "react-hooks/rules-of-hooks": {
+      "count": 6
+    }
+  },
+  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/JsonObjectEditFormDialog.tsx": {
+    "react-hooks/rules-of-hooks": {
+      "count": 3
+    }
+  },
+  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportHooks.ts": {
+    "react-hooks/rules-of-hooks": {
+      "count": 2
+    }
+  },
+  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditor.tsx": {
+    "react-hooks/rules-of-hooks": {
+      "count": 8
+    }
+  },
+  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/FormComponents.tsx": {
+    "react-hooks/rules-of-hooks": {
+      "count": 21
+    }
+  },
+  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/TransformerEditor/TransformerEditor.tsx": {
+    "react-hooks/rules-of-hooks": {
+      "count": 11
+    }
+  },
+  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/BlobEditorField.tsx": {
+    "react-hooks/rules-of-hooks": {
+      "count": 9
+    }
+  },
+  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/MlElementEditor.tsx": {
+    "react-hooks/rules-of-hooks": {
+      "count": 1
+    }
+  },
+  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/MlElementEditorReactCodeMirror.tsx": {
+    "react-hooks/rules-of-hooks": {
+      "count": 4
+    }
+  },
+  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/MlObjectEditor.tsx": {
+    "react-hooks/rules-of-hooks": {
+      "count": 1
+    }
+  },
+  "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ModelDiagramPage.tsx": {
+    "react-hooks/rules-of-hooks": {
+      "count": 1
+    }
+  },
+  "packages/miroir-standalone-app/src/miroir-fwk/4_view/tools/renderPerformanceMeasure.tsx": {
+    "react-hooks/rules-of-hooks": {
+      "count": 2
+    }
+  },
+  "packages/miroir-store-postgres/src/1_core/SqlGenerator.ts": {
+    "miroir/layers": {
+      "count": 2
+    }
+  },
+  "packages/miroir-store-postgres/src/1_core/SqlQueryBuilder.ts": {
+    "miroir/layers": {
+      "count": 1
+    }
+  }
+}

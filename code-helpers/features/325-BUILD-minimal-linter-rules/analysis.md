@@ -15,8 +15,8 @@ Key sources: [`eslint.config.mjs`](../../../eslint.config.mjs), [`eslint-rules/m
 |---|---|
 | D1. Tool | **ESLint 9, one flat config at the repo root.** It has `react-hooks` and custom rules, which the layering rule needs. |
 | D2. What "minimal" means | **Errors only.** A rule is on only if the codebase passes it today or this change fixes it. No warnings. |
-| D3. Files covered | **`src/` and `tests/` of every package**, without `preprocessor-generated/`, `dist/`, `release/`, `tmp/`. |
-| D4. Layering | **Enforced by a repo rule**, with the logger infrastructure allowed and existing violations frozen in a per-file list. |
+| D3. Files covered | **`src/`, `test/` and `tests/` of every package**, without `preprocessor-generated/`, `dist/`, `release/`, `tmp/`. |
+| D4. Layering | **Enforced by a repo rule**, with the logger infrastructure allowed and existing violations counted per file in `eslint-suppressions.json`. |
 | D5. Type-aware rules | **Deferred.** `no-floating-promises` and friends need a tsconfig per package and are slow. |
 | D6. Formatting | **None.** The old `quotes: double` rule is dropped. |
 | D7. CI | **Blocking step in `pr-checks.yml`, and a line in the AGENTS.md pre-push gate.** |
@@ -46,7 +46,7 @@ AGENTS.md: "implementation dependencies flow downwards only". The repo rule [`mi
 
 `no-restricted-imports` with regex patterns was rejected: a regex cannot tell `0_interfaces/1_core/x.ts` importing `../2_domain/y` (interface layer, allowed) from `1_core/x.ts` importing `../2_domain/y` (not allowed). `eslint-plugin-boundaries` and `import/no-restricted-paths` were rejected because they need a TS import resolver for the `.js` suffixes, which adds more dependencies than the 70-line rule.
 
-The grilling round (Q4) assumed 2 upward imports besides the logger. The rule finds 26 in 16 files, because the first count only covered `1_core`/`2_domain` to `3_controllers`/`4_services`. Moving that code is out of scope, so those 16 files are listed in `eslint.config.mjs` as a frozen exception list. New files cannot be added to it without a visible config change.
+The grilling round (Q4) assumed 2 upward imports besides the logger. The rule finds 26 in 16 files, because the first count only covered `1_core`/`2_domain` to `3_controllers`/`4_services`. Moving that code is out of scope, so those violations are recorded with ESLint's bulk suppressions (`eslint --suppress-rule`) in `eslint-suppressions.json`, one count per file and rule. A new violation in any file, listed or not, pushes the count over and fails. A fixed one fails too, with `There are suppressions left that do not occur anymore`, until someone runs `npx eslint packages --prune-suppressions`, so the counts only go down. A first version turned the rule off for the whole listed file, which hid new violations there (Greptile review of PR #328).
 
 ---
 
@@ -54,7 +54,7 @@ The grilling round (Q4) assumed 2 upward imports besides the logger. The rule fi
 
 1. **Catch mistakes before review.** In order to get feedback before a reviewer reads my PR, as a contributor (human or agent), I can run `npm run lint` and CI fails on the same errors.
 2. **Keep the layering.** In order to keep miroir-core's layers meaningful, as an application maintainer, I can rely on CI to reject a new upward implementation import.
-3. **Tighten one rule at a time.** In order to raise the bar without a big-bang cleanup, as a maintainer, I can remove a file from an exception list, or switch on a rule listed as off, in a small PR.
+3. **Tighten one rule at a time.** In order to raise the bar without a big-bang cleanup, as a maintainer, I can fix suppressed violations and prune their counts, or switch on a rule listed as off, in a small PR.
 
 ## 2. Non-goals
 
@@ -77,7 +77,7 @@ Violation counts with `@eslint/js` + `typescript-eslint` recommended + `react-ho
 | `@typescript-eslint/no-explicit-any` | 3832 | 454 | off |
 | `@typescript-eslint/no-unused-vars` | 1055 | 290 | off |
 | `react-hooks/exhaustive-deps` | 194 | 64 | not enabled |
-| `react-hooks/rules-of-hooks` | 72 | 14 | on, 14 files frozen |
+| `react-hooks/rules-of-hooks` | 72 | 14 | on, existing ones in `eslint-suppressions.json` |
 | `prefer-const` | 69 | 41 | fixed (61 by `--fix`, 8 by hand) |
 | `no-fallthrough` | 47 | 14 | off |
 | `@typescript-eslint/no-empty-object-type` | 14 | 13 | off |
@@ -106,16 +106,16 @@ Violation counts with `@eslint/js` + `typescript-eslint` recommended + `react-ho
 
 | Piece | Location |
 |---|---|
-| Config | `eslint.config.mjs` |
+| Config | `eslint.config.mjs`; suppressed existing violations in `eslint-suppressions.json` |
 | Layering rule and its RuleTester test | `eslint-rules/miroir-layers.mjs`, `eslint-rules/miroir-layers.test.mjs` |
 | Script | `npm run lint` (root `package.json`): the rule's test, then ESLint on `packages/` |
 | Dev dependencies (root) | `eslint` 9, `@eslint/js` 9, `typescript-eslint` 8, `eslint-plugin-react-hooks` 7 |
 
 ## 5. Follow-ups
 
-Each is a small PR that removes lines from `eslint.config.mjs`:
+Each is a small PR that removes lines from `eslint.config.mjs` or `eslint-suppressions.json`:
 
-1. Fix the 14 files frozen for `rules-of-hooks`.
-2. Fix the 16 files frozen for `miroir/layers`; moving `MiroirLoggerFactory` below `1_core` would also let the allowance go.
+1. Fix the 14 files with suppressed `rules-of-hooks` violations.
+2. Fix the 16 files with suppressed `miroir/layers` violations; moving `MiroirLoggerFactory` below `1_core` would also let the allowance go.
 3. `no-fallthrough`: mark each intended fallthrough with `// falls through`, fix the others.
 4. Type-aware rules (`no-floating-promises`), once the base runs in CI.
