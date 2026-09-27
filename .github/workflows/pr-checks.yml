@@ -22,6 +22,8 @@ jobs:
         run: |
           python3 -m pip install --quiet pytest
           python3 -m pytest scripts/tests -q
+      - name: Dependency policy
+        run: python3 scripts/check_dependency_policy.py --rule specs
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:

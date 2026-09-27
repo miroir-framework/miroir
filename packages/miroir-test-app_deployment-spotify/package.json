@@ -38,9 +38,9 @@
     "miroir-core": "*",
     "miroir-test-app_deployment-admin": "*",
     "miroir-test-app_deployment-miroir": "*",
-    "tsup": "^8.3.5",
-    "tsx": "^4.19.3",
-    "vite": "^6.3.5",
-    "vitest": "^3.2.4"
+    "tsup": "8.5.1",
+    "tsx": "4.20.3",
+    "vite": "6.4.3",
+    "vitest": "3.2.4"
   }
 }

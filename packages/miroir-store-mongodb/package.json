@@ -11,14 +11,14 @@
   "license": "MIT",
   "dependencies": {
     "miroir-core": "*",
-    "mongodb": "^6.0.0"
+    "mongodb": "6.21.0"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "copyfiles": "^2.4.1",
-    "rimraf": "^4.1.1",
-    "tsconfig-paths": "^4.1.2",
-    "tsup": "^8.0.1"
+    "@types/node": "20.19.30",
+    "copyfiles": "2.4.1",
+    "rimraf": "4.4.1",
+    "tsconfig-paths": "4.2.0",
+    "tsup": "8.5.1"
   },
   "scripts": {
     "watch": "lerna watch --scope='miroir-store-mongodb' --include-dependencies -- lerna run build --scope='miroir-store-mongodb'",

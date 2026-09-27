@@ -20,9 +20,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "mermaid": "*",
+    "mermaid": "11.12.3",
     "miroir-core": "*",
-    "svg-toolbelt": "^0.7.0"
+    "svg-toolbelt": "0.7.0"
   },
   "peerDependencies": {
     "@mui/material": ">=5.0.0",
@@ -30,8 +30,8 @@
     "react": ">=18.0.0"
   },
   "devDependencies": {
-    "@types/react": "^18",
-    "tsup": "^8.0.0",
-    "vitest": "^3.2.4"
+    "@types/react": "18.3.23",
+    "tsup": "8.5.1",
+    "vitest": "3.2.4"
   }
 }

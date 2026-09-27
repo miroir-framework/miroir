@@ -27,7 +27,7 @@ This plan does **not** cut bundle size (D19: separate issue opened in Slice 17 f
 | Slice | PR | Title | Status | Primary proof |
 |---|---|---|---|---|
 | 0 | 1 | Baseline: audit, specs, build sizes, nonreg | ✅ | `baseline.json` + nonreg:unit / nonreg:filesystem results |
-| 1 | 1 | Tracer: a floating spec fails the check; every spec pinned | ⬜ | `test_check_dependency_policy.py` specs rules + real repo exits 0 |
+| 1 | 1 | Tracer: a floating spec fails the check; every spec pinned | ✅ | `test_check_dependency_policy.py` specs rules + real repo exits 0 |
 | 2 | 1 | The release writes exact internal versions | ⬜ | `ci/release/tests` new test |
 | 3 | 1 | Build tools leave runtime `dependencies` | ⬜ | `classification` rule + `npm audit --omit=dev` drop |
 | 4 | 1 | `npm ci` works everywhere from the lockfile alone | ⬜ | `workflows` rule + clean `npm ci` + tsup/vite build on Linux |
@@ -148,7 +148,7 @@ npm audit --json > /tmp/audit-before.json; npm run nonreg:unit; npm run nonreg:f
 
 ## Slice 1 — Tracer: a floating spec fails the check; every spec is pinned
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -192,6 +192,13 @@ npm run nonreg:unit
 ```
 
 ### Realization
+
+- `scripts/check_dependency_policy.py`: rule `specs`, a rule table and `--rule` selection. `scripts/tests/test_check_dependency_policy.py`: 27 cases on `tmp_path` workspaces, plus the real repo.
+- RED on the real repo: 339 violations, i.e. 338 specs and the missing `.npmrc` (the plan's 343 counted differently; the 10 `^` peer ranges are not violations).
+- 338 specs pinned by a one-off helper (kept out of the repo) to the version the lockfile resolves for each package directory: nested `packages/<pkg>/node_modules/<name>` first, then the hoisted copy. The deployment packages keep their different `vite` 6.4.x versions; unifying them is Slice 6. `mermaid: *`, the root `yaml`/`rxjs` overrides and the `typescript` alias are pinned; the two internal `^0.5.0-rc.1` in `miroir-standalone-app` became `*`.
+- `npm install --package-lock-only` changed spec lines only (336 lines, no `version`, `resolved` or `integrity` change). It also dropped the `libc` field of the four `@nx/nx-linux-*` entries (npm 10.9 does not write it); they were restored from the previous lockfile. Slice 4 has to regenerate the lockfile with the same care.
+- `pr-checks.yml` job `core`: step "Dependency policy" (`--rule specs`) after the repo script tests.
+- Validation: pytest 73 passed; `npm ci` rc 0 and the lockfile still matches every manifest; `./build-all.sh devBuild` rc 0 (189 s); `tsc` miroir-core rc 0; miroir-core tests 2078 passed; nonreg:unit 38/38 passed (579 s).
 
 ---
 
