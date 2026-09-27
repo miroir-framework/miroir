@@ -2,7 +2,7 @@
 
 > Integration-first, no mocks. The harness is tested through its public entry points: `run-nonreg.py` (pytest in `scripts/tests`, which runs the real script on small real manifests), the package launchers (vitest unit tests on the argv/env they produce), and real vitest runs on the filesystem profile. No test file, `RunnerTestSession` or UI launch code changes, except where a slice names it.
 
-**Resume note:** analysis confirmed 2026-09-27. Branch `318-FEATURE-nonreg-profiling`, from `_integration` 76e52aa. Next: Slice 3.
+**Resume note:** analysis confirmed 2026-09-27. Branch `318-FEATURE-nonreg-profiling`, from `_integration` 76e52aa. Next: Slice 4.
 
 ## Scope
 
@@ -23,7 +23,7 @@ Out of scope: changes to the UI test runs; timing trends across runs (#306); ste
 | 0 | Characterize the legacy nonreg contract | ✅ DONE | `scripts/tests/test_run_nonreg.py` |
 | 1 | Clean filesystem baseline (D5, D6) | ✅ DONE | the 4 steps pass on `emulatedServer-filesystem` |
 | 2 | Opt-in timing profile (D1) | ✅ DONE | `--timings` writes `timings.json` with hook times; nothing written without it |
-| 3 | Shared runner for testByFile groups (D2) | ⬜ pending | `--runner shared` on the storage group: same per-step verdicts, lower wall time |
+| 3 | Shared runner for testByFile groups (D2) | ✅ DONE | `--runner shared` on the storage group: same per-step verdicts, lower wall time |
 | 4 | Shared runner for runner/action suites (D2) | ⬜ pending | new shared entry: one session per suite, same results as legacy |
 | 5 | `perSuite` reset policy (D4) | ⬜ pending | timing report shows one reset per marked suite; results unchanged |
 | 6 | Lazy store-state logging | ⬜ pending | reset time before/after, from `--timings` |
@@ -175,7 +175,7 @@ Resets are about 85–99 % of integ test time. Slice 5 is worth more than the an
 
 ## Slice 3 — Shared runner for testByFile groups (D2)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** `--runner shared` runs the storage integ steps in one vitest launch, with the same per-step verdicts.
 
@@ -194,6 +194,27 @@ Resets are about 85–99 % of integ test time. Slice 5 is worth more than the an
 **Refactor checkpoint:** a `StepRunner` strategy in `run-nonreg.py` (legacy / shared) behind the existing `run_step` loop.
 
 **Validation:** pytest; the real run above; `npm run nonreg:filesystem` unchanged (legacy).
+
+### Realization
+
+- The descriptor is generic, so `run-nonreg.py` knows nothing about packages: `"shared": {"group", "argv", "files"}`.
+  - Every member of a group has the same argv prefix, which is validated.
+  - The group runs `<prefix> --no-isolate --reporter=json --outputFile.json=<snapshot>/shared/<group>.json <all files>`.
+  - Each step's verdict comes from the report entries whose path contains one of its files. The step's `duration_s` is the sum of those files' durations, and `shared_group_duration_s` is the group's wall time.
+  - For the standalone-app launcher, the prefix carries `--no-bail`, so one failure does not hide the other steps.
+- Fallback: a member that fails, or has no results, in shared mode re-runs alone with its legacy argv. It records `mode: "shared→legacy"` and `shared_status`, plus `shared_state_leak_suspected: true` when it passes alone.
+- Legacy summaries are unchanged. The shared-only fields live in `StepResult.extra` and are merged by `step_to_dict`. `summary["runner"]` is written only for `shared`.
+- `spawn()` was extracted from `run_step` (refactor checkpoint) and is reused by the group run.
+- Timings in shared mode go to `timings/shared-<group>/`. They are then copied to each member's directory by file match, so `timings.json` keeps one entry per step.
+- Finding: with `pool: threads` + `singleThread` (the repo's setting), `globalThis` already persists across files **with** isolation. Isolation only resets the module graph, so `--no-isolate` adds only module-level state sharing: loggers, `ConfigurationService`, store registrations. The fixture leak files (`scripts/tests/fixtures/vitest-shared/leak-*.fixture.test.mjs`) interfere through a shared module for this reason.
+- Proof:
+  - pytest (3 new tests):
+    - one launch and one row per step;
+    - a step without a descriptor still runs legacy;
+    - the leak pair passes through the fallback and is flagged;
+    - a real failure stays failed;
+    - `--runner legacy` ignores descriptors and writes the exact legacy fields.
+  - Real run: the 3 storage integ steps with descriptors, `--runner shared` on filesystem, all passed in **16.3 s** vs 39.7 s legacy. The second and third files collect in about 20 ms instead of about 7 s.
 
 ---
 

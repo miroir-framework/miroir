@@ -744,7 +744,24 @@
         "--profile",
         "{profile}",
         "PersistenceStoreController.integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-profile",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--no-bail"
+        ],
+        "files": [
+          "PersistenceStoreController.integ"
+        ]
+      }
     },
     {
       "id": "appstack-ExtractorPersistenceStoreRunner.integ",
@@ -761,7 +778,24 @@
         "--profile",
         "{profile}",
         "ExtractorPersistenceStoreRunner.integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-profile",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--no-bail"
+        ],
+        "files": [
+          "ExtractorPersistenceStoreRunner.integ"
+        ]
+      }
     },
     {
       "id": "appstack-ExtractorTemplatePersistenceStoreRunner.integ",
@@ -778,7 +812,24 @@
         "--profile",
         "{profile}",
         "ExtractorTemplatePersistenceStoreRunner.integ"
-      ]
+      ],
+      "shared": {
+        "group": "standalone-app-profile",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--no-bail"
+        ],
+        "files": [
+          "ExtractorTemplatePersistenceStoreRunner.integ"
+        ]
+      }
     },
     {
       "id": "appstack-uiIntegrationTestLauncher.integ",

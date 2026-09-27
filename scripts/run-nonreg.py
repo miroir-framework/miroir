@@ -58,6 +58,15 @@ class StepResult:
     log_file: str | None = None
     vitest: dict[str, int] | None = None
     error_tail: str | None = None
+    # Fields only written by --runner shared (#318); absent from legacy summaries.
+    extra: dict[str, Any] = field(default_factory=dict)
+
+
+def step_to_dict(result: StepResult) -> dict[str, Any]:
+    data = asdict(result)
+    extra = data.pop("extra")
+    data.update(extra)
+    return data
 
 
 def load_manifest() -> dict[str, Any]:
@@ -129,6 +138,32 @@ def tail_text(text: str, max_lines: int = 40) -> str:
     return "\n".join(lines[-max_lines:])
 
 
+def spawn(argv: list[str], env: dict[str, str] | None) -> subprocess.CompletedProcess[str]:
+    """Run one command from the repo root, capturing combined output."""
+    # Windows: npm/npx resolve to *.cmd; CreateProcess cannot launch .cmd without a shell.
+    if os.name == "nt":
+        return subprocess.run(
+            subprocess.list2cmdline(argv),
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            shell=True,
+            env=env,
+        )
+    return subprocess.run(
+        argv,
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        shell=False,
+        env=env,
+    )
+
+
 def run_step(
     step: dict[str, Any],
     *,
@@ -167,29 +202,7 @@ def run_step(
     env = timing_env(snap_dir, step_id) if timings else None
     started = time.perf_counter()
     try:
-        # Windows: npm/npx resolve to *.cmd; CreateProcess cannot launch .cmd without a shell.
-        if os.name == "nt":
-            proc = subprocess.run(
-                subprocess.list2cmdline(argv),
-                cwd=ROOT,
-                capture_output=True,
-                text=True,
-                encoding="utf-8",
-                errors="replace",
-                shell=True,
-                env=env,
-            )
-        else:
-            proc = subprocess.run(
-                argv,
-                cwd=ROOT,
-                capture_output=True,
-                text=True,
-                encoding="utf-8",
-                errors="replace",
-                shell=False,
-                env=env,
-            )
+        proc = spawn(argv, env)
     except OSError as exc:
         result.status = "failed"
         result.exit_code = 127
@@ -284,6 +297,163 @@ def timings_markdown(timings: dict[str, Any]) -> list[str]:
         lines.append(f"| `{sid}` | {name} | {secs(total)} | {secs(before_ms)} | {secs(body_ms)} | {secs(after_ms)} |")
     lines.append("")
     return lines
+
+
+# ------------------------------------------------------------------------------------------------
+# Shared runner (#318, opt-in with --runner shared)
+#
+# A step joins a shared group when its manifest entry has
+#   "shared": {"group": "<name>", "argv": [<command prefix>], "files": [<vitest filters>]}
+# Every member of a group has the same argv prefix. The group runs once:
+#   <argv prefix> --no-isolate --reporter=json --outputFile.json=<report> <all files>
+# and each member's verdict comes from the report entries whose path contains one of its files.
+# Members that fail in shared mode re-run alone with their legacy argv (fallback), so a state leak
+# between files never turns into a false failure; the step records both verdicts.
+
+SHARED_DIRNAME = "shared"
+
+
+def plan_shared_groups(steps: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
+    groups: dict[str, list[dict[str, Any]]] = {}
+    for step in steps:
+        shared = step.get("shared")
+        if not shared:
+            continue
+        groups.setdefault(shared["group"], []).append(step)
+    for name, members in groups.items():
+        prefixes = {json.dumps(m["shared"]["argv"]) for m in members}
+        if len(prefixes) > 1:
+            raise ValueError(f"shared group {name!r}: members use different argv prefixes")
+    return groups
+
+
+def _vitest_counts_from_report(entries: list[dict[str, Any]]) -> dict[str, int]:
+    statuses = [a.get("status") for e in entries for a in e.get("assertionResults", [])]
+    return {
+        "tests_failed": statuses.count("failed"),
+        "tests_passed": statuses.count("passed"),
+        "tests_skipped": sum(1 for st in statuses if st in ("skipped", "pending", "todo")),
+        "files_failed": sum(1 for e in entries if e.get("status") != "passed"),
+        "files_passed": sum(1 for e in entries if e.get("status") == "passed"),
+        "files_skipped": 0,
+    }
+
+
+def _matches(path: str, filters: list[str]) -> bool:
+    normalized = path.replace("\\", "/")
+    return any(f in normalized for f in filters)
+
+
+def _distribute_group_timings(snap_dir: Path, group: str, members: list[dict[str, Any]]) -> None:
+    group_dir = snap_dir / TIMINGS_DIRNAME / f"{SHARED_DIRNAME}-{group}"
+    if not group_dir.is_dir():
+        return
+    for record_path in sorted(group_dir.glob("*.json")):
+        try:
+            filepath = json.loads(record_path.read_text(encoding="utf-8")).get("filepath", "")
+        except (OSError, json.JSONDecodeError):
+            continue
+        for member in members:
+            if _matches(filepath, member["shared"]["files"]):
+                target = snap_dir / TIMINGS_DIRNAME / member["id"]
+                target.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(record_path, target / record_path.name)
+
+
+def run_shared_group(
+    group: str,
+    members: list[dict[str, Any]],
+    *,
+    profile: str,
+    snap_dir: Path,
+    dry_run: bool,
+    timings: bool,
+) -> dict[str, StepResult]:
+    shared_dir = snap_dir / SHARED_DIRNAME
+    shared_dir.mkdir(parents=True, exist_ok=True)
+    report_path = shared_dir / f"{group}.json"
+    log_path = snap_dir / "logs" / f"{SHARED_DIRNAME}-{group}.log"
+    files = [f for m in members for f in m["shared"]["files"]]
+    argv = resolve_argv(
+        expand_argv(list(members[0]["shared"]["argv"]), profile)
+        + ["--no-isolate", "--reporter=json", f"--outputFile.json={report_path}", *files]
+    )
+
+    def base_result(member: dict[str, Any]) -> StepResult:
+        return StepResult(
+            id=member["id"],
+            title=member["title"],
+            tier=member["tier"],
+            requires=member.get("requires", "none"),
+            status="not_run",
+            argv=argv,
+            log_file=repo_relative(log_path),
+            extra={"mode": "shared", "shared_group": group},
+        )
+
+    if dry_run:
+        log_path.write_text(f"DRY-RUN: {' '.join(argv)}\n", encoding="utf-8")
+        results = {}
+        for member in members:
+            result = base_result(member)
+            result.status = "skipped"
+            result.skip_reason = "dry-run"
+            results[member["id"]] = result
+        return results
+
+    print(f"\n=== [shared] {group}: {', '.join(m['id'] for m in members)} ===", flush=True)
+    print(f"$ {' '.join(argv)}", flush=True)
+    env = timing_env(snap_dir, f"{SHARED_DIRNAME}-{group}") if timings else None
+    started = time.perf_counter()
+    try:
+        proc = spawn(argv, env)
+        combined = (proc.stdout or "") + ("\n" if proc.stderr else "") + (proc.stderr or "")
+        exit_code: int | None = proc.returncode
+    except OSError as exc:
+        combined = f"OSError: {exc}\nargv: {argv}\n"
+        exit_code = 127
+    group_duration = round(time.perf_counter() - started, 3)
+    log_path.write_text(combined, encoding="utf-8")
+
+    entries: list[dict[str, Any]] = []
+    if report_path.is_file():
+        try:
+            entries = json.loads(report_path.read_text(encoding="utf-8")).get("testResults", [])
+        except (OSError, json.JSONDecodeError):
+            entries = []
+    if timings:
+        _distribute_group_timings(snap_dir, group, members)
+
+    results: dict[str, StepResult] = {}
+    for member in members:
+        result = base_result(member)
+        result.extra["shared_group_duration_s"] = group_duration
+        result.exit_code = exit_code
+        matched = [e for e in entries if _matches(e.get("name", ""), member["shared"]["files"])]
+        result.vitest = _vitest_counts_from_report(matched) if matched else None
+        result.duration_s = round(
+            sum((e.get("endTime", 0) - e.get("startTime", 0)) for e in matched) / 1000, 3
+        )
+        passed = bool(matched) and all(e.get("status") == "passed" for e in matched)
+        if passed:
+            result.status = "passed"
+            print(f"PASSED [shared] {member['id']} ({result.duration_s}s)", flush=True)
+            results[member["id"]] = result
+            continue
+        print(f"FAILED [shared] {member['id']}; re-running legacy", flush=True)
+        fallback = run_step(member, profile=profile, snap_dir=snap_dir, dry_run=False, timings=timings)
+        fallback.extra = {
+            "mode": "shared→legacy",
+            "shared_group": group,
+            "shared_status": "failed" if matched else "no-results",
+            "shared_group_duration_s": group_duration,
+        }
+        if fallback.status == "passed":
+            # Passes alone, fails in the group: files interfere through shared module state.
+            fallback.extra["shared_state_leak_suspected"] = True
+        results[member["id"]] = fallback
+    print(f"shared group {group} done in {group_duration}s", flush=True)
+    return results
 
 
 def write_summary_md(summary: dict[str, Any], path: Path, timings: dict[str, Any] | None = None) -> None:
@@ -551,6 +721,15 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     p.add_argument(
+        "--runner",
+        choices=["legacy", "shared"],
+        default="legacy",
+        help=(
+            "legacy (default): one launch per step, as always. shared (#318, opt-in): steps with a "
+            "'shared' descriptor run together per group in one vitest launch; failures re-run legacy"
+        ),
+    )
+    p.add_argument(
         "--manifest",
         default=None,
         help="Manifest to run (default: scripts/nonreg-manifest.json)",
@@ -629,6 +808,8 @@ def main(argv: list[str] | None = None) -> int:
     wall_start = time.perf_counter()
     results: list[StepResult] = []
     aborted = False
+    shared_groups = plan_shared_groups(steps) if args.runner == "shared" else {}
+    shared_results: dict[str, StepResult] = {}
 
     for step in steps:
         if aborted:
@@ -645,9 +826,24 @@ def main(argv: list[str] | None = None) -> int:
             )
             continue
 
-        result = run_step(
-            step, profile=profile, snap_dir=snap_dir, dry_run=args.dry_run, timings=args.timings
-        )
+        group = step.get("shared", {}).get("group") if args.runner == "shared" else None
+        if group is not None:
+            if step["id"] not in shared_results:
+                shared_results.update(
+                    run_shared_group(
+                        group,
+                        shared_groups[group],
+                        profile=profile,
+                        snap_dir=snap_dir,
+                        dry_run=args.dry_run,
+                        timings=args.timings,
+                    )
+                )
+            result = shared_results[step["id"]]
+        else:
+            result = run_step(
+                step, profile=profile, snap_dir=snap_dir, dry_run=args.dry_run, timings=args.timings
+            )
         results.append(result)
         if result.status == "failed" and fail_fast:
             aborted = True
@@ -677,11 +873,14 @@ def main(argv: list[str] | None = None) -> int:
             "dirty": bool(_git("status", "--porcelain")),
         },
         "counts": counts,
-        "steps": [asdict(r) for r in results],
+        "steps": [step_to_dict(r) for r in results],
         "snapshot_dir": repo_relative(snap_dir),
         "summary_json": repo_relative(snap_dir / "summary.json"),
         "summary_md": repo_relative(snap_dir / "summary.md"),
     }
+
+    if args.runner != "legacy":
+        summary["runner"] = args.runner
 
     timings: dict[str, Any] | None = None
     if args.timings:

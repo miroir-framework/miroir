@@ -215,3 +215,92 @@ def test_default_run_does_not_enable_the_timing_runner(tmp_path: Path, vitest_fi
     assert "timings_json" not in summary
     assert sorted(p.name for p in snap_dir.iterdir()) == ["logs", "summary.json", "summary.md"]
     assert "### Slowest tests" not in (snap_dir / "summary.md").read_text(encoding="utf-8")
+
+
+# ------------------------------------------------------------------------------------------------
+# #318 Slice 3: opt-in shared runner with legacy fallback
+
+SHARED_FIXTURE_ARGV = ["npx", "vitest", "run", "--config", "scripts/tests/fixtures/vitest-shared/vitest.config.mjs"]
+
+
+def shared_step(step_id: str, files: list[str], group: str = "fixture") -> dict:
+    return {
+        "id": step_id,
+        "tier": "unit",
+        "title": step_id,
+        "argv": [*SHARED_FIXTURE_ARGV, *files],
+        "shared": {"group": group, "argv": SHARED_FIXTURE_ARGV, "files": files},
+    }
+
+
+@pytest.fixture
+def shared_manifest(tmp_path: Path) -> Path:
+    return write_manifest(
+        tmp_path,
+        [
+            shared_step("alpha", ["alpha.fixture"]),
+            {
+                "id": "plain",
+                "tier": "unit",
+                "title": "no shared descriptor",
+                "argv": ["python", "-c", "pass"],
+            },
+            shared_step("beta", ["beta.fixture"]),
+            shared_step("leaky", ["leak-1.fixture", "leak-2.fixture"]),
+            shared_step("broken", ["broken.fixture"]),
+        ],
+    )
+
+
+def steps_by_id(summary: dict) -> dict[str, dict]:
+    return {s["id"]: s for s in summary["steps"]}
+
+
+@requires_vitest
+def test_shared_runner_runs_a_group_in_one_launch_and_keeps_one_row_per_step(
+    tmp_path: Path, shared_manifest: Path
+):
+    _, summary, snap_dir = run_nonreg(tmp_path, shared_manifest, "--tier", "unit", "--runner", "shared")
+
+    steps = steps_by_id(summary)
+    assert [s["id"] for s in summary["steps"]] == ["alpha", "plain", "beta", "leaky", "broken"]
+    assert summary["runner"] == "shared"
+    for sid in ("alpha", "beta"):
+        assert steps[sid]["status"] == "passed"
+        assert steps[sid]["mode"] == "shared"
+        assert steps[sid]["shared_group"] == "fixture"
+        assert steps[sid]["vitest"]["tests_passed"] == 1
+    assert steps["alpha"]["argv"] == steps["beta"]["argv"]
+    assert "--no-isolate" in steps["alpha"]["argv"]
+    assert (snap_dir / "logs" / "shared-fixture.log").is_file()
+    assert "mode" not in steps["plain"]
+    assert steps["plain"]["status"] == "passed"
+
+
+@requires_vitest
+def test_shared_failures_rerun_legacy_and_flag_state_leaks(tmp_path: Path, shared_manifest: Path):
+    code, summary, _ = run_nonreg(tmp_path, shared_manifest, "--tier", "unit", "--runner", "shared")
+
+    steps = steps_by_id(summary)
+    assert steps["leaky"]["status"] == "passed"
+    assert steps["leaky"]["mode"] == "shared→legacy"
+    assert steps["leaky"]["shared_status"] == "failed"
+    assert steps["leaky"]["shared_state_leak_suspected"] is True
+    assert "--no-isolate" not in steps["leaky"]["argv"]
+
+    assert steps["broken"]["status"] == "failed"
+    assert steps["broken"]["mode"] == "shared→legacy"
+    assert "shared_state_leak_suspected" not in steps["broken"]
+    assert code == 1
+
+
+@requires_vitest
+def test_legacy_runner_ignores_shared_descriptors(tmp_path: Path, shared_manifest: Path):
+    _, summary, snap_dir = run_nonreg(tmp_path, shared_manifest, "--tier", "unit")
+
+    assert "runner" not in summary
+    for step in summary["steps"]:
+        assert set(step) == LEGACY_STEP_FIELDS
+        assert "--no-isolate" not in step["argv"]
+    assert not (snap_dir / "shared").exists()
+    assert steps_by_id(summary)["leaky"]["status"] == "passed"
