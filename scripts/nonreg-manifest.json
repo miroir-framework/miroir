@@ -41,6 +41,26 @@
       ]
     },
     {
+      "id": "unit-check-dependency-policy",
+      "tier": "unit",
+      "title": "Guard — dependency policy: exact specs, build tools in devDependencies, lockfile, workflows, action SHAs (#326)",
+      "requires": "none",
+      "argv": [
+        "python",
+        "scripts/check_dependency_policy.py",
+        "--rule",
+        "specs",
+        "--rule",
+        "classification",
+        "--rule",
+        "lockfile",
+        "--rule",
+        "workflows",
+        "--rule",
+        "actions"
+      ]
+    },
+    {
       "id": "unit-301-agent-tooling",
       "tier": "unit",
       "title": "Repo scripts (scripts/tests): #301 agent tooling",

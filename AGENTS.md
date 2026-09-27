@@ -16,6 +16,7 @@ Sibling repos, linked locally only when regenerating types from schemas: **jzod*
   ```bash
   python scripts/sync_agent_skills.py --check
   python -m pytest scripts/tests -q
+  python scripts/check_dependency_policy.py
   npm run lint
   npm run miroir-env -- check --strict --tracked-clean
   npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
@@ -26,7 +27,7 @@ Sibling repos, linked locally only when regenerating types from schemas: **jzod*
 
   | Command | Runs | Needs |
   |---|---|---|
-  | `npm run nonreg:unit` | 42 unit steps, about 8 min (MiroirTest unit, guards, platform tests) | built packages, pytest |
+  | `npm run nonreg:unit` | 43 unit steps, about 10 min (MiroirTest unit, guards, platform tests) | built packages, pytest |
   | `npm run nonreg:filesystem` | unit + integration on the filesystem profile | built packages only |
   | `npm run nonreg:default` | unit + integration on the default `emulatedServer-sql` profile | a running PostgreSQL |
   | `npm run nonreg -- --tier full` | everything, including postgres `modelValidation` | a running PostgreSQL |
@@ -35,7 +36,7 @@ Sibling repos, linked locally only when regenerating types from schemas: **jzod*
 - **Feature work:** non-trivial features and refactors start with `code-helpers/features/<issue>-<TYPE>-<slug>/analysis.md` then `tdd-implementation-plan.md` (skills `miroir-feature-analysis`, `miroir-analysis-to-tdd-plan`). Move and rename files with `git mv`.
 - **Skills:** Miroir skills are `.agents/skills/miroir-*`, next to a small shared core (`skills-lock.json`). `.agents/skills/` is canonical; `.claude/skills/` holds generated copies, so after editing a skill run `python scripts/sync_agent_skills.py`. Other skills are personal installs and are gitignored (`docs/contributing/development-setup.md`).
 - **Ad-hoc scripts** (diagnostics, repo helpers, one-off tooling) are in **Python**. Use JS/TS only when the script must run inside a package's Node/Vite/Vitest workflow or import TypeScript modules from the monorepo.
-- **Code graph (optional):** when `graphify-out/graph.json` exists, `graphify query "<question>"`, `graphify path "<A>" "<B>"` and `graphify explain "<concept>"` answer broad cross-package questions with a scoped subgraph; after modifying code, refresh it with `graphify update .`. It is not built by default; `python scripts/agent_session_setup.py --graphify` installs and builds it (about 40 seconds). For focused questions, search the code directly.
+- **Code graph (optional):** when `graphify-out/graph.json` exists, `graphify query "<question>"`, `graphify path "<A>" "<B>"` and `graphify explain "<concept>"` answer broad cross-package questions; after modifying code, refresh it with `graphify update .`. It is not built by default; `python scripts/agent_session_setup.py --graphify` installs and builds it. For focused questions, search the code directly.
 
 ## Architecture: layered (clean / hexagonal)
 

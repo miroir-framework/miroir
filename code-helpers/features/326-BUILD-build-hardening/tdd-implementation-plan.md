@@ -9,7 +9,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/326
 Working branches: PR 1 `claude/build-hardening-81mz9d`, PR 2 `claude/build-hardening-bundles` (D17), both from `_integration`
 
-**Resume note:** Slices 0–8 and 7b DONE 2026-09-27 (branch `claude/build-hardening-81mz9d`); next: Slice 9. Lockfiles are regenerated with npm 11 and `--before` (Slice 4 realization).
+**Resume note:** PR 1 (Slices 0–9 and 7b) DONE 2026-09-27 on `claude/build-hardening-81mz9d`; next: PR 2, Slice 10, on `claude/build-hardening-bundles`. Lockfiles are regenerated with npm 11 and `--before` (Slice 4 realization).
 
 ---
 
@@ -36,7 +36,7 @@ This plan does **not** cut bundle size (D19: separate issue opened in Slice 17 f
 | 7 | 1 | No high advisory at all; audit gate blocking in PR checks | ✅ | `audit` exits 0 on the real repo; `pr-checks.yml` step |
 | 7b | 1 | Every locked package is checked against its hash (added) | ✅ | `lockfile` rule + `test_fill_lockfile_integrity.py` + clean `npm ci` |
 | 8 | 1 | Updates only through reviewed, cooled-down PRs; actions pinned | ✅ | `actions` rule + `dependabot.yml` test |
-| 9 | 1 | PR 1 wrap-up: gate docs, nonreg step, full nonreg | ⬜ | nonreg:unit + nonreg:filesystem green |
+| 9 | 1 | PR 1 wrap-up: gate docs, nonreg step, full nonreg | ✅ | nonreg:unit + nonreg:filesystem green |
 | 10 | 2 | Vendor sourcemaps restored | ⬜ | `bundleSourcemaps.326.phase10.unit.test.ts` |
 | 11 | 2 | Tracer: the build prints and writes the attribution report | ⬜ | `bundleReport.326.phase11.unit.test.ts` |
 | 12 | 2 | Allowlist and eager budget guards | ⬜ | `test_check_bundle_policy.py` + real report exits 0 |
@@ -584,7 +584,7 @@ python -m pytest scripts/tests/test_check_dependency_policy.py -q
 
 ## Slice 9 — PR 1 wrap-up
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -606,6 +606,12 @@ npm run nonreg:unit && npm run nonreg:filesystem
 ```
 
 ### Realization
+
+- `docs/contributing/development-setup.md`, new section "Dependency policy": the six rules, installing, adding or updating a dependency, regenerating the lockfile (npm 11, `--before`, `npm update` for missing platform binaries, deleting entries of an exact-pinned parent or a stale nested override, `fill_lockfile_integrity.py`), overrides and vendored packages, audit exceptions (format and lifecycle), Dependabot and its security-PR exception. "Install and build" points to it.
+- `AGENTS.md`: `python scripts/check_dependency_policy.py` in the pre-push gate; the graphify line lost "with a scoped subgraph" and "(about 40 seconds)" to stay within 12 KiB (12 284 bytes); the `nonreg:unit` row now says 39 steps, about 10 min.
+- `scripts/nonreg-manifest.json`: step `unit-check-dependency-policy` runs rules `specs`, `classification`, `lockfile`, `workflows`, `actions` (the network-bound `audit` stays in PR checks).
+- `_integration` was merged in before this slice (ESLint, #325); its new devDependencies are pinned to the versions its lockfile used, relocked with npm 11.
+- Validation: `sync_agent_skills.py --check` passes; pytest 121 passed; every rule passes, `audit` included; the new nonreg step passes. The full safety net ran on the merged branch before Slices 8 and 9, which change only workflows, repo scripts, docs and the manifest: clean `npm ci`, `npm run lint`, `./build-all.sh devBuild`, `tsc` on `miroir-core` and `miroir-standalone-app`, 2078 `miroir-core` tests, `nonreg:unit` 38/38 and `nonreg:filesystem` 74/74.
 
 ---
 
