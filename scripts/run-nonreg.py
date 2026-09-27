@@ -65,6 +65,14 @@ def load_manifest() -> dict[str, Any]:
         return json.load(fh)
 
 
+def repo_relative(path: Path) -> str:
+    """Path relative to the repo root when inside it, else absolute (e.g. --results-root in /tmp)."""
+    try:
+        return str(path.relative_to(ROOT)).replace("\\", "/")
+    except ValueError:
+        return str(path).replace("\\", "/")
+
+
 def expand_argv(argv: list[str], profile: str) -> list[str]:
     return [part.replace("{profile}", profile) for part in argv]
 
@@ -145,7 +153,7 @@ def run_step(
 
     log_path = snap_dir / "logs" / f"{step_id}.log"
     log_path.parent.mkdir(parents=True, exist_ok=True)
-    result.log_file = str(log_path.relative_to(ROOT)).replace("\\", "/")
+    result.log_file = repo_relative(log_path)
 
     if dry_run:
         result.status = "skipped"
@@ -457,11 +465,26 @@ def build_parser() -> argparse.ArgumentParser:
         metavar=("CURRENT", "BASELINE"),
         help="Deprecated alias for --compare CURRENT BASELINE",
     )
+    p.add_argument(
+        "--manifest",
+        default=None,
+        help="Manifest to run (default: scripts/nonreg-manifest.json)",
+    )
+    p.add_argument(
+        "--results-root",
+        default=None,
+        help="Directory for snapshots (default: test-results/nonreg)",
+    )
     return p
 
 
 def main(argv: list[str] | None = None) -> int:
+    global MANIFEST_PATH, RESULTS_ROOT
     args = build_parser().parse_args(argv)
+    if args.manifest:
+        MANIFEST_PATH = Path(args.manifest).resolve()
+    if args.results_root:
+        RESULTS_ROOT = Path(args.results_root).resolve()
     manifest = load_manifest()
     profile = args.profile or manifest.get("defaultProfile") or "emulatedServer-sql"
 
@@ -560,7 +583,7 @@ def main(argv: list[str] | None = None) -> int:
         "started_at": started_at,
         "finished_at": finished_at,
         "duration_s": duration_s,
-        "manifest": str(MANIFEST_PATH.relative_to(ROOT)).replace("\\", "/"),
+        "manifest": repo_relative(MANIFEST_PATH),
         "git": {
             "commit": _git("rev-parse", "HEAD"),
             "branch": _git("rev-parse", "--abbrev-ref", "HEAD"),
@@ -568,9 +591,9 @@ def main(argv: list[str] | None = None) -> int:
         },
         "counts": counts,
         "steps": [asdict(r) for r in results],
-        "snapshot_dir": str(snap_dir.relative_to(ROOT)).replace("\\", "/"),
-        "summary_json": str((snap_dir / "summary.json").relative_to(ROOT)).replace("\\", "/"),
-        "summary_md": str((snap_dir / "summary.md").relative_to(ROOT)).replace("\\", "/"),
+        "snapshot_dir": repo_relative(snap_dir),
+        "summary_json": repo_relative(snap_dir / "summary.json"),
+        "summary_md": repo_relative(snap_dir / "summary.md"),
     }
 
     summary_json_path = snap_dir / "summary.json"

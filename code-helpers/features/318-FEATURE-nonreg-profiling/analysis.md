@@ -140,7 +140,7 @@ The time is in module import, not in vitest start. Only sharing the module graph
 | Path | Hook | What runs per test | Read-only tests |
 |---|---|---|---|
 | Runner/action suites (`miroir-runner-tests.integ`) | root `beforeEach` → `RunnerTestSession.beforeEach` → `beforeEachTest` → `resetIntegTestbed` | Miroir platform reset + init (`resetAndInitApplicationDeployment`), then run-target reset + seed when the suite has seed params. `rollback` reloads the whole store into the local cache. | about one per suite (for example "Refresh all Instances") |
-| Core transformer suites (`miroir-core-tests.integ`) | `IntegrationTestSession.beforeEach` → `seedTransformerTestApplicationData` | reset + init + createEntity + createInstance | all of them (about 339 `transformerTest` leaves) |
+| Core transformer suites (`miroir-core-tests.integ`) | `IntegrationTestSession.beforeEach` → `seedTransformerTestApplicationData` | reset + init + createEntity + createInstance | all of them. `miroirCoreTransformers` has 261 tests, about 80 ms each: 21.7 s of test time in a 30 s step (measured 2026-09-27, with `tests/tmp` present) |
 | `ExtractorPersistenceStoreRunner.integ` | file `beforeEach` | Library reset + seed | 11 / 11 |
 | `ExtractorTemplatePersistenceStoreRunner.integ` | file `beforeEach` | Library reset + `addEntitiesAndInstances` | 7 / 7 |
 | `PersistenceStoreController.integ` | file `beforeEach` | Library reset | mixed: mutating tests need it |
@@ -173,9 +173,9 @@ Hidden cost: `PersistenceStoreController.initApplicationDeploymentStore` passes 
 |---|---|---:|---|---|
 | 1 | Fix the Postgres launch tests (D6) | about 6 min | low | adopt |
 | 2 | Shared runner, `--no-isolate` groups (D2) | up to about 10 min, once most steps have a descriptor | medium | adopt, opt-in |
-| 3 | `perSuite` reset on read-only suites (D4) | tens of seconds today. Several minutes once the transformer step actually runs (about 339 leaves) | medium | adopt |
+| 3 | `perSuite` reset on read-only suites (D4) | tens of seconds: resets are cheap on filesystem (the 261 transformer tests take about 80 ms each, reset included) | medium | adopt, measure first with D1 |
 | 4 | Lazy `getState()` in `initApplicationDeploymentStore` logging | per reset, to be measured | low | adopt if measured |
-| 5 | Fix the transformer step (D5) | adds time: the step runs tests again | low | adopt |
+| 5 | Fix the transformer step (D5) | adds about 20 s: the step runs its 261 tests again | low | adopt |
 
 ---
 

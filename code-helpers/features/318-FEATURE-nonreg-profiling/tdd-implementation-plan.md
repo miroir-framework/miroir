@@ -2,7 +2,7 @@
 
 > Integration-first, no mocks. The harness is tested through its public entry points: `run-nonreg.py` (pytest in `scripts/tests`, which runs the real script on small real manifests), the package launchers (vitest unit tests on the argv/env they produce), and real vitest runs on the filesystem profile. No test file, `RunnerTestSession` or UI launch code changes, except where a slice names it.
 
-**Resume note:** analysis confirmed 2026-09-27. Branch `318-FEATURE-nonreg-profiling`, from `_integration` 76e52aa. Next: Slice 0.
+**Resume note:** analysis confirmed 2026-09-27. Branch `318-FEATURE-nonreg-profiling`, from `_integration` 76e52aa. Next: Slice 1.
 
 ## Scope
 
@@ -20,7 +20,7 @@ Out of scope: changes to the UI test runs; timing trends across runs (#306); ste
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize the legacy nonreg contract | ⬜ pending | `scripts/tests/test_run_nonreg.py` |
+| 0 | Characterize the legacy nonreg contract | ✅ DONE | `scripts/tests/test_run_nonreg.py` |
 | 1 | Clean filesystem baseline (D5, D6) | ⬜ pending | the 4 steps pass on `emulatedServer-filesystem` |
 | 2 | Opt-in timing profile (D1) | ⬜ pending | `--timings` writes `timings.json` with hook times; nothing written without it |
 | 3 | Shared runner for testByFile groups (D2) | ⬜ pending | `--runner shared` on the storage group: same per-step verdicts, lower wall time |
@@ -65,7 +65,7 @@ Out of scope: changes to the UI test runs; timing trends across runs (#306); ste
 
 ## Slice 0 — Characterize the legacy nonreg contract
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** lock what `run-nonreg.py` does today, so later slices can prove that the default is unchanged.
 
@@ -78,6 +78,15 @@ Out of scope: changes to the UI test runs; timing trends across runs (#306); ste
 **Refactor checkpoint:** let the manifest path and results root be overridden (a CLI flag or env), so tests do not touch the repo's manifest. The default stays the same.
 
 **Validation:** `python -m pytest scripts/tests -q`
+
+### Realization
+
+- `run-nonreg.py` gains `--manifest` and `--results-root` (defaults unchanged), plus `repo_relative()` so snapshot paths outside the repo are written as absolute paths instead of raising.
+- `scripts/tests/test_run_nonreg.py` (3 tests) locks, for the default run:
+  - `{profile}` expansion;
+  - the exact `summary.json` keys and per-step fields;
+  - the snapshot contents (`logs/`, `summary.json`, `summary.md`, and nothing else);
+  - `--fail-fast` producing `not_run`.
 
 ---
 
