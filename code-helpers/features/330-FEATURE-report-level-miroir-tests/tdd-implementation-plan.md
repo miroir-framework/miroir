@@ -16,7 +16,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Follow-up: https://github.com/miroir-framework/miroir/issues/333 (stored values in UI steps)
 Working branch: `claude/report-level-miroir-tests-0lnny6` (from `_integration`, PR against `_integration`)
 
-**Resume note:** plan written 2026-09-27; no slice started.
+**Resume note:** Slice 0 done 2026-09-27; Slice 1 in progress.
 
 ---
 
@@ -37,7 +37,7 @@ This plan does **not** cover stored values in UI steps (#333), an in-memory mode
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Baseline and 284 coverage inventory | ⬜ | nonreg baseline + `wizard-coverage.md` |
+| 0 | Baseline and 284 coverage inventory | ✅ | nonreg baseline + `wizard-coverage.md` |
 | 1 | Tracer: a MiroirTest mounts `BookDetails` from the testbed store | ⬜ | `report.bookDetails` leaf "displays the Book" |
 | 2 | Check steps: run a query, assert on its result | ⬜ | leaf "the store holds the displayed Book" + failure-report vitest |
 | 3 | Edit and save through the UI, checked in the store | ⬜ | leaf "saves an edited title" + idle-wait vitest |
@@ -109,7 +109,7 @@ Binding for this plan (analysis decision record, D1–D21 and T1–T12). Deviati
 
 ## Slice 0 — Baseline and 284 coverage inventory
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -132,7 +132,10 @@ python3 code-helpers/features/330-FEATURE-report-level-miroir-tests/list_wizard_
 
 ### Realization
 
-<Appended on completion.>
+- **Baseline (2026-09-27, `emulatedServer-filesystem`, shared runner):** all 11 steps pass: `integ-runner.lendDocument`, `.returnDocument`, `.dropEntity` (shared group), `integ-runner.freezeApplicationVersion`, `appstack-miroir-component-tests`, `unit-284-openapi-connection-wizard`, `integ-action-284-openapi-connection-wizard`, `integ-action-284-openapi-connection-wizard-auth`, `appstack-284-openapi-connection-wizard`, `unit-286-react-component-miroir-tests`, `unit-292-declarative-react-component-tests`. No pre-existing failure. A stale `dist` first failed every step (`miroir-core` had no `splitTags` export); `./build-all.sh devBuild` fixed it, so later slices rebuild before comparing.
+- **Inventory:** [`wizard-coverage.md`](wizard-coverage.md), 17 cases (11 in `wizardWalk.284`, 6 in `multistepBranch.284`), listed by [`list_wizard_cases.py`](list_wizard_cases.py); `--check` fails while a row has no "covered by".
+- **Finding for Slice 7 (deviation from D19 proposed there):** `multistepBranch.284` tests a branching Report defined inline in the test and the Library `reportMultistepCountryCreate`, not the wizard. Default: keep it, delete only `wizardWalk.284` once covered.
+- Test runs rewrite `packages/miroir-standalone-app/tests/assets/admin_data/`; restore it (`git checkout`, remove the new files) before committing.
 
 ---
 
