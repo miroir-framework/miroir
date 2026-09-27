@@ -17,6 +17,8 @@ import {
 import {
   getMiroirTestAllowedTags,
   getMiroirTestInstanceTags,
+  MIROIR_TEST_MODE_TAGS,
+  miroirTestSuiteModeTags,
 } from "../../src/5_tests/miroirTestTags";
 import { checkModelValidationInstance } from "../../src/5_tests/ModelValidationTools";
 import {
@@ -188,5 +190,42 @@ describe("MiroirTest issue", () => {
       .filter((instance: any) => instance.issue !== undefined && !/^[1-9]\d*$/.test(instance.issue))
       .map((instance: any) => `${instance.name}: ${instance.issue}`);
     expect(malformed).toEqual([]);
+  });
+});
+
+describe("MiroirTest mode tags (#316)", () => {
+  const catalog = loadApplicationMiroirTestCatalog(repoRoot);
+
+  it("the MiroirTest Entity allows unit, integ and ui, identically in its EntityVersion", () => {
+    const allowed = getMiroirTestAllowedTags(loadMiroirTestEntityFromFolders(repoRoot));
+    expect(allowed).toEqual(expect.arrayContaining([...MIROIR_TEST_MODE_TAGS]));
+    expect(getMiroirTestAllowedTags(readJson(miroirTestEntityVersionPath))).toEqual(allowed);
+  });
+
+  it("every MiroirTest instance carries exactly the mode tags derived from its leaves, first", () => {
+    const wrong = catalog
+      .map((entry) => {
+        const expected = miroirTestSuiteModeTags(entry.suiteDefinition);
+        const tags = getMiroirTestInstanceTags(entry.instance);
+        return { name: entry.suiteKey, expected, actual: tags.slice(0, expected.length), tags };
+      })
+      .filter(
+        (row) =>
+          row.expected.join(",") !== row.actual.join(",") ||
+          row.tags.filter((tag) => (MIROIR_TEST_MODE_TAGS as readonly string[]).includes(tag)).length !==
+            row.expected.length,
+      );
+    expect(wrong).toEqual([]);
+  });
+
+  it("--tags ui selects exactly the suites with reactComponentTest leaves", () => {
+    const uiSuites = catalog
+      .filter((entry) => miroirTestSuiteModeTags(entry.suiteDefinition).includes("ui"))
+      .map((entry) => entry.suiteKey)
+      .sort();
+    expect(uiSuites.length).toBeGreaterThan(0);
+    expect(
+      resolveCliSuiteKeysFromCatalog([], listCliUnitSuiteKeysFromFolders(repoRoot), catalog, ["ui"]).sort(),
+    ).toEqual(uiSuites);
   });
 });

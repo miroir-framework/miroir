@@ -1133,12 +1133,12 @@
     {
       "id": "unit-312-miroir-test-tags",
       "tier": "unit",
-      "title": "#312 \u2014 MiroirTest tags: CLI selection, Entity vocabulary, every test tagged, launcher routing, Tags column",
+      "title": "#312 / #316 \u2014 MiroirTest tags and names: CLI selection, Entity vocabulary, mode tags, naming guards, launcher routing, Tags column",
       "requires": "none",
       "argv": [
         "bash",
         "-c",
-        "npm run testByFile -w miroir-core -- miroirTestTags.unit && npm run testByFile -w miroir-standalone-app -- testMiroirLauncher.tags getColumnDefinitionsFromEntityAttributes"
+        "npm run testByFile -w miroir-core -- miroirTestTags.unit miroirTestNaming.unit && npm run testByFile -w miroir-standalone-app -- testMiroirLauncher.tags getColumnDefinitionsFromEntityAttributes"
       ]
     },
     {

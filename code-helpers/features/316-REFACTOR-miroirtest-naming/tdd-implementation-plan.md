@@ -13,7 +13,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Rename map: [`./rename-map.md`](./
 Prerequisites: [`../312-FEATURE-miroir-test-classification/`](../312-FEATURE-miroir-test-classification/) ✅, #315 ✅
 Working branch: `316-REFACTOR-miroirtest-naming`
 
-**Resume note:** Slices 0–5 DONE.
+**Resume note:** Slices 0–6 DONE; fresh `nonreg:filesystem` baseline recorded in Slice 6.
 
 ---
 
@@ -38,7 +38,7 @@ This plan does **not** rename inner suite and test labels (later pass), derive t
 | 3 | Rename runner and action suites (+ D13 stopgap, nonreg ids) | ✅ | naming guard, runner-kind test, nonreg integ steps |
 | 4 | Rename transformer suites | ✅ | naming guard, `--suites tr.core --mode integ` |
 | 5 | Rename function and query suites (+ D14 registry keys) | ✅ | naming guard with empty legacy list |
-| 6 | Docs, skills, nonreg baseline, cleanup, AC | ⬜ | `nonreg:filesystem`, AC checklist |
+| 6 | Docs, skills, nonreg baseline, cleanup, AC | ✅ | `nonreg:filesystem`, AC checklist |
 
 ---
 
@@ -283,13 +283,14 @@ The tests key on uuid, not name, so they stay valid through the rename.
 - D14 done: `MIROIR_TEST_SUITE_REGISTRY_NAMES` holds only new names, no alias branch left; the snapshot test in `loadApplicationMiroirTestsFromFolders.unit` needs no leftover map any more. `PENDING_KINDS` deleted from the guards.
 - The uuid note of `fn.transformer.interfaceCheck` moved to `docs/reference/testing.md`. AGENTS.md example shortened to stay under its 12 KB guard.
 - Pre-existing failures, unchanged by this work (fail on the Slice 4 tree too): standalone `Mustache.unit` ("nested template") and `adaptiveColumnWidths.unit` (min/max widths); neither is in the nonreg manifest.
+- `nonreg:unit` 38/38 passed.
 - Validation: core unit 2072 passed, issue guards 14, `testMiroir -w miroir-core -- --tags unit --mode unit` 726 passed, modelValidation miroir 162 / library 183, typechecks (core, standalone-app, both deployments), pre-push gate (skills check, pytest 35), 11 touched standalone test files.
 
 ---
 
 ## Slice 6 — Docs, skills, nonreg baseline, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** a contributor finds the naming scheme and mode tags documented, and the nonreg baseline carries the new ids.
 
@@ -318,4 +319,7 @@ The tests key on uuid, not name, so they stay valid through the rename.
 | Inner labels out of scope | unchanged (root label only, D11) |
 
 ### Realization
-_(pending)_
+- Docs: "Names and descriptions" section (scheme per kind, kind precedence, root label, export identifier, description rule) and mode tags in `docs/reference/testing.md`; pointers in `docs/contributing/testing.md`, `docs/guides/developer/testing.md`, `AGENTS.md` and the `miroir-analysis-to-tdd-plan` skill; leftover old suite names swept from doc examples (`MIROIR_TEST_SUITES=`) and the `miroir-edit-queries` skill.
+- Guards migrated: `tests/5-tests/miroirTestNaming.unit.test.ts` (characters, kind prefix, root label, description, UI launch kind by name prefix, replacing Slice 0's by-uuid check) and a "mode tags" block in `miroirTestTags.unit.test.ts` (Entity and EntityVersion enum, derived mode tags first on every instance, `--tags ui` = suites with component leaves; no hardcoded counts). Both run in the nonreg step `unit-312-miroir-test-tags`.
+- Deleted: `tests/5-tests/issues/316-miroirtest-naming/`, `rename_miroir_tests.py`, `rename_bare_distinctive.py`, `rename-map.json`, `descriptions.json`. `rename-map.md` stays as the record of old → new names.
+- Pre-push gate: skills check, pytest 35, core typecheck, core unit 2066 passed.
