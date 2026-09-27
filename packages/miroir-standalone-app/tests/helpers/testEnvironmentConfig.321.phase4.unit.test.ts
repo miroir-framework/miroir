@@ -13,7 +13,7 @@ import { resolveRepoRoot } from "./integrationTestProfiles.js";
 
 const ENTITY_DEPLOYMENT = "7959d814-400c-4e80-988f-a00fe582ab98";
 const ENTITY_MIROIR_USER = "d20d09e5-0685-4fc7-b9bd-fcfa3845127a";
-const FILESYSTEM_PROFILE_JSON = "./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json";
+const REAL_SERVER_PROFILE_JSON = "./packages/miroir-standalone-app/tests/miroirConfig.test-realServer-sql.json";
 
 describe("test configuration from a test environment", () => {
   it("MIROIR_ENV=test-filesystem puts every store in .miroir/test-filesystem, seeded from the packages", async () => {
@@ -44,14 +44,10 @@ describe("test configuration from a test environment", () => {
   it("a MIROIR_ENV that is not a test environment is ignored in favor of the profile file", async () => {
     const { miroirConfig } = await loadTestConfigFiles({
       MIROIR_ENV: "dev",
-      VITE_MIROIR_TEST_CONFIG_FILENAME: FILESYSTEM_PROFILE_JSON,
+      VITE_MIROIR_TEST_CONFIG_FILENAME: REAL_SERVER_PROFILE_JSON,
     });
-    const client = miroirConfig.client as MiroirConfigForClientStub;
 
-    expect(client.deploymentStorageConfig["18db21bf-f8d3-4f6a-8296-84b69f6dc48b"].data).toEqual({
-      emulatedServerType: "filesystem",
-      directory: "miroir-standalone-app/tests/assets/admin_data",
-    });
+    expect(miroirConfig.client.emulateServer).toBe(false);
   });
 
   it("fails naming both variables when neither selects a configuration", async () => {

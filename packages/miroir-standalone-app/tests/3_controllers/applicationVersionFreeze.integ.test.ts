@@ -3,7 +3,7 @@
  *
  * Run:
  * ```bash
- * VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json \
+ * MIROIR_ENV=test-filesystem \
  *   npm run testByFile -w miroir-standalone-app -- applicationVersionFreeze
  * ```
  */

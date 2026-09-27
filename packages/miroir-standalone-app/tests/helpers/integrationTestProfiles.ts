@@ -23,12 +23,10 @@ export type IntegrationTestTransformerDefaults = {
 
 export type IntegrationTestProfile = {
   name: string;
-  miroirConfigFilename: string;
+  /** The configuration file of a profile without environment (the realServer-* profiles). */
+  miroirConfigFilename?: string;
   logConfigFilename: string;
-  /**
-   * #321: the test environment (environments/<name>.json) the profile selects through MIROIR_ENV;
-   * when set, tests build their configuration from it and miroirConfigFilename is a deprecated fallback.
-   */
+  /** #321: the test environment (environments/<name>.json) the profile selects through MIROIR_ENV. */
   environment?: string;
   /** Optional overrides merged on top of JSON-derived defaults (D2). */
   transformerDefaults?: IntegrationTestTransformerDefaults;
@@ -55,43 +53,27 @@ function logPath(filename: string): string {
 export const INTEGRATION_TEST_PROFILES: Record<string, IntegrationTestProfile> = {
   "emulatedServer-sql": {
     name: "emulatedServer-sql",
-    miroirConfigFilename: configPath("miroirConfig.test-emulatedServer-sql.json"),
     logConfigFilename: logPath("catch-all.json"),
     environment: "test-sql",
     description: "Local default — admin filesystem, miroir + library Postgres (schemas test_sql_*)",
   },
   "emulatedServer-filesystem": {
     name: "emulatedServer-filesystem",
-    miroirConfigFilename: configPath("miroirConfig.test-emulatedServer-filesystem.json"),
     logConfigFilename: logPath("catch-all.json"),
     environment: "test-filesystem",
     description: "All store sections on filesystem (no Postgres), in .miroir/test-filesystem",
   },
   "emulatedServer-indexedDb": {
     name: "emulatedServer-indexedDb",
-    miroirConfigFilename: configPath("miroirConfig.test-emulatedServer-indexedDb.json"),
     logConfigFilename: logPath("catch-all.json"),
     environment: "test-indexedDb",
     description: "Miroir + library IndexedDB, in .miroir/test-indexedDb",
   },
   "emulatedServer-mongodb": {
     name: "emulatedServer-mongodb",
-    miroirConfigFilename: configPath("miroirConfig.test-emulatedServer-mongodb.json"),
     logConfigFilename: logPath("catch-all.json"),
     environment: "test-mongodb",
     description: "Miroir + library MongoDB (databases test_mongodb_*)",
-  },
-  "ci-emulatedServer-host-sql": {
-    name: "ci-emulatedServer-host-sql",
-    miroirConfigFilename: configPath("miroirConfig.test-ci-emulatedServer-host-sql.json"),
-    logConfigFilename: logPath("catch-all.json"),
-    description: "CI preset — host Postgres connection strings in JSON",
-  },
-  "ci-emulatedServer-dockerized-sql": {
-    name: "ci-emulatedServer-dockerized-sql",
-    miroirConfigFilename: configPath("miroirConfig.test-ci-emulatedServer-dockerized-sql.json"),
-    logConfigFilename: logPath("catch-all.json"),
-    description: "CI preset — dockerized Postgres connection strings in JSON",
   },
   "realServer-sql": {
     name: "realServer-sql",
@@ -143,12 +125,12 @@ export function resolveRepoRoot(): string {
   }
 
   const standaloneAppRoot = path.resolve(process.cwd(), "..");
-  if (existsSync(path.join(standaloneAppRoot, "tests/miroirConfig.test-emulatedServer-sql.json"))) {
+  if (existsSync(path.join(standaloneAppRoot, "tests/helpers/integrationTestProfiles.ts"))) {
     return path.resolve(standaloneAppRoot, "../..");
   }
 
   throw new Error(
-    "Cannot resolve monorepo root for integration test profile JSON (set PWD to repo root)",
+    "Cannot resolve monorepo root for integration test profiles (set PWD to repo root)",
   );
 }
 
@@ -170,7 +152,9 @@ export function resolveTransformerDefaultsForProfile(
       ? environmentClientConfig(
           resolveEnvironmentFromFiles({ cwd: resolveRepoRoot(), env: { MIROIR_ENV: profile.environment } }),
         )
-      : loadMiroirConfigJsonFromProfilePath(profile.miroirConfigFilename);
+      : profile.miroirConfigFilename
+        ? loadMiroirConfigJsonFromProfilePath(profile.miroirConfigFilename)
+        : {};
     derived = deriveTestSessionDefaultsFromMiroirConfig(config);
   } catch {
     derived = {};
@@ -248,12 +232,26 @@ export function applyIntegrationTestProfile(
         respectExistingEnv && isTestEnvironment(process.env.MIROIR_ENV ?? ""),
       ),
     );
-  } else if (!respectExistingEnv) {
-    // an environment left by a previous profile would win over this profile's configuration file
-    delete process.env.MIROIR_ENV;
+    // the environment replaces the configuration file: one set in the shell would be ignored
+    const configFile = process.env.VITE_MIROIR_TEST_CONFIG_FILENAME;
+    if (configFile && respectExistingEnv) {
+      deviations.push(
+        `VITE_MIROIR_TEST_CONFIG_FILENAME=${configFile} is ignored, the profile uses environment ${process.env.MIROIR_ENV}`,
+      );
+    }
+    delete process.env.VITE_MIROIR_TEST_CONFIG_FILENAME;
+  } else {
+    if (!respectExistingEnv) {
+      // an environment left by a previous profile would win over this profile's configuration file
+      delete process.env.MIROIR_ENV;
+    }
+    if (profile.miroirConfigFilename) {
+      deviations.push(
+        applyEnvVar("VITE_MIROIR_TEST_CONFIG_FILENAME", profile.miroirConfigFilename, respectExistingEnv),
+      );
+    }
   }
   deviations.push(
-    applyEnvVar("VITE_MIROIR_TEST_CONFIG_FILENAME", profile.miroirConfigFilename, respectExistingEnv),
     applyEnvVar("VITE_MIROIR_LOG_CONFIG_FILENAME", profile.logConfigFilename, respectExistingEnv),
     ...applyTransformerDefaults(resolveTransformerDefaultsForProfile(profile), respectExistingEnv),
   );

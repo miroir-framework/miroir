@@ -55,7 +55,7 @@ describe("testByFileLauncher profile (Gap D5)", () => {
     expect(stripProfileArgs(["-S", "mongodb", "--bail=1"])).toEqual(["--bail=1"]);
   });
 
-  it("--profile emulatedServer-sql sets VITE_* on spawn env", () => {
+  it("--profile emulatedServer-sql sets MIROIR_ENV and VITE_MIROIR_LOG_CONFIG_FILENAME on spawn env", () => {
     const { vitestArgs, spawnEnv } = prepareTestByFileLaunch(process.env, [
       "--profile",
       "emulatedServer-sql",
@@ -65,9 +65,8 @@ describe("testByFileLauncher profile (Gap D5)", () => {
     expect(vitestArgs).toEqual(["PersistenceStoreController.integ"]);
     expect(spawnEnv.VITE_TEST_MODE).toBe("true");
     expect(spawnEnv.MIROIR_AUTH_ENABLED).toBe("0");
-    expect(spawnEnv.VITE_MIROIR_TEST_CONFIG_FILENAME).toContain(
-      "miroirConfig.test-emulatedServer-sql.json",
-    );
+    expect(spawnEnv.MIROIR_ENV).toBe("test-sql");
+    expect(spawnEnv.VITE_MIROIR_TEST_CONFIG_FILENAME).toBeUndefined();
     expect(spawnEnv.VITE_MIROIR_LOG_CONFIG_FILENAME).toContain("config/logging");
   });
 
@@ -148,8 +147,8 @@ describe("testByFileLauncher profile (Gap D5)", () => {
 
     const { spawnEnv } = prepareTestByFileLaunch(process.env, [
       "--profile",
-      "emulatedServer-sql",
-      "PersistenceStoreController.integ",
+      "realServer-sql",
+      "uiIntegrationTestLauncher.realServer.integ",
     ]);
 
     expect(spawnEnv.VITE_MIROIR_TEST_CONFIG_FILENAME).toBe("/custom/config.json");

@@ -233,12 +233,9 @@ Browser (CLIENT, remote)
 Browser (CLIENT, remote)
   └── RestClientStub --> in-process SERVER (local)
                             └── filesystem
-                                  ├── tests/assets/admin_model/
-                                  ├── tests/assets/admin_data/
-                                  ├── tests/tmp/miroir_model/
-                                  ├── tests/tmp/miroir_modelVersion/
-                                  ├── tests/tmp/library_data/
-                                  └── tests/tmp/library_modelVersion/
+                                  ├── .miroir/test-filesystem/admin/{model,data}/
+                                  ├── .miroir/test-filesystem/miroir/{model,data,modelVersion}/
+                                  └── .miroir/test-filesystem/library/{model,data,modelVersion}/
 ```
 
 `emulateServer: true`, `emulatedServerType: "filesystem"`. Versioned apps add a `modelVersion` directory. Test profiles that never use AI/MCP omit `features` (both false).

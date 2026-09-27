@@ -110,13 +110,13 @@ RUN_TEST=Transformer_ResultSchema.failures npm run testByFile -w miroir-core -- 
 # All miroir-core unit tests
 npm run test -w miroir-core -- ''
 
-# Integration on a given store: pick the config, and a log preset (catch-all, scope-query, scope-persistence, …)
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json \
+# Integration on a given store: pick the test environment, and a log preset (catch-all, scope-query, scope-persistence, …)
+MIROIR_ENV=test-filesystem \
 VITE_MIROIR_LOG_CONFIG_FILENAME=scope-persistence \
 npm run testByFile -w miroir-standalone-app -- DomainController.integ
 ```
 
-Store configs in `packages/miroir-standalone-app/tests/`: `miroirConfig.test-emulatedServer-{filesystem,indexedDb,sql,mongodb}.json` (`sql` needs PostgreSQL). Tests run single-threaded; in test mode `RestClientStub` emulates the server. Assertion helpers for in-app / MiroirTest runs: `packages/miroir-core/src/1_core/testing/test-expect.ts`.
+Test environments: `environments/test-{filesystem,indexedDb,sql,mongodb}.json`, stores in `.miroir/<env>/` (`sql` needs PostgreSQL and `MIROIR_POSTGRES_PASSWORD`). Tests run single-threaded; in test mode `RestClientStub` emulates the server. Assertion helpers for in-app / MiroirTest runs: `packages/miroir-core/src/1_core/testing/test-expect.ts`.
 
 ## Running the application
 

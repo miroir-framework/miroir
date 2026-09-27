@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
 
+import { environmentClientConfig, resolveEnvironmentFromFiles } from "miroir-env";
+
+import { resolveRepoRoot } from "./integrationTestProfiles.js";
 import {
   DEFAULT_UI_INTEGRATION_PROFILE_NAME,
   isBrowserCompatibleEmulatedIndexedDbConfig,
@@ -115,9 +118,11 @@ describe("integrationTestProfileAssets (B5/B6-b/B6-c)", () => {
     ]);
   });
 
-  it("rejects the CLI hybrid indexedDb config (filesystem admin) as browser-incompatible", async () => {
-    const cliHybrid = await import("../miroirConfig.test-emulatedServer-indexedDb.json");
-    expect(isBrowserCompatibleEmulatedIndexedDbConfig(cliHybrid.default as never)).toBe(false);
+  it("rejects the CLI hybrid indexedDb configuration (filesystem admin) as browser-incompatible", () => {
+    const cliHybrid = environmentClientConfig(
+      resolveEnvironmentFromFiles({ cwd: resolveRepoRoot(), env: { MIROIR_ENV: "test-indexedDb" } }),
+    );
+    expect(isBrowserCompatibleEmulatedIndexedDbConfig(cliHybrid as never)).toBe(false);
   });
 
   it("throws for unknown profile names", async () => {

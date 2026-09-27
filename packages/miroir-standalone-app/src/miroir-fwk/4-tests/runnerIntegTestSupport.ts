@@ -279,11 +279,10 @@ export function getTestConfig(
     ? miroirConfig.client.deploymentStorageConfig[deployment_Miroir.uuid]
     : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Miroir.uuid];
 
-  const adminDeploymentStorageConfiguration: StoreUnitConfiguration =
-    (miroirConfig.client.emulateServer
-      ? miroirConfig.client.deploymentStorageConfig?.[deployment_Admin.uuid]
-      : miroirConfig.client.serverConfig?.storeSectionConfiguration?.[deployment_Admin.uuid]) ??
-    (deployment_Admin.configuration as StoreUnitConfiguration);
+  // #321: no fallback on deployment_Admin.configuration (the tracked Admin assets): tests never write there
+  const adminDeploymentStorageConfiguration: StoreUnitConfiguration | undefined = miroirConfig.client.emulateServer
+    ? miroirConfig.client.deploymentStorageConfig?.[deployment_Admin.uuid]
+    : miroirConfig.client.serverConfig?.storeSectionConfiguration?.[deployment_Admin.uuid];
 
   if (!adminDeploymentStorageConfiguration) {
     throw new Error(

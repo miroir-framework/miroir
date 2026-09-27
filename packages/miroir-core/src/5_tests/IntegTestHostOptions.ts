@@ -48,7 +48,8 @@ export type TestApplicationStoreOptions =
 export type AdminStoreOptions =
   | {
       emulatedServerType: "filesystem";
-      adminAssetsRootDirectory: string;
+      /** Directories of the Admin store sections: the Admin copy of a test environment (#321). */
+      directories: { admin: string; model: string; data: string };
       filesystemDeploymentRootDirectory: string;
     }
   | {

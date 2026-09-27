@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Inventory: [`./current-state-inven
 Related: #323 (server bundle ignores `--config`; Slice 3 must not rely on `--config`)
 Working branch: `claude/environment-configuration-7z5rjb` (from `_integration`)
 
-**Resume note:** approved by A 2026-09-27. Slices 0–4 DONE; Slice 5a done (every profile store is an environment), 5b next (transformer sessions on the environment Admin, test Admin copy and profile JSONs removed).
+**Resume note:** approved by A 2026-09-27. Slices 0–5 DONE (5 in two commits: 5a environments for every profile, 5b test Admin copy and emulated profile files removed). Next: Slice 6.
 
 ---
 
@@ -39,7 +39,7 @@ This plan does **not** touch the release path, Docker, Electron, miroir-cli or s
 | 2 | Personal environment: `local.json`, `MIROIR_ENV`, `extends` | ✅ | `fn.environment.resolveEnvironment` (merge leaves) + CLI test |
 | 3 | Server boots from the environment, Admin data in state | ✅ | `miroir-env/tests/openEnvironment.321.phase3.integ.test.ts` |
 | 4 | Tests run on `test-filesystem` without tracked writes | ✅ | `nonreg:filesystem` + tracked-assets guard clean; `testEnvironmentConfig.321.phase4.unit.test.ts` |
-| 5 | `test-sql`, `test-indexedDb`, `test-mongodb`; profile JSONs and test Admin copy retired | 🟨 5a | `nonreg:default` (Postgres) + guard |
+| 5 | `test-sql`, `test-indexedDb`, `test-mongodb`; profile JSONs and test Admin copy retired | ✅ | `nonreg:default` (Postgres) + guard |
 | 6 | Reconciliation, deviation warnings, `check` / `import` / `prune` | ⬜ | `miroirEnvReconcile.321.phase6.integ.test.ts` |
 | 7 | UI installs land in state and are recorded in `local.json` | ⬜ | Runner `deployApplication` integ test on `test-filesystem` |
 | 8 | Web client config from the environment | ⬜ | `vite.config` environment test + manual run |
@@ -341,7 +341,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ## Slice 5 — `test-sql`, `test-indexedDb`, `test-mongodb`; profile JSONs and the test Admin copy retired
 
-**Status:** 🟨 in progress (5a done, 5b pending)
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -386,6 +386,18 @@ Delivered in two commits: 5a (every profile store is an environment) and 5b (the
 - Without a profile, transformer sessions use Postgres on `localhost` (was `192.168.1.160`).
 - `PersistenceStoreController.integ`: the missing-entity message names the configured schema instead of `library`.
 - Validation (5a): pre-push gate green (typechecks, `scripts/tests`, 2097 miroir-core tests); `npm run nonreg` default tier on `emulatedServer-sql` against a local Postgres (`MIROIR_POSTGRES_PASSWORD` set) 74/74 (snapshot 20260927T151442Z); the 36 default-tier steps on `emulatedServer-filesystem` 36/36 (snapshot 20260927T154031Z); tracked-assets guard clean. `test-mongodb` is covered by the derivation leaves only (no MongoDB in the cloud container).
+
+**5b**
+
+- Transformer sessions (`tr.*`, `testMiroir` in integration mode) run on a test environment like the other tests: the one `MIROIR_ENV` names (set by `--profile`), `test-sql` otherwise; a `MIROIR_ENV` that is not `test-*` is ignored with a warning. `resolveTestSessionForIntegOptionsFromEnv` takes the Admin store from the environment's Admin copy (`.miroir/<environment>/admin`), puts a filesystem or IndexedDB test application in `.miroir/<environment>/testApplication`, and gives an SQL or MongoDB one the environment's connection (`MIROIR_TEST_POSTGRES_HOST` replaces its host). `MIROIR_TEST_*` variables still choose the store types and override the locations.
+- `tests/helpers/testEnvironment.ts` (`selectedTestEnvironment`, `openTestEnvironment`) resolves a test environment and seeds it once per test file, for `loadTestConfigFiles` and the transformer sessions alike.
+- miroir-core `AdminStoreOptions`: the filesystem variant takes the section `directories` instead of an `admin/`, `admin_model/`, `admin_data/` root. `MIROIR_TEST_ADMIN_ASSETS_ROOT`, `resolveDefaultAdminAssetsRoot` and the unused deprecated `IntegrationTestSessionForPostgres`, `buildMiroirConfigForPostgres`, `buildAdminFilesystemStoreConfig` are gone. The launcher checks that the three Admin directories exist, and accepts a MongoDB connection from the environment.
+- Profiles: the four emulated profiles name only their environment and no longer set `VITE_MIROIR_TEST_CONFIG_FILENAME`; a value set in the shell is dropped with a warning (an error under `CI`). The `ci-emulatedServer-host-sql` and `ci-emulatedServer-dockerized-sql` profiles are removed (Jenkins-era; their JSON had no Admin section). The realServer profiles keep their JSON files.
+- `git rm` `miroir-standalone-app/tests/assets/admin`, `admin_model`, `admin_data` and 13 `tests/miroirConfig.test-*.json`: the 4 emulated ones, `ci-emulatedServer-*` (4), `docker-emulatedServer-sql`, the 3 `mixed_*` and the unreferenced `miroirConfig.test.json`. Readers fixed: `secrets.270.phase0` and `mcpToolRunner.253.phase0` (no longer list the copy), the library `extractMetaModelConfig.json` and `ci/tests/config/*.json` (read the Admin package assets; `ci/build/test_core.sh` keeps working), unit tests that imported the JSON files (they resolve `test-sql` / `test-indexedDb` instead), `resolveRepoRoot` (its fallback marker was a deleted JSON).
+- `getTestConfig` no longer falls back on `deployment_Admin.configuration` (the tracked Admin assets) when a configuration has no Admin; `PersistenceStoreController.integ` no longer snapshots and restores Admin fixture rows.
+- `AGENTS.md` and `docs/` select test environments (`MIROIR_ENV=test-<store>`) instead of the deleted files; the complete docs pass stays in Slice 11.
+- Deviation from 5.2: realServer profiles still use their `miroirConfig.test-realServer-*.json` (the client side of a live server); selecting the server's environment for them moves to Slice 8 with the web client configuration. The Jenkinsfile still names deleted `ci-*` files; it goes in Slice 10.
+- Validation (5b): typechecks (miroir-core, miroir-env, standalone app), `scripts/tests`, 2097 miroir-core tests; `npm run nonreg:filesystem` 74/74 (snapshot 20260927T160324Z); the 36 default-tier steps on `emulatedServer-sql` against a local Postgres 36/36 (snapshot 20260927T162701Z); tracked-assets guard clean after the run.
 
 ---
 

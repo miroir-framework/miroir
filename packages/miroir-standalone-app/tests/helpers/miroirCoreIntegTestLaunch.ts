@@ -45,8 +45,8 @@ function resolveTestAppFilesystemParentDir(
 
 /**
  * #318: create the parent of the filesystem test-app root when absent. The default root
- * (`tests/tmp`) is gitignored, so a fresh checkout does not have it and the launch
- * validation would reject an otherwise valid filesystem run.
+ * (`.miroir/<environment>/testApplication`) is gitignored, so a fresh checkout does not have it
+ * and the launch validation would reject an otherwise valid filesystem run.
  */
 export function prepareMiroirCoreIntegTestLaunchDirectories(
   testSessionOptions: TestSessionForIntegOptions,
@@ -79,9 +79,12 @@ export function formatMiroirCoreIntegTestUsage(): string {
     `  --profile ${DEFAULT_PROFILE_KEY}                   Local default (admin filesystem, miroir + library Postgres)`,
     `  --profile <name>                         ${listIntegrationTestProfileNames().join(" | ")}`,
     "",
-    "Store backends (independent; profile supplies defaults, explicit env overrides):",
-    "  MIROIR_TEST_APP_STORE_TYPE             sql | filesystem | indexedDb | mongodb  (default: sql)",
-    "  MIROIR_TEST_ADMIN_STORE_TYPE           filesystem | sql | indexedDb | mongodb | bundled  (default: filesystem)",
+    "Test environment (#321): MIROIR_ENV=test-<store> (set by --profile; default: test-sql) gives the",
+    "Admin copy and the store defaults below; a MIROIR_ENV that is not test-* is ignored.",
+    "",
+    "Store backends (independent; the environment supplies defaults, explicit env overrides):",
+    "  MIROIR_TEST_APP_STORE_TYPE             sql | filesystem | indexedDb | mongodb  (default: the environment's Miroir store)",
+    "  MIROIR_TEST_ADMIN_STORE_TYPE           filesystem | sql | indexedDb | mongodb | bundled  (default: the environment's Admin store)",
     "",
     "When MIROIR_TEST_APP_STORE_TYPE=sql or MIROIR_TEST_ADMIN_STORE_TYPE=sql:",
     "  MIROIR_TEST_POSTGRES_HOST              Postgres host (default: localhost; a profile sets it from its environment)",
@@ -92,15 +95,14 @@ export function formatMiroirCoreIntegTestUsage(): string {
     "  MIROIR_TEST_APP_MONGODB_DATABASE       Test app database (default: testApplication)",
     "  MIROIR_TEST_ADMIN_MONGODB_DATABASE     Admin database (default: miroirAdmin)",
     "",
-    "When MIROIR_TEST_ADMIN_STORE_TYPE=filesystem:",
-    "  MIROIR_TEST_FILESYSTEM_ROOT            Package root for relative paths",
-    "  MIROIR_TEST_ADMIN_ASSETS_ROOT          Base dir with admin/, admin_model/, admin_data/",
+    "When MIROIR_TEST_ADMIN_STORE_TYPE=filesystem (default):",
+    "  the Admin copy of the test environment, in .miroir/<environment>/admin",
     "",
     "When MIROIR_TEST_APP_STORE_TYPE=filesystem:",
-    "  MIROIR_TEST_APP_FILESYSTEM_ROOT        Writable app root (default: tests/tmp/testApplication)",
+    "  MIROIR_TEST_APP_FILESYSTEM_ROOT        Writable app root (default: .miroir/<environment>/testApplication)",
     "",
     "When MIROIR_TEST_APP_STORE_TYPE=indexedDb:",
-    "  MIROIR_TEST_APP_INDEXEDDB_NAME         IndexedDB name prefix (default: testApplication)",
+    "  MIROIR_TEST_APP_INDEXEDDB_NAME         IndexedDB name prefix (default: .miroir/<environment>/testApplication/indexedDb)",
     "",
     "When MIROIR_TEST_ADMIN_STORE_TYPE=indexedDb:",
     "  MIROIR_TEST_ADMIN_INDEXEDDB_NAME     IndexedDB name prefix (default: miroirAdmin)",
@@ -136,7 +138,7 @@ function validateCiSqlBackendConfiguration(
   }
 
   const hasPostgresHost = Boolean(env.MIROIR_TEST_POSTGRES_HOST?.trim());
-  const hasProfileConfig = Boolean(env.VITE_MIROIR_TEST_CONFIG_FILENAME?.trim());
+  const hasProfileConfig = Boolean(env.MIROIR_ENV?.trim() || env.VITE_MIROIR_TEST_CONFIG_FILENAME?.trim());
   if (!hasPostgresHost && !hasProfileConfig) {
     return (
       `CI requires MIROIR_TEST_POSTGRES_HOST or testMiroir --profile ${DEFAULT_PROFILE_KEY} ` +
@@ -200,9 +202,12 @@ export function validateMiroirCoreIntegTestLaunch(
   const usesMongodb =
     testSessionOptions.testApplicationStore.emulatedServerType === "mongodb" ||
     testSessionOptions.adminStore.emulatedServerType === "mongodb";
-  if (usesMongodb && !env.MIROIR_TEST_MONGODB_CONNECTION_STRING?.trim()) {
+  const mongodbConnectionStrings = [testSessionOptions.testApplicationStore, testSessionOptions.adminStore]
+    .filter((store) => store.emulatedServerType === "mongodb")
+    .map((store) => ("connectionString" in store ? store.connectionString : undefined));
+  if (usesMongodb && mongodbConnectionStrings.some((connectionString) => !connectionString?.trim())) {
     errors.push(
-      "MIROIR_TEST_MONGODB_CONNECTION_STRING is required when app or admin store type is mongodb",
+      "MIROIR_TEST_MONGODB_CONNECTION_STRING is required when a mongodb store has no connection from the test environment",
     );
   }
 
@@ -216,11 +221,11 @@ export function validateMiroirCoreIntegTestLaunch(
   }
 
   if (testSessionOptions.adminStore.emulatedServerType === "filesystem") {
-    const adminRoot = testSessionOptions.adminStore.adminAssetsRootDirectory;
-    for (const subdir of ["admin", "admin_model", "admin_data"]) {
-      const target = path.join(adminRoot, subdir);
+    const { directories, filesystemDeploymentRootDirectory } = testSessionOptions.adminStore;
+    for (const directory of [directories.admin, directories.model, directories.data]) {
+      const target = path.resolve(filesystemDeploymentRootDirectory, directory);
       if (!fs.existsSync(target)) {
-        errors.push(`Admin assets directory missing: ${target}`);
+        errors.push(`Admin store directory missing: ${target}`);
       }
     }
   }

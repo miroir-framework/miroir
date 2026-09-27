@@ -151,17 +151,17 @@ npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql --suites action.domainController.dataCrud --mode integ
 
 # Deprecated imperative Data CRUD (parity harness — keep green; do not delete yet)
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+MIROIR_ENV=test-sql \
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
 npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
 
 # All DomainController suites
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+MIROIR_ENV=test-sql \
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
 npm run testByFile -w miroir-standalone-app -- DomainController.integ
 
 # Persistence store controller
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+MIROIR_ENV=test-sql \
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
 npm run testByFile -w miroir-standalone-app -- PersistenceStoreController.integ
 
@@ -170,7 +170,7 @@ npm run testByFile -w miroir-standalone-app -- \
   --profile emulatedServer-filesystem PersistenceStoreController.integ
 
 # Extractor runner (IndexedDB example)
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json \
+MIROIR_ENV=test-indexedDb \
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
 npm run testByFile -w miroir-standalone-app -- ExtractorPersistenceStoreRunner.integ
 ```
@@ -211,7 +211,7 @@ The same cases run in the app: open one of the instances in the Miroir Tests rep
 RTL proof for **Run Integration Tests** from the Miroir Tests report (`MiroirTestDisplay` → inspector). Single leaf: Return Book on `runner.returnDocument`.
 
 ```bash
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+MIROIR_ENV=test-sql \
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
 npm run testByFile -w miroir-standalone-app -- MiroirTestDisplayIntegrationLaunch.integ
 ```
@@ -308,7 +308,7 @@ Do **not** modify `UnitTestTools.ts` or `TestTools.ts` for new features — exte
 npm run testByFile -w miroir-core -- miroir-core-tests.unit.test
 
 # DomainController integ — with debug logging
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+MIROIR_ENV=test-sql \
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
 npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
 ```

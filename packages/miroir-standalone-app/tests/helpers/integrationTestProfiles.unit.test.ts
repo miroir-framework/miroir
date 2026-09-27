@@ -38,17 +38,21 @@ describe("integrationTestProfiles (Gap D0)", () => {
     }
   });
 
-  it("catalog includes emulatedServer-sql with json config paths", () => {
-    const profile = INTEGRATION_TEST_PROFILES["emulatedServer-sql"];
-    expect(profile.miroirConfigFilename.endsWith(".json")).toBe(true);
-    expect(profile.logConfigFilename.endsWith(".json")).toBe(true);
-    expect(profile.miroirConfigFilename).toContain("miroirConfig.test-emulatedServer-sql.json");
+  it("emulated profiles name a test environment, realServer profiles a configuration file (#321)", () => {
+    for (const profile of Object.values(INTEGRATION_TEST_PROFILES)) {
+      expect(profile.logConfigFilename.endsWith(".json")).toBe(true);
+      if (profile.name.startsWith("emulatedServer-")) {
+        expect(profile.environment).toMatch(/^test-/);
+        expect(profile.miroirConfigFilename).toBeUndefined();
+      } else {
+        expect(profile.environment).toBeUndefined();
+        expect(profile.miroirConfigFilename).toContain(`miroirConfig.test-${profile.name}.json`);
+      }
+    }
   });
 
   it("lists all registered profile names", () => {
     expect(listIntegrationTestProfileNames()).toEqual([
-      "ci-emulatedServer-dockerized-sql",
-      "ci-emulatedServer-host-sql",
       "emulatedServer-filesystem",
       "emulatedServer-indexedDb",
       "emulatedServer-mongodb",
@@ -68,13 +72,28 @@ describe("integrationTestProfiles (Gap D0)", () => {
   it("respectExistingEnv does not overwrite pre-set VITE_MIROIR_TEST_CONFIG_FILENAME", () => {
     process.env.VITE_MIROIR_TEST_CONFIG_FILENAME = "/custom/config.json";
 
-    applyIntegrationTestProfile("emulatedServer-sql", { respectExistingEnv: true });
+    applyIntegrationTestProfile("realServer-sql", { respectExistingEnv: true });
 
     expect(process.env.VITE_MIROIR_TEST_CONFIG_FILENAME).toBe("/custom/config.json");
     expect(process.env.VITE_MIROIR_LOG_CONFIG_FILENAME).toContain("config/logging");
   });
 
-  it("resolveTransformerDefaultsForProfile derives emulatedServer-sql from JSON", () => {
+  it("an environment profile drops a VITE_MIROIR_TEST_CONFIG_FILENAME set in the shell, with a warning (#321)", () => {
+    process.env.VITE_MIROIR_TEST_CONFIG_FILENAME = "/custom/config.json";
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    try {
+      applyIntegrationTestProfile("emulatedServer-sql");
+
+      expect(process.env.VITE_MIROIR_TEST_CONFIG_FILENAME).toBeUndefined();
+      expect(warn).toHaveBeenCalledWith(
+        "warning: integration test profile emulatedServer-sql: VITE_MIROIR_TEST_CONFIG_FILENAME=/custom/config.json is ignored, the profile uses environment test-sql",
+      );
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
+  it("resolveTransformerDefaultsForProfile derives emulatedServer-sql from its environment", () => {
     const defaults = resolveTransformerDefaultsForProfile(
       INTEGRATION_TEST_PROFILES["emulatedServer-sql"],
     );
@@ -88,9 +107,8 @@ describe("integrationTestProfiles (Gap D0)", () => {
     const profile = applyIntegrationTestProfile("emulatedServer-sql");
 
     expect(profile?.name).toBe("emulatedServer-sql");
-    expect(process.env.VITE_MIROIR_TEST_CONFIG_FILENAME).toContain(
-      "miroirConfig.test-emulatedServer-sql.json",
-    );
+    expect(process.env.MIROIR_ENV).toBe("test-sql");
+    expect(process.env.VITE_MIROIR_TEST_CONFIG_FILENAME).toBeUndefined();
     expect(process.env.VITE_MIROIR_LOG_CONFIG_FILENAME).toContain("catch-all.json");
     expect(process.env.MIROIR_TEST_APP_STORE_TYPE).toBe("sql");
     expect(process.env.MIROIR_TEST_ADMIN_STORE_TYPE).toBe("filesystem");
@@ -107,9 +125,7 @@ describe("integrationTestProfiles (Gap D0)", () => {
 
     applyIntegrationTestProfile("emulatedServer-sql", { respectExistingEnv: false });
 
-    expect(process.env.VITE_MIROIR_TEST_CONFIG_FILENAME).toContain(
-      "miroirConfig.test-emulatedServer-sql.json",
-    );
+    expect(process.env.VITE_MIROIR_TEST_CONFIG_FILENAME).toBeUndefined();
     expect(process.env.MIROIR_TEST_POSTGRES_HOST).toBe("localhost");
   });
 
@@ -117,9 +133,7 @@ describe("integrationTestProfiles (Gap D0)", () => {
     applyIntegrationTestProfile("emulatedServer-filesystem");
 
     expect(process.env.MIROIR_ENV).toBe("test-filesystem");
-    expect(process.env.VITE_MIROIR_TEST_CONFIG_FILENAME).toContain(
-      "miroirConfig.test-emulatedServer-filesystem.json",
-    );
+    expect(process.env.VITE_MIROIR_TEST_CONFIG_FILENAME).toBeUndefined();
     expect(process.env.MIROIR_TEST_APP_STORE_TYPE).toBe("filesystem");
     expect(process.env.MIROIR_TEST_ADMIN_STORE_TYPE).toBe("filesystem");
   });

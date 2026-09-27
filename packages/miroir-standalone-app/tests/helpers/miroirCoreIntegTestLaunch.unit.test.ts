@@ -115,8 +115,7 @@ describe("miroirCoreIntegTestLaunch", () => {
           CI: "true",
           MIROIR_TEST_SUITES: "tr.core",
           MIROIR_TEST_MODE: "integ",
-          VITE_MIROIR_TEST_CONFIG_FILENAME:
-            "./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json",
+          MIROIR_ENV: "test-sql",
         },
       }),
     );

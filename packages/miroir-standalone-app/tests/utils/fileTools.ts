@@ -1,22 +1,16 @@
 import { existsSync } from "node:fs";
 import {
-  isTestEnvironment,
   MiroirConfigClient,
   MiroirLoggerFactory,
   type LoggerInterface,
   type LoggerOptions,
 } from "miroir-core";
-import {
-  environmentClientConfig,
-  missingConnectionPasswords,
-  resolveEnvironmentFromFiles,
-  seedEnvironmentState,
-} from "miroir-env";
 import path from "path";
 import { cleanLevel } from "../3_controllers/constants";
 import { packageName } from "../../src/constants";
 import { DEFAULT_LOG_CONFIG_NAME } from "../../src/config/logConfigPresets.js";
 import { resolveRepoRoot } from "../helpers/integrationTestProfiles.js";
+import { openTestEnvironment, selectedTestEnvironment } from "../helpers/testEnvironment.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "FileTools");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -106,43 +100,13 @@ function resolveLogConfigPath(selection: string): string {
 }
 
 // ################################################################################################
-/** Test environments already seeded by this test file (vitest isolates modules per file). */
-const seededTestEnvironments = new Set<string>();
-
-/**
- * #321: the client configuration of the test environment named by MIROIR_ENV (set by
- * `--profile emulatedServer-filesystem`, or directly). Every store of a test environment is a copy
- * in .miroir/<environment>/, wiped and seeded from the package assets once per test file.
- * Returns undefined when MIROIR_ENV names no test environment: the profile JSON is used instead.
- */
-function testEnvironmentMiroirConfig(env: NodeJS.ProcessEnv): MiroirConfigClient | undefined {
-  const name = env.MIROIR_ENV;
-  if (!name) {
-    return undefined;
-  }
-  if (!isTestEnvironment(name)) {
-    log.warn(`loadTestConfigFiles: MIROIR_ENV=${name} is not a test environment (test-*); tests ignore it`);
-    return undefined;
-  }
-  const resolved = resolveEnvironmentFromFiles({ cwd: resolveRepoRoot(), env: { MIROIR_ENV: name } });
-  const runEnv = { ...process.env, ...env };
-  if (!seededTestEnvironments.has(name)) {
-    const seed = seedEnvironmentState(resolved, { reseed: true });
-    seededTestEnvironments.add(name);
-    log.info(`loadTestConfigFiles: environment ${name} seeded in .miroir/${name}:`, seed.seeded.join(", "));
-    for (const warning of missingConnectionPasswords(resolved, runEnv)) {
-      log.warn(`loadTestConfigFiles: ${warning}`);
-    }
-  }
-  return environmentClientConfig(resolved, runEnv);
-}
-
-// ################################################################################################
 export async function loadTestConfigFiles(
   env: any,
 ): Promise<{ miroirConfig: MiroirConfigClient; logConfig: LoggerOptions }> {
   try {
-    const environmentConfig = testEnvironmentMiroirConfig(env);
+    // #321: the test environment named by MIROIR_ENV (set by --profile) wins over a configuration file
+    const environmentName = selectedTestEnvironment(env);
+    const environmentConfig = environmentName ? openTestEnvironment(environmentName, env).miroirConfig : undefined;
     if (!environmentConfig && !env.VITE_MIROIR_TEST_CONFIG_FILENAME) {
       throw new Error(
         "Environment variables MIROIR_ENV and VITE_MIROIR_TEST_CONFIG_FILENAME not found. Tests must select a test environment (MIROIR_ENV=test-filesystem, or --profile) or a test configuration file",

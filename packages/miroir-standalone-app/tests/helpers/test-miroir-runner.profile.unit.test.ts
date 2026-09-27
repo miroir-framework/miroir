@@ -39,7 +39,7 @@ describe("testMiroirLauncher profile (Gap D1)", () => {
     }
   });
 
-  it("runner route: --profile emulatedServer-sql sets VITE_* and MIROIR_TEST_POSTGRES_HOST", () => {
+  it("runner route: --profile emulatedServer-sql sets MIROIR_ENV and MIROIR_TEST_POSTGRES_HOST", () => {
     const { vitestEntry, spawnEnv } = prepareTestMiroirLaunch(process.env, [
       "--profile",
       "emulatedServer-sql",
@@ -50,9 +50,8 @@ describe("testMiroirLauncher profile (Gap D1)", () => {
     ]);
 
     expect(vitestEntry).toBe("miroir-runner-tests.integ.test");
-    expect(spawnEnv.VITE_MIROIR_TEST_CONFIG_FILENAME).toContain(
-      "miroirConfig.test-emulatedServer-sql.json",
-    );
+    expect(spawnEnv.MIROIR_ENV).toBe("test-sql");
+    expect(spawnEnv.VITE_MIROIR_TEST_CONFIG_FILENAME).toBeUndefined();
     expect(spawnEnv.VITE_MIROIR_LOG_CONFIG_FILENAME).toContain("config/logging");
     expect(spawnEnv.MIROIR_TEST_POSTGRES_HOST).toBe("localhost");
     expect(spawnEnv.MIROIR_TEST_APP_STORE_TYPE).toBe("sql");
@@ -113,9 +112,7 @@ describe("testMiroirLauncher profile (Gap D1)", () => {
     ]);
 
     expect(spawnEnv.MIROIR_TEST_POSTGRES_HOST).toBe("custom-host");
-    expect(spawnEnv.VITE_MIROIR_TEST_CONFIG_FILENAME).toContain(
-      "miroirConfig.test-emulatedServer-sql.json",
-    );
+    expect(spawnEnv.MIROIR_ENV).toBe("test-sql");
   });
 
   it("resolveVitestEntry without profile does not set VITE_* (launcher applies profile separately)", () => {

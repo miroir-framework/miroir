@@ -19,13 +19,14 @@ import type {
   PersistenceStoreControllerManagerInterface,
   RunnerTestSessionInterface
 } from "miroir-core";
-import { getBootstrapPhasesForSessionKind } from "miroir-core";
-import { deployment_Admin } from "miroir-test-app_deployment-admin";
+import { getBootstrapPhasesForSessionKind, type StoreUnitConfiguration } from "miroir-core";
+import { deployment_Admin, deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
 
 import {
   runAppStackIntegrationBootstrap
 } from "./appStackIntegrationBootstrap.js";
+import { DEFAULT_TEST_ENVIRONMENT, openTestEnvironment, selectedTestEnvironment } from "./testEnvironment.js";
 
 import {
   INTEG_TEST_APPLICATION_NAME,
@@ -36,14 +37,13 @@ import {
 
 // ################################################################################################
 // Browser-safe re-exports — kept in sync with src/miroir-fwk/4-tests/IntegrationTestSession.ts.
-// Node-only overrides (resolveDefaultFilesystemDeploymentRoot, resolveDefaultAdminAssetsRoot)
-// are defined below and take precedence over the src browser-emulated defaults.
+// The Node-only override of resolveDefaultFilesystemDeploymentRoot is defined below and takes
+// precedence over the src browser-emulated default.
 export {
-  buildAdminFilesystemStoreConfig, buildAdminStoreUnitConfiguration, buildCreateTestApplicationStoresAction, buildIntegrationTestModelEnvironment, buildMiroirConfigForInteg,
-  /** @deprecated use buildMiroirConfigForInteg */
-  buildMiroirConfigForPostgres, buildTeardownTestApplicationStoresAction,
+  buildAdminStoreUnitConfiguration, buildCreateTestApplicationStoresAction, buildIntegrationTestModelEnvironment, buildMiroirConfigForInteg,
+  buildTeardownTestApplicationStoresAction,
   buildTestApplicationStoreUnitConfiguration, buildTestPostgresStoreConfig, collectStoreUnitConfigurationServerTypes, generateEphemeralIntegrationTestApplicationIdentity, INTEG_TEST_APPLICATION_NAME, INTEG_TEST_DEPLOYMENT_UUID, INTEG_TEST_LIBRARY_ENTITIES_AND_INSTANCES, INTEG_TEST_MODEL_BRANCH_UUID, INTEG_TEST_SELF_APPLICATION_UUID, INTEG_TEST_VERSION_UUID, IntegrationTestSession,
-  IntegrationTestSessionForPostgres, PINNED_INTEG_TEST_APPLICATION_IDENTITY,
+  PINNED_INTEG_TEST_APPLICATION_IDENTITY,
   /** @deprecated use INTEG_TEST_* */
   POSTGRES_TEST_APPLICATION_NAME,
   /** @deprecated use INTEG_TEST_* */
@@ -55,68 +55,94 @@ export {
   /** @deprecated use INTEG_TEST_* */
   POSTGRES_TEST_SELF_APPLICATION_UUID,
   /** @deprecated use INTEG_TEST_* */
-  POSTGRES_TEST_VERSION_UUID, type AdminStoreOptions, type IntegrationTestApplicationIdentity, type PostgresIntegrationAdapterOptions, type TestApplicationStoreOptions, type TestSessionForIntegOptions
+  POSTGRES_TEST_VERSION_UUID, type AdminStoreOptions, type IntegrationTestApplicationIdentity, type TestApplicationStoreOptions, type TestSessionForIntegOptions
 } from "../../src/miroir-fwk/4-tests/IntegrationTestSession.js";
 
 const DEFAULT_POSTGRES_HOST = "localhost";
 const DEFAULT_ADMIN_SQL_SCHEMA = "miroirAdmin";
 
 // ################################################################################################
-// Node-only real filesystem defaults. These OVERRIDE the browser-emulated stubs in src/ for every
-// direct caller of this facade (tests, env resolvers). Note: the deprecated
-// IntegrationTestSessionForPostgres class is defined in src/ and falls back to its own
-// browser-emulated defaults when its options are omitted — it is unused in this codebase.
+// Node-only real filesystem default. It OVERRIDES the browser-emulated stub in src/ for every
+// direct caller of this facade.
 export function resolveDefaultFilesystemDeploymentRoot(): string {
   return path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 }
 
-export function resolveDefaultAdminAssetsRoot(): string {
-  return path.join(resolveDefaultFilesystemDeploymentRoot(), "tests/assets");
-}
-
+/**
+ * #321: transformer sessions run on a test environment: MIROIR_ENV when it names one (set by
+ * `--profile`), `test-sql` otherwise. The Admin store is the environment's Admin copy in
+ * .miroir/<environment>/admin, the ephemeral test application goes next to it (filesystem, IndexedDB)
+ * or on the environment's database connection. `MIROIR_TEST_*` variables still choose the store types
+ * and override the locations.
+ */
 export function resolveTestSessionForIntegOptionsFromEnv(
   env: NodeJS.ProcessEnv = process.env,
 ): TestSessionForIntegOptions {
-  const filesystemDeploymentRootDirectory =
-    env.MIROIR_TEST_FILESYSTEM_ROOT ?? resolveDefaultFilesystemDeploymentRoot();
-  const adminAssetsRootDirectory =
-    env.MIROIR_TEST_ADMIN_ASSETS_ROOT ?? resolveDefaultAdminAssetsRoot();
+  const testEnvironment = openTestEnvironment(selectedTestEnvironment(env) ?? DEFAULT_TEST_ENVIRONMENT, env);
+  const client = testEnvironment.miroirConfig.client as {
+    filesystemDeploymentRootDirectory: string;
+    deploymentStorageConfig: Record<string, StoreUnitConfiguration>;
+  };
+  const filesystemDeploymentRootDirectory = client.filesystemDeploymentRootDirectory;
 
   return {
-    testApplicationStore: resolveTestApplicationStoreOptionsFromEnv(env),
-    adminStore: resolveAdminStoreOptionsFromEnv(env, {
+    testApplicationStore: resolveTestApplicationStoreOptionsFromEnv(
+      env,
+      testEnvironment.name,
+      client.deploymentStorageConfig[deployment_Miroir.uuid],
+    ),
+    adminStore: resolveAdminStoreOptionsFromEnv(
+      env,
+      testEnvironment.name,
       filesystemDeploymentRootDirectory,
-      adminAssetsRootDirectory,
-    }),
+      client.deploymentStorageConfig[deployment_Admin.uuid],
+    ),
     filesystemDeploymentRootDirectory,
   };
 }
 
+/** The connection string with another host: `MIROIR_TEST_POSTGRES_HOST` overrides the environment's. */
+function withPostgresHost(connectionString: string, host: string): string {
+  return connectionString.replace(/@[^@:/]+(:\d+)?\//, (_match, port: string | undefined) => `@${host}${port ?? ""}/`);
+}
+
 function resolveTestApplicationStoreOptionsFromEnv(
   env: NodeJS.ProcessEnv,
+  environmentName: string,
+  miroirStorage: StoreUnitConfiguration | undefined,
 ): TestApplicationStoreOptions {
-  const storeType = env.MIROIR_TEST_APP_STORE_TYPE ?? "sql";
+  const environmentSection = miroirStorage?.model;
+  const storeType = env.MIROIR_TEST_APP_STORE_TYPE ?? environmentSection?.emulatedServerType ?? "sql";
+  const environmentDirectory = `.miroir/${environmentName}/${INTEG_TEST_APPLICATION_NAME}`;
   switch (storeType) {
-    case "sql":
-      return {
-        emulatedServerType: "sql",
-        postgresHostName: env.MIROIR_TEST_POSTGRES_HOST ?? DEFAULT_POSTGRES_HOST,
-      };
+    case "sql": {
+      const host = env.MIROIR_TEST_POSTGRES_HOST;
+      if (environmentSection?.emulatedServerType === "sql") {
+        return {
+          emulatedServerType: "sql",
+          connectionString: host
+            ? withPostgresHost(environmentSection.connectionString, host)
+            : environmentSection.connectionString,
+        };
+      }
+      return { emulatedServerType: "sql", postgresHostName: host ?? DEFAULT_POSTGRES_HOST };
+    }
     case "filesystem":
       return {
         emulatedServerType: "filesystem",
-        applicationRootDirectory:
-          env.MIROIR_TEST_APP_FILESYSTEM_ROOT ?? "tests/tmp/testApplication",
+        applicationRootDirectory: env.MIROIR_TEST_APP_FILESYSTEM_ROOT ?? environmentDirectory,
       };
     case "indexedDb":
       return {
         emulatedServerType: "indexedDb",
-        rootIndexDbName: env.MIROIR_TEST_APP_INDEXEDDB_NAME ?? INTEG_TEST_APPLICATION_NAME,
+        rootIndexDbName: env.MIROIR_TEST_APP_INDEXEDDB_NAME ?? `${environmentDirectory}/indexedDb`,
       };
     case "mongodb":
       return {
         emulatedServerType: "mongodb",
-        connectionString: env.MIROIR_TEST_MONGODB_CONNECTION_STRING,
+        connectionString:
+          env.MIROIR_TEST_MONGODB_CONNECTION_STRING ??
+          (environmentSection?.emulatedServerType === "mongodb" ? environmentSection.connectionString : undefined),
         database: env.MIROIR_TEST_APP_MONGODB_DATABASE ?? INTEG_TEST_APPLICATION_NAME,
       };
     default:
@@ -128,19 +154,30 @@ function resolveTestApplicationStoreOptionsFromEnv(
 
 function resolveAdminStoreOptionsFromEnv(
   env: NodeJS.ProcessEnv,
-  defaults: {
-    filesystemDeploymentRootDirectory: string;
-    adminAssetsRootDirectory: string;
-  },
+  environmentName: string,
+  filesystemDeploymentRootDirectory: string,
+  adminStorage: StoreUnitConfiguration | undefined,
 ): AdminStoreOptions {
-  const storeType = env.MIROIR_TEST_ADMIN_STORE_TYPE ?? "filesystem";
+  const storeType = env.MIROIR_TEST_ADMIN_STORE_TYPE ?? adminStorage?.admin.emulatedServerType ?? "filesystem";
   switch (storeType) {
-    case "filesystem":
+    case "filesystem": {
+      const sections = adminStorage ? [adminStorage.admin, adminStorage.model, adminStorage.data] : [];
+      const [admin, model, data] = sections;
+      if (
+        admin?.emulatedServerType !== "filesystem" ||
+        model?.emulatedServerType !== "filesystem" ||
+        data?.emulatedServerType !== "filesystem"
+      ) {
+        throw new Error(
+          `MIROIR_TEST_ADMIN_STORE_TYPE=filesystem: the Admin of environment "${environmentName}" is not a filesystem store`,
+        );
+      }
       return {
         emulatedServerType: "filesystem",
-        adminAssetsRootDirectory: defaults.adminAssetsRootDirectory,
-        filesystemDeploymentRootDirectory: defaults.filesystemDeploymentRootDirectory,
+        directories: { admin: admin.directory, model: model.directory, data: data.directory },
+        filesystemDeploymentRootDirectory,
       };
+    }
     case "sql":
       return {
         emulatedServerType: "sql",

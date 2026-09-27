@@ -466,14 +466,12 @@ Applied by `scripts/test-miroir-runner.ts` and `scripts/test-by-file.ts` via `ap
 3. `--profile` / `-p` applied defaults (when env unset)
 4. Built-in defaults inside `IntegrationTestSession` (local dev only; CI should use argv or a profile)
 
-| Profile key | Config JSON | Typical use |
+| Profile key | Environment or config JSON | Typical use |
 |-------------|-------------|-------------|
-| `emulatedServer-sql` | `miroirConfig.test-emulatedServer-sql.json` | Local default — admin filesystem, miroir + library Postgres |
-| `emulatedServer-filesystem` | `miroirConfig.test-emulatedServer-filesystem.json` | All store sections on filesystem (no Postgres) |
-| `emulatedServer-indexedDb` | `miroirConfig.test-emulatedServer-indexedDb.json` | Miroir + library IndexedDB |
-| `emulatedServer-mongodb` | `miroirConfig.test-emulatedServer-mongodb.json` | Miroir + library MongoDB |
-| `ci-emulatedServer-host-sql` | `miroirConfig.test-ci-emulatedServer-host-sql.json` | CI — Postgres on host (`host.docker.internal`) |
-| `ci-emulatedServer-dockerized-sql` | `miroirConfig.test-ci-emulatedServer-dockerized-sql.json` | CI — Postgres in Docker network |
+| `emulatedServer-sql` | `environments/test-sql.json` | Local default — admin filesystem, miroir + library Postgres (schemas `test_sql_*`; password from `MIROIR_POSTGRES_PASSWORD`) |
+| `emulatedServer-filesystem` | `environments/test-filesystem.json` | All store sections on filesystem (no Postgres) |
+| `emulatedServer-indexedDb` | `environments/test-indexedDb.json` | Miroir + library IndexedDB |
+| `emulatedServer-mongodb` | `environments/test-mongodb.json` | Miroir + library MongoDB (databases `test_mongodb_*`) |
 | `realServer-sql` | `miroirConfig.test-realServer-sql.json` | Client REST → live `miroir-server` (Postgres on server) |
 | `realServer-filesystem` | `miroirConfig.test-realServer-filesystem.json` | Client REST → live server (filesystem on server) |
 | `realServer-indexedDb` | `miroirConfig.test-realServer-indexedDb.json` | Client REST → live server (IndexedDB on server) |
@@ -527,23 +525,23 @@ All vars have defaults; only set what differs from the defaults.
 |----------|--------|---------|
 | `MIROIR_TEST_APP_STORE_TYPE` | `sql` \| `filesystem` \| `indexedDb` \| `mongodb` | `sql` |
 
-**When `sql`:**
+**When `sql`:** the test application uses the test environment's Postgres connection (`connections.postgres`, password from `MIROIR_POSTGRES_PASSWORD`).
 
 | Variable | Purpose | Default |
 |----------|---------|---------|
-| `MIROIR_TEST_POSTGRES_HOST` | Postgres host | `localhost` |
+| `MIROIR_TEST_POSTGRES_HOST` | Replaces the host of that connection | the environment's (`localhost`) |
 
 **When `filesystem`:**
 
 | Variable | Purpose | Default |
 |----------|---------|---------|
-| `MIROIR_TEST_APP_FILESYSTEM_ROOT` | Writable directory for the test application | `tests/tmp/testApplication` |
+| `MIROIR_TEST_APP_FILESYSTEM_ROOT` | Writable directory for the test application | `.miroir/<environment>/testApplication` |
 
 **When `indexedDb`:**
 
 | Variable | Purpose | Default |
 |----------|---------|---------|
-| `MIROIR_TEST_APP_INDEXEDDB_NAME` | IndexedDB name prefix | `testApplication` |
+| `MIROIR_TEST_APP_INDEXEDDB_NAME` | IndexedDB name prefix | `.miroir/<environment>/testApplication/indexedDb` |
 
 **When `mongodb`:**
 
@@ -560,12 +558,7 @@ The admin store hosts `miroirAdmin` deployment metadata (entities, reports, menu
 |----------|--------|---------|
 | `MIROIR_TEST_ADMIN_STORE_TYPE` | `filesystem` \| `sql` \| `indexedDb` \| `mongodb` \| `bundled` | `filesystem` |
 
-**When `filesystem` (default):**
-
-| Variable | Purpose | Default |
-|----------|---------|---------|
-| `MIROIR_TEST_FILESYSTEM_ROOT` | Package root for relative paths | standalone-app root |
-| `MIROIR_TEST_ADMIN_ASSETS_ROOT` | Base directory with `admin/`, `admin_model/`, `admin_data/` | `tests/assets` |
+**When `filesystem` (default):** the Admin copy of the test environment (`MIROIR_ENV`, set by `--profile`; `test-sql` without a profile), in `.miroir/<environment>/admin`, seeded from `miroir-test-app_deployment-admin` once per test file.
 
 **When `sql`:**
 
@@ -620,7 +613,7 @@ MIROIR_TEST_SUITES=tr.core MIROIR_TEST_MODE=integ \
 Runner-type `MiroirTest` leaves (`runnerTest`) exercise composite actions end-to-end. The Vitest entry uses `MiroirTestIntegrationOrchestrator` with kind `"runner"` → `RunnerTestSession` → `runAppStackIntegrationBootstrap`. The same `VITE_MIROIR_*` config files as app-stack tests are required.
 
 ```bash
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+MIROIR_ENV=test-sql \
 VITE_MIROIR_LOG_CONFIG_FILENAME=catch-all \
 MIROIR_TEST_MODE=integ \
 npm run testByFile -w miroir-standalone-app -- miroir-runner-tests.integ.test
@@ -647,7 +640,7 @@ npm run testMiroir -w miroir-standalone-app -- \
 Legacy form (manual `VITE_MIROIR_*` without `--profile`):
 
 ```bash
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+MIROIR_ENV=test-sql \
 VITE_MIROIR_LOG_CONFIG_FILENAME=catch-all-detailed \
 npm run testMiroir -w miroir-standalone-app -- --suites runner.returnDocument --mode integ
 ```
@@ -694,20 +687,14 @@ See [HTTPS setup for developers](../guides/https-setup-developer.md).
 
 ### Config file catalogue
 
-All configs live in `packages/miroir-standalone-app/tests/`.
+Emulated-server tests run on the test environments `environments/test-{sql,filesystem,indexedDb,mongodb}.json` (state in `.miroir/<environment>/`, see `docs/reference/data-architecture-deployments.md`). The realServer configs live in `packages/miroir-standalone-app/tests/`.
 
 | Config file | Mode | Backends exercised |
 |-------------|------|-------------------|
-| `miroirConfig.test-emulatedServer-sql.json` | Emulated server (`RestClientStub`) | Admin: filesystem · Miroir + Library: Postgres |
-| `miroirConfig.test-emulatedServer-filesystem.json` | Emulated server | All sections: filesystem (writable under `tests/tmp/`) |
-| `miroirConfig.test-emulatedServer-indexedDb.json` | Emulated server | Miroir + Library: IndexedDB |
-| `miroirConfig.test-emulatedServer-mongodb.json` | Emulated server | Miroir + Library: MongoDB |
-| `miroirConfig.test-emulatedServer-mixed_*.json` | Emulated server | Mixed backends per deployment |
 | `miroirConfig.test-realServer-sql.json` | Real HTTPS server | Postgres via running `miroir-server` |
 | `miroirConfig.test-realServer-filesystem.json` | Real HTTPS server | Filesystem via running server |
 | `miroirConfig.test-realServer-indexedDb.json` | Real HTTPS server | IndexedDB via running server |
 | `miroirConfig.test-realServer-mongodb.json` | Real HTTPS server | MongoDB via running server |
-| `miroirConfig.test-ci-emulatedServer-*.json` | CI presets | Host-specific connection strings |
 
 Before first run, check `filesystemDeploymentRootDirectory` inside the chosen config — it must point at your local `packages/` directory (paths in the checked-in files are developer-specific).
 
@@ -759,7 +746,7 @@ Copy the six-character `runId` from `RUN … START` or `#??????.sN.#`, then `gre
 Vitest matches files by substring. Run from the **repository root** so relative config paths resolve correctly:
 
 ```bash
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+MIROIR_ENV=test-sql \
 VITE_MIROIR_LOG_CONFIG_FILENAME=catch-all-detailed \
 npm run testByFile -w miroir-standalone-app -- PersistenceStoreController.integ
 ```
@@ -1218,7 +1205,7 @@ The Miroir Tests report runs data-isolated integration sessions with `hostMode: 
 
 | Transport | Profile example | Where it runs | Notes |
 |-----------|-----------------|---------------|-------|
-| **Browser emulated IndexedDB** | `emulatedServer-indexedDb` | In-browser launcher (default) | Only emulated backend with native PersistenceStoreController in the browser. Bundled config is **`miroirConfig.browser-emulatedServer-indexedDb.json`** (all sections IndexedDB + placeholder `filesystemDeploymentRootDirectory` for `setupMiroirTest`). The Vitest file `miroirConfig.test-emulatedServer-indexedDb.json` still uses filesystem admin and is **CLI-only**. **No HTTPS to `miroir-server`** for this profile — network noise may be Vite loading modules. |
+| **Browser emulated IndexedDB** | `emulatedServer-indexedDb` | In-browser launcher (default) | Only emulated backend with native PersistenceStoreController in the browser. Bundled config is **`miroirConfig.browser-emulatedServer-indexedDb.json`** (all sections IndexedDB + placeholder `filesystemDeploymentRootDirectory` for `setupMiroirTest`). The `test-indexedDb` environment of the Vitest runs still uses a filesystem admin and is **CLI-only**. **No HTTPS to `miroir-server`** for this profile — network noise may be Vite loading modules. |
 | **CLI emulated** | `emulatedServer-sql`, `-filesystem`, `-mongodb` | `testMiroir` / `testByFile` (Node) | Postgres/filesystem/Mongo drivers register in Vitest `beforeAll` |
 | **Real server** | `realServer-sql`, `-indexedDb`, `-filesystem`, `-mongodb` | Browser client → `https://localhost:3080` (also Node proof via `uiIntegrationTestLauncher.realServer.integ`) | Requires running `miroir-server`. Select backend with `--storage` or `--profile realServer-*`. |
 
