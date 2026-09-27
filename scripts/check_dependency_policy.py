@@ -196,8 +196,19 @@ def check_lockfile(root: Path) -> list[Violation]:
         for section in INSTALL_SECTIONS:
             for name, spec in manifest.get(section, {}).items():
                 pinned = _pinned_version(spec) if name not in internal else None
-                key = _resolve(packages, base, name) if pinned else None
-                if key and packages[key].get("version") != pinned:
+                if not pinned:
+                    continue
+                key = _resolve(packages, base, name)
+                if key is None:
+                    violations.append(
+                        Violation(
+                            "lockfile",
+                            _rel(root, path),
+                            f'{section}.{name} "{spec}" but package-lock.json does not install it; see '
+                            "docs/contributing/development-setup.md, Dependency policy, to regenerate the lockfile",
+                        )
+                    )
+                elif packages[key].get("version") != pinned:
                     violations.append(
                         Violation(
                             "lockfile",

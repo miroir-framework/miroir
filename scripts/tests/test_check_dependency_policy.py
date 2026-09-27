@@ -192,6 +192,14 @@ def test_a_pinned_spec_the_lockfile_does_not_install_is_a_violation(repo: Path) 
     assert violation.message == 'dependencies.zod "3.25.75" but package-lock.json installs 3.25.76'
 
 
+@pytest.mark.parametrize("section", ["dependencies", "devDependencies", "optionalDependencies"])
+def test_a_direct_dependency_the_lockfile_lacks_is_a_violation(repo: Path, section: str) -> None:
+    _set(repo, "miroir-core", section, "vite", "7.3.6")
+    [violation] = check_lockfile(repo)
+    assert violation.where == "packages/miroir-core/package.json"
+    assert violation.message.startswith(f'{section}.vite "7.3.6" but package-lock.json does not install it')
+
+
 def test_the_nested_copy_counts_for_its_package(repo: Path) -> None:
     _set(repo, "miroir-react", "dependencies", "@mui/material", "5.17.1")
     [violation] = check_lockfile(repo)
