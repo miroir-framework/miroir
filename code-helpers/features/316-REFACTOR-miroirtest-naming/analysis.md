@@ -46,14 +46,14 @@ Rejected schemes (full tables kept in the project file `miroirtest-naming/propos
 | B, platform concept first | `mls.union.objectChoices` | A preferred the kind visible in the name. |
 | C, level first, kebab-case | `unit-mls-union-object-choices` | Duplicates the mode tags, needs an invented `dual` level, renames a test when it gains a mode (contradicts D3). |
 
-### Found during this analysis, to confirm with A
+### Found during this analysis, confirmed with A (2026-09-27)
 
-| # | Question | Recommended |
-|---|---|---|
-| D11 | The root suite `definition.miroirTestLabel` is a second name, printed by vitest and quoted by the CLI "did you mean" error. It differs from `name` on 34 of 66 instances (e.g. `domain_controller_data_crud` / `domainController.data.crud`). Align it to the new name? | Yes, set it equal to `name`; a guard checks equality. |
-| D12 | Deployment packages export each instance as `miroirTest_<name>` (70 in `miroir-test-app_deployment-miroir/index.ts`, 4 in the library one). Dots are not valid in identifiers. Rename the exports too? | Yes: `miroirTest_` + new name with `.` → `_` (`miroirTest_runner_createEntity`), so a name search finds the export. |
-| D13 | `inferUiIntegrationRunnerSuiteKind` decides `domainControllerTest` vs `actionTest` with `suiteKey?.startsWith("domain_controller_")` ([applicationMiroirTestCatalog.ts:58](../../../packages/miroir-core/src/5_tests/applicationMiroirTestCatalog.ts)). The rename would silently turn every DomainController suite into `actionTest`. | Test the prefix `action.domainController.` in the same change, covered by a unit test. |
-| D14 | The deprecated `MIROIR_TEST_SUITE_REGISTRY_NAMES` in [miroirCoreTestSuiteRegistry.ts](../../../packages/miroir-core/src/5_tests/miroirCoreTestSuiteRegistry.ts) hardcodes 38 keys, 4 of them aliases (`alterObject`, `mlsTypeCheck`, `menu`, `metaModelTransformers`) mapped to other export names. | Replace the keys with the new names and drop the alias branches (D10: no aliases). Removing the deprecated registry stays out of scope. |
+| # | Question | Decision | Status |
+|---|---|---|---|
+| D11 | The root suite `definition.miroirTestLabel` is a second name, printed by vitest and quoted by the CLI "did you mean" error. It differs from `name` on 34 of 66 instances (e.g. `domain_controller_data_crud` / `domainController.data.crud`). Align it to the new name? | Set it equal to `name`; a guard checks equality. | **Accepted** |
+| D12 | Deployment packages export each instance as `miroirTest_<name>` (70 in `miroir-test-app_deployment-miroir/index.ts`, 4 in the library one). Dots are not valid in identifiers. Rename the exports too? | `miroirTest_` + new name with `.` → `_` (`miroirTest_runner_createEntity`). | **Accepted** |
+| D13 | `inferUiIntegrationRunnerSuiteKind` decides `domainControllerTest` vs `actionTest` with `suiteKey?.startsWith("domain_controller_")` ([applicationMiroirTestCatalog.ts:58](../../../packages/miroir-core/src/5_tests/applicationMiroirTestCatalog.ts)). The rename would silently turn every DomainController suite into `actionTest`. | Stopgap: test the prefix `action.domainController.`, covered by a unit test. Removing name-based recognition is #317. | **Accepted** |
+| D14 | The deprecated `MIROIR_TEST_SUITE_REGISTRY_NAMES` in [miroirCoreTestSuiteRegistry.ts](../../../packages/miroir-core/src/5_tests/miroirCoreTestSuiteRegistry.ts) hardcodes 38 keys, 4 of them aliases (`alterObject`, `mlsTypeCheck`, `menu`, `metaModelTransformers`) mapped to other export names. | Replace the keys with the new names and drop the alias branches. Removing the deprecated registry stays out of scope. | **Accepted** |
 
 ## Goals
 
@@ -68,6 +68,7 @@ Rejected schemes (full tables kept in the project file `miroirtest-naming/propos
 - Removing the deprecated `MIROIR_TEST_SUITE_REGISTRY` (candidate T1 of #311).
 - Fixing `mlsTypeCheck` accepting any enum value (#313).
 - Adding a nonreg step for `runner_create_entity`, which has none today.
+- Deriving the UI runner suite kind from the definition instead of the name: #317.
 
 ## Current state
 
@@ -140,4 +141,4 @@ Many names are also TypeScript identifiers (`mlsToJsonSchema`, `tools`, `mustach
 
 ## Next
 
-`tdd-implementation-plan.md`, once D11 to D14 are confirmed.
+[tdd-implementation-plan.md](tdd-implementation-plan.md).
