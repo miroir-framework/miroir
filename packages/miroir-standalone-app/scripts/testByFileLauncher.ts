@@ -46,8 +46,10 @@ export function prepareTestByFileLaunch(
   };
 
   // #318: tests that load a profile by name (UI launch tests) follow the launch profile.
-  if (profileFromArg) {
-    spawnEnv.MIROIR_TEST_PROFILE = profileFromArg;
+  const launchProfile =
+    profileFromArg ?? (storageFromArg ? realServerProfileNameForStorage(storageFromArg) : undefined);
+  if (launchProfile) {
+    spawnEnv.MIROIR_TEST_PROFILE = launchProfile;
   }
 
   // Profile wins over --storage for the resolved storage hint passed to Vitest.

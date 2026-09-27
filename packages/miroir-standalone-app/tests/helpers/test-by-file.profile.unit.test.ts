@@ -131,6 +131,16 @@ describe("testByFileLauncher profile (Gap D5)", () => {
     expect(spawnEnv.MIROIR_TEST_PROFILE).toBe("emulatedServer-filesystem");
   });
 
+  it("#318: --storage names the real-server profile it selects", () => {
+    const { spawnEnv } = prepareTestByFileLaunch(process.env, [
+      "--storage",
+      "filesystem",
+      "uiIntegrationTestLauncher.integ",
+    ]);
+
+    expect(spawnEnv.MIROIR_TEST_PROFILE).toBe("realServer-filesystem");
+  });
+
   it("respectExistingEnv: pre-set VITE_MIROIR_TEST_CONFIG_FILENAME is kept", () => {
     process.env.VITE_MIROIR_TEST_CONFIG_FILENAME = "/custom/config.json";
 

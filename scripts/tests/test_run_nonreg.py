@@ -356,3 +356,59 @@ def test_shared_suites_group_maps_results_by_describe(tmp_path: Path):
         "gamma_suite > first",
         "gamma_suite > second",
     ]
+    # One launch, one collect: charged to the first member only.
+    assert timings["one"]["files"][0]["collect_ms"] > 0
+    assert timings["two"]["files"][0]["collect_ms"] == 0
+
+
+# ------------------------------------------------------------------------------------------------
+# #318 review: verdicts when the group launch fails, and fail-fast reporting
+
+STUB_LAUNCHER = ["python", "scripts/tests/fixtures/shared_stub_launcher.py"]
+
+
+def stub_suites_step(step_id: str, suite: str, launcher_extra: list[str] | None = None) -> dict:
+    return {
+        "id": step_id,
+        "tier": "unit",
+        "title": step_id,
+        "argv": ["python", "-c", "pass"],
+        "shared": {"group": "stub", "argv": [*STUB_LAUNCHER, *(launcher_extra or [])], "suites": [suite]},
+    }
+
+
+def test_shared_launch_failing_after_passing_tests_reruns_every_member_legacy(tmp_path: Path):
+    manifest = write_manifest(
+        tmp_path,
+        [
+            stub_suites_step("one", "s1", ["--exit", "1"]),
+            stub_suites_step("two", "s2", ["--exit", "1"]),
+        ],
+    )
+    code, summary, _ = run_nonreg(tmp_path, manifest, "--tier", "unit", "--runner", "shared")
+
+    for step in summary["steps"]:
+        assert step["mode"] == "shared→legacy"
+        assert step["shared_status"] == "launch-failed"
+        assert step["status"] == "passed"
+    assert code == 0
+
+
+def test_fail_fast_reports_group_members_that_already_ran(tmp_path: Path):
+    manifest = write_manifest(
+        tmp_path,
+        [
+            stub_suites_step("first", "s1"),
+            {"id": "fails", "tier": "unit", "title": "exits 3", "argv": ["python", "-c", "import sys; sys.exit(3)"]},
+            stub_suites_step("later", "s2"),
+            {"id": "after", "tier": "unit", "title": "never runs", "argv": ["python", "-c", "pass"]},
+        ],
+    )
+    _, summary, _ = run_nonreg(tmp_path, manifest, "--tier", "unit", "--runner", "shared", "--fail-fast")
+
+    steps = steps_by_id(summary)
+    assert steps["first"]["status"] == "passed"
+    assert steps["fails"]["status"] == "failed"
+    assert steps["later"]["status"] == "passed"
+    assert steps["later"]["mode"] == "shared"
+    assert steps["after"]["status"] == "not_run"

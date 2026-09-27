@@ -392,17 +392,26 @@ def _distribute_group_timings(snap_dir: Path, group: str, members: list[dict[str
     group_dir = snap_dir / TIMINGS_DIRNAME / f"{SHARED_DIRNAME}-{group}"
     if not group_dir.is_dir():
         return
+    # Collect, setup, prepare and environment are paid once per file for the whole group: they
+    # go to the first member that owns part of the file, and are 0 for the others.
+    startup_keys = ("collect_ms", "setup_ms", "prepare_ms", "environment_ms")
     for record_path in sorted(group_dir.glob("*.json")):
         try:
             filepath = json.loads(record_path.read_text(encoding="utf-8")).get("filepath", "")
         except (OSError, json.JSONDecodeError):
             continue
+        startup_charged = False
         for member in members:
             target = snap_dir / TIMINGS_DIRNAME / member["id"]
             if "suites" in member["shared"]:
                 record = json.loads(record_path.read_text(encoding="utf-8"))
-                target.mkdir(parents=True, exist_ok=True)
                 part = _record_for_suites(record, member["shared"]["suites"])
+                if not (part["suites"] or part["tests"]):
+                    continue
+                if startup_charged:
+                    part.update({k: 0 for k in startup_keys if k in part})
+                startup_charged = True
+                target.mkdir(parents=True, exist_ok=True)
                 (target / record_path.name).write_text(json.dumps(part, indent=2) + "\n", encoding="utf-8")
             elif _matches(filepath, member["shared"]["files"]):
                 target.mkdir(parents=True, exist_ok=True)
@@ -479,6 +488,12 @@ def run_shared_group(
     if by_suite:
         entries = _entries_by_suite(entries, members)
 
+    # A launch that fails while none of its tests failed (teardown, reporting, an unhandled
+    # error) cannot be pinned on one member, so none of its members counts as passed.
+    unexplained_failure = exit_code != 0 and not any(
+        a.get("status") == "failed" for e in entries for a in e.get("assertionResults", [])
+    )
+
     results: dict[str, StepResult] = {}
     for member in members:
         result = base_result(member)
@@ -492,7 +507,11 @@ def run_shared_group(
         result.duration_s = round(
             sum((e.get("endTime", 0) - e.get("startTime", 0)) for e in matched) / 1000, 3
         )
-        passed = bool(matched) and all(e.get("status") == "passed" for e in matched)
+        passed = (
+            bool(matched)
+            and all(e.get("status") == "passed" for e in matched)
+            and not unexplained_failure
+        )
         if passed:
             result.status = "passed"
             print(f"PASSED [shared] {member['id']} ({result.duration_s}s)", flush=True)
@@ -503,7 +522,9 @@ def run_shared_group(
         fallback.extra = {
             "mode": "shared→legacy",
             "shared_group": group,
-            "shared_status": "failed" if matched else "no-results",
+            "shared_status": (
+                "launch-failed" if unexplained_failure else "failed" if matched else "no-results"
+            ),
             "shared_group_duration_s": group_duration,
         }
         if fallback.status == "passed":
@@ -870,7 +891,9 @@ def main(argv: list[str] | None = None) -> int:
     shared_results: dict[str, StepResult] = {}
 
     for step in steps:
-        if aborted:
+        # A shared group runs all its members at the first one, so a member listed after a
+        # fail-fast abort may already have run: report its real result, not "not_run".
+        if aborted and step["id"] not in shared_results:
             results.append(
                 StepResult(
                     id=step["id"],
