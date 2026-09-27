@@ -799,15 +799,95 @@
             }
           },
           "reportTestStep": {
-            "type": "schemaReference",
+            "type": "union",
+            "discriminator": "step",
             "tag": {
               "value": {
                 "defaultLabel": "Report test step",
-                "description": "A step of a reportTest leaf: a component test step (#330; Slice 2 adds action and assertion steps)"
+                "description": "A step of a reportTest leaf: a component test step, an action or query, or an assertion on the results of the earlier actions (#330)"
+              }
+            },
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "reactComponentTestStep"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "reportTestCompositeActionStep"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "reportTestExpectActionResultStep"
+                }
+              }
+            ]
+          },
+          "reportTestCompositeActionStep": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "compositeAction",
+                "description": "Runs an action or a query through the session's DomainController, with the session test parameters and the results kept by the earlier steps as parameters; its returned value is kept under nameGivenToResult (#330)"
               }
             },
             "definition": {
-              "relativePath": "reactComponentTestStep"
+              "step": {
+                "type": "literal",
+                "definition": "compositeAction"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "action": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeActionTemplate"
+                }
+              },
+              "nameGivenToResult": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Name given to result",
+                    "description": "Name under which the value returned by the action is kept for the later steps; the action's own nameGivenToResult when absent (a query has one)"
+                  }
+                }
+              }
+            }
+          },
+          "reportTestExpectActionResultStep": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "expectActionResult",
+                "description": "Runs a test assertion over the results kept by the earlier compositeAction steps, as in a Runner test; a failed assertion fails the leaf with its expected and actual values (#330)"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "expectActionResult"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "assertion": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeRunTestAssertion"
+                }
+              }
             }
           },
           "reactComponentTestTextMatch": {

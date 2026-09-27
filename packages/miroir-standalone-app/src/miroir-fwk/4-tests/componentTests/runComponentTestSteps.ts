@@ -26,8 +26,10 @@ import {
 //   postcondition (e.g. `data-test-is-open`).
 // - A failing step throws a `ComponentTestStepError` whose message is
 //   `step <n> (<kind>[ "<label>"]): <message>`, `n` 1-based (T10). An `expectRenderedValues`
-//   failure also carries the expected and actual values.
+//   failure also carries the expected and actual values, as does any `StepValuesMismatch`.
 // - `saveAs` keeps the element of a step for the later targets `{"ref": <name>}` (T11).
+// - Other step kinds run through `options.extraStepHandlers` (the action and assertion steps of a
+//   Report test, #330).
 //
 // It does not import `@testing-library/react`: it runs in the app too.
 // ################################################################################################
@@ -46,8 +48,11 @@ export class ComponentTestStepError extends Error {
   }
 }
 
-/** Thrown by `expectRenderedValues` when the rendered values differ from `expectedValue`. */
-class RenderedValuesMismatch extends Error {
+/**
+ * Thrown by a step whose check compares values (`expectRenderedValues`, or an extra step), to
+ * carry them to its `ComponentTestStepError`.
+ */
+export class StepValuesMismatch extends Error {
   constructor(
     message: string,
     readonly expected: unknown,
@@ -67,7 +72,13 @@ interface ComponentTestStepContext {
 const selectOpenTimeout = 1000;
 const selectCommitTimeout = 2000;
 
-function stepPrefix(step: ReactComponentTestStep, index: number): string {
+/** The fields every step kind has. */
+interface AnyStep {
+  step: string;
+  label?: string | undefined;
+}
+
+function stepPrefix(step: AnyStep, index: number): string {
   return `step ${index + 1} (${step.step}${step.label !== undefined ? ` "${step.label}"` : ""})`;
 }
 
@@ -194,9 +205,14 @@ function elementValue(element: HTMLElement): unknown {
   return (element as HTMLInputElement).value;
 }
 
-export interface ComponentTestStepsOptions {
+export interface ComponentTestStepsOptions<ExtraStep extends AnyStep = never> {
   /** Replaces the `iterations` of every `measureRendering` step (#303 T7, one run of the app). */
   iterationsOverride?: number;
+  /**
+   * Handlers of step kinds that are not component test steps, by kind (the action and assertion
+   * steps of a Report test, #330). Their errors are reported like those of the other steps.
+   */
+  extraStepHandlers?: Record<ExtraStep["step"], (step: ExtraStep) => Promise<void>>;
 }
 
 export interface ComponentTestStepsResult {
@@ -206,10 +222,10 @@ export interface ComponentTestStepsResult {
 
 // ################################################################################################
 /** Runs `steps` in order against the mounted case of `env`. */
-export async function runComponentTestSteps(
+export async function runComponentTestSteps<ExtraStep extends AnyStep = never>(
   env: ComponentTestEnvironment,
-  steps: readonly ReactComponentTestStep[],
-  options: ComponentTestStepsOptions = {},
+  steps: readonly (ReactComponentTestStep | ExtraStep)[],
+  options: ComponentTestStepsOptions<ExtraStep> = {},
 ): Promise<ComponentTestStepsResult> {
   const context: ComponentTestStepContext = { elements: {} };
   const measurements: ComponentRenderMeasurement[] = [];
@@ -223,7 +239,7 @@ export async function runComponentTestSteps(
     }
   };
 
-  /** `expectRenderedValues` once: throws `RenderedValuesMismatch` when the values differ. */
+  /** `expectRenderedValues` once: throws `StepValuesMismatch` when the values differ. */
   const checkRenderedValues = (step: StepOf<"expectRenderedValues">): void => {
     const fieldName = step.field === undefined ? testSectionName : formikFieldName(step.field);
     const extracted = extractValuesFromRenderedElements(
@@ -261,7 +277,7 @@ export async function runComponentTestSteps(
     try {
       env.expect(actual, "rendered values").toEqual(expected);
     } catch (error) {
-      throw new RenderedValuesMismatch(
+      throw new StepValuesMismatch(
         error instanceof Error ? error.message : String(error),
         expected,
         actual,
@@ -480,9 +496,13 @@ export async function runComponentTestSteps(
     },
   };
 
+  const extraStepHandlers: Record<string, ((step: never) => Promise<void>) | undefined> =
+    options.extraStepHandlers ?? {};
   for (const [index, step] of steps.entries()) {
     try {
-      const handler = handlers[step.step] as ((step: ReactComponentTestStep) => Promise<void>) | undefined;
+      const handler = (Object.prototype.hasOwnProperty.call(handlers, step.step)
+        ? handlers[step.step as ReactComponentTestStep["step"]]
+        : extraStepHandlers[step.step]) as ((step: ReactComponentTestStep | ExtraStep) => Promise<void>) | undefined;
       if (!handler) {
         // every kind of the schema has a handler: only JSON that bypassed the schema gets here
         throw new Error("unknown step kind");
@@ -492,7 +512,7 @@ export async function runComponentTestSteps(
       const message = `${stepPrefix(step, index)}: ${error instanceof Error ? error.message : String(error)}`;
       throw new ComponentTestStepError(
         message,
-        error instanceof RenderedValuesMismatch ? { expected: error.expected, actual: error.actual } : undefined,
+        error instanceof StepValuesMismatch ? { expected: error.expected, actual: error.actual } : undefined,
       );
     }
   }

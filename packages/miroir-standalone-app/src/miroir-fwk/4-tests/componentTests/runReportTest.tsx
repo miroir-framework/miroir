@@ -6,11 +6,16 @@ import {
   MiroirContext,
   MiroirLoggerFactory,
   defaultMiroirModelEnvironment,
+  runReportTestCompositeActionStep,
+  runReportTestExpectActionResultStep,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type LoggerInterface,
   type MiroirActivityTrackerInterface,
   type MiroirEventService,
+  type ReportTestActionContext,
+  type ReportTestCompositeActionStep,
+  type ReportTestExpectActionResultStep,
   type ReportTestRunner,
   type ReportTestRunnerResult,
   type ReportTestSuiteContext,
@@ -35,7 +40,11 @@ import {
   type MountedComponent,
 } from "./componentTestEnvironment.js";
 import { MiroirTestProviders } from "./componentTestTools.js";
-import { ComponentTestStepError, runComponentTestSteps } from "./runComponentTestSteps.js";
+import {
+  ComponentTestStepError,
+  StepValuesMismatch,
+  runComponentTestSteps,
+} from "./runComponentTestSteps.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "runReportTest");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -53,7 +62,7 @@ export interface ReportTestSandboxHost {
   miroirEventService: MiroirEventService;
 }
 
-/** The runner and `close()`, which unmounts the last case. */
+/** The runner and `close()`, which releases the portal element and the DOM configuration. */
 export type ClosableReportTestRunner = ReportTestRunner & { close: () => void };
 
 /**
@@ -106,6 +115,31 @@ async function refreshLocalCache(
   }
 }
 
+/** Throws the error of a failed action or assertion step, with its compared values if any. */
+function throwOnError(outcome: ReportTestRunnerResult): void {
+  if (outcome.status === "ok") {
+    return;
+  }
+  if (outcome.expected !== undefined || outcome.actual !== undefined) {
+    throw new StepValuesMismatch(outcome.message, outcome.expected, outcome.actual);
+  }
+  throw new Error(outcome.message);
+}
+
+/** The handlers of the action and assertion steps of one leaf, sharing its kept results. */
+function actionStepHandlers(actionContext: ReportTestActionContext) {
+  return {
+    compositeAction: async (step: ReportTestCompositeActionStep | ReportTestExpectActionResultStep) =>
+      throwOnError(
+        await runReportTestCompositeActionStep(actionContext, step as ReportTestCompositeActionStep),
+      ),
+    expectActionResult: async (step: ReportTestCompositeActionStep | ReportTestExpectActionResultStep) =>
+      throwOnError(
+        await runReportTestExpectActionResultStep(actionContext, step as ReportTestExpectActionResultStep),
+      ),
+  };
+}
+
 // ################################################################################################
 /**
  * The `ReportTestRunner` of `reportTest` leaves (#330, analysis T4).
@@ -117,10 +151,12 @@ async function refreshLocalCache(
  *    then mounts `PageDispatcher` in a `MemoryRouter` at the Report's route, under the providers
  *    of the app (`MiroirTestProviders`) built on the session's DomainController and local cache.
  * 3. It runs the leaf's steps (`runComponentTestSteps`), a thrown error becoming an `error`
- *    result.
+ *    result. The action and assertion steps run through the session's DomainController and share
+ *    the leaf's kept results (`runReportTestCompositeActionStep`,
+ *    `runReportTestExpectActionResultStep`).
  *
- * The previous case is unmounted when the next one mounts; the last case stays mounted until
- * `close()`.
+ * Each case is unmounted when its steps end: a mounted Report would react to the testbed reset
+ * of the next leaf (its queries then fail on the emptied store).
  */
 export function createReportTestRunner(host: ReportTestSandboxHost): ClosableReportTestRunner {
   const restoreDomConfig = configureComponentTestDom();
@@ -184,7 +220,8 @@ export function createReportTestRunner(host: ReportTestSandboxHost): ClosableRep
     if (!Array.isArray(leaf.steps)) {
       return { status: "error", message: `reportTest "${leaf.miroirTestLabel}" has no steps` };
     }
-    const { domainController, applicationDeploymentMap, internalMiroirConfig } = sessionContext;
+    const { domainController, applicationDeploymentMap, internalMiroirConfig, testParams } =
+      sessionContext;
     const deploymentUuid = applicationDeploymentMap[suite.report.application];
     if (!deploymentUuid) {
       return {
@@ -226,13 +263,27 @@ export function createReportTestRunner(host: ReportTestSandboxHost): ClosableRep
           </MiroirTestProviders>
         </ComponentTestModeContext.Provider>,
       );
+      const actionContext: ReportTestActionContext = {
+        domainController,
+        applicationDeploymentMap,
+        modelEnvironment: domainController.currentModelEnvironment(
+          suite.report.application,
+          applicationDeploymentMap,
+        ),
+        testParams,
+        results: {},
+        miroirActivityTracker: host.miroirActivityTracker,
+      };
       await runComponentTestSteps(
         createComponentTestEnvironment({ testName, container, sandboxElement, portalElement, log }),
         leaf.steps,
+        { extraStepHandlers: actionStepHandlers(actionContext) },
       );
       return { status: "ok" };
     } catch (error) {
       return failure(testName, error);
+    } finally {
+      unmountCurrentCase();
     }
   };
 

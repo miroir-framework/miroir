@@ -3,9 +3,23 @@ import * as vitest from "vitest";
 type VitestNamespace = typeof vitest;
 
 import type {
+  CompositeActionTemplate,
   MiroirTestForReport,
+  ReportTestCompositeActionStep,
+  ReportTestExpectActionResultStep,
   TestAssertionResult,
+  TestSuiteResult,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
+import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
+import {
+  Action2Error,
+  Domain2ElementFailed,
+  TransformerFailure,
+  type Action2ReturnType,
+} from "../0_interfaces/2_domain/DomainElement";
+import type { ApplicationDeploymentMap } from "../1_core/Deployment";
+import { resolveCompositeActionTemplate } from "../2_domain/ResolveCompositeActionTemplate";
 import type {
   MiroirActivityTrackerInterface,
   TestAssertionPath,
@@ -122,4 +136,151 @@ export async function runMiroirReportTest(
         : undefined,
     )
     .toBe("ok");
+}
+
+// ################################################################################################
+// Action and assertion steps of a `reportTest` leaf (#330, analysis T6 / T7).
+// ################################################################################################
+
+/** Endpoint of `compositeActionSequence`. */
+const COMPOSITE_ACTION_ENDPOINT = "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5";
+
+/** What the action and assertion steps of one `reportTest` leaf share. */
+export interface ReportTestActionContext {
+  domainController: DomainControllerInterface;
+  applicationDeploymentMap: ApplicationDeploymentMap;
+  modelEnvironment: MiroirModelEnvironment;
+  /** The session's test parameters (`runnerTestContext.testParams`). */
+  testParams: Record<string, unknown>;
+  /** The values kept by the leaf's `compositeAction` steps, by name. Filled by the steps. */
+  results: Record<string, unknown>;
+  /** The tracker of the session's DomainController, where assertions record their results. */
+  miroirActivityTracker: MiroirActivityTrackerInterface;
+}
+
+function actionErrorMessage(result: Action2ReturnType | undefined): string {
+  if (result instanceof Action2Error) {
+    return `${result.errorType}: ${result.errorMessage ?? ""}`;
+  }
+  return `status ${JSON.stringify(result?.status)}`;
+}
+
+/** Runs a one-action sequence with the leaf's parameters: test parameters, then kept results. */
+async function runOneActionSequence(
+  context: ReportTestActionContext,
+  actionLabel: string,
+  action: unknown,
+): Promise<Action2ReturnType> {
+  return context.domainController.handleCompositeAction(
+    {
+      actionType: "compositeActionSequence",
+      actionLabel,
+      endpoint: COMPOSITE_ACTION_ENDPOINT,
+      payload: { actionSequence: [action as any] },
+    },
+    context.applicationDeploymentMap,
+    context.modelEnvironment,
+    { ...context.testParams, ...context.results },
+  );
+}
+
+/**
+ * `compositeAction`: resolves the action's build templates with the test parameters and the kept
+ * results, runs it through the session's DomainController, and keeps its returned value under
+ * the step's `nameGivenToResult`, or the action's (a query has one). A failed action, or a query
+ * returning a failure, is an `error` outcome.
+ */
+export async function runReportTestCompositeActionStep(
+  context: ReportTestActionContext,
+  step: ReportTestCompositeActionStep,
+): Promise<ReportTestRunnerResult> {
+  const actionLabel =
+    step.label ??
+    (typeof step.action.actionLabel === "string" ? step.action.actionLabel : step.action.actionType);
+  const resolved = resolveCompositeActionTemplate(
+    {
+      actionType: "compositeActionSequence",
+      actionLabel,
+      endpoint: COMPOSITE_ACTION_ENDPOINT,
+      payload: { actionSequence: [step.action] },
+    } as CompositeActionTemplate,
+    context.modelEnvironment,
+    { ...context.testParams, ...context.results },
+  );
+  if (resolved instanceof TransformerFailure) {
+    return { status: "error", message: `could not resolve the action: ${resolved.failureMessage}` };
+  }
+  const [resolvedAction] = resolved.resolvedCompositeActionDefinition.payload.actionSequence;
+  const result = await runOneActionSequence(context, actionLabel, resolvedAction);
+  if (result instanceof Action2Error || result?.status !== "ok") {
+    return { status: "error", message: `the action failed: ${actionErrorMessage(result)}` };
+  }
+  if (result.returnedDomainElement instanceof Domain2ElementFailed) {
+    return {
+      status: "error",
+      message: `the query failed: ${JSON.stringify(result.returnedDomainElement)}`,
+    };
+  }
+  const nameGivenToResult =
+    step.nameGivenToResult ?? (step.action as { nameGivenToResult?: string }).nameGivenToResult;
+  if (nameGivenToResult !== undefined) {
+    context.results[nameGivenToResult] = result.returnedDomainElement;
+  }
+  return { status: "ok" };
+}
+
+/**
+ * The result recorded for `assertionName` in the test that is running, if any, at the tracker's
+ * current path, where the DomainController records it (`getTestAssertionsResults` throws on a
+ * suite with no result yet, hence the walk).
+ */
+function trackedAssertionOfCurrentTest(
+  tracker: MiroirActivityTrackerInterface,
+  assertionName: string,
+): TestAssertionResult | undefined {
+  let suiteResult: TestSuiteResult | undefined = tracker.getTestAssertionsResults([]);
+  for (const element of tracker.getCurrentTestAssertionPath()) {
+    if (element.testSuite !== undefined) {
+      suiteResult = suiteResult?.testsSuiteResults?.[element.testSuite];
+    } else if (element.test !== undefined) {
+      return suiteResult?.testsResults?.[element.test]?.testAssertionsResults?.[assertionName];
+    }
+  }
+  return undefined;
+}
+
+/**
+ * `expectActionResult`: runs the assertion over the test parameters and the kept results, as the
+ * assertions of a Runner test run (same ignored attributes, `resultAccessPath`,
+ * `resultTransformer`). The DomainController records the assertion in the running test; a failed
+ * one is an `error` outcome with its expected and actual values.
+ */
+export async function runReportTestExpectActionResultStep(
+  context: ReportTestActionContext,
+  step: ReportTestExpectActionResultStep,
+): Promise<ReportTestRunnerResult> {
+  const assertionName = step.assertion.testAssertion.testLabel;
+  const previous = trackedAssertionOfCurrentTest(context.miroirActivityTracker, assertionName);
+  const result = await runOneActionSequence(
+    context,
+    step.label ?? step.assertion.actionLabel ?? assertionName,
+    step.assertion,
+  );
+  if (result instanceof Action2Error || result?.status !== "ok") {
+    return { status: "error", message: `the assertion could not run: ${actionErrorMessage(result)}` };
+  }
+  const tracked = trackedAssertionOfCurrentTest(context.miroirActivityTracker, assertionName);
+  // each run records a new object: the same one means this assertion recorded nothing
+  if (tracked === undefined || tracked === previous) {
+    return { status: "error", message: `the assertion "${assertionName}" recorded no result` };
+  }
+  if (tracked.assertionResult === "error") {
+    return {
+      status: "error",
+      message: `assertion "${assertionName}" failed`,
+      expected: tracked.assertionExpectedValue,
+      actual: tracked.assertionActualValue,
+    };
+  }
+  return { status: "ok" };
 }

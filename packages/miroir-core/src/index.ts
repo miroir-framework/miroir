@@ -479,6 +479,10 @@ export {
   reportTestSuite,
   ReportTestStep,
   reportTestStep,
+  ReportTestCompositeActionStep,
+  reportTestCompositeActionStep,
+  ReportTestExpectActionResultStep,
+  reportTestExpectActionResultStep,
   ReactComponentTestStep,
   reactComponentTestStep,
   ReactComponentTestTarget,
@@ -1783,6 +1787,9 @@ export {
   REPORT_TEST_NO_RUNNER_MESSAGE,
   REPORT_TEST_NO_SUITE_MESSAGE,
   runMiroirReportTest,
+  runReportTestCompositeActionStep,
+  runReportTestExpectActionResultStep,
+  type ReportTestActionContext,
 } from "./5_tests/ReportTestTools.js";
 export {
   createInProcessVitestStub,

@@ -16,7 +16,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Follow-up: https://github.com/miroir-framework/miroir/issues/333 (stored values in UI steps)
 Working branch: `claude/report-level-miroir-tests-0lnny6` (from `_integration`, PR against `_integration`)
 
-**Resume note:** Slices 0 and 1 done 2026-09-27; Slice 2 next.
+**Resume note:** Slices 0 to 2 done 2026-09-27; Slice 3 next.
 
 ---
 
@@ -39,7 +39,7 @@ This plan does **not** cover stored values in UI steps (#333), an in-memory mode
 |---|---|---|---|
 | 0 | Baseline and 284 coverage inventory | ✅ | nonreg baseline + `wizard-coverage.md` |
 | 1 | Tracer: a MiroirTest mounts `BookDetails` from the testbed store | ✅ | `report.bookDetails` leaf "displays the Book" |
-| 2 | Check steps: run a query, assert on its result | ⬜ | leaf "the store holds the displayed Book" + failure-report vitest |
+| 2 | Check steps: run a query, assert on its result | ✅ | leaf "the store holds the displayed Book" + failure-report vitest |
 | 3 | Edit and save through the UI, checked in the store | ⬜ | leaf "saves an edited title" + idle-wait vitest |
 | 4 | Invalid input is not saved | ⬜ | leaf "does not save an invalid value" |
 | 5 | Fake HTTP, and the wizard's first steps | ⬜ | `report.connectExternalServiceWizard` leaf "reads an OpenAPI document by URL" + undeclared-request vitest |
@@ -211,7 +211,7 @@ npm run lint
 
 ## Slice 2 — Check steps: run a query, assert on its result
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -223,7 +223,7 @@ A test author can run an action or query at any point of a Report test and asser
 
 **Test 1:** new leaf of `report.bookDetails`, **"the store holds the displayed Book"**: `expectElement` on the name, then `compositeAction` (`compositeRunBoxedQueryAction` on the Book by uuid, `nameGivenToResult: "book"`), then `expectActionResult` comparing `book.name` to the displayed value.
 
-**Test 2 (vitest, justified):** `reportTestFailure.330.phase2.integ.test.ts` runs the `report.bookDetails` suite with a copy of that leaf whose expected name is wrong, and asserts the leaf is recorded as `error` with the assertion label, the expected value and the actual value. Not reachable through MiroirTest: a MiroirTest cannot assert that another MiroirTest fails.
+**Test 2 (vitest, justified):** `reportTestFailure.330.slice2.integ.test.tsx` runs the `report.bookDetails` suite with a copy of that leaf whose expected name is wrong, and asserts the leaf is recorded as `error` with the assertion label, the expected value and the actual value. Not reachable through MiroirTest: a MiroirTest cannot assert that another MiroirTest fails.
 
 ### 2.2 GREEN
 
@@ -240,7 +240,7 @@ If Runner tests and report tests now build the same "sequence of assertions over
 ```bash
 npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core && npm run build -w miroir-test-app_deployment-library
 npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites report.bookDetails --mode integ
-RUN_TEST=reportTestFailure npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem reportTestFailure.330.phase2
+npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem reportTestFailure.330.slice2
 npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites runner.lendDocument --mode integ
 npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
@@ -248,7 +248,19 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+- **Proof:** `report.bookDetails` leaf "the store holds the displayed Book" passes: it finds the name on the page, reads the Book with a `storage` query (`compositeRunBoxedQueryAction`, kept as `storedBook`), and `expectActionResult` compares `{ name }` (a `createObject` result transformer over `storedBook.book.name`) to the displayed name. [`reportTestFailure.330.slice2.integ.test.tsx`](../../../packages/miroir-standalone-app/tests/4_view/issues/330-report-level-miroir-tests/reportTestFailure.330.slice2.integ.test.tsx) runs the same leaf expecting "Ubik": the leaf is recorded as `error`, expected `{ name: "Ubik" }`, actual the step message (`step 3 (expectActionResult "…"): assertion "storedBookName" failed`) and `{ name: "The Design of Everyday Things" }`.
+- **Schema:** `reportTestStep` is a union (discriminator `step`) of `reactComponentTestStep`, `reportTestCompositeActionStep` (`action`: `compositeActionTemplate`, optional `nameGivenToResult`) and `reportTestExpectActionResultStep` (`assertion`: `compositeRunTestAssertion`).
+- **Core:** `runReportTestCompositeActionStep` and `runReportTestExpectActionResultStep` in `5_tests/ReportTestTools.ts`, over a `ReportTestActionContext` (DomainController, deployment map, model environment, session `testParams`, the leaf's kept `results`, tracker).
+- **App:** `runComponentTestSteps` takes `extraStepHandlers` for step kinds it does not know; their `StepValuesMismatch` (was the private `RenderedValuesMismatch`) carries the compared values, as `expectRenderedValues` does. The report runner registers the two action handlers, with a fresh `results` per leaf.
+- **Deviations:**
+  - Not `handleCompositeActionTemplate` (T6): it does not return a query's result (its query branch leaves `lastPayloadResult` unchanged). The step resolves the action's build templates with `resolveCompositeActionTemplate`, then runs it in a one-action sequence through `handleCompositeAction`, which returns the query result. No DomainController change. Runtime templates of a non-query action are not resolved; build `getFromParameters` references reach the kept results, which are passed as parameters.
+  - The step's `nameGivenToResult` is optional: a query keeps its result under its own `nameGivenToResult`.
+  - The assertion is read back from the tracker at its current path. That path starts at the `reportTestSuite` (the walk records leaves under the full `testNamePath`), so the assertion lands next to the MiroirTest root, not in the leaf; the check walks the results tree instead of `getTestAssertionsResults`, which throws on a suite with no result yet.
+  - Each case is now unmounted when its steps end. A mounted BookDetails reacted to the next leaf's testbed reset with `storage` queries on the emptied store (`InstanceNotFound` in the log); the second leaf also went from 3.6 s to 1.1 s.
+  - The entry setup moved to `tests/helpers/reportTestEntry.ts` (`startReportTestEntry`), shared by `miroir-report-tests.integ.test.tsx` and the failure test.
+  - Test 2 is `reportTestFailure.330.slice2.integ.test.tsx` (not `phase2`), run with a non-throwing `expect` (`TestFramework.expect`) so the failing leaf is recorded without failing its vitest test.
+- **Refactor checkpoint:** Runner tests run their post-submit actions and assertions as one sequence (`handleTestCompositeAction`) and look assertions up by name in the whole tree; report steps run one action at a time and read the current test. Nothing shared enough to extract.
+- **Validation (2026-09-27):** see the list above, plus the launcher test, model validation, lint, `sync_agent_skills --check` and the scripts pytest.
 
 ---
 
