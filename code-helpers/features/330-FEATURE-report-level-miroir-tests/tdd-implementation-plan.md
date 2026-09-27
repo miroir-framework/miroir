@@ -16,7 +16,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Follow-up: https://github.com/miroir-framework/miroir/issues/333 (stored values in UI steps)
 Working branch: `claude/report-level-miroir-tests-0lnny6` (from `_integration`, PR against `_integration`)
 
-**Resume note:** Slices 0 to 5 done 2026-09-27; Slice 6 next.
+**Resume note:** Slices 0 to 6 done 2026-09-27; Slice 7 next.
 
 ---
 
@@ -43,7 +43,7 @@ This plan does **not** cover stored values in UI steps (#333), an in-memory mode
 | 3 | Edit and save through the UI, checked in the store | ✅ | leaf "saves an edited title" + idle-wait vitest |
 | 4 | Invalid input is not saved | ✅ | leaf "does not save an invalid value" |
 | 5 | Fake HTTP, and the wizard's first steps | ✅ | `report.connectExternalServiceWizard` leaf "reads an OpenAPI document by URL" + undeclared-request vitest |
-| 6 | Wizard Finish persists the Endpoint and Report | ⬜ | leaf "public service: Finish creates Endpoint and Report" |
+| 6 | Wizard Finish persists the Endpoint and Report | ✅ | leaf "public service: Finish creates Endpoint and Report" |
 | 7 | Wizard branches; 284 UI tests deleted | ⬜ | branch leaves + coverage table all covered |
 | 8 | Report tests in the app | ⬜ | launcher registry test + in-app run |
 | 9 | Nonreg, docs, cleanup, AC | ⬜ | nonreg steps + tracer narrative |
@@ -416,7 +416,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ## Slice 6 — Wizard Finish persists the Endpoint and Report
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -445,7 +445,15 @@ npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesyst
 
 ### Realization
 
-<Appended on completion.>
+- **Proof:** `report.connectExternalServiceWizard` leaf "public service: Finish creates Endpoint and Report" passes. It walks the wizard on a public service at `https://fake-service.example`: Base URL, Authentication left off, Operations (`getRelease` listed), probe id `1`, Review (the probe call shows `https://fake-service.example/releases/1`), Probe result "Probe succeeded.", Finish. It then reads the Library model from the store and finds one Endpoint named `discogsPublic`, one Report named `discogsPublic_getRelease`, no Entity named `discogsPublic`, and one more item in the Library Menu than before Finish.
+- **First run failed, testbed fixed (not the runner):** Finish refused with "connectExternalService: the selected application has no menu": the suite's inline testbed (`testbedModel` with only the application, no instances) created no Menu. The suite now uses the Library TestConfiguration of the Report MiroirTests (`libraryBookDetailsSeed`, `3123740d-…`), whose generator `make_report_test_configuration.py` adds the Library Menu to `testbedModel.menus`. `report.bookDetails` uses the same configuration and is unaffected.
+- **Deviations:**
+  - The checks count rows found by name (`extractorInstancesByEntity` with an anchored `filter`, then `listLength`), since the Endpoint and Report uuids are random.
+  - The Menu check counts the items of the Menu's first section before and after Finish (`numericOp` "-"): it proves a link was added, not that it targets the new Report, which a transformer cannot compare without more work. `wizardWalk.284` checked the Report uuid in the Menu's text.
+  - The probe is answered by a second fake response, `GET https://fake-service.example/releases/1`. Finish probes again (PR #285), so the same response serves the Review step and Finish.
+- **Runner:** unchanged. The idle wait covered Finish: its result was in the store when the checks ran.
+- **Coverage:** `wizard-coverage.md` rows `finish-public-creates-endpoint-and-report` and `public-path-skips-secrets` (Next on Authentication shows Operations).
+- **Validation (2026-09-27):** generator `--check` in sync; Miroir model validation 162, Library model validation 184; `uiIntegrationTestLauncher.unit` 18; `reportTestLauncher.330.slice1` 5; `report.bookDetails` 4; `report.connectExternalServiceWizard` 2; `fakeHttp.330.slice5` 2; `reportTestFailure.330.slice2` 2; miroir-core unit 2083 (+1 skipped). No TypeScript changed in this slice.
 
 ---
 

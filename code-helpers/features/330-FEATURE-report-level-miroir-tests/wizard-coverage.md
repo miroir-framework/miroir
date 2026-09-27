@@ -20,9 +20,9 @@
 | `wizardWalk.284.integ.test.tsx` L493 | `document-upload-fills-text` | Uploading a file fills the document text | |
 | `wizardWalk.284.integ.test.tsx` L516 | `cleared-url-does-not-override-pasted-document` | After a refused URL, clearing it lets a pasted document through | |
 | `wizardWalk.284.integ.test.tsx` L535 | `document-private-url-refused` | A private or loopback document URL is refused | |
-| `wizardWalk.284.integ.test.tsx` L549 | `public-path-skips-secrets` | A public service goes from Authentication to Operations without secret steps | |
+| `wizardWalk.284.integ.test.tsx` L549 | `public-path-skips-secrets` | A public service goes from Authentication to Operations without secret steps | `report.connectExternalServiceWizard` "public service: Finish creates Endpoint and Report" (Next on Authentication shows Operations) |
 | `wizardWalk.284.integ.test.tsx` L568 | `secrets-absent-from-bag-and-formik-dump` | A custom token never appears in the step bag or the form values | |
-| `wizardWalk.284.integ.test.tsx` L635 | `finish-public-creates-endpoint-and-report` | Finish on a public service creates the Endpoint and its Report, and no Entity | |
+| `wizardWalk.284.integ.test.tsx` L635 | `finish-public-creates-endpoint-and-report` | Finish on a public service creates the Endpoint and its Report, and no Entity | `report.connectExternalServiceWizard` "public service: Finish creates Endpoint and Report" (checked in the store, Menu link counted) |
 | `multistepBranch.284.integ.test.tsx` L404 | `false-branch-skips-secret-finish` | The false branch skips the secret step and Finish succeeds (branch fixture Report) | |
 | `multistepBranch.284.integ.test.tsx` L428 | `back-from-review-to-choice` | Back from review returns to the choice step on the visited path (branch fixture Report) | |
 | `multistepBranch.284.integ.test.tsx` L449 | `onNext-error-stays-with-inner-message` | An `onNext` error keeps the step and shows the inner message (branch fixture Report) | |

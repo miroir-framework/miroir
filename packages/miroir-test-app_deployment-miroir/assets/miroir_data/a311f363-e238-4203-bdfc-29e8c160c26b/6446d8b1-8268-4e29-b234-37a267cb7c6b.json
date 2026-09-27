@@ -20,11 +20,7 @@
       "applicationName": "Library",
       "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
     },
-    "testbedModel": {
-      "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-      "applicationName": "Library"
-    },
-    "testbedEntitiesAndInstances": [],
+    "testConfiguration": "3123740d-2398-458f-82e6-4f1294866e39",
     "testbedInitApplicationParameters": "libraryTestbedInitParams",
     "miroirTests": [
       {
@@ -106,6 +102,14 @@
                   }
                 }
               }
+            }
+          },
+          {
+            "method": "GET",
+            "url": "https://fake-service.example/releases/1",
+            "body": {
+              "id": "1",
+              "name": "x"
             }
           }
         ],
@@ -211,6 +215,473 @@
                 },
                 "containsHtml": "Base URL",
                 "timeout": 5000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reportTest",
+            "miroirTestLabel": "public service: Finish creates Endpoint and Report",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the Application step",
+                "target": {
+                  "byTestId": "multistep-step-label"
+                },
+                "containsHtml": "Application",
+                "timeout": 15000
+              },
+              {
+                "step": "openSelect",
+                "label": "open the application picker",
+                "field": "application.application"
+              },
+              {
+                "step": "click",
+                "label": "pick Library",
+                "target": {
+                  "byLabelText": "application.application-option-5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Library is picked",
+                "target": {
+                  "widget": "selectState",
+                  "field": "application.application"
+                },
+                "attribute": "data-test-selected-value",
+                "value": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "Next",
+                "target": {
+                  "byTestId": "multistep-next"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the Endpoint name step",
+                "target": {
+                  "byTestId": "multistep-step-label"
+                },
+                "containsHtml": "Endpoint name",
+                "timeout": 5000
+              },
+              {
+                "step": "change",
+                "label": "name the endpoint",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "name.endpointName"
+                },
+                "value": "discogsPublic"
+              },
+              {
+                "step": "click",
+                "label": "Next",
+                "target": {
+                  "byTestId": "multistep-next"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the OpenAPI document step",
+                "target": {
+                  "byTestId": "multistep-step-label"
+                },
+                "containsHtml": "OpenAPI document",
+                "timeout": 5000
+              },
+              {
+                "step": "change",
+                "label": "give the document URL",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "document.url"
+                },
+                "value": "https://fake-service.example/openapi.json"
+              },
+              {
+                "step": "click",
+                "label": "Next",
+                "target": {
+                  "byTestId": "multistep-next"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the Base URL step",
+                "target": {
+                  "byTestId": "multistep-step-label"
+                },
+                "containsHtml": "Base URL",
+                "timeout": 5000
+              },
+              {
+                "step": "change",
+                "label": "give the base URL",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "baseUrl.baseUrl"
+                },
+                "value": "https://fake-service.example"
+              },
+              {
+                "step": "change",
+                "label": "give the User-Agent",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "baseUrl.userAgent"
+                },
+                "value": "MiroirTest/330"
+              },
+              {
+                "step": "click",
+                "label": "Next",
+                "target": {
+                  "byTestId": "multistep-next"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the Authentication step",
+                "target": {
+                  "byTestId": "multistep-step-label"
+                },
+                "containsHtml": "Authentication",
+                "timeout": 5000
+              },
+              {
+                "step": "click",
+                "label": "Next",
+                "target": {
+                  "byTestId": "multistep-next"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the Operations step",
+                "target": {
+                  "byTestId": "multistep-step-label"
+                },
+                "containsHtml": "Operations",
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "the convertible operation",
+                "target": {
+                  "byText": "getRelease"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Next",
+                "target": {
+                  "byTestId": "multistep-next"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the Probe parameters step",
+                "target": {
+                  "byTestId": "multistep-step-label"
+                },
+                "containsHtml": "Probe parameters",
+                "timeout": 5000
+              },
+              {
+                "step": "change",
+                "label": "give the probe id",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "probeParams.id"
+                },
+                "value": "1"
+              },
+              {
+                "step": "click",
+                "label": "Next",
+                "target": {
+                  "byTestId": "multistep-next"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the Review step",
+                "target": {
+                  "byTestId": "multistep-step-label"
+                },
+                "containsHtml": "Review",
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "the probe call",
+                "target": {
+                  "byTestId": "probe-call-parameters"
+                },
+                "containsHtml": "https://fake-service.example/releases/1"
+              },
+              {
+                "step": "click",
+                "label": "Next",
+                "target": {
+                  "byTestId": "multistep-next"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the Probe result step",
+                "target": {
+                  "byTestId": "multistep-step-label"
+                },
+                "containsHtml": "Probe result",
+                "timeout": 10000
+              },
+              {
+                "step": "expectElement",
+                "label": "the probe outcome",
+                "target": {
+                  "byTestId": "probe-outcome"
+                },
+                "containsHtml": "Probe succeeded."
+              },
+              {
+                "step": "compositeAction",
+                "label": "read the Library menu before Finish",
+                "action": {
+                  "actionType": "compositeRunBoxedQueryAction",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  "actionLabel": "readMenuBeforeFinish",
+                  "nameGivenToResult": "menuBeforeFinish",
+                  "payload": {
+                    "actionType": "runBoxedQueryAction",
+                    "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                    "payload": {
+                      "application": {
+                        "transformerType": "getFromParameters",
+                        "interpolation": "build",
+                        "referenceName": "testApplicationUuid"
+                      },
+                      "applicationSection": "model",
+                      "queryExecutionStrategy": "storage",
+                      "query": {
+                        "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                        "application": {
+                          "transformerType": "getFromParameters",
+                          "interpolation": "build",
+                          "referenceName": "testApplicationUuid"
+                        },
+                        "pageParams": {
+                          "currentDeploymentUuid": {
+                            "transformerType": "getFromParameters",
+                            "interpolation": "build",
+                            "referenceName": "testApplicationDeploymentUuid"
+                          }
+                        },
+                        "extractors": {
+                          "menu": {
+                            "extractorOrCombinerType": "extractorByPrimaryKey",
+                            "applicationSection": "model",
+                            "parentName": "Menu",
+                            "parentUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+                            "instanceUuid": "dd168e5a-2a21-4d2d-a443-032c6d15eb22"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "step": "click",
+                "label": "Finish",
+                "target": {
+                  "byTestId": "multistep-finish"
+                }
+              },
+              {
+                "step": "compositeAction",
+                "label": "read the Library model",
+                "action": {
+                  "actionType": "compositeRunBoxedQueryAction",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  "actionLabel": "readStoredModel",
+                  "nameGivenToResult": "storedModel",
+                  "payload": {
+                    "actionType": "runBoxedQueryAction",
+                    "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                    "payload": {
+                      "application": {
+                        "transformerType": "getFromParameters",
+                        "interpolation": "build",
+                        "referenceName": "testApplicationUuid"
+                      },
+                      "applicationSection": "model",
+                      "queryExecutionStrategy": "storage",
+                      "query": {
+                        "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                        "application": {
+                          "transformerType": "getFromParameters",
+                          "interpolation": "build",
+                          "referenceName": "testApplicationUuid"
+                        },
+                        "pageParams": {
+                          "currentDeploymentUuid": {
+                            "transformerType": "getFromParameters",
+                            "interpolation": "build",
+                            "referenceName": "testApplicationDeploymentUuid"
+                          }
+                        },
+                        "extractors": {
+                          "endpoints": {
+                            "extractorOrCombinerType": "extractorInstancesByEntity",
+                            "applicationSection": "model",
+                            "parentName": "Endpoint",
+                            "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+                            "filter": {
+                              "attributeName": "name",
+                              "value": "^discogsPublic$"
+                            }
+                          },
+                          "reports": {
+                            "extractorOrCombinerType": "extractorInstancesByEntity",
+                            "applicationSection": "model",
+                            "parentName": "Report",
+                            "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+                            "filter": {
+                              "attributeName": "name",
+                              "value": "^discogsPublic_getRelease$"
+                            }
+                          },
+                          "entities": {
+                            "extractorOrCombinerType": "extractorInstancesByEntity",
+                            "applicationSection": "model",
+                            "parentName": "Entity",
+                            "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                            "filter": {
+                              "attributeName": "name",
+                              "value": "^discogsPublic$"
+                            }
+                          },
+                          "menu": {
+                            "extractorOrCombinerType": "extractorByPrimaryKey",
+                            "applicationSection": "model",
+                            "parentName": "Menu",
+                            "parentUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+                            "instanceUuid": "dd168e5a-2a21-4d2d-a443-032c6d15eb22"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "step": "expectActionResult",
+                "label": "Finish created the Endpoint and its Report, linked the Report in the Menu, and created no Entity",
+                "assertion": {
+                  "actionType": "compositeRunTestAssertion",
+                  "actionLabel": "createdByFinish",
+                  "nameGivenToResult": "createdByFinish",
+                  "testAssertion": {
+                    "testType": "testAssertion",
+                    "testLabel": "createdByFinish",
+                    "definition": {
+                      "resultTransformer": {
+                        "transformerType": "createObject",
+                        "interpolation": "runtime",
+                        "definition": {
+                          "endpoints": {
+                            "transformerType": "listLength",
+                            "interpolation": "runtime",
+                            "applyTo": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "storedModel",
+                                "endpoints"
+                              ]
+                            }
+                          },
+                          "reports": {
+                            "transformerType": "listLength",
+                            "interpolation": "runtime",
+                            "applyTo": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "storedModel",
+                                "reports"
+                              ]
+                            }
+                          },
+                          "entities": {
+                            "transformerType": "listLength",
+                            "interpolation": "runtime",
+                            "applyTo": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "storedModel",
+                                "entities"
+                              ]
+                            }
+                          },
+                          "menuLinksAdded": {
+                            "transformerType": "numericOp",
+                            "interpolation": "runtime",
+                            "op": "-",
+                            "args": [
+                              {
+                                "transformerType": "listLength",
+                                "interpolation": "runtime",
+                                "applyTo": {
+                                  "transformerType": "getFromContext",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "storedModel",
+                                    "menu",
+                                    "definition",
+                                    "definition",
+                                    "0",
+                                    "items"
+                                  ]
+                                }
+                              },
+                              {
+                                "transformerType": "listLength",
+                                "interpolation": "runtime",
+                                "applyTo": {
+                                  "transformerType": "getFromContext",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "menuBeforeFinish",
+                                    "menu",
+                                    "definition",
+                                    "definition",
+                                    "0",
+                                    "items"
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "expectedValue": {
+                        "endpoints": 1,
+                        "reports": 1,
+                        "entities": 0,
+                        "menuLinksAdded": 1
+                      }
+                    }
+                  }
+                }
               }
             ]
           }
