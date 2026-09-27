@@ -7,6 +7,7 @@
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Issue #249 — transformer inputOutput compatibility relation (entity uuids, payloads, subtyping) and stock definition validity. Uuids used: Menu dde4c883-ae6d-47c3-b6df-26bc6e3c1842, User ca794e28-b2dc-45b3-8137-00151557eea8, EntityVersion 54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.",
   "tags": [
+    "unit",
     "transformer"
   ],
   "issue": "249",

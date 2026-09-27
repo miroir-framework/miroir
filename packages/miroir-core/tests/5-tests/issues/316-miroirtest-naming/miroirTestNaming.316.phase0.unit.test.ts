@@ -2,47 +2,19 @@
  * #316 Slice 0: characterization of the MiroirTest catalog before the rename.
  * Keyed on uuid, so it stays valid while names change.
  */
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-
 import { describe, expect, it } from "vitest";
 
-import type { MiroirTestSuite } from "../../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { inferUiIntegrationRunnerSuiteKind } from "../../../../src/5_tests/applicationMiroirTestCatalog";
 import {
   loadApplicationMiroirTestCatalog,
   resolveMonorepoRoot,
 } from "../../../../src/5_tests/loadApplicationMiroirTestsFromFolders";
-import { walkMiroirTestLeaves } from "../../../../src/5_tests/inferIntegrationSessionKind";
-
-type RenameMapEntry = {
-  uuid: string;
-  deployment: string;
-  kind: "fn" | "query" | "tr" | "action" | "runner" | "ui";
-  oldName: string;
-  newName: string;
-};
+import { kindFromLeaves, loadRenameMap, type RenameMapEntry } from "./miroirTestKind.316";
 
 const repoRoot = resolveMonorepoRoot();
-const renameMap: RenameMapEntry[] = JSON.parse(
-  readFileSync(
-    join(repoRoot, "code-helpers/features/316-REFACTOR-miroirtest-naming/rename-map.json"),
-    "utf-8",
-  ),
-);
+const renameMap = loadRenameMap(repoRoot);
 const catalog = loadApplicationMiroirTestCatalog(repoRoot);
 const catalogByUuid = new Map(catalog.map((entry) => [entry.instance.uuid, entry]));
-
-/** Kind of a suite, from its leaf types (analysis D7). */
-function kindFromLeaves(suite: MiroirTestSuite): RenameMapEntry["kind"] {
-  const types = new Set(walkMiroirTestLeaves(suite).map((leaf) => leaf.miroirTestType));
-  if (types.has("reactComponentTest")) return "ui";
-  if (types.has("runnerTest")) return "runner";
-  if (types.has("actionTest")) return "action";
-  if (types.has("queryTest")) return "query";
-  if (types.has("functionCallTest")) return "fn";
-  return "tr";
-}
 
 describe("#316 phase 0: MiroirTest catalog characterization", () => {
   it("the catalog holds exactly the 66 instances of the rename map", () => {

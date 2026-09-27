@@ -13,7 +13,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Rename map: [`./rename-map.md`](./
 Prerequisites: [`../312-FEATURE-miroir-test-classification/`](../312-FEATURE-miroir-test-classification/) ✅, #315 ✅
 Working branch: `316-REFACTOR-miroirtest-naming`
 
-**Resume note:** Slice 0 DONE.
+**Resume note:** Slices 0–1 DONE.
 
 ---
 
@@ -33,7 +33,7 @@ This plan does **not** rename inner suite and test labels (later pass), derive t
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize names, kinds and name-driven behavior | ✅ | `miroirTestNaming.316.phase0.unit.test.ts` |
-| 1 | Select tests by mode: `unit` / `integ` / `ui` tags (tracer) | ⬜ | mode-tag guard + `testMiroir --tags ui` |
+| 1 | Select tests by mode: `unit` / `integ` / `ui` tags (tracer) | ✅ | mode-tag guard + `testMiroir --tags ui` |
 | 2 | Naming guard + rename UI component suites | ⬜ | naming guard, `--suites ui.mlElementEditor.array` |
 | 3 | Rename runner and action suites (+ D13 stopgap, nonreg ids) | ⬜ | naming guard, runner-kind test, nonreg integ steps |
 | 4 | Rename transformer suites | ⬜ | naming guard, `--suites tr.core --mode integ` |
@@ -63,7 +63,7 @@ From the analysis decision record (D1–D14, all **Accepted**).
 | D13 DomainController recognition | prefix `action.domainController.` (stopgap until #317) |
 | D14 Deprecated registry | keys = new names, alias branches removed |
 
-Mode tag rule (D2), shared by guard and data: a suite gets `unit` if it has a `functionCallTest`, `queryTest` or `transformerTest` leaf; `integ` if it has a `transformerTest`, `actionTest` or `runnerTest` leaf; `ui` if it has a `reactComponentTest` leaf. The guard computes it from `walkMiroirTestLeaves` ([inferIntegrationSessionKind.ts](../../../packages/miroir-core/src/5_tests/inferIntegrationSessionKind.ts)). Consequence: `fn.transformer.resultSchema` (38 function calls + 1 transformer test) carries `unit` and `integ`.
+Mode tag rule (D2), shared by guard and data, as realized in Slice 1: `miroirTestSuiteModeTags` ([miroirTestTags.ts](../../../packages/miroir-core/src/5_tests/miroirTestTags.ts)) gives `ui` to suites with a `reactComponentTest` leaf, otherwise maps the CLI launch kind (`classifyApplicationMiroirTestCliLaunchKind`): `unit` → `unit`, `mixed-unit-transformer` → `unit`, `integ`, `runner-integration` / `transformer-integration` → `integ`. Result: 9 `ui`, 39 `unit`, 19 `integ` (only `miroirCoreTransformers` carries both). This replaces the plan-time shorthand "transformer → unit + integ": 10 of the 11 transformer suites have no integration expectation and run in unit mode only.
 
 ---
 
@@ -89,7 +89,7 @@ No new model element, so no new uuid. Instance uuids are unchanged.
 | Existing tag guards | `npm run testByFile -w miroir-core -- miroirTestTags.unit` |
 | MiroirTest unit by name / tag | `npm run testMiroir -w miroir-core -- --suites <name> --mode unit` · `-- --tags <tag> --mode unit` |
 | MiroirTest integ | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites <name> --mode integ` |
-| UI component suites | `npm run testMiroir -w miroir-standalone-app -- --suites <name> --mode unit` |
+| UI component suites | `npm run testMiroir -w miroir-core -- --suites <name> --mode unit` (component suites run in the core unit launcher) |
 | Schema rebuild (Slice 1) | `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core` (if "jzodObject not found": `./build-all.sh`) |
 | Deployment rebuild after asset edits | `npm run build -w miroir-test-app_deployment-miroir -w miroir-test-app_deployment-library` |
 | modelValidation | `npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts` (same for `-library`) |
@@ -129,7 +129,7 @@ The tests key on uuid, not name, so they stay valid through the rename.
 
 ## Slice 1 — Select tests by mode (tracer bullet)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** `testMiroir --tags ui` runs the 9 component suites; `--tags integ` lists the 30 integration-capable suites (11 tr + 11 action + 7 runner, plus `fn.transformer.resultSchema`); the Tags column and chips show them.
 
@@ -148,12 +148,16 @@ The tests key on uuid, not name, so they stay valid through the rename.
 ### Validation
 - `RUN_TEST=miroirTestNaming npm run testByFile -w miroir-core -- miroirTestNaming.316`
 - `npm run testByFile -w miroir-core -- miroirTestTags.unit`
-- `npm run testMiroir -w miroir-standalone-app -- --tags ui --mode unit`
+- `npm run testMiroir -w miroir-core -- --tags ui --mode unit`
 - modelValidation for both deployments; typecheck `miroir-core`
 - `npm run test -w miroir-core -- ''`
 
 ### Realization
-_(pending)_
+- `miroirTestSuiteModeTags` and `MIROIR_TEST_MODE_TAGS` added to `miroirTestTags.ts` (exported from `miroir-core`), reusing `classifyApplicationMiroirTestCliLaunchKind` rather than a second leaf-type rule (the refactor checkpoint done up front).
+- Enum `unit`, `integ`, `ui` appended in the Entity row and EntityVersion (23 values). Mode tags prepended on the 66 instances from `miroirTestSuiteModeTags` (text-level insertion for 4 compactly formatted files, to keep diffs small). `devBuild` left the generated types unchanged.
+- Deviation: the tracer command is `npm run testMiroir -w miroir-core -- --tags ui --mode unit` (87 component tests pass). The standalone-app `testMiroir` only lists integration suites, so it rejects `--tags ui`.
+- Existing tests adjusted for the new tags: `miroirTestTags.unit.test.ts` (23 allowed tags, `mustache` tags `unit, tools`), `MiroirTestListDisplay.unit.test.tsx` (chips `integ (2)`, `unit (2)`).
+- Validation: phase0 + phase1 + `miroirTestTags` (26 tests), core unit tests (2068 passed), both modelValidations, core typecheck, component run above. `nonreg:unit`: 7 steps failed with "Cannot read properties of undefined (reading 'uuid')" on the container's stale `dist/`; after `./build-all.sh` (which also regenerated `miroirFundamentalType.ts` with the 3 new enum values: the first `devBuild` had read a stale deployment build) the 7 steps pass.
 
 ---
 
@@ -178,7 +182,7 @@ _(pending)_
 
 ### Validation
 - guards (phase0–2), `miroirTestTags.unit`
-- `npm run testMiroir -w miroir-standalone-app -- --suites ui.mlElementEditor.array --mode unit`
+- `npm run testMiroir -w miroir-core -- --suites ui.mlElementEditor.array --mode unit`
 - `npm run testByFile -w miroir-standalone-app -- runAllComponentTests.286.phase6` and `MiroirTestListDisplay`
 - deployment rebuild, modelValidation, typecheck `miroir-core`, `miroir-standalone-app`, deployments
 - `npm run nonreg:unit`
@@ -277,7 +281,7 @@ _(pending)_
 - add the migrated test file to the nonreg `unit-312-miroir-test-tags` step (or a sibling `unit-miroir-test-naming` step);
 - run `npm run nonreg:filesystem` and keep its snapshot as the new `latest` (D10).
 
-**Tracer narrative:** open Miroir Tests in the standalone app, filter the grid on the `ui` chip: the 9 `ui.mlElementEditor.*` suites remain, each with a one-sentence description; Run All runs them. Automated equivalent: `testMiroir -w miroir-standalone-app -- --tags ui --mode unit`.
+**Tracer narrative:** open Miroir Tests in the standalone app, filter the grid on the `ui` chip: the 9 `ui.mlElementEditor.*` suites remain, each with a one-sentence description; Run All runs them. Automated equivalent: `npm run testMiroir -w miroir-core -- --tags ui --mode unit`.
 
 ### Validation
 - pre-push gate (`sync_agent_skills --check`, `pytest scripts/tests`, core typecheck, core unit tests)

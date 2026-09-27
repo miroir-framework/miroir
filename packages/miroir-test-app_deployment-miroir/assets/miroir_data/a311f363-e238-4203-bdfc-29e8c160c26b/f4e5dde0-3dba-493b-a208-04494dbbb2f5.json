@@ -7,6 +7,7 @@
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Slice 6 unit transformerTest for syncExternalServiceSchema. openApiDocument is the committed Spotify get-playlist excerpt (assets/test-resources/spotifyOpenApiExcerpt.get-playlist.json), passed as transformerParams.",
   "tags": [
+    "unit",
     "external-service",
     "transformer"
   ],
@@ -28,7 +29,7 @@
           "openApiDocument": {
             "openapi": "3.0.0",
             "info": {
-              "title": "Spotify Web API excerpt \u2014 get-playlist",
+              "title": "Spotify Web API excerpt — get-playlist",
               "version": "0.0.1",
               "description": "Faithful subset of https://developer.spotify.com/reference/web-api/open-api-schema.yaml for GET /playlists/{playlist_id} (operationId get-playlist) plus PUT change-playlist-details. Includes PlaylistObject, TrackObject, SimplifiedArtistObject, ImageObject, paging/owner allOf, ImageObject nullable height/width, and PlaylistTrackObject.track oneOf."
             },
@@ -677,7 +678,7 @@
           "openApiDocument": {
             "openapi": "3.0.0",
             "info": {
-              "title": "Spotify Web API excerpt \u2014 get-playlist",
+              "title": "Spotify Web API excerpt — get-playlist",
               "version": "0.0.1",
               "description": "Faithful subset of https://developer.spotify.com/reference/web-api/open-api-schema.yaml for GET /playlists/{playlist_id} (operationId get-playlist) plus PUT change-playlist-details. Includes PlaylistObject, TrackObject, SimplifiedArtistObject, ImageObject, paging/owner allOf, ImageObject nullable height/width, and PlaylistTrackObject.track oneOf."
             },

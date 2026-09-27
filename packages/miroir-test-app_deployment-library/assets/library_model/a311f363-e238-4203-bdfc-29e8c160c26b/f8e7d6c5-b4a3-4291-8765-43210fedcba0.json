@@ -7,6 +7,7 @@
   "name": "runner_lend_document",
   "description": "library runner integration tests — lendDocument",
   "tags": [
+    "integ",
     "runner",
     "data"
   ],

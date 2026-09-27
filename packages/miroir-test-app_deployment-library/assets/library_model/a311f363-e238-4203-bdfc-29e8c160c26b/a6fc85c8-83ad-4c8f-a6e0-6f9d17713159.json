@@ -7,6 +7,7 @@
   "name": "runner_mcp_lend_document",
   "description": "Issue #253 — mcpToolRunner lendDocument via MCP tools/call; success also queries LendingHistoryItem.",
   "tags": [
+    "integ",
     "runner",
     "mcp",
     "data"

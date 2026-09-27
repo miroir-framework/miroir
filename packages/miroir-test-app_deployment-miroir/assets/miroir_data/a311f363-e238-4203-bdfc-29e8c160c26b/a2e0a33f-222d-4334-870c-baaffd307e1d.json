@@ -7,6 +7,7 @@
   "name": "runner_mcp_get_instances",
   "description": "Issue #253 — mcpToolRunner getInstances via MCP tools/call; payload includes seeded book1.",
   "tags": [
+    "integ",
     "runner",
     "mcp",
     "data"

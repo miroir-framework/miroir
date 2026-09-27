@@ -7,6 +7,7 @@
   "name": "domain_controller_model_undo_redo",
   "description": "DomainController Model undo/redo action integration tests (Feature 197). Owned by the Miroir meta-application; Library is only the runTarget/testbed. Domain-action coverage of createEntity + undo/redo + commit (React UI / currentTransaction checks remain on the deprecated legacy file). Lifecycle: session testBedModelAndInstances (empty Library).",
   "tags": [
+    "integ",
     "domain-controller",
     "model"
   ],

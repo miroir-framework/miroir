@@ -7,6 +7,7 @@
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Phase 3a pilot — resolveConditionalSchema build test as miroirTestType transformerTest",
   "tags": [
+    "unit",
     "ml-schema"
   ],
   "issue": "196",

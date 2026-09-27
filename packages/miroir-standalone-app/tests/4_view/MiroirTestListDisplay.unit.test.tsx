@@ -161,7 +161,14 @@ describe('MiroirTestListDisplay tag chips (#312)', () => {
 
     expect(
       screen.getAllByRole('button', { pressed: false }).map((chip) => chip.textContent),
-    ).toEqual(['data (1)', 'primary-key (1)', 'runner (1)', 'transformer (1)']);
+    ).toEqual([
+      'data (1)',
+      'integ (2)',
+      'primary-key (1)',
+      'runner (1)',
+      'transformer (1)',
+      'unit (2)',
+    ]);
   });
 
   it('a selected chip restricts the list and what Run All runs, a second click restores it', () => {

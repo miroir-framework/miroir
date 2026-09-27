@@ -102,7 +102,7 @@ describe("MiroirTest tags: selection over the folder catalog", () => {
 describe("MiroirTest tags: schema", () => {
   it("a tagged instance passes model validation against the MiroirTest EntityVersion", () => {
     const mustache = miroirTestInstanceNamed("mustache");
-    expect(mustache.tags).toEqual(["tools"]);
+    expect(mustache.tags).toEqual(["unit", "tools"]);
     const entityVersion = readJson(miroirTestEntityVersionPath);
     expect(entityVersion.entityUuid ?? ENTITY_MIROIR_TEST_UUID).toBe(ENTITY_MIROIR_TEST_UUID);
     const check = checkModelValidationInstance(
@@ -123,7 +123,7 @@ describe("MiroirTest tags: vocabulary from the MiroirTest Entity", () => {
   it("reads the allowed tags from the live Entity row, in declaration order", () => {
     expect(miroirTestEntity.uuid).toBe(ENTITY_MIROIR_TEST_UUID);
     const allowed = getMiroirTestAllowedTags(miroirTestEntity);
-    expect(allowed).toHaveLength(20);
+    expect(allowed).toHaveLength(23);
     expect(allowed?.slice(0, 3)).toEqual(["transformer", "ml-schema", "ml-union"]);
     expect(allowed).toContain("tools");
   });

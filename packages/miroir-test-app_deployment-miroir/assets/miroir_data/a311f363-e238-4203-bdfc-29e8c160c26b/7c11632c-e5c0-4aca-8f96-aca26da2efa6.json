@@ -7,6 +7,7 @@
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Migrated from UnitTest d41013e0-a6f8-4f4f-8c8e-036b77dc56d4 (Feature #196 Phase 5)",
   "tags": [
+    "unit",
     "primary-key"
   ],
   "issue": "196",

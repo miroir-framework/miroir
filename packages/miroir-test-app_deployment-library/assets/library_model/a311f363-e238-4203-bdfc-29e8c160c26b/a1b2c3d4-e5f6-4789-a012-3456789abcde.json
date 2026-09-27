@@ -7,6 +7,7 @@
   "name": "runner_return_document",
   "description": "library runner integration tests — returnDocument",
   "tags": [
+    "integ",
     "runner",
     "data"
   ],

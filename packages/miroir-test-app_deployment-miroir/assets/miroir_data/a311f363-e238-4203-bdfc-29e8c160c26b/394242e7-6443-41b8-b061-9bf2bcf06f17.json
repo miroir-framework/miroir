@@ -5,8 +5,9 @@
   "name": "externalServiceSyncExecute",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Slice 3 actionTest: operations-only landing plus createEntity re-sync (filesystem and postgres). Proves landing only \u2014 no HTTP.",
+  "description": "Slice 3 actionTest: operations-only landing plus createEntity re-sync (filesystem and postgres). Proves landing only — no HTTP.",
   "tags": [
+    "integ",
     "external-service",
     "model"
   ],

@@ -7,6 +7,7 @@
   "name": "runner_freeze_application_version",
   "description": "freezeApplicationVersion runner integration tests (#225 Phase 2). Owned by Miroir meta-application; appForTest (Publisher+Country) is the runTarget/testbed. Leaves: V1 baseline freeze; V1→alter→V2 via runner.",
   "tags": [
+    "integ",
     "runner",
     "versioning"
   ],

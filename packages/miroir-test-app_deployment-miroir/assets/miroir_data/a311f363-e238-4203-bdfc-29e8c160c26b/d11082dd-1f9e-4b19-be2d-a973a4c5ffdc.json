@@ -7,6 +7,7 @@
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Migrated from UnitTest 856426e9-85ce-4c40-a607-01029de24c1f (Feature #196 Phase 5)",
   "tags": [
+    "unit",
     "ml-schema",
     "ml-conversion"
   ],

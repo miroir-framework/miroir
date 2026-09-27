@@ -8437,7 +8437,10 @@ export const miroirFundamentalMlSchema = {
                 "report",
                 "menu",
                 "ai",
-                "tools"
+                "tools",
+                "unit",
+                "integ",
+                "ui"
               ]
             }
           },
