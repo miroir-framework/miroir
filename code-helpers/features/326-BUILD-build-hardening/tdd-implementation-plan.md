@@ -9,7 +9,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/326
 Working branches: PR 1 `claude/build-hardening-81mz9d`, PR 2 `claude/build-hardening-bundles` (D17), both from `_integration`
 
-**Resume note:** PR 1 (Slices 0–9 and 7b) DONE 2026-09-27 on `claude/build-hardening-81mz9d`; next: PR 2, Slice 10, on `claude/build-hardening-bundles`. Lockfiles are regenerated with npm 11 and `--before` (Slice 4 realization).
+**Resume note:** PR 1 (Slices 0–9 and 7b) DONE 2026-09-27 on `claude/build-hardening-81mz9d` (PR #334). PR 2 on `claude/build-hardening-bundles`, branched from PR 1's head: Slice 10 DONE; next: Slice 11. Lockfiles are regenerated with npm 11 and `--before` (Slice 4 realization).
 
 ---
 
@@ -37,7 +37,7 @@ This plan does **not** cut bundle size (D19: separate issue opened in Slice 17 f
 | 7b | 1 | Every locked package is checked against its hash (added) | ✅ | `lockfile` rule + `test_fill_lockfile_integrity.py` + clean `npm ci` |
 | 8 | 1 | Updates only through reviewed, cooled-down PRs; actions pinned | ✅ | `actions` rule + `dependabot.yml` test |
 | 9 | 1 | PR 1 wrap-up: gate docs, nonreg step, full nonreg | ✅ | nonreg:unit + nonreg:filesystem green |
-| 10 | 2 | Vendor sourcemaps restored | ⬜ | `bundleSourcemaps.326.phase10.unit.test.ts` |
+| 10 | 2 | Vendor sourcemaps restored | ✅ | `bundleSourcemaps.326.phase10.unit.test.ts` |
 | 11 | 2 | Tracer: the build prints and writes the attribution report | ⬜ | `bundleReport.326.phase11.unit.test.ts` |
 | 12 | 2 | Allowlist and eager budget guards | ⬜ | `test_check_bundle_policy.py` + real report exits 0 |
 | 13 | 2 | Electron main bundled with esbuild, traced and guarded | ⬜ | esbuild metafile report + `electron-builder --dir` content check |
@@ -619,7 +619,7 @@ npm run nonreg:unit && npm run nonreg:filesystem
 
 ## Slice 10 — Vendor sourcemaps restored
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -648,6 +648,13 @@ npm run testByFile -w miroir-standalone-app -- componentTestChunk.286.phase4
 ```
 
 ### Realization
+
+- Deviation, branch: PR 2's branch starts from PR 1's head, not from `_integration` (D17), so its builds use the pinned Vite 7.3.6 and the lockfile PR 1 fixed; PR 2's diff shows only its own commits once PR 1 is merged.
+- RED: `bundleSourcemaps.326.phase10.unit.test.ts` listed the 5 `vendor-*` chunks, whose maps had 0 sources (maps of 102 to 375 bytes).
+- GREEN: `vite/chunkLoadLoggerPlugin.js` adds the preamble with Rollup's `banner(chunk)` hook instead of `renderChunk`, which returned code without a map; Rollup shifts the chunk's map past a banner. The minified preamble, its `[miroir-chunk-load]` line and the `__miroirLoggedManualChunks` dedupe are unchanged, and so are the chunk file names.
+- Vendor maps now list their sources: `vendor-copilotkit` 2813, `vendor-mui` 382, `vendor-d3` 212, `vendor-react` 14, `vendor-ag-grid` 3.
+- Refactor checkpoint: the #286 guard now also sees inside the vendor chunks and still passes (4/4): no `@testing-library` source there.
+- Validation: build passes with no "Sourcemap is likely to be incorrect" warning; `bundleSourcemaps.326.phase10` 2/2; `componentTestChunk.286.phase4` 4/4.
 
 ---
 
