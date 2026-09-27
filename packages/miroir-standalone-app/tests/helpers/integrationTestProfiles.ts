@@ -6,6 +6,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
+import { isTestEnvironment } from "miroir-core";
+
 import {
   deriveTestSessionDefaultsFromMiroirConfig,
   type MiroirConfigForDerivation,
@@ -22,6 +24,11 @@ export type IntegrationTestProfile = {
   name: string;
   miroirConfigFilename: string;
   logConfigFilename: string;
+  /**
+   * #321: the test environment (environments/<name>.json) the profile selects through MIROIR_ENV;
+   * when set, tests build their configuration from it and miroirConfigFilename is a deprecated fallback.
+   */
+  environment?: string;
   /** Optional overrides merged on top of JSON-derived defaults (D2). */
   transformerDefaults?: IntegrationTestTransformerDefaults;
   description?: string;
@@ -55,7 +62,8 @@ export const INTEGRATION_TEST_PROFILES: Record<string, IntegrationTestProfile> =
     name: "emulatedServer-filesystem",
     miroirConfigFilename: configPath("miroirConfig.test-emulatedServer-filesystem.json"),
     logConfigFilename: logPath("catch-all.json"),
-    description: "All store sections on filesystem (no Postgres)",
+    environment: "test-filesystem",
+    description: "All store sections on filesystem (no Postgres), in .miroir/test-filesystem",
   },
   "emulatedServer-indexedDb": {
     name: "emulatedServer-indexedDb",
@@ -205,6 +213,17 @@ export function applyIntegrationTestProfile(
 
   const respectExistingEnv = options.respectExistingEnv !== false;
 
+  if (profile.environment) {
+    // only another test environment may take precedence: tests never run on dev or local
+    applyEnvVar(
+      "MIROIR_ENV",
+      profile.environment,
+      respectExistingEnv && isTestEnvironment(process.env.MIROIR_ENV ?? ""),
+    );
+  } else if (!respectExistingEnv) {
+    // an environment left by a previous profile would win over this profile's configuration file
+    delete process.env.MIROIR_ENV;
+  }
   applyEnvVar(
     "VITE_MIROIR_TEST_CONFIG_FILENAME",
     profile.miroirConfigFilename,

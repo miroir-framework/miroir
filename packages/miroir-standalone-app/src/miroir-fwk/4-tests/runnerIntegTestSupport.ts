@@ -7,6 +7,7 @@ import {
   type StoreUnitConfiguration,
   type Uuid,
   defaultSelfApplicationDeploymentMap,
+  ENVIRONMENT_STATE_ROOT,
   resetIntegTestbed,
 } from "miroir-core";
 import { deployment_Admin, deployment_Miroir } from "miroir-test-app_deployment-admin";
@@ -89,6 +90,21 @@ function usesStandaloneAppTestsTmpLayout(
   return false;
 }
 
+/**
+ * #321: `.miroir/<environment>` when the template store is a section of a test environment
+ * (`.miroir/<environment>/<application>/<section>`), so test applications live next to it.
+ */
+function environmentStateDirectory(
+  libraryDeploymentStorageConfiguration: StoreUnitConfiguration,
+): string | undefined {
+  const template = libraryDeploymentStorageConfiguration.model;
+  if (template.emulatedServerType !== "filesystem") {
+    return undefined;
+  }
+  const [root, environment] = template.directory.split("/");
+  return root === ENVIRONMENT_STATE_ROOT && environment ? `${root}/${environment}` : undefined;
+}
+
 const POSTGRES_IDENTIFIER_MAX = 63;
 const MODEL_VERSION_SUFFIX_LENGTH = "_modelVersion".length;
 
@@ -148,6 +164,19 @@ export function testApplicationStorageConfiguration(
       break;
     }
     case "filesystem": {
+      const environmentDirectory = environmentStateDirectory(libraryDeploymentStorageConfiguration);
+      if (environmentDirectory) {
+        testDeploymentStorageConfiguration = {
+          admin: libraryDeploymentStorageConfiguration.admin,
+          model: { emulatedServerType: "filesystem", directory: `${environmentDirectory}/${storeName}/model` },
+          data: { emulatedServerType: "filesystem", directory: `${environmentDirectory}/${storeName}/data` },
+          modelVersion: {
+            emulatedServerType: "filesystem",
+            directory: `${environmentDirectory}/${storeName}/modelVersion`,
+          },
+        };
+        break;
+      }
       if (usesStandaloneAppTestsTmpLayout(libraryDeploymentStorageConfiguration)) {
         testDeploymentStorageConfiguration = {
           admin: libraryDeploymentStorageConfiguration.admin,

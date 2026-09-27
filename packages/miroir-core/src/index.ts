@@ -940,6 +940,7 @@ export {
   ENVIRONMENT_STATE_ROOT,
   environmentSectionMode,
   environmentSections,
+  isTestEnvironment,
   REQUIRED_ENVIRONMENT_APPLICATIONS,
   resolveEnvironment,
   type EnvironmentDefinition,

@@ -13,6 +13,7 @@ export {
   type ResolvedEnvironment,
 } from "./environmentFiles.js";
 export {
+  environmentClientConfig,
   environmentServerConfig,
   GENERATED_ADMIN_ENTITIES,
   seedEnvironmentState,

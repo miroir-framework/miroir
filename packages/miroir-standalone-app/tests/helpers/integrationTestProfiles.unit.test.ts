@@ -14,6 +14,7 @@ const ENV_KEYS = [
   "MIROIR_TEST_ADMIN_STORE_TYPE",
   "MIROIR_TEST_POSTGRES_HOST",
   "MIROIR_TEST_ADMIN_SQL_SCHEMA",
+  "MIROIR_ENV",
 ] as const;
 
 describe("integrationTestProfiles (Gap D0)", () => {
@@ -109,5 +110,40 @@ describe("integrationTestProfiles (Gap D0)", () => {
       "miroirConfig.test-emulatedServer-sql.json",
     );
     expect(process.env.MIROIR_TEST_POSTGRES_HOST).toBe("localhost");
+  });
+
+  it("emulatedServer-filesystem selects the test-filesystem environment (#321)", () => {
+    applyIntegrationTestProfile("emulatedServer-filesystem");
+
+    expect(process.env.MIROIR_ENV).toBe("test-filesystem");
+    expect(process.env.VITE_MIROIR_TEST_CONFIG_FILENAME).toContain(
+      "miroirConfig.test-emulatedServer-filesystem.json",
+    );
+    expect(process.env.MIROIR_TEST_APP_STORE_TYPE).toBe("filesystem");
+    expect(process.env.MIROIR_TEST_ADMIN_STORE_TYPE).toBe("filesystem");
+  });
+
+  it("a MIROIR_ENV naming another test environment is kept, a development one is replaced (#321)", () => {
+    process.env.MIROIR_ENV = "test-other";
+    applyIntegrationTestProfile("emulatedServer-filesystem");
+    expect(process.env.MIROIR_ENV).toBe("test-other");
+
+    process.env.MIROIR_ENV = "dev";
+    applyIntegrationTestProfile("emulatedServer-filesystem");
+    expect(process.env.MIROIR_ENV).toBe("test-filesystem");
+  });
+
+  it("profiles without an environment leave MIROIR_ENV unset (#321)", () => {
+    applyIntegrationTestProfile("emulatedServer-sql");
+
+    expect(process.env.MIROIR_ENV).toBeUndefined();
+  });
+
+  it("respectExistingEnv false: a profile without an environment drops the previous profile's (#321)", () => {
+    applyIntegrationTestProfile("emulatedServer-filesystem", { respectExistingEnv: false });
+    applyIntegrationTestProfile("emulatedServer-sql", { respectExistingEnv: false });
+
+    expect(process.env.MIROIR_ENV).toBeUndefined();
+    expect(process.env.VITE_MIROIR_TEST_CONFIG_FILENAME).toContain("miroirConfig.test-emulatedServer-sql.json");
   });
 });

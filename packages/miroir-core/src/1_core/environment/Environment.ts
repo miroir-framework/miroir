@@ -21,6 +21,11 @@ export const REQUIRED_ENVIRONMENT_APPLICATIONS = ["miroir", "admin"] as const;
 
 const TEST_ENVIRONMENT_PREFIX = "test-";
 
+/** Test environments (`test-*`) hold copies only, and test runs select nothing else. */
+export function isTestEnvironment(name: string): boolean {
+  return name.startsWith(TEST_ENVIRONMENT_PREFIX);
+}
+
 /**
  * An environment definition as written in a file: any field may be partial, since it is merged
  * over the environment it extends. `null` removes an inherited entry.
@@ -202,7 +207,7 @@ function environmentRuleErrors(name: string, environment: MiroirEnvironment): st
       errors.push(`environment "${name}" must install application "${required}"`);
     }
   }
-  if (name.startsWith(TEST_ENVIRONMENT_PREFIX)) {
+  if (isTestEnvironment(name)) {
     for (const [applicationKey, application] of Object.entries(environment.applications ?? {})) {
       if (!application) {
         continue;

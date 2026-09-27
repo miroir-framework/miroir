@@ -6,7 +6,6 @@
  * RUN_TEST=processCapabilitiesStore.273.phase3 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem processCapabilitiesStore.273.phase3
  * ```
  */
-import { join } from "node:path";
 import process from "process";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -33,7 +32,6 @@ import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { loglevelnext } from "../../../../src/loglevelnextImporter.js";
 import { setupMiroirTest } from "../../../../src/miroir-fwk/4-tests/setupMiroirTest.js";
 import { miroirAppStartup } from "../../../../src/startup.js";
-import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 import { loadTestConfigFiles } from "../../../utils/fileTools.js";
 import { cleanLevel, packageName } from "../../constants.js";
 
@@ -101,7 +99,6 @@ ConfigurationService.configurationService.registerTestImplementation({ expect: e
 
 const { miroirConfig: miroirConfigParam, logConfig } = await loadTestConfigFiles(env);
 const miroirConfig = miroirConfigParam;
-miroirConfig.client.filesystemDeploymentRootDirectory = join(resolveRepoRoot(), "packages");
 const loggerOptions: LoggerOptions = logConfig;
 const miroirActivityTracker = new MiroirActivityTracker();
 const miroirEventService = new MiroirEventService(miroirActivityTracker);

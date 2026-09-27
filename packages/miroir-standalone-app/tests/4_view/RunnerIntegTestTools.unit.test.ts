@@ -191,4 +191,36 @@ describe("testApplicationStorageConfiguration", () => {
       schema: "Library_0e776954723b4718b32049a83a1d2b08_modelVersion",
     });
   });
+
+  it("puts filesystem test applications next to their template in a test environment (#321)", () => {
+    const configuration = testApplicationStorageConfiguration(
+      {
+        admin: { emulatedServerType: "filesystem", directory: ".miroir/test-filesystem/library" },
+        model: { emulatedServerType: "filesystem", directory: ".miroir/test-filesystem/library/model" },
+        data: { emulatedServerType: "filesystem", directory: ".miroir/test-filesystem/library/data" },
+        modelVersion: {
+          emulatedServerType: "filesystem",
+          directory: ".miroir/test-filesystem/library/modelVersion",
+        },
+      },
+      "Library",
+      "0e776954-723b-4718-b320-49a83a1d2b08",
+    );
+
+    expect(configuration).toEqual({
+      admin: { emulatedServerType: "filesystem", directory: ".miroir/test-filesystem/library" },
+      model: {
+        emulatedServerType: "filesystem",
+        directory: ".miroir/test-filesystem/Library_0e776954723b4718b32049a83a1d2b08/model",
+      },
+      data: {
+        emulatedServerType: "filesystem",
+        directory: ".miroir/test-filesystem/Library_0e776954723b4718b32049a83a1d2b08/data",
+      },
+      modelVersion: {
+        emulatedServerType: "filesystem",
+        directory: ".miroir/test-filesystem/Library_0e776954723b4718b32049a83a1d2b08/modelVersion",
+      },
+    });
+  });
 });

@@ -7,8 +7,10 @@ import {
   ENTITY_DEPLOYMENT_UUID,
   environmentSectionMode,
   environmentSections,
+  type MiroirConfigClient,
   type MiroirConfigServer,
   type StoreSectionConfiguration,
+  type StoreUnitConfiguration,
 } from "miroir-core";
 
 import { EnvironmentError, type ResolvedEnvironment } from "./environmentFiles.js";
@@ -92,4 +94,29 @@ export function environmentServerConfig(resolved: ResolvedEnvironment): MiroirCo
     ...(resolved.environment.features ? { features: resolved.environment.features } : {}),
   };
   return config as MiroirConfigServer;
+}
+
+/**
+ * The client configuration of an environment run with an emulated server (tests): the stores of
+ * every installed application, opened in process; the filesystem root is the repository root.
+ */
+export function environmentClientConfig(resolved: ResolvedEnvironment): MiroirConfigClient {
+  const rootApiUrl = resolved.environment.server?.rootApiUrl;
+  if (!rootApiUrl) {
+    throw new EnvironmentError(`environment "${resolved.name}" has no server.rootApiUrl: it cannot emulate a server`);
+  }
+  const deploymentStorageConfig: Record<string, StoreUnitConfiguration> = Object.fromEntries(
+    resolved.deployments.map((deployment) => [deployment.deployment, deployment.configuration as StoreUnitConfiguration]),
+  );
+  const config = {
+    miroirConfigType: "client",
+    client: {
+      emulateServer: true,
+      rootApiUrl,
+      filesystemDeploymentRootDirectory: resolved.repositoryRoot,
+      deploymentStorageConfig,
+    },
+    ...(resolved.environment.features ? { features: resolved.environment.features } : {}),
+  };
+  return config as MiroirConfigClient;
 }

@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Inventory: [`./current-state-inven
 Related: #323 (server bundle ignores `--config`; Slice 3 must not rely on `--config`)
 Working branch: `claude/environment-configuration-7z5rjb` (from `_integration`)
 
-**Resume note:** approved by A 2026-09-27. Slices 0–3 DONE.
+**Resume note:** approved by A 2026-09-27. Slices 0–4 DONE.
 
 ---
 
@@ -38,7 +38,7 @@ This plan does **not** touch the release path, Docker, Electron, miroir-cli or s
 | 1 | Tracer: `miroir-env show` resolves `dev` | ✅ | MiroirTest `fn.environment.deriveDeployments` + `miroirEnvCli.321.phase1.unit.test.ts` |
 | 2 | Personal environment: `local.json`, `MIROIR_ENV`, `extends` | ✅ | `fn.environment.resolveEnvironment` (merge leaves) + CLI test |
 | 3 | Server boots from the environment, Admin data in state | ✅ | `miroir-env/tests/openEnvironment.321.phase3.integ.test.ts` |
-| 4 | Tests run on `test-filesystem` without tracked writes | ⬜ | `nonreg:filesystem` + tracked-assets guard clean |
+| 4 | Tests run on `test-filesystem` without tracked writes | ✅ | `nonreg:filesystem` + tracked-assets guard clean; `testEnvironmentConfig.321.phase4.unit.test.ts` |
 | 5 | `test-sql`, `test-indexedDb`, `test-mongodb`; profile JSONs and test Admin copy retired | ⬜ | `nonreg:default` (Postgres) + guard |
 | 6 | Reconciliation, deviation warnings, `check` / `import` / `prune` | ⬜ | `miroirEnvReconcile.321.phase6.integ.test.ts` |
 | 7 | UI installs land in state and are recorded in `local.json` | ⬜ | Runner `deployApplication` integ test on `test-filesystem` |
@@ -291,7 +291,7 @@ npm run nonreg:unit
 
 ## Slice 4 — Tests run on `test-filesystem` without tracked writes
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -324,6 +324,18 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 ```
 
 ### Realization
+
+- `environments/test-filesystem.json`: Miroir, Admin, Library, appForTest and Spotify (the deployments of the `emulatedServer-filesystem` profile JSON), all `store: filesystem`, `mode: copy`, with `modelVersion` for the four applications that had one. Every section lives in `.miroir/test-filesystem/<application>/<section>`.
+- miroir-env `environmentClientConfig(resolved)` builds the emulated-server `MiroirConfigClient` (one `deploymentStorageConfig` entry per installed application; filesystem root = repository root). miroir-core exports `isTestEnvironment(name)`.
+- `applyIntegrationTestProfile`: a profile may name an `environment`; `emulatedServer-filesystem` names `test-filesystem` and sets `MIROIR_ENV`. An existing `MIROIR_ENV` is kept only when it names another `test-*` environment, so a developer's `dev` or `local` never reaches a test run; with `respectExistingEnv: false` (the UI launcher loading several profiles in one process), a profile without environment drops the previous one. The `VITE_MIROIR_TEST_CONFIG_FILENAME` and `MIROIR_TEST_*` values are set as before.
+- `loadTestConfigFiles`: when `MIROIR_ENV` names a test environment, the configuration comes from the resolver, and the environment state is wiped and seeded from the package assets once per test file (vitest isolates modules per file). A `MIROIR_ENV` that is not `test-*` is ignored with a warning; the profile JSON stays the fallback for the other profiles (Slice 5).
+- `testApplicationStorageConfiguration` (ephemeral test applications): when the template store is in `.miroir/<environment>/`, the test application goes to `.miroir/<environment>/<storeName>/{model,data,modelVersion}`.
+- Tests that read or asserted fixed paths now take them from the configuration: `secretsImport.270.phase6` (MiroirSecret rows of the configured Admin data, not `tests/assets/admin_data`), `spotifyApp` (Spotify Deployment row in the configured Admin data), `versioningModes.filesystem-seed` and `processCapabilitiesStore.273.phase3` (no forced `<repo>/packages` root; `seedMiroirModelVersionFromPackageAssets`, renamed with `git mv`, seeds the configured modelVersion directory). The "package assets untouched" checks of `spotifyApp` and `apiCallReport.281.phase1/phase4` resolved the package path against the filesystem root and passed vacuously once the root became the repository root; they now use `resolveRepoRoot()`.
+- Deviation from 4.2: the snapshot/restore of the Miroir Deployment and AdminApplication rows in `PersistenceStoreController.integ.test.tsx` stays until Slice 5. On `test-filesystem` it restores files the test no longer writes; the `emulatedServer-sql` profile still writes them in `tests/assets/admin_data`.
+- Not changed: transformer sessions (`tr.*`, `IntegrationTestSession`) still open the test Admin copy `tests/assets/admin*` read-only and create their application in `tests/tmp/` (gitignored); they move with the Admin copy in Slice 5. Seeding writes no Deployment or AdminApplication rows: tests register the deployments they use, as before.
+- Tests: `testEnvironmentConfig.321.phase4.unit.test.ts` (standalone app: configuration from `MIROIR_ENV`, seeded Admin, fallback and error), `testEnvironment.321.phase4.unit.test.ts` (miroir-env: client configuration of the tracked `test-filesystem`, reseed), `integrationTestProfiles.unit.test.ts` (+4: profile → `MIROIR_ENV`, precedence), `RunnerIntegTestTools.unit.test.ts` (+1: environment layout). The launcher unit tests save and clear `MIROIR_ENV` with the other profile variables.
+- Pre-existing, not in nonreg: `applicationVersionFreeze.integ` fails 17 of 21 cases ("Application does not have versioning enabled") on `test-filesystem` and on the old profile JSON alike.
+- Validation: `npm run nonreg:filesystem` 74 passed, 0 failed (snapshot `20260927T143801Z`), tracked-assets guard clean afterwards; miroir-env 21 tests; standalone-app typecheck clean.
 
 ---
 

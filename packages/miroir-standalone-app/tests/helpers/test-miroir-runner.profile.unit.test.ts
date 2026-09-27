@@ -15,6 +15,7 @@ const ENV_KEYS = [
   "MIROIR_TEST_ADMIN_SQL_SCHEMA",
   "MIROIR_TEST_MODE",
   "MIROIR_TEST_SUITES",
+  "MIROIR_ENV",
 ] as const;
 
 describe("testMiroirLauncher profile (Gap D1)", () => {

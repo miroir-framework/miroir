@@ -8,8 +8,7 @@
  * ```
  */
 import { readdirSync, readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import type {
@@ -17,6 +16,7 @@ import type {
   Deployment,
   DomainControllerInterface,
   EntityInstance,
+  MiroirConfigForClientStub,
   StoreUnitConfiguration,
 } from "miroir-core";
 import {
@@ -64,12 +64,6 @@ const shouldRun =
   RUN_TEST === "secretsImport.270" ||
   RUN_TEST.startsWith("secretsImport.270") ||
   RUN_TEST === "secretsImport.270.phase6";
-
-const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../../../..");
-const EMULATED_SECRET_DIR = join(
-  REPO_ROOT,
-  "packages/miroir-standalone-app/tests/assets/admin_data/a96856df-2b38-494a-8027-82617e2d64ad",
-);
 
 const INSTANCE_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";
 const QUERY_ENDPOINT = "9e404b3c-368c-40cb-be8b-e3c28550c25e";
@@ -138,8 +132,14 @@ const applicationDeploymentMap: ApplicationDeploymentMap = {
 
 let domainControllerForServer: DomainControllerInterface;
 
+/** MiroirSecret rows of the Admin data store the test runs on (#321: a copy, never tracked files). */
 function leftoverSecretJsonFiles(): string[] {
-  return readdirSync(EMULATED_SECRET_DIR).filter((name) => name.endsWith(".json"));
+  const secretDirectory = join(
+    (miroirConfig.client as MiroirConfigForClientStub).filesystemDeploymentRootDirectory,
+    (adminDeploymentStorageConfiguration.data as { directory: string }).directory,
+    ENTITY_MIROIR_SECRET_UUID,
+  );
+  return readdirSync(secretDirectory).filter((name) => name.endsWith(".json"));
 }
 
 async function querySecretRows(): Promise<Record<string, unknown>[]> {
