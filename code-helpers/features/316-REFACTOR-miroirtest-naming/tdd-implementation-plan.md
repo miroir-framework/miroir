@@ -227,7 +227,7 @@ The tests key on uuid, not name, so they stay valid through the rename.
 - Maintenance notes dropped from descriptions moved to `docs/reference/testing.md` ("Integration suite notes").
 - Existing tests adjusted where the quoted-name pass made label-vs-name tests contradictory (`miroirTestFilter`, `loadApplicationMiroirTestsFromFolders`, `miroirTestSuiteUiExecution`), plus order-insensitive comparisons after the new names sort differently; fixed a duplicate `);` in `RunnerTestSession.unit.test.ts` already broken on `_integration`.
 - Pre-existing failure, out of scope: `runner.createEntity` > "Create Entity with reports" queries `EntityVersion` on the ephemeral, deliberately unversioned run target (`Runner.ts`), so `entityDefs` fails. The suite's definition is unchanged by the rename.
-- Validation: core unit 2072 passed, typechecks (core, standalone-app, both deployments), 14 touched standalone test files, integ `runner.createEntity,action.domainController.dataCrud` 7/8 (the failure above); `nonreg:filesystem` result recorded in the next commit.
+- Validation: core unit 2072 passed, typechecks (core, standalone-app, both deployments), 14 touched standalone test files, integ `runner.createEntity,action.domainController.dataCrud` 7/8 (the failure above); `nonreg:filesystem` 71 pass / 3 fail; the 3 failures are the known environment ones (`appstack-uiIntegrationTestLauncher.integ`, `appstack-MiroirTest{Display,List}IntegrationLaunch` reach Postgres, ECONNREFUSED), all renamed `integ-runner.*` / `integ-action.*` steps pass.
 
 ---
 
