@@ -140,6 +140,9 @@ export class MiroirEventService implements MiroirEventServiceInterface {
   public events: Map<string, MiroirEvent> = new Map(); // TODO: make private! should be accessed only via selectors / hooks
   public eventEntries: Map<string, MiroirEventLog> = new Map();
   private eventSubscribers: Set<(events: MiroirEvent[]) => void> = new Set();
+  // newest first; reset when an event is added or removed (log lines and status updates keep startTime)
+  private sortedEvents: MiroirEvent[] | undefined;
+  private notificationPending = false;
   private cleanupInterval: NodeJS.Timeout;
 
   // Configuration
@@ -291,6 +294,7 @@ export class MiroirEventService implements MiroirEventServiceInterface {
       } as MiroirEvent;
 
       this.events.set(trackingData.activityId, event);
+      this.sortedEvents = undefined;
     } else {
       // Update existing action status/timing and transformer results
       const existing = this.events.get(trackingData.activityId)!;
@@ -364,8 +368,17 @@ export class MiroirEventService implements MiroirEventServiceInterface {
 
   // ##############################################################################################
   private notifySubscribers(): void {
+    // One pending notification at a time: a burst of log lines gives subscribers one update.
+    if (this.eventSubscribers.size === 0 || this.notificationPending) {
+      return;
+    }
+    this.notificationPending = true;
     // Use setTimeout to defer notifications and avoid updating React state during render
     setTimeout(() => {
+      this.notificationPending = false;
+      if (this.eventSubscribers.size === 0) {
+        return;
+      }
       const allEvents = this.getAllEvents();
       this.eventSubscribers.forEach(callback => callback(allEvents));
     }, 0);
@@ -386,10 +399,17 @@ export class MiroirEventService implements MiroirEventServiceInterface {
     return this.events.get(eventId);
   }
 
+  /**
+   * Newest first. The sort is cached until an event is added or removed; each call returns a
+   * fresh array so callers (and React state) never share the cached one.
+   */
   getAllEvents(): MiroirEvent[] {
-    return Array.from(this.events.values()).sort(
-      (a, b) => b.activity.startTime - a.activity.startTime
-    );
+    if (!this.sortedEvents) {
+      this.sortedEvents = Array.from(this.events.values()).sort(
+        (a, b) => b.activity.startTime - a.activity.startTime
+      );
+    }
+    return this.sortedEvents.slice();
   }
 
   getFilteredEvents(filter: EventFilter, events?: MiroirEvent[]): MiroirEvent[] {
@@ -464,6 +484,7 @@ export class MiroirEventService implements MiroirEventServiceInterface {
   clear(): void {
     this.events.clear();
     this.eventEntries.clear();
+    this.sortedEvents = undefined;
     this.notifySubscribers();
   }
 
@@ -526,6 +547,7 @@ export class MiroirEventService implements MiroirEventServiceInterface {
           this.eventEntries.delete(log.logId);
         });
         this.events.delete(eventId);
+        this.sortedEvents = undefined;
       }
     });
     if (actionsToRemove.length > 0) {
