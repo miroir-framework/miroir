@@ -9,7 +9,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/326
 Working branches: PR 1 `claude/build-hardening-81mz9d`, PR 2 `claude/build-hardening-bundles` (D17), both from `_integration`
 
-**Resume note:** Slices 0–7 and 7b DONE 2026-09-27 (branch `claude/build-hardening-81mz9d`); next: Slice 8. Lockfiles are regenerated with npm 11 and `--before` (Slice 4 realization).
+**Resume note:** Slices 0–8 and 7b DONE 2026-09-27 (branch `claude/build-hardening-81mz9d`); next: Slice 9. Lockfiles are regenerated with npm 11 and `--before` (Slice 4 realization).
 
 ---
 
@@ -35,7 +35,7 @@ This plan does **not** cut bundle size (D19: separate issue opened in Slice 17 f
 | 6 | 1 | No high advisory in build and test tooling | ✅ | `audit` lists no high in tooling packages |
 | 7 | 1 | No high advisory at all; audit gate blocking in PR checks | ✅ | `audit` exits 0 on the real repo; `pr-checks.yml` step |
 | 7b | 1 | Every locked package is checked against its hash (added) | ✅ | `lockfile` rule + `test_fill_lockfile_integrity.py` + clean `npm ci` |
-| 8 | 1 | Updates only through reviewed, cooled-down PRs; actions pinned | ⬜ | `actions` rule + `dependabot.yml` test |
+| 8 | 1 | Updates only through reviewed, cooled-down PRs; actions pinned | ✅ | `actions` rule + `dependabot.yml` test |
 | 9 | 1 | PR 1 wrap-up: gate docs, nonreg step, full nonreg | ⬜ | nonreg:unit + nonreg:filesystem green |
 | 10 | 2 | Vendor sourcemaps restored | ⬜ | `bundleSourcemaps.326.phase10.unit.test.ts` |
 | 11 | 2 | Tracer: the build prints and writes the attribution report | ⬜ | `bundleReport.326.phase11.unit.test.ts` |
@@ -544,7 +544,7 @@ npx npm@11 install --package-lock-only --before=2026-09-20T00:00:00Z    # npm ke
 
 ## Slice 8 — Updates arrive only through reviewed, cooled-down PRs; actions pinned
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -572,6 +572,13 @@ python -m pytest scripts/tests/test_check_dependency_policy.py -q
 ```
 
 ### Realization
+
+- Rule `actions`: a `uses:` line of `.github/workflows/*.yml` or `.github/actions/*/action.yml` that is not a local action and does not end in a 40-hex commit SHA is a violation; comment lines are ignored. RED on 60 references (10 tags), not the 55 of the plan.
+- SHAs: this session may read only the miroir repository, so it could not resolve tags through the GitHub API (the plan's route). 7 tags came from the "Download action repository" lines of this repository's own job logs (PR checks of 2026-09-27, GitHub Pages build of 2026-07-27); A supplied the 3 whose logs had expired: `actions/cache` v4.3.0, `actions/download-artifact` v4.3.0, `actions/setup-python` v5.6.0. Each `uses:` keeps its tag in a trailing comment, which Dependabot updates with the SHA.
+- Deviation: `release-tree.yml` (never run) moves from `actions/checkout@v4` and `actions/setup-node@v4` to v6, like every other workflow, so the repository uses one version of each.
+- `.github/dependabot.yml`: `npm` (root, workspaces included) and `github-actions` (`/` and `/.github/actions/*`), `target-branch: _integration`, weekly, `cooldown.default-days: 7`, one group per ecosystem (npm: minor and patch). Security updates still target `main`, the default branch, and skip the cooldown: recorded in the docs (Slice 9).
+- Tests: 3 for the rule, 3 on the real `dependabot.yml` (parsed with PyYAML, which the PR checks now install next to pytest), and the real-repository test covers `actions`. PR checks run `--rule actions` with the other static rules.
+- Validation: `--rule actions` passes; pytest 115 passed; every workflow and `dependabot.yml` parses as YAML.
 
 ---
 

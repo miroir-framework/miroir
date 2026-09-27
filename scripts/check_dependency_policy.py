@@ -12,6 +12,8 @@ Rules (all run by default; --rule selects some):
                   package, so `npm ci` installs the tarballs that were locked (scripts/fill_lockfile_integrity.py
                   adds missing ones).
   workflows       GitHub workflows and composite actions install with `npm ci`, never `npm install`.
+  actions         GitHub workflows and composite actions use each action at a commit SHA (`owner/repo@<sha> # v4`),
+                  which Dependabot updates; a tag or branch can be moved to other code.
   audit           `npm audit` reports no advisory at or above --level (default high), except the dated entries of
                   dependency-policy/audit-exceptions.json; lower severities are printed, not blocking. Needs the network.
 
@@ -42,6 +44,8 @@ BUILD_AND_TEST_TOOLS = ("electron", "electron-builder", "happy-dom", "vite", "vi
 BUILD_AND_TEST_TOOL_PREFIXES = ("vite-plugin-", "@vitejs/", "@vitest/")
 
 NPM_INSTALL_RE = re.compile(r"\bnpm\s+(install|i|add)\b")
+USES_RE = re.compile(r"^\s*(?:-\s+)?uses:\s*([^\s#]+)")
+COMMIT_SHA_REF_RE = re.compile(r"@[0-9a-f]{40}$")
 
 SEVERITIES = ("info", "low", "moderate", "high", "critical")
 EXCEPTIONS_FILE = Path("dependency-policy") / "audit-exceptions.json"
@@ -252,6 +256,23 @@ def check_workflows(root: Path) -> list[Violation]:
     ]
 
 
+def check_actions(root: Path) -> list[Violation]:
+    violations: list[Violation] = []
+    for path in workflow_files(root):
+        for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+            match = USES_RE.match(line)
+            if not match or match.group(1).startswith("./") or COMMIT_SHA_REF_RE.search(match.group(1)):
+                continue
+            violations.append(
+                Violation(
+                    "actions",
+                    f"{_rel(root, path)}:{number}",
+                    f"{match.group(1)} is not a commit SHA: pin it as owner/repo@<sha> # <tag>",
+                )
+            )
+    return violations
+
+
 # --------------------------------------------------------------------------------------------------------------------
 # audit
 
@@ -324,6 +345,7 @@ RULES: dict[str, Callable[[Path], list[Violation]]] = {
     "classification": check_classification,
     "lockfile": check_lockfile,
     "workflows": check_workflows,
+    "actions": check_actions,
 }
 
 

@@ -11,6 +11,7 @@ from pathlib import Path
 import pytest
 
 from check_dependency_policy import (
+    check_actions,
     check_audit,
     check_classification,
     check_lockfile,
@@ -255,6 +256,50 @@ def test_npm_ci_and_comments_pass(repo: Path) -> None:
     assert check_workflows(repo) == []
 
 
+SHA = "08c6903cd8c0fde910a37f88322edcfb5dd907a8"
+
+
+@pytest.mark.parametrize("ref", ["actions/checkout@v6", "actions/checkout@main", "owner/repo/path@v1.2.3"])
+def test_an_action_on_a_tag_or_branch_is_a_violation(repo: Path, ref: str) -> None:
+    _write(repo / ".github/workflows/ci.yml", f"jobs:\n  a:\n    steps:\n      - uses: {ref}\n")
+    [violation] = check_actions(repo)
+    assert (violation.where, violation.message.split(":")[0]) == (".github/workflows/ci.yml:4", f"{ref} is not a commit SHA")
+
+
+def test_an_action_in_a_composite_action_is_checked(repo: Path) -> None:
+    _write(repo / ".github/actions/build/action.yml", "runs:\n  steps:\n    - uses: actions/upload-artifact@v4\n")
+    [violation] = check_actions(repo)
+    assert violation.where == ".github/actions/build/action.yml:3"
+
+
+def test_sha_pinned_local_and_commented_actions_pass(repo: Path) -> None:
+    _write(
+        repo / ".github/workflows/ci.yml",
+        f"jobs:\n  a:\n    steps:\n      - uses: actions/checkout@{SHA} # v6\n"
+        "      - uses: ./.github/actions/build\n      # - uses: actions/cache@v4\n",
+    )
+    assert check_actions(repo) == []
+
+
+def _dependabot() -> dict:
+    yaml = pytest.importorskip("yaml")
+    return yaml.safe_load((REPO_ROOT / ".github" / "dependabot.yml").read_text(encoding="utf-8"))
+
+
+@pytest.mark.parametrize("ecosystem", ["npm", "github-actions"])
+def test_dependabot_updates_reach_integration_after_a_7_day_cooldown(ecosystem: str) -> None:
+    [update] = [u for u in _dependabot()["updates"] if u["package-ecosystem"] == ecosystem]
+    assert update["target-branch"] == "_integration"
+    assert update["schedule"]["interval"] == "weekly"
+    assert update["cooldown"]["default-days"] >= 7
+    assert update["groups"]
+
+
+def test_dependabot_watches_the_composite_actions_too() -> None:
+    [update] = [u for u in _dependabot()["updates"] if u["package-ecosystem"] == "github-actions"]
+    assert {"/", "/.github/actions/*"} <= set(update["directories"])
+
+
 def _exceptions(repo: Path, *entries: dict) -> None:
     _write(repo / "dependency-policy" / "audit-exceptions.json", {"exceptions": list(entries)})
 
@@ -315,7 +360,7 @@ def test_cli_audit_from_a_file(repo: Path, capsys: pytest.CaptureFixture[str]) -
     assert "[audit] vitest: critical vitest <3.2.6 GHSA-5xrq-8626-4rwp" in capsys.readouterr().out
 
 
-@pytest.mark.parametrize("rule", ["specs", "classification", "lockfile", "workflows"])
+@pytest.mark.parametrize("rule", ["specs", "classification", "lockfile", "workflows", "actions"])
 def test_this_repository_follows_the_rule(rule: str) -> None:
     result = subprocess.run([sys.executable, str(SCRIPT), "--rule", rule], cwd=REPO_ROOT, capture_output=True, text=True)
     assert result.returncode == 0, result.stdout
