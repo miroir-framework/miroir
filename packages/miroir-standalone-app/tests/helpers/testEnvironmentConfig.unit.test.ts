@@ -2,7 +2,7 @@
 // (set by --profile emulatedServer-filesystem): every section is a copy in .miroir/<environment>/,
 // seeded from the package assets, so no test writes into tracked files.
 // vitest, not MiroirTest: this is test-launcher wiring that reads files and environment variables.
-import { existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -40,26 +40,14 @@ describe("test configuration from a test environment", () => {
     expect(readdirSync(path.join(adminData, ENTITY_DEPLOYMENT))).toEqual([]);
   });
 
-  it("a MIROIR_ENV that is not a test environment is ignored in favor of the configuration file", async () => {
-    // under the repository (gitignored .miroir/): vitest imports no file outside it
-    const configFile = ".miroir/tests/miroirConfig.phase4.json";
-    mkdirSync(path.join(resolveRepoRoot(), ".miroir/tests"), { recursive: true });
-    writeFileSync(
-      path.join(resolveRepoRoot(), configFile),
-      JSON.stringify({
-        miroirConfigType: "client",
-        client: { emulateServer: false, serverConfig: { rootApiUrl: "https://localhost:3080", storeSectionConfiguration: {} } },
-      }),
-    );
-    const { miroirConfig } = await loadTestConfigFiles({
-      MIROIR_ENV: "dev",
-      VITE_MIROIR_TEST_CONFIG_FILENAME: configFile,
-    });
-
-    expect(miroirConfig.client.emulateServer).toBe(false);
+  it("a MIROIR_ENV that is not a test environment selects nothing: tests never run on dev or local", async () => {
+    await expect(loadTestConfigFiles({ MIROIR_ENV: "dev" })).rejects.toThrow(/no test environment selected/);
   });
 
-  it("fails naming both variables when neither selects a configuration", async () => {
-    await expect(loadTestConfigFiles({})).rejects.toThrow(/MIROIR_ENV and VITE_MIROIR_TEST_CONFIG_FILENAME/);
+  it("without a test environment the run fails, saying how to select one; a configuration file selects nothing", async () => {
+    await expect(loadTestConfigFiles({})).rejects.toThrow(/--profile .*MIROIR_ENV=test-filesystem/);
+    await expect(
+      loadTestConfigFiles({ VITE_MIROIR_TEST_CONFIG_FILENAME: "packages/miroir-standalone-app/tests/some-config.json" }),
+    ).rejects.toThrow(/no test environment selected/);
   });
 });
