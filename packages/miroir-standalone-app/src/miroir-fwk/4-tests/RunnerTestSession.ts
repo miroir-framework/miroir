@@ -456,7 +456,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
                 miroirDeploymentUuid: deployment_Miroir.uuid,
                 miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
               }
-            : undefined,
+            : false,
         },
       );
       this.runnerTestContext.runtimeContext = {};
@@ -475,10 +475,11 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       },
       {
         clearDocumentBody: false, // Keep UI mounted during browser-triggered integration runs.
+        // a real server keeps its own Miroir deployment (#321): never reset it
         resetMiroirPlatform: emulateServer ? {
           miroirDeploymentUuid: deployment_Miroir.uuid,
           miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
-        } : undefined,
+        } : false,
         ...(resetParams
           ? {
               integTestbedResetParams: {

@@ -20,10 +20,17 @@ const STANDALONE_APP_TESTS_TMP = "miroir-standalone-app/tests/tmp";
 
 export type BeforeEachTestOptions = {
   clearDocumentBody?: boolean;
-  resetMiroirPlatform?: {
-    miroirDeploymentUuid: Uuid;
-    miroirSelfApplicationUuid: Uuid;
-  };
+  /**
+   * The Miroir deployment reset before each test (default: the Miroir deployment of the test session).
+   * `false` against a real server (#321): the server's Miroir deployment is the one of its environment,
+   * in `dev` the package assets themselves, which a reset would wipe.
+   */
+  resetMiroirPlatform?:
+    | {
+        miroirDeploymentUuid: Uuid;
+        miroirSelfApplicationUuid: Uuid;
+      }
+    | false;
   /** Playfield model + instances + init; forwarded to resetIntegTestbed when set. */
   integTestbedResetParams?: IntegTestbedResetParams;
 };
@@ -45,10 +52,13 @@ export async function beforeEachTest(
       libraryRunTarget?.deploymentUuid ?? deployment_Library_DO_NO_USE.uuid,
     librarySelfApplicationUuid:
       libraryRunTarget?.applicationUuid ?? selfApplicationLibrary.uuid,
-    resetMiroirPlatform: options?.resetMiroirPlatform ?? {
-      miroirDeploymentUuid: deployment_Miroir.uuid,
-      miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
-    },
+    resetMiroirPlatform:
+      options?.resetMiroirPlatform === false
+        ? undefined
+        : (options?.resetMiroirPlatform ?? {
+            miroirDeploymentUuid: deployment_Miroir.uuid,
+            miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
+          }),
     ...(resetParams
       ? {
           testbedEntitiesAndInstances: resetParams.testbedEntitiesAndInstances,
