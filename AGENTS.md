@@ -17,6 +17,7 @@ Sibling repos, linked locally only when regenerating types from schemas: **jzod*
   python scripts/sync_agent_skills.py --check
   python -m pytest scripts/tests -q
   npm run lint
+  npm run miroir-env -- check --strict --tracked-clean
   npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
   npm run test -w miroir-core -- ''
   ```
