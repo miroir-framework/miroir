@@ -1,0 +1,81 @@
+{
+  "description": "#321 Slice 0: Deployment rows the dev server opens today (admin package admin_data/7959d814), directories rebased from packages/ to the repository root.",
+  "deployments": {
+    "10ff36f2-50a3-48d8-b80f-e48e5d13af8e": {
+      "name": "DefaultMiroirApplicationDeployment",
+      "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+      "configuration": {
+        "admin": {
+          "emulatedServerType": "filesystem",
+          "directory": "packages/miroir-test-app_deployment-miroir/src/assets"
+        },
+        "model": {
+          "emulatedServerType": "filesystem",
+          "directory": "packages/miroir-test-app_deployment-miroir/assets/miroir_model"
+        },
+        "data": {
+          "emulatedServerType": "filesystem",
+          "directory": "packages/miroir-test-app_deployment-miroir/assets/miroir_data"
+        },
+        "modelVersion": {
+          "emulatedServerType": "filesystem",
+          "directory": "packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion"
+        }
+      }
+    },
+    "18db21bf-f8d3-4f6a-8296-84b69f6dc48b": {
+      "name": "AdminApplicationFilesystemDeployment",
+      "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+      "configuration": {
+        "admin": {
+          "emulatedServerType": "filesystem",
+          "directory": "packages/miroir-test-app_deployment-admin/assets"
+        },
+        "model": {
+          "emulatedServerType": "filesystem",
+          "directory": "packages/miroir-test-app_deployment-admin/assets/admin_model"
+        },
+        "data": {
+          "emulatedServerType": "filesystem",
+          "directory": "packages/miroir-test-app_deployment-admin/assets/admin_data"
+        }
+      }
+    },
+    "f0359240-e849-4546-8158-75f4a8ae5831": {
+      "name": "DesignerApplicationFilesystemDeployment",
+      "selfApplication": "880831db-4f76-40b1-97c0-6a2f3f4ffccb",
+      "configuration": {
+        "admin": {
+          "emulatedServerType": "filesystem",
+          "directory": "packages/miroir-test-app_deployment-designer/assets"
+        },
+        "model": {
+          "emulatedServerType": "filesystem",
+          "directory": "packages/miroir-test-app_deployment-designer/assets/designer_model"
+        },
+        "data": {
+          "emulatedServerType": "filesystem",
+          "directory": "packages/miroir-test-app_deployment-designer/assets/designer_data"
+        }
+      }
+    },
+    "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {
+      "name": "LibraryApplicationFilesystemDeployment",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "configuration": {
+        "admin": {
+          "emulatedServerType": "filesystem",
+          "directory": "packages/miroir-test-app_deployment-admin/assets"
+        },
+        "model": {
+          "emulatedServerType": "filesystem",
+          "directory": "packages/miroir-test-app_deployment-library/assets/library_model"
+        },
+        "data": {
+          "emulatedServerType": "filesystem",
+          "directory": "packages/miroir-test-app_deployment-library/assets/library_data"
+        }
+      }
+    }
+  }
+}

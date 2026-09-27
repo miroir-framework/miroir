@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Inventory: [`./current-state-inven
 Related: #323 (server bundle ignores `--config`; Slice 3 must not rely on `--config`)
 Working branch: `claude/environment-configuration-7z5rjb` (from `_integration`)
 
-**Resume note:** plan written 2026-09-27, awaiting A's approval; no slice started.
+**Resume note:** approved by A 2026-09-27. Slice 0 DONE.
 
 ---
 
@@ -34,7 +34,7 @@ This plan does **not** touch the release path, Docker, Electron, miroir-cli or s
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize tracked writes and today's deployment map | ⬜ | `scripts/tests/test_tracked_assets_guard.py`, `unit-321-tracked-assets` baseline |
+| 0 | Characterize tracked writes and today's deployment map | ✅ | `scripts/tests/test_tracked_assets_guard.py`, `unit-321-tracked-assets` baseline |
 | 1 | Tracer: `miroir-env show` resolves `dev` | ⬜ | MiroirTest `fn.environment.resolveEnvironment` + `miroirEnvCli.321.phase1.unit.test.ts` |
 | 2 | Personal environment: `local.json`, `MIROIR_ENV`, `extends` | ⬜ | `fn.environment.resolveEnvironment` (merge leaves) + CLI test |
 | 3 | Server boots from the environment, Admin data in state | ⬜ | `serverBootFromEnvironment.321.phase3.integ.test.ts` |
@@ -111,7 +111,7 @@ Vitest exceptions (not reachable through MiroirTest): file-system seeding, CLI a
 
 ## Slice 0 — Characterize tracked writes and today's deployment map
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -133,10 +133,14 @@ Behavior asserted:
 
 ```bash
 python -m pytest scripts/tests/test_tracked_assets_guard.py -q
-python scripts/tracked_assets_guard.py --baseline HEAD   # clean on a fresh checkout
+python scripts/tracked_assets_guard.py check   # clean on a fresh checkout
 ```
 
 ### Realization
+
+- `scripts/tracked_assets_guard.py` with two subcommands instead of `--baseline <ref>`: `check` (changes since HEAD) and `snapshot --output F` + `check --since F` (only changes made during a run, so a developer's own uncommitted asset edits do not fail nonreg). Scope: `packages/*/assets/**`, `packages/*/tests/assets/**`, `packages/*/tests/test_assets/**`; gitignored files are out of scope. Content hashes detect a pre-existing edit that a run changes again.
+- `scripts/tests/test_tracked_assets_guard.py`: 7 tests on a throwaway git repository (clean, modified, added, deleted, out of scope, snapshot, re-edited).
+- `packages/miroir-env/tests/fixtures/dev-deployments.today.json`: the 4 Deployment rows of `admin/assets/admin_data/7959d814…/` with directories rebased from `packages/` to the repository root (generated once with an inline Python snippet). Noted for Slice 1: the filesystem `admin` section only creates its directory on open (`FileSystemStore.open`, `FileSystemAdminStore.createStore` is a no-op), which is why Miroir's `admin` directory `…-miroir/src/assets` appears at runtime; Slice 1 derives the `admin` section by rule (`packages/<package>/assets` for `live`), so only `model`, `data` and `modelVersion` are compared with this fixture.
 
 ---
 
