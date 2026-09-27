@@ -1878,7 +1878,7 @@
     {
       "id": "unit-326-build-tooling",
       "tier": "unit",
-      "title": "#326 — bundle report attribution and coverage tour arithmetic (build tooling, needs no build)",
+      "title": "#326 — bundle report attribution, coverage tour arithmetic and server preload (build tooling, needs no build)",
       "requires": "none",
       "argv": [
         "npm",
@@ -1888,7 +1888,8 @@
         "miroir-standalone-app",
         "--",
         "bundleReportCore.unit",
-        "coverageCore.unit"
+        "coverageCore.unit",
+        "coverageTourLoopback.unit"
       ],
       "shared": {
         "group": "standalone-app-unit-files",

@@ -204,10 +204,15 @@ def git_identity(monkeypatch: pytest.MonkeyPatch) -> None:
     [
         ("packages/miroir-core/src/index.ts", "run=true"),
         ("package-lock.json", "run=true"),
+        ("package.json", "run=true"),
+        (".npmrc", "run=true"),
+        ("tsconfig.json", "run=true"),
+        ("scripts/patch-tsup-baseurl.cjs", "run=true"),
         ("scripts/check_bundle_policy.py", "run=true"),
         (".github/workflows/pr-checks.yml", "run=true"),
         ("docs/guides/why-miroir.md", "run=false"),
         ("scripts/check_dependency_policy.py", "run=false"),
+        ("docs/tsconfig.json", "run=false"),
     ],
 )
 def test_the_bundle_job_runs_only_when_the_pr_changes_what_it_builds(

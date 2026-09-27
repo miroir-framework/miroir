@@ -63,14 +63,17 @@ jobs:
         id: paths
         env:
           EVENT_NAME: ${{ github.event_name }}
-        # On a pull_request, HEAD is the merge commit and HEAD^1 the base branch.
+        # On a pull_request, HEAD is the merge commit and HEAD^1 the base branch. The inputs are what the
+        # bundle job builds from: the packages, the install (root manifest, lockfile, .npmrc and the
+        # postinstall patch), the tsconfig the packages extend, the guard and this workflow.
         run: |
           if [ "$EVENT_NAME" != "pull_request" ]; then
             echo "run=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           changed=$(git diff --name-only HEAD^1 HEAD)
-          if grep -qE '^(packages/|package-lock\.json$|scripts/check_bundle_policy\.py$|\.github/workflows/pr-checks\.yml$)' <<< "$changed"; then
+          inputs='^(packages/|package(-lock)?\.json$|\.npmrc$|tsconfig\.json$|scripts/patch-tsup-baseurl\.cjs$|scripts/check_bundle_policy\.py$|\.github/workflows/pr-checks\.yml$)'
+          if grep -qE "$inputs" <<< "$changed"; then
             echo "run=true" >> "$GITHUB_OUTPUT"
           else
             echo "run=false" >> "$GITHUB_OUTPUT"

@@ -11,8 +11,8 @@
  *   npm run coverageTour -w miroir-standalone-app -- --serve
  * Options:
  *   --serve            copy dist/ into the server release, start it on https://localhost:3080
- *                      (production mode, authentication off, the repository's certs/ or a
- *                      self-signed certificate) and stop it at the end
+ *                      (production mode, authentication off, 127.0.0.1 only, the repository's
+ *                      certs/ or a self-signed certificate) and stop it at the end
  *   --url <url>        the app, served by a server already running (default https://localhost:3080)
  *   --browser <path>   Chromium or Chrome executable (default: env MIROIR_TOUR_BROWSER, then the
  *                      browser playwright-core installs, then the installed Chrome)
@@ -26,7 +26,7 @@ import { cpSync, existsSync, mkdirSync, mkdtempSync, openSync, readdirSync, read
 import https from "node:https";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
 
 import { chromium } from "playwright-core";
@@ -310,7 +310,7 @@ function coverageReportLines(report, out, packagesShown = 25) {
 
 /**
  * Starts the server release on the production build, as `npm run run:prod -w miroir-server` does,
- * with authentication off; returns the function that stops it.
+ * with authentication off and listening on 127.0.0.1 only; returns the function that stops it.
  * @returns {Promise<() => void>}
  */
 async function startServer(url) {
@@ -323,10 +323,13 @@ async function startServer(url) {
   }
   cpSync(distDir, path.join(serverDir, "release/client"), { recursive: true });
   const work = mkdtempSync(path.join(tmpdir(), "miroir-coverage-tour-"));
-  const certsDir = existsSync(path.join(root, "certs/localhost.pem")) ? path.join(root, "certs") : selfSignedCertificate(work);
+  const repoCerts = ["localhost.pem", "localhost-key.pem"].every((file) => existsSync(path.join(root, "certs", file)));
+  const certsDir = repoCerts ? path.join(root, "certs") : selfSignedCertificate(work);
   const log = path.join(work, "server.log");
   const logFd = openSync(log, "w");
-  const server = spawn(process.execPath, ["release/index.js", "--certsdir", certsDir, "--disable-auth"], {
+  // Authentication is off, so the server listens on 127.0.0.1 only (scripts/loopback-only.mjs).
+  const loopbackOnly = path.join(packageDir, "scripts/loopback-only.mjs");
+  const server = spawn(process.execPath, ["--import", pathToFileURL(loopbackOnly).href, "release/index.js", "--certsdir", certsDir, "--disable-auth"], {
     cwd: serverDir,
     env: { ...process.env, NODE_ENV: "production" },
     stdio: ["ignore", logFd, logFd],
@@ -345,7 +348,7 @@ async function startServer(url) {
     }
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
-  console.log(`  server started at ${url} (production mode, authentication off)`);
+  console.log(`  server started at ${url} (production mode, authentication off, 127.0.0.1 only)`);
   return stop;
 }
 
