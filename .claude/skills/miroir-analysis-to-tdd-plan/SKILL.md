@@ -96,7 +96,7 @@ Use [plan-template.md](plan-template.md). Required sections, in order:
 
 ## Conventions
 
-- Issue-scoped vitest files live in `tests/<layer>/issues/<NNN>-<slug>/`, named `<feature>.<NNN>.phaseN.unit|integ.test.ts`; MiroirTest assets live in the deployment package they test and carry the issue number in their `description` until cleanup.
+- Issue-scoped vitest files live in `tests/<layer>/issues/<NNN>-<slug>/`, named `<feature>.<NNN>.phaseN.unit|integ.test.ts`; MiroirTest assets live in the deployment package they test, carry `tags` from the vocabulary in `docs/reference/testing.md` (Tags), and carry the issue number in their `description` until cleanup.
 - Run: `npm run testMiroir -w miroir-core -- --suites <suite> --mode unit` / `-w miroir-standalone-app --mode integration`; vitest via `RUN_TEST=<name> npm run testByFile -w <pkg> -- <name>`; deployment assets proven by `modelValidation`; full safety net `npm run nonreg`.
 - Update the plan's progress table as slices complete — the plan is a living resume document (`**Resume note:**` line in the header, see #225).
 

@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 
 import type {
   MiroirTestDefinition,
@@ -20,15 +20,18 @@ vi.mock('../../src/miroir-fwk/4_view/components/Buttons/RunAllMiroirTestsButton.
     runMode = 'unit',
     disabled,
     title,
+    miroirTests = [],
   }: {
     label?: string;
     runMode?: 'unit' | 'integration';
     disabled?: boolean;
     title?: string;
+    miroirTests?: { name?: string }[];
   }) => (
     <button
       type="button"
       data-run-mode={runMode}
+      data-suites={miroirTests.map((test) => test.name).join(',')}
       disabled={disabled}
       title={title}
     >
@@ -143,5 +146,60 @@ describe('MiroirTestListDisplay dual bar (T3)', () => {
     expect(screen.queryByRole('button', { name: 'Run All Unit Tests' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Run All Integration Tests' })).toBeInTheDocument();
     expect(screen.getByText('Integration run settings')).toBeInTheDocument();
+  });
+});
+
+describe('MiroirTestListDisplay tag chips (#312)', () => {
+  const threeTests = () => [
+    asMiroirTest(miroirTest_runner_return_document),
+    asMiroirTest(miroirTest_EntityPrimaryKey),
+    asMiroirTest(miroirTest_miroirCoreTransformers),
+  ];
+
+  it('shows one chip per tag present, alphabetical, with its count', () => {
+    render(<MiroirTestListDisplay miroirTests={threeTests()} gridType="ag-grid" useSnackBar={false} />);
+
+    expect(
+      screen.getAllByRole('button', { pressed: false }).map((chip) => chip.textContent),
+    ).toEqual(['data (1)', 'primary-key (1)', 'runner (1)', 'transformer (1)']);
+  });
+
+  it('a selected chip restricts the list and what Run All runs, a second click restores it', () => {
+    render(<MiroirTestListDisplay miroirTests={threeTests()} gridType="ag-grid" useSnackBar={false} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'runner (1)' }));
+
+    expect(screen.getByRole('button', { name: 'runner (1)' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByText('Miroir Tests Available (1 of 3)')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Run All Unit Tests' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Run All Integration Tests' })).toHaveAttribute(
+      'data-suites',
+      'runner_return_document',
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'runner (1)' }));
+
+    expect(screen.getByText('Miroir Tests Available (3)')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Run All Unit Tests' })).toHaveAttribute(
+      'data-suites',
+      'EntityPrimaryKey,miroirCoreTransformers,runner_return_document',
+    );
+  });
+
+  it('ignores a selected tag that the new list no longer carries', () => {
+    const { rerender } = render(
+      <MiroirTestListDisplay miroirTests={threeTests()} gridType="ag-grid" useSnackBar={false} />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'runner (1)' }));
+
+    const withoutRunner = threeTests().slice(1);
+    rerender(<MiroirTestListDisplay miroirTests={withoutRunner} gridType="ag-grid" useSnackBar={false} />);
+
+    expect(screen.getByText('Miroir Tests Available (2)')).toBeInTheDocument();
+    expect(screen.queryAllByRole('button', { pressed: true })).toEqual([]);
+    expect(screen.getByRole('button', { name: 'Run All Unit Tests' })).toHaveAttribute(
+      'data-suites',
+      'EntityPrimaryKey,miroirCoreTransformers',
+    );
   });
 });

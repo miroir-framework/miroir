@@ -6,6 +6,11 @@
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "name": "domain_controller_non_uuid_pk_model_crud",
   "description": "DomainController non-UUID PK Model CRUD action integration tests (Feature 197). Owned by the Miroir meta-application; Library is only the runTarget/testbed. Lifecycle: session testBedModelAndInstances (Publisher only); leaf creates TestEntityCodeNumber.",
+  "tags": [
+    "domain-controller",
+    "model",
+    "primary-key"
+  ],
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "domainController.nonUuidPK.model.crud",

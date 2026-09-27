@@ -6,6 +6,9 @@
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Issues #286, #292: MlArrayEditor React component tests (MlElementEditor), one MiroirTest instance per editor. Edited by hand.",
+  "tags": [
+    "editor"
+  ],
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "MlArrayEditor_ComponentTestSuite",

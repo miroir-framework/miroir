@@ -6,6 +6,9 @@
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Migrated from UnitTest f74cd323-fe3f-426f-913a-6ca9cb353c08 (Feature #196 Phase 5)",
+  "tags": [
+    "model"
+  ],
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "modelUpdates.getModelUpdate",

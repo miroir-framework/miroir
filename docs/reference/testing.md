@@ -19,11 +19,12 @@ Miroir has these test layers:
 
 ### Parameter surface (argv preferred)
 
-**Trajectory:** CLI **arguments are the main way to pass parameters**. Environment variables remain supported for CI and legacy scripts, but new work should prefer argv (`--suites`, `--mode`, `--filter`, `--profile`, `--storage`). Where both are present, **argv wins** for suite selection, mode, filter, and storage. Explicit `VITE_MIROIR_*` / `MIROIR_TEST_*` values still override defaults supplied by `--profile`.
+**Trajectory:** CLI **arguments are the main way to pass parameters**. Environment variables remain supported for CI and legacy scripts, but new work should prefer argv (`--suites`, `--tags`, `--mode`, `--filter`, `--profile`, `--storage`). Where both are present, **argv wins** for suite selection, tags, mode, filter, and storage. Explicit `VITE_MIROIR_*` / `MIROIR_TEST_*` values still override defaults supplied by `--profile`.
 
 | Concern | Preferred argv | Env fallback (legacy / CI) |
 |---------|----------------|----------------------------|
 | Suites | `--suites` / `-s` | `MIROIR_TEST_SUITES` |
+| Tags | `--tags` | `MIROIR_TEST_TAGS` |
 | Mode | `--mode` / `-m` | `MIROIR_TEST_MODE` |
 | Filter | `--filter` / `-f` | `MIROIR_TEST_FILTER` |
 | Config preset | `--profile` / `-p` | `VITE_MIROIR_TEST_CONFIG_FILENAME` + related |
@@ -119,6 +120,40 @@ is a `MiroirTestDefinition` whose `definition` field is a `MiroirTestSuite` tree
 
 Field naming: `miroirTestType`, `miroirTestLabel`, `miroirTests`. Legacy `unitTest*` / `transformerTest*` fields are frozen.
 
+### Tags
+
+Every MiroirTest instance carries `tags` (#312), next to `name` and `description`: one to three tags saying what the test exercises, main area first. They select tests (`--tags`, the tag chips of the Miroir Tests page) and sort them (the Tags column of the Miroir Tests grid). How a test runs (leaf kind, unit or integration, owning application) is computed from the definition, so it is not a tag.
+
+The allowed values are the `enum` inside the `tags` array schema of the MiroirTest Entity (`miroir_model/16dbfe28-…/a311f363-….json`), in this order:
+
+| Tag | What the test exercises |
+|-----|------------------------|
+| `transformer` | Transformer definitions and their runtime |
+| `ml-schema` | ML schema tooling: references, unions, unfolding, conversions, type checks |
+| `ml-union` | ML unions: branch selection, choices, resolved types |
+| `ml-reference` | ML schema references: resolution, contexts, dependency sets |
+| `ml-conversion` | Conversions between ML schemas and other formats |
+| `query` | Queries, extractors, query templates |
+| `editor` | MlElementEditor React components |
+| `performance` | Render-performance measurements |
+| `runner` | Runners |
+| `domain-controller` | DomainController actions |
+| `model` | Model changes: Entity creation and removal, model CRUD, model updates |
+| `data` | Instance (data) CRUD |
+| `primary-key` | Non-UUID and composite primary keys |
+| `versioning` | Application versions, freeze, evolution trace |
+| `mcp` | MCP tools |
+| `external-service` | External services (OpenAPI sync) |
+| `report` | Reports |
+| `menu` | Menus |
+| `ai` | AI assistant integration |
+| `tools` | Generic helpers |
+
+The tags of each existing test: [`code-helpers/features/312-FEATURE-miroir-test-classification/tag-assignment.md`](../../code-helpers/features/312-FEATURE-miroir-test-classification/tag-assignment.md).
+
+- **Adding a tag:** add the value to the enum in the Entity row **and** in its EntityVersion (`miroir_modelVersion/54b9c72f-…/51c647fe-….json`), then `npm run build -w miroir-test-app_deployment-miroir` and `npm run devBuild -w miroir-core` (the generated `MiroirTestDefinition.tags` is a union of the values). The CLI and the instance editor read the values from the Entity.
+- **Guard:** `packages/miroir-core/tests/5-tests/miroirTestTags.unit.test.ts` fails on an instance without tags or with a tag the Entity does not allow. Model validation does not check enum values yet (#313).
+
 ---
 
 ## Discovery, selection, and execution
@@ -128,7 +163,7 @@ Three concerns. They are not the same list.
 | Concern | Answers | Source |
 |---------|---------|--------|
 | **Discovery** | Which MiroirTest suites exist | **CLI:** folder catalog — `discoverApplicationMiroirTestSourceFolders` / `loadApplicationMiroirTestCatalog` over `packages/miroir-test-app_deployment-*/assets/*/<MiroirTest uuid>`. **UI:** selected application's LocalCache (`useSelectedApplicationMiroirTests`). Same conceptual catalog, two loaders. |
-| **Selection** | Which of those run | `--suites` / `MIROIR_TEST_SUITES` / UI = instance `name` (optional `uuid` on `--suites`). `--filter` / UI checkboxes pick **leaves** (catalog-root key = `name`; nested keys and values = `miroirTestLabel`). See [Filtering MiroirTest cases](#filtering-miroirtest-cases). |
+| **Selection** | Which of those run | `--suites` / `MIROIR_TEST_SUITES` / UI = instance `name` (optional `uuid` on `--suites`). `--tags` / `MIROIR_TEST_TAGS` / UI tag chips keep the suites carrying **any** of the [tags](#tags), intersected with `--suites` when both are given. `--filter` / UI checkboxes pick **leaves** (catalog-root key = `name`; nested keys and values = `miroirTestLabel`). See [Filtering MiroirTest cases](#filtering-miroirtest-cases). |
 | **Execution** | How a selected suite or leaf runs | Leaf kinds infer session (`transformer` / `runner` / `action`) and unit vs integ. Playfield lives on the suite or a `TestConfiguration`; Runner JSON is a sibling folder. `FunctionCallTestRegistry` is a capability whitelist, not a suite catalog. |
 
 `scripts/nonreg-manifest.json` is a **curated** step list (unit catalog sweep, selected integ suites, app-stack files). It is not generated from the catalog and is not a discovery source.
@@ -193,6 +228,9 @@ Nonreg step ids: `unit-localCacheMemoryMeasure`, `unit-localCacheMemoryAttribute
 # Preferred — argv
 npm run testMiroir -w miroir-core -- --suites mustache --mode unit
 
+# Every unit suite carrying one of the tags (see Tags)
+npm run testMiroir -w miroir-core -- --tags ml-union,ml-reference --mode unit
+
 # Filter to specific test labels (suite miroirTestLabel → leaf labels)
 npm run testMiroir -w miroir-core -- --suites mustache --mode unit \
   --filter '{"mustache":["should extract patterns with double braces"]}'
@@ -210,6 +248,7 @@ See [Filtering MiroirTest cases](#filtering-miroirtest-cases) for the full model
 | Variable | Purpose | Default |
 |----------|---------|---------|
 | `MIROIR_TEST_SUITES` | Comma-separated suite keys, or `*` for all | `*` (all) |
+| `MIROIR_TEST_TAGS` | Comma-separated [tags](#tags): keep the suites carrying any of them. An unknown tag, or a selection left empty, is an error | (none) |
 | `MIROIR_TEST_MODE` | `unit` or `integration` (`integ` accepted) | `unit` |
 | `MIROIR_TEST_FILTER` | JSON filter — see [Filtering MiroirTest cases](#filtering-miroirtest-cases) | (none) |
 | `MIROIR_SCHEMA_MODE` | `frozen` (implicit `'auto'` → static schema) or `runtime` (198 carry-on) | `runtime` (unset); `testMiroir` defaults to `frozen` |
@@ -286,6 +325,12 @@ npm run testMiroir -w miroir-standalone-app -- \
 # Runner integ
 npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql --suites runner_return_document --mode integ
+
+# By tag: the integration-capable suites carrying the tag. Core (transformer) suites and
+# runner / action suites run in different vitest entries, so a tag selection that spans
+# both is refused: narrow the tags or add --suites.
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-filesystem --tags domain-controller --mode integ
 
 # Action Data CRUD integ — Miroir-owned suite; Library is runTarget only
 # (preferred over DomainController.integ.Data.CRUD.test.tsx)
@@ -1407,7 +1452,7 @@ await session.teardown();
 1. Create a `MiroirTestDefinition` JSON in the owning application's MiroirTest folder:
    - Miroir app: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-…/<uuid>.json`
    - Other apps: that app's **model** section `…/<app>_model/a311f363-…/<uuid>.json`
-2. Set `name` to the CLI / UI suite key (e.g. `myNewSuite`).
+2. Set `name` to the CLI / UI suite key (e.g. `myNewSuite`), and `tags` to one to three values of the [tag vocabulary](#tags), main area first.
 3. CLI discovery scans `packages/miroir-test-app_deployment-*/assets/*/<MiroirTest uuid>` (`discoverApplicationMiroirTestSourceFolders`). Test runners load the suite with `loadMiroirCoreTestSuiteFromFolders` / `loadMiroirTestSuiteFromCatalog`. Runner `runnerRef` lookup uses sibling Runner folders (`loadApplicationRunnerUuidIndexFromFolders`).
 4. Optional: export `miroirTest_myNewSuite` from the deployment package `index.ts` if other TypeScript wants a named import. Rebuild that package.
 5. Validate schema: `VITE_TEST_MODE=true npx vitest run tests/4_services/miroirTest.schema.unit.test.ts -w miroir-core`.
@@ -1574,6 +1619,7 @@ Checks performed:
 1. Start the app: `npm run dev -w miroir-standalone-app`.
 2. Navigate to **Miroir Tests** in the menu.
 3. Use the **list** report for batch runs, or open a suite’s **details** for a single-suite cockpit. The badge on details shows `unit` / `integration` / `mixed`.
+4. To work on a subset, click tag chips above the Run All buttons (each shows its test count): the list and both Run All buttons keep the tests carrying any selected tag; click again to deselect. The **Miroir Tests** grid below has a **Tags** column to sort and filter on.
 
 ### List vs details × unit vs integration
 

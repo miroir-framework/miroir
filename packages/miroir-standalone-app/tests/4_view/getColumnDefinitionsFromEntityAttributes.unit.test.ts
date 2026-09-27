@@ -3,6 +3,9 @@
  */
 import { describe, expect, it } from "vitest";
 
+import { entityMLSchema, type Entity } from "miroir-core";
+import { entityMiroirTest } from "miroir-test-app_deployment-miroir";
+
 import { getMDataGridColumnDefinitionsFromEntity } from "../../src/miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes.js";
 
 const bookEntityShape = {
@@ -29,5 +32,17 @@ describe("getMDataGridColumnDefinitionsFromEntity", () => {
     );
     expect(cols.map((c) => c.field)).toEqual(["title", "author"]);
     expect(cols.every((c) => c.headerName)).toBe(true);
+  });
+
+  it("gives the Miroir Tests grid a Tags column right after the name (#312)", () => {
+    const miroirTestEntity = entityMiroirTest as unknown as Entity;
+    const cols = getMDataGridColumnDefinitionsFromEntity(
+      "deployment-uuid",
+      entityMLSchema(miroirTestEntity),
+      undefined,
+      miroirTestEntity,
+    );
+    expect(cols.map((c) => c.field).slice(0, 2)).toEqual(["name", "tags"]);
+    expect(cols.find((c) => c.field === "tags")?.headerName).toBe("Tags");
   });
 });

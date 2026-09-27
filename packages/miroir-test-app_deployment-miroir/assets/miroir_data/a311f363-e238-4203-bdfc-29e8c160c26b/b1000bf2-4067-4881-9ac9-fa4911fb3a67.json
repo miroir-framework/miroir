@@ -6,6 +6,10 @@
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Migrated from UnitTest e2f3a4b5-c6d7-4e8f-9a01-b2c3d4e5f6a7 (Feature #196 Phase 5)",
+  "tags": [
+    "ml-schema",
+    "ml-reference"
+  ],
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "mls.MlSchemaReferencesSet",

@@ -6,6 +6,9 @@
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "name": "multistepReports.274",
   "description": "Issue #274 Slice 1 — Finish template with suite step bag creates Country Testland.",
+  "tags": [
+    "report"
+  ],
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "multistepReports.274",

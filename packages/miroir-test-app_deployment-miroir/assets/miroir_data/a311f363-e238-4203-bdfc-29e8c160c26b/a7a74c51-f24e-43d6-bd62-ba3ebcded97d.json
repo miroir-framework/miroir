@@ -6,6 +6,9 @@
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Phase 3c pilot — library query-runner tests migrated from unitTest_suite_queries_library",
+  "tags": [
+    "query"
+  ],
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "queries.library",

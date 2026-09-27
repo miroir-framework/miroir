@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { listMiroirTestSuiteKeys } from "miroir-core";
+import { listCliTransformerIntegrationSuiteKeysFromFolders } from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
 
 import { applyIntegrationTestProfile } from "./integrationTestProfiles.js";
 import {
@@ -140,6 +141,15 @@ describe("miroirCoreIntegTestLaunch", () => {
       }),
     );
     expect(errors.some((error) => error.includes("Unknown MIROIR_TEST_SUITES"))).toBe(true);
+  });
+
+  it("knows every transformer integration suite the launcher routes here", () => {
+    const errors = validateMiroirCoreIntegTestLaunch(
+      baseContext({
+        config: { suiteKeys: listCliTransformerIntegrationSuiteKeysFromFolders() },
+      }),
+    );
+    expect(errors.filter((error) => error.includes("Unknown MIROIR_TEST_SUITES"))).toEqual([]);
   });
 
   it("reports missing mongodb connection string", () => {

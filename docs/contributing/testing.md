@@ -39,7 +39,7 @@ Rules:
 
 ## Running tests
 
-**Prefer argv** (`--suites`, `--mode`, `--filter`, `--profile`, `--storage`). Env vars remain for CI / legacy; see [Parameter surface](../reference/testing.md#parameter-surface-argv-preferred) in the reference. Select MiroirTest suites by instance `name`:
+**Prefer argv** (`--suites`, `--tags`, `--mode`, `--filter`, `--profile`, `--storage`). Env vars remain for CI / legacy; see [Parameter surface](../reference/testing.md#parameter-surface-argv-preferred) in the reference. Select MiroirTest suites by instance `name`, or by [tag](../reference/testing.md#tags) with `--tags`:
 
 | Name | Example | Used in |
 |------|---------|---------|
@@ -86,6 +86,9 @@ MIROIR_TEST_SUITES=mustache MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-c
 # Multiple suites
 npm run testMiroir -w miroir-core -- --suites alterObject_atPath,EntityPrimaryKey --mode unit
 
+# Every unit suite carrying a tag
+npm run testMiroir -w miroir-core -- --tags ml-union --mode unit
+
 # All catalog suites
 npm run testMiroir -w miroir-core -- --mode unit
 
@@ -124,6 +127,7 @@ Runs in `miroir-standalone-app`, not `miroir-core`. Prefer **`--profile`** / **`
 | **Transformer** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites miroirCoreTransformers --mode integ` |
 | **Runner** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites runner_return_document --mode integ` |
 | **Freeze runner** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites runner_freeze_application_version --mode integ` |
+| **By tag** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --tags domain-controller --mode integ` |
 
 Legacy env form:
 

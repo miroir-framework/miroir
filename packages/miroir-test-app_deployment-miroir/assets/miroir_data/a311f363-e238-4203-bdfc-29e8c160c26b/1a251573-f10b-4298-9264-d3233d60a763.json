@@ -6,6 +6,10 @@
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Migrated from UnitTest e7f2a1b4-3c5d-4e6f-8a9b-0c1d2e3f4a5b (Feature #196 Phase 5)",
+  "tags": [
+    "menu",
+    "transformer"
+  ],
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "menu.build",

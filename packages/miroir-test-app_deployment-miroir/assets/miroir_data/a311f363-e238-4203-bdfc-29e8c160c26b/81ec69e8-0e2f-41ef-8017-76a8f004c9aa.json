@@ -6,6 +6,10 @@
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "name": "runner_drop_entity",
   "description": "DropEntity runner integration tests (Feature #197 Step 2). Owned by Miroir meta-application. Ephemeral runTarget (no suite.runTarget); preRunner creates Author via createEntity sequence then dropEntity removes it; do not seed remapped library model onto the runTarget playfield.",
+  "tags": [
+    "runner",
+    "model"
+  ],
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "runner.dropEntity",

@@ -6,6 +6,9 @@
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Migrated from TransformerTest 3f025c6c-982d-47ed-8061-50009788773a (Feature #196 Phase 5)",
+  "tags": [
+    "ml-schema"
+  ],
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "resolveConditionalSchema",
