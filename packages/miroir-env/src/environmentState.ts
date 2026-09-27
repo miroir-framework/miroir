@@ -243,6 +243,34 @@ function withConnectionPasswords(
 }
 
 /**
+ * The client configuration of an environment whose client calls its server (the web client, #321
+ * Slice 8): the server's URL, and the stores of every installed application (the client opens
+ * nothing itself; ConfigurationService requires the Admin deployment). `env` provides the database
+ * passwords the definition names: never give it for a configuration that reaches a browser.
+ * No `features`: the server owns the process capabilities (#273).
+ */
+export function environmentRealServerClientConfig(
+  resolved: ResolvedEnvironment,
+  env: NodeJS.ProcessEnv = {},
+): MiroirConfigClient {
+  const rootApiUrl = resolved.environment.server?.rootApiUrl;
+  if (!rootApiUrl) {
+    throw new EnvironmentError(`environment "${resolved.name}" has no server.rootApiUrl: no client can call it`);
+  }
+  const storeSectionConfiguration: Record<string, StoreUnitConfiguration> = Object.fromEntries(
+    resolved.deployments.map((deployment) => [
+      deployment.deployment,
+      withConnectionPasswords(resolved, deployment.configuration as StoreUnitConfiguration, env),
+    ]),
+  );
+  return {
+    miroirConfigType: "client",
+    client: { emulateServer: false, serverConfig: { rootApiUrl, storeSectionConfiguration } },
+    environment: configEnvironment(resolved),
+  };
+}
+
+/**
  * The client configuration of an environment run with an emulated server (tests): the stores of
  * every installed application, opened in process; the filesystem root is the repository root.
  * `env` provides the database passwords the definition names.

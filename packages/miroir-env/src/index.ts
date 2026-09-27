@@ -16,6 +16,7 @@ export {
 export {
   describeEnvironmentStateStatus,
   environmentClientConfig,
+  environmentRealServerClientConfig,
   environmentServerConfig,
   environmentStateDirectory,
   environmentStateStatus,
