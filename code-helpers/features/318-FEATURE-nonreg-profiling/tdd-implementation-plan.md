@@ -2,7 +2,7 @@
 
 > Integration-first, no mocks. The harness is tested through its public entry points: `run-nonreg.py` (pytest in `scripts/tests`, which runs the real script on small real manifests), the package launchers (vitest unit tests on the argv/env they produce), and real vitest runs on the filesystem profile. No test file, `RunnerTestSession` or UI launch code changes, except where a slice names it.
 
-**Resume note:** analysis confirmed 2026-09-27. Branch `318-FEATURE-nonreg-profiling`, from `_integration` 76e52aa. Next: Slice 5.
+**Resume note:** analysis confirmed 2026-09-27. Branch `318-FEATURE-nonreg-profiling`, from `_integration` 76e52aa. Next: Slice 6.
 
 ## Scope
 
@@ -25,7 +25,7 @@ Out of scope: changes to the UI test runs; timing trends across runs (#306); ste
 | 2 | Opt-in timing profile (D1) | ✅ DONE | `--timings` writes `timings.json` with hook times; nothing written without it |
 | 3 | Shared runner for testByFile groups (D2) | ✅ DONE | `--runner shared` on the storage group: same per-step verdicts, lower wall time |
 | 4 | Shared runner for runner/action suites (D2) | ✅ DONE | new shared entry: one session per suite, same results as legacy |
-| 5 | `perSuite` reset policy (D4) | ⬜ pending | timing report shows one reset per marked suite; results unchanged |
+| 5 | `perSuite` reset policy (D4) | ✅ DONE | timing report shows one reset per marked suite; results unchanged |
 | 6 | Lazy store-state logging | ⬜ pending | reset time before/after, from `--timings` |
 | 7 | Migrate descriptors, docs, compare full runs | ⬜ pending | legacy vs shared `nonreg:filesystem` on the same verdicts |
 
@@ -255,7 +255,7 @@ Resets are about 85–99 % of integ test time. Slice 5 is worth more than the an
 
 ## Slice 5 — `perSuite` reset policy (D4)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** a suite marked `testbedReset: "perSuite"` resets once per suite in CLI runs, and read-only testByFile files reset once per file.
 
@@ -273,6 +273,19 @@ Resets are about 85–99 % of integ test time. Slice 5 is worth more than the an
 **Refactor checkpoint:** one `withTestbedResetPolicy(policy, reset)` wrapper used by both CLI helpers.
 
 **Validation:** `modelValidation` for deployment-miroir; the touched suites and files; `npm run test -w miroir-core -- ''`; `tsc` for miroir-core and miroir-standalone-app.
+
+### Realization
+
+- Schema: optional `testbedReset: "perTest" | "perSuite"` (enum) on `miroirTestSuite`, in the MiroirTest entity and its modelVersion copy; generated types regenerated.
+- `miroir-core/src/5_tests/testbedResetPolicy.ts`: `resolveSuiteTestbedReset` (absent → `perTest`), `resolveSuitesTestbedReset` (several suites on one session: `perSuite` only if all are), and the `withTestbedResetPolicy(policy, reset)` wrapper. With `perSuite` it resets when the scope key (the top-level `describe` of the test, from `tests/helpers/testbedResetScope.ts`) changes; a failed reset is retried on the next test. Unit tests: `tests/5_tests/testbedResetPolicy.unit.test.ts`.
+- Used by the three CLI helpers: `runMiroirCoreTestsFromCLI`, `runMiroirRunnerTestsFromCLI` (legacy) and `runMiroirRunnerSuitesSharedFromCLI`. `RunnerTestSession`, `IntegrationTestSession` and the UI path are untouched, so UI runs keep resetting per test.
+- Marked suites: only `miroirCoreTransformers` (261 `transformerTest` leaves, all pure). The runner/action suites in nonreg all create, update or delete, except `runner_mcp_get_instances`, which has one leaf, so marking it gains nothing.
+- `ExtractorPersistenceStoreRunner.integ` and `ExtractorTemplatePersistenceStoreRunner.integ` only run `runBoxedQuery*` / query template actions: their `resetIntegTestbed` moved to `beforeAll` (the first file keeps a `beforeEach` that clears `document.body`).
+- Measured on `emulatedServer-filesystem`:
+  - `integ-transformer-miroirCoreTransformers`: 30 s → 9 s wall; `beforeEach` 20.9 s → 0.09 s in total (one reset), 261/261 passed.
+  - storage group (`--runner shared`): 16 s → 14.2 s; legacy files 12 s and 8 s, all passed.
+- Validation: `modelValidation` miroir passed; `npm run test -w miroir-core -- ''` 2064 passed; pytest 44 passed; `tsc` miroir-core and miroir-standalone-app clean; the 14 runner/action suites pass with `--runner shared` (35.9 s) and `domain_controller_data_crud` legacy.
+- Found, not fixed (pre-existing on the base): `tests/helpers/RunnerTestSession.unit.test.ts` does not parse (extra `)` at line 626), so that file cannot run.
 
 ---
 

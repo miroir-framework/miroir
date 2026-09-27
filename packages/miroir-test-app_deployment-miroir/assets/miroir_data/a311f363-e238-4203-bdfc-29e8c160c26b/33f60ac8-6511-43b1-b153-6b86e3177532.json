@@ -13,6 +13,7 @@
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "miroirCoreTransformers",
+    "testbedReset": "perSuite",
     "miroirTests": [
       {
         "miroirTestType": "miroirTestSuite",

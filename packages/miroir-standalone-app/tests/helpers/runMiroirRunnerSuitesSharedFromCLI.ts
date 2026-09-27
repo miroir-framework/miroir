@@ -10,6 +10,8 @@ import {
   type RunMiroirTests,
   type RunnerTestSessionInterface,
   type VitestNamespace,
+  resolveSuiteTestbedReset,
+  withTestbedResetPolicy,
 } from "miroir-core";
 
 import { loadRunnerOrActionMiroirTestSuite } from "./runMiroirRunnerTestsFromCLI.js";
@@ -92,8 +94,12 @@ export async function runMiroirRunnerSuitesSharedFromCLI(
         holder.value = withSuiteTestParams(environment, suite);
       });
 
+      // #318: a suite marked `testbedReset: "perSuite"` resets once, before its first test.
+      const resetTestbed = withTestbedResetPolicy(resolveSuiteTestbedReset(suite), () =>
+        session!.beforeEach(),
+      );
       vitest.beforeEach(async () => {
-        await session!.beforeEach();
+        await resetTestbed();
       });
 
       vitest.afterAll(async () => {
