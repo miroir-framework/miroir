@@ -35,6 +35,7 @@
     "nonreg:filesystem": "python scripts/run-nonreg.py --tier default --run-all --profile emulatedServer-filesystem",
     "nonreg:fail-fast": "python scripts/run-nonreg.py --tier default --fail-fast",
     "lint": "eslint packages",
+    "test:lint-rules": "node --test eslint-rules/miroir-layers.test.mjs",
     "check:console": "python scripts/check_bare_console.py",
     "check:ml": "python scripts/check_ml_nomenclature.py",
     "release:tag": "python scripts/release_tag.py",

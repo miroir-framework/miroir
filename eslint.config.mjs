@@ -4,6 +4,7 @@
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
+import miroirLayers from "./eslint-rules/miroir-layers.mjs";
 
 export default tseslint.config(
   {
@@ -18,7 +19,7 @@ export default tseslint.config(
   {
     files: ["packages/*/src/**/*.{ts,tsx}", "packages/*/tests/**/*.{ts,tsx}"],
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
-    plugins: { "react-hooks": reactHooks },
+    plugins: { "react-hooks": reactHooks, miroir: { rules: { layers: miroirLayers } } },
     linterOptions: { reportUnusedDisableDirectives: "off" },
     rules: {
       // Too many existing violations for a minimal set; candidates for later issues.
@@ -30,6 +31,9 @@ export default tseslint.config(
 
       // Hooks called conditionally or in callbacks break React's state ordering.
       "react-hooks/rules-of-hooks": "error",
+
+      // Implementation imports flow downwards only between numbered layers (AGENTS.md, "Architecture").
+      "miroir/layers": "error",
     },
   },
   {
@@ -75,5 +79,27 @@ export default tseslint.config(
       "packages/miroir-standalone-app/src/miroir-fwk/4_view/tools/renderPerformanceMeasure.tsx",
     ],
     rules: { "react-hooks/rules-of-hooks": "off" },
+  },
+  {
+    // Known upward imports (26 in 16 files, #325). Remove a file once it is fixed; never add one.
+    files: [
+      "packages/miroir-core/src/0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchema.ts",
+      "packages/miroir-core/src/0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchemaHelpers.ts",
+      "packages/miroir-core/src/1_core/Deployment.ts",
+      "packages/miroir-core/src/1_core/Menu.ts",
+      "packages/miroir-core/src/1_core/localCache/partialMutationGuard.ts",
+      "packages/miroir-core/src/1_core/localCache/reportQueryLoadSegment.ts",
+      "packages/miroir-core/src/1_core/mls/getDefaultValueForMlSchema.ts",
+      "packages/miroir-core/src/1_core/mls/mlsResolveSchemaReferenceInContext.ts",
+      "packages/miroir-core/src/1_core/mls/mlsTypeCheck.ts",
+      "packages/miroir-core/src/1_core/mls/resolveConditionalSchema.ts",
+      "packages/miroir-core/src/2_domain/ResolveCompositeActionTemplate.ts",
+      "packages/miroir-core/src/2_domain/TransformerInterfaceInference.ts",
+      "packages/miroir-core/src/3_controllers/DomainController.ts",
+      "packages/miroir-core/src/3_controllers/MiroirEventService.ts",
+      "packages/miroir-store-postgres/src/1_core/SqlGenerator.ts",
+      "packages/miroir-store-postgres/src/1_core/SqlQueryBuilder.ts",
+    ],
+    rules: { "miroir/layers": "off" },
   },
 );
