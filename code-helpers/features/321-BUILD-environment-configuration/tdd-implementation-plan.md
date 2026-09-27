@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Inventory: [`./current-state-inven
 Related: #323 (server bundle ignores `--config`; Slice 3 must not rely on `--config`)
 Working branch: `claude/environment-configuration-7z5rjb` (from `_integration`)
 
-**Resume note:** approved by A 2026-09-27. Slices 0–4 DONE.
+**Resume note:** approved by A 2026-09-27. Slices 0–4 DONE; Slice 5a done (every profile store is an environment), 5b next (transformer sessions on the environment Admin, test Admin copy and profile JSONs removed).
 
 ---
 
@@ -39,7 +39,7 @@ This plan does **not** touch the release path, Docker, Electron, miroir-cli or s
 | 2 | Personal environment: `local.json`, `MIROIR_ENV`, `extends` | ✅ | `fn.environment.resolveEnvironment` (merge leaves) + CLI test |
 | 3 | Server boots from the environment, Admin data in state | ✅ | `miroir-env/tests/openEnvironment.321.phase3.integ.test.ts` |
 | 4 | Tests run on `test-filesystem` without tracked writes | ✅ | `nonreg:filesystem` + tracked-assets guard clean; `testEnvironmentConfig.321.phase4.unit.test.ts` |
-| 5 | `test-sql`, `test-indexedDb`, `test-mongodb`; profile JSONs and test Admin copy retired | ⬜ | `nonreg:default` (Postgres) + guard |
+| 5 | `test-sql`, `test-indexedDb`, `test-mongodb`; profile JSONs and test Admin copy retired | 🟨 5a | `nonreg:default` (Postgres) + guard |
 | 6 | Reconciliation, deviation warnings, `check` / `import` / `prune` | ⬜ | `miroirEnvReconcile.321.phase6.integ.test.ts` |
 | 7 | UI installs land in state and are recorded in `local.json` | ⬜ | Runner `deployApplication` integ test on `test-filesystem` |
 | 8 | Web client config from the environment | ⬜ | `vite.config` environment test + manual run |
@@ -341,7 +341,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ## Slice 5 — `test-sql`, `test-indexedDb`, `test-mongodb`; profile JSONs and the test Admin copy retired
 
-**Status:** ⬜ pending
+**Status:** 🟨 in progress (5a done, 5b pending)
 
 ### Goal
 
@@ -373,6 +373,19 @@ python scripts/tracked_assets_guard.py --baseline HEAD
 ```
 
 ### Realization
+
+Delivered in two commits: 5a (every profile store is an environment) and 5b (the test Admin copy and the profile files retired).
+
+**5a**
+
+- miroir-core `deriveEnvironmentDeployments` derives every store. The database stores are copies named after the environment and the application: SQL schema and MongoDB database `<environment>_<application>` (`test-sql`, `miroir` → `test_sql_miroir`), IndexedDB `.miroir/<environment>/<application>/indexedDb`; the modelVersion and admin sections add `_modelVersion` and `_admin`. A separate admin name matters: the IndexedDB admin store opens `<name>-model` (the model section's Level database when names are equal), and the MongoDB admin store drops its own database on deletion. SQL connections come from `connections.postgres` (`postgres://<user>@<host>:<port>/<database>`, no password), MongoDB from `connections.mongodb.url`; a database store without its connection is an error. MiroirTest `fn.environment.deriveDeployments` +4 leaves.
+- `environments/test-sql.json`, `test-indexedDb.json`, `test-mongodb.json` extend `test-filesystem` and change only the store of Miroir, Library, appForTest and Spotify (Admin stays a filesystem copy, as in the profile files) and the connection.
+- miroir-env `environmentClientConfig(resolved, env)` adds the Postgres password from the variable `connections.postgres.passwordEnv` names (`MIROIR_POSTGRES_PASSWORD`); `missingConnectionPasswords` warns when it is unset. `miroir-env show` never prints a password. Seeding still copies filesystem sections only: database stores are created and reset by the test sessions, as before.
+- Profiles `emulatedServer-sql`, `-indexedDb`, `-mongodb` select `test-sql`, `test-indexedDb`, `test-mongodb`; their `MIROIR_TEST_*` defaults are derived from the environment's client configuration (5.3 done here). A shell value of a store-selecting variable (`MIROIR_ENV`, `VITE_MIROIR_TEST_CONFIG_FILENAME`, `MIROIR_TEST_APP_STORE_TYPE`, `MIROIR_TEST_ADMIN_STORE_TYPE`, `MIROIR_TEST_POSTGRES_HOST`, `MIROIR_TEST_ADMIN_SQL_SCHEMA`) that differs from the profile's is kept with a warning, and is an error when `CI` is set. Nonreg does not set `CI`; recording the environment in nonreg is Slice 11.
+- Ephemeral test applications: IndexedDB ones go next to their template in `.miroir/<environment>/`; SQL and MongoDB ones use the template's connection instead of the hardcoded `postgres:postgres@localhost` and `localhost:27017`.
+- Without a profile, transformer sessions use Postgres on `localhost` (was `192.168.1.160`).
+- `PersistenceStoreController.integ`: the missing-entity message names the configured schema instead of `library`.
+- Validation (5a): pre-push gate green (typechecks, `scripts/tests`, 2097 miroir-core tests); `npm run nonreg` default tier on `emulatedServer-sql` against a local Postgres (`MIROIR_POSTGRES_PASSWORD` set) 74/74 (snapshot 20260927T151442Z); the 36 default-tier steps on `emulatedServer-filesystem` 36/36 (snapshot 20260927T154031Z); tracked-assets guard clean. `test-mongodb` is covered by the derivation leaves only (no MongoDB in the cloud container).
 
 ---
 

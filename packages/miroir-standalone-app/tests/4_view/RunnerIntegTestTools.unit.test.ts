@@ -223,4 +223,41 @@ describe("testApplicationStorageConfiguration", () => {
       },
     });
   });
+
+  it("puts indexedDb test applications next to their template in a test environment (#321)", () => {
+    const template = (name: string) => ({ emulatedServerType: "indexedDb" as const, indexedDbName: name });
+    const configuration = testApplicationStorageConfiguration(
+      {
+        admin: template(".miroir/test-indexedDb/library/indexedDb"),
+        model: template(".miroir/test-indexedDb/library/indexedDb"),
+        data: template(".miroir/test-indexedDb/library/indexedDb"),
+        modelVersion: template(".miroir/test-indexedDb/library/indexedDb_modelVersion"),
+      },
+      "appForTest",
+    );
+
+    expect(configuration.model).toEqual(template(".miroir/test-indexedDb/appForTest/indexedDb"));
+    expect(configuration.data).toEqual(template(".miroir/test-indexedDb/appForTest/indexedDb"));
+    expect(configuration.modelVersion).toEqual(template(".miroir/test-indexedDb/appForTest/indexedDb_modelVersion"));
+  });
+
+  it("opens sql test applications on the template's server (#321)", () => {
+    const connectionString = "postgres://postgres:secret@db.example:5433/postgres";
+    const template = (schema: string) => ({ emulatedServerType: "sql" as const, connectionString, schema });
+    const configuration = testApplicationStorageConfiguration(
+      {
+        admin: template("test_sql_library"),
+        model: template("test_sql_library"),
+        data: template("test_sql_library"),
+      },
+      "Library",
+    );
+
+    expect(configuration.model).toEqual({ emulatedServerType: "sql", connectionString, schema: "Library" });
+    expect(configuration.modelVersion).toEqual({
+      emulatedServerType: "sql",
+      connectionString,
+      schema: "Library_modelVersion",
+    });
+  });
 });

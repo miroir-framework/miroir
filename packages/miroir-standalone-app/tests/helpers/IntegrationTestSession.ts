@@ -58,7 +58,7 @@ export {
   POSTGRES_TEST_VERSION_UUID, type AdminStoreOptions, type IntegrationTestApplicationIdentity, type PostgresIntegrationAdapterOptions, type TestApplicationStoreOptions, type TestSessionForIntegOptions
 } from "../../src/miroir-fwk/4-tests/IntegrationTestSession.js";
 
-const DEFAULT_POSTGRES_HOST = "192.168.1.160";
+const DEFAULT_POSTGRES_HOST = "localhost";
 const DEFAULT_ADMIN_SQL_SCHEMA = "miroirAdmin";
 
 // ################################################################################################

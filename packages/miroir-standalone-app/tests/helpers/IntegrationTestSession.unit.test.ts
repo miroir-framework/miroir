@@ -166,6 +166,13 @@ describe("IntegrationTestSession store configuration", () => {
     expect(options.adminStore.emulatedServerType).toBe("filesystem");
   });
 
+  it("resolveTestSessionForIntegOptionsFromEnv without a profile uses Postgres on localhost (#321)", () => {
+    expect(resolveTestSessionForIntegOptionsFromEnv({}).testApplicationStore).toEqual({
+      emulatedServerType: "sql",
+      postgresHostName: "localhost",
+    });
+  });
+
   it("resolveTestSessionForIntegOptionsFromEnv uses repo-relative filesystem app root", () => {
     const options = resolveTestSessionForIntegOptionsFromEnv({
       MIROIR_TEST_APP_STORE_TYPE: "filesystem",

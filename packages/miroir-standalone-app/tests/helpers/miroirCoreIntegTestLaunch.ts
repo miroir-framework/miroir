@@ -84,7 +84,7 @@ export function formatMiroirCoreIntegTestUsage(): string {
     "  MIROIR_TEST_ADMIN_STORE_TYPE           filesystem | sql | indexedDb | mongodb | bundled  (default: filesystem)",
     "",
     "When MIROIR_TEST_APP_STORE_TYPE=sql or MIROIR_TEST_ADMIN_STORE_TYPE=sql:",
-    "  MIROIR_TEST_POSTGRES_HOST              Postgres host (default: 192.168.1.160; profile sets from JSON)",
+    "  MIROIR_TEST_POSTGRES_HOST              Postgres host (default: localhost; a profile sets it from its environment)",
     "  MIROIR_TEST_ADMIN_SQL_SCHEMA           Admin schema when admin is sql (default: miroirAdmin)",
     "",
     "When either store uses mongodb:",
@@ -116,7 +116,7 @@ export function formatMiroirCoreIntegTestUsage(): string {
     "",
     "Example (explicit env — sql test app + filesystem admin):",
     "  MIROIR_TEST_SUITES=tr.core MIROIR_TEST_MODE=integ \\",
-    "    MIROIR_TEST_POSTGRES_HOST=192.168.1.160 npm run testMiroir -w miroir-standalone-app",
+    "    MIROIR_TEST_POSTGRES_HOST=db.example npm run testMiroir -w miroir-standalone-app",
   ].join("\n");
 }
 

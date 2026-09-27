@@ -25,6 +25,7 @@ const PROFILE_ENV_KEYS = [
   "MIROIR_TEST_POSTGRES_HOST",
   "MIROIR_TEST_ADMIN_SQL_SCHEMA",
   "MIROIR_ENV",
+  "CI",
 ] as const;
 
 function baseContext(overrides: {

@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   applyIntegrationTestProfile,
@@ -15,6 +15,7 @@ const ENV_KEYS = [
   "MIROIR_TEST_POSTGRES_HOST",
   "MIROIR_TEST_ADMIN_SQL_SCHEMA",
   "MIROIR_ENV",
+  "CI",
 ] as const;
 
 describe("integrationTestProfiles (Gap D0)", () => {
@@ -134,16 +135,53 @@ describe("integrationTestProfiles (Gap D0)", () => {
   });
 
   it("profiles without an environment leave MIROIR_ENV unset (#321)", () => {
-    applyIntegrationTestProfile("emulatedServer-sql");
+    applyIntegrationTestProfile("realServer-sql");
 
     expect(process.env.MIROIR_ENV).toBeUndefined();
   });
 
   it("respectExistingEnv false: a profile without an environment drops the previous profile's (#321)", () => {
     applyIntegrationTestProfile("emulatedServer-filesystem", { respectExistingEnv: false });
-    applyIntegrationTestProfile("emulatedServer-sql", { respectExistingEnv: false });
+    applyIntegrationTestProfile("realServer-sql", { respectExistingEnv: false });
 
     expect(process.env.MIROIR_ENV).toBeUndefined();
-    expect(process.env.VITE_MIROIR_TEST_CONFIG_FILENAME).toContain("miroirConfig.test-emulatedServer-sql.json");
+    expect(process.env.VITE_MIROIR_TEST_CONFIG_FILENAME).toContain("miroirConfig.test-realServer-sql.json");
+  });
+
+  it("sql, indexedDb and mongodb profiles select their test environment (#321)", () => {
+    for (const [profile, environment, appStoreType] of [
+      ["emulatedServer-sql", "test-sql", "sql"],
+      ["emulatedServer-indexedDb", "test-indexedDb", "indexedDb"],
+      ["emulatedServer-mongodb", "test-mongodb", "mongodb"],
+    ]) {
+      applyIntegrationTestProfile(profile, { respectExistingEnv: false });
+      expect(process.env.MIROIR_ENV).toBe(environment);
+      expect(process.env.MIROIR_TEST_APP_STORE_TYPE).toBe(appStoreType);
+      expect(process.env.MIROIR_TEST_ADMIN_STORE_TYPE).toBe("filesystem");
+    }
+    expect(process.env.MIROIR_TEST_POSTGRES_HOST).toBe("localhost");
+  });
+
+  it("a shell variable that contradicts the profile is kept with a warning (#321)", () => {
+    process.env.MIROIR_TEST_APP_STORE_TYPE = "sql";
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    try {
+      applyIntegrationTestProfile("emulatedServer-filesystem");
+      expect(process.env.MIROIR_TEST_APP_STORE_TYPE).toBe("sql");
+      expect(warn).toHaveBeenCalledWith(
+        "warning: integration test profile emulatedServer-filesystem: MIROIR_TEST_APP_STORE_TYPE=sql is kept, the profile sets filesystem",
+      );
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
+  it("under CI, a shell variable that contradicts the profile is an error (#321)", () => {
+    process.env.MIROIR_TEST_APP_STORE_TYPE = "sql";
+    process.env.CI = "true";
+
+    expect(() => applyIntegrationTestProfile("emulatedServer-filesystem")).toThrow(
+      /MIROIR_TEST_APP_STORE_TYPE=sql is kept, the profile sets filesystem/,
+    );
   });
 });

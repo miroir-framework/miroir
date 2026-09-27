@@ -146,7 +146,7 @@ function expectDeleteMissingAuthorInstanceError(instanceDeletedError: ActionErro
       break;
     case "sql":
       expect(errorMessage).toBe(
-        `could not find entity ${entityUuid} in database schema library, available entities: `,
+        `could not find entity ${entityUuid} in database schema ${libraryDeploymentStorageConfiguration.data.schema}, available entities: `,
       );
       break;
     case "filesystem":

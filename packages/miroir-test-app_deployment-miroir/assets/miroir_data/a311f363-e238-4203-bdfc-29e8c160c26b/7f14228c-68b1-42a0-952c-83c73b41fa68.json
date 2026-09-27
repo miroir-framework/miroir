@@ -5,7 +5,7 @@
   "name": "fn.environment.deriveDeployments",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Deployment configurations derived from an environment definition: live sections on package assets, copy sections in .miroir/<environment>/.",
+  "description": "Deployment configurations derived from an environment definition: live sections on package assets, copy sections in .miroir/<environment>/, database stores named after the environment.",
   "tags": [
     "unit",
     "tools"
@@ -310,6 +310,218 @@
             "application \"library\", section \"admin\": mode \"live\" needs store \"filesystem\", got \"sql\"",
             "application \"library\", section \"model\": mode \"live\" needs store \"filesystem\", got \"sql\"",
             "application \"library\", section \"data\": mode \"live\" needs store \"filesystem\", got \"sql\""
+          ]
+        }
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "a sql application gets schemas named after the environment and the application",
+        "functionRef": {
+          "module": "miroir-core/1_core/environment/Environment",
+          "export": "deriveEnvironmentDeployments"
+        },
+        "arguments": [
+          {
+            "connections": {
+              "postgres": {
+                "host": "localhost",
+                "passwordEnv": "MIROIR_POSTGRES_PASSWORD"
+              }
+            },
+            "applications": {
+              "library": {
+                "package": "miroir-test-app_deployment-library",
+                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                "store": "sql",
+                "mode": "copy",
+                "sections": {
+                  "modelVersion": {}
+                }
+              }
+            }
+          },
+          "test-sql"
+        ],
+        "expectedValue": {
+          "status": "ok",
+          "deployments": [
+            {
+              "applicationKey": "library",
+              "package": "miroir-test-app_deployment-library",
+              "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+              "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              "configuration": {
+                "admin": {
+                  "emulatedServerType": "sql",
+                  "connectionString": "postgres://postgres@localhost:5432/postgres",
+                  "schema": "test_sql_library_admin",
+                  "forceNullOptionalAttributeToUndefined": true
+                },
+                "model": {
+                  "emulatedServerType": "sql",
+                  "connectionString": "postgres://postgres@localhost:5432/postgres",
+                  "schema": "test_sql_library",
+                  "forceNullOptionalAttributeToUndefined": true
+                },
+                "data": {
+                  "emulatedServerType": "sql",
+                  "connectionString": "postgres://postgres@localhost:5432/postgres",
+                  "schema": "test_sql_library",
+                  "forceNullOptionalAttributeToUndefined": true
+                },
+                "modelVersion": {
+                  "emulatedServerType": "sql",
+                  "connectionString": "postgres://postgres@localhost:5432/postgres",
+                  "schema": "test_sql_library_modelVersion",
+                  "forceNullOptionalAttributeToUndefined": true
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "a mongodb application gets databases named after the environment and the application",
+        "functionRef": {
+          "module": "miroir-core/1_core/environment/Environment",
+          "export": "deriveEnvironmentDeployments"
+        },
+        "arguments": [
+          {
+            "connections": {
+              "mongodb": {
+                "url": "mongodb://localhost:27017/"
+              }
+            },
+            "applications": {
+              "library": {
+                "package": "miroir-test-app_deployment-library",
+                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                "store": "mongodb",
+                "mode": "copy"
+              }
+            }
+          },
+          "test-mongodb"
+        ],
+        "expectedValue": {
+          "status": "ok",
+          "deployments": [
+            {
+              "applicationKey": "library",
+              "package": "miroir-test-app_deployment-library",
+              "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+              "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              "configuration": {
+                "admin": {
+                  "emulatedServerType": "mongodb",
+                  "connectionString": "mongodb://localhost:27017/",
+                  "database": "test_mongodb_library_admin"
+                },
+                "model": {
+                  "emulatedServerType": "mongodb",
+                  "connectionString": "mongodb://localhost:27017/",
+                  "database": "test_mongodb_library"
+                },
+                "data": {
+                  "emulatedServerType": "mongodb",
+                  "connectionString": "mongodb://localhost:27017/",
+                  "database": "test_mongodb_library"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "an indexedDb application lives in the state directory of its environment",
+        "functionRef": {
+          "module": "miroir-core/1_core/environment/Environment",
+          "export": "deriveEnvironmentDeployments"
+        },
+        "arguments": [
+          {
+            "applications": {
+              "library": {
+                "package": "miroir-test-app_deployment-library",
+                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                "store": "indexedDb",
+                "mode": "copy",
+                "sections": {
+                  "modelVersion": {}
+                }
+              }
+            }
+          },
+          "test-indexedDb"
+        ],
+        "expectedValue": {
+          "status": "ok",
+          "deployments": [
+            {
+              "applicationKey": "library",
+              "package": "miroir-test-app_deployment-library",
+              "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+              "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              "configuration": {
+                "admin": {
+                  "emulatedServerType": "indexedDb",
+                  "indexedDbName": ".miroir/test-indexedDb/library/indexedDb_admin"
+                },
+                "model": {
+                  "emulatedServerType": "indexedDb",
+                  "indexedDbName": ".miroir/test-indexedDb/library/indexedDb"
+                },
+                "data": {
+                  "emulatedServerType": "indexedDb",
+                  "indexedDbName": ".miroir/test-indexedDb/library/indexedDb"
+                },
+                "modelVersion": {
+                  "emulatedServerType": "indexedDb",
+                  "indexedDbName": ".miroir/test-indexedDb/library/indexedDb_modelVersion"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "a database store needs its connection",
+        "functionRef": {
+          "module": "miroir-core/1_core/environment/Environment",
+          "export": "deriveEnvironmentDeployments"
+        },
+        "arguments": [
+          {
+            "applications": {
+              "library": {
+                "package": "miroir-test-app_deployment-library",
+                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                "store": "sql",
+                "mode": "copy",
+                "sections": {
+                  "data": {
+                    "store": "mongodb"
+                  }
+                }
+              }
+            }
+          },
+          "test-sql"
+        ],
+        "expectedValue": {
+          "status": "error",
+          "errors": [
+            "application \"library\", section \"admin\": store \"sql\" needs connections.postgres",
+            "application \"library\", section \"model\": store \"sql\" needs connections.postgres",
+            "application \"library\", section \"data\": store \"mongodb\" needs connections.mongodb"
           ]
         }
       }

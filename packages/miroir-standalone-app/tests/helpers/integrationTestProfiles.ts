@@ -7,6 +7,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 import { isTestEnvironment } from "miroir-core";
+import { environmentClientConfig, resolveEnvironmentFromFiles } from "miroir-env";
 
 import {
   deriveTestSessionDefaultsFromMiroirConfig,
@@ -56,7 +57,8 @@ export const INTEGRATION_TEST_PROFILES: Record<string, IntegrationTestProfile> =
     name: "emulatedServer-sql",
     miroirConfigFilename: configPath("miroirConfig.test-emulatedServer-sql.json"),
     logConfigFilename: logPath("catch-all.json"),
-    description: "Local default — admin filesystem, miroir + library Postgres",
+    environment: "test-sql",
+    description: "Local default — admin filesystem, miroir + library Postgres (schemas test_sql_*)",
   },
   "emulatedServer-filesystem": {
     name: "emulatedServer-filesystem",
@@ -69,13 +71,15 @@ export const INTEGRATION_TEST_PROFILES: Record<string, IntegrationTestProfile> =
     name: "emulatedServer-indexedDb",
     miroirConfigFilename: configPath("miroirConfig.test-emulatedServer-indexedDb.json"),
     logConfigFilename: logPath("catch-all.json"),
-    description: "Miroir + library IndexedDB",
+    environment: "test-indexedDb",
+    description: "Miroir + library IndexedDB, in .miroir/test-indexedDb",
   },
   "emulatedServer-mongodb": {
     name: "emulatedServer-mongodb",
     miroirConfigFilename: configPath("miroirConfig.test-emulatedServer-mongodb.json"),
     logConfigFilename: logPath("catch-all.json"),
-    description: "Miroir + library MongoDB",
+    environment: "test-mongodb",
+    description: "Miroir + library MongoDB (databases test_mongodb_*)",
   },
   "ci-emulatedServer-host-sql": {
     name: "ci-emulatedServer-host-sql",
@@ -162,7 +166,11 @@ export function resolveTransformerDefaultsForProfile(
 ): IntegrationTestTransformerDefaults {
   let derived: Partial<IntegrationTestTransformerDefaults> = {};
   try {
-    const config = loadMiroirConfigJsonFromProfilePath(profile.miroirConfigFilename);
+    const config = profile.environment
+      ? environmentClientConfig(
+          resolveEnvironmentFromFiles({ cwd: resolveRepoRoot(), env: { MIROIR_ENV: profile.environment } }),
+        )
+      : loadMiroirConfigJsonFromProfilePath(profile.miroirConfigFilename);
     derived = deriveTestSessionDefaultsFromMiroirConfig(config);
   } catch {
     derived = {};
@@ -170,29 +178,46 @@ export function resolveTransformerDefaultsForProfile(
   return { ...derived, ...profile.transformerDefaults };
 }
 
-function applyEnvVar(key: string, value: string, respectExistingEnv: boolean): void {
-  if (respectExistingEnv && process.env[key]) {
-    return;
+/** Variables that select stores: a shell value that differs from the profile's is a deviation (#321). */
+const STORE_SELECTING_VARIABLES = new Set([
+  "MIROIR_ENV",
+  "VITE_MIROIR_TEST_CONFIG_FILENAME",
+  "MIROIR_TEST_APP_STORE_TYPE",
+  "MIROIR_TEST_ADMIN_STORE_TYPE",
+  "MIROIR_TEST_POSTGRES_HOST",
+  "MIROIR_TEST_ADMIN_SQL_SCHEMA",
+]);
+
+function isCi(env: NodeJS.ProcessEnv): boolean {
+  return Boolean(env.CI) && env.CI !== "false" && env.CI !== "0";
+}
+
+/** Sets `key` unless it is already set and respected; returns the deviation when the kept value differs. */
+function applyEnvVar(key: string, value: string, respectExistingEnv: boolean): string | undefined {
+  const existing = process.env[key];
+  if (respectExistingEnv && existing) {
+    return existing !== value && STORE_SELECTING_VARIABLES.has(key)
+      ? `${key}=${existing} is kept, the profile sets ${value}`
+      : undefined;
   }
   process.env[key] = value;
+  return undefined;
 }
 
 function applyTransformerDefaults(
   defaults: IntegrationTestTransformerDefaults,
   respectExistingEnv: boolean,
-): void {
-  if (defaults.appStoreType) {
-    applyEnvVar("MIROIR_TEST_APP_STORE_TYPE", defaults.appStoreType, respectExistingEnv);
-  }
-  if (defaults.adminStoreType) {
-    applyEnvVar("MIROIR_TEST_ADMIN_STORE_TYPE", defaults.adminStoreType, respectExistingEnv);
-  }
-  if (defaults.postgresHost) {
-    applyEnvVar("MIROIR_TEST_POSTGRES_HOST", defaults.postgresHost, respectExistingEnv);
-  }
-  if (defaults.adminSqlSchema) {
-    applyEnvVar("MIROIR_TEST_ADMIN_SQL_SCHEMA", defaults.adminSqlSchema, respectExistingEnv);
-  }
+): (string | undefined)[] {
+  return [
+    defaults.appStoreType &&
+      applyEnvVar("MIROIR_TEST_APP_STORE_TYPE", defaults.appStoreType, respectExistingEnv),
+    defaults.adminStoreType &&
+      applyEnvVar("MIROIR_TEST_ADMIN_STORE_TYPE", defaults.adminStoreType, respectExistingEnv),
+    defaults.postgresHost &&
+      applyEnvVar("MIROIR_TEST_POSTGRES_HOST", defaults.postgresHost, respectExistingEnv),
+    defaults.adminSqlSchema &&
+      applyEnvVar("MIROIR_TEST_ADMIN_SQL_SCHEMA", defaults.adminSqlSchema, respectExistingEnv),
+  ];
 }
 
 export function applyIntegrationTestProfile(
@@ -212,28 +237,34 @@ export function applyIntegrationTestProfile(
   }
 
   const respectExistingEnv = options.respectExistingEnv !== false;
+  const deviations: (string | undefined)[] = [];
 
   if (profile.environment) {
     // only another test environment may take precedence: tests never run on dev or local
-    applyEnvVar(
-      "MIROIR_ENV",
-      profile.environment,
-      respectExistingEnv && isTestEnvironment(process.env.MIROIR_ENV ?? ""),
+    deviations.push(
+      applyEnvVar(
+        "MIROIR_ENV",
+        profile.environment,
+        respectExistingEnv && isTestEnvironment(process.env.MIROIR_ENV ?? ""),
+      ),
     );
   } else if (!respectExistingEnv) {
     // an environment left by a previous profile would win over this profile's configuration file
     delete process.env.MIROIR_ENV;
   }
-  applyEnvVar(
-    "VITE_MIROIR_TEST_CONFIG_FILENAME",
-    profile.miroirConfigFilename,
-    respectExistingEnv,
+  deviations.push(
+    applyEnvVar("VITE_MIROIR_TEST_CONFIG_FILENAME", profile.miroirConfigFilename, respectExistingEnv),
+    applyEnvVar("VITE_MIROIR_LOG_CONFIG_FILENAME", profile.logConfigFilename, respectExistingEnv),
+    ...applyTransformerDefaults(resolveTransformerDefaultsForProfile(profile), respectExistingEnv),
   );
-  applyEnvVar("VITE_MIROIR_LOG_CONFIG_FILENAME", profile.logConfigFilename, respectExistingEnv);
 
-  const transformerDefaults = resolveTransformerDefaultsForProfile(profile);
-  if (Object.keys(transformerDefaults).length > 0) {
-    applyTransformerDefaults(transformerDefaults, respectExistingEnv);
+  const kept = deviations.filter((deviation): deviation is string => Boolean(deviation));
+  if (kept.length > 0) {
+    const message = `integration test profile ${profile.name}: ${kept.join("; ")}`;
+    if (isCi(process.env)) {
+      throw new Error(`${message} (CI runs use the profile's values only: unset these variables)`);
+    }
+    console.warn(`warning: ${message}`);
   }
 
   return profile;

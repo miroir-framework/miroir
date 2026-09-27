@@ -6,7 +6,12 @@ import {
   type LoggerInterface,
   type LoggerOptions,
 } from "miroir-core";
-import { environmentClientConfig, resolveEnvironmentFromFiles, seedEnvironmentState } from "miroir-env";
+import {
+  environmentClientConfig,
+  missingConnectionPasswords,
+  resolveEnvironmentFromFiles,
+  seedEnvironmentState,
+} from "miroir-env";
 import path from "path";
 import { cleanLevel } from "../3_controllers/constants";
 import { packageName } from "../../src/constants";
@@ -120,12 +125,16 @@ function testEnvironmentMiroirConfig(env: NodeJS.ProcessEnv): MiroirConfigClient
     return undefined;
   }
   const resolved = resolveEnvironmentFromFiles({ cwd: resolveRepoRoot(), env: { MIROIR_ENV: name } });
+  const runEnv = { ...process.env, ...env };
   if (!seededTestEnvironments.has(name)) {
     const seed = seedEnvironmentState(resolved, { reseed: true });
     seededTestEnvironments.add(name);
     log.info(`loadTestConfigFiles: environment ${name} seeded in .miroir/${name}:`, seed.seeded.join(", "));
+    for (const warning of missingConnectionPasswords(resolved, runEnv)) {
+      log.warn(`loadTestConfigFiles: ${warning}`);
+    }
   }
-  return environmentClientConfig(resolved);
+  return environmentClientConfig(resolved, runEnv);
 }
 
 // ################################################################################################

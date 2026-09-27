@@ -96,17 +96,68 @@ export function environmentServerConfig(resolved: ResolvedEnvironment): MiroirCo
   return config as MiroirConfigServer;
 }
 
+/** Whether an installed application of the environment has a section on the given store. */
+function usesStore(resolved: ResolvedEnvironment, store: string): boolean {
+  return resolved.deployments.some((deployment) =>
+    Object.values(deployment.configuration).some((section) => section?.emulatedServerType === store),
+  );
+}
+
+/**
+ * Warnings about database passwords a run of the environment needs and cannot find: the
+ * definition names the variable (`connections.postgres.passwordEnv`), never the password.
+ */
+export function missingConnectionPasswords(resolved: ResolvedEnvironment, env: NodeJS.ProcessEnv): string[] {
+  const passwordEnv = resolved.environment.connections?.postgres?.passwordEnv;
+  if (!passwordEnv || env[passwordEnv] || !usesStore(resolved, "sql")) {
+    return [];
+  }
+  return [
+    `environment "${resolved.name}": ${passwordEnv} is not set, PostgreSQL connections go without a password (PGPASSWORD or ~/.pgpass may still provide one)`,
+  ];
+}
+
+/** The deployment configuration with the Postgres password from `connections.postgres.passwordEnv`. */
+function withConnectionPasswords(
+  resolved: ResolvedEnvironment,
+  configuration: StoreUnitConfiguration,
+  env: NodeJS.ProcessEnv,
+): StoreUnitConfiguration {
+  const passwordEnv = resolved.environment.connections?.postgres?.passwordEnv;
+  const password = passwordEnv ? env[passwordEnv] : undefined;
+  if (!password) {
+    return configuration;
+  }
+  const sections = Object.entries(configuration).map(([section, store]) => [
+    section,
+    store?.emulatedServerType === "sql"
+      ? {
+          ...store,
+          connectionString: store.connectionString.replace(
+            /^(postgres(?:ql)?:\/\/[^:@/]+)@/,
+            `$1:${encodeURIComponent(password)}@`,
+          ),
+        }
+      : store,
+  ]);
+  return Object.fromEntries(sections) as StoreUnitConfiguration;
+}
+
 /**
  * The client configuration of an environment run with an emulated server (tests): the stores of
  * every installed application, opened in process; the filesystem root is the repository root.
+ * `env` provides the database passwords the definition names.
  */
-export function environmentClientConfig(resolved: ResolvedEnvironment): MiroirConfigClient {
+export function environmentClientConfig(resolved: ResolvedEnvironment, env: NodeJS.ProcessEnv = {}): MiroirConfigClient {
   const rootApiUrl = resolved.environment.server?.rootApiUrl;
   if (!rootApiUrl) {
     throw new EnvironmentError(`environment "${resolved.name}" has no server.rootApiUrl: it cannot emulate a server`);
   }
   const deploymentStorageConfig: Record<string, StoreUnitConfiguration> = Object.fromEntries(
-    resolved.deployments.map((deployment) => [deployment.deployment, deployment.configuration as StoreUnitConfiguration]),
+    resolved.deployments.map((deployment) => [
+      deployment.deployment,
+      withConnectionPasswords(resolved, deployment.configuration as StoreUnitConfiguration, env),
+    ]),
   );
   const config = {
     miroirConfigType: "client",

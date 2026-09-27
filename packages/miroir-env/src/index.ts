@@ -16,6 +16,7 @@ export {
   environmentClientConfig,
   environmentServerConfig,
   GENERATED_ADMIN_ENTITIES,
+  missingConnectionPasswords,
   seedEnvironmentState,
   type SeedReport,
 } from "./environmentState.js";

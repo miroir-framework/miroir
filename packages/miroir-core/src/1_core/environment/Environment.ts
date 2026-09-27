@@ -97,7 +97,26 @@ function sectionDirectory(
   return section === "admin" ? state : `${state}/${section}`;
 }
 
+/** A SQL schema, MongoDB database or IndexedDB name part: `test-sql`, `miroir` → `test_sql_miroir`. */
+function storeIdentifier(environmentName: string, applicationKey: string): string {
+  return `${environmentName}_${applicationKey}`.replace(/[^A-Za-z0-9_]/g, "_");
+}
+
+/** Postgres connection without password: the run adds it from `passwordEnv` (miroir-env). */
+function postgresConnectionString(postgres: NonNullable<NonNullable<MiroirEnvironment["connections"]>["postgres"]>): string {
+  return `postgres://${postgres.user ?? "postgres"}@${postgres.host}:${postgres.port ?? 5432}/${postgres.database ?? "postgres"}`;
+}
+
+/**
+ * Where a section lives. Filesystem sections are directories (package assets when `live`,
+ * `.miroir/<environment>/<application>/<section>` when `copy`). The other stores are always copies,
+ * named after the environment and the application: SQL schema and MongoDB database
+ * `<environment>_<application>`, IndexedDB `.miroir/<environment>/<application>/indexedDb`; the
+ * modelVersion and admin sections add `_modelVersion` and `_admin` (an admin store opens, and on
+ * deletion may drop, a database of its own).
+ */
 function sectionConfiguration(
+  environment: MiroirEnvironment,
   environmentName: string,
   applicationKey: string,
   application: MiroirEnvironmentApplication,
@@ -106,13 +125,42 @@ function sectionConfiguration(
   section: EnvironmentSectionName,
 ): StoreSectionConfiguration | string {
   const where = `application "${applicationKey}", section "${section}"`;
-  if (store !== "filesystem") {
-    return `${where}: store "${store}" is not supported yet (filesystem only)`;
+  const suffix = section === "modelVersion" ? "_modelVersion" : section === "admin" ? "_admin" : "";
+  switch (store) {
+    case "filesystem":
+      return {
+        emulatedServerType: "filesystem",
+        directory: sectionDirectory(environmentName, applicationKey, application, mode, section),
+      };
+    case "sql": {
+      const postgres = environment.connections?.postgres;
+      if (!postgres) {
+        return `${where}: store "sql" needs connections.postgres`;
+      }
+      return {
+        emulatedServerType: "sql",
+        connectionString: postgresConnectionString(postgres),
+        schema: `${storeIdentifier(environmentName, applicationKey)}${suffix}`,
+        forceNullOptionalAttributeToUndefined: true,
+      };
+    }
+    case "mongodb": {
+      const mongodb = environment.connections?.mongodb;
+      if (!mongodb) {
+        return `${where}: store "mongodb" needs connections.mongodb`;
+      }
+      return {
+        emulatedServerType: "mongodb",
+        connectionString: mongodb.url,
+        database: `${storeIdentifier(environmentName, applicationKey)}${suffix}`,
+      };
+    }
+    case "indexedDb":
+      return {
+        emulatedServerType: "indexedDb",
+        indexedDbName: `${ENVIRONMENT_STATE_ROOT}/${environmentName}/${applicationKey}/indexedDb${suffix}`,
+      };
   }
-  return {
-    emulatedServerType: "filesystem",
-    directory: sectionDirectory(environmentName, applicationKey, application, mode, section),
-  };
 }
 
 /**
@@ -139,7 +187,7 @@ export function deriveEnvironmentDeployments(
         errors.push(`application "${applicationKey}", section "${section}": mode "live" needs store "filesystem", got "${store}"`);
         continue;
       }
-      const result = sectionConfiguration(environmentName, applicationKey, application, mode, store, section);
+      const result = sectionConfiguration(environment, environmentName, applicationKey, application, mode, store, section);
       if (typeof result === "string") {
         errors.push(result);
         continue;

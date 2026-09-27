@@ -62,12 +62,37 @@ export async function beforeEachTest(
   }
 }
 
-/** Node CLI profiles use Level under `tests/tmp`; browser UI profiles use short IndexedDB names. */
+/**
+ * #321: `.miroir/<environment>` when the template store is a section of a test environment
+ * (`.miroir/<environment>/<application>/…`), so test applications live next to it.
+ */
+function environmentStateDirectory(
+  libraryDeploymentStorageConfiguration: StoreUnitConfiguration,
+): string | undefined {
+  const template = libraryDeploymentStorageConfiguration.model;
+  const location =
+    template.emulatedServerType === "filesystem"
+      ? template.directory
+      : template.emulatedServerType === "indexedDb"
+        ? template.indexedDbName
+        : undefined;
+  const [root, environment] = location?.split("/") ?? [];
+  return root === ENVIRONMENT_STATE_ROOT && environment ? `${root}/${environment}` : undefined;
+}
+
+/**
+ * Node CLI profiles use Level under `tests/tmp`, or next to their template in a test environment
+ * (`.miroir/<environment>/<application>/indexedDb`); browser UI profiles use short IndexedDB names.
+ */
 export function resolveEphemeralIndexedDbBaseName(
   libraryDeploymentStorageConfiguration: StoreUnitConfiguration,
   testApplicationName: string,
 ): string {
   const template = libraryDeploymentStorageConfiguration.model;
+  const environmentDirectory = environmentStateDirectory(libraryDeploymentStorageConfiguration);
+  if (environmentDirectory) {
+    return `${environmentDirectory}/${testApplicationName}/indexedDb`;
+  }
   if (
     template.emulatedServerType === "indexedDb" &&
     template.indexedDbName.includes(`${STANDALONE_APP_TESTS_TMP}/`)
@@ -90,20 +115,6 @@ function usesStandaloneAppTestsTmpLayout(
   return false;
 }
 
-/**
- * #321: `.miroir/<environment>` when the template store is a section of a test environment
- * (`.miroir/<environment>/<application>/<section>`), so test applications live next to it.
- */
-function environmentStateDirectory(
-  libraryDeploymentStorageConfiguration: StoreUnitConfiguration,
-): string | undefined {
-  const template = libraryDeploymentStorageConfiguration.model;
-  if (template.emulatedServerType !== "filesystem") {
-    return undefined;
-  }
-  const [root, environment] = template.directory.split("/");
-  return root === ENVIRONMENT_STATE_ROOT && environment ? `${root}/${environment}` : undefined;
-}
 
 const POSTGRES_IDENTIFIER_MAX = 63;
 const MODEL_VERSION_SUFFIX_LENGTH = "_modelVersion".length;
@@ -213,44 +224,26 @@ export function testApplicationStorageConfiguration(
       break;
     }
     case "sql": {
+      // #321: same server as the template (a test environment names its host and password)
+      const connectionString =
+        libraryDeploymentStorageConfiguration.model.connectionString ??
+        "postgres://postgres:postgres@localhost:5432/postgres";
       testDeploymentStorageConfiguration = {
         admin: libraryDeploymentStorageConfiguration.admin,
-        model: {
-          emulatedServerType: "sql",
-          connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-          schema: storeName,
-        },
-        data: {
-          emulatedServerType: "sql",
-          connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-          schema: storeName,
-        },
-        modelVersion: {
-          emulatedServerType: "sql",
-          connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-          schema: `${storeName}_modelVersion`,
-        },
+        model: { emulatedServerType: "sql", connectionString, schema: storeName },
+        data: { emulatedServerType: "sql", connectionString, schema: storeName },
+        modelVersion: { emulatedServerType: "sql", connectionString, schema: `${storeName}_modelVersion` },
       };
       break;
     }
     case "mongodb": {
+      const connectionString =
+        libraryDeploymentStorageConfiguration.model.connectionString ?? "mongodb://localhost:27017";
       testDeploymentStorageConfiguration = {
         admin: libraryDeploymentStorageConfiguration.admin,
-        model: {
-          emulatedServerType: "mongodb",
-          connectionString: "mongodb://localhost:27017",
-          database: storeName,
-        },
-        data: {
-          emulatedServerType: "mongodb",
-          connectionString: "mongodb://localhost:27017",
-          database: storeName,
-        },
-        modelVersion: {
-          emulatedServerType: "mongodb",
-          connectionString: "mongodb://localhost:27017",
-          database: `${storeName}_modelVersion`,
-        },
+        model: { emulatedServerType: "mongodb", connectionString, database: storeName },
+        data: { emulatedServerType: "mongodb", connectionString, database: storeName },
+        modelVersion: { emulatedServerType: "mongodb", connectionString, database: `${storeName}_modelVersion` },
       };
       break;
     }

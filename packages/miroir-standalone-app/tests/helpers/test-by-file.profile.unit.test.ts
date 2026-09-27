@@ -13,6 +13,7 @@ const ENV_KEYS = [
   "MIROIR_TEST_STORAGE",
   "MIROIR_TEST_PROFILE",
   "MIROIR_ENV",
+  "CI",
 ] as const;
 
 describe("testByFileLauncher profile (Gap D5)", () => {
