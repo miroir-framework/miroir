@@ -5,8 +5,10 @@ import { fileURLToPath, URL } from "url";
 import { createRequire } from "module";
 import { log } from "console";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Not `__filename` / `__dirname`: the esbuild bundle (scripts/bundle-main.mjs) declares those for
+// the CommonJS code it bundles.
+const mainFilename = fileURLToPath(import.meta.url);
+const mainDirname = path.dirname(mainFilename);
 // Store factories and domain-controller setup are handled inside the IPC server.
 // The renderer process cannot reach Node.js / filesystem APIs, so all persistence
 // operations are forwarded from the renderer to this main process through IPC.
@@ -14,7 +16,7 @@ import { setupIpcServer } from "./ipcServerSetup.js";
 
 // Resolve TLS certificate paths (same defaults as miroir-server and vite.config.js).
 // mkcert-generated certs are placed in <repo-root>/certs/ by scripts/setup-https.sh(.ps1).
-const _defaultCertsDir = path.resolve(__dirname, '../../../certs');
+const _defaultCertsDir = path.resolve(mainDirname, '../../../certs');
 const _certFile = process.env.MIROIR_TLS_CERT ?? path.join(_defaultCertsDir, 'localhost.pem');
 const _keyFile  = process.env.MIROIR_TLS_KEY  ?? path.join(_defaultCertsDir, 'localhost-key.pem');
 const _certsReady = fs.existsSync(_certFile) && fs.existsSync(_keyFile);
@@ -47,7 +49,7 @@ class MainWindow {
   private getAppDistPath(): string {
     return app.isPackaged
       ? path.join(process.resourcesPath, "app")
-      : path.join(__dirname, "../../miroir-standalone-app/dist");
+      : path.join(mainDirname, "../../miroir-standalone-app/dist");
   }
 
   private setupEventHandlers(): void {
@@ -110,7 +112,7 @@ class MainWindow {
       backgroundColor: '#fff',
       icon: this.getIconPath(),
       webPreferences: {
-        preload: path.join(__dirname, "preload.js"),
+        preload: path.join(mainDirname, "preload.js"),
         nodeIntegration: false,
         contextIsolation: true,
         webSecurity: true,
@@ -155,7 +157,7 @@ class MainWindow {
     // Initialise store factories + domain controller in the main process and register the IPC
     // handler BEFORE loading the renderer URL.  The renderer will call back via IPC once it
     // starts initialising Miroir (store-management and persistence actions).
-    await setupIpcServer(__dirname);
+    await setupIpcServer(mainDirname);
     log("Starting miroir standalone app - IPC server ready");
 
     if (this.isDev) {
@@ -175,7 +177,7 @@ class MainWindow {
   private getIconPath(): string {
     // Return path to icon file
     // const iconPath = path.join(__dirname, "../assets/miroir-logo.png");
-    const iconPath = path.join(__dirname, "./resources/app/assets/miroir-logo-4ec98748.png");
+    const iconPath = path.join(mainDirname, "./resources/app/assets/miroir-logo-4ec98748.png");
     return iconPath;
   }
 

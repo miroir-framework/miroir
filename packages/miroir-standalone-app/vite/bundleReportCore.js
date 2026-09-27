@@ -201,6 +201,74 @@ export function condensedChain(chain, packageOfPath) {
 }
 
 /**
+ * `path` resolved against the absolute directory `base`, with forward slashes; paths of an
+ * esbuild namespace (`<runtime>`, `json:…`) are returned as they are.
+ * @param {string} base
+ * @param {string} path
+ */
+function resolveFrom(base, path) {
+  if (path.startsWith("<") || /^[a-z][a-z-]+:/i.test(path)) {
+    return path;
+  }
+  const normalized = path.replace(/\\/g, "/");
+  const joined = /^(\/|[A-Za-z]:\/)/.test(normalized) ? normalized : `${base.replace(/\\/g, "/")}/${normalized}`;
+  const [head, ...rest] = joined.split("/");
+  const segments = [];
+  for (const segment of rest) {
+    if (segment === "..") {
+      segments.pop();
+    } else if (segment !== "." && segment !== "") {
+      segments.push(segment);
+    }
+  }
+  return [head, ...segments].join("/");
+}
+
+/**
+ * The chunks (without sizes) and module graph of an esbuild build, from its metafile, in the
+ * shape buildBundleReport takes. Metafile paths are relative to esbuild's working directory.
+ * @param {{ inputs: Record<string, { imports: { path: string, kind: string, external?: boolean }[] }>,
+ *   outputs: Record<string, { entryPoint?: string, imports: { path: string, kind: string, external?: boolean }[],
+ *   inputs: Record<string, { bytesInOutput: number }> }> }} metafile
+ * @param {string} workingDir  absolute
+ * @param {string} outDir  absolute; chunk files are given relative to it
+ * @returns {{ chunks: Omit<ChunkInput, "rawBytes" | "gzipBytes">[], graph: ModuleGraph, externals: string[] }}
+ *   `externals`: the import specifiers esbuild left outside the bundle
+ */
+export function reportInputFromEsbuildMetafile(metafile, workingDir, outDir) {
+  const absolute = (path) => resolveFrom(workingDir, path);
+  const outPrefix = `${outDir.replace(/\\/g, "/").replace(/\/$/, "")}/`;
+  const outFile = (path) => absolute(path).replace(outPrefix, "");
+  /** @type {ModuleGraph} */
+  const graph = new Map();
+  const externals = new Set();
+  for (const [path, input] of Object.entries(metafile.inputs)) {
+    const internal = input.imports.filter((entry) => !entry.external);
+    for (const entry of input.imports.filter((candidate) => candidate.external && !candidate.path.startsWith("<"))) {
+      externals.add(entry.path);
+    }
+    graph.set(absolute(path), {
+      importedIds: internal.filter((entry) => entry.kind !== "dynamic-import").map((entry) => absolute(entry.path)),
+      dynamicallyImportedIds: internal.filter((entry) => entry.kind === "dynamic-import").map((entry) => absolute(entry.path)),
+    });
+  }
+  const chunks = Object.entries(metafile.outputs)
+    .filter(([path]) => path.endsWith(".js"))
+    .map(([path, output]) => ({
+      file: outFile(path),
+      name: path.replace(/^.*\//, "").replace(/\.js$/, ""),
+      isEntry: Boolean(output.entryPoint),
+      imports: output.imports
+        .filter((entry) => !entry.external && entry.kind === "import-statement")
+        .map((entry) => outFile(entry.path)),
+      modules: Object.fromEntries(
+        Object.entries(output.inputs).map(([input, { bytesInOutput }]) => [absolute(input), bytesInOutput]),
+      ),
+    }));
+  return { chunks, graph, externals: [...externals].sort() };
+}
+
+/**
  * @typedef {{
  *   file: string, name: string, isEntry: boolean, imports: readonly string[],
  *   modules: Record<string, number>, rawBytes: number, gzipBytes: number,

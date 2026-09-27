@@ -109,7 +109,7 @@ export function miroirBundleReport({ root, app, lazyChunksShown = 15, packagesSh
       mkdirSync(path.dirname(reportPath), { recursive: true });
       writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`);
       const print = (line) => (logger ? logger.info(line) : console.log(line));
-      for (const line of reportLines(report, { context, outDir, lazyChunksShown, packagesShown })) {
+      for (const line of bundleReportLines(report, { context, outDir, lazyChunksShown, packagesShown, treemap: true })) {
         print(line);
       }
     },
@@ -130,15 +130,22 @@ const kB = (bytes) =>
 /**
  * The console table: the chunks loaded with the page, then the largest lazy chunks, each with
  * its largest packages and the chain that brings them in; then the findings.
+ * @param {ReturnType<typeof buildBundleReport>} report
+ * @param {{ context: import("./bundleReportCore.js").AttributionContext, outDir: string,
+ *   reportFile?: string, lazyChunksShown?: number, packagesShown?: number, treemap?: boolean }} options
+ * @returns {string[]}
  */
-function reportLines(report, { context, outDir, lazyChunksShown, packagesShown }) {
+export function bundleReportLines(
+  report,
+  { context, outDir, reportFile = BUNDLE_REPORT_FILE, lazyChunksShown = 15, packagesShown = 5, treemap = false },
+) {
   const appDir = context.workspaces.find((workspace) => workspace.name === context.app)?.dir;
   const shortPath = (step) => (appDir && step.startsWith(`${appDir}/`) ? step.slice(appDir.length + 1) : step);
   const relativeOut = path.relative(process.cwd(), outDir) || ".";
   const { totals } = report;
   const lines = [
     "",
-    `Bundle report (#326): ${path.join(relativeOut, BUNDLE_REPORT_FILE)}, treemap ${path.join(relativeOut, TREEMAP_FILE)}`,
+    `Bundle report (#326): ${path.join(relativeOut, reportFile)}${treemap ? `, treemap ${path.join(relativeOut, TREEMAP_FILE)}` : ""}`,
     `  loaded with the page: ${totals.eager.chunks} chunks, ${kB(totals.eager.rawBytes)}, gzip ${kB(totals.eager.gzipBytes)}; whole build: ${totals.chunks} chunks, ${kB(totals.rawBytes)}, gzip ${kB(totals.gzipBytes)}`,
     "  Per chunk: its largest packages, with their size before minification and the import chain from this app's code.",
   ];

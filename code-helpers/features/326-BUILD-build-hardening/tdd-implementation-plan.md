@@ -9,7 +9,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/326
 Working branches: PR 1 `claude/build-hardening-81mz9d`, PR 2 `claude/build-hardening-bundles` (D17), both from `_integration`
 
-**Resume note:** PR 1 (Slices 0–9 and 7b) DONE 2026-09-27 on `claude/build-hardening-81mz9d` (PR #334). PR 2 on `claude/build-hardening-bundles`, branched from PR 1's head: Slices 10 to 12 DONE; next: Slice 13. Lockfiles are regenerated with npm 11 and `--before` (Slice 4 realization).
+**Resume note:** PR 1 (Slices 0–9 and 7b) DONE 2026-09-27 on `claude/build-hardening-81mz9d` (PR #334). PR 2 on `claude/build-hardening-bundles`, branched from PR 1's head: Slices 10 to 13 DONE; next: Slice 14. Lockfiles are regenerated with npm 11 and `--before` (Slice 4 realization).
 
 ---
 
@@ -40,7 +40,7 @@ This plan does **not** cut bundle size (D19: separate issue opened in Slice 17 f
 | 10 | 2 | Vendor sourcemaps restored | ✅ | `bundleSourcemaps.326.phase10.unit.test.ts` |
 | 11 | 2 | Tracer: the build prints and writes the attribution report | ✅ | `bundleReport.326.phase11.unit.test.ts` + `bundleReportCore.326.phase11.unit.test.ts` |
 | 12 | 2 | Allowlist and eager budget guards | ✅ | `test_check_bundle_policy.py` + real report exits 0 |
-| 13 | 2 | Electron main bundled with esbuild, traced and guarded | ⬜ | esbuild metafile report + `electron-builder --dir` content check |
+| 13 | 2 | Electron main bundled with esbuild, traced and guarded | ✅ | esbuild metafile report + `electron-builder --dir` content check |
 | 14 | 2 | Bundle guards run on PRs | ⬜ | `bundle` job in `pr-checks.yml` |
 | 15 | 2 | Sourcemaps kept out of the Electron package | ⬜ | asar / resources listing has no `.map` |
 | 16 | 2 | On-demand coverage tour | ⬜ | `coverage-report.json` from a real tour |
@@ -771,7 +771,7 @@ python scripts/check_bundle_policy.py packages/miroir-standalone-app/dist/.vite/
 
 ## Slice 13 — Electron main bundled with esbuild, traced and guarded
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -804,6 +804,18 @@ xvfb-run -a release/linux-unpacked/miroir-standalone-app-electron --no-sandbox  
 ```
 
 ### Realization
+
+- `packages/miroir-standalone-app-electron/scripts/bundle-main.mjs` (esbuild 0.25.12, pinned devDependency; about 4 s): `src/main.ts` → `dist/src/main.js` (ESM, with a banner defining `require`, `__filename` and `__dirname` for the bundled CommonJS code) and `src/preload.ts` → `dist/src/preload.js` (CommonJS, as a sandboxed preload needs), platform node, `keepNames`, sourcemaps, metafile. `npm run build` is now `tsc --noEmit -p tsconfig.json && node scripts/bundle-main.mjs`; `build-main` and `build-preload` are gone (`start-dev.sh` / `.bat` call `build-electron`, unchanged).
+- Externals (`EXTERNALS` in the script, each in `dependencies` so electron-builder ships it): `electron`; `@cursor/sdk` (native binaries, located at run time by `assertCursorSdkPackaged`; esbuild cannot resolve its internals either); `classic-level` (native, found by `node-gyp-build` next to its own files); `pg` (sequelize loads its dialect with a computed `require`, so esbuild never sees it). `electron-squirrel-startup` stays in `dependencies`: `main.ts` requires it at run time through `createRequire`. Every workspace package, `express`, `@types/*`, `electron` and `electron-builder` are `devDependencies`; `diff` and `http-proxy-middleware` were unused and removed. The optional mongodb drivers (`kerberos`, `snappy`, `@mongodb-js/zstd`, `mongodb-client-encryption`, `@aws-sdk/credential-providers`, `gcp-metadata`) are not installed; esbuild leaves their `require` in a `try` outside the bundle, where it fails and is caught as before.
+- `bundleReportCore.js` gained `reportInputFromEsbuildMetafile(metafile, workingDir, outDir)`: chunks (one per `.js` output, `entryPoint` → entry), module graph (`dynamic-import` edges apart), and the specifiers left outside the bundle. The script adds file sizes, calls `buildBundleReport`, writes `dist/bundle-report.json` with `externals` (the configured list plus the non-built-in specifiers esbuild left out) and prints the standalone table through `bundleReportLines`, now exported from `bundleReportPlugin.js`.
+- **Deviations:**
+  - `main.ts` read `__dirname` / `__filename` computed from `import.meta.url`; the banner declares the same names, so esbuild renamed them. They are now `mainDirname` / `mainFilename`.
+  - `react` and `react-dom` are in the main bundle, through `miroir-localcache-redux` → `react-redux`. The RED test therefore checks for no `@mui/*`, `@copilotkit/react-*` or `@testing-library/*`, and leaves React to the size issue (Slice 17). The Electron policy forbids the same three globs.
+  - The RED test does not run the guard (vitest does not call Python); the guard runs in the Validation below and, from Slice 14, in CI.
+- `packages/miroir-standalone-app-electron/bundle-policy.json` via `--init`: 263 packages, all `eager` (the main process loads its whole bundle), gzip baseline 4,749,138 bytes (main.js 29.4 MB raw); `forbiddenEager` `@testing-library/*`, `@mui/*`, `@copilotkit/react-*`. Largest packages (rendered bytes, before gzip): `miroir-test-app_deployment-miroir` 4.2 MB, `miroir-store-mongodb` 2.9 MB, `miroir-core` 2.1 MB, `iconv-lite` 1.6 MB, `zod` 1.3 MB, `react-dom` 1.2 MB, `sequelize` 1.1 MB, `mongodb` 1.0 MB.
+- Package content (`electron-builder --dir --linux -c.npmRebuild=false`; the cloud proxy blocks the Electron headers download that the native rebuild needs): `app.asar` 673 MB → 108 MB, 1,714 entries, no `node_modules/react`. What remains: `main.js` 29 MB, `main.js.map` 52 MB (Slice 15), `bundle-report.json`, and 44 `node_modules` directories, the externals and their dependencies (`@cursor/sdk` and `@cursor/sdk-linux-x64` the largest, `classic-level`, `pg`).
+- Smoke start: the packaged app under `xvfb-run` prints `IPC server ready`, listens on 127.0.0.1:3080, and the renderer opens its stores and runs queries. The main process logs 12 `could not find controller for deployment` errors from `refreshLocalCachesForDeployedApplications` (MCP setup, before any store is opened); the pre-slice `tsc` build, started the same way from a worktree, logs the same 12. The only new line is a `punycode` deprecation warning: the bundle evaluates `node-fetch` 2 (`miroir-ai` → `openai` → `node-fetch` → `whatwg-url` 5 → `tr46` 0.0.3, which requires the built-in `punycode`) at start, which the unbundled run did not.
+- Tests: `electronBundle.326.phase13.unit.test.ts` 4/4 (two entry chunks, the four stores and `express` bundled, no browser UI library, externals); `bundleReportCore.326.phase11.unit.test.ts` gained 4 metafile cases (16/16); `bundleReport.326.phase11` 6/6 and `bundleSourcemaps.326.phase10` after rebuilding the standalone app, whose guard still passes with 0 violations. `tsc` on the Electron package, ESLint on the changed files, `check_dependency_policy.py` and `scripts/tests` (138 passed) clean.
 
 ---
 

@@ -1,6 +1,7 @@
 /**
  * Issue #326 Slice 11: the attribution rules of the bundle report (vite/bundleReportCore.js), on
  * module ids and import edges copied from the module graph of a real standalone build.
+ * Slice 13: the same report from an esbuild metafile (the Electron main process build).
  *
  * Not reachable through MiroirTest: it tests the build tooling. Needs no build:
  * ```bash
@@ -17,6 +18,7 @@ import {
   importerLinks,
   npmPackageOfId,
   npmPackagesOfId,
+  reportInputFromEsbuildMetafile,
 } from "../../../../vite/bundleReportCore.js";
 import { resolveManualChunk } from "../../../../vite/manualChunks.js";
 
@@ -187,5 +189,91 @@ describe("bundleReportCore.326.phase11: report", () => {
         via: "packages/miroir-standalone-app/src/index.tsx → miroir-store-indexedDb",
       },
     ]);
+  });
+});
+
+describe("bundleReportCore.326.phase13: report from an esbuild metafile", () => {
+  // Paths are relative to esbuild's working directory, as in the Electron build's metafile.
+  const electronDir = `${root}/packages/miroir-standalone-app-electron`;
+  const metafile = {
+    inputs: {
+      "src/main.ts": {
+        imports: [
+          { path: "electron", kind: "import-statement", external: true },
+          { path: "src/ipcServerSetup.ts", kind: "import-statement" },
+        ],
+      },
+      "src/ipcServerSetup.ts": {
+        imports: [
+          { path: "../miroir-store-mongodb/dist/index.js", kind: "import-statement" },
+          { path: "../miroir-core/dist/index.js", kind: "dynamic-import" },
+          { path: "<runtime>", kind: "import-statement", external: true },
+        ],
+      },
+      "../miroir-store-mongodb/dist/index.js": {
+        imports: [
+          { path: "../../node_modules/mongodb/lib/index.js", kind: "import-statement" },
+          { path: "fs", kind: "import-statement", external: true },
+        ],
+      },
+      "../../node_modules/mongodb/lib/index.js": { imports: [{ path: "kerberos", kind: "require-call", external: true }] },
+      "../miroir-core/dist/index.js": { imports: [] },
+      "src/preload.ts": { imports: [{ path: "electron", kind: "require-call", external: true }] },
+    },
+    outputs: {
+      "dist/src/main.js.map": { imports: [], inputs: {} },
+      "dist/src/main.js": {
+        entryPoint: "src/main.ts",
+        imports: [{ path: "electron", kind: "import-statement", external: true }],
+        inputs: {
+          "src/main.ts": { bytesInOutput: 10 },
+          "src/ipcServerSetup.ts": { bytesInOutput: 20 },
+          "../miroir-store-mongodb/dist/index.js": { bytesInOutput: 30 },
+          "../../node_modules/mongodb/lib/index.js": { bytesInOutput: 40 },
+          "../miroir-core/dist/index.js": { bytesInOutput: 50 },
+        },
+      },
+      "dist/src/preload.js": {
+        entryPoint: "src/preload.ts",
+        imports: [],
+        inputs: { "src/preload.ts": { bytesInOutput: 5 } },
+      },
+    },
+  };
+  const { chunks, graph: metafileGraph, externals } = reportInputFromEsbuildMetafile(metafile, electronDir, `${electronDir}/dist`);
+
+  it("gives one entry chunk per JavaScript output, named relative to the output directory", () => {
+    expect(chunks.map((entry) => [entry.file, entry.isEntry, Object.keys(entry.modules).length])).toEqual([
+      ["src/main.js", true, 5],
+      ["src/preload.js", true, 1],
+    ]);
+    expect(chunks[0].modules[`${root}/node_modules/mongodb/lib/index.js`]).toBe(40);
+  });
+
+  it("resolves module paths against the working directory and keeps dynamic imports apart", () => {
+    expect(metafileGraph.get(`${electronDir}/src/ipcServerSetup.ts`)).toEqual({
+      importedIds: [`${root}/packages/miroir-store-mongodb/dist/index.js`],
+      dynamicallyImportedIds: [`${root}/packages/miroir-core/dist/index.js`],
+    });
+  });
+
+  it("lists what esbuild left outside the bundle, without its own <…> inputs", () => {
+    expect(externals).toEqual(["electron", "fs", "kerberos"]);
+  });
+
+  it("attributes the Electron build like the standalone one", () => {
+    const report = buildBundleReport({
+      chunks: chunks.map((entry) => ({ ...entry, rawBytes: 100, gzipBytes: 50 })),
+      graph: metafileGraph,
+      context: {
+        ...context,
+        app: "miroir-standalone-app-electron",
+        workspaces: [...context.workspaces, { dir: "packages/miroir-standalone-app-electron", name: "miroir-standalone-app-electron" }],
+      },
+    });
+    const mongodbEntry = report.packages.find((entry) => entry.name === "mongodb")!;
+    expect([mongodbEntry.kind, mongodbEntry.loadKind]).toEqual(["npm", "eager"]);
+    expect(mongodbEntry.via).toBe("packages/miroir-standalone-app-electron/src/ipcServerSetup.ts → miroir-store-mongodb → mongodb");
+    expect(report.totals.eager).toEqual({ chunks: 2, rawBytes: 200, gzipBytes: 100 });
   });
 });
