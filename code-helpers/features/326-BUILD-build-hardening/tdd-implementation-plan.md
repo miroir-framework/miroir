@@ -28,7 +28,7 @@ This plan does **not** cut bundle size (D19: separate issue opened in Slice 17 f
 |---|---|---|---|---|
 | 0 | 1 | Baseline: audit, specs, build sizes, nonreg | ✅ | `baseline.json` + nonreg:unit / nonreg:filesystem results |
 | 1 | 1 | Tracer: a floating spec fails the check; every spec pinned | ✅ | `test_check_dependency_policy.py` specs rules + real repo exits 0 |
-| 2 | 1 | The release writes exact internal versions | ⬜ | `ci/release/tests` new test |
+| 2 | 1 | The release writes exact internal versions | ✅ | `ci/release/tests` new test |
 | 3 | 1 | Build tools leave runtime `dependencies` | ⬜ | `classification` rule + `npm audit --omit=dev` drop |
 | 4 | 1 | `npm ci` works everywhere from the lockfile alone | ⬜ | `workflows` rule + clean `npm ci` + tsup/vite build on Linux |
 | 5 | 1 | No critical advisory | ⬜ | `audit --level critical` exits 0 |
@@ -204,7 +204,7 @@ npm run nonreg:unit
 
 ## Slice 2 — The release writes exact internal versions
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -231,6 +231,11 @@ python -m pytest ci/release/tests -q
 ```
 
 ### Realization
+
+- `rewrite_internal_wildcard_ranges` writes `plan.product_version` instead of `^<product_version>`; docstring and log line say "exact version".
+- No new test case was needed: `test_rewrite_internal_wildcard_ranges_makes_ranges_releaseable` already covers a `*` and a `file:` edge; its expectations moved from `^1.3.0` to `1.3.0` (RED before the change, GREEN after). `verify_release_ranges` accepts exact versions unchanged.
+- `docs/reference/release-process.md`: every `^<product_version>` mention now says the exact `<product_version>`.
+- Validation: `python -m pytest ci/release/tests -q`, 15 passed.
 
 ---
 
