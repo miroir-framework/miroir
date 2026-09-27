@@ -131,7 +131,7 @@ describe("applicationMiroirTestCatalog", () => {
     const unregistered = actionSuiteInstance("brand_new_integ_suite");
     expect(isUiIntegrationLaunchableSuite(unregistered.definition as MiroirTestSuite)).toBe(true);
     expect(
-      isUiIntegrationLaunchableSuite(unitTransformerInstance("EntityPrimaryKey").definition as MiroirTestSuite),
+      isUiIntegrationLaunchableSuite(unitTransformerInstance("fn.entityPrimaryKey").definition as MiroirTestSuite),
     ).toBe(false);
   });
 
@@ -140,11 +140,11 @@ describe("applicationMiroirTestCatalog", () => {
       runnerSuiteInstance("runner.returnDocument"),
       actionSuiteInstance("action.domainController.dataCrud"),
       actionSuiteInstance("brand_new_integ_suite"),
-      unitTransformerInstance("EntityPrimaryKey"),
+      unitTransformerInstance("fn.entityPrimaryKey"),
       mixedTransformerInstance("tr.core"),
     ]);
 
-    expect(listCliUnitSuiteKeys(catalog)).toEqual(["EntityPrimaryKey", "tr.core"]);
+    expect(listCliUnitSuiteKeys(catalog)).toEqual(["fn.entityPrimaryKey", "tr.core"]);
     expect(listCliRunnerIntegrationSuiteKeys(catalog)).toEqual([
       "action.domainController.dataCrud",
       "brand_new_integ_suite",
@@ -158,7 +158,7 @@ describe("applicationMiroirTestCatalog", () => {
       runnerSuiteInstance("runner.returnDocument"),
       actionSuiteInstance("brand_new_integ_suite"),
       mixedTransformerInstance("tr.core"),
-      unitTransformerInstance("EntityPrimaryKey"),
+      unitTransformerInstance("fn.entityPrimaryKey"),
     ]);
 
     expect(Object.keys(registries.runner).sort()).toEqual([

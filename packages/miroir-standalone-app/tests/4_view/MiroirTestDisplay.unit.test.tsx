@@ -6,7 +6,7 @@ import { render, screen } from '@testing-library/react';
 import type { MiroirTestDefinition } from 'miroir-core';
 import { miroirTest_runner_returnDocument } from 'miroir-test-app_deployment-library';
 import {
-  miroirTest_EntityPrimaryKey,
+  miroirTest_fn_entityPrimaryKey,
   miroirTest_action_domainController_dataCrud,
   miroirTest_tr_core,
 } from 'miroir-test-app_deployment-miroir';
@@ -93,11 +93,11 @@ describe('MiroirTestDisplay capability chrome (T4)', () => {
     ).toBeEnabled();
   });
 
-  it('shows unit-only chrome for EntityPrimaryKey', () => {
+  it('shows unit-only chrome for fn.entityPrimaryKey', () => {
     render(
       <MiroirTestDisplay
-        miroirTest={asMiroirTest(miroirTest_EntityPrimaryKey)}
-        testLabel="EntityPrimaryKey"
+        miroirTest={asMiroirTest(miroirTest_fn_entityPrimaryKey)}
+        testLabel="fn.entityPrimaryKey"
         gridType="ag-grid"
         useSnackBar={false}
       />,
@@ -105,7 +105,7 @@ describe('MiroirTestDisplay capability chrome (T4)', () => {
 
     expect(screen.getByText('unit')).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Run EntityPrimaryKey Unit Tests' }),
+      screen.getByRole('button', { name: 'Run fn.entityPrimaryKey Unit Tests' }),
     ).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Integration Tests/i })).not.toBeInTheDocument();
     expect(screen.queryByText('Integration run settings')).not.toBeInTheDocument();

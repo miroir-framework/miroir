@@ -13,7 +13,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Rename map: [`./rename-map.md`](./
 Prerequisites: [`../312-FEATURE-miroir-test-classification/`](../312-FEATURE-miroir-test-classification/) ✅, #315 ✅
 Working branch: `316-REFACTOR-miroirtest-naming`
 
-**Resume note:** Slices 0–4 DONE.
+**Resume note:** Slices 0–5 DONE.
 
 ---
 
@@ -37,7 +37,7 @@ This plan does **not** rename inner suite and test labels (later pass), derive t
 | 2 | Naming guard + rename UI component suites | ✅ | naming guard, `--suites ui.mlElementEditor.array` |
 | 3 | Rename runner and action suites (+ D13 stopgap, nonreg ids) | ✅ | naming guard, runner-kind test, nonreg integ steps |
 | 4 | Rename transformer suites | ✅ | naming guard, `--suites tr.core --mode integ` |
-| 5 | Rename function and query suites (+ D14 registry keys) | ⬜ | naming guard with empty legacy list |
+| 5 | Rename function and query suites (+ D14 registry keys) | ✅ | naming guard with empty legacy list |
 | 6 | Docs, skills, nonreg baseline, cleanup, AC | ⬜ | `nonreg:filesystem`, AC checklist |
 
 ---
@@ -255,13 +255,14 @@ The tests key on uuid, not name, so they stay valid through the rename.
 - D14 for transformers: `MIROIR_TEST_SUITE_REGISTRY_NAMES` keys renamed, the `mlsTypeCheck` / `menu` / `metaModelTransformers` alias branches removed; the export lookup applies D12 (`.` → `_`). Only `alterObject` remains (Slice 5).
 - The "Did you mean" label hint in `loadApplicationMiroirTestsFromFolders.unit` now uses a synthetic instance: no real root label differs from its name any more.
 - Sort-order updates in three standalone tests (`tr.core` now sorts after `runner.*`).
+- `nonreg:unit` 38/38 passed.
 - Validation: core unit 2072 passed, issue guards 14, `testMiroir -w miroir-core -- --suites tr.core,tr.mlsTypeCheck,tr.menuBuild,tr.metaModel.extractAttributes --mode unit` 305 passed, `--suites tr.core --mode integ` on filesystem 261 passed, deployment-miroir modelValidation 162, typechecks, 19 touched standalone test files (`MiroirTestDisplayIntegrationLaunch` fails on Postgres ECONNREFUSED, the known environment failure).
 
 ---
 
 ## Slice 5 — Function and query suites renamed
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** every MiroirTest name follows the scheme; the guards run with an empty `LEGACY_NAMES`, which is then deleted.
 
@@ -277,7 +278,12 @@ The tests key on uuid, not name, so they stay valid through the rename.
 - rebuild, modelValidation, typechecks, pre-push gate, `npm run nonreg:unit`
 
 ### Realization
-_(pending)_
+- Nearly every old name is also a code name (`tools` is also a tag). Script run with `--identifiers-only` for all 28 and `--quoted-in` for 13 reviewed files (registry, CLI and catalog tests, testing docs); `--suites` tokens are renamed everywhere. Reverted after review: the `tools` tag in `miroirTestTags.unit`, `export: "mlsToJsonSchema"` in `miroirTestTools.unit`, the `tools` row of the tag table. `--filter` JSON root keys renamed in a separate pass (lines mentioning filter only).
+- Tests holding old keys in unquoted strings fixed by hand: `MIROIR_TEST_SUITES` values, filter object keys, the `mls.mergePositionBased` root label now equal to the name, button names and `data-suites` in two standalone tests.
+- D14 done: `MIROIR_TEST_SUITE_REGISTRY_NAMES` holds only new names, no alias branch left; the snapshot test in `loadApplicationMiroirTestsFromFolders.unit` needs no leftover map any more. `PENDING_KINDS` deleted from the guards.
+- The uuid note of `fn.transformer.interfaceCheck` moved to `docs/reference/testing.md`. AGENTS.md example shortened to stay under its 12 KB guard.
+- Pre-existing failures, unchanged by this work (fail on the Slice 4 tree too): standalone `Mustache.unit` ("nested template") and `adaptiveColumnWidths.unit` (min/max widths); neither is in the nonreg manifest.
+- Validation: core unit 2072 passed, issue guards 14, `testMiroir -w miroir-core -- --tags unit --mode unit` 726 passed, modelValidation miroir 162 / library 183, typechecks (core, standalone-app, both deployments), pre-push gate (skills check, pytest 35), 11 touched standalone test files.
 
 ---
 

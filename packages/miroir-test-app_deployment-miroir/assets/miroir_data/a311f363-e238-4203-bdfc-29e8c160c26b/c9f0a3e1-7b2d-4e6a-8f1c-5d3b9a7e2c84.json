@@ -2,10 +2,10 @@
   "uuid": "c9f0a3e1-7b2d-4e6a-8f1c-5d3b9a7e2c84",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "transformerInterfaceCheck",
+  "name": "fn.transformer.interfaceCheck",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Issue #249 — transformer inputOutput compatibility relation (entity uuids, payloads, subtyping) and stock definition validity. Uuids used: Menu dde4c883-ae6d-47c3-b6df-26bc6e3c1842, User ca794e28-b2dc-45b3-8137-00151557eea8, EntityVersion 54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.",
+  "description": "Transformer input and output compatibility, and validity of the stock TransformerDefinitions.",
   "tags": [
     "unit",
     "transformer"
@@ -13,7 +13,7 @@
   "issue": "249",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "transformerInterfaceCheck",
+    "miroirTestLabel": "fn.transformer.interfaceCheck",
     "miroirTests": [
       {
         "miroirTestType": "miroirTestSuite",

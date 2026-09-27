@@ -509,7 +509,7 @@ This minimizes data transferred through the pipeline.
 ### Enable Query Logging
 
 ```bash
-VITE_MIROIR_LOG_CONFIG_FILENAME=scope-query npm run testMiroir -w miroir-core -- --suites queries_library --mode unit
+VITE_MIROIR_LOG_CONFIG_FILENAME=scope-query npm run testMiroir -w miroir-core -- --suites query.library.instances --mode unit
 ```
 
 ### Common Log Points

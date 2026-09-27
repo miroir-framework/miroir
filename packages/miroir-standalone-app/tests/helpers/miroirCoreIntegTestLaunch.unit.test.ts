@@ -184,7 +184,7 @@ describe("miroirCoreIntegTestLaunch", () => {
     const errors = validateMiroirCoreIntegTestLaunch(
       baseContext({
         config: {
-          suiteKeys: ["mustache"],
+          suiteKeys: ["fn.mustache.extractDoubleBracePatterns"],
           filter: {
             testList: { "mustache.extractDoubleBracePatterns": ["should extract patterns with double braces"] },
           },

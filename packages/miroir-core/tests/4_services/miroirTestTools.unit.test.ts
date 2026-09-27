@@ -20,7 +20,7 @@ import {
 import { miroirTest_runner_returnDocument } from "miroir-test-app_deployment-library";
 import {
   miroirTest_tr_resolveConditionalSchema_build,
-  miroirTest_queries_library,
+  miroirTest_query_library_instances,
 } from "miroir-test-app_deployment-miroir";
 import type {
   MiroirTestForFunctionCall,
@@ -163,7 +163,7 @@ describe("runMiroirTestInMemory — functionCallTest", () => {
     };
     await runMiroirTest(
       vitest,
-      ["mustache"],
+      ["fn.mustache.extractDoubleBracePatterns"],
       undefined,
       leaf,
       defaultMetaModelEnvironment,
@@ -194,7 +194,7 @@ describe("runMiroirTestInMemory — functionCallTest", () => {
     };
     await runMiroirTest(
       vitest,
-      ["mustache"],
+      ["fn.mustache.extractDoubleBracePatterns"],
       undefined,
       leaf,
       defaultMetaModelEnvironment,
@@ -228,7 +228,7 @@ describe("runMiroirTestInMemory — functionCallTest", () => {
     };
     await runMiroirTest(
       vitest,
-      ["EntityPrimaryKey"],
+      ["fn.entityPrimaryKey"],
       undefined,
       leaf,
       defaultMetaModelEnvironment,
@@ -259,7 +259,7 @@ describe("runMiroirTestInMemory — functionCallTest", () => {
     await expect(
       runMiroirTest(
         vitest,
-        ["mustache"],
+        ["fn.mustache.extractDoubleBracePatterns"],
         undefined,
         leaf,
         defaultMetaModelEnvironment,
@@ -285,7 +285,7 @@ describe("runMiroirTestInMemory — queryTest", () => {
   it("executes first queries_library scenario", async () => {
     const tracker = mockTracker();
     const leaf = (
-      (miroirTest_queries_library as MiroirTestDefinition).definition as MiroirTestSuite
+      (miroirTest_query_library_instances as MiroirTestDefinition).definition as MiroirTestSuite
     ).miroirTests[0] as MiroirTestForQuery;
     await runMiroirTest(
       vitest,
@@ -308,7 +308,7 @@ describe("runMiroirTestInMemory — queryTest", () => {
 
   it("rejects integration mode for queryTest leaves", async () => {
     const leaf = (
-      (miroirTest_queries_library as MiroirTestDefinition).definition as MiroirTestSuite
+      (miroirTest_query_library_instances as MiroirTestDefinition).definition as MiroirTestSuite
     ).miroirTests[0] as MiroirTestForQuery;
     await expect(
       runMiroirTest(

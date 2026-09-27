@@ -2,10 +2,10 @@
   "uuid": "c4dffd69-2594-482c-b680-295c30eafe30",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "virtualAttributes",
+  "name": "query.virtualAttributes",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Issue #82 — virtual attributes: lazy instance-only evaluation (Book citation tracer).",
+  "description": "Virtual attributes evaluated lazily on instances and through queries.",
   "tags": [
     "unit",
     "query"
@@ -13,7 +13,7 @@
   "issue": "82",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "virtualAttributes",
+    "miroirTestLabel": "query.virtualAttributes",
     "miroirTests": [
       {
         "miroirTestType": "miroirTestSuite",

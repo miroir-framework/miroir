@@ -48,21 +48,9 @@ describe("loadApplicationMiroirTestsFromFolders", () => {
     const runnerKeys = listCliRunnerIntegrationSuiteKeys(catalog);
 
     expect(catalog.length).toBeGreaterThanOrEqual(45);
-    const leftoverSnapshotToName: Record<string, string> = {
-      alterObject: "alterObject_atPath",
-      mlsTypeCheck: "tr.mlsTypeCheck",
-      menu: "tr.menuBuild",
-      metaModelTransformers: "tr.metaModel.extractAttributes",
-    };
     for (const key of MIROIR_TEST_SUITE_REGISTRY_NAMES) {
-      const targetName = leftoverSnapshotToName[key] ?? key;
-      expect(unitKeys, key).toContain(targetName);
-      expect(resolveApplicationMiroirTestSuiteKey(catalog, targetName), targetName).toBe(
-        targetName,
-      );
-      if (leftoverSnapshotToName[key]) {
-        expect(resolveApplicationMiroirTestSuiteKey(catalog, key), key).toBeUndefined();
-      }
+      expect(unitKeys, key).toContain(key);
+      expect(resolveApplicationMiroirTestSuiteKey(catalog, key), key).toBe(key);
     }
     for (const key of MIROIR_RUNNER_TEST_SUITE_REGISTRY_NAMES) {
       expect(runnerKeys, key).toContain(key);
@@ -73,9 +61,9 @@ describe("loadApplicationMiroirTestsFromFolders", () => {
   });
 
   it("loads suite JSON from application folders, including library runner suites", () => {
-    const unitSuite = loadMiroirCoreTestSuiteFromFolders("mergePositionBased");
+    const unitSuite = loadMiroirCoreTestSuiteFromFolders("fn.mlsToMls.mergePositionBased");
     expect(unitSuite.miroirTestType).toBe("miroirTestSuite");
-    expect(unitSuite.miroirTestLabel).toBe("mls.mergePositionBased");
+    expect(unitSuite.miroirTestLabel).toBe("fn.mlsToMls.mergePositionBased");
 
     const lendSuite = loadMiroirCoreTestSuiteFromFolders("runner.lendDocument");
     expect(lendSuite.miroirTestLabel).toBe("runner.lendDocument");
@@ -87,7 +75,7 @@ describe("loadApplicationMiroirTestsFromFolders", () => {
     const leftoverAliases: Array<[string, string]> = [
       ["menu", "tr.menuBuild"],
       ["mlsTypeCheck", "tr.mlsTypeCheck"],
-      ["alterObject", "alterObject_atPath"],
+      ["alterObject", "fn.tools.alterObjectAtPath"],
       ["metaModelTransformers", "tr.metaModel.extractAttributes"],
     ];
     for (const [token, targetName] of leftoverAliases) {

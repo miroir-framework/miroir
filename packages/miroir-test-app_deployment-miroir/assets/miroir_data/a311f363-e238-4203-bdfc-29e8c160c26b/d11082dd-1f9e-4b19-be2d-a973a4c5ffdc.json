@@ -2,10 +2,10 @@
   "uuid": "d11082dd-1f9e-4b19-be2d-a973a4c5ffdc",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "mlsToJsonSchema",
+  "name": "fn.mlsToJsonSchema",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Migrated from UnitTest 856426e9-85ce-4c40-a607-01029de24c1f (Feature #196 Phase 5)",
+  "description": "mlsToJsonSchema conversion of ML schemas to JSON Schema.",
   "tags": [
     "unit",
     "ml-schema",
@@ -14,7 +14,7 @@
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "mlsToJsonSchema",
+    "miroirTestLabel": "fn.mlsToJsonSchema",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",

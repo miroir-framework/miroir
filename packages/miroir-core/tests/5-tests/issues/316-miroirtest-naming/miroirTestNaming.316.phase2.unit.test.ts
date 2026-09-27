@@ -1,6 +1,5 @@
 /**
- * #316 Slice 2+: naming guards. Kinds still awaiting their rename are listed in
- * PENDING_KINDS; each rename slice removes its kinds.
+ * #316 Slice 2+: naming guards, on every MiroirTest instance.
  */
 import { describe, expect, it } from "vitest";
 
@@ -8,15 +7,9 @@ import {
   loadApplicationMiroirTestCatalog,
   resolveMonorepoRoot,
 } from "../../../../src/5_tests/loadApplicationMiroirTestsFromFolders";
-import { kindFromLeaves, loadRenameMap, type MiroirTestKind } from "./miroirTestKind.316";
+import { kindFromLeaves } from "./miroirTestKind.316";
 
-const PENDING_KINDS: MiroirTestKind[] = ["fn", "query"];
-
-const repoRoot = resolveMonorepoRoot();
-const kindByUuid = new Map(loadRenameMap(repoRoot).map((entry) => [entry.uuid, entry.kind]));
-const checked = loadApplicationMiroirTestCatalog(repoRoot).filter(
-  (entry) => !PENDING_KINDS.includes(kindByUuid.get(entry.instance.uuid)!),
-);
+const checked = loadApplicationMiroirTestCatalog(resolveMonorepoRoot());
 
 const UUID = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
 

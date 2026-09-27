@@ -101,7 +101,7 @@ Favor integration tests over unit tests and avoid mocking. Entity-backed tests u
 npm run build -w miroir-test-app_deployment-miroir
 
 # MiroirTest, selected by instance name
-npm run testMiroir -w miroir-core -- --suites mustache,alterObject_atPath --mode unit
+npm run testMiroir -w miroir-core -- --suites fn.entityPrimaryKey,fn.mlsToJsonSchema --mode unit
 npm run testMiroir -w miroir-standalone-app -- --suites tr.core --mode integration
 
 # PLATFORM vitest by file name (optional RUN_TEST)

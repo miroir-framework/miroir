@@ -5,43 +5,43 @@ export type MiroirTestSuiteLoader = () => Promise<{ default: MiroirTestSuite }>;
 /** @deprecated Use `listCliUnitSuiteKeys(loadApplicationMiroirTestCatalog())`. Last hardcoded snapshot. */
 export const MIROIR_TEST_SUITE_REGISTRY_NAMES = [
   "tr.admin.duplicateApplicationModel",
-  "alterObject",
-  "ansiColumnsToMlSchema",
-  "buildAnyKeyMap",
+  "fn.tools.alterObjectAtPath",
+  "fn.ansiColumnsToMlSchema",
+  "fn.mlsTypeCheck.buildAnyKeyMap",
   "tr.defaultValueForMlSchema",
-  "EntityPrimaryKey",
-  "getAttributeTypesFromMlSchema",
-  "mlObjectFlatten",
-  "MlSchemaReferencesList",
-  "MlSchemaReferencesSet",
-  "mlsToCopilotKitParameter",
-  "mlsToJsonSchema",
-  "mlsToMls_Summary",
-  "mlsTransitiveDependencySet",
+  "fn.entityPrimaryKey",
+  "fn.postgres.attributeTypesFromMlSchema",
+  "fn.mlObjectFlatten",
+  "fn.mlSchemaReferences.list",
+  "fn.mlSchemaReferences.set",
+  "fn.mlsToCopilotKitParameter",
+  "fn.mlsToJsonSchema",
+  "fn.mlsToMls.summary",
+  "fn.mlSchemaReferences.transitiveDependencySet",
   "tr.mlsTypeCheck",
-  "mlUnion_RecursiveUnfold",
-  "mlUnionResolvedTypeForArray",
-  "mlUnionResolvedTypeForObject",
-  "localizeMlSchemaReferenceContext",
+  "fn.mlUnion.recursivelyUnfold",
+  "fn.mlsTypeCheck.unionResolvedTypeForArray",
+  "fn.mlsTypeCheck.unionResolvedTypeForObject",
+  "fn.mlsUnfoldSchemaOnce.localizeReferenceContext",
   "tr.menuBuild",
-  "mergePositionBased",
+  "fn.mlsToMls.mergePositionBased",
   "tr.metaModel.extractAttributes",
   "tr.core",
-  "modelUpdates",
-  "mustache",
+  "fn.modelUpdate",
+  "fn.mustache.extractDoubleBracePatterns",
   "tr.resolveConditionalSchema.build",
-  "queries_library",
+  "query.library.instances",
   "tr.resolveConditionalSchema",
-  "resolveQueryTemplates",
+  "fn.templates.resolveQueryTemplates",
   "tr.resolveSchemaReferenceInContext",
-  "selectUnionBranchFromDiscriminator",
-  "tools",
-  "transformerInterfaceCheck",
-  "transformerResultSchema",
+  "fn.mlsTypeCheck.selectUnionBranchFromDiscriminator",
+  "fn.tools.pathsAndMerges",
+  "fn.transformer.interfaceCheck",
+  "fn.transformer.resultSchema",
   "tr.unfoldSchemaOnce",
-  "unionArrayChoices",
-  "unionObjectChoices",
-  "virtualAttributes",
+  "fn.mlsTypeCheck.unionArrayChoices",
+  "fn.mlsTypeCheck.unionObjectChoices",
+  "query.virtualAttributes",
 ] as const;
 
 export type MiroirTestSuiteKey = (typeof MIROIR_TEST_SUITE_REGISTRY_NAMES)[number];
@@ -52,10 +52,9 @@ export const MIROIR_TEST_SUITE_REGISTRY: Record<string, MiroirTestSuiteLoader> =
   return MIROIR_TEST_SUITE_REGISTRY_NAMES.reduce(
     (acc, name) => {
       acc[name] = async () => {
-        const instance =
-          name === "alterObject"
-            ? deployment.miroirTest_alterObject_atPath
-            : (deployment as unknown as Record<string, { definition: unknown }>)[`miroirTest_${name.replaceAll(".", "_")}`];
+        const instance = (deployment as unknown as Record<string, { definition: unknown }>)[
+          `miroirTest_${name.replaceAll(".", "_")}`
+        ];
         return { default: instance.definition as MiroirTestSuite };
       };
       return acc;

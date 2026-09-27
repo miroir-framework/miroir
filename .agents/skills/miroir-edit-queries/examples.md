@@ -6,10 +6,10 @@ This file contains detailed examples of Miroir Query test patterns.
 
 ```bash
 # Run all query tests (MiroirTest suite queries_library)
-npm run testMiroir -w miroir-core -- --suites queries_library --mode unit
+npm run testMiroir -w miroir-core -- --suites query.library.instances --mode unit
 
 # Run specific leaves by miroirTestLabel
-npm run testMiroir -w miroir-core -- --suites queries_library --mode unit --filter '{"queries_library":["my test name"]}'
+npm run testMiroir -w miroir-core -- --suites query.library.instances --mode unit --filter '{"query.library.instances":["my test name"]}'
 ```
 
 > The examples below show query shapes in the former vitest (TypeScript) form. Current tests are

@@ -2,10 +2,10 @@
   "uuid": "9e4db067-27ab-48c1-91f7-2a739824e674",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "unionArrayChoices",
+  "name": "fn.mlsTypeCheck.unionArrayChoices",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Migrated from UnitTest c6d1a006-0006-4000-8000-000000000006 (Feature #196 Phase 5)",
+  "description": "unionArrayChoices on array and tuple branches, including references.",
   "tags": [
     "unit",
     "ml-schema",
@@ -14,7 +14,7 @@
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "unionArrayChoices",
+    "miroirTestLabel": "fn.mlsTypeCheck.unionArrayChoices",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",

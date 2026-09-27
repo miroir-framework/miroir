@@ -6,7 +6,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { MiroirTestDefinition } from 'miroir-core';
 import { miroirTest_runner_returnDocument } from 'miroir-test-app_deployment-library';
 import {
-  miroirTest_EntityPrimaryKey,
+  miroirTest_fn_entityPrimaryKey,
   miroirTest_tr_core,
 } from 'miroir-test-app_deployment-miroir';
 
@@ -177,7 +177,7 @@ describe('RunAllMiroirTestsButton runMode (T2)', () => {
   it('defaults to unit and calls _runMiroirTestSuite with executionMode unit', async () => {
     render(
       <RunAllMiroirTestsButton
-        miroirTests={[asMiroirTest(miroirTest_EntityPrimaryKey)]}
+        miroirTests={[asMiroirTest(miroirTest_fn_entityPrimaryKey)]}
         useSnackBar={true}
         label="Run All Unit Tests"
       />,
@@ -198,7 +198,7 @@ describe('RunAllMiroirTestsButton runMode (T2)', () => {
       <RunAllMiroirTestsButton
         miroirTests={[
           asMiroirTest(miroirTest_runner_returnDocument),
-          asMiroirTest(miroirTest_EntityPrimaryKey),
+          asMiroirTest(miroirTest_fn_entityPrimaryKey),
           asMiroirTest(miroirTest_tr_core),
         ]}
         useSnackBar={true}

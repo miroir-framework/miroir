@@ -185,9 +185,11 @@ PLATFORM files are the vitest tests that have **no MiroirTest equivalent**: CLI/
 
 ### Notable catalog suites
 
-**`virtualAttributes`** — issue #82: lazy instance-local Entity attributes (`tag.value.virtualAttribute`). MiroirTest `functionCallTest` + `queryTest` (evaluate / strip / project / filter / orderBy / same-query runtimeTransformers). Sequelize skip + SQL compile: `packages/miroir-store-postgres/test/virtualAttributes.unit.test.ts`. List/details display: `packages/miroir-standalone-app/tests/4_view/virtualAttributes.integ.test.tsx`.
+**`query.virtualAttributes`** — issue #82: lazy instance-local Entity attributes (`tag.value.virtualAttribute`). MiroirTest `functionCallTest` + `queryTest` (evaluate / strip / project / filter / orderBy / same-query runtimeTransformers). Sequelize skip + SQL compile: `packages/miroir-store-postgres/test/virtualAttributes.unit.test.ts`. List/details display: `packages/miroir-standalone-app/tests/4_view/virtualAttributes.integ.test.tsx`.
 
-**`transformerResultSchema`** — issue #88: `functionCallTest` leaves call `resolveTransformerResultSchema` (pure schema inference, no transformer runtime). Reference: [transformer-result-schema.md](./transformer-result-schema.md). Nonreg step: `unit-transformerResultSchema`.
+**`fn.transformer.resultSchema`** — issue #88: `functionCallTest` leaves call `resolveTransformerResultSchema` (pure schema inference, no transformer runtime). Reference: [transformer-result-schema.md](./transformer-result-schema.md). Nonreg step: `unit-transformerResultSchema`.
+
+**`fn.transformer.interfaceCheck`** (issue #249) uses these Entity uuids: Menu `dde4c883-ae6d-47c3-b6df-26bc6e3c1842`, User `ca794e28-b2dc-45b3-8137-00151557eea8`, EntityVersion `54b9c72f-d4f3-4db9-9e0e-0dc840b530bd`.
 
 **Integration suite notes.** Setup facts that used to live in these suites' descriptions:
 
@@ -241,14 +243,14 @@ Nonreg step ids: `unit-localCacheMemoryMeasure`, `unit-localCacheMemoryAttribute
 
 ```bash
 # Preferred — argv
-npm run testMiroir -w miroir-core -- --suites mustache --mode unit
+npm run testMiroir -w miroir-core -- --suites fn.mustache.extractDoubleBracePatterns --mode unit
 
 # Every unit suite carrying one of the tags (see Tags)
 npm run testMiroir -w miroir-core -- --tags ml-union,ml-reference --mode unit
 
 # Filter to specific test labels (suite miroirTestLabel → leaf labels)
-npm run testMiroir -w miroir-core -- --suites mustache --mode unit \
-  --filter '{"mustache":["should extract patterns with double braces"]}'
+npm run testMiroir -w miroir-core -- --suites fn.mustache.extractDoubleBracePatterns --mode unit \
+  --filter '{"fn.mustache.extractDoubleBracePatterns":["should extract patterns with double braces"]}'
 
 # Legacy — env vars (still supported; argv wins when both are set)
 MIROIR_TEST_SUITES=mustache MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
@@ -1559,8 +1561,8 @@ Nest objects for intermediate suite labels; use a string array for the leaf list
 #### 4. One unit-test leaf (functionCallTest)
 
 ```bash
-npm run testMiroir -w miroir-core -- --suites mustache --mode unit \
-  --filter '{"mustache":["should extract patterns with double braces"]}'
+npm run testMiroir -w miroir-core -- --suites fn.mustache.extractDoubleBracePatterns --mode unit \
+  --filter '{"fn.mustache.extractDoubleBracePatterns":["should extract patterns with double braces"]}'
 ```
 
 #### 5. Legacy environment-variable form
@@ -1642,7 +1644,7 @@ List **Run All Unit Tests** never launches integration sessions. List/details in
 2. Same list → profile `emulatedServer-indexedDb` → **Run All Integration Tests** runs launchable suites only (expect `tr.core` and/or `runner.returnDocument` when present in the fetched list).
 3. Details `tr.core` → both unit and integ buttons; run unit then integ.
 4. Details `runner.returnDocument` → integ only (no unit button).
-5. Details unit-only suite (e.g. `EntityPrimaryKey`) → unit only.
+5. Details unit-only suite (e.g. `fn.entityPrimaryKey`) → unit only.
 
 ### Runner vs transformer from the UI
 

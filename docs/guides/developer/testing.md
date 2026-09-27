@@ -39,7 +39,7 @@ packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203
 Each file is a `MiroirTestDefinition` with a nested `miroirTestSuite` tree. Leaf kinds:
 
 - `transformerTest` — transformer build/runtime assertions
-- `functionCallTest` — direct function invocation (e.g. `mergePositionBased`, `mustache` helpers)
+- `functionCallTest` — direct function invocation (e.g. `fn.mlsToMls.mergePositionBased`, `fn.mustache.extractDoubleBracePatterns` helpers)
 - `queryTest` — query/extractor runner with fixture
 - `runnerTest` — composite action runner test
 - `miroirTestSuite` — nested grouping (e.g. `tr.admin.duplicateApplicationModel`, `tr.core`)
@@ -60,11 +60,11 @@ Field naming uses `miroirTestType`, `miroirTestLabel`, `miroirTests`.
 
 ```bash
 # Preferred — argv
-npm run testMiroir -w miroir-core -- --suites mustache --mode unit
+npm run testMiroir -w miroir-core -- --suites fn.mustache.extractDoubleBracePatterns --mode unit
 
 # Filter to specific test labels
-npm run testMiroir -w miroir-core -- --suites mustache --mode unit \
-  --filter '{"mustache":["should extract patterns with double braces"]}'
+npm run testMiroir -w miroir-core -- --suites fn.mustache.extractDoubleBracePatterns --mode unit \
+  --filter '{"fn.mustache.extractDoubleBracePatterns":["should extract patterns with double braces"]}'
 
 # Legacy — env (still supported; argv wins when both are set)
 MIROIR_TEST_SUITES=mustache MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core

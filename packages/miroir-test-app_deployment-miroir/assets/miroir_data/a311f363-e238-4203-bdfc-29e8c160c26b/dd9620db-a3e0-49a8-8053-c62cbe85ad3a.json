@@ -2,10 +2,10 @@
   "uuid": "dd9620db-a3e0-49a8-8053-c62cbe85ad3a",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "buildAnyKeyMap",
+  "name": "fn.mlsTypeCheck.buildAnyKeyMap",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Migrated from UnitTest 37b822d5-b37a-42cb-9753-43d12ab5b9f0 (Feature #196 Phase 5)",
+  "description": "buildAnyKeyMap on flat, nested and empty objects.",
   "tags": [
     "unit",
     "tools"
@@ -13,7 +13,7 @@
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "mls.buildAnyKeyMap",
+    "miroirTestLabel": "fn.mlsTypeCheck.buildAnyKeyMap",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",

@@ -78,13 +78,13 @@ Default `npm run nonreg` includes deployment `modelValidation` for **miroir**, *
 
 ```bash
 # Preferred — argv
-npm run testMiroir -w miroir-core -- --suites mustache --mode unit
+npm run testMiroir -w miroir-core -- --suites fn.mustache.extractDoubleBracePatterns --mode unit
 
 # Legacy — env (still supported)
 MIROIR_TEST_SUITES=mustache MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
 
 # Multiple suites
-npm run testMiroir -w miroir-core -- --suites alterObject_atPath,EntityPrimaryKey --mode unit
+npm run testMiroir -w miroir-core -- --suites fn.tools.alterObjectAtPath,fn.entityPrimaryKey --mode unit
 
 # Every unit suite carrying a tag
 npm run testMiroir -w miroir-core -- --tags ml-union --mode unit

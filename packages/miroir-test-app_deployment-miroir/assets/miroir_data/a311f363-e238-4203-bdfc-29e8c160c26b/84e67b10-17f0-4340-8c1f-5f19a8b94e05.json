@@ -2,10 +2,10 @@
   "uuid": "84e67b10-17f0-4340-8c1f-5f19a8b94e05",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "selectUnionBranchFromDiscriminator",
+  "name": "fn.mlsTypeCheck.selectUnionBranchFromDiscriminator",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Migrated from UnitTest c6d1a001-0001-4000-8000-000000000001 (Feature #196 Phase 5)",
+  "description": "selectUnionBranchFromDiscriminator branch selection and its error cases.",
   "tags": [
     "unit",
     "ml-schema",
@@ -14,7 +14,7 @@
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "mls.selectUnionBranchFromDiscriminator",
+    "miroirTestLabel": "fn.mlsTypeCheck.selectUnionBranchFromDiscriminator",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",

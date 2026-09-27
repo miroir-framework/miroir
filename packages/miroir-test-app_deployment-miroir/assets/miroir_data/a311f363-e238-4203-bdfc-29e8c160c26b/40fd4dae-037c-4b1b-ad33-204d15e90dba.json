@@ -2,10 +2,10 @@
   "uuid": "40fd4dae-037c-4b1b-ad33-204d15e90dba",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "resolveQueryTemplates",
+  "name": "fn.templates.resolveQueryTemplates",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Migrated from UnitTest c6d3a002-0002-4000-8000-000000000002 (Feature #196 Phase 5)",
+  "description": "resolveQueryTemplates conversion of query templates to queries.",
   "tags": [
     "unit",
     "query"
@@ -13,7 +13,7 @@
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "resolveQueryTemplates.unit.test",
+    "miroirTestLabel": "fn.templates.resolveQueryTemplates",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",

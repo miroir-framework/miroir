@@ -2,10 +2,10 @@
   "uuid": "801a12a2-2a42-4cb4-aa0d-192deae99fd4",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "name": "ansiColumnsToMlSchema",
+  "name": "fn.ansiColumnsToMlSchema",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Migrated from UnitTest 7c9e6679-7425-40de-944b-e07fc1f90ae7 (Feature #196 Phase 5)",
+  "description": "ansiColumnsToMlSchema mapping of postgres column types to ML schemas.",
   "tags": [
     "unit",
     "ml-schema",
@@ -14,7 +14,7 @@
   "issue": "196",
   "definition": {
     "miroirTestType": "miroirTestSuite",
-    "miroirTestLabel": "ansiColumnsToMlSchema",
+    "miroirTestLabel": "fn.ansiColumnsToMlSchema",
     "miroirTests": [
       {
         "miroirTestType": "functionCallTest",

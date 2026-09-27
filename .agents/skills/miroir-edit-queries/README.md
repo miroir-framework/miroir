@@ -15,7 +15,7 @@ Use this skill when:
 ### 1. Run Pre-flight Tests
 
 ```bash
-npm run testMiroir -w miroir-core -- --suites queries_library --mode unit
+npm run testMiroir -w miroir-core -- --suites query.library.instances --mode unit
 ```
 
 ### 2. Add Your Test Case
@@ -27,7 +27,7 @@ Add a `queryTest` leaf to the MiroirTest suite `queries_library`:
 ### 3. Run Your Test
 
 ```bash
-npm run testMiroir -w miroir-core -- --suites queries_library --mode unit --filter '{"queries_library":["my new query test"]}'
+npm run testMiroir -w miroir-core -- --suites query.library.instances --mode unit --filter '{"query.library.instances":["my new query test"]}'
 ```
 
 ## Files in This Skill
@@ -58,9 +58,9 @@ The [implementation.md](implementation.md) guide provides deep insights into:
 
 | Command | Purpose |
 |---------|---------|
-| `npm run testMiroir -w miroir-core -- --suites queries_library --mode unit` | All query tests |
-| `... --filter '{"queries_library":["<miroirTestLabel>"]}'` | Selected leaves |
-| `npm run testMiroir -w miroir-core -- --suites resolveQueryTemplates --mode unit` | Template resolution |
+| `npm run testMiroir -w miroir-core -- --suites query.library.instances --mode unit` | All query tests |
+| `... --filter '{"query.library.instances":["<miroirTestLabel>"]}'` | Selected leaves |
+| `npm run testMiroir -w miroir-core -- --suites fn.templates.resolveQueryTemplates --mode unit` | Template resolution |
 
 ## Recent Enhancements
 
@@ -98,7 +98,7 @@ The `filter` attribute in `extractorTemplateInstancesByEntity` and `extractorIns
 **Test Examples**:
 
 ```bash
-npm run testMiroir -w miroir-core -- --suites queries_library --mode unit --filter '{"queries_library":["select Authors with values filter (multiple values) (extractorInstancesByEntity)"]}'
+npm run testMiroir -w miroir-core -- --suites query.library.instances --mode unit --filter '{"query.library.instances":["select Authors with values filter (multiple values) (extractorInstancesByEntity)"]}'
 ```
 
 ## Related Skills

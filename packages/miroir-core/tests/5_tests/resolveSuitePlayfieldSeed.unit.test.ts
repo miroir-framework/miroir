@@ -24,7 +24,7 @@ import {
   miroirTest_action_domainController_dataCrud_nonUuidPk,
   miroirTest_action_domainController_modelCrud_nonUuidPk,
   miroirTest_action_scenario_evolutionTrace,
-  miroirTest_mustache,
+  miroirTest_fn_mustache_extractDoubleBracePatterns,
   miroirTest_runner_createEntity,
   miroirTest_runner_dropEntity,
   miroirTest_runner_freezeApplicationVersion,
@@ -157,7 +157,7 @@ function loadTestConfiguration(path: string): TestConfigurationPlayfield {
   });
 
   it("returns null when the suite has neither uuid nor inline fields and is not skipReset", () => {
-    expect(resolveSuitePlayfieldSeed(suiteDefinition(miroirTest_mustache))).toBeNull();
+    expect(resolveSuitePlayfieldSeed(suiteDefinition(miroirTest_fn_mustache_extractDoubleBracePatterns))).toBeNull();
   });
 
   it("generated MiroirTestSuite accepts optional inline playfield fields", () => {
