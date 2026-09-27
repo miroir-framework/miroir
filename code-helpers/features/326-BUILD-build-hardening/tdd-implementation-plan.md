@@ -9,7 +9,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/326
 Working branches: PR 1 `claude/build-hardening-81mz9d`, PR 2 `claude/build-hardening-bundles` (D17), both from `_integration`
 
-**Resume note:** Slice 0 DONE 2026-09-27. D4 settled on a vendored tarball; Slice 7 needs the tarball from A (cloud proxy blocks `cdn.sheetjs.com`).
+**Resume note:** Slices 0–7 DONE 2026-09-27 (branch `claude/build-hardening-81mz9d`); next: Slice 8. Lockfiles are regenerated with npm 11 and `--before` (Slice 4 realization).
 
 ---
 
@@ -33,7 +33,7 @@ This plan does **not** cut bundle size (D19: separate issue opened in Slice 17 f
 | 4 | 1 | `npm ci` works everywhere from the lockfile alone | ✅ | `workflows` rule + clean `npm ci` + tsup/vite build on Linux |
 | 5 | 1 | No critical advisory | ✅ | `audit --level critical` exits 0 |
 | 6 | 1 | No high advisory in build and test tooling | ✅ | `audit` lists no high in tooling packages |
-| 7 | 1 | No high advisory at all; audit gate blocking in PR checks | ⬜ | `audit` exits 0 on the real repo; `pr-checks.yml` step |
+| 7 | 1 | No high advisory at all; audit gate blocking in PR checks | ✅ | `audit` exits 0 on the real repo; `pr-checks.yml` step |
 | 8 | 1 | Updates only through reviewed, cooled-down PRs; actions pinned | ⬜ | `actions` rule + `dependabot.yml` test |
 | 9 | 1 | PR 1 wrap-up: gate docs, nonreg step, full nonreg | ⬜ | nonreg:unit + nonreg:filesystem green |
 | 10 | 2 | Vendor sourcemaps restored | ⬜ | `bundleSourcemaps.326.phase10.unit.test.ts` |
@@ -450,7 +450,7 @@ npm run nonreg:unit && npm run nonreg:filesystem
 
 ## Slice 7 — No high advisory at all; the audit gate blocks PRs
 
-**Status:** ⬜ pending (needs the SheetJS tarball)
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -483,6 +483,17 @@ npm run nonreg:unit && npm run nonreg:filesystem
 ```
 
 ### Realization
+
+- RED: after Slice 6, `--rule audit` listed 18 packages with a high advisory, all in the production tree. Most of the plan's 7.1 list (`axios`, `ws`, `form-data`, `flatted`, `nanoid`, `@xmldom/xmldom`, `extract-zip`, `sigstore`, `js-yaml`) had already gone with Slices 3 to 6.
+- Exact bumps: `http-proxy-middleware` 3.0.5 → 3.0.7 (5 manifests), `sequelize` 6.37.7 → 6.37.8 (`miroir-core`, `miroir-store-postgres`, `miroir-standalone-app`), `lodash` 4.17.23 → 4.18.1 (3 localcache packages).
+- `xlsx`: `dependency-policy/vendor/xlsx-0.20.3.tgz` (supplied by A; no install script, Apache-2.0, no dependencies since 0.19, which drops `adler-32`, `cfb`, `codepage`, `frac`, `ssf`, `wmf`, `word`), spec `file:../../dependency-policy/vendor/xlsx-0.20.3.tgz`. Its SHA-512 is in `dependency-policy/README.md` and the lockfile. `tsc` on `miroir-standalone-app` is clean, and a write / `read(…, {type: 'binary'})` / `sheet_to_json(…, {header: "A"})` round trip, the calls `Importer.tsx` and `ImportEntityFromSpreadsheetRunner.tsx` make, gives the expected rows.
+- Overrides, documented in `dependency-policy/README.md`: `lodash-es` 4.18.1 (`chevrotain` 11.1, under `mermaid` > `langium`, pins 4.17.23; that clears the 5 `chevrotain` / `langium` entries too) and `@connectrpc/connect-node` > `undici` 6.28.1 (it asks for `^5.28.4`). npm applied the nested override only once the stale `packages/miroir-ai/node_modules/undici` entry was removed from the lockfile before relocking.
+- `undici` / Cursor path (D5): `@connectrpc/connect-node` imports `undici` only for a `Headers` polyfill it installs on Node < 18. `@connectrpc/connect-node` and `@cursor/sdk` load with `undici` 6.28.1, and the 6 Cursor SDK test files of `miroir-ai` (#275) pass. No exception was needed, so there is no `audit-exceptions.json`.
+- In-range updates (`npm update`): `hono` 4.12.3 → 4.13.8, `@hono/node-server` 1.19.9 → 1.19.17, `express-rate-limit` 8.2.1 → 8.7.0 (its nested `ip-address` 10.0.1 goes), `ip-address` 9.0.5 → 10.7.2 with `socks` 2.8.5 → 2.8.10 (`jsbn` goes), `fast-uri` 3.0.6 → 3.1.8, `path-to-regexp` 0.1.12 → 0.1.13 and 8.3.0 → 8.4.2, `underscore` 1.13.7 → 1.13.8.
+- `pr-checks.yml`: step "No high or critical advisory (npm audit)" runs `--rule audit` right after `npm ci` (now `--no-audit`, since the step audits). Deviation: the static rules keep their own step before `npm ci`, so they fail fast; the plan had one step with every rule.
+- Known failures, unchanged by this slice: `miroir-ai` `tests/unit/miroirTools.unit.test.ts` (14 of 19 tests: the tool registry exports 3 tools, the test expects 5; the same first failure as in Slice 3, before any change here), the 6 `LocalCache.unit.test` failures of `miroir-localcache-redux` (Slice 3), and `tsc` on `miroir-localcache-zustand` (`Model.ts`: a `MetaModel` literal lacks 13 properties, which no dependency change affects; inferred, not bisected).
+- Electron: `electron-builder --dir --linux -c.npmRebuild=false` packages the app.
+- Validation: pytest 104 passed; every rule, `audit` included, passes; `./build-all.sh devBuild` and the Electron app build pass; `tsc` clean on `miroir-core`, `miroir-standalone-app`, `miroir-localcache`, `-localcache-redux`, `miroir-server`, `miroir-store-postgres`, `miroir-standalone-app-electron`, `miroir-ai`; `miroir-core` 2078 tests pass; `nonreg:unit` 38/38 and `nonreg:filesystem` 74/74 pass.
 
 ---
 
