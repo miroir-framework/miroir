@@ -1,11 +1,11 @@
 /**
- * Issue #326 Slice 10: every chunk of the standalone build has a sourcemap that lists its sources,
- * vendor chunks included, so the bundle report and the #286 guard can see what each chunk holds.
+ * Every chunk of the standalone build has a sourcemap that lists its sources, vendor chunks
+ * included (#326), so the bundle report and the #286 guard can see what each chunk holds.
  *
  * Not reachable through MiroirTest: it reads the production build output. Run after the build:
  * ```bash
  * npm run build -w miroir-standalone-app
- * npm run testByFile -w miroir-standalone-app -- bundleSourcemaps.326.phase10
+ * npm run testByFile -w miroir-standalone-app -- bundleSourcemaps.unit
  * ```
  */
 import { existsSync, readFileSync, statSync } from "node:fs";
@@ -16,7 +16,7 @@ import { describe, expect, it } from "vitest";
 
 type Manifest = Record<string, { file: string; name?: string }>;
 
-const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../../..");
+const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const distDirectory = join(packageRoot, "dist");
 const manifestPath = join(distDirectory, ".vite", "manifest.json");
 const chunkLoggerPath = join(packageRoot, "vite", "chunkLoadLoggerPlugin.js");
@@ -36,7 +36,7 @@ function sourcesOf(chunkFile: string): string[] {
   return existsSync(mapPath) ? JSON.parse(readFileSync(mapPath, "utf-8")).sources ?? [] : [];
 }
 
-describe("bundleSourcemaps.326.phase10", () => {
+describe("bundleSourcemaps", () => {
   it("every JavaScript chunk has a sourcemap listing at least one source", () => {
     const chunks = [...new Set(Object.values(readManifest()).map((chunk) => chunk.file))].filter((file) =>
       file.endsWith(".js"),

@@ -1,5 +1,5 @@
 /**
- * Issue #326 Slice 16: the coverage tour (scripts/coverage-tour.mjs) on the real production build,
+ * The coverage tour (scripts/coverage-tour.mjs, #326) on the real production build,
  * served by the real server release, in a real browser.
  *
  * Not reachable through MiroirTest: it tests the build tooling. On demand (D12): skipped unless
@@ -8,7 +8,7 @@
  * ```bash
  * npm run build -w miroir-standalone-app && npm run build:release -w miroir-server
  * MIROIR_COVERAGE_TOUR=1 MIROIR_TOUR_BROWSER=/opt/pw-browsers/chromium \
- *   npm run testByFile -w miroir-standalone-app -- coverageTour.326.phase16
+ *   npm run testByFile -w miroir-standalone-app -- coverageTour.integ
  * ```
  */
 import { spawnSync } from "node:child_process";
@@ -19,10 +19,10 @@ import { fileURLToPath } from "node:url";
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-const packageDir = resolve(dirname(fileURLToPath(import.meta.url)), "../../../..");
+const packageDir = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const TOUR_TIMEOUT = 600_000;
 
-describe.skipIf(process.env.MIROIR_COVERAGE_TOUR !== "1")("coverageTour.326.phase16", () => {
+describe.skipIf(process.env.MIROIR_COVERAGE_TOUR !== "1")("coverageTour", () => {
   let work: string;
   let run: ReturnType<typeof spawnSync>;
   let report: any;

@@ -1,10 +1,10 @@
 /**
- * Issue #326 Slice 16: the arithmetic of the coverage tour (vite/coverageCore.js), on a real
- * esbuild bundle with its source map and the real V8 block coverage of running it in this process.
+ * The arithmetic of the coverage tour (vite/coverageCore.js, #326), on a real esbuild bundle with
+ * its source map and the real V8 block coverage of running it in this process.
  *
  * Not reachable through MiroirTest: it tests the build tooling. Needs no build:
  * ```bash
- * npm run testByFile -w miroir-standalone-app -- coverageCore.326.phase16
+ * npm run testByFile -w miroir-standalone-app -- coverageCore.unit
  * ```
  */
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
@@ -21,9 +21,9 @@ import {
   buildCoverageReport,
   executedMask,
   sourceIndexByOffset,
-} from "../../../../vite/coverageCore.js";
+} from "../../vite/coverageCore.js";
 
-describe("coverageCore.326.phase16: executed code and its sources", () => {
+describe("coverageCore: executed code and its sources", () => {
   it("lets a block that did not run override the function that did", () => {
     const functions = [
       { ranges: [{ startOffset: 60, endOffset: 90, count: 3 }, { startOffset: 70, endOffset: 80, count: 0 }] },
@@ -66,7 +66,7 @@ describe("coverageCore.326.phase16: executed code and its sources", () => {
   });
 });
 
-describe("coverageCore.326.phase16: a bundle run under V8 coverage", () => {
+describe("coverageCore: a bundle run under V8 coverage", () => {
   const root = mkdtempSync(join(tmpdir(), "coverage-core-"));
   const assets = join(root, "packages/demo-app/dist/assets");
   const context = {

@@ -1,11 +1,11 @@
 /**
- * Issue #326 Slice 11: the attribution rules of the bundle report (vite/bundleReportCore.js), on
- * module ids and import edges copied from the module graph of a real standalone build.
- * Slice 13: the same report from an esbuild metafile (the Electron main process build).
+ * The attribution rules of the bundle report (vite/bundleReportCore.js, #326), on module ids and
+ * import edges copied from the module graph of a real standalone build, and the same report from an
+ * esbuild metafile (the Electron main process build).
  *
  * Not reachable through MiroirTest: it tests the build tooling. Needs no build:
  * ```bash
- * npm run testByFile -w miroir-standalone-app -- bundleReportCore.326.phase11
+ * npm run testByFile -w miroir-standalone-app -- bundleReportCore.unit
  * ```
  */
 import { describe, expect, it } from "vitest";
@@ -19,8 +19,8 @@ import {
   npmPackageOfId,
   npmPackagesOfId,
   reportInputFromEsbuildMetafile,
-} from "../../../../vite/bundleReportCore.js";
-import { resolveManualChunk } from "../../../../vite/manualChunks.js";
+} from "../../vite/bundleReportCore.js";
+import { resolveManualChunk } from "../../vite/manualChunks.js";
 
 const root = "/home/user/miroir";
 const context = {
@@ -58,7 +58,7 @@ const graph = new Map([
   ["__vite-browser-external", { importedIds: [], dynamicallyImportedIds: [] }],
 ]);
 
-describe("bundleReportCore.326.phase11: packages of a module id", () => {
+describe("bundleReportCore: packages of a module id", () => {
   it("reads every npm package on the path, innermost last, through \\0 prefixes and queries", () => {
     expect(npmPackagesOfId(nestedMarkdown)).toEqual(["@copilotkit/react-core", "react-markdown"]);
     expect(npmPackageOfId(nestedMarkdown)).toBe("react-markdown");
@@ -89,7 +89,7 @@ describe("bundleReportCore.326.phase11: packages of a module id", () => {
   });
 });
 
-describe("bundleReportCore.326.phase11: import chains", () => {
+describe("bundleReportCore: import chains", () => {
   const sources = [indexTsx, integrationTestSession];
 
   it("starts at the app file nearest to the module, marks dynamic import hops, merges CommonJS wrappers", () => {
@@ -120,7 +120,7 @@ describe("bundleReportCore.326.phase11: import chains", () => {
   });
 });
 
-describe("bundleReportCore.326.phase11: report", () => {
+describe("bundleReportCore: report", () => {
   const chunk = (file: string, isEntry: boolean, imports: string[], modules: Record<string, number>) => ({
     file,
     name: file.replace(/\.js$/, ""),
@@ -192,7 +192,7 @@ describe("bundleReportCore.326.phase11: report", () => {
   });
 });
 
-describe("bundleReportCore.326.phase13: report from an esbuild metafile", () => {
+describe("bundleReportCore: report from an esbuild metafile", () => {
   // Paths are relative to esbuild's working directory, as in the Electron build's metafile.
   const electronDir = `${root}/packages/miroir-standalone-app-electron`;
   const metafile = {

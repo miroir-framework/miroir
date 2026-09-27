@@ -1,13 +1,13 @@
 /**
- * Issue #326 Slice 11: the standalone build writes `dist/.vite/bundle-report.json`, which splits
+ * The standalone build writes `dist/.vite/bundle-report.json`, which splits
  * every chunk into the packages it holds, with the import chain that brings each package in from
  * the app's own source, and lists leaked Node modules and defeated dynamic imports as findings
- * (D11, D25). The build also prints the report as a table.
+ * (#326 D11, D25). The build also prints the report as a table.
  *
  * Not reachable through MiroirTest: it reads the production build output. Run after the build:
  * ```bash
  * npm run build -w miroir-standalone-app
- * npm run testByFile -w miroir-standalone-app -- bundleReport.326.phase11
+ * npm run testByFile -w miroir-standalone-app -- bundleReport.unit
  * ```
  */
 import { existsSync, readFileSync, statSync } from "node:fs";
@@ -39,7 +39,7 @@ type BundleReport = {
 };
 type Manifest = Record<string, { file: string; isEntry?: boolean; imports?: string[] }>;
 
-const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../../..");
+const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const distDirectory = join(packageRoot, "dist");
 const reportPath = join(distDirectory, ".vite", "bundle-report.json");
 const manifestPath = join(distDirectory, ".vite", "manifest.json");
@@ -80,7 +80,7 @@ function packageIn(chunk: ReportChunk, name: string): ReportPackage | undefined 
   return chunk.packages.find((entry) => entry.name === name);
 }
 
-describe("bundleReport.326.phase11", () => {
+describe("bundleReport", () => {
   const report = readReport();
 
   it("every chunk gives its file, load kind, sizes and packages, whose bytes add up to the chunk's", () => {

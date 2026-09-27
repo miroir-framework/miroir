@@ -9,7 +9,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/326
 Working branches: PR 1 `claude/build-hardening-81mz9d`, PR 2 `claude/build-hardening-bundles` (D17), both from `_integration`
 
-**Resume note:** PR 1 (Slices 0–9 and 7b) DONE 2026-09-27 on `claude/build-hardening-81mz9d` (PR #334). PR 2 on `claude/build-hardening-bundles`, branched from PR 1's head: Slices 10 to 16 DONE (draft PR #335, stacked on #334); next: Slice 17. Lockfiles are regenerated with npm 11 and `--before` (Slice 4 realization).
+**Resume note:** PR 1 (Slices 0–9 and 7b) DONE 2026-09-27 on `claude/build-hardening-81mz9d` (PR #334). PR 2 on `claude/build-hardening-bundles`, branched from PR 1's head: Slices 10 to 17 DONE (PR #335, stacked on #334: retarget to `_integration` once #334 merges). Size cuts: #337. Lockfiles are regenerated with npm 11 and `--before` (Slice 4 realization).
 
 ---
 
@@ -44,7 +44,7 @@ This plan does **not** cut bundle size (D19: separate issue opened in Slice 17 f
 | 14 | 2 | Bundle guards run on PRs | ✅ | `bundle` job in `pr-checks.yml` |
 | 15 | 2 | Sourcemaps kept out of the Electron package | ✅ | asar / resources listing has no `.map` |
 | 16 | 2 | On-demand coverage tour | ✅ | `coverageTour.326.phase16.integ.test.ts` on a real tour + `coverageCore.326.phase16.unit.test.ts` |
-| 17 | 2 | Docs, size issue, #286 guard folded, cleanup, AC | ⬜ | AC checklist |
+| 17 | 2 | Docs, size issue, #286 guard folded, cleanup, AC | ✅ | AC checklist, #337 |
 
 ---
 
@@ -924,7 +924,7 @@ MIROIR_COVERAGE_TOUR=1 MIROIR_TOUR_BROWSER=/opt/pw-browsers/chromium npm run tes
 
 ## Slice 17 — Docs, size issue, #286 guard folded, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -948,10 +948,10 @@ Manual: add `import "left-pad"` to `HomePage.tsx`, build, read the new package i
 |---|---|
 | Every critical and high advisory corrected | Slice 7: `check_dependency_policy.py` exits 0; `pr-checks.yml` audit step |
 | No `^` specs; no unreviewed versions | Slices 1, 4, 8: `specs`, `workflows`, `actions` rules; Dependabot cooldown |
-| Build output identifies the incoming code of each sub-bundle | Slice 11: console table + `bundle-report.json` test |
-| Features we do not use can be found | Slices 11 and 16: chains, findings, coverage report |
-| Long-term control over size | Slices 12, 14: guards in PR checks, ratchet |
-| Standalone and Electron both covered | Slices 11–15 |
+| Build output identifies the incoming code of each sub-bundle | Slice 11: console table + `bundle-report.json` (`tests/0_build/bundleReport.unit.test.ts`, `bundleReportCore.unit.test.ts`) |
+| Features we do not use can be found | Slices 11 and 16: chains, findings, coverage report (`coverageTour.integ.test.ts`); first findings in #337 |
+| Long-term control over size | Slices 12, 14: guards in PR checks (`test_check_bundle_policy.py`, `bundle` job), ratchet; tracer above |
+| Standalone and Electron both covered | Slices 11–15: `electronBundle.unit.test.ts`, both policies in the `bundle` job |
 
 ### Validation
 
@@ -961,3 +961,13 @@ npm run nonreg:unit && npm run nonreg:filesystem
 ```
 
 ### Realization
+
+- `docs/internals/code-splitting.md`: new "What loads with the page" (the 7 eager chunks, their content and why each is eager), "Bundle report and guards (#326)" (the files, reading the table, the three rules, updating a policy, `--init`, the CI job) and "Coverage tour (#326)". Corrected claims: CopilotKit, ag-grid, CodeMirror and the meta-model deployment load with the page; `ReportDisplay` loads with the home page; the `vendor-d3` rule never matches `miroir-diagram-class`; the store drivers still ship as lazy chunks. **Deviation:** ag-grid and CodeMirror were not in the plan's list of corrections; the report showed both eager (`vendor-ag-grid` holds a 44-byte polyfill shim `@reduxjs/toolkit` imports; `miroir-react` imports `@codemirror/view`).
+- Size issue #337 (D19): 11 standalone findings with their chains and sizes (report and tour) and the Electron main findings; the doc's follow-ups link it.
+- `componentTestChunk.286.phase4`: the "no `@testing-library/` in the entry's static closure" case is deleted, `forbiddenEager` covers it in the bundle job of every PR; the three component-test chunk cases stay (no policy rule expresses them). 3/3 on a fresh build.
+- Issue tests migrated with `git mv` to feature-named suites in `tests/0_build/`, the issue directory deleted. **Deviation:** six files, one per module under test, rather than one `bundleReport.unit.test.ts`: `bundleSourcemaps.unit`, `bundleReport.unit`, `bundleReportCore.unit`, `electronBundle.unit`, `coverageCore.unit`, `coverageTour.integ` (still on demand, `MIROIR_COVERAGE_TOUR=1`). Suite names lost their `.326.phaseN`; the realizations above keep the old names as history. `tests/0_build/` 40 passed, 3 skipped (the tour); the tour 3/3 with `MIROIR_COVERAGE_TOUR=1`.
+- Nonreg: new unit step `unit-326-build-tooling` (`bundleReportCore.unit`, `coverageCore.unit`: they need no build; the suites reading a build stay out, like the #286 guard); `AGENTS.md` says 40 unit steps.
+- Tracer, run for real: `import pc from "picocolors"; export const tracerBold = pc.bold;` at the top of `HomePage.tsx` (a bare `import "picocolors"` is tree-shaken), `npm run build`, then the guard: `[allowlist] picocolors is new in the build and loads on demand (packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/HomePage.tsx → picocolors): add it to "lazy" in the policy if it is wanted`, exit 1. Reverted and rebuilt: 0 violations, eager gzip 2,709,170 bytes, the baseline.
+- PR 2 stays stacked on PR 1's branch until #334 merges, then is retargeted to `_integration` (a PR against `_integration` now would carry PR 1's commits).
+- **Regression found and fixed:** the first `nonreg:filesystem` (shared runner) failed `unit-275-cursor-sdk`, 3 cases: Slice 13 had listed `@cursor/sdk` in the Electron `dependencies`, against #275 (the SDK is a dependency of `miroir-ai` alone, installed under `packages/miroir-ai` with its nested protobuf 1.10; the packaged Electron app keeps Cursor off and `assertCursorSdkPackaged` fails loud when it is turned on). Separate commit: `@cursor/sdk` out of the Electron `dependencies` (still external to the esbuild bundle, which only holds `miroir-ai`'s dynamic import of it), lockfile entries moved back under `packages/miroir-ai`. `app.asar` 57 MB → 29 MB; the packaged app starts (`IPC server ready`).
+- Validation: pytest `scripts/tests` 150 passed; lint; `nonreg:filesystem --runner shared` 75 of 76 steps, the one failure being the regression above, then `unit-275-cursor-sdk` and `unit-check-dependency-policy` pass after the fix; both bundle guards 0 violations.
