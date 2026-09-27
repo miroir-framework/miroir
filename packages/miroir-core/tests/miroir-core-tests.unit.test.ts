@@ -17,7 +17,12 @@ const unitSuiteKeys = listCliUnitSuiteKeysFromFolders();
 const parsedConfig = parseMiroirTestCliConfig(process.env, process.argv.slice(2), unitSuiteKeys);
 const config = {
   ...parsedConfig,
-  suiteKeys: resolveCliSuiteKeysFromCatalog(parsedConfig.suiteKeys, unitSuiteKeys),
+  suiteKeys: resolveCliSuiteKeysFromCatalog(
+    parsedConfig.suiteKeys,
+    unitSuiteKeys,
+    undefined,
+    parsedConfig.tags,
+  ),
 };
 const miroirActivityTracker = new MiroirActivityTracker();
 new MiroirEventService(miroirActivityTracker);

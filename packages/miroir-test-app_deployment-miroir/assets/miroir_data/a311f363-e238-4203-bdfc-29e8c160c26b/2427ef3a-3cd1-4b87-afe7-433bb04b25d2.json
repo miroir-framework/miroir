@@ -6,6 +6,10 @@
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "name": "evolutionTraceWP1",
   "description": "WP1 end-to-end evolution trace tracer bullet (Feature 9 Phase 8). Evolution history is stored in the evolving application's model section.",
+  "tags": [
+    "versioning",
+    "model"
+  ],
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "evolutionTrace.WP1",

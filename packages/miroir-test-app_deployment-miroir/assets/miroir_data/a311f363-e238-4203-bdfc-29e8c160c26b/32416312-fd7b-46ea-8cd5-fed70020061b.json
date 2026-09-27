@@ -6,6 +6,10 @@
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Migrated from UnitTest eca25c60-7dfb-4e1d-a718-1e639695404b (Feature #196 Phase 5)",
+  "tags": [
+    "ml-schema",
+    "ml-reference"
+  ],
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "mls.mlsTransitiveDependencySet",

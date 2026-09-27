@@ -28,6 +28,7 @@ import {
 } from "../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
 import {
   listCliRunnerIntegrationSuiteKeysFromFolders,
+  resolveCliSuiteKeysFromCatalog,
   loadApplicationRunnerUuidIndexFromFolders,
 } from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
 import { miroirAppStartup } from "../src/startup.js";
@@ -48,11 +49,21 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
   log = logger;
 });
 
-const config = parseMiroirRunnerTestCliConfig(
+const runnerSuiteKeys = listCliRunnerIntegrationSuiteKeysFromFolders();
+const parsedConfig = parseMiroirRunnerTestCliConfig(
   process.env,
   process.argv.slice(2),
-  listCliRunnerIntegrationSuiteKeysFromFolders(),
+  runnerSuiteKeys,
 );
+const config = {
+  ...parsedConfig,
+  suiteKeys: resolveCliSuiteKeysFromCatalog(
+    parsedConfig.suiteKeys,
+    runnerSuiteKeys,
+    undefined,
+    parsedConfig.tags,
+  ),
+};
 const { miroirConfig, logConfig } = await loadTestConfigFiles(env);
 const loggerOptions = logConfig as any as LoggerOptions;
 

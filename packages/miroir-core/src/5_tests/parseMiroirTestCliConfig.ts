@@ -13,6 +13,8 @@ export type MiroirTestCliConfig = {
   suiteKeys: string[];
   executionMode: MiroirTestExecutionMode;
   filter?: MiroirTestRunFilter;
+  /** #312: keep only the suites carrying any of these tags. */
+  tags?: string[];
 };
 
 export type MiroirCoreTestVitestEntry =
@@ -43,6 +45,12 @@ export function splitSuiteKeys(raw: string | undefined): string[] {
     .split(",")
     .map((key) => key.trim())
     .filter(Boolean);
+}
+
+/** Comma-separated tags (`--tags` / `MIROIR_TEST_TAGS`); `undefined` when none is given. */
+export function splitTags(raw: string | undefined): string[] | undefined {
+  const tags = splitSuiteKeys(raw);
+  return tags.length > 0 ? tags : undefined;
 }
 
 export function suiteKeysFromEnv(env: NodeJS.ProcessEnv): string[] {
@@ -202,6 +210,9 @@ export function parseMiroirTestCliArgs(
       result.executionMode = normalizeExecutionMode(argv[++index], options);
     } else if (arg === "--filter" || arg === "-f") {
       result.filter = parseFilterJson(argv[++index]);
+    } else if (arg === "--tags") {
+      // `--tags ""` gives [], which overrides MIROIR_TEST_TAGS: no tag filter.
+      result.tags = splitSuiteKeys(argv[++index]);
     }
   }
 
@@ -213,7 +224,7 @@ export function executionModeFromEnv(env: NodeJS.ProcessEnv): MiroirTestExecutio
   return mode === "integration" || mode === "integ" ? "integration" : "unit";
 }
 
-/** Resolve suite keys, mode, and filter from partial argv parse + env fallbacks. */
+/** Resolve suite keys, mode, filter, and tags from partial argv parse + env fallbacks. */
 export function resolveMiroirTestCliConfigFromPartial(
   env: NodeJS.ProcessEnv,
   fromArgs: Partial<MiroirTestCliConfig>,
@@ -223,6 +234,7 @@ export function resolveMiroirTestCliConfigFromPartial(
     suiteKeys: resolveSuiteKeys(fromArgs.suiteKeys ?? suiteKeysFromEnv(env), allSuiteKeys),
     executionMode: fromArgs.executionMode ?? executionModeFromEnv(env),
     filter: fromArgs.filter ?? parseFilterJson(env.MIROIR_TEST_FILTER),
+    tags: fromArgs.tags ?? splitTags(env.MIROIR_TEST_TAGS),
   };
 }
 
@@ -265,6 +277,10 @@ export function miroirTestCliConfigToEnv(config: MiroirTestCliConfig): NodeJS.Pr
   }
   if (config.filter !== undefined) {
     env.MIROIR_TEST_FILTER = JSON.stringify(config.filter);
+  }
+  if (config.tags !== undefined) {
+    // An empty value clears a MIROIR_TEST_TAGS inherited by the vitest process.
+    env.MIROIR_TEST_TAGS = config.tags.join(",");
   }
   return env;
 }

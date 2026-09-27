@@ -8,6 +8,7 @@ import {
   type MiroirTestCliConfig,
 } from "miroir-core";
 import {
+  listCliTransformerIntegrationSuiteKeysFromFolders,
   listCliUnitSuiteKeysFromFolders,
   loadApplicationMiroirTestCatalog,
 } from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
@@ -134,8 +135,10 @@ export function validateMiroirCoreIntegTestLaunch(
   }
 
   const catalog = loadApplicationMiroirTestCatalog();
+  // Every suite testMiroirLauncher routes to this entry (unit and transformer integration).
   const knownSuiteKeys = new Set([
     ...listCliUnitSuiteKeysFromFolders(),
+    ...listCliTransformerIntegrationSuiteKeysFromFolders(),
     ...listMiroirTestSuiteKeys(),
   ]);
   const unknownSuiteKeys = config.suiteKeys.filter((key) => {

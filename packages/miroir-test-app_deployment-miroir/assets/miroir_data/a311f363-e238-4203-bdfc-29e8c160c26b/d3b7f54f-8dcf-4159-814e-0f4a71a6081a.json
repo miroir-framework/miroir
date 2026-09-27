@@ -6,6 +6,9 @@
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Migrated from UnitTest a1d2e3f4-b5c6-4d7e-8f9a-0b1c2d3e4f5a (Feature #196 Phase 5)",
+  "tags": [
+    "tools"
+  ],
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "alterObject.atPath",

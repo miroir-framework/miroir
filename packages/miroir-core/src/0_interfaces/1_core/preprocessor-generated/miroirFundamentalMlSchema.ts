@@ -6765,21 +6765,6 @@ export const miroirFundamentalMlSchema = {
           "transformerName": {
             "type": "string"
           },
-          "testTag": {
-            "type": "union",
-            "optional": true,
-            "definition": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "array",
-                "definition": {
-                  "type": "string"
-                }
-              }
-            ]
-          },
           "skip": {
             "type": "boolean",
             "optional": true
@@ -7111,21 +7096,6 @@ export const miroirFundamentalMlSchema = {
           }
         },
         "definition": {
-          "testTag": {
-            "type": "union",
-            "optional": true,
-            "definition": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "array",
-                "definition": {
-                  "type": "string"
-                }
-              }
-            ]
-          },
           "skip": {
             "type": "boolean",
             "optional": true
@@ -8176,21 +8146,6 @@ export const miroirFundamentalMlSchema = {
           }
         },
         "definition": {
-          "testTag": {
-            "type": "union",
-            "optional": true,
-            "definition": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "array",
-                "definition": {
-                  "type": "string"
-                }
-              }
-            ]
-          },
           "skip": {
             "type": "boolean",
             "optional": true
@@ -8303,21 +8258,6 @@ export const miroirFundamentalMlSchema = {
           }
         },
         "definition": {
-          "testTag": {
-            "type": "union",
-            "optional": true,
-            "definition": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "array",
-                "definition": {
-                  "type": "string"
-                }
-              }
-            ]
-          },
           "skip": {
             "type": "boolean",
             "optional": true
@@ -8462,6 +8402,45 @@ export const miroirFundamentalMlSchema = {
               }
             }
           },
+          "tags": {
+            "type": "array",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "Tags",
+                "description": "Classification of this test, to select and sort tests (#312). The allowed values are the enum of this array: add a value there to extend the vocabulary.",
+                "display": {
+                  "editable": true
+                }
+              }
+            },
+            "definition": {
+              "type": "enum",
+              "definition": [
+                "transformer",
+                "ml-schema",
+                "ml-union",
+                "ml-reference",
+                "ml-conversion",
+                "query",
+                "editor",
+                "performance",
+                "runner",
+                "domain-controller",
+                "model",
+                "data",
+                "primary-key",
+                "versioning",
+                "mcp",
+                "external-service",
+                "report",
+                "menu",
+                "ai",
+                "tools"
+              ]
+            }
+          },
           "definition": {
             "type": "schemaReference",
             "context": {
@@ -8490,21 +8469,6 @@ export const miroirFundamentalMlSchema = {
                   },
                   "transformerName": {
                     "type": "string"
-                  },
-                  "testTag": {
-                    "type": "union",
-                    "optional": true,
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "array",
-                        "definition": {
-                          "type": "string"
-                        }
-                      }
-                    ]
                   },
                   "skip": {
                     "type": "boolean",
@@ -8817,21 +8781,6 @@ export const miroirFundamentalMlSchema = {
                   }
                 },
                 "definition": {
-                  "testTag": {
-                    "type": "union",
-                    "optional": true,
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "array",
-                        "definition": {
-                          "type": "string"
-                        }
-                      }
-                    ]
-                  },
                   "skip": {
                     "type": "boolean",
                     "optional": true
@@ -9854,21 +9803,6 @@ export const miroirFundamentalMlSchema = {
                   }
                 },
                 "definition": {
-                  "testTag": {
-                    "type": "union",
-                    "optional": true,
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "array",
-                        "definition": {
-                          "type": "string"
-                        }
-                      }
-                    ]
-                  },
                   "skip": {
                     "type": "boolean",
                     "optional": true
@@ -9977,21 +9911,6 @@ export const miroirFundamentalMlSchema = {
                   }
                 },
                 "definition": {
-                  "testTag": {
-                    "type": "union",
-                    "optional": true,
-                    "definition": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "array",
-                        "definition": {
-                          "type": "string"
-                        }
-                      }
-                    ]
-                  },
                   "skip": {
                     "type": "boolean",
                     "optional": true

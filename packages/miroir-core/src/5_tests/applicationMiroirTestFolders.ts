@@ -14,6 +14,9 @@ export const ENTITY_RUNNER_UUID = "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd";
 
 export const DEPLOYMENT_PACKAGE_PREFIX = "miroir-test-app_deployment-";
 
+/** The live MiroirTest Entity row, relative to the monorepo root (#312: tag vocabulary). */
+export const MIROIR_TEST_ENTITY_RELATIVE_PATH = `packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/${ENTITY_MIROIR_TEST_UUID}.json`;
+
 export type ApplicationMiroirTestSourceFolder = {
   applicationKey: string;
   /** Path relative to the monorepo root. */

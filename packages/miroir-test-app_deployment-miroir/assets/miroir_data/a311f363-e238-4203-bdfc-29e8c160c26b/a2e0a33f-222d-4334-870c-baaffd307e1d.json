@@ -6,6 +6,11 @@
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "name": "runner_mcp_get_instances",
   "description": "Issue #253 — mcpToolRunner getInstances via MCP tools/call; payload includes seeded book1.",
+  "tags": [
+    "runner",
+    "mcp",
+    "data"
+  ],
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "runner.mcpGetInstances",

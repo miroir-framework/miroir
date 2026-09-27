@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react';
 
 import {
   buildUiIntegrationSuiteRegistriesFromMiroirTests,
+  filterMiroirTestInstancesByTags,
+  listMiroirTestTagCounts,
   MiroirLoggerFactory,
   type LoggerInterface,
   type MiroirTestDefinition,
@@ -59,6 +61,18 @@ const integRunButtonStyle: React.CSSProperties = {
   backgroundColor: '#ef6c00',
 };
 
+function tagChipStyle(selected: boolean): React.CSSProperties {
+  return {
+    border: '1px solid #7e57c2',
+    borderRadius: '12px',
+    padding: '2px 10px',
+    fontSize: '12px',
+    cursor: 'pointer',
+    backgroundColor: selected ? '#7e57c2' : 'white',
+    color: selected ? 'white' : '#4527a0',
+  };
+}
+
 function summarizeSuiteResults(results: TestResultData[]): {
   passed: number;
   failed: number;
@@ -113,10 +127,28 @@ const MiroirTestListDisplayContent = (props: MiroirTestListDisplayProps) => {
     integrationPreferences.profileName,
   );
 
-  const sortedInstances = useMemo(
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+  const allSortedInstances = useMemo(
     () => sortMiroirTestInstances(miroirTests),
     [miroirTests],
   );
+  const tagCounts = useMemo(() => listMiroirTestTagCounts(allSortedInstances), [allSortedInstances]);
+  // A selected tag absent from the current list has no chip to clear it: ignore it.
+  const activeTags = useMemo(
+    () => selectedTags.filter((tag) => tagCounts.some((tagCount) => tagCount.tag === tag)),
+    [selectedTags, tagCounts],
+  );
+  // #312: the selected tags restrict the list and what Run All runs; none selected means all.
+  const sortedInstances = useMemo(
+    () => filterMiroirTestInstancesByTags(allSortedInstances, activeTags),
+    [allSortedInstances, activeTags],
+  );
+
+  const toggleTag = (tag: string) =>
+    setSelectedTags(
+      activeTags.includes(tag) ? activeTags.filter((selected) => selected !== tag) : [...activeTags, tag],
+    );
 
   const { runner: runnerRegistry, transformer: transformerRegistry } = useMemo(
     () => buildUiIntegrationSuiteRegistriesFromMiroirTests(sortedInstances),
@@ -171,12 +203,35 @@ const MiroirTestListDisplayContent = (props: MiroirTestListDisplayProps) => {
           alignItems: 'center',
         }}
       >
-        <span>Miroir Tests Available ({sortedInstances.length})</span>
+        <span>
+          {activeTags.length > 0
+            ? `Miroir Tests Available (${sortedInstances.length} of ${allSortedInstances.length})`
+            : `Miroir Tests Available (${sortedInstances.length})`}
+        </span>
         <span style={{ fontSize: '12px', fontWeight: 'normal', color: '#5e35b1' }}>
           unit: {listCapabilities.unitSuiteKeys.length} · integ-capable:{' '}
           {listCapabilities.integrationSuiteKeys.length}
         </span>
       </div>
+
+      {tagCounts.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
+          {tagCounts.map(({ tag, count }) => {
+            const selected = activeTags.includes(tag);
+            return (
+              <button
+                key={tag}
+                type="button"
+                aria-pressed={selected}
+                onClick={() => toggleTag(tag)}
+                style={tagChipStyle(selected)}
+              >
+                {`${tag} (${count})`}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {showUnitBatch && (
         <RunAllMiroirTestsButton

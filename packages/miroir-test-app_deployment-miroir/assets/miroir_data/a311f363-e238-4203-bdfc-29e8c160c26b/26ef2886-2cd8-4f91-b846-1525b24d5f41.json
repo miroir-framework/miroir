@@ -6,6 +6,9 @@
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "description": "Issue #303: MlElementEditor test pattern, one object exercising every editor type (no foreign key, no reference to another application's instances). The display leaf compares the whole rendered value. Three interaction leaves (#303 Slice 2) edit a deep leaf and the enum, switch the simple union from number to string, and add / delete an array item, rename a record entry and add the absent optional attribute; each ends with the same whole-value comparison so that a side effect on another editor is caught. Since #305 the comparison covers every branch: the literal, the empty array / record / tags, the recursive aReference (rendered since #296) and anAnyFile (any with display.any.format file, read from the hidden input of MlAnyEditor's file branch). Edited by hand.",
+  "tags": [
+    "editor"
+  ],
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "MlTestPattern_ComponentTestSuite",
