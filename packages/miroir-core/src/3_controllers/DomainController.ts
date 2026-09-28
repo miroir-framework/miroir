@@ -4455,16 +4455,6 @@ export class DomainController implements DomainControllerInterface, DomainContro
           }
           return this.handleModelAction(domainAction, applicationDeploymentMap, currentModel);
         }
-        // case "instanceAction": {
-        case "createInstance":
-        case "deleteInstance":
-        case "deleteInstanceWithCascade":
-        case "updateInstance":
-        case "loadNewInstancesInLocalCache":
-        case "getInstance":
-        case "getInstances": {
-          return this.handleInstanceAction(domainAction, applicationDeploymentMap);
-        }
         // case "storeManagementAction": {
         case "storeManagementAction_createStore":
         case "storeManagementAction_deleteStore":

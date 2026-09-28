@@ -5,6 +5,7 @@ import type {
   CompositeActionSequence,
   CompositeRunBoxedQueryAction,
   CompositeRunBoxedQueryTemplateAction,
+  InstanceAction,
   TransactionalInstanceAction,
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import type { Action2ReturnType, Action2VoidReturnType } from "../2_domain/DomainElement";
@@ -42,6 +43,10 @@ export type ConnectExternalServiceAction = {
  * Grows with each migrated action; handlers depend on this interface, not on the class.
  */
 export interface DomainControllerActionHost {
+  handleInstanceAction(
+    instanceAction: InstanceAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2VoidReturnType>;
   handlePrepareOpenApiDocument(domainAction: {
     actionType: "prepareOpenApiDocument";
     endpoint: string;

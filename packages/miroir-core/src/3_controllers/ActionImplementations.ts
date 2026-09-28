@@ -7,7 +7,19 @@ import type { ActionImplementationHandler } from "../0_interfaces/3_controllers/
  * `actionImplementation: { actionImplementationType: "libraryImplementation", ... }`,
  * as TransformerDefinitions do with `inMemoryTransformerImplementations`.
  */
+const handleInstanceAction: ActionImplementationHandler = (host, action, context) =>
+  host.handleInstanceAction(action, context.applicationDeploymentMap);
+
 export const miroirActionImplementations: Record<string, ActionImplementationHandler> = {
+  // InstanceEndpoint
+  handleAction_createInstance: handleInstanceAction,
+  handleAction_deleteInstance: handleInstanceAction,
+  handleAction_deleteInstanceWithCascade: handleInstanceAction,
+  handleAction_updateInstance: handleInstanceAction,
+  handleAction_loadNewInstancesInLocalCache: handleInstanceAction,
+  handleAction_getInstance: handleInstanceAction,
+  handleAction_getInstances: handleInstanceAction,
+
   // DomainEndpoint
   handleAction_transactionalInstanceAction: (host, action, context) =>
     host.handleTransactionalInstanceAction(action, context.applicationDeploymentMap),

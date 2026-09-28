@@ -15,7 +15,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/341
 Working branch: `claude/action-library-implementations-1jkrjp` (from `_integration` 9ae1aa9)
 
-**Resume note:** Slices 0-2 DONE; next is Slice 3 (InstanceEndpoint).
+**Resume note:** Slices 0-3 DONE; next is Slice 4 (ModelEndpoint). Full nonreg every 2 or 3 slices (A, 2026-09-28), gate + touched suites in between.
 
 ---
 
@@ -39,7 +39,7 @@ This plan does **not** migrate Persistence / LocalCache actions, touch the 5 dec
 | 0 | Characterize dispatch and Endpoint inventory | ✅ | `actionImplementations.341.phase0.unit.test.ts` + baseline `action.domainController.*` |
 | 1 | Tracer: `prepareOpenApiDocument` runs from its library reference | ✅ | `actionImplementations.341.phase1.unit.test.ts` |
 | 2 | DomainEndpoint actions | ✅ | `action.scenario.*`, `integ-action-284-*`, phase1 test extended |
-| 3 | InstanceEndpoint actions | ⬜ | `action.domainController.dataCrud*` |
+| 3 | InstanceEndpoint actions | ✅ | `action.domainController.dataCrud*` |
 | 4 | ModelEndpoint actions | ⬜ | `action.domainController.modelCrud*`, `freezeApplicationVersion` |
 | 5 | StoreManagement and UndoRedo actions | ⬜ | every integ session (open/close store), `modelUndoRedo` |
 | 6 | QueryEndpoint actions reachable through `handleAction` | ⬜ | `actionImplementations.341.phase6.integ.test.ts` |
@@ -242,7 +242,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ## Slice 3 — InstanceEndpoint actions
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE (2026-09-28)
 
 ### Goal
 
@@ -270,6 +270,9 @@ for s in action.domainController.dataCrud action.domainController.dataCrud.compo
 ```
 
 ### Realization
+
+- 7 map entries sharing one `handleInstanceAction` wrapper (D3: one identifier per action), `handleInstanceAction` added to the host interface (already public). The instance `case`s are removed from `handleActionInternal`. InstanceEndpoint declares its 7 actions.
+- Validation: modelValidation, lint, core unit (2096 passed), `nonreg:filesystem --runner shared` 78/78 (covers the 4 `action.domainController.dataCrud*` suites).
 
 ---
 
