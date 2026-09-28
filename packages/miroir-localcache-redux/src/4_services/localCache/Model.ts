@@ -32,7 +32,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
 } from "miroir-core";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { deployment_Miroir } from "miroir-app-admin";
 import {
   defaultMiroirMetaModel, entityDefinitionTheme, entityEndpointVersion, entityEntity,
   entityEntityVersion,
@@ -58,7 +58,7 @@ import {
   entityApplicationVersionCrossTransformerDefinitionVersion,
   entityHistoricalTransformerDefinitionVersion,
   entityTransformerDefinition,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";
 import type { LocalCacheSliceState } from "./localCacheReduxSliceInterface";

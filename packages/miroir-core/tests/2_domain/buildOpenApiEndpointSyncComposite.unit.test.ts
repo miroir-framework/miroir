@@ -21,7 +21,7 @@ const SPOTIFY_ENDPOINT_PATH = join(
 
 const MODEL_ENDPOINT_PATH = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_data",
+  "packages/miroir-app-miroir/assets/miroir_data",
   "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
   "7947ae40-eb34-4149-887b-15a9021e714e.json",
 );

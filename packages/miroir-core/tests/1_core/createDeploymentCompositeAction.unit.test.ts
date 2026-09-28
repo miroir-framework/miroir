@@ -14,7 +14,7 @@ import {
   entityApplicationForAdmin,
   entityDeployment,
   entityMiroirRight,
-} from "miroir-test-app_deployment-admin";
+} from "miroir-app-admin";
 
 const ADMIN_DEPLOYMENT_UUID = "18db21bf-f8d3-4f6a-8296-84b69f6dc48b";
 const APP_UUID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";

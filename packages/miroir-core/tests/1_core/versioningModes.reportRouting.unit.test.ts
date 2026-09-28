@@ -5,34 +5,34 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { deployment_Miroir } from "miroir-app-admin";
 import {
   reportApplicationVersionList,
   reportApplicationVersionDetails,
   reportEntityDefinitionList,
   selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
 import { getReportsAndEntitiesForDeploymentUuid } from "../../src/1_core/Model.js";
-import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel } from "miroir-app-miroir";
 import { REPO_ROOT } from "./versioningModes.testData.js";
 
 const MIROIR_MENU = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json",
+  "packages/miroir-app-miroir/assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json",
 );
 const ENTITY_VERSION_LIST_REPORT = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/f9aff35d-8636-4519-8361-c7648e0ddc68.json",
+  "packages/miroir-app-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/f9aff35d-8636-4519-8361-c7648e0ddc68.json",
 );
 const MIROIR_DEPLOYMENT_ADMIN = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-admin/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json",
+  "packages/miroir-app-admin/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json",
 );
 
 const APPLICATION_VERSION_DETAILS_REPORT = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/17e78252-2540-4003-9305-d85c0c02d7ba.json",
+  "packages/miroir-app-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/17e78252-2540-4003-9305-d85c0c02d7ba.json",
 );
 
 describe("Miroir Version History report routing", () => {
@@ -41,7 +41,7 @@ describe("Miroir Version History report routing", () => {
     expect(deployment.uuid).toBe(deployment_Miroir.uuid);
     expect(deployment.configuration.modelVersion).toEqual({
       emulatedServerType: "filesystem",
-      directory: "miroir-test-app_deployment-miroir/assets/miroir_modelVersion",
+      directory: "miroir-app-miroir/assets/miroir_modelVersion",
     });
   });
 

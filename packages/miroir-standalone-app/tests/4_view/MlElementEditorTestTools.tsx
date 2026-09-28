@@ -29,7 +29,7 @@ import {
 import {
   entityQueryVersion,
   entityReport,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
 // Browser-safe tools moved to src/ (#286), re-exported for the importers of this file.
 export {

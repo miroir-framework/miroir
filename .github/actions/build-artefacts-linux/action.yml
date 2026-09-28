@@ -14,13 +14,13 @@ runs:
 
     # ── Build order per copilot-instructions.md ─────────────────────────
     # 1. Core type definitions (data deployed by miroir & admin test apps)
-    - name: Build miroir-test-app_deployment-miroir
+    - name: Build miroir-app-miroir
       shell: bash
-      run: npm run build -w miroir-test-app_deployment-miroir
+      run: npm run build -w miroir-app-miroir
 
-    - name: Build miroir-test-app_deployment-admin
+    - name: Build miroir-app-admin
       shell: bash
-      run: npm run build -w miroir-test-app_deployment-admin
+      run: npm run build -w miroir-app-admin
 
     - name: Build miroir-test-app_deployment-library
       shell: bash

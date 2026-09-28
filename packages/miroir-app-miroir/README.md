@@ -1,4 +1,4 @@
-# miroir-test-app_deployment-miroir
+# miroir-app-miroir
 
 Miroir deployment assets for the Miroir Framework.
 
@@ -18,7 +18,7 @@ import {
   reportEntityList,
   menuDefaultMiroir,
   // ... other exports
-} from 'miroir-test-app_deployment-miroir';
+} from 'miroir-app-miroir';
 ```
 
 ## License

@@ -1,5 +1,5 @@
 {
-  "name": "miroir-test-app_deployment-miroir",
+  "name": "miroir-app-miroir",
   "private": true,
   "version": "0.5.0-rc.1",
   "description": "Miroir deployment assets (miroir_model and miroir_data) for the Miroir Framework",

@@ -27,8 +27,8 @@ export default defineConfig({
   // esbuild transform of the same file. Making them explicit externals prevents
   // esbuild from following the symlinks and reading their stale sourcemaps.
   external: [
-    'miroir-test-app_deployment-admin',
-    'miroir-test-app_deployment-miroir',
+    'miroir-app-admin',
+    'miroir-app-miroir',
     'miroir-test-app_deployment-library',
     // json-diff → @ewoudenberg/difflib uses dynamic require('assert'); must stay external for ncc/ESM consumers
     'json-diff',

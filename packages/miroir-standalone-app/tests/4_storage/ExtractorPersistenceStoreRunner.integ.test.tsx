@@ -21,7 +21,7 @@ import {
   resetIntegTestbed,
   StoreUnitConfiguration
 } from "miroir-core";
-import { deployment_Admin, deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-library";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
@@ -65,7 +65,7 @@ import {
   defaultMiroirMetaModel,
   entityEntity,
   selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
 const expectedMiroirEntitiesWithEnInName = ignorePostgresExtraAttributesOnList(
   defaultMiroirMetaModel.entities.filter((entity) =>

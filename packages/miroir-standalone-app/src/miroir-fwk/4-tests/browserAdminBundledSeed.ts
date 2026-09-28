@@ -2,16 +2,16 @@
  * Browser UI integ — seed for admin deployment as a bundled (in-memory) store.
  * Empty IndexedDB admin has no AdminApplication / Deployment entity tables, so
  * `createDeploymentCompositeAction` fails. Bundled admin mirrors the sandbox demo
- * seed from `miroir-test-app_deployment-admin` (see packages/miroir-sandbox/src/bundledData.ts).
+ * seed from `miroir-app-admin` (see packages/miroir-sandbox/src/bundledData.ts).
  */
 
 import type { EntityInstance, StoreUnitConfiguration } from 'miroir-core';
 import type { BundledDeploymentData, BundledSectionData } from 'miroir-store-bundled';
-import * as adminDeployment from 'miroir-test-app_deployment-admin';
+import * as adminDeployment from 'miroir-app-admin';
 import {
   deployment_Admin as localDeploymentAdmin,
   deployment_Miroir as localDeploymentMiroir,
-} from 'miroir-test-app_deployment-admin';
+} from 'miroir-app-admin';
 
 export const ADMIN_DEPLOYMENT_UUID = '18db21bf-f8d3-4f6a-8296-84b69f6dc48b';
 export const MIROIR_DEPLOYMENT_UUID = '10ff36f2-50a3-48d8-b80f-e48e5d13af8e';

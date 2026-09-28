@@ -73,8 +73,8 @@ import { callMcpToolViaHttp } from './mcpClient.js';
 import { MiroirMcpServer, setupMcpServer } from "../../src/mcpServer.js";
 import { EndpointToolRegistry } from "../../src/tools/EndpointToolRegistry.js";
 
-import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
-import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
+import { defaultMiroirMetaModel } from "miroir-app-miroir";
+import { deployment_Miroir } from 'miroir-app-admin';
 // import { runMcpTestsViaHttp } from './mcpClient.js';
 
 const packageName = "miroir-mcp";

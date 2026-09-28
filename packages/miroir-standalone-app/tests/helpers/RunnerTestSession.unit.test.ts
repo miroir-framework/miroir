@@ -18,7 +18,7 @@ import {
   type MiroirTestSuite,
   type Runner,
 } from "miroir-core";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { deployment_Miroir } from "miroir-app-admin";
 import {
   defaultAppForTestModel,
   deployment_AppForTest_DO_NO_USE,
@@ -31,7 +31,7 @@ import {
   returnDocument,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
-import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { selfApplicationMiroir } from "miroir-app-miroir";
 
 const runAppStackIntegrationBootstrapMock = vi.fn();
 const runRealServerClientBootstrapMock = vi.fn();

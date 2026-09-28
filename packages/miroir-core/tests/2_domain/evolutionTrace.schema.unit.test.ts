@@ -14,7 +14,7 @@ const ENTITYDEF_VERSION_UUID = "bdd7ad43-f0fc-4716-90c1-87454c40dd95";
 describe("ApplicationEvolutionTrace entity assets", () => {
   describe("Entity assets are importable from deployment package", () => {
     it("exports entityApplicationEvolutionTrace with correct uuid and shape", async () => {
-      const { entityApplicationEvolutionTrace } = await import("miroir-test-app_deployment-miroir");
+      const { entityApplicationEvolutionTrace } = await import("miroir-app-miroir");
       const e = entityApplicationEvolutionTrace as any;
       expect(e.uuid).toBe(TRACE_ROOT_ENTITY_UUID);
       expect(e.name).toBe("ApplicationEvolutionTrace");
@@ -22,7 +22,7 @@ describe("ApplicationEvolutionTrace entity assets", () => {
     });
 
     it("exports entityApplicationEvolutionTraceEvent with correct uuid and shape", async () => {
-      const { entityApplicationEvolutionTraceEvent } = await import("miroir-test-app_deployment-miroir");
+      const { entityApplicationEvolutionTraceEvent } = await import("miroir-app-miroir");
       const e = entityApplicationEvolutionTraceEvent as any;
       expect(e.uuid).toBe(TRACE_EVENT_ENTITY_UUID);
       expect(e.name).toBe("ApplicationEvolutionTraceEvent");
@@ -30,7 +30,7 @@ describe("ApplicationEvolutionTrace entity assets", () => {
     });
 
     it("exports entityDefinitionApplicationEvolutionTrace with correct shape", async () => {
-      const { entityDefinitionApplicationEvolutionTrace } = await import("miroir-test-app_deployment-miroir");
+      const { entityDefinitionApplicationEvolutionTrace } = await import("miroir-app-miroir");
       const ed = entityDefinitionApplicationEvolutionTrace as any;
       expect(ed.uuid).toBe(TRACE_ROOT_ENTITYDEF_UUID);
       expect(ed.entityUuid).toBe(TRACE_ROOT_ENTITY_UUID);
@@ -41,7 +41,7 @@ describe("ApplicationEvolutionTrace entity assets", () => {
     });
 
     it("exports entityDefinitionApplicationEvolutionTraceEvent with correct shape", async () => {
-      const { entityDefinitionApplicationEvolutionTraceEvent } = await import("miroir-test-app_deployment-miroir");
+      const { entityDefinitionApplicationEvolutionTraceEvent } = await import("miroir-app-miroir");
       const ed = entityDefinitionApplicationEvolutionTraceEvent as any;
       expect(ed.uuid).toBe(TRACE_EVENT_ENTITYDEF_UUID);
       expect(ed.entityUuid).toBe(TRACE_EVENT_ENTITY_UUID);
@@ -54,28 +54,28 @@ describe("ApplicationEvolutionTrace entity assets", () => {
 
   describe("defaultMiroirMetaModel includes the new entities", () => {
     it("defaultMiroirMetaModel.entities contains ApplicationEvolutionTrace", async () => {
-      const { defaultMiroirMetaModel } = await import("miroir-test-app_deployment-miroir");
+      const { defaultMiroirMetaModel } = await import("miroir-app-miroir");
       const found = defaultMiroirMetaModel.entities.find((e: any) => e.uuid === TRACE_ROOT_ENTITY_UUID);
       expect(found).toBeDefined();
       expect(found!.name).toBe("ApplicationEvolutionTrace");
     });
 
     it("defaultMiroirMetaModel.entities contains ApplicationEvolutionTraceEvent", async () => {
-      const { defaultMiroirMetaModel } = await import("miroir-test-app_deployment-miroir");
+      const { defaultMiroirMetaModel } = await import("miroir-app-miroir");
       const found = defaultMiroirMetaModel.entities.find((e: any) => e.uuid === TRACE_EVENT_ENTITY_UUID);
       expect(found).toBeDefined();
       expect(found!.name).toBe("ApplicationEvolutionTraceEvent");
     });
 
     it("defaultMiroirMetaModel.entityVersions contains entityDefinitionApplicationEvolutionTrace", async () => {
-      const { defaultMiroirMetaModel } = await import("miroir-test-app_deployment-miroir");
+      const { defaultMiroirMetaModel } = await import("miroir-app-miroir");
       const found = defaultMiroirMetaModel.entityVersions.find((ed: any) => ed.uuid === TRACE_ROOT_ENTITYDEF_UUID);
       expect(found).toBeDefined();
       expect(found!.entityUuid).toBe(TRACE_ROOT_ENTITY_UUID);
     });
 
     it("defaultMiroirMetaModel.entityVersions contains entityDefinitionApplicationEvolutionTraceEvent", async () => {
-      const { defaultMiroirMetaModel } = await import("miroir-test-app_deployment-miroir");
+      const { defaultMiroirMetaModel } = await import("miroir-app-miroir");
       const found = defaultMiroirMetaModel.entityVersions.find((ed: any) => ed.uuid === TRACE_EVENT_ENTITYDEF_UUID);
       expect(found).toBeDefined();
       expect(found!.entityUuid).toBe(TRACE_EVENT_ENTITY_UUID);

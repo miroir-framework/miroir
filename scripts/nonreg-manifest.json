@@ -273,7 +273,7 @@
         "run",
         "testByFile",
         "-w",
-        "miroir-test-app_deployment-miroir",
+        "miroir-app-miroir",
         "--",
         "tests/modelValidation.unit.test.ts"
       ]
@@ -288,7 +288,7 @@
         "run",
         "testByFile",
         "-w",
-        "miroir-test-app_deployment-admin",
+        "miroir-app-admin",
         "--",
         "tests/modelValidation.unit.test.ts"
       ]

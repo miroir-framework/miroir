@@ -37,7 +37,7 @@
 // ################################################################################################
 
 import type { MiroirThemeFull, StoredMiroirTheme } from "miroir-core";
-import { defaultStoredMiroirTheme } from "miroir-test-app_deployment-miroir";
+import { defaultStoredMiroirTheme } from "miroir-app-miroir";
 
 // ################################################################################################
 // TableTheme: color properties in sub-sections are optional.

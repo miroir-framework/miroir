@@ -112,7 +112,7 @@ The script queries these Miroir meta-model entities:
 
 The extraction script requires:
 - `miroir-core`
-- `miroir-test-app_deployment-admin`
+- `miroir-app-admin`
 - `miroir-store-filesystem`
 - `miroir-store-indexedDb`
 - `miroir-store-postgres`

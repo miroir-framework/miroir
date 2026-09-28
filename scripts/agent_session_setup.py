@@ -39,7 +39,7 @@ INTEGRATION_BRANCH = "_integration"
 
 # Same packages and order as pr-checks.yml; each group builds in one npm call.
 BUILD_GROUPS: list[list[str]] = [
-    ["miroir-test-app_deployment-miroir", "miroir-test-app_deployment-admin"],
+    ["miroir-app-miroir", "miroir-app-admin"],
     ["miroir-core"],
     ["miroir-env", "miroir-store-bundled", "miroir-store-postgres", "miroir-test-app_deployment-library"],
 ]

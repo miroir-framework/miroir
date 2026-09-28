@@ -1,5 +1,5 @@
 {
-  "name": "miroir-test-app_deployment-admin",
+  "name": "miroir-app-admin",
   "private": true,
   "version": "0.5.0-rc.1",
   "description": "Admin deployment assets for the Miroir Framework",
@@ -36,7 +36,7 @@
   "devDependencies": {
     "copyfiles": "2.4.1",
     "miroir-core": "*",
-    "miroir-test-app_deployment-miroir": "*",
+    "miroir-app-miroir": "*",
     "tsup": "8.5.1",
     "tsx": "4.20.3",
     "vite": "7.3.6",

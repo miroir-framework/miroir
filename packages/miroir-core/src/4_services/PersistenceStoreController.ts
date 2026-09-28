@@ -35,7 +35,7 @@ import { cleanLevel } from "./constants";
 import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 import { summarizeQueryHopResult, trackQueryHop } from "./trackQueryHop";
 
-import { entityCommit, entityEntity } from "miroir-test-app_deployment-miroir";
+import { entityCommit, entityEntity } from "miroir-app-miroir";
 import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import {

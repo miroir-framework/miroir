@@ -17,7 +17,7 @@ import {
   applyEntityOnlyRename,
   applyMlSchemaColumnChanges
 } from "miroir-core";
-import { entityEntity } from "miroir-test-app_deployment-miroir";
+import { entityEntity } from "miroir-app-miroir";
 import { IndexedDbInstanceStoreSectionMixin, MixedIndexedDbInstanceStoreSection } from "./IndexedDbInstanceStoreSectionMixin.js";
 import { IndexedDbStoreSection } from "./IndexedDbStoreSection.js";
 

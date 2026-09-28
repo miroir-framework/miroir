@@ -29,7 +29,7 @@ import {
   resolveOpenReportPageParams,
 } from "../../../../src/miroir-fwk/4_view/components/Reports/OpenReportLaunch.js";
 import { reportMultistepCountryCreate } from "miroir-test-app_deployment-library";
-import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { selfApplicationMiroir } from "miroir-app-miroir";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
 const RUN_TEST = process.env.RUN_TEST;
@@ -52,8 +52,8 @@ const FUNDAMENTAL_TYPES_PATH = join(
 );
 
 const ASSET_TREES = [
-  "packages/miroir-test-app_deployment-miroir/assets",
-  "packages/miroir-test-app_deployment-admin/assets",
+  "packages/miroir-app-miroir/assets",
+  "packages/miroir-app-admin/assets",
   "packages/miroir-test-app_deployment-library/assets",
   "packages/miroir-test-app_deployment-designer/assets",
   "packages/miroir-test-app_deployment-postgres/assets",
@@ -184,7 +184,7 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
       existsSync(
         join(
           REPO_ROOT,
-          "packages/miroir-test-app_deployment-miroir/assets/miroir_data",
+          "packages/miroir-app-miroir/assets/miroir_data",
           REPORT_ENTITY_UUID,
           wizardFile,
         ),
@@ -194,7 +194,7 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
       existsSync(
         join(
           REPO_ROOT,
-          "packages/miroir-test-app_deployment-miroir/assets/miroir_model",
+          "packages/miroir-app-miroir/assets/miroir_model",
           REPORT_ENTITY_UUID,
           wizardFile,
         ),

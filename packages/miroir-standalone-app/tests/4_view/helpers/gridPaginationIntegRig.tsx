@@ -16,7 +16,7 @@ import {
   reportBookList,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
-import { defaultMiroirMetaModel, defaultStoredMiroirTheme } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel, defaultStoredMiroirTheme } from "miroir-app-miroir";
 import { useMiroirContextService } from "miroir-react";
 
 import { EntityInstanceGrid } from "../../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGrid.js";

@@ -10,7 +10,7 @@ import {
 } from "../src/Library";
 import { resolveLibraryDeploymentUuid } from "../src/resolveLibraryDeploymentUuid.js";
 
-import { defaultMiroirMetaModel, instanceEndpointV1 } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel, instanceEndpointV1 } from "miroir-app-miroir";
 describe("getDefaultLibraryModelEnvironmentDEFUNCT (Phase 1)", () => {
   it("resolves miroirFundamentalMlSchema via getMiroirFundamentalSchemaForDeployment, not a caller-supplied schema", () => {
     const env = getDefaultLibraryModelEnvironmentDEFUNCT(

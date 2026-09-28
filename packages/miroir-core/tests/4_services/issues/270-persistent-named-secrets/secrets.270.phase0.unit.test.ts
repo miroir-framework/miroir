@@ -25,11 +25,11 @@ const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../../../
 const CORE_SRC = join(REPO_ROOT, "packages/miroir-core/src");
 const ADMIN_MODEL_ENTITIES = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-admin/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "packages/miroir-app-admin/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
 );
 const ADMIN_MENU = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-admin/assets/admin_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json",
+  "packages/miroir-app-admin/assets/admin_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json",
 );
 const MCP_HANDLERS = join(
   REPO_ROOT,
@@ -240,7 +240,7 @@ if (runThis) {
     // it("default Admin seed has no MiroirSecret instance JSON", () => {
     //   const realSecretData = join(
     //     REPO_ROOT,
-    //     "packages/miroir-test-app_deployment-admin/assets/admin_data",
+    //     "packages/miroir-app-admin/assets/admin_data",
     //     MIROIR_SECRET_ENTITY_UUID,
     //   );
     //   const emulatedSecretData = join(

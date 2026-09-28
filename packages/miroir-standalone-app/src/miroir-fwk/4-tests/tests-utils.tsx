@@ -30,10 +30,10 @@ import {
 } from "miroir-core";
 import {
   deployment_Miroir
-} from "miroir-test-app_deployment-admin";
+} from "miroir-app-admin";
 import {
   selfApplicationMiroir
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
 import {
   LocalCache,
@@ -100,7 +100,7 @@ export const selfApplicationDeploymentConfigurationsTO_REMOVE: Deployment[] = [
       "configuration": {
         "admin": {
           "emulatedServerType": "filesystem",
-          "directory": "miroir-test-app_deployment-admin/assets"
+          "directory": "miroir-app-admin/assets"
         },
         "model": {
           "emulatedServerType": "filesystem",

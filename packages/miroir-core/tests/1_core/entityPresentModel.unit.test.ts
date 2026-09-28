@@ -5,7 +5,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { entityEntity } from "miroir-test-app_deployment-miroir";
+import { entityEntity } from "miroir-app-miroir";
 
 import {
   entityMLSchema,

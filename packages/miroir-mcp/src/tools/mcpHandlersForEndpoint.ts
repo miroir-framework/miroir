@@ -20,8 +20,8 @@ import {
   type MiroirModelEnvironment,
   type SelfApplication,
 } from "miroir-core";
-import { defaultMiroirMetaModel,  } from "miroir-test-app_deployment-miroir";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { defaultMiroirMetaModel,  } from "miroir-app-miroir";
+import { deployment_Miroir } from "miroir-app-admin";
 import {
   getDefaultLibraryModelEnvironmentDEFUNCT,
   resolveLibraryDeploymentUuid,

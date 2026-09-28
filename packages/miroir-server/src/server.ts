@@ -76,7 +76,7 @@ import {
   deployment_Admin,
   deployment_Miroir,
   entityDeployment,
-} from "miroir-test-app_deployment-admin";
+} from "miroir-app-admin";
 
 import {
   describeEnvironmentStateStatus,

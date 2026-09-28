@@ -27,7 +27,7 @@ import {
   entityApplicationVersionCrossTransformerDefinitionVersion,
   entitySelfApplicationVersion,
   selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
 
 import {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { entityMiroirRight } from "miroir-test-app_deployment-admin";
+import { entityMiroirRight } from "miroir-app-admin";
 import {
   buildTestbedApplicationAccessGrantInstance,
   resolveTestbedAccessGrantPrincipal,

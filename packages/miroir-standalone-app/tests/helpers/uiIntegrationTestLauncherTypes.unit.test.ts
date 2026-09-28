@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { miroirTest_runner_returnDocument } from "miroir-test-app_deployment-library";
-import { miroirTest_tr_core } from "miroir-test-app_deployment-miroir";
+import { miroirTest_tr_core } from "miroir-app-miroir";
 import {
   classifyMiroirTestSuiteExecutionCapabilities,
   inferIntegrationSessionKind,

@@ -39,8 +39,8 @@ import { reportSectionsFormValue } from './ReportTools.js';
 import { useEnsureReportQueryLoaded } from './useEnsureReportQueryLoaded.js';
 import { useReportQueryLoadService } from './useReportQueryLoadService.js';
 
-import { reportReportDetails, entityReport } from "miroir-test-app_deployment-miroir";
-import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
+import { reportReportDetails, entityReport } from "miroir-app-miroir";
+import { deployment_Miroir } from 'miroir-app-admin';
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportViewWithEditor");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",

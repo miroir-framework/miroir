@@ -41,8 +41,8 @@ RUN rm -f package-lock.json && npm install
 # ---------------------------------------------------------------------------
 
 # 1. Application deployment metadata packages (define core types as ML schemas)
-RUN npm run build -w miroir-test-app_deployment-miroir
-RUN npm run build -w miroir-test-app_deployment-admin
+RUN npm run build -w miroir-app-miroir
+RUN npm run build -w miroir-app-admin
 RUN npm run build -w miroir-test-app_deployment-library
 RUN npm run build -w miroir-test-app_deployment-postgres
 RUN npm run build -w miroir-test-app_deployment-designer
@@ -123,11 +123,11 @@ COPY packages/miroir-server/config/miroirConfig.server.docker.json \
 # (filesystemDeploymentRootDirectory + deployment.configuration.*.directory).
 #
 # Miroir framework bootstrap data (read from deployment configs on startup):
-#   miroir-test-app_deployment-miroir/assets/miroir_model   (model section)
-#   miroir-test-app_deployment-miroir/assets/miroir_data    (data  section)
-#   miroir-test-app_deployment-miroir/src/assets            (admin section)
-#   miroir-test-app_deployment-admin/assets/admin_model     (model section)
-#   miroir-test-app_deployment-admin/assets/admin_data      (data  section)
+#   miroir-app-miroir/assets/miroir_model   (model section)
+#   miroir-app-miroir/assets/miroir_data    (data  section)
+#   miroir-app-miroir/src/assets            (admin section)
+#   miroir-app-admin/assets/admin_model     (model section)
+#   miroir-app-admin/assets/admin_data      (data  section)
 #
 # Library demo application data:
 #   miroir-test-app_deployment-library/assets/library_model
@@ -135,14 +135,14 @@ COPY packages/miroir-server/config/miroirConfig.server.docker.json \
 # -------------------------------------------------------------------------
 
 # Miroir framework assets
-COPY --from=builder /miroir/packages/miroir-test-app_deployment-miroir/assets \
-                    /seed/miroir-test-app_deployment-miroir/assets
-COPY --from=builder /miroir/packages/miroir-test-app_deployment-miroir/src \
-                    /seed/miroir-test-app_deployment-miroir/src
+COPY --from=builder /miroir/packages/miroir-app-miroir/assets \
+                    /seed/miroir-app-miroir/assets
+COPY --from=builder /miroir/packages/miroir-app-miroir/src \
+                    /seed/miroir-app-miroir/src
 
 # Admin application assets
-COPY --from=builder /miroir/packages/miroir-test-app_deployment-admin/assets \
-                    /seed/miroir-test-app_deployment-admin/assets
+COPY --from=builder /miroir/packages/miroir-app-admin/assets \
+                    /seed/miroir-app-admin/assets
 
 # Library demo assets (model + data only; admin dir is created automatically by the store)
 COPY --from=builder /miroir/packages/miroir-test-app_deployment-library/assets/library_model \

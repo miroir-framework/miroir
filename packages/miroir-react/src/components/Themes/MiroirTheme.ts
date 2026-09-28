@@ -24,7 +24,7 @@ import {
   darkStoredMiroirTheme,
   defaultStoredMiroirTheme,
   materialStoredMiroirTheme,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 import {
   // TableTheme,
   ResolvedTableTheme,

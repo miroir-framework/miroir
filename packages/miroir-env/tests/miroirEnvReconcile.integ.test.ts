@@ -252,7 +252,7 @@ describe("miroir-env check, import and prune on the state of a server start", ()
     mkdirSync(path.join(legacyAssets, "legacy_data"), { recursive: true });
     // before #321, Admin data rows were written into the package, with paths relative to packages/
     writeFileSync(
-      path.join(root, "packages/miroir-test-app_deployment-admin/assets/admin_data", ENTITY_DEPLOYMENT_UUID, `${LEGACY_DEPLOYMENT}.json`),
+      path.join(root, "packages/miroir-app-admin/assets/admin_data", ENTITY_DEPLOYMENT_UUID, `${LEGACY_DEPLOYMENT}.json`),
       JSON.stringify({
         uuid: LEGACY_DEPLOYMENT,
         parentName: "Deployment",
@@ -270,7 +270,7 @@ describe("miroir-env check, import and prune on the state of a server start", ()
     const check = await run(["check"], root);
     expect(check.exitCode).toBe(0);
     expect(check.stdout).toContain(
-      `warning: deployment ${LEGACY_DEPLOYMENT} (LegacyApplicationFilesystemDeployment) of packages/miroir-test-app_deployment-admin/assets/admin_data is no longer opened: Admin data lives in the environment state; record it with "miroir-env import"`,
+      `warning: deployment ${LEGACY_DEPLOYMENT} (LegacyApplicationFilesystemDeployment) of packages/miroir-app-admin/assets/admin_data is no longer opened: Admin data lives in the environment state; record it with "miroir-env import"`,
     );
     expect((await run(["check", "--strict"], root)).exitCode).toBe(1);
 

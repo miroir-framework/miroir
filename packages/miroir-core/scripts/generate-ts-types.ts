@@ -12,7 +12,7 @@ import {
   jzodToZodTextAndZodSchemaForTsGeneration,
 } from "@miroir-framework/jzod-ts";
 
-import { entityApplicationForAdmin, entityDeployment } from "miroir-test-app_deployment-admin";
+import { entityApplicationForAdmin, entityDeployment } from "miroir-app-admin";
 
 // Leftover Bundle EntityVersion (Entity counterpart not exported from admin package with this UUID).
 import entityDefinitionBundleV1 from "../src/assets/miroirAdmin/model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/01a051d8-d43c-430d-a98e-739048f54942.json";
@@ -48,7 +48,7 @@ import {
   testEndpointVersionV1,
   transformerMlSchema,
   undoRedoEndpointVersionV1,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 // import entityDefinitionTransformerTest from "../src/0_interfaces/1_core/bootstrapMlSchemas/fixtures/entityDefinitionTransformerTest.json" assert { type: "json" };
 // import entityDefinitionUnitTest from "../src/0_interfaces/1_core/bootstrapMlSchemas/fixtures/entityDefinitionUnitTest.json" assert { type: "json" };
 import {

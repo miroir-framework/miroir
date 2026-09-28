@@ -14,7 +14,7 @@ import {
 } from "miroir-test-app_deployment-library";
 import {
   selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
 import { ReportPage } from "../../../../src/miroir-fwk/4_view/routes/ReportPage";
 import type { ReportViewProps } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportHooks";
@@ -55,7 +55,7 @@ const deployment_Library: Deployment = {
   configuration: {
     admin: {
       emulatedServerType: "filesystem",
-      directory: "miroir-test-app_deployment-admin/assets",
+      directory: "miroir-app-admin/assets",
     },
     model: {
       emulatedServerType: "filesystem",

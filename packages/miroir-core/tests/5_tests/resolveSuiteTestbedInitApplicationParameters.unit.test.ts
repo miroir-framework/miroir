@@ -6,7 +6,7 @@ import {
 } from "../../src/5_tests/resolveSuiteTestbedInitApplicationParameters.js";
 import type { InitApplicationParameters } from "../../src/0_interfaces/4-services/PersistenceStoreControllerInterface.js";
 import type { MiroirTestSuite } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { miroirTest_runner_createEntity } from "miroir-test-app_deployment-miroir";
+import { miroirTest_runner_createEntity } from "miroir-app-miroir";
 
 const RUN_TEST = process.env.RUN_TEST;
 const shouldRun =

@@ -9,19 +9,19 @@
   "configuration": {
     "admin": {
       "emulatedServerType": "filesystem",
-      "directory":"miroir-test-app_deployment-miroir/src/assets"
+      "directory":"miroir-app-miroir/src/assets"
     },
     "model": {
       "emulatedServerType": "filesystem",
-      "directory":"miroir-test-app_deployment-miroir/assets/miroir_model"
+      "directory":"miroir-app-miroir/assets/miroir_model"
     },
     "data": {
       "emulatedServerType": "filesystem",
-      "directory":"miroir-test-app_deployment-miroir/assets/miroir_data"
+      "directory":"miroir-app-miroir/assets/miroir_data"
     },
     "modelVersion": {
       "emulatedServerType": "filesystem",
-      "directory":"miroir-test-app_deployment-miroir/assets/miroir_modelVersion"
+      "directory":"miroir-app-miroir/assets/miroir_modelVersion"
     }
   }
 }

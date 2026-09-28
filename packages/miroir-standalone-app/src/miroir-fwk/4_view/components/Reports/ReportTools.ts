@@ -24,7 +24,7 @@ import {
   type MultistepListChild,
 } from "./MultistepReportHost.js";
 
-import { entityQueryVersion } from "miroir-test-app_deployment-miroir";
+import { entityQueryVersion } from "miroir-app-miroir";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportTools");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",

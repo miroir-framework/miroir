@@ -9,7 +9,7 @@ import {
   miroirTest_fn_entityPrimaryKey,
   miroirTest_action_domainController_dataCrud,
   miroirTest_tr_core,
-} from 'miroir-test-app_deployment-miroir';
+} from 'miroir-app-miroir';
 
 import {
   resetUiIntegrationTestRunPreferencesForTests,

@@ -23,7 +23,7 @@ const runThis =
   RUN_TEST.startsWith("authentication.71");
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../../../..");
-const ADMIN_ASSETS = join(REPO_ROOT, "packages/miroir-test-app_deployment-admin/assets");
+const ADMIN_ASSETS = join(REPO_ROOT, "packages/miroir-app-admin/assets");
 const USER_ENTITY = "d20d09e5-0685-4fc7-b9bd-fcfa3845127a";
 const CREDENTIAL_ENTITY = "6c3ab489-1a36-4981-b5d0-bb3e02cfceed";
 const ALICE_UUID = "1c39328c-7de4-44ae-bcf1-5bbc38d8e267";

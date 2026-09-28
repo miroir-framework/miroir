@@ -36,7 +36,7 @@ import ReportSectionViewWithEditor from "./Reports/ReportSectionViewWithEditor.j
 import { reportSectionsFormSchema } from "./Reports/ReportTools.js";
 import { ThemedDialog, ThemedDialogTitle } from "./Themes/index.js";
 
-import { entityDefinitionReport as reportFormMlSchemaSource, entityEndpointVersion } from "miroir-test-app_deployment-miroir";
+import { entityDefinitionReport as reportFormMlSchemaSource, entityEndpointVersion } from "miroir-app-miroir";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JsonObjectEditFormDialog");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI"

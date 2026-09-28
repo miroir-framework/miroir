@@ -54,7 +54,7 @@
     "lodash": "4.18.1",
     "miroir-core": "*",
     "miroir-test-app_deployment-library": "*",
-    "miroir-test-app_deployment-miroir": "*",
+    "miroir-app-miroir": "*",
     "redux-saga": "1.3.0",
     "typed-redux-saga": "1.5.0",
     "zod": "3.25.76"

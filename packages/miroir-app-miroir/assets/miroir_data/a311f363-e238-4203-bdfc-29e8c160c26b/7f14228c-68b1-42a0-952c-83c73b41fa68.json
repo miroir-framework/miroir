@@ -73,7 +73,7 @@
           {
             "applications": {
               "miroir": {
-                "package": "miroir-test-app_deployment-miroir",
+                "package": "miroir-app-miroir",
                 "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                 "deployment": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
                 "store": "filesystem",
@@ -91,25 +91,25 @@
           "deployments": [
             {
               "applicationKey": "miroir",
-              "package": "miroir-test-app_deployment-miroir",
+              "package": "miroir-app-miroir",
               "deployment": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
               "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
               "configuration": {
                 "admin": {
                   "emulatedServerType": "filesystem",
-                  "directory": "packages/miroir-test-app_deployment-miroir/assets"
+                  "directory": "packages/miroir-app-miroir/assets"
                 },
                 "model": {
                   "emulatedServerType": "filesystem",
-                  "directory": "packages/miroir-test-app_deployment-miroir/assets/miroir_model"
+                  "directory": "packages/miroir-app-miroir/assets/miroir_model"
                 },
                 "data": {
                   "emulatedServerType": "filesystem",
-                  "directory": "packages/miroir-test-app_deployment-miroir/assets/miroir_data"
+                  "directory": "packages/miroir-app-miroir/assets/miroir_data"
                 },
                 "modelVersion": {
                   "emulatedServerType": "filesystem",
-                  "directory": "packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion"
+                  "directory": "packages/miroir-app-miroir/assets/miroir_modelVersion"
                 }
               }
             }
@@ -175,7 +175,7 @@
           {
             "applications": {
               "admin": {
-                "package": "miroir-test-app_deployment-admin",
+                "package": "miroir-app-admin",
                 "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                 "deployment": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
                 "store": "filesystem",
@@ -195,17 +195,17 @@
           "deployments": [
             {
               "applicationKey": "admin",
-              "package": "miroir-test-app_deployment-admin",
+              "package": "miroir-app-admin",
               "deployment": "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
               "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
               "configuration": {
                 "admin": {
                   "emulatedServerType": "filesystem",
-                  "directory": "packages/miroir-test-app_deployment-admin/assets"
+                  "directory": "packages/miroir-app-admin/assets"
                 },
                 "model": {
                   "emulatedServerType": "filesystem",
-                  "directory": "packages/miroir-test-app_deployment-admin/assets/admin_model"
+                  "directory": "packages/miroir-app-admin/assets/admin_model"
                 },
                 "data": {
                   "emulatedServerType": "filesystem",

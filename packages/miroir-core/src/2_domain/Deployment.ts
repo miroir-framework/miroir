@@ -2,7 +2,7 @@
 import {
   defaultMiroirMetaModel as defaultMiroirMetaModelRaw,
   selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 import { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import {
   GetBasicApplicationConfigurationParameters,

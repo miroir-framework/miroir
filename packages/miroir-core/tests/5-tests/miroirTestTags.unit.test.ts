@@ -29,7 +29,7 @@ import {
 const repoRoot = resolveMonorepoRoot();
 const miroirTestEntityVersionPath = join(
   repoRoot,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/51c647fe-07ec-411c-89cc-02689dc66d6a.json",
+  "packages/miroir-app-miroir/assets/miroir_modelVersion/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/51c647fe-07ec-411c-89cc-02689dc66d6a.json",
 );
 
 function readJson(path: string): any {

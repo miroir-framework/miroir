@@ -8,7 +8,7 @@ import { miroirTest_runner_returnDocument } from 'miroir-test-app_deployment-lib
 import {
   miroirTest_fn_entityPrimaryKey,
   miroirTest_tr_core,
-} from 'miroir-test-app_deployment-miroir';
+} from 'miroir-app-miroir';
 
 import {
   getIntegTestRunCoordinator,

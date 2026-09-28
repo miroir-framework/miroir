@@ -38,7 +38,7 @@
 
 import type { StoredMiroirTheme } from "miroir-core";
 import type { MiroirThemeFull } from "miroir-core";
-import { defaultStoredMiroirTheme, tableThemeSchemaJson } from "miroir-test-app_deployment-miroir";
+import { defaultStoredMiroirTheme, tableThemeSchemaJson } from "miroir-app-miroir";
 
 // ################################################################################################
 // TableTheme: color properties in sub-sections are optional.

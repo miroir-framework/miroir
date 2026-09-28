@@ -5,7 +5,7 @@ import type {
   LoggerInterface
 } from "miroir-core";
 import { defaultSelfApplicationDeploymentMap, MiroirLoggerFactory } from "miroir-core";
-import { runnerDeployApplication, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { runnerDeployApplication, selfApplicationMiroir } from "miroir-app-miroir";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { StoredRunnerView } from "./RunnerView.js";

@@ -56,12 +56,12 @@ import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
-import { deployment_Admin, deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 import {
   deployment_Library_DO_NO_USE,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
-import { defaultMiroirMetaModel, defaultStoredMiroirTheme } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel, defaultStoredMiroirTheme } from "miroir-app-miroir";
 import {
   defaultSpotifyAppModel,
   deployment_Spotify_DO_NO_USE,

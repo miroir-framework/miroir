@@ -11,7 +11,7 @@ import {
 } from "miroir-core";
 import { buildModelValidationGroupsFromFilesystem } from "miroir-core/model-validation-fs";
 
-import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel } from "miroir-app-miroir";
 
 // ================================================================================================
 // Model + data validation groups (filesystem-driven)
@@ -29,5 +29,5 @@ runModelValidationSuite({
   vitest,
   plan: buildModelValidationPlanFromGroups(modelTestsToRun),
   modelEnv: defaultMiroirModelEnvironment,
-  npmWorkspacePackage: "miroir-test-app_deployment-admin",
+  npmWorkspacePackage: "miroir-app-admin",
 });

@@ -38,7 +38,7 @@ import {
   entitySelfApplicationVersion,
   entityTheme,
   selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 import {
   selectCurrentReduxDeploymentsStateFromReduxState,
   selectMiroirSelectorQueryParams,

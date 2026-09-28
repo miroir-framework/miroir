@@ -45,7 +45,7 @@
     "loglevelnext": "6.0.0",
     "miroir-core": "*",
     "miroir-test-app_deployment-library": "*",
-    "miroir-test-app_deployment-miroir": "*",
+    "miroir-app-miroir": "*",
     "openai": "4.104.0",
     "rxjs": "7.8.2",
     "uuid": "11.1.0"

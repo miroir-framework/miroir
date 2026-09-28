@@ -44,10 +44,10 @@ ci/release/
 reference** that is intentional in normal development:
 
 - `miroir-core`'s `devBuild` (`generate-ts-types`) does a real value-level `import`
-  from the *built* `miroir-test-app_deployment-miroir` and
-  `miroir-test-app_deployment-admin` packages, to regenerate TypeScript types from
+  from the *built* `miroir-app-miroir` and
+  `miroir-app-admin` packages, to regenerate TypeScript types from
   their ML schema assets.
-- Conversely, `miroir-test-app_deployment-miroir`'s `src/Model.ts` /
+- Conversely, `miroir-app-miroir`'s `src/Model.ts` /
   `runnerMiroirEntityTestRegistry.ts` `import type { ... } from "miroir-core"`.
 
 In every package's manifest, this pair of edges is declared with two **different

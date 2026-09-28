@@ -52,9 +52,9 @@ import {
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
   selfApplicationVersionInitialMiroirVersion
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { deployment_Miroir } from "miroir-app-admin";
 import {
   ApplicationSection,
   CompositeActionSequence,
@@ -96,7 +96,7 @@ import {
   shouldCacheAllInstancesOnRefresh,
 } from "../1_core/localCache/cacheRefreshPolicy.js";
 import { ACTION_OK } from "../1_core/constants";
-import { defaultMiroirMetaModel as defaultMiroirMetaModelRaw } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel as defaultMiroirMetaModelRaw } from "miroir-app-miroir";
 import { expandResolvableResetAndinitializeDeploymentCompositeAction } from "../1_core/Deployment.js";
 import {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS

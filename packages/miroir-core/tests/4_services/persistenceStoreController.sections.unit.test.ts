@@ -23,7 +23,7 @@ import type {
 import { Action2Error } from "../../src/0_interfaces/2_domain/DomainElement.js";
 import { ACTION_OK } from "../../src/1_core/constants.js";
 import { PersistenceStoreController } from "../../src/4_services/PersistenceStoreController.js";
-import { entitySelfApplicationVersion } from "miroir-test-app_deployment-miroir";
+import { entitySelfApplicationVersion } from "miroir-app-miroir";
 
 // ---------------------------------------------------------------------------
 // Minimal test stubs

@@ -13,7 +13,7 @@ import {
   type MiroirModelEnvironment,
 } from "miroir-core";
 
-import wizardReport from "../../../miroir-test-app_deployment-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/dbd94bfe-b803-4bfd-8bb2-70a5932d5d1a.json" with { type: "json" };
+import wizardReport from "../../../miroir-app-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/dbd94bfe-b803-4bfd-8bb2-70a5932d5d1a.json" with { type: "json" };
 
 describe("wizard typecheck repro", () => {
   it("ConnectExternalServiceWizard report passes mlsTypeCheck against the report schema", () => {

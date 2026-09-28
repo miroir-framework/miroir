@@ -90,8 +90,8 @@ step "3/7 · deployment metadata packages"
 t0=$(now_secs)
 # These define core types as Jzod schemas; no miroir-core dependency.
 run_parallel_builds \
-  miroir-test-app_deployment-miroir \
-  miroir-test-app_deployment-admin \
+  miroir-app-miroir \
+  miroir-app-admin \
   miroir-test-app_deployment-library \
   miroir-test-app_deployment-postgres \
   miroir-test-app_deployment-designer

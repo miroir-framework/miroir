@@ -57,7 +57,7 @@ import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
-import { deployment_Admin, deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 import {
   Country3,
   defaultLibraryAppModel,
@@ -70,7 +70,7 @@ import {
 import {
   defaultMiroirMetaModel,
   defaultStoredMiroirTheme,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { selfApplicationDeploymentConfigurationsTO_REMOVE } from "../../src/miroir-fwk/4-tests/tests-utils.js";

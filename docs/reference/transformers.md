@@ -12,7 +12,7 @@ references:
   [dependent-types-for-transformer-composition](../proposals/dependent-types-for-transformer-composition.md).
 
 Stock definitions live in the Miroir application deployment assets
-(`packages/miroir-test-app_deployment-miroir/assets/miroir_data/a557419d-…/`, one JSON file per
+(`packages/miroir-app-miroir/assets/miroir_data/a557419d-…/`, one JSON file per
 transformer, keyed by `transformerType` in `applicationTransformerDefinitions`).
 
 **Virtual attributes** (Entity `mlSchema` tag `virtualAttribute`) are not a transformer type.

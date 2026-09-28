@@ -17,7 +17,7 @@
 #   build      Standard build - faster, but does not regenerate TypeScript types from Jzod schemas.
 #   devBuild   Full devBuild (default) – regenerates TypeScript types from Jzod schemas
 #              before building miroir-core. Required when schemas in
-#              packages/miroir-test-app_deployment-miroir/assets are modified.
+#              packages/miroir-app-miroir/assets are modified.
 #   typecheck  Type-check all packages with tsc --noEmit (no emit, no artefacts by default).
 #              Workspace packages resolve types from dist/, so run a normal build first
 #              if declaration files are missing or stale.
@@ -61,8 +61,8 @@ STATE_FILE="$SCRIPT_DIR/tmp/build-all-state"
 ALL_PACKAGES=(
   jzod
   jzod-ts
-  miroir-test-app_deployment-miroir
-  miroir-test-app_deployment-admin
+  miroir-app-miroir
+  miroir-app-admin
   miroir-core
   miroir-env
   miroir-localcache-redux
@@ -87,7 +87,7 @@ ALL_PACKAGES=(
 
 STAGE_OPTIONAL_JZOD=(jzod)
 STAGE_OPTIONAL_JZOD_TS=(jzod-ts)
-STAGE_DEPLOY_BOOTSTRAP=(miroir-test-app_deployment-miroir miroir-test-app_deployment-admin)
+STAGE_DEPLOY_BOOTSTRAP=(miroir-app-miroir miroir-app-admin)
 STAGE_CORE=(miroir-core)
 STAGE_CACHES_STORES=(
   miroir-env
@@ -614,11 +614,11 @@ record_time "2/9  jzod-ts (optional)" "$t0"
 # Step 3 – Deployment packages (import miroir-core types for DTS; devBuild
 #           regenerates core types from their dist in step 4)
 # ---------------------------------------------------------------------------
-step "3/9  · miroir-test-app_deployment-miroir & miroir-test-app_deployment-admin"
+step "3/9  · miroir-app-miroir & miroir-app-admin"
 t0=$(now_secs)
 bootstrap_miroir_core_for_deployment_dts
 run_stage_packages "deploy-bootstrap" "${STAGE_DEPLOY_BOOTSTRAP[@]}"
-record_time "3/9  miroir-test-app_deployment-miroir & miroir-test-app_deployment-admin" "$t0"
+record_time "3/9  miroir-app-miroir & miroir-app-admin" "$t0"
 
 # ---------------------------------------------------------------------------
 # Step 4 – miroir-core (optionally with type generation)

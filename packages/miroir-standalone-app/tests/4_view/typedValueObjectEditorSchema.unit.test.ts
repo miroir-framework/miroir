@@ -8,7 +8,7 @@ import {
   miroirTest_runner_returnDocument,
 } from "miroir-test-app_deployment-library";
 
-import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel } from "miroir-app-miroir";
 /**
  * TypedValueObjectEditor resolves the ML schema against useCurrentModelEnvironment(application, …).
  * Model-section Library instances (e.g. runner.returnDocument) must use the Library application so

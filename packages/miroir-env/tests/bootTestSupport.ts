@@ -24,8 +24,8 @@ import { repositoryRoot } from "./cliTestSupport";
 // Boot of a server-side DomainController from an environment, as miroir-server does it (#321).
 
 const PACKAGES = [
-  "miroir-test-app_deployment-miroir",
-  "miroir-test-app_deployment-admin",
+  "miroir-app-miroir",
+  "miroir-app-admin",
   "miroir-test-app_deployment-library",
   "miroir-test-app_deployment-designer",
 ];

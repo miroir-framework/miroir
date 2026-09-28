@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { miroirMlSchemaBootstrap } from "miroir-test-app_deployment-miroir";
+import { miroirMlSchemaBootstrap } from "miroir-app-miroir";
 import { entityBook } from "miroir-test-app_deployment-library";
 
 const RUN_TEST = process.env.RUN_TEST;

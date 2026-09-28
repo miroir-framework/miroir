@@ -7,7 +7,7 @@ import {
   testConfiguration_libraryBookDetailsSeed,
   testConfiguration_libraryDocumentSeed,
 } from "miroir-test-app_deployment-library";
-import { testConfiguration_libraryPublisherAndCountry } from "miroir-test-app_deployment-miroir";
+import { testConfiguration_libraryPublisherAndCountry } from "miroir-app-miroir";
 
 function playfieldFromInstance(instance: {
   uuid: string;

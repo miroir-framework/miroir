@@ -34,7 +34,7 @@ import {
   user1
 } from "miroir-test-app_deployment-library";
 
-import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel } from "miroir-app-miroir";
 
 /**
  * Session playfield triple (model + instances + init). Alias of miroir-core IntegTestbedResetParams.

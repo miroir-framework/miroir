@@ -73,7 +73,7 @@ import {
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { cleanLevel, packageName } from "./constants.js";
 
-import { deployment_Admin } from "miroir-test-app_deployment-admin";
+import { deployment_Admin } from "miroir-app-admin";
 import {
   entityBook,
   getDefaultLibraryModelEnvironmentDEFUNCT,
@@ -86,7 +86,7 @@ import {
   entityApplicationVersionCrossEntityVersion,
   entityEntityVersion,
   entitySelfApplicationVersion,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
 const REPO_ROOT = join(import.meta.dirname, "../../../..");
 const bookCountByPublisherQuery = JSON.parse(
@@ -272,15 +272,15 @@ const deployment_Miroir: Deployment = {
     },
     model: {
       emulatedServerType: "filesystem",
-      directory: "../miroir-test-app_deployment-miroir/assets/miroir_model",
+      directory: "../miroir-app-miroir/assets/miroir_model",
     },
     data: {
       emulatedServerType: "filesystem",
-      directory: "../miroir-test-app_deployment-miroir/assets/miroir_data",
+      directory: "../miroir-app-miroir/assets/miroir_data",
     },
     modelVersion: {
       emulatedServerType: "filesystem",
-      directory: "../miroir-test-app_deployment-miroir/assets/miroir_modelVersion",
+      directory: "../miroir-app-miroir/assets/miroir_modelVersion",
     },
   },
 };

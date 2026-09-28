@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import { deployment_Library_DO_NO_USE, defaultLibraryAppModel } from "miroir-test-app_deployment-library";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
-import { selfApplicationMiroir, defaultMiroirMetaModel, entityDefinitionEntity } from "miroir-test-app_deployment-miroir";
+import { deployment_Miroir } from "miroir-app-admin";
+import { selfApplicationMiroir, defaultMiroirMetaModel, entityDefinitionEntity } from "miroir-app-miroir";
 
 import { classifySchemaChange, computeSchemaRevision, getEndpointActions, type MetaModel } from "miroir-core";
 

@@ -10,7 +10,7 @@
  */
 import { describe, expect, it } from "vitest";
 
-import { entityMiroirRight, entityMiroirSecret } from "miroir-test-app_deployment-admin";
+import { entityMiroirRight, entityMiroirSecret } from "miroir-app-admin";
 
 import {
   buildTestbedApplicationAccessGrantInstance,

@@ -72,8 +72,8 @@ import {
   type CliCommandHandler,
 } from "../src/commands/commandsFromEndpoint.js";
 
-import { defaultMiroirMetaModel, instanceEndpointV1 } from "miroir-test-app_deployment-miroir";
-import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
+import { defaultMiroirMetaModel, instanceEndpointV1 } from "miroir-app-miroir";
+import { deployment_Miroir } from 'miroir-app-admin';
 const packageName = "miroir-cli";
 const fileName = "cli.integ.test";
 

@@ -26,11 +26,11 @@ import { useMiroirContextService } from "miroir-react";
 import { useCurrentModel, useCurrentModelEnvironment } from "../ReduxHooks.js";
 import { JsonDisplayHelper } from "miroir-react";
 import { usePageConfiguration } from "../services/usePageConfiguration.js";
-import { adminSelfApplication, entityApplicationForAdmin } from "miroir-test-app_deployment-admin";
+import { adminSelfApplication, entityApplicationForAdmin } from "miroir-app-admin";
 import { Formik, type FormikProps } from "formik";
 import { TypedValueObjectEditor } from "../components/Reports/TypedValueObjectEditor.js";
-import { reportEntityDetails } from "miroir-test-app_deployment-miroir";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { reportEntityDetails } from "miroir-app-miroir";
+import { deployment_Miroir } from "miroir-app-admin";
 import { reportUrl } from "../navigation.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ModelDiagramPage");

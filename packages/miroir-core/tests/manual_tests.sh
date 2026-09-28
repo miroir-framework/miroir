@@ -5,7 +5,7 @@
 
 cd ~/Mes\ documents/devhome/miroir-app-dev/
  
-npm run build -w miroir-test-app_deployment-miroir 
+npm run build -w miroir-app-miroir 
  
 RUN_TEST=adminTransformers.unit.test npm run testByFile -w miroir-core -- 'adminTransformers.unit.test'
 RUN_TEST=mustache.unit.test npm run testByFile -w miroir-core -- 'mustache.unit.test'

@@ -28,7 +28,7 @@ import { cleanLevel } from "../constants.js";
 import { usePageConfiguration } from "../services/index.js";
 import { emptyObject } from "../tools/emptyObject.js";
 
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { deployment_Miroir } from "miroir-app-admin";
 import {
   entityBook,
   selfApplicationLibrary,
@@ -41,7 +41,7 @@ import {
   entityTransformerDefinition,
   miroirTest_tr_resolveConditionalSchema,
   selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 // ################################################################################################
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TransformerBuilderPage");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

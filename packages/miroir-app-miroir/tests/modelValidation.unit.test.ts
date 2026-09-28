@@ -21,6 +21,6 @@ runModelValidationSuite({
     defaultMiroirMetaModelEntityNameToAttributeName,
   ),
   modelEnv: defaultMiroirModelEnvironment,
-  npmWorkspacePackage: "miroir-test-app_deployment-miroir",
+  npmWorkspacePackage: "miroir-app-miroir",
   logFoundEntities: defaultMiroirMetaModel.entities.map((entity: Entity) => entity.name),
 });

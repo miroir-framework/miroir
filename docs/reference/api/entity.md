@@ -18,7 +18,7 @@
 
 The structure of an Entity row is the `mlSchema` of the bootstrapped Entity `Entity` itself:
 
-`packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json`
+`packages/miroir-app-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json`
 
 Its `mlSchema` extends `entityDefinitionRoot` (from the Miroir fundamental schema `fe9b7d99-…`), which contributes `uuid`, `parentName`, `parentUuid`, `parentDefinitionVersionUuid` and `conceptLevel`.
 

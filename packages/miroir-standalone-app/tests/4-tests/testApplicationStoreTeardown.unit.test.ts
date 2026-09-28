@@ -4,7 +4,7 @@ import {
   entityApplicationForAdmin,
   entityDeployment,
   entityMiroirRight,
-} from "miroir-test-app_deployment-admin";
+} from "miroir-app-admin";
 
 import type { DomainControllerInterface } from "miroir-core";
 

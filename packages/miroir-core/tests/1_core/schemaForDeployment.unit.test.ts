@@ -1,6 +1,6 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { deployment_Miroir } from "miroir-app-admin";
 import {
   defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,
@@ -17,7 +17,7 @@ import {
   LIBRARY_TMP,
 } from "miroir-core";
 
-import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel } from "miroir-app-miroir";
 describe("getMiroirFundamentalSchemaForDeployment (Phase 1)", () => {
   it("returns the static schema for any deploymentUuid when model has no app-specific endpoints", () => {
     const result = getMiroirFundamentalSchemaForDeployment("any-uuid", defaultMiroirMetaModel);

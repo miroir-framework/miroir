@@ -37,8 +37,8 @@ import {
   type FoldedStateTree
 } from "miroir-react";
 
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
-import { entityQueryVersion } from "miroir-test-app_deployment-miroir";
+import { deployment_Miroir } from "miroir-app-admin";
+import { entityQueryVersion } from "miroir-app-miroir";
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import {

@@ -29,15 +29,15 @@
         },
         "model": {
           "emulatedServerType": "filesystem",
-          "directory": "../miroir-test-app_deployment-miroir/assets/miroir_model"
+          "directory": "../miroir-app-miroir/assets/miroir_model"
         },
         "data": {
           "emulatedServerType": "filesystem",
-          "directory": "../miroir-test-app_deployment-miroir/assets/miroir_data"
+          "directory": "../miroir-app-miroir/assets/miroir_data"
         },
         "modelVersion": {
           "emulatedServerType": "filesystem",
-          "directory": "../miroir-test-app_deployment-miroir/assets/miroir_modelVersion"
+          "directory": "../miroir-app-miroir/assets/miroir_modelVersion"
         }
       },
       "537fafe0-bb56-4e8b-883b-e65c0a05de17": {

@@ -25,7 +25,7 @@ import {
   type StoreUnitConfiguration,
   type TestbedUuids,
 } from "miroir-core";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { deployment_Miroir } from "miroir-app-admin";
 import {
   defaultAppForTestModel,
   deployment_AppForTest_DO_NO_USE,
@@ -36,7 +36,7 @@ import {
   deployment_Library_DO_NO_USE,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
-import { defaultMiroirMetaModel, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel, selfApplicationMiroir } from "miroir-app-miroir";
 import { browserMcpServerUrl, runMcpToolRunner } from "../4_view/components/Runners/runMcpToolRunner.js";
 import { runRealServerClientBootstrap } from "./runRealServerClientBootstrap.js";
 import { runTeardownTestApplicationStores } from "./testApplicationStoreTeardown.js";

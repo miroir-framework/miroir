@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { deployment_Miroir } from "miroir-app-admin";
 
 import {
   defaultMetaModelEnvironment,
@@ -10,7 +10,7 @@ import {
   resolveFundamentalSchemaForDeployment,
 } from "miroir-core";
 
-import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel } from "miroir-app-miroir";
 describe("defaultMiroirModelEnvironment (Phase 1)", () => {
   it("miroirFundamentalMlSchema equals getMiroirFundamentalSchemaForDeployment output", () => {
     expect(defaultMiroirModelEnvironment.miroirFundamentalMlSchema).toBe(

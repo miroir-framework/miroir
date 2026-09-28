@@ -32,7 +32,7 @@ Each deployment package under `packages/miroir-test-app_deployment-*/assets/` us
 | `{prefix}_modelVersion/` | `modelVersion` | **Optional.** Model history (see [Versioning reference](versioning.md)) |
 | `{prefix}_admin/` (admin package) | `admin` / nested admin model+data | Admin meta-configuration |
 
-Only **`miroir-test-app_deployment-miroir`** currently ships a `{prefix}_modelVersion/` tree (`miroir_modelVersion/`).
+Only **`miroir-app-miroir`** currently ships a `{prefix}_modelVersion/` tree (`miroir_modelVersion/`).
 
 ### Example: the Library application
 
@@ -55,7 +55,7 @@ Every application instance reads a `MiroirConfigClient` at startup. There are tw
 
 What the process can do is a separate snapshot. See [Process capabilities](process-capabilities.md) for the synoptic (what each flag enables, where to set it, product-shape defaults).
 
-**Where it comes from (#321).** Run from this repository, the server, the web client and the tests derive their configuration from an **environment** (`environments/*.json`, selected by `MIROIR_ENV`, then `environments/local.json`, then `dev`): which applications are installed, and where each section lives. The Admin data of a running environment, including the Deployment and AdminApplication rows the environment implies, is in the gitignored `.miroir/<environment>/`; the tracked `miroir-test-app_deployment-admin/assets/admin_data` is only its seed. See [Environments](environments.md). The configuration files described below remain for the release binary, the Docker image and Electron.
+**Where it comes from (#321).** Run from this repository, the server, the web client and the tests derive their configuration from an **environment** (`environments/*.json`, selected by `MIROIR_ENV`, then `environments/local.json`, then `dev`): which applications are installed, and where each section lives. The Admin data of a running environment, including the Deployment and AdminApplication rows the environment implies, is in the gitignored `.miroir/<environment>/`; the tracked `miroir-app-admin/assets/admin_data` is only its seed. See [Environments](environments.md). The configuration files described below remain for the release binary, the Docker image and Electron.
 
 ### 1. Remote Server (`emulateServer: false`)
 
@@ -139,7 +139,7 @@ Each section (`admin`, `model`, `data`, and optionally `modelVersion`) of a depl
 ```
 
 - Used exclusively in the `miroir-sandbox` demo SPA.
-- All data is statically imported at build time from the deployment packages (`miroir-test-app_deployment-miroir`, `miroir-test-app_deployment-admin`).
+- All data is statically imported at build time from the deployment packages (`miroir-app-miroir`, `miroir-app-admin`).
 - Read-only: no writes are persisted.
 - **No model history:** the bundled Miroir profile has no `modelVersion` section and cannot host one (see [Versioning reference](versioning.md)).
 - Registered at startup via `miroirBundledStoreSectionStartup(configurationService, bundledData)`.

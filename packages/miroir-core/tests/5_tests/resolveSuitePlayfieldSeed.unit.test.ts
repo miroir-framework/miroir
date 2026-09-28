@@ -29,7 +29,7 @@ import {
   miroirTest_runner_dropEntity,
   miroirTest_runner_freezeApplicationVersion,
   selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 import {
   miroirTest_runner_lendDocument,
   miroirTest_runner_returnDocument,
@@ -326,7 +326,7 @@ function loadTestConfiguration(path: string): TestConfigurationPlayfield {
 (shouldRun ? describe : describe.skip)("Miroir Publisher+Country TestConfiguration", () => {
   const configPath = join(
     REPO_ROOT,
-    "packages/miroir-test-app_deployment-miroir/assets/miroir_data",
+    "packages/miroir-app-miroir/assets/miroir_data",
     TEST_CONFIGURATION_ENTITY_UUID,
     `${MIROIR_PUBLISHER_COUNTRY_CONFIG_UUID}.json`,
   );

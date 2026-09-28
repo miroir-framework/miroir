@@ -44,13 +44,13 @@ Query tests are **MiroirTest** instances (see `docs/reference/testing.md`), not 
 
 | Suite (`--suites` name) | File | Leaves |
 |---|---|---|
-| `query.library.instances` | `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/a7a74c51-f24e-43d6-bd62-ba3ebcded97d.json` | `queryTest` |
-| `resolveQueryTemplates` | `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/40fd4dae-037c-4b1b-ad33-204d15e90dba.json` | template resolution |
+| `query.library.instances` | `packages/miroir-app-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/a7a74c51-f24e-43d6-bd62-ba3ebcded97d.json` | `queryTest` |
+| `resolveQueryTemplates` | `packages/miroir-app-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/40fd4dae-037c-4b1b-ad33-204d15e90dba.json` | template resolution |
 
 After editing a MiroirTest JSON file, rebuild the deployment package before running:
 
 ```bash
-npm run build -w miroir-test-app_deployment-miroir
+npm run build -w miroir-app-miroir
 ```
 
 ## Test Execution Commands
@@ -103,7 +103,7 @@ Copy an existing leaf close to what you need; the suite file shows the templated
 
 ### Step 3: Run the Test (Expect Failure)
 ```bash
-npm run build -w miroir-test-app_deployment-miroir
+npm run build -w miroir-app-miroir
 npm run testMiroir -w miroir-core -- --suites query.library.instances --mode unit \
   --filter '{"query.library.instances":["my new query test"]}'
 ```
@@ -334,8 +334,8 @@ runtimeTransformers: {
 
 | Purpose | Path |
 |---------|------|
-| Query tests (MiroirTest `query.library.instances`) | `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/a7a74c51-f24e-43d6-bd62-ba3ebcded97d.json` |
-| Template resolution tests (MiroirTest `resolveQueryTemplates`) | `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/40fd4dae-037c-4b1b-ad33-204d15e90dba.json` |
+| Query tests (MiroirTest `query.library.instances`) | `packages/miroir-app-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/a7a74c51-f24e-43d6-bd62-ba3ebcded97d.json` |
+| Template resolution tests (MiroirTest `resolveQueryTemplates`) | `packages/miroir-app-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/40fd4dae-037c-4b1b-ad33-204d15e90dba.json` |
 | Extractor integration tests | `packages/miroir-standalone-app/tests/4_storage/ExtractorPersistenceStoreRunner.integ.test.tsx` |
 | Template integration tests | `packages/miroir-standalone-app/tests/4_storage/ExtractorTemplatePersistenceStoreRunner.integ.test.tsx` |
 | Domain state test data | `packages/miroir-core/tests/2_domain/domainState.json` |

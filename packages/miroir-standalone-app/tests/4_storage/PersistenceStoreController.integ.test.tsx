@@ -37,7 +37,7 @@ import {
   deployment_Admin,
   deployment_Miroir,
   entityStoreBasedConfiguration,
-} from "miroir-test-app_deployment-admin";
+} from "miroir-app-admin";
 import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-library";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
@@ -62,7 +62,7 @@ import {
   entityEntity,
   entityEntityVersion,
   miroirModelInitializeCreateEntityOrder,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
 const expectedMiroirBootstrapEntityUuids = [
   entityEntity.uuid!,

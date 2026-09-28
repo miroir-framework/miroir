@@ -12,16 +12,16 @@ import {
   entityDefinitionsByEntityName,
 } from "../../src/index.js";
 import { mlObjectFlatten } from "../../src/1_core/mls/mlObjectFlatten.js";
-import { defaultMiroirMetaModel } from "../../../miroir-test-app_deployment-miroir/src/Model.js";
+import { defaultMiroirMetaModel } from "../../../miroir-app-miroir/src/Model.js";
 
 const REPO_ROOT = join(import.meta.dirname, "../../../..");
 const MODEL_ENTITIES = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "packages/miroir-app-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
 );
 const ENTITY_EV = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "packages/miroir-app-miroir/assets/miroir_modelVersion/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
 );
 
 function readEntity(filename: string): Entity {

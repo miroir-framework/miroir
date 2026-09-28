@@ -19,7 +19,7 @@ import {
   type MlObject,
   type MiroirModelEnvironment,
 } from "miroir-core";
-import { defaultMiroirMetaModel, instanceEndpointV1 } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel, instanceEndpointV1 } from "miroir-app-miroir";
 import {
   deployment_Library_DO_NO_USE,
   getDefaultLibraryModelEnvironmentDEFUNCT,

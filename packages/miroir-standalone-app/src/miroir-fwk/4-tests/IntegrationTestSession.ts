@@ -32,7 +32,7 @@ import { setupMiroirDomainController } from "miroir-localcache-redux";
 import { miroirBundledStoreSectionStartup } from "miroir-store-bundled";
 import type { BundledDeploymentData } from "miroir-store-bundled";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { deployment_Admin } from "miroir-test-app_deployment-admin";
+import { deployment_Admin } from "miroir-app-admin";
 // Node-only store drivers (filesystem / postgres / mongodb) must NOT be static
 // imports here — evaluating them in the Vite webApp pulls the MongoDB Node
 // driver and crashes with "Class extends value undefined is not a constructor".
@@ -71,7 +71,7 @@ import {
   type Uuid,
 } from "miroir-core";
 
-import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel } from "miroir-app-miroir";
 
 import type {
   AdminStoreOptions,

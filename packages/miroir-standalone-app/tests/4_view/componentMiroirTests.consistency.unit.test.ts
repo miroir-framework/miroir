@@ -27,7 +27,7 @@ import { defaultMiroirModelEnvironment, mlsTypeCheck, type MlElement } from "mir
 import { resolveRepoRoot } from "../helpers/integrationTestProfiles.js";
 
 const REPO_ROOT = resolveRepoRoot();
-const DEPLOYMENT_MIROIR = join(REPO_ROOT, "packages/miroir-test-app_deployment-miroir/assets");
+const DEPLOYMENT_MIROIR = join(REPO_ROOT, "packages/miroir-app-miroir/assets");
 const MIROIR_TEST_DATA_FOLDER = join(DEPLOYMENT_MIROIR, "miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b");
 const MIROIR_TEST_ENTITY_PATH = join(
   DEPLOYMENT_MIROIR,

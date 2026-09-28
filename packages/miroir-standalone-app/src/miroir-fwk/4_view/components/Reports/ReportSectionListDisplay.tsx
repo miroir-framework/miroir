@@ -104,7 +104,7 @@ const DEFAULT_LIST_GRID_SIZING: ListGridSizingSnapshot = {
   pageSize: DEFAULT_GRID_PAGE_SIZE,
 };
 
-import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { selfApplicationMiroir } from "miroir-app-miroir";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionListDisplay");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",

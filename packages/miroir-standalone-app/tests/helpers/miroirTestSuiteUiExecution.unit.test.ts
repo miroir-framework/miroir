@@ -11,7 +11,7 @@ import {
   miroirTest_tr_core,
   miroirTest_runner_createEntity,
   miroirTest_runner_dropEntity,
-} from 'miroir-test-app_deployment-miroir';
+} from 'miroir-app-miroir';
 
 import {
   classifyMiroirTestListExecutionCapabilities,

@@ -14,7 +14,7 @@ import {
   type StoreUnitConfiguration,
   type Uuid,
 } from "miroir-core";
-import { deployment_Admin, deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-library";
 
 import {
@@ -23,7 +23,7 @@ import {
   type IntegrationTestApplicationIdentity,
 } from "./IntegrationTestSession.js";
 
-import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel } from "miroir-app-miroir";
 import { ephemeralStoreIdentifier } from "./runnerIntegTestSupport.js";
 /** Postgres / identifier-safe name derived from applicationName. */
 export function sanitizeStoreIdentifier(name: string): string {

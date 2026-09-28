@@ -158,7 +158,7 @@ No database password reaches the browser. For `realServer-sql` from the browser,
 
 ## First run of an existing checkout
 
-Before #321, applications installed from the UI were written into `packages/miroir-test-app_deployment-admin/assets/admin_data`, which the server no longer reads. `npm run miroir-env -- check` lists those rows, and `npm run miroir-env -- import` records the deployments in `environments/local.json`.
+Before #321, applications installed from the UI were written into `packages/miroir-app-admin/assets/admin_data`, which the server no longer reads. `npm run miroir-env -- check` lists those rows, and `npm run miroir-env -- import` records the deployments in `environments/local.json`.
 
 ---
 

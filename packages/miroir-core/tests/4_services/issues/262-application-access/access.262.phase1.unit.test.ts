@@ -19,7 +19,7 @@ const runThis = !RUN_TEST || RUN_TEST === "access.262" || RUN_TEST.startsWith("a
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../../../..");
 const RIGHT_DIR = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-admin/assets/admin_data/a6136fc7-949b-4d64-9f13-dd3afce1ab3c",
+  "packages/miroir-app-admin/assets/admin_data/a6136fc7-949b-4d64-9f13-dd3afce1ab3c",
 );
 
 const ALICE = { miroirUserUuid: "1c39328c-7de4-44ae-bcf1-5bbc38d8e267", username: "alice" };
