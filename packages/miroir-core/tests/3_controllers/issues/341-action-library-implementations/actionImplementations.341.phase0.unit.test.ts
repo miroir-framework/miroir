@@ -102,11 +102,16 @@ describe("#341 phase 0: Miroir action dispatch characterization", () => {
           action.actionImplementation.actionImplementationType,
         ]),
     );
-    // Slice 0: entity_DuplicateAttribute only. Slice 1: prepareOpenApiDocument.
-    expect(implemented).toEqual([
-      ["entity_DuplicateAttribute", "compositeActionTemplate"],
-      ["prepareOpenApiDocument", "libraryImplementation"],
-    ]);
+    // Slice 0: entity_DuplicateAttribute only. Slice 1: prepareOpenApiDocument. Slice 2: DomainEndpoint.
+    expect(Object.fromEntries(implemented)).toEqual({
+      entity_DuplicateAttribute: "compositeActionTemplate",
+      ...Object.fromEntries(
+        expectedActionTypesByEndpoint.DomainEndpoint.map((actionType) => [
+          actionType,
+          "libraryImplementation",
+        ]),
+      ),
+    });
   });
 
   it("autocommits from the UI after 6 action types", () => {

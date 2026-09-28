@@ -55,6 +55,10 @@
             }
           }
         },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_transactionalInstanceAction"
+        },
         "actionErrors": {
           "type": "literal",
           "definition": "FailedHandleTransactionalInstanceAction"
@@ -116,6 +120,10 @@
             }
           }
         },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_compositeActionSequence"
+        },
         "actionErrors": {
           "type": "literal",
           "definition": "FailedCompositeAction"
@@ -151,6 +159,10 @@
             }
           }
         },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_compositeRunBoxedQueryAction"
+        },
         "actionErrors": {
           "type": "literal",
           "definition": "FailedToRunBoxedQuery"
@@ -185,6 +197,10 @@
               "relativePath": "runBoxedQueryTemplateAction"
             }
           }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_compositeRunBoxedQueryTemplateAction"
         },
         "actionErrors": {
           "type": "literal",
@@ -301,6 +317,10 @@
             }
           }
         },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_connectExternalService"
+        },
         "actionErrors": {
           "type": "literal",
           "definition": "FailedToConnectExternalService"
@@ -354,13 +374,13 @@
             }
           }
         },
-        "actionErrors": {
-          "type": "literal",
-          "definition": "FailedToPrepareOpenApiDocument"
-        },
         "actionImplementation": {
           "actionImplementationType": "libraryImplementation",
           "inMemoryImplementationFunctionName": "handleAction_prepareOpenApiDocument"
+        },
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedToPrepareOpenApiDocument"
         }
       }
     ]

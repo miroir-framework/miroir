@@ -15,6 +15,7 @@ import {
 } from "../0_interfaces/2_domain/DomainControllerInterface";
 import type {
   ActionImplementationContext,
+  ConnectExternalServiceAction,
   DomainControllerActionHost,
 } from "../0_interfaces/3_controllers/DomainControllerActionHost";
 import { miroirActionImplementations } from "./ActionImplementations";
@@ -3730,33 +3731,38 @@ export class DomainController implements DomainControllerInterface, DomainContro
    * #284 — probe then upsert endpoint + Model report on bag.application (never host props.application).
    * Public scheme only in Slice 1; do not log the bag.
    */
-  private async handleConnectExternalService(
-    domainAction: {
-      actionType: "connectExternalService";
-      endpoint: string;
-      payload: {
-        application: string;
-        endpointName: string;
-        openApiDocument: string;
-        baseUrl: string;
-        userAgent?: string;
-        authenticated: boolean;
-        /** Slice 4: customToken | clientCredentials | authorizationCode when authenticated. */
-        scheme?: string;
-        authorizationTemplate?: string;
-        credentialKey?: string;
-        tokenUrl?: string;
-        clientIdKey?: string;
-        clientSecretKey?: string;
-        refreshTokenKey?: string;
-        scopes?: string;
-        checkedOperationIds: string[];
-        probeOperationId: string;
-        probeParameters: Record<string, unknown>;
-        /** Slice 2 / Slice 4: temporary process-map values for the probe. */
-        processSecrets?: Record<string, string>;
-      };
-    },
+  // #341: was the transactionalInstanceAction case of handleActionInternal
+  async handleTransactionalInstanceAction(
+    domainAction: TransactionalInstanceAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2VoidReturnType> {
+    try {
+      await this.callUtil.callLocalCacheAction(
+        {}, // context
+        {}, // continuation
+        applicationDeploymentMap,
+        domainAction,
+      );
+    } catch (error) {
+      log.warn(
+        "DomainController handleAction caught exception when handling",
+        domainAction.actionType,
+        "application",
+        domainAction.payload.application,
+        "deployment",
+        applicationDeploymentMap[domainAction.payload.application],
+        "action",
+        domainAction,
+        "exception",
+        error,
+      );
+    }
+    return ACTION_OK;
+  }
+
+  // ##############################################################################################
+  async handleConnectExternalService(
+    domainAction: ConnectExternalServiceAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
     principal?: AuthPrincipal,
   ): Promise<Action2VoidReturnType> {
@@ -4601,75 +4607,6 @@ export class DomainController implements DomainControllerInterface, DomainContro
             applicationDeploymentMap,
             domainAction,
             currentModel,
-          );
-        }
-        case "transactionalInstanceAction": {
-          try {
-            await this.callUtil.callLocalCacheAction(
-              {}, // context
-              {}, // continuation
-              applicationDeploymentMap,
-              domainAction,
-            );
-          } catch (error) {
-            log.warn(
-              "DomainController handleAction caught exception when handling",
-              domainAction.actionType,
-              "application",
-              domainAction.payload.application,
-              "deployment",
-              applicationDeploymentMap[domainAction.payload.application],
-              "action",
-              domainAction,
-              "exception",
-              error,
-            );
-          }
-          return Promise.resolve(ACTION_OK);
-          break;
-        }
-        case "compositeRunBoxedQueryTemplateAction": {
-          return this.handleCompositeRunBoxedQueryTemplateAction(
-            domainAction,
-            applicationDeploymentMap,
-            {},
-            {},
-            principal,
-          );
-          throw new Error(
-            "DomainController handleAction compositeRunBoxedQueryTemplateAction is not implemented yet",
-          );
-        }
-        case 'compositeRunBoxedQueryAction':{
-          return this.handleCompositeRunBoxedQueryAction(
-            domainAction,
-            applicationDeploymentMap,
-            {},
-            principal,
-          );
-          // throw new Error(
-          //   "DomainController handleAction compositeRunBoxedQueryAction is not implemented yet",
-          // );
-        }
-        case "compositeActionSequence": {
-          // old school, not used anymore (or should not be used anymore)
-          return this.handleCompositeAction(
-            domainAction,
-            applicationDeploymentMap,
-            currentModel ?? ({} as MiroirModelEnvironment),
-            {}, // actionParamValues, not used in the old compositeActionSequence, should be removed from the signature
-            principal,
-          );
-          // throw new Error(
-          //   "DomainController handleAction compositeActionSequence should not be used anymore",
-          // );
-          break;
-        }
-        case "connectExternalService": {
-          return this.handleConnectExternalService(
-            domainAction as any,
-            applicationDeploymentMap,
-            principal,
           );
         }
         case "probeExternalService" as any: {
@@ -5608,7 +5545,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
   // }
 
   // ##############################################################################################
-  private async handleCompositeRunBoxedQueryAction(
+  async handleCompositeRunBoxedQueryAction(
     currentAction: CompositeRunBoxedQueryAction,
     // {
     //   actionType: "compositeRunBoxedQueryAction";
@@ -5747,7 +5684,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
   // }
 
   // ##############################################################################################
-  private async handleCompositeRunBoxedQueryTemplateAction(
+  async handleCompositeRunBoxedQueryTemplateAction(
     currentAction: CompositeRunBoxedQueryTemplateAction,
     // {
     //   actionType: "compositeRunBoxedQueryTemplateAction";

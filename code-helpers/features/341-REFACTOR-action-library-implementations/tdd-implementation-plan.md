@@ -15,7 +15,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/341
 Working branch: `claude/action-library-implementations-1jkrjp` (from `_integration` 9ae1aa9)
 
-**Resume note:** Slices 0-1 DONE; next is Slice 2 (DomainEndpoint).
+**Resume note:** Slices 0-2 DONE; next is Slice 3 (InstanceEndpoint).
 
 ---
 
@@ -38,7 +38,7 @@ This plan does **not** migrate Persistence / LocalCache actions, touch the 5 dec
 |---|---|---|---|
 | 0 | Characterize dispatch and Endpoint inventory | ✅ | `actionImplementations.341.phase0.unit.test.ts` + baseline `action.domainController.*` |
 | 1 | Tracer: `prepareOpenApiDocument` runs from its library reference | ✅ | `actionImplementations.341.phase1.unit.test.ts` |
-| 2 | DomainEndpoint actions | ⬜ | `action.scenario.*`, `integ-action-284-*`, phase1 test extended |
+| 2 | DomainEndpoint actions | ✅ | `action.scenario.*`, `integ-action-284-*`, phase1 test extended |
 | 3 | InstanceEndpoint actions | ⬜ | `action.domainController.dataCrud*` |
 | 4 | ModelEndpoint actions | ⬜ | `action.domainController.modelCrud*`, `freezeApplicationVersion` |
 | 5 | StoreManagement and UndoRedo actions | ⬜ | every integ session (open/close store), `modelUndoRedo` |
@@ -198,7 +198,7 @@ npm run test -w miroir-core -- ''
 
 ## Slice 2 — DomainEndpoint actions
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE (2026-09-28)
 
 ### Goal
 
@@ -230,6 +230,13 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 ```
 
 ### Realization
+
+- 5 map entries (`handleAction_transactionalInstanceAction`, `_compositeActionSequence`, `_compositeRunBoxedQueryAction`, `_compositeRunBoxedQueryTemplateAction`, `_connectExternalService`) and their 5 `case`s removed from `handleActionInternal`. DomainEndpoint now declares all 6 of its actions.
+- The `transactionalInstanceAction` case body became the public method `handleTransactionalInstanceAction`. `handleCompositeRunBoxedQueryAction`, `handleCompositeRunBoxedQueryTemplateAction` and `handleConnectExternalService` became public, and their signatures are in `DomainControllerActionHost`.
+- The inline payload type of `handleConnectExternalService` moved to the interface file as `ConnectExternalServiceAction`.
+- The phase0 check on implemented actions is now order-insensitive, keyed by action type.
+- Endpoint JSON edits go through a small script (normalised key order: `actionImplementation` right after `actionParameters`).
+- Validation: modelValidation, lint, `npm run test -w miroir-core -- ''` (2096 passed), `nonreg:filesystem --runner shared` 78/78 (covers `action.scenario.*`, the `integ-action-284-*` steps and `externalServices-spotify`).
 
 ---
 
