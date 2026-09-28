@@ -28,6 +28,28 @@ if is_empty "$DATA_DIR"; then
   find "${DATA_DIR}" -maxdepth 3 -type d | sed 's|^|  |'
 else
   echo "[miroir] Data volume already initialised — skipping seed."
+  # #344: application packages were renamed by role. A volume seeded before
+  # the rename keeps its data under the old directory names, and its
+  # Deployment rows point there: move the directories and rewrite the paths.
+  for rename in \
+    miroir-test-app_deployment-miroir:miroir-app-miroir \
+    miroir-test-app_deployment-admin:miroir-app-admin \
+    miroir-test-app_deployment-library:miroir-example-library \
+    miroir-test-app_deployment-spotify:miroir-example-spotify \
+    miroir-test-app_deployment-designer:miroir-example-designer \
+    miroir-test-app_deployment-postgres:miroir-example-postgres \
+    miroir-test-app_deployment-appForTest:miroir-fixture-appForTest; do
+    old="${rename%%:*}"
+    new="${rename#*:}"
+    if [ -d "${DATA_DIR}/${old}" ] && [ ! -e "${DATA_DIR}/${new}" ]; then
+      mv "${DATA_DIR}/${old}" "${DATA_DIR}/${new}"
+      echo "[miroir] Moved ${old} to ${new}."
+    fi
+    find "${DATA_DIR}" -type f -name '*.json' -exec grep -l "${old}" {} + 2>/dev/null | while read -r file; do
+      sed -i "s/${old}/${new}/g" "$file"
+      echo "[miroir] Rewrote ${old} paths in ${file}."
+    done
+  done
 fi
 
 # ── TLS setup ─────────────────────────────────────────────────────────────────
