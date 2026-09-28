@@ -470,6 +470,14 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     LoggerGlobalContext.setPhase(this.phaseStack[this.phaseStack.length - 1]);
   }
 
+  removePhase(phase: LogPhase): void {
+    const index = this.phaseStack.lastIndexOf(phase);
+    if (index >= 0) {
+      this.phaseStack.splice(index, 1);
+    }
+    LoggerGlobalContext.setPhase(this.phaseStack[this.phaseStack.length - 1]);
+  }
+
   getPhase(): LogPhase | undefined {
     return this.phaseStack[this.phaseStack.length - 1];
   }

@@ -175,6 +175,8 @@ export interface MiroirActivityTrackerInterface {
 
   pushPhase(phase: "bootstrap" | "rollback" | "query" | "assertion"): void;
   popPhase(): void;
+  /** Removes the latest occurrence of `phase`, for spans that may overlap (#341). */
+  removePhase(phase: "bootstrap" | "rollback" | "query" | "assertion"): void;
   getPhase(): "bootstrap" | "rollback" | "query" | "assertion" | undefined;
 
   trackAction<T>(

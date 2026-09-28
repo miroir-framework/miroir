@@ -3305,14 +3305,15 @@ export class DomainController implements DomainControllerInterface, DomainContro
         ),
       );
     }
-    // look up the action implementation in the currentModelEnvironment;
-    // Miroir Endpoints fall back to the bundled ones (#341), they must resolve before any store is open
-    const currentEndpointDefinition: EndpointDefinition | undefined =
-      currentModelEnvironment?.endpointsByUuid[(domainAction as any).endpoint] ??
-      currentModelEnvironment?.miroirMetaModel?.endpoints?.find((e) => e.uuid === (domainAction as any).endpoint) ??
-      (isMiroirAction
-        ? defaultMiroirModelEnvironment.endpointsByUuid[(domainAction as any).endpoint]
-        : undefined);
+    // look up the action implementation in the currentModelEnvironment.
+    // #341: Miroir Endpoints always come from the bundled meta-model: they must resolve before any
+    // store is open, and a stored copy may predate the implementations declared on its actions.
+    const currentEndpointDefinition: EndpointDefinition | undefined = isMiroirAction
+      ? defaultMiroirModelEnvironment.endpointsByUuid[(domainAction as any).endpoint]
+      : (currentModelEnvironment?.endpointsByUuid[(domainAction as any).endpoint] ??
+        currentModelEnvironment?.miroirMetaModel?.endpoints?.find(
+          (e) => e.uuid === (domainAction as any).endpoint,
+        ));
 
     log.info(
       "DomainController handleApplicationAction currentEndpointDefinition",
@@ -3466,7 +3467,8 @@ export class DomainController implements DomainControllerInterface, DomainContro
       );
     } finally {
       if (actionPhase) {
-        this.miroirContext.miroirActivityTracker.popPhase();
+        // an overlapping action may have pushed its own phase meanwhile
+        this.miroirContext.miroirActivityTracker.removePhase(actionPhase);
       }
       LoggerGlobalContext.setAction(undefined);
       this.miroirContext.miroirActivityTracker.setAction(undefined);

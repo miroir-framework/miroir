@@ -45,22 +45,35 @@ const prepareOpenApiDocumentAction = {
   payload: { url: DOCUMENT_URL },
 } as any;
 
-function environmentWithImplementationName(name: string): MiroirModelEnvironment {
+function newRemoteDomainController(): DomainController {
+  const miroirActivityTracker = new MiroirActivityTracker();
+  const miroirContext = new MiroirContext(
+    miroirActivityTracker,
+    new MiroirEventService(miroirActivityTracker),
+  );
+  return new DomainController("remote", miroirContext, {} as any, {} as any);
+}
+
+/** A copy of the DomainEndpoint whose prepareOpenApiDocument definition is changed by `change`. */
+function domainEndpointWith(change: (action: any) => void, endpointUuid = DOMAIN_ENDPOINT_UUID): any {
   const domainEndpoint = structuredClone(
     defaultMiroirModelEnvironment.endpointsByUuid[DOMAIN_ENDPOINT_UUID],
-  );
-  const action = (getEndpointActions(domainEndpoint) ?? []).find(
-    (a: any) => a.actionParameters.actionType.definition == "prepareOpenApiDocument",
   ) as any;
-  action.actionImplementation = {
-    actionImplementationType: "libraryImplementation",
-    inMemoryImplementationFunctionName: name,
-  };
+  domainEndpoint.uuid = endpointUuid;
+  change(
+    (getEndpointActions(domainEndpoint) ?? []).find(
+      (a: any) => a.actionParameters.actionType.definition == "prepareOpenApiDocument",
+    ),
+  );
+  return domainEndpoint;
+}
+
+function environmentWithEndpoint(endpoint: any): MiroirModelEnvironment {
   return {
     ...defaultMiroirModelEnvironment,
     endpointsByUuid: {
       ...defaultMiroirModelEnvironment.endpointsByUuid,
-      [DOMAIN_ENDPOINT_UUID]: domainEndpoint,
+      [endpoint.uuid]: endpoint,
     },
   };
 }
@@ -182,14 +195,38 @@ describe("Miroir actions run from their implementation reference", () => {
   });
 
   it("returns InvalidAction naming an implementation missing from the map", async () => {
-    const result = await newDomainController().handleAction(
-      prepareOpenApiDocumentAction,
+    const endpointUuid = "0b7b1b62-4e0d-4a57-9a3e-7c1f0e6d2a11";
+    const applicationUuid = "5c3f0a8e-1d2b-4c6f-8e9a-2b4d6f8a0c13";
+    const result = await newRemoteDomainController().handleAction(
+      { ...prepareOpenApiDocumentAction, endpoint: endpointUuid },
       {},
-      environmentWithImplementationName("handleAction_doesNotExist"),
+      environmentWithEndpoint(
+        domainEndpointWith((action) => {
+          action.actionImplementation = {
+            actionImplementationType: "libraryImplementation",
+            inMemoryImplementationFunctionName: "handleAction_doesNotExist",
+          };
+        }, endpointUuid),
+      ),
+      { [endpointUuid]: applicationUuid },
     );
     expect(result).toBeInstanceOf(Action2Error);
     expect((result as Action2Error).errorType).toBe("InvalidAction");
     expect((result as Action2Error).errorMessage).toContain("handleAction_doesNotExist");
+  });
+
+  it("runs a Miroir action from its bundled definition when the model environment holds an older copy", async () => {
+    const result = await newDomainController().handleAction(
+      prepareOpenApiDocumentAction,
+      {},
+      environmentWithEndpoint(
+        domainEndpointWith((action) => {
+          delete action.actionImplementation;
+        }),
+      ),
+    );
+    expect(result).not.toBeInstanceOf(Action2Error);
+    expect((result as any).returnedDomainElement).toBeDefined();
   });
 
   it("returns InvalidAction for an action no Miroir Endpoint declares", async () => {
