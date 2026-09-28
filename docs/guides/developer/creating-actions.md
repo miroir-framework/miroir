@@ -12,7 +12,7 @@ Actions perform side-effects in Miroir applications, such as creating, updating,
 
 ## Action Structure
 
-An action is declared in an **Endpoint** (Entity `3d8da4d4-8f76-4bb4-9212-14869d81c00c`), in its `definition.actions` array. The Miroir Endpoints are in `packages/miroir-test-app_deployment-miroir/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/`. Each action definition has:
+An action is declared in an **Endpoint** (Entity `3d8da4d4-8f76-4bb4-9212-14869d81c00c`), in its `definition.actions` array. The Miroir Endpoints are in `packages/miroir-app-miroir/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/`. Each action definition has:
 
 | Attribute | Role |
 |---|---|
@@ -38,7 +38,7 @@ To add an action with a library implementation:
 
 1. Declare it in an Endpoint JSON: `actionParameters`, then `actionImplementation` with `inMemoryImplementationFunctionName: "handleAction_<actionType>"`.
 2. Add `handleAction_<actionType>` to `miroirActionImplementations`. A handler receives the `DomainControllerActionHost` (`packages/miroir-core/src/0_interfaces/3_controllers/DomainControllerActionHost.ts`), the action and an `ActionImplementationContext` (deployment map, model environment, principal), and returns an `Action2ReturnType`. If it needs a `DomainController` capability the host interface does not offer yet, add that method to the interface.
-3. Rebuild (`npm run build -w miroir-test-app_deployment-miroir && npm run build -w miroir-core`) and send the action through `handleAction`. `DomainController` itself is not edited.
+3. Rebuild (`npm run build -w miroir-app-miroir && npm run build -w miroir-core`) and send the action through `handleAction`. `DomainController` itself is not edited.
 
 A name missing from the map makes `handleAction` return an `InvalidAction` error naming it. `packages/miroir-core/tests/3_controllers/ActionImplementations.unit.test.ts` checks that every declared name resolves and that every action of the Model, Instance, Domain, StoreManagement, UndoRedo and Query Endpoints declares an implementation.
 

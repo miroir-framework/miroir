@@ -12,7 +12,7 @@ import {
   logPhaseForActionType,
   type MiroirModelEnvironment,
 } from "miroir-core";
-import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel } from "miroir-app-miroir";
 import { miroirActionImplementations } from "../../src/3_controllers/ActionImplementations";
 import { DomainController } from "../../src/3_controllers/DomainController";
 import { MiroirActivityTracker } from "../../src/3_controllers/MiroirActivityTracker";

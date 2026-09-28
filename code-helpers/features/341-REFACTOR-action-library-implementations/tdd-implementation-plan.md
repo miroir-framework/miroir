@@ -88,9 +88,9 @@ Confirmed with A on 2026-09-28 (analysis decision record).
 | Issue vitest (miroir-core) | `RUN_TEST=actionImplementations.341 npm run testByFile -w miroir-core -- actionImplementations.341` |
 | Issue integ vitest | `VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json npm run testByFile -w miroir-standalone-app -- actionImplementations.341.phase6` |
 | Action MiroirTests | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites action.domainController.dataCrud --mode integ` (one per suite key) |
-| Miroir deployment validation | `npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts` |
-| Endpoint JSON rebuild | `npm run build -w miroir-test-app_deployment-miroir && npm run build -w miroir-core` |
-| Schema rebuild (Slice 8 only) | `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core` |
+| Miroir deployment validation | `npm run testByFile -w miroir-app-miroir -- tests/modelValidation.unit.test.ts` |
+| Endpoint JSON rebuild | `npm run build -w miroir-app-miroir && npm run build -w miroir-core` |
+| Schema rebuild (Slice 8 only) | `npm run build -w miroir-app-miroir && npm run devBuild -w miroir-core` |
 | Type check | `npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json` |
 | Nonreg | `npm run nonreg:unit -- --runner shared`, `npm run nonreg:filesystem -- --runner shared` |
 
@@ -174,9 +174,9 @@ Behavior asserted:
 ### Validation
 
 ```bash
-npm run build -w miroir-test-app_deployment-miroir && npm run build -w miroir-core
+npm run build -w miroir-app-miroir && npm run build -w miroir-core
 RUN_TEST=actionImplementations.341 npm run testByFile -w miroir-core -- actionImplementations.341
-npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts
+npm run testByFile -w miroir-app-miroir -- tests/modelValidation.unit.test.ts
 npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 npm run test -w miroir-core -- ''
 ```
@@ -222,7 +222,7 @@ Five map entries wrapping the existing code; move the inline `transactionalInsta
 ### Validation
 
 ```bash
-npm run build -w miroir-test-app_deployment-miroir && npm run build -w miroir-core
+npm run build -w miroir-app-miroir && npm run build -w miroir-core
 RUN_TEST=actionImplementations.341 npm run testByFile -w miroir-core -- actionImplementations.341
 npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites action.scenario.evolutionTrace --mode integ
 npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites action.scenario.multistepReportTemplate --mode integ
@@ -263,7 +263,7 @@ Declare the 7 implementations in InstanceEndpoint `ed520de4-…`; guard (a) fail
 ### Validation
 
 ```bash
-npm run build -w miroir-test-app_deployment-miroir && npm run build -w miroir-core
+npm run build -w miroir-app-miroir && npm run build -w miroir-core
 RUN_TEST=actionImplementations.341 npm run testByFile -w miroir-core -- actionImplementations.341
 for s in action.domainController.dataCrud action.domainController.dataCrud.compositePk action.domainController.dataCrud.nonUuidPk action.domainController.dataCrud.noParentUuid; do
   npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites $s --mode integ; done
@@ -299,7 +299,7 @@ One handler per action (D3): the 4 entity actions share one body, `initModel`, `
 ### Validation
 
 ```bash
-npm run build -w miroir-test-app_deployment-miroir && npm run build -w miroir-core
+npm run build -w miroir-app-miroir && npm run build -w miroir-core
 RUN_TEST=actionImplementations.341 npm run testByFile -w miroir-core -- actionImplementations.341
 for s in action.domainController.modelCrud action.domainController.modelCrud.nonUuidPk action.domainController.freezeApplicationVersion; do
   npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites $s --mode integ; done
@@ -337,7 +337,7 @@ Declare the implementations in StoreManagementEndpoint `bbd08cbb-…` and UndoRe
 ### Validation
 
 ```bash
-npm run build -w miroir-test-app_deployment-miroir && npm run build -w miroir-core
+npm run build -w miroir-app-miroir && npm run build -w miroir-core
 npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites action.domainController.modelUndoRedo --mode integ
 npm run nonreg:filesystem -- --runner shared
 ```
@@ -374,7 +374,7 @@ Two handlers calling `handleBoxedExtractorOrQueryAction` and `handleQueryTemplat
 ### Validation
 
 ```bash
-npm run build -w miroir-test-app_deployment-miroir && npm run build -w miroir-core
+npm run build -w miroir-app-miroir && npm run build -w miroir-core
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json npm run testByFile -w miroir-standalone-app -- actionImplementations.341.phase6
 ```
 
@@ -415,7 +415,7 @@ VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirCo
 ### Validation
 
 ```bash
-npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core
+npm run build -w miroir-app-miroir && npm run devBuild -w miroir-core
 RUN_TEST=actionImplementations.341 npm run testByFile -w miroir-core -- actionImplementations.341
 npm run test -w miroir-core -- ''
 npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
@@ -461,9 +461,9 @@ Add optional attributes to the action definition schema (names settled at this s
 ### Validation
 
 ```bash
-npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core
+npm run build -w miroir-app-miroir && npm run devBuild -w miroir-core
 RUN_TEST=actionImplementations.341 npm run testByFile -w miroir-core -- actionImplementations.341
-npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts
+npm run testByFile -w miroir-app-miroir -- tests/modelValidation.unit.test.ts
 npm run nonreg:unit -- --runner shared
 ```
 
