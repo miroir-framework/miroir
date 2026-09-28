@@ -31,7 +31,7 @@ const context = {
     { dir: "packages/miroir-standalone-app", name: "miroir-standalone-app" },
     { dir: "packages/miroir-store-indexedDb", name: "miroir-store-indexedDb" },
     { dir: "packages/miroir-store-mongodb", name: "miroir-store-mongodb" },
-    { dir: "packages/miroir-test-app_deployment-miroir", name: "miroir-test-app_deployment-miroir" },
+    { dir: "packages/miroir-app-miroir", name: "miroir-app-miroir" },
   ],
 };
 

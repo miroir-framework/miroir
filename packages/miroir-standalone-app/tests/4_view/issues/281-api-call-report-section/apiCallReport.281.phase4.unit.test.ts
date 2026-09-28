@@ -13,7 +13,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { defaultSpotifyAppModel } from "miroir-test-app_deployment-spotify";
+import { defaultSpotifyAppModel } from "miroir-example-spotify";
 
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
@@ -31,16 +31,16 @@ const SPOTIFY_ENTITY_RELATIVE =
 
 const SPOTIFY_MODEL_ROOT = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-spotify/assets/spotify_model",
+  "packages/miroir-example-spotify/assets/spotify_model",
 );
-const SPOTIFY_INDEX_TS = join(REPO_ROOT, "packages/miroir-test-app_deployment-spotify/index.ts");
+const SPOTIFY_INDEX_TS = join(REPO_ROOT, "packages/miroir-example-spotify/index.ts");
 const SPOTIFY_APP_INTEG = join(
   REPO_ROOT,
   "packages/miroir-standalone-app/tests/4_view/spotifyApp.integ.test.tsx",
 );
 const DOGFOOD_SYNC = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-spotify/scripts/dogfood-sync-spotify-schema.ts",
+  "packages/miroir-example-spotify/scripts/dogfood-sync-spotify-schema.ts",
 );
 
 const SKIP_WALK_DIRS = new Set(["node_modules", "dist", "graphify-out", ".git"]);

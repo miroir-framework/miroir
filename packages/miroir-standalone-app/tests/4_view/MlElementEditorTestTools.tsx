@@ -15,8 +15,8 @@ import {
   reportMultistepCountryCreate,
   reportMultistepLaunchPad,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
-import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
+import { deployment_Library_DO_NO_USE } from "miroir-example-library";
 import { Container } from "react-dom";
 import { MlEditorPropsRoot } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/MlElementEditorInterface";
 import {
@@ -29,7 +29,7 @@ import {
 import {
   entityQueryVersion,
   entityReport,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
 // Browser-safe tools moved to src/ (#286), re-exported for the importers of this file.
 export {

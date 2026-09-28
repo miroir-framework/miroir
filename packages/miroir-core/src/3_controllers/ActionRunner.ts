@@ -11,7 +11,7 @@ import { cleanLevel } from "./constants";
 
 import { Action2Error, Action2ReturnType } from "../0_interfaces/2_domain/DomainElement";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
-import { defaultMiroirMetaModel as defaultMiroirMetaModelRaw } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel as defaultMiroirMetaModelRaw } from "miroir-app-miroir";
 import { ACTION_OK } from "../1_core/constants";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ActionRunner");

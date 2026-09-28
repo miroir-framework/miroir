@@ -60,7 +60,7 @@ import { FieldValidationProvider, useFieldValidationContext } from '../ValueObje
 import { MlElementEditor } from '../ValueObjectEditor/MlElementEditor.js';
 import type { ValueObjectEditMode } from './ReportSectionEntityInstance.js';
 
-import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { selfApplicationMiroir } from "miroir-app-miroir";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TypedValueObjectEditor");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",

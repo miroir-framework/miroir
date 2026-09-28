@@ -9,7 +9,7 @@ import { environmentClientConfig, resolveEnvironmentFromFiles, seedEnvironmentSt
 import { repositoryRoot, temporaryRepository } from "./cliTestSupport";
 
 const application = (name: string, selfApplication: string, deployment: string) => ({
-  package: `miroir-test-app_deployment-${name}`,
+  package: `miroir-app-${name}`,
   selfApplication,
   deployment,
   store: "filesystem",
@@ -46,7 +46,7 @@ describe("test environments", () => {
 
   it("a reseed wipes what a run wrote and copies the package assets again", () => {
     const root = temporaryRepository({ "test-filesystem": testFilesystem });
-    const userRow = "packages/miroir-test-app_deployment-admin/assets/admin_data/d20d09e5-0685-4fc7-b9bd-fcfa3845127a/u.json";
+    const userRow = "packages/miroir-app-admin/assets/admin_data/d20d09e5-0685-4fc7-b9bd-fcfa3845127a/u.json";
     mkdirSync(path.dirname(path.join(root, userRow)), { recursive: true });
     writeFileSync(path.join(root, userRow), "{}");
     const resolved = resolveEnvironmentFromFiles({ cwd: root, env: { MIROIR_ENV: "test-filesystem" } });

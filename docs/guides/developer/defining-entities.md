@@ -57,7 +57,7 @@ Entity (Book, mlSchema)
 3. Default PK: leave `idAttribute` absent → **`uuid`**.
 4. Instances carry `uuid` and usually `parentUuid` = Entity uuid (`e8ba151b-…` for a Book).
 
-**Entity (Library Book, excerpt)** — `packages/miroir-test-app_deployment-library/assets/library_model/16dbfe28-…/e8ba151b-….json`. The `mlSchema` adds domain fields; identity / parent fields come from the shared `entityDefinitionRoot` extension:
+**Entity (Library Book, excerpt)** — `packages/miroir-example-library/assets/library_model/16dbfe28-…/e8ba151b-….json`. The `mlSchema` adds domain fields; identity / parent fields come from the shared `entityDefinitionRoot` extension:
 
 ```json
 {
@@ -127,7 +127,7 @@ Entity (Book, mlSchema)
 
 Application / deployment constraints: apps that need external entities may restrict which storage backends can host them; deployment must supply access directives (schema, etc.). **CUD on external instances fails** by design.
 
-**Entity** — Postgres `tables` (composite PK + external source), abridged from `packages/miroir-test-app_deployment-postgres/assets/postgres_model/16dbfe28-…/35961086-….json`:
+**Entity** — Postgres `tables` (composite PK + external source), abridged from `packages/miroir-example-postgres/assets/postgres_model/16dbfe28-…/35961086-….json`:
 
 ```json
 {

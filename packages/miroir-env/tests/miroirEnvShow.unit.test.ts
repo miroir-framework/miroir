@@ -49,7 +49,7 @@ describe("miroir-env show", () => {
     const result = await run(["show", "--name", "dev"], repositoryRoot);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("environment dev");
-    expect(result.stdout).toContain("packages/miroir-test-app_deployment-library/assets/library_model");
+    expect(result.stdout).toContain("packages/miroir-example-library/assets/library_model");
   });
 
   it("rejects a definition that does not match the miroirEnvironment schema, naming the path", async () => {

@@ -11,10 +11,10 @@ import {
 import {
   reportMultistepCountryCreate,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import {
   selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
 import { ReportPage } from "../../../../src/miroir-fwk/4_view/routes/ReportPage";
 import type { ReportViewProps } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportHooks";
@@ -32,7 +32,7 @@ import {
   type ReactComponentTestSuitePrep,
   type ReactComponentTestSuites,
 } from "../../MlElementEditorTestTools";
-import bookCountByPublisherQuery from "../../../../../miroir-test-app_deployment-library/assets/library_model/e4320b9e-ab45-4abe-85d8-359604b3c62f/6176dcdf-39a6-4805-8dc5-3c2366a31a11.json" with { type: "json" };
+import bookCountByPublisherQuery from "../../../../../miroir-example-library/assets/library_model/e4320b9e-ab45-4abe-85d8-359604b3c62f/6176dcdf-39a6-4805-8dc5-3c2366a31a11.json" with { type: "json" };
 
 const LIBRARY_APPLICATION_UUID = "5af03c98-fe5e-490b-b08f-e1230971c57f";
 const LIBRARY_DEPLOYMENT_UUID = "f714bb2f-a12d-4e71-a03b-74dcedea6eb4";
@@ -55,15 +55,15 @@ const deployment_Library: Deployment = {
   configuration: {
     admin: {
       emulatedServerType: "filesystem",
-      directory: "miroir-test-app_deployment-admin/assets",
+      directory: "miroir-app-admin/assets",
     },
     model: {
       emulatedServerType: "filesystem",
-      directory: "miroir-test-app_deployment-library/assets/library_model",
+      directory: "miroir-example-library/assets/library_model",
     },
     data: {
       emulatedServerType: "filesystem",
-      directory: "miroir-test-app_deployment-library/assets/library_data",
+      directory: "miroir-example-library/assets/library_data",
     },
   },
 };

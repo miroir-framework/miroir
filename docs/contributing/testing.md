@@ -7,7 +7,7 @@
 ## Prerequisites
 
 ```bash
-npm run build -w miroir-test-app_deployment-miroir
+npm run build -w miroir-app-miroir
 npm run devBuild -w miroir-core   # includes generated types
 ```
 
@@ -114,7 +114,7 @@ npm run testByFile -w miroir-core -- tests/4_services/PersistenceStoreController
 After changing Query / Endpoint ML schemas for `attributes` (or any fundamental schema), rebuild before these tests:
 
 ```bash
-npm run build -w miroir-test-app_deployment-miroir
+npm run build -w miroir-app-miroir
 npm run devBuild -w miroir-core
 ```
 
@@ -197,9 +197,9 @@ npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "MlTest
 MIROIR_COMPONENT_PERF=1 VITE_MIROIR_LOG_CONFIG_FILENAME=catch-all-detailed \
   npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "MlEditorRenderPerformance"
 
-# After a change to an instance JSON in miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-…/
-npm run build -w miroir-test-app_deployment-miroir
-npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts
+# After a change to an instance JSON in miroir-app-miroir/assets/miroir_data/a311f363-…/
+npm run build -w miroir-app-miroir
+npm run testByFile -w miroir-app-miroir -- modelValidation.unit.test.ts
 npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency
 ```
 

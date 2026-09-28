@@ -49,7 +49,7 @@ import { ADMIN_DEPLOYMENT_UUID, ADMIN_BUNDLED_CONFIG, ADMIN_MODEL_PARENT_UUIDS_A
 import { migrateAdminToIndexedDbIfNeeded } from "./adminMigration.js";
 import { RootComponent } from "@miroir-app/miroir-fwk/4_view/components/Page/RootComponent.js";
 import { ErrorPage } from "@miroir-app/miroir-fwk/4_view/ErrorPage.js";
-import { deployment_Admin, deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 
 // ---------------------------------------------------------------------------
 // Logger setup

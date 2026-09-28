@@ -109,7 +109,7 @@ describe("bundleReport", () => {
   it("the mermaid-VLURNSYL chunk is mostly the Miroir meta-model deployment", () => {
     const chunk = report.chunks.find((candidate) => candidate.file.includes("/mermaid-VLURNSYL"))!;
     expect(chunk).toBeDefined();
-    const deployment = packageIn(chunk, "miroir-test-app_deployment-miroir");
+    const deployment = packageIn(chunk, "miroir-app-miroir");
     expect((deployment?.renderedBytes ?? 0) / chunk.renderedBytes).toBeGreaterThan(0.9);
   });
 

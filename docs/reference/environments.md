@@ -63,7 +63,7 @@ Tests select their environment through their profile (`--profile emulatedServer-
   },
   "applications": {
     "library": {
-      "package": "miroir-test-app_deployment-library",
+      "package": "miroir-example-library",
       "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
       "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
       "store": "filesystem",
@@ -158,7 +158,7 @@ No database password reaches the browser. For `realServer-sql` from the browser,
 
 ## First run of an existing checkout
 
-Before #321, applications installed from the UI were written into `packages/miroir-test-app_deployment-admin/assets/admin_data`, which the server no longer reads. `npm run miroir-env -- check` lists those rows, and `npm run miroir-env -- import` records the deployments in `environments/local.json`.
+Before #321, applications installed from the UI were written into `packages/miroir-app-admin/assets/admin_data`, which the server no longer reads. `npm run miroir-env -- check` lists those rows, and `npm run miroir-env -- import` records the deployments in `environments/local.json`.
 
 ---
 

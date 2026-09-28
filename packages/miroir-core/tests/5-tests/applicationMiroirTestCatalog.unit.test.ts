@@ -224,10 +224,10 @@ describe("applicationMiroirTestCatalog", () => {
   it("derives the sibling Runner folder from a MiroirTest source folder", () => {
     expect(
       runnerEntityFolderRelativePath(
-        `packages/miroir-test-app_deployment-library/assets/library_model/${ENTITY_MIROIR_TEST_UUID}`,
+        `packages/miroir-example-library/assets/library_model/${ENTITY_MIROIR_TEST_UUID}`,
       ),
     ).toBe(
-      `packages/miroir-test-app_deployment-library/assets/library_model/${ENTITY_RUNNER_UUID}`,
+      `packages/miroir-example-library/assets/library_model/${ENTITY_RUNNER_UUID}`,
     );
   });
 

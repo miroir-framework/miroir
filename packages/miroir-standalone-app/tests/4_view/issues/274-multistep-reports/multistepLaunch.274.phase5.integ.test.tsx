@@ -12,7 +12,7 @@ import {
   reportMultistepCountryCreate,
   reportMultistepLaunchPad,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 
 import { ReportPage } from "../../../../src/miroir-fwk/4_view/routes/ReportPage";
 import { reportUrl } from "../../../../src/miroir-fwk/4_view/navigation";
@@ -44,15 +44,15 @@ const deployment_Library: Deployment = {
   configuration: {
     admin: {
       emulatedServerType: "filesystem",
-      directory: "miroir-test-app_deployment-admin/assets",
+      directory: "miroir-app-admin/assets",
     },
     model: {
       emulatedServerType: "filesystem",
-      directory: "miroir-test-app_deployment-library/assets/library_model",
+      directory: "miroir-example-library/assets/library_model",
     },
     data: {
       emulatedServerType: "filesystem",
-      directory: "miroir-test-app_deployment-library/assets/library_data",
+      directory: "miroir-example-library/assets/library_data",
     },
   },
 };

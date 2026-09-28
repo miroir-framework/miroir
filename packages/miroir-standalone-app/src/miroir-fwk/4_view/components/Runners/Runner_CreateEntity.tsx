@@ -7,7 +7,7 @@ import {
   defaultSelfApplicationDeploymentMap,
   MiroirLoggerFactory
 } from "miroir-core";
-import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { selfApplicationMiroir } from "miroir-app-miroir";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { StoredRunnerView } from "./RunnerView.js";

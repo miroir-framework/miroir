@@ -98,14 +98,14 @@ Each deployment package ships a Vitest file `tests/modelValidation.unit.test.ts`
 
 | Package | Tier | How groups are built | Assets |
 |---------|------|----------------------|--------|
-| `miroir-test-app_deployment-miroir` | `default` | `modelValidationSuite(defaultMiroirMetaModel, …)` | In-package MetaModel exports |
-| `miroir-test-app_deployment-admin` | `default` | `buildModelValidationGroupsFromFilesystem` (`miroir-core/model-validation-fs`) | `assets/admin_model` + `assets/admin_data` |
-| `miroir-test-app_deployment-library` | `default` | same filesystem helper | `assets/library_model` + `assets/library_data` |
-| `miroir-test-app_deployment-postgres` | `full` | same filesystem helper | `assets/postgres_model` (+ `postgres_data` when present) |
+| `miroir-app-miroir` | `default` | `modelValidationSuite(defaultMiroirMetaModel, …)` | In-package MetaModel exports |
+| `miroir-app-admin` | `default` | `buildModelValidationGroupsFromFilesystem` (`miroir-core/model-validation-fs`) | `assets/admin_model` + `assets/admin_data` |
+| `miroir-example-library` | `default` | same filesystem helper | `assets/library_model` + `assets/library_data` |
+| `miroir-example-postgres` | `full` | same filesystem helper | `assets/postgres_model` (+ `postgres_data` when present) |
 
 ```bash
 # One package
-npm run testByFile -w miroir-test-app_deployment-admin -- tests/modelValidation.unit.test.ts
+npm run testByFile -w miroir-app-admin -- tests/modelValidation.unit.test.ts
 
 # Miroir + admin + library (default nonreg)
 npm run nonreg
@@ -123,7 +123,7 @@ Vite configs for packages that use the filesystem helper must alias `miroir-core
 Tests are **deployment JSON entities**, not `.test.ts` files. Each file in
 
 ```
-packages/miroir-test-app_deployment-miroir/assets/miroir_data/
+packages/miroir-app-miroir/assets/miroir_data/
   a311f363-e238-4203-bdfc-29e8c160c26b/   ← entityMiroirTest UUID
     <uuid>.json                            ← one MiroirTestDefinition per suite
 ```
@@ -200,7 +200,7 @@ The allowed values are the `enum` inside the `tags` array schema of the MiroirTe
 
 The tags of each existing test: [`code-helpers/features/312-FEATURE-miroir-test-classification/tag-assignment.md`](../../code-helpers/features/312-FEATURE-miroir-test-classification/tag-assignment.md).
 
-- **Adding a tag:** add the value to the enum in the Entity row **and** in its EntityVersion (`miroir_modelVersion/54b9c72f-…/51c647fe-….json`), then `npm run build -w miroir-test-app_deployment-miroir` and `npm run devBuild -w miroir-core` (the generated `MiroirTestDefinition.tags` is a union of the values). The CLI and the instance editor read the values from the Entity.
+- **Adding a tag:** add the value to the enum in the Entity row **and** in its EntityVersion (`miroir_modelVersion/54b9c72f-…/51c647fe-….json`), then `npm run build -w miroir-app-miroir` and `npm run devBuild -w miroir-core` (the generated `MiroirTestDefinition.tags` is a union of the values). The CLI and the instance editor read the values from the Entity.
 - **Guard:** `packages/miroir-core/tests/5-tests/miroirTestTags.unit.test.ts` fails on an instance without tags or with a tag the Entity does not allow. Model validation does not check enum values yet (#313).
 
 ### Issue
@@ -215,7 +215,7 @@ Three concerns. They are not the same list.
 
 | Concern | Answers | Source |
 |---------|---------|--------|
-| **Discovery** | Which MiroirTest suites exist | **CLI:** folder catalog — `discoverApplicationMiroirTestSourceFolders` / `loadApplicationMiroirTestCatalog` over `packages/miroir-test-app_deployment-*/assets/*/<MiroirTest uuid>`. **UI:** selected application's LocalCache (`useSelectedApplicationMiroirTests`). Same conceptual catalog, two loaders. |
+| **Discovery** | Which MiroirTest suites exist | **CLI:** folder catalog — `discoverApplicationMiroirTestSourceFolders` / `loadApplicationMiroirTestCatalog` over `packages/{miroir-app,miroir-example,miroir-fixture}-*/assets/*/<MiroirTest uuid>`. **UI:** selected application's LocalCache (`useSelectedApplicationMiroirTests`). Same conceptual catalog, two loaders. |
 | **Selection** | Which of those run | `--suites` / `MIROIR_TEST_SUITES` / UI = instance `name` (optional `uuid` on `--suites`). `--tags` / `MIROIR_TEST_TAGS` / UI tag chips keep the suites carrying **any** of the [tags](#tags), intersected with `--suites` when both are given. `--filter` / UI checkboxes pick **leaves** (catalog-root key = `name`; nested keys and values = `miroirTestLabel`). See [Filtering MiroirTest cases](#filtering-miroirtest-cases). |
 | **Execution** | How a selected suite or leaf runs | Leaf kinds infer session (`transformer` / `runner` / `action`) and unit vs integ. Playfield lives on the suite or a `TestConfiguration`; Runner JSON is a sibling folder. `FunctionCallTestRegistry` is a capability whitelist, not a suite catalog. |
 
@@ -253,7 +253,7 @@ PLATFORM files are the vitest tests that have **no MiroirTest equivalent**: CLI/
 
 `tr.core` is a **mixed** suite: many leaves are unit-safe; leaves with `integrationTestExpectedValue` need an integ session (runtime SQL / store). Other catalog suites are unit-safe unless they declare integ expectations.
 
-**External services (#267):** MiroirTest suite keys `tr.syncExternalServiceSchema` (unit, `miroir-core` — `transformerTest` for `syncExternalServiceSchema`) and `action.scenario.externalServiceSync` (integration, `miroir-standalone-app` — lands synced operations + entity). End-to-end HTTP against a fake Spotify server is **PLATFORM** vitest (`externalServiceQuery`, `externalServiceGuards`, `externalServiceDispatch`, `externalServiceReport`, `spotifyApp` under `tests/3_controllers/` and `tests/4_view/`); nonreg step `externalServices-spotify`. Opt-in live Spotify: `tests/external-services/spotifyLive.integ.test.ts` (`LIVE_SPOTIFY_CLIENT_ID` + `LIVE_SPOTIFY_CLIENT_SECRET` + `LIVE_SPOTIFY_REFRESH_TOKEN` obtained once via `packages/miroir-test-app_deployment-spotify/scripts/get_spotify_refresh_token.py` and registered via the in-process `registerSecrets` **test hatch** as `spotifyRefreshToken`; those `LIVE_SPOTIFY_*` vars are **not** D6 import aliases and are not a production launch channel; OAuth2 refresh-token grant at accounts.spotify.com; not in nonreg).
+**External services (#267):** MiroirTest suite keys `tr.syncExternalServiceSchema` (unit, `miroir-core` — `transformerTest` for `syncExternalServiceSchema`) and `action.scenario.externalServiceSync` (integration, `miroir-standalone-app` — lands synced operations + entity). End-to-end HTTP against a fake Spotify server is **PLATFORM** vitest (`externalServiceQuery`, `externalServiceGuards`, `externalServiceDispatch`, `externalServiceReport`, `spotifyApp` under `tests/3_controllers/` and `tests/4_view/`); nonreg step `externalServices-spotify`. Opt-in live Spotify: `tests/external-services/spotifyLive.integ.test.ts` (`LIVE_SPOTIFY_CLIENT_ID` + `LIVE_SPOTIFY_CLIENT_SECRET` + `LIVE_SPOTIFY_REFRESH_TOKEN` obtained once via `packages/miroir-example-spotify/scripts/get_spotify_refresh_token.py` and registered via the in-process `registerSecrets` **test hatch** as `spotifyRefreshToken`; those `LIVE_SPOTIFY_*` vars are **not** D6 import aliases and are not a production launch channel; OAuth2 refresh-token grant at accounts.spotify.com; not in nonreg).
 
 **Persistent named secrets (#270):** PLATFORM vitest under `tests/**/issues/270-persistent-named-secrets/` (`secrets.270`, `secretsService.270`, `secretsHttp.270` unit/guard, `secretsRedact.270`, `secretsHydrate.270`, `secretsImport.270`, `secretsOauthCache.270`). Nonreg steps `unit-270-persistent-secrets` (core + MCP) and `appstack-270-persistent-secrets` (standalone-app hydrate + import, pinned to `emulatedServer-filesystem`). Production launch uses wrapping key `MIROIR_SECRETS_MASTER_KEY` / `--secrets-master-key` ([how to generate it](./authentication.md#generate-the-wrapping-key)); tests use the dummy `test-secrets-master`. `--secret` / `MIROIR_SECRET_*` / AI key env vars are bootstrap import only.
 
@@ -340,7 +340,7 @@ Meta-model unit tests should not pay carry-on cost on every fixture load. Set **
 MIROIR_SCHEMA_MODE=frozen npm run testByFile -w miroir-core -- tests/1_core/modelEnvironment.unit.test.ts
 
 # Extended app-action suite (library deployment)
-npm test -w miroir-test-app_deployment-library -- "App-action validation"
+npm test -w miroir-example-library -- "App-action validation"
 ```
 
 ### Via `testByFile`
@@ -566,7 +566,7 @@ The admin store hosts `miroirAdmin` deployment metadata (entities, reports, menu
 |----------|--------|---------|
 | `MIROIR_TEST_ADMIN_STORE_TYPE` | `filesystem` \| `sql` \| `indexedDb` \| `mongodb` \| `bundled` | `filesystem` |
 
-**When `filesystem` (default):** the Admin copy of the test environment (`MIROIR_ENV`, set by `--profile`; `test-sql` without a profile), in `.miroir/<environment>/admin`, seeded from `miroir-test-app_deployment-admin` once per test file.
+**When `filesystem` (default):** the Admin copy of the test environment (`MIROIR_ENV`, set by `--profile`; `test-sql` without a profile), in `.miroir/<environment>/admin`, seeded from `miroir-app-admin` once per test file.
 
 **When `sql`:**
 
@@ -911,7 +911,7 @@ Partial-fetch contract and controller projection: `code-helpers/features/214-FEA
 **Schema-first:** do **not** hand-edit `preprocessor-generated/miroirFundamentalType.ts` for `attributes`. Edit deployment assets (Query ED `359f1f9b-…`, Endpoints `a93598b3-…` / `ed520de4-…`), then:
 
 ```bash
-npm run build -w miroir-test-app_deployment-miroir
+npm run build -w miroir-app-miroir
 npm run devBuild -w miroir-core
 ```
 
@@ -936,7 +936,7 @@ Identity under projection uses `resolveProjectionIdentityFields` → `getEntityP
 
 The MlElementEditor component tests are MiroirTests (#286) written as declarative JSON (#292). Each case is a `reactComponentTest` leaf that holds the props of the rendered component and a list of `steps`. The standalone app's component test runner renders the component and interprets the steps. No case has TypeScript code of its own.
 
-There is one MiroirTest instance per editor, plus the test pattern and the render-performance suite (#303), in `miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/`:
+There is one MiroirTest instance per editor, plus the test pattern and the render-performance suite (#303), in `miroir-app-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/`:
 
 | Instance `name` | uuid | Cases |
 |---|---|---|
@@ -950,7 +950,7 @@ There is one MiroirTest instance per editor, plus the test pattern and the rende
 | `ui.mlElementEditor.allTypesPattern` | `26ef2886-2cd8-4f91-b846-1525b24d5f41` | 4 (see [Test pattern](#test-pattern)) |
 | `ui.mlElementEditor.renderPerformance` | `2da30877-d248-44bd-9786-5c091b1bc8fc` | 15, on demand (see [Render measurements](#render-measurements-measurerendering)) |
 
-Each instance is exported as `miroirTest_<name>` by `miroir-test-app_deployment-miroir` (`index.ts`, `index.d.ts`) and listed in `defaultMiroirMetaModel.tests` (`src/Model.ts`). The JSON files are edited by hand.
+Each instance is exported as `miroirTest_<name>` by `miroir-app-miroir` (`index.ts`, `index.d.ts`) and listed in `defaultMiroirMetaModel.tests` (`src/Model.ts`). The JSON files are edited by hand.
 
 **Instance format**
 
@@ -1137,13 +1137,13 @@ The entry `tests/4_view/miroir-component-tests.unit.test.tsx` loads every instan
 3. Rebuild the deployment package and check the instances:
 
 ```bash
-npm run build -w miroir-test-app_deployment-miroir
-npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts
+npm run build -w miroir-app-miroir
+npm run testByFile -w miroir-app-miroir -- modelValidation.unit.test.ts
 npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency
 npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "<editor>"
 ```
 
-A new instance also needs its export and declaration in `miroir-test-app_deployment-miroir` (`index.ts`, `index.d.ts`), its entry in `defaultMiroirMetaModel.tests` (`src/Model.ts`), and the instance counts of the vitest entry (`EXPECTED_INSTANCE_COUNT`, today 9) and `componentMiroirTests.consistency` (9), plus its name and uuid in `laterComponentInstances` of `componentTestInstances.292.phase1`. A component other than `MlElementEditor` needs an entry in `componentTests/componentRegistry.ts`. A new step kind needs a schema change (the `reactComponentTestStep` union in the MiroirTest Entity and EntityVersion, then `npm run devBuild -w miroir-core`) and a handler in `runComponentTestSteps.ts`.
+A new instance also needs its export and declaration in `miroir-app-miroir` (`index.ts`, `index.d.ts`), its entry in `defaultMiroirMetaModel.tests` (`src/Model.ts`), and the instance counts of the vitest entry (`EXPECTED_INSTANCE_COUNT`, today 9) and `componentMiroirTests.consistency` (9), plus its name and uuid in `laterComponentInstances` of `componentTestInstances.292.phase1`. A component other than `MlElementEditor` needs an entry in `componentTests/componentRegistry.ts`. A new step kind needs a schema change (the `reactComponentTestStep` union in the MiroirTest Entity and EntityVersion, then `npm run devBuild -w miroir-core`) and a handler in `runComponentTestSteps.ts`.
 
 To check that a new case asserts something, change one value of its `expectedValue` or `expectElement` check, run it, and see it fail with the message above.
 
@@ -1498,7 +1498,7 @@ npm run testMiroir -w miroir-core
 | `tests/4_view/ReportPage.integ.test.tsx` | Report view React tests |
 | `tests/4_view/BlobEditorField.integ.test.tsx` | Blob editor component tests |
 
-#### miroir-test-app_deployment-miroir
+#### miroir-app-miroir
 
 | Path | Role |
 |------|------|
@@ -1557,10 +1557,10 @@ await session.teardown();
 #### Unit suite (`testMiroir --mode unit`)
 
 1. Create a `MiroirTestDefinition` JSON in the owning application's MiroirTest folder:
-   - Miroir app: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-…/<uuid>.json`
+   - Miroir app: `packages/miroir-app-miroir/assets/miroir_data/a311f363-…/<uuid>.json`
    - Other apps: that app's **model** section `…/<app>_model/a311f363-…/<uuid>.json`
 2. Set `name` to the CLI / UI suite key (e.g. `myNewSuite`), and `tags` to one to three values of the [tag vocabulary](#tags), main area first. Set `issue` to the GitHub issue number the test is written for, when there is one ([Issue](#issue)).
-3. CLI discovery scans `packages/miroir-test-app_deployment-*/assets/*/<MiroirTest uuid>` (`discoverApplicationMiroirTestSourceFolders`). Test runners load the suite with `loadMiroirCoreTestSuiteFromFolders` / `loadMiroirTestSuiteFromCatalog`. Runner `runnerRef` lookup uses sibling Runner folders (`loadApplicationRunnerUuidIndexFromFolders`).
+3. CLI discovery scans `packages/{miroir-app,miroir-example,miroir-fixture}-*/assets/*/<MiroirTest uuid>` (`discoverApplicationMiroirTestSourceFolders`). Test runners load the suite with `loadMiroirCoreTestSuiteFromFolders` / `loadMiroirTestSuiteFromCatalog`. Runner `runnerRef` lookup uses sibling Runner folders (`loadApplicationRunnerUuidIndexFromFolders`).
 4. Optional: export `miroirTest_myNewSuite` from the deployment package `index.ts` if other TypeScript wants a named import. Rebuild that package.
 5. Validate schema: `VITE_TEST_MODE=true npx vitest run tests/4_services/miroirTest.schema.unit.test.ts -w miroir-core`.
 6. Run: `npm run testMiroir -w miroir-core -- --suites myNewSuite --mode unit`.
@@ -1788,11 +1788,11 @@ Real-server profiles require a reachable `miroir-server` and the selected backen
 
 ```bash
 # After changing MiroirTest JSON assets
-npm run build -w miroir-test-app_deployment-miroir
+npm run build -w miroir-app-miroir
 
 # After changing Query / Endpoint / EntityVersion ML schemas in deployment-miroir
 # (e.g. `attributes` on extractors or RestPersistenceAction_read)
-npm run build -w miroir-test-app_deployment-miroir
+npm run build -w miroir-app-miroir
 npm run devBuild -w miroir-core   # regenerates preprocessor-generated types + package build
 
 # After changing miroir-core entity definitions or generated types only

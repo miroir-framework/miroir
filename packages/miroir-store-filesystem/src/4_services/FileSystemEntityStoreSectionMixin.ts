@@ -24,7 +24,7 @@ import { FileSystemInstanceStoreSectionMixin, MixedFileSystemInstanceStoreSectio
 import { FileSystemStoreSection } from "./FileSystemStoreSection.js";
 
 
-import { entityEntity } from "miroir-test-app_deployment-miroir";
+import { entityEntity } from "miroir-app-miroir";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 

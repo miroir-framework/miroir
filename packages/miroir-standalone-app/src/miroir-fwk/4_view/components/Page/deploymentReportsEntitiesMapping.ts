@@ -8,8 +8,8 @@ import {
   adminSelfApplication,
   deployment_Admin,
   deployment_Miroir,
-} from "miroir-test-app_deployment-admin";
-import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+} from "miroir-app-admin";
+import { selfApplicationMiroir } from "miroir-app-miroir";
 
 /**
  * The reports and entities offered to the pages, by deployment: Admin, Miroir and the current

@@ -8,8 +8,8 @@ import {
   MiroirLoggerFactory,
   getEndpointActions,
 } from "miroir-core";
-import { adminSelfApplication, entityApplicationForAdmin, entityDeployment } from "miroir-test-app_deployment-admin";
-import { entityEndpointVersion } from "miroir-test-app_deployment-miroir";
+import { adminSelfApplication, entityApplicationForAdmin, entityDeployment } from "miroir-app-admin";
+import { entityEndpointVersion } from "miroir-app-miroir";
 
 import {
   handleMcpAction,

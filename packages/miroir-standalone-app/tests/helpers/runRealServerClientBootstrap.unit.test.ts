@@ -6,7 +6,7 @@ import type {
   MiroirConfigClient,
   PersistenceStoreControllerManagerInterface,
 } from "miroir-core";
-import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
+import { selfApplicationLibrary } from "miroir-example-library";
 
 const setupMiroirTestMock = vi.fn();
 const ensureMiroirPlatformMock = vi.fn();

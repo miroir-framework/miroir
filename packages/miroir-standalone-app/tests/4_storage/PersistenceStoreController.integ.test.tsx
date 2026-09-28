@@ -37,8 +37,8 @@ import {
   deployment_Admin,
   deployment_Miroir,
   entityStoreBasedConfiguration,
-} from "miroir-test-app_deployment-admin";
-import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-library";
+} from "miroir-app-admin";
+import { deployment_Library_DO_NO_USE } from "miroir-example-library";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
@@ -48,7 +48,7 @@ import {
   book1,
   entityAuthor,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import { cleanLevel, packageName } from "../../src/constants.js";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
@@ -62,7 +62,7 @@ import {
   entityEntity,
   entityEntityVersion,
   miroirModelInitializeCreateEntityOrder,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
 const expectedMiroirBootstrapEntityUuids = [
   entityEntity.uuid!,

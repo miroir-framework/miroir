@@ -1,0 +1,443 @@
+/// <reference types="vite/client" />
+
+import { describe, expect, it } from "vitest";
+
+import type {
+  Entity,
+  EntityVersion,
+  MlElement,
+  MetaModel,
+  MiroirModelEnvironment,
+} from "miroir-core";
+import {
+  defaultMiroirModelEnvironment,
+  mlsTypeCheck,
+  miroirFundamentalMlSchema,
+  resolveFundamentalSchemaForDeployment,
+} from "miroir-core";
+
+import {
+  defaultMiroirMetaModel,
+  entityDefinitionEntity,
+  entityDefinitionEntityDefinition,
+  entityDefinitionMenu,
+  entityDefinitionReport,
+  entityDefinitionSelfApplication,
+  entityDefinitionSelfApplicationModelBranch,
+} from "miroir-app-miroir";
+import {
+  deployment_Admin,
+  entityApplicationForAdmin,
+  entityDeployment,
+  entityImport,
+  entityViewParams,
+} from "miroir-app-admin";
+// import entityStoreBasedConfigurationAdmin from "../assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/9f9170da-538d-425c-8cb7-551640623eed.json" with {
+//   type: "json",
+// };
+import entityApplicationVersionAdmin from "../assets/designer_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/ff3d211b-7eb6-473a-afbf-503bb70a5c26.json" with {
+  type: "json",
+};
+import entityApplicationForDesigner from "../assets/designer_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/25d935e7-9e93-42c2-aade-0472b883492b.json" with {
+  type: "json",
+};
+import entityActivity from "../assets/designer_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/fd622624-1a7e-46fa-9964-c4ecfb543de3.json" with {
+  type: "json",
+};
+import entityUserStory from "../assets/designer_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/59debf06-405d-4def-a7eb-3db45360310d.json" with {
+  type: "json",
+};
+import entityRole from "../assets/designer_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/702535cd-e6fa-49d6-aa6f-b5874821e5a3.json" with {
+  type: "json",
+};
+import deployment_Designer from "../assets/deployment/f0359240-e849-4546-8158-75f4a8ae5831.json" with {
+  type: "json",
+};
+
+// Admin app self-application and deployment (for environment setup)
+// import adminSelfApplication from "../assets/designer_model/a659d350-dd97-4da9-91de-524fa01745dc/55af124e-8c05-4bae-a3ef-0933d41daa92.json" with {
+//   type: "json",
+// };
+// import deployment_Admin from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json" with {
+//   type: "json",
+// };
+
+// ================================================================================================
+// Admin MetaModel (for validating admin data instances)
+// ================================================================================================
+
+const adminMetaModel: MetaModel = {
+  applicationUuid: "55af124e-8c05-4bae-a3ef-0933d41daa92",
+  applicationName: "Admin",
+  entities: [
+    entityApplicationForAdmin,
+    entityDeployment,
+    // entityStoreBasedConfigurationAdmin,
+    entityViewParams,
+    entityApplicationVersionAdmin,
+  ] as unknown as Entity[],
+  entityVersions: [],
+  endpoints: [],
+  mlSchemas: [],
+  menus: [],
+  applicationVersions: [],
+  reports: [],
+  transformerDefinitions: [],
+  runners: [],
+  storedQueries: [],
+  applicationVersionCrossEntityVersion: [],
+  applicationVersionCrossQueryVersion: [],
+  queryVersions: [],
+  applicationVersionCrossReportVersion: [],
+  reportVersions: [],
+  applicationVersionCrossMenuVersion: [],
+  menuVersions: [],
+  applicationVersionCrossEndpointVersion: [],
+  endpointVersions: [],
+  applicationVersionCrossRunnerVersion: [],
+  runnerVersions: [],
+  applicationVersionCrossThemeVersion: [],
+  themeVersions: [],
+  applicationVersionCrossTransformerDefinitionVersion: [],
+  transformerDefinitionVersions: [],
+  tests: [],
+  themes: [],
+  applications: [],
+};
+
+// ================================================================================================
+// Model environments
+// ================================================================================================
+
+/**
+ * Admin model environment: used when validating admin data instances (AdminApplication, Deployment, etc.)
+ * so that currentModel reflects the admin application model.
+ */
+const adminModelEnvironment: MiroirModelEnvironment = {
+  miroirFundamentalMlSchema: resolveFundamentalSchemaForDeployment(
+    deployment_Admin.uuid,
+    adminMetaModel,
+    "static",
+  ),
+  miroirMetaModel: defaultMiroirMetaModel,
+  endpointsByUuid: {},
+  deploymentUuid: deployment_Admin.uuid,
+  currentModel: adminMetaModel,
+};
+
+// ================================================================================================
+// Designer MetaModel (for validating designer data instances)
+// ================================================================================================
+
+const designerMetaModel: MetaModel = {
+  applicationUuid: "880831db-4f76-40b1-97c0-6a2f3f4ffccb",
+  applicationName: "Designer",
+  entities: [
+    entityApplicationForDesigner,
+    entityActivity,
+    entityUserStory,
+    entityRole,
+    entityApplicationVersionAdmin,
+  ] as unknown as Entity[],
+  entityVersions: [],
+  endpoints: [],
+  mlSchemas: [],
+  menus: [],
+  applicationVersions: [],
+  reports: [],
+  transformerDefinitions: [],
+  runners: [],
+  storedQueries: [],
+  applicationVersionCrossEntityVersion: [],
+  applicationVersionCrossQueryVersion: [],
+  queryVersions: [],
+  applicationVersionCrossReportVersion: [],
+  reportVersions: [],
+  applicationVersionCrossMenuVersion: [],
+  menuVersions: [],
+  applicationVersionCrossEndpointVersion: [],
+  endpointVersions: [],
+  applicationVersionCrossRunnerVersion: [],
+  runnerVersions: [],
+  applicationVersionCrossThemeVersion: [],
+  themeVersions: [],
+  applicationVersionCrossTransformerDefinitionVersion: [],
+  transformerDefinitionVersions: [],
+  tests: [],
+  themes: [],
+  applications: [],
+};
+
+const designerModelEnvironment: MiroirModelEnvironment = {
+  miroirFundamentalMlSchema: resolveFundamentalSchemaForDeployment(
+    deployment_Designer.uuid,
+    designerMetaModel,
+    "static",
+  ),
+  miroirMetaModel: defaultMiroirMetaModel,
+  endpointsByUuid: {},
+  deploymentUuid: deployment_Designer.uuid,
+  currentModel: designerMetaModel,
+};
+
+// ================================================================================================
+// Eagerly load all instances via import.meta.glob
+// ================================================================================================
+
+// Model: Entities (parentUuid = entityEntity = 16dbfe28)
+const entityInstances = import.meta.glob(
+  "../assets/designer_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/*.json",
+  { eager: true },
+) as Record<string, { default: any }>;
+
+// Model: Reports (parentUuid = entityReport = 3f2baa83)
+const reportInstances = import.meta.glob(
+  "../assets/designer_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/*.json",
+  { eager: true },
+) as Record<string, { default: any }>;
+
+// Model: Menus (parentUuid = entityMenu = dde4c883)
+const menuInstances = import.meta.glob(
+  "../assets/designer_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/*.json",
+  { eager: true },
+) as Record<string, { default: any }>;
+
+// // Model: StoreBasedConfigurations (parentUuid = entityStoreBasedConfiguration = 7990c0c9)
+// const storeBasedConfigurationInstances = import.meta.glob(
+//   "../assets/designer_model/7990c0c9-86c3-40a1-a121-036c91b55ed7/*.json",
+//   { eager: true },
+// ) as Record<string, { default: any }>;
+
+// Model: SelfApplications (parentUuid = entitySelfApplication = a659d350)
+const selfApplicationInstances = import.meta.glob(
+  "../assets/designer_model/a659d350-dd97-4da9-91de-524fa01745dc/*.json",
+  { eager: true },
+) as Record<string, { default: any }>;
+
+// Model: SelfApplicationModelBranches (parentUuid = entitySelfApplicationModelBranch = cdb0aec6)
+const selfApplicationModelBranchInstances = import.meta.glob(
+  "../assets/designer_model/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/*.json",
+  { eager: true },
+) as Record<string, { default: any }>;
+
+// Data: AdminApplications (parentUuid = entityApplicationForAdmin = 25d935e7)
+const adminApplicationInstances = import.meta.glob(
+  "../assets/admin_data/25d935e7-9e93-42c2-aade-0472b883492b/*.json",
+  { eager: true },
+) as Record<string, { default: any }>;
+
+// Data: Deployments (parentUuid = entityDeployment = 7959d814)
+const deploymentInstances = import.meta.glob(
+  "../assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/*.json",
+  { eager: true },
+) as Record<string, { default: any }>;
+
+// Data: Bundles (parentUuid = entityBundle = 9f9170da)
+const bundleInstances = import.meta.glob(
+  "../assets/admin_data/9f9170da-538d-425c-8cb7-551640623eed/*.json",
+  { eager: true },
+) as Record<string, { default: any }>;
+
+// Data: ViewParams (parentUuid = entityViewParams = b9765b7c)
+const viewParamsInstances = import.meta.glob(
+  "../assets/admin_data/b9765b7c-b614-4126-a0e2-634463f99937/*.json",
+  { eager: true },
+) as Record<string, { default: any }>;
+
+// Data: ApplicationVersions / Imports (parentUuid = entityApplicationVersion = ff3d211b)
+const applicationVersionDataInstances = import.meta.glob(
+  "../assets/admin_data/ff3d211b-7eb6-473a-afbf-503bb70a5c26/*.json",
+  { eager: true },
+) as Record<string, { default: any }>;
+
+// Data: DesignerApplications (parentUuid = entityApplicationForDesigner = 25d935e7)
+const designerApplicationInstances = import.meta.glob(
+  "../assets/designer_data/25d935e7-9e93-42c2-aade-0472b883492b/*.json",
+  { eager: true },
+) as Record<string, { default: any }>;
+
+// Data: Activities (parentUuid = entityActivity = fd622624)
+const activityDataInstances = import.meta.glob(
+  "../assets/designer_data/fd622624-1a7e-46fa-9964-c4ecfb543de3/*.json",
+  { eager: true },
+) as Record<string, { default: any }>;
+
+// Data: UserStories (parentUuid = entityUserStory = 59debf06)
+const userStoryDataInstances = import.meta.glob(
+  "../assets/designer_data/59debf06-405d-4def-a7eb-3db45360310d/*.json",
+  { eager: true },
+) as Record<string, { default: any }>;
+
+// Data: Roles (parentUuid = entityRole = 702535cd)
+const roleDataInstances = import.meta.glob(
+  "../assets/designer_data/702535cd-e6fa-49d6-aa6f-b5874821e5a3/*.json",
+  { eager: true },
+) as Record<string, { default: any }>;
+
+// ================================================================================================
+// Helpers
+// ================================================================================================
+
+function buildInstanceLabel(instance: any, fallbackPath: string): string {
+  const uuid: string = instance.uuid ?? fallbackPath;
+  return instance.name ? `${instance.name} (${uuid})` : uuid;
+}
+
+function describeEntityGroup(
+  groupName: string,
+  mlSchema: MlElement,
+  instances: Record<string, { default: any }>,
+  modelEnv: MiroirModelEnvironment,
+): void {
+  if (Object.keys(instances).length === 0) {
+    return;
+  }
+  describe(groupName, () => {
+    for (const [path, module] of Object.entries(instances)) {
+      const instance = module.default;
+      const label = buildInstanceLabel(instance, path);
+      it(label, () => {
+        const result = mlsTypeCheck(
+          mlSchema,
+          instance,
+          [], // currentValuePath
+          [], // currentTypePath
+          modelEnv,
+          {}, // relativeReferenceMlContext
+        );
+        expect(
+          result.status,
+          `mlsTypeCheck failed for instance ${label}: ${JSON.stringify(result)}`,
+        ).toBe("ok");
+      });
+    }
+  });
+}
+
+// ================================================================================================
+// Test suites — Model instances (validated against the Miroir meta-model)
+// ================================================================================================
+
+describeEntityGroup(
+  "Entity",
+  (entityDefinitionEntity as unknown as EntityVersion).mlSchema as unknown as MlElement,
+  entityInstances,
+  defaultMiroirModelEnvironment,
+);
+
+describeEntityGroup(
+  "Report",
+  (entityDefinitionReport as unknown as EntityVersion).mlSchema as unknown as MlElement,
+  reportInstances,
+  defaultMiroirModelEnvironment,
+);
+
+describeEntityGroup(
+  "Menu",
+  (entityDefinitionMenu as unknown as EntityVersion).mlSchema as unknown as MlElement,
+  menuInstances,
+  defaultMiroirModelEnvironment,
+);
+
+// describeEntityGroup(
+//   "StoreBasedConfiguration",
+//   (entityDefinitionStoreBasedConfiguration as unknown as EntityVersion).mlSchema as unknown as MlElement,
+//   storeBasedConfigurationInstances,
+//   defaultMiroirModelEnvironment,
+// );
+
+describeEntityGroup(
+  "SelfApplication",
+  (entityDefinitionSelfApplication as unknown as EntityVersion).mlSchema as unknown as MlElement,
+  selfApplicationInstances,
+  defaultMiroirModelEnvironment,
+);
+
+
+describeEntityGroup(
+  "SelfApplicationModelBranch",
+  (entityDefinitionSelfApplicationModelBranch as unknown as EntityVersion).mlSchema as unknown as MlElement,
+  selfApplicationModelBranchInstances,
+  defaultMiroirModelEnvironment,
+);
+
+// ================================================================================================
+// Test suites — Data instances (validated against the admin model)
+// ================================================================================================
+
+describeEntityGroup(
+  "AdminApplication",
+  (entityApplicationForAdmin as unknown as Entity).mlSchema as unknown as MlElement,
+  adminApplicationInstances,
+  adminModelEnvironment,
+);
+
+describeEntityGroup(
+  "Deployment",
+  (entityDeployment as unknown as Entity).mlSchema as unknown as MlElement,
+  deploymentInstances,
+  adminModelEnvironment,
+);
+
+// describeEntityGroup(
+//   "StoreBasedConfiguration",
+//   (entityStoreBasedConfigurationAdmin as unknown as Entity).mlSchema as unknown as MlElement,
+//   bundleInstances,
+//   adminModelEnvironment,
+// );
+
+describeEntityGroup(
+  "ViewParams",
+  (entityViewParams as unknown as Entity).mlSchema as unknown as MlElement,
+  viewParamsInstances,
+  adminModelEnvironment,
+);
+
+describeEntityGroup(
+  "Import",
+  (entityImport as unknown as Entity).mlSchema as unknown as MlElement,
+  applicationVersionDataInstances,
+  adminModelEnvironment,
+);
+
+// ================================================================================================
+// Test suites — Designer data instances (validated against the designer model)
+// ================================================================================================
+
+describeEntityGroup(
+  "DesignerApplication",
+  (entityApplicationForDesigner as unknown as Entity).mlSchema as unknown as MlElement,
+  designerApplicationInstances,
+  designerModelEnvironment,
+);
+
+describeEntityGroup(
+  "Activity",
+  (entityActivity as unknown as Entity).mlSchema as unknown as MlElement,
+  activityDataInstances,
+  designerModelEnvironment,
+);
+
+describeEntityGroup(
+  "UserStory",
+  (entityUserStory as unknown as Entity).mlSchema as unknown as MlElement,
+  userStoryDataInstances,
+  designerModelEnvironment,
+);
+
+describeEntityGroup(
+  "Role",
+  (entityRole as unknown as Entity).mlSchema as unknown as MlElement,
+  roleDataInstances,
+  designerModelEnvironment,
+);
+
+describe("static schema mode (199)", () => {
+  it("admin model environment schema is miroirFundamentalMlSchema by reference", () => {
+    expect(adminModelEnvironment.miroirFundamentalMlSchema).toBe(miroirFundamentalMlSchema);
+  });
+
+  it("defaultMiroirModelEnvironment schema is miroirFundamentalMlSchema by reference", () => {
+    expect(defaultMiroirModelEnvironment.miroirFundamentalMlSchema).toBe(miroirFundamentalMlSchema);
+  });
+});

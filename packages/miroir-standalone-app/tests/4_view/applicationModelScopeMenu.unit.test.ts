@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import type { Menu, MiroirMenuItem } from "miroir-core";
-import { adminSelfApplication } from "miroir-test-app_deployment-admin";
+import { adminSelfApplication } from "miroir-app-admin";
 import {
   menuApplicationModelScopeTemplate,
   selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
-import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
+} from "miroir-app-miroir";
+import { selfApplicationLibrary } from "miroir-example-library";
 
 import {
   isApplicationModelScopeInjectionActive,

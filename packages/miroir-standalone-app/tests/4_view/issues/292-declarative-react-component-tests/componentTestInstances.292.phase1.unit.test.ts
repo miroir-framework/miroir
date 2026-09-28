@@ -8,7 +8,7 @@
  *   `baseline-component-cases.txt`;
  * - `miroirTestDefinitionHasReactComponentTest` is true for each instance and for a fixture whose
  *   only component leaf is inside a `reactComponentTestSuite`;
- * - `miroir-test-app_deployment-miroir` exports `miroirTest_<name>` for the 7 names, and
+ * - `miroir-app-miroir` exports `miroirTest_<name>` for the 7 names, and
  *   `defaultMiroirMetaModel.tests` holds the 7 uuids and not `MlElementEditor_ComponentTestSuite`;
  * - (#303) the only other instances with component leaves are `ui.mlElementEditor.allTypesPattern`
  *   and `ui.mlElementEditor.renderPerformance`, exported and listed in
@@ -27,8 +27,8 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import * as deploymentMiroir from "miroir-test-app_deployment-miroir";
-import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+import * as deploymentMiroir from "miroir-app-miroir";
+import { defaultMiroirMetaModel } from "miroir-app-miroir";
 
 import { miroirTestDefinitionHasReactComponentTest } from "../../../../src/miroir-fwk/4-tests/miroirTestSuiteUiExecution";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
@@ -36,7 +36,7 @@ import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 const REPO_ROOT = resolveRepoRoot();
 const MIROIR_TEST_DATA_FOLDER = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b",
+  "packages/miroir-app-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b",
 );
 const BASELINE_PATH = join(
   REPO_ROOT,

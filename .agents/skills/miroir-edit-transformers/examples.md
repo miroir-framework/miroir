@@ -182,7 +182,7 @@ const transformerForBuildPlusRuntime = {
 ```
 
 #### 6. Test Case
-**File**: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json`
+**File**: `packages/miroir-app-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json`
 
 ```json
 {

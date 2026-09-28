@@ -7,14 +7,14 @@ const REPO_ROOT = join(import.meta.dirname, "../../../..");
 
 const MODEL_ENDPOINT = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_data",
+  "packages/miroir-app-miroir/assets/miroir_data",
   "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
   "7947ae40-eb34-4149-887b-15a9021e714e.json",
 );
 
 const MIROIR_TEST_SUITE = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_data",
+  "packages/miroir-app-miroir/assets/miroir_data",
   "a311f363-e238-4203-bdfc-29e8c160c26b",
   "a1b2c3d4-5e6f-4789-a0b1-c2d3e4f5a6b7.json",
 );

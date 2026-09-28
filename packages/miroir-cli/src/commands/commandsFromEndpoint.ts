@@ -17,14 +17,14 @@ import {
   type MlObject,
   type MetaModel,
 } from "miroir-core";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { deployment_Miroir } from "miroir-app-admin";
 import {
   getDefaultLibraryModelEnvironmentDEFUNCT,
   defaultLibraryAppModel,
   resolveLibraryDeploymentUuid,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 
-import { defaultMiroirMetaModel, instanceEndpointV1 } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel, instanceEndpointV1 } from "miroir-app-miroir";
 const packageName = "miroir-cli";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, "info", "commandsFromEndpoint");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

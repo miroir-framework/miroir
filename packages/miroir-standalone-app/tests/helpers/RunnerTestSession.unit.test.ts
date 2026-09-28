@@ -18,20 +18,20 @@ import {
   type MiroirTestSuite,
   type Runner,
 } from "miroir-core";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { deployment_Miroir } from "miroir-app-admin";
 import {
   defaultAppForTestModel,
   deployment_AppForTest_DO_NO_USE,
   selfApplicationAppForTest,
-} from "miroir-test-app_deployment-appForTest";
+} from "miroir-fixture-appForTest";
 import {
   defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,
   miroirTest_runner_returnDocument,
   returnDocument,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
-import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+} from "miroir-example-library";
+import { selfApplicationMiroir } from "miroir-app-miroir";
 
 const runAppStackIntegrationBootstrapMock = vi.fn();
 const runRealServerClientBootstrapMock = vi.fn();

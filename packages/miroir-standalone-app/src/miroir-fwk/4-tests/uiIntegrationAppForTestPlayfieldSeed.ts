@@ -7,9 +7,9 @@ import {
   appForTestInitialApplicationVersion,
   selfApplicationAppForTest,
   selfApplicationModelBranchAppForTestMasterBranch,
-} from "miroir-test-app_deployment-appForTest";
+} from "miroir-fixture-appForTest";
 
-import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel } from "miroir-app-miroir";
 
 export const appForTestTestbedInitParams: InitApplicationParameters = {
   dataStoreType: "app",

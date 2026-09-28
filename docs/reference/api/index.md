@@ -2,7 +2,7 @@
 
 **Status: 🚧 In Progress - Auto-generated from ML schemas**
 
-This API reference is generated from ML schemas defined in the Miroir meta-model. For the most up-to-date schemas, see the Entity rows in `packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/` (each Entity carries the `mlSchema` of its instances) and the generated types in `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/`.
+This API reference is generated from ML schemas defined in the Miroir meta-model. For the most up-to-date schemas, see the Entity rows in `packages/miroir-app-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/` (each Entity carries the `mlSchema` of its instances) and the generated types in `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/`.
 
 ---
 
@@ -45,7 +45,7 @@ Defined as Entities of the Miroir application:
 Each concept's schema is the `mlSchema` of its Entity row, in:
 
 ```
-packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/
+packages/miroir-app-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/
 ```
 
 **Entity**: `16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json`

@@ -180,4 +180,4 @@ FROM information_schema.columns GROUP BY table_name
 
 - **In-memory**: `handleCountTransformer` in `TransformersForRuntime.ts`
 - **SQL**: `sqlStringForCountTransformer` in `SqlGenerator.ts`
-- **Definition**: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a557419d-.../4ee5c863-5ade-4706-92bd-1fc2d89c3766.json`
+- **Definition**: `packages/miroir-app-miroir/assets/miroir_data/a557419d-.../4ee5c863-5ade-4706-92bd-1fc2d89c3766.json`

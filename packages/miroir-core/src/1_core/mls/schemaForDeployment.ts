@@ -12,7 +12,7 @@ import type {
   MetaModel,
   MlSchema,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { selfApplicationMiroir } from "miroir-app-miroir";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
 import { packageName } from "../../constants";

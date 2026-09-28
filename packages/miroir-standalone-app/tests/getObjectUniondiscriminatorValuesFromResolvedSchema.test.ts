@@ -1,5 +1,5 @@
 import type { MiroirModelEnvironment } from "miroir-core";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { deployment_Miroir } from "miroir-app-admin";
 import {
   getObjectUniondiscriminatorValuesFromResolvedSchema,
   getMiroirFundamentalSchemaForDeployment,

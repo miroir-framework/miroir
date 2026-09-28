@@ -171,7 +171,7 @@ describe("resolveEntitiesToFetchOnRefresh (1.2–1.3)", () => {
 
   it("excludes Miroir Blob when EntityVersion asset sets cacheAllInstancesOnRefresh false (Phase 4)", async () => {
     const { entityBlob, entityDefinitionBlob, selfApplicationMiroir } = await import(
-      "miroir-test-app_deployment-miroir"
+      "miroir-app-miroir"
     );
     expect(entityDefinitionBlob.cache?.cacheAllInstancesOnRefresh).toBe(false);
 
@@ -187,7 +187,7 @@ describe("resolveEntitiesToFetchOnRefresh (1.2–1.3)", () => {
 
   it("excludes Blob from Entity.cache without EntityVersion map (Phase 7)", async () => {
     const { entityBlob, selfApplicationMiroir } = await import(
-      "miroir-test-app_deployment-miroir"
+      "miroir-app-miroir"
     );
     expect(entityBlob.cache?.cacheAllInstancesOnRefresh).toBe(false);
 
@@ -201,7 +201,7 @@ describe("resolveEntitiesToFetchOnRefresh (1.2–1.3)", () => {
 
   it("routes version-history entities to modelVersion (#232)", async () => {
     const { entitySelfApplicationVersion, selfApplicationMiroir } = await import(
-      "miroir-test-app_deployment-miroir"
+      "miroir-app-miroir"
     );
 
     const result = resolveEntitiesToFetchOnRefresh(
@@ -226,7 +226,7 @@ describe("resolveEntitiesToFetchOnRefresh (1.2–1.3)", () => {
       entityHistoricalMenuVersion,
       entitySelfApplicationVersion,
       selfApplicationMiroir,
-    } = await import("miroir-test-app_deployment-miroir");
+    } = await import("miroir-app-miroir");
 
     for (const appUuid of [selfApplicationMiroir.uuid as string, applicationUuid]) {
       const result = resolveEntitiesToFetchOnRefresh(

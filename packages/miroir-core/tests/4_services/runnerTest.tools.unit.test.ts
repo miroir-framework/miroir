@@ -8,12 +8,12 @@ import {
   miroirTest_runner_returnDocument,
   returnDocument,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import {
   miroirTest_runner_createEntity,
   miroirTest_runner_dropEntity,
   RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 import {
   miroirTestForRunner as miroirTestForRunnerSchema,
   miroirTestSuite as miroirTestSuiteSchema,

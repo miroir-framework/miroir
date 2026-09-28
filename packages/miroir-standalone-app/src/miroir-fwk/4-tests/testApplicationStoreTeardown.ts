@@ -12,7 +12,7 @@ import {
   entityApplicationForAdmin,
   entityDeployment,
   entityMiroirRight,
-} from "miroir-test-app_deployment-admin";
+} from "miroir-app-admin";
 
 export type TeardownTestApplicationStoresOptions = {
   deleteAdminInstances?: boolean;

@@ -16,8 +16,8 @@ import {
   entityBook,
   reportBookList,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
-import { defaultMiroirMetaModel, defaultStoredMiroirTheme } from "miroir-test-app_deployment-miroir";
+} from "miroir-example-library";
+import { defaultMiroirMetaModel, defaultStoredMiroirTheme } from "miroir-app-miroir";
 import { useMiroirContextService } from "miroir-react";
 
 import { ReportSectionListDisplay } from "../../../src/miroir-fwk/4_view/components/Reports/ReportSectionListDisplay.js";

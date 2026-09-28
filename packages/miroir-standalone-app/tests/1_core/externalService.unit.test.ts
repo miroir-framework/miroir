@@ -16,7 +16,7 @@ import {
   instanceEndpointV1,
   instanceEndpointVersionV1,
   storeManagementEndpoint,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
 import { reportPageParamsFromSearchParams } from "../../src/miroir-fwk/4_view/PageDispatcher.js";
 import { resolveRepoRoot } from "../helpers/integrationTestProfiles.js";
@@ -32,12 +32,12 @@ const REPO_ROOT = resolveRepoRoot();
 
 const MIROIR_DATA_ENDPOINT_DIR = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_data",
+  "packages/miroir-app-miroir/assets/miroir_data",
   ENDPOINT_ENTITY_UUID,
 );
 const LIBRARY_MODEL_ENDPOINT_DIR = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-library/assets/library_model",
+  "packages/miroir-example-library/assets/library_model",
   ENDPOINT_ENTITY_UUID,
 );
 

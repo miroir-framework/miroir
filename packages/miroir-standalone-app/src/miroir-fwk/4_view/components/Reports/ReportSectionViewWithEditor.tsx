@@ -58,7 +58,7 @@ import {
   reportEntityDetails,
   reportEntityVersionDetails,
   reportReportDetails,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionViewWithEditor");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",

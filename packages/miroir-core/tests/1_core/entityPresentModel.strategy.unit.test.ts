@@ -4,10 +4,10 @@
  */
 import { describe, expect, it } from "vitest";
 
-import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";
+import { defaultLibraryAppModel } from "miroir-example-library";
 import {
   selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
 import type {
   SelfApplication,

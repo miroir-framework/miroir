@@ -10,7 +10,7 @@ import { TransformerFailure, type TransformerReturnType } from "../0_interfaces/
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 
-import { entityEntity } from "miroir-test-app_deployment-miroir";
+import { entityEntity } from "miroir-app-miroir";
 
 import { applyMlSchemaColumnChanges } from "../1_core/Entity/modelEntityDualWrite";
 import { findEntityFromUuid } from "../tools";

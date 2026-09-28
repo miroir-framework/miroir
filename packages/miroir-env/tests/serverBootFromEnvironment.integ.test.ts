@@ -69,7 +69,7 @@ describe("server boot from the dev environment", () => {
     const admin = first.resolved.deployments.find((d) => d.applicationKey === "admin")!;
     expect(admin.configuration.model).toEqual({
       emulatedServerType: "filesystem",
-      directory: "packages/miroir-test-app_deployment-admin/assets/admin_model",
+      directory: "packages/miroir-app-admin/assets/admin_model",
     });
     expect(admin.configuration.data).toEqual({ emulatedServerType: "filesystem", directory: ".miroir/dev/admin/data" });
     expect(first.seed.seeded).toContain("admin/data");

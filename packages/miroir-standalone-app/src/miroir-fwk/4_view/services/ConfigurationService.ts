@@ -27,7 +27,7 @@ import {
   deployment_Admin,
   adminSelfApplication,
   entityDeployment,
-} from "miroir-test-app_deployment-admin";
+} from "miroir-app-admin";
 
 import type { Deployment } from 'miroir-core';
 

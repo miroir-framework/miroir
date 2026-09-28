@@ -17,7 +17,7 @@ import {
   applyEntityOnlyRename,
   applyMlSchemaColumnChanges
 } from "miroir-core";
-import { entityEntity } from "miroir-test-app_deployment-miroir";
+import { entityEntity } from "miroir-app-miroir";
 import { MixedMongoDbInstanceStoreSection, MongoDbInstanceStoreSectionMixin } from "./MongoDbInstanceStoreSectionMixin.js";
 import { MongoDbStoreSection } from "./MongoDbStoreSection.js";
 

@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   defaultLibraryAppModel,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
-import { defaultMiroirMetaModel, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+} from "miroir-example-library";
+import { defaultMiroirMetaModel, selfApplicationMiroir } from "miroir-app-miroir";
 
 import type { MetaModel } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {

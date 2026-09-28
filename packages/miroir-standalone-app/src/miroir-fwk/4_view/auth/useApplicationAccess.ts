@@ -19,7 +19,7 @@ import {
   useSelector,
   type ReduxStateWithUndoRedo,
 } from "miroir-react";
-import { adminSelfApplication } from "miroir-test-app_deployment-admin";
+import { adminSelfApplication } from "miroir-app-admin";
 
 import { useAuthSession } from "./authSession.js";
 

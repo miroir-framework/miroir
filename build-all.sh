@@ -17,7 +17,7 @@
 #   build      Standard build - faster, but does not regenerate TypeScript types from Jzod schemas.
 #   devBuild   Full devBuild (default) – regenerates TypeScript types from Jzod schemas
 #              before building miroir-core. Required when schemas in
-#              packages/miroir-test-app_deployment-miroir/assets are modified.
+#              packages/miroir-app-miroir/assets are modified.
 #   typecheck  Type-check all packages with tsc --noEmit (no emit, no artefacts by default).
 #              Workspace packages resolve types from dist/, so run a normal build first
 #              if declaration files are missing or stale.
@@ -61,8 +61,8 @@ STATE_FILE="$SCRIPT_DIR/tmp/build-all-state"
 ALL_PACKAGES=(
   jzod
   jzod-ts
-  miroir-test-app_deployment-miroir
-  miroir-test-app_deployment-admin
+  miroir-app-miroir
+  miroir-app-admin
   miroir-core
   miroir-env
   miroir-localcache-redux
@@ -79,15 +79,15 @@ ALL_PACKAGES=(
   miroir-cli
   miroir-ai
   miroir-standalone-app
-  miroir-test-app_deployment-library
-  miroir-test-app_deployment-spotify
-  miroir-test-app_deployment-appForTest
-  miroir-test-app_deployment-postgres
+  miroir-example-library
+  miroir-example-spotify
+  miroir-fixture-appForTest
+  miroir-example-postgres
 )
 
 STAGE_OPTIONAL_JZOD=(jzod)
 STAGE_OPTIONAL_JZOD_TS=(jzod-ts)
-STAGE_DEPLOY_BOOTSTRAP=(miroir-test-app_deployment-miroir miroir-test-app_deployment-admin)
+STAGE_DEPLOY_BOOTSTRAP=(miroir-app-miroir miroir-app-admin)
 STAGE_CORE=(miroir-core)
 STAGE_CACHES_STORES=(
   miroir-env
@@ -102,9 +102,9 @@ STAGE_CACHES_STORES=(
 )
 STAGE_UI_SERVICES=(miroir-react miroir-mcp miroir-diagram-class)
 STAGE_APPS=(miroir-cli miroir-ai miroir-mcp)
-STAGE_STANDALONE_DEPS=(miroir-test-app_deployment-library miroir-test-app_deployment-spotify miroir-test-app_deployment-appForTest)
+STAGE_STANDALONE_DEPS=(miroir-example-library miroir-example-spotify miroir-fixture-appForTest)
 STAGE_STANDALONE=(miroir-standalone-app)
-STAGE_DEPLOY_TEST=(miroir-test-app_deployment-library miroir-test-app_deployment-spotify miroir-test-app_deployment-appForTest miroir-test-app_deployment-postgres)
+STAGE_DEPLOY_TEST=(miroir-example-library miroir-example-spotify miroir-fixture-appForTest miroir-example-postgres)
 
 # ---------------------------------------------------------------------------
 # Argument parsing
@@ -614,11 +614,11 @@ record_time "2/9  jzod-ts (optional)" "$t0"
 # Step 3 – Deployment packages (import miroir-core types for DTS; devBuild
 #           regenerates core types from their dist in step 4)
 # ---------------------------------------------------------------------------
-step "3/9  · miroir-test-app_deployment-miroir & miroir-test-app_deployment-admin"
+step "3/9  · miroir-app-miroir & miroir-app-admin"
 t0=$(now_secs)
 bootstrap_miroir_core_for_deployment_dts
 run_stage_packages "deploy-bootstrap" "${STAGE_DEPLOY_BOOTSTRAP[@]}"
-record_time "3/9  miroir-test-app_deployment-miroir & miroir-test-app_deployment-admin" "$t0"
+record_time "3/9  miroir-app-miroir & miroir-app-admin" "$t0"
 
 # ---------------------------------------------------------------------------
 # Step 4 – miroir-core (optionally with type generation)
@@ -664,10 +664,10 @@ record_time "8/9  miroir-standalone-app" "$t0"
 # ---------------------------------------------------------------------------
 # Step 9 – Test/example deployment packages
 # ---------------------------------------------------------------------------
-step "9/9 · miroir-test-app_deployment-library, spotify & postgres"
+step "9/9 · miroir-example-library, spotify & postgres"
 t0=$(now_secs)
 run_stage_packages "deploy-test" "${STAGE_DEPLOY_TEST[@]}"
-record_time "9/9  miroir-test-app_deployment-library & miroir-test-app_deployment-postgres" "$t0"
+record_time "9/9  miroir-example-library & miroir-example-postgres" "$t0"
 
 # ---------------------------------------------------------------------------
 # Artefact-specific builds with timing

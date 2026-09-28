@@ -3,7 +3,7 @@ import { act, fireEvent, renderHook, screen, waitFor } from "@testing-library/re
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
-import { book1 } from "miroir-test-app_deployment-library";
+import { book1 } from "miroir-example-library";
 
 import { tableComponentCorePropsSchema } from "../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGridInterface.js";
 import { valueObjectGridPropsSchema } from "../../src/miroir-fwk/4_view/components/Grids/ValueObjectGridInterface.js";

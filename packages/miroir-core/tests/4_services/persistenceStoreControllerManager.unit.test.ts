@@ -32,7 +32,7 @@ import {
   BUNDLED_MODEL_VERSION_UNSUPPORTED_MESSAGE,
   miroirBundledStoreSectionStartup,
 } from "miroir-store-bundled";
-import { entitySelfApplicationVersion } from "miroir-test-app_deployment-miroir";
+import { entitySelfApplicationVersion } from "miroir-app-miroir";
 
 const DEPLOYMENT_UUID = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
 const ENTITY_UUID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";

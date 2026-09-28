@@ -5,7 +5,7 @@ import {
   transformer_extended_apply_wrapper,
   type CoreTransformerForBuildPlusRuntime,
 } from "miroir-core";
-import { book1, book2 } from "miroir-test-app_deployment-library";
+import { book1, book2 } from "miroir-example-library";
 import { describe, expect, it } from "vitest";
 
 import {

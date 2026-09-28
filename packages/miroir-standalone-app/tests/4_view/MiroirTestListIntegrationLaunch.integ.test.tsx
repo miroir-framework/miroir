@@ -16,7 +16,7 @@ import {
   type MiroirTestDefinition,
 } from 'miroir-core';
 import { MiroirContextReactProvider } from 'miroir-react';
-import { miroirTest_tr_core } from 'miroir-test-app_deployment-miroir';
+import { miroirTest_tr_core } from 'miroir-app-miroir';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirMongoDbStoreSectionStartup } from 'miroir-store-mongodb';

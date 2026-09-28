@@ -37,9 +37,9 @@ jobs:
         run: npm run lint
       - name: Build packages needed by miroir-core tests and miroir-env
         run: |
-          npm run build -w miroir-test-app_deployment-miroir -w miroir-test-app_deployment-admin
+          npm run build -w miroir-app-miroir -w miroir-app-admin
           npm run build -w miroir-core
-          npm run build -w miroir-env -w miroir-store-bundled -w miroir-store-postgres -w miroir-test-app_deployment-library
+          npm run build -w miroir-env -w miroir-store-bundled -w miroir-store-postgres -w miroir-example-library
       - name: Environments valid, tracked assets unchanged (#321)
         run: npm run miroir-env -- check --strict --tracked-clean
       - name: Typecheck miroir-core
@@ -96,13 +96,13 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit
       # The packages the two apps import, and miroir-env, which the standalone app's vite.config.js imports; each
-      # line needs the ones above it (miroir-mcp and miroir-ai import miroir-test-app_deployment-library,
+      # line needs the ones above it (miroir-mcp and miroir-ai import miroir-example-library,
       # miroir-diagram-class imports miroir-react).
       - name: Build the packages the apps import
         run: |
-          npm run build -w miroir-test-app_deployment-miroir -w miroir-test-app_deployment-admin
+          npm run build -w miroir-app-miroir -w miroir-app-admin
           npm run build -w miroir-core
-          npm run build -w miroir-env -w miroir-localcache-redux -w miroir-store-bundled -w miroir-store-filesystem -w miroir-store-indexedDb -w miroir-store-postgres -w miroir-store-mongodb -w miroir-test-app_deployment-library -w miroir-test-app_deployment-spotify -w miroir-test-app_deployment-appForTest
+          npm run build -w miroir-env -w miroir-localcache-redux -w miroir-store-bundled -w miroir-store-filesystem -w miroir-store-indexedDb -w miroir-store-postgres -w miroir-store-mongodb -w miroir-example-library -w miroir-example-spotify -w miroir-fixture-appForTest
           npm run build -w miroir-react -w miroir-mcp -w miroir-ai
           npm run build -w miroir-diagram-class
       - name: Build the standalone app (prints its bundle report)

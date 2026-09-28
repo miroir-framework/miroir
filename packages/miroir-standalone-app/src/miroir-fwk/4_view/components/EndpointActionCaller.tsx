@@ -38,12 +38,12 @@ import {
   deployment_Admin,
   deployment_Miroir,
   entityApplicationForAdmin,
-} from "miroir-test-app_deployment-admin";
-import { selfApplicationLibrary } from 'miroir-test-app_deployment-library';
+} from "miroir-app-admin";
+import { selfApplicationLibrary } from 'miroir-example-library';
 import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
 import { ThemedPaper } from './Themes/index.js';
 
-import { entityEndpointVersion, selfApplicationMiroir } from 'miroir-test-app_deployment-miroir';
+import { entityEndpointVersion, selfApplicationMiroir } from 'miroir-app-miroir';
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EndpointActionCaller");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",

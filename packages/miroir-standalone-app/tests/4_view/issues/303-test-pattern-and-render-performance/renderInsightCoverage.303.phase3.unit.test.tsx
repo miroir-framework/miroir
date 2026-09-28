@@ -34,7 +34,7 @@ import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
 const TEST_PATTERN_INSTANCE_FILE = join(
   resolveRepoRoot(),
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/26ef2886-2cd8-4f91-b846-1525b24d5f41.json",
+  "packages/miroir-app-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/26ef2886-2cd8-4f91-b846-1525b24d5f41.json",
 );
 
 /**

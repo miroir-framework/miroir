@@ -88,7 +88,7 @@ import {
   miroirUserCredential_AliceDev,
   miroirUserCredential_CarolDev,
   miroirUserCredential_DaveDev
-} from "miroir-test-app_deployment-admin";
+} from "miroir-app-admin";
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
@@ -413,15 +413,15 @@ async function startWebApp(root: Root) {
         "18db21bf-f8d3-4f6a-8296-84b69f6dc48b": {
           admin: {
             emulatedServerType: "filesystem",
-            directory: "miroir-test-app_deployment-admin/assets",
+            directory: "miroir-app-admin/assets",
           },
           model: {
             emulatedServerType: "filesystem",
-            directory: "miroir-test-app_deployment-admin/assets/admin_model",
+            directory: "miroir-app-admin/assets/admin_model",
           },
           data: {
             emulatedServerType: "filesystem",
-            directory: "miroir-test-app_deployment-admin/assets/admin_data",
+            directory: "miroir-app-admin/assets/admin_data",
           },
         },
       },

@@ -124,14 +124,14 @@ The script performs ordered steps:
 
 | Step | Packages |
 |---|---|
-| 1 | `miroir-test-app_deployment-miroir`, `miroir-test-app_deployment-admin` |
+| 1 | `miroir-app-miroir`, `miroir-app-admin` |
 | 2 | `miroir-core` (plain build, or `devbuild` to regenerate TS types from ML schemas) |
 | 3 | All local-cache and store packages (built in parallel) |
 | 4 | `miroir-react`, `miroir-mcp`, `miroir-diagram-class` |
 | 5 | `miroir-server`, `miroir-standalone-app`, `miroir-cli` |
 | 6 | Remaining deployment packages |
 
-If you modified schema definitions under `packages/miroir-test-app_deployment-miroir/assets`, use `devbuild` to regenerate TypeScript types before building `miroir-core`:
+If you modified schema definitions under `packages/miroir-app-miroir/assets`, use `devbuild` to regenerate TypeScript types before building `miroir-core`:
 
 ```sh
 ./build-all.sh devbuild
@@ -179,7 +179,7 @@ Both scripts place the certificates in `certs/` and print the `NODE_EXTRA_CA_CER
 
 Run from the repository, the server and the web client take their configuration from an **environment** in `environments/` ([Environments](../reference/environments.md)). Without anything set, they use `dev`:
 
-- application models are edited live in their package assets (`packages/miroir-test-app_deployment-*/assets/`);
+- application models are edited live in their package assets (`packages/{miroir-app,miroir-example,miroir-fixture}-*/assets/`);
 - Admin data (installed applications, users, rights, secrets, view settings) lives in the gitignored `.miroir/dev/`, so installing an application or changing a right changes no tracked file.
 
 ```sh

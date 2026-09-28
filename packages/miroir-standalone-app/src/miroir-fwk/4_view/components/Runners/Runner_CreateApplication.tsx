@@ -39,8 +39,8 @@ import {
 import { getMemoizedReduxDeploymentsStateSelectorMap, useMiroirContextService, useSelector } from "miroir-react";
 import {
   entityDeployment
-} from "miroir-test-app_deployment-admin";
-import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+} from "miroir-app-admin";
+import { selfApplicationMiroir } from "miroir-app-miroir";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";

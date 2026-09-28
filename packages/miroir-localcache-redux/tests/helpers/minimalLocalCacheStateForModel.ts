@@ -11,7 +11,7 @@ import { entitySelfApplicationVersion,
   entityMenu,
   entityQueryVersion,
   entityReport,
- } from "miroir-test-app_deployment-miroir";
+ } from "miroir-app-miroir";
 
 import type { LocalCacheSliceState } from "../../src/4_services/localCache/localCacheReduxSliceInterface.js";
 

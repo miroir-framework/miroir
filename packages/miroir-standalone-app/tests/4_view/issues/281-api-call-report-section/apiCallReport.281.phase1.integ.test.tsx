@@ -57,12 +57,12 @@ import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
-import { deployment_Admin, deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 import {
   deployment_Library_DO_NO_USE,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
-import { defaultMiroirMetaModel, defaultStoredMiroirTheme } from "miroir-test-app_deployment-miroir";
+} from "miroir-example-library";
+import { defaultMiroirMetaModel, defaultStoredMiroirTheme } from "miroir-app-miroir";
 import {
   defaultSpotifyAppModel,
   deployment_Spotify_DO_NO_USE,
@@ -71,7 +71,7 @@ import {
   selfApplicationModelBranchSpotifyMasterBranch,
   selfApplicationSpotify,
   spotifyInitApplicationVersion,
-} from "miroir-test-app_deployment-spotify";
+} from "miroir-example-spotify";
 
 import { loglevelnext } from "../../../../src/loglevelnextImporter.js";
 import { ReportPageContextProvider } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportPageContext.js";
@@ -540,7 +540,7 @@ describe.skipIf(!shouldRun).sequential("apiCallReport #281 phase1 — typed play
 
     const packagePlaylistDir = join(
       resolveRepoRoot(),
-      "packages/miroir-test-app_deployment-spotify/assets/spotify_data",
+      "packages/miroir-example-spotify/assets/spotify_data",
       SPOTIFY_PLAYLIST_ENTITY_UUID,
     );
     expect(existsSync(packagePlaylistDir), packagePlaylistDir).toBe(false);

@@ -13,6 +13,7 @@ import {
 import {
   APPLICATION_MIROIR_TEST_SOURCE_FOLDERS_LEGACY,
   ENTITY_MIROIR_TEST_UUID,
+  deploymentPackageApplicationKey,
 } from "../../src/5_tests/applicationMiroirTestFolders";
 import {
   discoverApplicationMiroirTestSourceFolders,
@@ -22,6 +23,13 @@ import {
 } from "../../src/5_tests/loadApplicationMiroirTestsFromFolders";
 
 describe("loadApplicationMiroirTestsFromFolders", () => {
+  it("reads the application key from framework, example and fixture package names (#344)", () => {
+    expect(deploymentPackageApplicationKey("miroir-app-admin")).toBe("admin");
+    expect(deploymentPackageApplicationKey("miroir-example-library")).toBe("library");
+    expect(deploymentPackageApplicationKey("miroir-fixture-appForTest")).toBe("appForTest");
+    expect(deploymentPackageApplicationKey("miroir-core")).toBeUndefined();
+  });
+
   it("discovers MiroirTest folders under deployment packages, covering the legacy snapshot", () => {
     const discovered = discoverApplicationMiroirTestSourceFolders();
     expect(discovered.map((folder) => folder.applicationKey).sort()).toEqual(

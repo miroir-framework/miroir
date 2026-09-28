@@ -11,13 +11,13 @@ import {
   adminSelfApplication,
   deployment_Admin,
   entityApplicationForAdmin,
-} from "miroir-test-app_deployment-admin";
+} from "miroir-app-admin";
 import { FC, useEffect, useMemo, useRef } from "react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { TypedValueObjectEditorWithFormik } from "../Reports/TypedValueObjectEditorWithFormik";
 
-import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { selfApplicationMiroir } from "miroir-app-miroir";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ApplicationSelector");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,

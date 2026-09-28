@@ -70,7 +70,7 @@ if (runThis) {
 
     it("Admin ViewParams entity mlSchema.definition has no agents", () => {
       const entity = readJson(
-        "packages/miroir-test-app_deployment-admin/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+        "packages/miroir-app-admin/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
         `${VIEW_PARAMS_ENTITY_UUID}.json`,
       );
       const mlSchema = entity.mlSchema as { definition?: Record<string, unknown> };
@@ -79,7 +79,7 @@ if (runThis) {
 
     it("Default ViewParams seed has no agents key", () => {
       const seed = readJson(
-        "packages/miroir-test-app_deployment-admin/assets/admin_data",
+        "packages/miroir-app-admin/assets/admin_data",
         VIEW_PARAMS_ENTITY_UUID,
         `${VIEW_PARAMS_SEED_UUID}.json`,
       );

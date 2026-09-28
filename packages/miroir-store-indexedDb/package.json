@@ -17,7 +17,7 @@
   "dependencies": {
     "level": "8.0.1",
     "miroir-core": "*",
-    "miroir-test-app_deployment-miroir": "*"
+    "miroir-app-miroir": "*"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
