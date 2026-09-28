@@ -46,6 +46,21 @@ import {
 } from "../1_core/authentication/AuthenticationPolicy.js";
 import { redactCredentialSecretsFromValue } from "./redactCredentialSecrets.js";
 
+const INSTANCE_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";
+const MODEL_ENDPOINT = "7947ae40-eb34-4149-887b-15a9021e714e";
+const modelActionTypesForwardedToDomainController = [
+  "initModel",
+  "commit",
+  "rollback",
+  "remoteLocalCacheRollback",
+  "resetModel",
+  "resetData",
+  "alterEntityAttribute",
+  "renameEntity",
+  "createEntity",
+  "dropEntity",
+];
+
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RestServer");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
@@ -428,22 +443,12 @@ export async function restActionHandler(
       if (useDomainControllerToHandleModelAndInstanceActions) {
         // we are on the server, the action has been received from remote client
         // if (action.actionType == "modelAction") {
-        if (
-          [
-            "initModel",
-            "commit",
-            "rollback",
-            "remoteLocalCacheRollback",
-            "resetModel",
-            "resetData",
-            "alterEntityAttribute",
-            "renameEntity",
-            "createEntity",
-            "dropEntity",
-          ].includes(action.actionType)
-        ) {
+        // #341: DomainController finds an action by its endpoint; actions replayed through the
+        // persistence layer carry the PersistenceEndpoint, so they are forwarded with the
+        // Miroir Endpoint that declares them.
+        if (modelActionTypesForwardedToDomainController.includes(action.actionType)) {
           const result = await domainController.handleAction(
-            action,
+            { ...action, endpoint: MODEL_ENDPOINT } as any,
             applicationDeploymentMap,
             defaultMiroirModelEnvironment,
             undefined,
@@ -453,7 +458,7 @@ export async function restActionHandler(
           return continuationFunction(response)(redactCredentialSecretsFromValue(result));
         } else {
           const result = await domainController.handleAction(
-            action,
+            { ...action, endpoint: INSTANCE_ENDPOINT } as any,
             applicationDeploymentMap,
             undefined,
             undefined,
