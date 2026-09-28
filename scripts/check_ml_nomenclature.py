@@ -52,6 +52,14 @@ JZOD_TS_API_FILES = {
     "packages/miroir-store-postgres/scripts/postgres-generate-ts-types.ts",
 }
 
+# The Jzod adapter (#145 AC 2): the only files that import the external packages, where Jzod's own names are
+# legitimate. Its module names name the adapter wherever it is imported.
+JZOD_ADAPTER_FILES = {
+    "packages/miroir-core/src/1_core/mls/mlJzodAdapter.ts",
+    "packages/miroir-core/src/1_core/mls/mlJzodTsAdapter.ts",
+}
+JZOD_ADAPTER_MODULES = {"mlJzodAdapter", "mlJzodTsAdapter"}
+
 # Names exported by the external packages and used by Miroir.
 EXTERNAL_EXPORTS = {
     "jzodToZodTextAndZodSchema",
@@ -117,6 +125,8 @@ class Hit:
 
 
 def is_allowed(rel: str, line: str, start: int, token: str) -> bool:
+    if rel in JZOD_ADAPTER_FILES or token in JZOD_ADAPTER_MODULES:
+        return True
     # quoted, the name is a schema key of Miroir's own language, not a jzod-ts type
     if rel in JZOD_TS_API_FILES and token in JZOD_TS_EXPORTS and line[start - 1 : start] not in ('"', "'", "`"):
         return True
@@ -203,6 +213,9 @@ def self_test() -> int:
         ("build-all.sh", '(cd "$SCRIPT_DIR/../../jzod-ts" && npm run build)', []),
         ("packages/a/src/x.ts", "// the MlElement from jzod-ts", []),
         ("packages/a/src/x.ts", "// a jzod schema", ["jzod"]),
+        ("packages/a/src/x.ts", 'import { valueToMl } from "miroir-core/src/1_core/mls/mlJzodAdapter";', []),
+        ("packages/miroir-core/src/1_core/mls/mlJzodAdapter.ts", "type JzodElementParameter = X;", []),
+        ("packages/miroir-core/src/1_core/mls/other.ts", "type JzodElementParameter = X;", ["JzodElementParameter"]),
     ]
     failures = 0
     for rel, line, expected in samples:

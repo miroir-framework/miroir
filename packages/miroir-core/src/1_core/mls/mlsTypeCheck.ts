@@ -1,4 +1,4 @@
-import { valueToJzod } from "@miroir-framework/jzod";
+import { valueToMl } from "./mlJzodAdapter";
 
 import {
   MlArray,
@@ -108,7 +108,7 @@ export function buildAnyObjectEntry(
   const entry: any = {
     // rawSchema: ANY_IMPLICIT_UNION_TYPE as MlElement,
     rawSchema: ANY_SCHEMA,
-    resolvedSchema: valueToJzod(v) as MlElement,
+    resolvedSchema: valueToMl(v),
     valuePath: childPath,
     typePath: childTypePath,
   };
@@ -121,7 +121,7 @@ export function buildAnyObjectEntry(
       entry[k2] = {
         // rawSchema: ANY_IMPLICIT_UNION_TYPE as MlElement,
         rawSchema: ANY_SCHEMA,
-        resolvedSchema: valueToJzod(v2) as MlElement,
+        resolvedSchema: valueToMl(v2),
         valuePath: subPath,
         typePath: subTypePath,
       };
@@ -154,7 +154,7 @@ export function buildAnySubnodeKeyMap(
       result[flatKey] = {
         // rawSchema: ANY_IMPLICIT_UNION_TYPE as MlElement,
         rawSchema: ANY_SCHEMA,
-        resolvedSchema: valueToJzod(v) as MlElement,
+        resolvedSchema: valueToMl(v),
         valuePath: childPath,
         typePath: childTypePath,
       };
@@ -905,7 +905,7 @@ export function mlsTypeCheck(
 
     const resolvedSchema =
       mlSchema.type === "any"
-        ? (valueToJzod(valueObject) as MlElement)
+        ? valueToMl(valueObject)
         : mlSchema;
 
     // If schema is optional, nullable, any, or undefined — accept null/undefined
@@ -1092,7 +1092,7 @@ export function mlsTypeCheck(
                 resolvedSchema: {
                   type: "any",
                 } as MlElement,
-                // resolvedSchema: valueToJzod(e[1]) as MlElement,
+                // resolvedSchema: valueToMl(e[1]),
               },
             ];
           }
@@ -2003,7 +2003,7 @@ export function mlsTypeCheck(
     }
     // plain Attributes
     case "any": {
-      const resolvedSchema = valueToJzod(valueObject) as MlElement;
+      const resolvedSchema = valueToMl(valueObject);
       const anySubnodeKeyMap: Record<string, KeyMapEntry> =
         typeof valueObject === "object" && valueObject !== null && !Array.isArray(valueObject)
           ? buildAnySubnodeKeyMap(valueObject, currentValuePath, currentTypePath)
@@ -2264,7 +2264,7 @@ export function mlsTypeCheck(
             resolvedSchema: effectiveRawSchema,
             valuePath: currentValuePath,
             typePath: currentTypePath,
-            // resolvedSchema: valueToJzod(valueObject) as MlElement
+            // resolvedSchema: valueToMl(valueObject)
           }, // map the current value path to the resolved schema
         },
       };

@@ -970,6 +970,8 @@ export {
   type EnvironmentSectionName,
 } from "./1_core/environment/Environment";
 export { mlsToJsonSchema } from "./1_core/mls/MlsToJsonSchema";
+export type { MlToZodOptions, MlZodTextAndZodSchema, MlZodTextAndZodSchemaRecord } from "./1_core/mls/mlJzodAdapter";
+export { mlToZod, mlToZodTextAndZodSchema, valueToMl } from "./1_core/mls/mlJzodAdapter";
 export {
   getAttributeTypesFromMlSchema,
   mlsToSqlAttributeTypeMap,

@@ -1,8 +1,7 @@
 import { z } from "zod";
 import { describe, it, expect } from "vitest";
 
-import { jzodToZod } from "@miroir-framework/jzod";
-// import { zodSchemaToTsTypeText } from "@miroir-framework/jzod-ts";
+import { mlToZod } from "../../src/1_core/mls/mlJzodAdapter";
 
 import {
   coreTransformerForBuildPlusRuntime,
@@ -36,7 +35,7 @@ describe("zodParseError", () => {
   });
 
   it("zodParseError type parses actual error", () => {
-    const zodParseErrorZodSchema = jzodToZod(zodParseErrorMlSchema as any);
+    const zodParseErrorZodSchema = mlToZod(zodParseErrorMlSchema);
     zodParseErrorZodSchema.parse(zodParseErrorExample);
   });
 
