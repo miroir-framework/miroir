@@ -47,6 +47,17 @@ const handleUndoRedoAction: ActionImplementationHandler = async (host, action, c
 };
 
 export const miroirActionImplementations: Record<string, ActionImplementationHandler> = {
+  // QueryEndpoint
+  handleAction_runBoxedQueryAction: (host, action, context) =>
+    host.handleBoxedExtractorOrQueryAction(
+      action,
+      context.applicationDeploymentMap,
+      context.modelEnvironment,
+      context.principal,
+    ),
+  handleAction_runBoxedQueryTemplateAction: (host, action, context) =>
+    host.handleQueryTemplateActionForServerONLY(action, context.applicationDeploymentMap),
+
   // StoreManagementEndpoint
   handleAction_storeManagementAction_createStore: storeManagementAction(true),
   handleAction_storeManagementAction_deleteStore: storeManagementAction(true),

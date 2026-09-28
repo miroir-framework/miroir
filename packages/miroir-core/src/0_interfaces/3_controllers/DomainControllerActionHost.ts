@@ -7,6 +7,8 @@ import type {
   CompositeRunBoxedQueryTemplateAction,
   InstanceAction,
   ModelAction,
+  RunBoxedQueryAction,
+  RunBoxedQueryTemplateAction,
   StoreManagementAction,
   TransactionalInstanceAction,
   UndoRedoAction,
@@ -46,6 +48,16 @@ export type ConnectExternalServiceAction = {
  * Grows with each migrated action; handlers depend on this interface, not on the class.
  */
 export interface DomainControllerActionHost {
+  handleBoxedExtractorOrQueryAction(
+    runBoxedExtractorOrQueryAction: RunBoxedQueryAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    currentModel?: MiroirModelEnvironment,
+    principal?: AuthPrincipal,
+  ): Promise<Action2ReturnType>;
+  handleQueryTemplateActionForServerONLY(
+    runBoxedQueryTemplateAction: RunBoxedQueryTemplateAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2ReturnType>;
   handleStoreManagementAction(
     domainAction: StoreManagementAction,
     applicationDeploymentMap: ApplicationDeploymentMap,

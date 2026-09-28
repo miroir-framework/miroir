@@ -110,6 +110,7 @@ describe("#341 phase 0: Miroir action dispatch characterization", () => {
       "ModelEndpoint",
       "StoreManagementEndpoint",
       "UndoRedoEndpoint",
+      "QueryEndpoint",
     ];
     expect(Object.fromEntries(implemented)).toEqual({
       ...Object.fromEntries(

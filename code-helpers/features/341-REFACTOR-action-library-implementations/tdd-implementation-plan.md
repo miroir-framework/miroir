@@ -15,7 +15,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/341
 Working branch: `claude/action-library-implementations-1jkrjp` (from `_integration` 9ae1aa9)
 
-**Resume note:** Slices 0-5 DONE; next is Slice 6 (QueryEndpoint). Full nonreg every 2 or 3 slices (A, 2026-09-28), gate + touched suites in between.
+**Resume note:** Slices 0-6 DONE; next is Slice 7 (one dispatch path). Full nonreg every 2 or 3 slices (A, 2026-09-28), gate + touched suites in between.
 
 ---
 
@@ -42,7 +42,7 @@ This plan does **not** migrate Persistence / LocalCache actions, touch the 5 dec
 | 3 | InstanceEndpoint actions | ✅ | `action.domainController.dataCrud*` |
 | 4 | ModelEndpoint actions | ✅ | `action.domainController.modelCrud*`, `freezeApplicationVersion` |
 | 5 | StoreManagement and UndoRedo actions | ✅ | every integ session (open/close store), `modelUndoRedo` |
-| 6 | QueryEndpoint actions reachable through `handleAction` | ⬜ | `actionImplementations.341.phase6.integ.test.ts` |
+| 6 | QueryEndpoint actions reachable through `handleAction` | ✅ | `actionImplementations.341.phase6.integ.test.ts` |
 | 7 | One dispatch path: remove the switches, scoped guard on | ⬜ | phase0 guard (b) + nonreg:filesystem |
 | 8 | Autocommit and log phase from action definitions | ⬜ | phase8 unit test vs Slice 0 lock |
 | 9 | Nonreg, docs, cleanup, AC | ⬜ | nonreg:filesystem (shared runner) + tracer narrative |
@@ -353,7 +353,7 @@ npm run nonreg:filesystem -- --runner shared
 
 ## Slice 6 — QueryEndpoint actions reachable through `handleAction`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE (2026-09-28)
 
 ### Goal
 
@@ -379,6 +379,11 @@ VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirCo
 ```
 
 ### Realization
+
+- RED confirmed: `handleAction(runBoxedQueryAction)` returned `ACTION_OK` with no domain element (`expected [] to deeply equal ['Author', …]`).
+- Deviation: the test is a new case in the existing `tests/4_storage/ExtractorPersistenceStoreRunner.integ.test.tsx` ("get Library Entities through DomainController.handleAction"). It is not in an issue-scoped file: it reuses that file's Library session, is already in nonreg (`appstack-ExtractorPersistenceStoreRunner.integ`), and needs no cleanup.
+- `handleAction_runBoxedQueryAction` → `handleBoxedExtractorOrQueryAction` (with the model environment and principal), `handleAction_runBoxedQueryTemplateAction` → `handleQueryTemplateActionForServerONLY`. QueryEndpoint declares both.
+- Validation: the test file 12/12 on filesystem, modelValidation, lint, core unit (2096 passed), and nonreg `--only` query, report and dataCrud steps: 13/13 pass. A full nonreg run follows Slice 7.
 
 ---
 
