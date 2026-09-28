@@ -6,7 +6,7 @@ Related issue: https://github.com/miroir-framework/miroir/issues/341
 Related analyses: [`../311-REFACTOR-architecture-review/analysis.md`](../311-REFACTOR-architecture-review/analysis.md) (candidates C1-C3 on `DomainController`)
 Key sources: [`DomainController.ts`](../../../packages/miroir-core/src/3_controllers/DomainController.ts), [`TransformersForRuntime.ts`](../../../packages/miroir-core/src/2_domain/TransformersForRuntime.ts) (`inMemoryTransformerImplementations`), Miroir Endpoints in [`miroir_data/3d8da4d4-…/`](../../../packages/miroir-test-app_deployment-miroir/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/)
 
-**Status:** decisions confirmed with A (2026-09-28); implementation per `tdd-implementation-plan.md`.
+**Status:** implemented (2026-09-28), see `tdd-implementation-plan.md` realizations.
 
 ---
 
@@ -58,7 +58,7 @@ Key sources: [`DomainController.ts`](../../../packages/miroir-core/src/3_control
 
 ### D4 — Cross-cutting rules
 
-**Status:** Accepted — later slice. Until then the hard-coded lists of §3.3 stay as they are.
+**Status:** Accepted — done in Slice 8: `autocommitFromUI` and `logPhase` on the action definition.
 
 ### D5 — Guard
 

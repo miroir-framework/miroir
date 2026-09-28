@@ -15,7 +15,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/341
 Working branch: `claude/action-library-implementations-1jkrjp` (from `_integration` 9ae1aa9)
 
-**Resume note:** Slices 0-8 DONE; next is Slice 9 (nonreg, docs, cleanup, AC). Full nonreg every 2 or 3 slices (A, 2026-09-28), gate + touched suites in between.
+**Resume note:** all slices DONE; PR against `_integration`. Full nonreg every 2 or 3 slices (A, 2026-09-28), gate + touched suites in between.
 
 ---
 
@@ -45,7 +45,7 @@ This plan does **not** migrate Persistence / LocalCache actions, touch the 5 dec
 | 6 | QueryEndpoint actions reachable through `handleAction` | ✅ | `actionImplementations.341.phase6.integ.test.ts` |
 | 7 | One dispatch path: remove the switches, scoped guard on | ✅ | phase0 guard (b) + nonreg:filesystem |
 | 8 | Autocommit and log phase from action definitions | ✅ | phase8 unit test vs Slice 0 lock |
-| 9 | Nonreg, docs, cleanup, AC | ⬜ | nonreg:filesystem (shared runner) + tracer narrative |
+| 9 | Nonreg, docs, cleanup, AC | ✅ | nonreg:filesystem (shared runner) + tracer narrative |
 
 ---
 
@@ -74,7 +74,7 @@ Confirmed with A on 2026-09-28 (analysis decision record).
 | Handler interface | `ActionImplementationHandler` (same file) |
 | Controller seam | `DomainControllerActionHost` (interface, `0_interfaces/3_controllers/`) |
 | Identifiers | `handleAction_<actionType>` for the 33 actions of analysis §3.1, plus `handleAction_bundleAction`, `handleAction_probeExternalService` |
-| Issue test dir | `packages/miroir-core/tests/3_controllers/issues/341-action-library-implementations/` |
+| Issue test dir | `packages/miroir-core/tests/3_controllers/issues/341-action-library-implementations/` (Slice 9: merged into `tests/3_controllers/ActionImplementations.unit.test.ts`) |
 | Issue integ test | `packages/miroir-standalone-app/tests/3_controllers/issues/341-action-library-implementations/actionImplementations.341.phase6.integ.test.ts` |
 | MiroirTest suites | none new: the existing `action.domainController.*` and `action.scenario.*` suites are the proof |
 | Nonreg step | none new (Slice 9 moves the guard into a feature-named unit file already run by `unit-miroir-core`) |
@@ -478,7 +478,7 @@ npm run nonreg:unit -- --runner shared
 
 ## Slice 9 — Nonreg, docs, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### 9.1 Nonreg
 
@@ -505,7 +505,14 @@ Automated equivalent: `ActionImplementations.unit.test.ts` (tracer case from Sli
 
 | Criterion | Proven by | Status |
 |---|---|---|
-| Miroir actions reference their implementation through `libraryImplementation` | guard (b), Slice 7 | ⬜ |
-| `DomainController` holds a map from function identifier to implementation | guard (a) + tracer, Slice 1 | ⬜ |
-| `DomainController` decoupled from the set of existing actions | Slice 7 (no dispatch switch), tracer narrative | ⬜ |
-| Behaviour preserved | `action.domainController.*` suites, nonreg:filesystem | ⬜ |
+| Miroir actions reference their implementation through `libraryImplementation` | guard (b), Slice 7 | ✅ |
+| `DomainController` holds a map from function identifier to implementation | guard (a) + tracer, Slice 1 | ✅ |
+| `DomainController` decoupled from the set of existing actions | Slice 7 (no dispatch switch), tracer narrative | ✅ |
+| Behaviour preserved | `action.domainController.*` suites, nonreg:filesystem | ✅ |
+
+### Realization (Slice 9)
+
+- `npm run nonreg:filesystem -- --runner shared`: 78/78 PASS; pre-push gate green (miroir-core unit 2099 passed).
+- `docs/guides/developer/creating-actions.md`: action definition attributes and how to add an action.
+- The phase0, phase1 and phase8 files are merged into `packages/miroir-core/tests/3_controllers/ActionImplementations.unit.test.ts` (12 tests, run by `unit-miroir-core`); the issue directory is deleted. Superseded checks were dropped: the exact per-Endpoint implementation map (replaced by guard (b) plus the composite check), the autocommit and log-phase locks (now checked on the definitions). The phase6 case already lives in `ExtractorPersistenceStoreRunner.integ.test.tsx`, so there was no app-side issue directory.
+
