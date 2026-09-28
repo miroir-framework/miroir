@@ -1,0 +1,6 @@
+{
+  "name": "cloud-agent",
+  "extends": "dev",
+  "description": "Coding-agent cloud sessions (selected through environments/local.json, which scripts/agent_session_setup.py --cloud-agent writes): dev on filesystem stores, with the AI features off.",
+  "features": { "ai": false }
+}

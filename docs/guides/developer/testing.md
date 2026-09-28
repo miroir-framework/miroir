@@ -148,7 +148,7 @@ npm run testByFile -w miroir-standalone-app -- \
   --storage sql uiIntegrationTestLauncher.realServer.integ
 
 # Legacy — explicit env for imperative Data CRUD
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+MIROIR_ENV=test-sql \
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
 npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
 ```
@@ -168,7 +168,7 @@ Filter one editor: `npm run testByFile -w miroir-standalone-app -- miroir-compon
 **MiroirTestDisplay integration launch (B6-d1)** — RTL proof for the **Run Integration Tests** button (`tests/4_view/MiroirTestDisplayIntegrationLaunch.integ.test.tsx`). Return Book leaf on `runner.returnDocument`; Postgres required (Node SQL mock env):
 
 ```bash
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+MIROIR_ENV=test-sql \
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
 npm run testByFile -w miroir-standalone-app -- MiroirTestDisplayIntegrationLaunch.integ
 ```

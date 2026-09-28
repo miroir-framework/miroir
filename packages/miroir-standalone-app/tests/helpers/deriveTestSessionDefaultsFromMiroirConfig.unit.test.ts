@@ -1,13 +1,17 @@
 import { describe, expect, it } from "vitest";
 
-import emulatedServerSqlConfig from "../miroirConfig.test-emulatedServer-sql.json" assert { type: "json" };
-import ciHostSqlConfig from "../miroirConfig.test-ci-emulatedServer-host-sql.json" assert { type: "json" };
+import { environmentClientConfig, resolveEnvironmentFromFiles } from "miroir-env";
 
 import { deriveTestSessionDefaultsFromMiroirConfig, parsePostgresHostFromConnectionString } from "./deriveTestSessionDefaultsFromMiroirConfig.js";
+import { resolveRepoRoot } from "./integrationTestProfiles.js";
+
+const MIROIR_DEPLOYMENT = "10ff36f2-50a3-48d8-b80f-e48e5d13af8e";
 
 describe("deriveTestSessionDefaultsFromMiroirConfig (Gap D2)", () => {
-  it("derives postgresHost and adminStoreType from emulatedServer-sql fixture", () => {
-    const defaults = deriveTestSessionDefaultsFromMiroirConfig(emulatedServerSqlConfig);
+  it("derives postgresHost and adminStoreType from the test-sql environment", () => {
+    const defaults = deriveTestSessionDefaultsFromMiroirConfig(
+      environmentClientConfig(resolveEnvironmentFromFiles({ cwd: resolveRepoRoot(), env: { MIROIR_ENV: "test-sql" } })),
+    );
 
     expect(defaults.adminStoreType).toBe("filesystem");
     expect(defaults.appStoreType).toBe("sql");
@@ -23,7 +27,7 @@ describe("deriveTestSessionDefaultsFromMiroirConfig (Gap D2)", () => {
       deriveTestSessionDefaultsFromMiroirConfig({
         client: {
           deploymentStorageConfig: {
-            "10ff36f2-50a3-48d8-b80f-e48e5d13af8e": {
+            [MIROIR_DEPLOYMENT]: {
               model: { emulatedServerType: "filesystem" },
             },
           },
@@ -32,8 +36,19 @@ describe("deriveTestSessionDefaultsFromMiroirConfig (Gap D2)", () => {
     ).toEqual({ appStoreType: "filesystem" });
   });
 
-  it("derives app store + postgres host from CI host-sql fixture without admin deployment", () => {
-    const defaults = deriveTestSessionDefaultsFromMiroirConfig(ciHostSqlConfig);
+  it("derives app store + postgres host from a configuration without admin deployment", () => {
+    const defaults = deriveTestSessionDefaultsFromMiroirConfig({
+      client: {
+        deploymentStorageConfig: {
+          [MIROIR_DEPLOYMENT]: {
+            model: {
+              emulatedServerType: "sql",
+              connectionString: "postgres://postgres@host.docker.internal:5432/postgres",
+            },
+          },
+        },
+      },
+    });
 
     expect(defaults.adminStoreType).toBeUndefined();
     expect(defaults.appStoreType).toBe("sql");

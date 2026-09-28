@@ -1,0 +1,11 @@
+{
+  "name": "test-indexedDb",
+  "extends": "test-filesystem",
+  "description": "Integration tests on IndexedDB (profile emulatedServer-indexedDb; Level databases in Node): Admin stays a filesystem copy, every store lives in .miroir/test-indexedDb/.",
+  "applications": {
+    "miroir": { "store": "indexedDb" },
+    "library": { "store": "indexedDb" },
+    "appForTest": { "store": "indexedDb" },
+    "spotify": { "store": "indexedDb" }
+  }
+}

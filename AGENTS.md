@@ -17,6 +17,7 @@ Sibling repos, linked locally only when regenerating types from schemas: **jzod*
   python scripts/sync_agent_skills.py --check
   python -m pytest scripts/tests -q
   npm run lint
+  npm run miroir-env -- check --strict --tracked-clean
   npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
   npm run test -w miroir-core -- ''
   ```
@@ -25,7 +26,7 @@ Sibling repos, linked locally only when regenerating types from schemas: **jzod*
 
   | Command | Runs | Needs |
   |---|---|---|
-  | `npm run nonreg:unit` | 34 unit steps, about 8 min (MiroirTest unit, guards, platform tests) | built packages, pytest |
+  | `npm run nonreg:unit` | 42 unit steps, about 8 min (MiroirTest unit, guards, platform tests) | built packages, pytest |
   | `npm run nonreg:filesystem` | unit + integration on the filesystem profile | built packages only |
   | `npm run nonreg:default` | unit + integration on the default `emulatedServer-sql` profile | a running PostgreSQL |
   | `npm run nonreg -- --tier full` | everything, including postgres `modelValidation` | a running PostgreSQL |
@@ -111,17 +112,17 @@ RUN_TEST=Transformer_ResultSchema.failures npm run testByFile -w miroir-core -- 
 # All miroir-core unit tests
 npm run test -w miroir-core -- ''
 
-# Integration on a given store: pick the config, and a log preset (catch-all, scope-query, scope-persistence, …)
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json \
+# Integration on a test environment, with a log preset
+MIROIR_ENV=test-filesystem \
 VITE_MIROIR_LOG_CONFIG_FILENAME=scope-persistence \
 npm run testByFile -w miroir-standalone-app -- DomainController.integ
 ```
 
-Store configs in `packages/miroir-standalone-app/tests/`: `miroirConfig.test-emulatedServer-{filesystem,indexedDb,sql,mongodb}.json` (`sql` needs PostgreSQL). Tests run single-threaded; in test mode `RestClientStub` emulates the server. Assertion helpers for in-app / MiroirTest runs: `packages/miroir-core/src/1_core/testing/test-expect.ts`.
+Test environments: `environments/test-{filesystem,indexedDb,sql,mongodb}.json`, stores in `.miroir/<env>/` (`sql` needs PostgreSQL and `MIROIR_POSTGRES_PASSWORD`). Tests run single-threaded; in test mode `RestClientStub` emulates the server. Assertion helpers for in-app / MiroirTest runs: `packages/miroir-core/src/1_core/testing/test-expect.ts`.
 
 ## Running the application
 
-Vite client at http://localhost:5173, API server at http://localhost:3080 (https when `certs/` is set up). A packaged server serves the client itself at https://localhost:3080. Details: `docs/guides/build-it-yourself.md`.
+Vite client at http://localhost:5173, API server at http://localhost:3080 (https when `certs/` is set up). A packaged server serves the client itself at https://localhost:3080. Both use the selected environment (`docs/reference/environments.md`). Details: `docs/guides/build-it-yourself.md`.
 
 ```bash
 npm run build:server -w miroir-server                       # server release binary (there is no `npm run dev` on miroir-server)

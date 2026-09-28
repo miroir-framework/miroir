@@ -1,0 +1,14 @@
+{
+  "name": "test-sql",
+  "extends": "test-filesystem",
+  "description": "Integration tests on PostgreSQL (profile emulatedServer-sql): Admin stays a filesystem copy in .miroir/test-sql/, the other applications use the schemas test_sql_<application>. The password comes from MIROIR_POSTGRES_PASSWORD.",
+  "connections": {
+    "postgres": { "host": "localhost", "port": 5432, "user": "postgres", "passwordEnv": "MIROIR_POSTGRES_PASSWORD" }
+  },
+  "applications": {
+    "miroir": { "store": "sql" },
+    "library": { "store": "sql" },
+    "appForTest": { "store": "sql" },
+    "spotify": { "store": "sql" }
+  }
+}

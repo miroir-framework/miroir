@@ -7,7 +7,7 @@ Related: #323 (server bundle ignores `--config`), [#157 PLAN](<../157-FEATURE- h
 Key sources: [`server.ts`](../../../packages/miroir-server/src/server.ts), [`Deployment.ts`](../../../packages/miroir-core/src/1_core/Deployment.ts), [`getMiroirFundamentalMlSchema.ts`](../../../packages/miroir-core/src/0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchema.ts), [`integrationTestProfiles.ts`](../../../packages/miroir-standalone-app/tests/helpers/integrationTestProfiles.ts), [`fileTools.ts`](../../../packages/miroir-standalone-app/tests/utils/fileTools.ts), [`index.tsx`](../../../packages/miroir-standalone-app/src/index.tsx)
 
 **Document role:** analysis and architectural decision record.
-**Status:** decisions confirmed (rounds 1 and 2); D13–D16 are defaults picked while writing this analysis, to be confirmed with the plan.
+**Status:** implemented (PR #327, Slices 0–11 of [tdd-implementation-plan.md](tdd-implementation-plan.md), approved by A on 2026-09-27). Decisions confirmed in rounds 1 and 2; D13–D20 confirmed with the plan. Where the implementation departs from a decision, the plan's Realization sections say so. User documentation: [docs/reference/environments.md](../../../docs/reference/environments.md).
 
 ---
 

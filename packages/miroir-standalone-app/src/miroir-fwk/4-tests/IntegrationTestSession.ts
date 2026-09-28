@@ -161,7 +161,7 @@ export const INTEG_TEST_LIBRARY_ENTITIES_AND_INSTANCES: ApplicationEntitiesAndIn
 /** @deprecated use INTEG_TEST_LIBRARY_ENTITIES_AND_INSTANCES */
 export const POSTGRES_TEST_LIBRARY_ENTITIES_AND_INSTANCES = INTEG_TEST_LIBRARY_ENTITIES_AND_INSTANCES;
 
-const DEFAULT_POSTGRES_HOST = "192.168.1.160";
+const DEFAULT_POSTGRES_HOST = "localhost";
 const DEFAULT_MONGODB_CONNECTION_STRING = "mongodb://localhost:27017";
 const DEFAULT_ADMIN_SQL_SCHEMA = "miroirAdmin";
 
@@ -206,24 +206,14 @@ export function resolveDefaultFilesystemDeploymentRoot(): string {
   return "browser-emulated-no-fs";
 }
 
-export function resolveDefaultAdminAssetsRoot(): string {
-  return `${resolveDefaultFilesystemDeploymentRoot()}/tests/assets`;
-}
-
 function normalizeSlashes(value: string): string {
   return value.replace(/\\/g, "/");
 }
 
-function joinPath(...segments: string[]): string {
-  return segments
-    .map((segment) => normalizeSlashes(segment).replace(/\/+$/, ""))
-    .filter((segment) => segment.length > 0)
-    .join("/");
-}
-
-function relativeStoreDirectory(filesystemDeploymentRoot: string, absolutePath: string): string {
+/** A directory under the filesystem root, relative to it; other directories are kept as they are. */
+function relativeStoreDirectory(filesystemDeploymentRoot: string, directory: string): string {
   const root = normalizeSlashes(filesystemDeploymentRoot).replace(/\/+$/, "");
-  const target = normalizeSlashes(absolutePath);
+  const target = normalizeSlashes(directory);
   return target.startsWith(`${root}/`) ? target.slice(root.length + 1) : target;
 }
 
@@ -312,26 +302,19 @@ export function buildTestApplicationStoreUnitConfiguration(
 export function buildAdminStoreUnitConfiguration(options: AdminStoreOptions): StoreUnitConfiguration {
   switch (options.emulatedServerType) {
     case "filesystem": {
-      const adminAssetsRoot = options.adminAssetsRootDirectory;
       const filesystemRoot = options.filesystemDeploymentRootDirectory;
       return {
         admin: {
           emulatedServerType: "filesystem",
-          directory: relativeStoreDirectory(filesystemRoot, joinPath(adminAssetsRoot, "admin")),
+          directory: relativeStoreDirectory(filesystemRoot, options.directories.admin),
         },
         model: {
           emulatedServerType: "filesystem",
-          directory: relativeStoreDirectory(
-            filesystemRoot,
-            joinPath(adminAssetsRoot, "admin_model"),
-          ),
+          directory: relativeStoreDirectory(filesystemRoot, options.directories.model),
         },
         data: {
           emulatedServerType: "filesystem",
-          directory: relativeStoreDirectory(
-            filesystemRoot,
-            joinPath(adminAssetsRoot, "admin_data"),
-          ),
+          directory: relativeStoreDirectory(filesystemRoot, options.directories.data),
         },
       };
     }
@@ -395,18 +378,6 @@ export function buildTestPostgresStoreConfig(
   });
 }
 
-/** @deprecated use buildAdminStoreUnitConfiguration */
-export function buildAdminFilesystemStoreConfig(
-  adminAssetsRoot: string,
-  filesystemDeploymentRoot: string,
-): StoreUnitConfiguration {
-  return buildAdminStoreUnitConfiguration({
-    emulatedServerType: "filesystem",
-    adminAssetsRootDirectory: adminAssetsRoot,
-    filesystemDeploymentRootDirectory: filesystemDeploymentRoot,
-  });
-}
-
 export function collectStoreUnitConfigurationServerTypes(
   ...configs: StoreUnitConfiguration[]
 ): Set<EmulatedServerType> {
@@ -436,30 +407,6 @@ export function buildMiroirConfigForInteg(
       },
     },
   } as MiroirConfigClient;
-}
-
-/** @deprecated use buildMiroirConfigForInteg */
-export function buildMiroirConfigForPostgres(
-  postgresHostName: string,
-  options: {
-    filesystemDeploymentRootDirectory: string;
-    adminAssetsRootDirectory: string;
-  },
-): MiroirConfigClient {
-  const adminStoreConfig = buildAdminStoreUnitConfiguration({
-    emulatedServerType: "filesystem",
-    adminAssetsRootDirectory: options.adminAssetsRootDirectory,
-    filesystemDeploymentRootDirectory: options.filesystemDeploymentRootDirectory,
-  });
-  const testStoreConfig = buildTestApplicationStoreUnitConfiguration(
-    INTEG_TEST_APPLICATION_NAME,
-    { emulatedServerType: "sql", postgresHostName },
-  );
-  return buildMiroirConfigForInteg(
-    testStoreConfig,
-    adminStoreConfig,
-    options.filesystemDeploymentRootDirectory,
-  );
 }
 
 async function registerStoreSectionStartups(
@@ -749,28 +696,3 @@ export class IntegrationTestSession implements RunnerTestSessionInterface {
   }
 }
 
-/** @deprecated use IntegrationTestSession */
-export type PostgresIntegrationAdapterOptions = {
-  postgresHostName?: string;
-  filesystemDeploymentRootDirectory?: string;
-  adminAssetsRootDirectory?: string;
-};
-
-/** @deprecated use IntegrationTestSession */
-export class IntegrationTestSessionForPostgres extends IntegrationTestSession {
-  constructor(options: PostgresIntegrationAdapterOptions = {}) {
-    super({
-      testApplicationStore: {
-        emulatedServerType: "sql",
-        postgresHostName: options.postgresHostName,
-      },
-      adminStore: {
-        emulatedServerType: "filesystem",
-        adminAssetsRootDirectory: options.adminAssetsRootDirectory ?? resolveDefaultAdminAssetsRoot(),
-        filesystemDeploymentRootDirectory:
-          options.filesystemDeploymentRootDirectory ?? resolveDefaultFilesystemDeploymentRoot(),
-      },
-      filesystemDeploymentRootDirectory: options.filesystemDeploymentRootDirectory,
-    });
-  }
-}

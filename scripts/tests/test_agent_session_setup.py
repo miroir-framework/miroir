@@ -113,3 +113,66 @@ def test_claude_session_start_hook_runs_the_script_in_cloud_only() -> None:
 def test_graphify_ignores_agent_tooling() -> None:
     ignored = (SCRIPT.parents[1] / ".graphifyignore").read_text(encoding="utf-8").split()
     assert {".agents/", ".claude/"} <= set(ignored)
+
+
+# #321 Slice 9: a cloud session selects the cloud-agent environment through environments/local.json
+
+
+def _with_environments(root: Path, local: str | None = None) -> Path:
+    (root / "environments").mkdir()
+    (root / "environments" / "dev.json").write_text("{}", encoding="utf-8")
+    if local is not None:
+        (root / "environments" / "local.json").write_text(local, encoding="utf-8")
+    return root
+
+
+def _run(root: Path, *args: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        [sys.executable, str(SCRIPT), "--root", str(root), *args],
+        capture_output=True,
+        text=True,
+    )
+
+
+def test_cloud_agent_session_writes_local_environment_when_absent(tmp_path: Path) -> None:
+    root = _with_environments(_tree(tmp_path))
+    result = _run(root, "--cloud-agent")
+    assert result.returncode == 0, result.stdout + result.stderr
+    local = json.loads((root / "environments" / "local.json").read_text(encoding="utf-8"))
+    assert local == {"extends": "cloud-agent"}
+    assert "environment: local (extends cloud-agent, environments/local.json)" in result.stdout
+
+
+def test_existing_local_environment_is_left_alone(tmp_path: Path) -> None:
+    root = _with_environments(_tree(tmp_path), local='{ "extends": "dev" }\n')
+    assert "personal environment" not in _names(plan_steps(root, _env(), cloud_agent=True))
+    assert (root / "environments" / "local.json").read_text(encoding="utf-8") == '{ "extends": "dev" }\n'
+
+
+def test_local_environment_only_for_cloud_agent_sessions(tmp_path: Path) -> None:
+    root = _with_environments(_tree(tmp_path))
+    assert plan_steps(root, _env()) == []
+    result = _run(root)
+    assert not (root / "environments" / "local.json").exists()
+    assert "environment: dev (default)" in result.stdout
+
+
+def test_dry_run_reports_the_local_environment_without_writing_it(tmp_path: Path) -> None:
+    root = _with_environments(_tree(tmp_path))
+    result = _run(root, "--cloud-agent", "--dry-run")
+    assert "environments/local.json" in result.stdout
+    assert not (root / "environments" / "local.json").exists()
+
+
+def test_session_start_hook_selects_cloud_agent() -> None:
+    settings = json.loads((SCRIPT.parents[1] / ".claude" / "settings.json").read_text(encoding="utf-8"))
+    commands = [h["command"] for entry in settings["hooks"]["SessionStart"] for h in entry["hooks"]]
+    assert any("scripts/agent_session_setup.py" in c and "--cloud-agent" in c for c in commands)
+
+
+def test_pr_checks_build_miroir_env_and_check_environments() -> None:
+    packages = [p for group in BUILD_GROUPS for p in group]
+    assert packages.index("miroir-env") > packages.index("miroir-core")
+    workflow = (SCRIPT.parents[1] / ".github" / "workflows" / "pr-checks.yml").read_text(encoding="utf-8")
+    assert "-w miroir-env" in workflow
+    assert "npm run miroir-env -- check --strict --tracked-clean" in workflow

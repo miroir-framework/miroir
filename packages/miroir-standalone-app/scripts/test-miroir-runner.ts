@@ -36,8 +36,8 @@ if (process.env.MIROIR_TEST_VERBOSE === "1") {
   console.log(
     "log config:",
     launchEnv.VITE_MIROIR_LOG_CONFIG_FILENAME ?? "(default)",
-    "test config:",
-    launchEnv.VITE_MIROIR_TEST_CONFIG_FILENAME ?? "(default)",
+    "test environment:",
+    launchEnv.MIROIR_ENV ?? "(default)",
   );
 }
 const result = spawnSync("npx", vitestArgs, {

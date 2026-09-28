@@ -348,6 +348,14 @@ export {
   MiroirConfigForRestClient,
   miroirConfigForRestClient,
   MiroirConfigServer,
+  MiroirConfigEnvironment,
+  miroirConfigEnvironment,
+  MiroirEnvironment,
+  miroirEnvironment,
+  MiroirEnvironmentApplication,
+  miroirEnvironmentApplication,
+  MiroirEnvironmentSectionMode,
+  MiroirEnvironmentStoreType,
   // MiroirCustomQueryParams,
   // miroirCustomQueryParams,
   MiroirFundamentalType,
@@ -630,6 +638,7 @@ export {
   EntitiesDomainStateReducer,
   EntitiesDomainStateTransformer,
   EntityInstancesUuidIndexEntityInstanceArraySelector,
+  InstanceActionListener,
   LocalCacheInfo
 } from "./0_interfaces/2_domain/DomainControllerInterface.js";
 export {
@@ -792,7 +801,10 @@ export {
   ApplicationDeploymentMap,
   ApplicationEntitiesAndInstances,
   // createApplicationCompositeAction,
+  adminApplicationRow,
   createDeploymentCompositeAction,
+  deploymentRow,
+  type AdminRowLabels,
   type CreateDeploymentCompositeActionOptions,
   defaultAdminApplicationDeploymentMapNOTGOOD,
   defaultDeployments,
@@ -940,6 +952,23 @@ export {
   mlsToMls_Summary
 } from "./1_core/mls/MlsToMls_Summary";
 export type { JsonSchema, MlsToJsonSchemaContext } from "./1_core/mls/MlsToJsonSchema";
+export {
+  applicationAssetsDirectory,
+  deriveEnvironmentDeployments,
+  environmentAppsDirectory,
+  ENVIRONMENT_STATE_ROOT,
+  environmentSectionMode,
+  environmentSections,
+  isTestEnvironment,
+  missingApplicationFields,
+  REQUIRED_ENVIRONMENT_APPLICATIONS,
+  resolveEnvironment,
+  type EnvironmentDefinition,
+  type EnvironmentDeployment,
+  type EnvironmentDeploymentsResult,
+  type EnvironmentResolution,
+  type EnvironmentSectionName,
+} from "./1_core/environment/Environment";
 export { mlsToJsonSchema } from "./1_core/mls/MlsToJsonSchema";
 export {
   getAttributeTypesFromMlSchema,

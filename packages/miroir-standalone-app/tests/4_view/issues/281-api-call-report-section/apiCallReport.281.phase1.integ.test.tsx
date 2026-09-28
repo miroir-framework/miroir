@@ -83,6 +83,7 @@ import { miroirAppStartup } from "../../../../src/startup.js";
 import { ReportUrlParamKeys } from "../../../../src/constants.js";
 import { cleanLevel, packageName } from "../../../3_controllers/constants.js";
 import { AppStackIntegrationTestSession } from "../../../helpers/IntegrationTestSession.js";
+import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 import { loadTestConfigFiles } from "../../../utils/fileTools.js";
 import {
   startFakeExternalServiceServer,
@@ -537,11 +538,10 @@ describe.skipIf(!shouldRun).sequential("apiCallReport #281 phase1 — typed play
     );
     expect(existsSync(runtimePlaylistDir), runtimePlaylistDir).toBe(false);
 
-    const packagePlaylistDir = resolveFilesystemDirectory(
-      join(
-        "miroir-test-app_deployment-spotify/assets/spotify_data",
-        SPOTIFY_PLAYLIST_ENTITY_UUID,
-      ),
+    const packagePlaylistDir = join(
+      resolveRepoRoot(),
+      "packages/miroir-test-app_deployment-spotify/assets/spotify_data",
+      SPOTIFY_PLAYLIST_ENTITY_UUID,
     );
     expect(existsSync(packagePlaylistDir), packagePlaylistDir).toBe(false);
   });

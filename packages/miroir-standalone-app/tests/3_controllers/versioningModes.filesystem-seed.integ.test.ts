@@ -3,13 +3,12 @@
  *
  * Run:
  * ```bash
- * VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json \
+ * MIROIR_ENV=test-filesystem \
  *   npm run testByFile -w miroir-standalone-app -- versioningModes.filesystem-seed
  * ```
  */
 import { beforeAll, describe, expect, it } from "vitest";
 import process from "process";
-import { join } from "node:path";
 
 import type { EntityInstance, EntityInstanceCollection, StoreUnitConfiguration } from "miroir-core";
 import {
@@ -31,8 +30,7 @@ import { miroirAppStartup } from "../../src/startup.js";
 import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
-import { resolveRepoRoot } from "../helpers/integrationTestProfiles.js";
-import { seedMiroirModelVersionTmpFromPackageAssets } from "../helpers/seedMiroirModelVersionTmpFromPackageAssets.js";
+import { seedMiroirModelVersionFromPackageAssets } from "../helpers/seedMiroirModelVersionFromPackageAssets.js";
 import { cleanLevel, packageName } from "./constants.js";
 import { MIROIR_VERSION_HISTORY_PARENTS } from "../../../miroir-core/tests/1_core/versioningModes.testData.js";
 
@@ -56,7 +54,6 @@ ConfigurationService.configurationService.registerTestImplementation({ expect: e
 
 const { miroirConfig: miroirConfigParam, logConfig } = await loadTestConfigFiles(env);
 const miroirConfig = miroirConfigParam;
-miroirConfig.client.filesystemDeploymentRootDirectory = join(resolveRepoRoot(), "packages");
 const loggerOptions: LoggerOptions = logConfig;
 const miroirActivityTracker = new MiroirActivityTracker();
 const miroirEventService = new MiroirEventService(miroirActivityTracker);
@@ -92,13 +89,13 @@ async function getPersistedInstances(section: "data" | "modelVersion", parentEnt
 
 beforeAll(async () => {
   log.info(fileName, "beforeAll");
-  seedMiroirModelVersionTmpFromPackageAssets(
-    miroirConfig.client.filesystemDeploymentRootDirectory as string,
-  );
-
   const miroirDeploymentStorageConfiguration =
     miroirConfig.client.deploymentStorageConfig[MIROIR_DEPLOYMENT_UUID];
   expect(miroirDeploymentStorageConfiguration?.modelVersion).toBeDefined();
+  seedMiroirModelVersionFromPackageAssets(
+    miroirConfig.client.filesystemDeploymentRootDirectory as string,
+    (miroirDeploymentStorageConfiguration?.modelVersion as { directory: string }).directory,
+  );
 
   const wired = await setupMiroirTest(miroirConfig, miroirActivityTracker, miroirEventService);
   persistenceStoreControllerManager = wired.persistenceStoreControllerManagerForServer!;
@@ -119,7 +116,8 @@ describe("Miroir filesystem modelVersion seed", () => {
   it("emulated-server filesystem config includes modelVersion for Miroir deployment", () => {
     expect(miroirStorageConfiguration.modelVersion).toBeDefined();
     expect(miroirStorageConfiguration.modelVersion!.emulatedServerType).toBe("filesystem");
-    expect(miroirStorageConfiguration.modelVersion!.directory).toMatch(/tests\/tmp\/miroir_modelVersion/);
+    // a copy of the package assets, never the assets themselves (resetModel clears the section)
+    expect(miroirStorageConfiguration.modelVersion!.directory).not.toContain("assets/");
   });
 
   it("bootstrapped store reads EntityVersion instances from modelVersion section", async () => {

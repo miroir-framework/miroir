@@ -1,0 +1,136 @@
+{
+  "uuid": "82ee9f39-654d-4e87-ba52-aecb7faf8483",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "name": "runner.deployApplication",
+  "description": "deployApplication runner on filesystem stores: the Deployment row it writes puts the stores in the apps directory of the selected environment.",
+  "tags": [
+    "integ",
+    "runner",
+    "model"
+  ],
+  "issue": "321",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "runner.deployApplication",
+    "miroirTests": [
+      {
+        "miroirTestType": "runnerTest",
+        "miroirTestLabel": "Deploy an application on filesystem stores",
+        "runnerRef": "4f3cd0b1-08a1-421c-84f7-e0589be88d18",
+        "testCompositeActionLabel": "Deploy an application on filesystem stores",
+        "initialModel": {
+          "transformerType": "getFromParameters",
+          "interpolation": "build",
+          "referenceName": "emptyApplicationModel"
+        },
+        "testParams": {
+          "deployApplication": {
+            "duplicateApplication": false,
+            "applicationBundle": {
+              "transformerType": "getFromParameters",
+              "interpolation": "build",
+              "referenceName": "defaultLibraryAppModel"
+            },
+            "deploymentUuid": {
+              "transformerType": "getFromParameters",
+              "interpolation": "build",
+              "referenceName": "testApplicationDeploymentUuid"
+            },
+            "applicationStorage": {
+              "emulatedServerType": "filesystem"
+            }
+          }
+        },
+        "preTestCompositeActions": [
+          {
+            "actionType": "compositeRunBoxedQueryAction",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "actionLabel": "getDeploymentRow",
+            "nameGivenToResult": "deploymentRow",
+            "payload": {
+              "actionType": "runBoxedQueryAction",
+              "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              "payload": {
+                "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                "applicationSection": "data",
+                "queryExecutionStrategy": "storage",
+                "query": {
+                  "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                  "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                  "extractors": {
+                    "deployment": {
+                      "extractorOrCombinerType": "extractorByPrimaryKey",
+                      "applicationSection": "data",
+                      "parentName": "Deployment",
+                      "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
+                      "instanceUuid": {
+                        "transformerType": "getFromParameters",
+                        "interpolation": "build",
+                        "referenceName": "testApplicationDeploymentUuid"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkDeploymentStoresInEnvironmentAppsDirectory",
+            "nameGivenToResult": "checkDeploymentStoresInEnvironmentAppsDirectory",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkDeploymentStoresInEnvironmentAppsDirectory",
+              "definition": {
+                "resultAccessPath": [],
+                "resultTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "deploymentRow",
+                    "deployment",
+                    "configuration"
+                  ]
+                },
+                "expectedValue": {
+                  "admin": {
+                    "emulatedServerType": "filesystem",
+                    "directory": {
+                      "transformerType": "mustacheStringTemplate",
+                      "interpolation": "build",
+                      "definition": "{{{environmentAppsDirectory}}}/admin"
+                    }
+                  },
+                  "model": {
+                    "emulatedServerType": "filesystem",
+                    "directory": {
+                      "transformerType": "mustacheStringTemplate",
+                      "interpolation": "build",
+                      "definition": "{{{environmentAppsDirectory}}}/Library-model"
+                    }
+                  },
+                  "data": {
+                    "emulatedServerType": "filesystem",
+                    "directory": {
+                      "transformerType": "mustacheStringTemplate",
+                      "interpolation": "build",
+                      "definition": "{{{environmentAppsDirectory}}}/Library-data"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "defaultApplicationName": "testApplication_DeployApplication",
+        "skipRunTargetPlayfieldReset": true,
+        "skipCreateDeployment": true
+      }
+    ]
+  }
+}

@@ -73,4 +73,16 @@ const shouldRun =
       libraryTestbedInitParams,
     );
   });
+
+  it("#321: beforeEachTest resets the Miroir deployment by default, never when told not to", async () => {
+    const resetIntegTestbedMock = vi
+      .spyOn(miroirCore, "resetIntegTestbed")
+      .mockResolvedValue(undefined);
+
+    await beforeEachTest({} as never, {} as never, undefined, {});
+    await beforeEachTest({} as never, {} as never, undefined, { resetMiroirPlatform: false });
+
+    expect(resetIntegTestbedMock.mock.calls[0][0].resetMiroirPlatform).toBeTruthy();
+    expect(resetIntegTestbedMock.mock.calls[1][0].resetMiroirPlatform).toBeFalsy();
+  });
 });

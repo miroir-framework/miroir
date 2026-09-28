@@ -24,6 +24,8 @@ const PROFILE_ENV_KEYS = [
   "MIROIR_TEST_ADMIN_STORE_TYPE",
   "MIROIR_TEST_POSTGRES_HOST",
   "MIROIR_TEST_ADMIN_SQL_SCHEMA",
+  "MIROIR_ENV",
+  "CI",
 ] as const;
 
 function baseContext(overrides: {
@@ -113,8 +115,7 @@ describe("miroirCoreIntegTestLaunch", () => {
           CI: "true",
           MIROIR_TEST_SUITES: "tr.core",
           MIROIR_TEST_MODE: "integ",
-          VITE_MIROIR_TEST_CONFIG_FILENAME:
-            "./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json",
+          MIROIR_ENV: "test-sql",
         },
       }),
     );

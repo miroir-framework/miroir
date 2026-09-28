@@ -27,10 +27,6 @@ const ADMIN_MODEL_ENTITIES = join(
   REPO_ROOT,
   "packages/miroir-test-app_deployment-admin/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
 );
-const EMULATED_ADMIN_MODEL_ENTITIES = join(
-  REPO_ROOT,
-  "packages/miroir-standalone-app/tests/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-);
 const ADMIN_MENU = join(
   REPO_ROOT,
   "packages/miroir-test-app_deployment-admin/assets/admin_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json",
@@ -77,15 +73,6 @@ if (runThis) {
         readJson(join(ADMIN_MODEL_ENTITIES, `${MIROIR_SECRET_ENTITY_UUID}.json`))
           .defaultInstanceDetailsReportUuid,
       ).toBe("e8a4612f-74bd-456b-83dc-f10a11f6d1b3");
-    });
-
-    it("emulated test-asset Admin entity folder has exactly 6 entities including MiroirSecret", () => {
-      const files = listEntityJsonFiles(EMULATED_ADMIN_MODEL_ENTITIES);
-      expect(files).toHaveLength(6);
-      expect(entityNamesInFolder(EMULATED_ADMIN_MODEL_ENTITIES)).toContain("MiroirSecret");
-      expect(
-        existsSync(join(EMULATED_ADMIN_MODEL_ENTITIES, `${MIROIR_SECRET_ENTITY_UUID}.json`)),
-      ).toBe(true);
     });
 
     it("parseServerArgs accepts --secrets-master-key", () => {

@@ -155,7 +155,7 @@ These uuids are registered in `versionHistoryEntityUuids` (`packages/miroir-core
 }
 ```
 
-**IndexedDB / MongoDB:** same pattern, with a separate database name or an IndexedDB namespace suffixed `-modelVersion` (see `miroirConfig.test-emulatedServer-indexedDb.json` and `miroirConfig.test-emulatedServer-mongodb.json` in `miroir-standalone-app/tests/`).
+**IndexedDB / MongoDB:** same pattern, with a separate database name or an IndexedDB namespace suffixed `-modelVersion` (see `environments/test-indexedDb.json` and `environments/test-mongodb.json`: the modelVersion section adds `_modelVersion`).
 
 | Backend | Writable `modelVersion` | Notes |
 |---|---|---|

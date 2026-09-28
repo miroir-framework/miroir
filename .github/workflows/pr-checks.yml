@@ -34,11 +34,13 @@ jobs:
         run: npm install --no-save "@rollup/rollup-linux-x64-gnu@$(node -p 'require("rollup/package.json").version')"
       - name: Lint
         run: npm run lint
-      - name: Build packages needed by miroir-core tests
+      - name: Build packages needed by miroir-core tests and miroir-env
         run: |
           npm run build -w miroir-test-app_deployment-miroir -w miroir-test-app_deployment-admin
           npm run build -w miroir-core
-          npm run build -w miroir-store-bundled -w miroir-store-postgres -w miroir-test-app_deployment-library
+          npm run build -w miroir-env -w miroir-store-bundled -w miroir-store-postgres -w miroir-test-app_deployment-library
+      - name: Environments valid, tracked assets unchanged (#321)
+        run: npm run miroir-env -- check --strict --tracked-clean
       - name: Typecheck miroir-core
         run: npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
       - name: miroir-core unit tests

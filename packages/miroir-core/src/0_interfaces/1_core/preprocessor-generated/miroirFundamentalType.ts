@@ -3764,6 +3764,10 @@ export type ServerConfigForClientConfig = {
         [x: string]: StoreUnitConfiguration;
     };
 };
+export type MiroirConfigEnvironment = {
+    name: string;
+    appsDirectory: string;
+};
 export type MiroirConfigForClientStub = {
     emulateServer: true;
     filesystemDeploymentRootDirectory: string;
@@ -3777,6 +3781,7 @@ export type MiroirConfigForRestClient = {
 export type MiroirConfigClient = {
     miroirConfigType: "client";
     client: MiroirConfigForClientStub | MiroirConfigForRestClient;
+    environment?: MiroirConfigEnvironment | undefined;
     features?: {
         ai?: boolean | undefined;
         mcp?: boolean | undefined;
@@ -3795,6 +3800,7 @@ export type MiroirConfigServer = {
             tokenSecret?: string | undefined;
         } | undefined;
     };
+    environment?: MiroirConfigEnvironment | undefined;
     features?: {
         ai?: boolean | undefined;
         mcp?: boolean | undefined;
@@ -3803,6 +3809,62 @@ export type MiroirConfigServer = {
     } | undefined;
 };
 export type MiroirConfig = "miroirConfigClient" | "miroirConfigServer";
+export type MiroirEnvironmentStoreType = "filesystem" | "indexedDb" | "sql" | "mongodb";
+export type MiroirEnvironmentSectionMode = "live" | "copy";
+export type MiroirEnvironmentSectionOverride = {
+    mode?: MiroirEnvironmentSectionMode | undefined;
+    store?: MiroirEnvironmentStoreType | undefined;
+};
+export type MiroirEnvironmentApplication = {
+    package?: string | undefined;
+    assetPrefix?: string | undefined;
+    selfApplication: string;
+    deployment: string;
+    store?: MiroirEnvironmentStoreType | undefined;
+    mode?: MiroirEnvironmentSectionMode | undefined;
+    sections?: {
+        model?: MiroirEnvironmentSectionOverride | undefined;
+        data?: MiroirEnvironmentSectionOverride | undefined;
+        modelVersion?: MiroirEnvironmentSectionOverride | undefined;
+    } | undefined;
+    configuration?: StoreUnitConfiguration | undefined;
+};
+export type MiroirEnvironment = {
+    name?: string | undefined;
+    extends?: string | undefined;
+    description?: string | undefined;
+    server?: {
+        rootApiUrl?: string | undefined;
+        mcpUrl?: string | undefined;
+        corsAllowedOrigins?: string[] | undefined;
+    } | undefined;
+    client?: {
+        mode?: ("realServer" | "emulatedServer") | undefined;
+    } | undefined;
+    features?: {
+        ai?: boolean | undefined;
+        mcp?: boolean | undefined;
+        cursor?: boolean | undefined;
+        designerTools?: boolean | undefined;
+    } | undefined;
+    logPreset?: string | undefined;
+    connections?: {
+        postgres?: {
+            host: string;
+            port?: number | undefined;
+            user?: string | undefined;
+            database?: string | undefined;
+            passwordEnv?: string | undefined;
+        } | undefined;
+        mongodb?: {
+            url: string;
+        } | undefined;
+    } | undefined;
+    secrets?: string[] | undefined;
+    applications?: {
+        [x: string]: MiroirEnvironmentApplication | null;
+    } | undefined;
+};
 export type Commit = {
     date: Date;
     selfApplication?: string | undefined;
@@ -10668,11 +10730,17 @@ export const storeSectionConfiguration: z.ZodType<StoreSectionConfiguration> = z
 export const storeUnitConfiguration: z.ZodType<StoreUnitConfiguration> = z.object({admin:z.lazy(() =>storeSectionConfiguration), model:z.lazy(() =>storeSectionConfiguration), data:z.lazy(() =>storeSectionConfiguration), "modelVersion":z.lazy(() =>storeSectionConfiguration).optional()}).strict();
 export const deploymentStorageConfig: z.ZodType<DeploymentStorageConfig> = z.record(z.string(),z.lazy(() =>storeUnitConfiguration));
 export const serverConfigForClientConfig: z.ZodType<ServerConfigForClientConfig> = z.object({rootApiUrl:z.string(), dataflowConfiguration:z.any(), storeSectionConfiguration:z.record(z.string(),z.lazy(() =>storeUnitConfiguration))}).strict();
+export const miroirConfigEnvironment: z.ZodType<MiroirConfigEnvironment> = z.object({name:z.string(), appsDirectory:z.string()}).strict();
 export const miroirConfigForClientStub: z.ZodType<MiroirConfigForClientStub> = z.object({emulateServer:z.literal(true), filesystemDeploymentRootDirectory:z.string(), rootApiUrl:z.string(), deploymentStorageConfig:z.lazy(() =>deploymentStorageConfig)}).strict();
 export const miroirConfigForRestClient: z.ZodType<MiroirConfigForRestClient> = z.object({emulateServer:z.literal(false), serverConfig:z.lazy(() =>serverConfigForClientConfig)}).strict();
-export const miroirConfigClient: z.ZodType<MiroirConfigClient> = z.object({miroirConfigType:z.literal("client"), client:z.union([z.lazy(() =>miroirConfigForClientStub), z.lazy(() =>miroirConfigForRestClient)]), features:z.object({ai:z.boolean().optional(), mcp:z.boolean().optional(), cursor:z.boolean().optional(), designerTools:z.boolean().optional()}).strict().optional()}).strict();
-export const miroirConfigServer: z.ZodType<MiroirConfigServer> = z.object({miroirConfigType:z.literal("server"), server:z.object({rootApiUrl:z.string(), mcpUrl:z.string().optional(), filesystemDeploymentRootDirectory:z.string(), authentication:z.object({enabled:z.boolean().optional(), tokenSecret:z.string().optional()}).strict().optional()}).strict(), features:z.object({ai:z.boolean().optional(), mcp:z.boolean().optional(), cursor:z.boolean().optional(), designerTools:z.boolean().optional()}).strict().optional()}).strict();
+export const miroirConfigClient: z.ZodType<MiroirConfigClient> = z.object({miroirConfigType:z.literal("client"), client:z.union([z.lazy(() =>miroirConfigForClientStub), z.lazy(() =>miroirConfigForRestClient)]), environment:z.lazy(() =>miroirConfigEnvironment).optional(), features:z.object({ai:z.boolean().optional(), mcp:z.boolean().optional(), cursor:z.boolean().optional(), designerTools:z.boolean().optional()}).strict().optional()}).strict();
+export const miroirConfigServer: z.ZodType<MiroirConfigServer> = z.object({miroirConfigType:z.literal("server"), server:z.object({rootApiUrl:z.string(), mcpUrl:z.string().optional(), filesystemDeploymentRootDirectory:z.string(), authentication:z.object({enabled:z.boolean().optional(), tokenSecret:z.string().optional()}).strict().optional()}).strict(), environment:z.lazy(() =>miroirConfigEnvironment).optional(), features:z.object({ai:z.boolean().optional(), mcp:z.boolean().optional(), cursor:z.boolean().optional(), designerTools:z.boolean().optional()}).strict().optional()}).strict();
 export const miroirConfig: z.ZodType<MiroirConfig> = z.union([z.literal("miroirConfigClient"), z.literal("miroirConfigServer")]);
+export const miroirEnvironmentStoreType: z.ZodType<MiroirEnvironmentStoreType> = z.enum(["filesystem","indexedDb","sql","mongodb"]);
+export const miroirEnvironmentSectionMode: z.ZodType<MiroirEnvironmentSectionMode> = z.enum(["live","copy"]);
+export const miroirEnvironmentSectionOverride: z.ZodType<MiroirEnvironmentSectionOverride> = z.object({mode:z.lazy(() =>miroirEnvironmentSectionMode).optional(), store:z.lazy(() =>miroirEnvironmentStoreType).optional()}).strict();
+export const miroirEnvironmentApplication: z.ZodType<MiroirEnvironmentApplication> = z.object({package:z.string().optional(), assetPrefix:z.string().optional(), selfApplication:z.string().uuid(), deployment:z.string().uuid(), store:z.lazy(() =>miroirEnvironmentStoreType).optional(), mode:z.lazy(() =>miroirEnvironmentSectionMode).optional(), sections:z.object({model:z.lazy(() =>miroirEnvironmentSectionOverride).optional(), data:z.lazy(() =>miroirEnvironmentSectionOverride).optional(), "modelVersion":z.lazy(() =>miroirEnvironmentSectionOverride).optional()}).strict().optional(), configuration:z.lazy(() =>storeUnitConfiguration).optional()}).strict();
+export const miroirEnvironment: z.ZodType<MiroirEnvironment> = z.object({name:z.string().optional(), extends:z.string().optional(), description:z.string().optional(), server:z.object({rootApiUrl:z.string().optional(), mcpUrl:z.string().optional(), corsAllowedOrigins:z.array(z.string()).optional()}).strict().optional(), client:z.object({mode:z.enum(["realServer","emulatedServer"]).optional()}).strict().optional(), features:z.object({ai:z.boolean().optional(), mcp:z.boolean().optional(), cursor:z.boolean().optional(), designerTools:z.boolean().optional()}).strict().optional(), logPreset:z.string().optional(), connections:z.object({postgres:z.object({host:z.string(), port:z.number().optional(), user:z.string().optional(), database:z.string().optional(), passwordEnv:z.string().optional()}).strict().optional(), mongodb:z.object({url:z.string()}).strict().optional()}).strict().optional(), secrets:z.array(z.string()).optional(), applications:z.record(z.string(),z.lazy(() =>miroirEnvironmentApplication).nullable()).optional()}).strict();
 export const commit: z.ZodType<Commit> = z.object({date:z.date(), selfApplication:z.string().uuid().optional(), name:z.string(), preceding:z.string().uuid().optional(), branch:z.string().uuid().optional(), author:z.string().uuid().optional(), description:z.string().optional(), actions:z.array(z.object({endpoint:z.string().uuid(), actionArguments:z.lazy(() =>modelAction)}).strict()), patches:z.array(z.any())}).strict();
 export const applicationEvolutionTrace: z.ZodType<ApplicationEvolutionTrace> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string().optional(), applicationUuid:z.string().uuid(), branchName:z.string(), timestamp:z.date().optional()}).strict();
 export const applicationEvolutionTraceEvent: z.ZodType<ApplicationEvolutionTraceEvent> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), traceRootUuid:z.string().uuid(), sequenceNumber:z.number(), operationType:z.enum(["createEntity","renameEntity","alterEntityAttribute","dropEntity","createEntityDefinition","updateEntityDefinition","createInstance","updateInstance","deleteInstance","squashedBaseline"]), applicationSection:z.enum(["model","data"]), compactionLevel:z.enum(["raw","commit","version"]), targetEntityUuid:z.string().uuid().optional(), targetInstanceUuid:z.string().uuid().optional(), commitUuid:z.string().uuid().optional(), fromVersionUuid:z.string().uuid().optional(), toVersionUuid:z.string().uuid().optional(), timestamp:z.string(), definitionVersionResolution:z.enum(["instanceParentDefinitionVersion","actionPayload","applicationVersionCrossEntityVersion","unresolved"]).optional(), targetDefinitionVersionUuid:z.string().uuid().optional()}).strict();

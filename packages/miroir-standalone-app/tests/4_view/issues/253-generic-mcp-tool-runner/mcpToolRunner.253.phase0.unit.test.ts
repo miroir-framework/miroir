@@ -160,7 +160,6 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
       "packages/miroir-test-app_deployment-miroir/assets",
       "packages/miroir-test-app_deployment-library/assets",
       "packages/miroir-test-app_deployment-admin/assets",
-      "packages/miroir-standalone-app/tests/assets",
     ];
     const instanceFiles = sourceTrees
       .flatMap((tree) => collectRunnerInstanceFiles(join(REPO_ROOT, tree)))

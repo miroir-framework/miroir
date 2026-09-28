@@ -1,10 +1,15 @@
-import { existsSync } from "node:fs";
-import { MiroirConfigClient, MiroirLoggerFactory, type LoggerInterface, type LoggerOptions } from "miroir-core";
+import {
+  MiroirConfigClient,
+  MiroirLoggerFactory,
+  type LoggerInterface,
+  type LoggerOptions,
+} from "miroir-core";
 import path from "path";
 import { cleanLevel } from "../3_controllers/constants";
 import { packageName } from "../../src/constants";
 import { DEFAULT_LOG_CONFIG_NAME } from "../../src/config/logConfigPresets.js";
 import { resolveRepoRoot } from "../helpers/integrationTestProfiles.js";
+import { openTestEnvironment, selectedTestEnvironment } from "../helpers/testEnvironment.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "FileTools");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -20,31 +25,6 @@ function unwrapJsonModule<T>(moduleContents: T | { default: T }): T {
     return (moduleContents as { default: T }).default;
   }
   return moduleContents as T;
-}
-
-/** Checked-in test configs often hardcode a developer machine path under `packages/`. */
-function applyPortableFilesystemDeploymentRoot(
-  miroirConfig: MiroirConfigClient,
-  env: NodeJS.ProcessEnv,
-): MiroirConfigClient {
-  const client = (miroirConfig as { client?: { filesystemDeploymentRootDirectory?: string } }).client;
-  if (!client?.filesystemDeploymentRootDirectory) {
-    return miroirConfig;
-  }
-
-  const override = env.MIROIR_TEST_FILESYSTEM_ROOT;
-  const configured = client.filesystemDeploymentRootDirectory;
-  const portable = override ?? path.join(resolveRepoRoot(), "packages");
-  if (override || !existsSync(configured)) {
-    log.info(
-      "@@@@@@@@@@@@@@@@@@ rewriting filesystemDeploymentRootDirectory",
-      configured,
-      "->",
-      portable,
-    );
-    client.filesystemDeploymentRootDirectory = portable;
-  }
-  return miroirConfig;
 }
 
 // ################################################################################################
@@ -98,15 +78,14 @@ export async function loadTestConfigFiles(
   env: any,
 ): Promise<{ miroirConfig: MiroirConfigClient; logConfig: LoggerOptions }> {
   try {
-    if (!env.VITE_MIROIR_TEST_CONFIG_FILENAME) {
+    // #321: the test environment named by MIROIR_ENV (set by --profile) is the only test configuration
+    const environmentName = selectedTestEnvironment(env);
+    if (!environmentName) {
       throw new Error(
-        "Environment variable VITE_MIROIR_TEST_CONFIG_FILENAME not found. Tests must find this variable, pointing to a valid test configuration file",
+        "no test environment selected: run the test with --profile (e.g. --profile emulatedServer-filesystem) or MIROIR_ENV=test-filesystem",
       );
     }
-    const miroirConfig = applyPortableFilesystemDeploymentRoot(
-      await loadTestSingleConfigFile<MiroirConfigClient>(env.VITE_MIROIR_TEST_CONFIG_FILENAME),
-      env,
-    );
+    const miroirConfig = openTestEnvironment(environmentName, env).miroirConfig;
 
     // Log config: default to the low-noise catch-all preset so nonreg / plain
     // test runs don't drown. Override explicitly via VITE_MIROIR_LOG_CONFIG_FILENAME

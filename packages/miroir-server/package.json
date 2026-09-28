@@ -55,6 +55,7 @@
     "loglevelnext": "^6.0.0",
     "miroir-ai": "*",
     "miroir-core": "*",
+    "miroir-env": "*",
     "miroir-localcache-redux": "*",
     "miroir-mcp": "*",
     "miroir-store-filesystem": "*",

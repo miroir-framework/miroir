@@ -1,0 +1,14 @@
+{
+  "name": "test-mongodb",
+  "extends": "test-filesystem",
+  "description": "Integration tests on MongoDB (profile emulatedServer-mongodb): Admin stays a filesystem copy in .miroir/test-mongodb/, the other applications use the databases test_mongodb_<application>.",
+  "connections": {
+    "mongodb": { "url": "mongodb://localhost:27017" }
+  },
+  "applications": {
+    "miroir": { "store": "mongodb" },
+    "library": { "store": "mongodb" },
+    "appForTest": { "store": "mongodb" },
+    "spotify": { "store": "mongodb" }
+  }
+}

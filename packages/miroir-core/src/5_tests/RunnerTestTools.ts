@@ -11,6 +11,7 @@ import type {
   StoreUnitConfiguration,
   TestAssertionResult,
   TestCompositeActionParams,
+  TestResult,
   TestSuiteResult,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { Action2ReturnType } from "../0_interfaces/2_domain/DomainElement";
@@ -59,6 +60,52 @@ function findTrackedAssertionByName(
     }
   }
   return undefined;
+}
+
+function findTrackedTest(suiteResult: TestSuiteResult, testLabel: string): TestResult | undefined {
+  const own = suiteResult.testsResults?.[testLabel];
+  if (own) {
+    return own;
+  }
+  for (const nested of Object.values(suiteResult.testsSuiteResults ?? {})) {
+    const found = findTrackedTest(nested, testLabel);
+    if (found) {
+      return found;
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Throws when an assertion of the leaf failed or did not run. A composite action records a
+ * failed assertion in the activity tracker and still returns ok, so the status alone does not
+ * tell. Assertions are looked up in the test labelled `testLabel` first.
+ */
+function expectLeafAssertionsPassed(
+  leaf: MiroirTestForRunner,
+  miroirActivityTracker: MiroirActivityTrackerInterface,
+  failureLabel: string,
+  testLabel?: string,
+): void {
+  const trackedRoot = miroirActivityTracker.getTestAssertionsResults([]);
+  const trackedTest = testLabel ? findTrackedTest(trackedRoot, testLabel) : undefined;
+  for (const assertion of leaf.testCompositeActionAssertions ?? []) {
+    // the tracker records an assertion under its testLabel
+    const assertionName = assertion.testAssertion.testLabel;
+    const tracked =
+      trackedTest?.testAssertionsResults?.[assertionName] ??
+      findTrackedAssertionByName(trackedRoot, assertionName);
+    if (tracked === undefined) {
+      throw new Error(
+        `runnerTest "${leaf.miroirTestLabel}" ${failureLabel} "${assertionName}" did not run`,
+      );
+    }
+    if (tracked.assertionResult === "error") {
+      throw new Error(
+        `runnerTest "${leaf.miroirTestLabel}" ${failureLabel} failed: ${tracked.assertionName} expected ${JSON.stringify(tracked.assertionExpectedValue)} actual ${JSON.stringify(tracked.assertionActualValue)}`,
+      );
+    }
+  }
 }
 
 export function resolveRunnerFromRunnerRef(
@@ -261,23 +308,7 @@ export async function runMiroirRunnerTest(
         currentModelEnvironment,
         mergedTestParams,
       );
-      const trackedRoot = miroirActivityTracker.getTestAssertionsResults([]);
-      for (const assertion of leaf.testCompositeActionAssertions ?? []) {
-        const tracked = findTrackedAssertionByName(
-          trackedRoot,
-          assertion.nameGivenToResult,
-        );
-        if (tracked === undefined) {
-          throw new Error(
-            `runnerTest "${leaf.miroirTestLabel}" post-submit assertion "${assertion.nameGivenToResult}" did not run`,
-          );
-        }
-        if (tracked.assertionResult === "error") {
-          throw new Error(
-            `runnerTest "${leaf.miroirTestLabel}" post-submit query assertion failed: ${tracked.assertionName} expected ${JSON.stringify(tracked.assertionExpectedValue)} actual ${JSON.stringify(tracked.assertionActualValue)}`,
-          );
-        }
-      }
+      expectLeafAssertionsPassed(leaf, miroirActivityTracker, "post-submit assertion", label);
     }
     miroirActivityTracker.setTestAssertionResult(testAssertionPath, {
       assertionName: leaf.miroirTestLabel,
@@ -308,6 +339,12 @@ export async function runMiroirRunnerTest(
   );
 
   localVitest.expect(result?.status, `${leaf.miroirTestLabel} failed`).toBe("ok");
+  expectLeafAssertionsPassed(
+    leaf,
+    miroirActivityTracker,
+    "assertion",
+    leaf.testCompositeActionLabel ?? "no_testCompositeActionLabel_given",
+  );
   miroirActivityTracker.setTestAssertionResult(testAssertionPath, {
     assertionName: leaf.miroirTestLabel,
     assertionResult: result?.status === "ok" ? "ok" : "error",

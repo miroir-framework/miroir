@@ -11,7 +11,8 @@ import type { StorageType } from "../0_interfaces/1_core/StorageConfiguration.js
 import {
   DomainControllerInterface,
   DomainState,
-  LocalCacheInfo
+  LocalCacheInfo,
+  type InstanceActionListener,
 } from "../0_interfaces/2_domain/DomainControllerInterface";
 
 import { MiroirContextInterface } from "../0_interfaces/3_controllers/MiroirContextInterface";
@@ -220,10 +221,14 @@ function isExtractorForExternalServiceResolved(value: unknown): value is Extract
   );
 }
 
+/**
+ * Parameters every Runner template can read. `environmentAppsDirectory` is where Runners put the
+ * stores of an application they install: the `NODE_ENV` default here serves configurations that
+ * name no environment; a DomainController whose configuration names one uses its apps directory.
+ */
 export const templateEvaluationParams = {
   env: { NODE_ENV: getMiroirEnvironmentMode() === "dev" ? "development" : "production" },
-  devRelativePathPrefix,
-  prodRelativePathPrefix,
+  environmentAppsDirectory: getMiroirEnvironmentMode() === "dev" ? devRelativePathPrefix : prodRelativePathPrefix,
   clientEnvironment: getClientEnvironment(),
 };
 
@@ -404,6 +409,7 @@ export class DomainController implements DomainControllerInterface {
   private outboundFetchReplacement: OutboundFetch | undefined;
   private readonly fetchOutbound: OutboundFetch = (input, init) =>
     (this.outboundFetchReplacement ?? outboundFetch)(input, init);
+  private instanceActionListeners: InstanceActionListener[] = [];
   // private actionHandler: ActionHandler;
   // ##############################################################################################
   constructor(
@@ -425,12 +431,41 @@ export class DomainController implements DomainControllerInterface {
     return this.persistenceStoreAccessMode;
   }
 
+  /** templateEvaluationParams, with the apps directory of the environment the configuration names. */
+  private templateEvaluationParams(): typeof templateEvaluationParams {
+    const environment = this.miroirContext.extendMiroirConfigWithExtraDeploymentConfiguration()?.environment;
+    return environment
+      ? { ...templateEvaluationParams, environmentAppsDirectory: environment.appsDirectory }
+      : templateEvaluationParams;
+  }
+
   setProcessCapabilities(snapshot: ProcessCapabilities): void {
     this.processCapabilities = snapshot;
   }
 
   setOutboundFetch(fetchReplacement: OutboundFetch | undefined): void {
     this.outboundFetchReplacement = fetchReplacement;
+  }
+
+  addInstanceActionListener(listener: InstanceActionListener): () => void {
+    this.instanceActionListeners.push(listener);
+    return () => {
+      this.instanceActionListeners = this.instanceActionListeners.filter((l) => l !== listener);
+    };
+  }
+
+  /** A failing listener is logged: it never fails the action it listens to. */
+  private notifyInstanceActionListeners(
+    action: InstanceAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): void {
+    for (const listener of this.instanceActionListeners) {
+      try {
+        listener(action, applicationDeploymentMap);
+      } catch (error) {
+        log.warn("DomainController instance action listener failed", action.actionType, error);
+      }
+    }
   }
 
   private resolveProcessCapabilities(): ProcessCapabilities {
@@ -1308,6 +1343,7 @@ export class DomainController implements DomainControllerInterface {
 
     if (!(result instanceof Action2Error)) {
       await this.maybeRecordEvolutionTrace(actionToPersist, applicationDeploymentMap);
+      this.notifyInstanceActionListeners(actionToPersist, applicationDeploymentMap);
     }
 
     // log.info(
@@ -2247,6 +2283,8 @@ export class DomainController implements DomainControllerInterface {
                   );
                   return replayActionResult;
                 }
+                // #321: listeners see a committed instance action like a direct one
+                this.notifyInstanceActionListeners(replayAction.payload.instanceAction, applicationDeploymentMap);
                 break;
               }
               // case "modelAction":
@@ -5077,7 +5115,7 @@ export class DomainController implements DomainControllerInterface {
     modelEnvironment: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
   ): Promise<Action2VoidReturnType> {
-    const localActionParams = { ...templateEvaluationParams, ...actionParamValues };
+    const localActionParams = { ...this.templateEvaluationParams(), ...actionParamValues };
 
     log.info(
       "handleBuildPlusRuntimeCompositeAction compositeActionSequence",
@@ -5149,7 +5187,7 @@ export class DomainController implements DomainControllerInterface {
     }
 
     const queryParamsForActionResolution = {
-      ...templateEvaluationParams,
+      ...this.templateEvaluationParams(),
       ...actionParamValues,
       ...resolvedCompositeActionTemplates, // TODO: remove, evaluated templates are available only at runtime!
     };
@@ -5681,7 +5719,7 @@ export class DomainController implements DomainControllerInterface {
     actionContext: Record<string, any> = {},
     principal?: AuthPrincipal,
   ): Promise<Action2ReturnType> {
-    const localActionParams = { ...templateEvaluationParams, ...actionParamValues };
+    const localActionParams = { ...this.templateEvaluationParams(), ...actionParamValues };
     const actionLabel = (compositeActionSequence as any).actionLabel ?? "no action label";
     log.info(
       "handleCompositeActionTemplate called with compositeActionSequence",
