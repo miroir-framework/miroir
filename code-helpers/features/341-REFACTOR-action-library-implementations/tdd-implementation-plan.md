@@ -15,7 +15,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/341
 Working branch: `claude/action-library-implementations-1jkrjp` (from `_integration` 9ae1aa9)
 
-**Resume note:** plan written, no slice started.
+**Resume note:** Slice 0 DONE; next is Slice 1 (tracer).
 
 ---
 
@@ -36,7 +36,7 @@ This plan does **not** migrate Persistence / LocalCache actions, touch the 5 dec
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize dispatch and Endpoint inventory | ⬜ | `actionImplementations.341.phase0.unit.test.ts` + baseline `action.domainController.*` |
+| 0 | Characterize dispatch and Endpoint inventory | ✅ | `actionImplementations.341.phase0.unit.test.ts` + baseline `action.domainController.*` |
 | 1 | Tracer: `prepareOpenApiDocument` runs from its library reference | ⬜ | `actionImplementations.341.phase1.unit.test.ts` |
 | 2 | DomainEndpoint actions | ⬜ | `action.scenario.*`, `integ-action-284-*`, phase1 test extended |
 | 3 | InstanceEndpoint actions | ⬜ | `action.domainController.dataCrud*` |
@@ -100,7 +100,7 @@ Vitest rather than MiroirTest for Slices 0, 1, 6, 8: they assert on `DomainContr
 
 ## Slice 0 — Characterize dispatch and Endpoint inventory
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE (2026-09-28)
 
 ### Goal
 
@@ -130,6 +130,13 @@ npm run nonreg:filesystem -- --runner shared
 ```
 
 ### Realization
+
+- `actionImplementations.341.phase0.unit.test.ts`: 5 tests. The test imports `miroir-core` (aliased to `src/index.ts`) before any `src/` module, otherwise module initialisation order breaks.
+- Deviation: the bundled `defaultMiroirMetaModel.endpoints` holds 12 entries for 10 Endpoints: InstanceEndpoint and StoreManagementEndpoint are listed twice, and MenuEndpoint is not bundled. The first test now locks the 10 bundled Endpoints, and a second test locks the duplicates. All in-scope Endpoints are bundled, so D2's fallback still holds (analysis §3.1).
+- Production change: `autocommitActionTypesFromUI` (exported constant in `DomainController.ts`) replaces the inline condition of `handleActionFromUI`.
+- Baseline `nonreg:filesystem --runner shared`: 78/78 steps pass (snapshot `test-results/nonreg/20260928T063956Z`). `unit-localCacheMonitorSummary` fails under the shared runner only and passes on the legacy re-run, so it is not a regression signal for later slices.
+- Environment: the session's `dist/` builds and `node_modules` predated `_integration`; fixed with `./build-all.sh`, `npm ci`, and the missing native `@rollup/rollup-linux-x64-gnu` installed with `--no-save`. The nonreg run rewrites 6 `miroir-standalone-app/tests/assets/admin_data` files; they are restored before committing.
+- Gate: lint, `sync_agent_skills --check`, pytest (45 passed), tsc miroir-core, `npm run test -w miroir-core -- ''` (2092 passed).
 
 ---
 

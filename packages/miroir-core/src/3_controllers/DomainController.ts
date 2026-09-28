@@ -397,6 +397,19 @@ function appendReportLinkToMenu(
   return undefined;
 }
 
+/**
+ * Action types after which `handleActionFromUI` commits automatically.
+ * #341: to become an attribute of the action definition.
+ */
+export const autocommitActionTypesFromUI: readonly string[] = [
+  "transactionalInstanceAction",
+  "alterEntityAttribute",
+  "createEntity",
+  "renameEntity",
+  "dropEntity",
+  "compositeActionSequence",
+];
+
 export class DomainController implements DomainControllerInterface {
   private callUtil: CallUtils;
   private processCapabilities: ProcessCapabilities | undefined;
@@ -2993,14 +3006,7 @@ export class DomainController implements DomainControllerInterface {
             //     result,
             //   );
             // }
-            if (
-              domainAction.actionType == "transactionalInstanceAction" ||
-              domainAction.actionType == "alterEntityAttribute" ||
-              domainAction.actionType == "createEntity" ||
-              domainAction.actionType == "renameEntity" ||
-              domainAction.actionType == "dropEntity" ||
-              domainAction.actionType == "compositeActionSequence"
-            ) {
+            if (autocommitActionTypesFromUI.includes(domainAction.actionType)) {
               // automatically commit after each model action from the UI if autocommit is enabled
               const commitAction: ModelAction = {
                 actionType: "commit",

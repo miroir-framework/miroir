@@ -103,6 +103,8 @@ Enumerated from `miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/*.json` (appli
 | ApplicationEndpoint | `ddd9c928-2ceb-4f67-971b-5898090412d6` | 2: `createApplication`, `dropApplication` | none | out |
 | LocalCacheEndpoint | `9e404b3c-368c-40cb-be8b-e3c28550c25e` | 0 | — | out |
 
+The bundled meta-model (`defaultMiroirMetaModel.endpoints`, `miroir-test-app_deployment-miroir/src/Model.ts` l.294), which `defaultEndpointsByUuid` is built from, lists 12 entries for 10 Endpoints: InstanceEndpoint and StoreManagementEndpoint appear twice (exported under two names each: `instanceEndpointV1` / `instanceEndpointVersionV1`, `deploymentEndpointV1` / `storeManagementEndpoint`), and MenuEndpoint is absent. All in-scope Endpoints are bundled, so D2's fallback to the bundle covers them.
+
 In scope: 6 Endpoints, 34 actions, of which 33 get a `libraryImplementation` and `entity_DuplicateAttribute` keeps its composite template. Out of scope: 5 Endpoints, 13 actions.
 
 The schema already allows the target (generated `action` in `miroirFundamentalType.ts`):
