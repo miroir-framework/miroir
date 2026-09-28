@@ -29,12 +29,11 @@ RUN apk add --no-cache python3 make g++
 # Copy the entire monorepo source
 COPY . .
 
-# Install ALL dependencies (including devDeps needed for building).
-# The lockfile is generated on the host OS (Windows/macOS) and does NOT contain
-# the musl-libc platform binaries needed by Alpine Linux (e.g.
-# @rollup/rollup-linux-x64-musl). Deleting it forces npm to resolve optional
-# native deps correctly for the current target platform.
-RUN rm -f package-lock.json && npm install
+# Install ALL dependencies (including devDeps needed for building) from the
+# lockfile, as CI does. The lockfile lists the musl-libc platform binaries Alpine
+# needs (e.g. @rollup/rollup-linux-x64-musl). Resolving without it pulls newer
+# versions than the ones the code is typed against (miroir-ai's dts build fails).
+RUN npm ci --no-audit
 
 # ---------------------------------------------------------------------------
 # Build in strict dependency order (mirrors build-all.sh / copilot-instructions)
