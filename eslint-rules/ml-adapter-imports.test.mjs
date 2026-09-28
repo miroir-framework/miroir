@@ -25,6 +25,14 @@ test("tests and scripts cannot import jzod or jzod-ts", async () => {
   assert.equal((await errorsFor("packages/miroir-store-postgres/scripts/a.ts", jzodTsImport)).length, 1);
 });
 
+test("package-root and JavaScript files cannot import jzod or jzod-ts", async () => {
+  assert.equal((await errorsFor("packages/miroir-cli/vite.config.js", jzodImport)).length, 1);
+  assert.equal((await errorsFor("packages/miroir-core/tsup.config.js", jzodTsImport)).length, 1);
+  assert.equal((await errorsFor("packages/miroir-mcp/lib/a.mjs", jzodImport)).length, 1);
+  assert.equal((await errorsFor("packages/miroir-react/src/a.jsx", jzodImport)).length, 1);
+  assert.equal((await errorsFor("packages/miroir-cli/a.cts", jzodImport)).length, 1);
+});
+
 test("the adapter imports jzod and jzod-ts", async () => {
   assert.equal((await errorsFor("packages/miroir-core/src/1_core/mls/mlJzodAdapter.ts", jzodImport)).length, 0);
   assert.equal((await errorsFor("packages/miroir-core/src/1_core/mls/mlJzodTsAdapter.ts", jzodTsImport)).length, 0);

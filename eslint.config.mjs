@@ -55,8 +55,8 @@ export default tseslint.config(
   {
     // @miroir-framework/jzod and jzod-ts are reached only through the adapter of miroir-core (#145): mlJzodAdapter.ts (valueToMl, mlToZod,
     // mlToZodTextAndZodSchema, exported by miroir-core) and mlJzodTsAdapter.ts (mlToTs, Node-only `miroir-core/ml-to-ts`).
-    // Scripts are included: the type generators go through the adapter too.
-    files: ["packages/*/{src,test,tests,scripts}/**/*.{ts,tsx,mts}"],
+    // Every source file of every package is covered, scripts and config files included.
+    files: ["packages/**/*.{ts,tsx,mts,cts,js,jsx,mjs,cjs}"],
     ignores: ["packages/miroir-core/src/1_core/mls/mlJzodAdapter.ts", "packages/miroir-core/src/1_core/mls/mlJzodTsAdapter.ts"],
     languageOptions: { parser: tseslint.parser },
     rules: {

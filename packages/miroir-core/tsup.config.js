@@ -34,7 +34,7 @@ export default defineConfig({
     'miroir-test-app_deployment-library',
     // json-diff → @ewoudenberg/difflib uses dynamic require('assert'); must stay external for ncc/ESM consumers
     'json-diff',
-    // build-time only (devDependency), used by the Node-only ml-to-ts entry; it pulls in the TypeScript compiler
+    // used only by the Node-only ml-to-ts entry; it pulls in the TypeScript compiler, never bundle it
     '@miroir-framework/jzod-ts',
     // Node builtins — only used by Node-only subpath entries
     'node:fs',

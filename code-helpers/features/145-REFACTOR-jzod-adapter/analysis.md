@@ -40,7 +40,7 @@ The signatures take and return `MlElement`; `MlZodTextAndZodSchema` restates Jzo
 caller names a Jzod type.
 
 **D2. Lint rule.** A separate `eslint.config.mjs` block with only `no-restricted-imports` for both packages, over
-`packages/*/{src,test,tests,scripts}/**/*.{ts,tsx,mts}` (scripts included, so the generators are covered), ignoring
+every TS and JS file under `packages/` (scripts and config files included, so the generators are covered), ignoring
 the two adapter files. A `node --test` case in `eslint-rules/` checks the block, run by `npm run lint`.
 
 **D3. ML nomenclature guard.** The adapter file names contain "Jzod"; `scripts/check_ml_nomenclature.py` allows Jzod
