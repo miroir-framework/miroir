@@ -38,10 +38,22 @@ def package_spec(key: str, entry: dict) -> str:
 def npm_view(spec: str) -> tuple[str, str]:
     npm = shutil.which("npm") or "npm"
     result = subprocess.run(
-        [npm, "view", spec, "dist.tarball", "dist.integrity", "--json"], capture_output=True, text=True, check=True
+        [npm, "view", spec, "version", "dist.tarball", "dist.integrity", "--json"],
+        capture_output=True,
+        text=True,
+        check=True,
     )
-    dist = json.loads(result.stdout)
-    return dist["dist.tarball"], dist["dist.integrity"]
+    return dist_of(spec, json.loads(result.stdout))
+
+
+def dist_of(spec: str, answer: dict | list) -> tuple[str, str]:
+    """(tarball URL, integrity) of `spec` in the answer of `npm view --json`. npm answers with a list when several
+    published versions match the spec (its matching is loose); the one whose version is exactly the spec's is taken."""
+    version = spec.rpartition("@")[2]
+    for dist in answer if isinstance(answer, list) else [answer]:
+        if dist.get("version") == version:
+            return dist["dist.tarball"], dist["dist.integrity"]
+    raise KeyError(f"{spec}: the registry lists no version {version}")
 
 
 def _with_dist(entry: dict, resolved: str, integrity: str) -> dict:
