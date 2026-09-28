@@ -113,9 +113,10 @@ COPY --from=builder /miroir/packages/miroir-standalone-app/dist \
 # -------------------------------------------------------------------------
 # Docker-specific server config (HTTP, filesystemDeploymentRootDirectory=/data)
 # Overrides the dev config that was pulled in with the packages/ copy above.
+# The ncc release bundle reads the copy next to it (release/miroirConfig.server.json).
 # -------------------------------------------------------------------------
 COPY packages/miroir-server/config/miroirConfig.server.docker.json \
-     /miroir/packages/miroir-server/config/miroirConfig.server.json
+     /miroir/packages/miroir-server/release/miroirConfig.server.json
 
 # -------------------------------------------------------------------------
 # Seed data — bundled in the image, copied to /data on first run
