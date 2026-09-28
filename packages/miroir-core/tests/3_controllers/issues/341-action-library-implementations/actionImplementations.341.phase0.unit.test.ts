@@ -104,7 +104,13 @@ describe("#341 phase 0: Miroir action dispatch characterization", () => {
     );
     // Slice 0: entity_DuplicateAttribute only. Slice 1: prepareOpenApiDocument.
     // Then one Endpoint per slice.
-    const migratedEndpoints = ["DomainEndpoint", "InstanceEndpoint", "ModelEndpoint"];
+    const migratedEndpoints = [
+      "DomainEndpoint",
+      "InstanceEndpoint",
+      "ModelEndpoint",
+      "StoreManagementEndpoint",
+      "UndoRedoEndpoint",
+    ];
     expect(Object.fromEntries(implemented)).toEqual({
       ...Object.fromEntries(
         migratedEndpoints

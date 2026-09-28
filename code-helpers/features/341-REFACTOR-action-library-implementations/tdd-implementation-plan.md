@@ -15,7 +15,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/341
 Working branch: `claude/action-library-implementations-1jkrjp` (from `_integration` 9ae1aa9)
 
-**Resume note:** Slices 0-4 DONE; next is Slice 5 (StoreManagement, UndoRedo). Full nonreg every 2 or 3 slices (A, 2026-09-28), gate + touched suites in between.
+**Resume note:** Slices 0-5 DONE; next is Slice 6 (QueryEndpoint). Full nonreg every 2 or 3 slices (A, 2026-09-28), gate + touched suites in between.
 
 ---
 
@@ -41,7 +41,7 @@ This plan does **not** migrate Persistence / LocalCache actions, touch the 5 dec
 | 2 | DomainEndpoint actions | ✅ | `action.scenario.*`, `integ-action-284-*`, phase1 test extended |
 | 3 | InstanceEndpoint actions | ✅ | `action.domainController.dataCrud*` |
 | 4 | ModelEndpoint actions | ✅ | `action.domainController.modelCrud*`, `freezeApplicationVersion` |
-| 5 | StoreManagement and UndoRedo actions | ⬜ | every integ session (open/close store), `modelUndoRedo` |
+| 5 | StoreManagement and UndoRedo actions | ✅ | every integ session (open/close store), `modelUndoRedo` |
 | 6 | QueryEndpoint actions reachable through `handleAction` | ⬜ | `actionImplementations.341.phase6.integ.test.ts` |
 | 7 | One dispatch path: remove the switches, scoped guard on | ⬜ | phase0 guard (b) + nonreg:filesystem |
 | 8 | Autocommit and log phase from action definitions | ⬜ | phase8 unit test vs Slice 0 lock |
@@ -316,7 +316,7 @@ npm run test -w miroir-core -- ''
 
 ## Slice 5 — StoreManagement and UndoRedo actions
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE (2026-09-28)
 
 ### Goal
 
@@ -343,6 +343,11 @@ npm run nonreg:filesystem -- --runner shared
 ```
 
 ### Realization
+
+- The store-management `case` became the public method `handleStoreManagementAction(action, applicationDeploymentMap, requiresStoreAdministration)`. The hard-coded `isStoreAdministrationAction` list is gone: the map entries for createStore, deleteStore and resetAndInitApplicationDeployment pass `true`, openStore and closeStore pass `false` (refactor checkpoint done).
+- `undo` and `redo` share the `handleUndoRedoAction` wrapper (still throws without a `currentModel`; the error is turned into an `Action2Error` as before) around the existing `handleDomainUndoRedoAction`.
+- StoreManagementEndpoint (5) and UndoRedoEndpoint (2) declare their actions. `storeManagementAction_openStore` resolves from the bundled Endpoints, so it works before any store is open.
+- Validation: modelValidation, lint, core unit (2096 passed), full `nonreg:filesystem --runner shared` 78/78.
 
 ---
 

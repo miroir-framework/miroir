@@ -24,7 +24,40 @@ const handleModelAction: ActionImplementationHandler = async (host, action, cont
   return host.handleModelAction(action, context.applicationDeploymentMap, context.modelEnvironment);
 };
 
+/** createStore, deleteStore and resetAndInitApplicationDeployment need the storeAdministration capability. */
+const storeManagementAction =
+  (requiresStoreAdministration: boolean): ActionImplementationHandler =>
+  (host, action, context) =>
+    host.handleStoreManagementAction(
+      action,
+      context.applicationDeploymentMap,
+      requiresStoreAdministration,
+    );
+
+const handleUndoRedoAction: ActionImplementationHandler = async (host, action, context) => {
+  if (!context.modelEnvironment) {
+    throw new Error("DomainController handleAction for undoRedoAction needs a currentModel argument");
+  }
+  return host.handleDomainUndoRedoAction(
+    context.applicationDeploymentMap[action.payload.application],
+    context.applicationDeploymentMap,
+    action,
+    context.modelEnvironment,
+  );
+};
+
 export const miroirActionImplementations: Record<string, ActionImplementationHandler> = {
+  // StoreManagementEndpoint
+  handleAction_storeManagementAction_createStore: storeManagementAction(true),
+  handleAction_storeManagementAction_deleteStore: storeManagementAction(true),
+  handleAction_storeManagementAction_resetAndInitApplicationDeployment: storeManagementAction(true),
+  handleAction_storeManagementAction_openStore: storeManagementAction(false),
+  handleAction_storeManagementAction_closeStore: storeManagementAction(false),
+
+  // UndoRedoEndpoint
+  handleAction_undo: handleUndoRedoAction,
+  handleAction_redo: handleUndoRedoAction,
+
   // ModelEndpoint (entity_DuplicateAttribute is a composite template)
   handleAction_initModel: handleModelAction,
   handleAction_commit: handleModelAction,

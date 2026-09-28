@@ -7,7 +7,9 @@ import type {
   CompositeRunBoxedQueryTemplateAction,
   InstanceAction,
   ModelAction,
+  StoreManagementAction,
   TransactionalInstanceAction,
+  UndoRedoAction,
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import type { Action2ReturnType, Action2VoidReturnType } from "../2_domain/DomainElement";
 
@@ -44,6 +46,17 @@ export type ConnectExternalServiceAction = {
  * Grows with each migrated action; handlers depend on this interface, not on the class.
  */
 export interface DomainControllerActionHost {
+  handleStoreManagementAction(
+    domainAction: StoreManagementAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    requiresStoreAdministration: boolean,
+  ): Promise<Action2VoidReturnType>;
+  handleDomainUndoRedoAction(
+    deploymentUuid: string,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    undoRedoAction: UndoRedoAction,
+    currentModelEnvironment: MiroirModelEnvironment,
+  ): Promise<Action2VoidReturnType>;
   handleModelAction(
     modelAction: ModelAction,
     applicationDeploymentMap: ApplicationDeploymentMap,

@@ -71,6 +71,10 @@
             }
           }
         },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_storeManagementAction_createStore"
+        },
         "actionErrors": {
           "type": "enum",
           "definition": [
@@ -142,6 +146,10 @@
             }
           }
         },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_storeManagementAction_deleteStore"
+        },
         "actionErrors": {
           "type": "literal",
           "definition": "FailedToDeleteStore"
@@ -195,6 +203,10 @@
               }
             }
           }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_storeManagementAction_resetAndInitApplicationDeployment"
         },
         "actionErrors": {
           "type": "literal",
@@ -272,6 +284,10 @@
             }
           }
         },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_storeManagementAction_openStore"
+        },
         "actionErrors": {
           "type": "literal",
           "definition": "FailedToOpenStore"
@@ -315,6 +331,10 @@
               }
             }
           }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_storeManagementAction_closeStore"
         },
         "actionErrors": {
           "type": "literal",

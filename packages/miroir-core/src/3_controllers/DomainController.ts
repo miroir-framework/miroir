@@ -82,6 +82,7 @@ import {
   TestCompositeActionSuite,
   TestCompositeActionTemplateSuite,
   TestResult,
+  StoreManagementAction,
   TransactionalInstanceAction,
   UndoRedoAction,
   type CompositeActionSequenceTemplate,
@@ -3731,6 +3732,111 @@ export class DomainController implements DomainControllerInterface, DomainContro
    * #284 — probe then upsert endpoint + Model report on bag.application (never host props.application).
    * Public scheme only in Slice 1; do not log the bag.
    */
+  // ##############################################################################################
+  /**
+   * #341: was the storeManagementAction case of handleActionInternal. The library implementation
+   * of each action says whether it needs the storeAdministration process capability.
+   */
+  async handleStoreManagementAction(
+    domainAction: StoreManagementAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    requiresStoreAdministration: boolean,
+  ): Promise<Action2VoidReturnType> {
+    const processCapabilities = this.resolveProcessCapabilities();
+    if (requiresStoreAdministration) {
+      const storeAdministrationError = assertProcessCapability(
+        "storeAdministration",
+        processCapabilities,
+      );
+      if (storeAdministrationError) {
+        return storeAdministrationError;
+      }
+    }
+    if (domainAction.actionType === "storeManagementAction_createStore") {
+      const requestedTypes = collectEmulatedServerTypes(domainAction.payload.configuration);
+      const hasIllegalCreateType = requestedTypes.some(
+        (storageType) =>
+          storageType === "bundled" ||
+          !processCapabilities.creatableStoreTypes.includes(storageType),
+      );
+      if (hasIllegalCreateType) {
+        return new Action2Error(
+          "FeatureUnavailable",
+          'Process capability "availableStoreTypes" is not available',
+          undefined,
+          undefined,
+          { capability: "availableStoreTypes" },
+        );
+      }
+    }
+    if (
+      domainAction.actionType == "storeManagementAction_resetAndInitApplicationDeployment"
+    ) {
+      await resetAndInitApplicationDeployment(
+        this,
+        applicationDeploymentMap,
+        domainAction.payload.deployments as any as Deployment[],
+      ); // TODO: works because only uuid of deployments is accessed in resetAndInitApplicationDeployment
+    } else {
+      try {
+        switch (this.persistenceStoreAccessMode) {
+          case "local": {
+            const result =
+              await this.persistenceStoreLocalOrRemote.handleStoreOrBundleActionForLocalStore(
+                domainAction,
+                applicationDeploymentMap,
+              );
+            if (result instanceof Action2Error) {
+              return result as any;
+            } else {
+              return Promise.resolve(ACTION_OK);
+            }
+            break;
+          }
+          case "remote": {
+            const result = await this.callUtil.callPersistenceAction(
+              {}, // context
+              {}, // continuation
+              applicationDeploymentMap,
+              domainAction,
+            );
+            if (result instanceof Action2Error) {
+              return result as any;
+            } else {
+              return Promise.resolve(ACTION_OK);
+            }
+            break;
+          }
+          default: {
+            log.error(
+              "DomainController handleAction storeManagementAction unknown persistenceStoreAccessMode",
+              this.persistenceStoreAccessMode,
+            );
+            throw new Error(
+              "DomainController handleAction storeManagementAction unknown persistenceStoreAccessMode " +
+                this.persistenceStoreAccessMode,
+            );
+            break;
+          }
+        }
+      } catch (error) {
+        log.warn(
+          "DomainController handleAction caught exception when handling",
+          domainAction.actionType,
+          "application",
+          domainAction.payload.application,
+          "deployment",
+          applicationDeploymentMap[domainAction.payload.application],
+          "action",
+          domainAction,
+          "exception",
+          error,
+        );
+      }
+    }
+    return ACTION_OK;
+  }
+
   // #341: was the transactionalInstanceAction case of handleActionInternal
   async handleTransactionalInstanceAction(
     domainAction: TransactionalInstanceAction,
@@ -4427,111 +4533,6 @@ export class DomainController implements DomainControllerInterface, DomainContro
         this.miroirContext.miroirActivityTracker.pushPhase(actionPhase);
       }
       switch (domainAction.actionType) {
-        // case "storeManagementAction": {
-        case "storeManagementAction_createStore":
-        case "storeManagementAction_deleteStore":
-        case "storeManagementAction_resetAndInitApplicationDeployment":
-        case "storeManagementAction_openStore":
-        case "storeManagementAction_closeStore": {
-          const processCapabilities = this.resolveProcessCapabilities();
-          const isStoreAdministrationAction =
-            domainAction.actionType === "storeManagementAction_createStore" ||
-            domainAction.actionType === "storeManagementAction_deleteStore" ||
-            domainAction.actionType === "storeManagementAction_resetAndInitApplicationDeployment";
-          if (isStoreAdministrationAction) {
-            const storeAdministrationError = assertProcessCapability(
-              "storeAdministration",
-              processCapabilities,
-            );
-            if (storeAdministrationError) {
-              return storeAdministrationError;
-            }
-          }
-          if (domainAction.actionType === "storeManagementAction_createStore") {
-            const requestedTypes = collectEmulatedServerTypes(domainAction.payload.configuration);
-            const hasIllegalCreateType = requestedTypes.some(
-              (storageType) =>
-                storageType === "bundled" ||
-                !processCapabilities.creatableStoreTypes.includes(storageType),
-            );
-            if (hasIllegalCreateType) {
-              return new Action2Error(
-                "FeatureUnavailable",
-                'Process capability "availableStoreTypes" is not available',
-                undefined,
-                undefined,
-                { capability: "availableStoreTypes" },
-              );
-            }
-          }
-          if (
-            domainAction.actionType == "storeManagementAction_resetAndInitApplicationDeployment"
-          ) {
-            await resetAndInitApplicationDeployment(
-              this,
-              applicationDeploymentMap,
-              domainAction.payload.deployments as any as Deployment[],
-            ); // TODO: works because only uuid of deployments is accessed in resetAndInitApplicationDeployment
-          } else {
-            try {
-              switch (this.persistenceStoreAccessMode) {
-                case "local": {
-                  const result =
-                    await this.persistenceStoreLocalOrRemote.handleStoreOrBundleActionForLocalStore(
-                      domainAction,
-                      applicationDeploymentMap,
-                    );
-                  if (result instanceof Action2Error) {
-                    return result as any;
-                  } else {
-                    return Promise.resolve(ACTION_OK);
-                  }
-                  break;
-                }
-                case "remote": {
-                  const result = await this.callUtil.callPersistenceAction(
-                    {}, // context
-                    {}, // continuation
-                    applicationDeploymentMap,
-                    domainAction,
-                  );
-                  if (result instanceof Action2Error) {
-                    return result as any;
-                  } else {
-                    return Promise.resolve(ACTION_OK);
-                  }
-                  break;
-                }
-                default: {
-                  log.error(
-                    "DomainController handleAction storeManagementAction unknown persistenceStoreAccessMode",
-                    this.persistenceStoreAccessMode,
-                  );
-                  throw new Error(
-                    "DomainController handleAction storeManagementAction unknown persistenceStoreAccessMode " +
-                      this.persistenceStoreAccessMode,
-                  );
-                  break;
-                }
-              }
-            } catch (error) {
-              log.warn(
-                "DomainController handleAction caught exception when handling",
-                domainAction.actionType,
-                "application",
-                domainAction.payload.application,
-                "deployment",
-                applicationDeploymentMap[domainAction.payload.application],
-                "action",
-                domainAction,
-                "exception",
-                error,
-              );
-            }
-          }
-          return Promise.resolve(ACTION_OK);
-          break;
-        }
         case "bundleAction": {
           // TODO: create a test for this!
           try {
@@ -4555,21 +4556,6 @@ export class DomainController implements DomainControllerInterface, DomainContro
           }
           return Promise.resolve(ACTION_OK);
           break;
-        }
-        case "undo":
-        case "redo": {
-          if (!currentModel) {
-            throw new Error(
-              "DomainController handleAction for undoRedoAction needs a currentModel argument",
-            );
-          }
-          // TODO: create callSyncActionHandler
-          return this.handleDomainUndoRedoAction(
-            deploymentUuid,
-            applicationDeploymentMap,
-            domainAction,
-            currentModel,
-          );
         }
         case "probeExternalService" as any: {
           return this.handleProbeExternalService(domainAction as any, principal);
