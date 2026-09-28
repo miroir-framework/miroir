@@ -18,7 +18,6 @@
   "dependencies": {
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.0",
-    "@miroir-framework/jzod": "0.8.5",
     "@mui/material": "5.17.1",
     "loglevelnext": "6.0.0",
     "material-symbols": "0.25.3",

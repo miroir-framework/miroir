@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { valueToJzod } from '@miroir-framework/jzod';
 import {
   Domain2ElementFailed,
   LoggerInterface,
@@ -17,6 +16,7 @@ import {
   type MlObject,
   type MlUnion,
   type MiroirModelEnvironment,
+  valueToMl,
 } from 'miroir-core';
 import {
   adminSelfApplication,
@@ -511,7 +511,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
 
             // ################################################################################################
             const transformationResultSchema: MlElement = useMemo(() => {
-              return (valueToJzod(transformationResult) ?? { type: "any" }) as MlElement;
+              return valueToMl(transformationResult);
             }, [transformationResult]);
 
             // ##################################################################################

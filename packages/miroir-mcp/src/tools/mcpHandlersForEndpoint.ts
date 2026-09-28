@@ -1,7 +1,6 @@
 import { type ZodTypeAny } from "zod";
 // import { get } from "http";
 
-import { jzodToZodTextAndZodSchema, type ZodTextAndZodSchema } from "@miroir-framework/jzod";
 import {
   Action2VoidReturnType,
   ApplicationDeploymentMap,
@@ -19,6 +18,7 @@ import {
   type MetaModel,
   type MiroirModelEnvironment,
   type SelfApplication,
+  mlToZodTextAndZodSchema,
 } from "miroir-core";
 import { defaultMiroirMetaModel,  } from "miroir-test-app_deployment-miroir";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
@@ -63,13 +63,7 @@ function mlPayloadToZodSchema(mlPayload: MlElement): ZodTypeAny {
 
   log.debug("mlPayloadToZodSchema resolved schema for MCP payload conversion");
 
-  const zodTextAndSchema: ZodTextAndZodSchema = jzodToZodTextAndZodSchema(
-    resolvedMlSchema as any,
-    () => ({}),
-    () => ({}),
-    { datesAsString: true },
-  );
-  return zodTextAndSchema.zodSchema as any;
+  return mlToZodTextAndZodSchema(resolvedMlSchema, undefined, undefined, { datesAsString: true }).zodSchema;
 }
 
 function unresolvedMlAny(): MlElement {

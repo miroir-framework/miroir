@@ -1,6 +1,5 @@
 import { FormikProps, useFormikContext } from "formik";
 import { useContext, useEffect, useMemo, useState, useRef } from "react";
-import { valueToJzod } from "@miroir-framework/jzod";
 
 import {
   EntityInstance,
@@ -28,6 +27,7 @@ import {
   type TransformerReturnType,
   type Uuid,
   type MlObject,
+  valueToMl,
 } from "miroir-core";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-react";
 import { packageName } from "../../../../constants";
@@ -255,13 +255,13 @@ export function useMlElementEditorHooks(
   const localResolvedElementMlSchemaBasedOnValue: MlElement | undefined = useMemo(
     () => {
       if (insideAny) {
-        return valueToJzod(currentValueObjectAtKey) as MlElement;
+        return valueToMl(currentValueObjectAtKey);
       }
       if (currentTypecheckKeyMap?.resolvedSchema) {
         return currentTypecheckKeyMap.resolvedSchema;
       }
       if (currentValueObjectAtKey !== undefined && currentValueObjectAtKey !== null) {
-        return valueToJzod(currentValueObjectAtKey) as MlElement;
+        return valueToMl(currentValueObjectAtKey);
       }
       return undefined;
     },

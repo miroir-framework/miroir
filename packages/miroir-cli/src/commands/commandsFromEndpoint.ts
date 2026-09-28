@@ -1,6 +1,5 @@
 import { type ZodTypeAny } from "zod";
 
-import { jzodToZodTextAndZodSchema, type ZodTextAndZodSchema } from "@miroir-framework/jzod";
 import {
   Action2VoidReturnType,
   ApplicationDeploymentMap,
@@ -16,6 +15,7 @@ import {
   type EndpointDefinition,
   type MlObject,
   type MetaModel,
+  mlToZodTextAndZodSchema,
 } from "miroir-core";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
@@ -100,13 +100,7 @@ export type CliRequestHandlers = Record<string, CliCommandHandler<any>>;
 function mlPayloadToZodSchema(mlPayload: MlObject): ZodTypeAny {
   const resolvedMlSchema = resolveAllReferences(mlPayload);
   
-  const zodTextAndSchema: ZodTextAndZodSchema = jzodToZodTextAndZodSchema(
-    resolvedMlSchema as any,
-    () => ({}),
-    () => ({}),
-    {datesAsString: true}
-  );
-  return zodTextAndSchema.zodSchema as any;
+  return mlToZodTextAndZodSchema(resolvedMlSchema, undefined, undefined, { datesAsString: true }).zodSchema;
 }
 
 /**
