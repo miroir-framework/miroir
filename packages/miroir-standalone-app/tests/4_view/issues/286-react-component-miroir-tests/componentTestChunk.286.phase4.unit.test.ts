@@ -6,11 +6,13 @@
  * `build.manifest` is `true` in `vite.config.js`, and one `.map` per chunk because `sourcemap` is
  * `true`).
  *
- * - The chunks that the `index.html` entry loads statically (the `imports` closure in the
- *   manifest) have no source under `node_modules/@testing-library/`.
- * - The chunks that the `componentTests/index.ts` dynamic import adds to them have no source under
- *   `node_modules/@testing-library/react/` and no `routes/TransformerBuilderPage`, and they do hold
- *   `@testing-library/dom` and `@testing-library/user-event` (so the guard is not vacuous).
+ * - The chunks that the `componentTests/index.ts` dynamic import adds to the ones the `index.html`
+ *   entry loads statically have no source under `node_modules/@testing-library/react/` and no
+ *   `routes/TransformerBuilderPage`, and they do hold `@testing-library/dom` and
+ *   `@testing-library/user-event` (so the guard is not vacuous).
+ * - That no chunk the entry loads statically holds `@testing-library/*` is checked by the bundle
+ *   guard of #326 (`forbiddenEager` in `bundle-policy.json`, `scripts/check_bundle_policy.py`), which
+ *   runs on every pull request that touches `packages/`.
  *
  * Run:
  * ```bash
@@ -120,10 +122,6 @@ describe("component test chunk bundle guard", () => {
 
   it("the index.html entry is the only entry", () => {
     expect(entryKeys).toEqual(["index.html"]);
-  });
-
-  it("no chunk loaded statically by the entry has a source under node_modules/@testing-library/", () => {
-    expect(sourcesMatching(manifest, entryClosure, "node_modules/@testing-library/")).toEqual([]);
   });
 
   it("componentTests/index.ts is a dynamic entry of its own", () => {

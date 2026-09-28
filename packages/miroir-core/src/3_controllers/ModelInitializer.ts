@@ -6,7 +6,7 @@ import {
   miroirModelInitializeDataInstances,
   miroirModelInitializeEntityVersionsAfterEntityEntityVersion,
   miroirModelInitializeEntityVersionsByEntityUuid,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
 import {
   Entity,

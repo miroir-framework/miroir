@@ -1,0 +1,388 @@
+{
+  "app": "miroir-standalone-app",
+  "totals": {
+    "chunks": 387,
+    "rawBytes": 27061644,
+    "gzipBytes": 6245174,
+    "eager": {
+      "chunks": 7,
+      "rawBytes": 10381242,
+      "gzipBytes": 2709170
+    }
+  },
+  "packages": [
+    {
+      "name": "miroir-core",
+      "kind": "workspace",
+      "loadKind": "eager",
+      "renderedBytes": 1879117,
+      "eagerRenderedBytes": 1879117,
+      "chunks": 1,
+      "chain": [
+        "packages/miroir-standalone-app/src/index.tsx",
+        "packages/miroir-core/dist/index.js"
+      ],
+      "via": "packages/miroir-standalone-app/src/index.tsx \u2192 miroir-core"
+    },
+    {
+      "name": "miroir-standalone-app",
+      "kind": "app",
+      "loadKind": "eager",
+      "renderedBytes": 1526539,
+      "eagerRenderedBytes": 571670,
+      "chunks": 26,
+      "chain": [
+        "packages/miroir-standalone-app/vite/manualChunks.js"
+      ],
+      "via": "packages/miroir-standalone-app/vite/manualChunks.js"
+    },
+    {
+      "name": "mongodb",
+      "kind": "npm",
+      "loadKind": "lazy",
+      "renderedBytes": 1119358,
+      "eagerRenderedBytes": 0,
+      "chunks": 1,
+      "chain": [
+        "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts",
+        "import(packages/miroir-store-mongodb/dist/index.js)",
+        "node_modules/mongodb/lib/index.js"
+      ],
+      "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(miroir-store-mongodb) \u2192 mongodb"
+    },
+    {
+      "name": "lucide",
+      "kind": "npm",
+      "loadKind": "eager",
+      "renderedBytes": 663619,
+      "eagerRenderedBytes": 663619,
+      "chunks": 1,
+      "chain": [
+        "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AgentsCopilotKit.tsx",
+        "node_modules/@copilotkit/react-core/dist/index.mjs",
+        "node_modules/@copilotkit/react-core/dist/copilotkit-B5RsC6la.mjs",
+        "import(node_modules/@copilotkit/web-inspector/dist/index.mjs)",
+        "node_modules/lucide/dist/esm/lucide.js",
+        "node_modules/lucide/dist/esm/icons/a-arrow-down.js"
+      ],
+      "via": "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AgentsCopilotKit.tsx \u2192 @copilotkit/react-core \u2192 import(@copilotkit/web-inspector) \u2192 lucide"
+    },
+    {
+      "name": "miroir-store-mongodb",
+      "kind": "workspace",
+      "loadKind": "lazy",
+      "renderedBytes": 417310,
+      "eagerRenderedBytes": 0,
+      "chunks": 1,
+      "chain": [
+        "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts",
+        "import(packages/miroir-store-mongodb/dist/index.js)"
+      ],
+      "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(miroir-store-mongodb)"
+    },
+    {
+      "name": "zod",
+      "kind": "npm",
+      "loadKind": "eager",
+      "renderedBytes": 266405,
+      "eagerRenderedBytes": 144578,
+      "chunks": 2,
+      "chain": [
+        "packages/miroir-standalone-app/src/index.tsx",
+        "packages/miroir-core/dist/index.js",
+        "node_modules/zod/index.js",
+        "node_modules/zod/v3/external.js",
+        "node_modules/zod/v3/helpers/util.js"
+      ],
+      "via": "packages/miroir-standalone-app/src/index.tsx \u2192 miroir-core \u2192 zod"
+    },
+    {
+      "name": "react-dom",
+      "kind": "npm",
+      "loadKind": "eager",
+      "renderedBytes": 222082,
+      "eagerRenderedBytes": 222082,
+      "chunks": 1,
+      "chain": [
+        "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/FormComponents.tsx",
+        "node_modules/react-dom/index.js"
+      ],
+      "via": "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/FormComponents.tsx \u2192 react-dom"
+    },
+    {
+      "name": "@testing-library/dom",
+      "kind": "npm",
+      "loadKind": "lazy",
+      "renderedBytes": 78976,
+      "eagerRenderedBytes": 0,
+      "chunks": 1,
+      "chain": [
+        "packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/componentTestEnvironment.ts",
+        "node_modules/@testing-library/dom/dist/@testing-library/dom.esm.js"
+      ],
+      "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/componentTestEnvironment.ts \u2192 @testing-library/dom"
+    },
+    {
+      "name": "miroir-store-indexedDb",
+      "kind": "workspace",
+      "loadKind": "eager",
+      "renderedBytes": 39203,
+      "eagerRenderedBytes": 39203,
+      "chunks": 1,
+      "chain": [
+        "packages/miroir-standalone-app/src/index.tsx",
+        "packages/miroir-store-indexedDb/dist/index.js"
+      ],
+      "via": "packages/miroir-standalone-app/src/index.tsx \u2192 miroir-store-indexedDb"
+    },
+    {
+      "name": "(bundler runtime)",
+      "kind": "virtual",
+      "loadKind": "eager",
+      "renderedBytes": 5347,
+      "eagerRenderedBytes": 4197,
+      "chunks": 6,
+      "chain": [
+        "packages/miroir-standalone-app/src/index.html",
+        "vite/modulepreload-polyfill.js"
+      ],
+      "via": "packages/miroir-standalone-app/src/index.html \u2192 (bundler runtime)"
+    }
+  ],
+  "chunks": [
+    {
+      "file": "assets/index-Dsnkzr4h.js",
+      "name": "index",
+      "loadKind": "entry",
+      "rawBytes": 3166635,
+      "gzipBytes": 710418,
+      "renderedBytes": 5941959,
+      "packages": [
+        {
+          "name": "miroir-core",
+          "kind": "workspace",
+          "renderedBytes": 1879117,
+          "modules": 1,
+          "chain": [
+            "packages/miroir-standalone-app/src/index.tsx",
+            "packages/miroir-core/dist/index.js"
+          ],
+          "via": "packages/miroir-standalone-app/src/index.tsx \u2192 miroir-core"
+        },
+        {
+          "name": "miroir-standalone-app",
+          "kind": "app",
+          "renderedBytes": 571670,
+          "modules": 106,
+          "chain": [
+            "packages/miroir-standalone-app/vite/manualChunks.js"
+          ],
+          "via": "packages/miroir-standalone-app/vite/manualChunks.js"
+        },
+        {
+          "name": "miroir-store-indexedDb",
+          "kind": "workspace",
+          "renderedBytes": 39203,
+          "modules": 1,
+          "chain": [
+            "packages/miroir-standalone-app/src/index.tsx",
+            "packages/miroir-store-indexedDb/dist/index.js"
+          ],
+          "via": "packages/miroir-standalone-app/src/index.tsx \u2192 miroir-store-indexedDb"
+        },
+        {
+          "name": "(bundler runtime)",
+          "kind": "virtual",
+          "renderedBytes": 1168,
+          "modules": 1,
+          "chain": [
+            "packages/miroir-standalone-app/src/index.html",
+            "vite/modulepreload-polyfill.js"
+          ],
+          "via": "packages/miroir-standalone-app/src/index.html \u2192 (bundler runtime)"
+        }
+      ]
+    },
+    {
+      "file": "assets/index-BH8x1DA2.js",
+      "name": "index",
+      "loadKind": "lazy",
+      "rawBytes": 1607336,
+      "gzipBytes": 262073,
+      "renderedBytes": 2880035,
+      "packages": [
+        {
+          "name": "mongodb",
+          "kind": "npm",
+          "renderedBytes": 1119358,
+          "modules": 260,
+          "chain": [
+            "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts",
+            "import(packages/miroir-store-mongodb/dist/index.js)",
+            "node_modules/mongodb/lib/index.js"
+          ],
+          "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(miroir-store-mongodb) \u2192 mongodb"
+        },
+        {
+          "name": "miroir-store-mongodb",
+          "kind": "workspace",
+          "renderedBytes": 417310,
+          "modules": 1,
+          "chain": [
+            "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts",
+            "import(packages/miroir-store-mongodb/dist/index.js)"
+          ],
+          "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(miroir-store-mongodb)"
+        },
+        {
+          "name": "(bundler runtime)",
+          "kind": "virtual",
+          "renderedBytes": 898,
+          "modules": 12,
+          "chain": [
+            "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts",
+            "import(packages/miroir-store-mongodb/dist/index.js)",
+            "node_modules/mongodb/lib/index.js",
+            "node_modules/mongodb/lib/client-side-encryption/client_encryption.js",
+            "node_modules/mongodb/lib/deps.js",
+            "__vite-optional-peer-dep:kerberos:mongodb:true"
+          ],
+          "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(miroir-store-mongodb) \u2192 mongodb \u2192 (bundler runtime)"
+        }
+      ]
+    },
+    {
+      "file": "assets/ReportDisplay-DEQWmZgN.js",
+      "name": "ReportDisplay",
+      "loadKind": "lazy",
+      "rawBytes": 804628,
+      "gzipBytes": 244016,
+      "renderedBytes": 1982553,
+      "packages": [
+        {
+          "name": "miroir-standalone-app",
+          "kind": "app",
+          "renderedBytes": 537863,
+          "modules": 92,
+          "chain": [
+            "packages/miroir-standalone-app/src/miroir-fwk/4_view/tools/renderInsightMaxDepth.ts"
+          ],
+          "via": "packages/miroir-standalone-app/src/miroir-fwk/4_view/tools/renderInsightMaxDepth.ts"
+        },
+        {
+          "name": "zod",
+          "kind": "npm",
+          "renderedBytes": 121827,
+          "modules": 17,
+          "chain": [
+            "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Runners/resolveMcpToolAction.ts",
+            "packages/miroir-mcp/dist/client.js",
+            "node_modules/@modelcontextprotocol/sdk/dist/esm/client/index.js",
+            "node_modules/@modelcontextprotocol/sdk/dist/esm/types.js",
+            "node_modules/zod/v4/index.js",
+            "node_modules/zod/v4/classic/index.js",
+            "node_modules/zod/v4/classic/external.js",
+            "node_modules/zod/v4/classic/iso.js"
+          ],
+          "via": "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Runners/resolveMcpToolAction.ts \u2192 miroir-mcp \u2192 @modelcontextprotocol/sdk \u2192 zod"
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "kind": "externalized-node-module",
+      "module": "fs",
+      "importer": "node_modules/mongodb/lib/cmap/auth/mongodb_oidc/token_machine_workflow.js",
+      "importerPackage": "mongodb",
+      "chunk": "assets/index-BH8x1DA2.js",
+      "chain": [
+        "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts",
+        "import(packages/miroir-store-mongodb/dist/index.js)",
+        "node_modules/mongodb/lib/index.js",
+        "node_modules/mongodb/lib/mongo_client_auth_providers.js",
+        "node_modules/mongodb/lib/cmap/auth/mongodb_oidc.js",
+        "node_modules/mongodb/lib/cmap/auth/mongodb_oidc/token_machine_workflow.js"
+      ],
+      "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(miroir-store-mongodb) \u2192 mongodb"
+    },
+    {
+      "kind": "externalized-node-module",
+      "module": "fs",
+      "importer": "node_modules/mongodb/lib/mongo_client.js",
+      "importerPackage": "mongodb",
+      "chunk": "assets/index-BH8x1DA2.js",
+      "chain": [
+        "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts",
+        "import(packages/miroir-store-mongodb/dist/index.js)",
+        "node_modules/mongodb/lib/index.js",
+        "node_modules/mongodb/lib/mongo_client.js"
+      ],
+      "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(miroir-store-mongodb) \u2192 mongodb"
+    },
+    {
+      "kind": "externalized-node-module",
+      "module": "fs",
+      "importer": "node_modules/mongodb/lib/utils.js",
+      "importerPackage": "mongodb",
+      "chunk": "assets/index-BH8x1DA2.js",
+      "chain": [
+        "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts",
+        "import(packages/miroir-store-mongodb/dist/index.js)",
+        "node_modules/mongodb/lib/index.js",
+        "node_modules/mongodb/lib/admin.js",
+        "node_modules/mongodb/lib/utils.js"
+      ],
+      "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(miroir-store-mongodb) \u2192 mongodb"
+    },
+    {
+      "kind": "externalized-node-module",
+      "module": "fs",
+      "importer": "packages/miroir-store-indexedDb/dist/index.js",
+      "importerPackage": "miroir-store-indexedDb",
+      "chunk": "assets/index-Dsnkzr4h.js",
+      "chain": [
+        "packages/miroir-standalone-app/src/index.tsx",
+        "packages/miroir-store-indexedDb/dist/index.js"
+      ],
+      "via": "packages/miroir-standalone-app/src/index.tsx \u2192 miroir-store-indexedDb"
+    },
+    {
+      "kind": "externalized-node-module",
+      "module": "http",
+      "importer": "node_modules/node-fetch/lib/index.mjs",
+      "importerPackage": "node-fetch",
+      "chunk": null,
+      "chain": [
+        "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AgentsCopilotKit.tsx",
+        "node_modules/@copilotkit/core/dist/index.mjs",
+        "node_modules/@copilotkit/shared/dist/index.mjs",
+        "node_modules/@copilotkit/shared/dist/telemetry/telemetry-client.mjs",
+        "node_modules/@segment/analytics-node/dist/esm/index.js",
+        "node_modules/@segment/analytics-node/dist/esm/index.common.js",
+        "node_modules/@segment/analytics-node/dist/esm/lib/http-client.js",
+        "node_modules/@segment/analytics-node/dist/esm/lib/fetch.js",
+        "import(node_modules/node-fetch/lib/index.mjs)"
+      ],
+      "via": "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AgentsCopilotKit.tsx \u2192 @copilotkit/core \u2192 @copilotkit/shared \u2192 @segment/analytics-node \u2192 import(node-fetch)"
+    },
+    {
+      "kind": "defeated-dynamic-import",
+      "module": "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ReportDisplay.tsx",
+      "chunk": "assets/ReportDisplay-DEQWmZgN.js",
+      "dynamicImporters": [
+        "packages/miroir-standalone-app/src/miroir-fwk/4_view/PageDispatcher.tsx",
+        "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionListDisplay.tsx"
+      ],
+      "staticImporters": [
+        "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionViewWithEditor.tsx",
+        "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/HomePage.tsx",
+        "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/SettingsPage.tsx"
+      ],
+      "chain": [
+        "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ReportDisplay.tsx"
+      ],
+      "via": "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ReportDisplay.tsx"
+    }
+  ]
+}

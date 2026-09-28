@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
+import { selfApplicationLibrary } from "miroir-example-library";
 
 import {
   openReportHref,
@@ -18,7 +18,7 @@ describe("LibraryHome multistep launchers", () => {
     const here = dirname(fileURLToPath(import.meta.url));
     const homePath = join(
       here,
-      "../../../miroir-test-app_deployment-library/assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/9c0cdb97-9537-4ee2-8053-a6ece3e0afe8.json",
+      "../../../miroir-example-library/assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/9c0cdb97-9537-4ee2-8053-a6ece3e0afe8.json",
     );
     const home = JSON.parse(readFileSync(homePath, "utf8")) as {
       definition: {
@@ -42,7 +42,7 @@ describe("LibraryHome multistep launchers", () => {
     const here = dirname(fileURLToPath(import.meta.url));
     const homePath = join(
       here,
-      "../../../miroir-test-app_deployment-library/assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/9c0cdb97-9537-4ee2-8053-a6ece3e0afe8.json",
+      "../../../miroir-example-library/assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/9c0cdb97-9537-4ee2-8053-a6ece3e0afe8.json",
     );
     const home = JSON.parse(readFileSync(homePath, "utf8")) as {
       definition: {

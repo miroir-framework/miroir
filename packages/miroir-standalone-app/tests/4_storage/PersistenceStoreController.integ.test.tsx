@@ -37,8 +37,8 @@ import {
   deployment_Admin,
   deployment_Miroir,
   entityStoreBasedConfiguration,
-} from "miroir-test-app_deployment-admin";
-import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-library";
+} from "miroir-app-admin";
+import { deployment_Library_DO_NO_USE } from "miroir-example-library";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
@@ -48,10 +48,7 @@ import {
   book1,
   entityAuthor,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+} from "miroir-example-library";
 import { cleanLevel, packageName } from "../../src/constants.js";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
@@ -65,7 +62,7 @@ import {
   entityEntity,
   entityEntityVersion,
   miroirModelInitializeCreateEntityOrder,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
 const expectedMiroirBootstrapEntityUuids = [
   entityEntity.uuid!,
@@ -144,7 +141,7 @@ function expectDeleteMissingAuthorInstanceError(instanceDeletedError: ActionErro
       break;
     case "sql":
       expect(errorMessage).toBe(
-        `could not find entity ${entityUuid} in database schema library, available entities: `,
+        `could not find entity ${entityUuid} in database schema ${libraryDeploymentStorageConfiguration.data.schema}, available entities: `,
       );
       break;
     case "filesystem":
@@ -171,23 +168,6 @@ const adminDeployment: Deployment = {
   configuration: adminDeploymentStorageConfiguration,
 };
 
-const adminAssetsRoot = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "../assets",
-);
-const miroirDeploymentFixturePath = path.join(
-  adminAssetsRoot,
-  "admin_data",
-  "7959d814-400c-4e80-988f-a00fe582ab98",
-  `${deployment_Miroir.uuid}.json`,
-);
-const miroirApplicationFixturePath = path.join(
-  adminAssetsRoot,
-  "admin_data",
-  "25d935e7-9e93-42c2-aade-0472b883492b",
-  "360fcf1f-f0d4-4f8a-9262-07886e70fa15.json",
-);
-const adminFixtureSnapshots = new Map<string, string>();
 
 // ################################################################################################
 beforeAll(async () => {
@@ -195,11 +175,6 @@ beforeAll(async () => {
     throw new Error(
       "LocalPersistenceStoreController state do not make sense for real server configurations! Please use only 'emulateServer: true' configurations for this test.",
     );
-  }
-
-  // Snapshot before bootstrap: deployMiroir upserts Deployment/Application into admin assets.
-  for (const fixturePath of [miroirDeploymentFixturePath, miroirApplicationFixturePath]) {
-    adminFixtureSnapshots.set(fixturePath, fs.readFileSync(fixturePath, "utf8"));
   }
 
   const session = new AppStackIntegrationTestSession(miroirConfig, {
@@ -244,8 +219,7 @@ beforeEach(async () => {
 
 // ################################################################################################
 afterAll(async () => {
-  // Remove Library Application/Deployment instances written into shared admin assets.
-  // Do not reset/delete the Admin store itself — tests/assets/admin_* are fixtures.
+  // Remove the Library Application/Deployment instances this test wrote into the environment's Admin.
   const deleteLibraryResult = await domainController.handleCompositeAction(
     testUtils_deleteApplicationDeployment(
       miroirConfig,
@@ -261,11 +235,6 @@ afterAll(async () => {
       "PersistenceStoreController.integ afterAll: failed to delete library deployment from admin",
       JSON.stringify(deleteLibraryResult, null, 2),
     );
-  }
-
-  // Restore Admin fixtures overwritten by deployMiroir bootstrap.
-  for (const [fixturePath, snapshot] of adminFixtureSnapshots) {
-    fs.writeFileSync(fixturePath, snapshot, "utf8");
   }
 });
 

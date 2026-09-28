@@ -29,21 +29,21 @@
   },
   "dependencies": {
     "miroir-core": "*",
-    "miroir-test-app_deployment-miroir": "*",
-    "pg": "^8.9.0",
-    "pg-hstore": "^2.3.4",
-    "sequelize": "^6.37.3"
+    "miroir-app-miroir": "*",
+    "pg": "8.16.0",
+    "pg-hstore": "2.3.4",
+    "sequelize": "6.37.8"
   },
   "devDependencies": {
-    "@babel/preset-typescript": "^7.25.7",
-    "@jest/globals": "^29.3.1",
+    "@babel/preset-typescript": "7.27.1",
+    "@jest/globals": "29.7.0",
     "@miroir-framework/jzod-ts": "0.8.5",
-    "@types/jest": "^29.2.4",
-    "copyfiles": "^2.4.1",
-    "loglevelnext": "^6.0.0",
-    "rimraf": "^4.1.1",
-    "ts-jest": "^29.1.1",
-    "tsconfig-paths": "^4.1.2",
-    "tsup": "^8.0.1"
+    "@types/jest": "29.5.14",
+    "copyfiles": "2.4.1",
+    "loglevelnext": "6.0.0",
+    "rimraf": "4.4.1",
+    "ts-jest": "29.4.0",
+    "tsconfig-paths": "4.2.0",
+    "tsup": "8.5.1"
   }
 }

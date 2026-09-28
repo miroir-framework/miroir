@@ -2,7 +2,7 @@ import { act, fireEvent, screen, waitFor, within } from "@testing-library/react"
 import "@testing-library/jest-dom";
 import { describe, expect, it, vi } from "vitest";
 
-import { book1, entityBook } from "miroir-test-app_deployment-library";
+import { book1, entityBook } from "miroir-example-library";
 
 import {
   expectPanelTransformerType,

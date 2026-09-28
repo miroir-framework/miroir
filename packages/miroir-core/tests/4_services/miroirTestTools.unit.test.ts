@@ -17,11 +17,11 @@ import {
   runMiroirTests,
   runMiroirTestSuite,
 } from "../../src";
-import { miroirTest_runner_returnDocument } from "miroir-test-app_deployment-library";
+import { miroirTest_runner_returnDocument } from "miroir-example-library";
 import {
   miroirTest_tr_resolveConditionalSchema_build,
   miroirTest_query_library_instances,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 import type {
   MiroirTestForFunctionCall,
   MiroirTestForQuery,

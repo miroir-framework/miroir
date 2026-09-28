@@ -50,6 +50,9 @@ SERVER_LINE_PATTERNS = [
     re.compile(r"console\.error\(`Error:"),
     re.compile(r"console\.log\(`Server startup parameters:"),
     re.compile(r"console\.log\(`  --"),
+    # environment selection and reconciliation at startup (#321)
+    re.compile(r"console\.log\(`  environment"),
+    re.compile(r"console\.(log|warn)\(`\[miroir-env\]"),
 ]
 
 

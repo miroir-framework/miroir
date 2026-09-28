@@ -1,5 +1,5 @@
 import { inferIntegrationSessionKind, type MiroirTestDefinition, type MiroirTestSuite } from "miroir-core";
-import { miroirTest_tr_core } from "miroir-test-app_deployment-miroir";
+import { miroirTest_tr_core } from "miroir-app-miroir";
 
 export type UiIntegrationTransformerSuiteEntry = {
   suiteDefinition: MiroirTestSuite;

@@ -8,7 +8,7 @@ import {
   deployment_Library_DO_NO_USE,
   entityAuthor,
   entityBook,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import type { LocalCacheSliceState } from "../../src/0_interfaces/2_domain/LocalCacheInterface.js";
 import type { ZEntityState } from "../../src/0_interfaces/2_domain/ReduxDeploymentsStateInterface.js";
 import { getReduxDeploymentsStateIndex } from "../../src/2_domain/ReduxDeploymentsState.js";

@@ -25,7 +25,7 @@ import {
   type StoredMiroirTheme,
   type Uuid
 } from "miroir-core";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { deployment_Miroir } from "miroir-app-admin";
 import {
   defaultMiroirMetaModel,
   entityApplicationVersionCrossEntityVersion,
@@ -42,7 +42,7 @@ import {
   entitySelfApplicationVersion,
   entityTest,
   entityTheme,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";
 import type { LocalCacheSliceState } from "./localCacheZustandInterface.js";

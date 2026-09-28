@@ -57,12 +57,12 @@ import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
-import { deployment_Admin, deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 import {
   deployment_Library_DO_NO_USE,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
-import { defaultMiroirMetaModel, defaultStoredMiroirTheme } from "miroir-test-app_deployment-miroir";
+} from "miroir-example-library";
+import { defaultMiroirMetaModel, defaultStoredMiroirTheme } from "miroir-app-miroir";
 import {
   defaultSpotifyAppModel,
   deployment_Spotify_DO_NO_USE,
@@ -71,7 +71,7 @@ import {
   selfApplicationModelBranchSpotifyMasterBranch,
   selfApplicationSpotify,
   spotifyInitApplicationVersion,
-} from "miroir-test-app_deployment-spotify";
+} from "miroir-example-spotify";
 
 import { loglevelnext } from "../../../../src/loglevelnextImporter.js";
 import { ReportPageContextProvider } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportPageContext.js";
@@ -83,6 +83,7 @@ import { miroirAppStartup } from "../../../../src/startup.js";
 import { ReportUrlParamKeys } from "../../../../src/constants.js";
 import { cleanLevel, packageName } from "../../../3_controllers/constants.js";
 import { AppStackIntegrationTestSession } from "../../../helpers/IntegrationTestSession.js";
+import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 import { loadTestConfigFiles } from "../../../utils/fileTools.js";
 import {
   startFakeExternalServiceServer,
@@ -537,11 +538,10 @@ describe.skipIf(!shouldRun).sequential("apiCallReport #281 phase1 — typed play
     );
     expect(existsSync(runtimePlaylistDir), runtimePlaylistDir).toBe(false);
 
-    const packagePlaylistDir = resolveFilesystemDirectory(
-      join(
-        "miroir-test-app_deployment-spotify/assets/spotify_data",
-        SPOTIFY_PLAYLIST_ENTITY_UUID,
-      ),
+    const packagePlaylistDir = join(
+      resolveRepoRoot(),
+      "packages/miroir-example-spotify/assets/spotify_data",
+      SPOTIFY_PLAYLIST_ENTITY_UUID,
     );
     expect(existsSync(packagePlaylistDir), packagePlaylistDir).toBe(false);
   });

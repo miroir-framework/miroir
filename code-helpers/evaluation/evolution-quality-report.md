@@ -280,7 +280,7 @@ The evaluation is grounded in the lean / agile insight that **quality and throug
 
 **Counter-Evidence**:
 - `425dda9f` (2026-03-16): 171 files changed — a cross-cutting rename of extractors/combiners touching nearly every package. This is "shotgun surgery" even if justified.
-- Type generation from schemas means a schema change in `miroir-test-app_deployment-miroir/assets` can cascade to `miroir-core/src/0_interfaces/1_core/preprocessor-generated/`, then through the export surface to all dependent packages — a structural coupling amplifier.
+- Type generation from schemas means a schema change in `miroir-app-miroir/assets` can cascade to `miroir-core/src/0_interfaces/1_core/preprocessor-generated/`, then through the export surface to all dependent packages — a structural coupling amplifier.
 - `9c741345` (2026-03-13): 25 files for renaming `DebugHelper` → `JsonDisplayHelper` — a simple rename rippled across many modules.
 
 **Recommendation**: For cross-cutting renames, consider adding an aliased re-export (deprecation layer) rather than bulk-renaming all call sites in one commit. This allows a gradual migration and reduces the risk of a 171-file commit. Monitor the coupling between schema packages and `miroir-core` generated types — this is the main coupling amplifier.

@@ -18,7 +18,7 @@
  * ──────────────────────────────────────
  * In development (non-packaged) the current working-directory is the electron package folder
  * (`packages/miroir-standalone-app-electron/`), so relative store paths like
- * `../miroir-test-app_deployment-admin/assets` resolve correctly.
+ * `../miroir-app-admin/assets` resolve correctly.
  *
  * In production (packaged) the CWD is the installation directory and the assets are stored
  * under `resources/miroir-assets/` (bundled by electron-builder extraResources).  The helper
@@ -31,8 +31,8 @@
  *
  * The assets directory layout under `assetsBase` mirrors the monorepo packages structure, e.g.
  *   miroir-core/src/assets/admin/
- *   miroir-test-app_deployment-admin/assets/
- *   miroir-test-app_deployment-miroir/assets/
+ *   miroir-app-admin/assets/
+ *   miroir-app-miroir/assets/
  */
 
 import { app, ipcMain } from "electron";

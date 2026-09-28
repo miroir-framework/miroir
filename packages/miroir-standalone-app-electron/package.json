@@ -10,9 +10,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build-main": "npx tsc src/main.ts --ignoreConfig --outDir dist --target es2020 --module esnext --moduleResolution bundler --allowSyntheticDefaultImports --strict --skipLibCheck",
-    "build-preload": "npx tsc src/preload.ts --ignoreConfig --outDir dist/src --target es2020 --module commonjs --moduleResolution bundler --allowSyntheticDefaultImports --strict --skipLibCheck",
-    "build-electron": "npm run build-main && npm run build-preload",
+    "build-electron": "tsc --noEmit -p tsconfig.json && node scripts/bundle-main.mjs",
     "build": "npm run build-electron",
     "electron": "npm run build-electron && electron .",
     "electron-dev": "npm run build-electron && electron . --dev",
@@ -23,28 +21,27 @@
     "dist-linux": "npm run build-electron && electron-builder --linux"
   },
   "dependencies": {
-    "diff": "8.0.3",
-    "electron-squirrel-startup": "^1.0.1",
-    "happy-dom": "20.7.0",
-    "express": "^4.21.2",
-    "http-proxy-middleware": "3.0.5",
+    "classic-level": "1.4.1",
+    "electron-squirrel-startup": "1.0.1",
+    "pg": "8.16.0"
+  },
+  "devDependencies": {
+    "@types/express": "4.17.25",
+    "@types/node": "20.19.10",
+    "electron": "44.4.3",
+    "electron-builder": "26.15.3",
+    "esbuild": "0.25.12",
+    "express": "4.22.1",
     "miroir-ai": "*",
     "miroir-core": "*",
-    "miroir-mcp": "*",
     "miroir-localcache-redux": "*",
+    "miroir-mcp": "*",
     "miroir-standalone-app": "*",
     "miroir-store-filesystem": "*",
     "miroir-store-indexedDb": "*",
     "miroir-store-mongodb": "*",
     "miroir-store-postgres": "*",
-    "miroir-test-app_deployment-admin": "*",
-    "vite": "^7.3.1"
-  },
-  "devDependencies": {
-    "@types/express": "^4.17.21",
-    "@types/node": "^20.8.9",
-    "electron": "40.6.1",
-    "electron-builder": "^26.8.1"
+    "miroir-app-admin": "*"
   },
   "build": {
     "appId": "com.miroir-framework.miroir-standalone-app-electron",
@@ -54,6 +51,8 @@
     },
     "files": [
       "dist/**/*",
+      "!**/*.map",
+      "!dist/bundle-report.json",
       "package.json"
     ],
     "extraResources": [
@@ -61,32 +60,34 @@
         "from": "../miroir-standalone-app/dist",
         "to": "app",
         "filter": [
-          "**/*"
+          "**/*",
+          "!**/*.map",
+          "!.vite/**"
         ]
       },
       {
-        "from": "../miroir-test-app_deployment-admin/assets/admin_data",
-        "to": "miroir-assets/miroir-test-app_deployment-admin/assets/admin_data",
+        "from": "../miroir-app-admin/assets/admin_data",
+        "to": "miroir-assets/miroir-app-admin/assets/admin_data",
         "filter": [
           "**/*"
         ]
       },
       {
-        "from": "../miroir-test-app_deployment-admin/assets/admin_model",
-        "to": "miroir-assets/miroir-test-app_deployment-admin/assets/admin_model",
+        "from": "../miroir-app-admin/assets/admin_model",
+        "to": "miroir-assets/miroir-app-admin/assets/admin_model",
         "filter": [
           "**/*"
         ]
       },
       {
-        "from": "../miroir-test-app_deployment-miroir/assets",
-        "to": "miroir-assets/miroir-test-app_deployment-miroir/assets",
+        "from": "../miroir-app-miroir/assets",
+        "to": "miroir-assets/miroir-app-miroir/assets",
         "filter": [
           "**/*"
         ]
       },
       {
-        "from": "../miroir-test-app_deployment-library/dist",
+        "from": "../miroir-example-library/dist",
         "to": "miroir-assets/bundles",
         "filter": [
           "library-model*.json",

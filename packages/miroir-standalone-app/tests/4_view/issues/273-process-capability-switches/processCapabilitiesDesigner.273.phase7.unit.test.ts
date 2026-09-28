@@ -130,7 +130,7 @@ if (runThis) {
     it("seed file exists and index.ts / index.d.ts export miroirRight_AliceAdminApplication", () => {
       const seedPath = join(
         REPO_ROOT,
-        "packages/miroir-test-app_deployment-admin/assets/admin_data",
+        "packages/miroir-app-admin/assets/admin_data",
         MIROIR_RIGHT_ENTITY_UUID,
         `${ALICE_ADMIN_RIGHT_UUID}.json`,
       );
@@ -141,8 +141,8 @@ if (runThis) {
       expect(seed.targetType).toBe("application");
       expect(seed.targetUuid).toBe(ADMIN_APPLICATION_UUID);
 
-      const indexTs = readRepoFile("packages/miroir-test-app_deployment-admin/index.ts");
-      const indexDts = readRepoFile("packages/miroir-test-app_deployment-admin/index.d.ts");
+      const indexTs = readRepoFile("packages/miroir-app-admin/index.ts");
+      const indexDts = readRepoFile("packages/miroir-app-admin/index.d.ts");
       expect(indexTs).toContain("miroirRight_AliceAdminApplication");
       expect(indexDts).toContain("miroirRight_AliceAdminApplication");
     });

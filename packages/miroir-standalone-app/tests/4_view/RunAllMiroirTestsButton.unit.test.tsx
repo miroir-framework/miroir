@@ -4,11 +4,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import type { MiroirTestDefinition } from 'miroir-core';
-import { miroirTest_runner_returnDocument } from 'miroir-test-app_deployment-library';
+import { miroirTest_runner_returnDocument } from 'miroir-example-library';
 import {
   miroirTest_fn_entityPrimaryKey,
   miroirTest_tr_core,
-} from 'miroir-test-app_deployment-miroir';
+} from 'miroir-app-miroir';
 
 import {
   getIntegTestRunCoordinator,

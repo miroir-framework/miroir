@@ -59,12 +59,12 @@ import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
-import { deployment_Admin, deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 import {
   deployment_Library_DO_NO_USE,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
-import { defaultMiroirMetaModel, defaultStoredMiroirTheme } from "miroir-test-app_deployment-miroir";
+} from "miroir-example-library";
+import { defaultMiroirMetaModel, defaultStoredMiroirTheme } from "miroir-app-miroir";
 import {
   defaultSpotifyAppModel,
   deployment_Spotify_DO_NO_USE,
@@ -74,7 +74,7 @@ import {
   selfApplicationSpotify,
   spotifyInitApplicationVersion,
   spotifyServiceEndpoint,
-} from "miroir-test-app_deployment-spotify";
+} from "miroir-example-spotify";
 
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { ReportPageContextProvider } from "../../src/miroir-fwk/4_view/components/Reports/ReportPageContext.js";
@@ -85,6 +85,7 @@ import { miroirAppStartup } from "../../src/startup.js";
 import { ReportUrlParamKeys } from "../../src/constants.js";
 import { cleanLevel, packageName } from "../3_controllers/constants.js";
 import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSession.js";
+import { resolveRepoRoot } from "../helpers/integrationTestProfiles.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import {
   startFakeExternalServiceServer,
@@ -537,7 +538,7 @@ afterAll(async () => {
 });
 
 describe.skipIf(!shouldRun).sequential("spotifyApp — Spotify deployment boot + report", () => {
-  it("registers the Spotify deployment in admin assets, test config, and the testbed map", () => {
+  it("registers the Spotify deployment in Admin data, test config, and the testbed map", () => {
     expect(deployment_Spotify_DO_NO_USE.uuid).toBe(SPOTIFY_DEPLOYMENT_UUID);
     expect(deployment_Spotify_DO_NO_USE.uuid).toBe(SPOTIFY_DEPLOYMENT_UUID);
     expect(selfApplicationSpotify.uuid).toBe(SPOTIFY_APPLICATION_UUID);
@@ -545,7 +546,7 @@ describe.skipIf(!shouldRun).sequential("spotifyApp — Spotify deployment boot +
     expect(emulatedClient.deploymentStorageConfig[SPOTIFY_DEPLOYMENT_UUID]).toBeDefined();
 
     const adminDeploymentPath = join(
-      resolveFilesystemDirectory("miroir-standalone-app/tests/assets/admin_data"),
+      resolveFilesystemDirectory((adminDeploymentStorageConfiguration.data as { directory: string }).directory),
       "7959d814-400c-4e80-988f-a00fe582ab98",
       `${SPOTIFY_DEPLOYMENT_UUID}.json`,
     );
@@ -570,11 +571,10 @@ describe.skipIf(!shouldRun).sequential("spotifyApp — Spotify deployment boot +
     );
     expect(existsSync(runtimePlaylistDir), runtimePlaylistDir).toBe(false);
 
-    const packagePlaylistDir = resolveFilesystemDirectory(
-      join(
-        "miroir-test-app_deployment-spotify/assets/spotify_data",
-        SPOTIFY_PLAYLIST_ENTITY_UUID,
-      ),
+    const packagePlaylistDir = join(
+      resolveRepoRoot(),
+      "packages/miroir-example-spotify/assets/spotify_data",
+      SPOTIFY_PLAYLIST_ENTITY_UUID,
     );
     expect(existsSync(packagePlaylistDir), packagePlaylistDir).toBe(false);
   });

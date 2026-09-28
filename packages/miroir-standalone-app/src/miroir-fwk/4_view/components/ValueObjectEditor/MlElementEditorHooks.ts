@@ -41,9 +41,9 @@ import {
 } from "../../ReduxHooks";
 import { FieldValidationContext } from "./FieldValidationContext";
 
-import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
-import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
-import { adminSelfApplication } from "miroir-test-app_deployment-admin";
+import { selfApplicationMiroir } from "miroir-app-miroir";
+import { selfApplicationLibrary } from "miroir-example-library";
+import { adminSelfApplication } from "miroir-app-admin";
 import { useApplicationAccess } from "../../auth/useApplicationAccess.js";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlElementEditorHooks");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

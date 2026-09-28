@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";
+import { defaultLibraryAppModel } from "miroir-example-library";
 
 import type {
   Entity,

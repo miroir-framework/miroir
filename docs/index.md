@@ -119,6 +119,7 @@ Welcome to the Miroir Framework documentation. This guide will help you find the
 - [Using AI in Miroir](guides/using-ai.md) - In-app CopilotKit assistant (token providers or Cursor)
 - [Process capabilities](reference/process-capabilities.md) - Feature switches: AI, MCP, Cursor, designer tools, store types
 - [Data architecture: deployments](reference/data-architecture-deployments.md) - Store backends, `emulateServer`, product scenarios
+- [Environments](reference/environments.md) - Which applications run where: `environments/*.json`, `.miroir/<environment>/` state, `miroir-env show|check|import|prune` (#321)
 - [Versioning](reference/versioning.md) - Model history: versioning modes, freeze, EntityVersion, `modelVersion` section
 - [ML nomenclature](reference/ml-nomenclature.md) - ML / MLS names of the meta-language; old Jzod names to migrate (#145)
 - [Configuration Reference](reference/configuration.md) - Environment variables and settings

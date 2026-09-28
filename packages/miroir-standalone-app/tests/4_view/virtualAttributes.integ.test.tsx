@@ -8,7 +8,7 @@ import {
   reportBookDetails,
   reportBookList,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 
 import { ReportSectionEntityInstance } from "../../src/miroir-fwk/4_view/components/Reports/ReportSectionEntityInstance.js";
 import { waitForProgressiveRendering } from "./MlElementEditorTestTools.js";

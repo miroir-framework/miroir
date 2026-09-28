@@ -82,8 +82,12 @@ def repo_relative(path: Path) -> str:
         return str(path).replace("\\", "/")
 
 
-def expand_argv(argv: list[str], profile: str) -> list[str]:
-    return [part.replace("{profile}", profile) for part in argv]
+def expand_argv(argv: list[str], profile: str, snap_dir: Path | None = None) -> list[str]:
+    """`{profile}` → the run's profile; `{snapshot_dir}` → the run's snapshot directory (#321)."""
+    expanded = [part.replace("{profile}", profile) for part in argv]
+    if snap_dir is None:
+        return expanded
+    return [part.replace("{snapshot_dir}", snap_dir.as_posix()) for part in expanded]
 
 
 def resolve_argv(argv: list[str]) -> list[str]:
@@ -173,7 +177,7 @@ def run_step(
     timings: bool = False,
 ) -> StepResult:
     step_id = step["id"]
-    argv = resolve_argv(expand_argv(list(step["argv"]), profile))
+    argv = resolve_argv(expand_argv(list(step["argv"]), profile, snap_dir))
     title = step["title"]
     tier = step["tier"]
     requires = step.get("requires", "none")
@@ -439,7 +443,7 @@ def run_shared_group(
     else:
         files = [f for m in members for f in m["shared"]["files"]]
         tail = ["--no-isolate", *report_args, *files]
-    argv = resolve_argv(expand_argv(list(members[0]["shared"]["argv"]), profile) + tail)
+    argv = resolve_argv(expand_argv(list(members[0]["shared"]["argv"]), profile, snap_dir) + tail)
 
     def base_result(member: dict[str, Any]) -> StepResult:
         return StepResult(
@@ -902,7 +906,7 @@ def main(argv: list[str] | None = None) -> int:
                     requires=step.get("requires", "none"),
                     status="not_run",
                     skip_reason="aborted after earlier failure (--fail-fast)",
-                    argv=expand_argv(list(step["argv"]), profile),
+                    argv=expand_argv(list(step["argv"]), profile, snap_dir),
                 )
             )
             continue

@@ -64,8 +64,8 @@ Implementation: `packages/miroir-core/src/1_core/versioning/applicationVersionFr
 
 An **EntityVersion** is an immutable snapshot of an Entity's present-model fields, taken at freeze time.
 
-- **Entity:** `EntityVersion`, uuid `54b9c72f-d4f3-4db9-9e0e-0dc840b530bd` (`scope: "versioning"`). Its `mlSchema` is in `packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json`.
-- **Instances:** only in the `modelVersion` section. The Miroir deployment ships some under `packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/`, e.g. `381ab1be-…` (a snapshot of Entity) and `bdd7ad43-…` (the self-describing snapshot of EntityVersion).
+- **Entity:** `EntityVersion`, uuid `54b9c72f-d4f3-4db9-9e0e-0dc840b530bd` (`scope: "versioning"`). Its `mlSchema` is in `packages/miroir-app-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json`.
+- **Instances:** only in the `modelVersion` section. The Miroir deployment ships some under `packages/miroir-app-miroir/assets/miroir_modelVersion/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/`, e.g. `381ab1be-…` (a snapshot of Entity) and `bdd7ad43-…` (the self-describing snapshot of EntityVersion).
 - **Snapshotted fields** (`ENTITY_PRESENT_MODEL_DEFINITION_FIELDS`): `mlSchema`, `idAttribute`, `externalDataSource`, `viewAttributes`, `defaultInstanceDetailsReportUuid`, `icon`, `display`, `cache`, plus `name` and `conceptLevel`. Entity-only classification fields (`scope`, `logicalDataModel`, `selfApplication`, …) are not copied. Freeze fails for an Entity without `mlSchema`.
 
 Abridged generated type:
@@ -133,7 +133,7 @@ These uuids are registered in `versionHistoryEntityUuids` (`packages/miroir-core
 - A request targeting `modelVersion` on a deployment that does not configure it fails explicitly. There is no fallback to `model` or `data`.
 - History is not loaded during ordinary bootstrap / rollback of the live model.
 
-**Asset folders:** `{prefix}_modelVersion/` maps to the section. Only `miroir-test-app_deployment-miroir` ships one (`miroir_modelVersion/`). See [Data Architecture — asset folders](data-architecture-deployments.md#deployment-package-asset-folders).
+**Asset folders:** `{prefix}_modelVersion/` maps to the section. Only `miroir-app-miroir` ships one (`miroir_modelVersion/`). See [Data Architecture — asset folders](data-architecture-deployments.md#deployment-package-asset-folders).
 
 **Filesystem example** (Library integration tests):
 
@@ -155,7 +155,7 @@ These uuids are registered in `versionHistoryEntityUuids` (`packages/miroir-core
 }
 ```
 
-**IndexedDB / MongoDB:** same pattern, with a separate database name or an IndexedDB namespace suffixed `-modelVersion` (see `miroirConfig.test-emulatedServer-indexedDb.json` and `miroirConfig.test-emulatedServer-mongodb.json` in `miroir-standalone-app/tests/`).
+**IndexedDB / MongoDB:** same pattern, with a separate database name or an IndexedDB namespace suffixed `-modelVersion` (see `environments/test-indexedDb.json` and `environments/test-mongodb.json`: the modelVersion section adds `_modelVersion`).
 
 | Backend | Writable `modelVersion` | Notes |
 |---|---|---|

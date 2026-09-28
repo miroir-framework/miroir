@@ -6,7 +6,7 @@ import type {
   MiroirConfigClient,
   PersistenceStoreControllerManagerInterface,
 } from "miroir-core";
-import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from "miroir-test-app_deployment-library";
+import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from "miroir-example-library";
 
 import {
   runAppStackIntegrationBootstrap,

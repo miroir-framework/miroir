@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 describe("WP1 evolution trace reports + menu", () => {
   it("ApplicationEvolutionTraceList report is importable with a uuid", async () => {
     const { reportApplicationEvolutionTraceList } = await import(
-      "miroir-test-app_deployment-miroir"
+      "miroir-app-miroir"
     );
     expect(reportApplicationEvolutionTraceList).toBeDefined();
     expect(reportApplicationEvolutionTraceList.uuid).toBeTruthy();
@@ -11,7 +11,7 @@ describe("WP1 evolution trace reports + menu", () => {
 
   it("ApplicationEvolutionTraceHistory report is importable with a uuid", async () => {
     const { reportApplicationEvolutionTraceHistory } = await import(
-      "miroir-test-app_deployment-miroir"
+      "miroir-app-miroir"
     );
     expect(reportApplicationEvolutionTraceHistory).toBeDefined();
     expect(reportApplicationEvolutionTraceHistory.uuid).toBeTruthy();
@@ -19,7 +19,7 @@ describe("WP1 evolution trace reports + menu", () => {
 
   it("ApplicationEvolutionTraceDetails report is importable with a uuid", async () => {
     const { reportApplicationEvolutionTraceDetails } = await import(
-      "miroir-test-app_deployment-miroir"
+      "miroir-app-miroir"
     );
     expect(reportApplicationEvolutionTraceDetails).toBeDefined();
     expect(reportApplicationEvolutionTraceDetails.uuid).toBeTruthy();
@@ -33,7 +33,7 @@ describe("WP1 evolution trace reports + menu", () => {
       reportApplicationEvolutionTraceList,
       reportApplicationEvolutionTraceHistory,
       menuDefaultMiroir,
-    } = await import("miroir-test-app_deployment-miroir");
+    } = await import("miroir-app-miroir");
     const menuJson = JSON.stringify(menuDefaultMiroir);
     expect(menuJson).toContain(reportApplicationEvolutionTraceList.uuid);
     expect(menuJson).toContain(reportApplicationEvolutionTraceHistory.uuid);
@@ -43,7 +43,7 @@ describe("WP1 evolution trace reports + menu", () => {
     const {
       entityDefinitionApplicationEvolutionTrace,
       reportApplicationEvolutionTraceDetails,
-    } = await import("miroir-test-app_deployment-miroir");
+    } = await import("miroir-app-miroir");
     expect(
       entityDefinitionApplicationEvolutionTrace.defaultInstanceDetailsReportUuid
     ).toBe(reportApplicationEvolutionTraceDetails.uuid);

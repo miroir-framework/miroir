@@ -12,19 +12,30 @@
     "packages/*"
   ],
   "overrides": {
-    "yaml": "^2.4.2",
-    "rxjs": "^7.8.1"
+    "yaml": "2.8.4",
+    "rxjs": "7.8.2",
+    "lerna": {
+      "js-yaml": "4.3.2",
+      "pacote": "21.5.1"
+    },
+    "nx": {
+      "smol-toml": "1.7.1"
+    },
+    "@connectrpc/connect-node": {
+      "undici": "6.28.1"
+    },
+    "lodash-es": "4.18.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.5",
-    "@types/node": "^25.6.0",
-    "@typescript/native": "npm:typescript@^7.0.2",
-    "eslint": "^9.39.5",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "globals": "^17.12.0",
-    "lerna": "^9.0.0",
-    "typescript": "npm:@typescript/typescript6@^6.0.2",
-    "typescript-eslint": "^8.70.1"
+    "@eslint/js": "9.39.5",
+    "@types/node": "25.6.0",
+    "@typescript/native": "npm:typescript@7.0.2",
+    "eslint": "9.39.5",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "globals": "17.12.0",
+    "lerna": "10.0.1",
+    "typescript": "npm:@typescript/typescript6@6.0.2",
+    "typescript-eslint": "8.70.1"
   },
   "scripts": {
     "postinstall": "node scripts/patch-tsup-baseurl.cjs",
@@ -38,7 +49,8 @@
     "check:console": "python scripts/check_bare_console.py",
     "check:ml": "python scripts/check_ml_nomenclature.py",
     "release:tag": "python scripts/release_tag.py",
-    "release:tree": "python ci/release/release_version.py"
+    "release:tree": "python ci/release/release_version.py",
+    "miroir-env": "node packages/miroir-env/dist/cli.js"
   },
   "nx": {
     "targets": {

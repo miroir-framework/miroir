@@ -76,8 +76,21 @@ import {
   deployment_Admin,
   deployment_Miroir,
   entityDeployment,
-} from "miroir-test-app_deployment-admin";
+} from "miroir-app-admin";
 
+import {
+  describeEnvironmentStateStatus,
+  EnvironmentError,
+  environmentServerConfig,
+  environmentStateStatus,
+  hasEnvironmentDefinitions,
+  openEnvironmentBootDeployments,
+  reconcileEnvironmentDeployments,
+  recordInstallsOf,
+  resolveEnvironmentFromFiles,
+  seedEnvironmentState,
+  type ResolvedEnvironment,
+} from "miroir-env";
 import { EndpointToolRegistry, setupMcpServer } from "miroir-mcp";
 import { setupMiroirDomainController } from 'miroir-localcache-redux';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
@@ -146,8 +159,8 @@ function printUsageAndExit(exitCode = 1): never {
   console.error(`Usage: node server.js [OPTIONS]`);
   myLogger.error(``);
   console.error(`OPTIONS:`);
-  console.error(`  --config   <path>   Path to the server config JSON file`);
-  myLogger.error(`                      (default: ../config/miroirConfig.server.json)`);
+  console.error(`  --config   <path>   Path to the server config JSON file, instead of the selected environment`);
+  myLogger.error(`                      (default: ../config/miroirConfig.server.json, used when no environments/ folder is found)`);
   console.error(`  --certsdir <dir>    Directory containing TLS certificate files`);
   myLogger.error(`                      (default: <repo-root>/certs/)`);
   console.error(`  --cert     <path>   Path to the TLS certificate file (.pem)`);
@@ -213,11 +226,43 @@ const secretsSummary = registeredSecretNames.length > 0
 console.log(`  --secret   : ${secretsSummary}`);
 console.log(`  --secrets-master-key : ${secretsMasterKey ? "(set)" : "(not set)"}`);
 
-const configFileContents = JSON.parse(
-  readFileSync(new URL(configFilePath, import.meta.url)).toString()
-);
+// #321: the selected environment (environments/*.json, see `miroir-env show`) gives the server
+// settings and the deployments to open. The config file is used when --config is given or when no
+// environments/ folder is found above the working directory (release binary, Docker image).
+function loadEnvironment(): ResolvedEnvironment | undefined {
+  if (process.argv.includes("--config") || !hasEnvironmentDefinitions(process.cwd())) {
+    return undefined;
+  }
+  try {
+    return resolveEnvironmentFromFiles({ cwd: process.cwd(), env: process.env });
+  } catch (error) {
+    if (error instanceof EnvironmentError) {
+      console.error(`Error: ${error.message}`);
+      process.exit(2);
+    }
+    throw error;
+  }
+}
 
-const miroirConfig: MiroirConfigServer = configFileContents as MiroirConfigServer;
+const resolvedEnvironment: ResolvedEnvironment | undefined = loadEnvironment();
+
+let miroirConfig: MiroirConfigServer;
+if (resolvedEnvironment) {
+  const { name, source, files } = resolvedEnvironment;
+  console.log(`  environment: ${name}, selected by ${source}, defined by ${files.join(" <- ")}`);
+  const state = environmentStateStatus(resolvedEnvironment);
+  if (state.status === "changed") {
+    console.log(`  environment ${describeEnvironmentStateStatus(state)}`);
+  }
+  const seed = seedEnvironmentState(resolvedEnvironment);
+  if (seed.seeded.length > 0) {
+    console.log(`  environment state seeded from package assets: ${seed.seeded.join(", ")}`);
+  }
+  miroirConfig = environmentServerConfig(resolvedEnvironment);
+} else {
+  console.log(`  environment: none, server settings and boot deployments from ${configFilePath}`);
+  miroirConfig = JSON.parse(readFileSync(new URL(configFilePath, import.meta.url)).toString()) as MiroirConfigServer;
+}
 myLogger.info('miroirConfig',miroirConfig)
 myLogger.info(`import.meta`, JSON.stringify((import.meta as any), null, 2));
 
@@ -373,10 +418,17 @@ const domainController = await setupMiroirDomainController(
   }
 ); // even when emulating server, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
 
-const configurations: Record<string, Deployment> = {
-  [deployment_Admin.uuid]: deployment_Admin as Deployment,
-  [deployment_Miroir.uuid]: deployment_Miroir as Deployment,
-};
+// without an environment: Admin and Miroir from the Deployment rows of the Admin package
+const configurations: Record<string, Deployment> = resolvedEnvironment
+  ? {}
+  : {
+      [deployment_Admin.uuid]: deployment_Admin as Deployment,
+      [deployment_Miroir.uuid]: deployment_Miroir as Deployment,
+    };
+
+if (resolvedEnvironment) {
+  await openEnvironmentBootDeployments(domainController, resolvedEnvironment);
+}
 
 myLogger.info(`Initial deployments to open: ${JSON.stringify(configurations, circularReplacer(), 2)}`);
 
@@ -447,72 +499,96 @@ if (secretsMasterKey) {
   hydrateSecrets({ wrappingKey: secretsMasterKey, rows: secretRows });
 }
 
-const deploymentsQueryResults = await domainController.handleBoxedExtractorOrQueryAction({
-  actionType: "runBoxedQueryAction",
-  endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-  payload: {
-    application: adminSelfApplication.uuid,
-    applicationSection: "data",
-    queryExecutionStrategy: "storage",
-    query: {
-      application: adminSelfApplication.uuid,
-      queryType: "boxedQueryWithExtractorCombinerTransformer",
-      extractors: {
-        deployments: {
-          extractorOrCombinerType: "extractorInstancesByEntity",
-          parentUuid: entityDeployment.uuid,
-        }
-      }
-    },
+async function openRegisteredDeployments(): Promise<{
+  deployments: Deployment[];
+  applicationDeploymentMap: ApplicationDeploymentMap;
+}> {
+  if (resolvedEnvironment) {
+    const reconciliation = await reconcileEnvironmentDeployments(domainController, resolvedEnvironment);
+    for (const change of reconciliation.changes) {
+      console.log(`[miroir-env] ${change}`);
+    }
+    for (const warning of reconciliation.warnings) {
+      console.warn(`[miroir-env] warning: ${warning}`);
+    }
+    return reconciliation;
   }
-}, defaultSelfApplicationDeploymentMap, defaultMetaModelEnvironment);
 
-if (deploymentsQueryResults instanceof Action2Error) {
-  throw new Error(`Error fetching deployments: ${deploymentsQueryResults.errorMessage}`);
+  const deploymentsQueryResults = await domainController.handleBoxedExtractorOrQueryAction({
+    actionType: "runBoxedQueryAction",
+    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+    payload: {
+      application: adminSelfApplication.uuid,
+      applicationSection: "data",
+      queryExecutionStrategy: "storage",
+      query: {
+        application: adminSelfApplication.uuid,
+        queryType: "boxedQueryWithExtractorCombinerTransformer",
+        extractors: {
+          deployments: {
+            extractorOrCombinerType: "extractorInstancesByEntity",
+            parentUuid: entityDeployment.uuid,
+          }
+        }
+      },
+    }
+  }, defaultSelfApplicationDeploymentMap, defaultMetaModelEnvironment);
+
+  if (deploymentsQueryResults instanceof Action2Error) {
+    throw new Error(`Error fetching deployments: ${deploymentsQueryResults.errorMessage}`);
+  }
+
+  const deployments: Deployment[] = deploymentsQueryResults.returnedDomainElement.deployments;
+
+  myLogger.info(`Deployments fetched: ${JSON.stringify(deployments, circularReplacer(), 2)}`);
+
+  const deploymentsToOpen: [string, Deployment][] = deployments
+    .filter((d) => !configurations[d.uuid.toString()])
+    .map((d) => [d.uuid.toString(), d]);
+
+  myLogger.info(`Deployments to open: ${JSON.stringify(deploymentsToOpen, circularReplacer(), 2)}`);
+
+  const applicationDeploymentMap: ApplicationDeploymentMap = deployments.reduce(
+    (acc, curr) => {
+      return {...acc, [curr.selfApplication??("NO ADMIN APPLICATION for " + curr.name)] : curr.uuid};
+    },
+    {}
+  );
+
+  myLogger.info(`ApplicationDeploymentMap for new deployments: ${JSON.stringify(applicationDeploymentMap, circularReplacer(), 2)}`);
+
+  // open all newly found stores
+  for (const c of deploymentsToOpen) {
+    const openStoreAction: StoreOrBundleAction = {
+      actionType: "storeManagementAction_openStore",
+      endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+      payload: {
+        application: c[1].selfApplication,
+        deploymentUuid: c[0],
+        configuration: {
+          [c[0]]: c[1].configuration as StoreUnitConfiguration,
+        },
+      },
+    };
+    await domainController.handleAction(
+      openStoreAction,
+      applicationDeploymentMap,
+      defaultMetaModelEnvironment
+    );
+  }
+  return { deployments, applicationDeploymentMap };
 }
 
-const deployments: Deployment[] = deploymentsQueryResults.returnedDomainElement.deployments;
+const { applicationDeploymentMap } = await openRegisteredDeployments();
 
-myLogger.info(`Deployments fetched: ${JSON.stringify(deployments, circularReplacer(), 2)}`);
-
-const deploymentsToOpen: [string, Deployment][] = deployments
-  .filter((d) => !configurations[d.uuid.toString()])
-  .map((d) => [d.uuid.toString(), d]);
-
-myLogger.info(`Deployments to open: ${JSON.stringify(deploymentsToOpen, circularReplacer(), 2)}`);
-
-const applicationDeploymentMap: ApplicationDeploymentMap = deployments.reduce(
-  (acc, curr) => {
-    return {...acc, [curr.selfApplication??("NO ADMIN APPLICATION for " + curr.name)] : curr.uuid};
-  },
-  {}
-);
-
-myLogger.info(`ApplicationDeploymentMap for new deployments: ${JSON.stringify(applicationDeploymentMap, circularReplacer(), 2)}`);
+// applications installed or dropped from now on are recorded in environments/local.json
+if (resolvedEnvironment) {
+  recordInstallsOf(domainController, resolvedEnvironment, (line) => console.log(`[miroir-env] ${line}`));
+}
 
 setPersistRotatedSecret(async (args) => {
   await persistRotatedSecretRow(domainController, args, applicationDeploymentMap);
 });
-
-// open all newly found stores
-for (const c of deploymentsToOpen) {
-  const openStoreAction: StoreOrBundleAction = {
-    actionType: "storeManagementAction_openStore",
-    endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-    payload: {
-      application: c[1].selfApplication,
-      deploymentUuid: c[0],
-      configuration: {
-        [c[0]]: c[1].configuration as StoreUnitConfiguration,
-      },
-    },
-  };
-  await domainController.handleAction(
-    openStoreAction,
-    applicationDeploymentMap,
-    defaultMetaModelEnvironment
-  );
-}
 
 async function loadAdminIdentityDirectory(): Promise<
   | {
@@ -945,7 +1021,10 @@ if (existsSync(certFile) && existsSync(keyFile)) {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const http = await import('http');
   http.createServer(app).listen(restPortFromConfig, () => {
-    myLogger.info("templateEvaluationParams", templateEvaluationParams);
+    myLogger.info("templateEvaluationParams", {
+      ...templateEvaluationParams,
+      ...(miroirConfig.environment ? { environmentAppsDirectory: miroirConfig.environment.appsDirectory } : {}),
+    });
     myLogger.info(`Server running in ${getMiroirEnvironmentMode()} mode`);
     myLogger.info(`Server accesses filesystem deployment root directory at: ${filesystemDeploymentRootDirectory}`);
     myLogger.info(`HTTP server listening on port ${restPortFromConfig} (no TLS — run setup-https to enable HTTPS)`);

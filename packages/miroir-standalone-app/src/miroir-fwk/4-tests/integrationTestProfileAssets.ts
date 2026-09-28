@@ -14,15 +14,17 @@ import {
 } from './integrationTestProfileCatalog.js';
 /** Browser-only: bundled admin + IndexedDB Miroir/Library (no filesystem/sql — those factories are not registered in webApp). */
 import browserEmulatedServerIndexedDbMiroirConfig from './miroirConfig.browser-emulatedServer-indexedDb.json';
+
 /**
  * Browser → live miroir-server (B6-c). The store type (sql/filesystem/indexedDb/mongodb)
  * lives entirely on the server; the browser client is REST-only and never loads a local
  * store factory, so all four backends are equally launchable from the webApp picker.
+ * #321: each realServer-* profile opens the stores of the test environment of its storage
+ * (test-sql, …), injected by vite.config.js; absent from a bundle built without it.
  */
-import browserRealServerSqlMiroirConfig from './miroirConfig.browser-realServer-sql.json';
-import browserRealServerIndexedDbMiroirConfig from './miroirConfig.browser-realServer-indexedDb.json';
-import browserRealServerFilesystemMiroirConfig from './miroirConfig.browser-realServer-filesystem.json';
-import browserRealServerMongodbMiroirConfig from './miroirConfig.browser-realServer-mongodb.json';
+declare const __MIROIR_TEST_CLIENT_CONFIGS__: Record<string, MiroirConfigClient>;
+const realServerTestClientConfigs: Record<string, MiroirConfigClient> =
+  typeof __MIROIR_TEST_CLIENT_CONFIGS__ === 'undefined' ? {} : __MIROIR_TEST_CLIENT_CONFIGS__;
 
 export { DEFAULT_UI_INTEGRATION_PROFILE_NAME } from './integrationTestProfileCatalog.js';
 
@@ -39,22 +41,12 @@ const BROWSER_INTEGRATION_TEST_PROFILE_ASSETS: Record<string, BrowserIntegration
       miroirConfig: browserEmulatedServerIndexedDbMiroirConfig as unknown as MiroirConfigClient,
       logConfig: catchAllLogConfig as LoggerOptions,
     },
-    'realServer-sql': {
-      miroirConfig: browserRealServerSqlMiroirConfig as unknown as MiroirConfigClient,
-      logConfig: catchAllLogConfig as LoggerOptions,
-    },
-    'realServer-indexedDb': {
-      miroirConfig: browserRealServerIndexedDbMiroirConfig as unknown as MiroirConfigClient,
-      logConfig: catchAllLogConfig as LoggerOptions,
-    },
-    'realServer-filesystem': {
-      miroirConfig: browserRealServerFilesystemMiroirConfig as unknown as MiroirConfigClient,
-      logConfig: catchAllLogConfig as LoggerOptions,
-    },
-    'realServer-mongodb': {
-      miroirConfig: browserRealServerMongodbMiroirConfig as unknown as MiroirConfigClient,
-      logConfig: catchAllLogConfig as LoggerOptions,
-    },
+    ...Object.fromEntries(
+      Object.entries(realServerTestClientConfigs).map(([profileName, miroirConfig]) => [
+        profileName,
+        { miroirConfig, logConfig: catchAllLogConfig as LoggerOptions },
+      ]),
+    ),
   };
 
 export function listBrowserIntegrationTestProfileNames(): string[] {

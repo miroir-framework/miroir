@@ -124,14 +124,14 @@ The script performs ordered steps:
 
 | Step | Packages |
 |---|---|
-| 1 | `miroir-test-app_deployment-miroir`, `miroir-test-app_deployment-admin` |
+| 1 | `miroir-app-miroir`, `miroir-app-admin` |
 | 2 | `miroir-core` (plain build, or `devbuild` to regenerate TS types from ML schemas) |
 | 3 | All local-cache and store packages (built in parallel) |
 | 4 | `miroir-react`, `miroir-mcp`, `miroir-diagram-class` |
 | 5 | `miroir-server`, `miroir-standalone-app`, `miroir-cli` |
 | 6 | Remaining deployment packages |
 
-If you modified schema definitions under `packages/miroir-test-app_deployment-miroir/assets`, use `devbuild` to regenerate TypeScript types before building `miroir-core`:
+If you modified schema definitions under `packages/miroir-app-miroir/assets`, use `devbuild` to regenerate TypeScript types before building `miroir-core`:
 
 ```sh
 ./build-all.sh devbuild
@@ -175,17 +175,27 @@ Both scripts place the certificates in `certs/` and print the `NODE_EXTRA_CA_CER
 
 ---
 
-## 6. Configure the server (optional)
+## 6. Choose your environment (optional)
 
-The main configuration file for the server is:
+Run from the repository, the server and the web client take their configuration from an **environment** in `environments/` ([Environments](../reference/environments.md)). Without anything set, they use `dev`:
 
-```packages/miroir-server/config/miroirConfig.server.json```
+- application models are edited live in their package assets (`packages/{miroir-app,miroir-example,miroir-fixture}-*/assets/`);
+- Admin data (installed applications, users, rights, secrets, view settings) lives in the gitignored `.miroir/dev/`, so installing an application or changing a right changes no tracked file.
 
-In this file, the `filesystemDeploymentRootDirectory` must point to a directory that contains both the `admin` and `miroir` application deployments. **The default value `".."` resolves to the monorepo root and works out of the box when running directly from the repo**.
+```sh
+npm run build -w miroir-env
+npm run miroir-env -- show      # the selected environment, where its state stands, each deployment and its stores
+```
 
-The filesystem deployments of your applications will be placed in a subdirectory of the given `filesystemDeploymentRootDirectory`.
+To install applications of your own or use other stores, create the gitignored `environments/local.json`, which is selected automatically:
 
-If you wish to use another location, edit `packages/miroir-server/config/miroirConfig.server.json`:
+```json
+{ "extends": "dev" }
+```
+
+Applications you install from the UI while it is selected are recorded in it. `MIROIR_ENV=<name>` selects another environment for one run.
+
+**Release binary and Docker image:** outside the repository (no `environments/` folder above the working directory), or with `--config <path>`, the server reads a configuration file instead, `packages/miroir-server/config/miroirConfig.server.json` by default. Its `filesystemDeploymentRootDirectory` must point to a directory that contains both the `admin` and `miroir` application deployments:
 
 ```json
 {
@@ -205,7 +215,7 @@ If you wish to use another location, edit `packages/miroir-server/config/miroirC
 
 The server now accepts parameters via explicit CLI flags:
 
-- `--config <path>`: Path to the server configuration file (default: `../config/miroirConfig.server.json`)
+- `--config <path>`: Path to a server configuration file, used instead of the selected environment (outside the repository the default is `../config/miroirConfig.server.json`)
 - `--certsdir <dir>`: Path to the directory containing TLS certificates (default: `<repo-root>/certs/`)
 - `--cert <file>`: Path to the TLS certificate file (default: `<certsdir>/localhost.pem`)
 - `--key <file>`: Path to the TLS key file (default: `<certsdir>/localhost-key.pem`)

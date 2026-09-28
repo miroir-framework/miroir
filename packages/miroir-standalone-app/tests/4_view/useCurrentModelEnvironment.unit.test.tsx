@@ -4,12 +4,12 @@ import "@testing-library/jest-dom";
 import React, { useEffect } from "react";
 import { configureStore, type Store } from "@reduxjs/toolkit";
 
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { deployment_Miroir } from "miroir-app-admin";
 import {
   defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,
   book1,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import {
   getMiroirFundamentalSchemaForDeployment,
   MiroirActivityTracker,
@@ -40,7 +40,7 @@ import {
   mutateEntityDescriptionInLocalCacheState,
 } from "../helpers/minimalLocalCacheStateForModel.js";
 
-import { instanceEndpointV1, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { instanceEndpointV1, selfApplicationMiroir } from "miroir-app-miroir";
 const TEST_UPDATE_PRESENT_MODEL = "TEST_UPDATE_PRESENT_MODEL";
 
 const miroirActivityTracker = new MiroirActivityTracker();

@@ -18,20 +18,20 @@ import {
   type MiroirTestSuite,
   type Runner,
 } from "miroir-core";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { deployment_Miroir } from "miroir-app-admin";
 import {
   defaultAppForTestModel,
   deployment_AppForTest_DO_NO_USE,
   selfApplicationAppForTest,
-} from "miroir-test-app_deployment-appForTest";
+} from "miroir-fixture-appForTest";
 import {
   defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,
   miroirTest_runner_returnDocument,
   returnDocument,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
-import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+} from "miroir-example-library";
+import { selfApplicationMiroir } from "miroir-app-miroir";
 
 const runAppStackIntegrationBootstrapMock = vi.fn();
 const runRealServerClientBootstrapMock = vi.fn();
@@ -144,6 +144,8 @@ function baseMiroirConfig(runTarget = runnerLibraryRunTarget()): MiroirConfigCli
         [runTarget.deploymentUuid]: storeSection,
         [deployment_Miroir.uuid]: storeSection,
         "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": storeSection,
+        // #321: Admin comes from the test environment, never from the tracked Admin assets
+        "18db21bf-f8d3-4f6a-8296-84b69f6dc48b": storeSection,
       },
     },
   } as MiroirConfigClient;
@@ -279,6 +281,11 @@ describe("RunnerTestSession (Gap E R)", () => {
               model: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
               data: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
             },
+            "18db21bf-f8d3-4f6a-8296-84b69f6dc48b": {
+              admin: { emulatedServerType: "filesystem", directory: ".miroir/test-sql/admin" },
+              model: { emulatedServerType: "filesystem", directory: ".miroir/test-sql/admin/model" },
+              data: { emulatedServerType: "filesystem", directory: ".miroir/test-sql/admin/data" },
+            },
           },
         },
       },
@@ -298,6 +305,49 @@ describe("RunnerTestSession (Gap E R)", () => {
       }),
     );
     expect(runAppStackIntegrationBootstrapMock).not.toHaveBeenCalled();
+  });
+
+  it("#321: a real-server session never resets the Miroir deployment of the server it calls", async () => {
+    const runTarget = runnerLibraryRunTarget();
+    runRealServerClientBootstrapMock.mockResolvedValueOnce({
+      domainController: {
+        handleCompositeAction: vi.fn().mockResolvedValue({ status: "ok" }),
+      } as unknown as DomainControllerInterface,
+      applicationDeploymentMap: {} as ApplicationDeploymentMap,
+      testApplicationUuid: runTarget.applicationUuid,
+      persistenceStoreControllerManager: {
+        getPersistenceStoreControllers: () => [],
+        deletePersistenceStoreController: vi.fn(),
+      },
+    });
+    const realServerConfig = {
+      miroirConfigType: "client",
+      client: {
+        emulateServer: false,
+        serverConfig: {
+          rootApiUrl: "https://localhost:3080",
+          storeSectionConfiguration: (baseMiroirConfig(runTarget).client as { deploymentStorageConfig: object })
+            .deploymentStorageConfig,
+        },
+      },
+    } as MiroirConfigClient;
+
+    for (const skipRunTargetPlayfieldReset of [false, true]) {
+      beforeEachTestMock.mockClear();
+      const session = new RunnerTestSession(
+        runnerSessionOptions(runTarget, { miroirConfig: realServerConfig, skipRunTargetPlayfieldReset }),
+      );
+      await session.initSession();
+      await session.beforeEach();
+
+      // the server's Miroir deployment is the one of its environment (dev: the package assets, live)
+      expect(beforeEachTestMock).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        expect.anything(),
+        expect.objectContaining({ resetMiroirPlatform: false }),
+      );
+    }
   });
 
   it("initSession passes grantAccessTo into ensureLibraryPlayfield when a principal is known", async () => {
@@ -325,6 +375,11 @@ describe("RunnerTestSession (Gap E R)", () => {
               admin: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
               model: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
               data: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+            },
+            "18db21bf-f8d3-4f6a-8296-84b69f6dc48b": {
+              admin: { emulatedServerType: "filesystem", directory: ".miroir/test-sql/admin" },
+              model: { emulatedServerType: "filesystem", directory: ".miroir/test-sql/admin/model" },
+              data: { emulatedServerType: "filesystem", directory: ".miroir/test-sql/admin/data" },
             },
           },
         },
@@ -574,6 +629,11 @@ describe("RunnerTestSession (Gap E R)", () => {
               admin: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
               model: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
               data: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+            },
+            "18db21bf-f8d3-4f6a-8296-84b69f6dc48b": {
+              admin: { emulatedServerType: "filesystem", directory: ".miroir/test-sql/admin" },
+              model: { emulatedServerType: "filesystem", directory: ".miroir/test-sql/admin/model" },
+              data: { emulatedServerType: "filesystem", directory: ".miroir/test-sql/admin/data" },
             },
           },
         },

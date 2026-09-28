@@ -3,7 +3,7 @@
  */
 import { describe, expect, it } from "vitest";
 
-import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { selfApplicationMiroir } from "miroir-app-miroir";
 
 import { selfApplication } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import type { SelfApplication } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";

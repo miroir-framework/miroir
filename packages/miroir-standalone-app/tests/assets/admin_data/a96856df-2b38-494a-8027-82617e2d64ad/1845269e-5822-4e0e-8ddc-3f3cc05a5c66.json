@@ -1,8 +1,0 @@
-{
-  "uuid": "1845269e-5822-4e0e-8ddc-3f3cc05a5c66",
-  "parentName": "MiroirSecret",
-  "parentUuid": "a96856df-2b38-494a-8027-82617e2d64ad",
-  "name": "spotifyClientSecret",
-  "ciphertext": "aes-256-gcm$QOl6qu18pPG-esz4$dlreH_1u94wgvGg3FDRirw$waOhUx9MoBFZ31PLakIpEg",
-  "algorithm": "aes-256-gcm"
-}

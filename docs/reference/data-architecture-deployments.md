@@ -21,9 +21,21 @@ Each deployment is divided into **sections** (three for unversioned deployments;
 
 Which applications need a `modelVersion` section depends on their versioning mode; see the [Versioning reference](versioning.md).
 
+### Application packages
+
+Each application's model and data live in a package whose name says its role (#344):
+
+| Role | Prefix | Packages |
+|---|---|---|
+| Framework: applications every Miroir server needs | `miroir-app-` | `miroir-app-miroir` (meta-model, built before `miroir-core`), `miroir-app-admin` |
+| Example: demo applications | `miroir-example-` | `miroir-example-library`, `miroir-example-spotify`, `miroir-example-designer`, `miroir-example-postgres` |
+| Test fixture: exists only for tests | `miroir-fixture-` | `miroir-fixture-appForTest` |
+
+CLI MiroirTest discovery scans every package with one of these prefixes (`DEPLOYMENT_PACKAGE_PREFIXES` in miroir-core).
+
 ### Deployment package asset folders
 
-Each deployment package under `packages/miroir-test-app_deployment-*/assets/` uses a prefix (`miroir_`, `library_`, `admin_`, …):
+Each application package under `packages/{miroir-app,miroir-example,miroir-fixture}-*/assets/` uses a prefix (`miroir_`, `library_`, `admin_`, …):
 
 | Asset directory | Maps to store section | Contents |
 |---|---|---|
@@ -32,11 +44,11 @@ Each deployment package under `packages/miroir-test-app_deployment-*/assets/` us
 | `{prefix}_modelVersion/` | `modelVersion` | **Optional.** Model history (see [Versioning reference](versioning.md)) |
 | `{prefix}_admin/` (admin package) | `admin` / nested admin model+data | Admin meta-configuration |
 
-Only **`miroir-test-app_deployment-miroir`** currently ships a `{prefix}_modelVersion/` tree (`miroir_modelVersion/`).
+Only **`miroir-app-miroir`** currently ships a `{prefix}_modelVersion/` tree (`miroir_modelVersion/`).
 
 ### Example: the Library application
 
-`packages/miroir-test-app_deployment-library/assets/`: model in `library_model/` (Entity rows for `Author`, `Book`, `Country`, `Publisher`, `User`, `LendingHistoryItem` under `library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/`), data in `library_data/<entity uuid>/`:
+`packages/miroir-example-library/assets/`: model in `library_model/` (Entity rows for `Author`, `Book`, `Country`, `Publisher`, `User`, `LendingHistoryItem` under `library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/`), data in `library_data/<entity uuid>/`:
 
 | Entity | Data folder |
 |---|---|
@@ -54,6 +66,8 @@ Only **`miroir-test-app_deployment-miroir`** currently ships a `{prefix}_modelVe
 Every application instance reads a `MiroirConfigClient` at startup. There are two variants (`emulateServer` true or false). That flag is **transport only**: HTTP to `miroir-server` versus an in-process stub. It does not turn AI, MCP, or designer tools on.
 
 What the process can do is a separate snapshot. See [Process capabilities](process-capabilities.md) for the synoptic (what each flag enables, where to set it, product-shape defaults).
+
+**Where it comes from (#321).** Run from this repository, the server, the web client and the tests derive their configuration from an **environment** (`environments/*.json`, selected by `MIROIR_ENV`, then `environments/local.json`, then `dev`): which applications are installed, and where each section lives. The Admin data of a running environment, including the Deployment and AdminApplication rows the environment implies, is in the gitignored `.miroir/<environment>/`; the tracked `miroir-app-admin/assets/admin_data` is only its seed. See [Environments](environments.md). The configuration files described below remain for the release binary, the Docker image and Electron.
 
 ### 1. Remote Server (`emulateServer: false`)
 
@@ -137,7 +151,7 @@ Each section (`admin`, `model`, `data`, and optionally `modelVersion`) of a depl
 ```
 
 - Used exclusively in the `miroir-sandbox` demo SPA.
-- All data is statically imported at build time from the deployment packages (`miroir-test-app_deployment-miroir`, `miroir-test-app_deployment-admin`).
+- All data is statically imported at build time from the deployment packages (`miroir-app-miroir`, `miroir-app-admin`).
 - Read-only: no writes are persisted.
 - **No model history:** the bundled Miroir profile has no `modelVersion` section and cannot host one (see [Versioning reference](versioning.md)).
 - Registered at startup via `miroirBundledStoreSectionStartup(configurationService, bundledData)`.
@@ -177,7 +191,7 @@ The `bundledData.ts` file in `miroir-sandbox` uses two separate sets (`MIROIR_MO
 
 An application can declare an **external HTTP service** as an `Endpoint` instance whose `definition` uses the `externalService` branch (key-union with the legacy `actions` branch — never both). The block holds provenance (`openApiDocument`), runtime `baseUrl`, a `securityScheme` discriminated union (`type: "http"` bearer with optional `credentialKey`; `type: "oauth2ClientCredentials"` with `tokenUrl` + `clientIdKey`/`clientSecretKey`; or `type: "oauth2AuthorizationCode"` with `tokenUrl` + `clientIdKey`/`clientSecretKey`/`refreshTokenKey` and optional `scopes` — all secret **names** only, exchanged for a token at runtime), `enabledOperations`, and materialized `operations[]` (GET only at sync time). For `oauth2AuthorizationCode` the framework performs only the OAuth2 refresh-token grant: user consent is out-of-band; the refresh token is the secret named by `refreshTokenKey`; when that name was hydrated from an Admin `MiroirSecret` row, a rotated refresh token is written back to the same row (in-process `registerSecrets` hatch values stay in memory only). Queries use `extractorForExternalService` / `extractorTemplateForExternalService`; execution is **server-process-only** (`POST /query` intercept when the boxed query contains an external extractor). Sync is a pure transformer (`syncExternalServiceSchema`) producing a reviewable `compositeActionSequence` that upserts `operations[]` and companion Entities.
 
-Entities backed by HTTP responses use `externalDataSource: { kind: "http", endpoint: <endpointUuid> }` (absent `kind` means SQL catalog external). All store backends **skip bootstrap** for `kind: "http"` — no data-section folder, no Sequelize model. HTTP report payloads live in the **query stash** (`contextResults` / the section’s `fetchedDataReference`), not in the Entity instance cache: they are never `loadNewInstancesInLocalCache`. `apiCallReportSection` types that stash from `Endpoint.operations[].responseSchema` without an Entity (#281). The Entity-backed `objectInstanceReportSection` path still works when an Entity is requested; it also does not persist HTTP rows as instances. Named secrets live as Admin `MiroirSecret` rows (entity uuid `a96856df-2b38-494a-8027-82617e2d64ad`), encrypted at rest with AES-256-GCM under a process wrapping key (`MIROIR_SECRETS_MASTER_KEY` or `--secrets-master-key` — [how to generate it](../reference/authentication.md#generate-the-wrapping-key)). `--secret <name>=<value>`, `MIROIR_SECRET_<NAME>`, and AI key env vars (`AI_OPENAI_KEY`, `AI_ANTHROPIC_KEY`, `AI_GOOGLE_KEY`, `AI_GITHUB_TOKEN`) are **bootstrap import only**; a later launch needs only the wrapping key. Endpoint instances still store secret **names** only. Values are never serialized into model JSON, generic REST/MCP responses, or the client cache (`ciphertext` is stripped like `passwordHash`). Writes go through CLI `--secret` import or labeled `secrets.set` / `secrets.delete` actions. See [`code-helpers/features/270-FEATURE-persistent-named-secrets/analysis.md`](../../code-helpers/features/270-FEATURE-persistent-named-secrets/analysis.md), [`code-helpers/features/267-FEATURE-openapi-external-services/analysis.md`](../../code-helpers/features/267-FEATURE-openapi-external-services/analysis.md), and the `miroir-test-app_deployment-spotify` example package.
+Entities backed by HTTP responses use `externalDataSource: { kind: "http", endpoint: <endpointUuid> }` (absent `kind` means SQL catalog external). All store backends **skip bootstrap** for `kind: "http"` — no data-section folder, no Sequelize model. HTTP report payloads live in the **query stash** (`contextResults` / the section’s `fetchedDataReference`), not in the Entity instance cache: they are never `loadNewInstancesInLocalCache`. `apiCallReportSection` types that stash from `Endpoint.operations[].responseSchema` without an Entity (#281). The Entity-backed `objectInstanceReportSection` path still works when an Entity is requested; it also does not persist HTTP rows as instances. Named secrets live as Admin `MiroirSecret` rows (entity uuid `a96856df-2b38-494a-8027-82617e2d64ad`), encrypted at rest with AES-256-GCM under a process wrapping key (`MIROIR_SECRETS_MASTER_KEY` or `--secrets-master-key` — [how to generate it](../reference/authentication.md#generate-the-wrapping-key)). `--secret <name>=<value>`, `MIROIR_SECRET_<NAME>`, and AI key env vars (`AI_OPENAI_KEY`, `AI_ANTHROPIC_KEY`, `AI_GOOGLE_KEY`, `AI_GITHUB_TOKEN`) are **bootstrap import only**; a later launch needs only the wrapping key. Endpoint instances still store secret **names** only. Values are never serialized into model JSON, generic REST/MCP responses, or the client cache (`ciphertext` is stripped like `passwordHash`). Writes go through CLI `--secret` import or labeled `secrets.set` / `secrets.delete` actions. See [`code-helpers/features/270-FEATURE-persistent-named-secrets/analysis.md`](../../code-helpers/features/270-FEATURE-persistent-named-secrets/analysis.md), [`code-helpers/features/267-FEATURE-openapi-external-services/analysis.md`](../../code-helpers/features/267-FEATURE-openapi-external-services/analysis.md), and the `miroir-example-spotify` example package.
 
 ---
 
@@ -233,12 +247,9 @@ Browser (CLIENT, remote)
 Browser (CLIENT, remote)
   └── RestClientStub --> in-process SERVER (local)
                             └── filesystem
-                                  ├── tests/assets/admin_model/
-                                  ├── tests/assets/admin_data/
-                                  ├── tests/tmp/miroir_model/
-                                  ├── tests/tmp/miroir_modelVersion/
-                                  ├── tests/tmp/library_data/
-                                  └── tests/tmp/library_modelVersion/
+                                  ├── .miroir/test-filesystem/admin/{model,data}/
+                                  ├── .miroir/test-filesystem/miroir/{model,data,modelVersion}/
+                                  └── .miroir/test-filesystem/library/{model,data,modelVersion}/
 ```
 
 `emulateServer: true`, `emulatedServerType: "filesystem"`. Versioned apps add a `modelVersion` directory. Test profiles that never use AI/MCP omit `features` (both false).

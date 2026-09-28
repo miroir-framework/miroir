@@ -1,0 +1,132 @@
+{
+  "date": "2026-09-27",
+  "tree": "f4fc620",
+  "npmAudit": {
+    "counts": {
+      "info": 0,
+      "low": 19,
+      "moderate": 25,
+      "high": 50,
+      "critical": 4,
+      "total": 98
+    },
+    "critical": [
+      "handlebars",
+      "shell-quote",
+      "tar",
+      "vitest"
+    ],
+    "high": [
+      "@babel/plugin-transform-modules-systemjs",
+      "@chevrotain/cst-dts-gen",
+      "@chevrotain/gast",
+      "@hono/node-server",
+      "@lerna/create",
+      "@nx/devkit",
+      "@xmldom/xmldom",
+      "app-builder-lib",
+      "axios",
+      "brace-expansion",
+      "browserslist",
+      "builder-util",
+      "builder-util-runtime",
+      "chevrotain",
+      "chevrotain-allstar",
+      "dmg-builder",
+      "electron",
+      "electron-builder",
+      "electron-builder-squirrel-windows",
+      "electron-publish",
+      "express-rate-limit",
+      "extract-zip",
+      "fast-uri",
+      "flatted",
+      "form-data",
+      "happy-dom",
+      "hono",
+      "http-proxy-middleware",
+      "ip-address",
+      "js-yaml",
+      "langium",
+      "lerna",
+      "lodash",
+      "lodash-es",
+      "minimatch",
+      "nanoid",
+      "nx",
+      "pacote",
+      "path-to-regexp",
+      "picomatch",
+      "postcss",
+      "sequelize",
+      "serialize-javascript",
+      "sigstore",
+      "tmp",
+      "underscore",
+      "undici",
+      "vite",
+      "ws",
+      "xlsx"
+    ]
+  },
+  "specStyles": {
+    "caret": 343,
+    "alias": 2,
+    "exact": 37,
+    "star_or_range": 120
+  },
+  "standaloneBuild": {
+    "jsChunks": 387,
+    "jsRawBytes": 27079719,
+    "jsGzipBytes": 6242811,
+    "sourcemapBytes": 53802812,
+    "eager": {
+      "chunks": 7,
+      "rawBytes": 10403904,
+      "gzipBytes": 2710648,
+      "files": [
+        {
+          "file": "index-*.js",
+          "rawBytes": 3165715
+        },
+        {
+          "file": "vendor-copilotkit-XMlhS4-*.js",
+          "rawBytes": 3055645
+        },
+        {
+          "file": "mermaid-VLURNSYL-D-*.js",
+          "rawBytes": 1954343
+        },
+        {
+          "file": "vendor-ag-grid-*.js",
+          "rawBytes": 1034359
+        },
+        {
+          "file": "index-*.js",
+          "rawBytes": 628071
+        },
+        {
+          "file": "vendor-mui-*.js",
+          "rawBytes": 338995
+        },
+        {
+          "file": "vendor-react-*.js",
+          "rawBytes": 226776
+        }
+      ]
+    }
+  },
+  "nonreg": {
+    "unit": {
+      "passed": 38,
+      "failed": 0,
+      "durationSeconds": 583
+    },
+    "filesystem": {
+      "passed": 74,
+      "failed": 0,
+      "durationSeconds": 1310
+    }
+  },
+  "fullBuildSeconds": 206
+}

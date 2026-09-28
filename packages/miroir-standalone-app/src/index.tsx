@@ -88,13 +88,7 @@ import {
   miroirUserCredential_AliceDev,
   miroirUserCredential_CarolDev,
   miroirUserCredential_DaveDev
-} from "miroir-test-app_deployment-admin";
-import miroirConfigEmulatedServerIndexedDb from "./assets/miroirConfig-emulatedServer-IndexedDb.json";
-import miroirConfigRealServerFilesystemGit from "./assets/miroirConfig-realServer-filesystem-git.json";
-import miroirConfigRealServerFilesystemTmp from "./assets/miroirConfig-realServer-filesystem-tmp.json";
-import miroirConfigRealServerIndexedDb from "./assets/miroirConfig-realServer-indexedDb.json";
-import miroirConfigRealServerSql from "./assets/miroirConfig-realServer-sql.json";
-import miroirConfig from "./assets/miroirConfig.json";
+} from "miroir-app-admin";
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
@@ -124,32 +118,13 @@ export const isElectron =
   typeof window.process === "object" &&
   window.process.versions?.electron;
 
-const miroirConfigFiles: { [k: string]: MiroirConfigClient } = {
-  miroirConfigEmulatedServerIndexedDb: miroirConfigEmulatedServerIndexedDb as MiroirConfigClient,
-  miroirConfigRealServerIndexedDb: miroirConfigRealServerIndexedDb as any as MiroirConfigClient,
-  miroirConfigRealServerFilesystemGit:
-    miroirConfigRealServerFilesystemGit as any as MiroirConfigClient,
-  miroirConfigRealServerFilesystemTmp:
-    miroirConfigRealServerFilesystemTmp as any as MiroirConfigClient,
-  miroirConfigRealServerSql: miroirConfigRealServerSql as any as MiroirConfigClient,
-};
+// #321: the client configuration of the selected environment (MIROIR_ENV, then
+// environments/local.json, then dev), injected by vite.config.js (vite/environmentConfig.js).
+declare const __MIROIR_CLIENT_CONFIG__: MiroirConfigClient;
+const webMiroirConfig: MiroirConfigClient | undefined =
+  typeof __MIROIR_CLIENT_CONFIG__ === "undefined" ? undefined : __MIROIR_CLIENT_CONFIG__;
 
-// ##############################################################################################
-// ##############################################################################################
-// const currentMiroirConfigName: string | undefined = "miroirConfigEmulatedServerIndexedDb"
-// const currentMiroirConfigName: string | undefined = "miroirConfigRealServerIndexedDb"
-const webMiroirConfigName: string | undefined = "miroirConfigRealServerFilesystemGit";
-// const currentMiroirConfigName: string | undefined = "miroirConfigRealServerFilesystemTmp"
-// const currentMiroirConfigName: string | undefined = "miroirConfigRealServerSql"
-// ##############################################################################################
-// ##############################################################################################
-
-const webMiroirConfig: MiroirConfigClient =
-  webMiroirConfigName && miroirConfigFiles[webMiroirConfigName]
-    ? miroirConfigFiles[webMiroirConfigName ?? ""]
-    : (miroirConfig as unknown as MiroirConfigClient);
-
-log.info("currentMiroirConfigName:", webMiroirConfigName, "currentMiroirConfig", webMiroirConfig);
+log.info("web client environment:", webMiroirConfig?.environment?.name, "configuration", webMiroirConfig);
 
 const miroirActivityTracker = new MiroirActivityTracker();
 const miroirEventService = new MiroirEventService(miroirActivityTracker);
@@ -438,15 +413,15 @@ async function startWebApp(root: Root) {
         "18db21bf-f8d3-4f6a-8296-84b69f6dc48b": {
           admin: {
             emulatedServerType: "filesystem",
-            directory: "miroir-test-app_deployment-admin/assets",
+            directory: "miroir-app-admin/assets",
           },
           model: {
             emulatedServerType: "filesystem",
-            directory: "miroir-test-app_deployment-admin/assets/admin_model",
+            directory: "miroir-app-admin/assets/admin_model",
           },
           data: {
             emulatedServerType: "filesystem",
-            directory: "miroir-test-app_deployment-admin/assets/admin_data",
+            directory: "miroir-app-admin/assets/admin_data",
           },
         },
       },
@@ -454,7 +429,12 @@ async function startWebApp(root: Root) {
   };
   // Electron uses desktopMiroirConfig (emulated server via IPC).
   // The browser webapp uses webMiroirConfig (real HTTP server).
-  const miroirConfigToUse = isElectron ? electronMiroirConfig : webMiroirConfig;
+  if (!isElectron && !webMiroirConfig) {
+    throw new Error(
+      "the web client has no configuration: serve or build it with Vite (vite.config.js), which injects the one of the selected environment",
+    );
+  }
+  const miroirConfigToUse = isElectron ? electronMiroirConfig : webMiroirConfig!;
   const {
     domainControllerForClient,
     domainControllerForServer: rawDomainControllerForServer,

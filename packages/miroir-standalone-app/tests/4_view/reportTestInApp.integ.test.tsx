@@ -38,7 +38,7 @@ import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
-import { entityReport, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { entityReport, selfApplicationMiroir } from "miroir-app-miroir";
 
 import { resetIntegTestRunCoordinatorForTests } from "../../src/miroir-fwk/4-tests/integTestRunCoordinator.js";
 import {
@@ -95,7 +95,7 @@ const leafLabel = "the application picker lists Library, not Miroir or Admin";
 
 const miroirReportsFolder = join(
   dirname(fileURLToPath(import.meta.url)),
-  "../../../miroir-test-app_deployment-miroir/assets/miroir_data",
+  "../../../miroir-app-miroir/assets/miroir_data",
   entityReport.uuid,
 );
 

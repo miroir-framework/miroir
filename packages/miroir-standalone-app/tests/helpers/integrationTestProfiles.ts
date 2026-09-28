@@ -3,13 +3,13 @@
  * Paths are relative to the repository root (joined with process.env.PWD in loadTestConfigFiles).
  */
 
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 import path from "node:path";
 
-import {
-  deriveTestSessionDefaultsFromMiroirConfig,
-  type MiroirConfigForDerivation,
-} from "./deriveTestSessionDefaultsFromMiroirConfig.js";
+import { isTestEnvironment } from "miroir-core";
+import { environmentClientConfig, resolveEnvironmentFromFiles } from "miroir-env";
+
+import { deriveTestSessionDefaultsFromMiroirConfig } from "./deriveTestSessionDefaultsFromMiroirConfig.js";
 
 export type IntegrationTestTransformerDefaults = {
   appStoreType?: "sql" | "filesystem" | "indexedDb" | "mongodb";
@@ -20,8 +20,15 @@ export type IntegrationTestTransformerDefaults = {
 
 export type IntegrationTestProfile = {
   name: string;
-  miroirConfigFilename: string;
   logConfigFilename: string;
+  /** #321: the test environment (environments/<name>.json) the profile selects through MIROIR_ENV. */
+  environment: string;
+  /**
+   * #321: `realServer` for a client that calls a running miroir-server with the stores of the
+   * environment (the realServer-* profiles); otherwise the client emulates the server in process.
+   * Selected through MIROIR_TEST_CLIENT.
+   */
+  client?: "realServer";
   /** Optional overrides merged on top of JSON-derived defaults (D2). */
   transformerDefaults?: IntegrationTestTransformerDefaults;
   description?: string;
@@ -32,13 +39,8 @@ export type ApplyIntegrationTestProfileOptions = {
   respectExistingEnv?: boolean;
 };
 
-const TESTS = "./packages/miroir-standalone-app/tests";
 /** Canonical consolidated log presets (shared by tests and dev/runtime). */
 const LOG_CONFIGS = "./packages/miroir-standalone-app/config/logging";
-
-function configPath(filename: string): string {
-  return `${TESTS}/${filename}`;
-}
 
 function logPath(filename: string): string {
   return `${LOG_CONFIGS}/${filename}`;
@@ -47,63 +49,55 @@ function logPath(filename: string): string {
 export const INTEGRATION_TEST_PROFILES: Record<string, IntegrationTestProfile> = {
   "emulatedServer-sql": {
     name: "emulatedServer-sql",
-    miroirConfigFilename: configPath("miroirConfig.test-emulatedServer-sql.json"),
     logConfigFilename: logPath("catch-all.json"),
-    description: "Local default — admin filesystem, miroir + library Postgres",
+    environment: "test-sql",
+    description: "Local default — admin filesystem, miroir + library Postgres (schemas test_sql_*)",
   },
   "emulatedServer-filesystem": {
     name: "emulatedServer-filesystem",
-    miroirConfigFilename: configPath("miroirConfig.test-emulatedServer-filesystem.json"),
     logConfigFilename: logPath("catch-all.json"),
-    description: "All store sections on filesystem (no Postgres)",
+    environment: "test-filesystem",
+    description: "All store sections on filesystem (no Postgres), in .miroir/test-filesystem",
   },
   "emulatedServer-indexedDb": {
     name: "emulatedServer-indexedDb",
-    miroirConfigFilename: configPath("miroirConfig.test-emulatedServer-indexedDb.json"),
     logConfigFilename: logPath("catch-all.json"),
-    description: "Miroir + library IndexedDB",
+    environment: "test-indexedDb",
+    description: "Miroir + library IndexedDB, in .miroir/test-indexedDb",
   },
   "emulatedServer-mongodb": {
     name: "emulatedServer-mongodb",
-    miroirConfigFilename: configPath("miroirConfig.test-emulatedServer-mongodb.json"),
     logConfigFilename: logPath("catch-all.json"),
-    description: "Miroir + library MongoDB",
-  },
-  "ci-emulatedServer-host-sql": {
-    name: "ci-emulatedServer-host-sql",
-    miroirConfigFilename: configPath("miroirConfig.test-ci-emulatedServer-host-sql.json"),
-    logConfigFilename: logPath("catch-all.json"),
-    description: "CI preset — host Postgres connection strings in JSON",
-  },
-  "ci-emulatedServer-dockerized-sql": {
-    name: "ci-emulatedServer-dockerized-sql",
-    miroirConfigFilename: configPath("miroirConfig.test-ci-emulatedServer-dockerized-sql.json"),
-    logConfigFilename: logPath("catch-all.json"),
-    description: "CI preset — dockerized Postgres connection strings in JSON",
+    environment: "test-mongodb",
+    description: "Miroir + library MongoDB (databases test_mongodb_*)",
   },
   "realServer-sql": {
     name: "realServer-sql",
-    miroirConfigFilename: configPath("miroirConfig.test-realServer-sql.json"),
     logConfigFilename: logPath("catch-all.json"),
-    description: "Client REST → live miroir-server (Postgres stores on server) — B6-c",
+    environment: "test-sql",
+    client: "realServer",
+    description: "Client REST → live miroir-server, on the Postgres stores of test-sql — B6-c",
   },
   "realServer-indexedDb": {
     name: "realServer-indexedDb",
-    miroirConfigFilename: configPath("miroirConfig.test-realServer-indexedDb.json"),
     logConfigFilename: logPath("catch-all.json"),
-    description: "Client REST → live miroir-server (IndexedDB stores on server) — B6-c",
+    environment: "test-indexedDb",
+    client: "realServer",
+    description: "Client REST → live miroir-server, on the IndexedDB stores of test-indexedDb — B6-c",
   },
   "realServer-filesystem": {
     name: "realServer-filesystem",
-    miroirConfigFilename: configPath("miroirConfig.test-realServer-filesystem.json"),
     logConfigFilename: logPath("catch-all.json"),
-    description: "Client REST → live miroir-server (filesystem stores on server) — B6-c",
+    environment: "test-filesystem",
+    client: "realServer",
+    description: "Client REST → live miroir-server, on the filesystem stores of test-filesystem — B6-c",
   },
   "realServer-mongodb": {
     name: "realServer-mongodb",
-    miroirConfigFilename: configPath("miroirConfig.test-realServer-mongodb.json"),
     logConfigFilename: logPath("catch-all.json"),
-    description: "Client REST → live miroir-server (MongoDB stores on server) — B6-c",
+    environment: "test-mongodb",
+    client: "realServer",
+    description: "Client REST → live miroir-server, on the MongoDB stores of test-mongodb — B6-c",
   },
 };
 
@@ -131,22 +125,13 @@ export function resolveRepoRoot(): string {
   }
 
   const standaloneAppRoot = path.resolve(process.cwd(), "..");
-  if (existsSync(path.join(standaloneAppRoot, "tests/miroirConfig.test-emulatedServer-sql.json"))) {
+  if (existsSync(path.join(standaloneAppRoot, "tests/helpers/integrationTestProfiles.ts"))) {
     return path.resolve(standaloneAppRoot, "../..");
   }
 
   throw new Error(
-    "Cannot resolve monorepo root for integration test profile JSON (set PWD to repo root)",
+    "Cannot resolve monorepo root for integration test profiles (set PWD to repo root)",
   );
-}
-
-export function loadMiroirConfigJsonFromProfilePath(relativePath: string): MiroirConfigForDerivation {
-  const normalized = relativePath.startsWith("./") ? relativePath.slice(2) : relativePath;
-  const configFilePath = path.join(resolveRepoRoot(), normalized);
-  if (!existsSync(configFilePath)) {
-    throw new Error(`Integration test profile config not found: ${configFilePath}`);
-  }
-  return JSON.parse(readFileSync(configFilePath, "utf8")) as MiroirConfigForDerivation;
 }
 
 export function resolveTransformerDefaultsForProfile(
@@ -154,7 +139,9 @@ export function resolveTransformerDefaultsForProfile(
 ): IntegrationTestTransformerDefaults {
   let derived: Partial<IntegrationTestTransformerDefaults> = {};
   try {
-    const config = loadMiroirConfigJsonFromProfilePath(profile.miroirConfigFilename);
+    const config = environmentClientConfig(
+      resolveEnvironmentFromFiles({ cwd: resolveRepoRoot(), env: { MIROIR_ENV: profile.environment } }),
+    );
     derived = deriveTestSessionDefaultsFromMiroirConfig(config);
   } catch {
     derived = {};
@@ -162,29 +149,47 @@ export function resolveTransformerDefaultsForProfile(
   return { ...derived, ...profile.transformerDefaults };
 }
 
-function applyEnvVar(key: string, value: string, respectExistingEnv: boolean): void {
-  if (respectExistingEnv && process.env[key]) {
-    return;
+/** Variables that select stores: a shell value that differs from the profile's is a deviation (#321). */
+const STORE_SELECTING_VARIABLES = new Set([
+  "MIROIR_ENV",
+  "MIROIR_TEST_CLIENT",
+  "VITE_MIROIR_TEST_CONFIG_FILENAME",
+  "MIROIR_TEST_APP_STORE_TYPE",
+  "MIROIR_TEST_ADMIN_STORE_TYPE",
+  "MIROIR_TEST_POSTGRES_HOST",
+  "MIROIR_TEST_ADMIN_SQL_SCHEMA",
+]);
+
+function isCi(env: NodeJS.ProcessEnv): boolean {
+  return Boolean(env.CI) && env.CI !== "false" && env.CI !== "0";
+}
+
+/** Sets `key` unless it is already set and respected; returns the deviation when the kept value differs. */
+function applyEnvVar(key: string, value: string, respectExistingEnv: boolean): string | undefined {
+  const existing = process.env[key];
+  if (respectExistingEnv && existing) {
+    return existing !== value && STORE_SELECTING_VARIABLES.has(key)
+      ? `${key}=${existing} is kept, the profile sets ${value}`
+      : undefined;
   }
   process.env[key] = value;
+  return undefined;
 }
 
 function applyTransformerDefaults(
   defaults: IntegrationTestTransformerDefaults,
   respectExistingEnv: boolean,
-): void {
-  if (defaults.appStoreType) {
-    applyEnvVar("MIROIR_TEST_APP_STORE_TYPE", defaults.appStoreType, respectExistingEnv);
-  }
-  if (defaults.adminStoreType) {
-    applyEnvVar("MIROIR_TEST_ADMIN_STORE_TYPE", defaults.adminStoreType, respectExistingEnv);
-  }
-  if (defaults.postgresHost) {
-    applyEnvVar("MIROIR_TEST_POSTGRES_HOST", defaults.postgresHost, respectExistingEnv);
-  }
-  if (defaults.adminSqlSchema) {
-    applyEnvVar("MIROIR_TEST_ADMIN_SQL_SCHEMA", defaults.adminSqlSchema, respectExistingEnv);
-  }
+): (string | undefined)[] {
+  return [
+    defaults.appStoreType &&
+      applyEnvVar("MIROIR_TEST_APP_STORE_TYPE", defaults.appStoreType, respectExistingEnv),
+    defaults.adminStoreType &&
+      applyEnvVar("MIROIR_TEST_ADMIN_STORE_TYPE", defaults.adminStoreType, respectExistingEnv),
+    defaults.postgresHost &&
+      applyEnvVar("MIROIR_TEST_POSTGRES_HOST", defaults.postgresHost, respectExistingEnv),
+    defaults.adminSqlSchema &&
+      applyEnvVar("MIROIR_TEST_ADMIN_SQL_SCHEMA", defaults.adminSqlSchema, respectExistingEnv),
+  ];
 }
 
 export function applyIntegrationTestProfile(
@@ -204,17 +209,37 @@ export function applyIntegrationTestProfile(
   }
 
   const respectExistingEnv = options.respectExistingEnv !== false;
+  const deviations: (string | undefined)[] = [];
 
-  applyEnvVar(
-    "VITE_MIROIR_TEST_CONFIG_FILENAME",
-    profile.miroirConfigFilename,
-    respectExistingEnv,
+  // only another test environment may take precedence: tests never run on dev or local
+  deviations.push(
+    applyEnvVar(
+      "MIROIR_ENV",
+      profile.environment,
+      respectExistingEnv && isTestEnvironment(process.env.MIROIR_ENV ?? ""),
+    ),
+    applyEnvVar("MIROIR_TEST_CLIENT", profile.client ?? "emulatedServer", respectExistingEnv),
   );
-  applyEnvVar("VITE_MIROIR_LOG_CONFIG_FILENAME", profile.logConfigFilename, respectExistingEnv);
+  // the environment replaces the configuration file: one set in the shell would be ignored
+  const configFile = process.env.VITE_MIROIR_TEST_CONFIG_FILENAME;
+  if (configFile && respectExistingEnv) {
+    deviations.push(
+      `VITE_MIROIR_TEST_CONFIG_FILENAME=${configFile} is ignored, the profile uses environment ${process.env.MIROIR_ENV}`,
+    );
+  }
+  delete process.env.VITE_MIROIR_TEST_CONFIG_FILENAME;
+  deviations.push(
+    applyEnvVar("VITE_MIROIR_LOG_CONFIG_FILENAME", profile.logConfigFilename, respectExistingEnv),
+    ...applyTransformerDefaults(resolveTransformerDefaultsForProfile(profile), respectExistingEnv),
+  );
 
-  const transformerDefaults = resolveTransformerDefaultsForProfile(profile);
-  if (Object.keys(transformerDefaults).length > 0) {
-    applyTransformerDefaults(transformerDefaults, respectExistingEnv);
+  const kept = deviations.filter((deviation): deviation is string => Boolean(deviation));
+  if (kept.length > 0) {
+    const message = `integration test profile ${profile.name}: ${kept.join("; ")}`;
+    if (isCi(process.env)) {
+      throw new Error(`${message} (CI runs use the profile's values only: unset these variables)`);
+    }
+    console.warn(`warning: ${message}`);
   }
 
   return profile;

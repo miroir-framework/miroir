@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { entityEntityVersion } from "miroir-test-app_deployment-miroir";
+import { entityEntityVersion } from "miroir-app-miroir";
 import type { Entity } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { versionHistoryEntityUuids } from "../../src/1_core/Model.js";
 import {
@@ -17,7 +17,7 @@ import {
   REPO_ROOT,
 } from "./versioningModes.testData.js";
 
-const MIROIR_DATA = join(REPO_ROOT, "packages/miroir-test-app_deployment-miroir/assets/miroir_data");
+const MIROIR_DATA = join(REPO_ROOT, "packages/miroir-app-miroir/assets/miroir_data");
 const MIROIR_MODEL_VERSION = join(REPO_ROOT, MIROIR_MODEL_VERSION_ASSETS_DIR);
 const ENTITY_VERSION_METACLASS = join(REPO_ROOT, MIROIR_ENTITY_VERSION_METACLASS_PATH);
 const DEPLOYMENT_INDEX = join(REPO_ROOT, MIROIR_DEPLOYMENT_INDEX);

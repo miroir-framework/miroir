@@ -1,4 +1,4 @@
-import { deployment_Admin } from "miroir-test-app_deployment-admin";
+import { deployment_Admin } from "miroir-app-admin";
 import type { BundledDeploymentData } from "miroir-store-bundled";
 import type { MiroirConfigClient } from "miroir-core";
 

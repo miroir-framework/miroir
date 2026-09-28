@@ -7,14 +7,14 @@
 ## Prerequisites
 
 ```bash
-npm run build -w miroir-test-app_deployment-miroir
+npm run build -w miroir-app-miroir
 npm run devBuild -w miroir-core   # includes generated types
 ```
 
 Integration tests need a reachable store when using SQL/ MongoDB configs:
 
 - **MiroirTest integ** (`testMiroir`): configure via `MIROIR_TEST_*` (default Postgres host `localhost`).
-- **App-stack integ** (`testByFile`): configure via `miroirConfig.test-*.json` files and `VITE_MIROIR_TEST_CONFIG_FILENAME`. Check `filesystemDeploymentRootDirectory` in the chosen config matches your machine.
+- **App-stack integ** (`testByFile`): pick the store with `--profile` (`emulatedServer-filesystem`, `emulatedServer-sql`, …), which selects a test environment (`environments/test-*.json`, see [Environments](../reference/environments.md)). Its stores are copies in `.miroir/<environment>/`, so no test writes tracked files. For sql, set `MIROIR_POSTGRES_PASSWORD`.
 
 ---
 
@@ -114,7 +114,7 @@ npm run testByFile -w miroir-core -- tests/4_services/PersistenceStoreController
 After changing Query / Endpoint ML schemas for `attributes` (or any fundamental schema), rebuild before these tests:
 
 ```bash
-npm run build -w miroir-test-app_deployment-miroir
+npm run build -w miroir-app-miroir
 npm run devBuild -w miroir-core
 ```
 
@@ -154,17 +154,17 @@ npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql --suites action.domainController.dataCrud --mode integ
 
 # Deprecated imperative Data CRUD (parity harness — keep green; do not delete yet)
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+MIROIR_ENV=test-sql \
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
 npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
 
 # All DomainController suites
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+MIROIR_ENV=test-sql \
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
 npm run testByFile -w miroir-standalone-app -- DomainController.integ
 
 # Persistence store controller
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+MIROIR_ENV=test-sql \
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
 npm run testByFile -w miroir-standalone-app -- PersistenceStoreController.integ
 
@@ -173,7 +173,7 @@ npm run testByFile -w miroir-standalone-app -- \
   --profile emulatedServer-filesystem PersistenceStoreController.integ
 
 # Extractor runner (IndexedDB example)
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json \
+MIROIR_ENV=test-indexedDb \
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
 npm run testByFile -w miroir-standalone-app -- ExtractorPersistenceStoreRunner.integ
 ```
@@ -197,9 +197,9 @@ npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "MlTest
 MIROIR_COMPONENT_PERF=1 VITE_MIROIR_LOG_CONFIG_FILENAME=catch-all-detailed \
   npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "MlEditorRenderPerformance"
 
-# After a change to an instance JSON in miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-…/
-npm run build -w miroir-test-app_deployment-miroir
-npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts
+# After a change to an instance JSON in miroir-app-miroir/assets/miroir_data/a311f363-…/
+npm run build -w miroir-app-miroir
+npm run testByFile -w miroir-app-miroir -- modelValidation.unit.test.ts
 npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency
 ```
 
@@ -214,7 +214,7 @@ The same cases run in the app: open one of the instances in the Miroir Tests rep
 RTL proof for **Run Integration Tests** from the Miroir Tests report (`MiroirTestDisplay` → inspector). Single leaf: Return Book on `runner.returnDocument`.
 
 ```bash
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+MIROIR_ENV=test-sql \
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
 npm run testByFile -w miroir-standalone-app -- MiroirTestDisplayIntegrationLaunch.integ
 ```
@@ -311,7 +311,7 @@ Do **not** modify `UnitTestTools.ts` or `TestTools.ts` for new features — exte
 npm run testByFile -w miroir-core -- miroir-core-tests.unit.test
 
 # DomainController integ — with debug logging
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+MIROIR_ENV=test-sql \
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
 npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
 ```

@@ -4,7 +4,7 @@ import {
   defaultSelfApplicationDeploymentMap,
   type DomainControllerInterface,
 } from "miroir-core";
-import { deployment_Admin } from "miroir-test-app_deployment-admin";
+import { deployment_Admin } from "miroir-app-admin";
 
 const setupMiroirDomainControllerMock = vi.fn();
 
@@ -62,10 +62,20 @@ import {
   buildIntegrationTestModelEnvironment,
   buildTestApplicationStoreUnitConfiguration,
   collectStoreUnitConfigurationServerTypes,
-  resolveDefaultAdminAssetsRoot,
-  resolveDefaultFilesystemDeploymentRoot,
   resolveTestSessionForIntegOptionsFromEnv,
 } from "./IntegrationTestSession.js";
+import { resolveRepoRoot } from "./integrationTestProfiles.js";
+
+/** The Admin copy of the test-sql environment, relative to the repository root. */
+const TEST_SQL_ADMIN = {
+  emulatedServerType: "filesystem" as const,
+  directories: {
+    admin: ".miroir/test-sql/admin",
+    model: ".miroir/test-sql/admin/model",
+    data: ".miroir/test-sql/admin/data",
+  },
+  filesystemDeploymentRootDirectory: resolveRepoRoot(),
+};
 
 function createMockDomainController(): DomainControllerInterface {
   return {
@@ -114,17 +124,14 @@ describe("IntegrationTestSession store configuration", () => {
     expect(config.data.database).toBe("testApplication");
   });
 
-  it("builds filesystem admin store with relative asset paths", () => {
-    const filesystemRoot = resolveDefaultFilesystemDeploymentRoot();
-    const adminAssetsRoot = resolveDefaultAdminAssetsRoot();
+  it("builds filesystem admin store from the section directories, relative to the filesystem root", () => {
     const config = buildAdminStoreUnitConfiguration({
-      emulatedServerType: "filesystem",
-      adminAssetsRootDirectory: adminAssetsRoot,
-      filesystemDeploymentRootDirectory: filesystemRoot,
+      ...TEST_SQL_ADMIN,
+      directories: { ...TEST_SQL_ADMIN.directories, admin: `${resolveRepoRoot()}/.miroir/test-sql/admin` },
     });
-    expect(config.admin.directory).toBe("tests/assets/admin");
-    expect(config.model.directory).toBe("tests/assets/admin_model");
-    expect(config.data.directory).toBe("tests/assets/admin_data");
+    expect(config.admin.directory).toBe(".miroir/test-sql/admin");
+    expect(config.model.directory).toBe(".miroir/test-sql/admin/model");
+    expect(config.data.directory).toBe(".miroir/test-sql/admin/data");
   });
 
   it("builds bundled admin store for deployment_Admin", () => {
@@ -146,34 +153,47 @@ describe("IntegrationTestSession store configuration", () => {
         emulatedServerType: "sql",
         postgresHostName: "127.0.0.1",
       }),
-      buildAdminStoreUnitConfiguration({
-        emulatedServerType: "filesystem",
-        adminAssetsRootDirectory: resolveDefaultAdminAssetsRoot(),
-        filesystemDeploymentRootDirectory: resolveDefaultFilesystemDeploymentRoot(),
-      }),
+      buildAdminStoreUnitConfiguration(TEST_SQL_ADMIN),
     );
     expect(types).toEqual(new Set(["sql", "filesystem"]));
   });
 
-  it("resolveTestSessionForIntegOptionsFromEnv defaults to sql app + filesystem admin", () => {
-    const options = resolveTestSessionForIntegOptionsFromEnv({
-      MIROIR_TEST_POSTGRES_HOST: "10.0.0.5",
-    });
-    expect(options.testApplicationStore).toEqual({
-      emulatedServerType: "sql",
-      postgresHostName: "10.0.0.5",
-    });
-    expect(options.adminStore.emulatedServerType).toBe("filesystem");
+  it("resolveTestSessionForIntegOptionsFromEnv without a profile runs on test-sql: Postgres on localhost, the environment's Admin (#321)", () => {
+    const options = resolveTestSessionForIntegOptionsFromEnv({});
+
+    expect(options.testApplicationStore.emulatedServerType).toBe("sql");
+    expect("connectionString" in options.testApplicationStore && options.testApplicationStore.connectionString).toMatch(
+      /^postgres:\/\/postgres(:[^@]*)?@localhost:5432\/postgres$/,
+    );
+    expect(options.adminStore).toEqual(TEST_SQL_ADMIN);
+    expect(options.filesystemDeploymentRootDirectory).toBe(resolveRepoRoot());
   });
 
-  it("resolveTestSessionForIntegOptionsFromEnv uses repo-relative filesystem app root", () => {
-    const options = resolveTestSessionForIntegOptionsFromEnv({
-      MIROIR_TEST_APP_STORE_TYPE: "filesystem",
-    });
-    expect(options.testApplicationStore).toEqual({
+  it("resolveTestSessionForIntegOptionsFromEnv: MIROIR_TEST_POSTGRES_HOST replaces the environment's host", () => {
+    const options = resolveTestSessionForIntegOptionsFromEnv({ MIROIR_TEST_POSTGRES_HOST: "10.0.0.5" });
+
+    expect("connectionString" in options.testApplicationStore && options.testApplicationStore.connectionString).toMatch(
+      /@10\.0\.0\.5:5432\/postgres$/,
+    );
+  });
+
+  it("resolveTestSessionForIntegOptionsFromEnv puts a filesystem test application next to the environment's Admin", () => {
+    expect(
+      resolveTestSessionForIntegOptionsFromEnv({ MIROIR_ENV: "test-filesystem" }).testApplicationStore,
+    ).toEqual({
       emulatedServerType: "filesystem",
-      applicationRootDirectory: "tests/tmp/testApplication",
+      applicationRootDirectory: ".miroir/test-filesystem/testApplication",
     });
+    expect(
+      resolveTestSessionForIntegOptionsFromEnv({ MIROIR_TEST_APP_STORE_TYPE: "filesystem" }).testApplicationStore,
+    ).toEqual({
+      emulatedServerType: "filesystem",
+      applicationRootDirectory: ".miroir/test-sql/testApplication",
+    });
+  });
+
+  it("resolveTestSessionForIntegOptionsFromEnv ignores a MIROIR_ENV that is not a test environment", () => {
+    expect(resolveTestSessionForIntegOptionsFromEnv({ MIROIR_ENV: "dev" }).adminStore).toEqual(TEST_SQL_ADMIN);
   });
 });
 
@@ -193,11 +213,7 @@ describe("IntegrationTestSession session lifecycle", () => {
 
     const session = new IntegrationTestSession({
       testApplicationStore: { emulatedServerType: "sql", postgresHostName: "127.0.0.1" },
-      adminStore: {
-        emulatedServerType: "filesystem",
-        adminAssetsRootDirectory: resolveDefaultAdminAssetsRoot(),
-        filesystemDeploymentRootDirectory: resolveDefaultFilesystemDeploymentRoot(),
-      },
+      adminStore: TEST_SQL_ADMIN,
     });
     const env = await session.initSession();
 
@@ -239,11 +255,7 @@ describe("IntegrationTestSession session lifecycle", () => {
 
     const session = new IntegrationTestSession({
       testApplicationStore: { emulatedServerType: "sql", postgresHostName: "127.0.0.1" },
-      adminStore: {
-        emulatedServerType: "filesystem",
-        adminAssetsRootDirectory: resolveDefaultAdminAssetsRoot(),
-        filesystemDeploymentRootDirectory: resolveDefaultFilesystemDeploymentRoot(),
-      },
+      adminStore: TEST_SQL_ADMIN,
     });
     await session.initSession();
     vi.mocked(domainController.handleAction).mockClear();
@@ -259,11 +271,7 @@ describe("IntegrationTestSession session lifecycle", () => {
 
     const session = new IntegrationTestSession({
       testApplicationStore: { emulatedServerType: "sql", postgresHostName: "127.0.0.1" },
-      adminStore: {
-        emulatedServerType: "filesystem",
-        adminAssetsRootDirectory: resolveDefaultAdminAssetsRoot(),
-        filesystemDeploymentRootDirectory: resolveDefaultFilesystemDeploymentRoot(),
-      },
+      adminStore: TEST_SQL_ADMIN,
     });
     await session.initSession();
     vi.mocked(domainController.handleCompositeAction).mockClear();

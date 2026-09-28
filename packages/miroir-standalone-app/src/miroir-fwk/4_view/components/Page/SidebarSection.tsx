@@ -14,7 +14,7 @@ import {
 
 import {
 adminSelfApplication,
-} from "miroir-test-app_deployment-admin";
+} from "miroir-app-admin";
 import {
   defaultSelfApplicationDeploymentMap,
   Domain2QueryReturnType,
@@ -46,7 +46,7 @@ import {
   entityMenu,
   menuApplicationModelScopeTemplate,
   selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 import {
   isApplicationModelScopeInjectionActive,
   mergeApplicationModelScopeMenuItems,

@@ -243,9 +243,10 @@ def test_rewrite_internal_wildcard_ranges_makes_ranges_releaseable(repo: Path) -
 
     assert set(rewritten) == {"app", "lib"}
     app_manifest = json.loads((repo / "packages" / "app" / "package.json").read_text(encoding="utf-8"))
-    assert app_manifest["dependencies"] == {"core": "^1.3.0", "lib": "^1.3.0"}
+    # Exact versions, never "^1.3.0" (#326): a released package pins the internal packages released with it.
+    assert app_manifest["dependencies"] == {"core": "1.3.0", "lib": "1.3.0"}
     lib_manifest = json.loads((repo / "packages" / "lib" / "package.json").read_text(encoding="utf-8"))
-    assert lib_manifest["dependencies"] == {"core": "^1.3.0"}
+    assert lib_manifest["dependencies"] == {"core": "1.3.0"}
     # Nothing to rewrite for 'core' (it has no internal runtime dependencies itself).
     verify_release_ranges(repo, plan)
 

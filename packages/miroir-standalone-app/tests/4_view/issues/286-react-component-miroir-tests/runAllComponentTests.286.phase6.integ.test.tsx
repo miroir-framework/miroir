@@ -52,7 +52,7 @@ import {
   entityReport,
   entitySelfApplicationVersion,
   selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
 vi.mock("../../../../src/miroir-fwk/4-tests/componentTests/index", async (importOriginal) => {
   const actual = await importOriginal<
@@ -77,7 +77,7 @@ import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 // ################################################################################################
 const MIROIR_TEST_DATA_FOLDER = join(
   resolveRepoRoot(),
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b",
+  "packages/miroir-app-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b",
 );
 /** Transformer suite run next to the component suite: 5 `transformerTest` leaves. */
 const TRANSFORMER_SUITE_UUID = "10bd8532-8d3e-40ca-a029-b43a38d11ea0";

@@ -25,18 +25,18 @@ import {
   type StoreUnitConfiguration,
   type TestbedUuids,
 } from "miroir-core";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { deployment_Miroir } from "miroir-app-admin";
 import {
   defaultAppForTestModel,
   deployment_AppForTest_DO_NO_USE,
   selfApplicationAppForTest,
-} from "miroir-test-app_deployment-appForTest";
+} from "miroir-fixture-appForTest";
 import {
   defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
-import { defaultMiroirMetaModel, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+} from "miroir-example-library";
+import { defaultMiroirMetaModel, selfApplicationMiroir } from "miroir-app-miroir";
 import { browserMcpServerUrl, runMcpToolRunner } from "../4_view/components/Runners/runMcpToolRunner.js";
 import { runRealServerClientBootstrap } from "./runRealServerClientBootstrap.js";
 import { runTeardownTestApplicationStores } from "./testApplicationStoreTeardown.js";
@@ -458,7 +458,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
                 miroirDeploymentUuid: deployment_Miroir.uuid,
                 miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
               }
-            : undefined,
+            : false,
         },
       );
       this.runnerTestContext.runtimeContext = {};
@@ -477,10 +477,11 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       },
       {
         clearDocumentBody: false, // Keep UI mounted during browser-triggered integration runs.
+        // a real server keeps its own Miroir deployment (#321): never reset it
         resetMiroirPlatform: emulateServer ? {
           miroirDeploymentUuid: deployment_Miroir.uuid,
           miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
-        } : undefined,
+        } : false,
         ...(resetParams
           ? {
               integTestbedResetParams: {

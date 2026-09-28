@@ -1,0 +1,31 @@
+{
+  "name": "miroir-env",
+  "version": "0.5.0-rc.1",
+  "description": "Environment definitions for Miroir: which applications are installed, on which stores, for development and tests (#321)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "bin": {
+    "miroir-env": "./dist/cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miroir-framework/miroir.git"
+  },
+  "author": "Miroir Framework <miroir-framework@protonmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsup",
+    "devBuild": "npm run build",
+    "test": "cross-env NODE_ENV=test vitest run --poolOptions.threads.singleThread",
+    "testByFile": "cross-env NODE_ENV=test vitest run"
+  },
+  "dependencies": {
+    "miroir-core": "*"
+  },
+  "devDependencies": {
+    "miroir-localcache-redux": "*",
+    "miroir-store-filesystem": "*",
+    "tsup": "8.5.1"
+  }
+}

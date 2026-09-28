@@ -5,7 +5,7 @@ import { useEffect, useRef } from "react";
 import React from "react";
 import { describe, expect, it, vi } from "vitest";
 
-import { book1 } from "miroir-test-app_deployment-library";
+import { book1 } from "miroir-example-library";
 
 import { ReportSectionListDisplay } from "../../src/miroir-fwk/4_view/components/Reports/ReportSectionListDisplay.js";
 import {
@@ -23,7 +23,7 @@ import {
   deployment_Library_DO_NO_USE,
   reportBookList,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 
 vi.mock("../../src/miroir-fwk/4_view/components/JsonObjectEditFormDialog.js", () => ({
   JsonObjectEditFormDialog: () => null,

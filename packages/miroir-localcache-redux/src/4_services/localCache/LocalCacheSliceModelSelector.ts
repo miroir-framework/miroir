@@ -34,7 +34,7 @@ import {
   entityRunner,
   entitySelfApplicationVersion,
   selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";
 import {
@@ -44,7 +44,7 @@ import {
   selectMiroirSelectorQueryParams,
 } from "./LocalCacheSliceSelectors.js";
 import { ReduxStateWithUndoRedo } from "./localCacheReduxSliceInterface.js";
-import { entityMiroirTest, entitySelfApplication, entityTheme } from "miroir-test-app_deployment-miroir";
+import { entityMiroirTest, entitySelfApplication, entityTheme } from "miroir-app-miroir";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "LocalCacheSliceModelSelector");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});

@@ -38,7 +38,7 @@ import {
   entityEndpointVersion,
   entityMenu,
   selfApplicationMiroir
- } from "miroir-test-app_deployment-miroir";
+ } from "miroir-app-miroir";
 import {
   ReduxStateWithUndoRedo,
   applyDomainStateQuerySelectorForCleanedResult,
@@ -55,7 +55,7 @@ import {
   useSelector,
 } from "miroir-react";
 
-import { adminSelfApplication, entityDeployment } from "miroir-test-app_deployment-admin";
+import { adminSelfApplication, entityDeployment } from "miroir-app-admin";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
 

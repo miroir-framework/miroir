@@ -7,7 +7,7 @@ import {
   deployment_Admin,
   deployment_Miroir,
   menuDefaultAdmin
-} from "miroir-test-app_deployment-admin";
+} from "miroir-app-admin";
 
 import { JsonDisplayHelper, useMiroirContextService } from 'miroir-react';
 import { packageName } from '../../../../constants.js';
@@ -23,7 +23,7 @@ import {
 } from "../Themes/index";
 import { SidebarSection } from './SidebarSection.js';
 
-import { menuDefaultMiroir, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { menuDefaultMiroir, selfApplicationMiroir } from "miroir-app-miroir";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Sidebar");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",

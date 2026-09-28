@@ -22,8 +22,8 @@ import {
   resetIntegTestbed,
   StoreUnitConfiguration
 } from "miroir-core";
-import { deployment_Admin, deployment_Miroir } from "miroir-test-app_deployment-admin";
-import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-library";
+import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
+import { deployment_Library_DO_NO_USE } from "miroir-example-library";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
@@ -44,7 +44,7 @@ import {
   getDefaultLibraryModelEnvironmentDEFUNCT,
   springer as publisher3,
   selfApplicationLibrary
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import type {
   ApplicationDeploymentMap,
   Deployment,
@@ -66,7 +66,7 @@ import {
   defaultMiroirMetaModel,
   entityEntity,
   selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
 const expectedMiroirEntitiesWithEnInName = ignorePostgresExtraAttributesOnList(
   defaultMiroirMetaModel.entities.filter((entity) =>

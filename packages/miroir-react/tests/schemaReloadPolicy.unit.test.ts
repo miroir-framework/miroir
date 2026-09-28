@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { deployment_Miroir } from "miroir-app-admin";
 import {
   defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import {
   classifySchemaChange,
   computeSchemaRevision,
@@ -14,7 +14,7 @@ import {
   selfApplicationMiroir,
   defaultMiroirMetaModel,
   entityDefinitionEntity,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 import {
   evaluateSchemaRevisionChange,
   resolveSchemaForDeploymentPolicy,

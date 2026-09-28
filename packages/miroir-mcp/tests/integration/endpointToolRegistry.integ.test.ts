@@ -56,9 +56,9 @@ import {
   user2,
   user3,
   defaultLibraryAppModel,
-} from "miroir-test-app_deployment-library";
-import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
-import { adminSelfApplication, deployment_Admin, deployment_Miroir } from "miroir-test-app_deployment-admin";
+} from "miroir-example-library";
+import { defaultMiroirMetaModel } from "miroir-app-miroir";
+import { adminSelfApplication, deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 
 import { loadMiroirMcpConfig } from "../../src/config/configLoader.js";
 import { MiroirMcpConfig } from "../../src/config/configSchema.js";

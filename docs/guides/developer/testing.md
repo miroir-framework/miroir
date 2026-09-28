@@ -33,7 +33,7 @@ The UI always runs **unit** mode.
 Instances live under:
 
 ```
-packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/
+packages/miroir-app-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/
 ```
 
 Each file is a `MiroirTestDefinition` with a nested `miroirTestSuite` tree. Leaf kinds:
@@ -148,7 +148,7 @@ npm run testByFile -w miroir-standalone-app -- \
   --storage sql uiIntegrationTestLauncher.realServer.integ
 
 # Legacy — explicit env for imperative Data CRUD
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+MIROIR_ENV=test-sql \
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
 npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
 ```
@@ -168,7 +168,7 @@ Filter one editor: `npm run testByFile -w miroir-standalone-app -- miroir-compon
 **MiroirTestDisplay integration launch (B6-d1)** — RTL proof for the **Run Integration Tests** button (`tests/4_view/MiroirTestDisplayIntegrationLaunch.integ.test.tsx`). Return Book leaf on `runner.returnDocument`; Postgres required (Node SQL mock env):
 
 ```bash
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+MIROIR_ENV=test-sql \
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
 npm run testByFile -w miroir-standalone-app -- MiroirTestDisplayIntegrationLaunch.integ
 ```
@@ -202,7 +202,7 @@ Legacy **Unit Test** / **Transformer Test** reports still exist; prefer **Miroir
 
 1. Add a `MiroirTest` JSON instance in the application's MiroirTest folder (RFC 4122 v4 UUID as filename). Its `name` is the suite key, `<kind>.<subject>[.<variant>]` with kind `fn`, `query`, `tr`, `action`, `runner` or `ui`; see [Names and descriptions](../../reference/testing.md#names-and-descriptions).
 2. Optional: export `miroirTest_<name with . replaced by _>` from the deployment package `index.ts` if other TypeScript wants a named import.
-3. Rebuild that package if you added a named export: `npm run build -w miroir-test-app_deployment-miroir`.
+3. Rebuild that package if you added a named export: `npm run build -w miroir-app-miroir`.
 4. Validate schema: run `tests/4_services/miroirTest.schema.unit.test.ts`.
 5. Run: `npm run testMiroir -w miroir-core -- --suites myNewSuite --mode unit`. TypeScript files that have no MiroirTest entity are PLATFORM — launch those with `testByFile`.
 

@@ -1,0 +1,30 @@
+# Dependency and action updates reach _integration only as Dependabot PRs, at least 7 days
+# after their release (#326, docs/contributing/development-setup.md, Dependency policy).
+# Security updates are the exception: Dependabot opens them against the default branch (main),
+# whatever target-branch says.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    target-branch: _integration
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      npm-minor-and-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]
+    open-pull-requests-limit: 10
+  - package-ecosystem: github-actions
+    directories:
+      - /
+      - /.github/actions/*
+    target-branch: _integration
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      github-actions:
+        patterns: ["*"]

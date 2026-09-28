@@ -44,7 +44,7 @@ import {
   defaultAdminViewParams,
   deployment_Admin,
   entityDeployment
-} from "miroir-test-app_deployment-admin";
+} from "miroir-app-admin";
 
 import {
   getMemoizedReduxDeploymentsStateSelectorMap,
@@ -65,7 +65,7 @@ import AppBar from './AppBar.js';
 import { deploymentReportsEntitiesMapping } from './deploymentReportsEntitiesMapping.js';
 
 import { JsonDisplayHelper } from 'miroir-react';
-import { defaultStoredMiroirTheme, selfApplicationMiroir } from 'miroir-test-app_deployment-miroir';
+import { defaultStoredMiroirTheme, selfApplicationMiroir } from 'miroir-app-miroir';
 import { packageName } from '../../../../constants.js';
 import {
   useCurrentModel,

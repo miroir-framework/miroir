@@ -44,10 +44,10 @@ ci/release/
 reference** that is intentional in normal development:
 
 - `miroir-core`'s `devBuild` (`generate-ts-types`) does a real value-level `import`
-  from the *built* `miroir-test-app_deployment-miroir` and
-  `miroir-test-app_deployment-admin` packages, to regenerate TypeScript types from
+  from the *built* `miroir-app-miroir` and
+  `miroir-app-admin` packages, to regenerate TypeScript types from
   their ML schema assets.
-- Conversely, `miroir-test-app_deployment-miroir`'s `src/Model.ts` /
+- Conversely, `miroir-app-miroir`'s `src/Model.ts` /
   `runnerMiroirEntityTestRegistry.ts` `import type { ... } from "miroir-core"`.
 
 In every package's manifest, this pair of edges is declared with two **different
@@ -114,9 +114,9 @@ selected package would still carry `"*"` runtime edges after `lerna version` run
 `rewrite_internal_wildcard_ranges()` closes that gap immediately after `lerna
 version` (and after unselected packages are restored, §5 step 3): it walks every
 selected package's `RUNTIME_KINDS` entries and force-rewrites any `"*"` or `file:`
-value that points at another *selected* package to `^<product_version>` — the same
-shape Lerna itself produces for the rare internal edges that already used a real
-semver range.
+value that points at another *selected* package to the exact `<product_version>`,
+never a `^` range: a released package pins the internal packages released with it
+(dependency policy, #326).
 
 ```12:44:ci/release/release_lib/lerna_ops.py
 def rewrite_internal_wildcard_ranges(repo_root: Path, plan: ReleasePlan) -> list[str]:
@@ -135,7 +135,7 @@ def rewrite_internal_wildcard_ranges(repo_root: Path, plan: ReleasePlan) -> list
                     continue
                 value = dependencies[dependency]
                 if value == "*" or (isinstance(value, str) and value.startswith("file:")):
-                    dependencies[dependency] = f"^{plan.product_version}"
+                    dependencies[dependency] = plan.product_version
                     changed = True
         if changed:
             dump_json(workspace.path, manifest)
@@ -186,7 +186,7 @@ Since `dist/` and `node_modules/` are both git-ignored, the fresh worktree start
 3. Restore the manifests of any package **outside** the selected closure (Lerna must
    not be allowed to permanently rewrite packages the release manager didn't approve).
 4. `rewrite_internal_wildcard_ranges()` — force-rewrite any `"*"`/`file:` runtime edge
-   between two selected packages to `^<product_version>` — see §4 (Lerna does not do
+   between two selected packages to the exact `<product_version>` — see §4 (Lerna does not do
    this on its own).
 5. Rewrite root `package.json` / `lerna.json` to the product version.
 6. `npm install --package-lock-only --ignore-scripts` (lockfile sync).
@@ -194,9 +194,9 @@ Since `dist/` and `node_modules/` are both git-ignored, the fresh worktree start
 8. `verify_release_ranges()` — see §4.
 9. `npm ci --ignore-scripts`.
 
-By step 9, every selected package's internal runtime edges are concrete
-`^<product_version>` ranges (step 4), so `npm ci` resolves them as ordinary
-in-range workspace matches — no bootstrap trick needed there anymore. The
+By step 9, every selected package's internal runtime edges are the exact
+`<product_version>` (step 4), so `npm ci` resolves them as ordinary exact
+workspace matches — no bootstrap trick needed there anymore. The
 `"*"`-bypasses-pre-release-exclusion behavior from §2 is still relied on exactly
 once in this flow: for `deployment-miroir`/`deployment-admin`'s **dev-only**
 `"miroir-core": "*"` edge, which step 4 deliberately never touches.
@@ -361,7 +361,7 @@ fully resolved and verified — the artefact pipeline never needs to reason abou
 | | Dev worktree (`build-all.sh`) | Release worktree (`ci/release/`) |
 |---|---|---|
 | Bootstrap edge value | Stays `"*"` forever | Stays `"*"` forever too (§4) — never rewritten |
-| Runtime edges | Stay `"*"` during normal dev | Rewritten to `^<product_version>` by `rewrite_internal_wildcard_ranges()` (§4) — Lerna itself leaves `"*"` untouched |
+| Runtime edges | Stay `"*"` during normal dev | Rewritten to the exact `<product_version>` by `rewrite_internal_wildcard_ranges()` (§4) — Lerna itself leaves `"*"` untouched |
 | Ordering mechanism | Hand-maintained `STAGE_*` arrays | Derived from `dependencies`/`peerDependencies` vs `devDependencies` classification (§3) |
 | `node_modules` state | Long-lived, incrementally updated | Fresh per release, `npm ci`'d once versions/ranges are final |
 | Validation | `npm run build` succeeding | + `npm pack` + isolated `file:` consumer install per distributeable layer (§6) |

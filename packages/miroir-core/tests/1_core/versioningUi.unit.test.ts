@@ -9,15 +9,15 @@ const FREEZE_MODULE_PATH = join(
 );
 const RUNNER_DATA_DIR = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_data/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+  "packages/miroir-app-miroir/assets/miroir_data/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
 );
 const SAV_ENTITY_PATH = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json",
+  "packages/miroir-app-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json",
 );
 const AV_LIST_REPORT_PATH = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/0810de28-fdab-4baf-8935-7e04a8f779a9.json",
+  "packages/miroir-app-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/0810de28-fdab-4baf-8935-7e04a8f779a9.json",
 );
 
 const VERSIONING_UI = {
@@ -79,7 +79,7 @@ describe("Versioning UI contracts", () => {
     );
     const detailsPath = join(
       REPO_ROOT,
-      `packages/miroir-test-app_deployment-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/${VERSIONING_UI.applicationVersionDetailsReportUuid}.json`,
+      `packages/miroir-app-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/${VERSIONING_UI.applicationVersionDetailsReportUuid}.json`,
     );
     expect(existsSync(detailsPath)).toBe(true);
     const details = JSON.parse(readFileSync(detailsPath, "utf8")) as {
@@ -195,7 +195,7 @@ describe("Versioning UI contracts", () => {
   it("Versioning report embeds freeze Runner and filters versions by application", () => {
     const versioningPath = join(
       REPO_ROOT,
-      `packages/miroir-test-app_deployment-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/${VERSIONING_UI.versioningReportUuid}.json`,
+      `packages/miroir-app-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/${VERSIONING_UI.versioningReportUuid}.json`,
     );
     expect(existsSync(versioningPath)).toBe(true);
     const report = JSON.parse(readFileSync(versioningPath, "utf8")) as {

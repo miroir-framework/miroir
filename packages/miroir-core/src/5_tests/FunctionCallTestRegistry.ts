@@ -20,6 +20,7 @@ import { mlsToCopilotKitParameter } from "../1_core/mls/MlsToCopilotKitParameter
 import { mergePositionBased } from "../1_core/mls/MlsToMls_CarryOn";
 import { mlsToMls_Summary } from "../1_core/mls/MlsToMls_Summary";
 import { mlsToJsonSchema } from "../1_core/mls/MlsToJsonSchema";
+import { deriveEnvironmentDeployments, resolveEnvironment } from "../1_core/environment/Environment";
 import { mlObjectFlatten } from "../1_core/mls/mlObjectFlatten";
 import {
   buildAnyObjectEntry,
@@ -82,6 +83,10 @@ const FUNCTION_CALL_REGISTRY: Record<string, Record<string, WhitelistedFunction>
   },
   "miroir-core/1_core/mls/MlsToJsonSchema": {
     mlsToJsonSchema: mlsToJsonSchema as WhitelistedFunction,
+  },
+  "miroir-core/1_core/environment/Environment": {
+    deriveEnvironmentDeployments: deriveEnvironmentDeployments as WhitelistedFunction,
+    resolveEnvironment: resolveEnvironment as WhitelistedFunction,
   },
   "miroir-core/tools": {
     alterObjectAtPath: alterObjectAtPath as WhitelistedFunction,

@@ -1,8 +1,0 @@
-{
-  "uuid": "5a7f7ecd-eaa5-44f7-a059-816eb15d164d",
-  "parentName":"Bundle",
-  "parentUuid":"9f9170da-538d-425c-8cb7-551640623eed",
-  "name":"AdminV1",
-  "defaultLabel": "Admin V1.",
-  "description": "Bundle for the Admin selfApplication V1."
-}

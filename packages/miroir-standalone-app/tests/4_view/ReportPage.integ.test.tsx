@@ -27,15 +27,15 @@ const deployment_Library: Deployment = {
   "configuration": {
     "admin": {
       "emulatedServerType": "filesystem",
-      "directory": "miroir-test-app_deployment-admin/assets"
+      "directory": "miroir-app-admin/assets"
     },
     "model": {
       "emulatedServerType": "filesystem",
-      "directory":"miroir-test-app_deployment-library/assets/library_model"
+      "directory":"miroir-example-library/assets/library_model"
     },
     "data": {
       "emulatedServerType": "filesystem",
-      "directory":"miroir-test-app_deployment-library/assets/library_data"
+      "directory":"miroir-example-library/assets/library_data"
     }
   }
 }

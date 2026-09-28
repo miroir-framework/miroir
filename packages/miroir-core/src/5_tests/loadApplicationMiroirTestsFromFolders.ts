@@ -30,7 +30,7 @@ import {
 } from "./miroirTestTags.js";
 import {
   APPLICATION_MIROIR_TEST_SOURCE_FOLDERS_LEGACY,
-  DEPLOYMENT_PACKAGE_PREFIX,
+  deploymentPackageApplicationKey,
   ENTITY_MIROIR_TEST_UUID,
   MIROIR_TEST_ENTITY_RELATIVE_PATH,
   buildRunnerUuidIndex,
@@ -44,7 +44,7 @@ export function resolveMonorepoRoot(startDir: string = process.cwd()): string {
   for (let i = 0; i < 12; i++) {
     if (
       existsSync(
-        join(dir, "packages", "miroir-test-app_deployment-miroir", "package.json"),
+        join(dir, "packages", "miroir-app-miroir", "package.json"),
       )
     ) {
       return dir;
@@ -59,8 +59,8 @@ export function resolveMonorepoRoot(startDir: string = process.cwd()): string {
 }
 
 /**
- * Find MiroirTest entity folders under each `miroir-test-app_deployment-<app>`
- * package `assets` store section. Adding a deployment package with that folder
+ * Find MiroirTest entity folders under each application package's
+ * `assets` store section (`DEPLOYMENT_PACKAGE_PREFIXES`). Adding a deployment package with that folder
  * is enough — no hardcoded app list.
  */
 export function discoverApplicationMiroirTestSourceFolders(
@@ -72,10 +72,10 @@ export function discoverApplicationMiroirTestSourceFolders(
   }
   const found: ApplicationMiroirTestSourceFolder[] = [];
   for (const entry of readdirSync(packagesDir, { withFileTypes: true })) {
-    if (!entry.isDirectory() || !entry.name.startsWith(DEPLOYMENT_PACKAGE_PREFIX)) {
+    const applicationKey = entry.isDirectory() ? deploymentPackageApplicationKey(entry.name) : undefined;
+    if (!applicationKey) {
       continue;
     }
-    const applicationKey = entry.name.slice(DEPLOYMENT_PACKAGE_PREFIX.length);
     const assetsDir = join(packagesDir, entry.name, "assets");
     if (!existsSync(assetsDir)) {
       continue;

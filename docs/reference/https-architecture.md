@@ -150,7 +150,7 @@ Set `MIROIR_TLS_CERT` and `MIROIR_TLS_KEY` to production certificate paths (e.g.
 | `packages/miroir-standalone-app-electron/app.config.json` | `webAppUrl` `http://` → `https://` |
 | `packages/miroir-standalone-app-electron/start-dev.sh` | Health-check migrated to `https://` with `-k` flag (+ HTTP fallback) |
 | `packages/miroir-standalone-app/tests/miroirConfig.test-*.json` (17 files) | `rootApiUrl` `http://` → `https://` |
-| `packages/miroir-test-app_deployment-library/scripts/extractMetaModelConfig.json` | `rootApiUrl` `http://` → `https://` |
+| `packages/miroir-example-library/scripts/extractMetaModelConfig.json` | `rootApiUrl` `http://` → `https://` |
 | `.gitignore` | Added `certs/*.pem` and `certs/*.key` exclusion rules |
 | `certs/README.md` | New — documents the gitignored certs directory |
 | `scripts/setup-https.sh` | New — mkcert setup script (bash) |

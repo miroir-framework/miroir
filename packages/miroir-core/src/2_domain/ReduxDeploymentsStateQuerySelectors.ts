@@ -26,7 +26,7 @@ import {
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
-import { entityEntity, entityEntityVersion } from "miroir-test-app_deployment-miroir";
+import { entityEntity, entityEntityVersion } from "miroir-app-miroir";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { getApplicationSection } from "../1_core/Model";

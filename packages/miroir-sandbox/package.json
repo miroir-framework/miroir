@@ -16,31 +16,31 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@emotion/react": "^11.10.5",
-    "@emotion/styled": "^11.10.5",
+    "@emotion/react": "11.14.0",
+    "@emotion/styled": "11.14.0",
     "@miroir-framework/jzod": "0.8.5",
-    "@mui/material": "^5.10.14",
-    "loglevelnext": "^6.0.0",
-    "material-symbols": "^0.25.0",
+    "@mui/material": "5.17.1",
+    "loglevelnext": "6.0.0",
+    "material-symbols": "0.25.3",
     "miroir-core": "*",
     "miroir-localcache-redux": "*",
     "miroir-react": "*",
     "miroir-store-bundled": "*",
     "miroir-store-indexedDb": "*",
-    "miroir-test-app_deployment-admin": "*",
-    "miroir-test-app_deployment-miroir": "*",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-redux": "^8.0.5",
-    "react-router-dom": "^6.13.0",
-    "uuid": "^11.0.0"
+    "miroir-app-admin": "*",
+    "miroir-app-miroir": "*",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-redux": "8.1.3",
+    "react-router-dom": "6.30.3",
+    "uuid": "11.1.0"
   },
   "devDependencies": {
-    "@types/node": "^20.8.9",
-    "@types/react": "^18.0.25",
-    "@types/react-dom": "^18.0.9",
-    "@vitejs/plugin-react": "^5.1.4",
-    "vite": "^6.3.5",
-    "vite-plugin-node-polyfills": "^0.23.0"
+    "@types/node": "20.19.41",
+    "@types/react": "18.3.23",
+    "@types/react-dom": "18.3.7",
+    "@vitejs/plugin-react": "5.1.4",
+    "vite": "7.3.6",
+    "vite-plugin-node-polyfills": "0.25.0"
   }
 }

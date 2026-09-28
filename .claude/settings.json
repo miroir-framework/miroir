@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "if [ \"$CLAUDE_CODE_REMOTE\" = \"true\" ]; then python3 \"$CLAUDE_PROJECT_DIR/scripts/agent_session_setup.py\"; fi",
+            "command": "if [ \"$CLAUDE_CODE_REMOTE\" = \"true\" ]; then python3 \"$CLAUDE_PROJECT_DIR/scripts/agent_session_setup.py\" --cloud-agent; fi",
             "timeout": 900
           }
         ]

@@ -2,7 +2,8 @@ name: Build Miroir Server Binary
 description: >
   Builds server-side store packages (filesystem, mongodb, postgres), miroir-cli,
   then produces the self-contained server release binary via `npm run build:release`
-  (which internally builds miroir-standalone-app and miroir-server).
+  (which builds miroir-server and copies the miroir-standalone-app build into release/client
+  when that build is present).
   Requires the checkout and build-artefacts-linux actions to have run first.
 
 runs:
@@ -27,7 +28,7 @@ runs:
 
     # ── 6. Upload artefacts ──────────────────────────────────────────────
     - name: Upload server binary
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       with:
         name: miroir-server-release
         path: packages/miroir-server/release/

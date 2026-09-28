@@ -5,13 +5,13 @@ import type {
   MiroirTestForTransformer,
   MiroirTestSuite,
 } from 'miroir-core';
-import { miroirTest_runner_returnDocument } from 'miroir-test-app_deployment-library';
+import { miroirTest_runner_returnDocument } from 'miroir-example-library';
 import {
   miroirTest_fn_entityPrimaryKey,
   miroirTest_tr_core,
   miroirTest_runner_createEntity,
   miroirTest_runner_dropEntity,
-} from 'miroir-test-app_deployment-miroir';
+} from 'miroir-app-miroir';
 
 import {
   classifyMiroirTestListExecutionCapabilities,

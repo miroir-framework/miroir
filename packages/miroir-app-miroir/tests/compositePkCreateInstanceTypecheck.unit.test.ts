@@ -1,0 +1,46 @@
+/**
+ * Repro for UI typecheck on action.domainController.dataCrud.compositePk createInstance.objects[0].
+ * modelValidation skips resolveConditionalSchema (no reduxDeploymentsState); the UI does not.
+ * InstanceEndpoint createInstance.objects used to tag ifThenElseMMLS → compositeActionTemplate,
+ * which made plain entity instances fail with "no discriminator values found (actionType)".
+ */
+import { describe, expect, it } from "vitest";
+
+import type { EntityVersion, MlElement, MiroirModelEnvironment } from "miroir-core";
+import { defaultMiroirModelEnvironment, getInnermostTypeCheckError, mlsTypeCheck } from "miroir-core";
+
+import { entityDefinitionMiroirTest } from "miroir-app-miroir";
+import suite from "../assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/e2f4a306-7d8f-4b13-a4e5-1f2a3b4c5d6e.json" assert { type: "json" };
+
+describe("composite_pk createInstance objects typecheck (UI path)", () => {
+  it("validates createInstance.objects[0] when reduxDeploymentsState is present", () => {
+    const schema = (entityDefinitionMiroirTest as unknown as EntityVersion)
+      .mlSchema as unknown as MlElement;
+    const modelEnv = defaultMiroirModelEnvironment as MiroirModelEnvironment;
+
+    // Empty object is truthy enough for mlsTypeCheck to invoke resolveConditionalSchema
+    // when currentDefaultValue + currentValuePath are also set (UI path).
+    const reduxDeploymentsState = {} as any;
+
+    const result = mlsTypeCheck(
+      schema,
+      suite,
+      [],
+      [],
+      modelEnv,
+      {},
+      suite, // currentDefaultValue / root
+      reduxDeploymentsState,
+      undefined,
+      suite, // rootObject
+    );
+
+    if (result.status === "error") {
+      console.error(
+        "UI-path typecheck failed:",
+        JSON.stringify(getInnermostTypeCheckError(result), null, 2),
+      );
+    }
+    expect(result.status).toBe("ok");
+  });
+});

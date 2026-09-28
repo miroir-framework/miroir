@@ -107,9 +107,9 @@ def rewrite_internal_wildcard_ranges(repo_root: Path, plan: ReleasePlan) -> list
     internal `dependencies`/`peerDependencies` edge (it is how the dev-time
     workspace linking works, see docs/reference/release-process.md). Left
     alone, every selected package would fail `verify_release_ranges` below.
-    This rewrites those edges to a concrete `^<product_version>` range,
-    exactly like the (rare) internal edges that already used real semver
-    ranges and that Lerna did bump automatically.
+    This rewrites those edges to the exact `<product_version>`: a released
+    package pins the internal packages released with it, never a range (#326,
+    docs/contributing/development-setup.md, Dependency policy).
     """
     packages = workspace_packages(repo_root)
     rewritten: list[str] = []
@@ -126,15 +126,15 @@ def rewrite_internal_wildcard_ranges(repo_root: Path, plan: ReleasePlan) -> list
                     continue
                 value = dependencies[dependency]
                 if value == "*" or (isinstance(value, str) and value.startswith("file:")):
-                    dependencies[dependency] = f"^{plan.product_version}"
+                    dependencies[dependency] = plan.product_version
                     changed = True
         if changed:
             dump_json(workspace.path, manifest)
             rewritten.append(name)
     if rewritten:
         log_step(
-            f"rewrote '*'/'file:' internal runtime range(s) Lerna left untouched to "
-            f"^{plan.product_version} in {len(rewritten)} package(s): {', '.join(sorted(rewritten))}"
+            f"rewrote '*'/'file:' internal runtime range(s) Lerna left untouched to exact version "
+            f"{plan.product_version} in {len(rewritten)} package(s): {', '.join(sorted(rewritten))}"
         )
     return rewritten
 

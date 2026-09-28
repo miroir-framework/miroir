@@ -20,8 +20,8 @@ import {
   entityQueryVersion,
   entityReport,
   selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
-import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
+} from "miroir-app-miroir";
+import { selfApplicationLibrary } from "miroir-example-library";
 import type { Entity } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 /** Miroir EntityVersion instance UUIDs (stable across relocation). */
@@ -66,28 +66,28 @@ const MIROIR_ENTITY_VERSION_INSTANCE_UUIDS = [
 const REPO_ROOT = join(import.meta.dirname, "../../../..");
 const ENTITY_VERSION_MODEL_VERSION_DIR = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion",
+  "packages/miroir-app-miroir/assets/miroir_modelVersion",
   "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
 );
 const ENTITY_VERSION_DATA_DIR = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_data",
+  "packages/miroir-app-miroir/assets/miroir_data",
   "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
 );
 const ENTITY_VERSION_MODEL_DIR = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_model",
+  "packages/miroir-app-miroir/assets/miroir_model",
   "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
 );
 const ENTITY_MODEL_DIR = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_model",
+  "packages/miroir-app-miroir/assets/miroir_model",
   "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
 );
 const ENTITY_ENTITY_ASSET = join(ENTITY_MODEL_DIR, "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json");
 const DEPLOYMENT_INDEX = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/index.ts",
+  "packages/miroir-app-miroir/index.ts",
 );
 
 const MIROIR = selfApplicationMiroir.uuid as string;

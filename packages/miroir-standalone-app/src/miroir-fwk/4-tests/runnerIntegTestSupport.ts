@@ -7,11 +7,12 @@ import {
   type StoreUnitConfiguration,
   type Uuid,
   defaultSelfApplicationDeploymentMap,
+  ENVIRONMENT_STATE_ROOT,
   resetIntegTestbed,
 } from "miroir-core";
-import { deployment_Admin, deployment_Miroir } from "miroir-test-app_deployment-admin";
-import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from "miroir-test-app_deployment-library";
-import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
+import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from "miroir-example-library";
+import { selfApplicationMiroir } from "miroir-app-miroir";
 
 import { resolveCanonicalTestDeploymentUuid } from "./resolveCanonicalTestDeploymentUuid.js";
 
@@ -19,10 +20,17 @@ const STANDALONE_APP_TESTS_TMP = "miroir-standalone-app/tests/tmp";
 
 export type BeforeEachTestOptions = {
   clearDocumentBody?: boolean;
-  resetMiroirPlatform?: {
-    miroirDeploymentUuid: Uuid;
-    miroirSelfApplicationUuid: Uuid;
-  };
+  /**
+   * The Miroir deployment reset before each test (default: the Miroir deployment of the test session).
+   * `false` against a real server (#321): the server's Miroir deployment is the one of its environment,
+   * in `dev` the package assets themselves, which a reset would wipe.
+   */
+  resetMiroirPlatform?:
+    | {
+        miroirDeploymentUuid: Uuid;
+        miroirSelfApplicationUuid: Uuid;
+      }
+    | false;
   /** Playfield model + instances + init; forwarded to resetIntegTestbed when set. */
   integTestbedResetParams?: IntegTestbedResetParams;
 };
@@ -44,10 +52,13 @@ export async function beforeEachTest(
       libraryRunTarget?.deploymentUuid ?? deployment_Library_DO_NO_USE.uuid,
     librarySelfApplicationUuid:
       libraryRunTarget?.applicationUuid ?? selfApplicationLibrary.uuid,
-    resetMiroirPlatform: options?.resetMiroirPlatform ?? {
-      miroirDeploymentUuid: deployment_Miroir.uuid,
-      miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
-    },
+    resetMiroirPlatform:
+      options?.resetMiroirPlatform === false
+        ? undefined
+        : (options?.resetMiroirPlatform ?? {
+            miroirDeploymentUuid: deployment_Miroir.uuid,
+            miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
+          }),
     ...(resetParams
       ? {
           testbedEntitiesAndInstances: resetParams.testbedEntitiesAndInstances,
@@ -61,12 +72,37 @@ export async function beforeEachTest(
   }
 }
 
-/** Node CLI profiles use Level under `tests/tmp`; browser UI profiles use short IndexedDB names. */
+/**
+ * #321: `.miroir/<environment>` when the template store is a section of a test environment
+ * (`.miroir/<environment>/<application>/…`), so test applications live next to it.
+ */
+function environmentStateDirectory(
+  libraryDeploymentStorageConfiguration: StoreUnitConfiguration,
+): string | undefined {
+  const template = libraryDeploymentStorageConfiguration.model;
+  const location =
+    template.emulatedServerType === "filesystem"
+      ? template.directory
+      : template.emulatedServerType === "indexedDb"
+        ? template.indexedDbName
+        : undefined;
+  const [root, environment] = location?.split("/") ?? [];
+  return root === ENVIRONMENT_STATE_ROOT && environment ? `${root}/${environment}` : undefined;
+}
+
+/**
+ * Node CLI profiles use Level under `tests/tmp`, or next to their template in a test environment
+ * (`.miroir/<environment>/<application>/indexedDb`); browser UI profiles use short IndexedDB names.
+ */
 export function resolveEphemeralIndexedDbBaseName(
   libraryDeploymentStorageConfiguration: StoreUnitConfiguration,
   testApplicationName: string,
 ): string {
   const template = libraryDeploymentStorageConfiguration.model;
+  const environmentDirectory = environmentStateDirectory(libraryDeploymentStorageConfiguration);
+  if (environmentDirectory) {
+    return `${environmentDirectory}/${testApplicationName}/indexedDb`;
+  }
   if (
     template.emulatedServerType === "indexedDb" &&
     template.indexedDbName.includes(`${STANDALONE_APP_TESTS_TMP}/`)
@@ -88,6 +124,7 @@ function usesStandaloneAppTestsTmpLayout(
   }
   return false;
 }
+
 
 const POSTGRES_IDENTIFIER_MAX = 63;
 const MODEL_VERSION_SUFFIX_LENGTH = "_modelVersion".length;
@@ -148,6 +185,19 @@ export function testApplicationStorageConfiguration(
       break;
     }
     case "filesystem": {
+      const environmentDirectory = environmentStateDirectory(libraryDeploymentStorageConfiguration);
+      if (environmentDirectory) {
+        testDeploymentStorageConfiguration = {
+          admin: libraryDeploymentStorageConfiguration.admin,
+          model: { emulatedServerType: "filesystem", directory: `${environmentDirectory}/${storeName}/model` },
+          data: { emulatedServerType: "filesystem", directory: `${environmentDirectory}/${storeName}/data` },
+          modelVersion: {
+            emulatedServerType: "filesystem",
+            directory: `${environmentDirectory}/${storeName}/modelVersion`,
+          },
+        };
+        break;
+      }
       if (usesStandaloneAppTestsTmpLayout(libraryDeploymentStorageConfiguration)) {
         testDeploymentStorageConfiguration = {
           admin: libraryDeploymentStorageConfiguration.admin,
@@ -184,44 +234,26 @@ export function testApplicationStorageConfiguration(
       break;
     }
     case "sql": {
+      // #321: same server as the template (a test environment names its host and password)
+      const connectionString =
+        libraryDeploymentStorageConfiguration.model.connectionString ??
+        "postgres://postgres:postgres@localhost:5432/postgres";
       testDeploymentStorageConfiguration = {
         admin: libraryDeploymentStorageConfiguration.admin,
-        model: {
-          emulatedServerType: "sql",
-          connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-          schema: storeName,
-        },
-        data: {
-          emulatedServerType: "sql",
-          connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-          schema: storeName,
-        },
-        modelVersion: {
-          emulatedServerType: "sql",
-          connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-          schema: `${storeName}_modelVersion`,
-        },
+        model: { emulatedServerType: "sql", connectionString, schema: storeName },
+        data: { emulatedServerType: "sql", connectionString, schema: storeName },
+        modelVersion: { emulatedServerType: "sql", connectionString, schema: `${storeName}_modelVersion` },
       };
       break;
     }
     case "mongodb": {
+      const connectionString =
+        libraryDeploymentStorageConfiguration.model.connectionString ?? "mongodb://localhost:27017";
       testDeploymentStorageConfiguration = {
         admin: libraryDeploymentStorageConfiguration.admin,
-        model: {
-          emulatedServerType: "mongodb",
-          connectionString: "mongodb://localhost:27017",
-          database: storeName,
-        },
-        data: {
-          emulatedServerType: "mongodb",
-          connectionString: "mongodb://localhost:27017",
-          database: storeName,
-        },
-        modelVersion: {
-          emulatedServerType: "mongodb",
-          connectionString: "mongodb://localhost:27017",
-          database: `${storeName}_modelVersion`,
-        },
+        model: { emulatedServerType: "mongodb", connectionString, database: storeName },
+        data: { emulatedServerType: "mongodb", connectionString, database: storeName },
+        modelVersion: { emulatedServerType: "mongodb", connectionString, database: `${storeName}_modelVersion` },
       };
       break;
     }
@@ -257,11 +289,10 @@ export function getTestConfig(
     ? miroirConfig.client.deploymentStorageConfig[deployment_Miroir.uuid]
     : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Miroir.uuid];
 
-  const adminDeploymentStorageConfiguration: StoreUnitConfiguration =
-    (miroirConfig.client.emulateServer
-      ? miroirConfig.client.deploymentStorageConfig?.[deployment_Admin.uuid]
-      : miroirConfig.client.serverConfig?.storeSectionConfiguration?.[deployment_Admin.uuid]) ??
-    (deployment_Admin.configuration as StoreUnitConfiguration);
+  // #321: no fallback on deployment_Admin.configuration (the tracked Admin assets): tests never write there
+  const adminDeploymentStorageConfiguration: StoreUnitConfiguration | undefined = miroirConfig.client.emulateServer
+    ? miroirConfig.client.deploymentStorageConfig?.[deployment_Admin.uuid]
+    : miroirConfig.client.serverConfig?.storeSectionConfiguration?.[deployment_Admin.uuid];
 
   if (!adminDeploymentStorageConfiguration) {
     throw new Error(

@@ -10,7 +10,7 @@
  */
 
 import type { EntityInstance } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { entityMiroirRight } from "miroir-test-app_deployment-admin";
+import { entityMiroirRight } from "miroir-app-admin";
 import { deterministicUuidV4 } from "../tools.js";
 import { ENTITY_MIROIR_RIGHT_UUID } from "./AccessPolicy.js";
 
