@@ -28,7 +28,7 @@ Working branch: `claude/action-library-implementations-1jkrjp` (from `_integrati
 - Guard test on Endpoint action implementations (D5, scoped).
 - Autocommit and log phase become action-definition attributes (D4).
 
-This plan does **not** migrate Persistence / LocalCache actions, implement the 5 declared-but-unimplemented actions (Test, Menu, Application Endpoints), touch `ActionRunner.ts`, or the commit-replay switch (analysis §2, §3.3).
+This plan does **not** migrate Persistence / LocalCache actions, touch the 5 declared-but-unimplemented actions (Test, Menu, Application Endpoints; removal is #342), touch `ActionRunner.ts`, or the commit-replay switch (analysis §2, §3.3).
 
 ---
 
@@ -62,7 +62,7 @@ Confirmed with A on 2026-09-28 (analysis decision record).
 | D5 Guard | (a) declared identifiers resolve, all Endpoints, from Slice 1; (b) every action of an in-scope Endpoint declares an implementation, from Slice 7 |
 | D6 Map location | New file `3_controllers/ActionImplementations.ts`; handlers get the controller through a narrow interface |
 
-**Open point flagged to A** (default taken): `bundleAction` and `probeExternalService` have no `endpoint` attribute in their schema (`BundleAction` in `miroirFundamentalType.ts`; `probeExternalService` is not in the `DomainAction` union at all, cast `as any`), so they cannot be routed by Endpoint. Default: add them to StoreManagementEndpoint (`bundleAction`) and DomainEndpoint (`probeExternalService`) with an `endpoint` literal, in Slice 7. Alternative: keep a two-case fallback for actions without `endpoint`.
+**Open point flagged to A** (default accepted 2026-09-28): `bundleAction` and `probeExternalService` have no `endpoint` attribute in their schema (`BundleAction` in `miroirFundamentalType.ts`; `probeExternalService` is not in the `DomainAction` union at all, cast `as any`), so they cannot be routed by Endpoint. Default: add them to StoreManagementEndpoint (`bundleAction`) and DomainEndpoint (`probeExternalService`) with an `endpoint` literal, in Slice 7. Alternative: keep a two-case fallback for actions without `endpoint`.
 
 ---
 

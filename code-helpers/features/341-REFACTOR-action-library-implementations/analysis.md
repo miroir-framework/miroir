@@ -79,7 +79,7 @@ Key sources: [`DomainController.ts`](../../../packages/miroir-core/src/3_control
 ## 2. Non-goals
 
 - Persistence and LocalCache actions (dispatched in `PersistenceStoreController.ts`, `RestServer.ts`, `miroir-localcache-redux`, `miroir-localcache-zustand`): later, unscheduled.
-- Implementing the 5 declared-but-unimplemented actions (§3.4).
+- The 5 declared-but-unimplemented actions (§3.4): all unused, their removal is #342.
 - Removing `ActionRunner.ts`'s own store-management switch (server-side store administration): later.
 - SQL implementations of actions (`sqlImplementationFunctionName`): the attribute exists in the schema but has no use for actions.
 
