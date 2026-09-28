@@ -191,6 +191,7 @@ npm run test -w miroir-core -- ''
 - Deviation: `handlePrepareOpenApiDocument` became public. TypeScript cannot satisfy an interface with a private method. The host interface limits what handlers use, but the class surface grows by one method per migrated private method.
 - Deviation: `connectExternalService.284.phase0` locked the old "libraryImplementation not supported yet" rejection. The test now expects `InvalidAction` "unknown library implementation" (deliberate edit).
 - Phase 0 test updated: `prepareOpenApiDocument` is now in the list of implemented actions.
+- Follow-up fix (second commit of the slice): `handleActionFromUI` called `handleActionInternal` directly, so a migrated action sent from the UI fell to its `default` branch. A new `handleMiroirAction` holds the rule (declared implementation → `handleApplicationAction`, otherwise `handleActionInternal`), used by `handleAction` and `handleActionFromUI`, including the autocommit `commit`. A phase1 test covers `handleActionFromUI`. Side effect: `entity_DuplicateAttribute` sent from the UI now runs its composite template; before, it fell to `default`.
 - Validation: modelValidation (162 passed), lint, tsc miroir-core and miroir-standalone-app, `npm run test -w miroir-core -- ''` (2095 passed), `nonreg:filesystem --runner shared` 77/78: the one failure was the #284 phase0 test above, now green.
 
 ---

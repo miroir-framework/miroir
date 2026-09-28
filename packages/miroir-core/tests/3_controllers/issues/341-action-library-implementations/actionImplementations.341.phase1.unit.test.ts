@@ -73,6 +73,12 @@ describe("#341 phase 1: Miroir actions run from their library implementation ref
     expect((result as any).returnedDomainElement).toBeDefined();
   });
 
+  it("runs prepareOpenApiDocument through handleActionFromUI from its Endpoint definition", async () => {
+    const result = await newDomainController().handleActionFromUI(prepareOpenApiDocumentAction, {});
+    expect(result).not.toBeInstanceOf(Action2Error);
+    expect((result as any).returnedDomainElement).toBeDefined();
+  });
+
   it("returns InvalidAction naming an implementation missing from the map", async () => {
     const result = await newDomainController().handleAction(
       prepareOpenApiDocumentAction,

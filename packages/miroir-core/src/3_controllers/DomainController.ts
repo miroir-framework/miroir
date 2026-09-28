@@ -2988,7 +2988,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
         //   domainAction,
         // );
         if (autocommit) {
-          return this.handleActionInternal(
+          return this.handleMiroirAction(
             domainAction,
             applicationDeploymentMap,
             currentModelEnvironment,
@@ -3033,7 +3033,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
                   application: application,
                 },
               };
-              const result = await this.handleActionInternal(
+              const result = await this.handleMiroirAction(
                 commitAction,
                 applicationDeploymentMap,
                 currentModelEnvironment,
@@ -3064,7 +3064,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
             }
           });
         }
-        return this.handleActionInternal(
+        return this.handleMiroirAction(
           domainAction,
           applicationDeploymentMap,
           currentModelEnvironment,
@@ -3149,10 +3149,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
           "resulting applicationUuid",
           applicationUuid,
         );
-        if (applicationUuid !== undefined && (
-          applicationUuid !== selfApplicationMiroir.uuid ||
-          findBundledMiroirActionDefinition(domainAction as any)?.actionImplementation !== undefined
-        )) {
+        if (applicationUuid !== undefined && applicationUuid !== selfApplicationMiroir.uuid) {
           return this.handleApplicationAction(
             domainAction,
             applicationDeploymentMap,
@@ -3162,14 +3159,45 @@ export class DomainController implements DomainControllerInterface, DomainContro
             principal,
           );
         } else {
-          return this.handleActionInternal(
+          return this.handleMiroirAction(
             domainAction,
             applicationDeploymentMap,
             currentModelEnvironment,
+            actionParamValues,
             principal,
           );
         }
       }).bind(this),
+    );
+  }
+
+  // ##############################################################################################
+  /**
+   * #341: a Miroir action whose (bundled) definition declares an actionImplementation runs
+   * from it; the others still go through the hard-coded dispatch of handleActionInternal.
+   */
+  private async handleMiroirAction(
+    domainAction: DomainAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    currentModelEnvironment?: MiroirModelEnvironment,
+    actionParamValues?: Record<string, unknown>,
+    principal?: AuthPrincipal,
+  ): Promise<Action2ReturnType> {
+    if (findBundledMiroirActionDefinition(domainAction as any)?.actionImplementation) {
+      return this.handleApplicationAction(
+        domainAction,
+        applicationDeploymentMap,
+        currentModelEnvironment,
+        actionParamValues,
+        selfApplicationMiroir.uuid,
+        principal,
+      );
+    }
+    return this.handleActionInternal(
+      domainAction,
+      applicationDeploymentMap,
+      currentModelEnvironment,
+      principal,
     );
   }
 
