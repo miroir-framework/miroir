@@ -93,7 +93,7 @@ describe("#341 phase 0: Miroir action dispatch characterization", () => {
     expect(duplicated.sort()).toEqual(["InstanceEndpoint", "StoreManagementEndpoint"]);
   });
 
-  it("declares an actionImplementation only on entity_DuplicateAttribute, as a composite template", () => {
+  it("declares an actionImplementation on the migrated actions only", () => {
     const implemented = miroirEndpoints.flatMap((endpoint: any) =>
       (getEndpointActions(endpoint) ?? [])
         .filter((action: any) => action.actionImplementation)
@@ -102,7 +102,11 @@ describe("#341 phase 0: Miroir action dispatch characterization", () => {
           action.actionImplementation.actionImplementationType,
         ]),
     );
-    expect(implemented).toEqual([["entity_DuplicateAttribute", "compositeActionTemplate"]]);
+    // Slice 0: entity_DuplicateAttribute only. Slice 1: prepareOpenApiDocument.
+    expect(implemented).toEqual([
+      ["entity_DuplicateAttribute", "compositeActionTemplate"],
+      ["prepareOpenApiDocument", "libraryImplementation"],
+    ]);
   });
 
   it("autocommits from the UI after 6 action types", () => {

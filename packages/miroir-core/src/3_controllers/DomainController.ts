@@ -13,6 +13,11 @@ import {
   DomainState,
   LocalCacheInfo
 } from "../0_interfaces/2_domain/DomainControllerInterface";
+import type {
+  ActionImplementationContext,
+  DomainControllerActionHost,
+} from "../0_interfaces/3_controllers/DomainControllerActionHost";
+import { miroirActionImplementations } from "./ActionImplementations";
 
 import { MiroirContextInterface } from "../0_interfaces/3_controllers/MiroirContextInterface";
 import {
@@ -410,7 +415,20 @@ export const autocommitActionTypesFromUI: readonly string[] = [
   "compositeActionSequence",
 ];
 
-export class DomainController implements DomainControllerInterface {
+/**
+ * #341: the definition of a Miroir action, looked up in the bundled Miroir Endpoints.
+ * Miroir Endpoints are resolved without a store, since some of their actions open stores.
+ */
+function findBundledMiroirActionDefinition(domainAction: { endpoint?: string; actionType: string }) {
+  if (!domainAction.endpoint) {
+    return undefined;
+  }
+  return getEndpointActions(
+    defaultMiroirModelEnvironment.endpointsByUuid[domainAction.endpoint],
+  )?.find((ac) => ac.actionParameters.actionType.definition == domainAction.actionType);
+}
+
+export class DomainController implements DomainControllerInterface, DomainControllerActionHost {
   private callUtil: CallUtils;
   private processCapabilities: ProcessCapabilities | undefined;
   // #330: a Report test answers the requests of its session's controller to external services
@@ -3133,7 +3151,7 @@ export class DomainController implements DomainControllerInterface {
         );
         if (applicationUuid !== undefined && (
           applicationUuid !== selfApplicationMiroir.uuid ||
-          (domainAction as any).actionType == "entity_DuplicateAttribute" 
+          findBundledMiroirActionDefinition(domainAction as any)?.actionImplementation !== undefined
         )) {
           return this.handleApplicationAction(
             domainAction,
@@ -3190,7 +3208,8 @@ export class DomainController implements DomainControllerInterface {
         ),
       );
     }
-    if (this.persistenceStoreAccessMode === "local") {
+    const isMiroirAction = resolvedApplicationUuid === selfApplicationMiroir.uuid;
+    if (this.persistenceStoreAccessMode === "local" && !isMiroirAction) {
       const application =
         resolvedApplicationUuid ??
         (domainAction as any).payload?.application ??
@@ -3218,7 +3237,7 @@ export class DomainController implements DomainControllerInterface {
         }
       }
     }
-    if (!currentModelEnvironment) {
+    if (!currentModelEnvironment && !isMiroirAction) {
       return Promise.resolve(
         new Action2Error(
           "InvalidAction",
@@ -3227,10 +3246,14 @@ export class DomainController implements DomainControllerInterface {
         ),
       );
     }
-    // look up the action implementation in the currentModelEnvironment
+    // look up the action implementation in the currentModelEnvironment;
+    // Miroir Endpoints fall back to the bundled ones (#341), they must resolve before any store is open
     const currentEndpointDefinition: EndpointDefinition | undefined =
       currentModelEnvironment?.endpointsByUuid[(domainAction as any).endpoint] ??
-      currentModelEnvironment?.miroirMetaModel?.endpoints?.find((e) => e.uuid === (domainAction as any).endpoint);
+      currentModelEnvironment?.miroirMetaModel?.endpoints?.find((e) => e.uuid === (domainAction as any).endpoint) ??
+      (isMiroirAction
+        ? defaultMiroirModelEnvironment.endpointsByUuid[(domainAction as any).endpoint]
+        : undefined);
 
     log.info(
       "DomainController handleApplicationAction currentEndpointDefinition",
@@ -3245,16 +3268,16 @@ export class DomainController implements DomainControllerInterface {
             " in current model environment endpoints: " +
             Object.keys(currentModelEnvironment?.endpointsByUuid || {}).join(", ") +
             " currentModelEnvironment deploymentUuid: " +
-            (currentModelEnvironment as any).deploymentUuid,
+            (currentModelEnvironment as any)?.deploymentUuid,
           [],
           undefined, // innerError
           { 
             domainAction, 
-            deploymentUuid: currentModelEnvironment.deploymentUuid,
-            applicationName: currentModelEnvironment.currentModel?.applicationName,
-            applicationUuid: currentModelEnvironment.currentModel?.applicationUuid,
+            deploymentUuid: currentModelEnvironment?.deploymentUuid,
+            applicationName: currentModelEnvironment?.currentModel?.applicationName,
+            applicationUuid: currentModelEnvironment?.currentModel?.applicationUuid,
             endpointsInModelEnvironment: Object.keys(currentModelEnvironment?.endpointsByUuid || {}),
-            application: currentModelEnvironment.currentModel?.applications,
+            application: currentModelEnvironment?.currentModel?.applications,
           },
         ),
       );
@@ -3287,14 +3310,25 @@ export class DomainController implements DomainControllerInterface {
       );
     }
     if (
-      currentActionDefinition.actionImplementation.actionImplementationType !=
-      "compositeActionTemplate"
+      currentActionDefinition.actionImplementation.actionImplementationType ==
+      "libraryImplementation"
     ) {
+      return this.runLibraryActionImplementation(
+        domainAction,
+        currentActionDefinition.actionImplementation.inMemoryImplementationFunctionName,
+        {
+          applicationDeploymentMap,
+          modelEnvironment: currentModelEnvironment,
+          actionParamValues,
+          principal,
+        },
+      );
+    }
+    if (!currentModelEnvironment) {
       return Promise.resolve(
         new Action2Error(
           "InvalidAction",
-          "DomainController handleApplicationAction actionImplementationType not supported yet: " +
-            currentActionDefinition.actionImplementation.actionImplementationType,
+          "DomainController handleApplicationAction call is missing currentModelEnvironment argument",
           [],
         ),
       );
@@ -3313,6 +3347,69 @@ export class DomainController implements DomainControllerInterface {
       principal,
     );
     return result as Action2ReturnType;
+  }
+
+  // ##############################################################################################
+  /**
+   * #341: runs the library implementation an action definition refers to
+   * (`inMemoryImplementationFunctionName`, looked up in `miroirActionImplementations`).
+   */
+  private async runLibraryActionImplementation(
+    domainAction: DomainAction,
+    implementationName: string,
+    context: ActionImplementationContext,
+  ): Promise<Action2ReturnType> {
+    const implementation = miroirActionImplementations[implementationName];
+    if (!implementation) {
+      return new Action2Error(
+        "InvalidAction",
+        "DomainController handleApplicationAction unknown library implementation " +
+          implementationName +
+          " for actionType " +
+          domainAction.actionType,
+        [],
+        undefined,
+        { domainAction },
+      );
+    }
+    return this.runInActionContext(domainAction.actionType, () =>
+      implementation(this, domainAction, context),
+    );
+  }
+
+  // ##############################################################################################
+  /**
+   * #341: logging context, log phase and error handling around the run of one action.
+   * Unlike handleActionInternal, the phase spans the whole asynchronous run.
+   */
+  private async runInActionContext(
+    actionType: string,
+    run: () => Promise<Action2ReturnType>,
+  ): Promise<Action2ReturnType> {
+    const actionPhase = logPhaseForActionType(actionType);
+    try {
+      LoggerGlobalContext.setAction(actionType);
+      this.miroirContext.miroirActivityTracker.setAction(actionType);
+      if (actionPhase) {
+        this.miroirContext.miroirActivityTracker.pushPhase(actionPhase);
+      }
+      return await run();
+    } catch (error) {
+      log.error("DomainController runInActionContext caught error for", actionType, error);
+      if (error instanceof Action2Error) {
+        return error;
+      }
+      return new Action2Error(
+        "FailedToHandleAction",
+        "DomainController caught error handling " + actionType + ": " + JSON.stringify(error, null, 2),
+      );
+    } finally {
+      if (actionPhase) {
+        this.miroirContext.miroirActivityTracker.popPhase();
+      }
+      LoggerGlobalContext.setAction(undefined);
+      this.miroirContext.miroirActivityTracker.setAction(undefined);
+    }
   }
 
   /**
@@ -4110,7 +4207,7 @@ export class DomainController implements DomainControllerInterface {
    * #284 — document step onNext: parse pasted/uploaded text or fetch HTTPS URL.
    * Returns openApiDocument text + convertible GET list (+ input schemas for later steps).
    */
-  private async handlePrepareOpenApiDocument(
+  async handlePrepareOpenApiDocument(
     domainAction: {
       actionType: "prepareOpenApiDocument";
       endpoint: string;
@@ -4549,9 +4646,6 @@ export class DomainController implements DomainControllerInterface {
         }
         case "probeExternalService" as any: {
           return this.handleProbeExternalService(domainAction as any, principal);
-        }
-        case "prepareOpenApiDocument": {
-          return this.handlePrepareOpenApiDocument(domainAction as any);
         }
         default:
           log.error(

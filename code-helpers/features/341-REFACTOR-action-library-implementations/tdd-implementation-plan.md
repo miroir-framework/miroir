@@ -15,7 +15,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/341
 Working branch: `claude/action-library-implementations-1jkrjp` (from `_integration` 9ae1aa9)
 
-**Resume note:** Slice 0 DONE; next is Slice 1 (tracer).
+**Resume note:** Slices 0-1 DONE; next is Slice 2 (DomainEndpoint).
 
 ---
 
@@ -37,7 +37,7 @@ This plan does **not** migrate Persistence / LocalCache actions, touch the 5 dec
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize dispatch and Endpoint inventory | ✅ | `actionImplementations.341.phase0.unit.test.ts` + baseline `action.domainController.*` |
-| 1 | Tracer: `prepareOpenApiDocument` runs from its library reference | ⬜ | `actionImplementations.341.phase1.unit.test.ts` |
+| 1 | Tracer: `prepareOpenApiDocument` runs from its library reference | ✅ | `actionImplementations.341.phase1.unit.test.ts` |
 | 2 | DomainEndpoint actions | ⬜ | `action.scenario.*`, `integ-action-284-*`, phase1 test extended |
 | 3 | InstanceEndpoint actions | ⬜ | `action.domainController.dataCrud*` |
 | 4 | ModelEndpoint actions | ⬜ | `action.domainController.modelCrud*`, `freezeApplicationVersion` |
@@ -142,7 +142,7 @@ npm run nonreg:filesystem -- --runner shared
 
 ## Slice 1 — Tracer: `prepareOpenApiDocument` runs from its library reference
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE (2026-09-28)
 
 ### Goal
 
@@ -183,6 +183,16 @@ npm run test -w miroir-core -- ''
 
 ### Realization
 
+- New: `0_interfaces/3_controllers/DomainControllerActionHost.ts` (`DomainControllerActionHost`, `ActionImplementationContext`, `ActionImplementationHandler`) and `3_controllers/ActionImplementations.ts` (`miroirActionImplementations`, one entry `handleAction_prepareOpenApiDocument`).
+- `handleAction`: a Miroir action goes to `handleApplicationAction` when its bundled definition declares an `actionImplementation` (helper `findBundledMiroirActionDefinition`). This rule replaces the `entity_DuplicateAttribute` special case.
+- `handleApplicationAction`: for Miroir actions it skips the store lookup for external services and does not require `currentModelEnvironment`; the Endpoint falls back to `defaultMiroirModelEnvironment.endpointsByUuid`. `libraryImplementation` runs through `runLibraryActionImplementation`, and an unknown name returns `InvalidAction`. The composite branch still requires `currentModelEnvironment`.
+- New `runInActionContext`: logging context, log phase and error handling for library implementations. Unlike `handleActionInternal`, it awaits the run, so the phase spans the asynchronous work.
+- The `prepareOpenApiDocument` case is removed from `handleActionInternal`. DomainEndpoint declares `handleAction_prepareOpenApiDocument`.
+- Deviation: `handlePrepareOpenApiDocument` became public. TypeScript cannot satisfy an interface with a private method. The host interface limits what handlers use, but the class surface grows by one method per migrated private method.
+- Deviation: `connectExternalService.284.phase0` locked the old "libraryImplementation not supported yet" rejection. The test now expects `InvalidAction` "unknown library implementation" (deliberate edit).
+- Phase 0 test updated: `prepareOpenApiDocument` is now in the list of implemented actions.
+- Validation: modelValidation (162 passed), lint, tsc miroir-core and miroir-standalone-app, `npm run test -w miroir-core -- ''` (2095 passed), `nonreg:filesystem --runner shared` 77/78: the one failure was the #284 phase0 test above, now green.
+
 ---
 
 ## Slice 2 — DomainEndpoint actions
@@ -206,7 +216,7 @@ Five map entries wrapping the existing code; move the inline `transactionalInsta
 
 ### 2.3 Refactor checkpoint
 
-- Private methods now reached through `DomainControllerActionHost` stay private on the class surface (interface implemented, not widened).
+- Methods reached through `DomainControllerActionHost` must be public (TypeScript cannot satisfy an interface with private members, see Slice 1 Realization); add them to the interface one by one, never the whole class.
 
 ### Validation
 

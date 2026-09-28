@@ -357,6 +357,10 @@
         "actionErrors": {
           "type": "literal",
           "definition": "FailedToPrepareOpenApiDocument"
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_prepareOpenApiDocument"
         }
       }
     ]
