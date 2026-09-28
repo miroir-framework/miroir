@@ -50,8 +50,13 @@ RUN npm run build -w miroir-example-designer
 # 2. miroir-core — includes devBuild step to generate TypeScript types from schemas
 RUN npm run devBuild -w miroir-core
 
+# 2'. miroir-env — environment resolution, imported by the server and by the
+#     standalone-app vite.config.js
+RUN npm run build -w miroir-env
+
 # 3. Local-cache and store packages (can run in parallel, all only depend on miroir-core)
 RUN npm run build -w miroir-localcache-redux \
+ && npm run build -w miroir-store-bundled \
  && npm run build -w miroir-store-filesystem \
  && npm run build -w miroir-store-indexedDb \
  && npm run build -w miroir-store-mongodb \
@@ -65,6 +70,11 @@ RUN npm run extract-library-model -w miroir-example-library
 RUN npm run build -w miroir-react
 RUN npm run build -w miroir-mcp
 RUN npm run build -w miroir-diagram-class
+RUN npm run build -w miroir-ai
+
+# 4'. Applications the standalone app bundles besides Library
+RUN npm run build -w miroir-example-spotify
+RUN npm run build -w miroir-fixture-appForTest
 
 # 5. Standalone app (Vite production build), then the server release bundle
 #    (ncc, packages/miroir-server/release/), which copies the client build into
