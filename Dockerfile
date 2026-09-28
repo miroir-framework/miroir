@@ -66,13 +66,14 @@ RUN npm run build -w miroir-react
 RUN npm run build -w miroir-mcp
 RUN npm run build -w miroir-diagram-class
 
-# 5. Server (tsup bundle) and standalone app (Vite production build)
-#    The standalone-app Vite config auto-detects missing TLS certs → uses plain
-#    HTTP proxy target http://localhost:3080, which is correct for Docker.
-#    NODE_OPTIONS increases the V8 heap limit to prevent OOM during Vite's large
-#    bundle compilation (default ~2 GB is not enough for this workspace).
-RUN npm run build-tsup -w miroir-server
+# 5. Standalone app (Vite production build), then the server release bundle
+#    (ncc, packages/miroir-server/release/), which copies the client build into
+#    release/client. The standalone-app Vite config auto-detects missing TLS
+#    certs → uses plain HTTP proxy target http://localhost:3080, which is correct
+#    for Docker. NODE_OPTIONS increases the V8 heap limit to prevent OOM during
+#    Vite's large bundle compilation (default ~2 GB is not enough for this workspace).
 RUN NODE_OPTIONS=--max-old-space-size=4096 npm run build -w miroir-standalone-app
+RUN npm run build:release -w miroir-server
 
 # Remove devDependencies from node_modules to reduce the layer transferred to
 # the final stage (saves several hundred MB).
@@ -177,4 +178,4 @@ EXPOSE 3080
 # Generate: docs/reference/authentication.md#generate-the-wrapping-key
 # --secret / MIROIR_SECRET_* / AI_* key env vars are bootstrap import only.
 ENTRYPOINT ["/sbin/tini", "--", "/docker-entrypoint.sh"]
-CMD ["node", "/miroir/packages/miroir-server/dist/server.js"]
+CMD ["node", "/miroir/packages/miroir-server/release/index.js"]

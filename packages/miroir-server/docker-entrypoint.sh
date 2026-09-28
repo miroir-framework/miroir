@@ -5,7 +5,7 @@
 # 1. On the very first start (empty /data volume), seeds the volume with the
 #    framework bootstrap data and the library demo application.
 # 2. Delegates to the command passed as arguments (defaults to starting the
-#    Node.js server: node /miroir/packages/miroir-server/dist/server.js).
+#    Node.js server: node /miroir/packages/miroir-server/release/index.js).
 # =============================================================================
 set -e
 
