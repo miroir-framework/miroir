@@ -130,6 +130,10 @@
               }
             }
           }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_initModel"
         }
       },
       {
@@ -173,6 +177,10 @@
               }
             }
           }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_commit"
         }
       },
       {
@@ -216,6 +224,10 @@
               }
             }
           }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_rollback"
         }
       },
       {
@@ -259,6 +271,10 @@
               }
             }
           }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_remoteLocalCacheRollback"
         }
       },
       {
@@ -326,6 +342,10 @@
               }
             }
           }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_resetModel"
         }
       },
       {
@@ -369,6 +389,10 @@
               }
             }
           }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_resetData"
         }
       },
       {
@@ -461,6 +485,10 @@
               }
             }
           }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_alterEntityAttribute"
         }
       },
       {
@@ -780,6 +808,10 @@
               }
             }
           }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_renameEntity"
         }
       },
       {
@@ -842,6 +874,10 @@
               }
             }
           }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_createEntity"
         }
       },
       {
@@ -897,6 +933,10 @@
               }
             }
           }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_dropEntity"
         }
       },
       {
@@ -974,6 +1014,10 @@
               }
             }
           }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_freezeApplicationVersion"
         }
       }
     ]

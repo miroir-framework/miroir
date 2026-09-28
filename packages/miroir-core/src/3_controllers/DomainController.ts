@@ -4427,34 +4427,6 @@ export class DomainController implements DomainControllerInterface, DomainContro
         this.miroirContext.miroirActivityTracker.pushPhase(actionPhase);
       }
       switch (domainAction.actionType) {
-        // case "modelAction":
-        case "initModel":
-        case "commit":
-        case "rollback":
-        case "remoteLocalCacheRollback":
-        case "resetModel":
-        case "resetData":
-        case "alterEntityAttribute":
-        case "renameEntity":
-        case "createEntity":
-        case "dropEntity":
-        case "freezeApplicationVersion": {
-          if (!currentModel) {
-            // throw new Error(
-            //   "DomainController handleAction for modelAction needs a currentModel argument"
-            // );
-            return Promise.resolve(
-              new Action2Error(
-                "InvalidAction",
-                "DomainController handleAction for modelAction needs a currentModel argument",
-                [],
-                undefined,
-                { domainAction },
-              ),
-            );
-          }
-          return this.handleModelAction(domainAction, applicationDeploymentMap, currentModel);
-        }
         // case "storeManagementAction": {
         case "storeManagementAction_createStore":
         case "storeManagementAction_deleteStore":

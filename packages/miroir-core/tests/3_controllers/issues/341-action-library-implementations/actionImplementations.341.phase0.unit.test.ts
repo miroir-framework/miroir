@@ -104,14 +104,14 @@ describe("#341 phase 0: Miroir action dispatch characterization", () => {
     );
     // Slice 0: entity_DuplicateAttribute only. Slice 1: prepareOpenApiDocument.
     // Then one Endpoint per slice.
-    const migratedEndpoints = ["DomainEndpoint", "InstanceEndpoint"];
+    const migratedEndpoints = ["DomainEndpoint", "InstanceEndpoint", "ModelEndpoint"];
     expect(Object.fromEntries(implemented)).toEqual({
-      entity_DuplicateAttribute: "compositeActionTemplate",
       ...Object.fromEntries(
         migratedEndpoints
           .flatMap((endpointName) => expectedActionTypesByEndpoint[endpointName])
           .map((actionType) => [actionType, "libraryImplementation"]),
       ),
+      entity_DuplicateAttribute: "compositeActionTemplate",
     });
   });
 

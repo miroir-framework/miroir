@@ -15,7 +15,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/341
 Working branch: `claude/action-library-implementations-1jkrjp` (from `_integration` 9ae1aa9)
 
-**Resume note:** Slices 0-3 DONE; next is Slice 4 (ModelEndpoint). Full nonreg every 2 or 3 slices (A, 2026-09-28), gate + touched suites in between.
+**Resume note:** Slices 0-4 DONE; next is Slice 5 (StoreManagement, UndoRedo). Full nonreg every 2 or 3 slices (A, 2026-09-28), gate + touched suites in between.
 
 ---
 
@@ -40,7 +40,7 @@ This plan does **not** migrate Persistence / LocalCache actions, touch the 5 dec
 | 1 | Tracer: `prepareOpenApiDocument` runs from its library reference | ✅ | `actionImplementations.341.phase1.unit.test.ts` |
 | 2 | DomainEndpoint actions | ✅ | `action.scenario.*`, `integ-action-284-*`, phase1 test extended |
 | 3 | InstanceEndpoint actions | ✅ | `action.domainController.dataCrud*` |
-| 4 | ModelEndpoint actions | ⬜ | `action.domainController.modelCrud*`, `freezeApplicationVersion` |
+| 4 | ModelEndpoint actions | ✅ | `action.domainController.modelCrud*`, `freezeApplicationVersion` |
 | 5 | StoreManagement and UndoRedo actions | ⬜ | every integ session (open/close store), `modelUndoRedo` |
 | 6 | QueryEndpoint actions reachable through `handleAction` | ⬜ | `actionImplementations.341.phase6.integ.test.ts` |
 | 7 | One dispatch path: remove the switches, scoped guard on | ⬜ | phase0 guard (b) + nonreg:filesystem |
@@ -278,7 +278,7 @@ for s in action.domainController.dataCrud action.domainController.dataCrud.compo
 
 ## Slice 4 — ModelEndpoint actions
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE (2026-09-28)
 
 ### Goal
 
@@ -307,6 +307,10 @@ npm run test -w miroir-core -- ''
 ```
 
 ### Realization
+
+- 11 map entries (one identifier per action, D3) share a `handleModelAction` wrapper that keeps the "needs a currentModel argument" check and calls `DomainController.handleModelAction`. The model `case`s are removed from `handleActionInternal`. ModelEndpoint declares the 11 actions; `entity_DuplicateAttribute` keeps its composite template.
+- Deviation: `handleModelAction`'s internal `switch` (about 1,100 lines) is not split into one method per action in this slice. The Endpoint definitions no longer depend on that grouping, so splitting it is an internal refactor. It moves to Slice 7's refactor checkpoint.
+- Validation: modelValidation, lint, core unit (2096 passed), and nonreg steps `--only` `integ-action.domainController.{modelCrud,modelCrud.nonUuidPk,freezeApplicationVersion,modelUndoRedo,dataCrud}`, `integ-action.scenario.evolutionTrace` and `appstack-PersistenceStoreController.integ`: 7/7 pass. A full nonreg run follows Slice 5.
 
 ---
 
@@ -396,6 +400,7 @@ VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirCo
 ### 7.3 Refactor checkpoint
 
 - Review `handleAction` / `handleApplicationAction` for leftovers of the two paths; the store lookup for external services stays for non-Miroir applications only.
+- Split `handleModelAction`'s internal switch into one method per model action (deferred from Slice 4), or record it as a follow-up.
 
 ### Validation
 

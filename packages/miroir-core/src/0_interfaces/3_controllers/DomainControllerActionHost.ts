@@ -6,6 +6,7 @@ import type {
   CompositeRunBoxedQueryAction,
   CompositeRunBoxedQueryTemplateAction,
   InstanceAction,
+  ModelAction,
   TransactionalInstanceAction,
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import type { Action2ReturnType, Action2VoidReturnType } from "../2_domain/DomainElement";
@@ -43,6 +44,11 @@ export type ConnectExternalServiceAction = {
  * Grows with each migrated action; handlers depend on this interface, not on the class.
  */
 export interface DomainControllerActionHost {
+  handleModelAction(
+    modelAction: ModelAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    currentModelEnvironment: MiroirModelEnvironment,
+  ): Promise<Action2VoidReturnType>;
   handleInstanceAction(
     instanceAction: InstanceAction,
     applicationDeploymentMap: ApplicationDeploymentMap,

@@ -1,4 +1,5 @@
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
+import { Action2Error } from "../0_interfaces/2_domain/DomainElement";
 import type { ActionImplementationHandler } from "../0_interfaces/3_controllers/DomainControllerActionHost";
 
 /**
@@ -10,7 +11,33 @@ import type { ActionImplementationHandler } from "../0_interfaces/3_controllers/
 const handleInstanceAction: ActionImplementationHandler = (host, action, context) =>
   host.handleInstanceAction(action, context.applicationDeploymentMap);
 
+const handleModelAction: ActionImplementationHandler = async (host, action, context) => {
+  if (!context.modelEnvironment) {
+    return new Action2Error(
+      "InvalidAction",
+      "DomainController handleAction for modelAction needs a currentModel argument",
+      [],
+      undefined,
+      { domainAction: action },
+    );
+  }
+  return host.handleModelAction(action, context.applicationDeploymentMap, context.modelEnvironment);
+};
+
 export const miroirActionImplementations: Record<string, ActionImplementationHandler> = {
+  // ModelEndpoint (entity_DuplicateAttribute is a composite template)
+  handleAction_initModel: handleModelAction,
+  handleAction_commit: handleModelAction,
+  handleAction_rollback: handleModelAction,
+  handleAction_remoteLocalCacheRollback: handleModelAction,
+  handleAction_resetModel: handleModelAction,
+  handleAction_resetData: handleModelAction,
+  handleAction_alterEntityAttribute: handleModelAction,
+  handleAction_renameEntity: handleModelAction,
+  handleAction_createEntity: handleModelAction,
+  handleAction_dropEntity: handleModelAction,
+  handleAction_freezeApplicationVersion: handleModelAction,
+
   // InstanceEndpoint
   handleAction_createInstance: handleInstanceAction,
   handleAction_deleteInstance: handleInstanceAction,
