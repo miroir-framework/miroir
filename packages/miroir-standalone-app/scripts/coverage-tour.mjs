@@ -12,7 +12,8 @@
  * Options:
  *   --serve            copy dist/ into the server release, start it on https://localhost:3080
  *                      (production mode, authentication off, 127.0.0.1 only, the repository's
- *                      certs/ or a self-signed certificate) and stop it at the end
+ *                      certs/ or a self-signed certificate, the selected environment as for
+ *                      `npm run miroir-env -- show`) and stop it at the end
  *   --url <url>        the app, served by a server already running (default https://localhost:3080)
  *   --browser <path>   Chromium or Chrome executable (default: env MIROIR_TOUR_BROWSER, then the
  *                      browser playwright-core installs, then the installed Chrome)
