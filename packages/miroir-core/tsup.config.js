@@ -8,6 +8,8 @@ export default defineConfig({
     // Node-only: filesystem model-validation helpers (node:fs). Not part of the
     // browser-facing main entry — Vite cannot resolve existsSync from fs stubs.
     'model-validation-fs': 'src/5_tests/ModelValidationToolsFilesystem.ts',
+    // Node-only: TypeScript generation from ML schemas (jzod-ts needs the TypeScript compiler).
+    'ml-to-ts': 'src/1_core/mls/mlJzodTsAdapter.ts',
   },
   format: ['esm'],
   bundle: true,
@@ -32,6 +34,8 @@ export default defineConfig({
     'miroir-test-app_deployment-library',
     // json-diff → @ewoudenberg/difflib uses dynamic require('assert'); must stay external for ncc/ESM consumers
     'json-diff',
+    // build-time only (devDependency), used by the Node-only ml-to-ts entry; it pulls in the TypeScript compiler
+    '@miroir-framework/jzod-ts',
     // Node builtins — only used by Node-only subpath entries
     'node:fs',
     'node:path',
@@ -51,5 +55,6 @@ export default defineConfig({
       'dist/model-validation-fs.d.ts',
       "export * from './5_tests/ModelValidationToolsFilesystem.js';\n",
     )
+    writeFileSync('dist/ml-to-ts.d.ts', "export * from './1_core/mls/mlJzodTsAdapter.js';\n")
   },
 })

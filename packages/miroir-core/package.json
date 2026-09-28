@@ -18,6 +18,10 @@
       "types": "./dist/model-validation-fs.d.ts",
       "import": "./dist/model-validation-fs.js"
     },
+    "./ml-to-ts": {
+      "types": "./dist/ml-to-ts.d.ts",
+      "import": "./dist/ml-to-ts.js"
+    },
     "./src/*": "./src/*"
   },
   "files": [
@@ -31,6 +35,8 @@
     "dist/**/*.d.ts.map",
     "dist/model-validation-fs.js",
     "dist/model-validation-fs.js.map",
+    "dist/ml-to-ts.js",
+    "dist/ml-to-ts.js.map",
     "dist/src/worker.js"
   ],
   "scripts": {
