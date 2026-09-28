@@ -6,7 +6,7 @@ import type { TestConfigurationPlayfield } from "miroir-core";
 import {
   testConfiguration_libraryBookDetailsSeed,
   testConfiguration_libraryDocumentSeed,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import { testConfiguration_libraryPublisherAndCountry } from "miroir-app-miroir";
 
 function playfieldFromInstance(instance: {

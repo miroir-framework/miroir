@@ -32,7 +32,7 @@ import { deployment_Miroir } from "miroir-app-admin";
 import {
   entityBook,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import { ReportPageContextProvider } from "../components/Reports/ReportPageContext";
 import { TransformerEditor } from "../components/TransformerEditor/TransformerEditor";
 

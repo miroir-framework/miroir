@@ -26,7 +26,7 @@ import { deployment_Miroir } from "miroir-app-admin";
 import {
   deployment_Library_DO_NO_USE,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import {
   selfApplicationMiroir,
 } from "miroir-app-miroir";

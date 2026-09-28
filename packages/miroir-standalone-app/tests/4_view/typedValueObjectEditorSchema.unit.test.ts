@@ -6,7 +6,7 @@ import {
   defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,
   miroirTest_runner_returnDocument,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 
 import { defaultMiroirMetaModel } from "miroir-app-miroir";
 /**

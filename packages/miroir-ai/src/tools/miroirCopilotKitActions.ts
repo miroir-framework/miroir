@@ -24,7 +24,7 @@ import {
   deployment_Library_DO_NO_USE,
   getDefaultLibraryModelEnvironmentDEFUNCT,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 // Convenience alias for a typed Action with known parameters
 type MiroirAction = Action<Parameter[]>;
 

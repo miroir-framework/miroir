@@ -22,9 +22,9 @@ runs:
       shell: bash
       run: npm run build -w miroir-app-admin
 
-    - name: Build miroir-test-app_deployment-library
+    - name: Build miroir-example-library
       shell: bash
-      run: npm run build -w miroir-test-app_deployment-library
+      run: npm run build -w miroir-example-library
 
     # 2. miroir-core with generated TypeScript types (devBuild)
     - name: Build miroir-core (with type generation)

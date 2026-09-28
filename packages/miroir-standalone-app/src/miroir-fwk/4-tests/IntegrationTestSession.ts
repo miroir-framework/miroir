@@ -27,7 +27,7 @@ import {
   folio as publisher1,
   penguin as publisher2,
   springer as publisher3,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import { setupMiroirDomainController } from "miroir-localcache-redux";
 import { miroirBundledStoreSectionStartup } from "miroir-store-bundled";
 import type { BundledDeploymentData } from "miroir-store-bundled";

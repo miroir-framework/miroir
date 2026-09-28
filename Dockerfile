@@ -43,9 +43,9 @@ RUN rm -f package-lock.json && npm install
 # 1. Application deployment metadata packages (define core types as ML schemas)
 RUN npm run build -w miroir-app-miroir
 RUN npm run build -w miroir-app-admin
-RUN npm run build -w miroir-test-app_deployment-library
-RUN npm run build -w miroir-test-app_deployment-postgres
-RUN npm run build -w miroir-test-app_deployment-designer
+RUN npm run build -w miroir-example-library
+RUN npm run build -w miroir-example-postgres
+RUN npm run build -w miroir-example-designer
 
 # 2. miroir-core — includes devBuild step to generate TypeScript types from schemas
 RUN npm run devBuild -w miroir-core
@@ -58,8 +58,8 @@ RUN npm run build -w miroir-localcache-redux \
  && npm run build -w miroir-store-postgres
 
 # 3'. extract model bundles from example applications
-RUN npm run extract-library-model -w miroir-test-app_deployment-library
-# RUN npm run extract-postgresManager-model -w miroir-test-app_deployment-postgres
+RUN npm run extract-library-model -w miroir-example-library
+# RUN npm run extract-postgresManager-model -w miroir-example-postgres
 
 # 4. UI / MCP / diagram packages
 RUN npm run build -w miroir-react
@@ -130,8 +130,8 @@ COPY packages/miroir-server/config/miroirConfig.server.docker.json \
 #   miroir-app-admin/assets/admin_data      (data  section)
 #
 # Library demo application data:
-#   miroir-test-app_deployment-library/assets/library_model
-#   miroir-test-app_deployment-library/assets/library_data
+#   miroir-example-library/assets/library_model
+#   miroir-example-library/assets/library_data
 # -------------------------------------------------------------------------
 
 # Miroir framework assets
@@ -145,10 +145,10 @@ COPY --from=builder /miroir/packages/miroir-app-admin/assets \
                     /seed/miroir-app-admin/assets
 
 # Library demo assets (model + data only; admin dir is created automatically by the store)
-COPY --from=builder /miroir/packages/miroir-test-app_deployment-library/assets/library_model \
-                    /seed/miroir-test-app_deployment-library/assets/library_model
-COPY --from=builder /miroir/packages/miroir-test-app_deployment-library/assets/library_data \
-                    /seed/miroir-test-app_deployment-library/assets/library_data
+COPY --from=builder /miroir/packages/miroir-example-library/assets/library_model \
+                    /seed/miroir-example-library/assets/library_model
+COPY --from=builder /miroir/packages/miroir-example-library/assets/library_data \
+                    /seed/miroir-example-library/assets/library_data
 
 # Docker-specific seed overrides (Docker-compatible library deployment record with
 # corrected directory paths — no ".." traversal — placed into admin_data).

@@ -15,7 +15,7 @@ import {
   type Deployment,
 } from "miroir-core";
 import { deployment_Admin } from "miroir-app-admin";
-import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
+import { selfApplicationLibrary } from "miroir-example-library";
 
 import {
   entityEntity,

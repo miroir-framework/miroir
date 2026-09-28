@@ -56,7 +56,7 @@ import {
   user2,
   user3,
   defaultLibraryAppModel,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import { defaultMiroirMetaModel } from "miroir-app-miroir";
 import { adminSelfApplication, deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 

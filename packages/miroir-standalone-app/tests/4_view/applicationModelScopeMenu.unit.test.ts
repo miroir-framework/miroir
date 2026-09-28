@@ -6,7 +6,7 @@ import {
   menuApplicationModelScopeTemplate,
   selfApplicationMiroir,
 } from "miroir-app-miroir";
-import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
+import { selfApplicationLibrary } from "miroir-example-library";
 
 import {
   isApplicationModelScopeInjectionActive,

@@ -21,7 +21,7 @@ import {
   useMiroirContextService,
 } from "miroir-react";
 import { formikPath_TransformerEditorInputModeSelector } from "../components/TransformerEditor/TransformerEditorInterface";
-import { deployment_Library_DO_NO_USE, entityBook, selfApplicationLibrary } from "miroir-test-app_deployment-library";
+import { deployment_Library_DO_NO_USE, entityBook, selfApplicationLibrary } from "miroir-example-library";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SearchPage");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

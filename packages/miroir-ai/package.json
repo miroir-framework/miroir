@@ -44,7 +44,7 @@
     "express": "4.22.1",
     "loglevelnext": "6.0.0",
     "miroir-core": "*",
-    "miroir-test-app_deployment-library": "*",
+    "miroir-example-library": "*",
     "miroir-app-miroir": "*",
     "openai": "4.104.0",
     "rxjs": "7.8.2",

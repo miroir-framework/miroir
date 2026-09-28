@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { miroirTest_runner_returnDocument } from "miroir-test-app_deployment-library";
+import { miroirTest_runner_returnDocument } from "miroir-example-library";
 import type { MiroirTestDefinition, MiroirTestSuite } from "miroir-core";
 
 import { buildIntegrationTestRunInspectorModel } from "../../src/miroir-fwk/4-tests/buildIntegrationTestRunInspectorModel.js";

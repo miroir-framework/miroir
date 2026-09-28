@@ -30,7 +30,7 @@ export type EndpointSecurityScheme =
       /**
        * OAuth2 Authorization Code flow (user context). The framework only
        * performs the refresh-token grant: the refresh token is provisioned
-       * once out-of-band (see packages/miroir-test-app_deployment-spotify/scripts/)
+       * once out-of-band (see packages/miroir-example-spotify/scripts/)
        * and supplied as a secret like the client id/secret.
        */
       type: "oauth2AuthorizationCode";

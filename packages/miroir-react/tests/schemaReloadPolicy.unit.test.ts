@@ -4,7 +4,7 @@ import { deployment_Miroir } from "miroir-app-admin";
 import {
   defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import {
   classifySchemaChange,
   computeSchemaRevision,

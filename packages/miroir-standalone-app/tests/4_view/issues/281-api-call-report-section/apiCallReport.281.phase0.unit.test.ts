@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import {
   querySpotifyGetPlaylist,
   reportSpotifyPlaylist,
-} from "miroir-test-app_deployment-spotify";
+} from "miroir-example-spotify";
 
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
@@ -19,7 +19,7 @@ const REPO_ROOT = resolveRepoRoot();
 
 const SPOTIFY_MODEL_ROOT = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-spotify/assets/spotify_model",
+  "packages/miroir-example-spotify/assets/spotify_model",
 );
 
 const SKIP_WALK_DIRS = new Set(["node_modules", "dist", "graphify-out", ".git"]);

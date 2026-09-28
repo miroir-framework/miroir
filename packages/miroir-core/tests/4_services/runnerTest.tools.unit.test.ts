@@ -8,7 +8,7 @@ import {
   miroirTest_runner_returnDocument,
   returnDocument,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import {
   miroirTest_runner_createEntity,
   miroirTest_runner_dropEntity,

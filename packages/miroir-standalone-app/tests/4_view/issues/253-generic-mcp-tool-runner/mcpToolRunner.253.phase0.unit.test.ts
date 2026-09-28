@@ -21,7 +21,7 @@ import {
   reportLibraryHome,
   returnDocument,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 
 import { resolveMcpToolAction } from "../../../../src/miroir-fwk/4_view/components/Runners/resolveMcpToolAction.js";
 import { resolveRunnerDefinitionApplication } from "../../../../src/miroir-fwk/4_view/components/Runners/runnerDefinitionApplication.js";
@@ -158,7 +158,7 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
 
     const sourceTrees = [
       "packages/miroir-app-miroir/assets",
-      "packages/miroir-test-app_deployment-library/assets",
+      "packages/miroir-example-library/assets",
       "packages/miroir-app-admin/assets",
     ];
     const instanceFiles = sourceTrees
@@ -166,9 +166,9 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
       .map((absolute) => relative(REPO_ROOT, absolute).replaceAll("\\", "/"))
       .sort();
     expect(instanceFiles).toEqual([
-      `packages/miroir-test-app_deployment-library/assets/library_model/${ENTITY_RUNNER_UUID}/98a38a84-e702-4540-a056-c7676a193a2b.json`,
-      `packages/miroir-test-app_deployment-library/assets/library_model/${ENTITY_RUNNER_UUID}/cc853632-f158-43fa-b9ed-437c9c25f539.json`,
-      `packages/miroir-test-app_deployment-library/assets/library_model/${ENTITY_RUNNER_UUID}/dbb39e31-5c7d-4473-9adb-5286e2972e46.json`,
+      `packages/miroir-example-library/assets/library_model/${ENTITY_RUNNER_UUID}/98a38a84-e702-4540-a056-c7676a193a2b.json`,
+      `packages/miroir-example-library/assets/library_model/${ENTITY_RUNNER_UUID}/cc853632-f158-43fa-b9ed-437c9c25f539.json`,
+      `packages/miroir-example-library/assets/library_model/${ENTITY_RUNNER_UUID}/dbb39e31-5c7d-4473-9adb-5286e2972e46.json`,
       `packages/miroir-app-miroir/assets/miroir_data/${ENTITY_RUNNER_UUID}/1cd065d8-dfb0-466f-974c-e81e993f2c66.json`,
       `packages/miroir-app-miroir/assets/miroir_data/${ENTITY_RUNNER_UUID}/20d51c4c-52e5-4077-baf3-5e87bd75e496.json`,
       `packages/miroir-app-miroir/assets/miroir_data/${ENTITY_RUNNER_UUID}/44313751-b0e5-4132-bb12-a544806e759b.json`,

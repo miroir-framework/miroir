@@ -21,7 +21,7 @@
       "mode": "copy"
     },
     "library": {
-      "package": "miroir-test-app_deployment-library",
+      "package": "miroir-example-library",
       "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
       "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
       "store": "filesystem",
@@ -37,7 +37,7 @@
       "sections": { "modelVersion": {} }
     },
     "spotify": {
-      "package": "miroir-test-app_deployment-spotify",
+      "package": "miroir-example-spotify",
       "selfApplication": "00514586-bf72-4de3-beea-0a627c821404",
       "deployment": "fd47d115-67e2-4870-8339-1c26665d1d15",
       "store": "filesystem",

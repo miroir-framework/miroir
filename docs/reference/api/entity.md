@@ -72,7 +72,7 @@ interface Entity {
 
 ### Example
 
-Library `Book`, abridged from `packages/miroir-test-app_deployment-library/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json`:
+Library `Book`, abridged from `packages/miroir-example-library/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json`:
 
 ```json
 {

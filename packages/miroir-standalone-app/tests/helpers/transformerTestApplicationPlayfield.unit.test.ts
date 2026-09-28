@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { MiroirConfigClient, StoreUnitConfiguration } from "miroir-core";
 import { deployment_Admin } from "miroir-app-admin";
-import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-library";
+import { deployment_Library_DO_NO_USE } from "miroir-example-library";
 
 import {
   PINNED_INTEG_TEST_APPLICATION_IDENTITY,

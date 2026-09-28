@@ -29,7 +29,7 @@ export default defineConfig({
   external: [
     'miroir-app-admin',
     'miroir-app-miroir',
-    'miroir-test-app_deployment-library',
+    'miroir-example-library',
     // json-diff → @ewoudenberg/difflib uses dynamic require('assert'); must stay external for ncc/ESM consumers
     'json-diff',
     // Node builtins — only used by Node-only subpath entries

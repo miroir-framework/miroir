@@ -47,7 +47,7 @@
     "miroir-core": "*",
     "miroir-localcache-redux": "*",
     "miroir-app-admin": "*",
-    "miroir-test-app_deployment-library": "*",
+    "miroir-example-library": "*",
     "miroir-app-miroir": "*",
     "uuid": "11.1.0",
     "zod": "3.25.76"

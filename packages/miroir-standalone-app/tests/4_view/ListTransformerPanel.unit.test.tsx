@@ -13,7 +13,7 @@ import {
   book1,
   reportBookList,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import { getReduxDeploymentsStateIndex } from "miroir-core";
 import {
   LocalCacheProvider,

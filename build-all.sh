@@ -79,10 +79,10 @@ ALL_PACKAGES=(
   miroir-cli
   miroir-ai
   miroir-standalone-app
-  miroir-test-app_deployment-library
-  miroir-test-app_deployment-spotify
+  miroir-example-library
+  miroir-example-spotify
   miroir-test-app_deployment-appForTest
-  miroir-test-app_deployment-postgres
+  miroir-example-postgres
 )
 
 STAGE_OPTIONAL_JZOD=(jzod)
@@ -102,9 +102,9 @@ STAGE_CACHES_STORES=(
 )
 STAGE_UI_SERVICES=(miroir-react miroir-mcp miroir-diagram-class)
 STAGE_APPS=(miroir-cli miroir-ai miroir-mcp)
-STAGE_STANDALONE_DEPS=(miroir-test-app_deployment-library miroir-test-app_deployment-spotify miroir-test-app_deployment-appForTest)
+STAGE_STANDALONE_DEPS=(miroir-example-library miroir-example-spotify miroir-test-app_deployment-appForTest)
 STAGE_STANDALONE=(miroir-standalone-app)
-STAGE_DEPLOY_TEST=(miroir-test-app_deployment-library miroir-test-app_deployment-spotify miroir-test-app_deployment-appForTest miroir-test-app_deployment-postgres)
+STAGE_DEPLOY_TEST=(miroir-example-library miroir-example-spotify miroir-test-app_deployment-appForTest miroir-example-postgres)
 
 # ---------------------------------------------------------------------------
 # Argument parsing
@@ -664,10 +664,10 @@ record_time "8/9  miroir-standalone-app" "$t0"
 # ---------------------------------------------------------------------------
 # Step 9 – Test/example deployment packages
 # ---------------------------------------------------------------------------
-step "9/9 · miroir-test-app_deployment-library, spotify & postgres"
+step "9/9 · miroir-example-library, spotify & postgres"
 t0=$(now_secs)
 run_stage_packages "deploy-test" "${STAGE_DEPLOY_TEST[@]}"
-record_time "9/9  miroir-test-app_deployment-library & miroir-test-app_deployment-postgres" "$t0"
+record_time "9/9  miroir-example-library & miroir-example-postgres" "$t0"
 
 # ---------------------------------------------------------------------------
 # Artefact-specific builds with timing

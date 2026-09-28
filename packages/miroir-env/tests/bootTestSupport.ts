@@ -26,8 +26,8 @@ import { repositoryRoot } from "./cliTestSupport";
 const PACKAGES = [
   "miroir-app-miroir",
   "miroir-app-admin",
-  "miroir-test-app_deployment-library",
-  "miroir-test-app_deployment-designer",
+  "miroir-example-library",
+  "miroir-example-designer",
 ];
 
 /** A repository root holding the tracked dev environment and a copy of the packages it installs. */

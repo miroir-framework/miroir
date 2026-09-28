@@ -45,7 +45,7 @@ const REPO_ROOT = resolveRepoRoot();
 
 const SPOTIFY_ENDPOINT_PATH = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-spotify/assets/spotify_model/3d8da4d4-8f76-4bb4-9212-14869d81c00c/0e5cb172-12ea-4467-8598-5889338ae454.json",
+  "packages/miroir-example-spotify/assets/spotify_model/3d8da4d4-8f76-4bb4-9212-14869d81c00c/0e5cb172-12ea-4467-8598-5889338ae454.json",
 );
 
 const PHASE0_BEARER_CREDENTIAL_KEY = "phase0Bearer";

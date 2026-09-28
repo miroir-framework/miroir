@@ -28,7 +28,7 @@ import {
   openReportHref,
   resolveOpenReportPageParams,
 } from "../../../../src/miroir-fwk/4_view/components/Reports/OpenReportLaunch.js";
-import { reportMultistepCountryCreate } from "miroir-test-app_deployment-library";
+import { reportMultistepCountryCreate } from "miroir-example-library";
 import { selfApplicationMiroir } from "miroir-app-miroir";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
@@ -54,10 +54,10 @@ const FUNDAMENTAL_TYPES_PATH = join(
 const ASSET_TREES = [
   "packages/miroir-app-miroir/assets",
   "packages/miroir-app-admin/assets",
-  "packages/miroir-test-app_deployment-library/assets",
-  "packages/miroir-test-app_deployment-designer/assets",
-  "packages/miroir-test-app_deployment-postgres/assets",
-  "packages/miroir-test-app_deployment-spotify/assets",
+  "packages/miroir-example-library/assets",
+  "packages/miroir-example-designer/assets",
+  "packages/miroir-example-postgres/assets",
+  "packages/miroir-example-spotify/assets",
 ];
 
 const SKIP_WALK_DIRS = new Set(["node_modules", "dist", "graphify-out", ".git"]);

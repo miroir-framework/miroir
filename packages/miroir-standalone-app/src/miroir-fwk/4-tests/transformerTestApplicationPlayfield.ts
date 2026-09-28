@@ -15,7 +15,7 @@ import {
   type Uuid,
 } from "miroir-core";
 import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
-import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-library";
+import { deployment_Library_DO_NO_USE } from "miroir-example-library";
 
 import {
   buildIntegrationTestModelEnvironment,

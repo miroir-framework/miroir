@@ -39,7 +39,7 @@ jobs:
         run: |
           npm run build -w miroir-app-miroir -w miroir-app-admin
           npm run build -w miroir-core
-          npm run build -w miroir-env -w miroir-store-bundled -w miroir-store-postgres -w miroir-test-app_deployment-library
+          npm run build -w miroir-env -w miroir-store-bundled -w miroir-store-postgres -w miroir-example-library
       - name: Environments valid, tracked assets unchanged (#321)
         run: npm run miroir-env -- check --strict --tracked-clean
       - name: Typecheck miroir-core

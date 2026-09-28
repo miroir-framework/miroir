@@ -16,7 +16,7 @@ import {
   entityBook,
   reportBookList,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import { defaultMiroirMetaModel, defaultStoredMiroirTheme } from "miroir-app-miroir";
 import { useMiroirContextService } from "miroir-react";
 

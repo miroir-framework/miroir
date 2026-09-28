@@ -22,7 +22,7 @@ import {
   reportTestConfigurationList,
   selfApplicationMiroir,
 } from "miroir-app-miroir";
-import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
+import { selfApplicationLibrary } from "miroir-example-library";
 
 const RUN_TEST = process.env.RUN_TEST;
 const shouldRun =

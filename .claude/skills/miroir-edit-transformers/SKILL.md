@@ -220,7 +220,7 @@ File: `packages/miroir-core/scripts/generate-ts-types.ts`
 ### Step 8: Run devBuild and Tests ✅
 Generate types and verify everything works:
 ```bash
-npm run build -w miroir-test-app_deployment-library
+npm run build -w miroir-example-library
 npm run devBuild -w miroir-core && npm run testMiroir -w miroir-core -- --suites tr.core --mode unit && npm run testMiroir -w miroir-standalone-app -- --suites tr.core --mode integration
 ```
 

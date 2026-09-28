@@ -9,15 +9,15 @@
   "configuration": {
     "admin": {
       "emulatedServerType": "filesystem",
-      "directory":"miroir-test-app_deployment-designer/assets"
+      "directory":"miroir-example-designer/assets"
     },
     "model": {
       "emulatedServerType": "filesystem",
-      "directory":"miroir-test-app_deployment-designer/assets/designer_model"
+      "directory":"miroir-example-designer/assets/designer_model"
     },
     "data": {
       "emulatedServerType": "filesystem",
-      "directory":"miroir-test-app_deployment-designer/assets/designer_data"
+      "directory":"miroir-example-designer/assets/designer_data"
     }
   }
 }

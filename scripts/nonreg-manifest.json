@@ -303,7 +303,7 @@
         "run",
         "testByFile",
         "-w",
-        "miroir-test-app_deployment-library",
+        "miroir-example-library",
         "--",
         "tests/modelValidation.unit.test.ts"
       ]
@@ -318,7 +318,7 @@
         "run",
         "testByFile",
         "-w",
-        "miroir-test-app_deployment-designer",
+        "miroir-example-designer",
         "--",
         "modelValidation"
       ]
@@ -1952,7 +1952,7 @@
         "run",
         "testByFile",
         "-w",
-        "miroir-test-app_deployment-postgres",
+        "miroir-example-postgres",
         "--",
         "tests/modelValidation.unit.test.ts"
       ]

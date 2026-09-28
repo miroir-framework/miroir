@@ -66,7 +66,7 @@ Build in this order (`build-all.sh` is canonical; `./build-all.sh` or `./build-a
 5. `miroir-react`, `miroir-mcp`, `miroir-diagram-class`
 6. `miroir-cli`, `miroir-ai`
 7. `miroir-standalone-app`
-8. `miroir-test-app_deployment-library`, `miroir-test-app_deployment-postgres` (example / test applications)
+8. `miroir-example-library`, `miroir-example-postgres` (example / test applications)
 
 Artefacts: `miroir-server` release binary (`npm run build:release -w miroir-server`), `miroir-standalone-app-electron`, Docker image. `miroir-designer` and `miroir-runtime` are unused stubs.
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { deployment_Library_DO_NO_USE, defaultLibraryAppModel } from "miroir-test-app_deployment-library";
+import { deployment_Library_DO_NO_USE, defaultLibraryAppModel } from "miroir-example-library";
 import { deployment_Miroir } from "miroir-app-admin";
 import { selfApplicationMiroir, defaultMiroirMetaModel, entityDefinitionEntity } from "miroir-app-miroir";
 

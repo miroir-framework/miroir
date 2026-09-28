@@ -55,7 +55,7 @@ import {
   endpointDocument,
   getDefaultLibraryModelEnvironmentDEFUNCT,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import {
   defaultMiroirMetaModel,
   selfApplicationMiroir,

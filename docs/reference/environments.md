@@ -63,7 +63,7 @@ Tests select their environment through their profile (`--profile emulatedServer-
   },
   "applications": {
     "library": {
-      "package": "miroir-test-app_deployment-library",
+      "package": "miroir-example-library",
       "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
       "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
       "store": "filesystem",

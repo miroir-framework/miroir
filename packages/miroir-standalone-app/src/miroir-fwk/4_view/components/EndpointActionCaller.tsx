@@ -39,7 +39,7 @@ import {
   deployment_Miroir,
   entityApplicationForAdmin,
 } from "miroir-app-admin";
-import { selfApplicationLibrary } from 'miroir-test-app_deployment-library';
+import { selfApplicationLibrary } from 'miroir-example-library';
 import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
 import { ThemedPaper } from './Themes/index.js';
 

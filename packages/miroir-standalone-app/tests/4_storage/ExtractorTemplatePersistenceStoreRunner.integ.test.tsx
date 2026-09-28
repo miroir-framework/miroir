@@ -57,7 +57,7 @@ import {
   springer as publisher3,
   reportBookList,
   selfApplicationLibrary
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import { cleanLevel, packageName } from '../../src/constants.js';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {

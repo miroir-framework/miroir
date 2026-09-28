@@ -13,11 +13,11 @@
     },
     "model": {
       "emulatedServerType": "filesystem",
-      "directory": "miroir-test-app_deployment-spotify/assets/spotify_model"
+      "directory": "miroir-example-spotify/assets/spotify_model"
     },
     "data": {
       "emulatedServerType": "filesystem",
-      "directory": "miroir-test-app_deployment-spotify/assets/spotify_data"
+      "directory": "miroir-example-spotify/assets/spotify_data"
     }
   }
 }

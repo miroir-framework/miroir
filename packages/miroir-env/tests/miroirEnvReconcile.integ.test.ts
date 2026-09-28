@@ -301,7 +301,7 @@ describe("miroir-env check, import and prune on the state of a server start", ()
     expect(clean.exitCode).toBe(0);
     expect(clean.stdout).toContain("tracked assets: clean");
 
-    const written = "packages/miroir-test-app_deployment-library/assets/library_data/written-by-a-run.json";
+    const written = "packages/miroir-example-library/assets/library_data/written-by-a-run.json";
     writeFileSync(path.join(root, written), "{}");
     const dirty = await run(["check", "--tracked-clean"], root);
     expect(dirty.exitCode).toBe(1);

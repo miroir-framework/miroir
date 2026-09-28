@@ -20,7 +20,7 @@ import {
   entityBook,
   selfApplicationLibrary,
   user1,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 
 
 const packageName = "miroir-mcp";

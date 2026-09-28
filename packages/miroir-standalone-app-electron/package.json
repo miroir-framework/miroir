@@ -84,7 +84,7 @@
         ]
       },
       {
-        "from": "../miroir-test-app_deployment-library/dist",
+        "from": "../miroir-example-library/dist",
         "to": "miroir-assets/bundles",
         "filter": [
           "library-model*.json",

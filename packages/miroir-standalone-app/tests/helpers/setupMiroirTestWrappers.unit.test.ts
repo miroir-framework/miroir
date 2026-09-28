@@ -15,7 +15,7 @@ import {
   setupMiroirTestAndDeployMiroirApp,
 } from "./setupMiroirTestWrappers.js";
 import { MiroirActivityTracker, MiroirEventService } from "miroir-core";
-import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
+import { selfApplicationLibrary } from "miroir-example-library";
 import {
   selfApplicationMiroir,
 } from "miroir-app-miroir";

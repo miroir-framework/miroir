@@ -47,15 +47,15 @@
       "configuration": {
         "admin": {
           "emulatedServerType": "filesystem",
-          "directory": "packages/miroir-test-app_deployment-designer/assets"
+          "directory": "packages/miroir-example-designer/assets"
         },
         "model": {
           "emulatedServerType": "filesystem",
-          "directory": "packages/miroir-test-app_deployment-designer/assets/designer_model"
+          "directory": "packages/miroir-example-designer/assets/designer_model"
         },
         "data": {
           "emulatedServerType": "filesystem",
-          "directory": "packages/miroir-test-app_deployment-designer/assets/designer_data"
+          "directory": "packages/miroir-example-designer/assets/designer_data"
         }
       }
     },
@@ -69,11 +69,11 @@
         },
         "model": {
           "emulatedServerType": "filesystem",
-          "directory": "packages/miroir-test-app_deployment-library/assets/library_model"
+          "directory": "packages/miroir-example-library/assets/library_model"
         },
         "data": {
           "emulatedServerType": "filesystem",
-          "directory": "packages/miroir-test-app_deployment-library/assets/library_data"
+          "directory": "packages/miroir-example-library/assets/library_data"
         }
       }
     }

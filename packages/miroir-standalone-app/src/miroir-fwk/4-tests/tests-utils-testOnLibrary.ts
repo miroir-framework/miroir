@@ -22,7 +22,7 @@ import {
   penguin as publisher2,
   springer as publisher3,
   entityPublisher,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 
 export const libraryEntitesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances  = [
   {

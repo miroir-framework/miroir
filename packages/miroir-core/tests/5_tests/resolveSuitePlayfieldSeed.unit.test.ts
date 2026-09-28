@@ -34,7 +34,7 @@ import {
   miroirTest_runner_lendDocument,
   miroirTest_runner_returnDocument,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 
 const RUN_TEST = process.env.RUN_TEST;
 const shouldRun =
@@ -258,7 +258,7 @@ function loadTestConfiguration(path: string): TestConfigurationPlayfield {
 (shouldRun ? describe : describe.skip)("Library document TestConfiguration", () => {
   const configPath = join(
     REPO_ROOT,
-    "packages/miroir-test-app_deployment-library/assets/library_model",
+    "packages/miroir-example-library/assets/library_model",
     TEST_CONFIGURATION_ENTITY_UUID,
     `${LIBRARY_DOCUMENT_CONFIG_UUID}.json`,
   );
@@ -396,7 +396,7 @@ function loadTestConfiguration(path: string): TestConfigurationPlayfield {
   ];
   const libraryEntityDir = join(
     REPO_ROOT,
-    "packages/miroir-test-app_deployment-library/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+    "packages/miroir-example-library/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   );
 
   it("five unique DC suite JSON files have inline playfield and no testConfiguration", () => {

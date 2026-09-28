@@ -68,7 +68,7 @@ import {
   defaultLibraryAppModel,
   endpointDocument,
   getDefaultLibraryModelEnvironmentDEFUNCT,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import { callMcpToolViaHttp } from './mcpClient.js';
 import { MiroirMcpServer, setupMcpServer } from "../../src/mcpServer.js";
 import { EndpointToolRegistry } from "../../src/tools/EndpointToolRegistry.js";

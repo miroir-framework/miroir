@@ -22,7 +22,7 @@ import {
   getDefaultLibraryModelEnvironmentDEFUNCT,
   defaultLibraryAppModel,
   resolveLibraryDeploymentUuid,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 
 import { defaultMiroirMetaModel, instanceEndpointV1 } from "miroir-app-miroir";
 const packageName = "miroir-cli";

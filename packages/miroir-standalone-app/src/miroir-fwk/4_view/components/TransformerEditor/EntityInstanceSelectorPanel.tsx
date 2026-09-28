@@ -37,7 +37,7 @@ import {
   adminSelfApplication,
   entityApplicationForAdmin,
 } from "miroir-app-admin";
-import { selfApplicationLibrary } from 'miroir-test-app_deployment-library';
+import { selfApplicationLibrary } from 'miroir-example-library';
 import { selfApplicationMiroir } from "miroir-app-miroir";
 import { packageName } from '../../../../constants';
 import { cleanLevel } from '../../constants';

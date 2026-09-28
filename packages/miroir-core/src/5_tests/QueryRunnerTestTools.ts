@@ -30,7 +30,7 @@ import {
   getQueryTemplateRunnerParamsForReduxDeploymentsState,
   runQueryTemplateFromReduxDeploymentsState,
 } from "../2_domain/ReduxDeploymentsStateQueryTemplateSelectors";
-// import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from "miroir-test-app_deployment-library";
+// import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from "miroir-example-library";
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
 import { ignorePostgresExtraAttributes, removeUndefinedProperties, unNullify } from "../4_services/otherTools";
 import { domainStateToReduxDeploymentsState, resolvePathOnObject } from "../tools";

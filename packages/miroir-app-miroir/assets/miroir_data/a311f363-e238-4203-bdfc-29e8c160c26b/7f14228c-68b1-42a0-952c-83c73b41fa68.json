@@ -26,7 +26,7 @@
           {
             "applications": {
               "library": {
-                "package": "miroir-test-app_deployment-library",
+                "package": "miroir-example-library",
                 "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                 "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                 "store": "filesystem",
@@ -41,21 +41,21 @@
           "deployments": [
             {
               "applicationKey": "library",
-              "package": "miroir-test-app_deployment-library",
+              "package": "miroir-example-library",
               "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
               "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
               "configuration": {
                 "admin": {
                   "emulatedServerType": "filesystem",
-                  "directory": "packages/miroir-test-app_deployment-library/assets"
+                  "directory": "packages/miroir-example-library/assets"
                 },
                 "model": {
                   "emulatedServerType": "filesystem",
-                  "directory": "packages/miroir-test-app_deployment-library/assets/library_model"
+                  "directory": "packages/miroir-example-library/assets/library_model"
                 },
                 "data": {
                   "emulatedServerType": "filesystem",
-                  "directory": "packages/miroir-test-app_deployment-library/assets/library_data"
+                  "directory": "packages/miroir-example-library/assets/library_data"
                 }
               }
             }
@@ -127,7 +127,7 @@
           {
             "applications": {
               "library": {
-                "package": "miroir-test-app_deployment-library",
+                "package": "miroir-example-library",
                 "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                 "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                 "store": "filesystem",
@@ -143,21 +143,21 @@
           "deployments": [
             {
               "applicationKey": "library",
-              "package": "miroir-test-app_deployment-library",
+              "package": "miroir-example-library",
               "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
               "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
               "configuration": {
                 "admin": {
                   "emulatedServerType": "filesystem",
-                  "directory": "packages/miroir-test-app_deployment-library/assets"
+                  "directory": "packages/miroir-example-library/assets"
                 },
                 "model": {
                   "emulatedServerType": "filesystem",
-                  "directory": "packages/miroir-test-app_deployment-library/assets/lib_model"
+                  "directory": "packages/miroir-example-library/assets/lib_model"
                 },
                 "data": {
                   "emulatedServerType": "filesystem",
-                  "directory": "packages/miroir-test-app_deployment-library/assets/lib_data"
+                  "directory": "packages/miroir-example-library/assets/lib_data"
                 }
               }
             }
@@ -227,7 +227,7 @@
           {
             "applications": {
               "library": {
-                "package": "miroir-test-app_deployment-library",
+                "package": "miroir-example-library",
                 "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                 "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                 "store": "filesystem",
@@ -242,7 +242,7 @@
           "deployments": [
             {
               "applicationKey": "library",
-              "package": "miroir-test-app_deployment-library",
+              "package": "miroir-example-library",
               "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
               "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
               "configuration": {
@@ -294,7 +294,7 @@
           {
             "applications": {
               "library": {
-                "package": "miroir-test-app_deployment-library",
+                "package": "miroir-example-library",
                 "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                 "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                 "store": "sql",
@@ -330,7 +330,7 @@
             },
             "applications": {
               "library": {
-                "package": "miroir-test-app_deployment-library",
+                "package": "miroir-example-library",
                 "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                 "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                 "store": "sql",
@@ -348,7 +348,7 @@
           "deployments": [
             {
               "applicationKey": "library",
-              "package": "miroir-test-app_deployment-library",
+              "package": "miroir-example-library",
               "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
               "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
               "configuration": {
@@ -397,7 +397,7 @@
             },
             "applications": {
               "library": {
-                "package": "miroir-test-app_deployment-library",
+                "package": "miroir-example-library",
                 "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                 "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                 "store": "mongodb",
@@ -412,7 +412,7 @@
           "deployments": [
             {
               "applicationKey": "library",
-              "package": "miroir-test-app_deployment-library",
+              "package": "miroir-example-library",
               "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
               "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
               "configuration": {
@@ -447,7 +447,7 @@
           {
             "applications": {
               "library": {
-                "package": "miroir-test-app_deployment-library",
+                "package": "miroir-example-library",
                 "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                 "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                 "store": "indexedDb",
@@ -465,7 +465,7 @@
           "deployments": [
             {
               "applicationKey": "library",
-              "package": "miroir-test-app_deployment-library",
+              "package": "miroir-example-library",
               "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
               "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
               "configuration": {
@@ -501,7 +501,7 @@
           {
             "applications": {
               "library": {
-                "package": "miroir-test-app_deployment-library",
+                "package": "miroir-example-library",
                 "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                 "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                 "store": "sql",
@@ -593,7 +593,7 @@
           {
             "applications": {
               "library": {
-                "package": "miroir-test-app_deployment-library",
+                "package": "miroir-example-library",
                 "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                 "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
                 "store": "filesystem",
@@ -625,7 +625,7 @@
           "deployments": [
             {
               "applicationKey": "library",
-              "package": "miroir-test-app_deployment-library",
+              "package": "miroir-example-library",
               "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
               "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
               "configuration": {

@@ -23,7 +23,7 @@ import {
   miroirTest_runner_mcp_lendDocument,
   miroirTest_runner_returnDocument,
   returnDocumentRunner,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import {
   miroirTest_action_domainController_freezeApplicationVersion,
   miroirTest_action_domainController_dataCrud_compositePk,

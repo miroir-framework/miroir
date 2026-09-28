@@ -51,7 +51,7 @@ import {
 // import {
 //   lendingEndpoint,
 //   selfApplicationLibrary
-// } from "miroir-test-app_deployment-library";
+// } from "miroir-example-library";
 import { LIBRARY_TMP } from "../0_interfaces/1_core/LIBRARY_TMP";
 import { noValue } from "./Instance";
 

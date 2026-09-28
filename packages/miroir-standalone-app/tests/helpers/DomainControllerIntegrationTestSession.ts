@@ -15,7 +15,7 @@ import {
   getBootstrapPhasesForDomainControllerProfile,
 } from "miroir-core";
 import { deployment_Miroir } from "miroir-app-admin";
-import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
+import { selfApplicationLibrary } from "miroir-example-library";
 import {
   selfApplicationMiroir,
 } from "miroir-app-miroir";

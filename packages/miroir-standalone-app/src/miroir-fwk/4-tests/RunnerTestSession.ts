@@ -35,7 +35,7 @@ import {
   defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import { defaultMiroirMetaModel, selfApplicationMiroir } from "miroir-app-miroir";
 import { browserMcpServerUrl, runMcpToolRunner } from "../4_view/components/Runners/runMcpToolRunner.js";
 import { runRealServerClientBootstrap } from "./runRealServerClientBootstrap.js";

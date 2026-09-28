@@ -11,7 +11,7 @@ import {
   resetIntegTestbed,
 } from "miroir-core";
 import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
-import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from "miroir-test-app_deployment-library";
+import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from "miroir-example-library";
 import { selfApplicationMiroir } from "miroir-app-miroir";
 
 import { resolveCanonicalTestDeploymentUuid } from "./resolveCanonicalTestDeploymentUuid.js";

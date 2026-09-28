@@ -21,7 +21,7 @@ import {
   entityReport,
   selfApplicationMiroir,
 } from "miroir-app-miroir";
-import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
+import { selfApplicationLibrary } from "miroir-example-library";
 import type { Entity } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 /** Miroir EntityVersion instance UUIDs (stable across relocation). */

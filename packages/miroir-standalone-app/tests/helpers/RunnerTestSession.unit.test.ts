@@ -30,7 +30,7 @@ import {
   miroirTest_runner_returnDocument,
   returnDocument,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import { selfApplicationMiroir } from "miroir-app-miroir";
 
 const runAppStackIntegrationBootstrapMock = vi.fn();

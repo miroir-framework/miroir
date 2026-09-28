@@ -37,7 +37,7 @@ const MIROIR_DATA_ENDPOINT_DIR = join(
 );
 const LIBRARY_MODEL_ENDPOINT_DIR = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-library/assets/library_model",
+  "packages/miroir-example-library/assets/library_model",
   ENDPOINT_ENTITY_UUID,
 );
 

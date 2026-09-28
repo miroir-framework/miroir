@@ -47,7 +47,7 @@ export const APPLICATION_MIROIR_TEST_SOURCE_FOLDERS_LEGACY: readonly Application
     },
     {
       applicationKey: "library",
-      relativePath: `packages/miroir-test-app_deployment-library/assets/library_model/${ENTITY_MIROIR_TEST_UUID}`,
+      relativePath: `packages/miroir-example-library/assets/library_model/${ENTITY_MIROIR_TEST_UUID}`,
     },
   ];
 

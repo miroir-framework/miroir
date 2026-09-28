@@ -9,7 +9,7 @@ import {
   defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,
   book1,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import {
   getMiroirFundamentalSchemaForDeployment,
   MiroirActivityTracker,

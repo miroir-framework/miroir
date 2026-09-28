@@ -92,9 +92,9 @@ t0=$(now_secs)
 run_parallel_builds \
   miroir-app-miroir \
   miroir-app-admin \
-  miroir-test-app_deployment-library \
-  miroir-test-app_deployment-postgres \
-  miroir-test-app_deployment-designer
+  miroir-example-library \
+  miroir-example-postgres \
+  miroir-example-designer
 record_time "3/7  deployment packages" "$t0"
 
 # ---------------------------------------------------------------------------
@@ -122,7 +122,7 @@ record_time "5/7  localcache + store packages" "$t0"
 # Extract model bundles from example applications.
 step "5b/7 model bundle extraction"
 t0=$(now_secs)
-npm run extract-library-model -w miroir-test-app_deployment-library
+npm run extract-library-model -w miroir-example-library
 record_time "5b/7 model bundle extraction" "$t0"
 
 # ---------------------------------------------------------------------------

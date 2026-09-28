@@ -25,7 +25,7 @@ import { deployment_Miroir } from "miroir-app-admin";
 import {
   getDefaultLibraryModelEnvironmentDEFUNCT,
   resolveLibraryDeploymentUuid,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import { mlElementToJsonSchema } from "./mlElementToJsonSchema.js";
 import {
   isMlConversionLimitReached,
