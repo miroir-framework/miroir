@@ -134,7 +134,8 @@
         "actionImplementation": {
           "actionImplementationType": "libraryImplementation",
           "inMemoryImplementationFunctionName": "handleAction_initModel"
-        }
+        },
+        "logPhase": "bootstrap"
       },
       {
         "actionParameters": {
@@ -228,7 +229,8 @@
         "actionImplementation": {
           "actionImplementationType": "libraryImplementation",
           "inMemoryImplementationFunctionName": "handleAction_rollback"
-        }
+        },
+        "logPhase": "rollback"
       },
       {
         "actionParameters": {
@@ -275,7 +277,8 @@
         "actionImplementation": {
           "actionImplementationType": "libraryImplementation",
           "inMemoryImplementationFunctionName": "handleAction_remoteLocalCacheRollback"
-        }
+        },
+        "logPhase": "rollback"
       },
       {
         "actionParameters": {
@@ -346,7 +349,8 @@
         "actionImplementation": {
           "actionImplementationType": "libraryImplementation",
           "inMemoryImplementationFunctionName": "handleAction_resetModel"
-        }
+        },
+        "logPhase": "bootstrap"
       },
       {
         "actionParameters": {
@@ -393,7 +397,8 @@
         "actionImplementation": {
           "actionImplementationType": "libraryImplementation",
           "inMemoryImplementationFunctionName": "handleAction_resetData"
-        }
+        },
+        "logPhase": "bootstrap"
       },
       {
         "actionParameters": {
@@ -489,7 +494,8 @@
         "actionImplementation": {
           "actionImplementationType": "libraryImplementation",
           "inMemoryImplementationFunctionName": "handleAction_alterEntityAttribute"
-        }
+        },
+        "autocommitFromUI": true
       },
       {
         "actionParameters": {
@@ -812,7 +818,8 @@
         "actionImplementation": {
           "actionImplementationType": "libraryImplementation",
           "inMemoryImplementationFunctionName": "handleAction_renameEntity"
-        }
+        },
+        "autocommitFromUI": true
       },
       {
         "actionParameters": {
@@ -878,7 +885,8 @@
         "actionImplementation": {
           "actionImplementationType": "libraryImplementation",
           "inMemoryImplementationFunctionName": "handleAction_createEntity"
-        }
+        },
+        "autocommitFromUI": true
       },
       {
         "actionParameters": {
@@ -937,7 +945,8 @@
         "actionImplementation": {
           "actionImplementationType": "libraryImplementation",
           "inMemoryImplementationFunctionName": "handleAction_dropEntity"
-        }
+        },
+        "autocommitFromUI": true
       },
       {
         "actionParameters": {

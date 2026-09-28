@@ -249,6 +249,31 @@
                           }
                         ]
                       },
+                      "autocommitFromUI": {
+                        "type": "boolean",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Autocommit from UI",
+                            "description": "When true, the action is followed by a commit when it is sent from the UI"
+                          }
+                        }
+                      },
+                      "logPhase": {
+                        "type": "enum",
+                        "optional": true,
+                        "definition": [
+                          "bootstrap",
+                          "rollback",
+                          "query"
+                        ],
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Log phase",
+                            "description": "Log phase the activity tracker is in while the action runs"
+                          }
+                        }
+                      },
                       "actionErrors": {
                         "type": "union",
                         "discriminator": "type",

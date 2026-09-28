@@ -155,6 +155,7 @@
           "actionImplementationType": "libraryImplementation",
           "inMemoryImplementationFunctionName": "handleAction_runBoxedQueryAction"
         },
+        "logPhase": "query",
         "actionErrors": {
           "type": "literal",
           "definition": "FailedToCreateInstance"

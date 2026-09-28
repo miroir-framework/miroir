@@ -15,7 +15,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/341
 Working branch: `claude/action-library-implementations-1jkrjp` (from `_integration` 9ae1aa9)
 
-**Resume note:** Slices 0-7 DONE; next is Slice 8 (autocommit and log phase attributes). Full nonreg every 2 or 3 slices (A, 2026-09-28), gate + touched suites in between.
+**Resume note:** Slices 0-8 DONE; next is Slice 9 (nonreg, docs, cleanup, AC). Full nonreg every 2 or 3 slices (A, 2026-09-28), gate + touched suites in between.
 
 ---
 
@@ -44,7 +44,7 @@ This plan does **not** migrate Persistence / LocalCache actions, touch the 5 dec
 | 5 | StoreManagement and UndoRedo actions | ✅ | every integ session (open/close store), `modelUndoRedo` |
 | 6 | QueryEndpoint actions reachable through `handleAction` | ✅ | `actionImplementations.341.phase6.integ.test.ts` |
 | 7 | One dispatch path: remove the switches, scoped guard on | ✅ | phase0 guard (b) + nonreg:filesystem |
-| 8 | Autocommit and log phase from action definitions | ⬜ | phase8 unit test vs Slice 0 lock |
+| 8 | Autocommit and log phase from action definitions | ✅ | phase8 unit test vs Slice 0 lock |
 | 9 | Nonreg, docs, cleanup, AC | ⬜ | nonreg:filesystem (shared runner) + tracer narrative |
 
 ---
@@ -438,7 +438,7 @@ npm run nonreg:filesystem -- --runner shared
 
 ## Slice 8 — Autocommit and log phase from action definitions
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -468,6 +468,11 @@ npm run nonreg:unit -- --runner shared
 ```
 
 ### Realization
+
+- Attribute names (default, told to A): `autocommitFromUI: boolean` and `logPhase: "bootstrap" | "rollback" | "query"`, both optional, added to the action definition in the Endpoint Entity `mlSchema` and its EntityVersion, next to `actionImplementation`. `devBuild` regenerated `Action`.
+- Filled on the 6 autocommit and 10 log-phase actions of the bundled Endpoints; `actionImplementations.341.phase8.unit.test.ts` checks both sets against the Slice 0 locks, and that `logPhaseForActionType` agrees with every definition.
+- `handleActionFromUI` commits when the bundled definition says `autocommitFromUI`; the `autocommitActionTypesFromUI` list and its phase0 lock are removed.
+- `runInActionContext` pushes the phase declared on the definition being run (so an application action can declare one too). `logPhaseForActionType` keeps its signature and reads the bundled definitions; `rollbackLog.ts` imports the bundled environment (the `LoggerContext` import of `rollbackLog.ts` is type-only, so no cycle).
 
 ---
 

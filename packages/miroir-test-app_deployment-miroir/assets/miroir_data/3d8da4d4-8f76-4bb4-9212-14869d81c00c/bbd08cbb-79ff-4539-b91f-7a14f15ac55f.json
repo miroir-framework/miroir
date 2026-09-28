@@ -75,6 +75,7 @@
           "actionImplementationType": "libraryImplementation",
           "inMemoryImplementationFunctionName": "handleAction_storeManagementAction_createStore"
         },
+        "logPhase": "bootstrap",
         "actionErrors": {
           "type": "enum",
           "definition": [
@@ -208,6 +209,7 @@
           "actionImplementationType": "libraryImplementation",
           "inMemoryImplementationFunctionName": "handleAction_storeManagementAction_resetAndInitApplicationDeployment"
         },
+        "logPhase": "bootstrap",
         "actionErrors": {
           "type": "literal",
           "definition": "FailedToResetAndInitMiroirAndApplicationDatabase"
@@ -288,6 +290,7 @@
           "actionImplementationType": "libraryImplementation",
           "inMemoryImplementationFunctionName": "handleAction_storeManagementAction_openStore"
         },
+        "logPhase": "bootstrap",
         "actionErrors": {
           "type": "literal",
           "definition": "FailedToOpenStore"

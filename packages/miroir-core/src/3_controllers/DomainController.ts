@@ -145,8 +145,8 @@ import { resolveCompositeActionTemplate } from "../2_domain/ResolveCompositeActi
 import { transformer_extended_apply, transformer_extended_apply_wrapper } from "../2_domain/TransformersForRuntime.js";
 import { LoggerGlobalContext } from '../4_services/LoggerContext.js';
 import {
-  logPhaseForActionType,
   summarizeRollbackInstanceCollections,
+  type LogPhase,
 } from "../4_services/rollbackLog.js";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
 import { outboundFetch, type OutboundFetch } from "../1_core/OutboundFetch.js";
@@ -403,19 +403,6 @@ function appendReportLinkToMenu(
   }
   return undefined;
 }
-
-/**
- * Action types after which `handleActionFromUI` commits automatically.
- * #341: to become an attribute of the action definition.
- */
-export const autocommitActionTypesFromUI: readonly string[] = [
-  "transactionalInstanceAction",
-  "alterEntityAttribute",
-  "createEntity",
-  "renameEntity",
-  "dropEntity",
-  "compositeActionSequence",
-];
 
 /**
  * #341: the definition of a Miroir action, looked up in the bundled Miroir Endpoints.
@@ -3025,7 +3012,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
             //     result,
             //   );
             // }
-            if (autocommitActionTypesFromUI.includes(domainAction.actionType)) {
+            if (findBundledMiroirActionDefinition(domainAction)?.autocommitFromUI) {
               // automatically commit after each model action from the UI if autocommit is enabled
               const commitAction: ModelAction = {
                 actionType: "commit",
@@ -3350,6 +3337,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
       return this.runLibraryActionImplementation(
         domainAction,
         currentActionDefinition.actionImplementation.inMemoryImplementationFunctionName,
+        currentActionDefinition.logPhase,
         {
           applicationDeploymentMap,
           modelEnvironment: currentModelEnvironment,
@@ -3391,6 +3379,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
   private async runLibraryActionImplementation(
     domainAction: DomainAction,
     implementationName: string,
+    logPhase: LogPhase | undefined,
     context: ActionImplementationContext,
   ): Promise<Action2ReturnType> {
     const implementation = miroirActionImplementations[implementationName];
@@ -3406,7 +3395,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
         { domainAction },
       );
     }
-    return this.runInActionContext(domainAction.actionType, () =>
+    return this.runInActionContext(domainAction.actionType, logPhase, () =>
       implementation(this, domainAction, context),
     );
   }
@@ -3414,13 +3403,13 @@ export class DomainController implements DomainControllerInterface, DomainContro
   // ##############################################################################################
   /**
    * #341: logging context, log phase and error handling around the run of one action.
-   * The phase spans the whole asynchronous run.
+   * The phase, declared on the action definition, spans the whole asynchronous run.
    */
   private async runInActionContext(
     actionType: string,
+    actionPhase: LogPhase | undefined,
     run: () => Promise<Action2ReturnType>,
   ): Promise<Action2ReturnType> {
-    const actionPhase = logPhaseForActionType(actionType);
     try {
       LoggerGlobalContext.setAction(actionType);
       this.miroirContext.miroirActivityTracker.setAction(actionType);

@@ -6,7 +6,6 @@ import { describe, expect, it } from "vitest";
 
 import { getEndpointActions, logPhaseForActionType } from "miroir-core";
 import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
-import { autocommitActionTypesFromUI } from "../../../../src/3_controllers/DomainController";
 
 const MIROIR_APPLICATION_UUID = "360fcf1f-f0d4-4f8a-9262-07886e70fa15";
 
@@ -121,19 +120,6 @@ describe("#341 phase 0: Miroir action dispatch characterization", () => {
       ),
       entity_DuplicateAttribute: "compositeActionTemplate",
     });
-  });
-
-  it("autocommits from the UI after 6 action types", () => {
-    expect([...autocommitActionTypesFromUI].sort()).toEqual(
-      [
-        "alterEntityAttribute",
-        "compositeActionSequence",
-        "createEntity",
-        "dropEntity",
-        "renameEntity",
-        "transactionalInstanceAction",
-      ].sort(),
-    );
   });
 
   it("assigns a log phase to 10 action types", () => {

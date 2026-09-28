@@ -59,6 +59,7 @@
           "actionImplementationType": "libraryImplementation",
           "inMemoryImplementationFunctionName": "handleAction_transactionalInstanceAction"
         },
+        "autocommitFromUI": true,
         "actionErrors": {
           "type": "literal",
           "definition": "FailedHandleTransactionalInstanceAction"
@@ -124,6 +125,7 @@
           "actionImplementationType": "libraryImplementation",
           "inMemoryImplementationFunctionName": "handleAction_compositeActionSequence"
         },
+        "autocommitFromUI": true,
         "actionErrors": {
           "type": "literal",
           "definition": "FailedCompositeAction"
@@ -163,6 +165,7 @@
           "actionImplementationType": "libraryImplementation",
           "inMemoryImplementationFunctionName": "handleAction_compositeRunBoxedQueryAction"
         },
+        "logPhase": "query",
         "actionErrors": {
           "type": "literal",
           "definition": "FailedToRunBoxedQuery"
