@@ -9,7 +9,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/326
 Working branches: PR 1 `claude/build-hardening-81mz9d`, PR 2 `claude/build-hardening-bundles` (D17), both from `_integration`
 
-**Resume note:** PR 1 (Slices 0–9 and 7b) DONE 2026-09-27 on `claude/build-hardening-81mz9d`; next: PR 2, Slice 10, on `claude/build-hardening-bundles`. Lockfiles are regenerated with npm 11 and `--before` (Slice 4 realization).
+**Resume note:** PR 1 (Slices 0–9 and 7b) DONE 2026-09-27 on `claude/build-hardening-81mz9d` (PR #334). PR 2 on `claude/build-hardening-bundles`, branched from PR 1's head: Slices 10 to 17 DONE (PR #335, stacked on #334: retarget to `_integration` once #334 merges). Size cuts: #337. Lockfiles are regenerated with npm 11 and `--before` (Slice 4 realization).
 
 ---
 
@@ -37,14 +37,14 @@ This plan does **not** cut bundle size (D19: separate issue opened in Slice 17 f
 | 7b | 1 | Every locked package is checked against its hash (added) | ✅ | `lockfile` rule + `test_fill_lockfile_integrity.py` + clean `npm ci` |
 | 8 | 1 | Updates only through reviewed, cooled-down PRs; actions pinned | ✅ | `actions` rule + `dependabot.yml` test |
 | 9 | 1 | PR 1 wrap-up: gate docs, nonreg step, full nonreg | ✅ | nonreg:unit + nonreg:filesystem green |
-| 10 | 2 | Vendor sourcemaps restored | ⬜ | `bundleSourcemaps.326.phase10.unit.test.ts` |
-| 11 | 2 | Tracer: the build prints and writes the attribution report | ⬜ | `bundleReport.326.phase11.unit.test.ts` |
-| 12 | 2 | Allowlist and eager budget guards | ⬜ | `test_check_bundle_policy.py` + real report exits 0 |
-| 13 | 2 | Electron main bundled with esbuild, traced and guarded | ⬜ | esbuild metafile report + `electron-builder --dir` content check |
-| 14 | 2 | Bundle guards run on PRs | ⬜ | `bundle` job in `pr-checks.yml` |
-| 15 | 2 | Sourcemaps kept out of the Electron package | ⬜ | asar / resources listing has no `.map` |
-| 16 | 2 | On-demand coverage tour | ⬜ | `coverage-report.json` from a real tour |
-| 17 | 2 | Docs, size issue, #286 guard folded, cleanup, AC | ⬜ | AC checklist |
+| 10 | 2 | Vendor sourcemaps restored | ✅ | `bundleSourcemaps.326.phase10.unit.test.ts` |
+| 11 | 2 | Tracer: the build prints and writes the attribution report | ✅ | `bundleReport.326.phase11.unit.test.ts` + `bundleReportCore.326.phase11.unit.test.ts` |
+| 12 | 2 | Allowlist and eager budget guards | ✅ | `test_check_bundle_policy.py` + real report exits 0 |
+| 13 | 2 | Electron main bundled with esbuild, traced and guarded | ✅ | esbuild metafile report + `electron-builder --dir` content check |
+| 14 | 2 | Bundle guards run on PRs | ✅ | `bundle` job in `pr-checks.yml` |
+| 15 | 2 | Sourcemaps kept out of the Electron package | ✅ | asar / resources listing has no `.map` |
+| 16 | 2 | On-demand coverage tour | ✅ | `coverageTour.326.phase16.integ.test.ts` on a real tour + `coverageCore.326.phase16.unit.test.ts` |
+| 17 | 2 | Docs, size issue, #286 guard folded, cleanup, AC | ✅ | AC checklist, #337 |
 
 ---
 
@@ -619,7 +619,7 @@ npm run nonreg:unit && npm run nonreg:filesystem
 
 ## Slice 10 — Vendor sourcemaps restored
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -649,11 +649,18 @@ npm run testByFile -w miroir-standalone-app -- componentTestChunk.286.phase4
 
 ### Realization
 
+- Deviation, branch: PR 2's branch starts from PR 1's head, not from `_integration` (D17), so its builds use the pinned Vite 7.3.6 and the lockfile PR 1 fixed; PR 2's diff shows only its own commits once PR 1 is merged.
+- RED: `bundleSourcemaps.326.phase10.unit.test.ts` listed the 5 `vendor-*` chunks, whose maps had 0 sources (maps of 102 to 375 bytes).
+- GREEN: `vite/chunkLoadLoggerPlugin.js` adds the preamble with Rollup's `banner(chunk)` hook instead of `renderChunk`, which returned code without a map; Rollup shifts the chunk's map past a banner. The minified preamble, its `[miroir-chunk-load]` line and the `__miroirLoggedManualChunks` dedupe are unchanged, and so are the chunk file names.
+- Vendor maps now list their sources: `vendor-copilotkit` 2813, `vendor-mui` 382, `vendor-d3` 212, `vendor-react` 14, `vendor-ag-grid` 3.
+- Refactor checkpoint: the #286 guard now also sees inside the vendor chunks and still passes (4/4): no `@testing-library` source there.
+- Validation: build passes with no "Sourcemap is likely to be incorrect" warning; `bundleSourcemaps.326.phase10` 2/2; `componentTestChunk.286.phase4` 4/4.
+
 ---
 
 ## Slice 11 — Tracer: the build prints and writes the attribution report
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -690,11 +697,36 @@ RUN_TEST=bundleReport.326.phase11 npm run testByFile -w miroir-standalone-app --
 
 ### Realization
 
+- RED: `bundleReport.326.phase11.unit.test.ts` (6 cases on the real build) failed: `dist/.vite/bundle-report.json` is missing.
+- GREEN:
+  - `vite/bundleReportCore.js`, pure functions over a plain module graph: package of a module id (the app, another workspace package, an npm package, or `virtual` for bundler helpers and emptied Node built-ins), import chains, load kind from the entry chunk's static imports, the report and its findings.
+  - `vite/bundleReportPlugin.js`: a `resolveId` hook (`enforce: "pre"`) records each Node built-in that Vite empties for the browser, with its importer; `writeBundle` reads each chunk as written (raw and gzip sizes), takes the module graph from `this.getModuleInfo`, writes `dist/.vite/bundle-report.json` and prints the table. `rollup-plugin-visualizer` 7.1.1 (exact devDependency of `miroir-standalone-app`, released 2026-08-14; relocked with npm 11 and `--before`, no new advisory) writes `dist/.vite/bundle-report.html`, a treemap. `VITE_MIROIR_BUNDLE_REPORT=false` turns both off.
+  - `vite.config.js` adds the plugin.
+- Deviations:
+  - Findings come from the module graph rather than from the log. In a production build Vite resolves every Node built-in to the one id `__vite-browser-external`, so the plugin asks the other plugins how each built-in import resolves (`this.resolve`) and records it when it gets that id. This finds 58 (built-in, importer) pairs, the 47 Vite warns about plus 11 `require()` calls in `bn.js` and `readable-stream` copies that Vite empties without a warning.
+  - The defeated dynamic import finding uses Vite 7.3.6's own condition: the module is also imported statically, and one of its `import()` callers outside `node_modules` sits in the same chunk. It finds the 2 modules Vite warns about, `ReportDisplay.tsx` and `uiIntegrationTestRunState.ts`. Vite's warnings stay in the output.
+  - The table prints the entry and eager chunks, then the 15 largest of the 380 lazy chunks and one line for the others, each with its 5 largest packages; the JSON has every chunk and package.
+  - Package sizes are Rollup's rendered length, before minification: they rank packages within a chunk but do not add up to the chunk's file size. Chunk sizes are those of the written files.
+  - Chains: in a chunk loaded with the page, a package's chain starts at an app file also loaded with the page and follows static imports only, when such a chain exists, since that is why the package loads eagerly; otherwise it starts at the nearest app file, fewest `import()` hops first. `import(<path>)` marks a dynamic hop, and a CommonJS wrapper and its module make one step.
+  - `file` is the path in `dist` (`assets/…`), as in the manifest.
+  - Added to the report: `totals`, and `packages[]`, one line per package over the whole build (`eager` when any of its code loads with the page).
+  - Added test `bundleReportCore.326.phase11.unit.test.ts`: 12 cases on module ids and edges copied from the real graph (virtual ids, nested `node_modules`, workspace and Windows paths, chain selection, report); it needs no build.
+- Refactor checkpoint: `resolveManualChunk` now uses the core's `npmPackagesOfId`. The old rules matched a package anywhere on the path (`id.includes("node_modules/@copilotkit")`), so 378 modules nested in another package's `node_modules` (e.g. `@copilotkit/react-core/node_modules/react-markdown`) go with the outer package; the new rules match any package on the path to keep that. On the 13,819 ids of the real graph no module changes chunk; the rebuilt manifest is byte for byte the one built before the refactor, with the same chunk files as the Slice 10 build.
+- What the first report shows (input for the Slice 17 size issue):
+  - Loaded with the page: 7 chunks, 10,381.2 kB, gzip 2,709.2 kB; whole build: 387 chunks, 27,061.6 kB, gzip 6,245.2 kB.
+  - `vendor-copilotkit` (3,032 kB, eager): `refractor`, `katex` and `parse5` come through `@copilotkit/react-ui`; `lucide` and `@copilotkit/web-inspector` are reached only through an `import()` inside `@copilotkit/react-core`, yet load with the page because the manual chunk holds them.
+  - `mermaid-VLURNSYL-*.js` (1,954 kB, eager) is entirely the meta-model deployment `miroir-test-app_deployment-miroir`, statically imported from `src/miroir-fwk/4_view/ModelEnvironmentSync.tsx`.
+  - `index-BuTvIIq4.js` (628 kB, eager) is the `crypto` polyfill: `bn.js`, `elliptic`, `readable-stream`, … via `miroir-core` → `crypto-browserify`.
+  - The Node store drivers (`mongodb`, `sequelize`) are lazy, through the dynamic imports of `IntegrationTestSession.ts`. `miroir-store-indexedDb` imports `fs` in the entry chunk; `colors` (`json-diff`, via `miroir-core`) imports `os`.
+  - The manual chunk rule for `miroir-diagram-class` never matches: Vite resolves that workspace package to `packages/miroir-diagram-class/`, not to a `node_modules/` path.
+- Build time unchanged (107 s).
+- Validation: build passes; `bundleReport.326.phase11` 6/6, `bundleReportCore.326.phase11` 12/12, `bundleSourcemaps.326.phase10` 2/2, `componentTestChunk.286.phase4` 4/4; `tsc` on `miroir-standalone-app` clean; ESLint clean on the changed files; every dependency policy rule passes, `audit` included; the treemap renders in headless Chromium.
+
 ---
 
 ## Slice 12 — Allowlist and eager budget guards
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -725,11 +757,21 @@ python scripts/check_bundle_policy.py packages/miroir-standalone-app/dist/.vite/
 
 ### Realization
 
+- `scripts/check_bundle_policy.py <report> <policy> [--init]`, three rules:
+  - `allowlist`: every npm and workspace package of the build is listed under `eager` (some of its code loads with the page) or `lazy`. A new package, or a `lazy` one that now loads with the page, fails with its import chain. **Deviations:** workspace packages count too (a `miroir-store-*` package reaching the page matters as much as an npm one), and so does each Node built-in the build empties for the browser, named `node:<module> via <importing package>` (D25), when its importer ships. The lists are a ratchet like the budget: a listed package that left the build, or an `eager` one that became lazy, fails until the policy says so; a name in both lists fails.
+  - `forbidden`: no package matching a `forbiddenEager` glob loads with the page, even if listed. The policy holds `@testing-library/*`, the #286 rule.
+  - `budget`: eager gzip above `eagerGzipBaseline` × 1.02 fails with both numbers; below × 0.98 fails and gives the new baseline to write.
+  - `--init` writes the lists and the baseline from the report and keeps `$comment`, `eagerGzipTolerance` and `forbiddenEager` from the existing policy.
+- The report gained `via` on each package and finding: the chain condensed to one step per package (`src/…/Foo.tsx → miroir-core → zod`), which the checker prints; the build's table prints the same string.
+- Tests: `scripts/tests/test_check_bundle_policy.py`, 17 cases on `scripts/tests/fixtures/bundle_policy/bundle-report.json`, the real report trimmed to 10 packages, 3 chunks and 6 findings. Written with the checker; against a checker whose rules are removed, 11 of them fail (the 6 others check `--init`, the passing cases and the missing-report message). No pytest case reads the real build, so `scripts/tests` stays independent of a build; the real check is the Validation below and, from Slice 14, the CI job.
+- `packages/miroir-standalone-app/bundle-policy.json` from today's build (D19): 392 eager and 156 lazy entries, eager gzip baseline 2,709,170 bytes (the same in the two builds of this slice). The eager list includes `miroir-test-app_deployment-admin`, `-library` and `-miroir`, and 7 Node built-ins (`node:fs via miroir-store-indexedDb`, `node:os via colors`, and 5 from the `crypto` polyfill).
+- Validation: `scripts/tests` 138 passed; build passes; the checker passes on the real report (0 violations); `bundleReport.326.phase11` 6/6 and `bundleReportCore.326.phase11` 12/12 after the `via` change; ESLint clean on `vite/`.
+
 ---
 
 ## Slice 13 — Electron main bundled with esbuild, traced and guarded
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -763,11 +805,23 @@ xvfb-run -a release/linux-unpacked/miroir-standalone-app-electron --no-sandbox  
 
 ### Realization
 
+- `packages/miroir-standalone-app-electron/scripts/bundle-main.mjs` (esbuild 0.25.12, pinned devDependency; about 4 s): `src/main.ts` → `dist/src/main.js` (ESM, with a banner defining `require`, `__filename` and `__dirname` for the bundled CommonJS code) and `src/preload.ts` → `dist/src/preload.js` (CommonJS, as a sandboxed preload needs), platform node, `keepNames`, sourcemaps, metafile. `npm run build` is now `tsc --noEmit -p tsconfig.json && node scripts/bundle-main.mjs`; `build-main` and `build-preload` are gone (`start-dev.sh` / `.bat` call `build-electron`, unchanged).
+- Externals (`EXTERNALS` in the script, each in `dependencies` so electron-builder ships it): `electron`; `@cursor/sdk` (native binaries, located at run time by `assertCursorSdkPackaged`; esbuild cannot resolve its internals either); `classic-level` (native, found by `node-gyp-build` next to its own files); `pg` (sequelize loads its dialect with a computed `require`, so esbuild never sees it). `electron-squirrel-startup` stays in `dependencies`: `main.ts` requires it at run time through `createRequire`. Every workspace package, `express`, `@types/*`, `electron` and `electron-builder` are `devDependencies`; `diff` and `http-proxy-middleware` were unused and removed. The optional mongodb drivers (`kerberos`, `snappy`, `@mongodb-js/zstd`, `mongodb-client-encryption`, `@aws-sdk/credential-providers`, `gcp-metadata`) are not installed; esbuild leaves their `require` in a `try` outside the bundle, where it fails and is caught as before.
+- `bundleReportCore.js` gained `reportInputFromEsbuildMetafile(metafile, workingDir, outDir)`: chunks (one per `.js` output, `entryPoint` → entry), module graph (`dynamic-import` edges apart), and the specifiers left outside the bundle. The script adds file sizes, calls `buildBundleReport`, writes `dist/bundle-report.json` with `externals` (the configured list plus the non-built-in specifiers esbuild left out) and prints the standalone table through `bundleReportLines`, now exported from `bundleReportPlugin.js`.
+- **Deviations:**
+  - `main.ts` read `__dirname` / `__filename` computed from `import.meta.url`; the banner declares the same names, so esbuild renamed them. They are now `mainDirname` / `mainFilename`.
+  - `react` and `react-dom` are in the main bundle, through `miroir-localcache-redux` → `react-redux`. The RED test therefore checks for no `@mui/*`, `@copilotkit/react-*` or `@testing-library/*`, and leaves React to the size issue (Slice 17). The Electron policy forbids the same three globs.
+  - The RED test does not run the guard (vitest does not call Python); the guard runs in the Validation below and, from Slice 14, in CI.
+- `packages/miroir-standalone-app-electron/bundle-policy.json` via `--init`: 263 packages, all `eager` (the main process loads its whole bundle), gzip baseline 4,749,138 bytes (main.js 29.4 MB raw); `forbiddenEager` `@testing-library/*`, `@mui/*`, `@copilotkit/react-*`. Largest packages (rendered bytes, before gzip): `miroir-test-app_deployment-miroir` 4.2 MB, `miroir-store-mongodb` 2.9 MB, `miroir-core` 2.1 MB, `iconv-lite` 1.6 MB, `zod` 1.3 MB, `react-dom` 1.2 MB, `sequelize` 1.1 MB, `mongodb` 1.0 MB.
+- Package content (`electron-builder --dir --linux -c.npmRebuild=false`; the cloud proxy blocks the Electron headers download that the native rebuild needs): `app.asar` 673 MB → 108 MB, 1,714 entries, no `node_modules/react`. What remains: `main.js` 29 MB, `main.js.map` 52 MB (Slice 15), `bundle-report.json`, and 44 `node_modules` directories, the externals and their dependencies (`@cursor/sdk` and `@cursor/sdk-linux-x64` the largest, `classic-level`, `pg`).
+- Smoke start: the packaged app under `xvfb-run` prints `IPC server ready`, listens on 127.0.0.1:3080, and the renderer opens its stores and runs queries. The main process logs 12 `could not find controller for deployment` errors from `refreshLocalCachesForDeployedApplications` (MCP setup, before any store is opened); the pre-slice `tsc` build, started the same way from a worktree, logs the same 12. The only new line is a `punycode` deprecation warning: the bundle evaluates `node-fetch` 2 (`miroir-ai` → `openai` → `node-fetch` → `whatwg-url` 5 → `tr46` 0.0.3, which requires the built-in `punycode`) at start, which the unbundled run did not.
+- Tests: `electronBundle.326.phase13.unit.test.ts` 4/4 (two entry chunks, the four stores and `express` bundled, no browser UI library, externals); `bundleReportCore.326.phase11.unit.test.ts` gained 4 metafile cases (16/16); `bundleReport.326.phase11` 6/6 and `bundleSourcemaps.326.phase10` after rebuilding the standalone app, whose guard still passes with 0 violations. `tsc` on the Electron package, ESLint on the changed files, `check_dependency_policy.py` and `scripts/tests` (138 passed) clean.
+
 ---
 
 ## Slice 14 — Bundle guards run on PRs
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -789,11 +843,18 @@ Push the branch; the `bundle` job runs green on the PR; a throwaway commit addin
 
 ### Realization
 
+- `.github/workflows/pr-checks.yml` gained two jobs:
+  - `bundle-paths` ("bundle guards needed?"): checkout with `fetch-depth: 2`, then `git diff --name-only HEAD^1 HEAD` (on a `pull_request` run, HEAD is the merge commit and HEAD^1 the base) matched against `packages/`, `package-lock.json`, `scripts/check_bundle_policy.py` and the workflow itself; a manual `workflow_dispatch` run always passes. **Deviations:** a separate gate job instead of a first step, so a skipped `bundle` job shows as skipped rather than as a green job that did nothing; the checker and the workflow file join the paths D20 named, so a change to the guard itself is checked.
+  - `bundle` ("bundle report + guards"): `npm ci`, then the packages the two apps import in five `npm run build` lines, each after the ones it needs (`miroir-mcp` and `miroir-ai` import `miroir-test-app_deployment-library`, `miroir-diagram-class` imports `miroir-react`); then both apps (each prints its report), both guards in one step that runs both before failing, and `actions/upload-artifact` (SHA-pinned v4, `include-hidden-files` for `dist/.vite`, 14 days, also when a guard fails) with the reports, the treemap and every `.map`. **Deviation:** not `./build-all.sh devBuild`, which also builds packages the apps do not import and the server binary; the generated types are committed, so `build` is enough.
+- Tests: `scripts/tests/test_check_bundle_policy.py` gained 9 cases. The gate's own script, read from the workflow, runs on a two-commit repository for 6 changed paths and for a manual run; two more read the job graph and the steps (both guards, `npm ci`, the artifact paths). 9 failed before the workflow change.
+- Replay of the job's build and guard steps from empty `dist` folders in the cloud session: packages 1 min 4 s, standalone app 1 min 56 s, Electron main 4 s, both guards 0 violations.
+- On GitHub (draft PR #335, stacked on #334): [run 36345779727](https://github.com/miroir-framework/miroir/actions/runs/36345779727) green, `bundle` job 3 min 28 s, the same eager gzip sizes as locally (2,709,170 and 4,749,138 bytes, so the baselines hold across machines), artifact `bundle-reports` 23.5 MB, 392 files. A throwaway commit removing `zod` from the standalone policy, reverted next: [run 36346058620](https://github.com/miroir-framework/miroir/actions/runs/36346058620) red with `[allowlist] zod is new in the build and loads with the page (packages/miroir-standalone-app/src/index.tsx → miroir-core → zod)`, the Electron guard still run, the artifact still uploaded.
+
 ---
 
 ## Slice 15 — Sourcemaps kept out of the Electron package
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -815,11 +876,16 @@ cd packages/miroir-standalone-app-electron && npx electron-builder --dir --linux
 
 ### Realization
 
+- `packages/miroir-standalone-app-electron/package.json`, `build`: `files` is `["dist/**/*", "!**/*.map", "!dist/bundle-report.json", "package.json"]`; the `extraResources` entry for `../miroir-standalone-app/dist` filters `["**/*", "!**/*.map", "!.vite/**"]` (the Vite manifest, the report and the treemap). The build output keeps them all, and the CI artifact of Slice 14 carries them.
+- **Deviation:** `!**/*.map` rather than `!dist/**/*.map`: electron-builder applies `files` to the shipped `node_modules` too, and `@cursor/sdk`, `pg-protocol` and `pg-cloudflare` carried 145 maps (712 kB). The esbuild bundle keeps external `.map` files (no inline maps), so nothing else changed there.
+- Test: `electronBundle.326.phase13.unit.test.ts` gained `electronPackage.326.phase15`, 2 cases on the `build` config (RED first, 6/6 after).
+- Package (`electron-builder --dir --linux -c.npmRebuild=false`): no `.map` in `release/linux-unpacked` nor in `app.asar`, no `.vite`; `app.asar` 108 MB → 57 MB, `resources/app` (the standalone `dist`) 108 MB → 32 MB; whole unpacked app 395 MB, most of it the Electron runtime. Smoke start under `xvfb-run`: `IPC server ready`, stores opened, queries answered.
+
 ---
 
 ## Slice 16 — On-demand coverage tour
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -838,19 +904,27 @@ Tour steps: home page, a Library report with a grid, an instance editor, Runners
 ### Validation
 
 ```bash
-npm run build -w miroir-standalone-app && npm run build:server -w miroir-server
-NODE_ENV=development node packages/miroir-server/release/index.js &
-npx tsx packages/miroir-standalone-app/scripts/coverage-tour.ts
-RUN_TEST=coverageTour.326.phase16 npm run testByFile -w miroir-standalone-app -- coverageTour.326.phase16
+npm run build -w miroir-standalone-app && npm run build:release -w miroir-server
+npm run coverageTour -w miroir-standalone-app -- --serve        # add --browser <chromium> when playwright-core's is not installed
+npm run testByFile -w miroir-standalone-app -- coverageCore.326.phase16
+MIROIR_COVERAGE_TOUR=1 MIROIR_TOUR_BROWSER=/opt/pw-browsers/chromium npm run testByFile -w miroir-standalone-app -- coverageTour.326.phase16
 ```
 
 ### Realization
+
+- `packages/miroir-standalone-app/scripts/coverage-tour.mjs`, run by `npm run coverageTour -w miroir-standalone-app`. **Deviation:** a Node ES module like the Electron `bundle-main.mjs`, not `coverage-tour.ts` through `tsx`: it only imports the plain JS of `vite/`. Options: `--serve` (copies `dist/` into the server release, starts it in production mode with authentication off on the repository's `certs/` or a one-day self-signed certificate made with `openssl`, stops it at the end), `--url` (a server already running, default `https://localhost:3080`, the address the client is built for), `--browser` or `MIROIR_TOUR_BROWSER`, `--out` (default `dist/.vite/coverage-report.json`), `--headed`. Exit 0, 1 when a page was not reached (the report is still written, with a screenshot per missed page next to it), 2 when the tour cannot run (no build, no server release, port taken, a served chunk that is not this build's).
+- `playwright-core` 1.63.0, pinned devDependency of `miroir-standalone-app` (published 2026-09-04, relocked with `--before`; one lockfile entry, no dependency, no install script, no browser download). The browser is `--browser`, else the Chromium playwright-core installs (`npx playwright-core install chromium`), else the installed Chrome. In the cloud container its Chromium build differs from 1.63's, hence `MIROIR_TOUR_BROWSER=/opt/pw-browsers/chromium`.
+- Tour (D26), each page checked by what it shows: home page (`Fetch configurations`, then "The Library Application" in the Application combobox), Library Books grid, the Book editor dialog from the grid's first edit button (`Book details`), Runners, the Miroir Tests report, the model diagram (an `svg`), the Copilot sidebar. After the home page it navigates inside the app (`history.pushState` + `popstate`, or clicks), so the page loads once and each chunk is counted once; a report URL opened directly lacks the Library configuration. When the home page fails the other pages are marked "not tried" instead of timing out one by one.
+- `vite/coverageCore.js` (pure): `executedMask` (V8 block coverage, inner ranges override outer), `sourceIndexByOffset` (a VLQ decoder of the source map, no dependency), `addChunkCoverage` (every character attributed to its package with the Slice 11 `attributeModule`; Vite's virtual `__vite-browser-external` and `__vite-optional-peer-dep:…` named as in the bundle report), `buildCoverageReport` (packages sorted by loaded code that never ran). `resolveFrom` is now exported by `bundleReportCore.js`. Sizes are characters of minified code, the unit of V8 offsets and source map columns.
+- The script refuses a served chunk whose text differs from `dist/assets` (a server serving an older build), and a chunk without source map.
+- Tests: `coverageCore.326.phase16.unit.test.ts`, 7 cases, one of them on a real esbuild bundle (two npm packages and an app file) run in the test process under `node:inspector` precise coverage. `coverageTour.326.phase16.integ.test.ts`, 3 cases (every D26 page visited and exit 0, `react-dom` partly ran, `mongodb` shipped and never ran), skipped unless `MIROIR_COVERAGE_TOUR=1` like the `MIROIR_COMPONENT_PERF` suite; about 30 s with `--serve`.
+- First tour of today's build: 7 of 7 pages; 28 of 387 chunks loaded, 11.9 M characters, of which 6.4 M ran (54 %); the whole build is 27.0 M. Most loaded code that never ran: `ag-grid-community` 987 k loaded, 36 % ran; `miroir-core` 1,569 k, 66 %; the app 560 k, 43 %; `bn.js` 306 k, 10 % (the `crypto` polyfill); `mermaid` 358 k, 37 %; `@glideapps/glide-data-grid` 185 k, 5 %; `@codemirror/view` 187 k, 9 %; `@copilotkit/react-core` 195 k, 18 %. 27 packages load and never run (micromark and remark extensions, Radix helpers, `d3-ease`, …). Shipped and never loaded: `@shikijs/langs` 7.4 M in 235 chunks, `sequelize` 488 k, `mongodb` 428 k, `miroir-store-mongodb` 181 k, `miroir-store-postgres` 124 k, `bson` 74 k. These feed the size issue of Slice 17.
 
 ---
 
 ## Slice 17 — Docs, size issue, #286 guard folded, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -874,10 +948,10 @@ Manual: add `import "left-pad"` to `HomePage.tsx`, build, read the new package i
 |---|---|
 | Every critical and high advisory corrected | Slice 7: `check_dependency_policy.py` exits 0; `pr-checks.yml` audit step |
 | No `^` specs; no unreviewed versions | Slices 1, 4, 8: `specs`, `workflows`, `actions` rules; Dependabot cooldown |
-| Build output identifies the incoming code of each sub-bundle | Slice 11: console table + `bundle-report.json` test |
-| Features we do not use can be found | Slices 11 and 16: chains, findings, coverage report |
-| Long-term control over size | Slices 12, 14: guards in PR checks, ratchet |
-| Standalone and Electron both covered | Slices 11–15 |
+| Build output identifies the incoming code of each sub-bundle | Slice 11: console table + `bundle-report.json` (`tests/0_build/bundleReport.unit.test.ts`, `bundleReportCore.unit.test.ts`) |
+| Features we do not use can be found | Slices 11 and 16: chains, findings, coverage report (`coverageTour.integ.test.ts`); first findings in #337 |
+| Long-term control over size | Slices 12, 14: guards in PR checks (`test_check_bundle_policy.py`, `bundle` job), ratchet; tracer above |
+| Standalone and Electron both covered | Slices 11–15: `electronBundle.unit.test.ts`, both policies in the `bundle` job |
 
 ### Validation
 
@@ -887,3 +961,15 @@ npm run nonreg:unit && npm run nonreg:filesystem
 ```
 
 ### Realization
+
+- `docs/internals/code-splitting.md`: new "What loads with the page" (the 7 eager chunks, their content and why each is eager), "Bundle report and guards (#326)" (the files, reading the table, the three rules, updating a policy, `--init`, the CI job) and "Coverage tour (#326)". Corrected claims: CopilotKit, ag-grid, CodeMirror and the meta-model deployment load with the page; `ReportDisplay` loads with the home page; the `vendor-d3` rule never matches `miroir-diagram-class`; the store drivers still ship as lazy chunks. **Deviation:** ag-grid and CodeMirror were not in the plan's list of corrections; the report showed both eager (`vendor-ag-grid` holds a 44-byte polyfill shim `@reduxjs/toolkit` imports; `miroir-react` imports `@codemirror/view`).
+- Size issue #337 (D19): 11 standalone findings with their chains and sizes (report and tour) and the Electron main findings; the doc's follow-ups link it.
+- `componentTestChunk.286.phase4`: the "no `@testing-library/` in the entry's static closure" case is deleted, `forbiddenEager` covers it in the bundle job of every PR; the three component-test chunk cases stay (no policy rule expresses them). 3/3 on a fresh build.
+- Issue tests migrated with `git mv` to feature-named suites in `tests/0_build/`, the issue directory deleted. **Deviation:** six files, one per module under test, rather than one `bundleReport.unit.test.ts`: `bundleSourcemaps.unit`, `bundleReport.unit`, `bundleReportCore.unit`, `electronBundle.unit`, `coverageCore.unit`, `coverageTour.integ` (still on demand, `MIROIR_COVERAGE_TOUR=1`). Suite names lost their `.326.phaseN`; the realizations above keep the old names as history. `tests/0_build/` 40 passed, 3 skipped (the tour); the tour 3/3 with `MIROIR_COVERAGE_TOUR=1`.
+- Nonreg: new unit step `unit-326-build-tooling` (`bundleReportCore.unit`, `coverageCore.unit`: they need no build; the suites reading a build stay out, like the #286 guard); `AGENTS.md` says 40 unit steps.
+- Tracer, run for real: `import pc from "picocolors"; export const tracerBold = pc.bold;` at the top of `HomePage.tsx` (a bare `import "picocolors"` is tree-shaken), `npm run build`, then the guard: `[allowlist] picocolors is new in the build and loads on demand (packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/HomePage.tsx → picocolors): add it to "lazy" in the policy if it is wanted`, exit 1. Reverted and rebuilt: 0 violations, eager gzip 2,709,170 bytes, the baseline.
+- PR 2 stays stacked on PR 1's branch until #334 merges, then is retargeted to `_integration` (a PR against `_integration` now would carry PR 1's commits).
+- **Regression found and fixed:** the first `nonreg:filesystem` (shared runner) failed `unit-275-cursor-sdk`, 3 cases: Slice 13 had listed `@cursor/sdk` in the Electron `dependencies`, against #275 (the SDK is a dependency of `miroir-ai` alone, installed under `packages/miroir-ai` with its nested protobuf 1.10; the packaged Electron app keeps Cursor off and `assertCursorSdkPackaged` fails loud when it is turned on). Separate commit: `@cursor/sdk` out of the Electron `dependencies` (still external to the esbuild bundle, which only holds `miroir-ai`'s dynamic import of it), lockfile entries moved back under `packages/miroir-ai`. `app.asar` 57 MB → 29 MB; the packaged app starts (`IPC server ready`).
+- Validation: pytest `scripts/tests` 150 passed; lint; `nonreg:filesystem --runner shared` 75 of 76 steps, the one failure being the regression above, then `unit-275-cursor-sdk` and `unit-check-dependency-policy` pass after the fix; both bundle guards 0 violations.
+- **Review fixes (Greptile on #335):** the tour's `--serve` server, started with `--disable-auth`, listened on all interfaces: it now listens on 127.0.0.1 only through `scripts/loopback-only.mjs`, preloaded with `node --import` (the server has no host option, and #327 reworks its startup), proven by `coverageTourLoopback.unit` (added to the nonreg step). The repository's `certs/` is used only when both `localhost.pem` and `localhost-key.pem` exist (with the cert alone the server fell back to HTTP and the tour waited two minutes for HTTPS). The `bundle-paths` gate also runs the bundle job for the root `package.json`, `.npmrc`, `tsconfig.json` and `scripts/patch-tsup-baseurl.cjs` (the `postinstall`), with gate test cases.
+- **Rebase onto `_integration` (2026-09-28), after #334 merged with #321 and #330:** conflicts in `vite.config.js` (#321 made the config a function of the command and mode; the report plugin was added back to its plugin list) and `AGENTS.md` (44 nonreg unit steps). The bundle job builds `miroir-env`, which `vite.config.js` now imports. npm's relock only dropped three stale `peer` flags. Both guards: 0 violations; what loads with the page grew 0.4% in both apps from #321 and #330, and the baselines moved with it. The tour's server now boots on the selected environment (`miroir-env show`): 7 of 7 pages. `fill_lockfile_integrity.py` takes the exact version when `npm view` lists several (the rebase hit it; the fix missed #334's merge by a minute and rides with this PR).

@@ -46,3 +46,85 @@ jobs:
         run: npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
       - name: miroir-core unit tests
         run: npm run test -w miroir-core -- ''
+
+  # Bundle report and guards (#326, docs/internals/code-splitting.md): only when the PR changes what they build.
+  bundle-paths:
+    name: bundle guards needed?
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      run: ${{ steps.paths.outputs.run }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 2
+      - name: Compare the PR with its base
+        id: paths
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        # On a pull_request, HEAD is the merge commit and HEAD^1 the base branch. The inputs are what the
+        # bundle job builds from: the packages, the install (root manifest, lockfile, .npmrc and the
+        # postinstall patch), the tsconfig the packages extend, the guard and this workflow.
+        run: |
+          if [ "$EVENT_NAME" != "pull_request" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          changed=$(git diff --name-only HEAD^1 HEAD)
+          inputs='^(packages/|package(-lock)?\.json$|\.npmrc$|tsconfig\.json$|scripts/patch-tsup-baseurl\.cjs$|scripts/check_bundle_policy\.py$|\.github/workflows/pr-checks\.yml$)'
+          if grep -qE "$inputs" <<< "$changed"; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  bundle:
+    name: bundle report + guards
+    needs: bundle-paths
+    if: needs.bundle-paths.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --no-audit
+      # The packages the two apps import, and miroir-env, which the standalone app's vite.config.js imports; each
+      # line needs the ones above it (miroir-mcp and miroir-ai import miroir-example-library,
+      # miroir-diagram-class imports miroir-react).
+      - name: Build the packages the apps import
+        run: |
+          npm run build -w miroir-app-miroir -w miroir-app-admin
+          npm run build -w miroir-core
+          npm run build -w miroir-env -w miroir-localcache-redux -w miroir-store-bundled -w miroir-store-filesystem -w miroir-store-indexedDb -w miroir-store-postgres -w miroir-store-mongodb -w miroir-example-library -w miroir-example-spotify -w miroir-fixture-appForTest
+          npm run build -w miroir-react -w miroir-mcp -w miroir-ai
+          npm run build -w miroir-diagram-class
+      - name: Build the standalone app (prints its bundle report)
+        run: npm run build -w miroir-standalone-app
+      - name: Build the Electron main process (prints its bundle report)
+        run: npm run build -w miroir-standalone-app-electron
+      - name: Bundle guards
+        run: |
+          status=0
+          python3 scripts/check_bundle_policy.py packages/miroir-standalone-app/dist/.vite/bundle-report.json packages/miroir-standalone-app/bundle-policy.json || status=1
+          python3 scripts/check_bundle_policy.py packages/miroir-standalone-app-electron/dist/bundle-report.json packages/miroir-standalone-app-electron/bundle-policy.json || status=1
+          exit $status
+      - name: Upload bundle reports and source maps
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: bundle-reports
+          path: |
+            packages/miroir-standalone-app/dist/.vite/bundle-report.*
+            packages/miroir-standalone-app/dist/**/*.map
+            packages/miroir-standalone-app-electron/dist/bundle-report.json
+            packages/miroir-standalone-app-electron/dist/**/*.map
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 14

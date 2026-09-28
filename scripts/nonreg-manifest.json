@@ -1876,6 +1876,39 @@
       }
     },
     {
+      "id": "unit-326-build-tooling",
+      "tier": "unit",
+      "title": "#326 — bundle report attribution, coverage tour arithmetic and server preload (build tooling, needs no build)",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "bundleReportCore.unit",
+        "coverageCore.unit",
+        "coverageTourLoopback.unit"
+      ],
+      "shared": {
+        "group": "standalone-app-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--no-bail"
+        ],
+        "files": [
+          "bundleReportCore.unit",
+          "coverageCore.unit"
+        ]
+      }
+    },
+    {
       "id": "unit-312-miroir-test-tags",
       "tier": "unit",
       "title": "#312 / #316 \u2014 MiroirTest tags and names: CLI selection, Entity vocabulary, mode tags, naming guards, launcher routing, Tags column",
