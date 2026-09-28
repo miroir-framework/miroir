@@ -81,7 +81,7 @@ ALL_PACKAGES=(
   miroir-standalone-app
   miroir-example-library
   miroir-example-spotify
-  miroir-test-app_deployment-appForTest
+  miroir-fixture-appForTest
   miroir-example-postgres
 )
 
@@ -102,9 +102,9 @@ STAGE_CACHES_STORES=(
 )
 STAGE_UI_SERVICES=(miroir-react miroir-mcp miroir-diagram-class)
 STAGE_APPS=(miroir-cli miroir-ai miroir-mcp)
-STAGE_STANDALONE_DEPS=(miroir-example-library miroir-example-spotify miroir-test-app_deployment-appForTest)
+STAGE_STANDALONE_DEPS=(miroir-example-library miroir-example-spotify miroir-fixture-appForTest)
 STAGE_STANDALONE=(miroir-standalone-app)
-STAGE_DEPLOY_TEST=(miroir-example-library miroir-example-spotify miroir-test-app_deployment-appForTest miroir-example-postgres)
+STAGE_DEPLOY_TEST=(miroir-example-library miroir-example-spotify miroir-fixture-appForTest miroir-example-postgres)
 
 # ---------------------------------------------------------------------------
 # Argument parsing

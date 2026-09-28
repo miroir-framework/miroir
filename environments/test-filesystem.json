@@ -29,7 +29,7 @@
       "sections": { "modelVersion": {} }
     },
     "appForTest": {
-      "package": "miroir-test-app_deployment-appForTest",
+      "package": "miroir-fixture-appForTest",
       "selfApplication": "eef01001-0001-4000-8000-000000000001",
       "deployment": "eef01001-0002-4000-8000-000000000002",
       "store": "filesystem",

@@ -23,7 +23,7 @@ import {
   defaultAppForTestModel,
   deployment_AppForTest_DO_NO_USE,
   selfApplicationAppForTest,
-} from "miroir-test-app_deployment-appForTest";
+} from "miroir-fixture-appForTest";
 import {
   defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,

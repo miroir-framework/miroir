@@ -215,7 +215,7 @@ Three concerns. They are not the same list.
 
 | Concern | Answers | Source |
 |---------|---------|--------|
-| **Discovery** | Which MiroirTest suites exist | **CLI:** folder catalog — `discoverApplicationMiroirTestSourceFolders` / `loadApplicationMiroirTestCatalog` over `packages/miroir-test-app_deployment-*/assets/*/<MiroirTest uuid>`. **UI:** selected application's LocalCache (`useSelectedApplicationMiroirTests`). Same conceptual catalog, two loaders. |
+| **Discovery** | Which MiroirTest suites exist | **CLI:** folder catalog — `discoverApplicationMiroirTestSourceFolders` / `loadApplicationMiroirTestCatalog` over `packages/{miroir-app,miroir-example,miroir-fixture}-*/assets/*/<MiroirTest uuid>`. **UI:** selected application's LocalCache (`useSelectedApplicationMiroirTests`). Same conceptual catalog, two loaders. |
 | **Selection** | Which of those run | `--suites` / `MIROIR_TEST_SUITES` / UI = instance `name` (optional `uuid` on `--suites`). `--tags` / `MIROIR_TEST_TAGS` / UI tag chips keep the suites carrying **any** of the [tags](#tags), intersected with `--suites` when both are given. `--filter` / UI checkboxes pick **leaves** (catalog-root key = `name`; nested keys and values = `miroirTestLabel`). See [Filtering MiroirTest cases](#filtering-miroirtest-cases). |
 | **Execution** | How a selected suite or leaf runs | Leaf kinds infer session (`transformer` / `runner` / `action`) and unit vs integ. Playfield lives on the suite or a `TestConfiguration`; Runner JSON is a sibling folder. `FunctionCallTestRegistry` is a capability whitelist, not a suite catalog. |
 
@@ -1560,7 +1560,7 @@ await session.teardown();
    - Miroir app: `packages/miroir-app-miroir/assets/miroir_data/a311f363-…/<uuid>.json`
    - Other apps: that app's **model** section `…/<app>_model/a311f363-…/<uuid>.json`
 2. Set `name` to the CLI / UI suite key (e.g. `myNewSuite`), and `tags` to one to three values of the [tag vocabulary](#tags), main area first. Set `issue` to the GitHub issue number the test is written for, when there is one ([Issue](#issue)).
-3. CLI discovery scans `packages/miroir-test-app_deployment-*/assets/*/<MiroirTest uuid>` (`discoverApplicationMiroirTestSourceFolders`). Test runners load the suite with `loadMiroirCoreTestSuiteFromFolders` / `loadMiroirTestSuiteFromCatalog`. Runner `runnerRef` lookup uses sibling Runner folders (`loadApplicationRunnerUuidIndexFromFolders`).
+3. CLI discovery scans `packages/{miroir-app,miroir-example,miroir-fixture}-*/assets/*/<MiroirTest uuid>` (`discoverApplicationMiroirTestSourceFolders`). Test runners load the suite with `loadMiroirCoreTestSuiteFromFolders` / `loadMiroirTestSuiteFromCatalog`. Runner `runnerRef` lookup uses sibling Runner folders (`loadApplicationRunnerUuidIndexFromFolders`).
 4. Optional: export `miroirTest_myNewSuite` from the deployment package `index.ts` if other TypeScript wants a named import. Rebuild that package.
 5. Validate schema: `VITE_TEST_MODE=true npx vitest run tests/4_services/miroirTest.schema.unit.test.ts -w miroir-core`.
 6. Run: `npm run testMiroir -w miroir-core -- --suites myNewSuite --mode unit`.

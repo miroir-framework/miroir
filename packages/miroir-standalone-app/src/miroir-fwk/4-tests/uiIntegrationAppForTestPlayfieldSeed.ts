@@ -7,7 +7,7 @@ import {
   appForTestInitialApplicationVersion,
   selfApplicationAppForTest,
   selfApplicationModelBranchAppForTestMasterBranch,
-} from "miroir-test-app_deployment-appForTest";
+} from "miroir-fixture-appForTest";
 
 import { defaultMiroirMetaModel } from "miroir-app-miroir";
 

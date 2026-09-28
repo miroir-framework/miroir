@@ -21,9 +21,21 @@ Each deployment is divided into **sections** (three for unversioned deployments;
 
 Which applications need a `modelVersion` section depends on their versioning mode; see the [Versioning reference](versioning.md).
 
+### Application packages
+
+Each application's model and data live in a package whose name says its role (#344):
+
+| Role | Prefix | Packages |
+|---|---|---|
+| Framework: applications every Miroir server needs | `miroir-app-` | `miroir-app-miroir` (meta-model, built before `miroir-core`), `miroir-app-admin` |
+| Example: demo applications | `miroir-example-` | `miroir-example-library`, `miroir-example-spotify`, `miroir-example-designer`, `miroir-example-postgres` |
+| Test fixture: exists only for tests | `miroir-fixture-` | `miroir-fixture-appForTest` |
+
+CLI MiroirTest discovery scans every package with one of these prefixes (`DEPLOYMENT_PACKAGE_PREFIXES` in miroir-core).
+
 ### Deployment package asset folders
 
-Each deployment package under `packages/miroir-test-app_deployment-*/assets/` uses a prefix (`miroir_`, `library_`, `admin_`, …):
+Each application package under `packages/{miroir-app,miroir-example,miroir-fixture}-*/assets/` uses a prefix (`miroir_`, `library_`, `admin_`, …):
 
 | Asset directory | Maps to store section | Contents |
 |---|---|---|

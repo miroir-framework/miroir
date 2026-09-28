@@ -18,7 +18,6 @@ export const DEPLOYMENT_PACKAGE_PREFIXES = [
   "miroir-app-",
   "miroir-example-",
   "miroir-fixture-",
-  "miroir-test-app_deployment-",
 ] as const;
 
 /** The application key of an application package (`miroir-example-library` → `library`), or undefined. */

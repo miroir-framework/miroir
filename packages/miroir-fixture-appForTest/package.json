@@ -1,5 +1,5 @@
 {
-  "name": "miroir-test-app_deployment-appForTest",
+  "name": "miroir-fixture-appForTest",
   "private": true,
   "version": "0.5.0-rc.1",
   "description": "Minimal versioned-internal test application assets for the Miroir Framework",

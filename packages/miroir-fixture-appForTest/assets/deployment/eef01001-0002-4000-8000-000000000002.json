@@ -13,15 +13,15 @@
     },
     "model": {
       "emulatedServerType": "filesystem",
-      "directory": "miroir-test-app_deployment-appForTest/assets/appForTest_model"
+      "directory": "miroir-fixture-appForTest/assets/appForTest_model"
     },
     "data": {
       "emulatedServerType": "filesystem",
-      "directory": "miroir-test-app_deployment-appForTest/assets/appForTest_data"
+      "directory": "miroir-fixture-appForTest/assets/appForTest_data"
     },
     "modelVersion": {
       "emulatedServerType": "filesystem",
-      "directory": "miroir-test-app_deployment-appForTest/assets/appForTest_modelVersion"
+      "directory": "miroir-fixture-appForTest/assets/appForTest_modelVersion"
     }
   }
 }

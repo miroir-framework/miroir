@@ -64,7 +64,7 @@ This plan does **not** <excluded work> (owned by #<NNN> / deferred).
 | <suite> (MiroirTest unit) | `npm run testMiroir -w miroir-core -- --suites <suite> --mode unit` |
 | <suite> (MiroirTest integ) | `npm run testMiroir -w miroir-standalone-app -- --suites <suite> --mode integration` |
 | <internal> vitest | `RUN_TEST=<name> npm run testByFile -w <pkg> -- <name>` |
-| Deployment validation | `npm run testByFile -w miroir-test-app_deployment-<app> -- tests/modelValidation.unit.test.ts` |
+| Deployment validation | `npm run testByFile -w miroir-<app|example|fixture>-<name> -- tests/modelValidation.unit.test.ts` |
 | Schema rebuild (if schemas touched) | `npm run build -w miroir-app-miroir && npm run devBuild -w miroir-core` |
 | Type check | `npx tsc --noEmit --skipLibCheck -p packages/<pkg>/tsconfig.json` |
 

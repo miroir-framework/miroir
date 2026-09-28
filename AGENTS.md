@@ -66,7 +66,7 @@ Build in this order (`build-all.sh` is canonical; `./build-all.sh` or `./build-a
 5. `miroir-react`, `miroir-mcp`, `miroir-diagram-class`
 6. `miroir-cli`, `miroir-ai`
 7. `miroir-standalone-app`
-8. `miroir-example-library`, `miroir-example-postgres` (example / test applications)
+8. `miroir-example-*` (example applications), `miroir-fixture-*` (test fixtures)
 
 Artefacts: `miroir-server` release binary (`npm run build:release -w miroir-server`), `miroir-standalone-app-electron`, Docker image. `miroir-designer` and `miroir-runtime` are unused stubs.
 
@@ -147,7 +147,7 @@ Core concept Entities, in `packages/miroir-app-miroir/assets/miroir_model/16dbfe
 | Report | `3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json` | UI display of a Query through sections |
 | Endpoint | `3d8da4d4-8f76-4bb4-9212-14869d81c00c.json` | Actions with side effects on instances and models |
 
-**Deployments** store each Application as **model** (`{prefix}_model/`: Entities, Queries, Reports, …) and **data** (`{prefix}_data/`: instances) under `packages/miroir-test-app_deployment-*/assets/`, whatever the store backend. `miroir-core/src/assets/` holds only leftover fixtures. Layout, store backends and the Library example: `docs/reference/data-architecture-deployments.md`.
+**Deployments** store each Application as **model** (`{prefix}_model/`: Entities, Queries, Reports, …) and **data** (`{prefix}_data/`: instances) under `packages/<package>/assets/`, whatever the store backend. The package prefix gives the application's role: `miroir-app-` (framework), `miroir-example-`, `miroir-fixture-` (tests only). `miroir-core/src/assets/` holds only leftover fixtures. Layout, store backends and the Library example: `docs/reference/data-architecture-deployments.md`.
 
 State management: Redux + Redux-Sagas for async flows, domain state isolated from UI state, query selectors exposed as React hooks.
 

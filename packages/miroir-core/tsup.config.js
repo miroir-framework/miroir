@@ -21,7 +21,7 @@ export default defineConfig({
   treeshake: true,
   minify: true,
   // The Rollup treeShakingPlugin second pass collapseSourcemaps failed because
-  // workspace symlink packages (miroir-test-app_deployment-*) were being bundled
+  // workspace symlink packages (miroir-app-*, miroir-example-*, miroir-fixture-*) were being bundled
   // with their dist/index.js.map included. Those stale maps embed an older version
   // of getMiroirFundamentalMlSchemaHelpers.ts, conflicting with the current
   // esbuild transform of the same file. Making them explicit externals prevents

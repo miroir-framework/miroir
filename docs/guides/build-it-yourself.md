@@ -179,7 +179,7 @@ Both scripts place the certificates in `certs/` and print the `NODE_EXTRA_CA_CER
 
 Run from the repository, the server and the web client take their configuration from an **environment** in `environments/` ([Environments](../reference/environments.md)). Without anything set, they use `dev`:
 
-- application models are edited live in their package assets (`packages/miroir-test-app_deployment-*/assets/`);
+- application models are edited live in their package assets (`packages/{miroir-app,miroir-example,miroir-fixture}-*/assets/`);
 - Admin data (installed applications, users, rights, secrets, view settings) lives in the gitignored `.miroir/dev/`, so installing an application or changing a right changes no tracked file.
 
 ```sh

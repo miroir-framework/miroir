@@ -16,7 +16,7 @@
 #
 # The script builds packages in strict dependency order:
 #   1. jzod  →  jzod-ts  (peer libraries, linked locally)
-#   2. miroir-test-app_deployment-*  (schema definitions)          [parallel]
+#   2. miroir-app-*, miroir-example-*, miroir-fixture-*  (schema definitions)  [parallel]
 #   3. miroir-core  (with devBuild — regenerates TS types from Jzod schemas)
 #   4. localcache + store packages                                  [parallel]
 #   5. model-bundle extraction

@@ -28,5 +28,5 @@ runModelValidationSuite({
   vitest,
   plan: buildModelValidationPlanFromGroups(modelTestsToRun),
   modelEnv: defaultMiroirModelEnvironment,
-  npmWorkspacePackage: "miroir-test-app_deployment-appForTest",
+  npmWorkspacePackage: "miroir-fixture-appForTest",
 });

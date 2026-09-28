@@ -247,7 +247,7 @@ describe("miroir-env check, import and prune on the state of a server start", ()
   });
 
   it("check flags a legacy deployment of the package Admin data, which import records in its short form (D14)", async () => {
-    const legacyAssets = path.join(root, "packages/miroir-test-app_deployment-legacy/assets");
+    const legacyAssets = path.join(root, "packages/miroir-example-legacy/assets");
     mkdirSync(path.join(legacyAssets, "legacy_model"), { recursive: true });
     mkdirSync(path.join(legacyAssets, "legacy_data"), { recursive: true });
     // before #321, Admin data rows were written into the package, with paths relative to packages/
@@ -260,9 +260,9 @@ describe("miroir-env check, import and prune on the state of a server start", ()
         name: "LegacyApplicationFilesystemDeployment",
         selfApplication: LEGACY_SELF_APPLICATION,
         configuration: {
-          admin: filesystem("miroir-test-app_deployment-legacy/assets"),
-          model: filesystem("miroir-test-app_deployment-legacy/assets/legacy_model"),
-          data: filesystem("miroir-test-app_deployment-legacy/assets/legacy_data"),
+          admin: filesystem("miroir-example-legacy/assets"),
+          model: filesystem("miroir-example-legacy/assets/legacy_model"),
+          data: filesystem("miroir-example-legacy/assets/legacy_data"),
         },
       }),
     );
@@ -279,7 +279,7 @@ describe("miroir-env check, import and prune on the state of a server start", ()
     const local = JSON.parse(readFileSync(path.join(root, "environments/local.json"), "utf-8"));
     expect(Object.keys(local.applications).sort()).toEqual(["legacy", "spotify"]);
     expect(local.applications.legacy).toEqual({
-      package: "miroir-test-app_deployment-legacy",
+      package: "miroir-example-legacy",
       selfApplication: LEGACY_SELF_APPLICATION,
       deployment: LEGACY_DEPLOYMENT,
       store: "filesystem",
@@ -287,7 +287,7 @@ describe("miroir-env check, import and prune on the state of a server start", ()
     });
 
     expect((await run(["check", "--strict"], root)).exitCode).toBe(0);
-    expect((await run(["show"], root)).stdout).toContain("packages/miroir-test-app_deployment-legacy/assets/legacy_model");
+    expect((await run(["show"], root)).stdout).toContain("packages/miroir-example-legacy/assets/legacy_model");
   });
 
   it("check --tracked-clean fails when a run changed an asset file under git", async () => {
