@@ -90,6 +90,34 @@ describe("#341 phase 1: Miroir actions run from their library implementation ref
     expect((result as Action2Error).errorMessage).toContain("handleAction_doesNotExist");
   });
 
+  it("returns InvalidAction for an action no Miroir Endpoint declares", async () => {
+    const result = await newDomainController().handleAction(
+      { actionType: "doesNotExist", endpoint: DOMAIN_ENDPOINT_UUID, payload: {} } as any,
+      {},
+    );
+    expect(result).toBeInstanceOf(Action2Error);
+    expect((result as Action2Error).errorType).toBe("InvalidAction");
+  });
+
+  it("declares an implementation for every action of the Endpoints DomainController dispatches", () => {
+    const inScopeEndpoints = [
+      "ModelEndpoint",
+      "InstanceEndpoint",
+      "DomainEndpoint",
+      "StoreManagementEndpoint",
+      "UndoRedoEndpoint",
+      "QueryEndpoint",
+    ];
+    const withoutImplementation = defaultMiroirMetaModel.endpoints
+      .filter((endpoint: any) => inScopeEndpoints.includes(endpoint.name))
+      .flatMap((endpoint: any) =>
+        (getEndpointActions(endpoint) ?? [])
+          .filter((action: any) => !action.actionImplementation)
+          .map((action: any) => endpoint.name + "." + action.actionParameters.actionType.definition),
+      );
+    expect(withoutImplementation).toEqual([]);
+  });
+
   it("resolves every libraryImplementation declared in the bundled Endpoints", () => {
     const declared = defaultMiroirMetaModel.endpoints.flatMap((endpoint: any) =>
       (getEndpointActions(endpoint) ?? [])

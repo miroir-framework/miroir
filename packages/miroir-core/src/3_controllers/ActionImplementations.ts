@@ -120,4 +120,6 @@ export const miroirActionImplementations: Record<string, ActionImplementationHan
   handleAction_connectExternalService: (host, action, context) =>
     host.handleConnectExternalService(action, context.applicationDeploymentMap, context.principal),
   handleAction_prepareOpenApiDocument: (host, action) => host.handlePrepareOpenApiDocument(action),
+  handleAction_probeExternalService: (host, action, context) =>
+    host.handleProbeExternalService(action, context.principal),
 };

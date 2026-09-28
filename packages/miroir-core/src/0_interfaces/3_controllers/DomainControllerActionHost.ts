@@ -48,6 +48,17 @@ export type ConnectExternalServiceAction = {
  * Grows with each migrated action; handlers depend on this interface, not on the class.
  */
 export interface DomainControllerActionHost {
+  handleProbeExternalService(
+    domainAction: {
+      payload?: {
+        endpoint?: any;
+        operationId?: string;
+        parameters?: Record<string, unknown>;
+        processSecrets?: Record<string, string>;
+      };
+    },
+    principal?: AuthPrincipal,
+  ): Promise<Action2ReturnType>;
   handleBoxedExtractorOrQueryAction(
     runBoxedExtractorOrQueryAction: RunBoxedQueryAction,
     applicationDeploymentMap: ApplicationDeploymentMap,

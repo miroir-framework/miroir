@@ -15,7 +15,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/341
 Working branch: `claude/action-library-implementations-1jkrjp` (from `_integration` 9ae1aa9)
 
-**Resume note:** Slices 0-6 DONE; next is Slice 7 (one dispatch path). Full nonreg every 2 or 3 slices (A, 2026-09-28), gate + touched suites in between.
+**Resume note:** Slices 0-7 DONE; next is Slice 8 (autocommit and log phase attributes). Full nonreg every 2 or 3 slices (A, 2026-09-28), gate + touched suites in between.
 
 ---
 
@@ -43,7 +43,7 @@ This plan does **not** migrate Persistence / LocalCache actions, touch the 5 dec
 | 4 | ModelEndpoint actions | ✅ | `action.domainController.modelCrud*`, `freezeApplicationVersion` |
 | 5 | StoreManagement and UndoRedo actions | ✅ | every integ session (open/close store), `modelUndoRedo` |
 | 6 | QueryEndpoint actions reachable through `handleAction` | ✅ | `actionImplementations.341.phase6.integ.test.ts` |
-| 7 | One dispatch path: remove the switches, scoped guard on | ⬜ | phase0 guard (b) + nonreg:filesystem |
+| 7 | One dispatch path: remove the switches, scoped guard on | ✅ | phase0 guard (b) + nonreg:filesystem |
 | 8 | Autocommit and log phase from action definitions | ⬜ | phase8 unit test vs Slice 0 lock |
 | 9 | Nonreg, docs, cleanup, AC | ⬜ | nonreg:filesystem (shared runner) + tracer narrative |
 
@@ -389,7 +389,7 @@ VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirCo
 
 ## Slice 7 — One dispatch path: remove the switches, scoped guard on
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE (2026-09-28)
 
 ### Goal
 
@@ -423,6 +423,16 @@ npm run nonreg:filesystem -- --runner shared
 ```
 
 ### Realization
+
+- `handleActionInternal` is deleted. `handleMiroirAction` returns `InvalidAction` for an action that no bundled Miroir Endpoint declares; before, such an action was logged and returned `ACTION_OK`. Every Miroir action now goes endpoint → definition → implementation.
+- `probeExternalService` already carried the DomainEndpoint uuid. It is now declared in DomainEndpoint (payload: `endpoint`, `operationId`, `parameters`, `processSecrets`, `application`, `deploymentUuid`, all optional) with `handleAction_probeExternalService`, and `handleProbeExternalService` became public. Declaring it changes no generated type (the DomainEndpoint schemas are picked by name), so no `devBuild` was needed.
+- Deviation from the open-point default: `bundleAction` was not given an endpoint. Nothing sends it to `DomainController`: `RestServer`, the redux and zustand persistence sagas and the REST clients handle it at store level, and no asset or test builds one. Declaring it in StoreManagementEndpoint would add a second `bundleAction` variant to the generated `storeManagementAction` union, which is built from all StoreManagementEndpoint actions. So its `DomainController` case was dropped with the switch. `bundleAction` now belongs with the persistence actions, out of scope (analysis §2).
+- Composite interpreters: the explicit action-type lists before `default` are removed in `handleCompositeActionInternal` and `handleCompositeActionTemplate`. In `handleRuntimeCompositeActionDO_NOT_USE` the list's body becomes the `default` branch, and its old "unknown actionType" default is removed, so an unknown step now fails in `handleAction`.
+- Deleted leftovers: the unused `ActionHandler`, `ActionHandlerKind`, `AsyncHandlerFunction` and `AsyncHandlerClosure` types, and the commented `actionHandler` field.
+- Guard (b) is on (phase1 test): every action of the 6 in-scope Endpoints declares an implementation. A phase1 test covers the unknown-action `InvalidAction`.
+- Deliberate test edit: `secrets.270.phase0` checked the source text for `return this.handleActionInternal(...)` carrying `principal`. It now checks `handleMiroirAction`.
+- Not done here: splitting `handleModelAction`'s internal switch (Slice 4 deviation) stays a follow-up. It is internal to the model implementation and no longer part of dispatch.
+- Validation: modelValidation, lint, tsc miroir-core and miroir-standalone-app, core unit (2098 passed), full `nonreg:filesystem --runner shared` 77/78. The failure was `unit-270-persistent-secrets` (the source-text test above); after the fix it passes on rerun.
 
 ---
 

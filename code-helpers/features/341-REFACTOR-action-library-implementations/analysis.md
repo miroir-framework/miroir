@@ -156,7 +156,7 @@ if (applicationUuid !== undefined && (
 | Handled in `handleActionInternal`, declared in no Miroir Endpoint | `bundleAction` (`actionName` `createBundle` / `deleteBundle`), `probeExternalService` |
 | Handled, declared, but unreachable through `handleAction` | `runBoxedQueryAction`, `runBoxedQueryTemplateAction` (fall to `default`, §3.2) |
 
-`bundleAction` and `probeExternalService` need an Endpoint action definition (most likely DomainEndpoint and StoreManagementEndpoint) before they can go through D2; this is part of the in-scope work, since otherwise the single path would reject them.
+`bundleAction` and `probeExternalService` need an Endpoint action definition (most likely DomainEndpoint and StoreManagementEndpoint) before they can go through D2; this is part of the in-scope work, since otherwise the single path would reject them. *Realized (Slice 7):* `probeExternalService` is declared in DomainEndpoint. `bundleAction` turned out to reach no `DomainController` path (it is handled at store level), so it left `DomainController` instead; see the plan's Slice 7 Realization.
 
 ### 3.5 Transformer precedent (aligned, to reuse)
 

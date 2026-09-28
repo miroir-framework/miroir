@@ -41,6 +41,7 @@ const expectedActionTypesByEndpoint: Record<string, string[]> = {
     "compositeRunBoxedQueryTemplateAction",
     "connectExternalService",
     "prepareOpenApiDocument",
+    "probeExternalService", // declared in Slice 7
   ],
   StoreManagementEndpoint: [
     "storeManagementAction_createStore",
