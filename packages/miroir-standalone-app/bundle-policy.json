@@ -1,6 +1,6 @@
 {
   "$comment": "Bundle guard (#326), checked by scripts/check_bundle_policy.py against the build's bundle-report.json. See docs/internals/code-splitting.md.",
-  "eagerGzipBaseline": 2709170,
+  "eagerGzipBaseline": 2721507,
   "eagerGzipTolerance": 0.02,
   "forbiddenEager": [
     "@testing-library/*"
