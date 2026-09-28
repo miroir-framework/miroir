@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 from check_dependency_policy import check_lockfile
-from fill_lockfile_integrity import main
+from fill_lockfile_integrity import dist_of, main
 
 # Stands in for the registry that `npm view` asks: (tarball URL, integrity) per spec.
 REGISTRY = {
@@ -100,3 +100,35 @@ def test_an_unanswered_package_writes_nothing_and_exits_1(repo: Path, capsys: py
     assert (repo / "package-lock.json").read_text(encoding="utf-8") == before
     assert "zod@3.25.76" in capsys.readouterr().out
 
+
+
+# `npm view <spec> version dist.tarball dist.integrity --json`: an object for one matching version (copied from the
+# registry's answer for rxjs@7.8.1), a list of such objects when several published versions match.
+RXJS = {
+    "version": "7.8.1",
+    "dist.tarball": "https://registry.npmjs.org/rxjs/-/rxjs-7.8.1.tgz",
+    "dist.integrity": "sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==",
+}
+RXJS_BUILD = {
+    "version": "7.8.1+build.2",
+    "dist.tarball": "https://registry.npmjs.org/rxjs/-/rxjs-7.8.1+build.2.tgz",
+    "dist.integrity": "sha512-build",
+}
+
+
+def test_a_single_answer_gives_its_tarball_and_integrity() -> None:
+    assert dist_of("rxjs@7.8.1", RXJS) == (RXJS["dist.tarball"], RXJS["dist.integrity"])
+
+
+def test_a_list_answer_gives_the_exact_version() -> None:
+    assert dist_of("rxjs@7.8.1", [RXJS_BUILD, RXJS]) == (RXJS["dist.tarball"], RXJS["dist.integrity"])
+
+
+def test_a_list_answer_without_the_exact_version_leaves_the_package_unanswered(
+    repo: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    def lookup(spec: str) -> tuple[str, str]:
+        return dist_of(spec, [RXJS_BUILD]) if spec == "zod@3.25.76" else registry(spec)
+
+    assert main([], root=repo, lookup=lookup) == 1
+    assert "zod@3.25.76" in capsys.readouterr().out

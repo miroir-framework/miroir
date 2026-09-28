@@ -29,18 +29,13 @@ export function miroirManualChunkLoadLogger(options = {}) {
   return {
     name: "miroir-manual-chunk-load-logger",
     apply: "build",
-    renderChunk(code, chunk) {
-      if (!enabled) {
-        return null;
+    // A banner, not renderChunk: Rollup shifts the chunk's sourcemap past it, whereas a
+    // renderChunk that returns no map leaves the chunk with an empty sourcemap (#326).
+    banner(chunk) {
+      if (!enabled || !chunk.name || !MANUAL_CHUNK_NAMES.has(chunk.name)) {
+        return "";
       }
-      const chunkName = chunk.name;
-      if (!chunkName || !MANUAL_CHUNK_NAMES.has(chunkName)) {
-        return null;
-      }
-
-      const preamble = BUILD_INJECT_PREAMBLE(chunkName, chunk.fileName);
-
-      return { code: preamble + code };
+      return BUILD_INJECT_PREAMBLE(chunk.name, chunk.fileName);
     },
   };
 }
