@@ -255,7 +255,8 @@
           },
           "branch": {
             "test": {
-              "transformerType": "equals",
+              "transformerType": "boolExpr",
+              "operator": "==",
               "interpolation": "runtime",
               "left": {
                 "transformerType": "getFromParameters",
@@ -450,7 +451,8 @@
           },
           "branch": {
             "test": {
-              "transformerType": "equals",
+              "transformerType": "boolExpr",
+              "operator": "==",
               "interpolation": "runtime",
               "left": {
                 "transformerType": "getFromParameters",

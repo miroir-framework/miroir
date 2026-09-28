@@ -438,6 +438,12 @@
                       "definition": {
                         "relativePath": "reactComponentTestSuite"
                       }
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "relativePath": "reportTestSuite"
+                      }
                     }
                   ]
                 }
@@ -493,6 +499,118 @@
                   "type": "schemaReference",
                   "definition": {
                     "relativePath": "miroirTestForReactComponent"
+                  }
+                }
+              }
+            }
+          },
+          "reportTestSuite": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "Report test suite",
+                "description": "A suite of reportTest leaves on one Report, mounted at its route with the integration session's DomainController and local cache (#330)",
+                "display": {
+                  "displayedAttributeValueWhenFolded": "miroirTestLabel"
+                }
+              }
+            },
+            "definition": {
+              "miroirTestType": {
+                "type": "literal",
+                "definition": "reportTestSuite"
+              },
+              "miroirTestLabel": {
+                "type": "string"
+              },
+              "skip": {
+                "type": "boolean",
+                "optional": true
+              },
+              "report": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Report",
+                    "description": "The Report under test and where it is displayed (#330)"
+                  }
+                },
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Application",
+                        "description": "Application owning the Report; its deployment comes from the session's application deployment map"
+                      }
+                    }
+                  },
+                  "applicationSection": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "applicationSection"
+                    },
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Application section",
+                        "description": "Section given in the Report's route"
+                      }
+                    }
+                  },
+                  "reportUuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Report",
+                        "description": "Uuid of the Report under test"
+                      }
+                    }
+                  },
+                  "instanceUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Instance",
+                        "description": "instanceUuid route parameter, for an instance details Report; a leaf may override it"
+                      }
+                    }
+                  }
+                }
+              },
+              "actionTimeoutMs": {
+                "type": "number",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Action timeout (ms)",
+                    "description": "How long an interaction step waits for the actions it started; 10000 when absent (#330)"
+                  }
+                }
+              },
+              "fakeHttpResponses": {
+                "type": "array",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Fake HTTP responses",
+                    "description": "Answers to the outbound HTTP requests of the Report's actions (external services), so the suite runs without a network; a request with no answer fails the leaf, naming its method and URL (#330)"
+                  }
+                },
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "reportTestFakeHttpResponse"
+                  }
+                }
+              },
+              "miroirTests": {
+                "type": "array",
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "miroirTestForReport"
                   }
                 }
               }
@@ -645,6 +763,142 @@
               },
               "miroirTestLabel": {
                 "type": "string"
+              }
+            }
+          },
+          "miroirTestForReport": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "Report test",
+                "description": "Mounts the Report of its reportTestSuite and runs steps: UI interactions and checks, actions and assertions on their results (#330)",
+                "display": {
+                  "displayedAttributeValueWhenFolded": "miroirTestLabel"
+                }
+              }
+            },
+            "definition": {
+              "skip": {
+                "type": "boolean",
+                "optional": true
+              },
+              "instanceUuid": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Instance",
+                    "description": "Overrides the suite's report.instanceUuid for this leaf"
+                  }
+                }
+              },
+              "steps": {
+                "type": "array",
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "reportTestStep"
+                  }
+                }
+              },
+              "miroirTestType": {
+                "type": "literal",
+                "definition": "reportTest"
+              },
+              "miroirTestLabel": {
+                "type": "string"
+              }
+            }
+          },
+          "reportTestStep": {
+            "type": "union",
+            "discriminator": "step",
+            "tag": {
+              "value": {
+                "defaultLabel": "Report test step",
+                "description": "A step of a reportTest leaf: a component test step, an action or query, or an assertion on the results of the earlier actions (#330)"
+              }
+            },
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "reactComponentTestStep"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "reportTestCompositeActionStep"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "reportTestExpectActionResultStep"
+                }
+              }
+            ]
+          },
+          "reportTestCompositeActionStep": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "compositeAction",
+                "description": "Runs an action or a query through the session's DomainController, with the session test parameters and the results kept by the earlier steps as parameters; its returned value is kept under nameGivenToResult (#330)"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "compositeAction"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "action": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeActionTemplate"
+                }
+              },
+              "nameGivenToResult": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Name given to result",
+                    "description": "Name under which the value returned by the action is kept for the later steps; the action's own nameGivenToResult when absent (a query has one)"
+                  }
+                }
+              }
+            }
+          },
+          "reportTestExpectActionResultStep": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "expectActionResult",
+                "description": "Runs a test assertion over the results kept by the earlier compositeAction steps, as in a Runner test; a failed assertion fails the leaf with its expected and actual values (#330)"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "expectActionResult"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "assertion": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeRunTestAssertion"
+                }
               }
             }
           },
@@ -985,6 +1239,41 @@
                   },
                   "keys": {
                     "type": "string"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "uploadFile",
+                    "description": "Uploads a file of the given name and text content into the file input target (user-event)"
+                  }
+                },
+                "definition": {
+                  "step": {
+                    "type": "literal",
+                    "definition": "uploadFile"
+                  },
+                  "label": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "target": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "reactComponentTestTarget"
+                    }
+                  },
+                  "fileName": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "mimeType": {
+                    "type": "string",
+                    "optional": true
                   }
                 }
               },
@@ -1692,6 +1981,68 @@
               },
               "miroirTestLabel": {
                 "type": "string"
+              }
+            }
+          },
+          "reportTestFakeHttpResponse": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "Fake HTTP response",
+                "description": "The answer to one outbound HTTP request of a Report test (#330)"
+              }
+            },
+            "definition": {
+              "method": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Method",
+                    "description": "HTTP method of the request, e.g. GET"
+                  }
+                }
+              },
+              "url": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "URL",
+                    "description": "Full URL of the request, query string included"
+                  }
+                }
+              },
+              "status": {
+                "type": "number",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Status",
+                    "description": "HTTP status of the answer; 200 when absent"
+                  }
+                }
+              },
+              "headers": {
+                "type": "record",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                },
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Headers",
+                    "description": "Headers of the answer; a body that is not a string also gets content-type application/json"
+                  }
+                }
+              },
+              "body": {
+                "type": "any",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Body",
+                    "description": "Body of the answer: a string as is, any other value as JSON"
+                  }
+                }
               }
             }
           }

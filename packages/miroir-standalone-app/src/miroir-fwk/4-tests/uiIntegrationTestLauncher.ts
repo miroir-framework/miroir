@@ -43,6 +43,12 @@ import type {
   UiIntegrationTestRunTargetMode,
 } from "./uiIntegrationTestLauncherTypes.js";
 
+export const REPORT_TESTS_NEED_A_SANDBOX_MESSAGE =
+  "a suite of reportTest leaves needs the app's component test sandbox to mount its Reports";
+
+export const REPORT_TESTS_NEED_AN_EMULATED_SERVER_MESSAGE =
+  "a suite of reportTest leaves runs on its pinned targets, which on a real server are its live deployments: choose an emulated profile";
+
 export type UiIntegrationTestLauncherEnvironment = {
   createOrchestrator: () => MiroirTestIntegrationOrchestrator;
   loadConfigForProfile: (profileName: string) => Promise<{
@@ -183,8 +189,15 @@ async function runRunnerOrActionIntegrationSuite(
   runTarget: TestbedUuids,
   sessionKind: "runner" | "action",
   hostMode: NonNullable<UiIntegrationTestRunRequest["hostMode"]>,
+  prepareReportTests: UiIntegrationTestRunRequest["prepareReportTests"],
 ): Promise<UiIntegrationTestRunResult> {
   const { miroirConfig, logConfig } = await environment.loadConfigForProfile(request.profileName);
+  // #330: the session resets its run target before each leaf and drops it at teardown
+  if (prepareReportTests && miroirConfig.client.emulateServer !== true) {
+    throw new Error(
+      `${REPORT_TESTS_NEED_AN_EMULATED_SERVER_MESSAGE} (suite "${request.suiteKey}", profile "${request.profileName}")`,
+    );
+  }
   await assertRealServerReachableIfNeeded(request, environment, miroirConfig);
 
   const trackerBundle = await environment.createActivityTracker(logConfig);
@@ -206,7 +219,14 @@ async function runRunnerOrActionIntegrationSuite(
   );
 
   let success = false;
+  let releaseReportTests: (() => void) | undefined;
   try {
+    // #330: the Reports of the suite mount in the app's sandbox, driven by this session
+    releaseReportTests = await prepareReportTests?.({
+      miroirActivityTracker: trackerBundle.miroirActivityTracker,
+      miroirEventService: trackerBundle.miroirEventService,
+      ...(request.miroirReports ? { miroirReports: request.miroirReports } : {}),
+    });
     const executionEnvironment = await testSession.initSession();
     await runMiroirTestSuiteInProcess({
       runMiroirTests,
@@ -227,7 +247,11 @@ async function runRunnerOrActionIntegrationSuite(
       request.suiteKey,
     );
   } finally {
-    await testSession.teardown();
+    try {
+      releaseReportTests?.();
+    } finally {
+      await testSession.teardown();
+    }
   }
 
   let testSuiteResults: TestSuiteResult | undefined;
@@ -371,19 +395,27 @@ export async function runUiIntegrationTestSuite(
       `Suite "${request.suiteKey}" is not a UI-launchable runner/action integration suite`,
     );
   }
+  if (suiteEntry.kind === "reportTest" && !request.prepareReportTests) {
+    throw new Error(`${REPORT_TESTS_NEED_A_SANDBOX_MESSAGE} (suite "${request.suiteKey}")`);
+  }
+  // #330: a Report suite names its Report's application by uuid, which an ephemeral testbed
+  // (fresh uuids) does not have: it always runs on its pinned targets, on an emulated profile only.
+  const effectiveRequest: UiIntegrationTestRunRequest =
+    suiteEntry.kind === "reportTest" ? { ...request, runTargetMode: "pinned" } : request;
   const runTarget = resolveUiIntegrationTestRunTarget(
-    request.runTargetMode,
-    request.suiteDefinition,
+    effectiveRequest.runTargetMode,
+    effectiveRequest.suiteDefinition,
   );
 
   return coordinator.runExclusive(() =>
     runRunnerOrActionIntegrationSuite(
-      request,
+      effectiveRequest,
       environment,
       suiteEntry,
       runTarget,
       sessionKind,
       hostMode,
+      suiteEntry.kind === "reportTest" ? effectiveRequest.prepareReportTests : undefined,
     ),
   );
 }

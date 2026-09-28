@@ -3,7 +3,10 @@
  * Lives in standalone-app so miroir-core does not import library/appForTest packages.
  */
 import type { TestConfigurationPlayfield } from "miroir-core";
-import { testConfiguration_libraryDocumentSeed } from "miroir-test-app_deployment-library";
+import {
+  testConfiguration_libraryBookDetailsSeed,
+  testConfiguration_libraryDocumentSeed,
+} from "miroir-test-app_deployment-library";
 import { testConfiguration_libraryPublisherAndCountry } from "miroir-test-app_deployment-miroir";
 
 function playfieldFromInstance(instance: {
@@ -24,6 +27,10 @@ export const TEST_CONFIGURATION_INSTANCE_INDEX: Record<string, TestConfiguration
   ),
   [testConfiguration_libraryPublisherAndCountry.uuid]: playfieldFromInstance(
     testConfiguration_libraryPublisherAndCountry,
+  ),
+  // #330: libraryDocumentSeed plus the Reports under test
+  [testConfiguration_libraryBookDetailsSeed.uuid]: playfieldFromInstance(
+    testConfiguration_libraryBookDetailsSeed,
   ),
 };
 

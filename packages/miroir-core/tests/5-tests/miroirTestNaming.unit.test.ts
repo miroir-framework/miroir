@@ -20,6 +20,7 @@ const UUID = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
 function kindFromLeaves(suite: MiroirTestSuite): string {
   const types = new Set(walkMiroirTestLeaves(suite).map((leaf) => leaf.miroirTestType));
   if (types.has("reactComponentTest")) return "ui";
+  if (types.has("reportTest")) return "report";
   if (types.has("runnerTest")) return "runner";
   if (types.has("actionTest")) return "action";
   if (types.has("queryTest")) return "query";
@@ -65,7 +66,7 @@ describe("MiroirTest naming", () => {
     expect(wrong).toEqual([]);
   });
 
-  it("UI launch kinds follow the name: action.domainController.*, action.scenario.*, runner.*", () => {
+  it("UI launch kinds follow the name: action.domainController.*, action.scenario.*, runner.*, report.*", () => {
     const wrong = catalog
       .map((entry) => ({
         name: entry.suiteKey,
@@ -78,7 +79,9 @@ describe("MiroirTest naming", () => {
             ? kind !== "actionTest"
             : name.startsWith("runner.")
               ? kind !== "runnerTest"
-              : false,
+              : name.startsWith("report.")
+                ? kind !== "reportTest"
+                : false,
       );
     expect(wrong).toEqual([]);
   });

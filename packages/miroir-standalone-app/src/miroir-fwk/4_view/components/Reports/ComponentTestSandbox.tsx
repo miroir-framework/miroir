@@ -4,6 +4,7 @@ import { MiroirLoggerFactory, type LoggerInterface } from "miroir-core";
 
 import { packageName } from "../../../../constants.js";
 import type { ComponentTestRegistration } from "../../../4-tests/componentTests/index.js";
+import type { UiIntegrationReportTestSession } from "../../../4-tests/uiIntegrationTestLauncherTypes.js";
 import { cleanLevel } from "../../constants.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ComponentTestSandbox");
@@ -26,6 +27,10 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger:
 // display's run is active, and `finishComponentTests()` (called by the Run buttons when the run
 // ends, success or error) destroys the open suite wrappers and releases the run lock. The close
 // button is disabled during the run.
+//
+// `prepareReportTests()` (#330) is the same for an integration run of a suite of `reportTest`
+// leaves: it registers a report test runner over the sandbox, for the run's session, and returns
+// the release that ends the run. Each Report is unmounted when its leaf ends.
 // ################################################################################################
 
 export interface ComponentTestSandboxContextValue {
@@ -37,6 +42,12 @@ export interface ComponentTestSandboxContextValue {
   prepareComponentTests: (options?: ComponentTestRunOptions) => Promise<void>;
   /** Ends the run started by `prepareComponentTests()`. The last case stays mounted. */
   finishComponentTests: () => void;
+  /**
+   * #330: loads the component test chunk, registers the report test runner over the sandbox for
+   * the session of an integration run, and shows the panel. Returns the release that ends the run.
+   * Throws when another display's component test run is active.
+   */
+  prepareReportTests: (session: UiIntegrationReportTestSession) => Promise<() => void>;
 }
 
 export interface ComponentTestRunOptions {
@@ -133,6 +144,35 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
     registrationRef.current?.endRun();
   }, []);
 
+  const prepareReportTests = useCallback(async (session: UiIntegrationReportTestSession) => {
+    const { componentTestRunInProgressMessage, isComponentTestRunActive, registerReportTests } =
+      await import("../../../4-tests/componentTests/index.js");
+    if (isComponentTestRunActive()) {
+      throw new Error(componentTestRunInProgressMessage);
+    }
+    closeRegistration();
+    const sandboxElement = sandboxRef.current;
+    if (!sandboxElement) {
+      throw new Error("component test sandbox element is not mounted");
+    }
+    const registration = registerReportTests({
+      sandboxElement,
+      miroirActivityTracker: session.miroirActivityTracker,
+      miroirEventService: session.miroirEventService,
+      ...(session.miroirReports ? { miroirReports: session.miroirReports } : {}),
+    });
+    registrationRef.current = registration;
+    runningRef.current = true;
+    setRunning(true);
+    setOpen(true);
+    log.info("report test sandbox ready");
+    return () => {
+      runningRef.current = false;
+      setRunning(false);
+      registration.endRun();
+    };
+  }, [closeRegistration]);
+
   const onClose = useCallback(() => {
     if (runningRef.current) {
       return;
@@ -155,8 +195,8 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
   );
 
   const contextValue = useMemo(
-    () => ({ prepareComponentTests, finishComponentTests }),
-    [prepareComponentTests, finishComponentTests],
+    () => ({ prepareComponentTests, finishComponentTests, prepareReportTests }),
+    [prepareComponentTests, finishComponentTests, prepareReportTests],
   );
 
   return (

@@ -244,15 +244,27 @@ export function MiroirContextReactProvider(props: {
   testingApplication?: Uuid; // for tests only! Yuck!
   testingDeploymentUuid?: Uuid; // for tests only! Yuck!
   /**
+   * For tests only: the deployments the context starts with, besides Miroir, Admin and the
+   * testing application. The report test runner gives the session's deployments, which
+   * RootComponent would set in the app (#330).
+   */
+  testingApplicationDeploymentMap?: ApplicationDeploymentMap;
+  /**
    * Initial value of `showPerformanceDisplay` (render insight tracking), overriding the
    * `sessionStorage` value. Used by component tests that measure renders (#303), so that
    * no `sessionStorage` write leaks into the app session.
    */
   initialShowPerformanceDisplay?: boolean;
+  /**
+   * The reports and entities by deployment, computed by the host instead of set by RootComponent:
+   * the report test runner mounts a page without RootComponent (#330). When given, it replaces
+   * the value set with `setDeploymentUuidToReportsEntitiesMapping`.
+   */
+  deploymentUuidToReportsEntitiesMapping?: DeploymentUuidToReportsEntitiesMapping;
   children: ReactNode;
 }) {
   const [application, setApplication] = useState(props.testingApplication ?? "");
-  // Test harness (e.g. #284 wizardWalk): seed the map with the testing application so pickers
+  // Test harness (e.g. the #330 Report MiroirTests): seed the map with the testing application so pickers
   // that read applicationDeploymentMap keys (D22) see the fixture app, not only Miroir/Admin.
   const [applicationDeploymentMap, setApplicationDeploymentMap] = useState<
     ApplicationDeploymentMap | undefined
@@ -260,6 +272,7 @@ export function MiroirContextReactProvider(props: {
     props.testingApplication && props.testingDeploymentUuid
       ? {
           ...defaultSelfApplicationDeploymentMap,
+          ...props.testingApplicationDeploymentMap,
           [props.testingApplication]: props.testingDeploymentUuid,
         }
       : undefined,
@@ -274,9 +287,11 @@ export function MiroirContextReactProvider(props: {
     useState<Dispatch<SetStateAction<FoldedStateTree>>>();
 
   const [
-    deploymentUuidToReportsEntitiesMapping,
+    deploymentUuidToReportsEntitiesMappingState,
     setDeploymentUuidToReportsEntitiesMapping,
   ] = useState<DeploymentUuidToReportsEntitiesMapping>({});
+  const deploymentUuidToReportsEntitiesMapping =
+    props.deploymentUuidToReportsEntitiesMapping ?? deploymentUuidToReportsEntitiesMappingState;
   const [schemasPerDeployment, setSchemasPerDeployment] = useState<Record<Uuid, MlSchema>>({});
   const [schemaReloadRequired, setSchemaReloadRequired] = useState(false);
   const schemaRevisionsRef = useRef<Record<Uuid, DeploymentSchemaRevisions>>({});

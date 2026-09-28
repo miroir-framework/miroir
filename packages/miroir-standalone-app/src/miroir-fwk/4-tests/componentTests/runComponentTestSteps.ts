@@ -9,7 +9,6 @@ import { describeTarget, queryAllTarget, resolveTarget } from "./componentTestTa
 import { runMeasureRendering } from "./measureRendering.js";
 import {
   extractValuesFromRenderedElements,
-  formikFieldName,
   formValuesToJSON,
   testSectionName,
 } from "./componentTestTools.js";
@@ -22,12 +21,15 @@ import {
 // Interpreter of the declarative component test steps (#292, analysis §5.3, §5.4).
 //
 // - After each action step (DOM events, typing, widget steps), it awaits `componentTestAct`, then
-//   `waitAfterUserInteraction(container)` (D9). Widget steps also wait for their own
+//   `waitAfterUserInteraction(container)` (D9), then `options.afterInteraction` (a Report test
+//   waits there for the actions the step started, #330). Widget steps also wait for their own
 //   postcondition (e.g. `data-test-is-open`).
 // - A failing step throws a `ComponentTestStepError` whose message is
 //   `step <n> (<kind>[ "<label>"]): <message>`, `n` 1-based (T10). An `expectRenderedValues`
-//   failure also carries the expected and actual values.
+//   failure also carries the expected and actual values, as does any `StepValuesMismatch`.
 // - `saveAs` keeps the element of a step for the later targets `{"ref": <name>}` (T11).
+// - Other step kinds run through `options.extraStepHandlers` (the action and assertion steps of a
+//   Report test, #330).
 //
 // It does not import `@testing-library/react`: it runs in the app too.
 // ################################################################################################
@@ -46,8 +48,11 @@ export class ComponentTestStepError extends Error {
   }
 }
 
-/** Thrown by `expectRenderedValues` when the rendered values differ from `expectedValue`. */
-class RenderedValuesMismatch extends Error {
+/**
+ * Thrown by a step whose check compares values (`expectRenderedValues`, or an extra step), to
+ * carry them to its `ComponentTestStepError`.
+ */
+export class StepValuesMismatch extends Error {
   constructor(
     message: string,
     readonly expected: unknown,
@@ -67,14 +72,25 @@ interface ComponentTestStepContext {
 const selectOpenTimeout = 1000;
 const selectCommitTimeout = 2000;
 
-function stepPrefix(step: ReactComponentTestStep, index: number): string {
+/** The fields every step kind has. */
+interface AnyStep {
+  step: string;
+  label?: string | undefined;
+}
+
+function stepPrefix(step: AnyStep, index: number): string {
   return `step ${index + 1} (${step.step}${step.label !== undefined ? ` "${step.label}"` : ""})`;
 }
 
-/** Runs `callback` without React `act`, then waits for React to settle (D9). */
-async function runAction(env: ComponentTestEnvironment, callback: () => unknown): Promise<void> {
+/** Runs `callback` without React `act`, then waits for React to settle (D9), then `afterInteraction`. */
+async function runAction(
+  env: ComponentTestEnvironment,
+  callback: () => unknown,
+  afterInteraction: (() => Promise<void>) | undefined,
+): Promise<void> {
   await componentTestAct(callback);
   await waitAfterUserInteraction(env.container);
+  await afterInteraction?.();
 }
 
 /** Retries `check` until it does not throw, for at most `timeout` ms, keeping the last error. */
@@ -124,11 +140,11 @@ export function optionFormikName(ariaLabel: string, selectNames: readonly string
 /**
  * The option lists rendered in the sandbox, by field (T8): `[role="option"]` elements whose
  * `aria-label` is `<formik name>-option-<value>` (`ThemedSelectWithPortal`), grouped by the formik
- * name without its `TESTSECTION.` prefix, texts in DOM order.
+ * name without the environment's `fieldNamePrefix`, texts in DOM order.
  */
 function renderedOptions(env: ComponentTestEnvironment): Record<string, string[]> {
   const options: Record<string, string[]> = {};
-  const prefix = `${testSectionName}.`;
+  const prefix = env.fieldNamePrefix;
   const selectNames = Array.from(
     env.sandboxElement.querySelectorAll<HTMLElement>(`[data-testid^="${selectStateTestIdPrefix}"]`),
   ).map((tracker) => (tracker.getAttribute("data-testid") ?? "").slice(selectStateTestIdPrefix.length));
@@ -137,7 +153,7 @@ function renderedOptions(env: ComponentTestEnvironment): Record<string, string[]
     if (formikName === undefined) {
       continue;
     }
-    const field = formikName.startsWith(prefix) ? formikName.slice(prefix.length) : formikName;
+    const field = prefix && formikName.startsWith(prefix) ? formikName.slice(prefix.length) : formikName;
     (options[field] ??= []).push(option.textContent?.trim() ?? "");
   }
   return options;
@@ -189,14 +205,36 @@ function isEmptyArrayEditor(env: ComponentTestEnvironment, fieldName: string): b
   );
 }
 
+const shortTextLength = 200;
+
+/** `text` cut to `shortTextLength` characters, for an error message. */
+function shortText(text: string | null): string {
+  const value = text ?? "";
+  return value.length > shortTextLength ? `${value.slice(0, shortTextLength)}…` : value;
+}
+
+/** `<tag data-testid="…">` and the start of the text of `element`, for an error message. */
+function describeElement(element: HTMLElement): string {
+  const testId = element.getAttribute("data-testid");
+  const tag = `<${element.tagName.toLowerCase()}${testId === null ? "" : ` data-testid="${testId}"`}>`;
+  return `${tag} ${JSON.stringify(shortText(element.textContent))}`;
+}
+
 /** The `value` of a form element, as the old `(element as HTMLInputElement).value` reads. */
 function elementValue(element: HTMLElement): unknown {
   return (element as HTMLInputElement).value;
 }
 
-export interface ComponentTestStepsOptions {
+export interface ComponentTestStepsOptions<ExtraStep extends AnyStep = never> {
   /** Replaces the `iterations` of every `measureRendering` step (#303 T7, one run of the app). */
   iterationsOverride?: number;
+  /**
+   * Handlers of step kinds that are not component test steps, by kind (the action and assertion
+   * steps of a Report test, #330). Their errors are reported like those of the other steps.
+   */
+  extraStepHandlers?: Record<ExtraStep["step"], (step: ExtraStep) => Promise<void>>;
+  /** Awaited after each action step, once React has settled (a Report test waits for its actions, #330). */
+  afterInteraction?: () => Promise<void>;
 }
 
 export interface ComponentTestStepsResult {
@@ -206,10 +244,10 @@ export interface ComponentTestStepsResult {
 
 // ################################################################################################
 /** Runs `steps` in order against the mounted case of `env`. */
-export async function runComponentTestSteps(
+export async function runComponentTestSteps<ExtraStep extends AnyStep = never>(
   env: ComponentTestEnvironment,
-  steps: readonly ReactComponentTestStep[],
-  options: ComponentTestStepsOptions = {},
+  steps: readonly (ReactComponentTestStep | ExtraStep)[],
+  options: ComponentTestStepsOptions<ExtraStep> = {},
 ): Promise<ComponentTestStepsResult> {
   const context: ComponentTestStepContext = { elements: {} };
   const measurements: ComponentRenderMeasurement[] = [];
@@ -217,15 +255,16 @@ export async function runComponentTestSteps(
   const userSession = () => (user ??= env.userEvent.setup());
 
   const resolve = (target: ReactComponentTestTarget) => resolveTarget(env, target, context.elements);
+  const interact = (callback: () => unknown) => runAction(env, callback, options.afterInteraction);
   const save = (element: HTMLElement, saveAs: string | undefined) => {
     if (saveAs !== undefined) {
       context.elements[saveAs] = element;
     }
   };
 
-  /** `expectRenderedValues` once: throws `RenderedValuesMismatch` when the values differ. */
+  /** `expectRenderedValues` once: throws `StepValuesMismatch` when the values differ. */
   const checkRenderedValues = (step: StepOf<"expectRenderedValues">): void => {
-    const fieldName = step.field === undefined ? testSectionName : formikFieldName(step.field);
+    const fieldName = step.field === undefined ? testSectionName : env.formikFieldName(step.field);
     const extracted = extractValuesFromRenderedElements(
       env.expect,
       step.filter === undefined ? undefined : [...step.filter],
@@ -261,7 +300,7 @@ export async function runComponentTestSteps(
     try {
       env.expect(actual, "rendered values").toEqual(expected);
     } catch (error) {
-      throw new RenderedValuesMismatch(
+      throw new StepValuesMismatch(
         error instanceof Error ? error.message : String(error),
         expected,
         actual,
@@ -274,7 +313,12 @@ export async function runComponentTestSteps(
     if (step.present === false) {
       const matches = queryAllTarget(env, step.target, context.elements);
       if (matches.length > 0) {
-        throw new Error(`expected no element to match target ${describeTarget(step.target)}, found ${matches.length}`);
+        throw new Error(
+          `expected no element to match target ${describeTarget(step.target)}, found ${matches.length}: ${matches
+            .slice(0, 3)
+            .map(describeElement)
+            .join(", ")}`,
+        );
       }
       return;
     }
@@ -318,7 +362,10 @@ export async function runComponentTestSteps(
       env.expect(element, "element checked").not.toBeChecked();
     }
     if (step.containsHtml !== undefined) {
-      env.expect(element, "element html").toContainHTML(step.containsHtml);
+      // the element's text in the message: the matcher's own message does not show it
+      env.expect(element, `element html (text ${JSON.stringify(shortText(element.textContent))})`).toContainHTML(
+        step.containsHtml,
+      );
     }
     if (step.attribute !== undefined) {
       checkAttribute(element, step.attribute.name, step.attribute.value);
@@ -339,16 +386,16 @@ export async function runComponentTestSteps(
     click: async (step) => {
       const element = resolve(step.target);
       save(element, step.saveAs);
-      await runAction(env, () => env.fireEvent.click(element));
+      await interact(() => env.fireEvent.click(element));
     },
     change: async (step) => {
       const element = resolve(step.target);
       save(element, step.saveAs);
-      await runAction(env, () => env.fireEvent.change(element, { target: { value: step.value } }));
+      await interact(() => env.fireEvent.change(element, { target: { value: step.value } }));
     },
     clickArrayButton: async (step) => {
       const element = resolve({ widget: "arrayButton", field: step.field, action: step.action, index: step.index });
-      await runAction(env, () => env.fireEvent.click(element));
+      await interact(() => env.fireEvent.click(element));
     },
     clickObjectButton: async (step) => {
       const element = resolve({
@@ -357,31 +404,36 @@ export async function runComponentTestSteps(
         action: step.action,
         attribute: step.attribute,
       });
-      await runAction(env, () => env.fireEvent.click(element));
+      await interact(() => env.fireEvent.click(element));
     },
     renameRecordEntry: async (step) => {
       const element = resolve({ widget: "recordEntryName", field: step.field, entry: step.entry });
       await componentTestAct(() => env.fireEvent.change(element, { target: { value: step.newName } }));
-      await runAction(env, () => env.fireEvent.blur(element));
+      await interact(() => env.fireEvent.blur(element));
     },
     submit: async (step) => {
       const element = resolve(step.target);
-      await runAction(env, () => env.fireEvent.submit(element));
+      await interact(() => env.fireEvent.submit(element));
     },
     blur: async (step) => {
       const element = resolve(step.target);
-      await runAction(env, () => env.fireEvent.blur(element));
+      await interact(() => env.fireEvent.blur(element));
     },
     type: async (step) => {
       const element = resolve(step.target);
-      await runAction(env, () => userSession().type(element, step.text));
+      await interact(() => userSession().type(element, step.text));
     },
     clear: async (step) => {
       const element = resolve(step.target);
-      await runAction(env, () => userSession().clear(element));
+      await interact(() => userSession().clear(element));
     },
     keyboard: async (step) => {
-      await runAction(env, () => userSession().keyboard(step.keys));
+      await interact(() => userSession().keyboard(step.keys));
+    },
+    uploadFile: async (step) => {
+      const element = resolve(step.target);
+      const file = new File([step.content], step.fileName, { type: step.mimeType ?? "" });
+      await interact(() => userSession().upload(element, file));
     },
     waitForAttribute: async (step) => {
       await waitForAttributeValue(
@@ -396,7 +448,7 @@ export async function runComponentTestSteps(
     openSelect: async (step) => {
       const combobox = resolve({ widget: "combobox", field: step.field, select: step.select });
       const state: ReactComponentTestTarget = { widget: "selectState", field: step.field, select: step.select };
-      await runAction(env, async () => {
+      await interact(async () => {
         env.fireEvent.click(combobox);
         await waitForAttributeValue(env, state, "data-test-is-open", "true", selectOpenTimeout, context.elements);
       });
@@ -404,7 +456,7 @@ export async function runComponentTestSteps(
     filterSelect: async (step) => {
       const combobox = resolve({ widget: "combobox", field: step.field, select: step.select });
       const state: ReactComponentTestTarget = { widget: "selectState", field: step.field, select: step.select };
-      await runAction(env, async () => {
+      await interact(async () => {
         await userSession().clear(combobox);
         await userSession().type(combobox, step.text);
         await waitForAttributeValue(env, state, "data-test-filter-text", step.text, selectOpenTimeout, context.elements);
@@ -416,7 +468,7 @@ export async function runComponentTestSteps(
       // when a type is chosen, and its detached tracker keeps the last state it rendered.
       const state = resolve({ widget: "selectState", field: step.field, select: step.select });
       const stateIs = (attribute: string, value: string) => () => checkAttribute(state, attribute, value);
-      await runAction(env, async () => {
+      await interact(async () => {
         if (state.getAttribute("data-test-is-open") !== "true") {
           env.fireEvent.click(combobox);
           await waitUntil(env, stateIs("data-test-is-open", "true"), selectOpenTimeout);
@@ -446,7 +498,7 @@ export async function runComponentTestSteps(
       const star = resolve({ widget: "unionTypeStar", field: step.field });
       const input: ReactComponentTestTarget = { widget: "unionTypeInput", field: step.field };
       const wasShown = queryAllTarget(env, input, context.elements).length > 0;
-      await runAction(env, async () => {
+      await interact(async () => {
         env.fireEvent.click(star);
         await waitUntil(
           env,
@@ -480,9 +532,13 @@ export async function runComponentTestSteps(
     },
   };
 
+  const extraStepHandlers: Record<string, ((step: never) => Promise<void>) | undefined> =
+    options.extraStepHandlers ?? {};
   for (const [index, step] of steps.entries()) {
     try {
-      const handler = handlers[step.step] as ((step: ReactComponentTestStep) => Promise<void>) | undefined;
+      const handler = (Object.prototype.hasOwnProperty.call(handlers, step.step)
+        ? handlers[step.step as ReactComponentTestStep["step"]]
+        : extraStepHandlers[step.step]) as ((step: ReactComponentTestStep | ExtraStep) => Promise<void>) | undefined;
       if (!handler) {
         // every kind of the schema has a handler: only JSON that bypassed the schema gets here
         throw new Error("unknown step kind");
@@ -492,7 +548,7 @@ export async function runComponentTestSteps(
       const message = `${stepPrefix(step, index)}: ${error instanceof Error ? error.message : String(error)}`;
       throw new ComponentTestStepError(
         message,
-        error instanceof RenderedValuesMismatch ? { expected: error.expected, actual: error.actual } : undefined,
+        error instanceof StepValuesMismatch ? { expected: error.expected, actual: error.actual } : undefined,
       );
     }
   }

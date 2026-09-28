@@ -473,6 +473,18 @@ export {
   miroirTestForReactComponent,
   ReactComponentTestSuite,
   reactComponentTestSuite,
+  MiroirTestForReport,
+  miroirTestForReport,
+  ReportTestSuite,
+  reportTestSuite,
+  ReportTestStep,
+  reportTestStep,
+  ReportTestCompositeActionStep,
+  reportTestCompositeActionStep,
+  ReportTestFakeHttpResponse,
+  reportTestFakeHttpResponse,
+  ReportTestExpectActionResultStep,
+  reportTestExpectActionResultStep,
   ReactComponentTestStep,
   reactComponentTestStep,
   ReactComponentTestTarget,
@@ -1415,6 +1427,7 @@ export {
   setPersistRotatedSecret,
   type PersistRotatedSecret,
 } from "./4_services/ExternalServiceClient.js";
+export { outboundFetch, type OutboundFetch } from "./1_core/OutboundFetch.js";
 export {
   boundPathsForOperation,
   listConvertibleGetOperations,
@@ -1560,6 +1573,7 @@ export {
 export {
   classifyMiroirTestSuiteExecutionCapabilities,
   inferIntegrationSessionKind,
+  miroirTestSuiteMountsReport,
   transformerTestLeafRequiresIntegration,
   walkMiroirTestLeaves,
   type MiroirTestSuiteExecutionCapabilities,
@@ -1773,6 +1787,15 @@ export {
   runMiroirReactComponentTest,
 } from "./5_tests/ReactComponentTestTools.js";
 export {
+  REPORT_TEST_NO_RUNNER_MESSAGE,
+  REPORT_TEST_NO_SUITE_MESSAGE,
+  runMiroirReportTest,
+  runReportTestCompositeActionStep,
+  runReportTestExpectActionResultStep,
+  type ReportTestActionContext,
+} from "./5_tests/ReportTestTools.js";
+export { createFakeOutboundFetch, type FakeOutboundFetch } from "./5_tests/FakeHttpResponses.js";
+export {
   createInProcessVitestStub,
   runMiroirTestSuiteInProcess,
   type InProcessExpectFn,
@@ -1782,10 +1805,15 @@ export type {
   ComponentRenderMeasurement,
   MiroirTestAnyLeaf,
   MiroirTestRunFilter,
+  MiroirTestLeafSuiteContext,
   ReactComponentTestRunner,
   ReactComponentTestRunnerResult,
   ReactComponentTestSuiteContext,
+  ReportTestRunner,
+  ReportTestRunnerResult,
+  ReportTestSuiteContext,
 } from "./0_interfaces/5-tests/miroirTestTypes";
+export { isReportTestSuiteContext } from "./0_interfaces/5-tests/miroirTestTypes";
 export {
   displayMiroirTestResults,
   miroirTestGlobalTimeOut,

@@ -218,9 +218,10 @@ describe("MiroirTest mode tags (#316)", () => {
     expect(wrong).toEqual([]);
   });
 
-  it("--tags ui selects exactly the suites with reactComponentTest leaves", () => {
+  it("--tags ui among the unit suites selects exactly the suites with reactComponentTest leaves", () => {
+    // Report suites also carry `ui` (#330), with `integ`: the integration launcher selects them.
     const uiSuites = catalog
-      .filter((entry) => miroirTestSuiteModeTags(entry.suiteDefinition).includes("ui"))
+      .filter((entry) => miroirTestSuiteModeTags(entry.suiteDefinition).join(",") === "ui")
       .map((entry) => entry.suiteKey)
       .sort();
     expect(uiSuites.length).toBeGreaterThan(0);

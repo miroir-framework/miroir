@@ -1166,6 +1166,84 @@
       ]
     },
     {
+      "id": "integ-report.bookDetails",
+      "tier": "default",
+      "title": "MiroirTest integ — report.bookDetails (Report mounted at its route, edit saved)",
+      "requires": "postgres",
+      "argv": [
+        "npm",
+        "run",
+        "testMiroir",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "--suites",
+        "report.bookDetails",
+        "--mode",
+        "integ"
+      ],
+      "shared": {
+        "group": "standalone-app-report-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "report.bookDetails"
+        ]
+      }
+    },
+    {
+      "id": "integ-report.connectExternalServiceWizard",
+      "tier": "default",
+      "title": "MiroirTest integ — report.connectExternalServiceWizard (multistep wizard, fake HTTP, Finish persisted)",
+      "requires": "postgres",
+      "argv": [
+        "npm",
+        "run",
+        "testMiroir",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "--suites",
+        "report.connectExternalServiceWizard",
+        "--mode",
+        "integ"
+      ],
+      "shared": {
+        "group": "standalone-app-report-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "report.connectExternalServiceWizard"
+        ]
+      }
+    },
+    {
       "id": "appstack-PersistenceStoreController.integ",
       "tier": "default",
       "title": "App-stack \u2014 PersistenceStoreController.integ",
@@ -1654,12 +1732,12 @@
     {
       "id": "appstack-284-openapi-connection-wizard",
       "tier": "default",
-      "title": "#284 — OpenAPI connection wizard (branching host + home walk)",
+      "title": "#284 — OpenAPI connection wizard (branching host)",
       "requires": "none",
       "argv": [
         "bash",
         "-c",
-        "npm run testByFile -w miroir-standalone-app -- --profile {profile} multistepBranch.284 && npm run testByFile -w miroir-standalone-app -- --profile {profile} wizardWalk.284"
+        "npm run testByFile -w miroir-standalone-app -- --profile {profile} multistepBranch.284"
       ]
     },
     {
@@ -1736,6 +1814,49 @@
         "bash",
         "-c",
         "npm run testByFile -w miroir-core -- miroirTestTags.unit miroirTestNaming.unit && npm run testByFile -w miroir-standalone-app -- testMiroirLauncher.tags getColumnDefinitionsFromEntityAttributes"
+      ]
+    },
+    {
+      "id": "unit-report-tests",
+      "tier": "unit",
+      "title": "Report tests — testMiroir routing and the wait for started actions (#330)",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "reportTestLauncher.unit",
+        "reportTestActionsIdle.unit"
+      ],
+      "shared": {
+        "group": "standalone-app-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--no-bail"
+        ],
+        "files": [
+          "reportTestLauncher.unit",
+          "reportTestActionsIdle.unit"
+        ]
+      }
+    },
+    {
+      "id": "appstack-report-tests",
+      "tier": "default",
+      "title": "Report tests — failed assertion, undeclared request, run from the Miroir Tests display (#330)",
+      "requires": "postgres",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w miroir-standalone-app -- --profile {profile} reportTestFailure.integ && npm run testByFile -w miroir-standalone-app -- --profile {profile} reportTestFakeHttp.integ && npm run testByFile -w miroir-standalone-app -- --profile {profile} reportTestInApp.integ"
       ]
     },
     {

@@ -132,6 +132,15 @@ export default defineConfig({
     hookTimeout: 30000,
     testTimeout: 180000, // 3 minutes for complex tests
     setupFiles: ['./setup.ts'],
+    // #330: svg-toolbelt's `main` is a CommonJS file in a `"type": "module"` package, which Node
+    // cannot load; its ESM build is loaded instead (miroir-diagram-class imports it, and the
+    // Report pages load miroir-diagram-class).
+    alias: [
+      {
+        find: /^svg-toolbelt$/,
+        replacement: path.resolve(__viteDirname, '../../node_modules/svg-toolbelt/dist/svg-toolbelt.esm.js'),
+      },
+    ],
     env: {
       VITE_TEST_MODE: 'true',
       MIROIR_AUTH_ENABLED: process.env.MIROIR_AUTH_ENABLED ?? '0',

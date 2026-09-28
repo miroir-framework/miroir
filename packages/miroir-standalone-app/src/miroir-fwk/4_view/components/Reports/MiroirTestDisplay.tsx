@@ -72,7 +72,8 @@ const runButtonStyle: React.CSSProperties = {
 
 /**
  * One MiroirTest suite with its Run buttons and results. It mounts a component test sandbox
- * (#286), used by the unit run when the suite holds `reactComponentTest` leaves.
+ * (#286), used by the unit run when the suite holds `reactComponentTest` leaves, and by the
+ * integration run when it holds `reportTest` leaves (#330).
  */
 export const MiroirTestDisplay = (props: MiroirTestSectionProps) => (
   <ComponentTestSandboxProvider>
@@ -218,6 +219,7 @@ const MiroirTestDisplayContent = (props: MiroirTestSectionProps) => {
             runMode="integration"
             integrationProfileName={integrationPreferences.profileName}
             integrationRunTargetMode={integrationPreferences.runTargetMode}
+            prepareReportTests={componentTestSandbox?.prepareReportTests}
             label={`Run ${testLabel} Integration Tests`}
             disabled={!integrationUiSupported || !integrationProfileBrowserLaunchable}
             title={

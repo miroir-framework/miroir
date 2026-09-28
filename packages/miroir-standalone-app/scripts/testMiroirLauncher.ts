@@ -1,6 +1,7 @@
 import {
   miroirTestCliConfigToEnv,
   miroirCoreTestVitestEntry,
+  miroirTestSuiteMountsReport,
   MIROIR_RUNNER_TEST_VITEST_ENTRY,
   parseMiroirRunnerTestCliConfig,
   parseMiroirTestCliArgs,
@@ -28,6 +29,51 @@ const ALL_SUITES_JOKER = "*";
  */
 export const MIROIR_RUNNER_TEST_SHARED_VITEST_ENTRY = "miroir-runner-tests-shared.integ.test";
 export const SHARED_RUNNER_FLAG = "--shared";
+
+/**
+ * #330: entry of the Report suites (a `reportTest` leaf mounts a Report), in a DOM environment.
+ * Like the shared entry, each suite gets its own session, so `--shared` changes nothing there.
+ */
+export const MIROIR_REPORT_TEST_VITEST_ENTRY = "miroir-report-tests.integ.test";
+
+/**
+ * The entry of the selected runner / action / Report suites, and the suites it runs: Report
+ * suites run in their own DOM entry, the others in the node entries (legacy, or shared with
+ * `--shared`). A selection naming both kinds (`--suites`, `--tags`) is refused. The implicit
+ * selection of every suite (no `--suites`, or `*`) runs the runner / action suites and leaves out
+ * the Report suites, with a warning.
+ */
+function runnerOrReportVitestEntry(
+  suiteKeys: string[],
+  catalog: ReturnType<typeof loadApplicationMiroirTestCatalog>,
+  argv: string[],
+  implicitSelection: boolean,
+): { vitestEntry: string; suiteKeys: string[] } {
+  const reportSuiteKeys = suiteKeys.filter((key) => {
+    const entry = catalog.find((catalogEntry) => catalogEntry.suiteKey === key);
+    return entry !== undefined && miroirTestSuiteMountsReport(entry.suiteDefinition);
+  });
+  const otherKeys = suiteKeys.filter((key) => !reportSuiteKeys.includes(key));
+  if (reportSuiteKeys.length > 0 && otherKeys.length === 0) {
+    return { vitestEntry: MIROIR_REPORT_TEST_VITEST_ENTRY, suiteKeys };
+  }
+  if (reportSuiteKeys.length > 0) {
+    if (!implicitSelection) {
+      throw new Error(
+        `the selection has both Report suites (${reportSuiteKeys.join(", ")}) and runner / action suites (${otherKeys.join(", ")}); they run in different entries: launch them separately`,
+      );
+    }
+    console.warn(
+      `testMiroir: the Report suites (${reportSuiteKeys.join(", ")}) run in their own entry and are left out of this run: launch them with --suites`,
+    );
+  }
+  return {
+    vitestEntry: argv.includes(SHARED_RUNNER_FLAG)
+      ? MIROIR_RUNNER_TEST_SHARED_VITEST_ENTRY
+      : MIROIR_RUNNER_TEST_VITEST_ENTRY,
+    suiteKeys: otherKeys,
+  };
+}
 
 /** Vitest reporter arguments given to testMiroir, forwarded as is (used by run-nonreg.py --runner shared). */
 export function forwardedVitestArgs(argv: string[]): string[] {
@@ -110,16 +156,17 @@ export function resolveVitestEntry(
   }
 
   const runnerConfig = parseMiroirRunnerTestCliConfig(env, argv, runnerKeys);
-  const resolvedRunnerConfig = {
-    ...runnerConfig,
-    suiteKeys: requestedTags?.length
+  const { vitestEntry, suiteKeys } = runnerOrReportVitestEntry(
+    requestedTags?.length
       ? selectedSuiteKeys
       : resolveCliSuiteKeysFromCatalog(runnerConfig.suiteKeys, runnerKeys, catalog),
-  };
+    catalog,
+    argv,
+    !explicitRequest && !requestedTags?.length,
+  );
+  const resolvedRunnerConfig = { ...runnerConfig, suiteKeys };
   return {
-    vitestEntry: argv.includes(SHARED_RUNNER_FLAG)
-      ? MIROIR_RUNNER_TEST_SHARED_VITEST_ENTRY
-      : MIROIR_RUNNER_TEST_VITEST_ENTRY,
+    vitestEntry,
     spawnEnv: {
       ...env,
       ...miroirTestCliConfigToEnv(resolvedRunnerConfig),

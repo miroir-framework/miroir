@@ -4,6 +4,7 @@ import {
   createReactComponentTestRunner,
   type ComponentTestSandboxHost,
 } from "./runReactComponentTest.js";
+import { createReportTestRunner, type ReportTestSandboxHost } from "./runReportTest.js";
 
 // ################################################################################################
 // Entry point of the component test chunk (#286, analysis §5.3 and §5.9).
@@ -14,6 +15,7 @@ import {
 // ################################################################################################
 
 export type { ComponentTestSandboxHost } from "./runReactComponentTest.js";
+export type { ReportTestSandboxHost } from "./runReportTest.js";
 
 export const componentTestRunInProgressMessage =
   "A component test run is already in progress in another test display: wait for it to finish, then run again.";
@@ -72,6 +74,41 @@ export function registerComponentTests(host: ComponentTestSandboxHost): Componen
       }
     },
   };
+  activeRun = registration;
+  return registration;
+}
+
+/**
+ * Creates a report test runner over the sandbox element and registers it in
+ * `ConfigurationService`, so that the `reportTest` leaves of the next integration run mount their
+ * Reports there (#330). Each case is unmounted when its steps end, so `endRun()` and `close()` both
+ * unregister the runner (idempotent). Throws `componentTestRunInProgressMessage` while another run
+ * is active.
+ */
+export function registerReportTests(host: ReportTestSandboxHost): ComponentTestRegistration {
+  if (activeRun) {
+    throw new Error(componentTestRunInProgressMessage);
+  }
+  const runner = createReportTestRunner(host);
+  ConfigurationService.configurationService.registerReportTestRunner(runner);
+  let closed = false;
+  const close = () => {
+    if (closed) {
+      return;
+    }
+    closed = true;
+    try {
+      runner.close();
+    } finally {
+      if (activeRun === registration) {
+        activeRun = undefined;
+      }
+      if (ConfigurationService.configurationService.reportTestRunner === runner) {
+        ConfigurationService.configurationService.registerReportTestRunner(undefined);
+      }
+    }
+  };
+  const registration: ComponentTestRegistration = { endRun: close, close };
   activeRun = registration;
   return registration;
 }

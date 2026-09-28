@@ -9,10 +9,12 @@ import type {
   MiroirTestForFunctionCall,
   MiroirTestForQuery,
   MiroirTestForReactComponent,
+  MiroirTestForReport,
   MiroirTestForRunner,
   MiroirTestLeaf,
   MiroirTestSuite,
   ReactComponentTestSuite,
+  ReportTestSuite,
   Runner,
   StoreUnitConfiguration,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -32,11 +34,14 @@ import {
 import { runMiroirQueryRunnerTestInMemory } from "./QueryRunnerTestTools";
 import { runMiroirRunnerTest } from "./RunnerTestTools";
 import { runMiroirReactComponentTest } from "./ReactComponentTestTools.js";
+import { runMiroirReportTest } from "./ReportTestTools.js";
 import type {
   MiroirTestAnyLeaf,
+  MiroirTestLeafSuiteContext,
   MiroirTestRunFilter,
   ReactComponentTestSuiteContext,
 } from "../0_interfaces/5-tests/miroirTestTypes";
+import { isReportTestSuiteContext } from "../0_interfaces/5-tests/miroirTestTypes";
 import { runMiroirTestSuiteWalk } from "./miroirTestSuiteWalk.js";
 import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
 import type { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
@@ -150,6 +155,13 @@ function miroirTestLeafLabel(leaf: MiroirTestAnyLeaf): string {
   return leaf.miroirTestLabel;
 }
 
+/** The suite context of a `reactComponentTest` leaf, `undefined` for another suite kind. */
+function reactComponentTestSuiteContextOf(
+  suiteContext: MiroirTestLeafSuiteContext | undefined,
+): ReactComponentTestSuiteContext | undefined {
+  return isReportTestSuiteContext(suiteContext) ? undefined : suiteContext;
+}
+
 // ################################################################################################
 export type RunMiroirTest = (
   localVitest: VitestNamespace,
@@ -164,8 +176,8 @@ export type RunMiroirTest = (
   executionOptions?: MiroirTestExecutionOptions,
   testAssertionPath?: TestAssertionPath,
   parentSkip?: boolean,
-  /** Set by the walk for a leaf of a `reactComponentTestSuite` node (#292). */
-  reactComponentTestSuite?: ReactComponentTestSuiteContext,
+  /** Set by the walk for a leaf of a `reactComponentTestSuite` (#292) or `reportTestSuite` (#330) node. */
+  suiteContext?: MiroirTestLeafSuiteContext,
 ) => Promise<void>;
 
 // ################################################################################################
@@ -187,10 +199,10 @@ export async function runMiroirTest(
   _parentTrackingId: string | undefined,
   _trackActionsBelow: boolean,
   _runMiroirTests: RunMiroirTests,
-  executionOptions?: MiroirTestExecutionOptions, // needed only for transformerTest, runnerTest, actionTest, reactComponentTest
+  executionOptions?: MiroirTestExecutionOptions, // needed only for transformerTest, runnerTest, actionTest, reactComponentTest, reportTest
   testAssertionPath?: TestAssertionPath,
   parentSkip?: boolean,
-  reactComponentTestSuite?: ReactComponentTestSuiteContext,
+  suiteContext?: MiroirTestLeafSuiteContext,
 ): Promise<void> {
   const executionMode = executionOptions?.executionMode ?? "unit";
 
@@ -311,7 +323,22 @@ export async function runMiroirTest(
           executionOptions.rethrowComponentTestFailures === true,
         testAssertionPath,
         parentSkip,
-        reactComponentTestSuite,
+        reactComponentTestSuiteContextOf(suiteContext),
+      );
+    case "reportTest":
+      if (executionOptions?.executionMode !== "integration") {
+        throw new Error("runMiroirTestInMemory: reportTest leaves require executionMode integration");
+      }
+      return runMiroirReportTest(
+        localVitest,
+        testNamePath,
+        filter,
+        leaf as MiroirTestForReport,
+        miroirActivityTracker,
+        executionOptions.executionEnvironment,
+        testAssertionPath,
+        parentSkip,
+        isReportTestSuiteContext(suiteContext) ? suiteContext : undefined,
       );
     case "runnerTest":
       if (executionOptions?.executionMode !== "integration") {
@@ -345,7 +372,7 @@ export async function runMiroirTest(
 export async function runMiroirTestSuite(
   localVitest: VitestNamespace,
   testSuitePath: string[],
-  miroirTestSuite: MiroirTestSuite | ReactComponentTestSuite,
+  miroirTestSuite: MiroirTestSuite | ReactComponentTestSuite | ReportTestSuite,
   filter: MiroirTestRunFilter | undefined,
   modelEnvironment: MiroirModelEnvironment,
   miroirActivityTracker: MiroirActivityTrackerInterface,
@@ -424,11 +451,12 @@ export const runMiroirTests: RunMiroirTests = {
     executionOptions,
     testAssertionPath?,
     parentSkip?,
-    reactComponentTestSuite?,
+    suiteContext?,
   ) => {
     if (parentSkip || leaf.skip) {
       return;
     }
+    const reactComponentTestSuite = reactComponentTestSuiteContextOf(suiteContext);
     const label = miroirTestLeafLabel(leaf);
     const unitOptions = executionOptions?.executionMode === "unit" ? executionOptions : undefined;
     const excludedMessage = !unitOptions
@@ -473,7 +501,7 @@ export const runMiroirTests: RunMiroirTests = {
             executionOptions,
             testAssertionPath,
             parentSkip,
-            reactComponentTestSuite,
+            suiteContext,
           );
         });
       });

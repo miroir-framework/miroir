@@ -6,10 +6,16 @@ import { ENTITY_MIROIR_TEST_UUID } from "./applicationMiroirTestFolders.js";
 import {
   classifyMiroirTestSuiteExecutionCapabilities,
   inferIntegrationSessionKind,
+  miroirTestSuiteMountsReport,
   walkMiroirTestLeaves,
 } from "./inferIntegrationSessionKind.js";
 
-export type UiIntegrationRunnerSuiteKind = "runnerTest" | "domainControllerTest" | "actionTest";
+/** `reportTest`: the suite mounts Reports (#330), so the app gives it a sandbox to mount them in. */
+export type UiIntegrationRunnerSuiteKind =
+  | "runnerTest"
+  | "domainControllerTest"
+  | "actionTest"
+  | "reportTest";
 
 export type ApplicationMiroirTestCliLaunchKind =
   | "unit"
@@ -55,6 +61,9 @@ export function inferUiIntegrationRunnerSuiteKind(
     return "runnerTest";
   }
   if (sessionKind === "action") {
+    if (miroirTestSuiteMountsReport(suite)) {
+      return "reportTest";
+    }
     // #316 stopgap: recognised by name until #317 derives it from the definition.
     if (suiteKey?.startsWith("action.domainController.")) {
       return "domainControllerTest";

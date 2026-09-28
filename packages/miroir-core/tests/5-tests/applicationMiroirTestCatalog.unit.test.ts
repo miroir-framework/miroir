@@ -127,6 +127,27 @@ describe("applicationMiroirTestCatalog", () => {
     expect(inferUiIntegrationRunnerSuiteKind(actionSuite, "action.scenario.evolutionTrace")).toBe("actionTest");
   });
 
+  it("infers the reportTest kind from reportTest leaves, whatever the suite name (#330)", () => {
+    const reportSuite = {
+      miroirTestType: "miroirTestSuite",
+      miroirTestLabel: "any.name",
+      miroirTests: [
+        {
+          miroirTestType: "reportTestSuite",
+          miroirTestLabel: "a Report",
+          report: {
+            application: "5af03c98-fe5e-490b-b08f-e1230971c57f",
+            applicationSection: "data",
+            reportUuid: "c3503412-3d8a-43ef-a168-aa36e975e606",
+          },
+          miroirTests: [{ miroirTestType: "reportTest", miroirTestLabel: "mounts it", steps: [] }],
+        },
+      ],
+    } as unknown as MiroirTestSuite;
+    expect(inferUiIntegrationRunnerSuiteKind(reportSuite, "any.name")).toBe("reportTest");
+    expect(inferUiIntegrationRunnerSuiteKind(reportSuite, "action.domainController.named")).toBe("reportTest");
+  });
+
   it("treats any integ suite as UI-launchable without a hardcoded registry", () => {
     const unregistered = actionSuiteInstance("brand_new_integ_suite");
     expect(isUiIntegrationLaunchableSuite(unregistered.definition as MiroirTestSuite)).toBe(true);

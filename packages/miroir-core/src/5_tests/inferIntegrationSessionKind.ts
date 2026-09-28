@@ -2,6 +2,7 @@ import type {
   MiroirTestForTransformer,
   MiroirTestSuite,
   ReactComponentTestSuite,
+  ReportTestSuite,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirTestAnyLeaf } from "../0_interfaces/5-tests/miroirTestTypes";
 import type { IntegrationTestSessionKind } from "./IntegrationTestBootstrap.js";
@@ -18,9 +19,16 @@ export type MiroirTestSuiteExecutionCapabilities = {
 export function walkMiroirTestLeaves(suite: MiroirTestSuite): MiroirTestAnyLeaf[] {
   const leaves: MiroirTestAnyLeaf[] = [];
 
-  function visit(node: MiroirTestAnyLeaf | MiroirTestSuite | ReactComponentTestSuite): void {
-    // A `reactComponentTestSuite` holds `reactComponentTest` leaves (#292).
-    if (node.miroirTestType === "miroirTestSuite" || node.miroirTestType === "reactComponentTestSuite") {
+  function visit(
+    node: MiroirTestAnyLeaf | MiroirTestSuite | ReactComponentTestSuite | ReportTestSuite,
+  ): void {
+    // A `reactComponentTestSuite` holds `reactComponentTest` leaves (#292), a `reportTestSuite`
+    // `reportTest` leaves (#330).
+    if (
+      node.miroirTestType === "miroirTestSuite" ||
+      node.miroirTestType === "reactComponentTestSuite" ||
+      node.miroirTestType === "reportTestSuite"
+    ) {
       for (const child of node.miroirTests) {
         visit(child);
       }
@@ -36,6 +44,11 @@ export function walkMiroirTestLeaves(suite: MiroirTestSuite): MiroirTestAnyLeaf[
   return leaves;
 }
 
+/** True when the suite has a `reportTest` leaf: it mounts a Report, so it runs in a DOM (#330). */
+export function miroirTestSuiteMountsReport(suite: MiroirTestSuite): boolean {
+  return walkMiroirTestLeaves(suite).some((leaf) => leaf.miroirTestType === "reportTest");
+}
+
 export function transformerTestLeafRequiresIntegration(leaf: MiroirTestForTransformer): boolean {
   return leaf.integrationTestExpectedValue !== undefined;
 }
@@ -44,6 +57,7 @@ function miroirTestLeafSupportsUnitExecution(leaf: MiroirTestAnyLeaf): boolean {
   switch (leaf.miroirTestType) {
     case "runnerTest":
     case "actionTest":
+    case "reportTest":
       return false;
     case "transformerTest":
       return leaf.unitTestExpectedValue !== undefined;
@@ -62,6 +76,7 @@ function miroirTestLeafRequiresIntegrationExecution(leaf: MiroirTestAnyLeaf): bo
   switch (leaf.miroirTestType) {
     case "runnerTest":
     case "actionTest":
+    case "reportTest":
       return true;
     case "transformerTest":
       return transformerTestLeafRequiresIntegration(leaf);
@@ -79,7 +94,8 @@ function miroirTestLeafRequiresIntegrationExecution(leaf: MiroirTestAnyLeaf): bo
 /**
  * Session kind for UI/CLI integ launchers.
  * `runnerTest` leaves → `"runner"` (requires a resolved Runner entity).
- * `actionTest` leaves → `"action"` (composite actions; no Runner entity).
+ * `actionTest` and `reportTest` leaves → `"action"` (composite actions or a mounted Report; no
+ * Runner entity; #330).
  */
 export function inferIntegrationSessionKind(
   suite: MiroirTestSuite,
@@ -90,7 +106,11 @@ export function inferIntegrationSessionKind(
     return "runner";
   }
 
-  if (leaves.some((leaf) => leaf.miroirTestType === "actionTest")) {
+  if (
+    leaves.some(
+      (leaf) => leaf.miroirTestType === "actionTest" || leaf.miroirTestType === "reportTest",
+    )
+  ) {
     return "action";
   }
 

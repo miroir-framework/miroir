@@ -1,5 +1,5 @@
 import { Formik, useFormikContext } from 'formik';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   ApplicationSection,
@@ -19,6 +19,7 @@ import {
   interpolateExpression,
   resolvePathOnObject,
   requiredVirtualAttributeNames,
+  stripVirtualAttributesFromInstance,
   type ApplicationDeploymentMap,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
   type MlObject,
@@ -58,6 +59,7 @@ import {
 } from "../Themes/index";
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { OpenApiEndpointSyncButton } from './OpenApiEndpointSyncButton.js';
+import { useReportFormSubmit } from './ReportFormSubmitContext.js';
 import { useReportPageContext } from './ReportPageContext.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 
@@ -202,6 +204,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // Use outline context for outline state management
   const outlineContext = useDocumentOutlineContext();
   const reportContext = useReportPageContext();
+  const submitReportFormValues = useReportFormSubmit();
 
   const instance: any = formikContext?.values[formikValuePathAsString] as EntityInstance;
 
@@ -264,6 +267,26 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       currentMiroirModelEnvironment,
     );
   }, [currentMiroirModelEnvironment, currentReportTargetEntity, instance]);
+
+  // The nested Formik below only shows the virtual attributes (#82): its submit saves the edited
+  // instance through the Report's own submit, without the virtual attributes (#330).
+  const submitNestedFormValues = useCallback(
+    async (values: Record<string, any>) => {
+      if (!submitReportFormValues) {
+        log.warn("ReportSectionEntityInstance submit ignored: not in a Report form", formikValuePathAsString);
+        return;
+      }
+      const editedInstance = values[formikValuePathAsString];
+      await submitReportFormValues({
+        ...values,
+        [formikValuePathAsString]:
+          currentReportTargetEntity && editedInstance
+            ? stripVirtualAttributesFromInstance(currentReportTargetEntity, editedInstance)
+            : editedInstance,
+      });
+    },
+    [currentReportTargetEntity, formikValuePathAsString, submitReportFormValues],
+  );
 
   const currentFlattenedReportSectionTargetEntityMlSchema: MlObject | undefined =
     currentReportTargetEntity
@@ -636,12 +659,13 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           <Formik
             initialValues={{ [formikValuePathAsString]: displayedInstance }}
             enableReinitialize
-            onSubmit={() => {}}
+            onSubmit={submitNestedFormValues}
           >
           <div data-testid="report-section-entity-instance-nested-formik">
           <TypedValueObjectEditor
             formValueMLSchema={currentFlattenedReportSectionTargetEntityMlSchema}
             formikValuePathAsString={formikValuePathAsString}
+            submitRequiresValidType // an instance that does not match its Entity is not saved (#330)
             // 
             valueObjectEditMode={props.valueObjectEditMode}
             labelElement={labelElement}

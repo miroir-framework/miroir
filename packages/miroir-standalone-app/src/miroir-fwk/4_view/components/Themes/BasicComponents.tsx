@@ -199,6 +199,7 @@ export const ThemedButton: React.FC<ThemedComponentProps & {
   loading?: boolean;
   disabled?: boolean;
   type?: 'button' | 'submit' | 'reset';
+  'data-testid'?: string;
 }> = ({ 
   children, 
   className, 
@@ -208,6 +209,7 @@ export const ThemedButton: React.FC<ThemedComponentProps & {
   loading = false,
   disabled = false,
   type = 'button',
+  'data-testid': dataTestId,
 }) => {
   const { currentTheme } = useMiroirTheme();
   const isDisabled = disabled || loading;
@@ -248,6 +250,7 @@ export const ThemedButton: React.FC<ThemedComponentProps & {
       style={style}
       onClick={isDisabled ? undefined : onClick}
       disabled={isDisabled}
+      data-testid={dataTestId}
     >
       {loading && <span css={spinnerStyles} />}
       {children}

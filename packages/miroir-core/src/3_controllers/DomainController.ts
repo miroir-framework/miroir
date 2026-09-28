@@ -142,6 +142,7 @@ import {
   summarizeRollbackInstanceCollections,
 } from "../4_services/rollbackLog.js";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
+import { outboundFetch, type OutboundFetch } from "../1_core/OutboundFetch.js";
 import { packageName } from "../constants";
 
 import {
@@ -399,6 +400,10 @@ function appendReportLinkToMenu(
 export class DomainController implements DomainControllerInterface {
   private callUtil: CallUtils;
   private processCapabilities: ProcessCapabilities | undefined;
+  // #330: a Report test answers the requests of its session's controller to external services
+  private outboundFetchReplacement: OutboundFetch | undefined;
+  private readonly fetchOutbound: OutboundFetch = (input, init) =>
+    (this.outboundFetchReplacement ?? outboundFetch)(input, init);
   // private actionHandler: ActionHandler;
   // ##############################################################################################
   constructor(
@@ -422,6 +427,10 @@ export class DomainController implements DomainControllerInterface {
 
   setProcessCapabilities(snapshot: ProcessCapabilities): void {
     this.processCapabilities = snapshot;
+  }
+
+  setOutboundFetch(fetchReplacement: OutboundFetch | undefined): void {
+    this.outboundFetchReplacement = fetchReplacement;
   }
 
   private resolveProcessCapabilities(): ProcessCapabilities {
@@ -3198,6 +3207,7 @@ export class DomainController implements DomainControllerInterface {
               ...((domainAction as any).payload ?? {}),
             },
             principal,
+            this.fetchOutbound,
           );
         }
       }
@@ -3422,6 +3432,7 @@ export class DomainController implements DomainControllerInterface {
         extractor.actionType,
         extractor.parameterBindings ?? {},
         principal,
+        this.fetchOutbound,
       );
       if (executed instanceof Action2Error) {
         return { kind: "error", error: executed };
@@ -3474,7 +3485,7 @@ export class DomainController implements DomainControllerInterface {
     principal?: AuthPrincipal,
   ): Promise<Action2ReturnType> {
     if (this.persistenceStoreAccessMode === "local") {
-      return executeExternalServiceOperation(endpoint, operationId, parameters, principal);
+      return executeExternalServiceOperation(endpoint, operationId, parameters, principal, this.fetchOutbound);
     }
     const targetApplication = (endpoint as { application?: string }).application;
     const deploymentUuid =
@@ -3574,6 +3585,7 @@ export class DomainController implements DomainControllerInterface {
         operationId,
         payload?.parameters ?? {},
         principal,
+        this.fetchOutbound,
       );
     } finally {
       if (secretSnapshots.length > 0) {
@@ -4115,7 +4127,7 @@ export class DomainController implements DomainControllerInterface {
       }
       try {
         // PR #285 P1: never follow redirects — a 3xx could land on a private/loopback host.
-        const response = await fetch(url, { redirect: "manual" });
+        const response = await this.fetchOutbound(url, { redirect: "manual" });
         if (response.status >= 300 && response.status < 400) {
           return new Action2Error(
             "InvalidAction",

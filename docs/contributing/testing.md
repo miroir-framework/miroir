@@ -127,6 +127,7 @@ Runs in `miroir-standalone-app`, not `miroir-core`. Prefer **`--profile`** / **`
 | **Transformer** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites tr.core --mode integ` |
 | **Runner** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites runner.returnDocument --mode integ` |
 | **Freeze runner** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites runner.freezeApplicationVersion --mode integ` |
+| **Report** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites report.bookDetails --mode integ` |
 | **By tag** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --tags domain-controller --mode integ` |
 
 Legacy env form:
@@ -136,6 +137,8 @@ MIROIR_TEST_SUITES=tr.core MIROIR_TEST_MODE=integ \
   MIROIR_TEST_POSTGRES_HOST=localhost \
   npm run testMiroir -w miroir-standalone-app
 ```
+
+A Report test mounts a whole Report at its route, drives it through its UI and checks what its actions stored: [reference — Report tests](../reference/testing.md#report-tests).
 
 **UI:** same suites under **Miroir Tests** → **Run Integration Tests** (webApp: `emulatedServer-indexedDb`; runner also supports `realServer-*`). See [reference — Running tests in the UI](../reference/testing.md#running-tests-in-the-ui).
 
@@ -289,7 +292,7 @@ VITE_TEST_MODE=true npx vitest run tests/4_services/miroirTest.schema.unit.test.
 
 ## Adding or migrating tests
 
-1. Create or edit a `MiroirTest` JSON instance in the application's MiroirTest folder. Name it `<kind>.<subject>[.<variant>]` (`fn`, `query`, `tr`, `action`, `runner`, `ui`), set the root `miroirTestLabel` to the same value, write a one-sentence `description`, and put its mode tag (`unit`, `integ` or `ui`) first in `tags`. Rules: [Names and descriptions](../reference/testing.md#names-and-descriptions).
+1. Create or edit a `MiroirTest` JSON instance in the application's MiroirTest folder. Name it `<kind>.<subject>[.<variant>]` (`fn`, `query`, `tr`, `action`, `runner`, `ui`, `report`), set the root `miroirTestLabel` to the same value, write a one-sentence `description`, and put its mode tag (`unit`, `integ` or `ui`) first in `tags`. Rules: [Names and descriptions](../reference/testing.md#names-and-descriptions).
 2. Optional: export `miroirTest_<name with . replaced by _>` from the deployment package `index.ts` if other TypeScript wants a named import.
 3. Rebuild the deployment package if you added a named export.
 4. Run `tests/4_services/miroirTest.schema.unit.test.ts` to validate JSON shape.

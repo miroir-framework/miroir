@@ -149,10 +149,6 @@ function libraryCountryFromDomainState(uuid: string): EntityInstance | undefined
     | undefined;
 }
 
-export function getMlEditorTestLocalCache(): LocalCacheInterface | undefined {
-  return mlEditorTestLocalCache;
-}
-
 export function getLibraryCountryFromMlEditorTestCache(
   uuid: string = LIBRARY_TEST_TRACER_COUNTRY_UUID,
 ): EntityInstance | undefined {

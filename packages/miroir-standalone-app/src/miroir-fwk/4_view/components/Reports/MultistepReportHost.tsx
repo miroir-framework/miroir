@@ -848,8 +848,9 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
         liveBag,
       );
       if (testResult instanceof TransformerFailure) {
+        // `||`: a failure can have an empty message (an unknown transformer), which must still show
         setFinishError(
-          testResult.failureMessage ?? testResult.message ?? "Branch test failed.",
+          testResult.failureMessage || testResult.message || "Branch test failed.",
         );
         return;
       }
@@ -1037,6 +1038,7 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
               type="button"
               variant="outlined"
               disabled={stepIndex === 0 && visitedStepIds.length <= 1}
+              data-testid="multistep-back"
               onClick={handleBack}
             >
               Back
@@ -1061,6 +1063,7 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
                     currentChild.stepId === "outcome" &&
                     stepBag.review?.probeSucceeded === false)
                 }
+                data-testid="multistep-finish"
                 onClick={handleFinish}
               >
                 Finish

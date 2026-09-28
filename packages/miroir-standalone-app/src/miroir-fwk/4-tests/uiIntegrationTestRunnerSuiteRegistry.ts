@@ -88,10 +88,17 @@ export type UiIntegrationActionTestSuiteEntry = {
   suiteDefinition: MiroirTestSuite;
 };
 
+/** A suite of `reportTest` leaves (#330): an action session, and a sandbox to mount its Reports. */
+export type UiIntegrationReportTestSuiteEntry = {
+  kind: "reportTest";
+  suiteDefinition: MiroirTestSuite;
+};
+
 export type UiIntegrationRunnerSuiteEntry =
   | UiIntegrationRunnerTestSuiteEntry
   | UiIntegrationDomainControllerTestSuiteEntry
-  | UiIntegrationActionTestSuiteEntry;
+  | UiIntegrationActionTestSuiteEntry
+  | UiIntegrationReportTestSuiteEntry;
 
 export function isUiIntegrationRunnerTestSuiteEntry(
   entry: UiIntegrationRunnerSuiteEntry,
