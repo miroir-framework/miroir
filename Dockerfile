@@ -34,7 +34,8 @@ COPY . .
 # the musl-libc platform binaries needed by Alpine Linux (e.g.
 # @rollup/rollup-linux-x64-musl). Deleting it forces npm to resolve optional
 # native deps correctly for the current target platform.
-RUN rm -f package-lock.json && npm install
+# RUN rm -f package-lock.json
+RUN npm ci --no-audit
 
 # ---------------------------------------------------------------------------
 # Build in strict dependency order (mirrors build-all.sh / copilot-instructions)
@@ -49,9 +50,12 @@ RUN npm run build -w miroir-example-designer
 
 # 2. miroir-core — includes devBuild step to generate TypeScript types from schemas
 RUN npm run devBuild -w miroir-core
+RUN npm run build -w miroir-env
+RUN npm run build -w miroir-fixture-appForTest
 
 # 3. Local-cache and store packages (can run in parallel, all only depend on miroir-core)
 RUN npm run build -w miroir-localcache-redux \
+ && npm run build -w miroir-store-bundled \
  && npm run build -w miroir-store-filesystem \
  && npm run build -w miroir-store-indexedDb \
  && npm run build -w miroir-store-mongodb \
@@ -59,6 +63,8 @@ RUN npm run build -w miroir-localcache-redux \
 
 # 3'. extract model bundles from example applications
 RUN npm run extract-library-model -w miroir-example-library
+RUN npm run build -w miroir-ai
+RUN npm run build -w miroir-example-spotify
 # RUN npm run extract-postgresManager-model -w miroir-example-postgres
 
 # 4. UI / MCP / diagram packages
