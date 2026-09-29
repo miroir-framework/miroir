@@ -35,7 +35,6 @@ COPY . .
 # versions than the ones the code is typed against (miroir-ai's dts build fails).
 RUN npm ci --no-audit
 
-
 # ---------------------------------------------------------------------------
 # Build in strict dependency order (mirrors build-all.sh / copilot-instructions)
 # ---------------------------------------------------------------------------
@@ -49,8 +48,6 @@ RUN npm run build -w miroir-example-designer
 
 # 2. miroir-core — includes devBuild step to generate TypeScript types from schemas
 RUN npm run devBuild -w miroir-core
-RUN npm run build -w miroir-env
-RUN npm run build -w miroir-fixture-appForTest
 
 # 2'. miroir-env — environment resolution, imported by the server and by the
 #     standalone-app vite.config.js
@@ -66,16 +63,16 @@ RUN npm run build -w miroir-localcache-redux \
 
 # 3'. extract model bundles from example applications
 RUN npm run extract-library-model -w miroir-example-library
-RUN npm run build -w miroir-ai
-RUN npm run build -w miroir-example-spotify
 # RUN npm run extract-postgresManager-model -w miroir-example-postgres
 
 # 4. UI / MCP / diagram packages
 RUN npm run build -w miroir-react
 RUN npm run build -w miroir-mcp
 RUN npm run build -w miroir-diagram-class
+RUN npm run build -w miroir-ai
 
 # 4'. Applications the standalone app bundles besides Library
+RUN npm run build -w miroir-example-spotify
 RUN npm run build -w miroir-fixture-appForTest
 
 # 5. Standalone app (Vite production build), then the server release bundle
