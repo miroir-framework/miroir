@@ -41,7 +41,6 @@ import {
   persistenceEndpointVersionV1,
   queryEndpointVersionV1,
   storeManagementEndpoint,
-  testEndpointVersionV1,
   transformerMlSchema,
   undoRedoEndpointVersionV1,
 } from "miroir-app-miroir";
@@ -368,7 +367,6 @@ async function generateSchemas(generateFundamentalMlSchema = true) {
         domainEndpointVersionV1,
         queryEndpointVersionV1,
         persistenceEndpointVersionV1,
-        testEndpointVersionV1,
         mlSchemaMlMiroirBootstrapSchema,
         transformerMlSchema,
         [],//[transformerMenuV1],
