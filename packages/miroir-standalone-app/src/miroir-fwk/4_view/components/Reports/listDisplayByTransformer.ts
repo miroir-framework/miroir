@@ -1,4 +1,3 @@
-import { valueToJzod } from "@miroir-framework/jzod";
 import {
   defaultMiroirModelEnvironment,
   defaultTransformerInput,
@@ -13,6 +12,7 @@ import {
   type EntityPrimaryKeySource,
   type MlElement,
   type TransformerReturnType,
+  valueToMl,
 } from "miroir-core";
 
 import { paginateRows } from "../Grids/gridPagination.js";
@@ -159,7 +159,6 @@ export function getListTransformationFailure(
   return null;
 }
 
-const ANY_SCHEMA: MlElement = { type: "any" };
 
 /**
  * Declared display schema for list-transformer results.
@@ -182,5 +181,5 @@ export function resolveListTransformationResultDisplaySchema(
     }
   }
 
-  return (valueToJzod(transformationResult, "arrayAsArray") ?? ANY_SCHEMA) as MlElement;
+  return valueToMl(transformationResult, "arrayAsArray");
 }

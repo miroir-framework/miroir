@@ -8,7 +8,8 @@ import {
   type MiroirEvent,
   type MiroirEventLog,
   type TransformerEvent,
-  type TransformerFailure
+  type TransformerFailure,
+  valueToMl,
 } from 'miroir-core';
 import React, { useMemo, useState } from 'react';
 
@@ -23,7 +24,6 @@ import {
   ThemedTitle,
 } from "../Themes/index";
 import { EventLogComponent } from '../EventLogComponent';
-import { valueToJzod } from '@miroir-framework/jzod';
 import { TypedValueObjectEditorWithFormik } from '../Reports/TypedValueObjectEditorWithFormik';
 
 // ################################################################################################
@@ -118,7 +118,7 @@ const DisplayTransformerEvent: React.FC<{
     if (!displayedParameters || !isExpanded) {
       return { type: "any" } as MlElement;
     }
-    return (valueToJzod(displayedParameters) ?? { type: "any" }) as MlElement;
+    return valueToMl(displayedParameters);
   }, [displayedParameters, isExpanded]);
 
   return (

@@ -19,6 +19,7 @@ import {
   type KeyMapEntry,
   type MiroirModelEnvironment,
   type Uuid,
+  valueToMl,
 } from "miroir-core";
 import {
   JsonDisplayHelper,
@@ -57,7 +58,6 @@ import {
 import { getFoldedDisplayValue } from "./MlElementEditorHooks";
 import { MlArrayEditorProps } from "./MlElementEditorInterface";
 import { emptyContainerMarker } from "./renderedValueMarkers";
-import { valueToJzod } from "@miroir-framework/jzod";
 import { selfApplicationMiroir } from "miroir-app-miroir";
 // import { MlUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
@@ -413,13 +413,13 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
   const localResolvedElementMlSchemaBasedOnValue: MlElement | undefined = useMemo(
     () => {
       if (insideAny) {
-        return valueToJzod(currentValue) as MlElement;
+        return valueToMl(currentValue);
       }
       if (currentTypeCheckKeyMap?.resolvedSchema) {
         return currentTypeCheckKeyMap.resolvedSchema;
       }
       if (currentValue !== undefined && currentValue !== null) {
-        return valueToJzod(currentValue) as MlElement;
+        return valueToMl(currentValue);
       }
       return undefined;
     },

@@ -53,6 +53,23 @@ export default tseslint.config(
     },
   },
   {
+    // @miroir-framework/jzod and jzod-ts are reached only through the adapter of miroir-core (#145): mlJzodAdapter.ts (valueToMl, mlToZod,
+    // mlToZodTextAndZodSchema, exported by miroir-core) and mlJzodTsAdapter.ts (mlToTs, Node-only `miroir-core/ml-to-ts`).
+    // Every source file of every package is covered, scripts and config files included.
+    files: ["packages/**/*.{ts,tsx,mts,cts,js,jsx,mjs,cjs}"],
+    ignores: ["packages/miroir-core/src/1_core/mls/mlJzodAdapter.ts", "packages/miroir-core/src/1_core/mls/mlJzodTsAdapter.ts"],
+    languageOptions: { parser: tseslint.parser },
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        ...["@miroir-framework/jzod", "@miroir-framework/jzod-ts"].map((name) => ({
+          name,
+          message: "Use the ML adapter of miroir-core: valueToMl, mlToZod, mlToZodTextAndZodSchema, or mlToTs from miroir-core/ml-to-ts.",
+        })),
+      ],
+    },
+  },
+  {
     // `declare global { var ... }` requires `var`.
     files: ["packages/*/{src,test,tests}/**/*.d.ts"],
     rules: { "no-var": "off" },
