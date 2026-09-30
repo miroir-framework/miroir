@@ -71,12 +71,12 @@ if (runThis) {
       expect(serverBlock).toMatch(/^\s+features\s*:/m);
     });
 
-    it("miroirConfig.server.json and miroirConfig.server.docker.json have a top-level features key", () => {
+    it("miroirConfig.server.json and the docker environment (#345) have a top-level features key", () => {
       const localConfig = readJson(
         join(REPO_ROOT, "packages/miroir-server/config/miroirConfig.server.json"),
       );
       const dockerConfig = readJson(
-        join(REPO_ROOT, "packages/miroir-server/config/miroirConfig.server.docker.json"),
+        join(REPO_ROOT, "environments/docker.json"),
       );
       expect(localConfig).toHaveProperty("features");
       expect(dockerConfig).toHaveProperty("features");

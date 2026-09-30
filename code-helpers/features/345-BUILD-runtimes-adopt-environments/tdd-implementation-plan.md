@@ -26,7 +26,7 @@ Out: #323 (bundle ignores `--config`); the server's legacy config-file path; CLI
 | 2 | miroir-mcp standalone configuration removed | ✅ DONE | package builds, server and Electron typecheck, mcp tests green |
 | 3 | miroir-cli runs on the selected environment | ✅ DONE | `cli.integ` on `test-filesystem`: `lendDocument` on Library |
 | 4 | An environment runs outside a checkout (`MIROIR_ROOT`, `packagesDirectory`) | ✅ DONE | `miroir-env` test booting the server config from a `/data`-like temp root |
-| 5 | Docker images start from the `docker` environment | ⬜ pending | pytest on `docker-entrypoint.sh`; `miroir-env` test on `environments/docker.json` over a seed layout |
+| 5 | Docker images start from the `docker` environment | ✅ DONE | pytest on `docker-entrypoint.sh`; `miroir-env` test on `environments/docker.json` over a seed layout |
 | 6 | Electron dev boots its environment in the main process | ⬜ pending | vitest on the main-process boot (no Electron window) |
 | 7 | Packaged Electron seeds user data and runs from it | ⬜ pending | vitest on the first-run copy + boot of `desktop` |
 | 8 | Nonreg, docs, AC checklist | ⬜ pending | `npm run nonreg:filesystem -- --runner shared` |
@@ -189,7 +189,7 @@ No new model uuid. The `miroir-env` tests reuse `packages/miroir-env/tests/bootT
 
 ## Slice 5 — Docker starts from the `docker` environment
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** both images ship `environments/docker.json` in `/seed`, run with `MIROIR_ROOT=/data MIROIR_ENV=docker`, keep seed-then-copy, and no longer need `miroirConfig.server.docker.json`.
 
@@ -204,6 +204,14 @@ No new model uuid. The `miroir-env` tests reuse `packages/miroir-env/tests/bootT
 **Validation:** `python -m pytest scripts/tests -q`; miroir-env tests; `npm run miroir-env -- check --strict`; `docker build .` if a daemon is available, else A before merge (D12).
 
 ### Realization
+
+- `environments/docker.json`: miroir (with `modelVersion`), admin, library, all `live`, `packagesDirectory: "."`, server `rootApiUrl` and CORS origins of the former docker config, client `realServer`, features ai + mcp.
+- `docker-entrypoint.sh`: `MIROIR_SEED_DIR` / `MIROIR_DATA_DIR` override `/seed` / `/data`; on a non-empty volume it copies the definitions of `/seed/environments/` that `/data/environments/` lacks, never overwriting one. `scripts/tests/test_docker_entrypoint.py` (3 tests).
+- Both Dockerfiles seed `environments/docker.json` and `<package>/assets` for Miroir, Admin and Library (Library: `library_model`, `library_data`), empty the Deployment and AdminApplication entity directories of the seed (the definition generates them), and set `MIROIR_ROOT=/data`, `MIROIR_ENV=docker`. `miroirConfig.server.docker.json` and `packages/miroir-server/docker/seed/` are deleted; `.dockerignore` skips `.miroir` and `environments/local.json`.
+- `packages/miroir-env/tests/dockerEnvironment.integ.test.ts` (2 tests): a fresh seed opens the three deployments without warnings and writes Deployment rows inside the root; a volume seeded before #345 keeps its data and gets its Miroir row rewritten.
+- Deviation: three issue-scoped tests read the deleted docker config (core 273.phase0, core 275.phase0, standalone 273.phase9); they now read `environments/docker.json`.
+- `docs/reference/docker.md` rewritten; `build-it-yourself.md` says the image runs through `MIROIR_ROOT`. `miroir-env check --strict` validates `docker` and `desktop`.
+
 
 ---
 

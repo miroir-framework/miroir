@@ -170,7 +170,7 @@ if (runThis) {
         join(REPO_ROOT, "packages/miroir-server/config/miroirConfig.server.json"),
       );
       const dockerConfig = readJson(
-        join(REPO_ROOT, "packages/miroir-server/config/miroirConfig.server.docker.json"),
+        join(REPO_ROOT, "environments/docker.json"),
       );
       const features = localConfig.features as Record<string, unknown>;
       expect(features).toBeDefined();

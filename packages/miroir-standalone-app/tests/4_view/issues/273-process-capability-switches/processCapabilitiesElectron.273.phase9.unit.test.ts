@@ -120,10 +120,10 @@ if (runThis) {
   });
 
   describe("processCapabilitiesElectron.273.phase9 — shipped server JSON still has ai/mcp", () => {
-    it("miroirConfig.server.json and .docker.json keep features.ai and features.mcp true", () => {
+    it("miroirConfig.server.json and the docker environment (#345) keep features.ai and features.mcp true", () => {
       const localConfig = readJson("packages/miroir-server/config/miroirConfig.server.json");
       const dockerConfig = readJson(
-        "packages/miroir-server/config/miroirConfig.server.docker.json",
+        "environments/docker.json",
       );
       const localFeatures = localConfig.features as { ai?: boolean; mcp?: boolean };
       const dockerFeatures = dockerConfig.features as { ai?: boolean; mcp?: boolean };

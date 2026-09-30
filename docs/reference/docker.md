@@ -1,28 +1,70 @@
-All 6 files are created. Here's a summary of everything that was built:
+# Docker Reference
+
+**Audience:** anyone building or running the Miroir Docker image.
+**Scope:** the two Dockerfiles, what the image seeds, and how the server finds its configuration. Environments in general: [environments.md](environments.md).
 
 ---
 
-**Files created:**
+## Images
 
-| File | Purpose |
-|---|---|
-| Dockerfile | Multi-stage build: `node:20-alpine` builder → slim production image |
-| .dockerignore | Excludes node_modules, dist, certs, Electron releases from build context |
-| docker-compose.yml | One-command `docker compose up`, named volume `miroir-data` |
-| docker-entrypoint.sh | Detects empty `/data`, seeds from `/seed/`, then starts the server |
-| miroirConfig.server.docker.json | `rootApiUrl: http://localhost:3080`, `filesystemDeploymentRootDirectory: /data`, plain HTTP |
-| packages/miroir-server/docker/seed/…/f714bb2f-…json | Docker-compatible library deployment record (no `..` path traversal) |
+| File | Built by | Contents |
+|---|---|---|
+| `Dockerfile` (root) | `docker compose up` (`docker-compose.yml`) | multi-stage: builds the monorepo, keeps `node_modules`, `packages/`, the server release bundle and the web client (served by the server from `public/`) |
+| `docker/miroir-server/Dockerfile` | CI (`build-linux-runnables.yml`, `ci/docker/build_miroir.sh`) | the server release bundle `packages/miroir-server/release/` built beforehand |
 
-**Key design decisions applied:**
-- **Single container**: Express serves both the SPA (from `public/`) and the API
-- **Plain HTTP** on port 3080 — TLS termination is the reverse-proxy's job
-- **`/data` volume**: seeded on first run with miroir + admin framework data + library demo, user deployments accumulate there
-- **Library demo fix**: the original deployment record has broken `../` paths; the Docker-specific JSON in `docker/seed/` overrides it with correct absolute-relative paths matching `/data` as the root
-- **`node:20-alpine`** base image, `tini` for PID-1 signal handling, devDeps pruned before final stage copy
+Both use `tini` as PID 1, `packages/miroir-server/docker-entrypoint.sh` as entrypoint, port 3080, and volumes `/data` (application data) and `/certs` (TLS certificates, optional).
 
-**Usage:**
+---
+
+## Configuration: the `docker` environment
+
+The server runs the tracked environment `environments/docker.json` (#345):
+
+- `MIROIR_ROOT=/data`, `MIROIR_ENV=docker` are set in both images; the server takes its settings (`rootApiUrl`, CORS origins, `features.ai` / `features.mcp`) and the applications to open from that definition.
+- `packagesDirectory: "."`: each application's assets live at `/data/<package>/assets` (for example `/data/miroir-app-admin/assets/admin_data`).
+- Applications: Miroir, Admin, Library, every section `live` in `/data` (the volume is already the copy).
+- At every start the server writes the Deployment and AdminApplication rows of Admin data from the definition; applications installed from the UI go to `/data/.miroir/docker/apps/` and stay registered in Admin data.
+
+There is no server config file in the image any more (`miroirConfig.server.docker.json` was removed with #345).
+
+---
+
+## Seed-then-copy
+
+The image holds a seed in `/seed`:
+
+```
+/seed/environments/docker.json
+/seed/miroir-app-miroir/assets/          (model, data, modelVersion)
+/seed/miroir-app-admin/assets/           (model, data without Deployment / AdminApplication rows)
+/seed/miroir-example-library/assets/     (library_model, library_data)
+```
+
+The entrypoint:
+
+1. copies `/seed` into an empty `/data` (first start);
+2. on a non-empty `/data`: applies the #344 package-rename migration, and copies the definitions of `/seed/environments/` that `/data/environments/` lacks (volumes seeded before #345), never overwriting one;
+3. sets up TLS from `/certs` when `localhost.pem` and `localhost-key.pem` are there;
+4. starts the server.
+
+`MIROIR_SEED_DIR` and `MIROIR_DATA_DIR` override `/seed` and `/data` (tests: `scripts/tests/test_docker_entrypoint.py`).
+
+A volume seeded by an image from before #345 keeps its data: its Admin and Miroir Deployment rows are rewritten from the definition at the next start, and deployments the definition does not install (for example Spotify's row from the old seed) are opened with a warning.
+
+---
+
+## Usage
+
 ```bash
-docker compose up           # builds + starts; first run seeds /data
-# then open http://localhost:3080
-docker compose down -v      # ⚠️ also wipes the data volume
-``` 
+docker compose up           # build and start; the first run seeds the miroir-data volume
+docker compose down -v      # stop and delete the volume (destroys its data)
+```
+
+To change the configuration, edit `environments/docker.json` in the volume (`/data/environments/docker.json`) and restart the container.
+
+---
+
+## Related
+
+- [Environments](environments.md)
+- `code-helpers/features/345-BUILD-runtimes-adopt-environments/analysis.md`

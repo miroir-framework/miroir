@@ -17,11 +17,11 @@
 #
 #   docker run -p 3080:3080 -v miroir-data:/data miroir-framework/miroir:latest
 #
-# On first run with an empty /data volume the container seeds it with:
-#   • Miroir framework model + data
-#   • Admin application model + data
-#   • Library demo application model + data
-# Subsequent starts skip the seed step.
+# On first run with an empty /data volume the container seeds it with the
+# `docker` environment (environments/docker.json) and the assets of the
+# applications it installs: Miroir, Admin, Library. The server runs that
+# environment (MIROIR_ROOT=/data, MIROIR_ENV=docker, #345). Subsequent starts
+# skip the seed step.
 # =============================================================================
 FROM node:22-alpine
 WORKDIR /miroir
@@ -46,16 +46,25 @@ RUN apk add --no-cache tini nano bash
 COPY packages/miroir-server/release /miroir/release
 
 # -------------------------------------------------------------------------
-# Docker-specific server config (HTTP, filesystemDeploymentRootDirectory=/data)
-# Overrides the default config bundled inside the release directory.
+# Seed data: the `docker` environment and the assets of its applications,
+# laid out as /data expects them (<package>/assets). Deployment and
+# AdminApplication rows are generated from the definition at every start:
+# the seed carries only their entity directories.
 # -------------------------------------------------------------------------
-COPY packages/miroir-server/config/miroirConfig.server.docker.json \
-     /miroir/release/miroirConfig.server.json
+COPY environments/docker.json /seed/environments/docker.json
+COPY packages/miroir-app-miroir/assets /seed/miroir-app-miroir/assets
+COPY packages/miroir-app-admin/assets /seed/miroir-app-admin/assets
+COPY packages/miroir-example-library/assets/library_model \
+     /seed/miroir-example-library/assets/library_model
+COPY packages/miroir-example-library/assets/library_data \
+     /seed/miroir-example-library/assets/library_data
+RUN for entity in 7959d814-400c-4e80-988f-a00fe582ab98 25d935e7-9e93-42c2-aade-0472b883492b; do \
+      rm -rf "/seed/miroir-app-admin/assets/admin_data/${entity}" && \
+      mkdir -p "/seed/miroir-app-admin/assets/admin_data/${entity}"; \
+    done
 
-# -------------------------------------------------------------------------
-# Seed data (framework + admin + library assets, Docker-compatible paths)
-# -------------------------------------------------------------------------
-COPY packages/miroir-server/docker/seed/. /seed/
+ENV MIROIR_ROOT=/data
+ENV MIROIR_ENV=docker
 
 # -------------------------------------------------------------------------
 # Entrypoint
