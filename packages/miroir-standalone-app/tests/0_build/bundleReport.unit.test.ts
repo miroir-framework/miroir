@@ -107,13 +107,12 @@ describe("bundleReport", () => {
     }
   });
 
-  it("mongodb is only in lazy chunks, brought in through IntegrationTestSession.ts", () => {
-    const withMongodb = report.chunks.filter((chunk) => packageIn(chunk, "mongodb"));
-    expect(withMongodb.length).toBeGreaterThan(0);
-    expect(withMongodb.map((chunk) => chunk.loadKind)).toEqual(withMongodb.map(() => "lazy"));
-    expect(packageIn(withMongodb[0], "mongodb")!.chain.some((step) => step.includes("IntegrationTestSession.ts"))).toBe(
-      true,
+  it("ships no Node store driver: vite build aliases the store packages to a stub (#337)", () => {
+    const nodeStorePackages = ["mongodb", "sequelize", "miroir-store-mongodb", "miroir-store-postgres", "miroir-store-filesystem"];
+    const shipped = report.chunks.flatMap((chunk) =>
+      nodeStorePackages.filter((name) => packageIn(chunk, name)).map((name) => `${name} in ${chunk.file}`),
     );
+    expect(shipped).toEqual([]);
   });
 
   it("findings name fs externalized from miroir-store-indexedDb and the defeated ReportDisplay.tsx import", () => {

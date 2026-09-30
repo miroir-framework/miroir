@@ -1,5 +1,5 @@
 /**
- * #337 slice 2: what the home page fetches. The bundle guard counts only the chunks `index.html`
+ * What the home page fetches (#337). The bundle guard counts only the chunks `index.html`
  * preloads; the home page also fetches its route chunk (`HomePage`) with everything it imports
  * statically, `ReportDisplay` included since the home page is a report. The home report has no list
  * section, so none of these chunks may hold a grid library.
@@ -7,7 +7,7 @@
  * Not reachable through MiroirTest: it reads the production build's manifest and bundle report.
  * ```bash
  * npm run build -w miroir-standalone-app
- * npm run testByFile -w miroir-standalone-app -- homePageLoad.337
+ * npm run testByFile -w miroir-standalone-app -- homePageLoad
  * ```
  */
 import { existsSync, readFileSync } from "node:fs";
@@ -19,7 +19,7 @@ import { describe, expect, it } from "vitest";
 type Manifest = Record<string, { file: string; isEntry?: boolean; imports?: string[] }>;
 type BundleReport = { chunks: { file: string; packages: { name: string }[] }[] };
 
-const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../../..");
+const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const viteDirectory = join(packageRoot, "dist", ".vite");
 const homePageRoute = "miroir-fwk/4_view/routes/HomePage.tsx";
 

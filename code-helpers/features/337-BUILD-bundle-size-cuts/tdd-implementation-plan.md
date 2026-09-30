@@ -8,7 +8,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../326-BUILD-build-hardening/`](../326-BUILD-build-hardening/) ✅
 Working branch: `claude/issue-337-analysis-yjkuzv`
 
-**Resume note:** slices 0–7 DONE.
+**Resume note:** all slices DONE; the follow-up issue draft is at the end of slice 8.
 
 ---
 
@@ -34,7 +34,7 @@ This plan does **not** cover: F13 (`lodash`), `yaml`, the grid split by `gridTyp
 | 5 | CodeMirror loads with the first code field | ✅ | `forbiddenEager` `@codemirror/*`; tour |
 | 6 | Node store drivers leave the web build | ✅ | policy `lazy` list shrinks; vitest integ still uses real stores |
 | 7 | Electron main process without React, minified | ✅ | Electron `forbiddenEager` `react-dom`; Electron smoke |
-| 8 | Nonreg, docs, cleanup, AC | ⬜ | nonreg filesystem + tour + AC table |
+| 8 | Nonreg, docs, cleanup, AC | ✅ | nonreg filesystem + tour + AC table |
 
 ---
 
@@ -356,7 +356,7 @@ Validation: Electron build + guard 0 violations; `electronBundle.unit` 6 passed 
 
 ## Slice 8 — Nonreg, docs, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### 8.1 Nonreg
 
@@ -376,10 +376,28 @@ Manual: open https://localhost:3080 with DevTools Network: the home page fetches
 
 ### AC checklist (#337)
 
-| Criterion (issue Goal) | Proof |
-|---|---|
-| Cut what the page loads, one finding at a time | slices 1–5, each with its guard RED/GREEN |
-| Cut what both apps ship without using it | slices 6 (web), 7 (Electron) |
-| Each cut lowers `eagerGzipBaseline` | policy diff per commit |
-| Gains kept | `forbiddenEager` entries, `defeated` and `size` rules |
-| Findings not cut here are tracked | follow-up issue listing F8, F9, F13, `yaml` with the final tour's numbers |
+| Criterion (issue Goal) | Proof | Status |
+|---|---|---|
+| Cut what the page loads, one finding at a time | slices 1–5, each with its guard RED/GREEN: eager gzip 2 725 899 → 902 938 | ✅ |
+| Cut what both apps ship without using it | slice 6 (web: no Node store driver, eager 867 330), slice 7 (Electron: no React, minified, 4 430 119 → 3 184 200) | ✅ |
+| Each cut lowers `eagerGzipBaseline` | policy diff in each slice commit (slice 2 moved the home page's route chunk, not the preloaded chunks: baseline unchanged, checked by `homePageLoad.unit`) | ✅ |
+| Gains kept | `forbiddenEager` entries (web and Electron), `defeated` and `size` rules with pytest cases, `homePageLoad.unit`, `bundleReport.unit` | ✅ |
+| Findings not cut here are tracked | follow-up issue draft below, to be filed on A's word | ⏳ |
+
+Web page load: **2 725 899 → 867 330 bytes gzipped (−68.2%)**, 7 → 4 preloaded chunks.
+
+### Realization
+
+8.1: `nonreg:filesystem -- --runner shared` 87 passed, 0 failed (run on the slice 6 and 7 tree; slice 8 changes docs and build tests only). 8.2: `docs/internals/code-splitting.md` rewritten where #337 changed it: vendor chunks, lazy grids and CodeMirror, the page table (4 chunks) with a table of the cuts and the rule keeping each, the Node store alias, the Electron `/node` entry, the `defeated` and `size` rules, follow-ups. 8.3 done; `bundleReport.unit` asserted that `mongodb` ships lazily, which slice 6 ended: it now asserts that no Node store driver ships. 8.4: the coverage tour of the final build visited 7 of 7 pages, loaded 30 of 391 chunks (10.1 M chars, 52% ran). Pre-push gate green (skills sync, pytest 187, dependency policy, lint, `miroir-env check`, miroir-core tsc and 2 131 tests).
+
+### Follow-up issue (draft)
+
+**Bundle size, after #337: what is left**
+
+#337 took the web page from 2.73 MB to 0.87 MB gzipped. Left, from its analysis (`code-helpers/features/337-BUILD-bundle-size-cuts/analysis.md`) and the final coverage tour:
+- F9: the grid chunk holds both ag-grid (988 k chars loaded, 36% ran) and glide-data-grid (184 k, 5% ran); load one of them by `gridType`.
+- F12: `MlElementEditorHooks.ts` loads the Library deployment with the page for one label (~21 kB gzip).
+- F13: `lodash` in the entry (104 k chars, 35% ran): single-function imports or `lodash-es`.
+- `yaml` in the entry (98 k chars, 6% ran): load it where YAML is parsed.
+- F8: shiki ships 235 grammar chunks in `dist/`; load the grammars used.
+
