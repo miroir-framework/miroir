@@ -33,10 +33,6 @@ import {
   type MlSchema,
   defaultSelfApplicationDeploymentMap,
 } from "miroir-core";
-import { loadMiroirMcpConfig } from "../../src/config/configLoader.js";
-import { MiroirMcpConfig } from "../../src/config/configSchema.js";
-import { setupMiroirPlatform } from '../../src/startup/setup.js';
-import { initializeStoreStartup } from "../../src/startup/storeStartup.js";
 import {
   ALL_MCP_TEST_CASES,
   type McpToolTest
@@ -70,6 +66,7 @@ import {
   getDefaultLibraryModelEnvironmentDEFUNCT,
 } from "miroir-example-library";
 import { callMcpToolViaHttp } from './mcpClient.js';
+import { startMcpTestPlatform } from './mcpTestPlatform.js';
 import { MiroirMcpServer, setupMcpServer } from "../../src/mcpServer.js";
 import { EndpointToolRegistry } from "../../src/tools/EndpointToolRegistry.js";
 
@@ -138,7 +135,6 @@ const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances =
 ];
 
 // Test configuration
-let miroirConfig: MiroirMcpConfig;
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
 let applicationDeploymentMap: ApplicationDeploymentMap;
@@ -186,102 +182,10 @@ const defaultLibraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
 describe("MCP Tools Integration Tests", () => {
   // ##############################################################################################
   beforeAll(async () => {
-    // Load configuration (test can override with env var MIROIR_MCP_CONFIG_PATH)
-    miroirConfig = loadMiroirMcpConfig();
-    
-    if (!miroirConfig) {
-      throw new Error("Failed to load MiroirMCP configuration");
-    }
-
-    if (!miroirConfig.client.applicationDeploymentMap) {
-      throw new Error("MiroirMCP configuration missing client.applicationDeploymentMap");
-    }
-
-    if (!miroirConfig.client.deploymentStorageConfig) {
-      throw new Error("MiroirMCP configuration missing client.deploymentStorageConfig");
-    }
-    // Initialize framework
-    miroirCoreStartup();
-    
-    // Initialize stores based on configuration
-    initializeStoreStartup(miroirConfig);
-    
-    // Register test implementation
-    ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
-
-    // Setup MiroirContext
-    const miroirActivityTracker = new MiroirActivityTracker();
-    const miroirEventService = new MiroirEventService(miroirActivityTracker);
-    
-    // Start loggers
-    MiroirLoggerFactory.startRegisteredLoggers(
-      miroirActivityTracker,
-      miroirEventService,
-      loglevelnext,
-      loggerOptions,
-    );
-
-    const {
-      domainController: localdomainController,
-    } = await setupMiroirPlatform(
-      miroirConfig as any as MiroirConfigClient,
-      miroirActivityTracker,
-      miroirEventService,
-    );
-
-    domainController = localdomainController;
+    const platform = await startMcpTestPlatform(expect, loggerOptions);
+    domainController = platform.domainController;
     localCache = domainController.getLocalCache();
-    applicationDeploymentMap = miroirConfig.client.applicationDeploymentMap;
-
-    if (!domainController) {
-      throw new Error("Failed to initialize DomainController");
-    }
-    if (!localCache) {
-      throw new Error("Failed to initialize LocalCache");
-    }
-
-    if (!applicationDeploymentMap) {
-      throw new Error("Failed to initialize ApplicationDeploymentMap");
-    }
-    if (Object.keys(applicationDeploymentMap).length === 0) {
-      throw new Error("ApplicationDeploymentMap is empty");
-    }
-
-    // Initialize store startup (register store factories)
-    await initializeStoreStartup(miroirConfig);
-
-    // Open stores for all configured deployments
-    for (const [deploymentUuid, storeConfig] of Object.entries(
-      miroirConfig.client.deploymentStorageConfig
-    )) {
-      log.info(`Opening stores for deployment ${deploymentUuid}`);
-
-      const openStoreAction: StoreOrBundleAction = {
-        actionType: "storeManagementAction_openStore",
-        actionLabel: `Open stores for ${deploymentUuid}`,
-        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        payload: {
-          application: Object.keys(applicationDeploymentMap).find(
-            (appUuid) => applicationDeploymentMap[appUuid] === deploymentUuid
-          ) || "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          deploymentUuid: deploymentUuid,
-          configuration: {
-            [deploymentUuid]: storeConfig as StoreUnitConfiguration,
-          },
-        },
-      };
-
-      const result = await domainController.handleAction(
-        openStoreAction,
-        applicationDeploymentMap
-      );
-
-      if (result.status !== "ok") {
-        throw new Error(
-          `Failed to open stores for deployment ${deploymentUuid}: ${JSON.stringify(result)}`
-        );
-      }
-    }
+    applicationDeploymentMap = platform.applicationDeploymentMap;
 
     // Self-contained MCP server: the registry-backed server runs in-process on an
     // ephemeral port, no external MCP server needs to be running for these tests.
@@ -351,24 +255,6 @@ describe("MCP Tools Integration Tests", () => {
     if (httpServer) {
       await new Promise<void>((resolve) => httpServer.close(() => resolve()));
     }
-    // Close all stores
-    for (const deploymentUuid of Object.keys(miroirConfig.client.deploymentStorageConfig)) {
-      const closeStoreAction: StoreOrBundleAction = {
-        actionType: "storeManagementAction_closeStore",
-        actionLabel: `Close stores for ${deploymentUuid}`,
-        // application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        payload: {
-          application: Object.keys(applicationDeploymentMap).find(
-            (appUuid) => applicationDeploymentMap[appUuid] === deploymentUuid
-          ) || "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        },
-      };
-
-      // TODO: closeStore fails on filesystem!
-      // await domainController.handleAction(closeStoreAction, applicationDeploymentMap);
-    }
-
     log.info("MCP test teardown completed");
   });
 

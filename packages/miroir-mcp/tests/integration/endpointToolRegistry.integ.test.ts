@@ -9,6 +9,7 @@ import {
   defaultMiroirModelEnvironment,
   DomainControllerInterface,
   emptyMetaModel,
+  environmentAppsDirectory,
   LocalCacheInterface,
   LoggerInterface,
   MiroirActivityTracker,
@@ -60,13 +61,10 @@ import {
 import { defaultMiroirMetaModel } from "miroir-app-miroir";
 import { adminSelfApplication, deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 
-import { loadMiroirMcpConfig } from "../../src/config/configLoader.js";
-import { MiroirMcpConfig } from "../../src/config/configSchema.js";
 import { MiroirMcpServer, setupMcpServer } from "../../src/mcpServer.js";
-import { setupMiroirPlatform } from "../../src/startup/setup.js";
-import { initializeStoreStartup } from "../../src/startup/storeStartup.js";
 import { EndpointToolRegistry } from "../../src/tools/EndpointToolRegistry.js";
 import { callMcpToolViaHttp, listMcpToolsViaHttp } from "./mcpClient.js";
+import { startMcpTestPlatform } from "./mcpTestPlatform.js";
 
 const packageName = "miroir-mcp";
 const fileName = "endpointToolRegistry.test";
@@ -117,7 +115,7 @@ const libraryEntitiesAndInstances: ApplicationEntitiesAndInstances = [
   },
 ];
 
-let miroirConfig: MiroirMcpConfig;
+let environmentName: string;
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
 let applicationDeploymentMap: ApplicationDeploymentMap;
@@ -127,62 +125,12 @@ const globalTimeOut = 60000;
 describe("EndpointToolRegistry integration", () => {
   // ##############################################################################################
   beforeAll(async () => {
-    miroirConfig = loadMiroirMcpConfig();
-    if (!miroirConfig) {
-      throw new Error("Failed to load MiroirMCP configuration");
-    }
-
-    miroirCoreStartup();
-    await initializeStoreStartup(miroirConfig);
-    ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
-
-    const miroirActivityTracker = new MiroirActivityTracker();
-    const miroirEventService = new MiroirEventService(miroirActivityTracker);
-
-    MiroirLoggerFactory.startRegisteredLoggers(
-      miroirActivityTracker,
-      miroirEventService,
-      loglevelnext,
-      loggerOptions,
-    );
-
-    const { domainController: localdomainController } = await setupMiroirPlatform(
-      miroirConfig as any as MiroirConfigClient,
-      miroirActivityTracker,
-      miroirEventService,
-    );
-
-    domainController = localdomainController;
+    const platform = await startMcpTestPlatform(expect, loggerOptions);
+    environmentName = platform.environment.name;
+    domainController = platform.domainController;
     localCache = domainController.getLocalCache();
-    applicationDeploymentMap = miroirConfig.client.applicationDeploymentMap;
-
-    for (const [deploymentUuid, storeConfig] of Object.entries(
-      miroirConfig.client.deploymentStorageConfig,
-    )) {
-      const openStoreAction: StoreOrBundleAction = {
-        actionType: "storeManagementAction_openStore",
-        actionLabel: `Open stores for ${deploymentUuid}`,
-        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        payload: {
-          application:
-            Object.keys(applicationDeploymentMap).find(
-              (appUuid) => applicationDeploymentMap[appUuid] === deploymentUuid,
-            ) || "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          deploymentUuid: deploymentUuid,
-          configuration: {
-            [deploymentUuid]: storeConfig as StoreUnitConfiguration,
-          },
-        },
-      };
-
-      const result = await domainController.handleAction(openStoreAction, applicationDeploymentMap);
-      if (result.status !== "ok") {
-        throw new Error(
-          `Failed to open stores for deployment ${deploymentUuid}: ${JSON.stringify(result)}`,
-        );
-      }
-    }
-    log.info("EndpointToolRegistry test setup completed");
+    applicationDeploymentMap = platform.applicationDeploymentMap;
+    log.info("EndpointToolRegistry test setup completed on environment", environmentName);
   }, globalTimeOut);
 
   // ##############################################################################################
@@ -515,11 +463,16 @@ describe("EndpointToolRegistry integration", () => {
     const pingVersionUuid = "aa0d5f7e-2222-4a67-9c0d-0000000000v9".replace("v", "c");
     const pingEndpointUuid = "aa0d5f7e-2222-4a67-9c0d-0000000000e9";
 
-    const pingStoreConfig: StoreUnitConfiguration = {
-      admin: { emulatedServerType: "filesystem", directory: "miroir-mcp/tests/tmp/pingapp_admin" },
-      model: { emulatedServerType: "filesystem", directory: "miroir-mcp/tests/tmp/pingapp_model" },
-      data: { emulatedServerType: "filesystem", directory: "miroir-mcp/tests/tmp/pingapp_data" },
-    } as StoreUnitConfiguration;
+    // stores of an application installed at runtime go to the environment's apps directory (#345)
+    const pingStoreConfig = (): StoreUnitConfiguration => {
+      const apps = environmentAppsDirectory(environmentName);
+      return {
+        admin: { emulatedServerType: "filesystem", directory: `${apps}/pingapp_admin` },
+        model: { emulatedServerType: "filesystem", directory: `${apps}/pingapp_model` },
+        data: { emulatedServerType: "filesystem", directory: `${apps}/pingapp_data` },
+        modelVersion: { emulatedServerType: "filesystem", directory: `${apps}/pingapp_modelVersion` },
+      } as StoreUnitConfiguration;
+    };
 
     it(
       "discovers a deployment added at runtime and lists its endpoint tools, without restart",
@@ -540,7 +493,7 @@ describe("EndpointToolRegistry integration", () => {
             pingDeploymentUuid,
             pingAppUuid,
             deployment_Admin as Deployment,
-            pingStoreConfig,
+            pingStoreConfig(),
             { skipOpenAdminStore: true },
           );
           const extendedDeploymentMap: ApplicationDeploymentMap = {
@@ -646,36 +599,6 @@ describe("EndpointToolRegistry integration", () => {
           expect(toolsAfterChange).toContain("PingApp_testPing");
         } finally {
           registry.stop();
-
-          // the Admin deployment store is NOT tmp-backed: the PingApp AdminApplication /
-          // Deployment rows created above persist on disk and would pollute subsequent
-          // runs (and other test files). Remove them explicitly.
-          const cleanupErrors: string[] = [];
-          for (const [entityUuid, instanceUuid] of [
-            ["25d935e7-9e93-42c2-aade-0472b883492b", pingAppUuid], // AdminApplication
-            ["7959d814-400c-4e80-988f-a00fe582ab98", pingDeploymentUuid], // Deployment
-          ] as const) {
-            const deleteResult = await domainController.handleAction(
-              {
-                actionType: "deleteInstance",
-                actionLabel: "remove PingApp row from Admin registry",
-                endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89", // instanceEndpointV1
-                payload: {
-                  application: adminSelfApplication.uuid,
-                  applicationSection: "data",
-                  parentUuid: entityUuid,
-                  objects: [{ uuid: instanceUuid, parentUuid: entityUuid }],
-                },
-              },
-              applicationDeploymentMap,
-            );
-            if (deleteResult.status !== "ok") {
-              cleanupErrors.push(JSON.stringify(deleteResult));
-            }
-          }
-          if (cleanupErrors.length > 0) {
-            log.warn(`PingApp cleanup errors (ignored): ${cleanupErrors.join("; ")}`);
-          }
         }
       },
       globalTimeOut,

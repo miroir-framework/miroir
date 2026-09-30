@@ -13,9 +13,8 @@ import {
 import { setupMiroirDomainController } from "miroir-localcache-redux";
 
 import {
+  bootEnvironment,
   environmentServerConfig,
-  openEnvironmentBootDeployments,
-  reconcileEnvironmentDeployments,
   resolveEnvironmentFromFiles,
   seedEnvironmentState,
 } from "../src/index";
@@ -85,7 +84,6 @@ export async function boot(root: string, env: Record<string, string | undefined>
     persistenceStoreAccessMode: "local",
     localPersistenceStoreControllerManager: persistenceStoreControllerManager,
   });
-  await openEnvironmentBootDeployments(domainController, resolved);
-  const reconciliation = await reconcileEnvironmentDeployments(domainController, resolved);
+  const reconciliation = await bootEnvironment(domainController, resolved);
   return { resolved, seed, domainController, persistenceStoreControllerManager, reconciliation };
 }

@@ -22,7 +22,7 @@ Out: #323 (bundle ignores `--config`); the server's legacy config-file path; CLI
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize: mcp baseline, guard on former write paths | ✅ DONE | `scripts/tests/test_tracked_assets_guard.py` cases; mcp baseline recorded |
-| 1 | miroir-mcp tests run on a test environment (tracer) | ⬜ pending | `mcpTools.integ`, `endpointToolRegistry.integ` green on `test-filesystem`, `tests/assets/admin_*` removed |
+| 1 | miroir-mcp tests run on a test environment (tracer) | ✅ DONE | `mcpTools.integ`, `endpointToolRegistry.integ` green on `test-filesystem`, `tests/assets/admin_*` removed |
 | 2 | miroir-mcp standalone configuration removed | ⬜ pending | package builds, server and Electron typecheck, mcp tests green |
 | 3 | miroir-cli runs on the selected environment | ⬜ pending | `cli.integ` on `test-filesystem`: `lendDocument` on Library |
 | 4 | An environment runs outside a checkout (`MIROIR_ROOT`, `packagesDirectory`) | ⬜ pending | `miroir-env` test booting the server config from a `/data`-like temp root |
@@ -88,7 +88,7 @@ No new model uuid. The `miroir-env` tests reuse `packages/miroir-env/tests/bootT
 
 ## Slice 1 — miroir-mcp tests on a test environment (tracer)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** the mcp integration tests open the stores of `test-filesystem` (or the `test-*` `MIROIR_ENV`), boot like the server, and no longer use `tests/assets/admin_*`.
 
@@ -106,6 +106,12 @@ No new model uuid. The `miroir-env` tests reuse `packages/miroir-env/tests/bootT
 **Validation:** `npm run build -w miroir-env && npm run test -w miroir-env`; `npm run testByFile -w miroir-mcp` (all green); standalone-app `testEnvironment` unit tests; `git status --short packages` clean after the run; typecheck miroir-mcp, miroir-env, miroir-standalone-app.
 
 ### Realization
+
+- miroir-env: `src/testEnvironment.ts` (`openTestEnvironment`, `selectedTestEnvironment`, vitest-free; `reseed` also wipes `.miroir/<env>/apps/`, so a test file does not find the stores an earlier one installed) and `bootEnvironment` in `openEnvironment.ts`; `tests/bootTestSupport.ts` boots through it; 3 new cases in `testEnvironments.unit.test.ts`.
+- standalone-app `tests/helpers/testEnvironment.ts` delegates, keeping its per-test-file seeding record and logger.
+- miroir-mcp: `tests/integration/mcpTestPlatform.ts` (`startMcpTestPlatform`) replaces the two copied `beforeAll`s; the `applicationDeploymentMap` comes from the reconciliation; `tests/assets/` (28 files) and `tests/config.mcp-emulatedServer.json` removed; `MIROIR_MCP_CONFIG_PATH` gone from `vitest.config.ts`; miroir-env added as a devDependency (lockfile edited by hand: a local `npm install` rewrote unrelated `peer` flags).
+- D5: PingApp stores in `environmentAppsDirectory(env)` with a `modelVersion` section, manual Admin cleanup removed; `mlElementToTS` expectation includes `modelVersion`. The dead close-store loop of `mcpTools.integ` removed.
+- Result: miroir-mcp 92/92 (was 90/92), twice in a row for `endpointToolRegistry`; no tracked file changed; miroir-env 40/40.
 
 ---
 

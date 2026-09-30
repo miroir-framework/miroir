@@ -3,15 +3,12 @@
  * is a copy in .miroir/<environment>/ or a database named after the environment; the filesystem copies are
  * wiped and seeded from the package assets once per test file, so no test writes into tracked files.
  */
-import { isTestEnvironment, MiroirLoggerFactory, type LoggerInterface, type MiroirConfigClient } from "miroir-core";
+import { MiroirLoggerFactory, type LoggerInterface } from "miroir-core";
 import { expect } from "vitest";
 import {
-  environmentClientConfig,
-  environmentRealServerClientConfig,
-  missingConnectionPasswords,
-  resolveEnvironmentFromFiles,
-  seedEnvironmentState,
-  type ResolvedEnvironment,
+  openTestEnvironment as openEnvironmentForTests,
+  selectedTestEnvironment as selectedTestEnvironmentFromEnv,
+  type TestEnvironment,
 } from "miroir-env";
 
 import { packageName } from "../../src/constants";
@@ -27,16 +24,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 /** The environment of transformer sessions started without a profile. */
 export const DEFAULT_TEST_ENVIRONMENT = "test-sql";
 
-export type TestEnvironment = {
-  name: string;
-  resolved: ResolvedEnvironment;
-  /**
-   * Client configuration, with the Postgres password from the environment's `passwordEnv`: the client
-   * emulates the server, or with MIROIR_TEST_CLIENT=realServer (realServer-* profiles) calls a running
-   * miroir-server with the stores of the environment.
-   */
-  miroirConfig: MiroirConfigClient;
-};
+export type { TestEnvironment };
 
 /**
  * Test environments already seeded by the running test file. A run that shares modules between test files
@@ -58,33 +46,20 @@ function seededByCurrentTestFile(): Set<string> {
  * `test-*` (a developer's `dev` or `local`) is ignored with a warning: tests never run on it.
  */
 export function selectedTestEnvironment(env: NodeJS.ProcessEnv): string | undefined {
-  const name = env.MIROIR_ENV;
-  if (!name) {
-    return undefined;
-  }
-  if (!isTestEnvironment(name)) {
-    log.warn(`MIROIR_ENV=${name} is not a test environment (test-*); tests ignore it`);
-    return undefined;
-  }
-  return name;
+  return selectedTestEnvironmentFromEnv(env, (message) => log.warn(message));
 }
 
 /** Resolves a test environment, seeding its filesystem copies the first time this test file opens it. */
 export function openTestEnvironment(name: string, env: NodeJS.ProcessEnv = process.env): TestEnvironment {
-  const resolved = resolveEnvironmentFromFiles({ cwd: resolveRepoRoot(), env: { MIROIR_ENV: name } });
-  const runEnv = { ...process.env, ...env };
   const seeded = seededByCurrentTestFile();
-  if (!seeded.has(name)) {
-    const seed = seedEnvironmentState(resolved, { reseed: true });
+  const reseed = !seeded.has(name);
+  const testEnvironment = openEnvironmentForTests(name, { cwd: resolveRepoRoot(), env, reseed });
+  if (reseed) {
     seeded.add(name);
-    log.info(`environment ${name} seeded in .miroir/${name}:`, seed.seeded.join(", "));
-    for (const warning of missingConnectionPasswords(resolved, runEnv)) {
+    log.info(`environment ${name} seeded in .miroir/${name}:`, testEnvironment.seed?.seeded.join(", "));
+    for (const warning of testEnvironment.warnings) {
       log.warn(warning);
     }
   }
-  const miroirConfig =
-    runEnv.MIROIR_TEST_CLIENT === "realServer"
-      ? environmentRealServerClientConfig(resolved, runEnv)
-      : environmentClientConfig(resolved, runEnv);
-  return { name, resolved, miroirConfig };
+  return testEnvironment;
 }

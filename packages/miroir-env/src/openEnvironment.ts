@@ -235,3 +235,17 @@ export async function reconcileEnvironmentDeployments(
     warnings,
   };
 }
+
+/**
+ * Opens every deployment of an environment, as a server start does: the boot deployments (Admin,
+ * Miroir), then the Deployment and AdminApplication rows aligned with the definition, then the
+ * other deployments. For runtimes with nothing to do in between (CLI, Electron, tests); the server
+ * imports its secrets between the two steps.
+ */
+export async function bootEnvironment(
+  domainController: DomainControllerInterface,
+  resolved: ResolvedEnvironment,
+): Promise<EnvironmentReconciliation> {
+  await openEnvironmentBootDeployments(domainController, resolved);
+  return reconcileEnvironmentDeployments(domainController, resolved);
+}

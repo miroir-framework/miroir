@@ -5,7 +5,13 @@ import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { environmentClientConfig, resolveEnvironmentFromFiles, seedEnvironmentState } from "../src/index";
+import {
+  environmentClientConfig,
+  openTestEnvironment,
+  resolveEnvironmentFromFiles,
+  seedEnvironmentState,
+  selectedTestEnvironment,
+} from "../src/index";
 import { repositoryRoot, temporaryRepository } from "./cliTestSupport";
 
 const application = (name: string, selfApplication: string, deployment: string) => ({
@@ -60,6 +66,31 @@ describe("test environments", () => {
     expect(existsSync(path.join(root, ".miroir/test-filesystem/admin/data/d20d09e5-0685-4fc7-b9bd-fcfa3845127a/u.json"))).toBe(
       true,
     );
+  });
+
+  // #345: the helper every package's tests share
+  it("openTestEnvironment with reseed also wipes the stores of applications installed at runtime", () => {
+    const root = temporaryRepository({ "test-filesystem": testFilesystem });
+    const installed = path.join(root, ".miroir/test-filesystem/apps/pingapp_data/x.json");
+    mkdirSync(path.dirname(installed), { recursive: true });
+    writeFileSync(installed, "{}");
+
+    const environment = openTestEnvironment("test-filesystem", { cwd: root, reseed: true });
+
+    expect(existsSync(installed)).toBe(false);
+    expect(environment.seed?.seeded).toContain("admin/data");
+    expect(environment.miroirConfig.client).toMatchObject({ emulateServer: true, filesystemDeploymentRootDirectory: root });
+  });
+
+  it("openTestEnvironment refuses an environment that is not a test environment", () => {
+    expect(() => openTestEnvironment("dev", { cwd: repositoryRoot })).toThrow(/not a test environment/);
+  });
+
+  it("selectedTestEnvironment ignores a MIROIR_ENV that is not test-*, with a warning", () => {
+    const warnings: string[] = [];
+    expect(selectedTestEnvironment({ MIROIR_ENV: "dev" }, (w) => warnings.push(w))).toBeUndefined();
+    expect(warnings).toHaveLength(1);
+    expect(selectedTestEnvironment({ MIROIR_ENV: "test-sql" })).toBe("test-sql");
   });
 
   it("an environment without server.rootApiUrl cannot emulate a server", () => {

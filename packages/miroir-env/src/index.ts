@@ -32,6 +32,7 @@ export {
   type EnvironmentAdminRows,
 } from "./adminRows.js";
 export {
+  bootEnvironment,
   openEnvironmentBootDeployments,
   reconcileEnvironmentDeployments,
   type EnvironmentReconciliation,
@@ -39,3 +40,4 @@ export {
 export { importExtras, inspectEnvironmentState, pruneExtras, type StateInspection } from "./stateCommands.js";
 export { changesDeployments, recordInstalledApplications, recordInstallsOf } from "./recordInstalls.js";
 export { changedAssetFiles } from "./trackedAssets.js";
+export { openTestEnvironment, selectedTestEnvironment, type TestEnvironment } from "./testEnvironment.js";
