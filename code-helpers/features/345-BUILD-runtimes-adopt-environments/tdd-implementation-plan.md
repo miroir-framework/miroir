@@ -23,7 +23,7 @@ Out: #323 (bundle ignores `--config`); the server's legacy config-file path; CLI
 |---|---|---|---|
 | 0 | Characterize: mcp baseline, guard on former write paths | ✅ DONE | `scripts/tests/test_tracked_assets_guard.py` cases; mcp baseline recorded |
 | 1 | miroir-mcp tests run on a test environment (tracer) | ✅ DONE | `mcpTools.integ`, `endpointToolRegistry.integ` green on `test-filesystem`, `tests/assets/admin_*` removed |
-| 2 | miroir-mcp standalone configuration removed | ⬜ pending | package builds, server and Electron typecheck, mcp tests green |
+| 2 | miroir-mcp standalone configuration removed | ✅ DONE | package builds, server and Electron typecheck, mcp tests green |
 | 3 | miroir-cli runs on the selected environment | ⬜ pending | `cli.integ` on `test-filesystem`: `lendDocument` on Library |
 | 4 | An environment runs outside a checkout (`MIROIR_ROOT`, `packagesDirectory`) | ⬜ pending | `miroir-env` test booting the server config from a `/data`-like temp root |
 | 5 | Docker images start from the `docker` environment | ⬜ pending | pytest on `docker-entrypoint.sh`; `miroir-env` test on `environments/docker.json` over a seed layout |
@@ -117,7 +117,7 @@ No new model uuid. The `miroir-env` tests reuse `packages/miroir-env/tests/bootT
 
 ## Slice 2 — Standalone mcp configuration removed
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** miroir-mcp is a library: no `bin`, no `main()`, no private config schema; store start-up follows a `MiroirConfigClient`.
 
@@ -130,6 +130,12 @@ No new model uuid. The `miroir-env` tests reuse `packages/miroir-env/tests/bootT
 **Validation:** `npm run build -w miroir-mcp`; `npm run testByFile -w miroir-mcp`; typecheck miroir-mcp, miroir-server, miroir-standalone-app-electron.
 
 ### Realization
+
+- `src/config/` (loader, zod schema, `defaultConfig.json`) removed; `src/index.ts` is exports only (no `main()`, no signal handlers); `bin`, `copy-files`, `dev` scripts and the `copyfiles` devDependency removed (lockfile edited to match, `npm ci --dry-run` clean).
+- `storeStartup.ts`: `requiredStoreTypes(MiroirConfigClient)` (emulated `deploymentStorageConfig` or real-server `storeSectionConfiguration`, every section including `modelVersion`) and `initializeStoreStartup(MiroirConfigClient)`.
+- `mcpServer.ts`: `setupLogging` and `openStores` removed (no caller left).
+- `tests/unit/mcpPackageSurface.unit.test.ts` (2 tests). README rewritten around "Where MCP runs".
+- Result: miroir-mcp 94/94; miroir-mcp, miroir-server, Electron typecheck clean.
 
 ---
 

@@ -41,7 +41,7 @@ export async function startMcpTestPlatform(
   }
 
   miroirCoreStartup();
-  await initializeStoreStartup(environment.miroirConfig as any);
+  await initializeStoreStartup(environment.miroirConfig);
   ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
 
   const miroirActivityTracker = new MiroirActivityTracker();
