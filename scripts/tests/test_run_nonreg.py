@@ -531,3 +531,47 @@ def test_run_without_scope_records_no_scopes(tmp_path: Path, scoped_manifest: Pa
 
     assert "scopes" not in summary
     assert len(summary["steps"]) == 5
+
+
+# ------------------------------------------------------------------------------------------------
+# #351 Slice 2: the real manifest is fully scoped
+
+REAL_MANIFEST = json.loads((ROOT / "scripts" / "nonreg-manifest.json").read_text(encoding="utf-8"))
+REAL_SCOPES = REAL_MANIFEST.get("scopes", {})
+
+
+def test_scope_catalogue_declares_three_to_eight_scopes_including_smoke():
+    selectable = [n for n in REAL_SCOPES if n != "always"]
+
+    assert "smoke" in selectable and "always" in REAL_SCOPES
+    assert 3 <= len(selectable) <= 8, selectable
+
+
+def test_every_manifest_step_names_declared_scopes():
+    problems = [
+        (s["id"], s.get("scopes"))
+        for s in REAL_MANIFEST["steps"]
+        if not s.get("scopes") or not set(s["scopes"]) <= set(REAL_SCOPES)
+    ]
+
+    assert problems == []
+
+
+def test_every_manifest_step_has_a_scope_besides_smoke():
+    """So the non-smoke scopes together always cover the whole suite."""
+    smoke_only = [s["id"] for s in REAL_MANIFEST["steps"] if set(s.get("scopes", [])) <= {"smoke"}]
+
+    assert smoke_only == []
+
+
+def test_the_run_bracket_is_in_the_always_scope():
+    always = [s["id"] for s in REAL_MANIFEST["steps"] if "always" in s.get("scopes", [])]
+
+    assert always == ["unit-321-environment-before", "unit-321-tracked-assets"]
+
+
+def test_smoke_is_wide_one_step_in_each_main_layer():
+    smoke = [set(s["scopes"]) for s in REAL_MANIFEST["steps"] if "smoke" in s.get("scopes", [])]
+
+    for layer in ("core", "actions", "runners", "ui"):
+        assert any(layer in scopes for scopes in smoke), layer

@@ -20,7 +20,7 @@ Out: MiroirTest tag selection, run-time derivation from a diff (analysis D1, D3)
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 1 | `--scope` selects a scope's steps plus `always` | ✅ DONE | `test_scope_*` in `test_run_nonreg.py` |
-| 2 | Real manifest scoped, guard keeps it complete | ⬜ pending | `test_every_manifest_step_*`, `test_smoke_*` |
+| 2 | Real manifest scoped, guard keeps it complete | ✅ DONE | `test_every_manifest_step_*`, `test_smoke_*` |
 | 3 | Plan skill names a scope per slice; docs; durations | ⬜ pending | `sync_agent_skills.py --check`, measured runs |
 
 ## Locked implementation defaults
@@ -60,7 +60,7 @@ Analysis D1 to D8, unchanged.
 
 ## Slice 2 — Real manifest scoped, guard keeps it complete
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **RED:**
 - Every manifest step has a non-empty `scopes` list whose names are declared in the top-level `scopes` catalogue.
@@ -75,7 +75,7 @@ Analysis D1 to D8, unchanged.
 
 ### Realization
 
-Membership written with a one-off Python script from the analysis inventory; guard tests in `test_run_nonreg.py`.
+Membership written with a one-off Python script from the analysis inventory (text insertion after each step `id`, so the manifest's formatting is kept); guard tests in `test_run_nonreg.py`. Dry-run sizes on the default tier, including the 2 `always` steps: smoke 8, core 14, actions 14, runners 12, ui 21, localcache 13, external 14, tooling 15.
 
 ## Slice 3 — Plan skill, docs, measured durations
 

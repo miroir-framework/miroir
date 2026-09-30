@@ -627,7 +627,8 @@ def print_synthetic_report(summary: dict[str, Any]) -> None:
     print("=" * 72)
     print(
         f"tier={summary['tier']} mode={summary['mode']} profile={summary['profile']} "
-        f"duration={summary['duration_s']}s"
+        + (f"scopes={','.join(summary['scopes'])} " if summary.get("scopes") else "")
+        + f"duration={summary['duration_s']}s"
     )
     print(
         f"passed={summary['counts']['passed']}  "

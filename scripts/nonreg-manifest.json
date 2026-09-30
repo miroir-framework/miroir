@@ -8,9 +8,21 @@
     "emulatedServer-indexedDb",
     "emulatedServer-mongodb"
   ],
+  "scopes": {
+    "always": "Run bracket (environment record, tracked-assets check): joins every scoped run",
+    "smoke": "Wide and thin: one step per layer (model validation, transformers, DomainController, runner, report, UI component)",
+    "core": "miroir-core unit catalog, transformers, queries, schemas, deployment modelValidation, access and authentication",
+    "actions": "DomainController, persistence stores, model evolution (CRUD, undo/redo, freeze, drop)",
+    "runners": "Runners, MCP runners, scenarios, multistep processes",
+    "ui": "React components, reports, Miroir Tests UI, grids and list displays",
+    "localcache": "Local cache memory measure and monitor",
+    "external": "External services, OpenAPI connection wizard, secrets, process capabilities, AI backend",
+    "tooling": "Repo guards, test harness and launchers, build tooling, runtimes (env, CLI, MCP, Electron)"
+  },
   "steps": [
     {
       "id": "unit-321-environment-before",
+      "scopes": ["always"],
       "tier": "unit",
       "title": "#321 \u2014 record the asset files already changed (a developer's own edits) and the selected environment (environment.json)",
       "requires": "none",
@@ -22,6 +34,7 @@
     },
     {
       "id": "unit-check-bare-console",
+      "scopes": ["tooling"],
       "tier": "unit",
       "title": "Guard — unallowlisted bare console.* in packages/*/src (#237)",
       "requires": "none",
@@ -32,6 +45,7 @@
     },
     {
       "id": "unit-check-ml-nomenclature",
+      "scopes": ["tooling"],
       "tier": "unit",
       "title": "Guard — ML / MLS nomenclature for Miroir's meta-language (#145)",
       "requires": "none",
@@ -42,6 +56,7 @@
     },
     {
       "id": "unit-check-dependency-policy",
+      "scopes": ["tooling"],
       "tier": "unit",
       "title": "Guard — dependency policy: exact specs, build tools in devDependencies, lockfile, workflows, action SHAs (#326)",
       "requires": "none",
@@ -62,6 +77,7 @@
     },
     {
       "id": "unit-301-agent-tooling",
+      "scopes": ["tooling"],
       "tier": "unit",
       "title": "Repo scripts (scripts/tests): #301 agent tooling",
       "requires": "none",
@@ -75,6 +91,7 @@
     },
     {
       "id": "unit-miroir-core",
+      "scopes": ["core"],
       "tier": "unit",
       "title": "MiroirTest unit suites (miroir-core registry)",
       "requires": "none",
@@ -91,6 +108,7 @@
     },
     {
       "id": "unit-71-authentication",
+      "scopes": ["core"],
       "tier": "unit",
       "title": "#71 — authentication hatch, login, token, password",
       "requires": "none",
@@ -120,6 +138,7 @@
     },
     {
       "id": "unit-262-application-access",
+      "scopes": ["core"],
       "tier": "unit",
       "title": "#262 — application access evaluation",
       "requires": "none",
@@ -149,6 +168,7 @@
     },
     {
       "id": "unit-264-deployment-access",
+      "scopes": ["core"],
       "tier": "unit",
       "title": "#264 — deployment access evaluation",
       "requires": "none",
@@ -178,6 +198,7 @@
     },
     {
       "id": "unit-transformerResultSchema",
+      "scopes": ["core"],
       "tier": "unit",
       "title": "#88 — resolveTransformerResultSchema PLATFORM inventory",
       "requires": "none",
@@ -207,6 +228,7 @@
     },
     {
       "id": "unit-resolveSuitePlayfieldSeed",
+      "scopes": ["tooling"],
       "tier": "unit",
       "title": "#252 — resolveSuitePlayfieldSeed (inline XOR TestConfiguration)",
       "requires": "none",
@@ -236,6 +258,7 @@
     },
     {
       "id": "unit-testConfigurationSection",
+      "scopes": ["tooling"],
       "tier": "unit",
       "title": "#252 — TestConfiguration entity, menus, getApplicationSection",
       "requires": "none",
@@ -265,6 +288,7 @@
     },
     {
       "id": "default-miroir-modelValidation",
+      "scopes": ["smoke", "core"],
       "tier": "default",
       "title": "Deployment modelValidation \u2014 miroir",
       "requires": "none",
@@ -280,6 +304,7 @@
     },
     {
       "id": "default-admin-modelValidation",
+      "scopes": ["core"],
       "tier": "default",
       "title": "Deployment modelValidation \u2014 admin",
       "requires": "none",
@@ -295,6 +320,7 @@
     },
     {
       "id": "default-library-modelValidation",
+      "scopes": ["core"],
       "tier": "default",
       "title": "Deployment modelValidation \u2014 library",
       "requires": "none",
@@ -310,6 +336,7 @@
     },
     {
       "id": "default-designer-modelValidation",
+      "scopes": ["core"],
       "tier": "default",
       "title": "Deployment modelValidation \u2014 designer",
       "requires": "none",
@@ -325,6 +352,7 @@
     },
     {
       "id": "unit-RunAllMiroirTestsButton",
+      "scopes": ["ui"],
       "tier": "unit",
       "title": "T2 \u2014 RunAllMiroirTestsButton runMode (unit/integ batch)",
       "requires": "none",
@@ -355,6 +383,7 @@
     },
     {
       "id": "unit-MiroirTestListDisplay",
+      "scopes": ["ui"],
       "tier": "unit",
       "title": "T3 \u2014 list dual bar (unit label + conditional integ)",
       "requires": "none",
@@ -385,6 +414,7 @@
     },
     {
       "id": "unit-MiroirTestDisplay",
+      "scopes": ["ui"],
       "tier": "unit",
       "title": "T4 \u2014 details mixed / runner / unit-only chrome",
       "requires": "none",
@@ -415,6 +445,7 @@
     },
     {
       "id": "unit-localCacheMemoryMeasure",
+      "scopes": ["localcache"],
       "tier": "unit",
       "title": "#211 \u2014 LocalCache memory measure (pure identity-aware sizing)",
       "requires": "none",
@@ -430,6 +461,7 @@
     },
     {
       "id": "unit-localCache-memoryMeasure-static-redux",
+      "scopes": ["localcache"],
       "tier": "unit",
       "title": "#211 \u2014 LocalCache static memory image (redux)",
       "requires": "none",
@@ -445,6 +477,7 @@
     },
     {
       "id": "unit-localCache-memoryMeasure-static-zustand",
+      "scopes": ["localcache"],
       "tier": "unit",
       "title": "#211 \u2014 LocalCache static memory image (zustand)",
       "requires": "none",
@@ -460,6 +493,7 @@
     },
     {
       "id": "unit-localCache-monitor-redux",
+      "scopes": ["localcache"],
       "tier": "unit",
       "title": "#211 \u2014 LocalCache monitor API present-only currentInfo (redux)",
       "requires": "none",
@@ -475,6 +509,7 @@
     },
     {
       "id": "unit-localCache-monitor-zustand",
+      "scopes": ["localcache"],
       "tier": "unit",
       "title": "#211 \u2014 LocalCache monitor API present-only currentInfo (zustand)",
       "requires": "none",
@@ -490,6 +525,7 @@
     },
     {
       "id": "unit-localCacheMemoryAttributed",
+      "scopes": ["localcache"],
       "tier": "unit",
       "title": "#211 \u2014 LocalCache attributed per-Entity + top-10 sizing",
       "requires": "none",
@@ -505,6 +541,7 @@
     },
     {
       "id": "unit-localCacheMonitorGate",
+      "scopes": ["localcache"],
       "tier": "unit",
       "title": "#211 \u2014 LocalCache monitor UI gate",
       "requires": "none",
@@ -535,6 +572,7 @@
     },
     {
       "id": "unit-localCacheMonitorSummary",
+      "scopes": ["localcache"],
       "tier": "unit",
       "title": "#211 \u2014 LocalCache monitor docked summary panel",
       "requires": "none",
@@ -565,6 +603,7 @@
     },
     {
       "id": "unit-localCacheMonitorIndicators",
+      "scopes": ["localcache"],
       "tier": "unit",
       "title": "#211 \u2014 LocalCache monitor session efficiency indicators",
       "requires": "none",
@@ -595,6 +634,7 @@
     },
     {
       "id": "unit-localCacheMonitorSession",
+      "scopes": ["localcache"],
       "tier": "unit",
       "title": "#211 \u2014 LocalCache monitor clear/export + OFF footprint hooks",
       "requires": "none",
@@ -625,6 +665,7 @@
     },
     {
       "id": "unit-localCacheMonitorFootprint",
+      "scopes": ["localcache"],
       "tier": "unit",
       "title": "#211 \u2014 LocalCache monitor panel footprint when OFF",
       "requires": "none",
@@ -640,6 +681,7 @@
     },
     {
       "id": "integ-tr.core",
+      "scopes": ["smoke", "core"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 tr.core",
       "requires": "postgres",
@@ -660,6 +702,7 @@
     },
     {
       "id": "integ-runner.lendDocument",
+      "scopes": ["smoke", "runners"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 runner.lendDocument",
       "requires": "postgres",
@@ -699,6 +742,7 @@
     },
     {
       "id": "integ-runner.returnDocument",
+      "scopes": ["runners"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 runner.returnDocument",
       "requires": "postgres",
@@ -738,6 +782,7 @@
     },
     {
       "id": "integ-runner.mcp.getInstances",
+      "scopes": ["runners"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 runner.mcp.getInstances",
       "requires": "postgres",
@@ -777,6 +822,7 @@
     },
     {
       "id": "integ-runner.deployApplication",
+      "scopes": ["runners"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 runner.deployApplication",
       "requires": "postgres",
@@ -816,6 +862,7 @@
     },
     {
       "id": "integ-runner.mcp.lendDocument",
+      "scopes": ["runners"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 runner.mcp.lendDocument",
       "requires": "postgres",
@@ -855,6 +902,7 @@
     },
     {
       "id": "integ-action.domainController.dataCrud",
+      "scopes": ["smoke", "actions"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 action.domainController.dataCrud (actionTest)",
       "requires": "postgres",
@@ -894,6 +942,7 @@
     },
     {
       "id": "integ-action.domainController.modelCrud",
+      "scopes": ["actions"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 action.domainController.modelCrud (actionTest)",
       "requires": "postgres",
@@ -933,6 +982,7 @@
     },
     {
       "id": "integ-action.domainController.dataCrud.compositePk",
+      "scopes": ["actions"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 action.domainController.dataCrud.compositePk (actionTest)",
       "requires": "postgres",
@@ -972,6 +1022,7 @@
     },
     {
       "id": "integ-action.domainController.modelCrud.nonUuidPk",
+      "scopes": ["actions"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 action.domainController.modelCrud.nonUuidPk (actionTest)",
       "requires": "postgres",
@@ -1011,6 +1062,7 @@
     },
     {
       "id": "integ-action.domainController.dataCrud.nonUuidPk",
+      "scopes": ["actions"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 action.domainController.dataCrud.nonUuidPk (actionTest)",
       "requires": "postgres",
@@ -1050,6 +1102,7 @@
     },
     {
       "id": "integ-action.domainController.dataCrud.noParentUuid",
+      "scopes": ["actions"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 action.domainController.dataCrud.noParentUuid (actionTest)",
       "requires": "postgres",
@@ -1089,6 +1142,7 @@
     },
     {
       "id": "integ-action.domainController.modelUndoRedo",
+      "scopes": ["actions"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 action.domainController.modelUndoRedo (actionTest)",
       "requires": "postgres",
@@ -1128,6 +1182,7 @@
     },
     {
       "id": "integ-action.domainController.freezeApplicationVersion",
+      "scopes": ["actions"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 action.domainController.freezeApplicationVersion (actionTest)",
       "requires": "postgres",
@@ -1167,6 +1222,7 @@
     },
     {
       "id": "integ-runner.freezeApplicationVersion",
+      "scopes": ["actions", "runners"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 runner.freezeApplicationVersion (runnerTest, filesystem)",
       "requires": "none",
@@ -1187,6 +1243,7 @@
     },
     {
       "id": "integ-runner.dropEntity",
+      "scopes": ["actions", "runners"],
       "tier": "default",
       "title": "MiroirTest integ — runner.dropEntity (skipReset, no playfield)",
       "requires": "postgres",
@@ -1226,6 +1283,7 @@
     },
     {
       "id": "integ-action.scenario.evolutionTrace",
+      "scopes": ["actions"],
       "tier": "default",
       "title": "MiroirTest integ — action.scenario.evolutionTrace (actionTest)",
       "requires": "postgres",
@@ -1237,6 +1295,7 @@
     },
     {
       "id": "integ-report.bookDetails",
+      "scopes": ["smoke", "ui"],
       "tier": "default",
       "title": "MiroirTest integ — report.bookDetails (Report mounted at its route, edit saved)",
       "requires": "postgres",
@@ -1276,6 +1335,7 @@
     },
     {
       "id": "integ-report.connectExternalServiceWizard",
+      "scopes": ["external"],
       "tier": "default",
       "title": "MiroirTest integ — report.connectExternalServiceWizard (multistep wizard, fake HTTP, Finish persisted)",
       "requires": "postgres",
@@ -1315,6 +1375,7 @@
     },
     {
       "id": "appstack-PersistenceStoreController.integ",
+      "scopes": ["actions"],
       "tier": "default",
       "title": "App-stack \u2014 PersistenceStoreController.integ",
       "requires": "postgres",
@@ -1349,6 +1410,7 @@
     },
     {
       "id": "appstack-ExtractorPersistenceStoreRunner.integ",
+      "scopes": ["core"],
       "tier": "default",
       "title": "App-stack \u2014 ExtractorPersistenceStoreRunner.integ",
       "requires": "postgres",
@@ -1383,6 +1445,7 @@
     },
     {
       "id": "appstack-ExtractorTemplatePersistenceStoreRunner.integ",
+      "scopes": ["core"],
       "tier": "default",
       "title": "App-stack \u2014 ExtractorTemplatePersistenceStoreRunner.integ",
       "requires": "postgres",
@@ -1417,6 +1480,7 @@
     },
     {
       "id": "appstack-uiIntegrationTestLauncher.integ",
+      "scopes": ["ui"],
       "tier": "default",
       "title": "UI launcher Node proof \u2014 runner + transformer leaves",
       "requires": "postgres",
@@ -1434,6 +1498,7 @@
     },
     {
       "id": "appstack-MiroirTestDisplayIntegrationLaunch",
+      "scopes": ["ui"],
       "tier": "default",
       "title": "UI details integ launch (B6-d1)",
       "requires": "postgres",
@@ -1451,6 +1516,7 @@
     },
     {
       "id": "appstack-MiroirTestListIntegrationLaunch",
+      "scopes": ["ui"],
       "tier": "default",
       "title": "UI list integ batch (T5)",
       "requires": "postgres",
@@ -1468,6 +1534,7 @@
     },
     {
       "id": "appstack-miroir-component-tests",
+      "scopes": ["smoke", "ui"],
       "tier": "default",
       "title": "#286, #292, #303 — MlElementEditor component tests as MiroirTests (vitest entry + JSON consistency; the runOnDemand perf suite is skipped without MIROIR_COMPONENT_PERF=1)",
       "requires": "none",
@@ -1479,6 +1546,7 @@
     },
     {
       "id": "integ-listDisplayByTransformer",
+      "scopes": ["ui"],
       "tier": "unit",
       "title": "#246 list transformer panel — app-stack integration",
       "requires": "none",
@@ -1509,6 +1577,7 @@
     },
     {
       "id": "unit-listDisplayByTransformer",
+      "scopes": ["ui"],
       "tier": "unit",
       "title": "#246 list transformer — helper + wiring unit suites",
       "requires": "none",
@@ -1539,6 +1608,7 @@
     },
     {
       "id": "integ-gridPagination",
+      "scopes": ["ui"],
       "tier": "unit",
       "title": "#247 grid pagination — app-stack integration",
       "requires": "none",
@@ -1569,6 +1639,7 @@
     },
     {
       "id": "unit-gridPagination",
+      "scopes": ["ui"],
       "tier": "unit",
       "title": "#247 grid pagination — primitives + viewport unit suites",
       "requires": "none",
@@ -1599,6 +1670,7 @@
     },
     {
       "id": "externalServices-spotify",
+      "scopes": ["external"],
       "tier": "default",
       "title": "#267 \u2014 external services + Spotify (nonreg bundle)",
       "requires": "none",
@@ -1610,6 +1682,7 @@
     },
     {
       "id": "apiCallReport-281",
+      "scopes": ["external"],
       "tier": "default",
       "title": "#281 \u2014 typed API-call report section (issue-directory nonreg)",
       "requires": "none",
@@ -1621,6 +1694,7 @@
     },
     {
       "id": "unit-270-persistent-secrets",
+      "scopes": ["external"],
       "tier": "unit",
       "title": "#270 — persist named secrets (core + MCP unit)",
       "requires": "none",
@@ -1632,6 +1706,7 @@
     },
     {
       "id": "appstack-270-persistent-secrets",
+      "scopes": ["external"],
       "tier": "default",
       "title": "#270 — persist named secrets (hydrate, HTTP, principal, rotation, import)",
       "requires": "none",
@@ -1649,6 +1724,7 @@
     },
     {
       "id": "unit-273-process-capabilities",
+      "scopes": ["external"],
       "tier": "unit",
       "title": "#273 — process capability switches (core + standalone unit)",
       "requires": "none",
@@ -1660,6 +1736,7 @@
     },
     {
       "id": "unit-275-cursor-sdk",
+      "scopes": ["external"],
       "tier": "unit",
       "title": "#275 — Cursor SDK as CopilotKit backend (core + ai + standalone unit)",
       "requires": "none",
@@ -1671,6 +1748,7 @@
     },
     {
       "id": "appstack-273-process-capabilities",
+      "scopes": ["external"],
       "tier": "default",
       "title": "#273 — store create/admin refuse follows snapshot",
       "requires": "none",
@@ -1688,6 +1766,7 @@
     },
     {
       "id": "unit-274-multistep-reports",
+      "scopes": ["runners", "ui"],
       "tier": "unit",
       "title": "#274 — multistep Reports (phase0 contracts)",
       "requires": "none",
@@ -1718,6 +1797,7 @@
     },
     {
       "id": "integ-action.scenario.multistepReportTemplate",
+      "scopes": ["runners"],
       "tier": "default",
       "title": "#274 — multistep Reports (MiroirTest Finish integ)",
       "requires": "none",
@@ -1757,6 +1837,7 @@
     },
     {
       "id": "appstack-274-multistep-reports",
+      "scopes": ["runners", "ui"],
       "tier": "default",
       "title": "#274 — multistep Reports (process walk + launchers)",
       "requires": "none",
@@ -1768,6 +1849,7 @@
     },
     {
       "id": "unit-284-openapi-connection-wizard",
+      "scopes": ["external"],
       "tier": "unit",
       "title": "#284 — OpenAPI connection wizard (phase0 stable contracts)",
       "requires": "none",
@@ -1779,6 +1861,7 @@
     },
     {
       "id": "integ-action-284-openapi-connection-wizard",
+      "scopes": ["external"],
       "tier": "default",
       "title": "#284 — OpenAPI connection wizard (public Finish, failed probe, second Finish)",
       "requires": "none",
@@ -1790,6 +1873,7 @@
     },
     {
       "id": "integ-action-284-openapi-connection-wizard-auth",
+      "scopes": ["external"],
       "tier": "default",
       "title": "#284 — OpenAPI connection wizard (authenticated probes)",
       "requires": "none",
@@ -1801,6 +1885,7 @@
     },
     {
       "id": "appstack-284-openapi-connection-wizard",
+      "scopes": ["external"],
       "tier": "default",
       "title": "#284 — OpenAPI connection wizard (branching host)",
       "requires": "none",
@@ -1812,6 +1897,7 @@
     },
     {
       "id": "unit-286-react-component-miroir-tests",
+      "scopes": ["ui"],
       "tier": "unit",
       "title": "#286 — React component tests as MiroirTests (core leaf + app sandbox, portal, matchers)",
       "requires": "none",
@@ -1823,6 +1909,7 @@
     },
     {
       "id": "unit-292-declarative-react-component-tests",
+      "scopes": ["ui"],
       "tier": "unit",
       "title": "#292 — declarative React component tests (core walk + schema, instances, step interpreter, targets, widgets, legacy removed)",
       "requires": "none",
@@ -1834,6 +1921,7 @@
     },
     {
       "id": "unit-303-test-pattern-and-render-performance",
+      "scopes": ["ui"],
       "tier": "unit",
       "title": "#303 — test pattern and render performance (render insight coverage, measureRendering step, iterations override + measurement table)",
       "requires": "none",
@@ -1845,6 +1933,7 @@
     },
     {
       "id": "unit-307-testByFile-launcher",
+      "scopes": ["tooling"],
       "tier": "unit",
       "title": "#307 \u2014 testByFile bail override and exact argument passing (launches the real script)",
       "requires": "none",
@@ -1877,6 +1966,7 @@
     },
     {
       "id": "unit-326-build-tooling",
+      "scopes": ["tooling"],
       "tier": "unit",
       "title": "#326 — bundle report attribution, coverage tour arithmetic and server preload (build tooling, needs no build)",
       "requires": "none",
@@ -1910,6 +2000,7 @@
     },
     {
       "id": "unit-312-miroir-test-tags",
+      "scopes": ["tooling"],
       "tier": "unit",
       "title": "#312 / #316 \u2014 MiroirTest tags and names: CLI selection, Entity vocabulary, mode tags, naming guards, launcher routing, Tags column",
       "requires": "none",
@@ -1921,6 +2012,7 @@
     },
     {
       "id": "unit-report-tests",
+      "scopes": ["ui"],
       "tier": "unit",
       "title": "Report tests — testMiroir routing and the wait for started actions (#330)",
       "requires": "none",
@@ -1953,6 +2045,7 @@
     },
     {
       "id": "appstack-report-tests",
+      "scopes": ["ui"],
       "tier": "default",
       "title": "Report tests — failed assertion, undeclared request, run from the Miroir Tests display (#330)",
       "requires": "postgres",
@@ -1964,6 +2057,7 @@
     },
     {
       "id": "unit-321-miroir-env",
+      "scopes": ["tooling"],
       "tier": "unit",
       "title": "#321 \u2014 environments: miroir-env commands, server boot from an environment, check / import / prune",
       "requires": "none",
@@ -1977,6 +2071,7 @@
     },
     {
       "id": "full-postgres-modelValidation",
+      "scopes": ["core"],
       "tier": "full",
       "title": "Deployment modelValidation \u2014 postgres",
       "requires": "none",
@@ -1992,6 +2087,7 @@
     },
     {
       "id": "unit-345-electron",
+      "scopes": ["tooling"],
       "tier": "unit",
       "title": "#345 \u2014 Electron main process: first-run preparation of the desktop environment and its boot",
       "requires": "none",
@@ -2005,6 +2101,7 @@
     },
     {
       "id": "unit-345-mcp",
+      "scopes": ["tooling"],
       "tier": "default",
       "title": "#345 \u2014 miroir-mcp tests on a test environment (test-filesystem unless MIROIR_ENV names another test-* environment)",
       "requires": "none",
@@ -2018,6 +2115,7 @@
     },
     {
       "id": "unit-345-cli",
+      "scopes": ["tooling"],
       "tier": "default",
       "title": "#345 \u2014 miroir-cli commands on a test environment (test-filesystem unless MIROIR_ENV names another test-* environment)",
       "requires": "none",
@@ -2031,6 +2129,7 @@
     },
     {
       "id": "unit-321-tracked-assets",
+      "scopes": ["always"],
       "tier": "unit",
       "title": "#321 \u2014 no asset file changed by the run (runs last in every tier); miroir-env check --strict: every definition valid, the selected environment state in line with it",
       "requires": "none",
