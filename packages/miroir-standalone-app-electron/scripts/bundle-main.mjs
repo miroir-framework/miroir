@@ -59,8 +59,10 @@ const common = {
   platform: "node",
   target: "node22",
   external: EXTERNALS,
-  // Class and function names stay as written: esbuild renames clashing top-level names, and
-  // some libraries read `constructor.name`.
+  // #337: smaller file to read at startup; stack traces map back through the source maps.
+  minify: true,
+  // Class and function names stay as written: esbuild renames clashing top-level names (and
+  // minifies them), and some libraries read `constructor.name`.
   keepNames: true,
   sourcemap: true,
   metafile: true,

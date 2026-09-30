@@ -54,11 +54,15 @@ describe("electronBundle", () => {
     }
   });
 
-  // react and react-dom are in the bundle today, through miroir-localcache-redux → react-redux:
-  // a finding for the size issue, not asserted here.
-  it("bundles no browser UI component library", () => {
+  // #337: the main process imports "miroir-localcache-redux/node", which re-exports no react-redux.
+  it("bundles no browser UI library, React included", () => {
     const ui = [...names].filter(
-      (name) => name.startsWith("@mui/") || name.startsWith("@copilotkit/react-") || name.startsWith("@testing-library/"),
+      (name) =>
+        name.startsWith("@mui/") ||
+        name.startsWith("@copilotkit/react-") ||
+        name.startsWith("@testing-library/") ||
+        name === "react-dom" ||
+        name === "react-redux",
     );
     expect(ui.map((name) => `${name} (${report.packages.find((entry) => entry.name === name)!.via})`)).toEqual([]);
   });

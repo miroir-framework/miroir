@@ -8,7 +8,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../326-BUILD-build-hardening/`](../326-BUILD-build-hardening/) ✅
 Working branch: `claude/issue-337-analysis-yjkuzv`
 
-**Resume note:** slices 0–6 DONE.
+**Resume note:** slices 0–7 DONE.
 
 ---
 
@@ -33,7 +33,7 @@ This plan does **not** cover: F13 (`lodash`), `yaml`, the grid split by `gridTyp
 | 4 | Only the used meta-model and Library JSON loads | ✅ | new `eagerPackageMaxBytes` rule (pytest); guard; MiroirTest CLI |
 | 5 | CodeMirror loads with the first code field | ✅ | `forbiddenEager` `@codemirror/*`; tour |
 | 6 | Node store drivers leave the web build | ✅ | policy `lazy` list shrinks; vitest integ still uses real stores |
-| 7 | Electron main process without React, minified | ⬜ | Electron `forbiddenEager` `react-dom`; Electron smoke |
+| 7 | Electron main process without React, minified | ✅ | Electron `forbiddenEager` `react-dom`; Electron smoke |
 | 8 | Nonreg, docs, cleanup, AC | ⬜ | nonreg filesystem + tour + AC table |
 
 ---
@@ -322,7 +322,7 @@ Validation: guard 0 violations; `npm run nonreg:filesystem -- --runner shared` 8
 
 ## Slice 7 — Electron main process without React, minified
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -348,7 +348,9 @@ Electron build + guard; `npm run testByFile -w miroir-standalone-app -- electron
 
 ### Realization
 
-_(to fill)_
+RED: with `react-dom` and `react-redux` in the Electron `forbiddenEager`, the build of the slice 6 tree failed the guard on both (`environmentBoot.ts → miroir-localcache-redux → react-redux → react-dom`). GREEN: `miroir-localcache-redux/src/node.ts` holds every export without React (`LocalCache`, the slice and its selectors, …); `src/index.ts` re-exports it and adds the React ones; `package.json` exports `./node` and tsup builds both entries. `bundle-main.mjs` minifies, with `keepNames: true` as before. 7.3 done in the same commit: `miroir-server`, `miroir-cli` and `miroir-mcp` import `miroir-localcache-redux/node`. **Electron eager gzip 4 430 119 → 3 184 200 (−28.1%)**; the committed Electron baseline (4 769 537) was already stale since slices 3 and 4, which shrank `miroir-core` and the meta-model in the Electron bundle too, so the branch's intermediate commits fail the Electron budget rule and this one sets it. The Electron policy also drops `miroir-app-miroir` from `defeatedDynamicImports` (slice 4 deleted its dynamic import).
+
+Validation: Electron build + guard 0 violations; `electronBundle.unit` 6 passed (asserts no `react-dom`, `react-redux`); smoke on `electron-builder --dir -c.npmRebuild=false`: `xvfb-run` logs `IPC server ready`; `unit-345-electron` in the slice 6 `nonreg:filesystem` run (87 passed); typecheck miroir-server, miroir-cli, miroir-mcp, miroir-standalone-app-electron, miroir-localcache-redux.
 
 ---
 

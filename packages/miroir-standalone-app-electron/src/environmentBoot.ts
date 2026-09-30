@@ -36,7 +36,7 @@ import {
   seedEnvironmentState,
   type ResolvedEnvironment,
 } from "miroir-env";
-import { setupMiroirDomainController } from "miroir-localcache-redux";
+import { setupMiroirDomainController } from "miroir-localcache-redux/node";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
