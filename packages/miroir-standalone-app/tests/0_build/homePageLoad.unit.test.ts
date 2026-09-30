@@ -17,11 +17,17 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 type Manifest = Record<string, { file: string; isEntry?: boolean; imports?: string[] }>;
-type BundleReport = { chunks: { file: string; packages: { name: string }[] }[] };
+type BundleReport = { chunks: { file: string; gzipBytes: number; packages: { name: string }[] }[] };
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const viteDirectory = join(packageRoot, "dist", ".vite");
 const homePageRoute = "miroir-fwk/4_view/routes/HomePage.tsx";
+/**
+ * Gzip bytes of everything the home page fetches: 1 391 763 on 2026-09-30 (12 chunks). The bundle guard's
+ * `eagerGzipBaseline` counts only the preloaded chunks, not the route chunks; this cap covers them, with
+ * about 4% headroom. Lower it when a change makes the home page smaller.
+ */
+const homePageMaxGzipBytes = 1_450_000;
 
 function readJson<T>(file: string): T {
   const path = join(viteDirectory, file);
@@ -62,5 +68,14 @@ describe("homePageLoad", () => {
           .map((entry) => `${entry.name} in ${chunk.file}`),
       );
     expect(grids).toEqual([]);
+  });
+
+  it(`the home page fetches at most ${homePageMaxGzipBytes} bytes gzipped`, () => {
+    const files = homePageFiles(readJson<Manifest>("manifest.json"));
+    const report = readJson<BundleReport>("bundle-report.json");
+    const gzipBytes = report.chunks
+      .filter((chunk) => files.has(chunk.file))
+      .reduce((total, chunk) => total + chunk.gzipBytes, 0);
+    expect(gzipBytes).toBeLessThanOrEqual(homePageMaxGzipBytes);
   });
 });
