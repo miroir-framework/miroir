@@ -72,7 +72,7 @@ Step list: [`scripts/nonreg-manifest.json`](../../scripts/nonreg-manifest.json).
 
 #### Scopes (#351)
 
-A **scope** is a named subset of the manifest for a quick check between implementation slices, when the full run (about 25 min on filesystem) is too long. Each step lists its scopes (`"scopes": ["actions", "runners"]`); the top-level `scopes` object describes them. `--scope a,b` runs the steps of those scopes plus the run bracket (scope `always`: environment record first, tracked-assets check last), still filtered by `--tier`; `--only` ids are added to the selection. `summary.json` records `scopes`. Without `--scope` a run is unchanged.
+A **scope** is a named subset of the manifest for a quick check between implementation slices, when the full run (about 25 min on filesystem) is too long. Each step lists its scopes (`"scopes": ["actions", "runners"]`); the top-level `scopes` object describes them. `--scope a,b` runs the steps of those scopes plus the run bracket (scope `always`: environment record first, tracked-assets check last), still filtered by `--tier`; `--only` ids are added to the selection. `summary.json` records `scopes`; an empty or unknown scope name is an error. `--compare` with a scoped run on either side compares only the steps both runs selected and lists the others as ignored. Without `--scope` a run is unchanged.
 
 ```bash
 npm run nonreg:filesystem -- --runner shared --scope smoke,actions
@@ -84,7 +84,7 @@ npm run nonreg:filesystem -- --runner shared --scope ui --only integ-runner.drop
 | `smoke` | 8 | 2.4 min | wide and thin: one step per layer (model validation, `tr.core`, DomainController dataCrud, runner lendDocument, report bookDetails, MlElementEditor component tests) |
 | `core` | 14 | 1.5 min | miroir-core unit catalog, transformers, queries, schemas, deployment `modelValidation`, access and authentication |
 | `actions` | 14 | 1.8 min | DomainController, persistence stores, model evolution |
-| `runners` | 12 | 1.9 min | runners, MCP runners, scenarios, multistep processes |
+| `runners` | 13 | 1.9 min (before `unit-345-mcp` joined) | runners, MCP runners, scenarios, multistep processes |
 | `ui` | 21 | 10.2 min | React components, reports, Miroir Tests UI, grids and lists |
 | `localcache` | 13 | 1.2 min | local cache memory measure and monitor |
 | `external` | 14 | 8.5 min | external services, OpenAPI connection wizard, secrets, process capabilities, AI backend |

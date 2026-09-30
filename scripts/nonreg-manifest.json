@@ -2101,7 +2101,7 @@
     },
     {
       "id": "unit-345-mcp",
-      "scopes": ["tooling"],
+      "scopes": ["runners", "tooling"],
       "tier": "default",
       "title": "#345 \u2014 miroir-mcp tests on a test environment (test-filesystem unless MIROIR_ENV names another test-* environment)",
       "requires": "none",

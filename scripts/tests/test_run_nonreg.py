@@ -575,3 +575,46 @@ def test_smoke_is_wide_one_step_in_each_main_layer():
 
     for layer in ("core", "actions", "runners", "ui"):
         assert any(layer in scopes for scopes in smoke), layer
+
+
+def test_empty_scope_is_an_error_not_a_full_run(tmp_path: Path, scoped_manifest: Path):
+    proc = subprocess.run(
+        [sys.executable, str(SCRIPT), "--manifest", str(scoped_manifest), "--results-root", str(tmp_path / "r"), "--scope", ""],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert proc.returncode == 2
+    assert "--scope needs at least one scope name" in proc.stderr
+    assert not (tmp_path / "r").exists()
+
+
+def test_compare_with_a_scoped_run_only_looks_at_the_steps_both_runs_selected(tmp_path: Path):
+    manifest = write_manifest(
+        tmp_path,
+        [
+            _scoped_step("before", "unit", "always"),
+            _scoped_step("a1", "unit", "a"),
+            {**_scoped_step("b1", "unit", "b"), "argv": ["python", "-c", "import sys; sys.exit(1)"]},
+            _scoped_step("after", "unit", "always"),
+        ],
+        scopes={"always": "run bracket", "a": "A", "b": "B"},
+    )
+    _, full, full_dir = run_nonreg(tmp_path / "full", manifest, "--tier", "unit")
+    assert full["counts"]["failed"] == 1
+
+    proc = subprocess.run(
+        [sys.executable, str(SCRIPT), "--manifest", str(manifest), "--results-root", str(tmp_path / "scoped"),
+         "--tier", "unit", "--scope", "a", "--compare", str(full_dir)],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert proc.returncode == 0, proc.stdout
+    assert "missing steps (0)" in proc.stdout
+    assert "still failing (0)" in proc.stdout
+    assert "scoped compare: 1 step(s) selected by only one run ignored: b1" in proc.stdout

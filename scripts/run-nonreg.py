@@ -140,6 +140,8 @@ def select_steps(
 def parse_scopes(arg: str, manifest: dict[str, Any]) -> list[str]:
     """Scope names from `--scope a,b`; raises ValueError on a name the manifest does not declare."""
     names = [s.strip() for s in arg.split(",") if s.strip()]
+    if not names:
+        raise ValueError("--scope needs at least one scope name")
     declared = sorted(n for n in manifest.get("scopes", {}) if n != ALWAYS_SCOPE)
     unknown = [n for n in names if n not in declared]
     if unknown:
@@ -715,6 +717,11 @@ def compare_summaries(current: dict[str, Any], baseline_path: Path) -> int:
     cur = by_id(current["steps"])
     base = by_id(baseline["steps"])
     all_ids = sorted(set(cur) | set(base))
+    # A scoped run (#351) selects a subset: only the steps both runs selected are comparable.
+    ignored: list[str] = []
+    if current.get("scopes") or baseline.get("scopes"):
+        ignored = sorted(set(cur) ^ set(base))
+        all_ids = sorted(set(cur) & set(base))
 
     new_fails: list[str] = []
     fixed: list[str] = []
@@ -756,6 +763,8 @@ def compare_summaries(current: dict[str, Any], baseline_path: Path) -> int:
     print(f"newly skipped ({len(newly_skipped)}): {', '.join(newly_skipped) or '—'}")
     print(f"added steps ({len(added_now)}): {', '.join(added_now) or '—'}")
     print(f"missing steps ({len(missing_now)}): {', '.join(missing_now) or '—'}")
+    if ignored:
+        print(f"scoped compare: {len(ignored)} step(s) selected by only one run ignored: {', '.join(ignored)}")
     print("=" * 72)
     return 1 if new_fails or still_failing else 0
 
@@ -920,7 +929,7 @@ def main(argv: list[str] | None = None) -> int:
         only_ids = {s.strip() for s in args.only.split(",") if s.strip()}
 
     scope_names: list[str] | None = None
-    if args.scope:
+    if args.scope is not None:
         try:
             scope_names = parse_scopes(args.scope, manifest)
         except ValueError as exc:
