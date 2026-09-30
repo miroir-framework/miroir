@@ -1,0 +1,365 @@
+# Issue #337 — TDD Implementation Plan
+
+> Vertical slices (RED → GREEN each). The applicative interface here is the **bundle guard**: each slice first states its cut as a policy constraint in `packages/<app>/bundle-policy.json` (a forbidden eager package, a new rule, a lower baseline), sees `scripts/check_bundle_policy.py` fail on the current build (RED), then changes the build or the code until the guard passes (GREEN) and lowers `eagerGzipBaseline`. New guard rules are proven by pytest on the guard; page-load facts the report does not hold (what the home page fetches) by a vitest reading `dist/`. That the app still works is proven by the coverage tour (real server, real browser, 7 pages) and nonreg. No mocks. The tracer bullet (slice 1) runs the whole loop once on the largest cut.
+>
+> **Execution model:** one branch, one green commit per slice. Each slice ends with its Validation commands; on success its Realization summary is appended and its Status flips to ✅ DONE.
+
+Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/337
+Prerequisite: [`../326-BUILD-build-hardening/`](../326-BUILD-build-hardening/) ✅
+Working branch: `claude/issue-337-analysis-yjkuzv`
+
+**Resume note:** plan written; no slice started.
+
+---
+
+## Scope
+
+- Standalone app: manual chunks (D1), lazy `ReportDisplay` and guard on defeated dynamic imports (D2), lazy `node:crypto` (D3), tree-shaken meta-model and Library deployments (D4, F12), lazy CodeMirror (D5), Node store drivers out of the web build (D6).
+- Electron main process: React-free `miroir-localcache-redux` entry and minified bundle (D7).
+- Guard additions that keep each gain (goal 3).
+
+This plan does **not** cover: F13 (`lodash`), `yaml`, the grid split by `gridType`, shiki grammars (S1), Rolldown (M4), C2/C3, D2 (package split), X3. They stay listed in the analysis as later options; a follow-up issue collects the ones still worth doing after the tour of the last slice.
+
+---
+
+## Progress summary
+
+| Slice | Title | Status | Primary proof |
+|---|---|---|---|
+| 0 | Characterize the baseline build | ⬜ | guard passes; baseline numbers recorded |
+| 1 | CopilotKit and ag-grid leave the page (tracer) | ⬜ | `forbiddenEager` + guard; coverage tour |
+| 2 | The home page stops loading the report route | ⬜ | new `defeatedDynamicImports` rule (pytest) + `homePageLoad` vitest; tour |
+| 3 | The crypto polyfill leaves the page | ⬜ | `forbiddenEager` crypto packages; secrets tests; nonreg filesystem |
+| 4 | Only the used meta-model and Library JSON loads | ⬜ | new `eagerPackageMaxBytes` rule (pytest); guard; MiroirTest CLI |
+| 5 | CodeMirror loads with the first code field | ⬜ | `forbiddenEager` `@codemirror/*`; tour |
+| 6 | Node store drivers leave the web build | ⬜ | policy `lazy` list shrinks; vitest integ still uses real stores |
+| 7 | Electron main process without React, minified | ⬜ | Electron `forbiddenEager` `react-dom`; Electron smoke |
+| 8 | Nonreg, docs, cleanup, AC | ⬜ | nonreg filesystem + tour + AC table |
+
+---
+
+## Locked implementation defaults
+
+Accepted by A on 2026-09-30 ("go" on the analysis). Deviations go into the slice's Realization.
+
+| Decision | Choice |
+|---|---|
+| D1 Manual chunks | M1: drop `vendor-copilotkit`, `vendor-ag-grid`, and the dead `miroir-diagram-class` clause of `vendor-d3`; `@copilotkit/*` and `ag-grid-*` in `forbiddenEager` |
+| D2 Defeated lazy routes | R1 (`React.lazy` in HomePage, SettingsPage, ReportSectionViewWithEditor; same for `uiIntegrationTestRunState.ts`) + R3 (guard rule) |
+| D3 Crypto polyfill | C1: `node:crypto` imported dynamically (see refinement below) |
+| D4 Meta-model deployment | D1: delete `MIROIR_TEST_SUITE_REGISTRY` and `loadMiroirCoreTestSuite`, `"sideEffects": false` and tree-shaking for `miroir-app-miroir` (and `miroir-example-library`, F12), size guard |
+| D5 CodeMirror | G1: `React.lazy` with a `<pre>` fallback |
+| D6 Node drivers | H1: alias to a throwing stub in the web build only |
+| D7 Electron | X1 (React-free entry), X2 (`minify: true`, `keepNames` kept) |
+| D8 Delivery | **Re-flagged:** one branch and one PR, one commit per slice, each commit lowering `eagerGzipBaseline`. The ratchet holds per commit, as D8 wanted per PR; stacked PRs cannot be retargeted here (#335). A can still ask for one PR per slice |
+
+**C1 refinement.** `encryptSecret`, `decryptSecret`, `hydrateSecrets` are synchronous and used by `miroir-server/src/server.ts` and the #270 tests. To keep them synchronous: `SecretsService` loads `node:crypto` with a top-level `await import()` when running on Node (`process.versions.node`), and exports `ensureSecretsCrypto()` that loads it on demand elsewhere; the async callers (`DomainController.connectExternalService`, `persistImportedProcessSecrets`) await it first. A sync call before loading throws "secrets crypto not loaded". Verified in slice 3 before GREEN; if the bundler keeps the import eager, fall back to the analysis's async form.
+
+---
+
+## Allocated UUIDs / keys
+
+No model element and no MiroirTest suite: the behaviours are build properties.
+
+| Artefact | Value |
+|---|---|
+| Guard rule, R3 | `defeatedDynamicImports` (policy key: list of accepted modules; `check_bundle_policy.py` rule name `defeated`) |
+| Guard rule, D4 | `eagerPackageMaxBytes` (policy key: package → max rendered bytes loaded with the page; rule name `size`) |
+| Issue-scoped vitest | `packages/miroir-standalone-app/tests/0_build/issues/337-bundle-size-cuts/homePageLoad.337.phase2.unit.test.ts` |
+| Nonreg step | none new: the guard runs in the `bundle report + guards` job of `pr-checks.yml`; see slice 8 |
+
+---
+
+## Test execution conventions
+
+| Purpose | Command |
+|---|---|
+| Standalone build + report | `npm run build -w miroir-standalone-app` |
+| Standalone guard | `python scripts/check_bundle_policy.py packages/miroir-standalone-app/dist/.vite/bundle-report.json packages/miroir-standalone-app/bundle-policy.json` |
+| Electron build + guard | `npm run build -w miroir-standalone-app-electron && python scripts/check_bundle_policy.py packages/miroir-standalone-app-electron/dist/bundle-report.json packages/miroir-standalone-app-electron/bundle-policy.json` |
+| Guard unit tests | `python -m pytest scripts/tests/test_check_bundle_policy.py -q` |
+| Build tests (read `dist/`) | `npm run testByFile -w miroir-standalone-app -- 0_build` |
+| Coverage tour (real server + browser) | `npm run build:release -w miroir-server && MIROIR_TOUR_BROWSER=/opt/pw-browsers/chromium npm run coverageTour -w miroir-standalone-app -- --serve` |
+| Secrets tests | `npm run testByFile -w miroir-core -- secrets` |
+| miroir-core unit | `npm run test -w miroir-core -- ''` |
+| Nonreg | `npm run nonreg:unit -- --runner shared`; `npm run nonreg:filesystem -- --runner shared` |
+| Type check | `npx tsc --noEmit --skipLibCheck -p packages/<pkg>/tsconfig.json` |
+
+After a baseline change, `--init` is **not** used: the slice edits `eagerGzipBaseline` and moves the named packages by hand, so the review shows each move.
+
+---
+
+## Slice 0 — Characterize the baseline build
+
+**Status:** ⬜ pending
+
+### Goal
+
+A fresh build of the merged branch passes the guard; its numbers (eager chunks, eager gzip, home page fetch, `ReportDisplay` chunk) are recorded here as the reference for every later slice.
+
+### 0.1 RED → GREEN
+
+- Build; run the guard and the `0_build` tests. Expected: 0 violations, eager gzip within 2% of 2 721 507.
+- Record: eager gzip, eager chunks, `ReportDisplay-*` gzip, total chunks. If the guard fails, the failure comes from `_integration` changes since #326: fix the policy (by hand) in this slice before any cut.
+
+### Validation
+
+Standalone build + guard; `npm run testByFile -w miroir-standalone-app -- 0_build`.
+
+### Realization
+
+_(to fill)_
+
+---
+
+## Slice 1 — CopilotKit and ag-grid leave the page (tracer)
+
+**Status:** ⬜ pending
+
+### Goal
+
+The page no longer preloads CopilotKit, its markdown stack, or ag-grid: an application user opens the home page without them (goal 1), and a maintainer's build fails if either comes back (goal 3).
+
+### 1.1 RED
+
+`bundle-policy.json`: add `@copilotkit/*` and `ag-grid-*` to `forbiddenEager`. Guard on the slice 0 build: `[forbidden] @copilotkit/core loads with the page …`, `[forbidden] ag-grid-community …`.
+
+### 1.2 GREEN
+
+- `vite/manualChunks.js`: remove the `vendor-copilotkit` and `vendor-ag-grid` rules and their names in `MIROIR_MANUAL_CHUNK_NAMES`; drop the `miroir-diagram-class` clause of `vendor-d3`.
+- Rebuild; move the packages that went lazy from `eager` to `lazy` in the policy (trial A: 202 packages), lower `eagerGzipBaseline` to the new value (trial A: 1 578 695).
+- `vite.config.js` `optimizeDeps.include` and `src/chunkLoadTrace.ts` (dev tracing names) keep working; update the names they map if they refer to removed chunks.
+
+### 1.3 Refactor checkpoint
+
+`chunkLoadLoggerPlugin.js` and `chunkLoadTrace.ts`: remove mappings to the two removed chunk names. Test `bundleReport.unit` assertions that name `vendor-copilotkit`/`vendor-ag-grid` updated to the new facts.
+
+### Validation
+
+Standalone build + guard (0 violations); `pytest scripts/tests -q`; `npm run testByFile -w miroir-standalone-app -- 0_build`; coverage tour (all 7 pages load; Copilot sidebar opens); `npx tsc … -p packages/miroir-standalone-app/tsconfig.json`.
+
+### Realization
+
+_(to fill)_
+
+---
+
+## Slice 2 — The home page stops loading the report route
+
+**Status:** ⬜ pending
+
+### Goal
+
+Opening the home page fetches no report-route code (after slice 1, that chunk holds ag-grid); a maintainer's build fails when a new static import defeats a lazy route.
+
+### 2.1 RED
+
+- `scripts/tests/test_check_bundle_policy.py`: `test_a_defeated_dynamic_import_fails_unless_accepted` (a report finding of kind `defeated-dynamic-import` not listed in `defeatedDynamicImports` → `[defeated] <module> is imported statically by <importers> …`), `test_an_accepted_defeated_import_that_is_fixed_must_be_removed`. Both fail: no such rule.
+- `homePageLoad.337.phase2.unit.test.ts` (vitest; not reachable through MiroirTest: it reads the production build's manifest): the static import closure of the entry plus the `HomePage` route chunk contains no chunk holding `routes/ReportDisplay.tsx` or `ag-grid-community`. Fails on the slice 1 build.
+
+### 2.2 GREEN
+
+- `check_bundle_policy.py`: rule `defeated`; `--init` writes the current findings to `defeatedDynamicImports`.
+- Policy: `defeatedDynamicImports: []`. Guard fails on the two current findings.
+- `HomePage.tsx`, `SettingsPage.tsx`, `ReportSectionViewWithEditor.tsx`: `ReportDisplay` through `React.lazy` + `Suspense`. `RunMiroirTestSuiteButton.tsx`, `UiIntegrationTestRunInspectorSummary.tsx`: `uiIntegrationTestRunState.ts` through a dynamic import (or type-only import where only types are used).
+- Eager gzip unchanged (the report chunk was never preloaded): baseline stays.
+
+### 2.3 Refactor checkpoint
+
+If the three pages share the same lazy declaration, one `LazyReportDisplay` module exports it.
+
+### Validation
+
+`pytest scripts/tests/test_check_bundle_policy.py -q`; standalone build + guard; `npm run testByFile -w miroir-standalone-app -- homePageLoad.337`; coverage tour; `npm run nonreg:unit -- --runner shared` (UI component tests render these pages).
+
+### Realization
+
+_(to fill)_
+
+---
+
+## Slice 3 — The crypto polyfill leaves the page
+
+**Status:** ⬜ pending
+
+### Goal
+
+The page no longer preloads `crypto-browserify`; secrets still encrypt and decrypt on the server, the CLI and in tests.
+
+### 3.1 RED
+
+`forbiddenEager`: `crypto-browserify`, `bn.js`, `elliptic`. Guard fails on the slice 2 build.
+
+### 3.2 GREEN
+
+`SecretsService.ts` per the C1 refinement (Locked defaults): no static `node:crypto` import; top-level load on Node; `ensureSecretsCrypto()` awaited by `DomainController.connectExternalService` before `importProcessSecrets`, and inside `persistImportedProcessSecrets`. Rebuild miroir-core, then the app; move the crypto packages to `lazy`, lower the baseline (≈ −185 kB expected).
+
+### 3.3 Refactor checkpoint
+
+`AuthenticationPolicy.ts` already imports `node:crypto` dynamically at 4 sites: if `SecretsService` now exposes a loader, reuse one loader for both.
+
+### Validation
+
+`npm run testByFile -w miroir-core -- secrets` (#270 suites, `serverSecrets.unit`, `secretAndRightUuid.288.unit`); `npm run test -w miroir-core -- ''`; typecheck miroir-core and miroir-server; standalone build + guard; `npm run nonreg:filesystem -- --runner shared` (DomainController, actions).
+
+### Realization
+
+_(to fill)_
+
+---
+
+## Slice 4 — Only the used meta-model and Library JSON loads
+
+**Status:** ⬜ pending
+
+### Goal
+
+The page loads the meta-model entries `miroir-core` and the app use, not the MiroirTest definitions and blobs of `miroir-app-miroir`, nor the Library deployment; a maintainer's build fails if the whole package comes back.
+
+### 4.1 RED
+
+- `test_check_bundle_policy.py`: `test_an_eager_package_above_its_size_cap_fails` (rule `size`: `eagerPackageMaxBytes` maps a package to the rendered bytes it may load with the page), `test_a_capped_package_absent_from_the_page_passes`.
+- Policy: `eagerPackageMaxBytes: { "miroir-app-miroir": 1000000 }` (today 3 889 022); `forbiddenEager`: `miroir-example-library`. Guard fails.
+
+### 4.2 GREEN
+
+- `miroir-core/src/5_tests/miroirCoreTestSuiteRegistry.ts`: delete `MIROIR_TEST_SUITE_REGISTRY` and `loadMiroirCoreTestSuite` (keep `MIROIR_TEST_SUITE_REGISTRY_NAMES`, `listMiroirTestSuiteKeys`); remove their exports from `index.ts`; update `tests/5-tests/miroirTestSuiteRegistry.unit.test.ts` to the catalog loaders.
+- `miroir-app-miroir`, `miroir-example-library`: `"sideEffects": false`; tsup `treeshake` left off if Rollup already drops unused exports (check the report), else on.
+- `MlElementEditorHooks.ts`: Library label read from the loaded model rather than importing `miroir-example-library` (or keep the import if tree-shaking reduces it to `selfApplicationLibrary`; then the forbid becomes a size cap).
+- Rebuild in `build-all.sh` order; lower the baseline (≈ −400 kB expected).
+
+### 4.3 Refactor checkpoint
+
+Any other `import *` or dynamic import of `miroir-app-miroir` reachable from the browser graph (none found at analysis time outside the registry) is removed or moved to a Node-only module.
+
+### Validation
+
+`pytest`; `npm run test -w miroir-core -- ''`; `npm run testMiroir -w miroir-core -- --suites tr.core --mode unit` (catalog loading); standalone build + guard; `npm run nonreg:unit -- --runner shared`; typecheck miroir-core, miroir-standalone-app.
+
+### Realization
+
+_(to fill)_
+
+---
+
+## Slice 5 — CodeMirror loads with the first code field
+
+**Status:** ⬜ pending
+
+### Goal
+
+The page loads no CodeMirror; the first code field (read-only block or editor) fetches it and then renders as today.
+
+### 5.1 RED
+
+`forbiddenEager`: `@codemirror/*`, `@uiw/react-codemirror`, `@lezer/*`. Guard fails.
+
+### 5.2 GREEN
+
+`miroir-react/src/components/CodeBlock_ReadOnly.tsx` and `MlElementEditorReactCodeMirror.tsx`: CodeMirror behind `React.lazy` with a `<pre>` fallback showing the same text. The exported component names and props do not change. Rebuild miroir-react, then the app; baseline (≈ −138 kB expected).
+
+### 5.3 Refactor checkpoint
+
+One lazy CodeMirror module shared by both components if their setup is the same.
+
+### Validation
+
+Standalone build + guard; `npm run nonreg:unit -- --runner shared` (component tests that render editors, e.g. transformer editor); coverage tour (Book instance editor page shows code fields); typecheck miroir-react, miroir-standalone-app.
+
+### Realization
+
+_(to fill)_
+
+---
+
+## Slice 6 — Node store drivers leave the web build
+
+**Status:** ⬜ pending
+
+### Goal
+
+The web build ships no `sequelize`, `mongodb`, `bson`, `miroir-store-postgres`, `miroir-store-mongodb`; vitest and nonreg still run them against real stores.
+
+### 6.1 RED
+
+Policy: remove `sequelize`, `mongodb`, `bson`, `miroir-store-mongodb`, `miroir-store-postgres` and their `node:* via …` entries from `lazy`. Guard fails: `[allowlist] sequelize is in neither eager nor lazy …`.
+
+### 6.2 GREEN
+
+`vite.config.js`: when `command === "build"` and `mode !== "test"`, `resolve.alias` maps those store packages to `vite/nodeStoreStub.js`, which exports the names `IntegrationTestSession.ts` imports and throws "Node store, not available in the browser" when called. `miroir-store-filesystem` included if the report shows it ships Node-only code. Rebuild; eager unchanged.
+
+### 6.3 Refactor checkpoint
+
+`optimizeDeps.exclude` keeps the dev-server exclusion; comment in `vite.config.js` explains both.
+
+### Validation
+
+Standalone build + guard; `npm run nonreg:filesystem -- --runner shared` (vitest resolves the real stores); `VITE_…`-free vitest integ on filesystem: `MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- DomainController.integ`.
+
+### Realization
+
+_(to fill)_
+
+---
+
+## Slice 7 — Electron main process without React, minified
+
+**Status:** ⬜ pending
+
+### Goal
+
+The Electron main bundle holds no `react-dom` and is minified; the packaged app still starts its IPC server.
+
+### 7.1 RED
+
+Electron `bundle-policy.json` `forbiddenEager`: add `react-dom`, `react-redux`. Guard fails (`ipcServerSetup.ts → miroir-localcache-redux → react-redux → react-dom`).
+
+### 7.2 GREEN
+
+- `miroir-localcache-redux`: a React-free entry (subpath export, e.g. `miroir-localcache-redux/node`) exporting what `ipcServerSetup.ts` uses; `src/index.ts` keeps its React re-exports.
+- `bundle-main.mjs`: `minify: true` with `keepNames: true`.
+- Rebuild; lower the Electron baseline.
+
+### 7.3 Refactor checkpoint
+
+Other Node consumers of `miroir-localcache-redux` (server, CLI, MCP) switch to the new entry when they import only non-React names.
+
+### Validation
+
+Electron build + guard; `npm run testByFile -w miroir-standalone-app -- electronBundle`; smoke: `xvfb-run -a release/linux-unpacked/miroir-standalone-app-electron --no-sandbox`, look for `IPC server ready` (build with `-c.npmRebuild=false` in the cloud); typecheck miroir-localcache-redux, electron.
+
+### Realization
+
+_(to fill)_
+
+---
+
+## Slice 8 — Nonreg, docs, cleanup, AC
+
+**Status:** ⬜ pending
+
+### 8.1 Nonreg
+
+`npm run nonreg:filesystem -- --runner shared` green. No new manifest step: the guard runs on every PR in `pr-checks.yml`, and build tests need a fresh build (as #326 decided).
+
+### 8.2 Docs
+
+`docs/internals/code-splitting.md`: "What loads with the page" table and summary table from the final build; manual chunk section (two chunks left); CodeMirror and crypto sections; new guard rules in "Bundle report and guards". `docs/internals/…` Electron note if any.
+
+### 8.3 Issue-directory cleanup
+
+`homePageLoad.337.phase2.unit.test.ts` → `tests/0_build/homePageLoad.unit.test.ts`; delete `tests/0_build/issues/337-bundle-size-cuts/`.
+
+### 8.4 Tracer bullet (narrative)
+
+Manual: open https://localhost:3080 with DevTools Network: the home page fetches the entry, `vendor-react`, `vendor-mui`, the meta-model chunk and the app chunks; opening a Library report fetches the report chunk with ag-grid; focusing a code field fetches CodeMirror. Automated equivalent: the guard, `homePageLoad.unit`, the coverage tour.
+
+### AC checklist (#337)
+
+| Criterion (issue Goal) | Proof |
+|---|---|
+| Cut what the page loads, one finding at a time | slices 1–5, each with its guard RED/GREEN |
+| Cut what both apps ship without using it | slices 6 (web), 7 (Electron) |
+| Each cut lowers `eagerGzipBaseline` | policy diff per commit |
+| Gains kept | `forbiddenEager` entries, `defeated` and `size` rules |
+| Findings not cut here are tracked | follow-up issue listing F8, F9, F13, `yaml` with the final tour's numbers |
