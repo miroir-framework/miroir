@@ -8,7 +8,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../326-BUILD-build-hardening/`](../326-BUILD-build-hardening/) ✅
 Working branch: `claude/issue-337-analysis-yjkuzv`
 
-**Resume note:** slices 0–3 DONE.
+**Resume note:** slices 0–4 DONE.
 
 ---
 
@@ -30,7 +30,7 @@ This plan does **not** cover: F13 (`lodash`), `yaml`, the grid split by `gridTyp
 | 1 | CopilotKit and ag-grid leave the page (tracer) | ✅ | `forbiddenEager` + guard; coverage tour |
 | 2 | The home page stops loading the grids | ✅ | new `defeated` rule (pytest) + `homePageLoad` vitest; tour |
 | 3 | The crypto polyfill leaves the page | ✅ | `forbiddenEager` crypto packages; secrets tests; nonreg filesystem |
-| 4 | Only the used meta-model and Library JSON loads | ⬜ | new `eagerPackageMaxBytes` rule (pytest); guard; MiroirTest CLI |
+| 4 | Only the used meta-model and Library JSON loads | ✅ | new `eagerPackageMaxBytes` rule (pytest); guard; MiroirTest CLI |
 | 5 | CodeMirror loads with the first code field | ⬜ | `forbiddenEager` `@codemirror/*`; tour |
 | 6 | Node store drivers leave the web build | ⬜ | policy `lazy` list shrinks; vitest integ still uses real stores |
 | 7 | Electron main process without React, minified | ⬜ | Electron `forbiddenEager` `react-dom`; Electron smoke |
@@ -213,7 +213,7 @@ RED: 3 `[forbidden]` violations (`crypto-browserify`, `bn.js`, `elliptic`). GREE
 
 ## Slice 4 — Only the used meta-model and Library JSON loads
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -241,7 +241,14 @@ Any other `import *` or dynamic import of `miroir-app-miroir` reachable from the
 
 ### Realization
 
-_(to fill)_
+RED: pytest cases of the `size` rule (landed with slice 2); policy caps failed on the slice 3 build (`miroir-app-miroir` 3 879 260 rendered bytes with the page). GREEN: `MIROIR_TEST_SUITE_REGISTRY` (a top-level `await import("miroir-app-miroir")`) and `loadMiroirCoreTestSuite` deleted with their exports; their unit test keeps the suite-name listing. **Eager gzip 1 402 592 → 1 070 644 (−23.7%)**; the meta-model deployment now sits in the entry chunk (4 eager chunks).
+
+Deviations, measured:
+- `"sideEffects": false` on `miroir-app-miroir` and `miroir-example-library`, and a trial alias of both packages to their sources (one module per JSON), changed the eager gzip by less than 1% (the alias made it 6 kB larger): what stays is used by eager code (`miroir-core` imports 112 names, `defaultMiroirMetaModel`). Both reverted. The bundle report's per-package rendered bytes for these packages differ between the two variants while the chunk bytes do not, so the `size` cap is set on the measured value with headroom: `eagerPackageMaxBytes: { "miroir-app-miroir": 3300000 }` (today 3 129 112; the whole package is 3.9 M).
+- F12 (Library deployment loaded for one label in `MlElementEditorHooks.ts`) not cut: ~21 kB gzip, left to the follow-up issue.
+- With the namespace read gone, Rollup tree-shakes the 3.9 MB deployment module statement by statement, and the build ran out of heap at 4 096 MB (twice, reproducible). The standalone `build` script and the `Dockerfile` step now allow 8 192 MB (6 144 was enough here).
+
+Validation: guard 0 violations; `bundleReport.unit` (the meta-model chunk assertion of #326 removed: the chunk no longer exists, the `size` rule replaces it), `bundleSourcemaps.unit`, `homePageLoad.337`; `miroirTestSuiteRegistry.unit`; `testMiroir --suites tr.core --mode unit` 261 passed.
 
 ---
 

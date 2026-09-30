@@ -107,13 +107,6 @@ describe("bundleReport", () => {
     }
   });
 
-  it("the chunk that holds the Miroir meta-model deployment holds little else", () => {
-    const chunk = report.chunks.find((candidate) => packageIn(candidate, "miroir-app-miroir"))!;
-    expect(chunk).toBeDefined();
-    const deployment = packageIn(chunk, "miroir-app-miroir");
-    expect((deployment?.renderedBytes ?? 0) / chunk.renderedBytes).toBeGreaterThan(0.9);
-  });
-
   it("mongodb is only in lazy chunks, brought in through IntegrationTestSession.ts", () => {
     const withMongodb = report.chunks.filter((chunk) => packageIn(chunk, "mongodb"));
     expect(withMongodb.length).toBeGreaterThan(0);

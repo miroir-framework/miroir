@@ -81,7 +81,7 @@ RUN npm run build -w miroir-fixture-appForTest
 #    certs → uses plain HTTP proxy target http://localhost:3080, which is correct
 #    for Docker. NODE_OPTIONS increases the V8 heap limit to prevent OOM during
 #    Vite's large bundle compilation (default ~2 GB is not enough for this workspace).
-RUN NODE_OPTIONS=--max-old-space-size=4096 npm run build -w miroir-standalone-app
+RUN NODE_OPTIONS=--max-old-space-size=8192 npm run build -w miroir-standalone-app
 RUN npm run build:release -w miroir-server
 
 # Remove devDependencies from node_modules to reduce the layer transferred to

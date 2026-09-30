@@ -1,6 +1,6 @@
 {
   "$comment": "Bundle guard (#326), checked by scripts/check_bundle_policy.py against the build's bundle-report.json. See docs/internals/code-splitting.md. defeatedDynamicImports (#337): ReportDisplay.tsx is also imported statically by HomePage, SettingsPage and ReportSectionViewWithEditor, which render a report at once.",
-  "eagerGzipBaseline": 1402592,
+  "eagerGzipBaseline": 1070644,
   "eagerGzipTolerance": 0.02,
   "forbiddenEager": [
     "@testing-library/*",
@@ -564,5 +564,8 @@
   ],
   "defeatedDynamicImports": [
     "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ReportDisplay.tsx"
-  ]
+  ],
+  "eagerPackageMaxBytes": {
+    "miroir-app-miroir": 3300000
+  }
 }
