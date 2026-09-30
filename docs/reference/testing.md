@@ -70,6 +70,28 @@ npm run nonreg -- --compare \
 
 Step list: [`scripts/nonreg-manifest.json`](../../scripts/nonreg-manifest.json). Runner: [`scripts/run-nonreg.py`](../../scripts/run-nonreg.py). Default integ profile: `emulatedServer-sql` (override with `--profile`).
 
+#### Scopes (#351)
+
+A **scope** is a named subset of the manifest for a quick check between implementation slices, when the full run (about 25 min on filesystem) is too long. Each step lists its scopes (`"scopes": ["actions", "runners"]`); the top-level `scopes` object describes them. `--scope a,b` runs the steps of those scopes plus the run bracket (scope `always`: environment record first, tracked-assets check last), still filtered by `--tier`; `--only` ids are added to the selection. `summary.json` records `scopes`. Without `--scope` a run is unchanged.
+
+```bash
+npm run nonreg:filesystem -- --runner shared --scope smoke,actions
+npm run nonreg:filesystem -- --runner shared --scope ui --only integ-runner.dropEntity
+```
+
+| Scope | Steps (default tier, incl. bracket) | Covers |
+|---|---|---|
+| `smoke` | 8 | wide and thin: one step per layer (model validation, `tr.core`, DomainController dataCrud, runner lendDocument, report bookDetails, MlElementEditor component tests) |
+| `core` | 14 | miroir-core unit catalog, transformers, queries, schemas, deployment `modelValidation`, access and authentication |
+| `actions` | 14 | DomainController, persistence stores, model evolution |
+| `runners` | 12 | runners, MCP runners, scenarios, multistep processes |
+| `ui` | 21 | React components, reports, Miroir Tests UI, grids and lists |
+| `localcache` | 13 | local cache memory measure and monitor |
+| `external` | 14 | external services, OpenAPI connection wizard, secrets, process capabilities, AI backend |
+| `tooling` | 15 | repo guards, test harness and launchers, build tooling, runtimes (env, CLI, MCP, Electron) |
+
+Which scopes a slice runs is decided in its TDD plan, from the files it changes (skill `miroir-analysis-to-tdd-plan`, § Nonreg scope per slice). A guard in `scripts/tests/test_run_nonreg.py` fails when a step has no scope besides `smoke` or names an undeclared one, so the scopes together always cover the manifest.
+
 #### Timing profile and shared runner (#318)
 
 Both are opt-in; without the flags a run behaves as before.
