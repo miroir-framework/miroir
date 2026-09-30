@@ -21,7 +21,7 @@ Out: MiroirTest tag selection, run-time derivation from a diff (analysis D1, D3)
 |---|---|---|---|
 | 1 | `--scope` selects a scope's steps plus `always` | ✅ DONE | `test_scope_*` in `test_run_nonreg.py` |
 | 2 | Real manifest scoped, guard keeps it complete | ✅ DONE | `test_every_manifest_step_*`, `test_smoke_*` |
-| 3 | Plan skill names a scope per slice; docs; durations | ⬜ pending | `sync_agent_skills.py --check`, measured runs |
+| 3 | Plan skill names a scope per slice; docs; durations | ✅ DONE | `sync_agent_skills.py --check`, measured runs |
 
 ## Locked implementation defaults
 
@@ -79,7 +79,7 @@ Membership written with a one-off Python script from the analysis inventory (tex
 
 ## Slice 3 — Plan skill, docs, measured durations
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 - `miroir-analysis-to-tdd-plan`: each slice's Validation names its nonreg scope(s), from a file-area → scope table; full nonreg every 2 or 3 slices and before a PR is ready.
 - `docs/reference/testing.md`: `--scope`, the scope table with measured durations.
@@ -88,7 +88,7 @@ Membership written with a one-off Python script from the analysis inventory (tex
 
 ### Realization
 
-See the PR description for measured durations.
+Skill section "Nonreg scope per slice" with the file-area → scope table; plan template's Validation block carries a `**Nonreg scopes:**` line and the scoped command. After `npm ci && ./build-all.sh` on `_integration` fde1e47, each scope ran once (`--tier default --profile emulatedServer-filesystem --runner shared`), all green: smoke 143 s, core 88 s, actions 105 s, runners 114 s, ui 612 s, localcache 74 s, external 509 s, tooling 166 s. In smoke, `appstack-miroir-component-tests` takes 61 s of the 143 s; kept as the UI representative (D2).
 
 ## AC checklist
 

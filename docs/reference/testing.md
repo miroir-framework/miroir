@@ -79,16 +79,18 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions
 npm run nonreg:filesystem -- --runner shared --scope ui --only integ-runner.dropEntity
 ```
 
-| Scope | Steps (default tier, incl. bracket) | Covers |
-|---|---|---|
-| `smoke` | 8 | wide and thin: one step per layer (model validation, `tr.core`, DomainController dataCrud, runner lendDocument, report bookDetails, MlElementEditor component tests) |
-| `core` | 14 | miroir-core unit catalog, transformers, queries, schemas, deployment `modelValidation`, access and authentication |
-| `actions` | 14 | DomainController, persistence stores, model evolution |
-| `runners` | 12 | runners, MCP runners, scenarios, multistep processes |
-| `ui` | 21 | React components, reports, Miroir Tests UI, grids and lists |
-| `localcache` | 13 | local cache memory measure and monitor |
-| `external` | 14 | external services, OpenAPI connection wizard, secrets, process capabilities, AI backend |
-| `tooling` | 15 | repo guards, test harness and launchers, build tooling, runtimes (env, CLI, MCP, Electron) |
+| Scope | Steps (default tier, incl. bracket) | Measured | Covers |
+|---|---|---|---|
+| `smoke` | 8 | 2.4 min | wide and thin: one step per layer (model validation, `tr.core`, DomainController dataCrud, runner lendDocument, report bookDetails, MlElementEditor component tests) |
+| `core` | 14 | 1.5 min | miroir-core unit catalog, transformers, queries, schemas, deployment `modelValidation`, access and authentication |
+| `actions` | 14 | 1.8 min | DomainController, persistence stores, model evolution |
+| `runners` | 12 | 1.9 min | runners, MCP runners, scenarios, multistep processes |
+| `ui` | 21 | 10.2 min | React components, reports, Miroir Tests UI, grids and lists |
+| `localcache` | 13 | 1.2 min | local cache memory measure and monitor |
+| `external` | 14 | 8.5 min | external services, OpenAPI connection wizard, secrets, process capabilities, AI backend |
+| `tooling` | 15 | 2.8 min | repo guards, test harness and launchers, build tooling, runtimes (env, CLI, MCP, Electron) |
+
+Measured on 2026-09-30 (cloud container, `emulatedServer-filesystem`, `--runner shared`, all green). `ui` is dominated by the React component MiroirTests (`unit-286`, `unit-292`: 4.5 min together), `external` by `externalServices-spotify` and `apiCallReport-281` (4 min together). Running all scopes one after the other takes about 30 min, a little more than a full run, because the bracket and shared launches repeat.
 
 Which scopes a slice runs is decided in its TDD plan, from the files it changes (skill `miroir-analysis-to-tdd-plan`, § Nonreg scope per slice). A guard in `scripts/tests/test_run_nonreg.py` fails when a step has no scope besides `smoke` or names an undeclared one, so the scopes together always cover the manifest.
 
