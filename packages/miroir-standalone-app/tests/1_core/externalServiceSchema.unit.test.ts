@@ -123,10 +123,10 @@ describe.skipIf(!shouldRun)("externalServiceSchema — Endpoint definition key-u
     expect(check.innermostError).toBeTruthy();
   });
 
-  it("still validates all 13 existing endpoint source assets (actions branch, no migration)", () => {
+  it("still validates all 10 existing endpoint source assets (actions branch, no migration)", () => {
     expect(existsSync(MIROIR_DATA_ENDPOINT_DIR)).toBe(true);
     expect(existsSync(LIBRARY_MODEL_ENDPOINT_DIR)).toBe(true);
-    expect(endpointAssetPaths()).toHaveLength(13);
+    expect(endpointAssetPaths()).toHaveLength(10);
 
     const endpointSchema = entityDefinitionEndpoint.mlSchema;
     for (const relativePath of endpointAssetPaths()) {

@@ -130,9 +130,6 @@ const expectedActionTypesByEndpoint: Record<string, string[]> = {
     "RestPersistenceAction_update",
     "RestPersistenceAction_delete",
   ],
-  TestEndpoint: ["runTestCompositeAction", "runTestCase"],
-  MenuEndpoint: ["menuAddItem"],
-  ApplicationEndpoint: ["createApplication", "dropApplication"],
   LocalCacheEndpoint: [],
 };
 
@@ -165,18 +162,17 @@ afterEach(() => {
 });
 
 describe("Miroir Endpoint inventory", () => {
-  it("bundles 10 of the 11 Miroir Endpoints, with their action types; MenuEndpoint is not bundled", () => {
+  it("bundles the 8 Miroir Endpoints, with their action types", () => {
     const actual = Object.fromEntries(
       miroirEndpoints.map((endpoint: any) => [endpoint.name, actionTypesOf(endpoint)]),
     );
-    const { MenuEndpoint: _notBundled, ...expectedBundled } = expectedActionTypesByEndpoint;
-    expect(actual).toEqual(expectedBundled);
+    expect(actual).toEqual(expectedActionTypesByEndpoint);
   });
 
   it("lists InstanceEndpoint and StoreManagementEndpoint twice in the bundled meta-model", () => {
     const names = miroirEndpoints.map((endpoint: any) => endpoint.name);
     const duplicated = names.filter((name: string, index: number) => names.indexOf(name) !== index);
-    expect(names.length).toBe(12);
+    expect(names.length).toBe(10);
     expect(duplicated.sort()).toEqual(["InstanceEndpoint", "StoreManagementEndpoint"]);
   });
 });
