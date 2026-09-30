@@ -6,7 +6,7 @@ import type { StoreSectionConfiguration } from "miroir-core";
 
 import {
   EnvironmentError,
-  findRepositoryRoot,
+  environmentRoot,
   readEnvironmentDefinitions,
   resolveEnvironmentFromFiles,
   validateEnvironmentDefinitions,
@@ -89,7 +89,7 @@ function check(args: string[], io: CliIo): number {
     lines.push(`${shown}: ${message}`);
   };
 
-  const repositoryRoot = findRepositoryRoot(io.cwd);
+  const repositoryRoot = environmentRoot(io.cwd, io.env);
   const definitions = readEnvironmentDefinitions(repositoryRoot);
   const validation = validateEnvironmentDefinitions(definitions);
   let resolved: ResolvedEnvironment | undefined;

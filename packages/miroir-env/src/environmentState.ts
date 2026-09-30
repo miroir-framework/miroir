@@ -70,7 +70,12 @@ export function seedEnvironmentState(resolved: ResolvedEnvironment, options: { r
       }
       const source = path.join(
         resolved.repositoryRoot,
-        applicationAssetsDirectory(deployment.applicationKey, { ...application, package: application.package }, section),
+        applicationAssetsDirectory(
+        deployment.applicationKey,
+        { ...application, package: application.package },
+        section,
+        resolved.environment.packagesDirectory,
+      ),
       );
       if (existsSync(source)) {
         // the entity directories of generated rows are kept (a filesystem data section knows its

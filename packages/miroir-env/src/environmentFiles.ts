@@ -12,7 +12,8 @@ import {
 // ################################################################################################
 // Environment definitions live in <repository root>/environments/<name>.json (#321).
 // The repository root is found from the working directory, never from the location of the
-// running bundle (bundlers relocate files, see #323).
+// running bundle (bundlers relocate files, see #323). Outside a checkout (Docker's /data, packaged
+// Electron's user data), MIROIR_ROOT names it (#345).
 // Selection, first match wins: --name, MIROIR_ENV, environments/local.json (personal, ignored by
 // git), dev.
 // ################################################################################################
@@ -21,6 +22,7 @@ export const ENVIRONMENTS_DIRECTORY = "environments";
 export const DEFAULT_ENVIRONMENT = "dev";
 export const LOCAL_ENVIRONMENT = "local";
 export const ENVIRONMENT_VARIABLE = "MIROIR_ENV";
+export const ROOT_VARIABLE = "MIROIR_ROOT";
 
 export class EnvironmentError extends Error {}
 
@@ -62,10 +64,19 @@ export function findRepositoryRoot(start: string): string {
   return directory;
 }
 
-/** True when a repository root with an environments/ folder is found above `cwd`. */
-export function hasEnvironmentDefinitions(cwd: string): boolean {
+/**
+ * The root of the environments: MIROIR_ROOT when set (a directory holding environments/ and the
+ * package assets, outside a checkout), else the repository root above `cwd`.
+ */
+export function environmentRoot(cwd: string, env: Record<string, string | undefined> = {}): string {
+  const root = env[ROOT_VARIABLE];
+  return root ? path.resolve(cwd, root) : findRepositoryRoot(cwd);
+}
+
+/** True when an environments/ folder is found under MIROIR_ROOT, or in the repository root above `cwd`. */
+export function hasEnvironmentDefinitions(cwd: string, env: Record<string, string | undefined> = {}): boolean {
   try {
-    return existsSync(path.join(findRepositoryRoot(cwd), ENVIRONMENTS_DIRECTORY));
+    return existsSync(path.join(environmentRoot(cwd, env), ENVIRONMENTS_DIRECTORY));
   } catch (error) {
     if (error instanceof EnvironmentError) {
       return false;
@@ -154,7 +165,7 @@ export function resolveEnvironmentFromFiles(options: {
   env: Record<string, string | undefined>;
   name?: string;
 }): ResolvedEnvironment {
-  const repositoryRoot = findRepositoryRoot(options.cwd);
+  const repositoryRoot = environmentRoot(options.cwd, options.env);
   const selection = selectEnvironment(repositoryRoot, options);
   const resolution = resolveEnvironment(readEnvironmentDefinitions(repositoryRoot), selection.name);
   if (resolution.status === "error") {

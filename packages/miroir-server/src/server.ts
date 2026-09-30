@@ -230,7 +230,7 @@ console.log(`  --secrets-master-key : ${secretsMasterKey ? "(set)" : "(not set)"
 // settings and the deployments to open. The config file is used when --config is given or when no
 // environments/ folder is found above the working directory (release binary, Docker image).
 function loadEnvironment(): ResolvedEnvironment | undefined {
-  if (process.argv.includes("--config") || !hasEnvironmentDefinitions(process.cwd())) {
+  if (process.argv.includes("--config") || !hasEnvironmentDefinitions(process.cwd(), process.env)) {
     return undefined;
   }
   try {

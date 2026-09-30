@@ -25,7 +25,7 @@ Out: #323 (bundle ignores `--config`); the server's legacy config-file path; CLI
 | 1 | miroir-mcp tests run on a test environment (tracer) | ✅ DONE | `mcpTools.integ`, `endpointToolRegistry.integ` green on `test-filesystem`, `tests/assets/admin_*` removed |
 | 2 | miroir-mcp standalone configuration removed | ✅ DONE | package builds, server and Electron typecheck, mcp tests green |
 | 3 | miroir-cli runs on the selected environment | ✅ DONE | `cli.integ` on `test-filesystem`: `lendDocument` on Library |
-| 4 | An environment runs outside a checkout (`MIROIR_ROOT`, `packagesDirectory`) | ⬜ pending | `miroir-env` test booting the server config from a `/data`-like temp root |
+| 4 | An environment runs outside a checkout (`MIROIR_ROOT`, `packagesDirectory`) | ✅ DONE | `miroir-env` test booting the server config from a `/data`-like temp root |
 | 5 | Docker images start from the `docker` environment | ⬜ pending | pytest on `docker-entrypoint.sh`; `miroir-env` test on `environments/docker.json` over a seed layout |
 | 6 | Electron dev boots its environment in the main process | ⬜ pending | vitest on the main-process boot (no Electron window) |
 | 7 | Packaged Electron seeds user data and runs from it | ⬜ pending | vitest on the first-run copy + boot of `desktop` |
@@ -165,7 +165,7 @@ No new model uuid. The `miroir-env` tests reuse `packages/miroir-env/tests/bootT
 
 ## Slice 4 — An environment runs outside a checkout
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** with `MIROIR_ROOT=<dir>`, `resolveEnvironmentFromFiles` reads `<dir>/environments/` and runs with `<dir>` as filesystem root; `packagesDirectory: "."` places package assets at `<dir>/<package>/assets`.
 
@@ -178,6 +178,12 @@ No new model uuid. The `miroir-env` tests reuse `packages/miroir-env/tests/bootT
 **Validation:** `npm run devBuild -w miroir-core`; miroir-env tests; `npm run test -w miroir-core -- ''`; typecheck miroir-core, miroir-env, miroir-server; `npm run miroir-env -- check --strict`.
 
 ### Realization
+
+- miroir-core: `miroirEnvironment.packagesDirectory` (optional string) in `getMiroirFundamentalMlSchema.ts`, types regenerated (`devBuild`); `applicationAssetsDirectory(…, packagesDirectory = DEFAULT_PACKAGES_DIRECTORY)`, `.` gives `<package>/assets`; `sectionDirectory` passes the environment's.
+- miroir-env: `ROOT_VARIABLE = "MIROIR_ROOT"`, `environmentRoot(cwd, env)` (MIROIR_ROOT resolved from `cwd`, else the repository root search); `resolveEnvironmentFromFiles`, `hasEnvironmentDefinitions(cwd, env)` and `miroir-env check` use it; `seedEnvironmentState`, Admin row labels and the legacy Admin data lookup pass `packagesDirectory`. The legacy lookup already skips a live Admin data section (`legacy !== adminData`).
+- miroir-server: `hasEnvironmentDefinitions(process.cwd(), process.env)`, so `MIROIR_ROOT` selects the environment path.
+- Refactor checkpoint: callers pass `packagesDirectory` as a 4th argument rather than the whole environment; kept, the other fields of the environment are not needed there.
+- `tests/environmentRoot.integ.test.ts` (3 tests, RED on "no repository root"). miroir-env 43/43, miroir-core 2133/2134 (1 skipped), `miroir-env check --strict` ok.
 
 ---
 
