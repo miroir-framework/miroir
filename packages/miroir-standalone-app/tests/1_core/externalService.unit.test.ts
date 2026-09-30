@@ -63,17 +63,17 @@ function readEndpointAsset(relativePath: string): EndpointDefinition {
 }
 
 describe.skipIf(!shouldRun)("externalService — current contracts", () => {
-  it("lists 13 endpoint source assets under miroir_data and library_model", () => {
+  it("lists 10 endpoint source assets under miroir_data and library_model", () => {
     expect(existsSync(MIROIR_DATA_ENDPOINT_DIR)).toBe(true);
     expect(existsSync(LIBRARY_MODEL_ENDPOINT_DIR)).toBe(true);
 
     const paths = endpointAssetPaths();
-    expect(paths).toHaveLength(13);
-    expect(jsonFilesIn(MIROIR_DATA_ENDPOINT_DIR)).toHaveLength(11);
+    expect(paths).toHaveLength(10);
+    expect(jsonFilesIn(MIROIR_DATA_ENDPOINT_DIR)).toHaveLength(8);
     expect(jsonFilesIn(LIBRARY_MODEL_ENDPOINT_DIR)).toHaveLength(2);
   });
 
-  it("validates all 13 endpoint source assets against the current Endpoint ML schema", () => {
+  it("validates all 10 endpoint source assets against the current Endpoint ML schema", () => {
     const endpointSchema = entityDefinitionEndpoint.mlSchema;
     expect(endpointSchema).toBeTruthy();
 
@@ -89,12 +89,12 @@ describe.skipIf(!shouldRun)("externalService — current contracts", () => {
     }
   });
 
-  it("defaultMiroirMetaModel.endpoints has 12 registrations over 10 unique uuids with alias pairs", () => {
+  it("defaultMiroirMetaModel.endpoints has 10 registrations over 8 unique uuids with alias pairs", () => {
     const registrations = defaultMiroirMetaModel.endpoints;
-    expect(registrations).toHaveLength(12);
+    expect(registrations).toHaveLength(10);
 
     const uniqueUuids = new Set(registrations.map((endpoint) => endpoint.uuid));
-    expect(uniqueUuids.size).toBe(10);
+    expect(uniqueUuids.size).toBe(8);
 
     expect(deploymentEndpointV1.uuid).toBe(storeManagementEndpoint.uuid);
     expect(deploymentEndpointV1.uuid).toBe("bbd08cbb-79ff-4539-b91f-7a14f15ac55f");
