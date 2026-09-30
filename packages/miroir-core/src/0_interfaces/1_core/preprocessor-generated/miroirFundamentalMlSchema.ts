@@ -16932,6 +16932,10 @@ export const miroirFundamentalMlSchema = {
             "type": "string",
             "optional": true
           },
+          "packagesDirectory": {
+            "type": "string",
+            "optional": true
+          },
           "server": {
             "type": "object",
             "optional": true,

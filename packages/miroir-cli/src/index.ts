@@ -1,127 +1,21 @@
 #!/usr/bin/env node
 
-import loglevelNextLog from 'loglevelnext';
-import { Command, Option } from 'commander';
+import { Command } from 'commander';
 import {
   ApplicationDeploymentMap,
   DomainControllerInterface,
-  miroirCoreStartup,
-  MiroirActivityTracker,
-  MiroirEventService,
-  MiroirLoggerFactory,
-  StoreOrBundleAction,
-  StoreUnitConfiguration,
-  type LoggerFactoryInterface,
   type LoggerInterface,
-  type LoggerOptions,
-  type MiroirConfigClient,
 } from 'miroir-core';
 
-import { loadMiroirCliConfig } from './config/configLoader.js';
-import { MiroirCliConfig } from './config/configSchema.js';
-import { setupMiroirPlatform } from './startup/setup.js';
-import { initializeStoreStartup } from './startup/storeStartup.js';
+import { initializePlatform } from './platform.js';
 import {
-  cliRequestHandlers,
   getAllCommands,
-  type CliCommandHandler,
   type CliResult,
 } from './commands/commandsFromEndpoint.js';
 
-const packageName = "miroir-cli";
 const version = "1.0.0";
 
 const log: LoggerInterface = console as any as LoggerInterface;
-
-const loglevelnext: LoggerFactoryInterface = loglevelNextLog as any as LoggerFactoryInterface;
-
-const loggerOptions: LoggerOptions = {
-  defaultLevel: "INFO",
-  defaultTemplate: "[{{time}}] {{level}} ({{name}}) -",
-  specificLoggerOptions: {},
-};
-
-// ################################################################################################
-// Initialize Platform
-// ################################################################################################
-
-async function initializePlatform(
-  config: MiroirCliConfig
-): Promise<{
-  domainController: DomainControllerInterface;
-  applicationDeploymentMap: ApplicationDeploymentMap;
-}> {
-  // Initialize framework
-  miroirCoreStartup();
-  
-  // Initialize stores based on configuration
-  await initializeStoreStartup(config);
-
-  // Setup MiroirContext
-  const miroirActivityTracker = new MiroirActivityTracker();
-  const miroirEventService = new MiroirEventService(miroirActivityTracker);
-  
-  // Start loggers
-  MiroirLoggerFactory.startRegisteredLoggers(
-    miroirActivityTracker,
-    miroirEventService,
-    loglevelnext,
-    loggerOptions,
-  );
-
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, "info", "index");
-let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
-MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {
-    log = logger;
-  });
-
-  const { domainController } = await setupMiroirPlatform(
-    config as any as MiroirConfigClient,
-    miroirActivityTracker,
-    miroirEventService,
-  );
-
-  const applicationDeploymentMap = config.client.applicationDeploymentMap;
-
-  if (!domainController) {
-    throw new Error("Failed to initialize DomainController");
-  }
-
-  // Open stores for all configured deployments
-  for (const [deploymentUuid, storeConfig] of Object.entries(
-    config.client.deploymentStorageConfig
-  )) {
-    log.info(`Opening stores for deployment ${deploymentUuid}`);
-
-    const openStoreAction: StoreOrBundleAction = {
-      actionType: "storeManagementAction_openStore",
-      actionLabel: `Open stores for ${deploymentUuid}`,
-      endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-      payload: {
-        application: Object.keys(applicationDeploymentMap).find(
-          (appUuid) => applicationDeploymentMap[appUuid] === deploymentUuid
-        ) || "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        deploymentUuid: deploymentUuid,
-        configuration: {
-          [deploymentUuid]: storeConfig as StoreUnitConfiguration,
-        },
-      },
-    };
-
-    const result = await domainController.handleAction(
-      openStoreAction,
-      applicationDeploymentMap
-    );
-
-    if (result.status !== "ok") {
-      throw new Error(
-        `Failed to open stores for deployment ${deploymentUuid}: ${JSON.stringify(result)}`
-      );
-    }
-  }
-
-  return { domainController, applicationDeploymentMap };
-}
 
 // ################################################################################################
 // Register Commands
@@ -215,34 +109,22 @@ async function main(): Promise<void> {
 
   // Add global options
   program.option(
-    '-c, --config <path>',
-    'Path to configuration file (overrides MIROIR_CLI_CONFIG_PATH env var)'
+    '-e, --env <name>',
+    'Environment to run on (environments/<name>.json); default: MIROIR_ENV, environments/local.json, then dev',
   );
+  program.allowUnknownOption(true);
+  program.helpOption(false);
 
   // Parse global options first
   program.parse(process.argv);
   const globalOpts = program.opts();
 
-  // Set config path from CLI option if provided
-  if (globalOpts.config) {
-    process.env.MIROIR_CLI_CONFIG_PATH = globalOpts.config;
-  }
-
-  // Load configuration
-  let config: MiroirCliConfig;
-  try {
-    config = loadMiroirCliConfig();
-  } catch (error) {
-    log.error(`Failed to load configuration: ${error instanceof Error ? error.message : String(error)}`);
-    process.exit(1);
-  }
-
-  // Initialize platform
+  // Initialize platform on the selected environment
   let domainController: DomainControllerInterface;
   let applicationDeploymentMap: ApplicationDeploymentMap;
-  
+
   try {
-    const platform = await initializePlatform(config);
+    const platform = await initializePlatform({ name: globalOpts.env });
     domainController = platform.domainController;
     applicationDeploymentMap = platform.applicationDeploymentMap;
   } catch (error) {
@@ -259,8 +141,8 @@ async function main(): Promise<void> {
     .description('Command Line Interface for Miroir Framework - exposes Endpoint Actions as CLI commands');
 
   cliProgram.option(
-    '-c, --config <path>',
-    'Path to configuration file (overrides MIROIR_CLI_CONFIG_PATH env var)'
+    '-e, --env <name>',
+    'Environment to run on (environments/<name>.json); default: MIROIR_ENV, environments/local.json, then dev',
   );
 
   // Add list command to show available commands
@@ -279,8 +161,9 @@ async function main(): Promise<void> {
   // Register all endpoint commands
   registerCommands(cliProgram, domainController, applicationDeploymentMap);
 
-  // Parse and execute
+  // Parse and execute; open stores keep the event loop alive, so the CLI exits explicitly
   await cliProgram.parseAsync(process.argv);
+  process.exit(0);
 }
 
 // Run CLI

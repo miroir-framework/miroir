@@ -391,7 +391,7 @@ describe('mlElementToTS', () => {
 
     const result = mlElementToTS(mlElement as any);
 
-    expect(result).toBe('"model" | "data"');
+    expect(result).toBe('"model" | "data" | "modelVersion"');
   });
 
   it('should handle nested objects with proper indentation', () => {

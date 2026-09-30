@@ -755,6 +755,8 @@ See [HTTPS setup for developers](../guides/https-setup-developer.md).
 
 Every profile selects a test environment (`environments/test-{sql,filesystem,indexedDb,mongodb}.json`, state in `.miroir/<environment>/`, see [Environments](environments.md)). There are no per-profile configuration files.
 
+The miroir-mcp and miroir-cli tests (#345) open their test environment with `openTestEnvironment` from `miroir-env`: `MIROIR_ENV` when it names a `test-*` environment, else `test-filesystem`. The Electron main-process test boots the `desktop` environment in a temporary folder. Nonreg runs them in the steps `unit-345-mcp`, `unit-345-cli` and `unit-345-electron`.
+
 | Profile | Environment | Client |
 |---------|-------------|--------|
 | `emulatedServer-<storage>` | `test-<storage>` | emulates the server in-process (`RestClientStub`) |

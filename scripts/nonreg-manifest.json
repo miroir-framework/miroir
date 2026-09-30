@@ -1991,6 +1991,45 @@
       ]
     },
     {
+      "id": "unit-345-electron",
+      "tier": "unit",
+      "title": "#345 \u2014 Electron main process: first-run preparation of the desktop environment and its boot",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app-electron"
+      ]
+    },
+    {
+      "id": "unit-345-mcp",
+      "tier": "default",
+      "title": "#345 \u2014 miroir-mcp tests on a test environment (test-filesystem unless MIROIR_ENV names another test-* environment)",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-mcp"
+      ]
+    },
+    {
+      "id": "unit-345-cli",
+      "tier": "default",
+      "title": "#345 \u2014 miroir-cli commands on a test environment (test-filesystem unless MIROIR_ENV names another test-* environment)",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-cli"
+      ]
+    },
+    {
       "id": "unit-321-tracked-assets",
       "tier": "unit",
       "title": "#321 \u2014 no asset file changed by the run (runs last in every tier); miroir-env check --strict: every definition valid, the selected environment state in line with it",

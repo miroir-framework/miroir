@@ -52,7 +52,7 @@ Once the installation is over, you'll get a green notification of success, then 
 
 <img src="../tutorials/libraryTutorial/miroir-select_application.png" alt="Select the Library Application" width="80%"/>
 
-**the created deployment resides in the installation directory, under the `resources/miroir-assets` subdirectory.**
+**the created deployment resides in the `miroir` folder of the application's user data directory (for example `~/.config/Miroir Standalone App/miroir` on Linux, `%APPDATA%\Miroir Standalone App\miroir` on Windows), which the application seeds on its first start and keeps across updates.**
 
 
 ### Display the current Model of the Library Application

@@ -2081,6 +2081,7 @@ export function getMiroirFundamentalMlSchema(
             name: { type: "string", optional: true },
             extends: { type: "string", optional: true },
             description: { type: "string", optional: true },
+            packagesDirectory: { type: "string", optional: true },
             server: {
               type: "object",
               optional: true,

@@ -1,169 +1,29 @@
 # miroir-mcp
 
-Model Context Protocol (MCP) server for the Miroir Framework. Exposes Miroir's InstanceEndpoint actions as MCP tools, enabling external systems to interact with Miroir applications through the standardized MCP interface.
+Model Context Protocol (MCP) server for the Miroir Framework. Exposes the Endpoint actions of the deployed Miroir applications as MCP tools, enabling external systems to interact with Miroir applications through the standardized MCP interface.
 
-## Features
+## Where MCP runs
 
-- **7 MCP Tools**: Full coverage of InstanceEndpoint actions
-  - `miroir_createInstance` - Create new entity instances
-  - `miroir_getInstance` - Retrieve a single instance
-  - `miroir_getInstances` - Retrieve all instances of an entity
-  - `miroir_updateInstance` - Update existing instances
-  - `miroir_deleteInstance` - Delete an instance
-  - `miroir_deleteInstanceWithCascade` - Delete with cascade
-  - `miroir_loadNewInstancesInLocalCache` - Load instances in cache only
+miroir-mcp is a library. The MCP endpoint is served by:
 
-- **Configuration-Driven**: JSON-based configuration for deployments and storage
-- **Multiple Storage Backends**: Filesystem, IndexedDB, PostgreSQL (via peer dependencies)
-- **Framework Logging**: Integrated with Miroir's MiroirLoggerFactory
-- **Type-Safe**: Full TypeScript support with Zod validation
+- **miroir-server**, on the port of `server.mcpUrl` of the selected environment, when `features.mcp` is on;
+- **the Electron main process**, on its loopback server.
 
-## Installation
+Both take their stores from their environment (`environments/*.json`, see `docs/reference/environments.md`). The package has no configuration file and no binary of its own (#345).
 
-```bash
-npm install miroir-mcp
-
-# Install required store package(s)
-npm install miroir-store-filesystem
-
-# Optional: for other storage backends
-npm install miroir-store-indexedDb
-npm install miroir-store-postgres
-```
-
-## Quick Start
-
-### 1. Create a Configuration File
-
-Create `miroirMcpConfig.json`:
-
-```json
-{
-  "applicationDeploymentMap": {
-    "360fcf1f-f0d4-4f8a-9262-07886e70fa15": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
-    "5af03c98-fe5e-490b-b08f-e1230971c57f": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
-  },
-  "storeSectionConfiguration": {
-    "10ff36f2-50a3-48d8-b80f-e48e5d13af8e": {
-      "admin": {
-        "emulatedServerType": "filesystem",
-        "directory": "./data/miroir_admin"
-      },
-      "model": {
-        "emulatedServerType": "filesystem",
-        "directory": "./data/miroir_model"
-      },
-      "data": {
-        "emulatedServerType": "filesystem",
-        "directory": "./data/miroir_data"
-      }
-    },
-    "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {
-      "admin": {
-        "emulatedServerType": "filesystem",
-        "directory": "./data/miroir_admin"
-      },
-      "model": {
-        "emulatedServerType": "filesystem",
-        "directory": "./data/library_model"
-      },
-      "data": {
-        "emulatedServerType": "filesystem",
-        "directory": "./data/library_data"
-      }
-    }
-  },
-  "logConfig": {
-    "defaultLevel": "INFO",
-    "defaultTemplate": "[{{time}}] {{level}} {{name}} ### ",
-    "specificLoggerOptions": {}
-  }
-}
-```
-
-### 2. Run the MCP Server
-
-```bash
-# Using environment variable to specify config
-MIROIR_MCP_CONFIG_PATH=./miroirMcpConfig.json npx miroir-mcp
-
-# Or use default embedded configuration
-npx miroir-mcp
-```
-
-### 3. Use with MCP Clients
-
-The server exposes a **stateless Streamable HTTP** endpoint at `/mcp` (default port `4080`, configurable via `mcpUrl` in config).
-
-Example Cursor / VS Code configuration (`.vscode/mcp.json` or `.cursor/mcp.json`):
+Example Cursor / VS Code configuration (`.vscode/mcp.json` or `.cursor/mcp.json`) for the `dev` environment:
 
 ```json
 {
   "servers": {
     "miroir": {
-      "url": "http://localhost:4080/mcp"
+      "url": "https://localhost:4080/mcp"
     }
   }
 }
 ```
 
-When embedded in `miroir-server`, the MCP app listens on the port from `server.mcpUrl` in the server config.
-
-## Configuration
-
-### Environment Variables
-
-- `MIROIR_MCP_CONFIG_PATH`: Path to configuration JSON file (optional, uses default if not provided)
-- `MIROIR_MCP_LOG_CONFIG`: Path to logger configuration JSON file (optional)
-
-### Configuration Schema
-
-```typescript
-{
-  applicationDeploymentMap: {
-    [applicationUuid: string]: deploymentUuid
-  },
-  storeSectionConfiguration: {
-    [deploymentUuid: string]: {
-      admin: StoreSectionConfiguration,
-      model: StoreSectionConfiguration,
-      data: StoreSectionConfiguration
-    }
-  },
-  logConfig?: {
-    defaultLevel: string,
-    defaultTemplate: string,
-    specificLoggerOptions?: { [loggerName: string]: { level?: string, template?: string } }
-  }
-}
-```
-
-### Storage Types
-
-**Filesystem:**
-```json
-{
-  "emulatedServerType": "filesystem",
-  "directory": "./data/path"
-}
-```
-
-**PostgreSQL:**
-```json
-{
-  "emulatedServerType": "sql",
-  "connectionString": "postgres://user:pass@localhost:5432/db",
-  "schema": "schemaName"
-}
-```
-
-**IndexedDB:**
-```json
-{
-  "emulatedServerType": "indexedDb",
-  "indexedDbName": "databaseName"
-}
-```
+The endpoint is a **stateless Streamable HTTP** endpoint at `/mcp`.
 
 ## MCP Tools Reference
 
@@ -254,95 +114,25 @@ Load instances into local cache without persistence.
 
 ## Development
 
-### Running Tests
-
 ```bash
-# Install dependencies including filesystem store for tests
-npm install
-npm install miroir-store-filesystem
-
-# Run integration tests
-npm test
-
-# Run specific test file
-npm run testByFile -- mcpTools
-```
-
-### Building
-
-```bash
-npm run build
+npm run build -w miroir-mcp
+npm run testByFile -w miroir-mcp                        # all tests
+npm run testByFile -w miroir-mcp -- mcpTools.integ      # one file
 ```
 
 ## Architecture
 
 The MCP server follows Miroir's layered architecture:
 
-1. **Configuration Layer** (`src/config/`): Schema validation and loading
-2. **Startup Layer** (`src/startup/`): Conditional store initialization
-3. **MCP Server** (`src/mcpServer.ts`): Framework initialization and stateless Streamable HTTP MCP protocol handling
-4. **Tools Layer** (`src/tools/`): Tool definitions and handlers
+1. **Startup Layer** (`src/startup/`): store initialization from a client configuration (tests)
+2. **MCP Server** (`src/mcpServer.ts`): Framework initialization and stateless Streamable HTTP MCP protocol handling
+3. **Tools Layer** (`src/tools/`): Tool definitions and handlers
 
 All actions are executed through `DomainController.handleAction()`, ensuring consistency with the rest of the Miroir framework.
 
 ## Testing
 
-The MCP server supports test mode with emulated server configuration, matching the pattern used in Miroir's integration tests.
-
-### Test Mode Configuration
-
-When `testMode` or `emulateServer` is enabled, the MCP server creates a dual-controller setup:
-
-- **Client-side controller**: Uses remote persistence (through RestClientStub)
-- **Server-side controller**: Uses local persistence (direct store access)
-
-This enables testing of rollback and other operations that require the full client-server architecture without network overhead.
-
-Example test configuration (`tests/miroirConfig.test-emulatedServer.json`):
-
-```json
-{
-  "testMode": true,
-  "emulateServer": true,
-  "rootApiUrl": "http://localhost:3080",
-  "applicationDeploymentMap": { ... },
-  "storeSectionConfiguration": { ... }
-}
-```
-
-### Running Integration Tests
-
-```bash
-# Run all tests (uses test configuration from vitest.config.ts)
-npm test
-
-# Run specific test file
-npm run testByFile -- mcpTools.test
-```
-
-The test configuration is automatically loaded via the `MIROIR_MCP_CONFIG_PATH` environment variable set in `vitest.config.ts`.
-
-## Troubleshooting
-
-### "Failed to initialize filesystem store"
-
-Ensure `miroir-store-filesystem` is installed:
-
-```bash
-npm install miroir-store-filesystem
-```
-
-### Store directory not found
-
-The server creates directories automatically, but ensure the parent path exists and is writable.
-
-### Configuration validation errors
-
-Validate your configuration against the schema. Common issues:
-
-- Missing required fields (`applicationSection`, `deploymentUuid`, etc.)
-- Invalid UUIDs
-- Incorrect storage type names
+The integration tests run on a test environment: `MIROIR_ENV` when it names a `test-*` environment, else `test-filesystem`. Each test file seeds the environment's copies in `.miroir/<environment>/` again from the package assets and boots it like the server (`openTestEnvironment` and `bootEnvironment` from miroir-env, `tests/integration/mcpTestPlatform.ts`), so no test writes into tracked files.
 
 ## License
 

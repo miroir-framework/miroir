@@ -21,7 +21,6 @@ import {
 } from "miroir-core";
 
 
-import { MiroirMcpConfig } from "./config/configSchema.js";
 import { MCP_HTTP_ENDPOINT } from "./mcpConstants.js";
 import { type EndpointToolRegistry } from "./tools/EndpointToolRegistry.js";
 
@@ -297,87 +296,6 @@ export class MiroirMcpServer {
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-  // ##############################################################################################
-  /**
-   * Setup MiroirLoggerFactory with configuration
-   */
-  export async function setupLogging(
-    config: MiroirMcpConfig,
-    miroirContext: MiroirContextInterface,
-  ): Promise<void> {
-    const loglevel = logger.default;
-    const loglevelnext = loglevel as any as LoggerFactoryInterface;
-
-    const logConfig: LoggerOptions = (config.client.logConfig || {
-      defaultLevel: "INFO",
-      defaultTemplate: "[{{time}}] {{level}} {{name}} ### ",
-      specificLoggerOptions: {},
-    }) as LoggerOptions;
-
-    // Register logger for this module
-    const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, "info", "mcpServer");
-let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
-MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
-    ).then((logger: LoggerInterface) => {
-      log = logger;
-    });
-
-    // Start all registered loggers
-    MiroirLoggerFactory.startRegisteredLoggers(
-      miroirContext.miroirActivityTracker as MiroirActivityTracker,
-      miroirContext.miroirEventService,
-      loglevelnext,
-      logConfig,
-    );
-
-    log.info("Logging initialized");
-  }
-
-  // ##############################################################################################
-  // ##############################################################################################
-  /**
-   * Open stores for all configured deployments
-   */
-  export async function openStores(
-    config: MiroirMcpConfig,
-    domainController: DomainControllerInterface,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-  ): Promise<void> {
-    for (const [deploymentUuid, storeConfig] of Object.entries(
-      config.client.deploymentStorageConfig,
-    )) {
-      log.info(`Opening stores for deployment ${deploymentUuid}`);
-
-      const openStoreAction: StoreOrBundleAction = {
-        actionType: "storeManagementAction_openStore",
-        actionLabel: `Open stores for ${deploymentUuid}`,
-        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        payload: {
-          application:
-            Object.keys(applicationDeploymentMap).find(
-              (appUuid) => applicationDeploymentMap[appUuid] === deploymentUuid,
-            ) || "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          deploymentUuid: deploymentUuid,
-          configuration: {
-            [deploymentUuid]: storeConfig,
-          },
-        },
-      };
-
-      const result = await domainController.handleAction(
-        openStoreAction,
-        applicationDeploymentMap,
-      );
-
-      if (result.status !== "ok") {
-        throw new Error(
-          `Failed to open stores for deployment ${deploymentUuid}: ${JSON.stringify(result)}`,
-        );
-      }
-
-      log.info(`Successfully opened all stores for deployment ${deploymentUuid}`);
-    }
-  }
   // ##############################################################################################
   /**
    * Setup MCP request handlers for a server instance

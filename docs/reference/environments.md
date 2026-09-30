@@ -1,14 +1,14 @@
 # Environments Reference
 
-**Audience:** framework contributors and anyone running Miroir from this repository (server, web client, tests, coding-agent sessions).
-**Scope:** how an environment is selected, the definition file format, where running state lives, the `miroir-env` command, and how deviations are reported. Introduced by #321.
+**Audience:** framework contributors and anyone running Miroir from this repository (server, web client, tests, coding-agent sessions, miroir-cli, miroir-mcp, Electron, Docker).
+**Scope:** how an environment is selected, the definition file format, where running state lives, the `miroir-env` command, and how deviations are reported. Introduced by #321; every runtime adopted it with #345.
 
 ---
 
 ## Key points
 
 - An **environment** says which applications are installed and where each of their stores lives. It is one JSON file in `environments/`, validated by the `miroirEnvironment` ML schema.
-- The server, the web client served by Vite, the integration tests and coding-agent sessions all take their configuration from an environment. There is no other per-run configuration file.
+- Every runtime takes its configuration from an environment ([Runtimes](#runtimes)): the server, the web client served by Vite, the tests, coding-agent sessions, miroir-cli, miroir-mcp, Electron and Docker. There is no other per-run configuration file (the release binary run outside a checkout, without `MIROIR_ROOT`, is the one exception).
 - **Running state** (Admin data, copied stores, applications installed from the UI) lives in the gitignored `.miroir/<environment>/`. Running Miroir or its tests never writes tracked files; the application models you edit live in their package assets are the exception, on purpose.
 - `npm run miroir-env -- show` prints the resolved environment; `npm run miroir-env -- check` compares the state with it. Deviations warn locally and fail in CI and nonreg.
 
@@ -25,8 +25,29 @@
 | `test-sql` | profile `emulatedServer-sql` (the default), `realServer-sql`, transformer sessions without a profile | Postgres schemas `test_sql_<application>`; Admin copied in `.miroir/test-sql/` |
 | `test-indexedDb` | profile `emulatedServer-indexedDb`, `realServer-indexedDb` | IndexedDB stores named `.miroir/test-indexedDb/<application>/indexedDb…`; Admin copied in `.miroir/test-indexedDb/` |
 | `test-mongodb` | profile `emulatedServer-mongodb`, `realServer-mongodb` | MongoDB databases `test_mongodb_<application>`; Admin copied in `.miroir/test-mongodb/` |
+| `docker` | the Docker images (`MIROIR_ROOT=/data`) | Miroir, Admin, Library **live** in the volume, which is already a copy of the image's seed ([docker.md](docker.md)) |
+| `desktop` | the packaged Electron application (`MIROIR_ROOT=<user data>/miroir`) | Miroir and Admin **live** in the user data folder, seeded on first start |
 
 Test environments (`test-*`) hold copies only: a `live` section in a test environment is refused.
+
+---
+
+## Runtimes
+
+| Runtime | Environment | How it gets there |
+|---|---|---|
+| miroir-server (checkout) | the selected one | `npm run` or `node packages/miroir-server/release/index.js` from the checkout |
+| miroir-server (release binary elsewhere) | none | `--config <file>`, default `config/miroirConfig.server.json` ([build-it-yourself.md](../guides/build-it-yourself.md)); `MIROIR_ROOT` switches it to an environment |
+| Web client (Vite) | the selected one | `vite.config.js` injects its client configuration ([Web client](#web-client)) |
+| Tests (vitest, MiroirTest) | `test-<storage>` | `--profile`, or `MIROIR_ENV=test-*`; default `test-sql` (`test-filesystem` for miroir-mcp and miroir-cli) |
+| Coding-agent sessions | `cloud-agent` | `environments/local.json` written by `agent_session_setup.py --cloud-agent` |
+| miroir-cli | the selected one | `--env <name>` (same as `MIROIR_ENV`); prints `environment: <name>, selected by …` on stderr |
+| miroir-mcp | the one of its host | a library: miroir-server and Electron start it on their DomainController; its tests run on `test-filesystem` |
+| Electron, development | the selected one | the main process boots it (`src/environmentBoot.ts`), the renderer asks for its client configuration over IPC (`get-client-config`) |
+| Electron, packaged | `desktop` | first start copies `resources/miroir-assets` to `<user data>/miroir`; `MIROIR_ROOT` points there |
+| Docker | `docker` | `MIROIR_ROOT=/data`, `MIROIR_ENV=docker` in the image; the entrypoint seeds `/data` from `/seed` ([docker.md](docker.md)) |
+
+Electron and Docker share one seeding rule: copy the seed into an empty root; on later starts keep everything and only add the environment definitions the root lacks.
 
 ---
 
@@ -40,6 +61,8 @@ First match wins:
 4. `dev`.
 
 `miroir-env show` and the server log both print the selected environment and why it was selected (for example `selected by environments/local.json`).
+
+The environments are read from `<root>/environments/`, where the root is `MIROIR_ROOT` when set, else the repository root found above the working directory. `MIROIR_ROOT` runs an environment outside a checkout (Docker, packaged Electron): the root then holds `environments/` and the application assets.
 
 Tests select their environment through their profile (`--profile emulatedServer-filesystem` sets `MIROIR_ENV=test-filesystem`). A test run ignores, with a warning, a `MIROIR_ENV` that is not a test environment: tests never run on `dev` or `local`.
 
@@ -83,7 +106,8 @@ Tests select their environment through their profile (`--profile emulatedServer-
 | `connections.postgres` | Host, port, user and database of Postgres stores. `passwordEnv` names the variable that holds the password; a definition never contains a password. |
 | `connections.mongodb` | URL of MongoDB stores. |
 | `applications.<key>` | One installed application. The key names it in paths (`.miroir/<env>/<key>/…`) and in store names. |
-| `package` | The `packages/` folder whose `assets/` hold the application's sections (`<key>_model`, `<key>_data`, `<key>_modelVersion`; `assetPrefix` overrides `<key>`). |
+| `packagesDirectory` | Where the application packages are, relative to the root: `packages` by default, `.` when each package's `assets/` sits directly under the root (`docker`, `desktop`). |
+| `package` | The folder of `packagesDirectory` whose `assets/` hold the application's sections (`<key>_model`, `<key>_data`, `<key>_modelVersion`; `assetPrefix` overrides `<key>`). |
 | `selfApplication`, `deployment` | The application and deployment uuids. Admin and Miroir must use the uuids the platform opens. |
 | `store` | `filesystem`, `sql`, `indexedDb` or `mongodb`. |
 | `mode` | `live`: the section is the package folder itself (filesystem only, never in `test-*`). `copy`: the section lives in the state, seeded from the package on first use. |
@@ -92,7 +116,7 @@ Tests select their environment through their profile (`--profile emulatedServer-
 
 `logPreset` and `secrets` are accepted by the schema but not read yet.
 
-Paths are relative to the repository root, which is the filesystem root of every environment.
+Paths are relative to the root (`MIROIR_ROOT`, else the repository root), which is the filesystem root of every environment.
 
 ---
 
@@ -166,4 +190,5 @@ Before #321, applications installed from the UI were written into `packages/miro
 
 - [Testing reference](testing.md): profiles, `MIROIR_TEST_CLIENT`, test environments per store.
 - [Data architecture: deployments](data-architecture-deployments.md): store backends and deployment layout.
-- Design and decisions: `code-helpers/features/321-BUILD-environment-configuration/analysis.md`.
+- [Docker reference](docker.md): the `docker` environment and the image seed.
+- Design and decisions: `code-helpers/features/321-BUILD-environment-configuration/analysis.md`, and for the runtimes `code-helpers/features/345-BUILD-runtimes-adopt-environments/analysis.md`.

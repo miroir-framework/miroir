@@ -120,51 +120,29 @@ COPY --from=builder /miroir/packages/miroir-standalone-app/dist \
                     /miroir/packages/miroir-server/public
 
 # -------------------------------------------------------------------------
-# Docker-specific server config (HTTP, filesystemDeploymentRootDirectory=/data)
-# Overrides the dev config that was pulled in with the packages/ copy above.
-# The ncc release bundle reads the copy next to it (release/miroirConfig.server.json).
-# -------------------------------------------------------------------------
-COPY packages/miroir-server/config/miroirConfig.server.docker.json \
-     /miroir/packages/miroir-server/release/miroirConfig.server.json
-
-# -------------------------------------------------------------------------
-# Seed data — bundled in the image, copied to /data on first run
+# Seed data — bundled in the image, copied to /data on first run (#345)
 #
-# Layout mirrors the relative paths used in deployment configuration JSONs
-# (filesystemDeploymentRootDirectory + deployment.configuration.*.directory).
-#
-# Miroir framework bootstrap data (read from deployment configs on startup):
-#   miroir-app-miroir/assets/miroir_model   (model section)
-#   miroir-app-miroir/assets/miroir_data    (data  section)
-#   miroir-app-miroir/src/assets            (admin section)
-#   miroir-app-admin/assets/admin_model     (model section)
-#   miroir-app-admin/assets/admin_data      (data  section)
-#
-# Library demo application data:
-#   miroir-example-library/assets/library_model
-#   miroir-example-library/assets/library_data
+# /data is the root of the `docker` environment (environments/docker.json):
+# the server runs with MIROIR_ROOT=/data and MIROIR_ENV=docker, and the
+# environment places each application's assets at /data/<package>/assets
+# (packagesDirectory "."). The Deployment and AdminApplication rows of Admin
+# data are generated from the definition at every start, so the seed carries
+# only their (empty) entity directories.
 # -------------------------------------------------------------------------
-
-# Miroir framework assets
-COPY --from=builder /miroir/packages/miroir-app-miroir/assets \
-                    /seed/miroir-app-miroir/assets
-COPY --from=builder /miroir/packages/miroir-app-miroir/src \
-                    /seed/miroir-app-miroir/src
-
-# Admin application assets
-COPY --from=builder /miroir/packages/miroir-app-admin/assets \
-                    /seed/miroir-app-admin/assets
-
-# Library demo assets (model + data only; admin dir is created automatically by the store)
+COPY --from=builder /miroir/environments/docker.json /seed/environments/docker.json
+COPY --from=builder /miroir/packages/miroir-app-miroir/assets /seed/miroir-app-miroir/assets
+COPY --from=builder /miroir/packages/miroir-app-admin/assets /seed/miroir-app-admin/assets
 COPY --from=builder /miroir/packages/miroir-example-library/assets/library_model \
                     /seed/miroir-example-library/assets/library_model
 COPY --from=builder /miroir/packages/miroir-example-library/assets/library_data \
                     /seed/miroir-example-library/assets/library_data
+RUN for entity in 7959d814-400c-4e80-988f-a00fe582ab98 25d935e7-9e93-42c2-aade-0472b883492b; do \
+      rm -rf "/seed/miroir-app-admin/assets/admin_data/${entity}" && \
+      mkdir -p "/seed/miroir-app-admin/assets/admin_data/${entity}"; \
+    done
 
-# Docker-specific seed overrides (Docker-compatible library deployment record with
-# corrected directory paths — no ".." traversal — placed into admin_data).
-COPY packages/miroir-server/docker/seed \
-     /seed
+ENV MIROIR_ROOT=/data
+ENV MIROIR_ENV=docker
 
 # -------------------------------------------------------------------------
 # Entrypoint

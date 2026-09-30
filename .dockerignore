@@ -33,3 +33,7 @@ packages/miroir-standalone-app-electron/release
 # Large generated docs / reports that are not needed at build time
 docs-OLD
 tmp
+
+# Environment state and a developer's own environment (#345): the image seeds its own
+.miroir
+environments/local.json

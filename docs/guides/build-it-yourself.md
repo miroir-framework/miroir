@@ -195,7 +195,7 @@ To install applications of your own or use other stores, create the gitignored `
 
 Applications you install from the UI while it is selected are recorded in it. `MIROIR_ENV=<name>` selects another environment for one run.
 
-**Release binary and Docker image:** outside the repository (no `environments/` folder above the working directory), or with `--config <path>`, the server reads a configuration file instead, `packages/miroir-server/config/miroirConfig.server.json` by default. Its `filesystemDeploymentRootDirectory` must point to a directory that contains both the `admin` and `miroir` application deployments:
+**Release binary:** outside the repository (no `environments/` folder above the working directory, and no `MIROIR_ROOT`), or with `--config <path>`, the server reads a configuration file instead, `packages/miroir-server/config/miroirConfig.server.json` by default. Its `filesystemDeploymentRootDirectory` must point to a directory that contains both the `admin` and `miroir` application deployments:
 
 ```json
 {
@@ -206,6 +206,8 @@ Applications you install from the UI while it is selected are recorded in it. `M
   }
 }
 ```
+
+`MIROIR_ROOT=<folder>` runs an environment outside a checkout instead: the folder holds `environments/` and the application assets. The Docker image works this way ([docker.md](../reference/docker.md)).
 
 
 ---

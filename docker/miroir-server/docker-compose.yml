@@ -13,10 +13,10 @@
 # To start fresh:
 #   docker compose down -v     # ⚠️ destroys all user data in the volume
 #
-# Custom server config:
-#   Mount your own miroirConfig.server.json to override the baked-in defaults:
-#     volumes:
-#       - ./my-config/miroirConfig.server.json:/miroir/packages/miroir-server/config/miroirConfig.server.json:ro
+# Configuration:
+#   The server runs the `docker` environment (MIROIR_ROOT=/data, MIROIR_ENV=docker,
+#   see docs/reference/docker.md). To change it, edit environments/docker.json
+#   in the volume (/data/environments/docker.json) and restart.
 # =============================================================================
 
 services:
@@ -36,8 +36,6 @@ services:
     volumes:
       # Named volume for user application data (auto-seeded with demo data on first run)
       - miroir-data:/data
-      # Uncomment to override the server config:
-      # - ./packages/miroir-server/config/miroirConfig.server.docker.json:/miroir/packages/miroir-server/config/miroirConfig.server.json:ro
     restart: unless-stopped
     # Optional: set log level via environment (requires server to read it; see README)
     # environment:

@@ -14,7 +14,6 @@ graphify-out*/
 packages/graphify-out*/
 packages/miroir-cli/dist*/
 packages/miroir-cli/tmp*/
-packages/miroir-cli/tests/tmp*/
 packages/miroir-core/graphify-out*/
 packages/miroir-core/node_modules*/
 packages/miroir-core/dist*/
@@ -23,7 +22,6 @@ packages/miroir-core/dist/src/0_interfaces/2_domain/instanceDomainInterface.d.ts
 packages/miroir-core/dist/src/index.d.ts
 packages/miroir-core/node_modules*/
 packages/miroir-mcp/dist*/
-packages/miroir-mcp/tmp*/
 packages/miroir-diagram-class/node_modules*/
 packages/miroir-diagram-class/dist*/
 packages/miroir-react/node_modules*/

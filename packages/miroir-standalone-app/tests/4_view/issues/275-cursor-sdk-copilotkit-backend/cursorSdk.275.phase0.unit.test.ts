@@ -83,18 +83,17 @@ if (runThis) {
   });
 
   describe("cursorSdk.275.phase0 — Electron electronServerConfig features", () => {
-    it("ipcServerSetup.ts electronServerConfig has ai, mcp, designerTools and no cursor", () => {
+    it("environmentBoot.ts electronServerConfig has designerTools and no cursor; the desktop environment (#345) has ai and mcp", () => {
       const src = readRepoFile(
-        "packages/miroir-standalone-app-electron/src/ipcServerSetup.ts",
+        "packages/miroir-standalone-app-electron/src/environmentBoot.ts",
       );
-      const start = src.indexOf("const electronServerConfig");
+      const start = src.indexOf("function electronServerConfig");
       expect(start).toBeGreaterThanOrEqual(0);
-      const block = src.slice(start, src.indexOf("const miroirContext", start));
-      expect(block).toMatch(/\bfeatures\s*:/);
-      expect(block).toMatch(/\bai\s*:\s*true\b/);
-      expect(block).toMatch(/\bmcp\s*:\s*true\b/);
+      const block = src.slice(start, src.indexOf("export async function bootElectronServer", start));
       expect(block).toMatch(/\bdesignerTools\s*:\s*true\b/);
       expect(block).not.toMatch(/\bcursor\s*:/);
+      const desktop = JSON.parse(readRepoFile("environments/desktop.json"));
+      expect(desktop.features).toEqual({ ai: true, mcp: true });
     });
   });
 

@@ -117,3 +117,20 @@ def test_check_since_a_missing_snapshot_checks_changes_since_head(repo: Path, tm
     assert result.returncode == 1
     assert "no snapshot" in result.stdout
     assert "packages/app/assets/app_data/row.json" in result.stdout
+
+
+# #345 Slice 0: the paths miroir-mcp, miroir-cli and Electron wrote before adopting environments.
+@pytest.mark.parametrize(
+    "written",
+    [
+        "packages/miroir-mcp/tests/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/x.json",
+        "packages/miroir-mcp/tests/assets/miroir_admin/x.json",
+        "packages/miroir-cli/tests/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/x.json",
+        "packages/miroir-app-admin/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/x.json",
+    ],
+)
+def test_former_runtime_write_paths_are_reported(repo: Path, written: str) -> None:
+    _write(repo, written, "{}")
+    result = _guard(repo, "check", "--json")
+    assert result.returncode == 1
+    assert json.loads(result.stdout)["changed"] == [written]
