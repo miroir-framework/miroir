@@ -8,7 +8,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../326-BUILD-build-hardening/`](../326-BUILD-build-hardening/) ✅
 Working branch: `claude/issue-337-analysis-yjkuzv`
 
-**Resume note:** slices 0–5 DONE.
+**Resume note:** slices 0–6 DONE.
 
 ---
 
@@ -32,7 +32,7 @@ This plan does **not** cover: F13 (`lodash`), `yaml`, the grid split by `gridTyp
 | 3 | The crypto polyfill leaves the page | ✅ | `forbiddenEager` crypto packages; secrets tests; nonreg filesystem |
 | 4 | Only the used meta-model and Library JSON loads | ✅ | new `eagerPackageMaxBytes` rule (pytest); guard; MiroirTest CLI |
 | 5 | CodeMirror loads with the first code field | ✅ | `forbiddenEager` `@codemirror/*`; tour |
-| 6 | Node store drivers leave the web build | ⬜ | policy `lazy` list shrinks; vitest integ still uses real stores |
+| 6 | Node store drivers leave the web build | ✅ | policy `lazy` list shrinks; vitest integ still uses real stores |
 | 7 | Electron main process without React, minified | ⬜ | Electron `forbiddenEager` `react-dom`; Electron smoke |
 | 8 | Nonreg, docs, cleanup, AC | ⬜ | nonreg filesystem + tour + AC table |
 
@@ -65,7 +65,7 @@ No model element and no MiroirTest suite: the behaviours are build properties.
 |---|---|
 | Guard rule, R3 | `defeatedDynamicImports` (policy key: list of accepted modules; `check_bundle_policy.py` rule name `defeated`) |
 | Guard rule, D4 | `eagerPackageMaxBytes` (policy key: package → max rendered bytes loaded with the page; rule name `size`) |
-| Issue-scoped vitest | `packages/miroir-standalone-app/tests/0_build/issues/337-bundle-size-cuts/homePageLoad.337.phase2.unit.test.ts` |
+| Issue-scoped vitest | `packages/miroir-standalone-app/tests/0_build/homePageLoad.unit.test.ts` (moved there in slice 8) |
 | Nonreg step | none new: the guard runs in the `bundle report + guards` job of `pr-checks.yml`; see slice 8 |
 
 ---
@@ -290,7 +290,7 @@ Validation: guard 0 violations; `npm run nonreg:unit -- --runner shared` 44 pass
 
 ## Slice 6 — Node store drivers leave the web build
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -314,7 +314,9 @@ Standalone build + guard; `npm run nonreg:filesystem -- --runner shared` (vitest
 
 ### Realization
 
-_(to fill)_
+GREEN as planned, `miroir-store-filesystem` included (it imports `node:fs` and `node:path`): `vite.config.js` aliases the three store packages to `vite/nodeStoreStub.js` when `command === "build"` and `mode !== "test"`; the stub exports the three `…StoreSectionStartup` functions `IntegrationTestSession.ts` imports, each throwing. The policy lost 61 lazy entries (the stores, `sequelize`, `mongodb`, `bson`, their dependencies and 20 `node:* via …` built-ins) with the same script as slice 1. Nothing was eager, yet **eager gzip 902 938 → 867 330 (−3.9%)**, measured; the cause was not traced (Rollup places shared modules differently once the store chunks are gone). 6.3: no `optimizeDeps` change was needed, the comment sits by the alias.
+
+Validation: guard 0 violations; `npm run nonreg:filesystem -- --runner shared` 87 passed, 0 failed (with slices 6 and 7 in the tree; vitest resolves the real stores, DomainController integ steps included).
 
 ---
 
