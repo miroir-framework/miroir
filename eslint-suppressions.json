@@ -61,7 +61,7 @@
   },
   "packages/miroir-core/src/3_controllers/DomainController.ts": {
     "miroir/layers": {
-      "count": 6
+      "count": 5
     }
   },
   "packages/miroir-core/src/3_controllers/MiroirEventService.ts": {

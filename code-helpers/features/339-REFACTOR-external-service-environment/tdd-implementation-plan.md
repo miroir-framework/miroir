@@ -22,10 +22,10 @@ In: analysis § 5 target design. Out: injectable `SecretStore` (later, unschedul
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 1 | Client built on an injected environment | ⬜ pending | `externalServiceClient.339.unit` |
-| 2 | DomainController receives the client at construction | ⬜ pending | `DomainControllerOutboundFetch.unit` (rewritten) |
-| 3 | Test sessions and Report tests on the injected environment | ⬜ pending | `reportTestFakeHttp.integ`, 284/270/external service integ |
-| 4 | Server environment, removal of module state and setters, cleanup | ⬜ pending | lint, `nonreg:filesystem` |
+| 1 | Client built on an injected environment | ✅ DONE | `externalServiceClient.339.unit` |
+| 2 | DomainController receives the client at construction | ✅ DONE | `DomainControllerOutboundFetch.unit` (rewritten) |
+| 3 | Test sessions and Report tests on the injected environment | ✅ DONE | `reportTestFakeHttp.integ`, 284/270/external service integ |
+| 4 | Server environment, removal of module state and setters, cleanup | ✅ DONE | lint, `nonreg:filesystem` |
 
 ## Locked implementation defaults
 
@@ -53,7 +53,7 @@ fake HTTP) already characterise the behaviour; they run green on the base before
 
 ## Slice 1 — Client built on an injected environment
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 - **RED** `packages/miroir-core/tests/4_services/issues/339-external-service-environment/externalServiceClient.339.unit.test.ts`:
   two clients with different environments do not share their token cache, their allow list or their
@@ -67,7 +67,7 @@ fake HTTP) already characterise the behaviour; they run green on the base before
 
 ## Slice 2 — DomainController receives the client at construction
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 - **RED** rewrite `DomainControllerOutboundFetch.unit`: a controller built with a client on a fake
   fetch sends its requests there; another controller built on another client does not.
@@ -79,7 +79,7 @@ fake HTTP) already characterise the behaviour; they run green on the base before
 
 ## Slice 3 — Test sessions and Report tests on the injected environment
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 - **RED** `reportTestFakeHttp.integ` and the Report connection wizard test run with the runner using
   `executionEnvironment.fakeOutboundHttp` instead of `setOutboundFetch`.
@@ -90,7 +90,7 @@ fake HTTP) already characterise the behaviour; they run green on the base before
 
 ## Slice 4 — Server environment, removal, cleanup
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 - **GREEN** `server.ts` builds its client with `persistRotatedSecret`; remove `OutboundFetch.ts`,
   `setPersistRotatedSecret`, `clearPersistRotatedSecret`, `allowInsecureBaseUrlsForTests`,
@@ -106,3 +106,29 @@ fake HTTP) already characterise the behaviour; they run green on the base before
 | DomainController receives the environment; no `setOutboundFetch` | slice 2 |
 | Report fake-HTTP tests, 270 OAuth cache, 284, `DomainControllerOutboundFetch.unit` pass | slices 2-3 |
 | `npm run lint`, `nonreg:filesystem` pass | slice 4 |
+
+## Realization
+
+The four slices landed as one implementation commit: removing `setOutboundFetch` from
+`DomainControllerInterface` and adding the constructor parameter break every caller at once, so no
+intermediate state of the monorepo compiles. Slice 1's temporary legacy wrappers were therefore not
+written.
+
+- **Slice 1.** `ExternalServiceClientInterface.ts` (`OutboundFetch`, `ExternalServiceEnvironment`,
+  `ExternalServiceTokenCache`, `PersistRotatedSecret`, `ExternalServiceClientInterface`);
+  `createExternalServiceClient`, `createExternalServiceTokenCache`; `1_core/OutboundFetch.ts` deleted.
+  New `externalServiceClient.339.unit` (3 tests). `secretsOauthCache.270.phase5.unit` builds its client
+  with a fake fetch instead of stubbing the global `fetch`.
+- **Slice 2.** `DomainController` 5th constructor parameter; `setupMiroirDomainController` (redux,
+  zustand) takes an optional client defaulting to `defaultExternalServiceClient()` from
+  `5_setup/externalServiceEnvironment.ts`. `DomainControllerOutboundFetch.unit` rewritten (the "goes
+  back to the global fetch" case no longer exists: there is nothing to put back). One `miroir/layers`
+  suppression of `DomainController.ts` pruned (6 to 5).
+- **Slice 3.** `createFakeOutboundHttp` in `5_tests/FakeHttpResponses.ts`; `setupMiroirTest` builds
+  the session's client on it and returns it; `runAppStackIntegrationBootstrap` and `RunnerTestSession`
+  expose it as `MiroirTestExecutionEnvironment.fakeOutboundHttp`; `runReportTest` installs a suite's
+  answers with `answerWith` and releases them in `finally`. `AppStackIntegrationSessionOptions` and
+  `AppStackBootstrapOptions` take `externalServiceEnvironment` overrides. The integ tests pass
+  `{ insecureBaseUrls: [fakeServer.baseUrl], tokenCache }`; `externalServiceGuards.integ` runs its
+  direct calls through a local `executeExternalServiceOperation(…, insecureBaseUrls)` helper.
+- **Slice 4.** `server.ts` passes `persistRotatedSecret` in its client's environment.

@@ -1,5 +1,5 @@
 import type { ReportTestFakeHttpResponse } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import type { OutboundFetch } from "../1_core/OutboundFetch.js";
+import type { OutboundFetch } from "../0_interfaces/4-services/ExternalServiceClientInterface.js";
 
 // ################################################################################################
 // The fake of the outbound fetch for a Report test (#330, analysis T9): it answers the requests
@@ -52,4 +52,33 @@ export function createFakeOutboundFetch(responses: readonly ReportTestFakeHttpRe
     return responseOf(declared);
   };
   return { fetch, undeclaredRequests };
+}
+
+/**
+ * The fetch of a test session's external service environment (#339): it forwards each request to
+ * the fetch it is created with, except while a Report test leaf has installed its fake answers.
+ */
+export interface FakeOutboundHttp {
+  fetch: OutboundFetch;
+  /** Answers the session's requests with `responses` until `release` is called. */
+  answerWith(responses: readonly ReportTestFakeHttpResponse[]): FakeOutboundFetch & { release(): void };
+}
+
+export function createFakeOutboundHttp(forward: OutboundFetch): FakeOutboundHttp {
+  let installed: FakeOutboundFetch | undefined;
+  return {
+    fetch: (input, init) => (installed ?? { fetch: forward }).fetch(input, init),
+    answerWith(responses) {
+      const fake = createFakeOutboundFetch(responses);
+      installed = fake;
+      return {
+        ...fake,
+        release() {
+          if (installed === fake) {
+            installed = undefined;
+          }
+        },
+      };
+    },
+  };
 }

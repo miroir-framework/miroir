@@ -10,6 +10,7 @@ import {
   Action2ReturnType,
   ConfigurationService,
   DomainController,
+  defaultExternalServiceClient,
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
   MlElement,
@@ -792,6 +793,7 @@ export function buildComponentTestWrapper(
             miroirContext,
             localCache,
             persistenceSaga,
+            defaultExternalServiceClient(),
           );
           (realDc as any).callUtil.callPersistenceAction = async (callContext: any) =>
             callContext ?? {};

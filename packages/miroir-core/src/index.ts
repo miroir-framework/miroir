@@ -1445,18 +1445,24 @@ export {
 } from "./4_services/SecretsService.js";
 export { ParseServerArgsError, parseServerArgs } from "./4_services/parseServerArgs.js";
 export {
-  allowInsecureBaseUrlsForTests,
-  assertBaseUrlAllowed,
-  clearAllowedInsecureBaseUrlsForTests,
-  clearExternalServiceTokenCacheForTests,
-  clearPersistRotatedSecret,
-  executeExternalServiceOperation,
+  createExternalServiceClient,
+  createExternalServiceTokenCache,
   oauth2PrincipalCacheScope,
   oauth2ResolvedCacheScope,
-  setPersistRotatedSecret,
-  type PersistRotatedSecret,
 } from "./4_services/ExternalServiceClient.js";
-export { outboundFetch, type OutboundFetch } from "./1_core/OutboundFetch.js";
+export type {
+  ExternalServiceClientInterface,
+  ExternalServiceEnvironment,
+  ExternalServicePrincipal,
+  ExternalServiceTokenCache,
+  OutboundFetch,
+  PersistRotatedSecret,
+  ResolveExternalServiceSecret,
+} from "./0_interfaces/4-services/ExternalServiceClientInterface.js";
+export {
+  defaultExternalServiceClient,
+  defaultExternalServiceEnvironment,
+} from "./5_setup/externalServiceEnvironment.js";
 export {
   boundPathsForOperation,
   listConvertibleGetOperations,
@@ -1824,7 +1830,12 @@ export {
   runReportTestExpectActionResultStep,
   type ReportTestActionContext,
 } from "./5_tests/ReportTestTools.js";
-export { createFakeOutboundFetch, type FakeOutboundFetch } from "./5_tests/FakeHttpResponses.js";
+export {
+  createFakeOutboundFetch,
+  createFakeOutboundHttp,
+  type FakeOutboundFetch,
+  type FakeOutboundHttp,
+} from "./5_tests/FakeHttpResponses.js";
 export {
   createInProcessVitestStub,
   runMiroirTestSuiteInProcess,

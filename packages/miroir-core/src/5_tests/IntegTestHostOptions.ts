@@ -1,3 +1,4 @@
+import type { ExternalServiceEnvironment } from "../0_interfaces/4-services/ExternalServiceClientInterface.js";
 import type {
   Deployment,
   EntityInstance,
@@ -135,6 +136,8 @@ export type AppStackIntegrationSessionOptions = IntegTestHostOptions & {
   /** Passed through to app-stack bootstrap wiring (setupMiroirTest). */
   miroirActivityTracker?: MiroirActivityTracker;
   miroirEventService?: MiroirEventService;
+  /** #339: what the session's external service environment changes from the default one. */
+  externalServiceEnvironment?: Partial<ExternalServiceEnvironment>;
 };
 
 /** Alias kept for existing standalone-app imports. */
