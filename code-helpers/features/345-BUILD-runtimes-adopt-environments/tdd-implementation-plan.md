@@ -29,7 +29,7 @@ Out: #323 (bundle ignores `--config`); the server's legacy config-file path; CLI
 | 5 | Docker images start from the `docker` environment | ✅ DONE | pytest on `docker-entrypoint.sh`; `miroir-env` test on `environments/docker.json` over a seed layout |
 | 6 | Electron dev boots its environment in the main process | ✅ DONE | vitest on the main-process boot (no Electron window) |
 | 7 | Packaged Electron seeds user data and runs from it | ✅ DONE | vitest on the first-run copy + boot of `desktop` |
-| 8 | Nonreg, docs, AC checklist | ⬜ pending | `npm run nonreg:filesystem -- --runner shared` |
+| 8 | Nonreg, docs, AC checklist | ✅ DONE | `npm run nonreg:filesystem -- --runner shared` |
 
 ## Locked implementation defaults
 
@@ -266,7 +266,7 @@ No new model uuid. The `miroir-env` tests reuse `packages/miroir-env/tests/bootT
 
 ## Slice 8 — Nonreg, docs, AC checklist
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** the guard watches the mcp and cli tests in nonreg, docs list every runtime.
 
@@ -289,3 +289,22 @@ No new model uuid. The `miroir-env` tests reuse `packages/miroir-env/tests/bootT
 | Pre-push gate and `nonreg:filesystem -- --runner shared` pass | Slice 8 |
 
 ### Realization
+
+- Nonreg steps `unit-345-mcp`, `unit-345-cli` (default tier, filesystem stores, no Postgres) and `unit-345-electron` (unit tier, deviation: added to the two planned), before `unit-321-tracked-assets`.
+- `.gitignore` drops `packages/miroir-mcp/tmp*/` and `packages/miroir-cli/tests/tmp*/`: nothing writes there any more.
+- `docs/reference/environments.md`: "Runtimes" table, `docker` and `desktop` in the environment table, `MIROIR_ROOT` in Selection, `packagesDirectory` in the field table. `docs/reference/testing.md`: the mcp / cli / Electron test environments.
+- Pre-push gate green: skills sync, pytest 181 passed, lint, `miroir-env check --strict --tracked-clean`, miroir-core 2133 passed; typecheck of miroir-core, miroir-env, miroir-mcp, miroir-cli, miroir-server, miroir-standalone-app, miroir-standalone-app-electron. `check_dependency_policy.py` reports 7 audit violations (axios, and others in third-party packages), none from this branch's dependency changes (workspace packages and the vitest version already in the lock).
+- `npm run nonreg:filesystem -- --runner shared`: 87 steps passed, 0 failed (snapshot `test-results/nonreg/20260930T180623Z`).
+- Docker: `docker build -f docker/miroir-server/Dockerfile` cannot run here (the Alpine package mirror is blocked by the session's network). Instead, the image layout was rebuilt in a temporary folder (`/seed` as the Dockerfile copies it, empty `/data`), and the entrypoint was run with `MIROIR_SEED_DIR` / `MIROIR_DATA_DIR`, `MIROIR_ROOT`, `MIROIR_ENV=docker` and the release bundle. It logged `environment: docker, selected by MIROIR_ENV`, served `/capabilities` (ai and mcp true) and wrote the three Deployment rows in `/data`. Pre-existing, not changed here: the release bundle keeps the workspace packages external (`ncc -e miroir-ai …`), so it only resolves them next to a `node_modules` that holds them.
+
+### AC status
+
+| AC | Status |
+|---|---|
+| mcp resolves its stores from an environment, `tests/assets/admin_*` removed, tests on `test-<storage>` | ✅ Slices 1-2, `unit-345-mcp` |
+| cli resolves its stores from an environment, `defaultConfig.json` removed | ✅ Slice 3, `unit-345-cli` |
+| Electron starts from an environment, writes run state outside tracked files | ✅ Slices 6-7, `unit-345-electron`; a packaged build is A's check (D12) |
+| Docker builds its configuration from an environment definition, seed-then-copy kept, release image works | ✅ Slice 5, entrypoint + release boot on the image layout; the image build itself is A's check (D12) |
+| Guard covers the files these runtimes used to write | ✅ Slice 0, `unit-321-tracked-assets` after the new steps |
+| `environments.md` lists every runtime | ✅ Slice 8 |
+| Pre-push gate and `nonreg:filesystem -- --runner shared` pass | ✅ Slice 8 |
