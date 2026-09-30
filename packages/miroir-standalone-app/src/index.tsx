@@ -398,43 +398,19 @@ async function startWebApp(root: Root) {
   theme.spacing(10);
 
   log.warn("startWebApp start in mode", getMiroirEnvironmentMode(), "isElectron:", isElectron);
-  const filesystemDeploymentRootDirectory: string = electronRestClient
-    ? await electronRestClient.getDefaultFilesystemFolder()
-    : "no default filesystem folder because not in Electron";
-  log.debug("startWebApp filesystemDeploymentRootDirectory:", filesystemDeploymentRootDirectory);
+  // Electron: the main process runs the environment (#345) and hands over its client configuration.
+  const electronMiroirConfig: MiroirConfigClient | undefined = electronRestClient
+    ? await electronRestClient.getClientConfig()
+    : undefined;
 
-  const electronMiroirConfig: MiroirConfigClient = {
-    miroirConfigType: "client",
-    client: {
-      emulateServer: true,
-      rootApiUrl: ELECTRON_LOOPBACK_ROOT_API_URL,
-      filesystemDeploymentRootDirectory,
-      deploymentStorageConfig: {
-        "18db21bf-f8d3-4f6a-8296-84b69f6dc48b": {
-          admin: {
-            emulatedServerType: "filesystem",
-            directory: "miroir-app-admin/assets",
-          },
-          model: {
-            emulatedServerType: "filesystem",
-            directory: "miroir-app-admin/assets/admin_model",
-          },
-          data: {
-            emulatedServerType: "filesystem",
-            directory: "miroir-app-admin/assets/admin_data",
-          },
-        },
-      },
-    },
-  };
-  // Electron uses desktopMiroirConfig (emulated server via IPC).
+  // Electron uses the configuration of the main process's environment (emulated server via IPC).
   // The browser webapp uses webMiroirConfig (real HTTP server).
   if (!isElectron && !webMiroirConfig) {
     throw new Error(
       "the web client has no configuration: serve or build it with Vite (vite.config.js), which injects the one of the selected environment",
     );
   }
-  const miroirConfigToUse = isElectron ? electronMiroirConfig : webMiroirConfig!;
+  const miroirConfigToUse = electronMiroirConfig ?? webMiroirConfig!;
   const {
     domainControllerForClient,
     domainControllerForServer: rawDomainControllerForServer,
@@ -453,112 +429,7 @@ async function startWebApp(root: Root) {
     ? (new ElectronServerDomainControllerProxy() as any as DomainControllerInterface)
     : rawDomainControllerForServer;
 
-  if (isElectron && electronMiroirConfig.client.emulateServer) {
-    if (!domainControllerForServer) {
-      throw new Error("Domain controller for server is not defined");
-    }
-    const configurations: Record<string, Deployment> = {
-      [deployment_Admin.uuid]: deployment_Admin as Deployment,
-      [deployment_Miroir.uuid]: deployment_Miroir as Deployment,
-    };
-
-    log.debug("Electron mode: opening stores for configured deployments:", configurations);
-    // open all configured stores
-    for (const c of Object.entries(configurations)) {
-      const openStoreAction: StoreOrBundleAction = {
-        actionType: "storeManagementAction_openStore",
-        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        payload: {
-          application: c[1].selfApplication,
-          deploymentUuid: c[0],
-          configuration: {
-            [c[0]]: c[1].configuration as StoreUnitConfiguration,
-          },
-        },
-      };
-      const openStoreActionResult = await domainControllerForServer.handleAction(
-        openStoreAction,
-        defaultSelfApplicationDeploymentMap,
-        defaultMetaModelEnvironment,
-      );
-      if (openStoreActionResult instanceof Action2Error) {
-        log.error("Error opening store for deployment " + c[0], openStoreActionResult);
-        throw new Error(
-          `Error opening store for deployment ${c[0]}: ${openStoreActionResult.errorMessage}`,
-        );
-      }
-    }
-    const deploymentsQueryResults =
-      await domainControllerForServer.handleBoxedExtractorOrQueryAction(
-        {
-          actionType: "runBoxedQueryAction",
-          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-          payload: {
-            application: adminSelfApplication.uuid,
-            applicationSection: "data",
-            queryExecutionStrategy: "storage",
-            query: {
-              application: adminSelfApplication.uuid,
-              queryType: "boxedQueryWithExtractorCombinerTransformer",
-              extractors: {
-                deployments: {
-                  extractorOrCombinerType: "extractorInstancesByEntity",
-                  parentUuid: entityDeployment.uuid,
-                },
-              },
-            },
-          },
-        },
-        defaultSelfApplicationDeploymentMap,
-        defaultMetaModelEnvironment,
-      );
-
-    if (deploymentsQueryResults instanceof Action2Error) {
-      log.error("Error fetching deployments:", deploymentsQueryResults);
-      throw new Error(`Error fetching deployments: ${deploymentsQueryResults.errorMessage}`);
-    }
-
-    const deployments: Deployment[] = deploymentsQueryResults.returnedDomainElement.deployments;
-
-    log.info(`Deployments fetched: ${JSON.stringify(deployments, circularReplacer(), 2)}`);
-
-    const deploymentsToOpen: [string, Deployment][] = deployments
-      .filter((d) => !configurations[d.uuid.toString()])
-      .map((d) => [d.uuid.toString(), d]);
-
-    log.info(`Deployments to open: ${JSON.stringify(deploymentsToOpen, circularReplacer(), 2)}`);
-
-    const applicationDeploymentMap: ApplicationDeploymentMap = deployments.reduce((acc, curr) => {
-      return {
-        ...acc,
-        [curr.selfApplication ?? "NO ADMIN APPLICATION for " + curr.name]: curr.uuid,
-      };
-    }, {});
-
-    log.info(
-      `ApplicationDeploymentMap for new deployments: ${JSON.stringify(applicationDeploymentMap, circularReplacer(), 2)}`,
-    );
-
-    // open all newly found stores
-    for (const c of deploymentsToOpen) {
-      const openStoreAction: StoreOrBundleAction = {
-        actionType: "storeManagementAction_openStore",
-        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        payload: {
-          application: c[1].selfApplication,
-          deploymentUuid: c[0],
-          configuration: {
-            [c[0]]: c[1].configuration as StoreUnitConfiguration,
-          },
-        },
-      };
-      await domainControllerForServer.handleAction(
-        openStoreAction,
-        applicationDeploymentMap,
-        defaultMetaModelEnvironment,
-      );
-    }
-  }
+  // Electron: the main process opened every deployment of its environment before the window loaded.
 
   root.render(
     <>

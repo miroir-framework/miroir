@@ -93,17 +93,18 @@ if (runThis) {
       expect(src).toMatch(/\blisten\s*\(/);
     });
 
-    it("electronServerConfig has features ai, mcp, and designerTools true", () => {
+    it("electronServerConfig keeps designerTools true and the desktop environment (#345) has ai and mcp true", () => {
       const src = readRepoFile(
-        "packages/miroir-standalone-app-electron/src/ipcServerSetup.ts",
+        "packages/miroir-standalone-app-electron/src/environmentBoot.ts",
       );
-      const start = src.indexOf("const electronServerConfig");
+      const start = src.indexOf("function electronServerConfig");
       expect(start).toBeGreaterThanOrEqual(0);
-      const block = src.slice(start, src.indexOf("const miroirContext", start));
+      const block = src.slice(start, src.indexOf("export async function bootElectronServer", start));
       expect(block).toMatch(/\bfeatures\s*:/);
-      expect(block).toMatch(/\bai\s*:\s*true\b/);
-      expect(block).toMatch(/\bmcp\s*:\s*true\b/);
       expect(block).toMatch(/\bdesignerTools\s*:\s*true\b/);
+      const desktopFeatures = readJson("environments/desktop.json").features as { ai?: boolean; mcp?: boolean };
+      expect(desktopFeatures.ai).toBe(true);
+      expect(desktopFeatures.mcp).toBe(true);
     });
   });
 

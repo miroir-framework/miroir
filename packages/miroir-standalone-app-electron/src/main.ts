@@ -157,7 +157,7 @@ class MainWindow {
     // Initialise store factories + domain controller in the main process and register the IPC
     // handler BEFORE loading the renderer URL.  The renderer will call back via IPC once it
     // starts initialising Miroir (store-management and persistence actions).
-    await setupIpcServer(mainDirname);
+    await setupIpcServer();
     log("Starting miroir standalone app - IPC server ready");
 
     if (this.isDev) {

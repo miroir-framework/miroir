@@ -23,6 +23,7 @@
 import {
   Action2Error,
   type ApplicationDeploymentMap,
+  type MiroirConfigClient,
   type RestClientCallReturnType,
   type RestClientInterface,
 } from "miroir-core";
@@ -75,6 +76,13 @@ export class ElectronRestClient implements RestClientInterface {
   getDefaultFilesystemFolder(): string {
     return (window as any).electronAPI.callMiroirIpc({
       type: "get-default-filesystem-folder",
+    });
+  }
+
+  /** The client configuration of the environment the main process runs (#345). */
+  getClientConfig(): Promise<MiroirConfigClient> {
+    return (window as any).electronAPI.callMiroirIpc({
+      type: "get-client-config",
     });
   }
 

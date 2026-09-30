@@ -27,8 +27,8 @@ Out: #323 (bundle ignores `--config`); the server's legacy config-file path; CLI
 | 3 | miroir-cli runs on the selected environment | ✅ DONE | `cli.integ` on `test-filesystem`: `lendDocument` on Library |
 | 4 | An environment runs outside a checkout (`MIROIR_ROOT`, `packagesDirectory`) | ✅ DONE | `miroir-env` test booting the server config from a `/data`-like temp root |
 | 5 | Docker images start from the `docker` environment | ✅ DONE | pytest on `docker-entrypoint.sh`; `miroir-env` test on `environments/docker.json` over a seed layout |
-| 6 | Electron dev boots its environment in the main process | ⬜ pending | vitest on the main-process boot (no Electron window) |
-| 7 | Packaged Electron seeds user data and runs from it | ⬜ pending | vitest on the first-run copy + boot of `desktop` |
+| 6 | Electron dev boots its environment in the main process | ✅ DONE | vitest on the main-process boot (no Electron window) |
+| 7 | Packaged Electron seeds user data and runs from it | ✅ DONE | vitest on the first-run copy + boot of `desktop` |
 | 8 | Nonreg, docs, AC checklist | ⬜ pending | `npm run nonreg:filesystem -- --runner shared` |
 
 ## Locked implementation defaults
@@ -217,7 +217,7 @@ No new model uuid. The `miroir-env` tests reuse `packages/miroir-env/tests/bootT
 
 ## Slice 6 — Electron dev boots its environment
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** in development the Electron main process selects the environment like the server, seeds, boots, reconciles and serves the client configuration; the renderer opens nothing and writes no tracked file.
 
@@ -231,11 +231,17 @@ No new model uuid. The `miroir-env` tests reuse `packages/miroir-env/tests/bootT
 
 ### Realization
 
+- `src/environmentBoot.ts` (no `electron` import): `bootElectronServer({ cwd, env }, log)` resolves and seeds the environment, registers the four store startups, builds the server configuration on the loopback URL (`designerTools: true` unless the environment says otherwise, `ai` / `mcp` from the environment), sets up the domain controller, runs `bootEnvironment` and `recordInstallsOf`, and returns the client configuration on the loopback URL.
+- `ipcServerSetup.ts`: `setupIpcServer()` (no `mainDirname` any more) calls `miroirCoreStartup` then `bootElectronServer`; IPC `get-client-config` returns the client configuration; `get-assets-base-path` and `get-default-filesystem-folder` return the environment root.
+- Renderer `index.tsx`: the inline `electronMiroirConfig` and the ~150 lines that opened Admin and Miroir and then every Deployment row are replaced by `ElectronRestClient.getClientConfig()`; the main process has opened everything before the window loads.
+- `app.config.json` loses `filesystemDeploymentRootDirectory`; `package.json` gains `miroir-env`, `vitest`, `test` / `testByFile`; `bundle-policy.json` adds `miroir-env` to eager and drops `loglevelnext` (no longer bundled). Bundle policy: 0 violations, eager gzip 4.78 MB (baseline 4.77 MB, within 2 %).
+- Deviations: the RED file is `tests/environmentBoot.integ.test.ts` (it covers Slices 6 and 7 together); three issue-scoped source tests (standalone 273.phase9, 275.phase0, 275.phase7) looked for `const electronServerConfig` in `ipcServerSetup.ts`: they now read `function electronServerConfig` in `environmentBoot.ts` and the features of `environments/desktop.json`. Slices 6 and 7 are one commit: the boot and the first-run preparation are one module.
+
 ---
 
 ## Slice 7 — Packaged Electron runs from user data
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** a packaged app copies `resources/miroir-assets` to `userData/miroir` on first start and runs `desktop` with `MIROIR_ROOT` there.
 
@@ -248,6 +254,13 @@ No new model uuid. The `miroir-env` tests reuse `packages/miroir-env/tests/bootT
 **Validation:** Electron tests; `npm run build-electron -w miroir-standalone-app-electron`; A runs one packaged build before merge (D12).
 
 ### Realization
+
+- `environments/desktop.json`: miroir (with `modelVersion`) and admin, `live`, `packagesDirectory: "."`, server on `http://127.0.0.1:3080`, client `emulatedServer`, features ai + mcp. Library is not installed: the quickstart installs it from `resources/miroir-assets/bundles`, which stays in `extraResources` (deviation from the plan, which listed Library: installing it upfront would contradict the quickstart).
+- `prepareDesktopRoot({ resources, userData })`: first start copies `resources/miroir-assets` to `userData/miroir` and empties the generated Admin entities (the bundled Admin data carries the checkout's rows); later starts keep everything and only add missing `environments/*.json`, the Docker entrypoint's rule. Packaged, `ipcServerSetup` runs it and sets `MIROIR_ROOT` and `MIROIR_ENV` (default `desktop`).
+- `extraResources` adds `environments/desktop.json` → `miroir-assets/environments/desktop.json`.
+- `tests/environmentBoot.integ.test.ts` (3 tests) builds `resources/miroir-assets` from `build.extraResources` itself, so a packaging change that drops what `desktop` needs fails it: first-run copy, user data kept on the second start, boot of `desktop` with Admin and Miroir opened, no warnings, Deployment rows generated, loopback client configuration.
+- `docs/getting-started/quickstart.md`: installed applications live in the user data folder, not in the installation directory.
+- A packaged build (`npm run dist -w miroir-standalone-app-electron`) was not run here (D12).
 
 ---
 

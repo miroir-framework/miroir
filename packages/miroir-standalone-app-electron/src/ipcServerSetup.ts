@@ -5,39 +5,27 @@
  * stores) and registers a single IPC channel `miroir-ipc` that the renderer process can call
  * instead of making HTTP requests.
  *
- * Three message types are handled:
- *   'rest-call'      – routes a REST-style call through RestClientStub (persistence actions)
- *   'server-action'  – routes an arbitrary DomainAction through the server DomainController
- *   'server-query'   – routes a boxed query through the server DomainController
+ * Message types:
+ *   'rest-call'         – routes a REST-style call through RestClientStub (persistence actions)
+ *   'server-action'     – routes an arbitrary DomainAction through the server DomainController
+ *   'server-query'      – routes a boxed query through the server DomainController
+ *   'get-client-config' – the renderer's client configuration, from the environment
  *
  * Because Electron IPC uses structured clone, class instances lose their prototype chain.
  * The RestClientCallReturnType.headers field (a Headers instance) is replaced with a plain
  * object before sending so that the renderer never receives a non-serialisable value.
  *
- * PATH RESOLUTION FOR FILESYSTEM STORES
- * ──────────────────────────────────────
- * In development (non-packaged) the current working-directory is the electron package folder
- * (`packages/miroir-standalone-app-electron/`), so relative store paths like
- * `../miroir-app-admin/assets` resolve correctly.
- *
- * In production (packaged) the CWD is the installation directory and the assets are stored
- * under `resources/miroir-assets/` (bundled by electron-builder extraResources).  The helper
- * `resolveOpenStoreAction` rewrites every relative `directory` value in
- * `storeManagementAction_openStore` actions to an absolute path so both scenarios work
- * identically without modifying any stored JSON or renderer code.
- *
- *   Dev   assetsBase = packages/
- *   Prod  assetsBase = <resourcesPath>/miroir-assets/
- *
- * The assets directory layout under `assetsBase` mirrors the monorepo packages structure, e.g.
- *   miroir-core/src/assets/admin/
- *   miroir-app-admin/assets/
- *   miroir-app-miroir/assets/
+ * ENVIRONMENT (#345)
+ * ─────────────────
+ * The main process runs an environment like miroir-server (environmentBoot.ts): in development
+ * the one selected in the checkout (MIROIR_ENV, environments/local.json, dev), packaged the
+ * `desktop` environment in <userData>/miroir, seeded on first start from resources/miroir-assets.
+ * It opens every deployment of the environment before the renderer loads; the renderer asks for
+ * its client configuration with 'get-client-config' and opens no store itself.
  */
 
 import { app, ipcMain } from "electron";
 import express from "express";
-import * as os from "os";
 import * as path from "path";
 import { assertCursorSdkPackaged, createCopilotKitRouter } from "miroir-ai";
 import {
@@ -48,11 +36,6 @@ import {
   getClientEnvironment,
   getProcessCapabilities,
   isAllowedElectronLoopbackOrigin,
-  MiroirActivityTracker,
-  MiroirConfigServer,
-  MiroirContext,
-  MiroirEventService,
-  PersistenceStoreControllerManager,
   RestClientStub,
   shouldListenLoopbackHttp,
   shouldMountCopilotKitRoute,
@@ -60,71 +43,28 @@ import {
   miroirCoreStartup
 } from "miroir-core";
 import { EndpointToolRegistry, setupMcpServer } from "miroir-mcp";
-import { setupMiroirDomainController } from "miroir-localcache-redux";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
-import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { log } from "console";
+import { bootElectronServer, DESKTOP_ENVIRONMENT, prepareDesktopRoot } from "./environmentBoot.js";
 
 export const MIROIR_IPC_CHANNEL = "miroir-ipc";
 
 // ################################################################################################
-// Path resolution helpers
+// Environment selection
 // ################################################################################################
 
 /**
- * Returns the base directory that mirrors the monorepo `packages/` layout.
- * Receives `mainDirname` (the `__dirname` of main.ts) to avoid `import.meta.url`
- * in this file (tsconfig targets commonjs for IDE analysis).
- *
- * Dev   (non-packaged): dist/ → electron-pkg/ → packages/
- * Prod  (packaged):      <resourcesPath>/miroir-assets/
+ * Where the main process finds its environment: the checkout in development, the user-data
+ * folder once packaged (seeded from resources/miroir-assets on first start).
  */
-export function getAssetsBasePath(mainDirname: string): string {
-  return app.isPackaged
-    ? path.join(process.resourcesPath, "miroir-assets")
-    : path.join(mainDirname, "../..");  // dist/ → electron-pkg/ → packages/
-}
-
-/**
- * Converts a potentially-relative store directory to an absolute path.
- * Relative paths are treated as relative to `assetsBasePath` using a fake
- * sibling `__stub` so that paths like `../miroir-foo/assets` resolve to
- * `assetsBasePath/miroir-foo/assets`.
- */
-function resolveStoreDir(dir: string, assetsBasePath: string): string {
-  if (path.isAbsolute(dir)) return dir;
-  // path.resolve of "__stub/../miroir-foo" → "assetsBasePath/miroir-foo"
-  return path.resolve(path.join(assetsBasePath, "__stub"), dir);
-}
-
-/**
- * Walks the `configuration` map inside a `storeManagementAction_openStore`
- * action and makes every `directory` value absolute.  Other action types are
- * returned unchanged.
- */
-function resolveOpenStoreAction(action: any, assetsBasePath: string): any {
-  return action;
-  if (action?.actionType !== "storeManagementAction_openStore") return action;
-  const config = action.payload?.configuration;
-  if (!config) return action;
-
-  const resolvedConfig: Record<string, any> = {};
-  for (const [deploymentUuid, deploymentConfig] of Object.entries(config as Record<string, any>)) {
-    const resolved: Record<string, any> = {};
-    for (const [section, sectionCfg] of Object.entries(deploymentConfig as Record<string, any>)) {
-      if (sectionCfg && typeof sectionCfg === "object" && "directory" in sectionCfg) {
-        // resolved[section] = { ...sectionCfg, directory: resolveStoreDir(sectionCfg.directory, assetsBasePath) };
-        resolved[section] = { ...sectionCfg, directory: resolveStoreDir(sectionCfg.directory, assetsBasePath) };
-      } else {
-        resolved[section] = sectionCfg;
-      }
-    }
-    resolvedConfig[deploymentUuid] = resolved;
+function electronEnvironmentLocation(): { cwd: string; env: Record<string, string | undefined> } {
+  if (!app.isPackaged) {
+    return { cwd: process.cwd(), env: process.env };
   }
-
-  return { ...action, payload: { ...action.payload, configuration: resolvedConfig } };
+  const root = prepareDesktopRoot({
+    resources: path.join(process.resourcesPath, "miroir-assets"),
+    userData: app.getPath("userData"),
+  });
+  return { cwd: root, env: { ...process.env, MIROIR_ROOT: root, MIROIR_ENV: process.env.MIROIR_ENV ?? DESKTOP_ENVIRONMENT } };
 }
 
 // ################################################################################################
@@ -144,68 +84,18 @@ function serializeRestResult(result: any): any {
   return result;
 }
 
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
-export async function getDefaultFilesystemFolder(): Promise<string> {
-    const envKey = app.isPackaged ? "production" : "development";
-    console.log("getDefaultFilesystemFolder envKey", envKey);
-    const appConfig = await import("../app.config.json", { with: { type: "json" } });
-    const configured: string | undefined = (appConfig.default[envKey] as any)?.filesystemDeploymentRootDirectory;
-    console.log("getDefaultFilesystemFolder filesystemDeploymentRootDirectory", configured);
-    const result = (configured && configured.length > 0) ? configured : os.homedir();
-    console.log("getDefaultFilesystemFolder result", result);
-    return result;
-  }
-// ################################################################################################
-// ################################################################################################
-// ################################################################################################
 /**
  * Initialises the server-side Miroir stack and registers the IPC handler.
  * Must be called from the main process before loadURL() so the handler is ready when the
  * renderer first sends a message.
- *
- * @param mainDirname - `__dirname` of main.ts, used to resolve dev-mode asset paths.
  */
-export async function setupIpcServer(mainDirname: string): Promise<void> {
-  // Register all store factories in the main-process ConfigurationService instance.
+export async function setupIpcServer(): Promise<void> {
+  // Store factories are registered in the main-process ConfigurationService instance.
   // (The renderer process has a different ConfigurationService instance and can only register
   //  IndexedDb — which is why IPC is needed for filesystem / postgres / mongodb.)
   miroirCoreStartup();
-  miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
-  miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
-  miroirMongoDbStoreSectionStartup(ConfigurationService.configurationService);
-  miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
-
-  const miroirActivityTracker = new MiroirActivityTracker();
-  const miroirEventService = new MiroirEventService(miroirActivityTracker);
-
-  const electronServerConfig: MiroirConfigServer = {
-    miroirConfigType: "server",
-    server: {
-      filesystemDeploymentRootDirectory: await getDefaultFilesystemFolder(),
-      rootApiUrl: ELECTRON_LOOPBACK_ROOT_API_URL,
-    },
-    features: { ai: true, mcp: true, designerTools: true },
-  };
-
-  const miroirContext = new MiroirContext(
-    miroirActivityTracker,
-    miroirEventService,
-    electronServerConfig
-  );
-
-  const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
-    ConfigurationService.configurationService.adminStoreFactoryRegister,
-    ConfigurationService.configurationService.StoreSectionFactoryRegister,
-    electronServerConfig.server.filesystemDeploymentRootDirectory,
-  );
-
-  const domainController = await setupMiroirDomainController(miroirContext, {
-    persistenceStoreAccessMode: "local",
-    localPersistenceStoreControllerManager: persistenceStoreControllerManager,
-  });
+  const { domainController, persistenceStoreControllerManager, serverConfig: electronServerConfig, clientConfig, environment } =
+    await bootElectronServer(electronEnvironmentLocation(), (line) => log(`[miroir-env] ${line}`));
 
   // RestClientStub routes REST-shaped calls through restServerDefaultHandlers using the real stores.
   const restClientStub = new RestClientStub(ELECTRON_LOOPBACK_ROOT_API_URL);
@@ -288,13 +178,9 @@ export async function setupIpcServer(mainDirname: string): Promise<void> {
     });
   }
 
-  // Expose the assets base path so the renderer (or other callers) can read it for
-  // diagnostic purposes.  Path normalization of openStore actions is done transparently
-  // inside the 'server-action' handler below; renderers do not need to call this for
-  // normal operation.
-  ipcMain.handle("get-assets-base-path", () => getAssetsBasePath(mainDirname));
+  // The root of the environment (repository root, or <userData>/miroir once packaged), for diagnostics.
+  ipcMain.handle("get-assets-base-path", () => environment.repositoryRoot);
 
-  
   ipcMain.handle(MIROIR_IPC_CHANNEL, async (_event, payload: any) => {
     switch (payload.type) {
       case "rest-call": {
@@ -303,17 +189,18 @@ export async function setupIpcServer(mainDirname: string): Promise<void> {
         return serializeRestResult(result);
       }
       
-      // Expose the platform-appropriate default filesystem folder
+      // The root of the environment: store paths are relative to it
       case "get-default-filesystem-folder": {
-        return getDefaultFilesystemFolder();
+        return environment.repositoryRoot;
+      }
+
+      case "get-client-config": {
+        return clientConfig;
       }
 
       case "server-action": {
-        // Normalize relative filesystem store paths so they work in both dev and
-        // production (packaged) mode.  See getAssetsBasePath() / resolveOpenStoreAction().
-        const resolvedAction = resolveOpenStoreAction(payload.action, getAssetsBasePath(mainDirname));
         const result = await domainController.handleAction(
-          resolvedAction,
+          payload.action,
           payload.applicationDeploymentMap,
           payload.currentModel
         );
