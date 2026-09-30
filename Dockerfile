@@ -29,12 +29,10 @@ RUN apk add --no-cache python3 make g++
 # Copy the entire monorepo source
 COPY . .
 
-# Install ALL dependencies (including devDeps needed for building).
-# The lockfile is generated on the host OS (Windows/macOS) and does NOT contain
-# the musl-libc platform binaries needed by Alpine Linux (e.g.
-# @rollup/rollup-linux-x64-musl). Deleting it forces npm to resolve optional
-# native deps correctly for the current target platform.
-# RUN rm -f package-lock.json
+# Install ALL dependencies (including devDeps needed for building) from the
+# lockfile, as CI does. The lockfile lists the musl-libc platform binaries Alpine
+# needs (e.g. @rollup/rollup-linux-x64-musl). Resolving without it pulls newer
+# versions than the ones the code is typed against (miroir-ai's dts build fails).
 RUN npm ci --no-audit
 
 # ---------------------------------------------------------------------------
@@ -50,8 +48,10 @@ RUN npm run build -w miroir-example-designer
 
 # 2. miroir-core — includes devBuild step to generate TypeScript types from schemas
 RUN npm run devBuild -w miroir-core
+
+# 2'. miroir-env — environment resolution, imported by the server and by the
+#     standalone-app vite.config.js
 RUN npm run build -w miroir-env
-RUN npm run build -w miroir-fixture-appForTest
 
 # 3. Local-cache and store packages (can run in parallel, all only depend on miroir-core)
 RUN npm run build -w miroir-localcache-redux \
@@ -63,14 +63,17 @@ RUN npm run build -w miroir-localcache-redux \
 
 # 3'. extract model bundles from example applications
 RUN npm run extract-library-model -w miroir-example-library
-RUN npm run build -w miroir-ai
-RUN npm run build -w miroir-example-spotify
 # RUN npm run extract-postgresManager-model -w miroir-example-postgres
 
 # 4. UI / MCP / diagram packages
 RUN npm run build -w miroir-react
 RUN npm run build -w miroir-mcp
 RUN npm run build -w miroir-diagram-class
+RUN npm run build -w miroir-ai
+
+# 4'. Applications the standalone app bundles besides Library
+RUN npm run build -w miroir-example-spotify
+RUN npm run build -w miroir-fixture-appForTest
 
 # 5. Standalone app (Vite production build), then the server release bundle
 #    (ncc, packages/miroir-server/release/), which copies the client build into
