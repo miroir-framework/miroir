@@ -8,7 +8,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../326-BUILD-build-hardening/`](../326-BUILD-build-hardening/) ✅
 Working branch: `claude/issue-337-analysis-yjkuzv`
 
-**Resume note:** slices 0–4 DONE.
+**Resume note:** slices 0–5 DONE.
 
 ---
 
@@ -31,7 +31,7 @@ This plan does **not** cover: F13 (`lodash`), `yaml`, the grid split by `gridTyp
 | 2 | The home page stops loading the grids | ✅ | new `defeated` rule (pytest) + `homePageLoad` vitest; tour |
 | 3 | The crypto polyfill leaves the page | ✅ | `forbiddenEager` crypto packages; secrets tests; nonreg filesystem |
 | 4 | Only the used meta-model and Library JSON loads | ✅ | new `eagerPackageMaxBytes` rule (pytest); guard; MiroirTest CLI |
-| 5 | CodeMirror loads with the first code field | ⬜ | `forbiddenEager` `@codemirror/*`; tour |
+| 5 | CodeMirror loads with the first code field | ✅ | `forbiddenEager` `@codemirror/*`; tour |
 | 6 | Node store drivers leave the web build | ⬜ | policy `lazy` list shrinks; vitest integ still uses real stores |
 | 7 | Electron main process without React, minified | ⬜ | Electron `forbiddenEager` `react-dom`; Electron smoke |
 | 8 | Nonreg, docs, cleanup, AC | ⬜ | nonreg filesystem + tour + AC table |
@@ -254,7 +254,7 @@ Validation: guard 0 violations; `bundleReport.unit` (the meta-model chunk assert
 
 ## Slice 5 — CodeMirror loads with the first code field
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -278,7 +278,13 @@ Standalone build + guard; `npm run nonreg:unit -- --runner shared` (component te
 
 ### Realization
 
-_(to fill)_
+RED: `@codemirror/*`, `@uiw/react-codemirror` and `@lezer/*` in `forbiddenEager` failed the guard on the slice 4 build. GREEN: `CodeBlock_ReadOnly` and `MlElementEditorReactCodeMirror` load CodeMirror through `React.lazy`; the read-only block shows the same text in a `<pre>` until it arrives. **Eager gzip 1 070 644 → 902 938 (−15.7%)**, more than the −138 kB expected because the language and search packages went with it.
+
+Deviations:
+- 5.3 not done: the read-only block and the editor configure CodeMirror differently (read-only, fold gutter vs. editable with change handlers), so each keeps its own lazy module; both load the same shared CodeMirror chunks.
+- `listDisplayByTransformer.integ` (nonreg:unit) read a grid row synchronously after toggling the transformer panel off; since slice 2 the grid is lazy, so the test now waits for the row with `findByText`. It passed in earlier runs by timing only.
+
+Validation: guard 0 violations; `npm run nonreg:unit -- --runner shared` 44 passed, 1 failed (the test above), which then passed alone (13/13); coverage tour 7 of 7 pages; typecheck miroir-react, miroir-standalone-app.
 
 ---
 
