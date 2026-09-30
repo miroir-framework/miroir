@@ -19,6 +19,22 @@ uses the old names must be updated by hand with the table below.
 (`jzodToZodTextAndZodSchema`, `jzodToTsCode`, `valueToJzod`, …) and prose about the Jzod project.
 `npm run check:ml` ([testing reference](testing.md)) enforces this on the whole repository.
 
+## The Jzod adapter
+
+Miroir reaches the Jzod packages only through one adapter in miroir-core, which holds the casts between Jzod's types
+and the ML types:
+
+| Function | Wraps | Import from |
+|---|---|---|
+| `valueToMl(value, arrayResolution?)` | `valueToJzod` | `miroir-core` |
+| `mlToZod(mlSchema)` | `jzodToZod` | `miroir-core` |
+| `mlToZodTextAndZodSchema(mlSchema, eager?, lazy?, { datesAsString })` | `jzodToZodTextAndZodSchema` | `miroir-core` |
+| `mlToTs(typeName, mlSchema, context?, …)`, `mlToZodTextAndZodSchemaForTsGeneration` | `jzodToTsCode`, `jzodToZodTextAndZodSchemaForTsGeneration` | `miroir-core/ml-to-ts` (Node only: jzod-ts needs the TypeScript compiler) |
+
+The sources are `packages/miroir-core/src/1_core/mls/mlJzodAdapter.ts` and `mlJzodTsAdapter.ts`. No other file imports
+`@miroir-framework/jzod` or `@miroir-framework/jzod-ts` (`no-restricted-imports` in `eslint.config.mjs`, run by
+`npm run lint`), and only miroir-core depends on them.
+
 ## Names a stored deployment can contain
 
 | Old | New |

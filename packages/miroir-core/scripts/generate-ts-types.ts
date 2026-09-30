@@ -1,16 +1,12 @@
 import fs from 'fs/promises';
 import path from "path";
 
+import type { MlElement } from "../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
-  jzodToZodTextAndZodSchema,
-  ZodTextAndZodSchemaRecord,
-} from "@miroir-framework/jzod";
-
-import {
-  JzodElement,
-  jzodToTsCode,
-  jzodToZodTextAndZodSchemaForTsGeneration,
-} from "@miroir-framework/jzod-ts";
+  mlToZodTextAndZodSchema,
+  type MlZodTextAndZodSchemaRecord,
+} from "../src/1_core/mls/mlJzodAdapter";
+import { mlToTs, mlToZodTextAndZodSchemaForTsGeneration } from "../src/1_core/mls/mlJzodTsAdapter";
 
 import { entityApplicationForAdmin, entityDeployment } from "miroir-app-admin";
 
@@ -80,7 +76,7 @@ build();
 
 // ################################################################################################
 /** Resolve mlSchema from Entity (preferred) or legacy EntityVersion (#217 Phase 4). */
-function presentModelMLSchema(e: any /*Entity | EntityVersion*/): any /*JzodObject*/ {
+function presentModelMLSchema(e: any /*Entity | EntityVersion*/): any /*MlObject*/ {
   if (!e?.mlSchema) {
     throw new Error(`Present-model source ${e?.name ?? e?.uuid ?? "<unknown>"} has no mlSchema`);
   }
@@ -94,7 +90,7 @@ function presentModelMLSchema(e: any /*Entity | EntityVersion*/): any /*JzodObje
       "Only extension of the entityDefinitionRoot schema is allowed for the mlSchema of an Entity",
     );
   }
-  const extendedMLSchema: any /*JzodObject*/ | undefined= e.mlSchema.extend ? entityDefinitionRoot as any /*JzodObject*/ : undefined;
+  const extendedMLSchema: any /*MlObject*/ | undefined= e.mlSchema.extend ? entityDefinitionRoot as any /*MlObject*/ : undefined;
   return {
     type: "object",
     definition: {
@@ -105,7 +101,7 @@ function presentModelMLSchema(e: any /*Entity | EntityVersion*/): any /*JzodObje
 }
 
 /** @deprecated Prefer {@link presentModelMLSchema} with Entity assets. */
-function entityDefinitionMLSchema(e:any /*EntityVersion*/): any /*JzodObject*/ {
+function entityDefinitionMLSchema(e:any /*EntityVersion*/): any /*MlObject*/ {
   return presentModelMLSchema(e);
 }
 // ################################################################################################
@@ -118,7 +114,7 @@ async function fileExists(filePath: string): Promise<boolean> {
   }
 }
 
-async function writeFile(jzodElement:any, targetFileName: any, mlSchemaVariableName: any, newFileContents: any) {
+async function writeFile(mlElement:any, targetFileName: any, mlSchemaVariableName: any, newFileContents: any) {
   const contents =
     typeof newFileContents === "string"
       ? newFileContents
@@ -141,7 +137,7 @@ async function writeFile(jzodElement:any, targetFileName: any, mlSchemaVariableN
 
 // ################################################################################################
 async function generateTsTypeFileFromMl(
-  jzodElement: any,
+  mlElement: any,
   targetFileName: any,
   mlSchemaVariableName: any,
   context: any,
@@ -149,8 +145,8 @@ async function generateTsTypeFileFromMl(
 ) {
   // console.log("generateTsTypeFileFromMl called!", JSON.stringify(context, null, 2));
   const generateTypeAnotationsForSchema: string[] =
-    jzodElement.type == "schemaReference"
-      ? Object.keys(jzodElement.context).filter(
+    mlElement.type == "schemaReference"
+      ? Object.keys(mlElement.context).filter(
           (e) =>
             ![
               "entityInstance",
@@ -302,9 +298,9 @@ export const coreTransformerForBuildPlusRuntime: z.ZodType<CoreTransformerForBui
 
 `;
   const generateTypesStart = Date.now();
-  const newFileContentsNotFormated = jzodToTsCode(
+  const newFileContentsNotFormated = mlToTs(
     mlSchemaVariableName,
-    jzodElement,
+    mlElement,
     context,
     true, // exportPrefix
     headerForZodImports,// true, // headerForZodImports
@@ -340,7 +336,7 @@ export const coreTransformerForBuildPlusRuntime: z.ZodType<CoreTransformerForBui
     "ms"
   );
   console.log("generateTsTypeFileFromMlSchemaInParallel writing file:", targetFileName, newFileContents.length);
-  await writeFile(jzodElement, targetFileName, mlSchemaVariableName, newFileContents);
+  await writeFile(mlElement, targetFileName, mlSchemaVariableName, newFileContents);
   console.log("generateTsTypeFileFromMlSchemaInParallel file written OK:", targetFileName);
 }
 
@@ -359,7 +355,7 @@ async function generateSchemas(generateFundamentalMlSchema = true) {
     const extendedSchemaVariableName = "extendedSchemasType";
     const mlSchemaVariableName = "miroirFundamentalType";
     // const start = Date.now();
-    let miroirFundamentalMlSchema: any; // TODO: not really a JzodElement!!
+    let miroirFundamentalMlSchema: any; // TODO: not really a MlElement!!
     try {
       miroirFundamentalMlSchema = getMiroirFundamentalMlSchema(
         entityDefinitionBundleV1,
@@ -414,7 +410,7 @@ async function generateSchemas(generateFundamentalMlSchema = true) {
               "transformerForBuildPlusRuntime",
             ].includes(key)
         )
-      ) as JzodElement;
+      ) as MlElement;
       // console.log(
       //   "miroir-core generateSchemas filteredMiroirFundamentalMlSchemaContext:",
       //   JSON.stringify(Object.keys(filteredMiroirFundamentalMlSchemaContext), null, 2)
@@ -469,14 +465,14 @@ async function generateSchemas(generateFundamentalMlSchema = true) {
 
       const extendedSchemas = preExtendedSchemas.concat(mlElementTemplateExtendedSchemas);
 
-      const extendedMlSchemaContext: [string, JzodElement][] = Object.entries(
+      const extendedMlSchemaContext: [string, MlElement][] = Object.entries(
         // miroirFundamentalMlSchema.definition.context
         filteredMiroirFundamentalMlSchemaContext
       ).filter((e) => extendedSchemas.includes(e[0])) as any;
       // const exendedMlSchemaContext = Object.fromEntries(Object.entries(miroirFundamentalMlSchema.definition.context));
       // console.log("miroir-core generateSchemas exendedMlSchemaContext:", exendedMlSchemaContext);
       const extendedZodSchema = {
-        type: "schemaReference",
+        type: "schemaReference" as const,
         context: Object.fromEntries(extendedMlSchemaContext),
         definition: {
           relativePath: "transformerForBuildPlusRuntime_Abstract",
@@ -492,12 +488,12 @@ async function generateSchemas(generateFundamentalMlSchema = true) {
       );
       // console.log("miroir-core generateSchemas extendedZodSchema:", JSON.stringify(extendedZodSchema, null, 2));
 
-      const extendedZodTextAndZodSchemaRecord: ZodTextAndZodSchemaRecord = {};
+      const extendedZodTextAndZodSchemaRecord: MlZodTextAndZodSchemaRecord = {};
       extendedMlSchemaContext.forEach((e) => {
         if (!e[1]) {
           throw new Error(`miroir-core generateSchemas e[1] is undefined for ${e[0]}`);
         }
-        extendedZodTextAndZodSchemaRecord[e[0]] = jzodToZodTextAndZodSchema(
+        extendedZodTextAndZodSchemaRecord[e[0]] = mlToZodTextAndZodSchema(
           e[1],
           () => extendedZodTextAndZodSchemaRecord,
           () => extendedZodTextAndZodSchemaRecord
@@ -509,10 +505,10 @@ async function generateSchemas(generateFundamentalMlSchema = true) {
         JSON.stringify(Object.keys(extendedZodTextAndZodSchemaRecord), null, 2)
       );
 
-      const extendedZodTextAndZodSchemaRecordForTsGenerationContext: ZodTextAndZodSchemaRecord = {};
+      const extendedZodTextAndZodSchemaRecordForTsGenerationContext: MlZodTextAndZodSchemaRecord = {};
       extendedMlSchemaContext.forEach((e) => {
         extendedZodTextAndZodSchemaRecordForTsGenerationContext[e[0]] =
-          jzodToZodTextAndZodSchemaForTsGeneration(
+          mlToZodTextAndZodSchemaForTsGeneration(
             e[1],
             extendedZodTextAndZodSchemaRecordForTsGenerationContext
           );
@@ -536,8 +532,8 @@ async function generateSchemas(generateFundamentalMlSchema = true) {
         JSON.stringify(Object.keys(extendedZodSchema.context), null, 2)
       );
 
-      console.log("miroir-core calling jzodToTsCode.");
-      const extendedMlSchemasTsTypes = jzodToTsCode(
+      console.log("miroir-core calling mlToTs.");
+      const extendedMlSchemasTsTypes = mlToTs(
         extendedSchemaVariableName,
         extendedZodSchema,
         extendedZodTextAndZodSchemaRecord,
@@ -547,14 +543,14 @@ async function generateSchemas(generateFundamentalMlSchema = true) {
       );
 
       console.log("miroir-core generateSchemas extendedTypes generated.");
-      const nonExtendedMlSchemaContext: ZodTextAndZodSchemaRecord = Object.fromEntries(
+      const nonExtendedMlSchemaContext: MlZodTextAndZodSchemaRecord = Object.fromEntries(
         // Object.entries(miroirFundamentalMlSchema.definition.context).filter(
         Object.entries(filteredMiroirFundamentalMlSchemaContext).filter(
           (e) => !extendedSchemas.includes(e[0])
         )
       ) as any;
       const nonExtendedZodSchema = {
-        type: "schemaReference",
+        type: "schemaReference" as const,
         context: nonExtendedMlSchemaContext,
         definition: {
           relativePath: "mlElement",

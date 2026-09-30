@@ -1,10 +1,6 @@
 import path from "path";
 import fs from 'fs/promises';
-import {
-  JzodElement,
-  // jzodToZodTextAndZodSchemaForTsGeneration,
-  jzodToTsCode,
-} from "@miroir-framework/jzod-ts";
+import { mlToTs } from "miroir-core/ml-to-ts";
 import { sqlQuerySelectSchema } from "../src/1_core/SqlQueryBuilder";
 import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 import { packageName } from "../src/constants";
@@ -26,7 +22,7 @@ async function fileExists(filePath: string): Promise<boolean> {
 
 // ################################################################################################
 async function writeFile(
-  jzodElement: any,
+  mlElement: any,
   targetFileName: any,
   mlSchemaVariableName: any,
   newFileContents: any
@@ -47,7 +43,7 @@ async function writeFile(
 }
 
 // ################################################################################################
-const extendedMlSchemasTsTypes = jzodToTsCode(
+const extendedMlSchemasTsTypes = mlToTs(
   "sqlQuerySelectSchema",
   sqlQuerySelectSchema,
   {},

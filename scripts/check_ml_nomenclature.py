@@ -37,20 +37,14 @@ EXCLUDED_PREFIXES = (
 )
 EXCLUDED_PARTS = ("node_modules", "dist")
 
-# The 25 element kinds of the language; Jzod (and jzod-ts) define and export the same names for its own language.
-ELEMENT_KINDS = (
-    "Array", "AttributeDateValidations", "AttributeNumberValidations", "AttributePlainDateWithValidations",
-    "AttributePlainNumberWithValidations", "AttributePlainStringWithValidations", "AttributeStringValidations",
-    "BaseObject", "Element", "Enum", "EnumAttributeTypes", "EnumElementTypes", "Function", "Intersection", "Lazy",
-    "Literal", "Map", "Object", "PlainAttribute", "Promise", "Record", "Reference", "Set", "Tuple", "Union",
-)
-JZOD_TS_EXPORTS = {f"{p}{k}" for k in ELEMENT_KINDS for p in ("jzod", "Jzod")}
-
-# Files that drive the jzod-ts API with its own types (code generation): jzod-ts element-kind names are legitimate there.
-JZOD_TS_API_FILES = {
-    "packages/miroir-core/scripts/generate-ts-types.ts",
-    "packages/miroir-store-postgres/scripts/postgres-generate-ts-types.ts",
+# The Jzod adapter (#145 AC 2): the only files that import the external packages, where Jzod's own names are
+# legitimate, and the test of the lint rule that keeps it so. Its module names name the adapter wherever it is imported.
+JZOD_ADAPTER_FILES = {
+    "packages/miroir-core/src/1_core/mls/mlJzodAdapter.ts",
+    "packages/miroir-core/src/1_core/mls/mlJzodTsAdapter.ts",
+    "eslint-rules/ml-adapter-imports.test.mjs",
 }
+JZOD_ADAPTER_MODULES = {"mlJzodAdapter", "mlJzodTsAdapter"}
 
 # Names exported by the external packages and used by Miroir.
 EXTERNAL_EXPORTS = {
@@ -117,8 +111,7 @@ class Hit:
 
 
 def is_allowed(rel: str, line: str, start: int, token: str) -> bool:
-    # quoted, the name is a schema key of Miroir's own language, not a jzod-ts type
-    if rel in JZOD_TS_API_FILES and token in JZOD_TS_EXPORTS and line[start - 1 : start] not in ('"', "'", "`"):
+    if rel in JZOD_ADAPTER_FILES or token in JZOD_ADAPTER_MODULES:
         return True
     if token in EXTERNAL_EXPORTS:
         return True
@@ -196,13 +189,16 @@ def self_test() -> int:
         ("docs/x.md", "Use `JzodElement` here.", ["JzodElement"]),
         ("packages/a/src/x.ts", "const t: JzodElement = jzodTypeCheck(x);", ["JzodElement", "jzodTypeCheck"]),
         ("packages/a/src/x.ts", '// label "Jzod Schema"', ["Jzod"]),
-        ("packages/miroir-core/scripts/generate-ts-types.ts", "JzodElement", []),
+        ("packages/miroir-core/scripts/generate-ts-types.ts", "JzodElement", ["JzodElement"]),
         ("packages/miroir-core/scripts/generate-ts-types.ts", "getMiroirFundamentalJzodSchema", ["getMiroirFundamentalJzodSchema"]),
         ("packages/miroir-core/scripts/generate-ts-types.ts", 'relativePath: "jzodElement",', ["jzodElement"]),
         ("packages/a/src/x.ts", 'relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement"', ["miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement"]),
         ("build-all.sh", '(cd "$SCRIPT_DIR/../../jzod-ts" && npm run build)', []),
         ("packages/a/src/x.ts", "// the MlElement from jzod-ts", []),
         ("packages/a/src/x.ts", "// a jzod schema", ["jzod"]),
+        ("packages/a/src/x.ts", 'import { valueToMl } from "miroir-core/src/1_core/mls/mlJzodAdapter";', []),
+        ("packages/miroir-core/src/1_core/mls/mlJzodAdapter.ts", "type JzodElementParameter = X;", []),
+        ("packages/miroir-core/src/1_core/mls/other.ts", "type JzodElementParameter = X;", ["JzodElementParameter"]),
     ]
     failures = 0
     for rel, line, expected in samples:
