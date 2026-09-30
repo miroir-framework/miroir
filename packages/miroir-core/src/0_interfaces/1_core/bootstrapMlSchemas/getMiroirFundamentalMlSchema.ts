@@ -288,7 +288,6 @@ export function getMiroirFundamentalMlSchema(
   domainEndpointVersionV1: any,
   queryEndpointVersionV1: any,
   persistenceEndpointVersionV1: any,
-  testEndpointVersionV1: any,
   mlSchemaMlMiroirBootstrapSchema: any,
   transformerMlSchema: any,
   miroirTransformersMlSchemas: any[], // TransformerDefinition[] NOT USED
@@ -2082,6 +2081,7 @@ export function getMiroirFundamentalMlSchema(
             name: { type: "string", optional: true },
             extends: { type: "string", optional: true },
             description: { type: "string", optional: true },
+            packagesDirectory: { type: "string", optional: true },
             server: {
               type: "object",
               optional: true,
@@ -2961,18 +2961,6 @@ export function getMiroirFundamentalMlSchema(
             tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
             definition: e.actionParameters,
           })),
-        },
-        testAction_runTestCompositeAction: {
-          type: "object",
-          definition: (getEndpointActions(testEndpointVersionV1) ?? []).find(
-            (a: any) => a.actionParameters.actionType.definition == "runTestCompositeAction",
-          )?.actionParameters,
-        },
-        testAction_runTestCase: {
-          type: "object",
-          definition: (getEndpointActions(testEndpointVersionV1) ?? []).find(
-            (a: any) => a.actionParameters.actionType.definition == "runTestCase",
-          )?.actionParameters,
         },
         instanceCUDAction: {
           type: "union",

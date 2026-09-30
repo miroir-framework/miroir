@@ -35,17 +35,14 @@ import {
 } from "miroir-app-admin";
 import { buildTestbedApplicationAccessGrantInstance } from "./authentication/TestbedAccessGrant.js";
 import {
-  applicationEndpointV1,
   domainEndpointVersionV1,
   instanceEndpointV1,
   localCacheEndpointVersionV1,
-  menuEndpointV1,
   modelEndpointV1,
   persistenceEndpointVersionV1,
   queryEndpointVersionV1,
   selfApplicationMiroir,
   storeManagementEndpoint,
-  testEndpointVersionV1,
   undoRedoEndpointVersionV1,
 } from "miroir-app-miroir";
 // import {
@@ -91,17 +88,14 @@ export const defaultAdminApplicationDeploymentMapNOTGOOD: ApplicationDeploymentM
  * All built-in endpoints belong to the Miroir self-application.
  */
 export const defaultEndpointApplicationMap: EndpointApplicationMap = {
-  [applicationEndpointV1.uuid]: selfApplicationMiroir.uuid,
   [instanceEndpointV1.uuid]: selfApplicationMiroir.uuid,
   [modelEndpointV1.uuid]: selfApplicationMiroir.uuid,
   [domainEndpointVersionV1.uuid]: selfApplicationMiroir.uuid,
-  [testEndpointVersionV1.uuid]: selfApplicationMiroir.uuid,
   [storeManagementEndpoint.uuid]: selfApplicationMiroir.uuid,
   [undoRedoEndpointVersionV1.uuid]: selfApplicationMiroir.uuid,
   [localCacheEndpointVersionV1.uuid]: selfApplicationMiroir.uuid,
   [queryEndpointVersionV1.uuid]: selfApplicationMiroir.uuid,
   [persistenceEndpointVersionV1.uuid]: selfApplicationMiroir.uuid,
-  [menuEndpointV1.uuid]: selfApplicationMiroir.uuid,
   [LIBRARY_TMP.lendingEndpointUuid]: LIBRARY_TMP.selfApplicationLibraryUuid,
 };
 

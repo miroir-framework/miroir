@@ -3,14 +3,18 @@
 # Miroir Framework — Docker entrypoint
 # =============================================================================
 # 1. On the very first start (empty /data volume), seeds the volume with the
-#    framework bootstrap data and the library demo application.
-# 2. Delegates to the command passed as arguments (defaults to starting the
-#    Node.js server: node /miroir/packages/miroir-server/release/index.js).
+#    image's /seed: the `docker` environment definition (environments/docker.json)
+#    and the assets of the applications it installs (Miroir, Admin, Library).
+#    The server runs that environment: MIROIR_ROOT=/data, MIROIR_ENV=docker (#345).
+# 2. A volume seeded by an older image gets the environment definitions it lacks.
+# 3. Delegates to the command passed as arguments (defaults to starting the
+#    Node.js server).
 # =============================================================================
 set -e
 
-SEED_DIR=/seed
-DATA_DIR=/data
+# Overridable for tests (scripts/tests/test_docker_entrypoint.py).
+SEED_DIR="${MIROIR_SEED_DIR:-/seed}"
+DATA_DIR="${MIROIR_DATA_DIR:-/data}"
 
 # Determine whether the data volume has already been initialised.
 # A volume is considered uninitialised when it is empty (no files or dirs).
@@ -50,6 +54,17 @@ else
       echo "[miroir] Rewrote ${old} paths in ${file}."
     done
   done
+  # #345: volumes seeded before the image ran an environment have no environments/.
+  if [ -d "${SEED_DIR}/environments" ]; then
+    mkdir -p "${DATA_DIR}/environments"
+    for definition in "${SEED_DIR}"/environments/*.json; do
+      target="${DATA_DIR}/environments/$(basename "$definition")"
+      if [ ! -e "$target" ]; then
+        cp "$definition" "$target"
+        echo "[miroir] Added ${target}."
+      fi
+    done
+  fi
 fi
 
 # ── TLS setup ─────────────────────────────────────────────────────────────────

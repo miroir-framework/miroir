@@ -105,7 +105,9 @@ function rebaseLegacyConfiguration(configuration: StoreUnitConfiguration): Store
 /** The package Admin data directory, where UI installs wrote their Deployment rows before #321. */
 function legacyAdminDataDirectory(resolved: ResolvedEnvironment): string | undefined {
   const admin = resolved.environment.applications?.admin;
-  return admin?.package ? applicationAssetsDirectory("admin", { ...admin, package: admin.package }, "data") : undefined;
+  return admin?.package
+    ? applicationAssetsDirectory("admin", { ...admin, package: admin.package }, "data", resolved.environment.packagesDirectory)
+    : undefined;
 }
 
 /** Compares the Admin data of the environment state with the definition, and looks for legacy rows. */

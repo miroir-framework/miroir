@@ -73,7 +73,12 @@ function applicationLabels(
     }
     const file = path.join(
       resolved.repositoryRoot,
-      applicationAssetsDirectory(deployment.applicationKey, { ...application, package: application.package }, section),
+      applicationAssetsDirectory(
+        deployment.applicationKey,
+        { ...application, package: application.package },
+        section,
+        resolved.environment.packagesDirectory,
+      ),
       SELF_APPLICATION_ENTITY,
       `${deployment.selfApplication}.json`,
     );

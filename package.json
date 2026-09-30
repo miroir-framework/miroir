@@ -20,7 +20,8 @@
     },
     "nx": {
       "smol-toml": "1.7.1",
-      "brace-expansion@5": "5.0.12"
+      "brace-expansion@5": "5.0.12",
+      "axios": "1.20.0"
     },
     "@connectrpc/connect-node": {
       "undici": "6.28.1"

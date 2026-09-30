@@ -1,89 +1,66 @@
-import { MiroirCliConfig } from "../config/configSchema.js";
-import { getRequiredStorageTypes } from "../config/configLoader.js";
-import { ConfigurationService } from "miroir-core";
+import { ConfigurationService, type MiroirConfigClient, type StoreUnitConfiguration } from "miroir-core";
 
 const packageName = "miroir-cli";
 
 /**
- * Conditionally initialize store backend support based on configuration
- * Dynamically imports and calls startup functions only for detected storage types
+ * The store types of every deployment a client configuration opens: the emulated server's stores, or
+ * those a real-server client names.
  */
-export async function initializeStoreStartup(config: MiroirCliConfig): Promise<void> {
-  const requiredStorageTypes = getRequiredStorageTypes(config);
-  
-  console.log(
-    `[${packageName}] Detected storage types in configuration:`,
-    Array.from(requiredStorageTypes)
-  );
-
-  // Initialize each required storage backend
-  const initPromises: Promise<void>[] = [];
-  
-  for (const storageType of requiredStorageTypes) {
-    switch (storageType) {
-      case "filesystem":
-        initPromises.push(initializeFilesystemStore());
-        break;
-      case "indexedDb":
-        initPromises.push(initializeIndexedDbStore());
-        break;
-      case "sql":
-        initPromises.push(initializeSqlStore());
-        break;
-      default:
-        console.warn(
-          `[${packageName}] Unknown storage type: ${storageType} - skipping initialization`
-        );
+export function requiredStoreTypes(config: MiroirConfigClient): Set<string> {
+  const deployments: Record<string, StoreUnitConfiguration> = config.client.emulateServer
+    ? config.client.deploymentStorageConfig
+    : (config.client.serverConfig.storeSectionConfiguration ?? {});
+  const storeTypes = new Set<string>();
+  for (const storeUnitConfig of Object.values(deployments)) {
+    for (const section of Object.values(storeUnitConfig) as { emulatedServerType?: string }[]) {
+      if (section?.emulatedServerType) {
+        storeTypes.add(section.emulatedServerType);
+      }
     }
   }
-  
-  await Promise.all(initPromises);
+  return storeTypes;
 }
 
 /**
- * Initialize filesystem store support
+ * Registers the store implementations a client configuration needs: only those packages are
+ * imported, so the optional store peer dependencies stay optional.
  */
-async function initializeFilesystemStore(): Promise<void> {
-  try {
-    const module = await import("miroir-store-filesystem");
-    module.miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
-    console.log(`[${packageName}] Filesystem store initialized`);
-  } catch (error) {
-    throw new Error(
-      `Filesystem storage is required but miroir-store-filesystem package is not available. ` +
-        `Is it installed? Error: ${error instanceof Error ? error.message : String(error)}`
-    );
+export async function initializeStoreStartup(config: MiroirConfigClient): Promise<void> {
+  const storeTypes = requiredStoreTypes(config);
+  console.log(`[${packageName}] Detected storage types in configuration:`, Array.from(storeTypes));
+  await Promise.all([...storeTypes].map(initializeStore));
+}
+
+type StoreStartup = (configurationService: typeof ConfigurationService.configurationService) => void;
+
+// dynamic imports: a store package is loaded only when a deployment uses it
+const storeStartups: Record<string, { storePackage: string; load: () => Promise<StoreStartup> }> = {
+  filesystem: {
+    storePackage: "miroir-store-filesystem",
+    load: async () => (await import("miroir-store-filesystem")).miroirFileSystemStoreSectionStartup,
+  },
+  indexedDb: {
+    storePackage: "miroir-store-indexedDb",
+    load: async () => (await import("miroir-store-indexedDb")).miroirIndexedDbStoreSectionStartup,
+  },
+  sql: {
+    storePackage: "miroir-store-postgres",
+    load: async () => (await import("miroir-store-postgres")).miroirPostgresStoreSectionStartup,
+  },
+};
+
+async function initializeStore(storeType: string): Promise<void> {
+  const storeStartup = storeStartups[storeType];
+  if (!storeStartup) {
+    console.warn(`[${packageName}] Unknown storage type: ${storeType} - skipping initialization`);
+    return;
   }
-}
-
-/**
- * Initialize IndexedDB store support
- */
-async function initializeIndexedDbStore(): Promise<void> {
   try {
-    const module = await import("miroir-store-indexedDb");
-    module.miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
-    console.log(`[${packageName}] IndexedDB store initialized`);
+    (await storeStartup.load())(ConfigurationService.configurationService);
   } catch (error) {
     throw new Error(
-      `IndexedDB storage is required but miroir-store-indexedDb package is not available. ` +
-        `Is it installed? Error: ${error instanceof Error ? error.message : String(error)}`
-    );
-  }
-}
-
-/**
- * Initialize SQL (PostgreSQL) store support
- */
-async function initializeSqlStore(): Promise<void> {
-  try {
-    const module = await import("miroir-store-postgres");
-    module.miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
-    console.log(`[${packageName}] PostgreSQL store initialized`);
-  } catch (error) {
-    throw new Error(
-      `SQL storage is required but miroir-store-postgres package is not available. ` +
-        `Is it installed? Error: ${error instanceof Error ? error.message : String(error)}`
+      `${storeType} storage is required but ${storeStartup.storePackage} is not available. ` +
+        `Is it installed? Error: ${error instanceof Error ? error.message : String(error)}`,
     );
   }
 }

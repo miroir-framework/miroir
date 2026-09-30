@@ -70,7 +70,12 @@ export function seedEnvironmentState(resolved: ResolvedEnvironment, options: { r
       }
       const source = path.join(
         resolved.repositoryRoot,
-        applicationAssetsDirectory(deployment.applicationKey, { ...application, package: application.package }, section),
+        applicationAssetsDirectory(
+        deployment.applicationKey,
+        { ...application, package: application.package },
+        section,
+        resolved.environment.packagesDirectory,
+      ),
       );
       if (existsSync(source)) {
         // the entity directories of generated rows are kept (a filesystem data section knows its
@@ -216,8 +221,11 @@ export function missingConnectionPasswords(resolved: ResolvedEnvironment, env: N
   ];
 }
 
-/** The deployment configuration with the Postgres password from `connections.postgres.passwordEnv`. */
-function withConnectionPasswords(
+/**
+ * The deployment configuration with the Postgres password from `connections.postgres.passwordEnv`,
+ * to open its stores. Admin Deployment rows keep the configuration without it.
+ */
+export function withConnectionPasswords(
   resolved: ResolvedEnvironment,
   configuration: StoreUnitConfiguration,
   env: NodeJS.ProcessEnv,

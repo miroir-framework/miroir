@@ -99,20 +99,27 @@ function environmentSectionStore(application: PackageApplication, section: Envir
   return (section === "admin" ? undefined : application.sections?.[section]?.store) ?? application.store;
 }
 
+/** Where the application packages are, relative to the root: `packages` in a checkout. */
+export const DEFAULT_PACKAGES_DIRECTORY = "packages";
+
 /**
- * Where a section lives in the application package (repository-relative): what a `live` section
- * opens and what a `copy` section is seeded from.
+ * Where a section lives in the application package (root-relative): what a `live` section opens
+ * and what a `copy` section is seeded from. `packagesDirectory` is the environment's (#345): `.`
+ * for a root laid out as `<package>/assets` (a Docker volume, packaged Electron's user data).
  */
 export function applicationAssetsDirectory(
   applicationKey: string,
   application: { package: string; assetPrefix?: string },
   section: EnvironmentSectionName,
+  packagesDirectory: string = DEFAULT_PACKAGES_DIRECTORY,
 ): string {
-  const assets = `packages/${application.package}/assets`;
+  const packages = packagesDirectory.replace(/\/+$/, "");
+  const assets = packages === "." || packages === "" ? `${application.package}/assets` : `${packages}/${application.package}/assets`;
   return section === "admin" ? assets : `${assets}/${application.assetPrefix ?? applicationKey}_${section}`;
 }
 
 function sectionDirectory(
+  environment: MiroirEnvironment,
   environmentName: string,
   applicationKey: string,
   application: PackageApplication,
@@ -120,7 +127,7 @@ function sectionDirectory(
   section: EnvironmentSectionName,
 ): string {
   if (mode === "live") {
-    return applicationAssetsDirectory(applicationKey, application, section);
+    return applicationAssetsDirectory(applicationKey, application, section, environment.packagesDirectory);
   }
   const state = `${ENVIRONMENT_STATE_ROOT}/${environmentName}/${applicationKey}`;
   return section === "admin" ? state : `${state}/${section}`;
@@ -159,7 +166,7 @@ function sectionConfiguration(
     case "filesystem":
       return {
         emulatedServerType: "filesystem",
-        directory: sectionDirectory(environmentName, applicationKey, application, mode, section),
+        directory: sectionDirectory(environment, environmentName, applicationKey, application, mode, section),
       };
     case "sql": {
       const postgres = environment.connections?.postgres;

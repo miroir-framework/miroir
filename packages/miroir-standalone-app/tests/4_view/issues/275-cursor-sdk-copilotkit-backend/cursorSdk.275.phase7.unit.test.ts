@@ -25,9 +25,9 @@ function readJson(...relativeParts: string[]): Record<string, unknown> {
 }
 
 function electronServerConfigBlock(src: string): string {
-  const start = src.indexOf("const electronServerConfig");
+  const start = src.indexOf("function electronServerConfig");
   expect(start).toBeGreaterThanOrEqual(0);
-  const end = src.indexOf("const miroirContext", start);
+  const end = src.indexOf("export async function bootElectronServer", start);
   expect(end).toBeGreaterThan(start);
   return src.slice(start, end);
 }
@@ -118,14 +118,14 @@ if (runThis) {
   });
 
   describe("cursorSdk.275.phase7 — features.cursor stays persistence-side and off", () => {
-    it("electronServerConfig has ai/mcp/designerTools and no cursor key", () => {
-      const src = readRepoFile("packages/miroir-standalone-app-electron/src/ipcServerSetup.ts");
+    it("electronServerConfig has designerTools and no cursor key; the desktop environment (#345) has ai/mcp and no cursor", () => {
+      const src = readRepoFile("packages/miroir-standalone-app-electron/src/environmentBoot.ts");
       const block = electronServerConfigBlock(src);
       expect(block).toMatch(/\bfeatures\s*:/);
-      expect(block).toMatch(/\bai\s*:\s*true\b/);
-      expect(block).toMatch(/\bmcp\s*:\s*true\b/);
       expect(block).toMatch(/\bdesignerTools\s*:\s*true\b/);
       expect(block).not.toMatch(/\bcursor\s*:/);
+      const features = readJson("environments/desktop.json").features as Record<string, unknown>;
+      expect(features).toEqual({ ai: true, mcp: true });
     });
 
     it("renderer electronMiroirConfig has no features key", () => {

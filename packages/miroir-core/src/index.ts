@@ -443,8 +443,6 @@ export {
   TableThemeSchema,
   Test,
   test,
-  TestAction_runTestCompositeAction,
-  testAction_runTestCompositeAction,
   TestCompositeAction,
   testCompositeAction,
   TestCompositeActionParams,

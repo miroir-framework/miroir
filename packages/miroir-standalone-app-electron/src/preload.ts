@@ -9,12 +9,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // ── Miroir IPC bridge ─────────────────────────────────────────────────────
   // Routes Miroir persistence / domain-controller calls to the main process
   // instead of going through HTTP.  The payload shape is defined in
-  // ipcServerSetup.ts (types: 'rest-call', 'server-action', 'server-query').
+  // ipcServerSetup.ts (types: 'rest-call', 'server-action', 'server-query',
+  // 'get-client-config').
   callMiroirIpc: (payload: unknown) => ipcRenderer.invoke('miroir-ipc', payload),
 
-  // Returns the assets base path used by the main process for store path resolution.
-  // Dev: absolute path to the monorepo packages/ directory.
-  // Prod: <resourcesPath>/miroir-assets/
+  // Returns the root of the environment the main process runs (#345), for diagnostics.
+  // Dev: the repository root. Packaged: <userData>/miroir.
   getAssetsBasePath: () => ipcRenderer.invoke('get-assets-base-path'),
 
   // // Returns the platform-appropriate default filesystem folder (os.homedir()).

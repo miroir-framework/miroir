@@ -1,5 +1,4 @@
 import { defineConfig } from "vitest/config";
-import { resolve } from "path";
 
 export default defineConfig({
   test: {
@@ -13,9 +12,6 @@ export default defineConfig({
       threads: {
         singleThread: true,
       },
-    },
-    env: {
-      MIROIR_CLI_CONFIG_PATH: resolve(__dirname, "tests/config.cli-emulatedServer.json"),
     },
   },
 });

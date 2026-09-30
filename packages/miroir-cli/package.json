@@ -20,8 +20,7 @@
     "command-line"
   ],
   "scripts": {
-    "copy-files": "copyfiles -u 1 src/**/*.json dist/src",
-    "build": "npm run copy-files && tsup --target=node20 --format esm src/index.ts",
+    "build": "tsup --target=node20 --format esm src/index.ts",
     "devBuild": "npm run build",
     "dev": "npm run build && node ./dist/index.js",
     "test": "cross-env NODE_ENV=test vitest run --poolOptions.threads.singleThread --bail=1",
@@ -30,11 +29,12 @@
   "dependencies": {
     "commander": "12.1.0",
     "loglevelnext": "6.0.0",
-    "miroir-core": "*",
-    "miroir-localcache-redux": "*",
     "miroir-app-admin": "*",
-    "miroir-example-library": "*",
     "miroir-app-miroir": "*",
+    "miroir-core": "*",
+    "miroir-env": "*",
+    "miroir-example-library": "*",
+    "miroir-localcache-redux": "*",
     "uuid": "11.1.0",
     "zod": "3.25.76"
   },
@@ -57,7 +57,6 @@
   "devDependencies": {
     "@types/node": "22.19.17",
     "@types/uuid": "10.0.0",
-    "copyfiles": "2.4.1",
     "cross-env": "7.0.3",
     "miroir-example-library": "*",
     "tsup": "8.5.1",
