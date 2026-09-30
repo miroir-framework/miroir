@@ -186,7 +186,8 @@ if (runThis) {
       expect(fnBlock).toMatch(/principal\s*\?:/);
     });
 
-    it("handleAction forwards principal to handleApplicationAction and handleActionInternal", () => {
+    // #341: Miroir actions go through handleMiroirAction (handleActionInternal is gone)
+    it("handleAction forwards principal to handleApplicationAction and handleMiroirAction", () => {
       const src = readFileSync(join(CORE_SRC, "3_controllers/DomainController.ts"), "utf8");
       const fnStart = src.indexOf("async handleAction(");
       const fnEnd = src.indexOf("private async handleApplicationAction(", fnStart);
@@ -195,7 +196,7 @@ if (runThis) {
       const applicationCall = fnBlock.match(
         /return this\.handleApplicationAction\([\s\S]*?\);/,
       )?.[0];
-      const internalCall = fnBlock.match(/return this\.handleActionInternal\([\s\S]*?\);/)?.[0];
+      const internalCall = fnBlock.match(/return this\.handleMiroirAction\([\s\S]*?\);/)?.[0];
       expect(applicationCall).toBeDefined();
       expect(internalCall).toBeDefined();
       expect(applicationCall!).toContain("principal");

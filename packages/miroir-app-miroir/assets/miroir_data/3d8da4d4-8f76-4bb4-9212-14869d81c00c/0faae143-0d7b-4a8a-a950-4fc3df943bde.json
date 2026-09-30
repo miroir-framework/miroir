@@ -76,6 +76,10 @@
             }
           }
         },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_runBoxedQueryTemplateAction"
+        },
         "actionErrors": {
           "type": "literal",
           "definition": "FailedToCreateInstance"
@@ -147,6 +151,11 @@
             }
           }
         },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_runBoxedQueryAction"
+        },
+        "logPhase": "query",
         "actionErrors": {
           "type": "literal",
           "definition": "FailedToCreateInstance"

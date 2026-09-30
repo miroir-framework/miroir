@@ -1,3 +1,6 @@
+import { getEndpointActions } from "../0_interfaces/1_core/endpointDefinition";
+import { defaultMiroirModelEnvironment } from "../1_core/Model";
+
 export type LogPhase = "bootstrap" | "rollback" | "query" | "assertion";
 
 export type RollbackInstanceCollection = {
@@ -47,22 +50,21 @@ export function summarizeRollbackInstanceCollections(
   return { summaries, perEntity };
 }
 
+let logPhaseByActionType: Map<string, LogPhase> | undefined;
+
+/**
+ * #341: the log phase declared on the definition of a bundled Miroir action (`logPhase`).
+ */
 export function logPhaseForActionType(actionType: string): LogPhase | undefined {
-  switch (actionType) {
-    case "rollback":
-    case "remoteLocalCacheRollback":
-      return "rollback";
-    case "initModel":
-    case "resetModel":
-    case "resetData":
-    case "storeManagementAction_createStore":
-    case "storeManagementAction_openStore":
-    case "storeManagementAction_resetAndInitApplicationDeployment":
-      return "bootstrap";
-    case "runBoxedQueryAction":
-    case "compositeRunBoxedQueryAction":
-      return "query";
-    default:
-      return undefined;
+  if (!logPhaseByActionType) {
+    logPhaseByActionType = new Map();
+    for (const endpoint of Object.values(defaultMiroirModelEnvironment.endpointsByUuid)) {
+      for (const action of getEndpointActions(endpoint) ?? []) {
+        if (action.logPhase) {
+          logPhaseByActionType.set(action.actionParameters.actionType.definition, action.logPhase);
+        }
+      }
+    }
   }
+  return logPhaseByActionType.get(actionType);
 }

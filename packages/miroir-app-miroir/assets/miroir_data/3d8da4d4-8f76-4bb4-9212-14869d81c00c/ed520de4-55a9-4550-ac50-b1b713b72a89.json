@@ -102,6 +102,10 @@
             }
           }
         },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_createInstance"
+        },
         "actionErrors": {
           "type": "literal",
           "definition": "FailedToCreateInstance"
@@ -184,6 +188,10 @@
               }
             }
           }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_deleteInstance"
         },
         "actionErrors": {
           "type": "literal",
@@ -269,6 +277,10 @@
               }
             }
           }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_deleteInstanceWithCascade"
         },
         "actionErrors": {
           "type": "literal",
@@ -373,6 +385,10 @@
             }
           }
         },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_updateInstance"
+        },
         "actionErrors": {
           "type": "literal",
           "definition": "FailedToUpdateInstance"
@@ -446,6 +462,10 @@
               }
             }
           }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_loadNewInstancesInLocalCache"
         },
         "actionErrors": {
           "type": "literal",
@@ -529,6 +549,10 @@
             }
           }
         },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_getInstance"
+        },
         "actionErrors": {
           "type": "literal",
           "definition": "FailedToGetInstance"
@@ -608,6 +632,10 @@
               }
             }
           }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_getInstances"
         },
         "actionErrors": {
           "type": "literal",

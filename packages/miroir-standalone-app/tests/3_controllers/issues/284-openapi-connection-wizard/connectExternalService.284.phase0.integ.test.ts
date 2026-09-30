@@ -175,7 +175,8 @@ describe.skipIf(!shouldRunPhase0Stable)("phase0 stable", () => {
     });
   });
 
-  it("handleApplicationAction rejects libraryImplementation with not supported yet", async () => {
+  // #341: libraryImplementation is supported; an implementation name missing from the map is rejected.
+  it("handleApplicationAction rejects a libraryImplementation missing from the implementation map", async () => {
     const endpointUuid = "00000000-0000-4000-8000-000000000099";
     const actionType = "testLibraryAction";
     const modelEnv = {
@@ -208,7 +209,7 @@ describe.skipIf(!shouldRunPhase0Stable)("phase0 stable", () => {
     );
 
     expect(result).toBeInstanceOf(Action2Error);
-    expect((result as Action2Error).errorMessage).toContain("not supported yet");
-    expect((result as Action2Error).errorMessage).toContain("libraryImplementation");
+    expect((result as Action2Error).errorType).toBe("InvalidAction");
+    expect((result as Action2Error).errorMessage).toContain("unknown library implementation");
   });
 });

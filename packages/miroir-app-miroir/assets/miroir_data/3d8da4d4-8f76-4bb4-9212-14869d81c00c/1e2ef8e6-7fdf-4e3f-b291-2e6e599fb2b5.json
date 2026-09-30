@@ -55,6 +55,11 @@
             }
           }
         },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_transactionalInstanceAction"
+        },
+        "autocommitFromUI": true,
         "actionErrors": {
           "type": "literal",
           "definition": "FailedHandleTransactionalInstanceAction"
@@ -116,6 +121,11 @@
             }
           }
         },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_compositeActionSequence"
+        },
+        "autocommitFromUI": true,
         "actionErrors": {
           "type": "literal",
           "definition": "FailedCompositeAction"
@@ -151,6 +161,11 @@
             }
           }
         },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_compositeRunBoxedQueryAction"
+        },
+        "logPhase": "query",
         "actionErrors": {
           "type": "literal",
           "definition": "FailedToRunBoxedQuery"
@@ -185,6 +200,10 @@
               "relativePath": "runBoxedQueryTemplateAction"
             }
           }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_compositeRunBoxedQueryTemplateAction"
         },
         "actionErrors": {
           "type": "literal",
@@ -301,6 +320,10 @@
             }
           }
         },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_connectExternalService"
+        },
         "actionErrors": {
           "type": "literal",
           "definition": "FailedToConnectExternalService"
@@ -354,9 +377,73 @@
             }
           }
         },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_prepareOpenApiDocument"
+        },
         "actionErrors": {
           "type": "literal",
           "definition": "FailedToPrepareOpenApiDocument"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "probeExternalService"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "endpoint": {
+                "type": "any",
+                "optional": true
+              },
+              "operationId": {
+                "type": "string",
+                "optional": true
+              },
+              "parameters": {
+                "type": "record",
+                "optional": true,
+                "definition": {
+                  "type": "any"
+                }
+              },
+              "processSecrets": {
+                "type": "record",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "application": {
+                "type": "uuid",
+                "optional": true
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "optional": true
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_probeExternalService"
         }
       }
     ]

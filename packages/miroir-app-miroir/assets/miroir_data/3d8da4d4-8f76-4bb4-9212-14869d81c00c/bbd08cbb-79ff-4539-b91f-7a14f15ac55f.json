@@ -71,6 +71,11 @@
             }
           }
         },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_storeManagementAction_createStore"
+        },
+        "logPhase": "bootstrap",
         "actionErrors": {
           "type": "enum",
           "definition": [
@@ -142,6 +147,10 @@
             }
           }
         },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_storeManagementAction_deleteStore"
+        },
         "actionErrors": {
           "type": "literal",
           "definition": "FailedToDeleteStore"
@@ -196,6 +205,11 @@
             }
           }
         },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_storeManagementAction_resetAndInitApplicationDeployment"
+        },
+        "logPhase": "bootstrap",
         "actionErrors": {
           "type": "literal",
           "definition": "FailedToResetAndInitMiroirAndApplicationDatabase"
@@ -272,6 +286,11 @@
             }
           }
         },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_storeManagementAction_openStore"
+        },
+        "logPhase": "bootstrap",
         "actionErrors": {
           "type": "literal",
           "definition": "FailedToOpenStore"
@@ -315,6 +334,10 @@
               }
             }
           }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_storeManagementAction_closeStore"
         },
         "actionErrors": {
           "type": "literal",
