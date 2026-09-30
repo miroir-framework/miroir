@@ -8,7 +8,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../326-BUILD-build-hardening/`](../326-BUILD-build-hardening/) ✅
 Working branch: `claude/issue-337-analysis-yjkuzv`
 
-**Resume note:** plan written; no slice started.
+**Resume note:** slices 0–1 DONE.
 
 ---
 
@@ -26,9 +26,9 @@ This plan does **not** cover: F13 (`lodash`), `yaml`, the grid split by `gridTyp
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize the baseline build | ⬜ | guard passes; baseline numbers recorded |
-| 1 | CopilotKit and ag-grid leave the page (tracer) | ⬜ | `forbiddenEager` + guard; coverage tour |
-| 2 | The home page stops loading the report route | ⬜ | new `defeatedDynamicImports` rule (pytest) + `homePageLoad` vitest; tour |
+| 0 | Characterize the baseline build | ✅ | guard passes; baseline numbers recorded |
+| 1 | CopilotKit and ag-grid leave the page (tracer) | ✅ | `forbiddenEager` + guard; coverage tour |
+| 2 | The home page stops loading the grids | ⬜ | new `defeated` rule (pytest) + `homePageLoad` vitest; tour |
 | 3 | The crypto polyfill leaves the page | ⬜ | `forbiddenEager` crypto packages; secrets tests; nonreg filesystem |
 | 4 | Only the used meta-model and Library JSON loads | ⬜ | new `eagerPackageMaxBytes` rule (pytest); guard; MiroirTest CLI |
 | 5 | CodeMirror loads with the first code field | ⬜ | `forbiddenEager` `@codemirror/*`; tour |
@@ -45,7 +45,7 @@ Accepted by A on 2026-09-30 ("go" on the analysis). Deviations go into the slice
 | Decision | Choice |
 |---|---|
 | D1 Manual chunks | M1: drop `vendor-copilotkit`, `vendor-ag-grid`, and the dead `miroir-diagram-class` clause of `vendor-d3`; `@copilotkit/*` and `ag-grid-*` in `forbiddenEager` |
-| D2 Defeated lazy routes | R1 (`React.lazy` in HomePage, SettingsPage, ReportSectionViewWithEditor; same for `uiIntegrationTestRunState.ts`) + R3 (guard rule) |
+| D2 Defeated lazy routes | R3 (guard rule). R1 replaced by lazy grids: see slice 2 deviation |
 | D3 Crypto polyfill | C1: `node:crypto` imported dynamically (see refinement below) |
 | D4 Meta-model deployment | D1: delete `MIROIR_TEST_SUITE_REGISTRY` and `loadMiroirCoreTestSuite`, `"sideEffects": false` and tree-shaking for `miroir-app-miroir` (and `miroir-example-library`, F12), size guard |
 | D5 CodeMirror | G1: `React.lazy` with a `<pre>` fallback |
@@ -91,7 +91,7 @@ After a baseline change, `--init` is **not** used: the slice edits `eagerGzipBas
 
 ## Slice 0 — Characterize the baseline build
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -108,13 +108,13 @@ Standalone build + guard; `npm run testByFile -w miroir-standalone-app -- 0_buil
 
 ### Realization
 
-_(to fill)_
+Build of `_integration` fde1e47 merged into the branch (2026-09-30), after `npm ci` and `./build-all.sh` (the container had pre-#346 `node_modules`). Standalone guard: 0 violations, 7 eager chunks, **2 725 899** bytes gzipped (baseline 2 721 507, +0.2%); 387 chunks, 6 266 735 bytes gzipped in all; `ReportDisplay-*` 244 717, `HomePage-*` 1 257. Electron guard: 0 violations, 4 775 734 (baseline 4 769 537). Build tests: all pass once the Electron app is built (`electronBundle.unit` needs `npm run build -w miroir-standalone-app-electron`).
 
 ---
 
 ## Slice 1 — CopilotKit and ag-grid leave the page (tracer)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -140,37 +140,40 @@ Standalone build + guard (0 violations); `pytest scripts/tests -q`; `npm run tes
 
 ### Realization
 
-_(to fill)_
+RED: 9 `[forbidden]` violations on the slice 0 build. GREEN as planned; also removed the two mappings of `src/chunkLoadTrace.ts`, reworded two comments naming `vendor-copilotkit`, and rewrote the three build-test assertions that described the #326 facts (`bundleReport.unit`: CopilotKit and ag-grid only in lazy chunks; the meta-model chunk found by content, not by its `mermaid-VLURNSYL` name; `bundleSourcemaps.unit` checks `vendor-mui`; `bundleReportCore.unit`: CopilotKit left to Rollup). Policy lists moved with a script (no `--init`): 190 eager, 358 lazy. **Eager gzip 2 725 899 → 1 577 325 (−42.1%)**, 5 eager chunks. Coverage tour: 7 of 7 pages, Copilot sidebar included.
 
 ---
 
-## Slice 2 — The home page stops loading the report route
+## Slice 2 — The home page stops loading the grids
 
 **Status:** ⬜ pending
 
 ### Goal
 
-Opening the home page fetches no report-route code (after slice 1, that chunk holds ag-grid); a maintainer's build fails when a new static import defeats a lazy route.
+Opening the home page fetches neither ag-grid nor glide-data-grid (the home report has only markdown, input and open-report sections); a report with a list section fetches them when that section first renders. A maintainer's build fails when a new static import defeats a dynamic one.
+
+**Deviation from D2 (found while planning):** `HomePage.tsx` renders `ReportDisplay` at once (the home page *is* a report: `reportMiroirWebAppOrDesktopHome`, or the sandbox home), and `SettingsPage.tsx` does too. Making `ReportDisplay` lazy there (R1) saves nothing. What makes the report chunk heavy is the grids, statically imported by `ReportSectionListDisplay.tsx → EntityInstanceGrid.tsx` (and `TestResultsGrid.tsx → ValueObjectGrid.tsx`). So this slice makes the grids lazy instead (analysis F9 option, narrowed), accepts the `ReportDisplay` finding in `defeatedDynamicImports` with that reason, and removes the `uiIntegrationTestRunState.ts` finding (a 27-line module: `RunAllMiroirTestsButton.tsx` imports it statically too). R3 (the guard rule) is kept.
 
 ### 2.1 RED
 
-- `scripts/tests/test_check_bundle_policy.py`: `test_a_defeated_dynamic_import_fails_unless_accepted` (a report finding of kind `defeated-dynamic-import` not listed in `defeatedDynamicImports` → `[defeated] <module> is imported statically by <importers> …`), `test_an_accepted_defeated_import_that_is_fixed_must_be_removed`. Both fail: no such rule.
-- `homePageLoad.337.phase2.unit.test.ts` (vitest; not reachable through MiroirTest: it reads the production build's manifest): the static import closure of the entry plus the `HomePage` route chunk contains no chunk holding `routes/ReportDisplay.tsx` or `ag-grid-community`. Fails on the slice 1 build.
+- `scripts/tests/test_check_bundle_policy.py`: `test_init_accepts_the_defeated_dynamic_imports_of_the_report`, `test_a_defeated_dynamic_import_fails_unless_accepted`, `test_an_accepted_defeated_import_that_now_splits_off_must_be_removed`. They fail: no such rule.
+- `homePageLoad.337.phase2.unit.test.ts` (vitest; not reachable through MiroirTest: it reads the production build's manifest and report): the chunks the home page loads (static closure of the entry plus that of the `HomePage` and `ReportDisplay` route chunks) hold no `ag-grid-community` and no `@glideapps/glide-data-grid`. Fails on the slice 1 build.
 
 ### 2.2 GREEN
 
-- `check_bundle_policy.py`: rule `defeated`; `--init` writes the current findings to `defeatedDynamicImports`.
-- Policy: `defeatedDynamicImports: []`. Guard fails on the two current findings.
-- `HomePage.tsx`, `SettingsPage.tsx`, `ReportSectionViewWithEditor.tsx`: `ReportDisplay` through `React.lazy` + `Suspense`. `RunMiroirTestSuiteButton.tsx`, `UiIntegrationTestRunInspectorSummary.tsx`: `uiIntegrationTestRunState.ts` through a dynamic import (or type-only import where only types are used).
+- `check_bundle_policy.py`: rule `defeated` (policy key `defeatedDynamicImports`); `--init` writes the current findings.
+- Policy: `defeatedDynamicImports: ["packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ReportDisplay.tsx"]`.
+- `RunAllMiroirTestsButton.tsx`: static import of `uiIntegrationTestRunState.ts`.
+- `ReportSectionListDisplay.tsx`: `EntityInstanceGrid` through `React.lazy` + `Suspense`; `TestResultsGrid.tsx`: `ValueObjectGrid` the same way.
 - Eager gzip unchanged (the report chunk was never preloaded): baseline stays.
 
 ### 2.3 Refactor checkpoint
 
-If the three pages share the same lazy declaration, one `LazyReportDisplay` module exports it.
+One `LazyGrids.tsx` module declares both lazy grids if the two sites need the same fallback.
 
 ### Validation
 
-`pytest scripts/tests/test_check_bundle_policy.py -q`; standalone build + guard; `npm run testByFile -w miroir-standalone-app -- homePageLoad.337`; coverage tour; `npm run nonreg:unit -- --runner shared` (UI component tests render these pages).
+`pytest scripts/tests/test_check_bundle_policy.py -q`; standalone build + guard; `npm run testByFile -w miroir-standalone-app -- homePageLoad.337`; coverage tour (Library Books grid, Miroir Tests report); `npm run nonreg:unit -- --runner shared` (UI component tests render list sections).
 
 ### Realization
 

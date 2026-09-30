@@ -98,16 +98,17 @@ describe("bundleReport", () => {
     }
   });
 
-  it("vendor-copilotkit is eager, and the chain of its zod or rxjs starts in the app's source", () => {
-    const copilotkit = report.chunks.find((chunk) => chunk.name === "vendor-copilotkit")!;
-    expect(copilotkit.loadKind).toBe("eager");
-    const shared = packageIn(copilotkit, "zod") ?? packageIn(copilotkit, "rxjs");
-    expect(shared, "zod or rxjs in vendor-copilotkit").toBeDefined();
-    expect(shared!.chain[0]).toMatch(new RegExp(`^${appSource}`));
+  it("CopilotKit and ag-grid are only in lazy chunks, and their chains start in the app's source (#337)", () => {
+    for (const name of ["@copilotkit/react-core", "ag-grid-community"]) {
+      const holders = report.chunks.filter((chunk) => packageIn(chunk, name));
+      expect(holders.length, name).toBeGreaterThan(0);
+      expect(holders.map((chunk) => chunk.loadKind), name).toEqual(holders.map(() => "lazy"));
+      expect(packageIn(holders[0], name)!.chain[0]).toMatch(new RegExp(`^${appSource}`));
+    }
   });
 
-  it("the mermaid-VLURNSYL chunk is mostly the Miroir meta-model deployment", () => {
-    const chunk = report.chunks.find((candidate) => candidate.file.includes("/mermaid-VLURNSYL"))!;
+  it("the chunk that holds the Miroir meta-model deployment holds little else", () => {
+    const chunk = report.chunks.find((candidate) => packageIn(candidate, "miroir-app-miroir"))!;
     expect(chunk).toBeDefined();
     const deployment = packageIn(chunk, "miroir-app-miroir");
     expect((deployment?.renderedBytes ?? 0) / chunk.renderedBytes).toBeGreaterThan(0.9);
