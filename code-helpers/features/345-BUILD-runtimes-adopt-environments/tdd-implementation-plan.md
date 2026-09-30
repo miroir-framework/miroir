@@ -21,7 +21,7 @@ Out: #323 (bundle ignores `--config`); the server's legacy config-file path; CLI
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize: mcp baseline, guard on former write paths | ⬜ pending | `scripts/tests/test_tracked_assets_guard.py` cases; mcp baseline recorded |
+| 0 | Characterize: mcp baseline, guard on former write paths | ✅ DONE | `scripts/tests/test_tracked_assets_guard.py` cases; mcp baseline recorded |
 | 1 | miroir-mcp tests run on a test environment (tracer) | ⬜ pending | `mcpTools.integ`, `endpointToolRegistry.integ` green on `test-filesystem`, `tests/assets/admin_*` removed |
 | 2 | miroir-mcp standalone configuration removed | ⬜ pending | package builds, server and Electron typecheck, mcp tests green |
 | 3 | miroir-cli runs on the selected environment | ⬜ pending | `cli.integ` on `test-filesystem`: `lendDocument` on Library |
@@ -68,7 +68,7 @@ No new model uuid. The `miroir-env` tests reuse `packages/miroir-env/tests/bootT
 
 ## Slice 0 — Characterize
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** lock what the guard already detects and the mcp baseline, so later slices can remove files safely.
 
@@ -81,6 +81,8 @@ No new model uuid. The `miroir-env` tests reuse `packages/miroir-env/tests/bootT
 **Validation:** `python -m pytest scripts/tests -q`.
 
 ### Realization
+
+`test_former_runtime_write_paths_are_reported` (4 cases: mcp `tests/assets/admin_data`, mcp `tests/assets/miroir_admin`, cli `tests/assets/admin_data`, Admin package `admin_data`) green at once: the pathspecs already cover every path, as the analysis §3.5 says. mcp baseline on 1b87835: 90 passed, 2 failed (analysis §3.1).
 
 ---
 
