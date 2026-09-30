@@ -47,7 +47,7 @@ export const MIROIR_TEST_SUITE_REGISTRY_NAMES = [
 export type MiroirTestSuiteKey = (typeof MIROIR_TEST_SUITE_REGISTRY_NAMES)[number];
 
 export const MIROIR_TEST_SUITE_REGISTRY: Record<string, MiroirTestSuiteLoader> = await import(
-  "miroir-test-app_deployment-miroir",
+  "miroir-app-miroir",
 ).then((deployment) => {
   return MIROIR_TEST_SUITE_REGISTRY_NAMES.reduce(
     (acc, name) => {
@@ -78,7 +78,7 @@ export async function loadMiroirCoreTestSuite(suiteKey: string): Promise<MiroirT
     return loaded.default;
   }
 
-  const deployment = await import("miroir-test-app_deployment-miroir");
+  const deployment = await import("miroir-app-miroir");
   for (const [exportName, value] of Object.entries(deployment)) {
     if (!exportName.startsWith("miroirTest_")) {
       continue;

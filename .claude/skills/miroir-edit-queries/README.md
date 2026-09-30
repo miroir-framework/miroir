@@ -21,8 +21,8 @@ npm run testMiroir -w miroir-core -- --suites query.library.instances --mode uni
 ### 2. Add Your Test Case
 
 Add a `queryTest` leaf to the MiroirTest suite `query.library.instances`:
-`packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/a7a74c51-f24e-43d6-bd62-ba3ebcded97d.json` (leaf shape in [SKILL.md](SKILL.md)), then
-`npm run build -w miroir-test-app_deployment-miroir`.
+`packages/miroir-app-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/a7a74c51-f24e-43d6-bd62-ba3ebcded97d.json` (leaf shape in [SKILL.md](SKILL.md)), then
+`npm run build -w miroir-app-miroir`.
 
 ### 3. Run Your Test
 

@@ -4,7 +4,7 @@ import {
   defaultSelfApplicationDeploymentMap,
   type DomainControllerInterface,
 } from "miroir-core";
-import { deployment_Admin } from "miroir-test-app_deployment-admin";
+import { deployment_Admin } from "miroir-app-admin";
 
 const setupMiroirDomainControllerMock = vi.fn();
 

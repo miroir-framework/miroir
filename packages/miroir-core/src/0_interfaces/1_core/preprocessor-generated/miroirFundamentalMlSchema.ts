@@ -25082,6 +25082,63 @@ export const miroirFundamentalMlSchema = {
                 }
               }
             }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "probeExternalService"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "endpoint": {
+                    "type": "any",
+                    "optional": true
+                  },
+                  "operationId": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "parameters": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
+                    }
+                  },
+                  "processSecrets": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "string"
+                    }
+                  },
+                  "application": {
+                    "type": "uuid",
+                    "optional": true
+                  },
+                  "deploymentUuid": {
+                    "type": "uuid",
+                    "optional": true
+                  }
+                }
+              }
+            }
           }
         ]
       },
@@ -25401,6 +25458,31 @@ export const miroirFundamentalMlSchema = {
               }
             ]
           },
+          "autocommitFromUI": {
+            "type": "boolean",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Autocommit from UI",
+                "description": "When true, the action is followed by a commit when it is sent from the UI"
+              }
+            }
+          },
+          "logPhase": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "bootstrap",
+              "rollback",
+              "query"
+            ],
+            "tag": {
+              "value": {
+                "defaultLabel": "Log phase",
+                "description": "Log phase the activity tracker is in while the action runs"
+              }
+            }
+          },
           "actionErrors": {
             "type": "union",
             "discriminator": "type",
@@ -25683,6 +25765,31 @@ export const miroirFundamentalMlSchema = {
                                 }
                               }
                             ]
+                          },
+                          "autocommitFromUI": {
+                            "type": "boolean",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Autocommit from UI",
+                                "description": "When true, the action is followed by a commit when it is sent from the UI"
+                              }
+                            }
+                          },
+                          "logPhase": {
+                            "type": "enum",
+                            "optional": true,
+                            "definition": [
+                              "bootstrap",
+                              "rollback",
+                              "query"
+                            ],
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Log phase",
+                                "description": "Log phase the activity tracker is in while the action runs"
+                              }
+                            }
                           },
                           "actionErrors": {
                             "type": "union",
@@ -39440,6 +39547,63 @@ export const miroirFundamentalMlSchema = {
                 ]
               }
             }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "probeExternalService"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "endpoint": {
+                    "type": "any",
+                    "optional": true
+                  },
+                  "operationId": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "parameters": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
+                    }
+                  },
+                  "processSecrets": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "string"
+                    }
+                  },
+                  "application": {
+                    "type": "uuid",
+                    "optional": true
+                  },
+                  "deploymentUuid": {
+                    "type": "uuid",
+                    "optional": true
+                  }
+                }
+              }
+            }
           }
         ]
       },
@@ -45917,6 +46081,63 @@ export const miroirFundamentalMlSchema = {
                     }
                   }
                 ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "probeExternalService"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "endpoint": {
+                    "type": "any",
+                    "optional": true
+                  },
+                  "operationId": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "parameters": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
+                    }
+                  },
+                  "processSecrets": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "string"
+                    }
+                  },
+                  "application": {
+                    "type": "uuid",
+                    "optional": true
+                  },
+                  "deploymentUuid": {
+                    "type": "uuid",
+                    "optional": true
+                  }
+                }
               }
             }
           }

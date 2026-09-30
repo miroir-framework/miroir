@@ -47,7 +47,7 @@ import {
 import {
   entityEntity,
   entitySelfApplication,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";

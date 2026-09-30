@@ -66,26 +66,26 @@ jobs:
       - name: Build deployment packages (parallel)
         run: |
           pids=()
-          npm run build -w miroir-test-app_deployment-miroir & pids+=($!)
-          npm run build -w miroir-test-app_deployment-admin & pids+=($!)
-          npm run build -w miroir-test-app_deployment-library & pids+=($!)
+          npm run build -w miroir-app-miroir & pids+=($!)
+          npm run build -w miroir-app-admin & pids+=($!)
+          npm run build -w miroir-example-library & pids+=($!)
           for pid in "${pids[@]}"; do wait "$pid"; done
       - name: Verify deployment package dist dirs
         run: |
-          echo "--- miroir-test-app_deployment-miroir ---"
-          ls packages/miroir-test-app_deployment-miroir/dist/
-          echo "--- miroir-test-app_deployment-admin ---"
-          ls packages/miroir-test-app_deployment-admin/dist/
-          echo "--- miroir-test-app_deployment-library ---"
-          ls packages/miroir-test-app_deployment-library/dist/
+          echo "--- miroir-app-miroir ---"
+          ls packages/miroir-app-miroir/dist/
+          echo "--- miroir-app-admin ---"
+          ls packages/miroir-app-admin/dist/
+          echo "--- miroir-example-library ---"
+          ls packages/miroir-example-library/dist/
       - name: Upload dist – deployment packages
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: dist-deployment-packages
           path: |
-            packages/miroir-test-app_deployment-miroir/dist
-            packages/miroir-test-app_deployment-admin/dist
-            packages/miroir-test-app_deployment-library/dist
+            packages/miroir-app-miroir/dist
+            packages/miroir-app-admin/dist
+            packages/miroir-example-library/dist
           if-no-files-found: error
 
   # ──────────────────────────────────────────────────────────────────────────────

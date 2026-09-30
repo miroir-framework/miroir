@@ -24,8 +24,8 @@ import {
   type StoreUnitConfiguration
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
-import { entityDefinitionEntity, entityEntity, entityMenu, menuDefaultMiroir, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { deployment_Miroir } from "miroir-app-admin";
+import { entityDefinitionEntity, entityEntity, entityMenu, menuDefaultMiroir, selfApplicationMiroir } from "miroir-app-miroir";
 import { InitApplicationParameters } from "../../src/0_interfaces/4-services/PersistenceStoreControllerInterface";
 
 

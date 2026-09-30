@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 import {
   reportSpotifyPlaylist,
   spotifyServiceEndpoint,
-} from "miroir-test-app_deployment-spotify";
+} from "miroir-example-spotify";
 
 import { resolveApiCallReportSectionSchema } from "../../../../src/miroir-fwk/4_view/components/Reports/resolveApiCallReportSectionSchema.js";
 

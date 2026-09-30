@@ -1,0 +1,1034 @@
+{
+  "uuid": "7947ae40-eb34-4149-887b-15a9021e714e",
+  "parentName": "Endpoint",
+  "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "name": "ModelEndpoint",
+  "version": "1",
+  "description": "The Model Endpoint",
+  "definition": {
+    "actions": [
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "initModel"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Action Label",
+                "description": "The label of the action. This label can be used in the UI to display the action.",
+                "canBeTemplate": true
+              }
+            }
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Application",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              },
+              "model": {
+                "type": "any",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Model",
+                    "description": "The model of the application",
+                    "canBeTemplate": false,
+                    "ifThenElseMMLS": {
+                      "mmlsReference": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "metaModel"
+                      }
+                    }
+                  }
+                }
+              },
+              "params": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Initialization Parameters",
+                    "description": "The parameters for the model initialization. The parameters can be used to specify additional parameters used during the model initialization, like the meta-model, for example.",
+                    "canBeTemplate": true
+                  }
+                },
+                "definition": {
+                  "metaModel": {
+                    "type": "any",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "MetaModel",
+                        "description": "The meta-model of the application",
+                        "canBeTemplate": false,
+                        "ifThenElseMMLS": {
+                          "mmlsReference": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "metaModel"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "dataStoreType": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "dataStoreType"
+                    }
+                  },
+                  "selfApplication": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "selfApplication"
+                    }
+                  },
+                  "applicationModelBranch": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "entityInstance"
+                    }
+                  },
+                  "applicationVersion": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "entityInstance"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_initModel"
+        },
+        "logPhase": "bootstrap"
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "commit"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Application",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_commit"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "rollback"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Application",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_rollback"
+        },
+        "logPhase": "rollback"
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "remoteLocalCacheRollback"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Application",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_remoteLocalCacheRollback"
+        },
+        "logPhase": "rollback"
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "resetModel"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+          },
+          "payload": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "Reset Model Payload",
+                "description": "The payload for the resetModel action. This action will reset the model to the specified state. The payload can be used to specify the state to reset the model to. If no state is specified, the model will be reset to an empty state.",
+                "canBeTemplate": true
+              }
+            },
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Application",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              },
+              "model": {
+                "type": "any",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Model",
+                    "description": "The model of the application",
+                    "canBeTemplate": false,
+                    "ifThenElseMMLS": {
+                      "mmlsReference": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "metaModel"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_resetModel"
+        },
+        "logPhase": "bootstrap"
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "resetData"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Application",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_resetData"
+        },
+        "logPhase": "bootstrap"
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "alterEntityAttribute"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Application",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              },
+              "transactional": {
+                "type": "boolean",
+                "optional": true
+              },
+              "entityName": {
+                "type": "string"
+              },
+              "entityUuid": {
+                "type": "string",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ]
+              },
+              "addColumns": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "object",
+                  "definition": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "mlElement"
+                      }
+                    }
+                  }
+                }
+              },
+              "removeColumns": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "update": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "mlElement"
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_alterEntityAttribute"
+        },
+        "autocommitFromUI": true
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "entity_DuplicateAttribute"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Application",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              },
+              "transactional": {
+                "type": "boolean",
+                "optional": true
+              },
+              "columns": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string",
+                  "description": "the columns to be duplicated"
+                }
+              },
+              "sourceEntityName": {
+                "type": "string",
+                "optional": true
+              },
+              "sourceEntityUuid": {
+                "type": "uuid"
+              },
+              "targetEntityName": {
+                "type": "string",
+                "optional": true
+              },
+              "targetEntityUuid": {
+                "type": "uuid"
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "compositeActionTemplate",
+          "definition": {
+            "actionType": "compositeActionSequence",
+            "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+            "payload": {
+              "actionSequence": [
+                {
+                  "actionType": "compositeRunBoxedQueryAction",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  "actionLabel": "sourceEntityLookup",
+                  "nameGivenToResult": "sourceEntity",
+                  "payload": {
+                    "actionType": "runBoxedQueryAction",
+                    "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                    "payload": {
+                      "application": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referencePath": [
+                          "payload",
+                          "application"
+                        ]
+                      },
+                      "applicationSection": "model",
+                      "queryExecutionStrategy": "storage",
+                      "query": {
+                        "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                        "application": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": [
+                            "payload",
+                            "application"
+                          ]
+                        },
+                        "extractors": {
+                          "entities": {
+                            "extractorOrCombinerType": "extractorByPrimaryKey",
+                            "applicationSection": "model",
+                            "parentName": "Entity",
+                            "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                            "instanceUuid": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "payload",
+                                "sourceEntityUuid"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "actionType": "compositeRunBoxedQueryAction",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  "actionLabel": "targetEntityLookup",
+                  "nameGivenToResult": "targetEntity",
+                  "payload": {
+                    "actionType": "runBoxedQueryAction",
+                    "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                    "payload": {
+                      "application": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referencePath": [
+                          "payload",
+                          "application"
+                        ]
+                      },
+                      "applicationSection": "model",
+                      "queryExecutionStrategy": "storage",
+                      "query": {
+                        "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                        "application": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": [
+                            "payload",
+                            "application"
+                          ]
+                        },
+                        "extractors": {
+                          "entities": {
+                            "extractorOrCombinerType": "extractorByPrimaryKey",
+                            "applicationSection": "model",
+                            "parentName": "Entity",
+                            "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                            "instanceUuid": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "payload",
+                                "targetEntityUuid"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "actionType": "alterEntityAttribute",
+                  "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                  "actionLabel": "duplicateAttributes",
+                  "payload": {
+                    "application": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "payload",
+                        "application"
+                      ]
+                    },
+                    "entityName": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "targetEntity",
+                        "entities",
+                        "name"
+                      ]
+                    },
+                    "entityUuid": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "payload",
+                        "targetEntityUuid"
+                      ]
+                    },
+                    "addColumns": {
+                      "transformerType": "mapList",
+                      "interpolation": "runtime",
+                      "applyTo": {
+                        "transformerType": "entityDefinition_extractAttributes",
+                        "interpolation": "runtime",
+                        "entityDefinition": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": [
+                            "sourceEntity",
+                            "entities"
+                          ]
+                        },
+                        "attributeNames": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": [
+                            "payload",
+                            "columns"
+                          ]
+                        }
+                      },
+                      "referenceToOuterObject": "attribute",
+                      "elementTransformer": {
+                        "transformerType": "createObject",
+                        "interpolation": "runtime",
+                        "definition": {
+                          "name": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "attribute",
+                              "0"
+                            ]
+                          },
+                          "definition": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "attribute",
+                              "1"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "renameEntity"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Application",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              },
+              "transactional": {
+                "type": "boolean",
+                "optional": true
+              },
+              "entityName": {
+                "type": "string",
+                "optional": true
+              },
+              "entityUuid": {
+                "type": "string",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ]
+              },
+              "targetValue": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_renameEntity"
+        },
+        "autocommitFromUI": true
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "createEntity"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Application",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              },
+              "transactional": {
+                "type": "boolean",
+                "optional": true
+              },
+              "entities": {
+                "type": "array",
+                "definition": {
+                  "type": "schemaReference",
+                  "tag": {
+                    "value": {
+                      "canBeTemplate": true
+                    }
+                  },
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entity"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_createEntity"
+        },
+        "autocommitFromUI": true
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "dropEntity"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Application",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              },
+              "transactional": {
+                "type": "boolean",
+                "optional": true
+              },
+              "entityUuid": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_dropEntity"
+        },
+        "autocommitFromUI": true
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "freezeApplicationVersion"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Application",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              },
+              "versionName": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Version name"
+                  }
+                }
+              },
+              "description": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Description"
+                  }
+                }
+              },
+              "branch": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Branch",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+                      "targetEntityOrderInstancesBy": "name"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_freezeApplicationVersion"
+        }
+      }
+    ]
+  }
+}

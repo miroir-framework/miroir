@@ -73,27 +73,27 @@ import {
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { cleanLevel, packageName } from "./constants.js";
 
-import { deployment_Admin } from "miroir-test-app_deployment-admin";
+import { deployment_Admin } from "miroir-app-admin";
 import {
   entityBook,
   getDefaultLibraryModelEnvironmentDEFUNCT,
   selfApplicationLibrary,
   selfApplicationModelBranchLibraryMasterBranch,
   selfApplicationVersionLibraryInitialVersion,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import {
   defaultMiroirMetaModel,
   entityApplicationVersionCrossEntityVersion,
   entityEntityVersion,
   entitySelfApplicationVersion,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
 const REPO_ROOT = join(import.meta.dirname, "../../../..");
 const bookCountByPublisherQuery = JSON.parse(
   readFileSync(
     join(
       REPO_ROOT,
-      "packages/miroir-test-app_deployment-library/assets/library_model/e4320b9e-ab45-4abe-85d8-359604b3c62f/6176dcdf-39a6-4805-8dc5-3c2366a31a11.json",
+      "packages/miroir-example-library/assets/library_model/e4320b9e-ab45-4abe-85d8-359604b3c62f/6176dcdf-39a6-4805-8dc5-3c2366a31a11.json",
     ),
     "utf8",
   ),
@@ -102,7 +102,7 @@ const countryListReport = JSON.parse(
   readFileSync(
     join(
       REPO_ROOT,
-      "packages/miroir-test-app_deployment-library/assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/08176cc7-43ae-4fca-91b7-bf869d19e4b9.json",
+      "packages/miroir-example-library/assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/08176cc7-43ae-4fca-91b7-bf869d19e4b9.json",
     ),
     "utf8",
   ),
@@ -111,7 +111,7 @@ const libraryMenu = JSON.parse(
   readFileSync(
     join(
       REPO_ROOT,
-      "packages/miroir-test-app_deployment-library/assets/library_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json",
+      "packages/miroir-example-library/assets/library_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json",
     ),
     "utf8",
   ),
@@ -120,7 +120,7 @@ const libraryBooksEndpoint = JSON.parse(
   readFileSync(
     join(
       REPO_ROOT,
-      "packages/miroir-test-app_deployment-library/assets/library_model/3d8da4d4-8f76-4bb4-9212-14869d81c00c/9884c1a4-5122-488a-85db-a99fbc02e678.json",
+      "packages/miroir-example-library/assets/library_model/3d8da4d4-8f76-4bb4-9212-14869d81c00c/9884c1a4-5122-488a-85db-a99fbc02e678.json",
     ),
     "utf8",
   ),
@@ -129,7 +129,7 @@ const libraryReturnDocumentRunner = JSON.parse(
   readFileSync(
     join(
       REPO_ROOT,
-      "packages/miroir-test-app_deployment-library/assets/library_model/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/98a38a84-e702-4540-a056-c7676a193a2b.json",
+      "packages/miroir-example-library/assets/library_model/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/98a38a84-e702-4540-a056-c7676a193a2b.json",
     ),
     "utf8",
   ),
@@ -272,15 +272,15 @@ const deployment_Miroir: Deployment = {
     },
     model: {
       emulatedServerType: "filesystem",
-      directory: "../miroir-test-app_deployment-miroir/assets/miroir_model",
+      directory: "../miroir-app-miroir/assets/miroir_model",
     },
     data: {
       emulatedServerType: "filesystem",
-      directory: "../miroir-test-app_deployment-miroir/assets/miroir_data",
+      directory: "../miroir-app-miroir/assets/miroir_data",
     },
     modelVersion: {
       emulatedServerType: "filesystem",
-      directory: "../miroir-test-app_deployment-miroir/assets/miroir_modelVersion",
+      directory: "../miroir-app-miroir/assets/miroir_modelVersion",
     },
   },
 };
@@ -300,11 +300,11 @@ const deployment_Library: Deployment = {
     },
     model: {
       emulatedServerType: "filesystem",
-      directory: "../miroir-test-app_deployment-library/assets/library_model",
+      directory: "../miroir-example-library/assets/library_model",
     },
     data: {
       emulatedServerType: "filesystem",
-      directory: "../miroir-test-app_deployment-library/assets/library_data",
+      directory: "../miroir-example-library/assets/library_data",
     },
     modelVersion: {
       emulatedServerType: "filesystem",

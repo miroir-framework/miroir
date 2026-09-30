@@ -71,7 +71,7 @@ Measured by the [bundle report](#bundle-report-and-guards-326) of the build of 2
 |---|---|---|---|
 | `index-*.js` (entry) | 3.17 MB, 710 kB | `miroir-core`, `lodash`, the app, `@codemirror/view`, `yaml`, `@remix-run/router` | the entry; `miroir-react` imports `@codemirror/view` |
 | `vendor-copilotkit-*` | 3.03 MB, 907 kB | `refractor`, `lucide`, `katex`, `@copilotkit/react-core`, `parse5`, `@copilotkit/web-inspector` | Rollup put in it shared packages the entry needs: `zod` (from `miroir-core`), `react-markdown` and the remark/micromark stack (`MarkdownEditorModal`), the `vite-plugin-node-polyfills` shims, `uuid` |
-| `mermaid-VLURNSYL-*` | 1.95 MB, 465 kB | only `miroir-test-app_deployment-miroir`, the meta-model deployment (no mermaid) | `ModelEnvironmentSync.tsx` imports it statically |
+| `mermaid-VLURNSYL-*` | 1.95 MB, 465 kB | only `miroir-app-miroir`, the meta-model deployment (no mermaid) | `ModelEnvironmentSync.tsx` imports it statically |
 | `vendor-ag-grid-*` | 1.03 MB, 265 kB | `ag-grid-community`, `ag-grid-react` | it also holds a 44-byte `vite-plugin-node-polyfills` shim that `@reduxjs/toolkit` (through `miroir-localcache-redux`) imports |
 | `index-*.js` | 628 kB, 185 kB | `bn.js`, `readable-stream`, `elliptic`, `buffer`, `asn1.js` | `miroir-core` imports `crypto`, which `nodePolyfills({ include: ["crypto"] })` replaces with `crypto-browserify` |
 | `vendor-mui-*` | 339 kB, 103 kB | `@mui/material`, `@mui/system`, `@popperjs/core` | the app shell |

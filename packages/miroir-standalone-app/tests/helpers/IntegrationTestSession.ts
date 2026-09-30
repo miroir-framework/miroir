@@ -20,8 +20,8 @@ import type {
   RunnerTestSessionInterface
 } from "miroir-core";
 import { getBootstrapPhasesForSessionKind, type StoreUnitConfiguration } from "miroir-core";
-import { deployment_Admin, deployment_Miroir } from "miroir-test-app_deployment-admin";
-import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
+import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
+import { selfApplicationLibrary } from "miroir-example-library";
 
 import {
   runAppStackIntegrationBootstrap

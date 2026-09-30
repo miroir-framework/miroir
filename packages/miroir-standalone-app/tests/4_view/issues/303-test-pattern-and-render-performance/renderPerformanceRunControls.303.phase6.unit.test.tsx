@@ -58,7 +58,7 @@ import {
   miroirTest_ui_mlElementEditor_enum,
   miroirTest_tr_resolveConditionalSchema,
   selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
 vi.mock("../../../../src/miroir-fwk/4-tests/componentTests/index", async (importOriginal) => {
   const actual = await importOriginal<

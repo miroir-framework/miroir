@@ -9,7 +9,7 @@ import {
 
 import { LocalCache } from "../src/4_services/LocalCache";
 
-import { entityDefinitionEntityDefinition, entityEntity, entityEntityVersion } from "miroir-test-app_deployment-miroir";
+import { entityDefinitionEntityDefinition, entityEntity, entityEntityVersion } from "miroir-app-miroir";
 // ################################################################################################
 // ################################################################################################
 //  TEST CONSTANTS

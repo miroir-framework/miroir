@@ -24,11 +24,11 @@ const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../../../
 const CORE_SRC = join(REPO_ROOT, "packages/miroir-core/src");
 const ADMIN_MODEL_ENTITIES = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-admin/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "packages/miroir-app-admin/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
 );
 const ADMIN_DATA = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-admin/assets/admin_data",
+  "packages/miroir-app-admin/assets/admin_data",
 );
 const VIEW_PARAMS_ENTITY_UUID = "b9765b7c-b614-4126-a0e2-634463f99937";
 const VIEW_PARAMS_SEED_UUID = "441cb6fd-2728-4a16-b170-ebceec1ce6c2";

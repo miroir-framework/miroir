@@ -41,7 +41,7 @@
     "miroir-store-indexedDb": "*",
     "miroir-store-mongodb": "*",
     "miroir-store-postgres": "*",
-    "miroir-test-app_deployment-admin": "*"
+    "miroir-app-admin": "*"
   },
   "build": {
     "appId": "com.miroir-framework.miroir-standalone-app-electron",
@@ -66,28 +66,28 @@
         ]
       },
       {
-        "from": "../miroir-test-app_deployment-admin/assets/admin_data",
-        "to": "miroir-assets/miroir-test-app_deployment-admin/assets/admin_data",
+        "from": "../miroir-app-admin/assets/admin_data",
+        "to": "miroir-assets/miroir-app-admin/assets/admin_data",
         "filter": [
           "**/*"
         ]
       },
       {
-        "from": "../miroir-test-app_deployment-admin/assets/admin_model",
-        "to": "miroir-assets/miroir-test-app_deployment-admin/assets/admin_model",
+        "from": "../miroir-app-admin/assets/admin_model",
+        "to": "miroir-assets/miroir-app-admin/assets/admin_model",
         "filter": [
           "**/*"
         ]
       },
       {
-        "from": "../miroir-test-app_deployment-miroir/assets",
-        "to": "miroir-assets/miroir-test-app_deployment-miroir/assets",
+        "from": "../miroir-app-miroir/assets",
+        "to": "miroir-assets/miroir-app-miroir/assets",
         "filter": [
           "**/*"
         ]
       },
       {
-        "from": "../miroir-test-app_deployment-library/dist",
+        "from": "../miroir-example-library/dist",
         "to": "miroir-assets/bundles",
         "filter": [
           "library-model*.json",

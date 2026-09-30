@@ -20,7 +20,7 @@ import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
-import { entityReport } from "miroir-test-app_deployment-miroir";
+import { entityReport } from "miroir-app-miroir";
 import { env } from "process";
 
 import { createReportTestRunner } from "../../src/miroir-fwk/4-tests/componentTests/runReportTest.js";
@@ -35,7 +35,7 @@ const pageLabel = "miroir-runner-tests.integ";
 
 const miroirReportsFolder = join(
   dirname(fileURLToPath(import.meta.url)),
-  "../../../miroir-test-app_deployment-miroir/assets/miroir_data",
+  "../../../miroir-app-miroir/assets/miroir_data",
   entityReport.uuid,
 );
 

@@ -32,7 +32,7 @@ import {
   deployment_Miroir,
   entityApplicationForAdmin,
   entityDeployment,
-} from "miroir-test-app_deployment-admin";
+} from "miroir-app-admin";
 import { buildTestbedApplicationAccessGrantInstance } from "./authentication/TestbedAccessGrant.js";
 import {
   applicationEndpointV1,
@@ -47,11 +47,11 @@ import {
   storeManagementEndpoint,
   testEndpointVersionV1,
   undoRedoEndpointVersionV1,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 // import {
 //   lendingEndpoint,
 //   selfApplicationLibrary
-// } from "miroir-test-app_deployment-library";
+// } from "miroir-example-library";
 import { LIBRARY_TMP } from "../0_interfaces/1_core/LIBRARY_TMP";
 import { noValue } from "./Instance";
 

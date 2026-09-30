@@ -44,7 +44,7 @@ import { resolveRepoRoot } from "../helpers/integrationTestProfiles.js";
 
 const MIROIR_TEST_DATA_FOLDER = join(
   resolveRepoRoot(),
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b",
+  "packages/miroir-app-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b",
 );
 
 /**

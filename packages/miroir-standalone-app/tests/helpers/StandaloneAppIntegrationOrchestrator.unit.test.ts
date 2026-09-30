@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { DomainControllerInterface, MiroirConfigClient } from "miroir-core";
 import { getPlayfieldForSessionKind } from "miroir-core";
-import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
+import { selfApplicationLibrary } from "miroir-example-library";
 
 const runAppStackIntegrationBootstrapMock = vi.fn();
 

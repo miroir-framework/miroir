@@ -18,12 +18,12 @@ import type { EntityInstance, MiroirConfigClient, StoreUnitConfiguration } from 
 import { versionHistoryEntityUuids } from "miroir-core";
 import type { BundledDeploymentData, BundledSectionData } from "miroir-store-bundled";
 
-import * as adminDeployment from "miroir-test-app_deployment-admin";
+import * as adminDeployment from "miroir-app-admin";
 import {
   deployment_Admin as localDeploymentAdmin,
   deployment_Miroir as localDeploymentMiroir,
-} from "miroir-test-app_deployment-admin";
-import * as miroirDeployment from "miroir-test-app_deployment-miroir";
+} from "miroir-app-admin";
+import * as miroirDeployment from "miroir-app-miroir";
 
 // ---------------------------------------------------------------------------
 // Deployment UUIDs
@@ -40,7 +40,7 @@ export const ADMIN_BUNDLED_CONFIG: StoreUnitConfiguration = {
   data:  { emulatedServerType: "bundled", deploymentUuid: ADMIN_DEPLOYMENT_UUID },
 };
 
-// TODO: duplicates from miroir-test-app_deployment-admin, and miroir-test-app_deployment-miroir
+// TODO: duplicates from miroir-app-admin, and miroir-app-miroir
 export const demoMiroirConfig: MiroirConfigClient = {
   miroirConfigType: "client",
   client: {

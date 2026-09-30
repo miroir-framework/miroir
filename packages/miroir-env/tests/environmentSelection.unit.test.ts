@@ -7,28 +7,28 @@ import { describe, expect, it } from "vitest";
 import { run, temporaryRepository } from "./cliTestSupport";
 
 const miroir = {
-  package: "miroir-test-app_deployment-miroir",
+  package: "miroir-app-miroir",
   selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   deployment: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
   store: "filesystem",
   mode: "live",
 };
 const admin = {
-  package: "miroir-test-app_deployment-admin",
+  package: "miroir-app-admin",
   selfApplication: "55af124e-8c05-4bae-a3ef-0933d41daa92",
   deployment: "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
   store: "filesystem",
   mode: "live",
 };
 const library = {
-  package: "miroir-test-app_deployment-library",
+  package: "miroir-example-library",
   selfApplication: "5af03c98-fe5e-490b-b08f-e1230971c57f",
   deployment: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
   store: "filesystem",
   mode: "live",
 };
 const spotify = {
-  package: "miroir-test-app_deployment-spotify",
+  package: "miroir-example-spotify",
   selfApplication: "00514586-bf72-4de3-beea-0a627c821404",
   deployment: "fd47d115-67e2-4870-8339-1c26665d1d15",
   store: "filesystem",

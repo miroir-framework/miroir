@@ -92,7 +92,7 @@ def test_graphify_only_on_request(tmp_path: Path) -> None:
 def test_status_names_integration_branch_and_missing_builds(tmp_path: Path) -> None:
     lines = "\n".join(status_lines(_tree(tmp_path, built=["miroir-core"]), _env()))
     assert "_integration" in lines
-    assert "not built" in lines and "miroir-test-app_deployment-miroir" in lines
+    assert "not built" in lines and "miroir-app-miroir" in lines
 
 
 def test_dry_run_executes_nothing(tmp_path: Path) -> None:

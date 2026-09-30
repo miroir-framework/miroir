@@ -1,0 +1,357 @@
+{
+  "uuid": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+  "parentName": "Endpoint",
+  "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "name": "StoreManagementEndpoint",
+  "version": "1",
+  "description": "Store Management Endpoint",
+  "definition": {
+    "actions": [
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "storeManagementAction_createStore"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "deploymentUuid": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Module Deployment Uuid",
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Application",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    }
+                  }
+                }
+              },
+              "configuration": {
+                "type": "schemaReference",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Configuration",
+                    "description": "The configuration to create the store with. A configuration must be specified for the store to be created by this action.",
+                    "canBeTemplate": true
+                  }
+                },
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "storeUnitConfiguration"
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_storeManagementAction_createStore"
+        },
+        "logPhase": "bootstrap",
+        "actionErrors": {
+          "type": "enum",
+          "definition": [
+            "FailedToCreateStore",
+            "FailedToDeployModule"
+          ]
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "storeManagementAction_deleteStore"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "deploymentUuid": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Module Deployment Uuid"
+                  }
+                }
+              },
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Application",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    }
+                  }
+                }
+              },
+              "configuration": {
+                "type": "schemaReference",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Configuration",
+                    "description": "The configuration to delete the store with. A configuration must be specified for the store to be deleted by this action.",
+                    "canBeTemplate": true
+                  }
+                },
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "storeUnitConfiguration"
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_storeManagementAction_deleteStore"
+        },
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedToDeleteStore"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "storeManagementAction_resetAndInitApplicationDeployment"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Application",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    }
+                  }
+                }
+              },
+              "deployments": {
+                "type": "array",
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "deployment"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_storeManagementAction_resetAndInitApplicationDeployment"
+        },
+        "logPhase": "bootstrap",
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedToResetAndInitMiroirAndApplicationDatabase"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "storeManagementAction_openStore"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "deploymentUuid": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Module Deployment Uuid"
+                  }
+                }
+              },
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Application",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    }
+                  }
+                }
+              },
+              "configuration": {
+                "type": "record",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Configuration",
+                    "description": "The configuration to open the store with. A configuration must be specified for the deployment to be opened by this action.",
+                    "canBeTemplate": true
+                  }
+                },
+                "definition": {
+                  "type": "schemaReference",
+                  "tag": {
+                    "value": {
+                      "canBeTemplate": true
+                    }
+                  },
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "storeUnitConfiguration"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_storeManagementAction_openStore"
+        },
+        "logPhase": "bootstrap",
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedToOpenStore"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "storeManagementAction_closeStore"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "bbd08cbb-79ff-4539-b91f-7a14f15ac55f"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Application",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_storeManagementAction_closeStore"
+        },
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedToCloseStore"
+        }
+      }
+    ],
+    "actionTransformer": {
+      "type": "any",
+      "optional": true
+    },
+    "actionMigrations": {
+      "type": "any",
+      "optional": true
+    }
+  }
+}

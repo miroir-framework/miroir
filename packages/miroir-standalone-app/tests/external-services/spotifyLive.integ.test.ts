@@ -42,16 +42,16 @@ import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
-import { deployment_Admin, deployment_Miroir } from "miroir-test-app_deployment-admin";
-import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from "miroir-test-app_deployment-library";
-import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
+import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from "miroir-example-library";
+import { defaultMiroirMetaModel } from "miroir-app-miroir";
 import {
   defaultSpotifyAppModel,
   selfApplicationModelBranchSpotifyMasterBranch,
   selfApplicationSpotify,
   spotifyInitApplicationVersion,
   spotifyServiceEndpoint,
-} from "miroir-test-app_deployment-spotify";
+} from "miroir-example-spotify";
 
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { miroirAppStartup } from "../../src/startup.js";

@@ -430,6 +430,15 @@ describe("log phase on LoggerGlobalContext and tracker", () => {
     expect(LoggerGlobalContext.getPhase()).toBeUndefined();
   });
 
+  it("removePhase takes out the phase of an action that ends before an overlapping one (#341)", () => {
+    tracker.pushPhase("query");
+    tracker.pushPhase("bootstrap");
+    tracker.removePhase("query");
+    expect(LoggerGlobalContext.getPhase()).toBe("bootstrap");
+    tracker.removePhase("bootstrap");
+    expect(LoggerGlobalContext.getPhase()).toBeUndefined();
+  });
+
   it("trackAction options.phase is set during the span and cleared after", async () => {
     await tracker.trackAction("runBoxedQueryAction", "DC.handleBoxedQuery", async () => {
       expect(LoggerGlobalContext.getPhase()).toBe("query");

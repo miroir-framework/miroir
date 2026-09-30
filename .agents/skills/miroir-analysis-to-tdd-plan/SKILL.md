@@ -32,7 +32,7 @@ The `tdd` skill's "public interface" means TS/JS signatures only. In Miroir the 
 
 - **Favor applicative interfaces whenever the behavior can be expressed as model data.** A new Report/Query/Runner asset is interface; a new exported TS function is a last resort.
 - Lock applicative contracts (JSON shapes, uuids, `menuItemScope`-style marker fields, endpoint action payload schemas) in **Slice 0** before any code changes.
-- Interface changes to core schemas imply the build chain: edit assets in `miroir-test-app_deployment-miroir` → `npm run build -w miroir-test-app_deployment-miroir` → `npm run devBuild -w miroir-core` (regenerates `miroirFundamentalType.ts`). Plan this explicitly in the slice that changes a schema.
+- Interface changes to core schemas imply the build chain: edit assets in `miroir-app-miroir` → `npm run build -w miroir-app-miroir` → `npm run devBuild -w miroir-core` (regenerates `miroirFundamentalType.ts`). Plan this explicitly in the slice that changes a schema.
 - Code-level interfaces still follow the `codebase-design` vocabulary (deep modules, seams).
 
 ### 3. MiroirTest whenever possible; vitest for internals only

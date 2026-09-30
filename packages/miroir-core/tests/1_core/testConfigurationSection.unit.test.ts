@@ -12,7 +12,7 @@ import type {
   Report,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { getApplicationSection } from "../../src/1_core/Model.js";
-import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel } from "miroir-app-miroir";
 import {
   entityMiroirTest,
   entityTestConfiguration,
@@ -21,8 +21,8 @@ import {
   reportTestConfigurationDetails,
   reportTestConfigurationList,
   selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
-import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
+} from "miroir-app-miroir";
+import { selfApplicationLibrary } from "miroir-example-library";
 
 const RUN_TEST = process.env.RUN_TEST;
 const shouldRun =
@@ -40,12 +40,12 @@ const MIROIR_TEST_UUID = "a311f363-e238-4203-bdfc-29e8c160c26b";
 const REPO_ROOT = join(import.meta.dirname, "../../../..");
 const ENTITY_PATH = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "packages/miroir-app-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   `${ENTITY_UUID}.json`,
 );
 const ENTITY_VERSION_PATH = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "packages/miroir-app-miroir/assets/miroir_modelVersion/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   `${ENTITY_VERSION_UUID}.json`,
 );
 
@@ -162,7 +162,7 @@ function complexMenuItems(menu: Menu): Array<{
     const entity = readJson(
       join(
         REPO_ROOT,
-        "packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+        "packages/miroir-app-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
         `${(entityMiroirTest as Entity).uuid}.json`,
       ),
     ) as Entity;

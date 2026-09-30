@@ -18,7 +18,7 @@ import {
   deployment_Library_DO_NO_USE,
   entityBook,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 
 import { LocalCache } from "../src/4_services/LocalCache.js";
 

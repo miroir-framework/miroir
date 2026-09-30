@@ -42,7 +42,7 @@ npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
 
 ### Step 2: Write Test Cases First (TDD) 📝
 Add test cases to the test suite:
-- **File**: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` (`miroirTest_tr_core`)
+- **File**: `packages/miroir-app-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` (`miroirTest_tr_core`)
 - **Suite name**: `tr.core`
 - Use the test case template from `template-test-case.json`
 
@@ -54,7 +54,7 @@ npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
 
 ### Step 4: Create TransformerDefinition JSON 📄
 Create the transformer definition file:
-- **Location**: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/<uuid>.json`
+- **Location**: `packages/miroir-app-miroir/assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/<uuid>.json`
 - **Parent UUID**: `a557419d-a288-4fb8-8a1e-971c86c113b8` (TransformerDefinition entity)
 - Use the template from `template-library-transformer.json`
 - **Key field**: `transformerImplementationType: "libraryImplementation"`
@@ -220,7 +220,7 @@ File: `packages/miroir-core/scripts/generate-ts-types.ts`
 ### Step 8: Run devBuild and Tests ✅
 Generate types and verify everything works:
 ```bash
-npm run build -w miroir-test-app_deployment-library
+npm run build -w miroir-example-library
 npm run devBuild -w miroir-core && npm run testMiroir -w miroir-core -- --suites tr.core --mode unit && npm run testMiroir -w miroir-standalone-app -- --suites tr.core --mode integration
 ```
 

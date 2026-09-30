@@ -26,8 +26,8 @@ import {
   reportMiroirSandboxHome,
   reportMiroirWebAppOrDesktopHome,
   selfApplicationMiroir
-} from "miroir-test-app_deployment-miroir";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+} from "miroir-app-miroir";
+import { deployment_Miroir } from "miroir-app-admin";
 import {
   packageName,
   type ReportUrlParamKeys

@@ -7,7 +7,7 @@ import { expect as vitestExpect } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-import { miroirTest_runner_returnDocument } from 'miroir-test-app_deployment-library';
+import { miroirTest_runner_returnDocument } from 'miroir-example-library';
 import {
   ConfigurationService,
   MiroirActivityTracker,

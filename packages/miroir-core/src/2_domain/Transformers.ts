@@ -53,7 +53,7 @@ import {
   transformer_resolveTransformerResultSchema_json,
   // meta model
   transformer_metaModel_entityDefinition_extractAttributes_json,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
 // ################################################################################################
 export type Step = "build" | "runtime";

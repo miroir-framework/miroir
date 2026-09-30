@@ -56,7 +56,7 @@ import {
 } from "./resolveMcpToolAction.js";
 import { browserMcpServerUrl, runMcpToolRunner } from "./runMcpToolRunner.js";
 
-import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { selfApplicationMiroir } from "miroir-app-miroir";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RunnerView");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,

@@ -1,4 +1,4 @@
-import { entityEntity } from "miroir-test-app_deployment-miroir";
+import { entityEntity } from "miroir-app-miroir";
 import type {
   Entity,
   EntityInstance,

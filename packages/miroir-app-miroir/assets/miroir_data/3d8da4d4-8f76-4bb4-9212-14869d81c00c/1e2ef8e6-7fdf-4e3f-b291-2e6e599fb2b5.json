@@ -1,0 +1,451 @@
+{
+  "uuid": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+  "parentName": "Endpoint",
+  "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "name": "DomainEndpoint",
+  "version": "1",
+  "description": "Domain Endpoint",
+  "definition": {
+    "actions": [
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "transactionalInstanceAction"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Application",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    }
+                  }
+                }
+              },
+              "instanceAction": {
+                "type": "schemaReference",
+                "optional": false,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "instanceCUDAction"
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_transactionalInstanceAction"
+        },
+        "autocommitFromUI": true,
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedHandleTransactionalInstanceAction"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "compositeActionSequence"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "optional": true
+              },
+              "templates": {
+                "type": "record",
+                "optional": true,
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "coreTransformerForBuildPlusRuntime"
+                  }
+                }
+              },
+              "actionSequence": {
+                "type": "array",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Actions Definition",
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "compositeAction"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_compositeActionSequence"
+        },
+        "autocommitFromUI": true,
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedCompositeAction"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "compositeRunBoxedQueryAction"
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "nameGivenToResult": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "runBoxedQueryAction"
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_compositeRunBoxedQueryAction"
+        },
+        "logPhase": "query",
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedToRunBoxedQuery"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "compositeRunBoxedQueryTemplateAction"
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "nameGivenToResult": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "runBoxedQueryTemplateAction"
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_compositeRunBoxedQueryTemplateAction"
+        },
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedToRunBoxedQueryTemplate"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "connectExternalService"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+          },
+          "payload": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "canBeTemplate": true
+              }
+            },
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Application"
+                  }
+                }
+              },
+              "endpointName": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "openApiDocument": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "baseUrl": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "userAgent": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "authenticated": {
+                "type": "boolean",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "checkedOperationIds": {
+                "type": "array",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "probeOperationId": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "probeParameters": {
+                "type": "record",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
+                "definition": {
+                  "type": "any"
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_connectExternalService"
+        },
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedToConnectExternalService"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "prepareOpenApiDocument"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+          },
+          "payload": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "canBeTemplate": true
+              }
+            },
+            "definition": {
+              "text": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "url": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_prepareOpenApiDocument"
+        },
+        "actionErrors": {
+          "type": "literal",
+          "definition": "FailedToPrepareOpenApiDocument"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "probeExternalService"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "endpoint": {
+                "type": "any",
+                "optional": true
+              },
+              "operationId": {
+                "type": "string",
+                "optional": true
+              },
+              "parameters": {
+                "type": "record",
+                "optional": true,
+                "definition": {
+                  "type": "any"
+                }
+              },
+              "processSecrets": {
+                "type": "record",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "application": {
+                "type": "uuid",
+                "optional": true
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "optional": true
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_probeExternalService"
+        }
+      }
+    ]
+  }
+}

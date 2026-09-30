@@ -5,11 +5,11 @@ import {
   getBootstrapPhasesForDomainControllerProfile,
   getPlayfieldForDomainControllerProfile,
 } from "miroir-core";
-import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
+import { selfApplicationLibrary } from "miroir-example-library";
 import {
   selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+} from "miroir-app-miroir";
+import { deployment_Miroir } from "miroir-app-admin";
 
 const runAppStackIntegrationBootstrapMock = vi.fn();
 

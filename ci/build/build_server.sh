@@ -16,7 +16,7 @@
 #
 # The script builds packages in strict dependency order:
 #   1. jzod  →  jzod-ts  (peer libraries, linked locally)
-#   2. miroir-test-app_deployment-*  (schema definitions)          [parallel]
+#   2. miroir-app-*, miroir-example-*, miroir-fixture-*  (schema definitions)  [parallel]
 #   3. miroir-core  (with devBuild — regenerates TS types from Jzod schemas)
 #   4. localcache + store packages                                  [parallel]
 #   5. model-bundle extraction
@@ -90,11 +90,11 @@ step "3/7 · deployment metadata packages"
 t0=$(now_secs)
 # These define core types as Jzod schemas; no miroir-core dependency.
 run_parallel_builds \
-  miroir-test-app_deployment-miroir \
-  miroir-test-app_deployment-admin \
-  miroir-test-app_deployment-library \
-  miroir-test-app_deployment-postgres \
-  miroir-test-app_deployment-designer
+  miroir-app-miroir \
+  miroir-app-admin \
+  miroir-example-library \
+  miroir-example-postgres \
+  miroir-example-designer
 record_time "3/7  deployment packages" "$t0"
 
 # ---------------------------------------------------------------------------
@@ -122,7 +122,7 @@ record_time "5/7  localcache + store packages" "$t0"
 # Extract model bundles from example applications.
 step "5b/7 model bundle extraction"
 t0=$(now_secs)
-npm run extract-library-model -w miroir-test-app_deployment-library
+npm run extract-library-model -w miroir-example-library
 record_time "5b/7 model bundle extraction" "$t0"
 
 # ---------------------------------------------------------------------------

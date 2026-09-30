@@ -7,7 +7,7 @@ import {
 import { DomainInstanceUuidIndexToArray } from "../1_core/DomainState";
 
 
-import { entityReport } from "miroir-test-app_deployment-miroir";
+import { entityReport } from "miroir-app-miroir";
 
 import {
   EntityInstance,

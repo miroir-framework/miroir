@@ -47,7 +47,7 @@ export type runModelValidationSuiteParams = {
   vitest: ModelValidationVitest;
   plan: ModelValidationPlan;
   modelEnv: MiroirModelEnvironment;
-  /** npm workspace name used in printed re-run commands, e.g. miroir-test-app_deployment-miroir */
+  /** npm workspace name used in printed re-run commands, e.g. miroir-app-miroir */
   npmWorkspacePackage: string;
   /** vitest file filter segment after `--`, default `model` */
   testFileFilter?: string;

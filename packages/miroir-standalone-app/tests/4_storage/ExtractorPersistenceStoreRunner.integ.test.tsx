@@ -1,6 +1,7 @@
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import {
+  Action2Error,
   type Action2ReturnType,
   ApplicationSection,
   ConfigurationService,
@@ -21,8 +22,8 @@ import {
   resetIntegTestbed,
   StoreUnitConfiguration
 } from "miroir-core";
-import { deployment_Admin, deployment_Miroir } from "miroir-test-app_deployment-admin";
-import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-library";
+import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
+import { deployment_Library_DO_NO_USE } from "miroir-example-library";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
@@ -43,7 +44,7 @@ import {
   getDefaultLibraryModelEnvironmentDEFUNCT,
   springer as publisher3,
   selfApplicationLibrary
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import type {
   ApplicationDeploymentMap,
   Deployment,
@@ -65,7 +66,7 @@ import {
   defaultMiroirMetaModel,
   entityEntity,
   selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
 const expectedMiroirEntitiesWithEnInName = ignorePostgresExtraAttributesOnList(
   defaultMiroirMetaModel.entities.filter((entity) =>
@@ -356,6 +357,41 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
   });
 
   // ################################################################################################
+  // #341: runBoxedQueryAction runs from its QueryEndpoint libraryImplementation through handleAction
+  it("get Library Entities through DomainController.handleAction", async () => {
+    const queryResult: Action2ReturnType = await domainController.handleAction(
+      {
+        actionType: "runBoxedQueryAction",
+        endpoint: "0faae143-0d7b-4a8a-a950-4fc3df943bde",
+        payload: {
+          application: selfApplicationLibrary.uuid,
+          applicationSection: "model",
+          queryExecutionStrategy: "storage",
+          query: {
+            queryType: "boxedQueryWithExtractorCombinerTransformer",
+            application: selfApplicationLibrary.uuid,
+            extractors: {
+              entities: {
+                extractorOrCombinerType: "extractorInstancesByEntity",
+                applicationSection: "model",
+                parentName: entityEntity.name,
+                parentUuid: entityEntity.uuid,
+              },
+            },
+          },
+        },
+      },
+      applicationDeploymentMap,
+      defaultLibraryModelEnvironment,
+    );
+    expect(queryResult instanceof Action2Error, JSON.stringify(queryResult)).toBe(false);
+    expect(
+      ((queryResult as any).returnedDomainElement?.entities ?? [])
+        .map((entity: Entity) => entity.name)
+        .sort(),
+    ).toEqual(["Author", "Book", "Country", "LendingHistoryItem", "Publisher", "User"]);
+  });
+
   it("get Library Entities", async () => {
     await chainVitestSteps(
       "ExtractorPersistenceStoreRunner_getLibraryEntities",

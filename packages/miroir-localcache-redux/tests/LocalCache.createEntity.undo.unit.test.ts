@@ -9,13 +9,13 @@ import {
 import {
   entityEntity,
   entityEntityVersion,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 import {
   entityAuthor,
   entityBook,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
-import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
+import { deployment_Library_DO_NO_USE } from "miroir-example-library";
 
 import { LocalCache } from "../src/4_services/LocalCache";
 

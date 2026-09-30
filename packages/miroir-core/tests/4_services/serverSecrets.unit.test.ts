@@ -143,7 +143,7 @@ describe.skipIf(!shouldRun)("serverSecrets — SecretStore + parseServerArgs + r
       readFileSync(
         join(
           REPO_ROOT,
-          "packages/miroir-test-app_deployment-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/dbd94bfe-b803-4bfd-8bb2-70a5932d5d1a.json",
+          "packages/miroir-app-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/dbd94bfe-b803-4bfd-8bb2-70a5932d5d1a.json",
         ),
         "utf8",
       ),

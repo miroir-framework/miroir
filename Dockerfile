@@ -29,50 +29,60 @@ RUN apk add --no-cache python3 make g++
 # Copy the entire monorepo source
 COPY . .
 
-# Install ALL dependencies (including devDeps needed for building).
-# The lockfile is generated on the host OS (Windows/macOS) and does NOT contain
-# the musl-libc platform binaries needed by Alpine Linux (e.g.
-# @rollup/rollup-linux-x64-musl). Deleting it forces npm to resolve optional
-# native deps correctly for the current target platform.
-RUN rm -f package-lock.json && npm install
+# Install ALL dependencies (including devDeps needed for building) from the
+# lockfile, as CI does. The lockfile lists the musl-libc platform binaries Alpine
+# needs (e.g. @rollup/rollup-linux-x64-musl). Resolving without it pulls newer
+# versions than the ones the code is typed against (miroir-ai's dts build fails).
+RUN npm ci --no-audit
 
 # ---------------------------------------------------------------------------
 # Build in strict dependency order (mirrors build-all.sh / copilot-instructions)
 # ---------------------------------------------------------------------------
 
 # 1. Application deployment metadata packages (define core types as ML schemas)
-RUN npm run build -w miroir-test-app_deployment-miroir
-RUN npm run build -w miroir-test-app_deployment-admin
-RUN npm run build -w miroir-test-app_deployment-library
-RUN npm run build -w miroir-test-app_deployment-postgres
-RUN npm run build -w miroir-test-app_deployment-designer
+RUN npm run build -w miroir-app-miroir
+RUN npm run build -w miroir-app-admin
+RUN npm run build -w miroir-example-library
+RUN npm run build -w miroir-example-postgres
+RUN npm run build -w miroir-example-designer
 
 # 2. miroir-core — includes devBuild step to generate TypeScript types from schemas
 RUN npm run devBuild -w miroir-core
 
+# 2'. miroir-env — environment resolution, imported by the server and by the
+#     standalone-app vite.config.js
+RUN npm run build -w miroir-env
+
 # 3. Local-cache and store packages (can run in parallel, all only depend on miroir-core)
 RUN npm run build -w miroir-localcache-redux \
+ && npm run build -w miroir-store-bundled \
  && npm run build -w miroir-store-filesystem \
  && npm run build -w miroir-store-indexedDb \
  && npm run build -w miroir-store-mongodb \
  && npm run build -w miroir-store-postgres
 
 # 3'. extract model bundles from example applications
-RUN npm run extract-library-model -w miroir-test-app_deployment-library
-# RUN npm run extract-postgresManager-model -w miroir-test-app_deployment-postgres
+RUN npm run extract-library-model -w miroir-example-library
+# RUN npm run extract-postgresManager-model -w miroir-example-postgres
 
 # 4. UI / MCP / diagram packages
 RUN npm run build -w miroir-react
 RUN npm run build -w miroir-mcp
 RUN npm run build -w miroir-diagram-class
+RUN npm run build -w miroir-ai
 
-# 5. Server (tsup bundle) and standalone app (Vite production build)
-#    The standalone-app Vite config auto-detects missing TLS certs → uses plain
-#    HTTP proxy target http://localhost:3080, which is correct for Docker.
-#    NODE_OPTIONS increases the V8 heap limit to prevent OOM during Vite's large
-#    bundle compilation (default ~2 GB is not enough for this workspace).
-RUN npm run build-tsup -w miroir-server
+# 4'. Applications the standalone app bundles besides Library
+RUN npm run build -w miroir-example-spotify
+RUN npm run build -w miroir-fixture-appForTest
+
+# 5. Standalone app (Vite production build), then the server release bundle
+#    (ncc, packages/miroir-server/release/), which copies the client build into
+#    release/client. The standalone-app Vite config auto-detects missing TLS
+#    certs → uses plain HTTP proxy target http://localhost:3080, which is correct
+#    for Docker. NODE_OPTIONS increases the V8 heap limit to prevent OOM during
+#    Vite's large bundle compilation (default ~2 GB is not enough for this workspace).
 RUN NODE_OPTIONS=--max-old-space-size=4096 npm run build -w miroir-standalone-app
+RUN npm run build:release -w miroir-server
 
 # Remove devDependencies from node_modules to reduce the layer transferred to
 # the final stage (saves several hundred MB).
@@ -112,9 +122,10 @@ COPY --from=builder /miroir/packages/miroir-standalone-app/dist \
 # -------------------------------------------------------------------------
 # Docker-specific server config (HTTP, filesystemDeploymentRootDirectory=/data)
 # Overrides the dev config that was pulled in with the packages/ copy above.
+# The ncc release bundle reads the copy next to it (release/miroirConfig.server.json).
 # -------------------------------------------------------------------------
 COPY packages/miroir-server/config/miroirConfig.server.docker.json \
-     /miroir/packages/miroir-server/config/miroirConfig.server.json
+     /miroir/packages/miroir-server/release/miroirConfig.server.json
 
 # -------------------------------------------------------------------------
 # Seed data — bundled in the image, copied to /data on first run
@@ -123,32 +134,32 @@ COPY packages/miroir-server/config/miroirConfig.server.docker.json \
 # (filesystemDeploymentRootDirectory + deployment.configuration.*.directory).
 #
 # Miroir framework bootstrap data (read from deployment configs on startup):
-#   miroir-test-app_deployment-miroir/assets/miroir_model   (model section)
-#   miroir-test-app_deployment-miroir/assets/miroir_data    (data  section)
-#   miroir-test-app_deployment-miroir/src/assets            (admin section)
-#   miroir-test-app_deployment-admin/assets/admin_model     (model section)
-#   miroir-test-app_deployment-admin/assets/admin_data      (data  section)
+#   miroir-app-miroir/assets/miroir_model   (model section)
+#   miroir-app-miroir/assets/miroir_data    (data  section)
+#   miroir-app-miroir/src/assets            (admin section)
+#   miroir-app-admin/assets/admin_model     (model section)
+#   miroir-app-admin/assets/admin_data      (data  section)
 #
 # Library demo application data:
-#   miroir-test-app_deployment-library/assets/library_model
-#   miroir-test-app_deployment-library/assets/library_data
+#   miroir-example-library/assets/library_model
+#   miroir-example-library/assets/library_data
 # -------------------------------------------------------------------------
 
 # Miroir framework assets
-COPY --from=builder /miroir/packages/miroir-test-app_deployment-miroir/assets \
-                    /seed/miroir-test-app_deployment-miroir/assets
-COPY --from=builder /miroir/packages/miroir-test-app_deployment-miroir/src \
-                    /seed/miroir-test-app_deployment-miroir/src
+COPY --from=builder /miroir/packages/miroir-app-miroir/assets \
+                    /seed/miroir-app-miroir/assets
+COPY --from=builder /miroir/packages/miroir-app-miroir/src \
+                    /seed/miroir-app-miroir/src
 
 # Admin application assets
-COPY --from=builder /miroir/packages/miroir-test-app_deployment-admin/assets \
-                    /seed/miroir-test-app_deployment-admin/assets
+COPY --from=builder /miroir/packages/miroir-app-admin/assets \
+                    /seed/miroir-app-admin/assets
 
 # Library demo assets (model + data only; admin dir is created automatically by the store)
-COPY --from=builder /miroir/packages/miroir-test-app_deployment-library/assets/library_model \
-                    /seed/miroir-test-app_deployment-library/assets/library_model
-COPY --from=builder /miroir/packages/miroir-test-app_deployment-library/assets/library_data \
-                    /seed/miroir-test-app_deployment-library/assets/library_data
+COPY --from=builder /miroir/packages/miroir-example-library/assets/library_model \
+                    /seed/miroir-example-library/assets/library_model
+COPY --from=builder /miroir/packages/miroir-example-library/assets/library_data \
+                    /seed/miroir-example-library/assets/library_data
 
 # Docker-specific seed overrides (Docker-compatible library deployment record with
 # corrected directory paths — no ".." traversal — placed into admin_data).
@@ -177,4 +188,4 @@ EXPOSE 3080
 # Generate: docs/reference/authentication.md#generate-the-wrapping-key
 # --secret / MIROIR_SECRET_* / AI_* key env vars are bootstrap import only.
 ENTRYPOINT ["/sbin/tini", "--", "/docker-entrypoint.sh"]
-CMD ["node", "/miroir/packages/miroir-server/dist/server.js"]
+CMD ["node", "/miroir/packages/miroir-server/release/index.js"]

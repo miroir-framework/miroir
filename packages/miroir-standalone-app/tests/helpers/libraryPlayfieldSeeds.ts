@@ -25,7 +25,7 @@ import {
   folio as publisher1,
   penguin as publisher2,
   springer as publisher3,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 
 import {
   miroirTest_action_domainController_freezeApplicationVersion,
@@ -37,7 +37,7 @@ import {
   miroirTest_action_domainController_dataCrud_nonUuidPk,
   miroirTest_action_domainController_modelCrud_nonUuidPk,
   miroirTest_action_scenario_evolutionTrace,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
 export * from "../../src/miroir-fwk/4-tests/uiIntegrationPlayfieldSeeds.js";
 

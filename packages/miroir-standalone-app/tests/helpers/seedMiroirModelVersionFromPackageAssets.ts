@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { resolveRepoRoot } from "./integrationTestProfiles.js";
 
 const PACKAGE_MODEL_VERSION_REL =
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion";
+  "packages/miroir-app-miroir/assets/miroir_modelVersion";
 
 /**
  * Copy git-tracked Miroir Version History assets into the test store's modelVersion section

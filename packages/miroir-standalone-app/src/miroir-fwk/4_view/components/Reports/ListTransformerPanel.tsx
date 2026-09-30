@@ -24,7 +24,7 @@ import {
   type Uuid,
 } from "miroir-core";
 import { ThemedOnScreenHelper } from "miroir-react";
-import { entityEntity, reportEntityDetails } from "miroir-test-app_deployment-miroir";
+import { entityEntity, reportEntityDetails } from "miroir-app-miroir";
 
 import { TypedValueObjectEditor } from "./TypedValueObjectEditor.js";
 import { TypedValueObjectEditorWithFormik } from "./TypedValueObjectEditorWithFormik.js";

@@ -21,7 +21,7 @@ import {
 import {
   adminSelfApplication,
   entityApplicationForAdmin
-} from "miroir-test-app_deployment-admin";
+} from "miroir-app-admin";
 
 import { Formik, type FormikProps } from 'formik';
 import {
@@ -57,7 +57,7 @@ import {
 } from "./TransformerEditorInterface";
 import { TransformerEventsPanel } from './TransformerEventsPanel';
 
-import { entityDefinitionTransformerDefinition } from 'miroir-test-app_deployment-miroir';
+import { entityDefinitionTransformerDefinition } from 'miroir-app-miroir';
 // ################################################################################################
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TransformerEditor");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

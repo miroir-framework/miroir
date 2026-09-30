@@ -10,7 +10,7 @@ import type {
   Query,
   Report,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { selfApplicationMiroir } from "miroir-app-miroir";
 
 export type SchemaChangeKind = "none" | "app-overlay" | "meta-full-carry-on";
 export type SchemaRevisionScope = "meta" | "app";

@@ -9,7 +9,7 @@ import {
   type EntityVersion
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-import { entityEntity, entityReport, entityEntityVersion, entityMenu } from "miroir-test-app_deployment-miroir";
+import { entityEntity, entityReport, entityEntityVersion, entityMenu } from "miroir-app-miroir";
 
 import { MetaEntity, type Uuid } from "../../src/0_interfaces/1_core/EntityVersion";
 import { resolveTestCompositeActionTemplate, resolveTestCompositeActionTemplateSuite } from "../../src/2_domain/TestSuiteTemplate";

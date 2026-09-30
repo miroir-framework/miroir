@@ -27,8 +27,8 @@ import {
   entityApplicationVersionCrossTransformerDefinitionVersion,
   entitySelfApplicationVersion,
   selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
-import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
+} from "miroir-app-miroir";
+import { selfApplicationLibrary } from "miroir-example-library";
 
 import {
   buildFreezeApplicationVersionPlan,

@@ -62,7 +62,7 @@ npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
 
 ### Step 2: Write Test Cases First (TDD) 📝
 Add test cases to the test suite:
-- **File**: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json`
+- **File**: `packages/miroir-app-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json`
 - **Suite name**: `tr.core`
 - Use the test case template from `template-test-case.json`
 

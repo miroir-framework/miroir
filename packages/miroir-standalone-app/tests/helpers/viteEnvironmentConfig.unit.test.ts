@@ -103,7 +103,7 @@ describe("the web client configuration comes from the selected environment", () 
         emulatedServerType: "filesystem",
         directory: `.miroir/test-${storage}/admin/data`,
       });
-      expect(JSON.stringify(config)).not.toContain("miroir-test-app_deployment-admin/assets");
+      expect(JSON.stringify(config)).not.toContain("miroir-app-admin/assets");
     }
     const httpOnly = webTestClientConfigs({ cwd: repositoryRoot, httpOnly: true, seed: false });
     expect((httpOnly["realServer-sql"].client as MiroirConfigForRestClient).serverConfig.rootApiUrl).toBe(

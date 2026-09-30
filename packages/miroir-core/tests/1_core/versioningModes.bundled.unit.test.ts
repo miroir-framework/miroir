@@ -16,7 +16,7 @@ import { miroirBundledStoreSectionStartup } from "miroir-store-bundled";
 import {
   entityEntityVersion,
   entitySelfApplicationVersion,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 import {
   demoBundledData,
   demoMiroirConfig,

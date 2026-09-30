@@ -37,7 +37,7 @@ import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import {
   deployment_Admin,
   deployment_Miroir,
-} from "miroir-test-app_deployment-admin";
+} from "miroir-app-admin";
 import {
   author1,
   author2,
@@ -57,7 +57,7 @@ import {
   springer as publisher3,
   reportBookList,
   selfApplicationLibrary
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import { cleanLevel, packageName } from '../../src/constants.js';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
@@ -72,7 +72,7 @@ import { AppStackIntegrationTestSession } from '../helpers/IntegrationTestSessio
 import {
   defaultMiroirMetaModel,
   entityEntity,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;

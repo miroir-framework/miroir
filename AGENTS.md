@@ -60,17 +60,17 @@ Sibling repos, linked locally only when regenerating types from schemas: **jzod*
 Build in this order (`build-all.sh` is canonical; `./build-all.sh` or `./build-all.sh devBuild` for a full ordered build):
 
 1. Optional siblings: `jzod`, `jzod-ts` (when linked locally)
-2. `miroir-test-app_deployment-miroir`, `miroir-test-app_deployment-admin` (core types and concepts as ML schemas)
+2. `miroir-app-miroir`, `miroir-app-admin` (core types and concepts as ML schemas)
 3. `miroir-core` (foundation, generated types)
 4. `miroir-localcache*`, `miroir-store-*` (`filesystem`, `indexedDb`, `postgres`, `mongodb`, `bundled`; see `docs/reference/data-architecture-deployments.md`)
 5. `miroir-react`, `miroir-mcp`, `miroir-diagram-class`
 6. `miroir-cli`, `miroir-ai`
 7. `miroir-standalone-app`
-8. `miroir-test-app_deployment-library`, `miroir-test-app_deployment-postgres` (example / test applications)
+8. `miroir-example-*` (example applications), `miroir-fixture-*` (test fixtures)
 
 Artefacts: `miroir-server` release binary (`npm run build:release -w miroir-server`), `miroir-standalone-app-electron`, Docker image. `miroir-designer` and `miroir-runtime` are unused stubs.
 
-**Generated types:** `npm run devBuild -w miroir-core` regenerates `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/` (mainly `miroirFundamentalType.ts`) from the ML schemas, then builds. Run it after every change to a core schema in `packages/miroir-test-app_deployment-miroir/assets`, once `miroir-test-app_deployment-miroir` itself is rebuilt. Generator helpers: `packages/miroir-core/src/0_interfaces/1_core/bootstrapMlSchemas/`.
+**Generated types:** `npm run devBuild -w miroir-core` regenerates `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/` (mainly `miroirFundamentalType.ts`) from the ML schemas, then builds. Run it after every change to a core schema in `packages/miroir-app-miroir/assets`, once `miroir-app-miroir` itself is rebuilt. Generator helpers: `packages/miroir-core/src/0_interfaces/1_core/bootstrapMlSchemas/`.
 
 ```bash
 npm run devBuild -w miroir-core    # with type generation
@@ -101,7 +101,7 @@ Favor integration tests over unit tests and avoid mocking. Entity-backed tests u
 
 ```bash
 # Rebuild the deployment after MiroirTest JSON changes
-npm run build -w miroir-test-app_deployment-miroir
+npm run build -w miroir-app-miroir
 
 # MiroirTest by <kind>.<subject>: fn query tr action runner ui report
 npm run testMiroir -w miroir-core -- --suites fn.mlsToJsonSchema --mode unit
@@ -133,11 +133,11 @@ npm run dev -w miroir-standalone-app                        # Vite client
 
 ## Schema-first model
 
-Applications are defined by data structures and behaviours declared as JSON, in Miroir's meta-language **ML** (schemas: **MLS**), a subset of TypeScript types derived from the external Jzod project. The meta-schema is bootstrapped (it describes itself): `packages/miroir-test-app_deployment-miroir/assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json`. ML schemas generate the TypeScript types and Zod validators; miroir-core exports its types through `packages/miroir-core/src/index.ts`.
+Applications are defined by data structures and behaviours declared as JSON, in Miroir's meta-language **ML** (schemas: **MLS**), a subset of TypeScript types derived from the external Jzod project. The meta-schema is bootstrapped (it describes itself): `packages/miroir-app-miroir/assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json`. ML schemas generate the TypeScript types and Zod validators; miroir-core exports its types through `packages/miroir-core/src/index.ts`.
 
 Every core concept is an **Entity**; the live Entity row is the authoritative definition (`mlSchema`, primary key `idAttribute`, view / cache fields). `Entity` is its own meta-class (its `parentUuid` is its own uuid). Model history (`EntityVersion`, freeze, `modelVersion`) is optional: `docs/reference/versioning.md`. Primary keys (UUID, single non-UUID, composite) and their helpers: `docs/guides/developer/defining-entities.md`.
 
-Core concept Entities, in `packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/`:
+Core concept Entities, in `packages/miroir-app-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/`:
 
 | Concept | Entity file | Role |
 |---|---|---|
@@ -147,7 +147,7 @@ Core concept Entities, in `packages/miroir-test-app_deployment-miroir/assets/mir
 | Report | `3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json` | UI display of a Query through sections |
 | Endpoint | `3d8da4d4-8f76-4bb4-9212-14869d81c00c.json` | Actions with side effects on instances and models |
 
-**Deployments** store each Application as **model** (`{prefix}_model/`: Entities, Queries, Reports, …) and **data** (`{prefix}_data/`: instances) under `packages/miroir-test-app_deployment-*/assets/`, whatever the store backend. `miroir-core/src/assets/` holds only leftover fixtures. Layout, store backends and the Library example: `docs/reference/data-architecture-deployments.md`.
+**Deployments** store each Application as **model** (`{prefix}_model/`: Entities, Queries, Reports, …) and **data** (`{prefix}_data/`: instances) under `packages/<package>/assets/`, whatever the store backend. The package prefix gives the application's role: `miroir-app-` (framework), `miroir-example-`, `miroir-fixture-` (tests only). `miroir-core/src/assets/` holds only leftover fixtures. Layout, store backends and the Library example: `docs/reference/data-architecture-deployments.md`.
 
 State management: Redux + Redux-Sagas for async flows, domain state isolated from UI state, query selectors exposed as React hooks.
 

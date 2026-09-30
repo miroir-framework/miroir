@@ -24,7 +24,7 @@ import { describe, expect, it } from "vitest";
 import {
   entityMiroirTest,
   miroirTest_ui_mlElementEditor_any,
-} from "miroir-test-app_deployment-miroir";
+} from "miroir-app-miroir";
 
 import {
   defaultMiroirModelEnvironment,

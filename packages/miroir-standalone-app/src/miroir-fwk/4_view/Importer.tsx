@@ -20,12 +20,12 @@ import {
   deployment_Admin,
   entityApplicationForAdmin,
   entityDeployment,
-} from "miroir-test-app_deployment-admin";
+} from "miroir-app-admin";
 import * as XLSX from 'xlsx';
 import { applicationParis, packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
 
-import { entityMenu, entitySelfApplication } from "miroir-test-app_deployment-miroir";
+import { entityMenu, entitySelfApplication } from "miroir-app-miroir";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "importer");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",

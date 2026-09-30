@@ -24,7 +24,7 @@ import {
 } from "miroir-core";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 
-import { defaultMiroirMetaModel as deploymentMetaModel, entityEntityVersion } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel as deploymentMetaModel, entityEntityVersion } from "miroir-app-miroir";
 
 import { miroirAppStartup } from "../../src/startup.js";
 import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";

@@ -13,7 +13,7 @@ import {
   book1,
   reportBookList,
   selfApplicationLibrary,
-} from "miroir-test-app_deployment-library";
+} from "miroir-example-library";
 import { getReduxDeploymentsStateIndex } from "miroir-core";
 import {
   LocalCacheProvider,
@@ -26,7 +26,7 @@ import { ReportSectionListDisplay } from "../../src/miroir-fwk/4_view/components
 import { LIST_TRANSFORMER_PAGE_SIZE } from "../../src/miroir-fwk/4_view/components/Reports/listDisplayByTransformer.js";
 import { TableComponentTypeSchema } from "../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGridInterface.js";
 import { MiroirThemeProvider } from "../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js";
-import { defaultStoredMiroirTheme } from "miroir-test-app_deployment-miroir";
+import { defaultStoredMiroirTheme } from "miroir-app-miroir";
 
 vi.mock("../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGrid.js", () => ({
   EntityInstanceGrid: (props: Record<string, unknown>) => {

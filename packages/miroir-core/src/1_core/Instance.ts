@@ -1,4 +1,4 @@
-import { instanceEndpointV1, modelEndpointV1, storeManagementEndpoint as storeManagementEndpointV1 } from "miroir-test-app_deployment-miroir";
+import { instanceEndpointV1, modelEndpointV1, storeManagementEndpoint as storeManagementEndpointV1 } from "miroir-app-miroir";
 import { getEndpointActions } from "../0_interfaces/1_core/endpointDefinition.js";
 import type { EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
