@@ -18,20 +18,17 @@ Auto-generated commands from Endpoints - Using the cliCommandEntry() factory pat
 
 JSON-only I/O - Input via --payload or --file, output as JSON
 
-Config-driven - Uses MIROIR_CLI_CONFIG_PATH environment variable or --config option
+Environment-driven - Runs on an environment of the repository (`environments/<name>.json`, see `docs/reference/environments.md`): `--env <name>`, else `MIROIR_ENV`, else `environments/local.json`, else `dev`. It emulates the server in process on that environment's stores and opens every deployment the environment installs; do not run it on the environment of a running miroir-server.
 
 
 Usage example
 
 ```sh
-# Set config
-export MIROIR_CLI_CONFIG_PATH=./config.json
-
-# Run a command
+# Run a command on the selected environment (from the repository)
 miroir-cli getInstance --payload '{"application":"...","applicationSection":"data","parentUuid":"...","uuid":"..."}'
 
-# Or from file
-miroir-cli createInstance --file ./payload.json
+# On a given environment, from a file
+miroir-cli --env test-filesystem createInstance --file ./payload.json
 
 # List available commands
 miroir-cli list

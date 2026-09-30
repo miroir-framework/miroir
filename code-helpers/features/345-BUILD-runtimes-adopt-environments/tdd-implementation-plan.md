@@ -24,7 +24,7 @@ Out: #323 (bundle ignores `--config`); the server's legacy config-file path; CLI
 | 0 | Characterize: mcp baseline, guard on former write paths | ✅ DONE | `scripts/tests/test_tracked_assets_guard.py` cases; mcp baseline recorded |
 | 1 | miroir-mcp tests run on a test environment (tracer) | ✅ DONE | `mcpTools.integ`, `endpointToolRegistry.integ` green on `test-filesystem`, `tests/assets/admin_*` removed |
 | 2 | miroir-mcp standalone configuration removed | ✅ DONE | package builds, server and Electron typecheck, mcp tests green |
-| 3 | miroir-cli runs on the selected environment | ⬜ pending | `cli.integ` on `test-filesystem`: `lendDocument` on Library |
+| 3 | miroir-cli runs on the selected environment | ✅ DONE | `cli.integ` on `test-filesystem`: `lendDocument` on Library |
 | 4 | An environment runs outside a checkout (`MIROIR_ROOT`, `packagesDirectory`) | ⬜ pending | `miroir-env` test booting the server config from a `/data`-like temp root |
 | 5 | Docker images start from the `docker` environment | ⬜ pending | pytest on `docker-entrypoint.sh`; `miroir-env` test on `environments/docker.json` over a seed layout |
 | 6 | Electron dev boots its environment in the main process | ⬜ pending | vitest on the main-process boot (no Electron window) |
@@ -141,7 +141,7 @@ No new model uuid. The `miroir-env` tests reuse `packages/miroir-env/tests/bootT
 
 ## Slice 3 — miroir-cli on the selected environment
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** `miroir-cli [--env <name>] <command>` opens every deployment of the selected environment; Library commands work.
 
@@ -154,6 +154,12 @@ No new model uuid. The `miroir-env` tests reuse `packages/miroir-env/tests/bootT
 **Validation:** `npm run build -w miroir-cli && npm run testByFile -w miroir-cli`; typecheck miroir-cli; `git status --short packages` clean.
 
 ### Realization
+
+- Baseline: the CLI tests could not start (0/7, all skipped) and neither could the CLI: its zod schema stripped `filesystemDeploymentRootDirectory` (analysis §3.2).
+- `src/platform.ts` `initializePlatform({ cwd, env, name })`: resolve (`--env` = `name`), `seedEnvironmentState`, `environmentClientConfig`, store start-up, `setupMiroirPlatform`, `bootEnvironment`; logs the environment and its source like the server. `index.ts` imports it (the entry runs `main()` on import, so the test cannot import from it); `-e, --env <name>` replaces `-c, --config`; the CLI exits explicitly after the command (open stores keep the event loop alive).
+- `src/config/`, `tests/config.cli-emulatedServer.json`, `MIROIR_CLI_CONFIG_PATH`, `copy-files` and `copyfiles` removed; miroir-env added as a dependency. `storeStartup.ts` is the miroir-mcp one (duplicated: `setup.ts` and `storeStartup.ts` stay copies, the CLI does not depend on miroir-mcp).
+- The test's `deleteInstance` payload used the pre-`objects: EntityInstance[]` shape; aligned with the mcp test case.
+- Result: miroir-cli 7/7 on `test-filesystem`; `node dist/index.js --env test-filesystem getInstances -p …` returns the Library books and exits 0.
 
 ---
 

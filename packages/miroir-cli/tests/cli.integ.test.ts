@@ -61,10 +61,8 @@ import {
 } from "miroir-example-library";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
-import { loadMiroirCliConfig } from "../src/config/configLoader.js";
-import { MiroirCliConfig } from "../src/config/configSchema.js";
-import { setupMiroirPlatform } from '../src/startup/setup.js';
-import { initializeStoreStartup } from "../src/startup/storeStartup.js";
+import { openTestEnvironment, selectedTestEnvironment } from "miroir-env";
+import { initializePlatform } from "../src/platform.js";
 import {
   cliRequestHandlers,
   cliRequestHandlers_EntityEndpoint,
@@ -123,7 +121,6 @@ const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances =
 ];
 
 // Test configuration
-let miroirConfig: MiroirCliConfig;
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
 let applicationDeploymentMap: ApplicationDeploymentMap;
@@ -247,14 +244,7 @@ export const cliInstanceActionTests: CliCommandTest[] = [
     params: {
       application: testApplicationUuid,
       applicationSection: "data" as const,
-      objects: [
-        {
-          parentName: testEntity.name,
-          parentUuid: testEntity.uuid,
-          applicationSection: "data" as const,
-          instances: [testInstance],
-        },
-      ],
+      objects: [testInstance],
     },
     tests: (expect: any, result: any) => {
       expect(result).toBeDefined();
@@ -327,103 +317,17 @@ async function runCliTest(
 // ################################################################################################
 describe("CLI Commands Integration Tests", () => {
   beforeAll(async () => {
-    // Load configuration
-    miroirConfig = loadMiroirCliConfig();
-    
-    if (!miroirConfig) {
-      throw new Error("Failed to load MiroirCLI configuration");
-    }
-
-    if (!miroirConfig.client.applicationDeploymentMap) {
-      throw new Error("MiroirCLI configuration missing client.applicationDeploymentMap");
-    }
-
-    if (!miroirConfig.client.deploymentStorageConfig) {
-      throw new Error("MiroirCLI configuration missing client.deploymentStorageConfig");
-    }
-
-    // Initialize framework
-    miroirCoreStartup();
-    
-    // Initialize stores based on configuration
-    await initializeStoreStartup(miroirConfig);
-    
-    // Register test implementation
-    // configurationService.registerTestImplementation({ expect: expect as any });
+    // #345: the CLI runs on a test environment, its copies seeded again for this test file
+    const environmentName = selectedTestEnvironment(process.env) ?? "test-filesystem";
+    openTestEnvironment(environmentName, { reseed: true });
     ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
 
-    // Setup MiroirContext
-    const miroirActivityTracker = new MiroirActivityTracker();
-    const miroirEventService = new MiroirEventService(miroirActivityTracker);
-    
-    // Start loggers
-    MiroirLoggerFactory.startRegisteredLoggers(
-      miroirActivityTracker,
-      miroirEventService,
-      loglevelnext,
-      loggerOptions,
-    );
-
-    const {
-      domainController: localdomainController,
-    } = await setupMiroirPlatform(
-      miroirConfig as any as MiroirConfigClient,
-      miroirActivityTracker,
-      miroirEventService,
-    );
-
-    domainController = localdomainController;
+    const platform = await initializePlatform({ env: { ...process.env, MIROIR_ENV: environmentName } });
+    expect(platform.environment.name).toBe(environmentName);
+    domainController = platform.domainController;
     localCache = domainController.getLocalCache();
-    applicationDeploymentMap = miroirConfig.client.applicationDeploymentMap;
-
-    if (!domainController) {
-      throw new Error("Failed to initialize DomainController");
-    }
-    if (!localCache) {
-      throw new Error("Failed to initialize LocalCache");
-    }
-
-    if (!applicationDeploymentMap) {
-      throw new Error("Failed to initialize ApplicationDeploymentMap");
-    }
-    if (Object.keys(applicationDeploymentMap).length === 0) {
-      throw new Error("ApplicationDeploymentMap is empty");
-    }
-
-    // Open stores for all configured deployments
-    for (const [deploymentUuid, storeConfig] of Object.entries(
-      miroirConfig.client.deploymentStorageConfig
-    )) {
-      log.info(`Opening stores for deployment ${deploymentUuid}`);
-
-      const openStoreAction: StoreOrBundleAction = {
-        actionType: "storeManagementAction_openStore",
-        actionLabel: `Open stores for ${deploymentUuid}`,
-        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        payload: {
-          application: Object.keys(applicationDeploymentMap).find(
-            (appUuid) => applicationDeploymentMap[appUuid] === deploymentUuid
-          ) || "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-          deploymentUuid: deploymentUuid,
-          configuration: {
-            [deploymentUuid]: storeConfig as StoreUnitConfiguration,
-          },
-        },
-      };
-
-      const result = await domainController.handleAction(
-        openStoreAction,
-        applicationDeploymentMap
-      );
-
-      if (result.status !== "ok") {
-        throw new Error(
-          `Failed to open stores for deployment ${deploymentUuid}: ${JSON.stringify(result)}`
-        );
-      }
-    }
-
-    log.info("CLI test setup completed");
+    applicationDeploymentMap = platform.applicationDeploymentMap;
+    log.info("CLI test setup completed on environment", environmentName);
   }, globalTimeOut);
 
   beforeEach(async () => {

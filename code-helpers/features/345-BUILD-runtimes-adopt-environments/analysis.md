@@ -74,6 +74,7 @@ Grilling round 1 posted 2026-09-30 (questions in the project file `issue-345/gri
 - `defaultConfig.json`: Miroir in `./tests/tmp/miroir_*`, Admin in `./tests/assets/{miroir_admin,admin_model,admin_data}`, which do not exist (not tracked). Only Miroir and Admin are opened, so the generated `lendDocument` command has no Library store.
 - The zod schema has no `filesystemDeploymentRootDirectory`, yet `src/startup/setup.ts:86` passes `miroirConfig.client.filesystemDeploymentRootDirectory` (always `undefined`: paths resolve from the working directory); `setup.ts:55` reads `client.serverConfig.rootApiUrl`, absent from the schema.
 - `tests/cli.integ.test.ts` uses `tests/config.cli-emulatedServer.json` (same as default without `mcpUrl`). The CLI is not in `scripts/nonreg-manifest.json`.
+- Baseline on 1b87835: `npm run testByFile -w miroir-cli` fails in `beforeAll`, 7 tests skipped (`addPersistenceStoreController no filesystemDeploymentRootDirectory provided`, the stripped field). The CLI cannot start either.
 
 ### 3.3 Electron (`miroir-standalone-app-electron`)
 
