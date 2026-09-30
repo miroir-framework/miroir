@@ -8,7 +8,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../326-BUILD-build-hardening/`](../326-BUILD-build-hardening/) ✅
 Working branch: `claude/issue-337-analysis-yjkuzv`
 
-**Resume note:** slices 0–2 DONE.
+**Resume note:** slices 0–3 DONE.
 
 ---
 
@@ -29,7 +29,7 @@ This plan does **not** cover: F13 (`lodash`), `yaml`, the grid split by `gridTyp
 | 0 | Characterize the baseline build | ✅ | guard passes; baseline numbers recorded |
 | 1 | CopilotKit and ag-grid leave the page (tracer) | ✅ | `forbiddenEager` + guard; coverage tour |
 | 2 | The home page stops loading the grids | ✅ | new `defeated` rule (pytest) + `homePageLoad` vitest; tour |
-| 3 | The crypto polyfill leaves the page | ⬜ | `forbiddenEager` crypto packages; secrets tests; nonreg filesystem |
+| 3 | The crypto polyfill leaves the page | ✅ | `forbiddenEager` crypto packages; secrets tests; nonreg filesystem |
 | 4 | Only the used meta-model and Library JSON loads | ⬜ | new `eagerPackageMaxBytes` rule (pytest); guard; MiroirTest CLI |
 | 5 | CodeMirror loads with the first code field | ⬜ | `forbiddenEager` `@codemirror/*`; tour |
 | 6 | Node store drivers leave the web build | ⬜ | policy `lazy` list shrinks; vitest integ still uses real stores |
@@ -183,7 +183,7 @@ RED: 5 new pytest cases failed on the old guard; `homePageLoad.337` failed on th
 
 ## Slice 3 — The crypto polyfill leaves the page
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -207,7 +207,7 @@ The page no longer preloads `crypto-browserify`; secrets still encrypt and decry
 
 ### Realization
 
-_(to fill)_
+RED: 3 `[forbidden]` violations (`crypto-browserify`, `bn.js`, `elliptic`). GREEN per the C1 refinement: `SecretsService.ts` has no static `node:crypto` import; a top-level `await import("node:crypto")` runs when `process.versions.node` is set, `ensureSecretsCrypto()` (exported) loads it elsewhere, and `DomainController.connectExternalService` awaits it before `importProcessSecrets`. The sync API is unchanged, so `miroir-server` needs no change. miroir-core dist now has 6 `import('crypto')` and no static one. **Eager gzip 1 577 335 → 1 402 592 (−11.1%)**; 42 crypto packages moved to `lazy`. Refactor checkpoint: `AuthenticationPolicy.ts` keeps its own 4 dynamic imports (already async, one line each; a shared loader would add a module for nothing). Validation: secrets suites 7 files, 49 tests; `npm run test -w miroir-core -- ''` 2 133 passed; `nonreg:filesystem` deferred to after slice 4 (both touch miroir-core).
 
 ---
 

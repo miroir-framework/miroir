@@ -1432,6 +1432,7 @@ export {
   clearSecretsMasterKey,
   decryptSecret,
   encryptSecret,
+  ensureSecretsCrypto,
   getSecretsMasterKey,
   hydrateSecrets,
   importProcessSecrets,
