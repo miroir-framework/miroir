@@ -157,6 +157,52 @@ def test_the_command_line_prints_each_violation_and_exits_1(
 
 
 
+# #337: dynamic imports that split nothing off, and size caps on packages loaded with the page.
+
+
+def defeated_finding(report: dict) -> dict:
+    return next(finding for finding in report["findings"] if finding["kind"] == "defeated-dynamic-import")
+
+
+def test_init_accepts_the_defeated_dynamic_imports_of_the_report(report: dict, policy: dict) -> None:
+    assert policy["defeatedDynamicImports"] == [defeated_finding(report)["module"]]
+
+
+def test_a_defeated_dynamic_import_fails_unless_accepted(report: dict, policy: dict) -> None:
+    finding = defeated_finding(report)
+    policy["defeatedDynamicImports"] = []
+    [message] = violations(report, policy)
+    assert message.startswith(f"[defeated] {finding['module']} is imported dynamically but also statically by")
+    assert all(importer in message for importer in finding["staticImporters"])
+
+
+def test_an_accepted_defeated_import_that_now_splits_off_must_be_removed(report: dict, policy: dict) -> None:
+    module = defeated_finding(report)["module"]
+    report["findings"] = [finding for finding in report["findings"] if finding["kind"] != "defeated-dynamic-import"]
+    assert violations(report, policy) == [
+        f"[defeated] {module} now splits off: remove it from defeatedDynamicImports in the policy"
+    ]
+
+
+def test_an_eager_package_above_its_size_cap_fails(report: dict, policy: dict) -> None:
+    size = package(report, "zod")["eagerRenderedBytes"]
+    policy["eagerPackageMaxBytes"] = {"zod": size - 1}
+    assert violations(report, policy) == [
+        f"[size] zod loads {size} bytes with the page, over its eagerPackageMaxBytes of {size - 1}"
+    ]
+
+
+def test_a_capped_package_within_its_cap_or_lazy_passes(report: dict, policy: dict) -> None:
+    policy["eagerPackageMaxBytes"] = {"zod": package(report, "zod")["eagerRenderedBytes"], "mongodb": 0}
+    assert violations(report, policy) == []
+
+
+def test_init_keeps_the_size_caps(tmp_path: Path, report: dict, policy: dict) -> None:
+    policy["eagerPackageMaxBytes"] = {"zod": 1}
+    _, written = run(tmp_path, report, policy, "--init")
+    assert written["eagerPackageMaxBytes"] == {"zod": 1}
+
+
 # Slice 14: the `bundle` job of pr-checks.yml.
 
 REPO_ROOT = Path(__file__).resolve().parents[2]

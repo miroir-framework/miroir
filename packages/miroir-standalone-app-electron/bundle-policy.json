@@ -272,5 +272,9 @@
     "zod",
     "zod-to-json-schema"
   ],
-  "lazy": []
+  "lazy": [],
+  "defeatedDynamicImports": [
+    "packages/miroir-app-miroir/dist/index.js",
+    "packages/miroir-core/dist/index.js"
+  ]
 }

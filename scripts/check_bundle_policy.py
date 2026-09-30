@@ -10,6 +10,11 @@ packages/miroir-standalone-app/vite/bundleReportPlugin.js) with the app's commit
              the page, fails with the import chain that brings it in. So does a listed package that left the build,
              or an `eager` one that is now lazy: the lists only move when someone updates them.
   forbidden  no package matching a `forbiddenEager` glob (`@testing-library/*`) loads with the page, even if listed.
+  defeated   every dynamic import that splits nothing off (the module is also imported statically, so its chunk loads
+             with its static importers) is listed under `defeatedDynamicImports`; a new one fails with its static
+             importers, and a listed one that now splits off must be removed (#337).
+  size       a package listed in `eagerPackageMaxBytes` loads at most that many bytes (before minification) with the
+             page (#337).
   budget     the gzip size of the chunks loaded with the page stays within `eagerGzipTolerance` (2%) of
              `eagerGzipBaseline`. Above, the PR grew the initial load; below, the PR shrank it and lowers the
              baseline, so the gain is kept.
@@ -108,8 +113,50 @@ def check(report: dict, policy: dict) -> list[Violation]:
                 Violation("forbidden", f"{name} loads with the page{via}, which forbiddenEager {patterns[0]} forbids")
             )
 
+    violations.extend(check_defeated_dynamic_imports(report, policy))
+    violations.extend(check_package_sizes(report, policy))
     violations.extend(check_budget(report, policy))
     return violations
+
+
+def defeated_dynamic_imports(report: dict) -> dict[str, list[str]]:
+    """Module -> its static importers, for every dynamic import that splits nothing off."""
+    return {
+        finding["module"]: finding.get("staticImporters", [])
+        for finding in report["findings"]
+        if finding["kind"] == "defeated-dynamic-import"
+    }
+
+
+def check_defeated_dynamic_imports(report: dict, policy: dict) -> list[Violation]:
+    defeated = defeated_dynamic_imports(report)
+    accepted = set(policy.get("defeatedDynamicImports", []))
+    violations = [
+        Violation(
+            "defeated",
+            f"{module} is imported dynamically but also statically by {', '.join(importers)}, so its chunk loads "
+            "with them: import it dynamically there too, or add it to defeatedDynamicImports in the policy",
+        )
+        for module, importers in sorted(defeated.items())
+        if module not in accepted
+    ]
+    violations.extend(
+        Violation("defeated", f"{module} now splits off: remove it from defeatedDynamicImports in the policy")
+        for module in sorted(accepted - defeated.keys())
+    )
+    return violations
+
+
+def check_package_sizes(report: dict, policy: dict) -> list[Violation]:
+    eager_bytes = {entry["name"]: entry.get("eagerRenderedBytes", 0) for entry in report["packages"]}
+    return [
+        Violation(
+            "size",
+            f"{name} loads {eager_bytes[name]} bytes with the page, over its eagerPackageMaxBytes of {limit}",
+        )
+        for name, limit in sorted(policy.get("eagerPackageMaxBytes", {}).items())
+        if eager_bytes.get(name, 0) > limit
+    ]
 
 
 def describe(load_kind: str) -> str:
@@ -142,7 +189,7 @@ def check_budget(report: dict, policy: dict) -> list[Violation]:
 
 
 def init(report: dict, existing: dict) -> dict:
-    """A policy that the report passes, keeping the existing comment, tolerance and forbiddenEager."""
+    """A policy that the report passes, keeping the existing comment, tolerance, forbiddenEager and size caps."""
     shipped = shipped_packages(report)
     return {
         "$comment": existing.get("$comment", DEFAULT_COMMENT),
@@ -151,6 +198,8 @@ def init(report: dict, existing: dict) -> dict:
         "forbiddenEager": existing.get("forbiddenEager", DEFAULT_FORBIDDEN_EAGER),
         "eager": sorted(name for name, info in shipped.items() if info["loadKind"] == "eager"),
         "lazy": sorted(name for name, info in shipped.items() if info["loadKind"] == "lazy"),
+        "defeatedDynamicImports": sorted(defeated_dynamic_imports(report)),
+        **({"eagerPackageMaxBytes": existing["eagerPackageMaxBytes"]} if "eagerPackageMaxBytes" in existing else {}),
     }
 
 

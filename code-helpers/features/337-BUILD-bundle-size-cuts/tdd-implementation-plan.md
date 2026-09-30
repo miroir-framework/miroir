@@ -8,7 +8,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../326-BUILD-build-hardening/`](../326-BUILD-build-hardening/) ✅
 Working branch: `claude/issue-337-analysis-yjkuzv`
 
-**Resume note:** slices 0–1 DONE.
+**Resume note:** slices 0–2 DONE.
 
 ---
 
@@ -28,7 +28,7 @@ This plan does **not** cover: F13 (`lodash`), `yaml`, the grid split by `gridTyp
 |---|---|---|---|
 | 0 | Characterize the baseline build | ✅ | guard passes; baseline numbers recorded |
 | 1 | CopilotKit and ag-grid leave the page (tracer) | ✅ | `forbiddenEager` + guard; coverage tour |
-| 2 | The home page stops loading the grids | ⬜ | new `defeated` rule (pytest) + `homePageLoad` vitest; tour |
+| 2 | The home page stops loading the grids | ✅ | new `defeated` rule (pytest) + `homePageLoad` vitest; tour |
 | 3 | The crypto polyfill leaves the page | ⬜ | `forbiddenEager` crypto packages; secrets tests; nonreg filesystem |
 | 4 | Only the used meta-model and Library JSON loads | ⬜ | new `eagerPackageMaxBytes` rule (pytest); guard; MiroirTest CLI |
 | 5 | CodeMirror loads with the first code field | ⬜ | `forbiddenEager` `@codemirror/*`; tour |
@@ -146,7 +146,7 @@ RED: 9 `[forbidden]` violations on the slice 0 build. GREEN as planned; also rem
 
 ## Slice 2 — The home page stops loading the grids
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -177,7 +177,7 @@ One `LazyGrids.tsx` module declares both lazy grids if the two sites need the sa
 
 ### Realization
 
-_(to fill)_
+RED: 5 new pytest cases failed on the old guard; `homePageLoad.337` failed on the slice 1 build (ag-grid in the chunks the home page fetches). GREEN: rule `defeated` in `check_bundle_policy.py` (and a `size` rule for slice 4, same commit: both are guard rules with their tests); `LazyGrids.tsx` exports lazy `EntityInstanceGrid` and `ValueObjectGrid`, used by `ReportSectionListDisplay.tsx` and `TestResultsGrid.tsx` inside `Suspense` with `CenteredSpinner`; `RunAllMiroirTestsButton.tsx` imports `uiIntegrationTestRunState.ts` statically. The standalone policy accepts `ReportDisplay.tsx` (reason in `$comment`); the Electron policy accepts its two findings (`miroir-app-miroir`, `miroir-core` dist: esbuild writes one file, a dynamic import splits nothing there). `ReportDisplay-*` 244 717 → 133 586 bytes gzipped; the grids are a lazy chunk of 371 511. Eager gzip unchanged (1 577 335). The home page test follows the static imports of `HomePage.tsx` (Rollup merged `ReportDisplay` into a shared chunk named `_ReportDisplay-*`). Coverage tour: 7 of 7 pages, Library grid with 49 rows. `nonreg:unit` (shared runner): 44 passed; `unit-345-electron` failed on the in-progress slice 7 import (`miroir-localcache-redux/node` not built yet), not on this slice.
 
 ---
 
