@@ -12,7 +12,6 @@ import type {
   SelfApplication,
 } from "miroir-core";
 import {
-  applicationEndpointV1,
   applicationVersionInitialMiroirVersionCrossEntityDefinitionApplication,
   applicationVersionInitialMiroirVersionCrossEntityDefinitionApplicationModelBranch,
   applicationVersionInitialMiroirVersionCrossEntityDefinitionApplicationVersion,
@@ -183,7 +182,6 @@ import {
   selfApplicationMiroir,
   selfApplicationVersionInitialMiroirVersion,
   storeManagementEndpoint,
-  testEndpointVersionV1,
   undoRedoEndpointVersionV1,
   entityCommit
 } from "..";
@@ -295,12 +293,10 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityVersionApplicationVersionCrossTransformerDefinitionVersion as EntityVersion,
   ],
   endpoints: [
-    applicationEndpointV1 as any as EndpointDefinition,
     deploymentEndpointV1 as any as EndpointDefinition,
     instanceEndpointV1 as any as EndpointDefinition,
     modelEndpointV1 as any as EndpointDefinition,
     domainEndpointVersionV1 as any as EndpointDefinition,
-    testEndpointVersionV1 as any as EndpointDefinition,
     storeManagementEndpoint as any as EndpointDefinition,
     instanceEndpointVersionV1 as any as EndpointDefinition,
     undoRedoEndpointVersionV1 as any as EndpointDefinition,
@@ -534,7 +530,6 @@ export const miroirModelInitializeDataInstances: EntityInstance[] = [
   reportTestConfigurationList as EntityInstance,
   menuDefaultMiroir as EntityInstance,
   miroirMlSchemaBootstrap as EntityInstance,
-  applicationEndpointV1 as EntityInstance,
   deploymentEndpointV1 as EntityInstance,
   instanceEndpointV1 as EntityInstance,
   modelEndpointV1 as EntityInstance,
