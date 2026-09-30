@@ -58,7 +58,7 @@ import {
 import { getFoldedDisplayValue } from "./MlElementEditorHooks";
 import { MlArrayEditorProps } from "./MlElementEditorInterface";
 import { emptyContainerMarker } from "./renderedValueMarkers";
-import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { selfApplicationMiroir } from "miroir-app-miroir";
 // import { MlUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlElementEditor");
