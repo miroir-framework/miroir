@@ -65,7 +65,7 @@ export function openTestEnvironment(
     throw new Error(`openTestEnvironment: "${name}" is not a test environment (test-*)`);
   }
   const runEnv = { ...process.env, ...options.env };
-  const resolved = resolveEnvironmentFromFiles({ cwd: options.cwd ?? process.cwd(), env: { MIROIR_ENV: name } });
+  const resolved = resolveEnvironmentFromFiles({ cwd: options.cwd ?? process.cwd(), env: { ...runEnv, MIROIR_ENV: name } });
   if (options.reseed) {
     rmSync(path.join(resolved.repositoryRoot, environmentAppsDirectory(name)), { recursive: true, force: true });
   }

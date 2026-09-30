@@ -20,6 +20,7 @@ import {
   type AdminRowChange,
 } from "./adminRows.js";
 import { EnvironmentError, type ResolvedEnvironment } from "./environmentFiles.js";
+import { withConnectionPasswords } from "./environmentState.js";
 
 // ################################################################################################
 // Opening an environment's deployments (#321). The environment definition is the source of the
@@ -109,6 +110,7 @@ async function persistAdminRows(
 export async function openEnvironmentBootDeployments(
   domainController: DomainControllerInterface,
   resolved: ResolvedEnvironment,
+  env: NodeJS.ProcessEnv = {},
 ): Promise<string[]> {
   const opened: string[] = [];
   for (const key of BOOT_APPLICATIONS) {
@@ -126,7 +128,7 @@ export async function openEnvironmentBootDeployments(
       domainController,
       deployment.selfApplication,
       deployment.deployment,
-      deployment.configuration,
+      withConnectionPasswords(resolved, deployment.configuration, env),
       defaultSelfApplicationDeploymentMap,
     );
     opened.push(deployment.deployment);
@@ -187,6 +189,7 @@ async function applyChanges(
 export async function reconcileEnvironmentDeployments(
   domainController: DomainControllerInterface,
   resolved: ResolvedEnvironment,
+  env: NodeJS.ProcessEnv = {},
 ): Promise<EnvironmentReconciliation> {
   const comparison = compareAdminRows(resolved, await queryAdminRows(domainController));
   await applyChanges(domainController, { uuid: ENTITY_ADMIN_APPLICATION_UUID, name: "AdminApplication" }, comparison.changes);
@@ -207,7 +210,7 @@ export async function reconcileEnvironmentDeployments(
       domainController,
       deployment.selfApplication,
       deployment.deployment,
-      deployment.configuration,
+      withConnectionPasswords(resolved, deployment.configuration, env),
       applicationDeploymentMap,
     );
     opened.push(deployment.deployment);
@@ -221,7 +224,7 @@ export async function reconcileEnvironmentDeployments(
       domainController,
       deployment.selfApplication,
       deployment.uuid,
-      deployment.configuration,
+      withConnectionPasswords(resolved, deployment.configuration as StoreUnitConfiguration, env),
       applicationDeploymentMap,
     );
     opened.push(deployment.uuid);
@@ -240,12 +243,14 @@ export async function reconcileEnvironmentDeployments(
  * Opens every deployment of an environment, as a server start does: the boot deployments (Admin,
  * Miroir), then the Deployment and AdminApplication rows aligned with the definition, then the
  * other deployments. For runtimes with nothing to do in between (CLI, Electron, tests); the server
- * imports its secrets between the two steps.
+ * imports its secrets between the two steps. `env` holds the Postgres password the definition names
+ * (`connections.postgres.passwordEnv`).
  */
 export async function bootEnvironment(
   domainController: DomainControllerInterface,
   resolved: ResolvedEnvironment,
+  env: NodeJS.ProcessEnv = {},
 ): Promise<EnvironmentReconciliation> {
-  await openEnvironmentBootDeployments(domainController, resolved);
-  return reconcileEnvironmentDeployments(domainController, resolved);
+  await openEnvironmentBootDeployments(domainController, resolved, env);
+  return reconcileEnvironmentDeployments(domainController, resolved, env);
 }

@@ -84,6 +84,6 @@ export async function boot(root: string, env: Record<string, string | undefined>
     persistenceStoreAccessMode: "local",
     localPersistenceStoreControllerManager: persistenceStoreControllerManager,
   });
-  const reconciliation = await bootEnvironment(domainController, resolved);
+  const reconciliation = await bootEnvironment(domainController, resolved, env);
   return { resolved, seed, domainController, persistenceStoreControllerManager, reconciliation };
 }

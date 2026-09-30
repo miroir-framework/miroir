@@ -427,7 +427,7 @@ const configurations: Record<string, Deployment> = resolvedEnvironment
     };
 
 if (resolvedEnvironment) {
-  await openEnvironmentBootDeployments(domainController, resolvedEnvironment);
+  await openEnvironmentBootDeployments(domainController, resolvedEnvironment, process.env);
 }
 
 myLogger.info(`Initial deployments to open: ${JSON.stringify(configurations, circularReplacer(), 2)}`);
@@ -504,7 +504,7 @@ async function openRegisteredDeployments(): Promise<{
   applicationDeploymentMap: ApplicationDeploymentMap;
 }> {
   if (resolvedEnvironment) {
-    const reconciliation = await reconcileEnvironmentDeployments(domainController, resolvedEnvironment);
+    const reconciliation = await reconcileEnvironmentDeployments(domainController, resolvedEnvironment, process.env);
     for (const change of reconciliation.changes) {
       console.log(`[miroir-env] ${change}`);
     }

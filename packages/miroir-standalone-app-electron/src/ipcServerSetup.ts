@@ -64,7 +64,8 @@ function electronEnvironmentLocation(): { cwd: string; env: Record<string, strin
     resources: path.join(process.resourcesPath, "miroir-assets"),
     userData: app.getPath("userData"),
   });
-  return { cwd: root, env: { ...process.env, MIROIR_ROOT: root, MIROIR_ENV: process.env.MIROIR_ENV ?? DESKTOP_ENVIRONMENT } };
+  // always `desktop`: a MIROIR_ENV from the shell names an environment of a checkout, not seeded here
+  return { cwd: root, env: { ...process.env, MIROIR_ROOT: root, MIROIR_ENV: DESKTOP_ENVIRONMENT } };
 }
 
 // ################################################################################################

@@ -58,6 +58,6 @@ export async function startMcpTestPlatform(
     miroirActivityTracker,
     miroirEventService,
   );
-  const { applicationDeploymentMap } = await bootEnvironment(domainController, environment.resolved);
+  const { applicationDeploymentMap } = await bootEnvironment(domainController, environment.resolved, process.env);
   return { environment, domainController, applicationDeploymentMap };
 }

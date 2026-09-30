@@ -104,7 +104,7 @@ export async function bootElectronServer(
     localPersistenceStoreControllerManager: persistenceStoreControllerManager,
   });
 
-  const reconciliation = await bootEnvironment(domainController, environment);
+  const reconciliation = await bootEnvironment(domainController, environment, options.env);
   reconciliation.changes.forEach((change) => log(change));
   reconciliation.warnings.forEach((warning) => log(`warning: ${warning}`));
   // applications installed or dropped from the UI are recorded in environments/local.json

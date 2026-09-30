@@ -11,6 +11,7 @@ import {
   resolveEnvironmentFromFiles,
   seedEnvironmentState,
   selectedTestEnvironment,
+  withConnectionPasswords,
 } from "../src/index";
 import { repositoryRoot, temporaryRepository } from "./cliTestSupport";
 
@@ -80,6 +81,26 @@ describe("test environments", () => {
     expect(existsSync(installed)).toBe(false);
     expect(environment.seed?.seeded).toContain("admin/data");
     expect(environment.miroirConfig.client).toMatchObject({ emulateServer: true, filesystemDeploymentRootDirectory: root });
+  });
+
+  it("openTestEnvironment resolves from MIROIR_ROOT when the run sets it", () => {
+    const root = temporaryRepository({ "test-filesystem": testFilesystem });
+
+    const environment = openTestEnvironment("test-filesystem", { cwd: "/", env: { MIROIR_ROOT: root } });
+
+    expect(environment.resolved.repositoryRoot).toBe(root);
+  });
+
+  it("withConnectionPasswords puts the password of passwordEnv in the sql stores only", () => {
+    const resolved = resolveEnvironmentFromFiles({ cwd: repositoryRoot, env: { MIROIR_ENV: "test-sql" } });
+    const miroir = resolved.deployments.find((d) => d.applicationKey === "miroir")!;
+    const admin = resolved.deployments.find((d) => d.applicationKey === "admin")!;
+
+    const opened = withConnectionPasswords(resolved, miroir.configuration, { MIROIR_POSTGRES_PASSWORD: "s3cr:t" });
+
+    expect((opened.model as { connectionString: string }).connectionString).toMatch(/^postgres(ql)?:\/\/postgres:s3cr%3At@localhost/);
+    expect(withConnectionPasswords(resolved, admin.configuration, { MIROIR_POSTGRES_PASSWORD: "s3cr:t" })).toEqual(admin.configuration);
+    expect(miroir.configuration.model).not.toHaveProperty("connectionString", expect.stringContaining("s3cr"));
   });
 
   it("openTestEnvironment refuses an environment that is not a test environment", () => {

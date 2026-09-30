@@ -221,8 +221,11 @@ export function missingConnectionPasswords(resolved: ResolvedEnvironment, env: N
   ];
 }
 
-/** The deployment configuration with the Postgres password from `connections.postgres.passwordEnv`. */
-function withConnectionPasswords(
+/**
+ * The deployment configuration with the Postgres password from `connections.postgres.passwordEnv`,
+ * to open its stores. Admin Deployment rows keep the configuration without it.
+ */
+export function withConnectionPasswords(
   resolved: ResolvedEnvironment,
   configuration: StoreUnitConfiguration,
   env: NodeJS.ProcessEnv,

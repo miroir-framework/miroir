@@ -25,6 +25,7 @@ export {
   GENERATED_ADMIN_ENTITIES,
   missingConnectionPasswords,
   seedEnvironmentState,
+  withConnectionPasswords,
   type SeedReport,
 } from "./environmentState.js";
 export {

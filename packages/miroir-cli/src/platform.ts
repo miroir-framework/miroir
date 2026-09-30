@@ -69,7 +69,7 @@ export async function initializePlatform(
   );
 
   const { domainController } = await setupMiroirPlatform(miroirConfig, miroirActivityTracker, miroirEventService);
-  const reconciliation = await bootEnvironment(domainController, environment);
+  const reconciliation = await bootEnvironment(domainController, environment, env);
   for (const warning of reconciliation.warnings) {
     log(`[miroir-cli] warning: ${warning}`);
   }
