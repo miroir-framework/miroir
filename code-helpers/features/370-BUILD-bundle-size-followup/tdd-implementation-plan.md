@@ -33,7 +33,7 @@ This plan does **not** cover F10 (rejected), the ag-grid 33 migration (G2, own i
 | 3 | The page loads no JSON diff | ✅ | `forbiddenEager` `json-diff`; `fn.modelUpdate` |
 | 4 | The page loads `merge`, not lodash | ✅ | bare-`lodash` importer test; guard |
 | 5 | The page loads no Library example | ✅ | `forbiddenEager` `miroir-example-library`; label test |
-| 6 | The first list loads one grid library | ⬜ | grid chunk test; glide list test |
+| 6 | The first list loads one grid library | ✅ | grid chunk test; glide list test |
 | 7 | Releases ship 12 grammars | ⬜ | grammar count test; tour Copilot sidebar |
 | 8 | Electron loads only the stores and features it uses | ⬜ | Electron guard; startup time; smoke |
 | 9 | Nonreg, docs, cleanup, AC | ⬜ | `nonreg:filesystem` + tour + AC table |
@@ -281,7 +281,7 @@ Guard; the component tests that render an application picker (`npm run nonreg:fi
 
 ## Slice 6 — The first list loads one grid library
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -305,7 +305,10 @@ Build tests; grid tests including glide (`integ-gridPagination`, `unit-gridPagin
 
 ### Realization
 
-_(to fill)_
+- The ag-grid list chunk (`ValueObjectGrid-*.js`) went from 372 332 to 268 310 bytes gzipped (−104 022, trial said −98 729); glide-data-grid is its own `GlideDataGridComponent-*.js` chunk (104 340 gzipped). The page is unchanged (746 696, within tolerance of the baseline).
+- `LazyGrids.tsx` declares `GlideDataGridComponent` with `React.lazy`; `EntityInstanceGrid.tsx` and `ValueObjectGrid.tsx` import it from there and render it inside `Suspense` with `CenteredSpinner`. `bundleReport.unit` gained "the chunk holding ag-grid holds no glide-data-grid" (red before, green after).
+- `gridPagination.integ` asserted on the grids right after `render`. Glide tests now wait for the lazy grid (`findByTestId`, `waitFor` on the glide container). The ag-grid tracer test through `ReportSectionListDisplay` also failed when the file ran alone, even with this slice's source reverted (its grid has been lazy since #337; the shared runner had warmed the module cache); it now waits for `.ag-paging-panel` too.
+- Validation: guard 0 violations; `bundleReport.unit` 7 passed; `homePageLoad`, `bundleSourcemaps`, `electronBundle` 10 passed; `gridPagination` (unit and integ) 41 passed; no new typecheck errors; nonreg `--scope smoke,ui` 25 passed (snapshot `20261001T214821Z`). The coverage tour was not run separately.
 
 ---
 

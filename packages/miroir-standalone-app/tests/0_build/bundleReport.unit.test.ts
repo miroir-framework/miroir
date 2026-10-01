@@ -115,6 +115,14 @@ describe("bundleReport", () => {
     expect(shipped).toEqual([]);
   });
 
+  it("the chunk holding ag-grid holds no glide-data-grid: a list loads one grid library (#370)", () => {
+    const agGridChunks = report.chunks.filter((chunk) => packageIn(chunk, "ag-grid-community"));
+    expect(agGridChunks.length).toBeGreaterThan(0);
+    expect(
+      agGridChunks.filter((chunk) => packageIn(chunk, "@glideapps/glide-data-grid")).map((chunk) => chunk.file),
+    ).toEqual([]);
+  });
+
   it("bare `lodash` resolves to a `merge` shim on lodash-es: lodash comes only through glide's per-method imports (#370)", () => {
     const lodashChains = report.chunks.flatMap((chunk) => {
       const lodash = packageIn(chunk, "lodash");

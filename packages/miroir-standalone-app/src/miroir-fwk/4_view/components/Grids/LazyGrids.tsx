@@ -12,3 +12,11 @@ export const EntityInstanceGrid = lazy(async () => ({
 export const ValueObjectGrid = lazy(async () => ({
   default: (await import("./ValueObjectGrid.js")).ValueObjectGrid,
 }));
+
+/**
+ * glide-data-grid is the alternative grid (`gridType: "glide-data-grid"`, ag-grid is the default):
+ * it loads only when a list asks for it (#370). Render it inside a `Suspense`.
+ */
+export const GlideDataGridComponent = lazy(async () => ({
+  default: (await import("./GlideDataGridComponent.js")).GlideDataGridComponent,
+}));
