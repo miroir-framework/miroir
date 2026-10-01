@@ -27,7 +27,6 @@
 import { app, ipcMain } from "electron";
 import express from "express";
 import * as path from "path";
-import { assertCursorSdkPackaged, createCopilotKitRouter } from "miroir-ai";
 import {
   ConfigurationService,
   defaultSelfApplicationDeploymentMap,
@@ -42,7 +41,6 @@ import {
   shouldMountMcpHttp,
   miroirCoreStartup
 } from "miroir-core";
-import { EndpointToolRegistry, setupMcpServer } from "miroir-mcp";
 import { log } from "console";
 import { bootElectronServer, DESKTOP_ENVIRONMENT, prepareDesktopRoot } from "./environmentBoot.js";
 
@@ -113,7 +111,9 @@ export async function setupIpcServer(): Promise<void> {
   restClientStub.setProcessCapabilities(capabilities);
   domainController.setProcessCapabilities(capabilities);
 
+  // #370: miroir-ai and miroir-mcp load only when their feature is on.
   if (app.isPackaged && capabilities.cursor) {
+    const { assertCursorSdkPackaged } = await import("miroir-ai");
     assertCursorSdkPackaged();
   }
 
@@ -146,6 +146,7 @@ export async function setupIpcServer(): Promise<void> {
     });
 
     if (shouldMountCopilotKitRoute(capabilities.ai)) {
+      const { createCopilotKitRouter } = await import("miroir-ai");
       const listenUrl = new URL(ELECTRON_LOOPBACK_ROOT_API_URL);
       const mcpHttpUrl = `http://127.0.0.1:${Number(listenUrl.port) || 3080}/mcp`;
       loopbackApp.use(
@@ -155,6 +156,7 @@ export async function setupIpcServer(): Promise<void> {
     }
 
     if (shouldMountMcpHttp(capabilities.mcp)) {
+      const { EndpointToolRegistry, setupMcpServer } = await import("miroir-mcp");
       const endpointToolRegistry = new EndpointToolRegistry(
         domainController,
         defaultSelfApplicationDeploymentMap,

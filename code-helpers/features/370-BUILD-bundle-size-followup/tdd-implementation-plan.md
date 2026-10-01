@@ -35,7 +35,7 @@ This plan does **not** cover F10 (rejected), the ag-grid 33 migration (G2, own i
 | 5 | The page loads no Library example | ✅ | `forbiddenEager` `miroir-example-library`; label test |
 | 6 | The first list loads one grid library | ✅ | grid chunk test; glide list test |
 | 7 | Releases ship 12 grammars | ✅ | grammar count test; tour Copilot sidebar |
-| 8 | Electron loads only the stores and features it uses | ⬜ | Electron guard; startup time; smoke |
+| 8 | Electron loads only the stores and features it uses | ✅ | Electron guard; startup time; smoke |
 | 9 | Nonreg, docs, cleanup, AC | ⬜ | `nonreg:filesystem` + tour + AC table |
 
 ---
@@ -347,7 +347,7 @@ Build tests; coverage tour (Copilot sidebar page); record `dist/` JS size and ch
 
 ## Slice 8 — Electron loads only the stores and features it uses
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -371,7 +371,12 @@ Electron build + guard; `electronBundle.unit`; packaged smoke (`electron-builder
 
 ### Realization
 
-_(to fill)_
+- What the main process reads at start went from 3 184 414 to 1 005 067 bytes gzipped (7 chunks of 40; the whole build is 3 198 123). The `desktop` environment then loads the filesystem store, miroir-ai and miroir-mcp (both features are on); the MongoDB, PostgreSQL and IndexedDB stores stay unread. Packaged app, launch to "IPC server ready" under `xvfb-run`, median of 3: 2.63 s before, 2.35 s after.
+- Deviation: instead of importing the store packages the environment names, `src/storesOnDemand.ts` registers placeholder factories for each store type (admin and the three sections). The first call imports the package, runs its startup on a scratch `ConfigurationServiceInner`, puts the real factories in the registry and delegates. A store opened later (an application installed on another store from the UI) still works, and `getProcessCapabilities`, which reads the registry keys, sees the same store types as before.
+- `ipcServerSetup.ts` imports `miroir-ai` (Copilot route, Cursor check) and `miroir-mcp` inside the branches that use them. `bundle-main.mjs` builds the main process with `splitting: true` into `dist/src/` (chunks in `dist/src/chunks/`); electron-builder's `dist/**/*` already packages them.
+- Deviation: with splitting, esbuild sets `entryPoint` on the chunk of every dynamic import target, so the report counted 22 entry chunks. `reportInputFromEsbuildMetafile` now counts as entries only outputs whose entry point is not a dynamic import target (new `bundleReportCore.unit` case). The Electron policy was regenerated: baseline 1 005 067, a `lazy` list, `miroir-core/dist/index.js` out of `defeatedDynamicImports`.
+- `electronBundle.unit`: the entry test checks entry chunks only; new case "loads no MongoDB or PostgreSQL driver, miroir-ai or miroir-mcp at start" (red on the old report: `src/main.js` held sequelize, mongodb, miroir-ai, miroir-mcp).
+- Validation: both guards 0 violations; `0_build` tests 46 passed, 3 skipped; Electron package tests (`environmentBoot.integ`, boots `desktop`) 3 passed; Electron typecheck clean; packaged smoke as above; nonreg `--scope smoke,tooling` 21 passed (snapshot `20261001T221440Z`).
 
 ---
 

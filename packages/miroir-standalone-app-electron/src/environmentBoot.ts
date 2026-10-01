@@ -37,10 +37,8 @@ import {
   type ResolvedEnvironment,
 } from "miroir-env";
 import { setupMiroirDomainController } from "miroir-localcache-redux/node";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
-import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+
+import { registerStoreOnDemand } from "./storesOnDemand.js";
 
 /** The environment of the packaged application. */
 export const DESKTOP_ENVIRONMENT = "desktop";
@@ -86,10 +84,16 @@ export async function bootElectronServer(
     log(`warning: ${warning}`);
   }
 
-  miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
-  miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
-  miroirMongoDbStoreSectionStartup(ConfigurationService.configurationService);
-  miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
+  // #370: each store package (and its database driver) loads when a section on that store opens.
+  const configurationService = ConfigurationService.configurationService;
+  registerStoreOnDemand(configurationService, "filesystem", async () =>
+    (await import("miroir-store-filesystem")).miroirFileSystemStoreSectionStartup);
+  registerStoreOnDemand(configurationService, "indexedDb", async () =>
+    (await import("miroir-store-indexedDb")).miroirIndexedDbStoreSectionStartup);
+  registerStoreOnDemand(configurationService, "mongodb", async () =>
+    (await import("miroir-store-mongodb")).miroirMongoDbStoreSectionStartup);
+  registerStoreOnDemand(configurationService, "sql", async () =>
+    (await import("miroir-store-postgres")).miroirPostgresStoreSectionStartup);
 
   const serverConfig = electronServerConfig(environment);
   const miroirActivityTracker = new MiroirActivityTracker();

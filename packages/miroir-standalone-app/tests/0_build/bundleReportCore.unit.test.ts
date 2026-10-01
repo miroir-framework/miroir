@@ -276,4 +276,41 @@ describe("bundleReportCore: report from an esbuild metafile", () => {
     expect(mongodbEntry.via).toBe("packages/miroir-standalone-app-electron/src/ipcServerSetup.ts → miroir-store-mongodb → mongodb");
     expect(report.totals.eager).toEqual({ chunks: 2, rawBytes: 200, gzipBytes: 100 });
   });
+
+  // #370: with `splitting`, esbuild sets `entryPoint` on the chunk of every dynamic import target too.
+  it("counts as entries only the build's entry points, not the chunks of dynamic imports", () => {
+    const split = reportInputFromEsbuildMetafile(
+      {
+        inputs: metafile.inputs,
+        outputs: {
+          "dist/src/main.js": {
+            entryPoint: "src/main.ts",
+            imports: [
+              { path: "dist/src/chunks/chunk-A.js", kind: "import-statement" },
+              { path: "dist/src/chunks/dist-B.js", kind: "dynamic-import" },
+            ],
+            inputs: {
+              "src/main.ts": { bytesInOutput: 10 },
+              "src/ipcServerSetup.ts": { bytesInOutput: 20 },
+              "../miroir-store-mongodb/dist/index.js": { bytesInOutput: 30 },
+              "../../node_modules/mongodb/lib/index.js": { bytesInOutput: 40 },
+            },
+          },
+          "dist/src/chunks/chunk-A.js": { imports: [], inputs: {} },
+          "dist/src/chunks/dist-B.js": {
+            entryPoint: "../miroir-core/dist/index.js",
+            imports: [{ path: "dist/src/chunks/chunk-A.js", kind: "import-statement" }],
+            inputs: { "../miroir-core/dist/index.js": { bytesInOutput: 50 } },
+          },
+        },
+      },
+      electronDir,
+      `${electronDir}/dist`,
+    );
+    expect(split.chunks.map((entry) => [entry.file, entry.isEntry])).toEqual([
+      ["src/main.js", true],
+      ["src/chunks/chunk-A.js", false],
+      ["src/chunks/dist-B.js", false],
+    ]);
+  });
 });

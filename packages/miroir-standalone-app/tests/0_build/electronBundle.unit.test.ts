@@ -42,10 +42,23 @@ describe("electronBundle", () => {
 
   it("reports the main process and the preload as the two entry chunks", () => {
     expect(report.app).toBe("miroir-standalone-app-electron");
-    expect(report.chunks.map((chunk) => [chunk.file, chunk.loadKind]).sort()).toEqual([
-      ["src/main.js", "entry"],
-      ["src/preload.js", "entry"],
-    ]);
+    expect(
+      report.chunks
+        .filter((chunk) => chunk.loadKind === "entry")
+        .map((chunk) => chunk.file)
+        .sort(),
+    ).toEqual(["src/main.js", "src/preload.js"]);
+  });
+
+  // #370: the main process imports the store packages, miroir-ai and miroir-mcp when it uses them.
+  it("loads no MongoDB or PostgreSQL driver, miroir-ai or miroir-mcp at start: they are lazy chunks", () => {
+    const atStart = report.chunks.filter((chunk) => chunk.loadKind !== "lazy");
+    const onDemand = ["mongodb", "sequelize", "miroir-store-mongodb", "miroir-store-postgres", "miroir-ai", "miroir-mcp"];
+    expect(
+      atStart.flatMap((chunk) =>
+        chunk.packages.filter((entry) => onDemand.includes(entry.name)).map((entry) => `${entry.name} in ${chunk.file}`),
+      ),
+    ).toEqual([]);
   });
 
   it("bundles the four stores and express into the main process", () => {
