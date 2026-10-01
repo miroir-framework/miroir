@@ -34,7 +34,7 @@ This plan does **not** cover F10 (rejected), the ag-grid 33 migration (G2, own i
 | 4 | The page loads `merge`, not lodash | ✅ | bare-`lodash` importer test; guard |
 | 5 | The page loads no Library example | ✅ | `forbiddenEager` `miroir-example-library`; label test |
 | 6 | The first list loads one grid library | ✅ | grid chunk test; glide list test |
-| 7 | Releases ship 12 grammars | ⬜ | grammar count test; tour Copilot sidebar |
+| 7 | Releases ship 12 grammars | ✅ | grammar count test; tour Copilot sidebar |
 | 8 | Electron loads only the stores and features it uses | ⬜ | Electron guard; startup time; smoke |
 | 9 | Nonreg, docs, cleanup, AC | ⬜ | `nonreg:filesystem` + tour + AC table |
 
@@ -314,7 +314,7 @@ Build tests; grid tests including glide (`integ-gridPagination`, `unit-gridPagin
 
 ## Slice 7 — Releases ship 12 grammars
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -338,7 +338,10 @@ Build tests; coverage tour (Copilot sidebar page); record `dist/` JS size and ch
 
 ### Realization
 
-_(to fill)_
+- `dist/assets` JS 23 072 551 → 16 606 652 bytes, 405 → 182 files (trial said 23.1 → 16.7 MB, 391 → 168: the count had grown since slice 0 with the new lazy chunks). The page is unchanged (746 693).
+- `vite/shikiLanguagesPlugin.js` (`SHIKI_LANGUAGES`, the D7 list) resolves the `./langs.mjs` imported from `shiki/dist/` to a module generated from shiki's own `bundledLanguagesInfo`, filtered to the list, so the names and aliases (`js`, `ts`, `sh`, `yml`, `py`, …) stay shiki's. A missing grammar fails the build. The plugin runs first in `vite.config.js`.
+- `bundleReport.unit` gained "ships at most 12 shiki grammar chunks" (235 before, 12 after: css, html, javascript, json, jsx, python, shellscript, sql, tsx, typescript, xml, yaml).
+- Validation: guard 0 violations; build tests (`bundleReport`, `homePageLoad`, `bundleSourcemaps`) 28 passed; nonreg `--scope smoke,ui` 25 passed (snapshot `20261001T220112Z`). The coverage tour was not run: no automated check renders a Copilot code block, so highlighting in the sidebar is untested.
 
 ---
 

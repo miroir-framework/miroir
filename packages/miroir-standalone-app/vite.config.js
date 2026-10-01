@@ -11,6 +11,7 @@ import { miroirBundleReport } from "./vite/bundleReportPlugin.js";
 import { miroirManualChunkLoadLogger } from "./vite/chunkLoadLoggerPlugin.js";
 import { MIROIR_TEST_CLIENT_CONFIGS, webClientEnvironment, webTestClientConfigs } from "./vite/environmentConfig.js";
 import { resolveManualChunk } from "./vite/manualChunks.js";
+import { shikiLanguages } from "./vite/shikiLanguagesPlugin.js";
 import { miroirTestTimingConfig } from "../../scripts/vitest/timing.mjs";
 
 // Resolve certificate paths (same defaults as miroir-server)
@@ -135,6 +136,8 @@ export default defineConfig(({ command, mode }) => {
       ],
     },
     plugins: [
+      // #370: Copilot code blocks highlight 12 languages; the other 223 shiki grammars are not shipped
+      shikiLanguages(),
       miroirManualChunkLoadLogger(),
       // #326: prints which packages each chunk holds and why; writes dist/.vite/bundle-report.json
       miroirBundleReport({ root: path.resolve(__viteDirname, "../.."), app: "miroir-standalone-app" }),

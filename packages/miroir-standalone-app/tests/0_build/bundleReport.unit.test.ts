@@ -123,6 +123,12 @@ describe("bundleReport", () => {
     ).toEqual([]);
   });
 
+  it("ships at most 12 shiki grammar chunks: Copilot code blocks highlight a chosen list of languages (#370)", () => {
+    const grammarChunks = report.chunks.filter((chunk) => packageIn(chunk, "@shikijs/langs"));
+    expect(grammarChunks.length).toBeGreaterThan(0);
+    expect(grammarChunks.length).toBeLessThanOrEqual(12);
+  });
+
   it("bare `lodash` resolves to a `merge` shim on lodash-es: lodash comes only through glide's per-method imports (#370)", () => {
     const lodashChains = report.chunks.flatMap((chunk) => {
       const lodash = packageIn(chunk, "lodash");
