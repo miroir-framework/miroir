@@ -68,7 +68,7 @@
     "serialize-error": "13.0.1",
     "uuid": "11.1.0",
     "yaml": "2.9.1",
-    "zod": "3.25.76"
+    "zod": "4.6.5"
   },
   "devDependencies": {
     "@babel/plugin-syntax-import-attributes": "7.29.7",

@@ -44,7 +44,7 @@
     "miroir-example-library": "*",
     "miroir-app-miroir": "*",
     "uuid": "11.1.0",
-    "zod": "3.25.76"
+    "zod": "4.6.5"
   },
   "peerDependencies": {
     "miroir-store-filesystem": "*",
