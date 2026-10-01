@@ -30,7 +30,7 @@ This plan does **not** cover F10 (rejected), the ag-grid 33 migration (G2, own i
 | 0 | Characterize the baseline after the MUI 9 bump | ✅ | guard passes; baselines recorded |
 | 1 | The page loads no YAML parser (tracer) | ✅ | `forbiddenEager` `yaml`; YAML OpenAPI transformer test |
 | 2 | The page loads no IndexedDB store | ✅ | `forbiddenEager` `abstract-level`; `testMiroir` on `test-indexedDb` |
-| 3 | The page loads no JSON diff | ⬜ | `forbiddenEager` `json-diff`; `fn.modelUpdate` |
+| 3 | The page loads no JSON diff | ✅ | `forbiddenEager` `json-diff`; `fn.modelUpdate` |
 | 4 | The page loads `merge`, not lodash | ⬜ | bare-`lodash` importer test; guard |
 | 5 | The page loads no Library example | ⬜ | `forbiddenEager` `miroir-example-library`; label test |
 | 6 | The first list loads one grid library | ⬜ | grid chunk test; glide list test |
@@ -182,7 +182,7 @@ Guard; IndexedDB stores still work: `MIROIR_ENV=test-indexedDb npm run testMiroi
 
 ## Slice 3 — The page loads no JSON diff
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -206,7 +206,10 @@ Guard; `npm run testMiroir -w miroir-core -- --suites fn.modelUpdate --mode unit
 
 ### Realization
 
-_(to fill)_
+- Page eager gzip 816 811 → 784 301 (−32 510, trial said −33 839); `eagerGzipBaseline` lowered. `json-diff`, `@ewoudenberg/difflib`, `assert` added to `forbiddenEager`; `--init` moved them and the polyfill packages only `assert` needed (`util`, `object.assign`, `which-typed-array`, …) to `lazy`. Two small `vite-plugin-node-polyfills` chunks are now shared between the entry and lazy chunks, so the page loads 5 chunks instead of 4.
+- `FunctionCallTestRegistry.ts`: a module entry is an export map or `{ exports, load }`; `resolveFunctionCallTarget` is async and `runMiroirFunctionCallTestInMemory` awaits it; `listWhitelistedFunctionRefs` lists the declared export names. The registry unit test now expects rejections.
+- Deviation: the loader alone was not enough. miroir-core's tsup config has `splitting: false` and `json-diff` is external, so the dynamic import of `ModelUpdate` was inlined and its static `json-diff` import stayed at the top of `dist/index.js`. `ModelUpdate.ts` now loads `json-diff` the slice 1 way (at module load in Node, `ensureJsonDiff()` elsewhere, reading `diff` or `default.diff` for the CommonJS module), and the registry loader awaits `ensureJsonDiff()`. Turning on tsup splitting for miroir-core was not tried: wider change than this slice.
+- Validation: guard 0 violations; `testMiroir fn.modelUpdate` 6 passed; `npm run test -w miroir-core` 2134 passed, 1 skipped; miroir-core typecheck clean; full `nonreg:filesystem --runner shared` 87 passed (snapshot `20261001T202417Z`).
 
 ---
 

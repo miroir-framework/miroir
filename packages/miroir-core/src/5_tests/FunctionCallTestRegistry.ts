@@ -53,7 +53,6 @@ import {
   inferTransformerOutputTypeFromSchema,
 } from "../2_domain/TransformerInterfaceInference";
 import { mergeIfUnique, pushIfUnique } from "../1_core/tools";
-import { getModelUpdate } from "../1_core/model/ModelUpdate";
 import { ansiColumnsToMlSchema } from "../1_core/postgres/ansiColumnsToMlSchema";
 import {
   domainStateToReduxDeploymentsState,
@@ -74,10 +73,22 @@ export type FunctionCallRef = {
 export type WhitelistedFunction = (...args: unknown[]) => unknown;
 
 /**
+ * A module the page should not load up front (#370): its whitelisted export names, and a loader
+ * that imports the module the first time one of them is called.
+ */
+type LazyRegistryModule = {
+  exports: string[];
+  load: () => Promise<Record<string, unknown>>;
+};
+
+/**
  * Whitelist of module/export pairs allowed for UI and in-memory functionCallTest execution.
  * Only registered exports can be invoked — arbitrary module paths are rejected.
  */
-const FUNCTION_CALL_REGISTRY: Record<string, Record<string, WhitelistedFunction>> = {
+const FUNCTION_CALL_REGISTRY: Record<
+  string,
+  Record<string, WhitelistedFunction> | LazyRegistryModule
+> = {
   "miroir-core/1_core/mustache": {
     extractDoubleBracePatterns: extractDoubleBracePatterns as WhitelistedFunction,
   },
@@ -144,8 +155,14 @@ const FUNCTION_CALL_REGISTRY: Record<string, Record<string, WhitelistedFunction>
       return array;
     }) as WhitelistedFunction,
   },
+  // json-diff and its `assert` polyfill stay out of the page until a test calls getModelUpdate.
   "miroir-core/1_core/model/ModelUpdate": {
-    getModelUpdate: getModelUpdate as WhitelistedFunction,
+    exports: ["getModelUpdate"],
+    load: async () => {
+      const modelUpdate = await import("../1_core/model/ModelUpdate");
+      await modelUpdate.ensureJsonDiff();
+      return modelUpdate;
+    },
   },
   "miroir-core/1_core/ansiColumnsToMlSchema": {
     ansiColumnsToMlSchema: ansiColumnsToMlSchema as WhitelistedFunction,
@@ -208,20 +225,38 @@ const FUNCTION_CALL_REGISTRY: Record<string, Record<string, WhitelistedFunction>
   },
 };
 
-export function resolveFunctionCallTarget(ref: FunctionCallRef): WhitelistedFunction {
-  const moduleExports = FUNCTION_CALL_REGISTRY[ref.module];
-  if (!moduleExports) {
+function isLazyRegistryModule(
+  entry: Record<string, WhitelistedFunction> | LazyRegistryModule,
+): entry is LazyRegistryModule {
+  return Array.isArray(entry.exports) && typeof entry.load === "function";
+}
+
+function registryExportNames(
+  entry: Record<string, WhitelistedFunction> | LazyRegistryModule,
+): string[] {
+  return isLazyRegistryModule(entry) ? entry.exports : Object.keys(entry);
+}
+
+export async function resolveFunctionCallTarget(ref: FunctionCallRef): Promise<WhitelistedFunction> {
+  const moduleEntry = FUNCTION_CALL_REGISTRY[ref.module];
+  if (!moduleEntry) {
     throw new Error(`functionRef module not whitelisted: ${ref.module}`);
   }
-  const fn = moduleExports[ref.export];
-  if (!fn) {
+  if (!registryExportNames(moduleEntry).includes(ref.export)) {
     throw new Error(`functionRef export not whitelisted: ${ref.module}/${ref.export}`);
   }
-  return fn;
+  if (!isLazyRegistryModule(moduleEntry)) {
+    return moduleEntry[ref.export];
+  }
+  const loaded = (await moduleEntry.load())[ref.export];
+  if (typeof loaded !== "function") {
+    throw new Error(`functionRef export is not a function: ${ref.module}/${ref.export}`);
+  }
+  return loaded as WhitelistedFunction;
 }
 
 export function listWhitelistedFunctionRefs(): FunctionCallRef[] {
-  return Object.entries(FUNCTION_CALL_REGISTRY).flatMap(([module, exports]) =>
-    Object.keys(exports).map((exportName) => ({ module, export: exportName })),
+  return Object.entries(FUNCTION_CALL_REGISTRY).flatMap(([module, entry]) =>
+    registryExportNames(entry).map((exportName) => ({ module, export: exportName })),
   );
 }
