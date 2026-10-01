@@ -258,6 +258,192 @@
           },
           {
             "miroirTestType": "reportTest",
+            "miroirTestLabel": "types a name read from the store",
+            "steps": [
+              {
+                "step": "compositeAction",
+                "label": "read another Book from the store",
+                "action": {
+                  "actionType": "compositeRunBoxedQueryAction",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  "actionLabel": "readOtherBook",
+                  "nameGivenToResult": "otherBook",
+                  "payload": {
+                    "actionType": "runBoxedQueryAction",
+                    "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                    "payload": {
+                      "application": {
+                        "transformerType": "getFromParameters",
+                        "interpolation": "build",
+                        "referenceName": "testApplicationUuid"
+                      },
+                      "applicationSection": "data",
+                      "queryExecutionStrategy": "storage",
+                      "query": {
+                        "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                        "application": {
+                          "transformerType": "getFromParameters",
+                          "interpolation": "build",
+                          "referenceName": "testApplicationUuid"
+                        },
+                        "pageParams": {
+                          "currentDeploymentUuid": {
+                            "transformerType": "getFromParameters",
+                            "interpolation": "build",
+                            "referenceName": "testApplicationDeploymentUuid"
+                          }
+                        },
+                        "extractors": {
+                          "book": {
+                            "extractorOrCombinerType": "extractorByPrimaryKey",
+                            "applicationSection": "data",
+                            "parentName": "Book",
+                            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                            "instanceUuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the name field",
+                "target": {
+                  "byDisplayValue": "The Design of Everyday Things"
+                },
+                "timeout": 10000,
+                "saveAs": "nameField"
+              },
+              {
+                "step": "clear",
+                "target": {
+                  "ref": "nameField"
+                }
+              },
+              {
+                "step": "type",
+                "label": "type the other Book's name, kept by the first step",
+                "target": {
+                  "ref": "nameField"
+                },
+                "text": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "otherBook",
+                    "book",
+                    "name"
+                  ]
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the name field shows the other Book's name",
+                "target": {
+                  "byDisplayValue": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "otherBook",
+                      "book",
+                      "name"
+                    ]
+                  }
+                }
+              },
+              {
+                "step": "click",
+                "label": "submit the Book",
+                "target": {
+                  "byTestId": "typed-value-object-editor-submit"
+                }
+              },
+              {
+                "step": "compositeAction",
+                "label": "read the Book from the store",
+                "action": {
+                  "actionType": "compositeRunBoxedQueryAction",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  "actionLabel": "readStoredBook",
+                  "nameGivenToResult": "storedBook",
+                  "payload": {
+                    "actionType": "runBoxedQueryAction",
+                    "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                    "payload": {
+                      "application": {
+                        "transformerType": "getFromParameters",
+                        "interpolation": "build",
+                        "referenceName": "testApplicationUuid"
+                      },
+                      "applicationSection": "data",
+                      "queryExecutionStrategy": "storage",
+                      "query": {
+                        "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                        "application": {
+                          "transformerType": "getFromParameters",
+                          "interpolation": "build",
+                          "referenceName": "testApplicationUuid"
+                        },
+                        "pageParams": {
+                          "currentDeploymentUuid": {
+                            "transformerType": "getFromParameters",
+                            "interpolation": "build",
+                            "referenceName": "testApplicationDeploymentUuid"
+                          }
+                        },
+                        "extractors": {
+                          "book": {
+                            "extractorOrCombinerType": "extractorByPrimaryKey",
+                            "applicationSection": "data",
+                            "parentName": "Book",
+                            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                            "instanceUuid": "e20e276b-619d-4e16-8816-b7ec37b53439"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "step": "expectActionResult",
+                "label": "the store holds the other Book's name",
+                "assertion": {
+                  "actionType": "compositeRunTestAssertion",
+                  "actionLabel": "storedBookName",
+                  "nameGivenToResult": "storedBookName",
+                  "testAssertion": {
+                    "testType": "testAssertion",
+                    "testLabel": "storedBookName",
+                    "definition": {
+                      "resultTransformer": {
+                        "transformerType": "createObject",
+                        "interpolation": "runtime",
+                        "definition": {
+                          "name": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "storedBook",
+                              "book",
+                              "name"
+                            ]
+                          }
+                        }
+                      },
+                      "expectedValue": {
+                        "name": "Rear Window"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reportTest",
             "miroirTestLabel": "does not save an invalid value",
             "steps": [
               {
