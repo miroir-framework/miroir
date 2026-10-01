@@ -14,12 +14,10 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import {
   Action2Error,
-  allowInsecureBaseUrlsForTests,
-  clearAllowedInsecureBaseUrlsForTests,
   clearSecrets,
   defaultMiroirModelEnvironment,
   DomainController,
-  executeExternalServiceOperation,
+  defaultExternalServiceClient,
   registerSecrets,
   type EndpointDefinition,
 } from "miroir-core";
@@ -143,25 +141,24 @@ describe.skipIf(!shouldRunPhase0Stable)("phase0 stable", () => {
     ).toBe(true);
   });
 
-  describe("executeExternalServiceOperation bearer characterization", () => {
+  describe("external service client bearer characterization", () => {
     let fakeServer: FakeExternalServiceServer;
 
     beforeAll(async () => {
       fakeServer = await startFakeExternalServiceServer();
       fakeServer.setFixture("GET", PHASE0_GET_PATH, { body: { ok: true } });
       registerSecrets({ [PHASE0_BEARER_CREDENTIAL_KEY]: PHASE0_BEARER_TOKEN });
-      allowInsecureBaseUrlsForTests([fakeServer.baseUrl]);
     });
 
     afterAll(async () => {
       clearSecrets();
-      clearAllowedInsecureBaseUrlsForTests();
       await fakeServer.close();
     });
 
     it("sends Authorization Bearer from credentialKey with http scheme and no User-Agent", async () => {
       const endpoint = phase0HttpBearerEndpoint(fakeServer.baseUrl);
-      const result = await executeExternalServiceOperation(endpoint, "phase0-get", {});
+      const client = defaultExternalServiceClient({ insecureBaseUrls: [fakeServer.baseUrl] });
+      const result = await client.executeOperation(endpoint, "phase0-get", {});
       expect(result instanceof Action2Error, JSON.stringify(result)).toBe(false);
 
       const apiRequests = fakeServer.receivedRequests.filter(
@@ -201,7 +198,7 @@ describe.skipIf(!shouldRunPhase0Stable)("phase0 stable", () => {
       },
     };
 
-    const controller = new DomainController("local", {} as any, {} as any, {} as any);
+    const controller = new DomainController("local", {} as any, {} as any, {} as any, defaultExternalServiceClient());
     const result = await (controller as any).handleApplicationAction(
       { endpoint: endpointUuid, actionType },
       {},

@@ -81,7 +81,7 @@ RUN npm run build -w miroir-fixture-appForTest
 #    certs → uses plain HTTP proxy target http://localhost:3080, which is correct
 #    for Docker. NODE_OPTIONS increases the V8 heap limit to prevent OOM during
 #    Vite's large bundle compilation (default ~2 GB is not enough for this workspace).
-RUN NODE_OPTIONS=--max-old-space-size=4096 npm run build -w miroir-standalone-app
+RUN NODE_OPTIONS=--max-old-space-size=8192 npm run build -w miroir-standalone-app
 RUN npm run build:release -w miroir-server
 
 # Remove devDependencies from node_modules to reduce the layer transferred to
@@ -148,7 +148,8 @@ ENV MIROIR_ENV=docker
 # Entrypoint
 # -------------------------------------------------------------------------
 COPY packages/miroir-server/docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
+# Strip CR in case the checkout converted line endings (Windows core.autocrlf).
+RUN sed -i 's/\r$//' /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh
 
 # -------------------------------------------------------------------------
 # Runtime declarations

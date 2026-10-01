@@ -11,8 +11,6 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 
 import {
   Action2Error,
-  allowInsecureBaseUrlsForTests,
-  clearAllowedInsecureBaseUrlsForTests,
   clearSecrets,
   ENTITY_MIROIR_SECRET_UUID,
   registerSecrets,
@@ -124,7 +122,6 @@ describe.skipIf(!shouldRunPhase2).sequential(
           [`GET /releases/1`]: { status: 401, body: { error: "unauthorized" } },
         },
       });
-      allowInsecureBaseUrlsForTests([harness.fakeServer.baseUrl]);
       secretCountBefore = await countMiroirSecretRows();
     }, 120000);
 
@@ -135,7 +132,6 @@ describe.skipIf(!shouldRunPhase2).sequential(
     });
 
     afterAll(async () => {
-      clearAllowedInsecureBaseUrlsForTests();
       clearSecrets();
       if (harness?.fakeServer) {
         await harness.fakeServer.close();

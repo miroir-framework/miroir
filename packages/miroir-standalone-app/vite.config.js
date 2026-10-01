@@ -56,6 +56,12 @@ function realServerTestClientConfigs(command, mode) {
   return { [MIROIR_TEST_CLIENT_CONFIGS]: JSON.stringify(configs) };
 }
 
+const NODE_STORE_PACKAGES = ["miroir-store-filesystem", "miroir-store-postgres", "miroir-store-mongodb"];
+const nodeStoreAliases = NODE_STORE_PACKAGES.map((name) => ({
+  find: new RegExp(`^${name}$`),
+  replacement: path.resolve(__viteDirname, "vite/nodeStoreStub.js"),
+}));
+
 export default defineConfig(({ command, mode }) => {
   const web = selectedWebClientEnvironment(command, mode);
   const apiBase = web?.rootApiUrl ?? (certsReady ? 'https://localhost:3080' : 'http://localhost:3080');
@@ -87,6 +93,8 @@ export default defineConfig(({ command, mode }) => {
     },
     resolve: {
       dedupe: ['react', 'react-dom', '@emotion/react', '@emotion/styled', '@mui/material'],
+      // #337: the web build ships no Node store driver (sequelize, mongodb, …); vitest keeps the real ones.
+      alias: command === "build" && mode !== "test" ? nodeStoreAliases : [],
     },
     optimizeDeps: {
       include: [

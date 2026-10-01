@@ -51,13 +51,15 @@ LEGACY_SUMMARY_KEYS = {
 }
 
 
-def write_manifest(tmp_path: Path, steps: list[dict]) -> Path:
+def write_manifest(tmp_path: Path, steps: list[dict], scopes: dict[str, str] | None = None) -> Path:
     manifest = {
         "version": 1,
         "defaultProfile": "emulatedServer-sql",
         "profiles": ["emulatedServer-sql", "emulatedServer-filesystem"],
         "steps": steps,
     }
+    if scopes is not None:
+        manifest["scopes"] = scopes
     path = tmp_path / "manifest.json"
     path.write_text(json.dumps(manifest), encoding="utf-8")
     return path
@@ -456,3 +458,163 @@ def test_every_tier_starts_by_recording_the_environment_and_ends_with_the_tracke
     assert last["id"] == "unit-321-tracked-assets"
     assert "tracked_assets_guard.py check --since {snapshot_dir}/tracked-assets-before.json" in " ".join(last["argv"])
     assert "miroir-env -- check --strict" in " ".join(last["argv"])
+
+
+# ------------------------------------------------------------------------------------------------
+# #351 Slice 1: --scope selects the steps of named scopes, plus the `always` bracket
+
+
+def _scoped_step(step_id: str, tier: str, *scopes: str) -> dict:
+    return {"id": step_id, "tier": tier, "title": step_id, "scopes": list(scopes), "argv": ["python", "-c", "pass"]}
+
+
+@pytest.fixture
+def scoped_manifest(tmp_path: Path) -> Path:
+    return write_manifest(
+        tmp_path,
+        [
+            _scoped_step("before", "unit", "always"),
+            _scoped_step("a1", "unit", "a", "smoke"),
+            _scoped_step("b1", "unit", "b"),
+            _scoped_step("a2", "default", "a"),
+            _scoped_step("c1", "unit", "c"),
+            _scoped_step("after", "unit", "always"),
+        ],
+        scopes={"always": "run bracket", "smoke": "wide and thin", "a": "A", "b": "B", "c": "C"},
+    )
+
+
+def test_scope_runs_its_steps_plus_the_always_steps_in_manifest_order(tmp_path: Path, scoped_manifest: Path):
+    code, summary, snap_dir = run_nonreg(tmp_path, scoped_manifest, "--scope", "a")
+
+    assert code == 0
+    assert [s["id"] for s in summary["steps"]] == ["before", "a1", "a2", "after"]
+    assert summary["scopes"] == ["a"]
+    assert "- Scopes: `a`" in (snap_dir / "summary.md").read_text(encoding="utf-8")
+
+
+def test_several_scopes_run_their_union(tmp_path: Path, scoped_manifest: Path):
+    _, summary, _ = run_nonreg(tmp_path, scoped_manifest, "--scope", "smoke,b")
+
+    assert [s["id"] for s in summary["steps"]] == ["before", "a1", "b1", "after"]
+
+
+def test_only_adds_steps_to_a_scope(tmp_path: Path, scoped_manifest: Path):
+    _, summary, _ = run_nonreg(tmp_path, scoped_manifest, "--scope", "b", "--only", "c1")
+
+    assert [s["id"] for s in summary["steps"]] == ["before", "b1", "c1", "after"]
+
+
+def test_tier_still_filters_a_scope(tmp_path: Path, scoped_manifest: Path):
+    _, summary, _ = run_nonreg(tmp_path, scoped_manifest, "--scope", "a", "--tier", "unit")
+
+    assert [s["id"] for s in summary["steps"]] == ["before", "a1", "after"]
+
+
+def test_unknown_scope_is_an_error_naming_the_declared_scopes(tmp_path: Path, scoped_manifest: Path):
+    proc = subprocess.run(
+        [sys.executable, str(SCRIPT), "--manifest", str(scoped_manifest), "--results-root", str(tmp_path / "r"), "--scope", "a,nope"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert proc.returncode == 2
+    assert "unknown scope(s): nope" in proc.stderr
+    assert "a, b, c, smoke" in proc.stderr
+    assert not (tmp_path / "r").exists()
+
+
+def test_run_without_scope_records_no_scopes(tmp_path: Path, scoped_manifest: Path):
+    _, summary, _ = run_nonreg(tmp_path, scoped_manifest, "--tier", "unit")
+
+    assert "scopes" not in summary
+    assert len(summary["steps"]) == 5
+
+
+# ------------------------------------------------------------------------------------------------
+# #351 Slice 2: the real manifest is fully scoped
+
+REAL_MANIFEST = json.loads((ROOT / "scripts" / "nonreg-manifest.json").read_text(encoding="utf-8"))
+REAL_SCOPES = REAL_MANIFEST.get("scopes", {})
+
+
+def test_scope_catalogue_declares_three_to_eight_scopes_including_smoke():
+    selectable = [n for n in REAL_SCOPES if n != "always"]
+
+    assert "smoke" in selectable and "always" in REAL_SCOPES
+    assert 3 <= len(selectable) <= 8, selectable
+
+
+def test_every_manifest_step_names_declared_scopes():
+    problems = [
+        (s["id"], s.get("scopes"))
+        for s in REAL_MANIFEST["steps"]
+        if not s.get("scopes") or not set(s["scopes"]) <= set(REAL_SCOPES)
+    ]
+
+    assert problems == []
+
+
+def test_every_manifest_step_has_a_scope_besides_smoke():
+    """So the non-smoke scopes together always cover the whole suite."""
+    smoke_only = [s["id"] for s in REAL_MANIFEST["steps"] if set(s.get("scopes", [])) <= {"smoke"}]
+
+    assert smoke_only == []
+
+
+def test_the_run_bracket_is_in_the_always_scope():
+    always = [s["id"] for s in REAL_MANIFEST["steps"] if "always" in s.get("scopes", [])]
+
+    assert always == ["unit-321-environment-before", "unit-321-tracked-assets"]
+
+
+def test_smoke_is_wide_one_step_in_each_main_layer():
+    smoke = [set(s["scopes"]) for s in REAL_MANIFEST["steps"] if "smoke" in s.get("scopes", [])]
+
+    for layer in ("core", "actions", "runners", "ui"):
+        assert any(layer in scopes for scopes in smoke), layer
+
+
+def test_empty_scope_is_an_error_not_a_full_run(tmp_path: Path, scoped_manifest: Path):
+    proc = subprocess.run(
+        [sys.executable, str(SCRIPT), "--manifest", str(scoped_manifest), "--results-root", str(tmp_path / "r"), "--scope", ""],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert proc.returncode == 2
+    assert "--scope needs at least one scope name" in proc.stderr
+    assert not (tmp_path / "r").exists()
+
+
+def test_compare_with_a_scoped_run_only_looks_at_the_steps_both_runs_selected(tmp_path: Path):
+    manifest = write_manifest(
+        tmp_path,
+        [
+            _scoped_step("before", "unit", "always"),
+            _scoped_step("a1", "unit", "a"),
+            {**_scoped_step("b1", "unit", "b"), "argv": ["python", "-c", "import sys; sys.exit(1)"]},
+            _scoped_step("after", "unit", "always"),
+        ],
+        scopes={"always": "run bracket", "a": "A", "b": "B"},
+    )
+    _, full, full_dir = run_nonreg(tmp_path / "full", manifest, "--tier", "unit")
+    assert full["counts"]["failed"] == 1
+
+    proc = subprocess.run(
+        [sys.executable, str(SCRIPT), "--manifest", str(manifest), "--results-root", str(tmp_path / "scoped"),
+         "--tier", "unit", "--scope", "a", "--compare", str(full_dir)],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert proc.returncode == 0, proc.stdout
+    assert "missing steps (0)" in proc.stdout
+    assert "still failing (0)" in proc.stdout
+    assert "scoped compare: 1 step(s) selected by only one run ignored: b1" in proc.stdout

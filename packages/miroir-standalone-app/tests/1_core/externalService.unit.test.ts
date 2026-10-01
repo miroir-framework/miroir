@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import {
   Action2Error,
   checkModelValidationInstance,
+  defaultExternalServiceClient,
   defaultMiroirModelEnvironment,
   DomainController,
   type EndpointDefinition,
@@ -137,7 +138,7 @@ describe.skipIf(!shouldRun)("externalService — current contracts", () => {
       },
     };
 
-    const controller = new DomainController("local", {} as any, {} as any, {} as any);
+    const controller = new DomainController("local", {} as any, {} as any, {} as any, defaultExternalServiceClient());
     const result = await (controller as any).handleApplicationAction(
       { endpoint: endpointUuid, actionType },
       {},

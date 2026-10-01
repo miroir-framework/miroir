@@ -42,6 +42,7 @@ import {
   getMiroirTestSuiteKey,
   sortMiroirTestInstances,
 } from '../Reports/miroirTestSuiteKey.js';
+import { setLastUiIntegrationTestRunResult } from '../../../4-tests/uiIntegrationTestRunState.js';
 import { generateTestReport, type TestResultData } from './testResultReport.js';
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, 'RunAllMiroirTestsButton');
@@ -147,11 +148,9 @@ async function runLaunchableIntegrationBatch(params: {
   const [
     { runUiIntegrationTestSuite },
     { loadBrowserUiIntegrationTestLauncherEnvironment },
-    { setLastUiIntegrationTestRunResult },
   ] = await Promise.all([
     import('../../../4-tests/uiIntegrationTestLauncher.js'),
     import('../../../4-tests/loadBrowserUiIntegrationTestLauncherEnvironment.js'),
-    import('../../../4-tests/uiIntegrationTestRunState.js'),
   ]);
 
   const baseEnv = await loadBrowserUiIntegrationTestLauncherEnvironment();
