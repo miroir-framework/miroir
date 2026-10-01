@@ -37,7 +37,7 @@ const env = {
 const vitestArgs = [
   "vitest",
   "run",
-  "--poolOptions.forks.singleFork",
+  "--maxWorkers=1",
   "--reporter=verbose",
   // root is ./tests (vite.config.js): the filter must be a root-relative substring,
   // "tests/<file>" would never match on Windows path matching

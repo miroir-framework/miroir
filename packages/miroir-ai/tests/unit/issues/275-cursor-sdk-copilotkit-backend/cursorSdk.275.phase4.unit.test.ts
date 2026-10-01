@@ -630,10 +630,12 @@ if (runThis) {
   });
 
   describe("cursorSdk.275.phase4 — @cursor/sdk nested runtime deps are installed", () => {
-    const sdkPackageJsonPath = join(
-      REPO_ROOT,
-      "packages/miroir-ai/node_modules/@cursor/sdk/package.json",
-    );
+    // Looked up from miroir-ai: npm may nest the SDK under packages/miroir-ai or hoist it to the root
+    // (its exports do not expose package.json, so walk the node_modules lookup paths).
+    const sdkPackageJsonPath =
+      (createRequire(join(REPO_ROOT, "packages/miroir-ai/package.json")).resolve.paths("@cursor/sdk") ?? [])
+        .map((nodeModules) => join(nodeModules, "@cursor/sdk/package.json"))
+        .find((candidate) => existsSync(candidate)) ?? "@cursor/sdk/package.json not found";
 
     it("createRequire from the SDK package resolves each declared dependency", () => {
       expect(existsSync(sdkPackageJsonPath)).toBe(true);

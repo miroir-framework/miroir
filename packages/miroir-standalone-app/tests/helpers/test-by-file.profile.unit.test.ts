@@ -153,7 +153,7 @@ describe("testByFileLauncher profile (Gap D5)", () => {
 });
 
 describe("buildTestByFileVitestArgs (#307)", () => {
-  const base = ["run", "--reporter=verbose", "--poolOptions.forks.singleFork"];
+  const base = ["run", "--reporter=verbose", "--maxWorkers=1"];
 
   it("adds --bail=1 by default", () => {
     expect(buildTestByFileVitestArgs(["some.integ"])).toEqual([...base, "--bail=1", "some.integ"]);

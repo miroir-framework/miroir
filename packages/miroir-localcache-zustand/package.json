@@ -18,7 +18,7 @@
   "scripts": {
     "build": "tsup",
     "devBuild": "npm run build",
-    "vitest": "vitest run --poolOptions.threads.singleThread --passWithNoTests"
+    "vitest": "vitest run --passWithNoTests"
   },
   "tsup": {
     "dts": true,

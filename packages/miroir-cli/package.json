@@ -23,7 +23,7 @@
     "build": "tsup --target=node20 --format esm src/index.ts",
     "devBuild": "npm run build",
     "dev": "npm run build && node ./dist/index.js",
-    "test": "cross-env NODE_ENV=test vitest run --poolOptions.threads.singleThread --bail=1",
+    "test": "cross-env NODE_ENV=test vitest run --bail=1",
     "testByFile": "cross-env NODE_ENV=test vitest run"
   },
   "dependencies": {
