@@ -143,7 +143,7 @@ const BINARY_CHOICE_BRANCH = {
   whenFalse: "review",
 };
 
-/** `targets` replaces the `choice` step's `whenTrue` / `whenFalse` (#338: multi-way `cases`). */
+/** `targets` replaces the `choice` step's `whenTrue` / `whenFalse`, and `test` if given (#338: multi-way `cases`). */
 function buildBranchFixtureReport(targets: Record<string, unknown> = BINARY_CHOICE_BRANCH): any {
   return {
     uuid: BRANCH_REPORT_UUID,
@@ -462,6 +462,23 @@ const mlElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> = {
                 await waitForHost();
                 await goToChoiceStep(container);
                 await setTakeSecretPath(false);
+                fireEvent.click(screen.getByRole("button", { name: "Next" }));
+                await waitAfterUserInteraction();
+                await waitFor(() => {
+                  expect(stepLabelText()).toMatch(/Review/i);
+                });
+              },
+            },
+            "cases-branch-inherited-key-falls-back-to-default": {
+              props: () =>
+                branchFixtureProps({
+                  test: { transformerType: "returnValue", interpolation: "runtime", value: "toString" },
+                  cases: { true: "secret" },
+                  default: "review",
+                }),
+              tests: async (expect: ExpectStatic, container: Container) => {
+                await waitForHost();
+                await goToChoiceStep(container);
                 fireEvent.click(screen.getByRole("button", { name: "Next" }));
                 await waitAfterUserInteraction();
                 await waitFor(() => {

@@ -856,8 +856,11 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
       }
       const branch = currentChild.branch;
       // `cases` (multi-way) wins over `whenTrue` / `whenFalse` (binary)
+      // own keys only: a value like "toString" must fall back to `default`
       const nextStepId = branch.cases
-        ? branch.cases[String(testResult)] ?? branch.default
+        ? Object.prototype.hasOwnProperty.call(branch.cases, String(testResult))
+          ? branch.cases[String(testResult)]
+          : branch.default
         : testResult
           ? branch.whenTrue
           : branch.whenFalse;
