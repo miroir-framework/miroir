@@ -854,7 +854,21 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
         );
         return;
       }
-      const nextStepId = testResult ? currentChild.branch.whenTrue : currentChild.branch.whenFalse;
+      const branch = currentChild.branch;
+      // `cases` (multi-way) wins over `whenTrue` / `whenFalse` (binary)
+      const nextStepId = branch.cases
+        ? branch.cases[String(testResult)] ?? branch.default
+        : testResult
+          ? branch.whenTrue
+          : branch.whenFalse;
+      if (nextStepId === undefined) {
+        setFinishError(
+          branch.cases
+            ? `No branch case for value: ${String(testResult)}`
+            : `No branch target for value: ${String(testResult)}`,
+        );
+        return;
+      }
       const nextIndex = indexOfStepId(nextStepId);
       if (nextIndex < 0) {
         setFinishError(`Unknown branch target stepId: ${nextStepId}`);
