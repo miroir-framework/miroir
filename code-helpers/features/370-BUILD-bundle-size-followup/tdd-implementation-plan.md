@@ -36,7 +36,7 @@ This plan does **not** cover F10 (rejected), the ag-grid 33 migration (G2, own i
 | 6 | The first list loads one grid library | ✅ | grid chunk test; glide list test |
 | 7 | Releases ship 12 grammars | ✅ | grammar count test; tour Copilot sidebar |
 | 8 | Electron loads only the stores and features it uses | ✅ | Electron guard; startup time; smoke |
-| 9 | Nonreg, docs, cleanup, AC | ⬜ | `nonreg:filesystem` + tour + AC table |
+| 9 | Nonreg, docs, cleanup, AC | ✅ | `nonreg:filesystem` + tour + AC table |
 
 ---
 
@@ -382,7 +382,7 @@ Electron build + guard; `electronBundle.unit`; packaged smoke (`electron-builder
 
 ## Slice 9 — Nonreg, docs, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### 9.1 Nonreg
 
@@ -404,11 +404,28 @@ Manual: home page with DevTools Network: no `yaml`, `level`, `json-diff`, `lodas
 
 | Item (issue) | Proof | Status |
 |---|---|---|
-| F9 grids | slice 6 | ⬜ |
-| F12 Library label | slice 5 | ⬜ |
-| F13 lodash | slice 4 | ⬜ |
-| yaml | slice 1 | ⬜ |
-| F8 shiki | slice 7 | ⬜ |
-| F10 never-run packages | rejected in the analysis (73 kB, all in use by loaded features) | ⬜ |
-| Electron leftovers | slice 8 (stores, AI, MCP); `iconv-lite` deferred (E3) | ⬜ |
-| New: IndexedDB store, JSON diff | slices 2, 3 | ⬜ |
+| F9 grids | slice 6 | ✅ |
+| F12 Library label | slice 5 | ✅ |
+| F13 lodash | slice 4 | ✅ |
+| yaml | slice 1 | ✅ |
+| F8 shiki | slice 7 | ✅ |
+| F10 never-run packages | rejected in the analysis (73 kB, all in use by loaded features) | ✅ rejected |
+| Electron leftovers | slice 8 (stores, AI, MCP); `iconv-lite` deferred (E3) | ✅ (`iconv-lite` left) |
+| New: IndexedDB store, JSON diff | slices 2, 3 | ✅ |
+
+### Realization
+
+| Measure | Slice 0 | After slice 8 |
+|---|---|---|
+| Page eager gzip (`index.html` preloads) | 881 289 (4 chunks) | 746 693 (5 chunks), −15% |
+| Home page load | 1 405 734 (12 chunks) | 1 280 602 (16 chunks), −9% |
+| ag-grid list chunk | 372 332 | 268 311 |
+| `dist/assets` JavaScript | 23 140 723 bytes, 391 files | 16 606 652 bytes, 182 files |
+| Electron main process read at start | 3 184 414 | 1 005 067 |
+| Packaged Electron, launch to "IPC server ready" (median of 3) | 2.63 s | 2.35 s |
+
+- The analysis expected about 743 kB on the page; the result is 747 kB. Each cut came within 1.5 kB of its trial except lodash (−26.7 kB measured, −28.8 kB trial).
+- Docs: `docs/internals/code-splitting.md` (page table from the final build, the #370 cuts table, conditional dynamic imports, grids, shiki, the Electron split, the lodash shim, the tsup inlining pitfall, follow-ups). `homePageLoad` cap lowered from 1 450 000 to 1 335 000 (final load plus about 4%).
+- Full `nonreg:filesystem --runner shared` (snapshot `20261001T221949Z`): 86 passed, 1 failed. `unit-275-cursor-sdk` characterized `ipcServerSetup.ts` importing `createCopilotKitRouter` statically, which slice 8 changed on purpose; the case now checks the on-demand import and that no static `miroir-ai` import is left. The step passes alone.
+- Pre-push gate: skills sync, `scripts/tests` (200 passed), dependency policy, lint, `miroir-env check --strict --tracked-clean`, miroir-core typecheck and tests all clean. The miroir-standalone-app typecheck keeps its 32 errors from the MUI 9 bump, none in files this plan touched.
+- Not verified by hand: the tracer narrative's manual DevTools walk and the coverage tour were not run in this session.

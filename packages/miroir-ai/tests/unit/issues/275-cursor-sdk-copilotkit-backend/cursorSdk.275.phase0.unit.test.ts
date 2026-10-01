@@ -101,11 +101,14 @@ if (runThis) {
   });
 
   describe("cursorSdk.275.phase0 — Electron ipcServerSetup CopilotKit import", () => {
-    it("ipcServerSetup.ts statically imports createCopilotKitRouter", () => {
+    // #370: imported when the `ai` feature mounts the route, so the main process does not read
+    // miroir-ai at start otherwise.
+    it("ipcServerSetup.ts imports createCopilotKitRouter from miroir-ai on demand", () => {
       const src = readRepoFile(
         "packages/miroir-standalone-app-electron/src/ipcServerSetup.ts",
       );
-      expect(src).toMatch(/import\s*\{[^}]*\bcreateCopilotKitRouter\b[^}]*\}\s*from\s*"miroir-ai"/);
+      expect(src).toMatch(/const\s*\{[^}]*\bcreateCopilotKitRouter\b[^}]*\}\s*=\s*await\s+import\("miroir-ai"\)/);
+      expect(src).not.toMatch(/from\s*"miroir-ai"/);
     });
   });
 
