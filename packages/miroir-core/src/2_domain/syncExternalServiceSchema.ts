@@ -8,8 +8,6 @@
  * ExternalServiceClient must not import this file.
  */
 
-import { parse as parseYaml } from "yaml";
-
 import type { CoreTransformerForBuildPlusRuntime } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   getExternalService,
@@ -33,6 +31,28 @@ let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerNa
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {
   log = logger;
 });
+
+type YamlModule = typeof import("yaml");
+
+/**
+ * `yaml`, loaded without a static import (#370): a static import puts the parser in the web page.
+ * On Node it loads with this module; elsewhere `ensureYamlParser()` loads it first (the web app
+ * starts it after its first render, `DomainController` before preparing an OpenAPI document).
+ * JSON documents never need it.
+ */
+let yamlModule: YamlModule | undefined =
+  typeof process !== "undefined" && process.versions?.node ? await import("yaml") : undefined;
+
+export async function ensureYamlParser(): Promise<void> {
+  yamlModule ??= await import("yaml");
+}
+
+function parseYaml(text: string): unknown {
+  if (!yamlModule) {
+    throw new Error("YAML parser not loaded: await ensureYamlParser() first");
+  }
+  return yamlModule.parse(text);
+}
 
 const ENTITY_ENTITY_UUID = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
 const ENTITY_VERSION_OF_ENTITY_UUID = "381ab1be-337f-4198-b1d3-f686867fc1dd";

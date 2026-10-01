@@ -28,7 +28,7 @@ This plan does **not** cover F10 (rejected), the ag-grid 33 migration (G2, own i
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize the baseline after the MUI 9 bump | ✅ | guard passes; baselines recorded |
-| 1 | The page loads no YAML parser (tracer) | ⬜ | `forbiddenEager` `yaml`; YAML OpenAPI transformer test |
+| 1 | The page loads no YAML parser (tracer) | ✅ | `forbiddenEager` `yaml`; YAML OpenAPI transformer test |
 | 2 | The page loads no IndexedDB store | ⬜ | `forbiddenEager` `abstract-level`; `testMiroir` on `test-indexedDb` |
 | 3 | The page loads no JSON diff | ⬜ | `forbiddenEager` `json-diff`; `fn.modelUpdate` |
 | 4 | The page loads `merge`, not lodash | ⬜ | bare-`lodash` importer test; guard |
@@ -112,7 +112,7 @@ Fresh `npm ci` + `./build-all.sh` on `_integration` 276e43aa. Web eager gzip **8
 
 ## Slice 1 — The page loads no YAML parser (tracer)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -137,7 +137,12 @@ Guard; `npm run testMiroir -w miroir-core -- --suites tr.syncExternalServiceSche
 
 ### Realization
 
-_(to fill)_
+- Page eager gzip 881 289 → 850 787 (−30 502, trial said −30 876); `eagerGzipBaseline` lowered to 850 787. `yaml` moved from `eager` to `lazy` and added to `forbiddenEager`.
+- `tr.syncExternalServiceSchema` gained "parses a YAML OpenAPI document (#370: yaml loads on demand)" (the first case's document as YAML, written with pyyaml `safe_dump`); 5 passed before and after the change.
+- `DomainController` awaits `ensureYamlParser()` in `handlePrepareOpenApiDocument` and `handleConnectExternalService`. The `syncExternalServiceSchema` transformer stays synchronous: in the browser it relies on the call in `index.tsx` after the first render.
+- Refactor checkpoint: `SecretsService.ts` has the same three-line shape. A shared helper would have to take a loader closure to keep the import literal visible to the bundler, which saves nothing for two uses; not extracted.
+- Validation: guard 0 violations; `testMiroir tr.syncExternalServiceSchema` 5 passed; `npm run test -w miroir-core` 2134 passed, 1 skipped; miroir-core typecheck clean; nonreg `--scope smoke,core,external` 30 passed (snapshot `20261001T195728Z`).
+- The miroir-standalone-app typecheck fails on `_integration` already: 32 errors in 8 files from the MUI 9 bump (#364: `Grid item`, `InputProps`, `inputProps`, `Stack justifyContent`), none in files this slice touches. Out of scope here.
 
 ---
 

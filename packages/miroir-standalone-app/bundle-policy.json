@@ -1,6 +1,6 @@
 {
   "$comment": "Bundle guard (#326), checked by scripts/check_bundle_policy.py against the build's bundle-report.json. See docs/internals/code-splitting.md. defeatedDynamicImports (#337): ReportDisplay.tsx is also imported statically by HomePage, SettingsPage and ReportSectionViewWithEditor, which render a report at once.",
-  "eagerGzipBaseline": 867330,
+  "eagerGzipBaseline": 850787,
   "eagerGzipTolerance": 0.02,
   "forbiddenEager": [
     "@testing-library/*",
@@ -11,7 +11,8 @@
     "elliptic",
     "@codemirror/*",
     "@uiw/react-codemirror",
-    "@lezer/*"
+    "@lezer/*",
+    "yaml"
   ],
   "eager": [
     "@babel/runtime",
@@ -137,7 +138,6 @@
     "uuid",
     "vite-plugin-node-polyfills",
     "which-typed-array",
-    "yaml",
     "zod"
   ],
   "lazy": [
@@ -501,6 +501,7 @@
     "w3c-keyname",
     "web-namespaces",
     "xtend",
+    "yaml",
     "zod-to-json-schema",
     "zwitch"
   ],
