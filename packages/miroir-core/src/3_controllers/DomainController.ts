@@ -200,6 +200,7 @@ import {
 } from "../4_services/ExternalServiceClient.js";
 import { ConfigurationService } from './ConfigurationService.js';
 import {
+  ensureSecretsCrypto,
   getSecretsMasterKey,
   importProcessSecrets,
   persistImportedProcessSecrets,
@@ -4203,6 +4204,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
           "connectExternalService: wrapping key required to persist secrets",
         );
       }
+      await ensureSecretsCrypto();
       const secretInstances = importProcessSecrets({
         wrappingKey,
         secrets: processSecretsBag,

@@ -98,28 +98,21 @@ describe("bundleReport", () => {
     }
   });
 
-  it("vendor-copilotkit is eager, and the chain of its zod or rxjs starts in the app's source", () => {
-    const copilotkit = report.chunks.find((chunk) => chunk.name === "vendor-copilotkit")!;
-    expect(copilotkit.loadKind).toBe("eager");
-    const shared = packageIn(copilotkit, "zod") ?? packageIn(copilotkit, "rxjs");
-    expect(shared, "zod or rxjs in vendor-copilotkit").toBeDefined();
-    expect(shared!.chain[0]).toMatch(new RegExp(`^${appSource}`));
+  it("CopilotKit and ag-grid are only in lazy chunks, and their chains start in the app's source (#337)", () => {
+    for (const name of ["@copilotkit/react-core", "ag-grid-community"]) {
+      const holders = report.chunks.filter((chunk) => packageIn(chunk, name));
+      expect(holders.length, name).toBeGreaterThan(0);
+      expect(holders.map((chunk) => chunk.loadKind), name).toEqual(holders.map(() => "lazy"));
+      expect(packageIn(holders[0], name)!.chain[0]).toMatch(new RegExp(`^${appSource}`));
+    }
   });
 
-  it("the mermaid-VLURNSYL chunk is mostly the Miroir meta-model deployment", () => {
-    const chunk = report.chunks.find((candidate) => candidate.file.includes("/mermaid-VLURNSYL"))!;
-    expect(chunk).toBeDefined();
-    const deployment = packageIn(chunk, "miroir-app-miroir");
-    expect((deployment?.renderedBytes ?? 0) / chunk.renderedBytes).toBeGreaterThan(0.9);
-  });
-
-  it("mongodb is only in lazy chunks, brought in through IntegrationTestSession.ts", () => {
-    const withMongodb = report.chunks.filter((chunk) => packageIn(chunk, "mongodb"));
-    expect(withMongodb.length).toBeGreaterThan(0);
-    expect(withMongodb.map((chunk) => chunk.loadKind)).toEqual(withMongodb.map(() => "lazy"));
-    expect(packageIn(withMongodb[0], "mongodb")!.chain.some((step) => step.includes("IntegrationTestSession.ts"))).toBe(
-      true,
+  it("ships no Node store driver: vite build aliases the store packages to a stub (#337)", () => {
+    const nodeStorePackages = ["mongodb", "sequelize", "miroir-store-mongodb", "miroir-store-postgres", "miroir-store-filesystem"];
+    const shipped = report.chunks.flatMap((chunk) =>
+      nodeStorePackages.filter((name) => packageIn(chunk, name)).map((name) => `${name} in ${chunk.file}`),
     );
+    expect(shipped).toEqual([]);
   });
 
   it("findings name fs externalized from miroir-store-indexedDb and the defeated ReportDisplay.tsx import", () => {

@@ -1432,6 +1432,7 @@ export {
   clearSecretsMasterKey,
   decryptSecret,
   encryptSecret,
+  ensureSecretsCrypto,
   getSecretsMasterKey,
   hydrateSecrets,
   importProcessSecrets,
@@ -1909,10 +1910,8 @@ export {
 } from "./5_tests/parseMiroirRunnerTestCLIConfig";
 export {
   listMiroirTestSuiteKeys,
-  loadMiroirCoreTestSuite,
   MIROIR_TEST_SUITE_REGISTRY_NAMES,
   type MiroirTestSuiteKey,
-  type MiroirTestSuiteLoader,
 } from "./5_tests/miroirCoreTestSuiteRegistry.js";
 export {
   type VitestNamespace,

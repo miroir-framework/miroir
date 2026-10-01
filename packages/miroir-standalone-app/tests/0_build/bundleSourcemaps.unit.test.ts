@@ -45,10 +45,8 @@ describe("bundleSourcemaps", () => {
     expect(withoutSources).toEqual([]);
   });
 
-  it("the vendor-copilotkit map lists @copilotkit/react-core sources", () => {
-    const [copilotkit] = Object.values(readManifest()).filter((chunk) => chunk.name === "vendor-copilotkit");
-    expect(sourcesOf(copilotkit.file).some((source) => source.includes("node_modules/@copilotkit/react-core/"))).toBe(
-      true,
-    );
+  it("the vendor-mui map lists @mui/material sources", () => {
+    const [mui] = Object.values(readManifest()).filter((chunk) => chunk.name === "vendor-mui");
+    expect(sourcesOf(mui.file).some((source) => source.includes("node_modules/@mui/material/"))).toBe(true);
   });
 });

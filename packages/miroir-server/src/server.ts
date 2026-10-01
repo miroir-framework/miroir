@@ -92,7 +92,7 @@ import {
   type ResolvedEnvironment,
 } from "miroir-env";
 import { EndpointToolRegistry, setupMcpServer } from "miroir-mcp";
-import { setupMiroirDomainController } from 'miroir-localcache-redux';
+import { setupMiroirDomainController } from 'miroir-localcache-redux/node';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirMongoDbStoreSectionStartup } from 'miroir-store-mongodb';
