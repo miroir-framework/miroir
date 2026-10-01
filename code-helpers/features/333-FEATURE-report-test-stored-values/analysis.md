@@ -24,6 +24,7 @@ Taken as defaults by the agent (A asked for the issue to be solved; the issue le
 | D4 | Type of a resolved value | Outside `expectedValue`, a string, a number or a boolean; otherwise the step fails (`the stored value "x" is an object, expected …`). | Coercing objects to JSON text. |
 | D5 | `getFromContext` attributes | `referenceName` or `referencePath`; `interpolation` ignored (resolved at step start); `safe`, `expectedType` not honoured. | Running the transformer engine: its failure messages do not name the missing key, and UI steps are not templates. |
 | D6 | `reactComponentTest` leaves | Same step schema (shared `reactComponentTestStep`); they keep no values, so a reference fails as unresolved. | A separate Report-only step schema (duplicates 19 step kinds). |
+| D6b | A literal `getFromContext` object in a UI step (e.g. the expected form value of a transformer editor) | Read as a reference: such a value cannot be entered or expected literally. No MiroirTest has one today (all `reactComponentTest` / `reportTest` JSON checked). | An escape syntax, until a test needs it. |
 | D7 | Other transformers (`mustacheStringTemplate`, …) in UI steps | **Deferred**: only `getFromContext`, as the issue asks. | — |
 
 ## Goals
