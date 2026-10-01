@@ -21,19 +21,19 @@
     "testByFile": "vitest run --poolOptions.forks.singleFork --reporter=verbose"
   },
   "dependencies": {
-    "@codemirror/lang-javascript": "6.2.4",
+    "@codemirror/lang-javascript": "6.2.5",
     "@redux-devtools/core": "5.0.0",
-    "@uiw/react-codemirror": "4.23.13",
+    "@uiw/react-codemirror": "4.25.11",
     "miroir-app-miroir": "*",
     "miroir-core": "*",
     "miroir-localcache-redux": "*",
     "miroir-localcache-zustand": "*",
     "react-error-boundary": "4.1.2",
-    "react-hook-form": "7.58.0",
+    "react-hook-form": "7.88.0",
     "react-markdown": "10.1.0",
     "react-redux": "9.3.0",
     "react-router-dom": "6.30.3",
-    "react-select": "5.10.1"
+    "react-select": "5.10.2"
   },
   "peerDependencies": {
     "@emotion/react": "^11.10.5",
