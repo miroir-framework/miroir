@@ -106,6 +106,7 @@
     "mustache",
     "node:fs via miroir-store-indexedDb",
     "node:os via colors",
+    "non-error",
     "object-is",
     "object-keys",
     "object.assign",
