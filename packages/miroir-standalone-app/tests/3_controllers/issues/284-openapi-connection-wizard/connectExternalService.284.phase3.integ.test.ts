@@ -12,8 +12,6 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import {
   Action2Error,
-  allowInsecureBaseUrlsForTests,
-  clearAllowedInsecureBaseUrlsForTests,
   getExternalService,
 } from "miroir-core";
 
@@ -154,11 +152,9 @@ describe.skipIf(!shouldRunPhase3).sequential(
           [`GET /artists/42`]: { body: { id: "42", name: "artist-forty-two" } },
         },
       });
-      allowInsecureBaseUrlsForTests([harness.fakeServer.baseUrl]);
     }, 120000);
 
     afterAll(async () => {
-      clearAllowedInsecureBaseUrlsForTests();
       if (harness?.fakeServer) {
         await harness.fakeServer.close();
       }

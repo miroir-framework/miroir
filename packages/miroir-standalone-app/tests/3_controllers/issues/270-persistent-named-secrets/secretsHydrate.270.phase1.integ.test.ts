@@ -23,10 +23,8 @@ import type {
 } from "miroir-core";
 import {
   Action2Error,
-  allowInsecureBaseUrlsForTests,
-  clearAllowedInsecureBaseUrlsForTests,
-  clearExternalServiceTokenCacheForTests,
   clearSecrets,
+  createExternalServiceTokenCache,
   clearSecretsMasterKey,
   ConfigurationService,
   defaultMetaModelEnvironment,
@@ -372,6 +370,9 @@ async function commitTestEndpoint(): Promise<void> {
   );
 }
 
+// #339: the OAuth2 tokens of the session's external service environment
+const tokenCache = createExternalServiceTokenCache();
+
 beforeAll(async () => {
   if (!shouldRun) {
     return;
@@ -385,9 +386,8 @@ beforeAll(async () => {
   fakeServer = await startFakeExternalServiceServer({
     [`GET /playlists/${PLAYLIST_ID_OK}`]: { body: PLAYLIST_OK },
   });
-  allowInsecureBaseUrlsForTests([fakeServer.baseUrl]);
-
   const session = new AppStackIntegrationTestSession(miroirConfig, {
+    externalServiceEnvironment: { insecureBaseUrls: [fakeServer.baseUrl], tokenCache },
     applicationDeploymentMap,
     adminDeployment,
     libraryDeploymentStorageConfiguration,
@@ -413,7 +413,7 @@ beforeEach(async () => {
     return;
   }
   fakeServer.receivedRequests.length = 0;
-  clearExternalServiceTokenCacheForTests();
+  tokenCache.clear();
   clearSecrets();
   clearSecretsMasterKey();
   await resetIntegTestbed({
@@ -446,7 +446,6 @@ afterAll(async () => {
   await deleteCreatedSecretRows();
   clearSecrets();
   clearSecretsMasterKey();
-  clearAllowedInsecureBaseUrlsForTests();
   if (fakeServer) {
     await fakeServer.close();
   }

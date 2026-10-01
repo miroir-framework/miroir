@@ -1,5 +1,6 @@
 // ONLY A DEV DEPENDENCY! USED FOR THE TYPE ONLY, PRUNED BY THE TRANSPILER
 import * as vitest from "vitest";
+import type { FakeOutboundHttp } from "./FakeHttpResponses.js";
 export type VitestNamespace = typeof vitest;
 
 
@@ -97,6 +98,11 @@ export type MiroirTestExecutionEnvironment = {
   compositeActionTestContext?: CompositeActionTestContext;
   /** Runner integ; also usable as Action context under 1.3-a. Absent on transformer-only sessions. */
   runnerTestContext?: RunnerTestContext;
+  /**
+   * #339: the fetch of the session's external service environment, on which a Report test installs
+   * its fake HTTP answers. Absent when the session did not build its DomainControllers.
+   */
+  fakeOutboundHttp?: FakeOutboundHttp;
 };
 
 export interface RunnerTestSessionInterface {

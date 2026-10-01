@@ -5,7 +5,6 @@ import {
   MiroirActivityTracker,
   MiroirContext,
   MiroirLoggerFactory,
-  createFakeOutboundFetch,
   defaultMiroirModelEnvironment,
   runReportTestCompositeActionStep,
   runReportTestExpectActionResultStep,
@@ -178,6 +177,10 @@ async function refreshLocalCache(
 export const REPORT_TEST_FAKE_HTTP_NEEDS_EMULATED_SERVER =
   "fake HTTP responses need an emulated server: on a real server the requests go out from the server process";
 
+/** Result message of such a leaf in a session that reuses controllers it did not build (#339). */
+export const REPORT_TEST_FAKE_HTTP_NEEDS_SESSION_CONTROLLERS =
+  "fake HTTP responses need a session that builds its own DomainControllers: this one reuses the app's";
+
 function undeclaredRequestsMessage(fakeFetch: FakeOutboundFetch): string {
   return `no fake HTTP response declared for ${fakeFetch.undeclaredRequests.join(", ")}`;
 }
@@ -312,13 +315,13 @@ export function createReportTestRunner(host: ReportTestSandboxHost): ClosableRep
     if (suite.fakeHttpResponses && !internalMiroirConfig.client.emulateServer) {
       return { status: "skipped", message: REPORT_TEST_FAKE_HTTP_NEEDS_EMULATED_SERVER };
     }
-    const fakeFetch = suite.fakeHttpResponses ? createFakeOutboundFetch(suite.fakeHttpResponses) : undefined;
-    const sessionDomainControllers = [domainController, executionEnvironment.domainControllerForServer].filter(
-      (controller): controller is DomainControllerInterface => controller !== undefined,
-    );
-    if (fakeFetch) {
-      sessionDomainControllers.forEach((controller) => controller.setOutboundFetch(fakeFetch.fetch));
+    // the session's external service environment answers with the suite's fake HTTP responses
+    if (suite.fakeHttpResponses && !executionEnvironment.fakeOutboundHttp) {
+      return { status: "skipped", message: REPORT_TEST_FAKE_HTTP_NEEDS_SESSION_CONTROLLERS };
     }
+    const fakeFetch = suite.fakeHttpResponses
+      ? executionEnvironment.fakeOutboundHttp?.answerWith(suite.fakeHttpResponses)
+      : undefined;
     try {
       if (host.miroirReports) {
         // the session resets its Miroir model before each leaf, back to the bootstrap Reports
@@ -390,9 +393,7 @@ export function createReportTestRunner(host: ReportTestSandboxHost): ClosableRep
       return failure(testName, error, fakeFetch);
     } finally {
       unmountCurrentCase();
-      if (fakeFetch) {
-        sessionDomainControllers.forEach((controller) => controller.setOutboundFetch(undefined));
-      }
+      fakeFetch?.release();
     }
   };
 

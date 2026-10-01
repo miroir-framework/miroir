@@ -612,7 +612,7 @@ export const RootComponent = (props: RootComponentProps) => {
   const agentsEnabled = context.processCapabilities.ai === true;
   const copilotUiRequested =
     context.showAiSidebar === true || context.showCopilotDevConsole === true;
-  // Latch: defer vendor-copilotkit until first AI AppBar open, then keep
+  // Latch: defer the CopilotKit chunks until first AI AppBar open, then keep
   // CopilotKit mounted while snapshot ai stays enabled so chat state survives closing
   // both controls (AiActionsProvider still toggles visibility inside the shell).
   const [copilotKitSessionActive, setCopilotKitSessionActive] = useState(false);

@@ -8,6 +8,7 @@ import type {
   Deployment,
   DomainControllerInterface,
   EndpointDefinition,
+  ExternalServiceTokenCache,
   StoreUnitConfiguration,
 } from "miroir-core";
 import {
@@ -16,6 +17,7 @@ import {
   LoggerOptions,
   MiroirActivityTracker,
   miroirCoreStartup,
+  createExternalServiceTokenCache,
   MiroirEventService,
   MiroirLoggerFactory,
   resetAndInitApplicationDeployment,
@@ -62,6 +64,8 @@ export type ConnectExternalService284Harness = {
   domainControllerForServer: DomainControllerInterface;
   applicationDeploymentMap: ApplicationDeploymentMap;
   fakeServer: FakeExternalServiceServer;
+  /** #339: the OAuth2 tokens of the session's external service environment. */
+  tokenCache: ExternalServiceTokenCache;
   libraryModelEnvironment: ReturnType<typeof getDefaultLibraryModelEnvironmentDEFUNCT>;
 };
 
@@ -139,8 +143,11 @@ export async function bootConnectExternalService284Harness(options?: {
   expect(FIXTURE_APPLICATION_UUID).not.toBe(ADMIN_APPLICATION_UUID);
 
   const fakeServer = await startFakeExternalServiceServer(options?.fixtures ?? {});
+  const tokenCache = createExternalServiceTokenCache();
 
   const session = new AppStackIntegrationTestSession(miroirConfig, {
+    // the session's external services may call the fake server, a loopback http URL
+    externalServiceEnvironment: { insecureBaseUrls: [fakeServer.baseUrl], tokenCache },
     applicationDeploymentMap,
     adminDeployment,
     libraryDeploymentStorageConfiguration,
@@ -177,6 +184,7 @@ export async function bootConnectExternalService284Harness(options?: {
     domainControllerForServer,
     applicationDeploymentMap,
     fakeServer,
+    tokenCache,
     libraryModelEnvironment: defaultLibraryModelEnvironment,
   };
 }

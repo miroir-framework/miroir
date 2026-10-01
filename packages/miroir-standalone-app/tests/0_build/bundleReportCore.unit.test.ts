@@ -81,8 +81,8 @@ describe("bundleReportCore: packages of a module id", () => {
     expect(attributeModule("C:/dev/miroir/node_modules/zod/index.js", windows).name).toBe("zod");
   });
 
-  it("keeps a package nested under @copilotkit in vendor-copilotkit, as the manual chunks always did", () => {
-    expect(resolveManualChunk(nestedMarkdown)).toBe("vendor-copilotkit");
+  it("leaves CopilotKit, and the packages nested under it, to Rollup's own splitting (#337)", () => {
+    expect(resolveManualChunk(nestedMarkdown)).toBeUndefined();
     expect(resolveManualChunk(`${root}/node_modules/d3-sankey/node_modules/internmap/src/index.js`)).toBe("vendor-d3");
     expect(resolveManualChunk(`\0${root}/node_modules/react/index.js?commonjs-es-import`)).toBe("vendor-react");
     expect(resolveManualChunk(`${root}/node_modules/zod/index.js`)).toBeUndefined();

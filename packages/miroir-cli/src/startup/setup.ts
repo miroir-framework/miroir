@@ -15,7 +15,7 @@ import {
 import {
   RestPersistenceClientAndRestClient,
   setupMiroirDomainController
-} from "miroir-localcache-redux";
+} from "miroir-localcache-redux/node";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName("miroir-cli", "5", "setup");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

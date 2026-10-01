@@ -6,6 +6,8 @@ import {
   DomainController,
   DomainControllerInterface,
   MiroirContextInterface,
+  defaultExternalServiceClient,
+  type ExternalServiceClientInterface,
 } from "miroir-core";
 import { LocalCache } from "./4_services/LocalCache.js";
 import {
@@ -24,6 +26,8 @@ import {
 export function setupMiroirDomainController(
   miroirContext: MiroirContextInterface,
   persistenceParams: PersistenceStoreAccessParams,
+  /** #339: the client of the external services; defaults to the global fetch and the process secrets. */
+  externalServiceClient: ExternalServiceClientInterface = defaultExternalServiceClient(),
 ): DomainControllerInterface {
   // Create the persistence store (replaces saga)
   const persistenceStore = new PersistenceAsyncStore(persistenceParams);
@@ -46,7 +50,7 @@ export function setupMiroirDomainController(
     miroirContext,
     localCache, // implements LocalCacheInterface
     persistenceStore, // implements PersistenceStoreLocalOrRemoteInterface
-    // {} as any// new Endpoint(localCache)
+    externalServiceClient,
   );
   
   return domainController;

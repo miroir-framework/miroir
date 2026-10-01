@@ -9,16 +9,21 @@ import {
   type EndpointExternalService,
 } from "../0_interfaces/1_core/endpointDefinition.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
+import type {
+  ExternalServiceClientInterface,
+  ExternalServiceEnvironment,
+  ExternalServicePrincipal,
+  ExternalServiceTokenCache,
+} from "../0_interfaces/4-services/ExternalServiceClientInterface.js";
 import {
   Action2Error,
   type Action2ReturnType,
   type ActionErrorType,
 } from "../0_interfaces/2_domain/DomainElement.js";
 import { packageName } from "../constants.js";
-import { resolveSecret, type ResolveSecretResult } from "./SecretStore.js";
+import type { ResolveSecretResult } from "./SecretStore.js";
 import { cleanLevel } from "./constants.js";
 import { MiroirLoggerFactory } from "./MiroirLoggerFactory.js";
-import { outboundFetch, type OutboundFetch } from "../1_core/OutboundFetch.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(
   packageName,
@@ -30,47 +35,35 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
   log = logger;
 });
 
-const allowedInsecureBaseUrls = new Set<string>();
-
-export function allowInsecureBaseUrlsForTests(baseUrls: string[]): void {
-  for (const url of baseUrls) {
-    allowedInsecureBaseUrls.add(normalizeBaseUrl(url));
-  }
-}
-
-export function clearAllowedInsecureBaseUrlsForTests(): void {
-  allowedInsecureBaseUrls.clear();
-}
-
-type Oauth2TokenCacheEntry = { accessToken: string; expiresAtMs: number };
-const oauth2TokenCache = new Map<string, Oauth2TokenCacheEntry>();
-/** Latest refresh token per secret key (in-memory only; providers may rotate on refresh). */
-const rotatedRefreshTokens = new Map<string, string>();
 const TOKEN_EXPIRY_MARGIN_MS = 60_000;
 
-export function clearExternalServiceTokenCacheForTests(): void {
-  oauth2TokenCache.clear();
-  rotatedRefreshTokens.clear();
+/** An empty token cache, for one ExternalServiceEnvironment. */
+export function createExternalServiceTokenCache(): ExternalServiceTokenCache {
+  const accessTokens = new Map<string, { accessToken: string; expiresAtMs: number }>();
+  const rotatedRefreshTokens = new Map<string, string>();
+  return {
+    accessTokens,
+    rotatedRefreshTokens,
+    clear() {
+      accessTokens.clear();
+      rotatedRefreshTokens.clear();
+    },
+  };
 }
 
-export type PersistRotatedSecret = (args: {
-  name: string;
-  value: string;
-  scope: "process" | "user";
-  miroirUserUuid?: string;
-}) => Promise<void>;
-
-let persistRotatedSecret: PersistRotatedSecret | undefined;
-
-export function setPersistRotatedSecret(callback: PersistRotatedSecret | undefined): void {
-  persistRotatedSecret = callback;
+/** The client of the external services, on the environment its composition root gives it (#339). */
+export function createExternalServiceClient(
+  environment: ExternalServiceEnvironment,
+): ExternalServiceClientInterface {
+  return {
+    fetch: environment.fetch,
+    executeOperation: (endpointInstance, actionType, bindings, principal) =>
+      executeExternalServiceOperation(environment, endpointInstance, actionType, bindings, principal),
+    assertBaseUrlAllowed: (baseUrl) => assertBaseUrlAllowed(environment, baseUrl),
+  };
 }
 
-export function clearPersistRotatedSecret(): void {
-  persistRotatedSecret = undefined;
-}
-
-export function oauth2PrincipalCacheScope(principal?: { miroirUserUuid?: string }): string {
+export function oauth2PrincipalCacheScope(principal?: ExternalServicePrincipal): string {
   return principal?.miroirUserUuid ?? "process";
 }
 
@@ -142,7 +135,10 @@ function messageForHttpStatus(status: number): string {
   return `External service returned HTTP ${status}: upstream failure`;
 }
 
-export function assertBaseUrlAllowed(baseUrl: string): Action2Error | undefined {
+function assertBaseUrlAllowed(
+  environment: ExternalServiceEnvironment,
+  baseUrl: string,
+): Action2Error | undefined {
   let parsed: URL;
   try {
     parsed = new URL(baseUrl);
@@ -154,10 +150,8 @@ export function assertBaseUrlAllowed(baseUrl: string): Action2Error | undefined 
   if (!insecure) {
     return undefined;
   }
-  if (
-    allowedInsecureBaseUrls.has(normalizeBaseUrl(baseUrl)) ||
-    allowedInsecureBaseUrls.has(parsed.origin)
-  ) {
+  const allowed = environment.insecureBaseUrls.map(normalizeBaseUrl);
+  if (allowed.includes(normalizeBaseUrl(baseUrl)) || allowed.includes(parsed.origin)) {
     return undefined;
   }
   return externalServiceError(
@@ -319,16 +313,16 @@ async function resolveClientCredentialsToken(
   scheme: OAuth2ClientCredentialsScheme,
   actionType: string,
   forceRefresh: boolean,
-  principal?: { miroirUserUuid?: string },
-  fetchImpl: OutboundFetch = outboundFetch,
+  principal: ExternalServicePrincipal | undefined,
+  environment: ExternalServiceEnvironment,
 ): Promise<string | Action2Error> {
   const cacheKey = `${normalizeBaseUrl(scheme.tokenUrl)}|${scheme.clientIdKey}|${oauth2PrincipalCacheScope(principal)}`;
-  const cached = oauth2TokenCache.get(cacheKey);
+  const cached = environment.tokenCache.accessTokens.get(cacheKey);
   if (!forceRefresh && cached && cached.expiresAtMs - TOKEN_EXPIRY_MARGIN_MS > Date.now()) {
     return cached.accessToken;
   }
 
-  const tokenUrlError = assertBaseUrlAllowed(scheme.tokenUrl);
+  const tokenUrlError = assertBaseUrlAllowed(environment, scheme.tokenUrl);
   if (tokenUrlError) {
     log.warn("external service call rejected: tokenUrl not allowed", { actionType });
     return tokenUrlError;
@@ -337,8 +331,8 @@ async function resolveClientCredentialsToken(
   let clientId: string;
   let clientSecret: string;
   try {
-    clientId = resolveSecret(scheme.clientIdKey, principal).value;
-    clientSecret = resolveSecret(scheme.clientSecretKey, principal).value;
+    clientId = environment.resolveSecret(scheme.clientIdKey, principal).value;
+    clientSecret = environment.resolveSecret(scheme.clientSecretKey, principal).value;
   } catch {
     log.warn(
       "external service call blocked: clientIdKey/clientSecretKey did not resolve to registered secrets (restart the server with --secret <name>=<value> or MIROIR_SECRET_<NAME>)",
@@ -353,7 +347,7 @@ async function resolveClientCredentialsToken(
   }
   let response: Response;
   try {
-    response = await fetchImpl(scheme.tokenUrl, {
+    response = await environment.fetch(scheme.tokenUrl, {
       method: "POST",
       headers: {
         Authorization: `Basic ${toBase64(`${clientId}:${clientSecret}`)}`,
@@ -399,7 +393,7 @@ async function resolveClientCredentialsToken(
   }
   const expiresInSec =
     typeof payload.expires_in === "number" && payload.expires_in > 0 ? payload.expires_in : 3600;
-  oauth2TokenCache.set(cacheKey, {
+  environment.tokenCache.accessTokens.set(cacheKey, {
     accessToken: payload.access_token,
     expiresAtMs: Date.now() + expiresInSec * 1000,
   });
@@ -437,10 +431,10 @@ async function resolveAuthorizationCodeToken(
   scheme: OAuth2AuthorizationCodeScheme,
   actionType: string,
   forceRefresh: boolean,
-  principal?: { miroirUserUuid?: string },
-  fetchImpl: OutboundFetch = outboundFetch,
+  principal: ExternalServicePrincipal | undefined,
+  environment: ExternalServiceEnvironment,
 ): Promise<string | Action2Error> {
-  const tokenUrlError = assertBaseUrlAllowed(scheme.tokenUrl);
+  const tokenUrlError = assertBaseUrlAllowed(environment, scheme.tokenUrl);
   if (tokenUrlError) {
     log.warn("external service call rejected: tokenUrl not allowed", { actionType });
     return tokenUrlError;
@@ -449,8 +443,8 @@ async function resolveAuthorizationCodeToken(
   let clientId: string;
   let clientSecret: string;
   try {
-    clientId = resolveSecret(scheme.clientIdKey, principal).value;
-    clientSecret = resolveSecret(scheme.clientSecretKey, principal).value;
+    clientId = environment.resolveSecret(scheme.clientIdKey, principal).value;
+    clientSecret = environment.resolveSecret(scheme.clientSecretKey, principal).value;
   } catch {
     log.warn(
       "external service call blocked: clientIdKey/clientSecretKey did not resolve to registered secrets (restart the server with --secret <name>=<value> or MIROIR_SECRET_<NAME>)",
@@ -461,7 +455,7 @@ async function resolveAuthorizationCodeToken(
 
   let resolvedRefresh: ResolveSecretResult;
   try {
-    resolvedRefresh = resolveSecret(scheme.refreshTokenKey, principal);
+    resolvedRefresh = environment.resolveSecret(scheme.refreshTokenKey, principal);
   } catch {
     log.warn(
       "external service call blocked: refreshTokenKey did not resolve to a registered secret (restart the server with --secret <name>=<value> or MIROIR_SECRET_<NAME>)",
@@ -471,13 +465,13 @@ async function resolveAuthorizationCodeToken(
   }
 
   const cacheKey = oauth2AuthorizationCodeCacheKey(scheme, resolvedRefresh);
-  const cached = oauth2TokenCache.get(cacheKey);
+  const cached = environment.tokenCache.accessTokens.get(cacheKey);
   if (!forceRefresh && cached && cached.expiresAtMs - TOKEN_EXPIRY_MARGIN_MS > Date.now()) {
     return cached.accessToken;
   }
 
   const rotatedKey = `${scheme.refreshTokenKey}|${oauth2ResolvedCacheScope(resolvedRefresh)}`;
-  const refreshToken = rotatedRefreshTokens.get(rotatedKey) ?? resolvedRefresh.value;
+  const refreshToken = environment.tokenCache.rotatedRefreshTokens.get(rotatedKey) ?? resolvedRefresh.value;
 
   const body = new URLSearchParams({ grant_type: "refresh_token", refresh_token: refreshToken });
   if (scheme.scopes) {
@@ -485,7 +479,7 @@ async function resolveAuthorizationCodeToken(
   }
   let response: Response;
   try {
-    response = await fetchImpl(scheme.tokenUrl, {
+    response = await environment.fetch(scheme.tokenUrl, {
       method: "POST",
       headers: {
         Authorization: `Basic ${toBase64(`${clientId}:${clientSecret}`)}`,
@@ -534,9 +528,9 @@ async function resolveAuthorizationCodeToken(
       actionType,
       refreshTokenKey: scheme.refreshTokenKey,
     });
-    if (resolvedRefresh.source === "row" && persistRotatedSecret) {
+    if (resolvedRefresh.source === "row" && environment.persistRotatedSecret) {
       try {
-        await persistRotatedSecret({
+        await environment.persistRotatedSecret({
           name: scheme.refreshTokenKey,
           value: payload.refresh_token,
           scope: resolvedRefresh.scope,
@@ -549,11 +543,11 @@ async function resolveAuthorizationCodeToken(
         );
       }
     }
-    rotatedRefreshTokens.set(rotatedKey, payload.refresh_token);
+    environment.tokenCache.rotatedRefreshTokens.set(rotatedKey, payload.refresh_token);
   }
   const expiresInSec =
     typeof payload.expires_in === "number" && payload.expires_in > 0 ? payload.expires_in : 3600;
-  oauth2TokenCache.set(cacheKey, {
+  environment.tokenCache.accessTokens.set(cacheKey, {
     accessToken: payload.access_token,
     expiresAtMs: Date.now() + expiresInSec * 1000,
   });
@@ -575,8 +569,8 @@ async function resolveAuthorizationHeader(
   externalService: EndpointExternalService,
   actionType: string,
   forceTokenRefresh: boolean,
-  principal?: { miroirUserUuid?: string },
-  fetchImpl: OutboundFetch = outboundFetch,
+  principal: ExternalServicePrincipal | undefined,
+  environment: ExternalServiceEnvironment,
 ): Promise<string | Action2Error | undefined> {
   const scheme = externalService.securityScheme;
   if (scheme?.type === "none") {
@@ -588,7 +582,7 @@ async function resolveAuthorizationHeader(
       actionType,
       forceTokenRefresh,
       principal,
-      fetchImpl,
+      environment,
     );
     if (token instanceof Action2Error) {
       return token;
@@ -601,7 +595,7 @@ async function resolveAuthorizationHeader(
       actionType,
       forceTokenRefresh,
       principal,
-      fetchImpl,
+      environment,
     );
     if (token instanceof Action2Error) {
       return token;
@@ -611,7 +605,7 @@ async function resolveAuthorizationHeader(
   if (externalService.credentialKey) {
     let token: string;
     try {
-      token = resolveSecret(externalService.credentialKey, principal).value;
+      token = environment.resolveSecret(externalService.credentialKey, principal).value;
     } catch {
       log.warn(
         "external service call blocked: credentialKey did not resolve to a registered secret (restart the server with --secret <name>=<value> or MIROIR_SECRET_<NAME>)",
@@ -631,12 +625,12 @@ async function resolveAuthorizationHeader(
   return undefined;
 }
 
-export async function executeExternalServiceOperation(
+async function executeExternalServiceOperation(
+  environment: ExternalServiceEnvironment,
   endpointInstance: EndpointDefinitionLike,
   actionType: string,
   bindings: Record<string, unknown>,
-  principal?: { miroirUserUuid?: string },
-  fetchImpl: OutboundFetch = outboundFetch,
+  principal?: ExternalServicePrincipal,
 ): Promise<Action2ReturnType> {
   const externalService = getExternalService(endpointInstance);
   if (!externalService) {
@@ -668,7 +662,7 @@ export async function executeExternalServiceOperation(
     actionType,
     bindingStrings(bindings),
     principal,
-    fetchImpl,
+    environment,
   );
 }
 
@@ -678,15 +672,15 @@ export async function executeExternalServiceOperation(
  * @param actionType - The action type to call.
  * @param bindings - The bindings to use for the call.
  * @param principal - The principal to use for the call.
- * @param fetchImpl - The fetch of the calling DomainController.
+ * @param environment - The environment of the client.
  * @returns The result of the call.
  */
 async function fetchExternalServiceOperation(
   externalService: EndpointExternalService,
   actionType: string,
   bindings: Record<string, string>,
-  principal?: { miroirUserUuid?: string },
-  fetchImpl: OutboundFetch = outboundFetch,
+  principal: ExternalServicePrincipal | undefined,
+  environment: ExternalServiceEnvironment,
 ): Promise<Action2ReturnType> {
   const operation = externalService.operations.find((op) => op.operationId === actionType);
   if (!operation) {
@@ -714,7 +708,7 @@ async function fetchExternalServiceOperation(
     );
   }
 
-  const baseUrlError = assertBaseUrlAllowed(externalService.baseUrl);
+  const baseUrlError = assertBaseUrlAllowed(environment, externalService.baseUrl);
   if (baseUrlError) {
     log.warn("external service call rejected: baseUrl not allowed", { baseUrl: externalService.baseUrl });
     return baseUrlError;
@@ -734,7 +728,7 @@ async function fetchExternalServiceOperation(
     actionType,
     false,
     principal,
-    fetchImpl,
+    environment,
   );
   if (authorization instanceof Action2Error) {
     return authorization;
@@ -748,7 +742,7 @@ async function fetchExternalServiceOperation(
 
   const doFetch = async (): Promise<Response | Action2Error> => {
     try {
-      return await fetchImpl(url, {
+      return await environment.fetch(url, {
         method: operation.method,
         headers,
       });
@@ -778,7 +772,7 @@ async function fetchExternalServiceOperation(
       actionType,
       true,
       principal,
-      fetchImpl,
+      environment,
     );
     if (refreshedAuthorization instanceof Action2Error) {
       return refreshedAuthorization;
