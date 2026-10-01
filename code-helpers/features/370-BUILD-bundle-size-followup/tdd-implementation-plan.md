@@ -29,7 +29,7 @@ This plan does **not** cover F10 (rejected), the ag-grid 33 migration (G2, own i
 |---|---|---|---|
 | 0 | Characterize the baseline after the MUI 9 bump | ✅ | guard passes; baselines recorded |
 | 1 | The page loads no YAML parser (tracer) | ✅ | `forbiddenEager` `yaml`; YAML OpenAPI transformer test |
-| 2 | The page loads no IndexedDB store | ⬜ | `forbiddenEager` `abstract-level`; `testMiroir` on `test-indexedDb` |
+| 2 | The page loads no IndexedDB store | ✅ | `forbiddenEager` `abstract-level`; `testMiroir` on `test-indexedDb` |
 | 3 | The page loads no JSON diff | ⬜ | `forbiddenEager` `json-diff`; `fn.modelUpdate` |
 | 4 | The page loads `merge`, not lodash | ⬜ | bare-`lodash` importer test; guard |
 | 5 | The page loads no Library example | ⬜ | `forbiddenEager` `miroir-example-library`; label test |
@@ -148,7 +148,7 @@ Guard; `npm run testMiroir -w miroir-core -- --suites tr.syncExternalServiceSche
 
 ## Slice 2 — The page loads no IndexedDB store
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -172,7 +172,11 @@ Guard; IndexedDB stores still work: `MIROIR_ENV=test-indexedDb npm run testMiroi
 
 ### Realization
 
-_(to fill)_
+- Page eager gzip 850 787 → 816 811 (−33 976, trial said −35 099); `eagerGzipBaseline` lowered. `level`, `browser-level`, `abstract-level` added to `forbiddenEager`; `--init` moved them and their dependencies (`buffer`, `events`, `ieee754`, `catering`, `level-supports`, `level-transcoder`, `module-error`, `queue-microtask`, `run-parallel-limit`, `node:fs via miroir-store-indexedDb`) from `eager` to `lazy`.
+- Deviation: lazy factory bodies alone changed nothing (850 998), because `src/index.ts` re-exported `IndexedDb`, `IndexedDbDataStoreSection` and `IndexedDbModelStoreSection` statically. No package imports them (only `miroirIndexedDbStoreSectionStartup` is used, in 34 files), so the package now exports the startup function only.
+- tsup's ESM splitting emits one chunk per store class (`IndexedDb-*.js`, `IndexedDbAdminStore-*.js`, …); no tsup config change.
+- Refactor checkpoint: the other stores' `startup.ts` are aliased away in the web build since #337; left as they are.
+- Validation: guard 0 violations; `MIROIR_ENV=test-indexedDb testMiroir tr.core --mode integration` 261 passed (every application on `indexedDb`); miroir-store-indexedDb typecheck clean; nonreg `--scope smoke,actions` 19 passed (snapshot `20261001T201335Z`).
 
 ---
 
