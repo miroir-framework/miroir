@@ -13,7 +13,7 @@
 - `wizardWalk.284` is deleted: every row above is covered by a leaf of `report.connectExternalServiceWizard`. `multistepBranch.284` is kept, and nonreg step `appstack-284-openapi-connection-wizard` now runs it alone.
 - The upload row uses a new component test step, `uploadFile` (file name, text content, MIME type).
 - The Report leaves walk the real wizard where `wizardWalk.284` mounted cut-down copies of it (the secret case mounted the Custom token step alone). Walking the scheme branch found two bugs, fixed in Slice 7: the `scheme` and `secretsClient` branch tests used a transformer that does not exist (`equals`, now `boolExpr` `==`), so Next on Scheme did nothing; and the host showed that failure as an empty message. Checking that the token is in no text of the page found it in the hidden page-parameters dump of `ReportViewWithEditor`, now redacted like the step bag.
-- A `customToken` user still passes through the Client credentials secrets step: a branch has two targets for three schemes (#338).
+- A `customToken` user used to pass through the Client credentials secrets step (two branch targets for three schemes); fixed by #338 with a multi-way `cases` branch.
 
 ## Cases
 

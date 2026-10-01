@@ -8,7 +8,7 @@ Working branch: `claude/issue-338-qw3n4k` (from `_integration`, PR against `_int
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 1 | Multi-way `branch.cases` in the multistep host | ✅ | `multistepBranch.284` tests `cases-branch-*` |
-| 2 | Wizard: Scheme goes straight to its secrets step | ⏳ | MiroirTest `report.connectExternalServiceWizard` leaf "a custom token reaches neither the step bag nor the page" |
+| 2 | Wizard: Scheme goes straight to its secrets step | ✅ | MiroirTest `report.connectExternalServiceWizard` leaf "a custom token reaches neither the step bag nor the page" |
 
 ## Slice 1 — Multi-way `branch.cases` in the multistep host
 
@@ -26,3 +26,4 @@ Working branch: `claude/issue-338-qw3n4k` (from `_integration`, PR against `_int
 ## Realization
 
 - Slice 1: four `cases-branch-*` tests in `multistepBranch.284` (true case, false case, `default`, no matching case). Nonreg smoke,ui,external on filesystem, shared runner: 37/37 pass.
+- Slice 2: the leaf failed at "the Custom token step, straight after Scheme" (it showed Client credentials secrets) before the wizard change, passes after; `report.connectExternalServiceWizard` 8/8. Nonreg smoke,ui,external on filesystem, shared runner: 37/37 pass. #330 plan and wizard-coverage notes updated.
