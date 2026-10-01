@@ -115,6 +115,14 @@ describe("bundleReport", () => {
     expect(shipped).toEqual([]);
   });
 
+  it("bare `lodash` resolves to a `merge` shim on lodash-es: lodash comes only through glide's per-method imports (#370)", () => {
+    const lodashChains = report.chunks.flatMap((chunk) => {
+      const lodash = packageIn(chunk, "lodash");
+      return lodash ? [lodash.chain] : [];
+    });
+    expect(lodashChains.filter((chain) => !chain.some((step) => step.includes("@glideapps/glide-data-grid")))).toEqual([]);
+  });
+
   it("findings name fs externalized from miroir-store-indexedDb and the defeated ReportDisplay.tsx import", () => {
     expect(
       report.findings.filter(

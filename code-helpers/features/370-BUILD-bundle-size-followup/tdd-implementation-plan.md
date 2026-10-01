@@ -31,7 +31,7 @@ This plan does **not** cover F10 (rejected), the ag-grid 33 migration (G2, own i
 | 1 | The page loads no YAML parser (tracer) | ✅ | `forbiddenEager` `yaml`; YAML OpenAPI transformer test |
 | 2 | The page loads no IndexedDB store | ✅ | `forbiddenEager` `abstract-level`; `testMiroir` on `test-indexedDb` |
 | 3 | The page loads no JSON diff | ✅ | `forbiddenEager` `json-diff`; `fn.modelUpdate` |
-| 4 | The page loads `merge`, not lodash | ⬜ | bare-`lodash` importer test; guard |
+| 4 | The page loads `merge`, not lodash | ✅ | bare-`lodash` importer test; guard |
 | 5 | The page loads no Library example | ⬜ | `forbiddenEager` `miroir-example-library`; label test |
 | 6 | The first list loads one grid library | ⬜ | grid chunk test; glide list test |
 | 7 | Releases ship 12 grammars | ⬜ | grammar count test; tour Copilot sidebar |
@@ -215,7 +215,7 @@ Guard; `npm run testMiroir -w miroir-core -- --suites fn.modelUpdate --mode unit
 
 ## Slice 4 — The page loads `merge`, not lodash
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -239,7 +239,11 @@ Guard; `bundleReport.unit`; typecheck miroir-standalone-app; `npm run nonreg:fil
 
 ### Realization
 
-_(to fill)_
+- Page eager gzip 784 301 → 757 610 (−26 691, trial said −28 849); `eagerGzipBaseline` lowered; `lodash` added to `forbiddenEager` and moved to `lazy`.
+- `vite/lodashMergeShim.js` re-exports `merge` from `lodash-es`; `vite.config.js` aliases `^lodash$` to it in every mode but `test`, ahead of the #337 store aliases (build only).
+- Deviation: the RED test as planned ("no chunk holds lodash") would stay red: glide-data-grid imports per-method modules (`lodash/has.js`, …, 163 modules) in its lazy grid chunk. The report lists packages, not modules, so the test checks that every chunk holding `lodash` reaches it through `@glideapps/glide-data-grid`. Red before the change (the entry held lodash through redux-saga-promise), green after.
+- `SelectEntityInstanceEditor.tsx` and `JsonObjectEditFormDialog.tsx` import named functions from `lodash-es`. The app now declares `lodash-es` 4.18.1 (the version the root override already pins; one line in the lockfile's workspace entry). lodash-es has no types and `@types/lodash-es` is not installed, so `src/lodash-es.d.ts` re-exports the four functions' types from `@types/lodash`.
+- Validation: guard 0 violations; `bundleReport.unit` 6 passed; no new typecheck errors in miroir-standalone-app (the 32 pre-existing MUI 9 errors remain); nonreg `--scope smoke,localcache,ui` 36 passed (snapshot `20261001T205155Z`). The dev server was not started: the alias also applies there, untested.
 
 ---
 

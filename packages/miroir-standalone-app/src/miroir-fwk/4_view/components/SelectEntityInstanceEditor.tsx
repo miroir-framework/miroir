@@ -1,5 +1,4 @@
-import _ from "lodash";
-const { transform:_transform, isObject: _isObject, isUndefined: _isUndefined } = _;
+import { isObject as _isObject, isUndefined as _isUndefined, transform as _transform } from "lodash-es";
 
 import {
   ICellRendererParams
