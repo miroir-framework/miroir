@@ -150,7 +150,6 @@ import {
   type LogPhase,
 } from "../4_services/rollbackLog.js";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
-import { outboundFetch, type OutboundFetch } from "../1_core/OutboundFetch.js";
 import { packageName } from "../constants";
 
 import {
@@ -194,10 +193,7 @@ import {
 } from "../2_domain/syncExternalServiceSchema.js";
 import { normalizeConnectExternalServicePayload } from "./normalizeConnectExternalServicePayload.js";
 import { redactCredentialSecretsFromValue } from "../4_services/redactCredentialSecrets.js";
-import {
-  assertBaseUrlAllowed,
-  executeExternalServiceOperation,
-} from "../4_services/ExternalServiceClient.js";
+import type { ExternalServiceClientInterface } from "../0_interfaces/4-services/ExternalServiceClientInterface.js";
 import { ConfigurationService } from './ConfigurationService.js';
 import {
   ensureSecretsCrypto,
@@ -426,10 +422,6 @@ function findBundledMiroirActionDefinition(domainAction: { endpoint?: string; ac
 export class DomainController implements DomainControllerInterface, DomainControllerActionHost {
   private callUtil: CallUtils;
   private processCapabilities: ProcessCapabilities | undefined;
-  // #330: a Report test answers the requests of its session's controller to external services
-  private outboundFetchReplacement: OutboundFetch | undefined;
-  private readonly fetchOutbound: OutboundFetch = (input, init) =>
-    (this.outboundFetchReplacement ?? outboundFetch)(input, init);
   private instanceActionListeners: InstanceActionListener[] = [];
   // ##############################################################################################
   constructor(
@@ -437,7 +429,8 @@ export class DomainController implements DomainControllerInterface, DomainContro
     private miroirContext: MiroirContextInterface,
     private localCache: LocalCacheInterface,
     private persistenceStoreLocalOrRemote: PersistenceStoreLocalOrRemoteInterface, // instance of PersistenceReduxSaga
-    // private endpoint: EndpointDefinition,
+    // #339: the outbound requests to external services, on the environment of the composition root
+    private externalServiceClient: ExternalServiceClientInterface,
   ) {
     // this.callUtil = new CallUtils(miroirContext.errorLogService, persistenceStoreLocalOrRemote);
     this.callUtil = new CallUtils(persistenceStoreLocalOrRemote);
@@ -461,10 +454,6 @@ export class DomainController implements DomainControllerInterface, DomainContro
 
   setProcessCapabilities(snapshot: ProcessCapabilities): void {
     this.processCapabilities = snapshot;
-  }
-
-  setOutboundFetch(fetchReplacement: OutboundFetch | undefined): void {
-    this.outboundFetchReplacement = fetchReplacement;
   }
 
   addInstanceActionListener(listener: InstanceActionListener): () => void {
@@ -3284,7 +3273,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
           !(endpointInstance instanceof Action2Error) &&
           getExternalService(endpointInstance)
         ) {
-          return executeExternalServiceOperation(
+          return this.externalServiceClient.executeOperation(
             endpointInstance,
             (domainAction as any).actionType,
             {
@@ -3292,7 +3281,6 @@ export class DomainController implements DomainControllerInterface, DomainContro
               ...((domainAction as any).payload ?? {}),
             },
             principal,
-            this.fetchOutbound,
           );
         }
       }
@@ -3594,12 +3582,11 @@ export class DomainController implements DomainControllerInterface, DomainContro
       if (endpointInstance instanceof Action2Error) {
         return { kind: "error", error: endpointInstance };
       }
-      const executed = await executeExternalServiceOperation(
+      const executed = await this.externalServiceClient.executeOperation(
         endpointInstance,
         extractor.actionType,
         extractor.parameterBindings ?? {},
         principal,
-        this.fetchOutbound,
       );
       if (executed instanceof Action2Error) {
         return { kind: "error", error: executed };
@@ -3652,7 +3639,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
     principal?: AuthPrincipal,
   ): Promise<Action2ReturnType> {
     if (this.persistenceStoreAccessMode === "local") {
-      return executeExternalServiceOperation(endpoint, operationId, parameters, principal, this.fetchOutbound);
+      return this.externalServiceClient.executeOperation(endpoint, operationId, parameters, principal);
     }
     const targetApplication = (endpoint as { application?: string }).application;
     const deploymentUuid =
@@ -3747,12 +3734,11 @@ export class DomainController implements DomainControllerInterface, DomainContro
       }
     }
     try {
-      return await executeExternalServiceOperation(
+      return await this.externalServiceClient.executeOperation(
         endpoint,
         operationId,
         payload?.parameters ?? {},
         principal,
-        this.fetchOutbound,
       );
     } finally {
       if (secretSnapshots.length > 0) {
@@ -4399,13 +4385,13 @@ export class DomainController implements DomainControllerInterface, DomainContro
       typeof textRaw === "string" ? textRaw : textRaw == null ? "" : String(textRaw);
 
     if (url.length > 0) {
-      const baseUrlError = assertBaseUrlAllowed(url);
+      const baseUrlError = this.externalServiceClient.assertBaseUrlAllowed(url);
       if (baseUrlError) {
         return baseUrlError;
       }
       try {
         // PR #285 P1: never follow redirects — a 3xx could land on a private/loopback host.
-        const response = await this.fetchOutbound(url, { redirect: "manual" });
+        const response = await this.externalServiceClient.fetch(url, { redirect: "manual" });
         if (response.status >= 300 && response.status < 400) {
           return new Action2Error(
             "InvalidAction",

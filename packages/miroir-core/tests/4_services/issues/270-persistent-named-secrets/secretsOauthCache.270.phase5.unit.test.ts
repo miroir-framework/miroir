@@ -1,20 +1,16 @@
 /**
  * #270 PR review — OAuth refresh cache must follow the resolved secret row.
  */
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import {
   Action2Error,
-  allowInsecureBaseUrlsForTests,
-  clearAllowedInsecureBaseUrlsForTests,
-  clearExternalServiceTokenCacheForTests,
-  clearPersistRotatedSecret,
   clearSecrets,
   clearSecretsMasterKey,
+  defaultExternalServiceClient,
   encryptSecret,
-  executeExternalServiceOperation,
   hydrateSecrets,
-  setPersistRotatedSecret,
+  type OutboundFetch,
 } from "miroir-core";
 
 const RUN_TEST = process.env.RUN_TEST;
@@ -63,10 +59,6 @@ function authorizationCodeEndpoint() {
 }
 
 afterEach(() => {
-  vi.unstubAllGlobals();
-  clearPersistRotatedSecret();
-  clearExternalServiceTokenCacheForTests();
-  clearAllowedInsecureBaseUrlsForTests();
   clearSecrets();
   clearSecretsMasterKey();
 });
@@ -74,7 +66,6 @@ afterEach(() => {
 if (runThis) {
   describe("secretsOauthCache.270.phase5 resolved-scope cache", () => {
     it("does not reuse a process-fallback rotated token after Alice creates a user row", async () => {
-      allowInsecureBaseUrlsForTests([BASE_URL]);
       hydrateSecrets({
         wrappingKey: WRAPPING_KEY,
         rows: [
@@ -100,13 +91,7 @@ if (runThis) {
         scope: "process" | "user";
         miroirUserUuid?: string;
       }> = [];
-      setPersistRotatedSecret(async (args) => {
-        persisted.push(args);
-      });
-
-      vi.stubGlobal(
-        "fetch",
-        async (url: string | URL, init?: { body?: string }) => {
+      const fetch = (async (url: string | URL, init?: { body?: string }) => {
           const href = String(url);
           if (href.includes("/api/token")) {
             const body = String(init?.body ?? "");
@@ -127,10 +112,16 @@ if (runThis) {
             status: 200,
             json: async () => ({ ok: true }),
           };
+      }) as unknown as OutboundFetch;
+      const client = defaultExternalServiceClient({
+        fetch,
+        insecureBaseUrls: [BASE_URL],
+        persistRotatedSecret: async (args) => {
+          persisted.push(args);
         },
-      );
+      });
 
-      const first = await executeExternalServiceOperation(
+      const first = await client.executeOperation(
         authorizationCodeEndpoint(),
         "get-playlist",
         { playlist_id: "p1" },
@@ -156,7 +147,7 @@ if (runThis) {
         ],
       });
 
-      const second = await executeExternalServiceOperation(
+      const second = await client.executeOperation(
         authorizationCodeEndpoint(),
         "get-playlist",
         { playlist_id: "p1" },
