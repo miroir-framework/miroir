@@ -13,12 +13,8 @@ export default defineConfig({
     hookTimeout: 30000,
     // Vitest 3 defaults to the "forks" pool, which runs test FILES in parallel processes.
     // Integration files share on-disk stores (.miroir/<test environment>/) and ports, so they MUST run
-    // sequentially: force the threads pool where singleThread below actually applies.
+    // sequentially: one worker.
     pool: "threads",
-    poolOptions: {
-      threads: {
-        singleThread: true,
-      },
-    },
+    maxWorkers: 1,
   },
 });

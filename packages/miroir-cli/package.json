@@ -23,7 +23,7 @@
     "build": "tsup --target=node20 --format esm src/index.ts",
     "devBuild": "npm run build",
     "dev": "npm run build && node ./dist/index.js",
-    "test": "cross-env NODE_ENV=test vitest run --poolOptions.threads.singleThread --bail=1",
+    "test": "cross-env NODE_ENV=test vitest run --bail=1",
     "testByFile": "cross-env NODE_ENV=test vitest run"
   },
   "dependencies": {
@@ -60,6 +60,6 @@
     "cross-env": "7.0.3",
     "miroir-example-library": "*",
     "tsup": "8.5.1",
-    "vitest": "3.2.7"
+    "vitest": "5.0.1"
   }
 }

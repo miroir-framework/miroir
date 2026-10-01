@@ -17,8 +17,8 @@
   "scripts": {
     "build": "tsup",
     "devBuild": "npm run build",
-    "test": "vitest run --poolOptions.threads.singleThread -t",
-    "testByFile": "vitest run --poolOptions.forks.singleFork --reporter=verbose"
+    "test": "vitest run -t",
+    "testByFile": "vitest run --maxWorkers=1 --reporter=verbose"
   },
   "dependencies": {
     "@codemirror/lang-javascript": "6.2.5",
@@ -48,6 +48,6 @@
     "miroir-app-admin": "*",
     "miroir-example-library": "*",
     "tsup": "8.5.1",
-    "vitest": "3.2.7"
+    "vitest": "5.0.1"
   }
 }

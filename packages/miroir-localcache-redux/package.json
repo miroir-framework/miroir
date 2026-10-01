@@ -23,7 +23,7 @@
     "devBuild": "npm run build",
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
     "test": "cross-env NODE_ENV=test jest --verbose --debug --silent=false -t",
-    "vitest": "vitest run --poolOptions.threads.singleThread --passWithNoTests"
+    "vitest": "vitest run --passWithNoTests"
   },
   "tsup": {
     "dts": true,
@@ -77,7 +77,7 @@
     "tsup": "8.5.1",
     "vite": "7.3.6",
     "vite-plugin-node-polyfills": "0.28.0",
-    "vitest": "3.2.7"
+    "vitest": "5.0.1"
   },
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT"

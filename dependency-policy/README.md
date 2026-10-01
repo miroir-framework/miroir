@@ -15,6 +15,7 @@ An override forces one version of a package everywhere in the tree, whatever its
 | `nx` > `smol-toml` | 1.7.1 | `nx` 23.2.1 (under `lerna`) pins `smol-toml` 1.6.1: GHSA-7w5x-hrqm-74c2 (high) | #326 Slice 6 | `nx` pins `smol-toml` ≥ 1.7.1 |
 | `@connectrpc/connect-node` > `undici` | 6.28.1 | `@connectrpc/connect-node` 1.7.0 (under `miroir-ai` and `@cursor/sdk`) asks for `undici` `^5.28.4`; 5.x has high advisories fixed only in 6.24 and 6.27 (GHSA-vrm6-8vpv-qv8q, GHSA-v9p9-hfj2-hcw8, GHSA-vxpw-j846-p89q) and moderate ones fixed in 6.28. It imports only `Headers`, as a polyfill for Node < 18 | #326 Slice 7 | `@connectrpc/connect-node` asks for `undici` ≥ 6.28 |
 | `lodash-es` | 4.18.1 | `chevrotain` 11.1 (under `mermaid` > `langium`) pins `lodash-es` 4.17.23: GHSA-r5fr-rjxr-66jc (high), GHSA-f23m-r3pf-42rh | #326 Slice 7 | `mermaid` no longer brings a `chevrotain` that pins `lodash-es` ≤ 4.17.23 |
+| `vitest` | 5.0.1 | One hoisted `vitest` for the repo-root tools (nonreg shared runner, `scripts/tests`): `@copilotkit/channels-core` 0.11 (under `@copilotkit/runtime`) declares an optional `vitest` `^4.0.0` peer, which otherwise keeps vitest 5 out of the root `node_modules` | #374 | `@copilotkit/channels-core` accepts `vitest` 5 |
 
 ## Vendored packages
 

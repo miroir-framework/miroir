@@ -45,7 +45,7 @@
     "miroir-store-indexedDb": "*",
     "miroir-store-mongodb": "*",
     "miroir-store-postgres": "*",
-    "vitest": "3.2.7"
+    "vitest": "5.0.1"
   },
   "build": {
     "appId": "com.miroir-framework.miroir-standalone-app-electron",

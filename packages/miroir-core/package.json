@@ -44,11 +44,11 @@
     "build": "npm run copy-files && tsup",
     "devBuild": "npm run generate-ts-types && echo DONE PRE-BUILD && npm run build",
     "generate-ts-types": "tsx ./scripts/generate-ts-types.ts",
-    "testByFileBailOut": "vitest run --poolOptions.forks.singleFork --reporter=verbose --bail=1",
-    "testByFile": "vitest run --poolOptions.forks.singleFork --reporter=verbose",
+    "testByFileBailOut": "vitest run --maxWorkers=1 --reporter=verbose --bail=1",
+    "testByFile": "vitest run --maxWorkers=1 --reporter=verbose",
     "testMiroir": "tsx ./scripts/test-miroir-core.ts",
-    "testByFileWithFullLog": "cross-env DEBUG='vite-node:*' vitest run --poolOptions.forks.singleFork",
-    "test": "vitest run --poolOptions.threads.singleThread -t"
+    "testByFileWithFullLog": "cross-env DEBUG='vite-node:*' vitest run --maxWorkers=1",
+    "test": "vitest run -t"
   },
   "browser": {
     "os": false,
@@ -94,6 +94,6 @@
     "tsup": "8.5.1",
     "tsx": "4.23.15",
     "vite": "7.3.6",
-    "vitest": "3.2.7"
+    "vitest": "5.0.1"
   }
 }

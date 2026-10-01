@@ -11,10 +11,5 @@ export default defineConfig({
     setupFiles: [],
     testTimeout: 10000,
     hookTimeout: 10000,
-    poolOptions: {
-      threads: {
-        singleThread: true,
-      },
-    },
   },
 });
