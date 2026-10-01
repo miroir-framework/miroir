@@ -1829,7 +1829,11 @@ export {
   runMiroirReportTest,
   runReportTestCompositeActionStep,
   runReportTestExpectActionResultStep,
+  resolveReportTestStepReferences,
   type ReportTestActionContext,
+  type ResolvedReactComponentTestStep,
+  type ResolvedReactComponentTestTarget,
+  type WithoutStoredValueReferences,
 } from "./5_tests/ReportTestTools.js";
 export {
   createFakeOutboundFetch,
