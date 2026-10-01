@@ -374,6 +374,25 @@ function storedValueOf(
   return current;
 }
 
+/** The step fields of type `string` that accept a reference, by step kind (#333). */
+const stringOnlyStepFields: Record<string, readonly string[]> = {
+  type: ["text"],
+  filterSelect: ["text"],
+  selectOption: ["option"],
+  renameRecordEntry: ["newName"],
+  uploadFile: ["content"],
+  waitForAttribute: ["value"],
+};
+
+/** Whether the field at `fieldPath` of a `stepKind` step takes a string only. */
+function isStringOnlyField(stepKind: string, fieldPath: readonly (string | number)[]): boolean {
+  if (fieldPath.length === 1) {
+    return stringOnlyStepFields[stepKind]?.includes(String(fieldPath[0])) ?? false;
+  }
+  // `byTestId` of a target (`target`, `parentContains`)
+  return fieldPath.length === 2 && fieldPath[1] === "byTestId";
+}
+
 /**
  * `step` with each `getFromContext` reference replaced by its value in `storedValues` (#333): the
  * test parameters and the values kept by the earlier `compositeAction` steps of the leaf.
@@ -381,7 +400,7 @@ function storedValueOf(
  * - A reference reads `referenceName`, or follows `referencePath`; `interpolation` is ignored,
  *   the reference is resolved when the step runs.
  * - Outside `expectedValue` (of `expectRenderedValues`), a reference must resolve to a string, a
- *   number or a boolean.
+ *   number or a boolean; a field that takes a string only gets a number or a boolean as text.
  * - An unresolved reference throws, naming the step field and what is missing.
  */
 export function resolveReportTestStepReferences(
@@ -403,7 +422,8 @@ export function resolveReportTestStepReferences(
           `${field}: the stored value "${path}" is ${kindOf(stored)}, expected a string, a number or a boolean`,
         );
       }
-      return stored;
+      // a field that takes a string only receives a stored number or boolean as its text
+      return isStringOnlyField(step.step, fieldPath) ? String(stored) : stored;
     }
     if (Array.isArray(value)) {
       return value.map((item, index) => resolve(item, [...fieldPath, index]));

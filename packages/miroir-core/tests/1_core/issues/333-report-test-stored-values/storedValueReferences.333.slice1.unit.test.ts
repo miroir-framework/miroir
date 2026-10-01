@@ -57,6 +57,28 @@ describe("resolveReportTestStepReferences (#333)", () => {
     });
   });
 
+  it("gives a stored number as text to a field that takes a string only", () => {
+    const year = { transformerType: "getFromContext", referencePath: ["otherBook", "book", "year"] } as const;
+    const typeStep: ReactComponentTestStep = { step: "type", target: { byTestId: year }, text: year };
+    const waitStep: ReactComponentTestStep = {
+      step: "waitForAttribute",
+      target: { ref: "yearField" },
+      attribute: "value",
+      value: year,
+    };
+    expect(resolveReportTestStepReferences(typeStep, storedValues)).toEqual({
+      step: "type",
+      target: { byTestId: "1969" },
+      text: "1969",
+    });
+    expect(resolveReportTestStepReferences(waitStep, storedValues)).toEqual({
+      step: "waitForAttribute",
+      target: { ref: "yearField" },
+      attribute: "value",
+      value: "1969",
+    });
+  });
+
   it("resolves references in the locators of a target and in the values of expectElement", () => {
     const step: ReactComponentTestStep = {
       step: "expectElement",
