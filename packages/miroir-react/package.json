@@ -48,6 +48,6 @@
     "miroir-app-admin": "*",
     "miroir-example-library": "*",
     "tsup": "8.5.1",
-    "vitest": "3.2.7"
+    "vitest": "5.0.1"
   }
 }
