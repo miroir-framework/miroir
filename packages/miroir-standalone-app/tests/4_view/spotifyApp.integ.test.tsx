@@ -31,10 +31,8 @@ import type {
 } from "miroir-core";
 import {
   Action2Error,
-  allowInsecureBaseUrlsForTests,
-  clearExternalServiceTokenCacheForTests,
-  clearAllowedInsecureBaseUrlsForTests,
   clearSecrets,
+  createExternalServiceTokenCache,
   ConfigurationService,
   createDeploymentCompositeAction,
   defaultMiroirModelEnvironment,
@@ -424,6 +422,9 @@ function renderSpotifyReport(
   );
 }
 
+// #339: the OAuth2 tokens of the session's external service environment
+const tokenCache = createExternalServiceTokenCache();
+
 beforeAll(async () => {
   fakeServer = await startFakeExternalServiceServer({
     [`GET /playlists/${PLAYLIST_ID_OK}`]: { body: PHASE7_PLAYLIST },
@@ -433,14 +434,13 @@ beforeAll(async () => {
     spotifyClientSecret: "test-client-secret",
     spotifyRefreshToken: "test-refresh-token",
   });
-  allowInsecureBaseUrlsForTests([fakeServer.baseUrl]);
-
   miroirContext = new MiroirContext(miroirActivityTracker, miroirEventService, miroirConfig);
 
   const libraryDeploymentStorageConfiguration: StoreUnitConfiguration =
     emulatedClient.deploymentStorageConfig[deployment_Library_DO_NO_USE.uuid];
 
   const session = new AppStackIntegrationTestSession(miroirConfig, {
+    externalServiceEnvironment: { insecureBaseUrls: [fakeServer.baseUrl], tokenCache },
     applicationDeploymentMap,
     adminDeployment,
     libraryDeploymentStorageConfiguration,
@@ -499,7 +499,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   fakeServer.receivedRequests.length = 0;
-  clearExternalServiceTokenCacheForTests();
+  tokenCache.clear();
   fakeServer.setFixture("GET", `/playlists/${PLAYLIST_ID_OK}`, { body: PHASE7_PLAYLIST });
   fakeServer.setFixture("GET", `/playlists/${PLAYLIST_ID_NEWSHAPE}`, { body: PLAYLIST_NEW_SHAPE });
   fakeServer.setFixture("GET", `/playlists/${PLAYLIST_ID_METADATA_ONLY}`, { body: PLAYLIST_METADATA_ONLY });
@@ -530,8 +530,7 @@ afterEach(() => {
 
 afterAll(async () => {
   clearSecrets();
-  clearAllowedInsecureBaseUrlsForTests();
-  clearExternalServiceTokenCacheForTests();
+  tokenCache.clear();
   if (fakeServer) {
     await fakeServer.close();
   }

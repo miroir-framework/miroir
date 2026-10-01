@@ -32,9 +32,8 @@ import type {
 } from "miroir-core";
 import {
   Action2Error,
-  allowInsecureBaseUrlsForTests,
-  clearAllowedInsecureBaseUrlsForTests,
   clearSecrets,
+  createExternalServiceTokenCache,
   ConfigurationService,
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
@@ -382,6 +381,9 @@ function renderReport(reportDefinition: Report, playlistId: string) {
   );
 }
 
+// #339: the OAuth2 tokens of the session's external service environment
+const tokenCache = createExternalServiceTokenCache();
+
 beforeAll(async () => {
   if (!miroirConfig.client.emulateServer) {
     throw new Error(
@@ -397,11 +399,10 @@ beforeAll(async () => {
     },
   });
   registerSecrets({ fakeSpotify: "test-token" });
-  allowInsecureBaseUrlsForTests([fakeServer.baseUrl]);
-
   miroirContext = new MiroirContext(miroirActivityTracker, miroirEventService, miroirConfig);
 
   const session = new AppStackIntegrationTestSession(miroirConfig, {
+    externalServiceEnvironment: { insecureBaseUrls: [fakeServer.baseUrl], tokenCache },
     applicationDeploymentMap,
     adminDeployment,
     libraryDeploymentStorageConfiguration,
@@ -439,7 +440,6 @@ afterEach(() => {
 
 afterAll(async () => {
   clearSecrets();
-  clearAllowedInsecureBaseUrlsForTests();
   if (fakeServer) {
     await fakeServer.close();
   }

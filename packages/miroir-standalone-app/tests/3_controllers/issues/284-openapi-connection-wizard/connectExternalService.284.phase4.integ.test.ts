@@ -12,9 +12,6 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest
 
 import {
   Action2Error,
-  allowInsecureBaseUrlsForTests,
-  clearAllowedInsecureBaseUrlsForTests,
-  clearExternalServiceTokenCacheForTests,
   clearSecrets,
   clearSecretsMasterKey,
   ENTITY_MIROIR_SECRET_UUID,
@@ -122,7 +119,6 @@ describe.skipIf(!shouldRunPhase4).sequential(
           [`GET /releases/1`]: { body: { id: "1", name: "x" } },
         },
       });
-      allowInsecureBaseUrlsForTests([harness.fakeServer.baseUrl]);
       setSecretsMasterKey(WRAPPING_KEY);
     }, 120000);
 
@@ -130,11 +126,10 @@ describe.skipIf(!shouldRunPhase4).sequential(
       harness.fakeServer.onRequest = undefined;
       harness.fakeServer.receivedRequests.length = 0;
       clearSecrets();
-      clearExternalServiceTokenCacheForTests();
+      harness.tokenCache.clear();
     });
 
     afterAll(async () => {
-      clearAllowedInsecureBaseUrlsForTests();
       clearSecrets();
       clearSecretsMasterKey();
       if (harness?.fakeServer) {

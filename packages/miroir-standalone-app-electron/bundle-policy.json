@@ -1,11 +1,13 @@
 {
   "$comment": "Bundle guard (#326), checked by scripts/check_bundle_policy.py against the build's bundle-report.json. See docs/internals/code-splitting.md.",
-  "eagerGzipBaseline": 4769537,
+  "eagerGzipBaseline": 3184200,
   "eagerGzipTolerance": 0.02,
   "forbiddenEager": [
     "@testing-library/*",
     "@mui/*",
-    "@copilotkit/react-*"
+    "@copilotkit/react-*",
+    "react-dom",
+    "react-redux"
   ],
   "eager": [
     "@ag-ui/a2ui-middleware",
@@ -133,7 +135,6 @@
     "has-symbols",
     "hasown",
     "heap",
-    "hoist-non-react-statics",
     "hono",
     "http-errors",
     "https-proxy-agent",
@@ -164,17 +165,17 @@
     "mime-db",
     "mime-types",
     "miroir-ai",
+    "miroir-app-admin",
+    "miroir-app-miroir",
     "miroir-core",
     "miroir-env",
+    "miroir-example-library",
     "miroir-localcache-redux",
     "miroir-mcp",
     "miroir-store-filesystem",
     "miroir-store-indexedDb",
     "miroir-store-mongodb",
     "miroir-store-postgres",
-    "miroir-app-admin",
-    "miroir-example-library",
-    "miroir-app-miroir",
     "moment",
     "moment-timezone",
     "mongodb",
@@ -211,10 +212,6 @@
     "quick-format-unescaped",
     "range-parser",
     "raw-body",
-    "react",
-    "react-dom",
-    "react-is",
-    "react-redux",
     "readable-stream",
     "redux",
     "redux-saga",
@@ -226,7 +223,6 @@
     "safe-buffer",
     "safe-stable-stringify",
     "safer-buffer",
-    "scheduler",
     "secure-json-parse",
     "semver",
     "send",
@@ -258,7 +254,6 @@
     "underscore",
     "unpipe",
     "untruncate-json",
-    "use-sync-external-store",
     "utils-merge",
     "uuid",
     "validator",
@@ -272,5 +267,8 @@
     "zod",
     "zod-to-json-schema"
   ],
-  "lazy": []
+  "lazy": [],
+  "defeatedDynamicImports": [
+    "packages/miroir-core/dist/index.js"
+  ]
 }

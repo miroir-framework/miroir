@@ -3,7 +3,6 @@
  * Persist of imported rows is the caller's job (`secrets.set`); this module does not
  * import DomainController.
  */
-import { createCipheriv, createDecipheriv, createHash, randomBytes } from "node:crypto";
 
 import type { EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface.js";
@@ -19,6 +18,27 @@ import {
   bytesToBase64Url,
 } from "../1_core/authentication/AuthenticationPolicy.js";
 import { registerHydratedProcessSecret, registerHydratedUserSecret } from "./SecretStore.js";
+
+type NodeCrypto = typeof import("node:crypto");
+
+/**
+ * `node:crypto`, loaded without a static import (#337): in a browser build a static import pulls
+ * the `crypto-browserify` polyfill into the page. On Node it loads with this module, so the sync
+ * functions below work at once; elsewhere `ensureSecretsCrypto()` loads it first.
+ */
+let nodeCrypto: NodeCrypto | undefined =
+  typeof process !== "undefined" && process.versions?.node ? await import("node:crypto") : undefined;
+
+export async function ensureSecretsCrypto(): Promise<void> {
+  nodeCrypto ??= await import("node:crypto");
+}
+
+function secretsCrypto(): NodeCrypto {
+  if (!nodeCrypto) {
+    throw new Error("Secrets crypto is not loaded: await ensureSecretsCrypto() first");
+  }
+  return nodeCrypto;
+}
 
 const ADMIN_APPLICATION_UUID = "55af124e-8c05-4bae-a3ef-0933d41daa92";
 const INSTANCE_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";
@@ -144,7 +164,7 @@ export function clearSecretsMasterKey(): void {
 }
 
 function wrappingKeyBytes(wrappingKey: string): Buffer {
-  return createHash("sha256").update(wrappingKey, "utf8").digest();
+  return secretsCrypto().createHash("sha256").update(wrappingKey, "utf8").digest();
 }
 
 export function encryptSecret(algorithm: string, wrappingKey: string, plaintext: string): string {
@@ -154,8 +174,8 @@ export function encryptSecret(algorithm: string, wrappingKey: string, plaintext:
   if (!wrappingKey) {
     throw new Error("Wrapping key is required");
   }
-  const iv = randomBytes(GCM_IV_LENGTH);
-  const cipher = createCipheriv(AES_256_GCM, wrappingKeyBytes(wrappingKey), iv);
+  const iv = secretsCrypto().randomBytes(GCM_IV_LENGTH);
+  const cipher = secretsCrypto().createCipheriv(AES_256_GCM, wrappingKeyBytes(wrappingKey), iv);
   const encrypted = Buffer.concat([cipher.update(plaintext, "utf8"), cipher.final()]);
   const tag = cipher.getAuthTag();
   return [
@@ -181,7 +201,7 @@ export function decryptSecret(algorithm: string, wrappingKey: string, ciphertext
     const iv = bufferFromBase64Url(parts[1]);
     const data = bufferFromBase64Url(parts[2]);
     const tag = bufferFromBase64Url(parts[3]);
-    const decipher = createDecipheriv(AES_256_GCM, wrappingKeyBytes(wrappingKey), iv);
+    const decipher = secretsCrypto().createDecipheriv(AES_256_GCM, wrappingKeyBytes(wrappingKey), iv);
     decipher.setAuthTag(tag);
     return Buffer.concat([decipher.update(data), decipher.final()]).toString("utf8");
   } catch {

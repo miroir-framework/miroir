@@ -48,18 +48,8 @@ export function resolveChunkLabelFromScriptUrl(url: string): string | undefined 
   ) {
     return "vendor-react";
   }
-  if (normalized.includes("@copilotkit") || normalized.includes("/copilotkit")) {
-    return "vendor-copilotkit";
-  }
-  if (
-    normalized.includes("/node_modules/d3/") ||
-    normalized.includes("/deps/d3.") ||
-    normalized.includes("miroir-diagram-class")
-  ) {
+  if (normalized.includes("/node_modules/d3/") || normalized.includes("/deps/d3.")) {
     return "vendor-d3";
-  }
-  if (normalized.includes("ag-grid")) {
-    return "vendor-ag-grid";
   }
   if (normalized.includes("@mui/material") || normalized.includes("@mui_icons-material")) {
     return "vendor-mui";

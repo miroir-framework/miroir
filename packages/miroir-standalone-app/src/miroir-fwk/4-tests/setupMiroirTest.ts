@@ -1,9 +1,13 @@
 import {
+  createFakeOutboundHttp,
+  defaultExternalServiceClient,
   fetchProcessCapabilities,
   MiroirActivityTracker,
   MiroirEventService,
   resolveProcessCapabilitiesUrl,
   type DomainControllerInterface,
+  type ExternalServiceEnvironment,
+  type FakeOutboundHttp,
   type LocalCacheInterface,
   type MiroirConfigClient,
 } from "miroir-core";
@@ -36,21 +40,33 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 
 // ################################################################################################
 /**
- * @param miroirConfig 
- * @returns 
+ * @param miroirConfig
+ * @param externalServiceEnvironment what the session's external service environment changes from
+ * the default one (#339), e.g. the insecure base URLs of a fake external service server
+ * @returns the session's DomainControllers, and the fetch of their external service environment
  */
 export async function setupMiroirTest(
   miroirConfig: MiroirConfigClient,
   miroirActivityTracker?: MiroirActivityTracker,
   miroirEventService?: MiroirEventService,
   customfetch?: any,
+  externalServiceEnvironment: Partial<ExternalServiceEnvironment> = {},
 ): Promise<{
   domainControllerForClient: DomainControllerInterface;
   domainControllerForServer?: DomainControllerInterface | undefined;
   persistenceStoreControllerManagerForClient: PersistenceStoreControllerManager;
   persistenceStoreControllerManagerForServer?: PersistenceStoreControllerManager | undefined;
   localCache: LocalCacheInterface;
+  fakeOutboundHttp: FakeOutboundHttp;
 }> {
+  // the client and the emulated server share one external service environment, as they share a process
+  const fakeOutboundHttp = createFakeOutboundHttp(
+    externalServiceEnvironment.fetch ?? ((input, init) => globalThis.fetch(input, init)),
+  );
+  const externalServiceClient = defaultExternalServiceClient({
+    ...externalServiceEnvironment,
+    fetch: fakeOutboundHttp.fetch,
+  });
   const localMiroirActivityTracker = miroirActivityTracker??new MiroirActivityTracker();
   const localMiroirEventService = miroirEventService??new MiroirEventService(localMiroirActivityTracker);
   const miroirContext = new MiroirContext(
@@ -108,7 +124,8 @@ export async function setupMiroirTest(
       localPersistenceStoreControllerManager:
         persistenceStoreControllerManagerForServer ?? persistenceStoreControllerManagerForClient,
       remotePersistenceStoreRestClient,
-    }
+    },
+    externalServiceClient,
   ); // even when emulating server, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
 
   const localCache = domainControllerForClient.getLocalCache();
@@ -119,7 +136,8 @@ export async function setupMiroirTest(
       {
         persistenceStoreAccessMode: "local",
         localPersistenceStoreControllerManager: persistenceStoreControllerManagerForServer!,
-      }
+      },
+      externalServiceClient,
     ); // even when emulating server, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
 
     (client as RestClientStub).setServerDomainController(domainControllerForServer);
@@ -130,6 +148,7 @@ export async function setupMiroirTest(
       persistenceStoreControllerManagerForClient,
       persistenceStoreControllerManagerForServer,
       localCache,
+      fakeOutboundHttp,
     };
   }
   // Isolated UI / vitest real-server sessions create a new remote DomainController.
@@ -146,5 +165,6 @@ export async function setupMiroirTest(
     persistenceStoreControllerManagerForClient,
     persistenceStoreControllerManagerForServer: undefined,
     localCache,
+    fakeOutboundHttp,
   };
 }

@@ -1,9 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React from "react";
-import ReactCodeMirror from "@uiw/react-codemirror";
-import { EditorView } from "@codemirror/view";
-import { javascript } from '@codemirror/lang-javascript';
+import React, { lazy, Suspense } from "react";
 import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
 import { useMiroirTheme } from '../contexts/MiroirThemeContext';
 import { cleanLevel, packageName } from '../constants';
@@ -12,27 +9,46 @@ const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLe
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger: LoggerInterface) => { log = logger; });
 
-// Module-level identities: @uiw/react-codemirror reconfigures the EditorView whenever
+// CodeMirror loads with the first code block, not with the page (#337).
+// Identities built once: @uiw/react-codemirror reconfigures the EditorView whenever
 // `extensions` or `basicSetup` change by reference, which rebuilds the fold gutter DOM
 // and drops the click that sits between mousedown and mouseup.
-const codeMirrorExtensions = [
-  javascript(),
-  EditorView.lineWrapping,
-  EditorView.theme({
-    ".cm-foldGutter": {
-      width: "1.2em",
-    },
-    ".cm-foldGutter .cm-gutterElement": {
-      textAlign: "center",
-      cursor: "pointer",
-    },
-  }),
-];
-
-const codeMirrorBasicSetup = {
-  foldGutter: true,
-  lineNumbers: true,
-};
+const ReadOnlyCodeMirror = lazy(async () => {
+  const [{ default: ReactCodeMirror }, { EditorView }, { javascript }] = await Promise.all([
+    import("@uiw/react-codemirror"),
+    import("@codemirror/view"),
+    import("@codemirror/lang-javascript"),
+  ]);
+  const extensions = [
+    javascript(),
+    EditorView.lineWrapping,
+    EditorView.theme({
+      ".cm-foldGutter": {
+        width: "1.2em",
+      },
+      ".cm-foldGutter .cm-gutterElement": {
+        textAlign: "center",
+        cursor: "pointer",
+      },
+    }),
+  ];
+  const basicSetup = {
+    foldGutter: true,
+    lineNumbers: true,
+  };
+  return {
+    default: ({ value, style }: { value: string; style: React.CSSProperties }) => (
+      <ReactCodeMirror
+        readOnly={true}
+        maxHeight="400px"
+        style={style}
+        value={value}
+        extensions={extensions}
+        basicSetup={basicSetup}
+      />
+    ),
+  };
+});
 
 interface CodeBlockProps {
   value: string;
@@ -45,6 +61,8 @@ export const CodeBlock_ReadOnly: React.FC<CodeBlockProps> = ({ value, copyButton
   const lines = jsonString?.split("\n");
   const maxLineLength = lines ? Math.max(...lines.map((line) => line.length)) : 0;
   const fixedWidth = Math.min(Math.max(maxLineLength * 0.6, 1200), 1800);
+
+  const codeStyle: React.CSSProperties = { width: `${fixedWidth}px`, maxWidth: "90vw" };
 
   const containerStyles = css({
     position: 'relative',
@@ -86,17 +104,13 @@ export const CodeBlock_ReadOnly: React.FC<CodeBlockProps> = ({ value, copyButton
           Copy
         </button>
       )}
-      <ReactCodeMirror
-        readOnly={true}
-        maxHeight="400px"
-        style={{
-          width: `${fixedWidth}px`,
-          maxWidth: "90vw",
-        }}
-        value={jsonString}
-        extensions={codeMirrorExtensions}
-        basicSetup={codeMirrorBasicSetup}
-      />
+      <Suspense
+        fallback={
+          <pre style={{ ...codeStyle, maxHeight: "400px", overflow: "auto", margin: 0 }}>{jsonString}</pre>
+        }
+      >
+        <ReadOnlyCodeMirror value={jsonString} style={codeStyle} />
+      </Suspense>
     </div>
   );
 };

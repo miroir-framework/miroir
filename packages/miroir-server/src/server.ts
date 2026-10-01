@@ -61,7 +61,8 @@ import {
   persistImportedProcessSecrets,
   persistRotatedSecretRow,
   requireWrappingKeyForSecretImport,
-  setPersistRotatedSecret,
+  defaultExternalServiceClient,
+  type DomainControllerInterface,
   resolveAuthenticationEnabled,
   restServerDefaultHandlers,
   setProcessTokenSecret,
@@ -92,7 +93,7 @@ import {
   type ResolvedEnvironment,
 } from "miroir-env";
 import { EndpointToolRegistry, setupMcpServer } from "miroir-mcp";
-import { setupMiroirDomainController } from 'miroir-localcache-redux';
+import { setupMiroirDomainController } from 'miroir-localcache-redux/node';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirMongoDbStoreSectionStartup } from 'miroir-store-mongodb';
@@ -410,12 +411,19 @@ const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
   miroirConfig.server.filesystemDeploymentRootDirectory,
 );
 
-const domainController = await setupMiroirDomainController(
+const domainController: DomainControllerInterface = await setupMiroirDomainController(
   miroirContext, 
   {
     persistenceStoreAccessMode: "local",
     localPersistenceStoreControllerManager: persistenceStoreControllerManager
-  }
+  },
+  defaultExternalServiceClient({
+    // a rotated refresh token of a persisted secret row goes back to its row; called only by an
+    // external service call, once the server has opened its deployments
+    persistRotatedSecret: async (args) => {
+      await persistRotatedSecretRow(domainController, args, applicationDeploymentMap);
+    },
+  }),
 ); // even when emulating server, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
 
 // without an environment: Admin and Miroir from the Deployment rows of the Admin package
@@ -585,10 +593,6 @@ const { applicationDeploymentMap } = await openRegisteredDeployments();
 if (resolvedEnvironment) {
   recordInstallsOf(domainController, resolvedEnvironment, (line) => console.log(`[miroir-env] ${line}`));
 }
-
-setPersistRotatedSecret(async (args) => {
-  await persistRotatedSecretRow(domainController, args, applicationDeploymentMap);
-});
 
 async function loadAdminIdentityDirectory(): Promise<
   | {

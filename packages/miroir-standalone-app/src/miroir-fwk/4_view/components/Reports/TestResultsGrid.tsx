@@ -1,7 +1,8 @@
-import React, { useCallback, useMemo } from "react";
+import React, { Suspense, useCallback, useMemo } from "react";
 import { MiroirLoggerFactory, type MlElement, type LoggerInterface, type ViewParams } from "miroir-core";
 
-import { ValueObjectGrid } from "../Grids/ValueObjectGrid.js";
+import { CenteredSpinner } from "../CenteredSpinner.js";
+import { ValueObjectGrid } from "../Grids/LazyGrids.js";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { TestCellWithDetails } from "./TestCellWithDetails.js";
@@ -345,6 +346,7 @@ export const TestResultsGrid: React.FC<TestResultsGridProps> = ({
       </div>
 
       <div style={{ width: "100%" }}>
+        <Suspense fallback={<CenteredSpinner />}>
         <ValueObjectGrid
           valueObjects={testResultsDataWithSelection}
           mlSchema={testResultSchema}
@@ -358,6 +360,7 @@ export const TestResultsGrid: React.FC<TestResultsGridProps> = ({
           displayTools={false}
           gridType={gridType}
         />
+        </Suspense>
       </div>
     </div>
   );

@@ -1,10 +1,6 @@
-// import ReactCodeMirror from "@uiw/react-codemirror";
-import { javascript } from "@codemirror/lang-javascript";
-// import CodeMirror from '@uiw/react-codemirror';
-// import {ReactCodeMirror} from '@uiw/react-codemirror';
-import ReactCodeMirror from '@uiw/react-codemirror';
+import type { ReactCodeMirrorProps } from "@uiw/react-codemirror";
 import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
-import React, { useCallback, useEffect } from "react";
+import React, { lazy, Suspense, useCallback, useEffect } from "react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { MlElementEditorReactCodeMirrorProps } from "./MlElementEditorInterface";
@@ -23,7 +19,19 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
   log = logger;
 });
 
-const extensions = [javascript()];
+// CodeMirror loads with the first code editor, not with the page (#337).
+const JavaScriptCodeMirror = lazy(async () => {
+  const [{ default: ReactCodeMirror }, { javascript }] = await Promise.all([
+    import("@uiw/react-codemirror"),
+    import("@codemirror/lang-javascript"),
+  ]);
+  const extensions = [javascript()];
+  return {
+    default: (props: Omit<ReactCodeMirrorProps, "extensions">) => (
+      <ReactCodeMirror {...props} extensions={extensions} />
+    ),
+  };
+});
 
 export const MlElementEditorReactCodeMirror: React.FC<MlElementEditorReactCodeMirrorProps> = (
   props: MlElementEditorReactCodeMirrorProps
@@ -206,12 +214,15 @@ export const MlElementEditorReactCodeMirror: React.FC<MlElementEditorReactCodeMi
             </ThemedStyledButton>
           </ThemedSpan>
         </ThemedSpan>
-        <ReactCodeMirror
-          value={codeMirrorValue}
-          extensions={extensions}
-          onChange={handleChange}
-          style={{ overflowY: "auto", width: editorWidth }}
-        />
+        <Suspense
+          fallback={<pre style={{ overflowY: "auto", width: editorWidth, margin: 0 }}>{codeMirrorValue}</pre>}
+        >
+          <JavaScriptCodeMirror
+            value={codeMirrorValue}
+            onChange={handleChange}
+            style={{ overflowY: "auto", width: editorWidth }}
+          />
+        </Suspense>
       </ThemedSpan>
     </span>
   );

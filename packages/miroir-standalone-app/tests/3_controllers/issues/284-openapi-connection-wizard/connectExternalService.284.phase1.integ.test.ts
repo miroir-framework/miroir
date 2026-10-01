@@ -11,8 +11,6 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import {
   Action2Error,
-  allowInsecureBaseUrlsForTests,
-  clearAllowedInsecureBaseUrlsForTests,
   getExternalService,
 } from "miroir-core";
 
@@ -98,7 +96,6 @@ describe.skipIf(!shouldRunPhase1).sequential("connectExternalService.284.phase1 
         [`GET /releases/1`]: { body: { id: "1", name: "x" } },
       },
     });
-    allowInsecureBaseUrlsForTests([harness.fakeServer.baseUrl]);
     const modelBefore = harness.domainController.currentModel(
       FIXTURE_APPLICATION_UUID,
       harness.applicationDeploymentMap,
@@ -107,7 +104,6 @@ describe.skipIf(!shouldRunPhase1).sequential("connectExternalService.284.phase1 
   }, 120000);
 
   afterAll(async () => {
-    clearAllowedInsecureBaseUrlsForTests();
     if (harness?.fakeServer) {
       await harness.fakeServer.close();
     }
