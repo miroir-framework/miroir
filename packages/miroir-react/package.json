@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@codemirror/lang-javascript": "6.2.4",
-    "@redux-devtools/core": "3.14.0",
+    "@redux-devtools/core": "5.0.0",
     "@uiw/react-codemirror": "4.23.13",
     "miroir-app-miroir": "*",
     "miroir-core": "*",
