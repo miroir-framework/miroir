@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@codemirror/lang-javascript": "6.2.4",
-    "@redux-devtools/core": "3.14.0",
+    "@redux-devtools/core": "5.0.0",
     "@uiw/react-codemirror": "4.23.13",
     "miroir-app-miroir": "*",
     "miroir-core": "*",
@@ -31,7 +31,7 @@
     "react-error-boundary": "4.1.2",
     "react-hook-form": "7.58.0",
     "react-markdown": "10.1.0",
-    "react-redux": "8.1.3",
+    "react-redux": "9.3.0",
     "react-router-dom": "6.30.3",
     "react-select": "5.10.1"
   },
