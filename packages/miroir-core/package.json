@@ -65,7 +65,7 @@
     "miroir-app-admin": "*",
     "miroir-app-miroir": "*",
     "mustache": "4.2.0",
-    "serialize-error": "12.0.0",
+    "serialize-error": "13.0.1",
     "uuid": "11.1.0",
     "yaml": "2.9.1",
     "zod": "3.25.76"

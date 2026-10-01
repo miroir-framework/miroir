@@ -191,6 +191,7 @@
     "negotiator",
     "node-domexception",
     "node-fetch",
+    "non-error",
     "object-inspect",
     "on-exit-leak-free",
     "on-finished",
