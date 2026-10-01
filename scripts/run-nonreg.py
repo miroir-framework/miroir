@@ -112,6 +112,45 @@ def step_in_tier(step_tier: str, selected: TierName) -> bool:
     return TIER_ORDER[step_tier] <= TIER_ORDER[selected]
 
 
+ALWAYS_SCOPE = "always"
+
+
+def select_steps(
+    manifest: dict[str, Any],
+    tier: TierName,
+    only_ids: set[str] | None,
+    scopes: set[str] | None,
+) -> list[dict[str, Any]]:
+    """Steps of the tier, restricted to `--only` ids and `--scope` scopes (#351) when given.
+
+    With both, the selection is their union; `always` steps join every scoped selection.
+    """
+    if only_ids is None and scopes is None:
+        return [s for s in manifest["steps"] if step_in_tier(s["tier"], tier)]
+    wanted_scopes = (scopes or set()) | ({ALWAYS_SCOPE} if scopes else set())
+
+    def selected(step: dict[str, Any]) -> bool:
+        if only_ids is not None and step["id"] in only_ids:
+            return True
+        return bool(wanted_scopes & set(step.get("scopes", [])))
+
+    return [s for s in manifest["steps"] if step_in_tier(s["tier"], tier) and selected(s)]
+
+
+def parse_scopes(arg: str, manifest: dict[str, Any]) -> list[str]:
+    """Scope names from `--scope a,b`; raises ValueError on a name the manifest does not declare."""
+    names = [s.strip() for s in arg.split(",") if s.strip()]
+    if not names:
+        raise ValueError("--scope needs at least one scope name")
+    declared = sorted(n for n in manifest.get("scopes", {}) if n != ALWAYS_SCOPE)
+    unknown = [n for n in names if n not in declared]
+    if unknown:
+        raise ValueError(
+            f"unknown scope(s): {', '.join(unknown)}; declared scopes: {', '.join(declared) or '(none)'}"
+        )
+    return names
+
+
 def parse_vitest_counts(text: str) -> dict[str, int] | None:
     """Best-effort parse of Vitest footer counts from combined stdout/stderr."""
     files_m = None
@@ -546,6 +585,7 @@ def write_summary_md(summary: dict[str, Any], path: Path, timings: dict[str, Any
         f"- Tier: `{summary['tier']}`",
         f"- Mode: `{summary['mode']}`",
         f"- Profile: `{summary['profile']}`",
+        *([f"- Scopes: `{', '.join(summary['scopes'])}`"] if summary.get("scopes") else []),
         f"- Started: `{summary['started_at']}`",
         f"- Finished: `{summary['finished_at']}`",
         f"- Duration: `{summary['duration_s']}s`",
@@ -589,7 +629,8 @@ def print_synthetic_report(summary: dict[str, Any]) -> None:
     print("=" * 72)
     print(
         f"tier={summary['tier']} mode={summary['mode']} profile={summary['profile']} "
-        f"duration={summary['duration_s']}s"
+        + (f"scopes={','.join(summary['scopes'])} " if summary.get("scopes") else "")
+        + f"duration={summary['duration_s']}s"
     )
     print(
         f"passed={summary['counts']['passed']}  "
@@ -676,6 +717,11 @@ def compare_summaries(current: dict[str, Any], baseline_path: Path) -> int:
     cur = by_id(current["steps"])
     base = by_id(baseline["steps"])
     all_ids = sorted(set(cur) | set(base))
+    # A scoped run (#351) selects a subset: only the steps both runs selected are comparable.
+    ignored: list[str] = []
+    if current.get("scopes") or baseline.get("scopes"):
+        ignored = sorted(set(cur) ^ set(base))
+        all_ids = sorted(set(cur) & set(base))
 
     new_fails: list[str] = []
     fixed: list[str] = []
@@ -717,6 +763,8 @@ def compare_summaries(current: dict[str, Any], baseline_path: Path) -> int:
     print(f"newly skipped ({len(newly_skipped)}): {', '.join(newly_skipped) or '—'}")
     print(f"added steps ({len(added_now)}): {', '.join(added_now) or '—'}")
     print(f"missing steps ({len(missing_now)}): {', '.join(missing_now) or '—'}")
+    if ignored:
+        print(f"scoped compare: {len(ignored)} step(s) selected by only one run ignored: {', '.join(ignored)}")
     print("=" * 72)
     return 1 if new_fails or still_failing else 0
 
@@ -773,6 +821,14 @@ def build_parser() -> argparse.ArgumentParser:
         "--only",
         default=None,
         help="Comma-separated step ids to run (still filtered by --tier)",
+    )
+    p.add_argument(
+        "--scope",
+        default=None,
+        help=(
+            "Comma-separated scope names from the manifest's `scopes` (#351): runs their steps plus "
+            "the `always` steps (still filtered by --tier; union with --only)"
+        ),
     )
     p.add_argument(
         "--dry-run",
@@ -872,12 +928,17 @@ def main(argv: list[str] | None = None) -> int:
     if args.only:
         only_ids = {s.strip() for s in args.only.split(",") if s.strip()}
 
-    steps = [
-        s
-        for s in manifest["steps"]
-        if step_in_tier(s["tier"], selected_tier)
-        and (only_ids is None or s["id"] in only_ids)
-    ]
+    scope_names: list[str] | None = None
+    if args.scope is not None:
+        try:
+            scope_names = parse_scopes(args.scope, manifest)
+        except ValueError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
+
+    steps = select_steps(
+        manifest, selected_tier, only_ids, set(scope_names) if scope_names is not None else None
+    )
     if not steps:
         print("No steps selected.", file=sys.stderr)
         return 2
@@ -966,6 +1027,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.runner != "legacy":
         summary["runner"] = args.runner
+    if scope_names is not None:
+        summary["scopes"] = scope_names
 
     timings: dict[str, Any] | None = None
     if args.timings:
