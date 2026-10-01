@@ -32,7 +32,7 @@ This plan does **not** cover F10 (rejected), the ag-grid 33 migration (G2, own i
 | 2 | The page loads no IndexedDB store | ✅ | `forbiddenEager` `abstract-level`; `testMiroir` on `test-indexedDb` |
 | 3 | The page loads no JSON diff | ✅ | `forbiddenEager` `json-diff`; `fn.modelUpdate` |
 | 4 | The page loads `merge`, not lodash | ✅ | bare-`lodash` importer test; guard |
-| 5 | The page loads no Library example | ⬜ | `forbiddenEager` `miroir-example-library`; label test |
+| 5 | The page loads no Library example | ✅ | `forbiddenEager` `miroir-example-library`; label test |
 | 6 | The first list loads one grid library | ⬜ | grid chunk test; glide list test |
 | 7 | Releases ship 12 grammars | ⬜ | grammar count test; tour Copilot sidebar |
 | 8 | Electron loads only the stores and features it uses | ⬜ | Electron guard; startup time; smoke |
@@ -249,7 +249,7 @@ Guard; `bundleReport.unit`; typecheck miroir-standalone-app; `npm run nonreg:fil
 
 ## Slice 5 — The page loads no Library example
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -273,7 +273,9 @@ Guard; the component tests that render an application picker (`npm run nonreg:fi
 
 ### Realization
 
-_(to fill)_
+- Page eager gzip 757 610 → 746 687 (−10 923, trial said −11 366); `eagerGzipBaseline` lowered; `miroir-example-library` added to `forbiddenEager` and moved to `lazy`.
+- Deviation from D5: labelling from the Admin `applications` rows alone failed `report.connectExternalServiceWizard` ("the application picker lists Library, not Miroir or Admin"): the wizard runs in a sandbox whose cache has no Admin `applications` rows, so the picker showed the Library uuid. The fallback now reads each application's own SelfApplication row (its `name`) from its model section in the local cache (`useSelfApplicationLabels` in `MlElementEditorHooks.ts`, one `useSelector` with `shallowEqual`). Order: Admin row label, then SelfApplication name, then Miroir/Admin constants, then the uuid.
+- Validation: guard 0 violations; no new typecheck errors in miroir-standalone-app; nonreg `--scope smoke,ui` 25 passed (snapshot `20261001T212126Z`; the run before the fallback, `20261001T210507Z`, failed `appstack-report-tests` as described).
 
 ---
 
