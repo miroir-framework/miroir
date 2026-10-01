@@ -140,6 +140,7 @@ Guard; `npm run testMiroir -w miroir-core -- --suites tr.syncExternalServiceSche
 - Page eager gzip 881 289 → 850 787 (−30 502, trial said −30 876); `eagerGzipBaseline` lowered to 850 787. `yaml` moved from `eager` to `lazy` and added to `forbiddenEager`.
 - `tr.syncExternalServiceSchema` gained "parses a YAML OpenAPI document (#370: yaml loads on demand)" (the first case's document as YAML, written with pyyaml `safe_dump`); 5 passed before and after the change.
 - `DomainController` awaits `ensureYamlParser()` in `handlePrepareOpenApiDocument` and `handleConnectExternalService`. The `syncExternalServiceSchema` transformer stays synchronous: in the browser it relies on the call in `index.tsx` after the first render.
+- PR review (Greptile on #377): the call in `index.tsx` after the first render still downloaded `yaml` on every visit. It is gone; the two browser callers of the synchronous transformer await `ensureYamlParser()` instead: `OpenApiEndpointSyncButton` before building its composite, and `runMiroirTest` for `transformerTest` leaves.
 - Refactor checkpoint: `SecretsService.ts` has the same three-line shape. A shared helper would have to take a loader closure to keep the import literal visible to the bundler, which saves nothing for two uses; not extracted.
 - Validation: guard 0 violations; `testMiroir tr.syncExternalServiceSchema` 5 passed; `npm run test -w miroir-core` 2134 passed, 1 skipped; miroir-core typecheck clean; nonreg `--scope smoke,core,external` 30 passed (snapshot `20261001T195728Z`).
 - The miroir-standalone-app typecheck fails on `_integration` already: 32 errors in 8 files from the MUI 9 bump (#364: `Grid item`, `InputProps`, `inputProps`, `Stack justifyContent`), none in files this slice touches. Out of scope here.
@@ -277,6 +278,7 @@ Guard; the component tests that render an application picker (`npm run nonreg:fi
 - Deviation from D5: labelling from the Admin `applications` rows alone failed `report.connectExternalServiceWizard` ("the application picker lists Library, not Miroir or Admin"): the wizard runs in a sandbox whose cache has no Admin `applications` rows, so the picker showed the Library uuid. The fallback now reads each application's own SelfApplication row (its `name`) from its model section in the local cache (`useSelfApplicationLabels` in `MlElementEditorHooks.ts`, one `useSelector` with `shallowEqual`). Order: Admin row label, then SelfApplication name, then Miroir/Admin constants, then the uuid.
 - Validation: guard 0 violations; no new typecheck errors in miroir-standalone-app; nonreg `--scope smoke,ui` 25 passed (snapshot `20261001T212126Z`; the run before the fallback, `20261001T210507Z`, failed `appstack-report-tests` as described).
 
+- PR review (Greptile on #377): the label selector ran for every field. It now gets the application map only for a restricted application picker; other fields pass none and the selector returns an empty record at once.
 ---
 
 ## Slice 6 — The first list loads one grid library

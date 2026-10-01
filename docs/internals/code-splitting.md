@@ -88,7 +88,7 @@ What #370 took off the page (analysis and measurements: `code-helpers/features/3
 
 | Cut | Gzip saved | Kept off by |
 |---|---|---|
-| `yaml` loaded by `ensureYamlParser()` (`syncExternalServiceSchema.ts`), awaited by the DomainController's OpenAPI handlers and fetched by `index.tsx` after the first render | 31 kB | `forbiddenEager` `yaml` |
+| `yaml` loaded by `ensureYamlParser()` (`syncExternalServiceSchema.ts`), awaited by the DomainController's OpenAPI handlers, the OpenAPI Endpoint sync button and the `transformerTest` runner | 31 kB | `forbiddenEager` `yaml` |
 | `miroir-store-indexedDb` factories import the store classes (and `level`) when they first run; the package exports only its startup function | 34 kB | `forbiddenEager` `level`, `browser-level`, `abstract-level` |
 | `json-diff` loaded by `ensureJsonDiff()` (`ModelUpdate.ts`); the function-call test registry accepts a module loader | 33 kB | `forbiddenEager` `json-diff`, `@ewoudenberg/difflib`, `assert` |
 | Bare `lodash` aliased to `vite/lodashMergeShim.js` (`merge` from `lodash-es`): its only importer, `@teroneko/redux-saga-promise`, requires it for `merge` | 27 kB | `forbiddenEager` `lodash`; `bundleReport.unit` |
@@ -171,7 +171,7 @@ npm run testByFile -w miroir-standalone-app -- componentTestChunk.286.phase4
 |---|---|---|---|
 | ag-grid | — (lazy grid chunk) | Yes | Yes (first list section or test results grid) |
 | glide-data-grid | — (own lazy chunk, #370) | Yes | Yes (first list with `gridType: glide-data-grid`) |
-| `yaml`, `json-diff`, IndexedDB store (`level`) | — (lazy chunks, #370) | Yes | `yaml` after the first render; the others on first use |
+| `yaml`, `json-diff`, IndexedDB store (`level`) | — (lazy chunks, #370) | Yes | Yes (first OpenAPI parse, model diff or IndexedDB section) |
 | shiki grammars | — (12 lazy chunks, #370) | Yes | Yes (first code block in that language) |
 | CodeMirror | — (lazy chunks) | Yes | Yes (first code field or block) |
 | `crypto-browserify` (for `node:crypto`) | — (lazy chunks) | Yes | Yes (first secrets or MCP client use) |

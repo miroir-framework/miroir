@@ -21,7 +21,6 @@ import {
   defaultSelfApplicationDeploymentMap,
   deploymentsFromInstances,
   ELECTRON_LOOPBACK_ROOT_API_URL,
-  ensureYamlParser,
   expect,
   fetchProcessCapabilities,
   getClientEnvironment,
@@ -453,9 +452,6 @@ async function startWebApp(root: Root) {
       </StrictMode>
     </>,
   );
-  // #370: the YAML parser is not in the page's eager bundle; fetch it once the app is rendering,
-  // for the synchronous OpenAPI parsing paths of syncExternalServiceSchema.
-  void ensureYamlParser();
 }
 
 if (container) {

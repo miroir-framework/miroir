@@ -26,6 +26,7 @@ import type {
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
 import { runMiroirActionTest } from "./ActionTestTools.js";
+import { ensureYamlParser } from "../2_domain/syncExternalServiceSchema.js";
 import { runMiroirFunctionCallTestInMemory } from "./FunctionCallTestTools";
 import {
   runMiroirTransformerIntegrationTest,
@@ -231,6 +232,8 @@ export async function runMiroirTest(
       );
     }
     case "transformerTest": {
+      // #370: syncExternalServiceSchema parses YAML synchronously; the browser loads the parser here.
+      await ensureYamlParser();
       if (executionOptions?.executionMode === "integration") {
         const env = executionOptions.executionEnvironment;
         if (env?.domainController === undefined) {

@@ -228,7 +228,6 @@ export function useMlElementEditorHooks(
   count++;
   const context = useMiroirContextService();
   const { visible, candidates, applications } = useApplicationAccess();
-  const selfApplicationLabels = useSelfApplicationLabels(applicationDeploymentMap);
   const currentModel: MetaModel = useCurrentModel(currentApplication, applicationDeploymentMap);
   const miroirMetaModel: MetaModel = useCurrentModel(
     selfApplicationMiroir.uuid,
@@ -306,6 +305,18 @@ export function useMlElementEditorHooks(
       return undefined;
     },
     [currentTypecheckKeyMap, currentValueObjectAtKey]
+  );
+  // Only the restricted application picker (#284 D22) needs application labels: other fields
+  // pass no map, so their selector returns at once.
+  const isRestrictedApplicationPicker =
+    localResolvedElementMlSchemaBasedOnValue?.type == "uuid" &&
+    !!(
+      localResolvedElementMlSchemaBasedOnValue.tag?.value as
+        | { display?: { uuid?: { restrictToApplicationDeploymentMap?: boolean } } }
+        | undefined
+    )?.display?.uuid?.restrictToApplicationDeploymentMap;
+  const selfApplicationLabels = useSelfApplicationLabels(
+    isRestrictedApplicationPicker ? applicationDeploymentMap : undefined,
   );
   // for objects, records
   const itemsOrder: any[] = useMemo(
