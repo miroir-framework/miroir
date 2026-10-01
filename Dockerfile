@@ -148,7 +148,8 @@ ENV MIROIR_ENV=docker
 # Entrypoint
 # -------------------------------------------------------------------------
 COPY packages/miroir-server/docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
+# Strip CR in case the checkout converted line endings (Windows core.autocrlf).
+RUN sed -i 's/\r$//' /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh
 
 # -------------------------------------------------------------------------
 # Runtime declarations
