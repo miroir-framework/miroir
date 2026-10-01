@@ -8,7 +8,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../337-BUILD-bundle-size-cuts/`](../337-BUILD-bundle-size-cuts/) ✅ (PR #368)
 Working branch: `claude/issue-370-bundle-size-followup`
 
-**Resume note:** slice 0 DONE.
+**Resume note:** all slices DONE (2026-10-01); see the slice 9 realization for the final figures.
 
 ---
 
