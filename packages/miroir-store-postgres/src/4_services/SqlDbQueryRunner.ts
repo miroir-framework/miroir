@@ -27,7 +27,7 @@ import {
   MiroirLoggerFactory,
   RunBoxedQueryAction,
   safeResolvePathOnObject,
-  serializeCompositeKeyValue,
+  indexInstancesByCacheKey,
   type ApplicationDeploymentMap,
   type ExtractorRunnerInMemory,
   type MiroirModelEnvironment
@@ -555,8 +555,7 @@ export class SqlDbQueryRunner {
       }
       const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
       const idAttribute = this.persistenceStoreController.getEntityIdAttribute(entityUuid);
-      const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
-      const entityInstanceUuidIndex = Object.fromEntries(result.map((i) => [serializeCompositeKeyValue(pkAttrs, i), i]));
+      const entityInstanceUuidIndex = indexInstancesByCacheKey({ idAttribute }, result);
       return entityInstanceUuidIndex;
     });
   };
@@ -626,8 +625,7 @@ export class SqlDbQueryRunner {
       }
       const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
       const idAttribute = this.persistenceStoreController.getEntityIdAttribute(entityUuid);
-      const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
-      const entityInstanceUuidIndex = Object.fromEntries(result.map((i) => [serializeCompositeKeyValue(pkAttrs, i), i]));
+      const entityInstanceUuidIndex = indexInstancesByCacheKey({ idAttribute }, result);
       return entityInstanceUuidIndex;
     });
   };

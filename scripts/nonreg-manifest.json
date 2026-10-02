@@ -1411,6 +1411,41 @@
       }
     },
     {
+      "id": "integ-175-pk-less-external",
+      "scopes": ["actions", "localcache"],
+      "tier": "default",
+      "title": "App-stack \u2014 External SQL Entities without primary key (refresh, queries, read-only)",
+      "requires": "storage",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "PkLessExternalEntity.integ"
+      ],
+      "shared": {
+        "group": "standalone-app-profile",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--no-bail"
+        ],
+        "files": [
+          "PkLessExternalEntity.integ"
+        ]
+      }
+    },
+    {
       "id": "appstack-ExtractorPersistenceStoreRunner.integ",
       "scopes": ["core"],
       "tier": "default",

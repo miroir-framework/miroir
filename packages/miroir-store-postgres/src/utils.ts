@@ -2,7 +2,9 @@
 
 import {
   Entity,
+  entityHasNoPrimaryKey,
   entityMLSchema,
+  getEntityPrimaryKeyAttributes,
   isVirtualAttribute,
   MlElement,
   MlObject,
@@ -23,7 +25,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 export type EntityUuidIndexedSequelizeModel = {
   [parentUuid in string]: {
     parentName?: string;
-    idAttribute?: string | string[];
+    idAttribute?: string | string[] | false; // false: no primary key (#175)
     isExternal?: boolean;
     effectiveSchema?: string;
     optionalNonNullableAttributes?: string[];
@@ -79,8 +81,8 @@ export function fromMiroirPresentModelToSequelizeEntityDefinition(
   entity: Entity,
 ): ModelAttributes<Model, Attributes<Model>> {
   const mlSchema = resolveMlSchemaForSequelize(entity);
-  const idAttribute: string | string[] = entity.idAttribute ?? "uuid";
-  const pkAttributes: string[] = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
+  // #175: an entity without primary key (idAttribute: false) has no primaryKey attribute.
+  const pkAttributes: string[] = entityHasNoPrimaryKey(entity) ? [] : getEntityPrimaryKeyAttributes(entity);
   const mlObjectAttributes = mlSchema.definition;
   const result = Object.fromEntries(
     Object.entries(mlObjectAttributes)

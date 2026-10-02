@@ -48,6 +48,9 @@ import {
   type CoreTransformerForBuildPlusRuntime_boolExpr,
   type CoreTransformerForBuildPlusRuntime_accessDynamicPath,
   type MiroirModelEnvironment,
+  entityHasNoPrimaryKey,
+  getEntityPrimaryKeyAttribute,
+  keylessEntityQueryFailure,
 } from "miroir-core";
 import { RecursiveStringRecords } from "../4_services/SqlDbQueryTemplateRunner";
 import { cleanLevel } from "../4_services/constants";
@@ -94,9 +97,9 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 function getIdAttributeForEntity(
   entityUuid: string,
   modelEnvironment?: MiroirModelEnvironment
-): string | string[] {
+): string | string[] | false {
   const present = findPresentEntityFromModelEnvironment(modelEnvironment, entityUuid);
-  return present?.idAttribute ?? "uuid";
+  return entityHasNoPrimaryKey(present) ? false : getEntityPrimaryKeyAttribute(present ?? {});
 }
 
 // ##############################################################################################
@@ -493,6 +496,9 @@ export function sqlStringForCombiner /*BoxedExtractorTemplateRunner*/(
     case "combinerOneToOne": {
       // TODO: deal with name clashes
       const parentPkColumn = getIdAttributeForEntity(query.parentUuid, modelEnvironment);
+      if (parentPkColumn === false) {
+        throw new Error(keylessEntityQueryFailure("combinerOneToOne", query.parentUuid).failureMessage);
+      }
       const joinCondition = sqlJoinConditionForPk(
         parentPkColumn,
         query.AttributeOfObjectToCompareToReferenceUuid,
@@ -518,6 +524,9 @@ export function sqlStringForCombiner /*BoxedExtractorTemplateRunner*/(
       const objectRefEntry = extractorsAndCombiners?.[query.objectReference];
       const objectRefEntityUuid = objectRefEntry && "parentUuid" in objectRefEntry ? objectRefEntry.parentUuid : undefined;
       const objectRefPkColumn = objectRefEntityUuid ? getIdAttributeForEntity(objectRefEntityUuid, modelEnvironment) : "uuid";
+      if (objectRefPkColumn === false) {
+        throw new Error(keylessEntityQueryFailure("combinerOneToMany", objectRefEntityUuid!).failureMessage);
+      }
       const joinCondition2 = sqlJoinConditionForPk(
         objectRefPkColumn,
         query.AttributeOfListObjectToCompareToReferenceUuid,
@@ -658,6 +667,9 @@ export function  sqlStringForExtractor(
   switch (extractor.extractorOrCombinerType) {
     case "extractorByPrimaryKey": {
       const pkColumn = getIdAttributeForEntity(extractor.parentUuid, modelEnvironment);
+      if (pkColumn === false) {
+        return keylessEntityQueryFailure("extractorByPrimaryKey", extractor.parentUuid);
+      }
       const effectiveSchema = getSchemaForEntity(extractor.parentUuid, schema, modelEnvironment);
       const whereClausePk = sqlWhereClauseForPk(pkColumn, extractor.instanceUuid);
       if (!extractor.applyTransformer) {

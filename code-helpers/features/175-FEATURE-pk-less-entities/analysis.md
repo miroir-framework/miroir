@@ -11,7 +11,7 @@ Key sources: [`EntityPrimaryKey.ts`](../../../packages/miroir-core/src/1_core/En
 User guide: [`docs/guides/developer/defining-entities.md`](../../../docs/guides/developer/defining-entities.md) (use case 6)
 
 **Document role:** analysis and decision record.
-**Status:** decisions **confirmed with A** (grilling, 2026-10-02). Implementation per [`tdd-implementation-plan.md`](./tdd-implementation-plan.md).
+**Status:** implemented (2026-10-02), slices 0-9 of [`tdd-implementation-plan.md`](./tdd-implementation-plan.md). Decisions confirmed with A (grilling, 2026-10-02).
 
 **Document history:** a first draft (commit 85aa9ee5) proposed a separate `primaryKey: "none"` field, External SQL only, and targeted sources unique on some columns. The grilling replaced all three; the rejected frames are kept below.
 

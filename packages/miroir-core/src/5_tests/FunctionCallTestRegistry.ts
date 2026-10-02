@@ -1,10 +1,13 @@
 import { extractDoubleBracePatterns } from "../1_core/mustache";
 import {
+  checkEntityPrimaryKeyDeclaration,
   entityHasCompositePrimaryKey,
+  entityHasNoPrimaryKey,
   entityHasUuidPrimaryKey,
   getEntityPrimaryKeyAttribute,
   getEntityPrimaryKeyAttributes,
   getForeignKeyValue,
+  getInstanceCacheKeys,
   getInstancePrimaryKeyValue,
   instanceMatchesForeignKey,
   parseCompositeKeyValue,
@@ -173,6 +176,9 @@ const FUNCTION_CALL_REGISTRY: Record<
     getEntityPrimaryKeyAttributes: getEntityPrimaryKeyAttributes as WhitelistedFunction,
     entityHasCompositePrimaryKey: entityHasCompositePrimaryKey as WhitelistedFunction,
     entityHasUuidPrimaryKey: entityHasUuidPrimaryKey as WhitelistedFunction,
+    entityHasNoPrimaryKey: entityHasNoPrimaryKey as WhitelistedFunction,
+    getInstanceCacheKeys: getInstanceCacheKeys as WhitelistedFunction,
+    checkEntityPrimaryKeyDeclaration: checkEntityPrimaryKeyDeclaration as WhitelistedFunction,
     serializeCompositeKeyValue: serializeCompositeKeyValue as WhitelistedFunction,
     parseCompositeKeyValue: parseCompositeKeyValue as WhitelistedFunction,
     getInstancePrimaryKeyValue: getInstancePrimaryKeyValue as WhitelistedFunction,

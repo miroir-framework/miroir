@@ -8,7 +8,11 @@ import type {
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import type { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import type { ReduxDeploymentsState } from "../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
-import { getInstancePrimaryKeyValue } from "../1_core/Entity/EntityPrimaryKey";
+import {
+  entityHasNoPrimaryKey,
+  getInstancePrimaryKeyValue,
+  indexInstancesByCacheKey,
+} from "../1_core/Entity/EntityPrimaryKey";
 import { applyExtractorFilterAndOrderBy } from "./ExtractorByEntityReturningObjectListTools";
 import { getReduxDeploymentsStateIndex } from "./ReduxDeploymentsState";
 import {
@@ -105,6 +109,10 @@ export function indexInstancesByPrimaryKey(
   instances: EntityInstance[],
   sourceIndex: Record<string, EntityInstance | undefined>,
 ): Record<string, EntityInstance> {
+  if (entityHasNoPrimaryKey(entity)) {
+    // #175: rows without primary key are re-keyed positionally, in their filtered / ordered order.
+    return indexInstancesByCacheKey({ idAttribute: false }, instances);
+  }
   const keyByInstance = new Map<EntityInstance | undefined, string>(
     Object.entries(sourceIndex).map(([key, instance]) => [instance, key]),
   );

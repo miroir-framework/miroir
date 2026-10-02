@@ -28,7 +28,7 @@ Entity (Book, mlSchema)
 **Good to know**
 
 - `conceptLevel` is `MetaModel` | `Model` | `Data` | **`External`** (Use case 2).
-- **Absent `idAttribute` ⇒ default `uuid` PK.** It does not mean "no primary key" (Use case 6).
+- **Absent `idAttribute` ⇒ default `uuid` PK.** It does not mean "no primary key": that is `idAttribute: false` (Use case 6).
 - `uuid` and `parentUuid` on every instance is the default UUID-PK path. Non-UUID / composite PKs (Use cases 3–4) and optional `parentUuid` (Use case 5) relax it.
 
 ---
@@ -42,7 +42,7 @@ Entity (Book, mlSchema)
 | Match an external natural key (not UUID) | `idAttribute: "<attr>"` | Non-UUID PK entities / tests |
 | Match a multi-column natural key | `idAttribute: ["a","b",…]` | Postgres `tables`, `columns` |
 | Import / sync instances that omit `parentUuid` | Optional `parentUuid`; resolve from action context | `action.domainController.dataCrud.noParentUuid` |
-| Reflect a PK-less table | Explicit PK-less handling; refresh flushes cache | External tables without PK |
+| Reflect a table or API whose rows have no key | `idAttribute: false` (External SQL / HTTP only, read-only) | Postgres `pg_stat_activity` |
 
 ---
 
@@ -225,17 +225,55 @@ Helpers live in `packages/miroir-core/src/1_core/Entity/EntityPrimaryKey.ts`:
 
 ## Use case 6 — Entities / tables without a primary key
 
-**Status:** not implemented yet — [#175](https://github.com/miroir-framework/miroir/issues/175) is open. There is currently no way to declare a PK-less Entity.
+**Status:** implemented ([#175](https://github.com/miroir-framework/miroir/issues/175)).
 
-**When:** External (or imported) tables have **no** reliable PK.
+**When:** an External table, view or API returns rows that nothing identifies, and rows can repeat. Examples: a log table without key, a system view such as `pg_stat_activity`, an API response whose items have no `id`.
 
-**Target behavior**
+**What to set:** `idAttribute: false` on the Entity. `false` is the only way to say "no primary key": an absent `idAttribute` still means `uuid`, and `idAttribute: true` is rejected by model validation.
 
-- Represent Entities that are explicitly PK-less (absence of `idAttribute` alone is **not** enough — that still defaults to `uuid`).
-- On refresh, **flush** in-memory contents for that Entity so incoming rows replace the previous set (avoids duplicate ghost rows).
-- Editing PK-less instances in Miroir UI is out of scope for now.
+**Constraints**
 
-Treat this as a specialized external-read pattern; prefer adding a real / composite PK when the source allows it.
+- Only External SQL Entities (`conceptLevel: "External"` or a SQL `externalDataSource`) and External HTTP Entities (`externalDataSource.kind: "http"`) may be keyless. Model validation rejects `idAttribute: false` on any other Entity.
+- Instances are **read-only**. `createInstance`, `updateInstance` and `deleteInstance` fail with `InvalidAction` ("… has no primary key (idAttribute: false), its instances are read-only"), in the DomainController, the local caches and the Postgres store.
+- Key-based queries fail explicitly: `extractorByPrimaryKey` and `combinerOneToOne` on a keyless Entity return a `QueryNotExecutable` failure instead of a wrong row.
+
+**Platform behavior**
+
+- Each refresh replaces the Entity's cached rows with the source's current rows, duplicates included.
+- In the local cache, rows are keyed by position: `#0`, `#1`, … (`getInstanceCacheKeys`, `indexInstancesByCacheKey` in `packages/miroir-core/src/1_core/Entity/EntityPrimaryKey.ts`). These keys only hold until the next refresh: do not store them.
+- Filters and `orderBy` keep every row, identical rows included.
+- Grids show every row on every page, with no edit, duplicate, delete, open or add affordance and no clickable key column.
+- The Postgres store maps the Entity to a Sequelize model without primary key (no phantom `id` column).
+- Syncing an HTTP Endpoint (`syncExternalServiceSchema`) declares the created Entity `idAttribute: "id"` when the response items have an `id`, and `idAttribute: false` otherwise.
+
+**Entity** — Postgres `pg_stat_activity` (one row per server process), abridged from `packages/miroir-example-postgres/assets/postgres_model/16dbfe28-…/7214c5a3-….json`:
+
+```json
+{
+  "uuid": "7214c5a3-e5f4-4420-835f-fc2f9dc6a1d2",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "name": "pg_stat_activity",
+  "conceptLevel": "External",
+  "idAttribute": false,
+  "externalDataSource": { "schema": "pg_catalog" },
+  "mlSchema": {
+    "type": "object",
+    "definition": {
+      "datname": { "type": "string", "optional": true, "nullable": true },
+      "usename": { "type": "string", "optional": true, "nullable": true },
+      "state": { "type": "string", "optional": true, "nullable": true },
+      "query": { "type": "string", "optional": true, "nullable": true }
+    }
+  }
+}
+```
+
+The Postgres app shows it through the `ActivityList` report ("Server Activity" in its menu).
+
+**Prefer a key when there is one.** If some columns are unique in the source, declare them as a composite `idAttribute` (Use case 4) instead: instances then keep stable keys, details pages and key-based queries.
+
+**Regression:** `packages/miroir-standalone-app/tests/4_storage/PkLessExternalEntity.integ.test.ts` (PostgreSQL), MiroirTest suite `fn.entityPrimaryKey`.
 
 ---
 

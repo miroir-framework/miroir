@@ -19,7 +19,10 @@ import {
   TransformerFailure,
   Uuid,
   buildLocalCacheSegmentHeader,
+  entityHasNoPrimaryKey,
   getEntityPrimaryKeyAttribute,
+  getInstanceCacheKeys,
+  keylessEntityInstanceActionError,
   serializeCompositeKeyValue,
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,
@@ -134,11 +137,12 @@ interface EntityState {
   segment?: LocalCacheSegmentHeader;
 }
 
-// Module-level map from entityInstancesLocationIndex → idAttribute name(s) (default "uuid")
+// Module-level map from entityInstancesLocationIndex → idAttribute name(s) (default "uuid"),
+// false for an entity without primary key (#175).
 // Adapters / id attributes are always keyed by the FULL segment index (#214).
-const idAttributeByIndex: Record<string, string | string[]> = {};
+const idAttributeByIndex: Record<string, string | string[] | false> = {};
 
-function getIdAttributeForIndex(index: string): string | string[] {
+function getIdAttributeForIndex(index: string): string | string[] | false {
   // Partial sibling keys share the full entity's PK config.
   const fullIndex = stripLocalCacheSegmentSuffix(index);
   return idAttributeByIndex[fullIndex] ?? "uuid";
@@ -151,7 +155,7 @@ function registerPresentModelSourceInLocalCache(
   deploymentUuid: string,
   source: EntityInstance
 ): void {
-  const idAttribute = getEntityPrimaryKeyAttribute(source as any);
+  const idAttribute = entityHasNoPrimaryKey(source as any) ? false : getEntityPrimaryKeyAttribute(source as any);
   const targetEntityUuid = (source as any).entityUuid ?? (source as any).uuid;
   if (idAttribute !== "uuid" && targetEntityUuid) {
     for (const targetSection of ["model", "data"] as ApplicationSection[]) {
@@ -191,11 +195,12 @@ function addManyToEntityState(state: EntityState, instances: EntityInstance[], i
 }
 
 // ################################################################################################
-function setAllInEntityState(instances: EntityInstance[], idAttribute: string | string[] = "uuid"): EntityState {
-  const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
+// Keyless entities (#175) get positional keys, so identical rows are all kept.
+function setAllInEntityState(instances: EntityInstance[], idAttribute: string | string[] | false = "uuid"): EntityState {
+  const keys = getInstanceCacheKeys({ idAttribute }, instances);
   return {
-    ids: instances.map(i => serializeCompositeKeyValue(pkAttrs, i)),
-    entities: Object.fromEntries(instances.map(i => [serializeCompositeKeyValue(pkAttrs, i), i]))
+    ids: keys,
+    entities: Object.fromEntries(instances.map((instance, index) => [keys[index], instance]))
   };
 }
 
@@ -377,6 +382,10 @@ function handleInstanceAction(
         const section = instanceAction.payload.applicationSection ?? "data";
         const index = getReduxDeploymentsStateIndex(deploymentUuid, section, resolvedParentUuid);
         const idAttribute = getIdAttributeForIndex(index);
+        if (idAttribute === false) {
+          log.error("handleInstanceAction", keylessEntityInstanceActionError(instanceAction.actionType, resolvedParentUuid).errorMessage);
+          return;
+        }
         
         initializeLocalCacheSliceState(deploymentUuid, section, resolvedParentUuid, "current", state);
 
@@ -400,6 +409,10 @@ function handleInstanceAction(
         const section = instanceAction.payload.applicationSection ?? "data";
         const index = getReduxDeploymentsStateIndex(deploymentUuid, section, resolvedParentUuid);
         const idAttribute = getIdAttributeForIndex(index);
+        if (idAttribute === false) {
+          log.error("handleInstanceAction", keylessEntityInstanceActionError(instanceAction.actionType, resolvedParentUuid).errorMessage);
+          return;
+        }
         const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
         const pk = serializeCompositeKeyValue(pkAttrs, instance);
         
@@ -421,6 +434,10 @@ function handleInstanceAction(
         const section = instanceAction.payload.applicationSection ?? "data";
         const index = getReduxDeploymentsStateIndex(deploymentUuid, section, resolvedParentUuid);
         const idAttribute = getIdAttributeForIndex(index);
+        if (idAttribute === false) {
+          log.error("handleInstanceAction", keylessEntityInstanceActionError(instanceAction.actionType, resolvedParentUuid).errorMessage);
+          return;
+        }
 
         if (resolvedParentUuid === entitySelfApplication.uuid && state.current[index]) {
           const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
