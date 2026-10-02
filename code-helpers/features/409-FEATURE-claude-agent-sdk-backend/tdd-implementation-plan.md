@@ -10,7 +10,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../275-FEATURE-cursor-sdk-copilotkit-backend/`](../275-FEATURE-cursor-sdk-copilotkit-backend/) ✅
 Working branch: `claude/409-claude-agent-sdk-backend`
 
-**Resume note:** plan written, no slice started.
+**Resume note:** Slice 0 DONE.
 
 ---
 
@@ -30,7 +30,7 @@ This plan does **not** make the token provider SDKs lazy (#410), give the Claude
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize the Cursor pick and module loading | ⬜ | `agentBackend.409.phase0` (unit + child-process probe) |
+| 0 | Characterize the Cursor pick and module loading | ✅ | `agentBackend.409.phase0` (unit + child-process probe) |
 | 1 | `agentBackend` config drives the Cursor chat (tracer) | ⬜ | `agentBackend.409.phase1` |
 | 2 | Browser asks for "the agent" and names the backend | ⬜ | `agentBackend.409.phase2` (standalone-app) |
 | 3 | Claude agent chat through the shared bridge | ⬜ | `agentBackend.409.phase3` (miroir-ai) |
@@ -95,7 +95,7 @@ No new model element: the change is process wiring, config schema and `miroir-ai
 
 ## Slice 0 — Characterize the Cursor pick and module loading
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -130,7 +130,10 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-ai/tsconfig.json
 
 ### Realization
 
-_(pending)_
+- Probe files in `packages/miroir-ai/tests/support/`: `moduleLoadProbe.ts` (launcher, `runModuleLoadProbe` + `loadedAgentSdks`), `moduleLoadProbeRegister.mjs` (`--import` entry calling `module.register`), `moduleLoadProbeHooks.mjs` (resolve hook appending each specifier to a file, stub redirection), `moduleLoadProbeChild.mjs` (builds the router from the built package with recording runtime seams, sends one request), `sdkStubs/{cursor-sdk,claude-agent-sdk}.mjs`.
+- `agentBackend.409.phase0.unit.test.ts` locks three facts: building the router loads no agent SDK; one `"cursor"` request returns 200 and loads only `@cursor/sdk`; importing `miroir-ai` loads `openai` and `@anthropic-ai/sdk` eagerly (#410 gap).
+- 0.2 needed no new test: `cursorSdk.275.phase4` already asserts that a `"cursor"` request reaches the injected factory.
+- The container's `node_modules` and `dist/` were stale; `npm ci` and `./build-all.sh` ran first. `devBuild` rewrote only the timestamp of `miroirFundamentalType.ts`, which was reverted.
 
 ---
 
