@@ -10,7 +10,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../275-FEATURE-cursor-sdk-copilotkit-backend/`](../275-FEATURE-cursor-sdk-copilotkit-backend/) ✅
 Working branch: `claude/409-claude-agent-sdk-backend`
 
-**Resume note:** Slices 0 and 1 DONE.
+**Resume note:** Slices 0, 1 and 2 DONE. Slice 3 waits on A's choice about the nested zod 4 install.
 
 ---
 
@@ -32,7 +32,7 @@ This plan does **not** make the token provider SDKs lazy (#410), give the Claude
 |---|---|---|---|
 | 0 | Characterize the Cursor pick and module loading | ✅ | `agentBackend.409.phase0` (unit + child-process probe) |
 | 1 | `agentBackend` config drives the Cursor chat (tracer) | ✅ | `agentBackend.409.phase1` |
-| 2 | Browser asks for "the agent" and names the backend | ⬜ | `agentBackend.409.phase2` (standalone-app) |
+| 2 | Browser asks for "the agent" and names the backend | ✅ | `agentBackend.409.phase2` (standalone-app) |
 | 3 | Claude agent chat through the shared bridge | ⬜ | `agentBackend.409.phase3` (miroir-ai) |
 | 4 | Only the picked SDK is loaded, `miroir-ai` lazy in the server | ⬜ | `agentBackend.409.phase4` (child-process probe) |
 | 5 | Start checks: packaged SDK, Electron, `miroir-env check` alias warning | ⬜ | `agentBackend.409.phase5` |
@@ -201,7 +201,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,external
 
 ## Slice 2 — Browser asks for "the agent" and names the backend
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -234,7 +234,12 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui,external
 
 ### Realization
 
-_(pending)_
+- New `routes/ai/agentBackendPick.ts`: `agentBackendLabel(capabilities)` ("Cursor", "Claude", or `undefined` for `none`) and `agentRequestProperties(pick, agentBackend)` (`{ aiConfig: { backend: "agent" } }` only when the agent is picked and a backend is configured).
+- `miroirAiBackend.ts`: `MiroirAiBackendPick = "agent"`; stored `"agent"` and stale `"cursor"` both read as `"agent"`; writes store `"agent"`.
+- `AppBar.tsx`: the toggle shows when the label is defined; its `aria-label` and tooltip name the backend. `AgentsCopilotKit.tsx` builds its CopilotKit properties with `agentRequestProperties`.
+- Refactor checkpoint: no `cursor`-named identifiers were left in these files after the change, so no rename was needed.
+- Updated the #275 phase 6 source-scan test for the new names.
+- Scoped nonreg `smoke,ui,external`: 40 passed, 0 failed.
 
 ---
 
