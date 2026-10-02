@@ -30,7 +30,7 @@ const emptyMap = new Map<string, unknown>();
 const disabledSnapshot = {
   ai: false,
   mcp: false,
-  cursor: false,
+  agentBackend: "none" as const,
   designerTools: true,
   availableStoreTypes: [] as string[],
   creatableStoreTypes: [] as string[],
@@ -68,34 +68,34 @@ function featureDefinitionKeys(block: string): string[] {
 
 if (runThis) {
   describe("cursorSdk.275.phase0 — FAIL_CLOSED_PROCESS_CAPABILITIES includes cursor", () => {
-    it("exported fail-closed keys include cursor as false", () => {
+    it("exported fail-closed keys include agentBackend none (#409)", () => {
       expect(Object.keys(FAIL_CLOSED_PROCESS_CAPABILITIES).sort()).toEqual([
+        "agentBackend",
         "ai",
         "availableStoreTypes",
         "creatableStoreTypes",
-        "cursor",
         "designerTools",
         "mcp",
         "storeAdministration",
       ]);
-      expect(FAIL_CLOSED_PROCESS_CAPABILITIES.cursor).toBe(false);
+      expect(FAIL_CLOSED_PROCESS_CAPABILITIES.agentBackend).toBe("none");
     });
   });
 
   describe("cursorSdk.275.phase0 — getProcessCapabilities includes cursor", () => {
-    it("empty config on node yields snapshot with cursor false", () => {
+    it("empty config on node yields snapshot with agentBackend none (#409)", () => {
       const snapshot = getProcessCapabilities({
         config: {},
         environment: "node",
         storeSectionFactoryRegister: emptyMap,
         adminStoreFactoryRegister: emptyMap,
       });
-      expect(snapshot.cursor).toBe(false);
+      expect(snapshot.agentBackend).toBe("none");
       expect(Object.keys(snapshot).sort()).toEqual([
+        "agentBackend",
         "ai",
         "availableStoreTypes",
         "creatableStoreTypes",
-        "cursor",
         "designerTools",
         "mcp",
         "storeAdministration",
@@ -104,14 +104,14 @@ if (runThis) {
   });
 
   describe("cursorSdk.275.phase0 — ProcessCapabilityName union contains cursor", () => {
-    it("processCapabilities.ts ProcessCapabilityName lists ai, mcp, cursor, storeAdministration, availableStoreTypes, designerTools", () => {
+    it("processCapabilities.ts ProcessCapabilityName lists ai, mcp, agent (#409), storeAdministration, availableStoreTypes, designerTools", () => {
       const src = readSource("1_core/processCapabilities.ts");
       const unionStart = src.indexOf("export type ProcessCapabilityName");
       expect(unionStart).toBeGreaterThanOrEqual(0);
       const unionBlock = src.slice(unionStart, src.indexOf("type ProcessCapabilitiesConfig", unionStart));
       expect(unionBlock).toContain('"ai"');
       expect(unionBlock).toContain('"mcp"');
-      expect(unionBlock).toContain('"cursor"');
+      expect(unionBlock).toContain('"agent"');
       expect(unionBlock).toContain('"storeAdministration"');
       expect(unionBlock).toContain('"availableStoreTypes"');
       expect(unionBlock).toContain('"designerTools"');
@@ -126,12 +126,16 @@ if (runThis) {
       const clientBlock = schemaBlock(src, "miroirConfigClient", "miroirConfigServer");
       const serverBlock = schemaBlock(src, "miroirConfigServer", "miroirConfig");
       expect(featureDefinitionKeys(clientBlock).sort()).toEqual([
+        "agentBackend",
+        "agentModel",
         "ai",
         "cursor",
         "designerTools",
         "mcp",
       ]);
       expect(featureDefinitionKeys(serverBlock).sort()).toEqual([
+        "agentBackend",
+        "agentModel",
         "ai",
         "cursor",
         "designerTools",

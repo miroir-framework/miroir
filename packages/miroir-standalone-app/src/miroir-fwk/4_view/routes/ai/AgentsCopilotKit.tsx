@@ -9,7 +9,7 @@
  * survives closing both controls.
  *
  * Backend pick lives in sessionStorage (`miroirAiBackend`). When the pick is
- * `"cursor"` and processCapabilities.cursor is true, CopilotKit receives
+ * `"cursor"` and processCapabilities.agentBackend is "cursor", CopilotKit receives
  * properties={{ aiConfig: { backend: "cursor" } }} (forwarded as
  * forwardedProps). Default omitted pick uses the token AI_PROVIDER_TYPE path
  * (no properties backend).
@@ -53,7 +53,7 @@ export function AgentsCopilotKit(): React.JSX.Element | null {
   const copilotHeaders = useMemo(() => authorizationHeaders(token), [token]);
   useSyncExternalStore(subscribeMiroirAiBackend, readMiroirAiBackend, readMiroirAiBackend);
   const useCursorBackend =
-    readMiroirAiBackend() === "cursor" && processCapabilities.cursor === true;
+    readMiroirAiBackend() === "cursor" && processCapabilities.agentBackend === "cursor";
   const runtimeUrl = copilotRuntimeUrl(
     getClientEnvironment(),
     electronRuntimeBaseUrl({ rootApiUrl: ELECTRON_LOOPBACK_ROOT_API_URL }),

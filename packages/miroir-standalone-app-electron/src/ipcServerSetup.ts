@@ -112,7 +112,7 @@ export async function setupIpcServer(): Promise<void> {
   domainController.setProcessCapabilities(capabilities);
 
   // #370: miroir-ai and miroir-mcp load only when their feature is on.
-  if (app.isPackaged && capabilities.cursor) {
+  if (app.isPackaged && capabilities.agentBackend === "cursor") {
     const { assertCursorSdkPackaged } = await import("miroir-ai");
     assertCursorSdkPackaged();
   }

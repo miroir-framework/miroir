@@ -13,7 +13,7 @@ const runThis = !RUN_TEST || RUN_TEST.startsWith("agentBackend.409");
 const CURSOR_CAPABILITIES = {
   ai: true,
   mcp: true,
-  cursor: true,
+  agentBackend: "cursor",
   designerTools: true,
   availableStoreTypes: [],
   creatableStoreTypes: [],
@@ -21,7 +21,7 @@ const CURSOR_CAPABILITIES = {
 };
 
 if (runThis) {
-  describe("agentBackend.409.phase0: module loading with the cursor capability", () => {
+  describe("agentBackend.409.phase0: module loading with the cursor backend", () => {
     it("building the router loads no agent SDK", () => {
       const result = runModuleLoadProbe({ capabilities: CURSOR_CAPABILITIES });
       expect(loadedAgentSdks(result)).toEqual([]);

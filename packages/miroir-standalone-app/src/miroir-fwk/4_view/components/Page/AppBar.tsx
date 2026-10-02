@@ -348,7 +348,7 @@ export function AppBar(props:AppBarProps) {
     ) : (
       <> </>
     ),
-    showAgentUi && context.processCapabilities.cursor === true ? (
+    showAgentUi && context.processCapabilities.agentBackend === "cursor" ? (
       <AppBarIconButton
         key="ai-backend-cursor"
         aria-label="Cursor"

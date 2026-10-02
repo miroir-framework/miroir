@@ -17028,6 +17028,19 @@ export const miroirFundamentalMlSchema = {
                 "type": "boolean",
                 "optional": true
               },
+              "agentBackend": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "cursor",
+                  "claude",
+                  "none"
+                ]
+              },
+              "agentModel": {
+                "type": "string",
+                "optional": true
+              },
               "designerTools": {
                 "type": "boolean",
                 "optional": true
@@ -17094,6 +17107,19 @@ export const miroirFundamentalMlSchema = {
               },
               "cursor": {
                 "type": "boolean",
+                "optional": true
+              },
+              "agentBackend": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "cursor",
+                  "claude",
+                  "none"
+                ]
+              },
+              "agentModel": {
+                "type": "string",
                 "optional": true
               },
               "designerTools": {
@@ -17295,6 +17321,19 @@ export const miroirFundamentalMlSchema = {
               },
               "cursor": {
                 "type": "boolean",
+                "optional": true
+              },
+              "agentBackend": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "cursor",
+                  "claude",
+                  "none"
+                ]
+              },
+              "agentModel": {
+                "type": "string",
                 "optional": true
               },
               "designerTools": {

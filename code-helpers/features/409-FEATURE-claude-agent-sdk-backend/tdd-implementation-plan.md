@@ -10,7 +10,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../275-FEATURE-cursor-sdk-copilotkit-backend/`](../275-FEATURE-cursor-sdk-copilotkit-backend/) ✅
 Working branch: `claude/409-claude-agent-sdk-backend`
 
-**Resume note:** Slice 0 DONE.
+**Resume note:** Slices 0 and 1 DONE.
 
 ---
 
@@ -31,7 +31,7 @@ This plan does **not** make the token provider SDKs lazy (#410), give the Claude
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize the Cursor pick and module loading | ✅ | `agentBackend.409.phase0` (unit + child-process probe) |
-| 1 | `agentBackend` config drives the Cursor chat (tracer) | ⬜ | `agentBackend.409.phase1` |
+| 1 | `agentBackend` config drives the Cursor chat (tracer) | ✅ | `agentBackend.409.phase1` |
 | 2 | Browser asks for "the agent" and names the backend | ⬜ | `agentBackend.409.phase2` (standalone-app) |
 | 3 | Claude agent chat through the shared bridge | ⬜ | `agentBackend.409.phase3` (miroir-ai) |
 | 4 | Only the picked SDK is loaded, `miroir-ai` lazy in the server | ⬜ | `agentBackend.409.phase4` (child-process probe) |
@@ -139,7 +139,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-ai/tsconfig.json
 
 ## Slice 1 — `agentBackend` config drives the Cursor chat (tracer)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -190,7 +190,12 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,external
 
 ### Realization
 
-_(pending)_
+- Schema: `agentBackend` (enum `cursor`, `claude`, `none`) and `agentModel` (string) added next to `cursor` in the three `features` objects; `devBuild` regenerated `miroirFundamentalMlSchema.ts` and `miroirFundamentalType.ts`.
+- `processCapabilities.ts`: new exported type `AgentBackend`; `ProcessCapabilities.cursor` → `agentBackend`; capability name `"cursor"` → `"agent"`, which `assertProcessCapability` checks as `agentBackend !== "none"`; `isCursorBackendAllowed` → `isAgentBackendAllowed`.
+- Route: `resolveBackendPick` returns `"agent"` for `"agent"` and `"cursor"`; the router option `createCursorAbstractAgent` became `createAgentForBackend(backend)`; `cursorRuntimeAgents` → `agentRuntimeAgents(agent, backend)`; until slice 3 the default factory refuses `claude` with a 503.
+- Deviation: the route now always answers 403 when `isAgentBackendAllowed` is false. Before, a snapshot with `cursor` and `mcp` on but `ai` off fell through `assertProcessCapability("cursor")` and reached the agent; it now reports capability `"ai"`.
+- Readers outside tests read `agentBackend === "cursor"` (`ipcServerSetup.ts`, `AppBar.tsx`, `AgentsCopilotKit.tsx`); slice 2 generalizes the browser ones.
+- Updated existing tests: `miroir-core` 273 phase 1 and 2, 275 phase 0 and 1; `miroir-ai` 275 phase 2 and 4, 409 phase 0; `miroir-standalone-app` 273 phase 2 and 3, 275 phase 6. `miroir-standalone-app` `tsc` reports only the existing MUI `Grid` errors in files this slice does not touch.
 
 ---
 

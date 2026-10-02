@@ -85,7 +85,7 @@ if (runThis) {
       expect(src).toContain("aiConfig");
       expect(src).toMatch(/backend:\s*"cursor"/);
       expect(src).toContain("readMiroirAiBackend");
-      expect(src).toMatch(/processCapabilities\.cursor\s*===\s*true/);
+      expect(src).toMatch(/processCapabilities\.agentBackend\s*===\s*"cursor"/);
     });
 
     it("memoizes CopilotKit properties so the provider does not reset on every render", () => {
@@ -118,9 +118,9 @@ if (runThis) {
       const windowStart = Math.max(0, cursorIdx - 400);
       const aroundPicker = src.slice(windowStart, cursorIdx + 200);
       const gatedByShowAgentUiAndCursor =
-        aroundPicker.includes("showAgentUi") && aroundPicker.includes(".cursor");
+        aroundPicker.includes("showAgentUi") && aroundPicker.includes(".agentBackend");
       const gatedByAiAndCursor =
-        /\.ai\b/.test(aroundPicker) && aroundPicker.includes(".cursor");
+        /\.ai\b/.test(aroundPicker) && aroundPicker.includes(".agentBackend");
       expect(gatedByShowAgentUiAndCursor || gatedByAiAndCursor).toBe(true);
     });
   });

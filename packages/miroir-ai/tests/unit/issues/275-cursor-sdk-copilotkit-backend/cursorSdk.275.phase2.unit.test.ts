@@ -1,5 +1,5 @@
 /**
- * #275 Slice 2 — CopilotKit agents branch + refuse + filtered actions.
+ * #275 Slice 2 (pick and capability generalized to "agent" by #409) — CopilotKit agents branch + refuse + filtered actions.
  * Do not register in FunctionCallTestRegistry.
  */
 import { createServer } from "node:http";
@@ -8,7 +8,7 @@ import express, { type Request, type Router } from "express";
 import { afterEach, describe, expect, it } from "vitest";
 import { AbstractAgent } from "@ag-ui/client";
 import { CopilotRuntime } from "@copilotkit/runtime";
-import { clearSecrets, isCursorBackendAllowed, registerSecrets, type ProcessCapabilities } from "miroir-core";
+import { clearSecrets, isAgentBackendAllowed, registerSecrets, type ProcessCapabilities } from "miroir-core";
 
 import {
   createCopilotKitRouter,
@@ -48,7 +48,7 @@ function snapshot(overrides: Partial<ProcessCapabilities> = {}): ProcessCapabili
   return {
     ai: true,
     mcp: true,
-    cursor: true,
+    agentBackend: "cursor",
     designerTools: true,
     availableStoreTypes: [],
     creatableStoreTypes: [],
@@ -65,7 +65,7 @@ function recordingSeams(testAgent: TestCursorAgent) {
     runtimeOptions,
     endpointOptions,
     tokenBuilds,
-    createCursorAbstractAgent: () => testAgent,
+    createAgentForBackend: () => testAgent,
     createCopilotRuntime: (options: any) => {
       runtimeOptions.push(options);
       return { dummyCursorRuntime: true };
@@ -115,14 +115,14 @@ if (runThis) {
       const req = {
         body: CURSOR_ENVELOPE,
       } as Request;
-      expect(resolveBackendPick(req)).toBe("cursor");
+      expect(resolveBackendPick(req)).toBe("agent");
     });
 
     it("falls back to top-level body.aiConfig.backend", () => {
       const req = {
         body: { aiConfig: { backend: "cursor" } },
       } as Request;
-      expect(resolveBackendPick(req)).toBe("cursor");
+      expect(resolveBackendPick(req)).toBe("agent");
     });
 
     it("returns undefined when neither location picks cursor", () => {
@@ -133,12 +133,12 @@ if (runThis) {
     });
   });
 
-  describe("cursorSdk.275.phase2 — isCursorBackendAllowed", () => {
-    it("is true only when ai, cursor, and mcp are all true", () => {
-      expect(isCursorBackendAllowed(snapshot())).toBe(true);
-      expect(isCursorBackendAllowed(snapshot({ ai: false }))).toBe(false);
-      expect(isCursorBackendAllowed(snapshot({ cursor: false }))).toBe(false);
-      expect(isCursorBackendAllowed(snapshot({ mcp: false }))).toBe(false);
+  describe("cursorSdk.275.phase2 — isAgentBackendAllowed", () => {
+    it("is true only when ai, mcp and a cursor backend are set (#409)", () => {
+      expect(isAgentBackendAllowed(snapshot())).toBe(true);
+      expect(isAgentBackendAllowed(snapshot({ ai: false }))).toBe(false);
+      expect(isAgentBackendAllowed(snapshot({ agentBackend: "none" }))).toBe(false);
+      expect(isAgentBackendAllowed(snapshot({ mcp: false }))).toBe(false);
     });
   });
 
@@ -167,7 +167,7 @@ if (runThis) {
       const seams = recordingSeams(testAgent);
       const router = createCopilotKitRouter(undefined as any, {}, {
         capabilities: snapshot(),
-        createCursorAbstractAgent: seams.createCursorAbstractAgent,
+        createAgentForBackend: seams.createAgentForBackend,
         createCopilotRuntime: seams.createCopilotRuntime,
         buildCopilotRuntime: seams.buildCopilotRuntime,
         copilotRuntimeNodeHttpEndpoint: seams.copilotRuntimeNodeHttpEndpoint,
@@ -191,12 +191,12 @@ if (runThis) {
   });
 
   describe("cursorSdk.275.phase2 — refuse uses injected snapshot", () => {
-    it("returns FeatureUnavailable capability cursor when injected snapshot has cursor false", async () => {
+    it("returns FeatureUnavailable capability agent when injected snapshot has agentBackend none (#409)", async () => {
       const testAgent = new TestCursorAgent();
       const seams = recordingSeams(testAgent);
       const router = createCopilotKitRouter(undefined as any, {}, {
-        capabilities: snapshot({ cursor: false }),
-        createCursorAbstractAgent: seams.createCursorAbstractAgent,
+        capabilities: snapshot({ agentBackend: "none" }),
+        createAgentForBackend: seams.createAgentForBackend,
         createCopilotRuntime: seams.createCopilotRuntime,
         buildCopilotRuntime: seams.buildCopilotRuntime,
         copilotRuntimeNodeHttpEndpoint: seams.copilotRuntimeNodeHttpEndpoint,
@@ -208,7 +208,7 @@ if (runThis) {
       expect(result.body).toMatchObject({
         status: "error",
         errorType: "FeatureUnavailable",
-        errorContext: { capability: "cursor" },
+        errorContext: { capability: "agent" },
       });
       expect(seams.runtimeOptions).toHaveLength(0);
       expect(seams.tokenBuilds).toHaveLength(0);
@@ -224,7 +224,7 @@ if (runThis) {
           snapshotReads += 1;
           return snapshot({ mcp: false });
         },
-        createCursorAbstractAgent: seams.createCursorAbstractAgent,
+        createAgentForBackend: seams.createAgentForBackend,
         createCopilotRuntime: seams.createCopilotRuntime,
         buildCopilotRuntime: seams.buildCopilotRuntime,
         copilotRuntimeNodeHttpEndpoint: seams.copilotRuntimeNodeHttpEndpoint,
@@ -262,7 +262,7 @@ if (runThis) {
       const seams = recordingSeams(testAgent);
       const router = createCopilotKitRouter(undefined as any, {}, {
         capabilities: snapshot(),
-        createCursorAbstractAgent: seams.createCursorAbstractAgent,
+        createAgentForBackend: seams.createAgentForBackend,
         createCopilotRuntime: seams.createCopilotRuntime,
         buildCopilotRuntime: seams.buildCopilotRuntime,
         copilotRuntimeNodeHttpEndpoint: seams.copilotRuntimeNodeHttpEndpoint,

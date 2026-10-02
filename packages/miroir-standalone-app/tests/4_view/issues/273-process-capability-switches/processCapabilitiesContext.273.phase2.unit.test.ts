@@ -31,7 +31,7 @@ const ELECTRON_SRC = join(REPO_ROOT, "packages/miroir-standalone-app-electron/sr
 const snapshot: ProcessCapabilities = {
   ai: true,
   mcp: true,
-  cursor: false,
+  agentBackend: "none" as const,
   designerTools: true,
   availableStoreTypes: ["indexedDb"],
   creatableStoreTypes: ["indexedDb"],

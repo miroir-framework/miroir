@@ -65,7 +65,7 @@ function snapshot(overrides: Partial<ProcessCapabilities> = {}): ProcessCapabili
   return {
     ai: true,
     mcp: true,
-    cursor: true,
+    agentBackend: "cursor",
     designerTools: true,
     availableStoreTypes: [],
     creatableStoreTypes: [],
