@@ -39,7 +39,9 @@ export const MIROIR_REPORT_TEST_VITEST_ENTRY = "miroir-report-tests.integ.test";
 
 /**
  * #406: entry of the component suites (a `reactComponentTest` leaf mounts a React component), in a
- * DOM environment. It runs the suites named by `MIROIR_TEST_SUITES`, all of them without it.
+ * DOM environment. It runs the suites named by `MIROIR_TEST_SUITES`, all of them without it. The
+ * launcher runs a selected `runOnDemand` suite (`MIROIR_COMPONENT_PERF=1`), and refuses `--filter`
+ * and `--mode integ`, which this entry would ignore.
  */
 export const MIROIR_COMPONENT_TEST_VITEST_ENTRY = "miroir-component-tests.unit.test";
 
@@ -152,9 +154,26 @@ export function resolveVitestEntry(
   if (explicitRequest && !requestedTags?.length) {
     const selectedComponentKeys = componentSuiteKeys(selectedSuiteKeys, catalog);
     if (selectedComponentKeys.length > 0) {
+      // the component entry runs whole suites, in unit mode: refuse what it would ignore
+      const componentArgs = parseMiroirTestCliArgs(argv, { integModeAlias: true });
+      if (componentArgs.executionMode === "integration") {
+        throw new Error(
+          `component suites (${selectedComponentKeys.join(", ")}) run in unit mode only: drop --mode ${componentArgs.executionMode}`,
+        );
+      }
+      if (componentArgs.filter !== undefined) {
+        throw new Error(
+          `component suites (${selectedComponentKeys.join(", ")}) take no --filter: select cases with \`npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "<case label>"\``,
+        );
+      }
       return {
         vitestEntry: MIROIR_COMPONENT_TEST_VITEST_ENTRY,
-        spawnEnv: { ...env, MIROIR_TEST_SUITES: selectedComponentKeys.join(",") },
+        spawnEnv: {
+          ...env,
+          MIROIR_TEST_SUITES: selectedComponentKeys.join(","),
+          // a suite named in --suites runs, `runOnDemand` (#303 render performance) included
+          MIROIR_COMPONENT_PERF: "1",
+        },
       };
     }
   }

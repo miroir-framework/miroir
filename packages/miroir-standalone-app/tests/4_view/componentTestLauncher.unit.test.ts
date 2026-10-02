@@ -1,7 +1,7 @@
 /**
  * Component tests (#406): `testMiroir --suites` routes the component suites (a `reactComponentTest`
- * leaf mounts a React component) to their DOM entry, and refuses a selection mixing them with
- * other suites.
+ * leaf mounts a React component) to their DOM entry, runs a selected `runOnDemand` suite, and
+ * refuses a selection mixing them with other suites, `--mode integ` and `--filter`.
  *
  * Run:
  * ```bash
@@ -47,6 +47,21 @@ describe("testMiroirLauncher and component suites (#406)", () => {
       "ui.mlElementEditor.literal",
       "ui.transformerEditor",
     ]);
+  });
+
+  it("runs a selected runOnDemand suite", () => {
+    const { spawnEnv } = resolveVitestEntry(process.env, ["--suites", "ui.mlElementEditor.renderPerformance"]);
+    expect(spawnEnv.MIROIR_TEST_SUITES).toBe("ui.mlElementEditor.renderPerformance");
+    expect(spawnEnv.MIROIR_COMPONENT_PERF).toBe("1");
+  });
+
+  it("refuses --mode integ and --filter, which the component entry would ignore", () => {
+    expect(() => resolveVitestEntry(process.env, ["--suites", "ui.transformerEditor", "--mode", "integ"])).toThrow(
+      /run in unit mode only/,
+    );
+    expect(() =>
+      resolveVitestEntry(process.env, ["--suites", "ui.transformerEditor", "--filter", '{"ui.transformerEditor":["TransformerEditor"]}']),
+    ).toThrow(/take no --filter/);
   });
 
   it("refuses a selection mixing component suites and other suites", () => {

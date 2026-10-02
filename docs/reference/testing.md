@@ -1175,7 +1175,7 @@ MIROIR_COMPONENT_PERF=1 VITE_MIROIR_LOG_CONFIG_FILENAME=catch-all-detailed \
 npm run testMiroir -w miroir-standalone-app -- --suites ui.transformerEditor
 ```
 
-`testMiroir --suites` routes a selection of component suites to this entry, which then runs only these instances (`MIROIR_TEST_SUITES`); a selection mixing component suites with other suites is refused.
+`testMiroir --suites` routes a selection of component suites to this entry, which then runs only these instances (`MIROIR_TEST_SUITES`). A selected `runOnDemand` suite runs (the launcher sets `MIROIR_COMPONENT_PERF=1`). The launcher refuses a selection mixing component suites with other suites, and `--mode integ` or `--filter` with component suites: the entry runs whole suites in unit mode, so pick cases with `testByFile … -t` instead.
 
 `testByFile` (`scripts/test-by-file.ts`) passes `--bail=1` to vitest by default: after the first failing case, the later cases are reported as not run, not as passed. To see every failure at once, add `--no-bail` (or `--bail=0`); any other `--bail=<n>` replaces the default. Arguments reach vitest exactly as given, so a `-t` pattern may contain spaces (`-t "field at 1"`).
 
