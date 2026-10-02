@@ -39,7 +39,16 @@ npm run nonreg                         # --tier default --run-all
 npm run nonreg:unit                    # tier unit only
 npm run nonreg:fail-fast               # tier default, stop on first failure
 npm run nonreg -- --tier full --run-all
+npm run nonreg -- --storage filesystem # integration steps on another store
 ```
+
+#### Storage (#390)
+
+`--storage sql|filesystem|indexedDb|mongodb` runs the integration steps on profile `emulatedServer-<storage>`, whose test environment is `environments/test-<storage>.json`. Without it the run uses the manifest's `defaultProfile`, `emulatedServer-sql`. `--profile` still takes any profile name, and cannot be combined with `--storage`. Shortcuts: `nonreg:filesystem`, `nonreg:indexedDb`, `nonreg:mongodb`; `nonreg:default` is sql.
+
+Steps that run on the store of the run say `"requires": "storage"` in the manifest. When the run selects one of them and the store needs a database (PostgreSQL for `sql`, MongoDB for `mongodb`), the runner first opens a connection to the address in the `connections` of the test environment. If that fails, it prints the address and exits with code 2 before running any step. `--dry-run` and unit-tier runs skip the check. `summary.json` and `summary.md` record `storage` (`null` for a profile that is not `emulatedServer-*`).
+
+A few steps pin `emulatedServer-filesystem` in their argv and run on filesystem whatever the storage: `integ-runner.freezeApplicationVersion`, `externalServices-spotify`, `appstack-270-persistent-secrets`.
 
 | Tier | Contents |
 |------|----------|
@@ -68,7 +77,7 @@ npm run nonreg -- --compare \
   test-results/nonreg/20260717T234407Z
 ```
 
-Step list: [`scripts/nonreg-manifest.json`](../../scripts/nonreg-manifest.json). Runner: [`scripts/run-nonreg.py`](../../scripts/run-nonreg.py). Default integ profile: `emulatedServer-sql` (override with `--profile`).
+Step list: [`scripts/nonreg-manifest.json`](../../scripts/nonreg-manifest.json). Runner: [`scripts/run-nonreg.py`](../../scripts/run-nonreg.py). Default integ profile: `emulatedServer-sql` (override with `--storage` or `--profile`).
 
 #### Scopes (#351)
 
@@ -102,8 +111,8 @@ Both are opt-in; without the flags a run behaves as before.
 - `--runner shared` runs the steps that carry a `shared` descriptor in the manifest together, one vitest launch per `group`, which saves about 9 s of launch overhead per step. A `files` group adds `--no-isolate` and the files of its steps to the group's `argv`; a `suites` group passes the MiroirTest suite keys to `testMiroir ... --shared` (entry `miroir-runner-tests-shared.integ.test.ts`: one session per suite). Results are split back per step. A step that fails or has no result in the group re-runs alone in legacy mode: `summary.json` records `mode: "shared→legacy"`, and `shared_state_leak_suspected` when it then passes. So does every member when the launch fails while none of its tests failed (`shared_status: "launch-failed"`). A group runs where its first member is listed, so its later members run earlier than in a legacy run; with `--fail-fast` they still report their real result. With `--timings`, a shared file's collect and setup times are charged to its first member only. `--runner legacy` (the default) ignores the descriptors.
 
 ```bash
-python scripts/run-nonreg.py --tier default --profile emulatedServer-filesystem --timings
-python scripts/run-nonreg.py --tier default --profile emulatedServer-filesystem --runner shared
+python scripts/run-nonreg.py --tier default --storage filesystem --timings
+python scripts/run-nonreg.py --tier default --storage filesystem --runner shared
 ```
 
 A step joins a group by adding, next to its `argv`:
