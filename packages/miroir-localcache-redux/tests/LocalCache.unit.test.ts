@@ -708,3 +708,93 @@ describe("LocalCache.unit.test - non-serializable Date attributes (#44)", () => 
     expect(storedInstance(localCache).timestamp).toBe(isoTimestamp);
   });
 });
+
+// ################################################################################################
+// #175: a refresh replaces the cached rows of an Entity, it never merges them.
+function loadEntityPresentModel(localCache: LocalCache, entityUuid: string, idAttribute: unknown): void {
+  const loadEntityPresentModelAction: InstanceAction = {
+    actionType: "loadNewInstancesInLocalCache",
+    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+    payload: {
+      application: testApplicationUuid,
+      objects: [
+        {
+          parentUuid: entityEntity.uuid,
+          applicationSection: "model",
+          instances: [
+            { uuid: entityUuid, parentUuid: entityEntity.uuid, name: "TestEntity175", idAttribute } as any,
+          ],
+        } as EntityInstanceCollection,
+      ],
+    },
+  };
+  localCache.handleLocalCacheAction(loadEntityPresentModelAction, applicationDeploymentMap);
+}
+
+describe("LocalCache.unit.test - refresh replacement (#175)", () => {
+  const keyedCases: { label: string; entityUuid: string; idAttribute?: string | string[]; rows: any[]; keys: string[] }[] = [
+    {
+      label: "uuid",
+      entityUuid: testEntityUuid,
+      rows: [{ uuid: testInstanceUuid }, { uuid: testInstance2Uuid }, { uuid: "c-uuid" }],
+      keys: [testInstanceUuid, testInstance2Uuid, "c-uuid"],
+    },
+    {
+      label: "single non-uuid",
+      entityUuid: testEntityUuidWithCustomPK,
+      idAttribute: "name",
+      rows: [{ name: "a" }, { name: "b" }, { name: "c" }],
+      keys: ["a", "b", "c"],
+    },
+    {
+      label: "composite",
+      entityUuid: testEntityUuidWithCompositePK,
+      idAttribute: ["region", "code"],
+      rows: [
+        { region: "EU", code: "A" },
+        { region: "EU", code: "B" },
+        { region: "US", code: "A" },
+      ],
+      keys: ["EU|A", "EU|B", "US|A"],
+    },
+  ];
+
+  for (const c of keyedCases) {
+    it(`keyed (${c.label}): loading [A, B] then [C] leaves exactly [C]`, () => {
+      const localCache = new LocalCache();
+      if (c.idAttribute) {
+        loadEntityPresentModel(localCache, c.entityUuid, c.idAttribute);
+      }
+      const [a, b, cRow] = c.rows.map((r) => ({ ...r, parentUuid: c.entityUuid }));
+      bootstrapLocalCache(localCache, [a, b], c.entityUuid, "data");
+      expect(Object.keys(localCache.getDomainState()[testDeploymentUuid]?.data?.[c.entityUuid] ?? {})).toEqual([
+        c.keys[0],
+        c.keys[1],
+      ]);
+      bootstrapLocalCache(localCache, [cRow], c.entityUuid, "data");
+      expect(localCache.getDomainState()[testDeploymentUuid]?.data?.[c.entityUuid]).toEqual({ [c.keys[2]]: cRow });
+    });
+  }
+
+  it("keyless (idAttribute: false): every row is kept, duplicates included, under positional keys", () => {
+    const localCache = new LocalCache();
+    const keylessEntityUuid = "88888888-8888-8888-8888-888888888888";
+    loadEntityPresentModel(localCache, keylessEntityUuid, false);
+    const a = { label: "a", n: 1, parentUuid: keylessEntityUuid } as any;
+    const b = { label: "b", n: 2, parentUuid: keylessEntityUuid } as any;
+    bootstrapLocalCache(localCache, [a, { ...a }, b], keylessEntityUuid, "data");
+    expect(localCache.getDomainState()[testDeploymentUuid]?.data?.[keylessEntityUuid]).toEqual({
+      "#0": a,
+      "#1": a,
+      "#2": b,
+    });
+
+    // A refresh replaces all rows: nothing is left over from the previous load.
+    const c = { label: "c", n: 3, parentUuid: keylessEntityUuid } as any;
+    bootstrapLocalCache(localCache, [a, c], keylessEntityUuid, "data");
+    expect(localCache.getDomainState()[testDeploymentUuid]?.data?.[keylessEntityUuid]).toEqual({
+      "#0": a,
+      "#1": c,
+    });
+  });
+});

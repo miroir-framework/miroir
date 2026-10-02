@@ -11828,7 +11828,7 @@ export const miroirFundamentalMlSchema = {
             "tag": {
               "value": {
                 "defaultLabel": "Id Attribute",
-                "description": "The attribute(s) used as primary key for instances of this entity. Defaults to 'uuid' when absent. Can be a single attribute name (string) or an array of attribute names for composite primary keys.",
+                "description": "The attribute(s) used as primary key for instances of this entity. Defaults to 'uuid' when absent. Can be a single attribute name (string), an array of attribute names for composite primary keys, or false when instances have no primary key (External SQL and HTTP entities only; such instances are read-only).",
                 "id": 16
               }
             },
@@ -11841,6 +11841,9 @@ export const miroirFundamentalMlSchema = {
                 "definition": {
                   "type": "string"
                 }
+              },
+              {
+                "type": "boolean"
               }
             ]
           },
@@ -12110,7 +12113,7 @@ export const miroirFundamentalMlSchema = {
             "tag": {
               "value": {
                 "defaultLabel": "Id Attribute",
-                "description": "The attribute(s) used as primary key for instances of this entity. Defaults to 'uuid' when absent. Can be a single attribute name (string) or an array of attribute names for composite primary keys."
+                "description": "The attribute(s) used as primary key for instances of this entity. Defaults to 'uuid' when absent. Can be a single attribute name (string), an array of attribute names for composite primary keys, or false when instances have no primary key (External SQL and HTTP entities only; such instances are read-only)."
               }
             },
             "definition": [
@@ -12122,6 +12125,9 @@ export const miroirFundamentalMlSchema = {
                 "definition": {
                   "type": "string"
                 }
+              },
+              {
+                "type": "boolean"
               }
             ]
           },
@@ -43906,7 +43912,7 @@ export const miroirFundamentalMlSchema = {
             "tag": {
               "value": {
                 "defaultLabel": "Id Attribute",
-                "description": "The attribute(s) used as primary key for instances of this entity. Defaults to 'uuid' when absent. Can be a single attribute name (string) or an array of attribute names for composite primary keys.",
+                "description": "The attribute(s) used as primary key for instances of this entity. Defaults to 'uuid' when absent. Can be a single attribute name (string), an array of attribute names for composite primary keys, or false when instances have no primary key (External SQL and HTTP entities only; such instances are read-only).",
                 "id": 16,
                 "isTemplate": true
               }
@@ -43920,6 +43926,9 @@ export const miroirFundamentalMlSchema = {
                 "definition": {
                   "type": "string"
                 }
+              },
+              {
+                "type": "boolean"
               }
             ]
           },

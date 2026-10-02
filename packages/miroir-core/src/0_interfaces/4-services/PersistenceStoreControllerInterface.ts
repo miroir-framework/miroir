@@ -56,7 +56,8 @@ export interface PersistenceStoreAbstractSectionInterface extends PersistenceSto
     // entityVersions : EntityVersion[],
   ):Promise<Action2VoidReturnType>;
   getEntityUuids():string[];
-  getEntityIdAttribute(entityUuid: string): string | string[];
+  /** `false` for an entity without primary key (#175). */
+  getEntityIdAttribute(entityUuid: string): string | string[] | false;
   clear():Promise<Action2VoidReturnType>;
 }
 

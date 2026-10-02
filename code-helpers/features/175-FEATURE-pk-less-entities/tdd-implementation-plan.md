@@ -9,9 +9,9 @@
 
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/175
 Prerequisites: #173 non-uuid PK ✅, #176 composite PK ✅
-Working branch: `claude/project-thread-soh787` (from `_integration`)
+Working branch: `claude/project-thread-lq8utx` (from `_integration`)
 
-**Resume note:** decisions confirmed with A (grilling, 2026-10-02); no slice started.
+**Resume note:** decisions confirmed with A (grilling, 2026-10-02). Implementation started 2026-10-02 on branch `claude/project-thread-lq8utx` (from `_integration`, with the analysis commits cherry-picked); one commit per slice.
 
 ---
 
@@ -33,9 +33,9 @@ This plan does **not** cover: editing keyless rows; keyless Miroir-owned Entitie
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize refresh replacement, keyless collapse, HTTP display keying | ⬜ | cache vitests (redux, zustand), `fn.entityPrimaryKey`, HTTP display characterization |
-| 1 | Tracer: refresh a keyless External SQL table twice (redux) | ⬜ | `pkLessExternalEntity.175.phase1.integ.test.ts` |
-| 2 | Model validation of `idAttribute: false` | ⬜ | `fn.entityPrimaryKey` cases + deployments' modelValidation |
+| 0 | Characterize refresh replacement, keyless collapse, HTTP display keying | ✅ | cache vitests (redux, zustand), `fn.entityPrimaryKey`, HTTP display characterization |
+| 1 | Tracer: refresh a keyless External SQL table twice (redux) | ✅ | `PkLessExternalEntity.integ.test.ts` |
+| 2 | Model validation of `idAttribute: false` | ✅ | `fn.entityPrimaryKey` cases + deployments' modelValidation |
 | 3 | Zustand cache parity | ⬜ | zustand vitest + phase1 integ on zustand |
 | 4 | Queries keep keyless rows and refuse key-based lookups | ⬜ | `DomainStateQuerySelectors.pkLess.unit.test.ts` + phase1 integ |
 | 5 | CUD on keyless Entities refused before touching the cache | ⬜ | phase1 integ, CUD cases |
@@ -105,7 +105,7 @@ From the analysis decision record (confirmed). Deviations go into the slice's Re
 
 ## Slice 0 — Characterize refresh replacement, keyless collapse, HTTP display keying
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE (committed with slice 1)
 
 ### Goal
 
@@ -142,11 +142,17 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,localcache,core
 
 ### Realization
 
+- Redux: `describe("LocalCache.unit.test - refresh replacement (#175)")` loads `[A, B]` then `[C]` for uuid, single non-uuid and composite PKs and asserts exactly `[C]` remains (green before any change).
+- The keyless case was written directly as the target behaviour (three rows under `#0…#2`, replaced on reload) rather than as an assertion of today's collapse: it was red until slice 1, which is the same proof with less churn.
+- Zustand characterization moved to slice 3, where its keyless case flips.
+- `getEntityPrimaryKeyAttribute({}) === "uuid"` was already covered in `fn.entityPrimaryKey`.
+- 0.2 (HTTP display keying) is done at the start of slice 7, where it is used.
+
 ---
 
 ## Slice 1 — Tracer: refresh a keyless External SQL table twice (redux)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -205,11 +211,26 @@ npm run nonreg:default -- --runner shared --scope smoke,actions
 
 ### Realization
 
+- Test written at its final place, `miroir-standalone-app/tests/4_storage/PkLessExternalEntity.integ.test.ts` (no issue directory to move in 9.3). It runs only when the Library deployment is on a sql store (`describe.skip` otherwise), uses plain `describe` (`describe.sequential` is broken by vitest 5, #379), creates `test_175.pk_less_rows` through `sequelize` (already a devDependency), and deploys the Entity with `resetAndinitializeDeploymentCompositeAction` filtered to it.
+- Red before the fix: with the Sequelize model unchanged, the refresh fails with `column "id" does not exist` (checked by disabling `removeAttribute("id")`).
+- Schema: `{ "type": "boolean" }` added to `idAttribute` in Entity, EntityVersion and both `miroir_modelVersion` copies; generated type is `string | string[] | boolean`.
+- `EntityPrimaryKey.ts`: `entityHasNoPrimaryKey`, `POSITIONAL_KEY_PREFIX`, `getInstanceCacheKeys`, `indexInstancesByCacheKey`, `keylessEntityInstanceActionError`, `keylessEntityQueryFailure`. `getEntityPrimaryKeyAttribute(s)` and `getInstancePrimaryKeyValue` throw a plain `Error` for a boolean `idAttribute` (`Action2Error` is not an `Error` subclass, so throwing it gives no stack); `entityHasUuidPrimaryKey` returns false for keyless sources.
+- `PersistenceStoreInstanceSectionAbstractInterface.getEntityIdAttribute` returns `string | string[] | false`.
+- Sites fixed (compiler or `?? "uuid"` review):
+  - `instanceProjection.resolveProjectionIdentityFields`: no PK identity field for keyless sources;
+  - `ExtractorRunnerInMemory`, `SqlDbQueryRunner` (2 sites), `FileSystemExtractorRunner`: `indexInstancesByCacheKey` (the slice 4 change, needed here to compile);
+  - `SqlGenerator.getIdAttributeForEntity` returns `false` for keyless entities; `extractorByPrimaryKey` returns `keylessEntityQueryFailure`, `combinerOneToOne` / `combinerOneToMany` throw it (slice 4 adds the tests);
+  - `sqlDbInstanceStoreSectionMixin.deleteInstance` refuses keyless entities (External entities are already refused before);
+  - `utils.fromMiroirPresentModelToSequelizeEntityDefinition`: no `primaryKey` attribute; `SqlDbStoreSection.getAccessToDataSectionEntity`: `removeAttribute("id")`;
+  - filesystem, IndexedDB and bundled store sections ignore a boolean `idAttribute` (keyless entities are never stored there).
+- Redux `LocalCacheSlice.ts`: keyless entities get a registered adapter whose `selectId` throws, `entityIdAttributeByIndex` holds `false`, `applyEntityInstancesToZone` builds `{ids, entities}` from `getInstanceCacheKeys`. Create, update and delete on a keyless entity return `keylessEntityInstanceActionError` before touching state (cache side of slice 5).
+- Pre-existing failures, unchanged: the 6 "custom idAttribute" cases of `LocalCache.unit.test.ts` (memory note, `_integration`).
+
 ---
 
 ## Slice 2 — Model validation of `idAttribute: false`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE (committed with slices 0 and 1)
 
 ### Goal
 
@@ -242,6 +263,11 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core
 ```
 
 ### Realization
+
+- `checkEntityPrimaryKeyDeclaration(entity): string[]` in `EntityPrimaryKey.ts` (empty when valid), whitelisted for `fn.entityPrimaryKey` (4 cases).
+- `buildModelValidationGroupsFromFilesystem` has no per-entity hook, so the check runs in `checkModelValidationInstance` for every row whose `parentUuid` is the Entity meta-entity: all deployments' `modelValidation` steps and the in-memory `modelValidationSuite` get it.
+- `miroir-core/tests/5-tests/modelValidation.entityPrimaryKey.unit.test.ts`: `false` accepted on External SQL and HTTP, rejected on a Model entity, `true` rejected, composite unchanged.
+- Scoped nonreg (`smoke,core,actions,localcache`, filesystem, shared runner) after slice 1: 36 passed; the 3 `appstack-*Store*.integ` steps fail on `describe.sequential is not a function` (#379, same on `_integration`), and `unit-321-tracked-assets` failed only because the asset changes were not committed yet.
 
 ---
 

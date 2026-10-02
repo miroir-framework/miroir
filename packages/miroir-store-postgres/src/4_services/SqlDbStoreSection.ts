@@ -5,6 +5,8 @@ import {
   Entity,
   isHttpExternalEntity,
   isSqlExternalEntity,
+  entityHasNoPrimaryKey,
+  getEntityPrimaryKeyAttribute,
   MiroirLoggerFactory,
   PersistenceStoreAbstractSectionInterface,
   StorageSpaceHandlerInterface,
@@ -54,7 +56,7 @@ export class SqlDbStoreSection
   }
 
   // ##############################################################################################
-  getEntityIdAttribute(entityUuid: string): string | string[] {
+  getEntityIdAttribute(entityUuid: string): string | string[] | false {
     return this.sqlSchemaTableAccess[entityUuid]?.idAttribute ?? "uuid";
   }
 
@@ -125,7 +127,9 @@ export class SqlDbStoreSection
   getAccessToDataSectionEntity(
     entity: Entity,
   ): EntityUuidIndexedSequelizeModel {
-    const idAttribute: string | string[] = entity.idAttribute ?? "uuid";
+    const idAttribute: string | string[] | false = entityHasNoPrimaryKey(entity)
+      ? false
+      : getEntityPrimaryKeyAttribute(entity);
     const isExternal = isSqlExternalEntity(entity);
     const effectiveSchema = isExternal && entity.externalDataSource?.schema
       ? entity.externalDataSource.schema
@@ -136,6 +140,18 @@ export class SqlDbStoreSection
     const optionalNonNullableAttributes = this.forceNullOptionalAttributeToUndefined
       ? getOptionalNonNullableAttributes(entity)
       : undefined;
+    const sequelizeModel = this.sequelize.define(
+      effectiveTableName,
+      fromMiroirPresentModelToSequelizeEntityDefinition(entity),
+      {
+        freezeTableName: true,
+        schema: effectiveSchema,
+      }
+    );
+    if (idAttribute === false) {
+      // #175: without this, Sequelize adds a phantom "id" primary key column to the model.
+      sequelizeModel.removeAttribute("id");
+    }
     const result = {
       [entity.uuid]: {
         parentName: entity.parentName,
@@ -143,14 +159,7 @@ export class SqlDbStoreSection
         isExternal,
         effectiveSchema,
         optionalNonNullableAttributes,
-        sequelizeModel: this.sequelize.define(
-          effectiveTableName,
-          fromMiroirPresentModelToSequelizeEntityDefinition(entity),
-          {
-            freezeTableName: true,
-            schema: effectiveSchema,
-          }
-        ),
+        sequelizeModel: sequelizeModel,
       },
     };
     log.info(

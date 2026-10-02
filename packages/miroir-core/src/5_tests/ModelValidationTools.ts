@@ -14,6 +14,10 @@ import type {
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { getInnermostTypeCheckError } from "../1_core/mls/mlsTypeCheckError.js";
 import { mlsTypeCheck } from "../1_core/mls/mlsTypeCheck.js";
+import { checkEntityPrimaryKeyDeclaration } from "../1_core/Entity/EntityPrimaryKey.js";
+
+// Entity rows get semantic checks their schema can not express (e.g. idAttribute: false).
+const ENTITY_ENTITY_UUID = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
 
 // ================================================================================================
 // Types
@@ -178,6 +182,12 @@ export function checkModelValidationInstance(
       status: "error",
       innermostError: getInnermostTypeCheckError(result),
     };
+  }
+  if (instance?.parentUuid === ENTITY_ENTITY_UUID) {
+    const entityErrors = checkEntityPrimaryKeyDeclaration(instance);
+    if (entityErrors.length > 0) {
+      return { label, filter, status: "error", innermostError: entityErrors };
+    }
   }
   return { label, filter, status: "ok" };
 }

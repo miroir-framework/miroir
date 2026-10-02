@@ -26,7 +26,11 @@ import {
   TransformerFailure,
   Uuid,
   buildLocalCacheSegmentHeader,
+  entityHasNoPrimaryKey,
   getEntityPrimaryKeyAttribute,
+  getInstanceCacheKeys,
+  indexInstancesByCacheKey,
+  keylessEntityInstanceActionError,
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,
   getLocalCacheIndexEntityUuid,
@@ -203,12 +207,17 @@ const entityAdapter: EntityAdapter<EntityInstance, string> = createEntityAdapter
 // Map of custom EntityAdapters for entities with non-UUID primary keys,
 // indexed by entityInstancesLocationIndex.
 const entityAdapterMap: Record<string, EntityAdapter<EntityInstance, string>> = {};
-// Map from entityInstancesLocationIndex → idAttribute name(s) ("uuid" is default)
-const entityIdAttributeByIndex: Record<string, string | string[]> = {};
+// Map from entityInstancesLocationIndex → idAttribute name(s) ("uuid" is default),
+// false for an entity without primary key (#175).
+const entityIdAttributeByIndex: Record<string, string | string[] | false> = {};
+
+function isCustomIdAttribute(idAttribute: string | string[] | false | undefined): boolean {
+  return idAttribute === false || (!!idAttribute && idAttribute !== "uuid");
+}
 
 function getOrCreateEntityAdapter(
   entityInstancesLocationIndex: string,
-  idAttribute?: string | string[]
+  idAttribute?: string | string[] | false
 ): EntityAdapter<EntityInstance, string> {
   log.debug(
     "getOrCreateEntityAdapter called for entityInstancesLocationIndex",
@@ -219,7 +228,7 @@ function getOrCreateEntityAdapter(
 
   const existingAdapter = entityAdapterMap[entityInstancesLocationIndex];
   if (existingAdapter) {
-    if (idAttribute && idAttribute !== "uuid") {
+    if (isCustomIdAttribute(idAttribute)) {
       const existingIdAttribute =
         entityIdAttributeByIndex[entityInstancesLocationIndex] ?? "uuid";
       if (existingIdAttribute === "uuid") {
@@ -234,6 +243,19 @@ function getOrCreateEntityAdapter(
       return existingAdapter;
     }
   }
+  if (idAttribute === false) {
+    // #175: rows are keyed positionally by applyEntityInstancesToZone; key-based operations are refused.
+    const keylessAdapter = createEntityAdapter<EntityInstance, string>({
+      selectId: () => {
+        throw new Error(
+          "entity at " + entityInstancesLocationIndex + " has no primary key: its instances can not be addressed by key"
+        );
+      },
+    });
+    entityAdapterMap[entityInstancesLocationIndex] = keylessAdapter;
+    entityIdAttributeByIndex[entityInstancesLocationIndex] = false;
+    return keylessAdapter;
+  }
   if (idAttribute && idAttribute !== "uuid") {
     const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
     const customAdapter = createEntityAdapter<EntityInstance, string>({
@@ -246,7 +268,7 @@ function getOrCreateEntityAdapter(
   return entityAdapter;
 }
 
-function getEntityIdAttribute(entityInstancesLocationIndex: string): string | string[] {
+function getEntityIdAttribute(entityInstancesLocationIndex: string): string | string[] | false {
   return entityIdAttributeByIndex[entityInstancesLocationIndex] ?? "uuid";
 }
 
@@ -295,7 +317,9 @@ function registerEntityAdapterFromPresentModelSource(
   deploymentUuid: string,
   source: EntityInstance,
 ): void {
-  const idAttribute = getEntityPrimaryKeyAttribute(source as any);
+  const idAttribute = entityHasNoPrimaryKey(source as any)
+    ? false
+    : getEntityPrimaryKeyAttribute(source as any);
   const targetEntityUuid =
     (source as any).entityUuid ?? (source as any).uuid;
   log.debug(
@@ -307,7 +331,7 @@ function registerEntityAdapterFromPresentModelSource(
     targetEntityUuid,
   );
 
-  if (idAttribute !== "uuid" && targetEntityUuid) {
+  if (isCustomIdAttribute(idAttribute) && targetEntityUuid) {
     for (const targetSection of ["model", "data"] as ApplicationSection[]) {
       const locationIndex = getReduxDeploymentsStateIndex(
         deploymentUuid,
@@ -387,10 +411,16 @@ function applyEntityInstancesToZone(
       state,
       segment
     );
-  const next = adapter.setAll(
-    (state as any)[zone][entityInstancesLocationIndex],
-    serializableInstances
-  );
+  const adapterIndex = getReduxDeploymentsStateIndex(deploymentUuid, section, entityUuid, "full");
+  const idAttribute = getEntityIdAttribute(adapterIndex);
+  const next =
+    idAttribute === false
+      ? {
+          // #175: rows without primary key are all kept, under positional keys.
+          ids: getInstanceCacheKeys({ idAttribute }, serializableInstances),
+          entities: indexInstancesByCacheKey({ idAttribute }, serializableInstances),
+        }
+      : adapter.setAll((state as any)[zone][entityInstancesLocationIndex], serializableInstances);
   // EntityAdapter.setAll drops custom fields — re-attach segment header (#214).
   (state as any)[zone][entityInstancesLocationIndex] = {
     ...next,
@@ -559,6 +589,9 @@ function handleInstanceAction(
             instanceAction.payload.applicationSection,
             resolvedParentUuid
           );
+          if (getEntityIdAttribute(instanceCollectionEntityIndex) === false) {
+            return keylessEntityInstanceActionError("createInstance", resolvedParentUuid);
+          }
           // log.info(
           //   "handleInstanceAction createInstance for",
           //   "deployment", deploymentUuid,
@@ -670,6 +703,9 @@ function handleInstanceAction(
               instanceAction.payload.applicationSection,
               resolvedParentUuid
             );
+            if (getEntityIdAttribute(instanceCollectionEntityIndex) === false) {
+              return keylessEntityInstanceActionError("deleteInstance", resolvedParentUuid);
+            }
 
             // log.debug(
             //   "localCacheSliceObject handleInstanceAction delete received instanceCollectionEntityIndex",
@@ -692,7 +728,7 @@ function handleInstanceAction(
             //   JSON.stringify(state[instanceCollectionEntityIndex])
             // );
 
-            const deleteIdAttribute = getEntityIdAttribute(instanceCollectionEntityIndex);
+            const deleteIdAttribute = getEntityIdAttribute(instanceCollectionEntityIndex) as string | string[]; // keyless refused above
             const deletePkAttrs = Array.isArray(deleteIdAttribute) ? deleteIdAttribute : [deleteIdAttribute];
             const deletePkValue = serializeCompositeKeyValue(deletePkAttrs, instance);
             state.current[instanceCollectionEntityIndex] = sliceEntityAdapter.removeOne(
@@ -735,6 +771,9 @@ function handleInstanceAction(
             instanceAction.payload.applicationSection,
             resolvedParentUuid
           );
+          if (getEntityIdAttribute(instanceCollectionEntityIndex) === false) {
+            return keylessEntityInstanceActionError("updateInstance", resolvedParentUuid);
+          }
           const { adapter: sliceEntityAdapter } = initializeLocalCacheSliceStateWithEntityAdapter(
             deploymentUuid,
             instanceAction.payload.applicationSection,
@@ -748,7 +787,7 @@ function handleInstanceAction(
           //   changes: i,
           // }));
           // log.info("localCacheSliceObject handleInstanceAction for entity", instanceCollection.parentUuid, instanceCollection.parentUuid, "updating", updates)
-          const updateIdAttribute = getEntityIdAttribute(instanceCollectionEntityIndex);
+          const updateIdAttribute = getEntityIdAttribute(instanceCollectionEntityIndex) as string | string[]; // keyless refused above
           const updatePkAttrs = Array.isArray(updateIdAttribute) ? updateIdAttribute : [updateIdAttribute];
           const updatePkValue = serializeCompositeKeyValue(updatePkAttrs, instance);
           if (resolvedParentUuid === entitySelfApplication.uuid) {

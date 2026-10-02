@@ -648,7 +648,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   // #############################################################################################
-  getEntityIdAttribute(entityUuid: string): string | string[] {
+  getEntityIdAttribute(entityUuid: string): string | string[] | false {
     return this.dataStoreSection.getEntityIdAttribute(entityUuid);
   }
 
