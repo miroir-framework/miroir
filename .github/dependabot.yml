@@ -28,6 +28,11 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "@types/react-dom"
         update-types: ["version-update:semver-major"]
+      # ag-grid-react renders the grid and ag-grid-community holds its CSS: they must share a major.
+      - dependency-name: "ag-grid-community"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "ag-grid-react"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directories:
       - /
