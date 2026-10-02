@@ -9,6 +9,7 @@ import {
   resolveMiroirTestCliConfigFromPartial,
   splitSuiteKeys,
   splitTags,
+  walkMiroirTestLeaves,
 } from "miroir-core";
 import {
   listCliRunnerIntegrationSuiteKeysFromFolders,
@@ -35,6 +36,36 @@ export const SHARED_RUNNER_FLAG = "--shared";
  * Like the shared entry, each suite gets its own session, so `--shared` changes nothing there.
  */
 export const MIROIR_REPORT_TEST_VITEST_ENTRY = "miroir-report-tests.integ.test";
+
+/**
+ * #406: entry of the component suites (a `reactComponentTest` leaf mounts a React component), in a
+ * DOM environment. It runs the suites named by `MIROIR_TEST_SUITES`, all of them without it. The
+ * launcher runs a selected `runOnDemand` suite (`MIROIR_COMPONENT_PERF=1`), and refuses `--filter`
+ * and `--mode integ`, which this entry would ignore.
+ */
+export const MIROIR_COMPONENT_TEST_VITEST_ENTRY = "miroir-component-tests.unit.test";
+
+/** The selected suites that mount a React component (#406), refusing a selection mixing them with others. */
+function componentSuiteKeys(
+  suiteKeys: string[],
+  catalog: ReturnType<typeof loadApplicationMiroirTestCatalog>,
+): string[] {
+  const componentKeys = suiteKeys.filter((key) => {
+    const entry = catalog.find((catalogEntry) => catalogEntry.suiteKey === key);
+    return (
+      entry !== undefined &&
+      walkMiroirTestLeaves(entry.suiteDefinition).some((leaf) => leaf.miroirTestType === "reactComponentTest")
+    );
+  });
+  if (componentKeys.length > 0 && componentKeys.length < suiteKeys.length) {
+    throw new Error(
+      `the selection has both component suites (${componentKeys.join(", ")}) and other suites (${suiteKeys
+        .filter((key) => !componentKeys.includes(key))
+        .join(", ")}); they run in different entries: launch them separately`,
+    );
+  }
+  return componentKeys;
+}
 
 /**
  * The entry of the selected runner / action / Report suites, and the suites it runs: Report
@@ -118,6 +149,34 @@ export function resolveVitestEntry(
     : explicitRequest
       ? resolveCliSuiteKeysFromCatalog(requestedSuiteKeys, [...coreKeys, ...runnerKeys], catalog)
       : requestedSuiteKeys;
+
+  // tags select among the integration-capable suites only, so only --suites names component suites
+  if (explicitRequest && !requestedTags?.length) {
+    const selectedComponentKeys = componentSuiteKeys(selectedSuiteKeys, catalog);
+    if (selectedComponentKeys.length > 0) {
+      // the component entry runs whole suites, in unit mode: refuse what it would ignore
+      const componentArgs = parseMiroirTestCliArgs(argv, { integModeAlias: true });
+      if (componentArgs.executionMode === "integration") {
+        throw new Error(
+          `component suites (${selectedComponentKeys.join(", ")}) run in unit mode only: drop --mode ${componentArgs.executionMode}`,
+        );
+      }
+      if (componentArgs.filter !== undefined) {
+        throw new Error(
+          `component suites (${selectedComponentKeys.join(", ")}) take no --filter: select cases with \`npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "<case label>"\``,
+        );
+      }
+      return {
+        vitestEntry: MIROIR_COMPONENT_TEST_VITEST_ENTRY,
+        spawnEnv: {
+          ...env,
+          MIROIR_TEST_SUITES: selectedComponentKeys.join(","),
+          // a suite named in --suites runs, `runOnDemand` (#303 render performance) included
+          MIROIR_COMPONENT_PERF: "1",
+        },
+      };
+    }
+  }
 
   if (requestedTags?.length) {
     const selectedCoreKeys = selectedSuiteKeys.filter((key) => coreKeys.has(key));

@@ -245,6 +245,69 @@
           "transformerType": "returnValue",
           "value": 0
         }
+      },
+      {
+        "miroirTestType": "transformerTest",
+        "miroirTestLabel": "omits an optional attribute tagged initializeTo from an object MLS",
+        "transformerName": "defaultValueForMLSchema",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "getObjectEntries",
+          "interpolation": "build",
+          "applyTo": {
+            "transformerType": "defaultValueForMLSchema",
+            "interpolation": "build",
+            "mlSchema": {
+              "type": "object",
+              "definition": {
+                "a": {
+                  "type": "string"
+                },
+                "b": {
+                  "type": "enum",
+                  "optional": true,
+                  "tag": {
+                    "value": {
+                      "initializeTo": {
+                        "initializeToType": "value",
+                        "value": "build"
+                      }
+                    }
+                  },
+                  "definition": ["build", "runtime"]
+                }
+              }
+            }
+          }
+        },
+        "transformerParams": {},
+        "expectedValue": [["a", ""]]
+      },
+      {
+        "miroirTestType": "transformerTest",
+        "miroirTestLabel": "omits optional interpolation and mlSchema from a returnValue transformer default",
+        "transformerName": "defaultValueForMLSchema",
+        "runTestStep": "build",
+        "transformer": {
+          "transformerType": "getObjectEntries",
+          "interpolation": "build",
+          "applyTo": {
+            "transformerType": "defaultValueForMLSchema",
+            "interpolation": "build",
+            "mlSchema": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "coreTransformerForBuildPlusRuntime"
+              }
+            }
+          }
+        },
+        "transformerParams": {},
+        "expectedValue": [
+          ["transformerType", "returnValue"],
+          ["value", 0]
+        ]
       }
     ]
   }

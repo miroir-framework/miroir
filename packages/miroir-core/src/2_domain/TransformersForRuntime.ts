@@ -310,8 +310,9 @@ export function getDefaultValueForMlSchemaWithResolution(
       const result: Record<string, any> = {};
 
       // TODO: do not call this when the object has a initializeTo tag!
+      // Optional attributes stay absent, even with initializeTo: absent carries their default meaning.
       Object.entries(resolvedObjectType.definition)
-        .filter((a) => forceOptional || !a[1].optional || a[1].tag?.value?.initializeTo)
+        .filter((a) => forceOptional || !a[1].optional)
         .forEach((a) => {
           const attributeName = a[0];
           const attributeValue = getDefaultValueForMlSchemaWithResolution(

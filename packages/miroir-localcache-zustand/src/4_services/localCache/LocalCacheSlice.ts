@@ -287,6 +287,10 @@ function applyEntityInstancesToZone(
     segment
   );
   const idAttribute = getIdAttributeForIndex(index);
+  if (idAttribute === false) {
+    log.error("applyEntityInstancesToZone", keylessEntityInstanceActionError("load", entityUuid).errorMessage);
+    return;
+  }
   (state as any)[zone][index] = {
     ...(merge
       ? addManyToEntityState((state as any)[zone][index], instances, idAttribute)

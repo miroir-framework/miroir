@@ -182,10 +182,10 @@ Full catalogue: [reference/testing.md](../reference/testing.md#running-app-stack
 
 ### MlElementEditor component tests
 
-The ML schema editor cases are MiroirTests (#286) written as declarative JSON (#292). There is one instance per editor (`ui.mlElementEditor.enum`, `ui.mlElementEditor.array`, `ui.mlElementEditor.literal`, `ui.mlElementEditor.object`, `ui.mlElementEditor.simpleType`, `ui.mlElementEditor.union`, `ui.mlElementEditor.any`; 68 cases in all), plus the test pattern `ui.mlElementEditor.allTypesPattern` (one object with every editor type, 4 cases) and the render-performance suite `ui.mlElementEditor.renderPerformance` (15 cases with a `measureRendering` step, `runOnDemand`) (#303). Each instance has one `reactComponentTestSuite` node, which names the rendered component and its default props, and one `reactComponentTest` leaf per case, with its own props and a list of steps (`click`, `change`, `selectOption`, `expectRenderedValues`, `expectElement`, …). The vitest entry `tests/4_view/miroir-component-tests.unit.test.tsx` runs them:
+The ML schema editor cases are MiroirTests (#286) written as declarative JSON (#292). There is one instance per editor (`ui.mlElementEditor.enum`, `ui.mlElementEditor.array`, `ui.mlElementEditor.literal`, `ui.mlElementEditor.object`, `ui.mlElementEditor.simpleType`, `ui.mlElementEditor.union`, `ui.mlElementEditor.any`; 68 cases in all), plus the test pattern `ui.mlElementEditor.allTypesPattern` (one object with every editor type, 4 cases) and the render-performance suite `ui.mlElementEditor.renderPerformance` (15 cases with a `measureRendering` step, `runOnDemand`) (#303). `ui.transformerEditor` (4 cases, #406) renders the TransformerEditor the same way. Each instance has one `reactComponentTestSuite` node, which names the rendered component and its default props, and one `reactComponentTest` leaf per case, with its own props and a list of steps (`click`, `change`, `selectOption`, `expectRenderedValues`, `expectElement`, …). The vitest entry `tests/4_view/miroir-component-tests.unit.test.tsx` runs them:
 
 ```bash
-# The 72 default cases, plus 2 entry checks; the 15 on-demand cases are skipped.
+# The 76 default cases (72 editor cases, 4 TransformerEditor cases), plus 2 entry checks; the 15 on-demand cases are skipped.
 # No --profile and no Postgres (in-memory LocalCache).
 npm run testByFile -w miroir-standalone-app -- miroir-component-tests
 
@@ -196,6 +196,9 @@ npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "MlTest
 # Render-performance suite (on demand), measurement tables in the log
 MIROIR_COMPONENT_PERF=1 VITE_MIROIR_LOG_CONFIG_FILENAME=catch-all-detailed \
   npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "MlEditorRenderPerformance"
+
+# The TransformerEditor cases (#406), by suite name
+npm run testMiroir -w miroir-standalone-app -- --suites ui.transformerEditor
 
 # After a change to an instance JSON in miroir-app-miroir/assets/miroir_data/a311f363-…/
 npm run build -w miroir-app-miroir

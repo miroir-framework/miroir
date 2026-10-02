@@ -3,7 +3,8 @@
  * analysis §5.7).
  *
  * For every instance of the Miroir deployment folder that holds a `reactComponentTest` leaf (the
- * 7 per-editor instances of #292, the test pattern and the render-performance instances of #303):
+ * 7 per-editor instances of #292, the test pattern and the render-performance instances of #303,
+ * the TransformerEditor instance of #406):
  * - it passes `mlsTypeCheck` against the MiroirTest Entity `mlSchema` and the EntityVersion
  *   `mlSchema`;
  * - its leaf labels are unique over all the instances and start with `<child label>: `, the child
@@ -134,8 +135,8 @@ const schemas: [string, MlElement][] = [
 
 // ################################################################################################
 describe("componentMiroirTests consistency", () => {
-  it("the 9 component test instances pass mlsTypeCheck against the Entity and EntityVersion mlSchemas", () => {
-    expect(componentTestInstances.map((instance) => instance.name)).toHaveLength(9);
+  it("the 10 component test instances pass mlsTypeCheck against the Entity and EntityVersion mlSchemas", () => {
+    expect(componentTestInstances.map((instance) => instance.name)).toHaveLength(10);
     const failures: string[] = [];
     for (const instance of componentTestInstances) {
       for (const [schemaName, schema] of schemas) {

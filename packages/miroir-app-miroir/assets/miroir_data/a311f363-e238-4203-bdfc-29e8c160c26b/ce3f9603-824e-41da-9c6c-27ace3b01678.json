@@ -1,0 +1,238 @@
+{
+  "uuid": "ce3f9603-824e-41da-9c6c-27ace3b01678",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "ui.transformerEditor",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "TransformerEditor on the Miroir application: renders the default transformer and its result, edits it, chooses a transformer type, and switches the input type restriction off.",
+  "tags": [
+    "ui",
+    "editor",
+    "transformer"
+  ],
+  "issue": "406",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "ui.transformerEditor",
+    "miroirTests": [
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "TransformerEditor",
+        "component": "TransformerEditor",
+        "componentProps": {
+          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+          "entityUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: renders the default returnValue transformer and its result",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "title",
+                "target": {
+                  "byText": "Transformer Editor"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "default transformer type",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "returnValue"
+              },
+              {
+                "step": "expectElement",
+                "label": "default returned value",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "result",
+                "target": {
+                  "byText": "seize value..."
+                },
+                "count": 1
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: editing the returned value updates the result",
+            "steps": [
+              {
+                "step": "change",
+                "label": "returned value",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "value": "new value"
+              },
+              {
+                "step": "expectElement",
+                "label": "new result",
+                "target": {
+                  "byText": "new value"
+                },
+                "count": 1,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "old result gone",
+                "target": {
+                  "byText": "seize value..."
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: choosing getObjectValues returns the values of the input",
+            "steps": [
+              {
+                "step": "selectOption",
+                "label": "transformer type",
+                "field": "transformerEditor_transformer_selector.transformer.transformerType",
+                "option": "getObjectValues"
+              },
+              {
+                "step": "expectElement",
+                "label": "result: the input value",
+                "target": {
+                  "byText": "put your input here..."
+                },
+                "count": 1,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: the input type restriction hides array transformers until it is switched off",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "restriction on",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                },
+                "checked": true
+              },
+              {
+                "step": "expectElement",
+                "label": "hidden transformers hint",
+                "target": {
+                  "byTestId": "transformer-type-restriction-hint"
+                }
+              },
+              {
+                "step": "openSelect",
+                "label": "open transformer types",
+                "field": "transformerEditor_transformer_selector.transformer.transformerType"
+              },
+              {
+                "step": "expectElement",
+                "label": "getObjectValues offered",
+                "target": {
+                  "byRole": "option",
+                  "name": "transformerEditor_transformer_selector.transformer.transformerType-option-getObjectValues"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "aggregate hidden",
+                "target": {
+                  "byRole": "option",
+                  "name": "transformerEditor_transformer_selector.transformer.transformerType-option-aggregate"
+                },
+                "present": false
+              },
+              {
+                "step": "type",
+                "label": "close transformer types",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "text": "{Escape}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "transformer types closed",
+                "target": {
+                  "widget": "selectState",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "attribute": "data-test-is-open",
+                "value": "false"
+              },
+              {
+                "step": "click",
+                "label": "switch the restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                },
+                "checked": false
+              },
+              {
+                "step": "expectElement",
+                "label": "no hint",
+                "target": {
+                  "byTestId": "transformer-type-restriction-hint"
+                },
+                "present": false
+              },
+              {
+                "step": "openSelect",
+                "label": "reopen transformer types",
+                "field": "transformerEditor_transformer_selector.transformer.transformerType"
+              },
+              {
+                "step": "expectElement",
+                "label": "aggregate offered",
+                "target": {
+                  "byRole": "option",
+                  "name": "transformerEditor_transformer_selector.transformer.transformerType-option-aggregate"
+                }
+              },
+              {
+                "step": "type",
+                "label": "close transformer types again",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "text": "{Escape}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "transformer types closed again",
+                "target": {
+                  "widget": "selectState",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "attribute": "data-test-is-open",
+                "value": "false"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

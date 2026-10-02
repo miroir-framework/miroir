@@ -19,7 +19,7 @@ updates:
     ignore:
       - dependency-name: "zod"
         update-types: ["version-update:semver-major"]
-      # React 19 needs react, react-dom and their types moved together, with a migration.
+      # React 19 needs react, react-dom and @types/* to move together: migrate deliberately.
       - dependency-name: "react"
         update-types: ["version-update:semver-major"]
       - dependency-name: "react-dom"
@@ -27,6 +27,11 @@ updates:
       - dependency-name: "@types/react"
         update-types: ["version-update:semver-major"]
       - dependency-name: "@types/react-dom"
+        update-types: ["version-update:semver-major"]
+      # ag-grid-react renders the grid and ag-grid-community holds its CSS: they must share a major.
+      - dependency-name: "ag-grid-community"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "ag-grid-react"
         update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directories:

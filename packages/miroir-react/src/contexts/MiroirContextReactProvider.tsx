@@ -258,6 +258,12 @@ export function MiroirContextReactProvider(props: {
    */
   initialShowPerformanceDisplay?: boolean;
   /**
+   * Initial value of `toolsPageState` (the Tools page and TransformerEditor state), replacing the
+   * `sessionStorage` value; its updates are then not written to `sessionStorage`. Used by component
+   * tests (#406), so that each case starts from the same state and none leaks into the app session.
+   */
+  initialToolsPageState?: ToolsPageState;
+  /**
    * The reports and entities by deployment, computed by the host instead of set by RootComponent:
    * the report test runner mounts a page without RootComponent (#330). When given, it replaces
    * the value set with `setDeploymentUuidToReportsEntitiesMapping`.
@@ -395,7 +401,11 @@ export function MiroirContextReactProvider(props: {
     const saved = sessionStorage.getItem("generalEditMode");
     return saved ? JSON.parse(saved) : false;
   });
+  const persistToolsPageState = props.initialToolsPageState === undefined;
   const [toolsPageState, setToolsPageState] = useState<ToolsPageState>(() => {
+    if (props.initialToolsPageState !== undefined) {
+      return props.initialToolsPageState;
+    }
     // Persist TransformerBuilderPage state across navigation per deployment
     const saved = sessionStorage.getItem("toolsPageState");
     return saved ? JSON.parse(saved) : {};
@@ -486,9 +496,11 @@ export function MiroirContextReactProvider(props: {
       // log.info("updateTransformerEditorState updateToolsPageStateDEFUNCT", { updates, newState });
       setToolsPageState(newState);
       // Persist to sessionStorage per deployment
-      sessionStorage.setItem("toolsPageState", JSON.stringify(newState));
+      if (persistToolsPageState) {
+        sessionStorage.setItem("toolsPageState", JSON.stringify(newState));
+      }
     },
-    [toolsPageState],
+    [toolsPageState, persistToolsPageState],
   );
 
   // ##############################################################################################
@@ -501,9 +513,11 @@ export function MiroirContextReactProvider(props: {
       // log.info("updateTransformerEditorState", { toolsPageState, updates, newState });
       setToolsPageState(newState);
       // Persist to sessionStorage per deployment
-      sessionStorage.setItem("toolsPageState", JSON.stringify(newState));
+      if (persistToolsPageState) {
+        sessionStorage.setItem("toolsPageState", JSON.stringify(newState));
+      }
     },
-    [toolsPageState],
+    [toolsPageState, persistToolsPageState],
   );
 
   // Snackbar handlers
