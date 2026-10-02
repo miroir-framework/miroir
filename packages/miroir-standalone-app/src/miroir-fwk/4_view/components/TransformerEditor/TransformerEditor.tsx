@@ -78,21 +78,29 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 // ################################################################################################
 // ################################################################################################
 /**
- * #383: root input type of the edited transformer, from the input selector (D7). "here": the kind
- * of the value; "instance": the selected entity, or an array of it when all instances are shown.
+ * #383: root input type of the edited transformer, from the input it actually runs on (D7).
+ * "here": the kind of the value. "instance": the `defaultInput` the instance selector bound, an
+ * entity instance (its entity uuid) or an array of them (array of that entity).
  */
 function transformerEditorRootInputType(
   inputSelector: { mode?: string; input?: unknown } | undefined,
-  entityUuid: Uuid | undefined,
-  showAllInstances: boolean,
+  instanceInput: Record<string, unknown> | undefined,
 ): InputOutputType {
   if (inputSelector?.mode === "here") {
     return inputOutputTypeOfValue(inputSelector.input);
   }
-  if (inputSelector?.mode !== "instance" || !entityUuid) {
+  if (inputSelector?.mode !== "instance") {
     return "any";
   }
-  return showAllInstances ? { type: "array", payload: entityUuid } : entityUuid;
+  const value = instanceInput?.[defaultTransformerInput];
+  const entityUuidOf = (instance: unknown): string | undefined => {
+    const parentUuid = (instance as { parentUuid?: unknown } | undefined)?.parentUuid;
+    return typeof parentUuid === "string" ? parentUuid : undefined;
+  };
+  if (Array.isArray(value)) {
+    return { type: "array", payload: entityUuidOf(value[0]) ?? "any" };
+  }
+  return entityUuidOf(value) ?? inputOutputTypeOfValue(value);
 }
 
 function formatInputOutputType(type: InputOutputType): string {
@@ -871,8 +879,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                       editedTransformer={formikContext.values.transformerEditor_transformer_selector.transformer}
                       rootInputType={transformerEditorRootInputType(
                         formikContext.values[formikPath_TransformerEditorInputModeSelector],
-                        persistedState?.selectedEntityUuid ?? initialEntityUuid,
-                        showAllInstances,
+                        formikContext.values.transformerEditor_input,
                       )}
                       entities={editorModel?.entities}
                       restrictTransformersToInputType={restrictTransformersToInputType}

@@ -288,6 +288,22 @@ export function inputOutputTypeOfValue(value: unknown): InputOutputType {
   }
 }
 
+/** Element of an array value: its element schema when known, else lifted from the coarse type. */
+function arrayElementValue(array: WalkValue, environment: WalkEnvironment): WalkValue {
+  const type = arrayElementInputOutputType(array.type);
+  const definition = (array.schema as { type?: string; definition?: unknown }).definition;
+  if (
+    array.schema.type === "array" &&
+    definition &&
+    typeof definition === "object" &&
+    !Array.isArray(definition) &&
+    "type" in definition
+  ) {
+    return { type, schema: definition as MlElement };
+  }
+  return walkValueOfType(type, environment);
+}
+
 /** Element type of an array type; anything else gives `any`. */
 function arrayElementInputOutputType(type: InputOutputType): InputOutputType {
   if (typeof type === "object" && type.type === "array") {
@@ -300,7 +316,10 @@ export interface TransformerInterfaceWalkOptions {
   transformerDefinitions?: Record<string, TransformerDefinition>;
   /** ML schemas of the entities known to the caller, by entity uuid (output inference, D8). */
   entityMlSchemas?: Record<string, MlElement>;
-  /** Extra ML context bindings (e.g. `row` in the list transformer panel). */
+  /**
+   * Extra ML context bindings (e.g. `row` in the list transformer panel). A `defaultInput` entry
+   * replaces the default binding of the root input.
+   */
   context?: TransformerResultSchemaContext;
 }
 
@@ -389,8 +408,40 @@ function walkNode(
     report.failures.push({ direction: "input", given: consumed.type, declared: declared.input });
   }
 
-  walkChildren(transformer, path, given, consumed, context, environment);
-  return { report, output };
+  const element = walkChildren(transformer, path, given, consumed, context, environment);
+  // #88 resolves a list combinator's element transformer in the parent's context; the walk knows
+  // the bound element, so it derives the output of mapList / filterList / find from it.
+  const listOutput = element ? listCombinatorOutput(transformer.transformerType, consumed, element) : undefined;
+  if (listOutput) {
+    report.output = listOutput.type;
+  }
+  return { report, output: listOutput ?? output };
+}
+
+function payloadOf(type: InputOutputType): InputOutputPayloadType {
+  return typeof type === "object" || type === "object" || type === "array" || type === "undefined"
+    ? "any"
+    : type;
+}
+
+function listCombinatorOutput(
+  transformerType: string,
+  consumed: WalkValue,
+  element: { bound: WalkValue; output: WalkValue },
+): WalkValue | undefined {
+  switch (transformerType) {
+    case "mapList":
+      return {
+        type: { type: "array", payload: payloadOf(element.output.type) },
+        schema: { type: "array", definition: element.output.schema } as MlElement,
+      };
+    case "filterList":
+      return consumed;
+    case "find":
+      return element.bound;
+    default:
+      return undefined;
+  }
 }
 
 /** Context binding of a value under `referenceToOuterObject`, else as `defaultInput` (D9). */
@@ -415,21 +466,23 @@ function walkChildren(
   consumed: WalkValue,
   context: TransformerResultSchemaContext,
   environment: WalkEnvironment,
-): void {
+): { bound: WalkValue; output: WalkValue } | undefined {
   const handledKeys = new Set<string>(SKIP_WALK_KEYS);
   const transformerType = transformer.transformerType;
+  let element: { bound: WalkValue; output: WalkValue } | undefined;
 
   const elementSlot = LIST_ELEMENT_SLOTS[transformerType];
   if (elementSlot && isTypedTransformerNode(transformer[elementSlot])) {
-    const element = walkValueOfType(arrayElementInputOutputType(consumed.type), environment);
-    const binding = bindOuterValue(transformer, given, element, context);
-    walkNode(
+    const bound = arrayElementValue(consumed, environment);
+    const binding = bindOuterValue(transformer, given, bound, context);
+    const { output } = walkNode(
       transformer[elementSlot] as TypedTransformerNode,
       [...path, elementSlot],
       binding.given,
       binding.context,
       environment,
     );
+    element = { bound, output };
     handledKeys.add(elementSlot);
   }
 
@@ -460,6 +513,7 @@ function walkChildren(
       walkNested(value, [...path, key], given, context, environment);
     }
   }
+  return element;
 }
 
 /** Walk every typed transformer found in `value` (directly, in arrays or in plain records). */
@@ -501,7 +555,9 @@ export function checkTransformerInterfaceRecursively(
   };
   if (isTypedTransformerNode(transformer)) {
     const root = walkValueOfType(rootInput, environment);
-    walkNode(transformer, [], root, { ...options.context, [defaultTransformerInput]: root.schema }, environment);
+    // The caller's context may bind `defaultInput` differently from the root input (the list
+    // transformer panel restricts by the row, while the runtime keeps the list as `defaultInput`).
+    walkNode(transformer, [], root, { [defaultTransformerInput]: root.schema, ...options.context }, environment);
   }
   const nodes = environment.nodes;
   return {

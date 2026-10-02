@@ -415,6 +415,137 @@
           },
           {
             "miroirTestType": "miroirTestSuite",
+            "miroirTestLabel": "caller context",
+            "miroirTests": [
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "a caller defaultInput binding replaces the root binding",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "ifThenElse",
+                    "interpolation": "runtime",
+                    "then": {
+                      "transformerType": "listLength",
+                      "interpolation": "runtime",
+                      "applyTo": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "defaultInput"
+                      }
+                    }
+                  },
+                  "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  {
+                    "entityMlSchemas": {
+                      "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": {
+                        "type": "object",
+                        "definition": {
+                          "uuid": {
+                            "type": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "context": {
+                      "row": {
+                        "type": "object",
+                        "definition": {
+                          "uuid": {
+                            "type": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "defaultInput": {
+                        "type": "array",
+                        "definition": {
+                          "type": "object",
+                          "definition": {
+                            "uuid": {
+                              "type": "uuid"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "assertions": [
+                  {
+                    "label": "node 0 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "path"
+                    ],
+                    "expectedValue": []
+                  },
+                  {
+                    "label": "node 0 given input",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "givenInput"
+                    ],
+                    "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  },
+                  {
+                    "label": "node 1 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      1,
+                      "path"
+                    ],
+                    "expectedValue": [
+                      "then"
+                    ]
+                  },
+                  {
+                    "label": "node 1 given input",
+                    "resultAccessPath": [
+                      "nodes",
+                      1,
+                      "givenInput"
+                    ],
+                    "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  },
+                  {
+                    "label": "node 1 consumed input",
+                    "resultAccessPath": [
+                      "nodes",
+                      1,
+                      "consumedInput"
+                    ],
+                    "expectedValue": {
+                      "type": "array",
+                      "payload": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                    }
+                  },
+                  {
+                    "label": "status",
+                    "resultAccessPath": [
+                      "status"
+                    ],
+                    "expectedValue": "ok"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "miroirTestSuite",
             "miroirTestLabel": "own applyTo (D1)",
             "miroirTests": [
               {
@@ -984,6 +1115,117 @@
                       "givenInput"
                     ],
                     "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "mapList output is computed from the element of its applyTo, not the parent input",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "mapList",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "users"
+                    },
+                    "elementTransformer": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "defaultInput"
+                    }
+                  },
+                  "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  {
+                    "entityMlSchemas": {
+                      "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": {
+                        "type": "object",
+                        "definition": {
+                          "uuid": {
+                            "type": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "ca794e28-b2dc-45b3-8137-00151557eea8": {
+                        "type": "object",
+                        "definition": {
+                          "uuid": {
+                            "type": "uuid"
+                          },
+                          "email": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "context": {
+                      "users": {
+                        "type": "array",
+                        "definition": {
+                          "type": "object",
+                          "definition": {
+                            "uuid": {
+                              "type": "uuid"
+                            },
+                            "email": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "assertions": [
+                  {
+                    "label": "node 0 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "path"
+                    ],
+                    "expectedValue": []
+                  },
+                  {
+                    "label": "node 0 given input",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "givenInput"
+                    ],
+                    "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  },
+                  {
+                    "label": "node 0 consumed input",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "consumedInput"
+                    ],
+                    "expectedValue": {
+                      "type": "array",
+                      "payload": "ca794e28-b2dc-45b3-8137-00151557eea8"
+                    }
+                  },
+                  {
+                    "label": "node 0 output",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "output"
+                    ],
+                    "expectedValue": {
+                      "type": "array",
+                      "payload": "ca794e28-b2dc-45b3-8137-00151557eea8"
+                    }
                   }
                 ]
               },
@@ -2095,6 +2337,48 @@
               "type": "array",
               "payload": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
             }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "entity schemas differing after 2000 characters are told apart",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceInference",
+              "export": "inferTransformerOutputTypeFromSchema"
+            },
+            "arguments": [
+              {
+                "type": "object",
+                "definition": {
+                  "long": {
+                    "type": "literal",
+                    "definition": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxb"
+                  }
+                }
+              },
+              {
+                "entityMlSchemas": {
+                  "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": {
+                    "type": "object",
+                    "definition": {
+                      "long": {
+                        "type": "literal",
+                        "definition": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxa"
+                      }
+                    }
+                  },
+                  "ca794e28-b2dc-45b3-8137-00151557eea8": {
+                    "type": "object",
+                    "definition": {
+                      "long": {
+                        "type": "literal",
+                        "definition": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxb"
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": "ca794e28-b2dc-45b3-8137-00151557eea8"
           },
           {
             "miroirTestType": "functionCallTest",

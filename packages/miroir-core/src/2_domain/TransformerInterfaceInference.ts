@@ -5,7 +5,6 @@ import {
   type MlElement,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { isFailedTransformerInterfaceFromDefinition } from "../0_interfaces/2_domain/TransformerResultSchemaInterface";
-import { safeStringify } from "../4_services/otherTools";
 import { resolveTransformerResultSchema } from "./Transformer_ResultSchema";
 
 function isTransformerExpression(
@@ -14,8 +13,9 @@ function isTransformerExpression(
   return typeof transformer === "object" && !Array.isArray(transformer) && "transformerType" in transformer;
 }
 
+/** Full comparison: `safeStringify` truncates long schemas, which would equate distinct entities. */
 function mlSchemasEquivalent(a: MlElement, b: MlElement): boolean {
-  return safeStringify(a) === safeStringify(b);
+  return JSON.stringify(a) === JSON.stringify(b);
 }
 
 /**

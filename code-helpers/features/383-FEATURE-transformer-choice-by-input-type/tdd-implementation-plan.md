@@ -286,3 +286,11 @@ npm run nonreg:filesystem -- --runner shared
 - Docs: `docs/reference/transformers.md` "Choosing a transformer by input type"; `docs/reference/testing.md` entry for `fn.transformer.interfaceWalk`.
 - Pre-push gate green: skills sync, pytest 200 passed, dependency policy, lint, `miroir-env check --strict --tracked-clean`, miroir-core tsc, miroir-core unit tests 2187 passed.
 - Full `nonreg:filesystem --runner shared`: 89/89 pass.
+
+### Review fixes (PR #403)
+
+- `mapList` and other list combinators: the walk now computes their output from the element output of the bound `applyTo` value, not from the parent input. New `fn.transformer.interfaceWalk` cases cover it.
+- List panel: the walk context's `defaultInput` is the array of rows, so a nested `applyTo` default resolves to the list.
+- TransformerEditor: the root input entity comes from the current input value (instance `parentUuid`, or first element of an array), not from a persisted selection that can be stale.
+- `mlSchemasEquivalent` compares with `JSON.stringify`; `safeStringify` truncated large schemas, so different schemas compared equal.
+- Lint: pruned the `miroir/layers` suppression of `TransformerInterfaceInference.ts`, which no longer occurs.
