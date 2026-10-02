@@ -9,6 +9,7 @@ from __future__ import annotations
 import copy
 import json
 import os
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -235,7 +236,11 @@ def _gate(tmp_path: Path, changed: str, event: str = "pull_request") -> str:
     output = tmp_path / "github_output"
     assert step["env"] == {"EVENT_NAME": "${{ github.event_name }}"}
     env = {**os.environ, "EVENT_NAME": event, "GITHUB_OUTPUT": str(output)}
-    subprocess.run(["bash", "-eo", "pipefail", "-c", step["run"]], cwd=repo, env=env, check=True)
+    # Resolve bash via PATH explicitly: an unqualified "bash" can lose on Windows to the WSL
+    # launcher stub at C:\Windows\System32\bash.exe, which Win32's CreateProcess search order
+    # checks before PATH (see resolve_argv() in run-nonreg.py for the same workaround).
+    bash = shutil.which("bash") or "bash"
+    subprocess.run([bash, "-eo", "pipefail", "-c", step["run"]], cwd=repo, env=env, check=True)
     return output.read_text(encoding="utf-8").strip()
 
 
