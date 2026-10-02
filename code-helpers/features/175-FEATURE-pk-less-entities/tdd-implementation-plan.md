@@ -25,7 +25,7 @@ Working branch: `claude/project-thread-soh787` (from `_integration`)
 - External-service sync writes `idAttribute: false` when the response has no `id`; keyless HTTP rows display read-only.
 - Demo: keyless `pg_stat_activity` Entity, "Activity" Report and menu item in the Postgres app.
 
-This plan does **not** cover: editing keyless rows; keyless Miroir-owned Entities (filesystem, IndexedDB, MongoDB, bundled); keys stable across refreshes (D3-b, deferred); the existing one-row segment fill from report `extractorByPrimaryKey` targets (analysis §2).
+This plan does **not** cover: editing keyless rows; keyless Miroir-owned Entities (filesystem, IndexedDB, MongoDB, bundled); keys stable across refreshes (D3-b, deferred); the existing one-row segment fill from report `extractorByPrimaryKey` targets (#381).
 
 ---
 
