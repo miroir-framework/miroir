@@ -3690,8 +3690,12 @@ export type MultistepStep = {
     onNext?: CompositeActionSequenceTemplate | undefined;
     branch?: {
         test: CoreTransformerForBuildPlusRuntime;
-        whenTrue: string;
-        whenFalse: string;
+        whenTrue?: string | undefined;
+        whenFalse?: string | undefined;
+        cases?: {
+            [x: string]: string;
+        } | undefined;
+        default?: string | undefined;
     } | undefined;
     inputSchemaFromBag?: CoreTransformerForBuildPlusRuntime | undefined;
 };
@@ -10750,7 +10754,7 @@ export const gridReportSection: z.ZodType<GridReportSection> = z.object({type:z.
 export const rootReport: z.ZodType<RootReport> = z.object({reportParametersToFetchQueryParametersTransformer:z.record(z.string(),z.any()).optional(), reportParameters:z.record(z.string(),z.any()).optional(), runStoredQueries:z.array(z.lazy(() =>runStoredQuery)).optional(), extractorTemplates:z.lazy(() =>extractorOrCombinerTemplateRecord).optional(), extractors:z.lazy(() =>extractorOrCombinerRecord).optional(), combiners:z.lazy(() =>extractorOrCombinerRecord).optional(), combinerTemplates:z.lazy(() =>extractorOrCombinerTemplateRecord).optional(), runtimeTransformers:z.record(z.string(),z.lazy(() =>coreTransformerForBuildPlusRuntime)).optional(), section:z.lazy(() =>reportSection), compositeActionSequence:z.lazy(() =>compositeActionSequenceTemplate).optional()}).strict();
 export const mlObjectOrReference: z.ZodType<MlObjectOrReference> = z.union([z.lazy(() =>mlReference), z.lazy(() =>mlObject)]);
 export const mlSchema: z.ZodType<MlSchema> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), name:z.string(), defaultLabel:z.string().optional(), description:z.string().optional(), definition:z.lazy(() =>mlObjectOrReference).optional()}).strict();
-export const multistepStep: z.ZodType<MultistepStep> = z.object({stepId:z.string(), section:z.lazy(() =>reportSection), onNext:z.lazy(() =>compositeActionSequenceTemplate).optional(), branch:z.object({test:z.lazy(() =>coreTransformerForBuildPlusRuntime), whenTrue:z.string(), whenFalse:z.string()}).strict().optional(), inputSchemaFromBag:z.lazy(() =>coreTransformerForBuildPlusRuntime).optional()}).strict();
+export const multistepStep: z.ZodType<MultistepStep> = z.object({stepId:z.string(), section:z.lazy(() =>reportSection), onNext:z.lazy(() =>compositeActionSequenceTemplate).optional(), branch:z.object({test:z.lazy(() =>coreTransformerForBuildPlusRuntime), whenTrue:z.string().optional(), whenFalse:z.string().optional(), cases:z.record(z.string(),z.string()).optional(), default:z.string().optional()}).strict().optional(), inputSchemaFromBag:z.lazy(() =>coreTransformerForBuildPlusRuntime).optional()}).strict();
 export const parameterTransformer: z.ZodType<ParameterTransformer> = z.string();
 export const openReportSection: z.ZodType<OpenReportSection> = z.object({type:z.literal("openReportSection"), definition:z.object({label:z.string(), reportUuid:z.string().uuid(), openAs:z.enum(["modal","route"]), application:z.string().uuid().optional(), applicationSection:z.enum(["data","model","modelVersion"]).optional(), deploymentUuid:z.string().uuid().optional()}).strict()}).strict();
 export const report: z.ZodType<Report> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), defaultLabel:z.string(), type:z.enum(["list","grid","multistep"]).optional(), description:z.string().optional(), selfApplication:z.string().uuid().optional(), definition:z.lazy(() =>rootReport)}).strict();
