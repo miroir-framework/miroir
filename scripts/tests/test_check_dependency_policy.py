@@ -206,6 +206,30 @@ def test_the_nested_copy_counts_for_its_package(repo: Path) -> None:
     assert violation.where == "packages/miroir-react/package.json"
 
 
+def _install_react(repo: Path, nested_react: str | None) -> None:
+    _set(repo, "miroir-react", "dependencies", "react", nested_react or "18.3.1")
+    _set(repo, "miroir-react", "dependencies", "react-dom", "18.3.1")
+    lock = json.loads((repo / "package-lock.json").read_text(encoding="utf-8"))
+    for key in ("node_modules/react", "node_modules/react-dom"):
+        lock["packages"][key] = {"version": "18.3.1", "integrity": f"sha512-{key}"}
+    if nested_react:
+        key = "packages/miroir-react/node_modules/react"
+        lock["packages"][key] = {"version": nested_react, "integrity": f"sha512-{key}"}
+    _write(repo / "package-lock.json", lock)
+
+
+def test_react_and_react_dom_of_one_major_pass(repo: Path) -> None:
+    _install_react(repo, None)
+    assert check_lockfile(repo) == []
+
+
+def test_react_and_react_dom_of_different_majors_are_a_violation(repo: Path) -> None:
+    _install_react(repo, "19.3.0")
+    [violation] = check_lockfile(repo)
+    assert violation.where == "packages/miroir-react/package.json"
+    assert violation.message.startswith("package-lock.json installs react 19.3.0 and react-dom 18.3.1")
+
+
 def test_a_missing_platform_package_is_a_violation(repo: Path) -> None:
     lock = json.loads((repo / "package-lock.json").read_text(encoding="utf-8"))
     lock["packages"]["node_modules/vitest"]["optionalDependencies"]["@rollup/rollup-linux-x64-gnu"] = "4.59.0"

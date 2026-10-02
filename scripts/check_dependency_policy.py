@@ -10,7 +10,8 @@ Rules (all run by default; --rule selects some):
                   platform binary its packages declare (npm/cli#4828 drops the other platforms' ones), so `npm ci`
                   alone installs a working tree on every OS, and records the integrity hash of every registry
                   package, so `npm ci` installs the tarballs that were locked (scripts/fill_lockfile_integrity.py
-                  adds missing ones).
+                  adds missing ones). Packages that only work together (react and react-dom) resolve to the same
+                  major version for every package that installs one of them.
   workflows       GitHub workflows and composite actions install with `npm ci`, never `npm install`.
   actions         GitHub workflows and composite actions use each action at a commit SHA (`owner/repo@<sha> # v4`),
                   which Dependabot updates; a tag or branch can be moved to other code.
@@ -186,6 +187,35 @@ def needs_integrity(key: str, entry: dict) -> bool:
     return not entry.get("resolved", "").startswith(("git", "github:", "file:"))
 
 
+# react-dom calls React internals that change between majors: react 19 with react-dom 18 crashes at start.
+PAIRED_MAJORS: tuple[tuple[str, str], ...] = (("react", "react-dom"),)
+
+
+def _paired_major_violations(root: Path, packages: dict[str, dict]) -> list[Violation]:
+    violations: list[Violation] = []
+    for path in manifest_paths(root):
+        base = "" if path.parent == root else _rel(root, path.parent)
+        manifest = _load_json(path)
+        declared = {name for section in INSTALL_SECTIONS for name in manifest.get(section, {})}
+        for pair in PAIRED_MAJORS:
+            if not declared.intersection(pair):
+                continue
+            keys = [_resolve(packages, base, name) for name in pair]
+            if None in keys:
+                continue
+            versions = [packages[key].get("version", "") for key in keys]
+            if len({version.split(".")[0] for version in versions}) > 1:
+                installed = " and ".join(f"{name} {version}" for name, version in zip(pair, versions))
+                violations.append(
+                    Violation(
+                        "lockfile",
+                        _rel(root, path),
+                        f"package-lock.json installs {installed}; {' and '.join(pair)} must share a major version",
+                    )
+                )
+    return violations
+
+
 def check_lockfile(root: Path) -> list[Violation]:
     packages = _lock_packages(root)
     internal = workspace_names(root)
@@ -235,6 +265,7 @@ def check_lockfile(root: Path) -> list[Violation]:
                     "development-setup.md, Dependency policy, to regenerate the lockfile",
                 )
             )
+    violations.extend(_paired_major_violations(root, packages))
     unchecked = [key for key, entry in packages.items() if needs_integrity(key, entry)]
     if unchecked:
         listed = ", ".join(unchecked[:3]) + (", …" if len(unchecked) > 3 else "")
