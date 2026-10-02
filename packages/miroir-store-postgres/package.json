@@ -41,7 +41,7 @@
     "copyfiles": "2.4.1",
     "loglevelnext": "6.0.0",
     "rimraf": "4.4.1",
-    "ts-jest": "29.4.13",
+    "ts-jest": "29.4.14",
     "tsconfig-paths": "4.2.0",
     "tsup": "8.5.1"
   }
