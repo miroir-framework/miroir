@@ -32,8 +32,8 @@ Out (analysis non-goals): output-type filtering; full ML schemas for the restric
 | 1 | Root restriction in ListTransformerPanel (tracer) | ✅ DONE | `fn.transformer.interfaceWalk` offered types; panel root select |
 | 2 | Nested restriction by runtime slot rules | ✅ DONE | walk cases per slot; panel nested select |
 | 3 | Recursive marking in ListTransformerPanel | ✅ DONE | walk failures; panel nested warning |
-| 4 | TransformerEditor: root input, restriction, marking, toggle | ⬜ pending | `inputOutputTypeOfValue` cases; editor toggle test |
-| 5 | Nonreg, docs, AC checklist | ⬜ pending | full `nonreg:filesystem` |
+| 4 | TransformerEditor: root input, restriction, marking, toggle | ✅ DONE | `inputOutputTypeOfValue` cases; editor toggle test |
+| 5 | Nonreg, docs, AC checklist | ✅ DONE | full `nonreg:filesystem` |
 
 ## Locked implementation defaults
 
@@ -219,7 +219,7 @@ Same commands as slice 1.
 
 ## Slice 4 — TransformerEditor: root input, restriction, marking, toggle
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Goal: the TransformerEditor restricts and marks at every position from its input selector (D7, D6), with a toggle that brings the full list back and survives a reload (D4, G3).
 
@@ -239,14 +239,19 @@ Same commands as slice 1, plus `npm run testByFile -w miroir-standalone-app -- T
 
 ### Realization
 
-_(pending)_
+- `inputOutputTypeOfValue` landed in slice 2 (needed for a literal `applyTo`).
+- TransformerEditor: a new `TransformerDefinitionEditor` component holds the switch and the definition `TypedValueObjectEditor`, and runs the walk. Hooks could not go into the Formik render callback: `react-hooks/rules-of-hooks` violations there are bulk-suppressed per file and a new one fails `npm run lint`. Root input from `transformerEditorRootInputType` (D7). Restrictions and warnings are path-prefixed with `transformer`.
+- Deviation, state location: `ToolsPageState` used by the app is the one in `miroir-react` (`MiroirContextReactProvider.tsx`), not `miroir-core` `ViewParams.ts`; the new `restrictTransformersToInputType` field is there.
+- Test: new `tests/4_view/transformerEditorChoiceByInputType.integ.test.tsx` on the app-stack shell (the old `TransformerEditor.test.tsx` does not load). It renders the TransformerEditor on the Miroir application, whose model the shell always holds (on Library the definition editor does not render, `editorModel.entities` is empty). Cases: the default "here" object input hides `aggregate`; switching off offers it, writes `restrictTransformersToInputType: false` to the `toolsPageState` session storage entry, and a remount keeps the switch off.
+- The TransformerEditor marking is not covered by a UI test: the default `returnValue` never fails, and a failing nested transformer cannot be chosen through the restricted select. It uses the same walk failures as the panel (slice 3 core cases).
+- Label formatting is duplicated in small form between the two editors (`formatInputOutputTypeLabel` with entity names in the panel, raw types in the TransformerEditor); left as is.
 
 ## Slice 5 — Nonreg, docs, AC checklist
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
-- Nonreg: `fn.transformer.interfaceWalk` runs in `unit-miroir-core` (all unit MiroirTests); add a step for `transformerChoiceByInputType.integ` (scope `ui`, group `standalone-app-unit-files`), and for the TransformerEditor test file if new.
-- Docs: `docs/reference/testing.md` entity uuids for `fn.transformer.interfaceWalk`; transformer editor user doc (restriction, hint, toggle).
+- Nonreg: `fn.transformer.interfaceWalk` runs in `unit-miroir-core` (all unit MiroirTests); add steps for `transformerChoiceByInputType.integ` and `transformerEditorChoiceByInputType.integ` (scope `ui`, group `standalone-app-unit-files`).
+- Docs: `docs/reference/testing.md` notable suite entry for `fn.transformer.interfaceWalk`; `docs/reference/transformers.md` section "Choosing a transformer by input type".
 - Cleanup: no `issues/383-*` directory is created; the MiroirTest `issue` field stays as metadata.
 - Tracer narrative: open Tools → Transformer editor with a Book instance, root select lacks `aggregate`; pick `mapList` over a list, nested select lacks `object`-input types; toggle off, full list. Automated equivalent: slices 1, 2, 4 UI tests.
 
@@ -256,11 +261,11 @@ _(pending)_
 |---|---|
 | Object / entity / string / number input: `array`-input types not offered at the root | slice 1 `transformerTypesAcceptingInput` cases; panel root select test |
 | Array input: offered, `object`-input types not | slice 1 cases |
-| Nested `mapList` element and `dataflowObject` step | slice 2 walk cases; panel nested select test. The `dataflowObject` step form uses `applyTo: getFromContext("<previous step>")`, since the runtime does not pipe one step into the next (D9) |
-| Changing the outer transformer updates nested choices and marking | slice 2 panel test (outer `applyTo` change) |
+| Nested `mapList` element and `dataflowObject` step | slice 2 walk cases ("list element slots", "dataflowObject steps"); panel nested select test (`if` of an `ifThenElse`). The `dataflowObject` step form uses `applyTo: getFromContext("<previous step>")`, since the runtime does not pipe one step into the next (D9) |
+| Changing the outer transformer updates nested choices and marking | the walk is a pure function of the edited tree, recomputed on every Formik change; slice 2 own-`applyTo` and list-element cases. No UI test drives an `applyTo` change |
 | `any` / `undefined` / undeclared offered everywhere | slice 1 cases |
-| Selected incompatible transformer kept and marked at its level | slice 1 current-type case; slice 3 walk + panel tests |
-| Toggle off shows the full list; survives reload | slice 4 editor test (session storage via `toolsPageState`) |
+| Selected incompatible transformer kept and marked at its level | slice 1 current-type case; slice 3 walk cases + `ListTransformerPanel.unit` nested marking |
+| Toggle off shows the full list; survives reload | `transformerEditorChoiceByInputType.integ` (session storage via `toolsPageState`, remount) |
 | Core unit tests for per-path derivation and filtering | `fn.transformer.interfaceWalk` |
 
 ### Validation

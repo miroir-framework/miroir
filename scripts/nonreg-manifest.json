@@ -1607,6 +1607,68 @@
       }
     },
     {
+      "id": "integ-transformerChoiceByInputType",
+      "scopes": ["ui"],
+      "tier": "unit",
+      "title": "#383 list transformer panel offers transformers by input type",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "transformerChoiceByInputType.integ"
+      ],
+      "shared": {
+        "group": "standalone-app-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--no-bail"
+        ],
+        "files": [
+          "transformerChoiceByInputType.integ"
+        ]
+      }
+    },
+    {
+      "id": "integ-transformerEditorChoiceByInputType",
+      "scopes": ["ui"],
+      "tier": "unit",
+      "title": "#383 TransformerEditor restriction switch",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "transformerEditorChoiceByInputType.integ"
+      ],
+      "shared": {
+        "group": "standalone-app-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--no-bail"
+        ],
+        "files": [
+          "transformerEditorChoiceByInputType.integ"
+        ]
+      }
+    },
+    {
       "id": "integ-gridPagination",
       "scopes": ["ui"],
       "tier": "unit",

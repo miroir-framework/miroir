@@ -72,6 +72,32 @@ the tables that follow.
 - **`getFromContext` / `getFromParameters`** — read a value by `referenceName` or `referencePath`
   instead of consuming the pipe.
 
+### Choosing a transformer by input type
+
+In the TransformerEditor and the list transformer panel, the `transformerType` select at every
+position of a transformer lists only the transformers whose declared input accepts the input that
+position receives (issue #383). A hint next to the select gives the number of hidden transformers
+and the input type. The currently selected type always stays in the list.
+
+- **Root input**: the list row entity in the list transformer panel; in the TransformerEditor, the
+  kind of the "here" value (`array`, `object` or a primitive), the selected entity for one
+  instance, an array of it when all instances are shown.
+- **Nested positions** follow the runtime: a transformer with an `applyTo` consumes the `applyTo`
+  output; `mapList.elementTransformer`, `filterList.predicate` and `find.predicate` receive a list
+  element; `mergeIntoObject.definition` and `createObjectFromPairs` pairs receive the `applyTo`
+  value; `dataflowObject` steps receive the parent's input, with earlier steps reachable by name
+  through `getFromContext`. Bound under `referenceToOuterObject`, a value is reachable by name and
+  the input stays the parent's. Other slots receive the parent's input.
+- **Unknown inputs are `any`** and restrict nothing; declared input `undefined`, no
+  `inputOutput` and unknown types are always offered.
+- Nested transformers that do not accept their input are marked at their own level (orange).
+- The TransformerEditor switch "Restrict transformers to the input type" (on by default, kept for
+  the browser session) shows the full lists again; the marking stays.
+
+The core functions are `checkTransformerInterfaceRecursively` and `transformerTypesAcceptingInput`
+(`miroir-core/src/2_domain/TransformerInterfaceCheck.ts`), tested by the MiroirTest
+`fn.transformer.interfaceWalk`.
+
 ---
 
 ## Quick reference by business role
