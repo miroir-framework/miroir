@@ -125,6 +125,11 @@ import {
 } from "../1_core/Model";
 import { rejectPartialMutationInstanceAction } from "../1_core/localCache/partialMutationGuard.js";
 import {
+  entityHasNoPrimaryKey,
+  invalidEntityPrimaryKeyDeclarationError,
+  keylessEntityInstanceActionError,
+} from "../1_core/Entity/EntityPrimaryKey.js";
+import {
   assertProcessCapability,
   getProcessCapabilities,
   type ProcessCapabilities,
@@ -1253,6 +1258,44 @@ export class DomainController implements DomainControllerInterface, DomainContro
 
 
   // ##############################################################################################
+  /**
+   * #175: instances of an entity without primary key can not be addressed individually, so
+   * create, update and delete are refused before the store or the local cache is touched.
+   */
+  private rejectInstanceActionOnKeylessEntity(
+    instanceAction: InstanceAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Action2Error | undefined {
+    if (
+      (instanceAction.actionType !== "createInstance" &&
+        instanceAction.actionType !== "updateInstance" &&
+        instanceAction.actionType !== "deleteInstance") ||
+      instanceAction.payload.applicationSection !== "data" ||
+      (instanceAction.payload.objects ?? []).length === 0
+    ) {
+      return undefined;
+    }
+    const targetEntityUuids = new Set<string>(
+      (instanceAction.payload.objects ?? [])
+        .map((instance) => instance.parentUuid ?? instanceAction.payload.parentUuid)
+        .filter((uuid): uuid is string => !!uuid),
+    );
+    if (instanceAction.payload.parentUuid) {
+      targetEntityUuids.add(instanceAction.payload.parentUuid);
+    }
+    if (targetEntityUuids.size === 0) {
+      return undefined;
+    }
+    const currentModel = this.currentModel(instanceAction.payload.application, applicationDeploymentMap);
+    const keylessEntity = currentModel?.entities?.find(
+      (entity) => targetEntityUuids.has(entity.uuid) && entityHasNoPrimaryKey(entity),
+    );
+    return keylessEntity
+      ? keylessEntityInstanceActionError(instanceAction.actionType, keylessEntity.name ?? keylessEntity.uuid)
+      : undefined;
+  }
+
+  // ##############################################################################################
   // ACTION TEMPLATES
   // ##############################################################################################
   async handleInstanceAction(
@@ -1281,6 +1324,11 @@ export class DomainController implements DomainControllerInterface, DomainContro
         rejectedPartial
       );
       return Promise.resolve(rejectedPartial);
+    }
+
+    const rejectedKeyless = this.rejectInstanceActionOnKeylessEntity(instanceAction, applicationDeploymentMap);
+    if (rejectedKeyless) {
+      return Promise.resolve(rejectedKeyless);
     }
 
     const actionToPersist =
@@ -1840,6 +1888,13 @@ export class DomainController implements DomainControllerInterface, DomainContro
         case "createEntity":
         case "renameEntity":
         case "dropEntity": {
+          const invalidDeclaration =
+            modelAction.actionType === "createEntity"
+              ? invalidEntityPrimaryKeyDeclarationError(modelAction.payload.entities)
+              : undefined;
+          if (invalidDeclaration) {
+            return invalidDeclaration;
+          }
           if (modelAction.payload.transactional == false) {
             // the modelAction is not transactional, we update the persistentStore directly
             log.warn("handleModelAction running for non-transactional action!");

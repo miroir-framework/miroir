@@ -1,5 +1,10 @@
 import type { EntityInstance } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { Action2Error } from "../../0_interfaces/2_domain/DomainElement";
+import { Action2Error, Domain2ElementFailed } from "../../0_interfaces/2_domain/DomainElement";
+import {
+  isHttpExternalEntity,
+  isSqlExternalEntity,
+  type EntityExternalDataSourceCarrier,
+} from "./entityExternalDataSource";
 
 // Composite key separator. Individual values are escaped so this separator is unambiguous.
 const COMPOSITE_KEY_SEPARATOR = "|";
@@ -10,16 +15,114 @@ const COMPOSITE_KEY_ESCAPE = "\\";
  * or legacy EntityVersion).
  */
 export type EntityPrimaryKeySource = {
-  idAttribute?: (string | string[]) | undefined;
+  idAttribute?: (string | string[] | boolean) | undefined;
 };
+
+// Prefix of the positional keys given to the instances of an Entity without primary key (#175).
+export const POSITIONAL_KEY_PREFIX = "#";
+
+// ##############################################################################################
+/**
+ * Returns true if the entity declares `idAttribute: false`: its instances have no primary key
+ * and can repeat (#175). Only External SQL and HTTP entities may be declared so.
+ */
+export function entityHasNoPrimaryKey(source: EntityPrimaryKeySource | undefined): boolean {
+  return source?.idAttribute === false;
+}
+
+// ##############################################################################################
+/**
+ * Model-validation check of an Entity's `idAttribute` beyond its schema: `true` has no meaning,
+ * and `false` (no primary key) is only allowed on External SQL and HTTP entities, whose rows
+ * Miroir only reads. Returns the error messages, empty when the declaration is valid.
+ */
+export function checkEntityPrimaryKeyDeclaration(
+  entity: EntityPrimaryKeySource & EntityExternalDataSourceCarrier & { name?: string },
+): string[] {
+  if (entity.idAttribute === true) {
+    return [`Entity ${entity.name}: idAttribute true is not allowed, use false for an entity without primary key`];
+  }
+  if (entity.idAttribute === false && !isSqlExternalEntity(entity) && !isHttpExternalEntity(entity)) {
+    return [
+      `Entity ${entity.name}: idAttribute false (no primary key) is only allowed on External SQL and HTTP entities`,
+    ];
+  }
+  return [];
+}
+
+// ##############################################################################################
+/**
+ * Error returned by createEntity when an Entity declares an invalid primary key (`idAttribute: true`, or
+ * `false` outside External SQL and HTTP Entities): the same rule as model validation, at runtime.
+ */
+export function invalidEntityPrimaryKeyDeclarationError(
+  entities: (EntityPrimaryKeySource & EntityExternalDataSourceCarrier & { name?: string })[],
+): Action2Error | undefined {
+  const errors = entities.flatMap((entity) => checkEntityPrimaryKeyDeclaration(entity));
+  return errors.length > 0
+    ? new Action2Error("InvalidAction", `createEntity refused: ${errors.join("; ")}`, ["createEntity"])
+    : undefined;
+}
+
+// ##############################################################################################
+/**
+ * Error returned when a key-based operation (create, update, delete instance) targets an entity
+ * without primary key: its instances can not be addressed individually, they are read-only (#175).
+ */
+export function keylessEntityInstanceActionError(actionType: string, entityLabel: string): Action2Error {
+  return new Action2Error(
+    "InvalidAction",
+    `${actionType} refused: entity ${entityLabel} has no primary key (idAttribute: false), its instances are read-only`,
+    [actionType],
+    undefined,
+    { entity: entityLabel },
+  );
+}
+
+// ##############################################################################################
+/**
+ * Query failure returned when a key-based extractor or combiner (extractorByPrimaryKey,
+ * combinerOneToOne) targets an entity without primary key (#175).
+ */
+export function keylessEntityQueryFailure(extractorType: string, entityUuid: string): Domain2ElementFailed {
+  return new Domain2ElementFailed({
+    queryFailure: "QueryNotExecutable",
+    query: extractorType,
+    entityUuid,
+    failureMessage: `${extractorType} is not possible on entity ${entityUuid}: it has no primary key (idAttribute: false)`,
+  });
+}
+
+// ##############################################################################################
+/**
+ * For a key-based extractor or combiner (extractorByPrimaryKey, combinerOneToOne), returns the
+ * query failure to give when its target entity, looked up in `currentModel`, has no primary key;
+ * undefined otherwise.
+ */
+export function keylessEntityQueryFailureForTarget(
+  currentModel: { entities?: ({ uuid: string } & EntityPrimaryKeySource)[] } | undefined,
+  extractorOrCombiner: { extractorOrCombinerType: string; parentUuid: string },
+): Domain2ElementFailed | undefined {
+  const targetEntity = currentModel?.entities?.find((entity) => entity.uuid === extractorOrCombiner.parentUuid);
+  return entityHasNoPrimaryKey(targetEntity)
+    ? keylessEntityQueryFailure(extractorOrCombiner.extractorOrCombinerType, extractorOrCombiner.parentUuid)
+    : undefined;
+}
 
 // ##############################################################################################
 /**
  * Returns the attribute name(s) used as the primary key for instances of the given entity.
  * Defaults to "uuid" when the source does not specify an idAttribute.
  * For backward compatibility, returns a single string for single-attribute PKs.
+ * Throws for an entity without primary key (`idAttribute: false`): callers handling such
+ * entities must check `entityHasNoPrimaryKey` first, or use `getInstanceCacheKeys`.
  */
 export function getEntityPrimaryKeyAttribute(source: EntityPrimaryKeySource): string | string[] {
+  if (typeof source.idAttribute === "boolean") {
+    throw new Error(
+      `getEntityPrimaryKeyAttribute: entity ${(source as any).name ?? (source as any).uuid ?? ""} has no primary key (idAttribute: ${source.idAttribute})`
+    );
+  }
   return source.idAttribute ?? "uuid";
 }
 
@@ -124,9 +227,39 @@ export function getInstancePrimaryKeyValue(source: EntityPrimaryKeySource, insta
 
 // ##############################################################################################
 /**
+ * Returns the keys under which a batch of instances is indexed in memory (local cache, query results).
+ * Keyed entities: the serialized primary key of each instance.
+ * Entities without primary key (`idAttribute: false`): positional keys `#0`…`#n-1`, so that identical
+ * rows are all kept. Positional keys are only meaningful within the batch; they are never stored on rows.
+ */
+export function getInstanceCacheKeys(source: EntityPrimaryKeySource, instances: EntityInstance[]): string[] {
+  if (entityHasNoPrimaryKey(source)) {
+    return instances.map((_, index) => POSITIONAL_KEY_PREFIX + index);
+  }
+  const pkAttributes = getEntityPrimaryKeyAttributes(source);
+  return instances.map((instance) => serializeCompositeKeyValue(pkAttributes, instance));
+}
+
+// ##############################################################################################
+/**
+ * Indexes a batch of instances by the keys given by `getInstanceCacheKeys`.
+ */
+export function indexInstancesByCacheKey(
+  source: EntityPrimaryKeySource,
+  instances: EntityInstance[]
+): Record<string, EntityInstance> {
+  const keys = getInstanceCacheKeys(source, instances);
+  return Object.fromEntries(instances.map((instance, index) => [keys[index], instance]));
+}
+
+// ##############################################################################################
+/**
  * Returns true if the entity uses the default uuid-based primary key.
  */
 export function entityHasUuidPrimaryKey(source: EntityPrimaryKeySource): boolean {
+  if (entityHasNoPrimaryKey(source)) {
+    return false;
+  }
   const idAttr = getEntityPrimaryKeyAttribute(source);
   return idAttr === "uuid";
 }

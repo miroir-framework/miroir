@@ -37,6 +37,7 @@ import { summarizeQueryHopResult, trackQueryHop } from "./trackQueryHop";
 
 import { entityCommit, entityEntity } from "miroir-app-miroir";
 import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance";
+import { invalidEntityPrimaryKeyDeclarationError } from "../1_core/Entity/EntityPrimaryKey.js";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import {
   Action2EntityInstanceCollectionOrFailure,
@@ -321,7 +322,10 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
               persistenceStoreControllerAction.payload.entities
             );
             // #220: Action payload.entities is Entity[]
-            return this.createEntities(persistenceStoreControllerAction.payload.entities);
+            return (
+              invalidEntityPrimaryKeyDeclarationError(persistenceStoreControllerAction.payload.entities) ??
+              this.createEntities(persistenceStoreControllerAction.payload.entities)
+            );
             break;
           }
           default:
@@ -648,7 +652,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   // #############################################################################################
-  getEntityIdAttribute(entityUuid: string): string | string[] {
+  getEntityIdAttribute(entityUuid: string): string | string[] | false {
     return this.dataStoreSection.getEntityIdAttribute(entityUuid);
   }
 

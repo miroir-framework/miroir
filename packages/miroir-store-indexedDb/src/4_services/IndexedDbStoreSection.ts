@@ -48,7 +48,8 @@ export class IndexedDbStoreSection
     // #217 Phase 11 — register idAttribute from Entity first; ED map is legacy fill-in only.
     for (const entity of entities) {
       const idAttr = entity.idAttribute ?? "uuid";
-      if (idAttr !== "uuid") {
+      // idAttribute false (#175) is for External SQL / HTTP entities only, never stored here.
+      if (typeof idAttr !== "boolean" && idAttr !== "uuid") {
         this.entityIdAttributes[entity.uuid] = idAttr;
       }
     }
@@ -116,7 +117,8 @@ export class IndexedDbStoreSection
     }
     // Register idAttribute for non-UUID PK entities (#220 — Entity-only)
     const idAttr = entity.idAttribute ?? "uuid";
-    if (idAttr !== "uuid") {
+    // idAttribute false (#175) is for External SQL / HTTP entities only, never stored here.
+    if (typeof idAttr !== "boolean" && idAttr !== "uuid") {
       this.entityIdAttributes[entity.uuid] = idAttr;
     }
     return Promise.resolve(ACTION_OK);

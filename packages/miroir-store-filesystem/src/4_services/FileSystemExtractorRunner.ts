@@ -26,7 +26,7 @@ import {
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
   RunBoxedQueryAction,
-  serializeCompositeKeyValue,
+  indexInstancesByCacheKey,
   transformer_InnerReference_resolve,
   type ApplicationDeploymentMap
 } from "miroir-core";
@@ -312,8 +312,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
       }
       const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
       const idAttribute = this.persistenceStoreController.getEntityIdAttribute(entityUuid);
-      const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
-      const entityInstanceUuidIndex = Object.fromEntries(result.map((i: any) => [serializeCompositeKeyValue(pkAttrs, i), i]));
+      const entityInstanceUuidIndex = indexInstancesByCacheKey({ idAttribute }, result);
       return entityInstanceUuidIndex;
     });
   };

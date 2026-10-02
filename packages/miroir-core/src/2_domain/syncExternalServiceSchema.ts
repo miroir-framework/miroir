@@ -614,6 +614,18 @@ export function previewOpenApiGetCall(
   return { method: "GET", path, url };
 }
 
+/** Whether the items of a response (the array elements, or the object itself) declare an "id" attribute. */
+function responseItemsHaveId(responseSchema: unknown): boolean {
+  const schema = responseSchema as { type?: string; definition?: any } | undefined;
+  const item = schema?.type === "array" ? schema.definition : schema;
+  return (
+    item?.type === "object" &&
+    item.definition != null &&
+    typeof item.definition === "object" &&
+    Object.prototype.hasOwnProperty.call(item.definition, "id")
+  );
+}
+
 export function openApiParameterNamesForOperation(
   openApiDocument: unknown,
   operationId: string,
@@ -848,7 +860,8 @@ function syncExternalServiceSchemaValue(
           name: entitySpec.name ?? operationId,
           conceptLevel: "Model",
           description: `External HTTP entity for ${operationId}`,
-          idAttribute: "id",
+          // responses without "id" give an Entity without primary key: read-only, positional rows
+          idAttribute: responseItemsHaveId(responseSchema) ? "id" : false,
           externalDataSource: {
             kind: "http",
             endpoint: endpointInstance.uuid,

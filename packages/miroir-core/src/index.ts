@@ -825,13 +825,22 @@ export {
 } from "./3_controllers/MiroirEventService.js";
 // export { rootLessListKeyMapDEFUNCT } from "./1_core/mls/rootLessListKeyMap";
 export {
+  checkEntityPrimaryKeyDeclaration,
+  invalidEntityPrimaryKeyDeclarationError,
   entityHasCompositePrimaryKey,
+  entityHasNoPrimaryKey,
   entityHasUuidPrimaryKey,
   getEntityPrimaryKeyAttribute,
   getEntityPrimaryKeyAttributes,
   getForeignKeyValue,
+  getInstanceCacheKeys,
   getInstancePrimaryKeyValue,
+  indexInstancesByCacheKey,
   instanceMatchesForeignKey,
+  keylessEntityInstanceActionError,
+  keylessEntityQueryFailure,
+  keylessEntityQueryFailureForTarget,
+  POSITIONAL_KEY_PREFIX,
   parseCompositeKeyValue,
   resolveInstanceParentUuid,
   serializeCompositeKeyValue

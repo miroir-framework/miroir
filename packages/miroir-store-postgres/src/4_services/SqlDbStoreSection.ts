@@ -5,6 +5,8 @@ import {
   Entity,
   isHttpExternalEntity,
   isSqlExternalEntity,
+  entityHasNoPrimaryKey,
+  getEntityPrimaryKeyAttribute,
   MiroirLoggerFactory,
   PersistenceStoreAbstractSectionInterface,
   StorageSpaceHandlerInterface,
@@ -54,7 +56,7 @@ export class SqlDbStoreSection
   }
 
   // ##############################################################################################
-  getEntityIdAttribute(entityUuid: string): string | string[] {
+  getEntityIdAttribute(entityUuid: string): string | string[] | false {
     return this.sqlSchemaTableAccess[entityUuid]?.idAttribute ?? "uuid";
   }
 
@@ -67,6 +69,12 @@ export class SqlDbStoreSection
   // ######################################################################################
   async clear(): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "clear start, entities", this.getEntityUuids());
+    // The tables of External entities belong to their source: forget their models instead of dropping them.
+    for (const access of Object.values(this.sqlSchemaTableAccess)) {
+      if (access.isExternal) {
+        this.sequelize.modelManager.removeModel(access.sequelizeModel);
+      }
+    }
     await this.sequelize.drop();
     this.sqlSchemaTableAccess = {};
     log.info(this.logHeader, "clear done, entities", this.getEntityUuids());
@@ -125,7 +133,9 @@ export class SqlDbStoreSection
   getAccessToDataSectionEntity(
     entity: Entity,
   ): EntityUuidIndexedSequelizeModel {
-    const idAttribute: string | string[] = entity.idAttribute ?? "uuid";
+    const idAttribute: string | string[] | false = entityHasNoPrimaryKey(entity)
+      ? false
+      : getEntityPrimaryKeyAttribute(entity);
     const isExternal = isSqlExternalEntity(entity);
     const effectiveSchema = isExternal && entity.externalDataSource?.schema
       ? entity.externalDataSource.schema
@@ -136,6 +146,26 @@ export class SqlDbStoreSection
     const optionalNonNullableAttributes = this.forceNullOptionalAttributeToUndefined
       ? getOptionalNonNullableAttributes(entity)
       : undefined;
+    const attributes = fromMiroirPresentModelToSequelizeEntityDefinition(entity);
+    // #175: Sequelize refuses a non-primary-key "id" column at define time, so a keyless source's "id"
+    // column is added back only after the phantom "id" primary key is removed.
+    const { id: keylessIdColumn, ...keylessAttributes } = attributes as Record<string, any>;
+    const sequelizeModel = this.sequelize.define(
+      effectiveTableName,
+      idAttribute === false ? keylessAttributes : attributes,
+      {
+        freezeTableName: true,
+        schema: effectiveSchema,
+      }
+    );
+    if (idAttribute === false) {
+      // #175: without this, Sequelize adds a phantom "id" primary key column to the model.
+      sequelizeModel.removeAttribute("id");
+      if (keylessIdColumn !== undefined) {
+        sequelizeModel.rawAttributes.id = keylessIdColumn;
+        (sequelizeModel as unknown as { refreshAttributes(): void }).refreshAttributes(); // public in Sequelize 6, missing from its types
+      }
+    }
     const result = {
       [entity.uuid]: {
         parentName: entity.parentName,
@@ -143,14 +173,7 @@ export class SqlDbStoreSection
         isExternal,
         effectiveSchema,
         optionalNonNullableAttributes,
-        sequelizeModel: this.sequelize.define(
-          effectiveTableName,
-          fromMiroirPresentModelToSequelizeEntityDefinition(entity),
-          {
-            freezeTableName: true,
-            schema: effectiveSchema,
-          }
-        ),
+        sequelizeModel: sequelizeModel,
       },
     };
     log.info(
