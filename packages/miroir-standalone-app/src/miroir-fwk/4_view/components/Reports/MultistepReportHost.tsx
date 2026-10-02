@@ -1,23 +1,12 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useRef,
-  useState,
-  useSyncExternalStore,
-  type ReactNode,
-} from "react";
+import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from "react";
 import { useNavigate, type Params } from "react-router-dom";
 
 import {
   Action2Error,
   LoggerInterface,
   MiroirLoggerFactory,
-  ensureYamlParser,
   entityWithResolvedMLSchema,
   getDefaultValueForMlSchemaWithResolutionNonHook,
-  isYamlParserLoaded,
   mlsTypeCheck,
   transformer_extended_apply_wrapper,
   TransformerFailure,
@@ -48,6 +37,7 @@ import {
   ThemedSpan,
   ThemedStyledButton,
 } from "../Themes/index.js";
+import { useYamlParserStatus } from "./useYamlParserStatus.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(
   packageName,
@@ -508,21 +498,8 @@ function ProbeOutcome(props: { bag: Record<string, any> }) {
   );
 }
 
-// #370: the YAML parser loads on demand; subscribing starts the load and re-renders once it is there.
-function subscribeYamlParser(onLoaded: () => void): () => void {
-  let subscribed = true;
-  void ensureYamlParser().then(() => {
-    if (subscribed) {
-      onLoaded();
-    }
-  });
-  return () => {
-    subscribed = false;
-  };
-}
-
 function ProbeCallParameterCheck(props: { bag: Record<string, any> }) {
-  useSyncExternalStore(subscribeYamlParser, isYamlParserLoaded);
+  const yamlParserStatus = useYamlParserStatus(); // #370: re-renders once the parser has loaded
   const operationId = props.bag?.operations?.probeOperationId;
   if (typeof operationId !== "string" || operationId.length === 0) {
     return null;
@@ -543,6 +520,8 @@ function ProbeCallParameterCheck(props: { bag: Record<string, any> }) {
         <p>
           Request: {preview.method} {preview.url}
         </p>
+      ) : yamlParserStatus === "failed" ? (
+        <p>Request preview unavailable: the YAML parser did not load.</p>
       ) : baseUrl ? (
         <p>Base URL: {String(baseUrl)}</p>
       ) : null}
