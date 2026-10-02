@@ -86,6 +86,8 @@ export interface ToolsPageState {
     applicationSection?: ApplicationSection;
     currentInstanceIndex?: number;
     showAllInstances?: boolean;
+    /** #383: restrict transformerType selects to the input type of their position (default on). */
+    restrictTransformersToInputType?: boolean;
     // selector
     mode?: "here" | "defined" | "none"; // OLD
     currentDefinedTransformerDefinition?: any; // OLD

@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
+  checkTransformerInterfaceRecursively,
   Domain2ElementFailed,
+  inputOutputTypeOfValue,
   LoggerInterface,
   MiroirLoggerFactory,
   Uuid,
@@ -12,6 +14,7 @@ import {
   noValue,
   safeStringify,
   transformer_extended_apply_wrapper,
+  type InputOutputType,
   type MlElement,
   type MlObject,
   type MlUnion,
@@ -41,6 +44,9 @@ import {
   ThemedContainer,
   ThemedFoldableContainer,
   ThemedHeaderSection,
+  ThemedLabel,
+  ThemedLabeledEditor,
+  ThemedSwitch,
   ThemedTitle
 } from "../Themes/index";
 import { EntityInstanceSelectorPanel } from './EntityInstanceSelectorPanel';
@@ -70,6 +76,135 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
+// ################################################################################################
+/**
+ * #383: root input type of the edited transformer, from the input selector (D7). "here": the kind
+ * of the value; "instance": the selected entity, or an array of it when all instances are shown.
+ */
+function transformerEditorRootInputType(
+  inputSelector: { mode?: string; input?: unknown } | undefined,
+  entityUuid: Uuid | undefined,
+  showAllInstances: boolean,
+): InputOutputType {
+  if (inputSelector?.mode === "here") {
+    return inputOutputTypeOfValue(inputSelector.input);
+  }
+  if (inputSelector?.mode !== "instance" || !entityUuid) {
+    return "any";
+  }
+  return showAllInstances ? { type: "array", payload: entityUuid } : entityUuid;
+}
+
+function formatInputOutputType(type: InputOutputType): string {
+  return typeof type === "string" ? type : safeStringify(type);
+}
+
+/**
+ * The transformer definition editor with its "Restrict transformers to the input type" switch.
+ * Every transformerType select is restricted to the input of its position while the switch is
+ * on; nested mismatches are always marked (#383 D4, D6).
+ */
+const TransformerDefinitionEditor: React.FC<{
+  formValueMLSchema: MlElement;
+  application: Uuid;
+  applicationDeploymentMap: Record<Uuid, Uuid>;
+  deploymentUuid: Uuid;
+  editedTransformer: unknown;
+  rootInputType: InputOutputType;
+  entities?: { uuid: Uuid; mlSchema?: unknown }[];
+  restrictTransformersToInputType: boolean;
+  onRestrictTransformersToInputTypeChange: (checked: boolean) => void;
+}> = ({
+  formValueMLSchema,
+  application,
+  applicationDeploymentMap,
+  deploymentUuid,
+  editedTransformer,
+  rootInputType,
+  entities,
+  restrictTransformersToInputType,
+  onRestrictTransformersToInputTypeChange,
+}) => {
+  const entityMlSchemas = useMemo(
+    () =>
+      Object.fromEntries(
+        (entities ?? [])
+          .filter((entity) => entity.mlSchema)
+          .map((entity) => [entity.uuid, entity.mlSchema as MlElement]),
+      ),
+    [entities],
+  );
+  const rootInputTypeKey = safeStringify(rootInputType);
+  const editedTransformerKey = safeStringify(editedTransformer);
+  const interfaceWalk = useMemo(
+    () => checkTransformerInterfaceRecursively(editedTransformer, rootInputType, { entityMlSchemas }),
+    [editedTransformerKey, rootInputTypeKey, entityMlSchemas],
+  );
+  // Node paths are relative to the transformer, editor paths to its selector.
+  const transformerTypeRestrictions = useMemo(
+    () =>
+      restrictTransformersToInputType
+        ? interfaceWalk.nodes.map((node) => ({
+            path: ["transformer", ...node.path],
+            input: node.consumedInput,
+            inputLabel: formatInputOutputType(node.consumedInput),
+          }))
+        : undefined,
+    [interfaceWalk, restrictTransformersToInputType],
+  );
+  const compatibilityWarnings = useMemo(
+    () =>
+      interfaceWalk.nodes
+        .filter((node) => node.failures.length > 0)
+        .map((node) => ({
+          path: ["transformer", ...node.path],
+          title: node.failures
+            .map(
+              (failure) =>
+                `${node.path.join(".") || "root"} (${node.transformerType}) ${failure.direction}: given ${formatInputOutputType(failure.given)}, declared ${formatInputOutputType(failure.declared)}`,
+            )
+            .join("; "),
+        })),
+    [interfaceWalk],
+  );
+
+  return (
+    <>
+      <ThemedLabeledEditor
+        labelElement={<ThemedLabel>Restrict transformers to the input type</ThemedLabel>}
+        editor={
+          <ThemedSwitch
+            id="transformer-editor-restrict-switch"
+            name="transformer-editor-restrict-switch"
+            inputProps={{
+              "data-testid": "transformer-editor-restrict-switch",
+            } as React.InputHTMLAttributes<HTMLInputElement>}
+            checked={restrictTransformersToInputType}
+            onChange={(event) => onRestrictTransformersToInputTypeChange(event.target.checked)}
+            size="small"
+          />
+        }
+      />
+      <TypedValueObjectEditor
+        labelElement={<>Transformer Definition</>}
+        formValueMLSchema={formValueMLSchema}
+        formikValuePathAsString="transformerEditor_transformer_selector"
+        application={application}
+        applicationDeploymentMap={applicationDeploymentMap}
+        deploymentUuid={deploymentUuid}
+        applicationSection={"model"}
+        formLabel={"Transformer Definition Selector"}
+        displaySubmitButton="noDisplay"
+        valueObjectEditMode="create"
+        maxRenderDepth={Infinity}
+        compatibilityWarnings={compatibilityWarnings}
+        transformerTypeRestrictions={transformerTypeRestrictions}
+      />
+    </>
+  );
+};
+
+// ################################################################################################
 export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   const {
     deploymentUuid: initialDeploymentUuid,
@@ -95,6 +230,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   // ##############################################################################################
 
   const showAllInstances = persistedState?.showAllInstances || false;
+  const restrictTransformersToInputType = persistedState?.restrictTransformersToInputType ?? true;
 
   
   // ##############################################################################################
@@ -727,19 +863,25 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                     ]}
                   />
                   {canRenderDefinitionEditor ? (
-                  <TypedValueObjectEditor
-                    labelElement={<>Transformer Definition</>}
-                    formValueMLSchema={formMLSchema.definition["transformerEditor_transformer_selector"]}
-                    formikValuePathAsString="transformerEditor_transformer_selector"
-                    application={editorApplication}
-                    applicationDeploymentMap={applicationDeploymentMap}
-                    deploymentUuid={editorDeploymentUuid}
-                    applicationSection={"model"}
-                    formLabel={"Transformer Definition Selector"}
-                    displaySubmitButton="noDisplay"
-                    valueObjectEditMode="create"
-                    maxRenderDepth={Infinity}
-                  />
+                    <TransformerDefinitionEditor
+                      formValueMLSchema={formMLSchema.definition["transformerEditor_transformer_selector"]}
+                      application={editorApplication}
+                      applicationDeploymentMap={applicationDeploymentMap}
+                      deploymentUuid={editorDeploymentUuid}
+                      editedTransformer={formikContext.values.transformerEditor_transformer_selector.transformer}
+                      rootInputType={transformerEditorRootInputType(
+                        formikContext.values[formikPath_TransformerEditorInputModeSelector],
+                        persistedState?.selectedEntityUuid ?? initialEntityUuid,
+                        showAllInstances,
+                      )}
+                      entities={editorModel?.entities}
+                      restrictTransformersToInputType={restrictTransformersToInputType}
+                      onRestrictTransformersToInputTypeChange={(checked) =>
+                        context.updateTransformerEditorState({
+                          restrictTransformersToInputType: checked,
+                        })
+                      }
+                    />
                   ) : null}
                 </div>
                 {/* Right Panes: stacked */}
