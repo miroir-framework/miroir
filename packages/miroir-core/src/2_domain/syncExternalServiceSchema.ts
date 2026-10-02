@@ -36,8 +36,8 @@ type YamlModule = typeof import("yaml");
 
 /**
  * `yaml`, loaded without a static import (#370): a static import puts the parser in the web page.
- * On Node it loads with this module; elsewhere `ensureYamlParser()` loads it first (the web app
- * starts it after its first render, `DomainController` before preparing an OpenAPI document).
+ * On Node it loads with this module; elsewhere `ensureYamlParser()` loads it first (`DomainController`
+ * before preparing an OpenAPI document, the web views that parse one before they use it).
  * JSON documents never need it.
  */
 let yamlModule: YamlModule | undefined =
@@ -45,6 +45,10 @@ let yamlModule: YamlModule | undefined =
 
 export async function ensureYamlParser(): Promise<void> {
   yamlModule ??= await import("yaml");
+}
+
+export function isYamlParserLoaded(): boolean {
+  return yamlModule !== undefined;
 }
 
 function parseYaml(text: string): unknown {

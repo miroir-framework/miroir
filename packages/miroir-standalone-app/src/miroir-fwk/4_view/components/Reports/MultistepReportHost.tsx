@@ -1,12 +1,23 @@
-import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 import { useNavigate, type Params } from "react-router-dom";
 
 import {
   Action2Error,
   LoggerInterface,
   MiroirLoggerFactory,
+  ensureYamlParser,
   entityWithResolvedMLSchema,
   getDefaultValueForMlSchemaWithResolutionNonHook,
+  isYamlParserLoaded,
   mlsTypeCheck,
   transformer_extended_apply_wrapper,
   TransformerFailure,
@@ -497,7 +508,21 @@ function ProbeOutcome(props: { bag: Record<string, any> }) {
   );
 }
 
+// #370: the YAML parser loads on demand; subscribing starts the load and re-renders once it is there.
+function subscribeYamlParser(onLoaded: () => void): () => void {
+  let subscribed = true;
+  void ensureYamlParser().then(() => {
+    if (subscribed) {
+      onLoaded();
+    }
+  });
+  return () => {
+    subscribed = false;
+  };
+}
+
 function ProbeCallParameterCheck(props: { bag: Record<string, any> }) {
+  useSyncExternalStore(subscribeYamlParser, isYamlParserLoaded);
   const operationId = props.bag?.operations?.probeOperationId;
   if (typeof operationId !== "string" || operationId.length === 0) {
     return null;
