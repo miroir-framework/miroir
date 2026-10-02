@@ -169,6 +169,7 @@ function collectionFromReadResult(
  *
  * extractorByPrimaryKey targets use runBoxedQueryAction (storage) — the server
  * has no CRUD GET-by-instanceUuid route; only /all is exposed on RestServer.
+ * Their row is merged into the segment (#381), which a lone row leaves stale.
  */
 export function createReportQueryLoadExecutor(
   domainController: DomainControllerInterface,
@@ -290,6 +291,8 @@ export function createReportQueryLoadExecutor(
           applicationSection: section,
           instances: [instance],
           ...segmentFieldsForProjection(projectionAttributes),
+          // #381: one row is not the whole segment — upsert it, never replace the segment
+          cacheLoadMode: "merge",
         });
         continue;
       }
