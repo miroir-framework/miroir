@@ -57,35 +57,34 @@ if (runThis) {
       sessionStorage.removeItem(MIROIR_AI_BACKEND_KEY);
     });
 
-    it("absent key is not cursor", () => {
+    it("absent key is no agent pick", () => {
       expect(sessionStorage.getItem(MIROIR_AI_BACKEND_KEY)).toBeNull();
-      expect(readMiroirAiBackend()).not.toBe("cursor");
+      expect(readMiroirAiBackend()).toBeUndefined();
     });
 
-    it("writeMiroirAiBackend(\"cursor\") stores key miroirAiBackend", () => {
-      writeMiroirAiBackend("cursor");
-      expect(sessionStorage.getItem(MIROIR_AI_BACKEND_KEY)).toBe("cursor");
-      expect(readMiroirAiBackend()).toBe("cursor");
+    it("writeMiroirAiBackend(\"agent\") stores key miroirAiBackend (#409)", () => {
+      writeMiroirAiBackend("agent");
+      expect(sessionStorage.getItem(MIROIR_AI_BACKEND_KEY)).toBe("agent");
+      expect(readMiroirAiBackend()).toBe("agent");
     });
 
     it("clearing the pick removes miroirAiBackend", () => {
-      writeMiroirAiBackend("cursor");
+      writeMiroirAiBackend("agent");
       writeMiroirAiBackend();
       expect(sessionStorage.getItem(MIROIR_AI_BACKEND_KEY)).toBeNull();
-      expect(readMiroirAiBackend()).not.toBe("cursor");
+      expect(readMiroirAiBackend()).toBeUndefined();
     });
   });
 
   describe("cursorSdk.275.phase6 — AgentsCopilotKit properties", () => {
-    it("source passes properties aiConfig.backend cursor when pick and snapshot allow it", () => {
+    it("source passes agent request properties when pick and snapshot allow it (#409)", () => {
       const src = readRepoFile(
         "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AgentsCopilotKit.tsx",
       );
       expect(src).toContain("properties");
-      expect(src).toContain("aiConfig");
-      expect(src).toMatch(/backend:\s*"cursor"/);
+      expect(src).toContain("agentRequestProperties(");
       expect(src).toContain("readMiroirAiBackend");
-      expect(src).toMatch(/processCapabilities\.agentBackend\s*===\s*"cursor"/);
+      expect(src).toContain("processCapabilities.agentBackend");
     });
 
     it("memoizes CopilotKit properties so the provider does not reset on every render", () => {
@@ -112,15 +111,15 @@ if (runThis) {
       const src = readRepoFile(
         "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/AppBar.tsx",
       );
-      expect(src).toMatch(/aria-label=["']Cursor["']|title=["']Cursor["']|>\s*Cursor\s*</);
-      const cursorIdx = src.search(/aria-label=["']Cursor["']|title=["']Cursor["']|>\s*Cursor\s*</);
+      expect(src).toMatch(/aria-label=\{agentLabel\}/);
+      const cursorIdx = src.search(/aria-label=\{agentLabel\}/);
       expect(cursorIdx).toBeGreaterThanOrEqual(0);
       const windowStart = Math.max(0, cursorIdx - 400);
       const aroundPicker = src.slice(windowStart, cursorIdx + 200);
       const gatedByShowAgentUiAndCursor =
-        aroundPicker.includes("showAgentUi") && aroundPicker.includes(".agentBackend");
+        aroundPicker.includes("showAgentUi") && aroundPicker.includes("agentLabel");
       const gatedByAiAndCursor =
-        /\.ai\b/.test(aroundPicker) && aroundPicker.includes(".agentBackend");
+        /\.ai\b/.test(aroundPicker) && aroundPicker.includes("agentLabel");
       expect(gatedByShowAgentUiAndCursor || gatedByAiAndCursor).toBe(true);
     });
   });

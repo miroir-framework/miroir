@@ -9,10 +9,10 @@
  * survives closing both controls.
  *
  * Backend pick lives in sessionStorage (`miroirAiBackend`). When the pick is
- * `"cursor"` and processCapabilities.agentBackend is "cursor", CopilotKit receives
- * properties={{ aiConfig: { backend: "cursor" } }} (forwarded as
- * forwardedProps). Default omitted pick uses the token AI_PROVIDER_TYPE path
- * (no properties backend).
+ * `"agent"` and processCapabilities.agentBackend is not "none", CopilotKit receives
+ * properties={{ aiConfig: { backend: "agent" } }} (forwarded as forwardedProps), and
+ * the server runs its configured agent backend (#409). Default omitted pick uses the
+ * token AI_PROVIDER_TYPE path (no properties backend).
  *
  * `/api/copilotkit` is identity-gated (#71). CopilotKit has its own HTTP client,
  * so REST's RestClient token getter does not apply. Pass the session Bearer on
@@ -39,6 +39,7 @@ import { useMiroirContextService } from "miroir-react";
 
 import { useAuthSession } from "../../auth/authSession.js";
 import { AiActionsProvider } from "./AiActionsProvider.js";
+import { agentRequestProperties } from "./agentBackendPick.js";
 import {
   readMiroirAiBackend,
   subscribeMiroirAiBackend,
@@ -51,17 +52,19 @@ export function AgentsCopilotKit(): React.JSX.Element | null {
     useMiroirContextService();
   const { token } = useAuthSession();
   const copilotHeaders = useMemo(() => authorizationHeaders(token), [token]);
-  useSyncExternalStore(subscribeMiroirAiBackend, readMiroirAiBackend, readMiroirAiBackend);
-  const useCursorBackend =
-    readMiroirAiBackend() === "cursor" && processCapabilities.agentBackend === "cursor";
+  const miroirAiBackend = useSyncExternalStore(
+    subscribeMiroirAiBackend,
+    readMiroirAiBackend,
+    readMiroirAiBackend,
+  );
   const runtimeUrl = copilotRuntimeUrl(
     getClientEnvironment(),
     electronRuntimeBaseUrl({ rootApiUrl: ELECTRON_LOOPBACK_ROOT_API_URL }),
   );
+  const agentBackend = processCapabilities.agentBackend;
   const copilotProperties = useMemo(
-    () =>
-      useCursorBackend ? { aiConfig: { backend: "cursor" as const } } : undefined,
-    [useCursorBackend],
+    () => agentRequestProperties(miroirAiBackend, agentBackend),
+    [miroirAiBackend, agentBackend],
   );
   const defaultAgent = useMemo(
     () =>
