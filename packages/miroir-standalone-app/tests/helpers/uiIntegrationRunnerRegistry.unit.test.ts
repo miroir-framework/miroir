@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   indexApplicationMiroirTestsByKey,
+  inferUiIntegrationRunnerSuiteKind,
   resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite,
 } from "miroir-core";
 import { loadApplicationMiroirTestCatalog } from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
@@ -50,6 +51,13 @@ const applicationMiroirTestCatalogByKey = indexApplicationMiroirTestsByKey(
 (shouldRun ? describe : describe.skip)("UI integration runner registry", () => {
   it("lists the sixteen runner/action suite keys (legacy snapshot)", () => {
     expect([...listUiIntegrationRunnerSuiteKeys()].sort()).toEqual([...EXPECTED_KEYS].sort());
+  });
+
+  it("legacy entry kinds come from their definitions, not hand-written (#317)", () => {
+    for (const key of EXPECTED_KEYS) {
+      const entry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY[key];
+      expect(entry.kind, key).toBe(inferUiIntegrationRunnerSuiteKind(entry.suiteDefinition));
+    }
   });
 
   it("legacy entries are kind + suiteDefinition; init lives on folder suite JSON", () => {
