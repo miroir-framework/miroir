@@ -707,6 +707,15 @@ A `reportTest` leaf holds `steps` and may override `instanceUuid`.
 - `compositeAction`: runs an action or a query (`action`, a `compositeActionTemplate`) through the session's DomainController, with the session parameters (`testApplicationUuid`, `testApplicationDeploymentUuid`, …) and the results kept by the earlier steps as parameters. Its result is kept under `nameGivenToResult`, or the action's own.
 - `expectActionResult`: runs a `compositeRunTestAssertion` over the kept results, as a Runner test does. A failure names the step, the assertion and the compared values.
 
+**Stored values in UI steps (#333).** A component test step reads the session parameters and the results kept so far with a `getFromContext` reference (`referenceName`, or `referencePath` into a kept result), resolved when the step starts; `interpolation` is ignored. References are accepted in the values a step enters or compares (`change.value`, `type.text`, `filterSelect.text`, `selectOption.option`, `renameRecordEntry.newName`, `uploadFile.content`, `waitForAttribute.value`, `expectElement.value` and `values`, anywhere in `expectRenderedValues.expectedValue`) and in the text locators of a target (`byText`, `byDisplayValue`, `byLabelText`, `name`, `byTestId`). Form field names (`field`, `fieldName`, `entry`, `attribute`, `ref`) stay literal. In `expectedValue` a reference resolves to any value. In `uploadFile.content` it resolves to any JSON value, uploaded as its JSON text unless it is a string. One reference may stand for the whole of `expectElement.values`, as an array of strings, numbers or booleans. Elsewhere a reference must resolve to a string, a number or a boolean, because these fields reach the DOM as text; a field that takes text only (`text`, `option`, `newName`, `waitForAttribute.value`, `byTestId`) gets a number or a boolean as text. An unresolved reference fails the step, naming the field and what is missing:
+
+```json
+{ "step": "type", "target": { "ref": "nameField" },
+  "text": { "transformerType": "getFromContext", "referencePath": ["otherBook", "book", "name"] } }
+```
+
+`step 4 (type "…"): text: no stored value at "otherBook.book.nme": "otherBook.book" has no "nme" (has: author, …)`. The step schema is shared with `reactComponentTest` leaves, which keep no values: a reference there fails as unresolved.
+
 **Waiting.** After each interaction step, the test waits until the actions the step started have settled and React has rendered their effects, again while those renders start new actions. It fails after the suite's `actionTimeoutMs` (10000 when absent), naming the actions still running. For what appears later without an action, `expectElement` takes a `timeout`.
 
 **Fake HTTP.** `fakeHttpResponses` answers the outbound requests of the Report's actions (an OpenAPI document, an external service): `method`, full `url`, `status` (200 when absent), `headers`, `body` (JSON unless a string). During each leaf they answer the outbound requests of the session's DomainControllers (client and emulated server), not those of the rest of the app; a request with no answer fails the leaf, naming its method and URL. On a `realServer-*` profile the requests leave from the server process, which the test cannot answer: a leaf of a suite with `fakeHttpResponses` is recorded as skipped there.
@@ -731,7 +740,7 @@ In the app, "Run Integration Tests" on the suite's display (Miroir Tests page) m
 
 | Suite | Report | Covers |
 |---|---|---|
-| `report.bookDetails` | Library BookDetails (instance details) | display, store check, edit saved, invalid value not saved |
+| `report.bookDetails` | Library BookDetails (instance details) | display, store check, edit saved, stored value typed (#333), invalid value not saved |
 | `report.connectExternalServiceWizard` | Miroir ConnectExternalServiceWizard (multistep), and the home Report's launcher | document by URL, pasted or uploaded, and its errors; refused private URL; custom token kept out of the page; Finish checked in the store |
 
 Tests of the mechanism, in `packages/miroir-standalone-app/tests/4_view/`: `reportTestLauncher.unit` (routing of `testMiroir`), `reportTestActionsIdle.unit` (the wait), `reportTestFailure.integ` (a failed assertion step), `reportTestFakeHttp.integ` (an undeclared request), `reportTestInApp.integ` (the Miroir Tests display drives the wizard).

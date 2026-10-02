@@ -1,4 +1,11 @@
-import type { ReactComponentTestTarget, ReactComponentTestTextMatch } from "miroir-core";
+import type {
+  ResolvedReactComponentTestTarget as ReactComponentTestTarget,
+  WithoutStoredValueReferences,
+  ReactComponentTestTextMatch as ReactComponentTestTextMatchWithReferences,
+} from "miroir-core";
+
+// the targets of resolved steps: their stored value references are replaced by values (#333)
+type ReactComponentTestTextMatch = WithoutStoredValueReferences<ReactComponentTestTextMatchWithReferences>;
 
 import type { ComponentTestEnvironment } from "./componentTestEnvironment.js";
 

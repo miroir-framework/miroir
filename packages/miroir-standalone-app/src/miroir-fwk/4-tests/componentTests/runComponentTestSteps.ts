@@ -1,4 +1,10 @@
-import type { ComponentRenderMeasurement, ReactComponentTestStep, ReactComponentTestTarget } from "miroir-core";
+import {
+  resolveReportTestStepReferences,
+  type ComponentRenderMeasurement,
+  type ReactComponentTestStep,
+  type ResolvedReactComponentTestStep,
+  type ResolvedReactComponentTestTarget,
+} from "miroir-core";
 
 import {
   componentTestAct,
@@ -30,6 +36,8 @@ import {
 // - `saveAs` keeps the element of a step for the later targets `{"ref": <name>}` (T11).
 // - Other step kinds run through `options.extraStepHandlers` (the action and assertion steps of a
 //   Report test, #330).
+// - Before a component test step runs, its `getFromContext` references are replaced by the values
+//   of `options.storedValues` (#333); an unresolved reference fails the step.
 //
 // It does not import `@testing-library/react`: it runs in the app too.
 // ################################################################################################
@@ -62,7 +70,7 @@ export class StepValuesMismatch extends Error {
   }
 }
 
-type StepOf<K extends ReactComponentTestStep["step"]> = Extract<ReactComponentTestStep, { step: K }>;
+type StepOf<K extends ReactComponentTestStep["step"]> = Extract<ResolvedReactComponentTestStep, { step: K }>;
 
 /** The elements saved by `saveAs`, by name, kept across the steps of one case. */
 interface ComponentTestStepContext {
@@ -108,7 +116,7 @@ function checkAttribute(element: HTMLElement, attribute: string, value: string):
 /** Waits until the element of `target` has `attribute` equal to `value`, resolving it at each try. */
 async function waitForAttributeValue(
   env: ComponentTestEnvironment,
-  target: ReactComponentTestTarget,
+  target: ResolvedReactComponentTestTarget,
   attribute: string,
   value: string,
   timeout: number,
@@ -235,6 +243,11 @@ export interface ComponentTestStepsOptions<ExtraStep extends AnyStep = never> {
   extraStepHandlers?: Record<ExtraStep["step"], (step: ExtraStep) => Promise<void>>;
   /** Awaited after each action step, once React has settled (a Report test waits for its actions, #330). */
   afterInteraction?: () => Promise<void>;
+  /**
+   * The values the `getFromContext` references of the component test steps read, taken when each
+   * step starts (#333): a Report test's parameters and kept results. Without it, a reference fails.
+   */
+  storedValues?: () => Record<string, unknown>;
 }
 
 export interface ComponentTestStepsResult {
@@ -254,7 +267,7 @@ export async function runComponentTestSteps<ExtraStep extends AnyStep = never>(
   let user: ReturnType<ComponentTestEnvironment["userEvent"]["setup"]> | undefined;
   const userSession = () => (user ??= env.userEvent.setup());
 
-  const resolve = (target: ReactComponentTestTarget) => resolveTarget(env, target, context.elements);
+  const resolve = (target: ResolvedReactComponentTestTarget) => resolveTarget(env, target, context.elements);
   const interact = (callback: () => unknown) => runAction(env, callback, options.afterInteraction);
   const save = (element: HTMLElement, saveAs: string | undefined) => {
     if (saveAs !== undefined) {
@@ -447,7 +460,7 @@ export async function runComponentTestSteps<ExtraStep extends AnyStep = never>(
     },
     openSelect: async (step) => {
       const combobox = resolve({ widget: "combobox", field: step.field, select: step.select });
-      const state: ReactComponentTestTarget = { widget: "selectState", field: step.field, select: step.select };
+      const state: ResolvedReactComponentTestTarget = { widget: "selectState", field: step.field, select: step.select };
       await interact(async () => {
         env.fireEvent.click(combobox);
         await waitForAttributeValue(env, state, "data-test-is-open", "true", selectOpenTimeout, context.elements);
@@ -455,7 +468,7 @@ export async function runComponentTestSteps<ExtraStep extends AnyStep = never>(
     },
     filterSelect: async (step) => {
       const combobox = resolve({ widget: "combobox", field: step.field, select: step.select });
-      const state: ReactComponentTestTarget = { widget: "selectState", field: step.field, select: step.select };
+      const state: ResolvedReactComponentTestTarget = { widget: "selectState", field: step.field, select: step.select };
       await interact(async () => {
         await userSession().clear(combobox);
         await userSession().type(combobox, step.text);
@@ -496,7 +509,7 @@ export async function runComponentTestSteps<ExtraStep extends AnyStep = never>(
     },
     toggleUnionTypeSelector: async (step) => {
       const star = resolve({ widget: "unionTypeStar", field: step.field });
-      const input: ReactComponentTestTarget = { widget: "unionTypeInput", field: step.field };
+      const input: ResolvedReactComponentTestTarget = { widget: "unionTypeInput", field: step.field };
       const wasShown = queryAllTarget(env, input, context.elements).length > 0;
       await interact(async () => {
         env.fireEvent.click(star);
@@ -536,14 +549,21 @@ export async function runComponentTestSteps<ExtraStep extends AnyStep = never>(
     options.extraStepHandlers ?? {};
   for (const [index, step] of steps.entries()) {
     try {
-      const handler = (Object.prototype.hasOwnProperty.call(handlers, step.step)
+      const isComponentTestStep = Object.prototype.hasOwnProperty.call(handlers, step.step);
+      const handler = (isComponentTestStep
         ? handlers[step.step as ReactComponentTestStep["step"]]
-        : extraStepHandlers[step.step]) as ((step: ReactComponentTestStep | ExtraStep) => Promise<void>) | undefined;
+        : extraStepHandlers[step.step]) as
+        | ((step: ResolvedReactComponentTestStep | ExtraStep) => Promise<void>)
+        | undefined;
       if (!handler) {
         // every kind of the schema has a handler: only JSON that bypassed the schema gets here
         throw new Error("unknown step kind");
       }
-      await handler(step);
+      await handler(
+        isComponentTestStep
+          ? resolveReportTestStepReferences(step as ReactComponentTestStep, options.storedValues?.() ?? {})
+          : (step as ExtraStep),
+      );
     } catch (error) {
       const message = `${stepPrefix(step, index)}: ${error instanceof Error ? error.message : String(error)}`;
       throw new ComponentTestStepError(

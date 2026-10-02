@@ -227,7 +227,8 @@ function actionStepHandlers(actionContext: ReportTestActionContext) {
  *    result. The action and assertion steps run through the session's DomainController and share
  *    the leaf's kept results (`runReportTestCompositeActionStep`,
  *    `runReportTestExpectActionResultStep`). After each interaction step, it waits for the actions
- *    the step started (T5).
+ *    the step started (T5). The UI steps reference those results and the test parameters with
+ *    `getFromContext`, resolved when each step starts (#333).
  * 4. When the suite declares `fakeHttpResponses`, the outbound fetch answers them during the leaf
  *    (T9); a request with no declared answer fails the leaf, naming its method and URL. On a real
  *    server the leaf is skipped.
@@ -383,7 +384,12 @@ export function createReportTestRunner(host: ReportTestSandboxHost): ClosableRep
         // the fields of a Report are named from its own form values, without a test section
         createComponentTestEnvironment({ testName, container, sandboxElement, portalElement, log, fieldNamePrefix: "" }),
         leaf.steps,
-        { extraStepHandlers: actionStepHandlers(actionContext), afterInteraction },
+        {
+          extraStepHandlers: actionStepHandlers(actionContext),
+          afterInteraction,
+          // UI steps read the test parameters and the results kept so far, as the action steps do (#333)
+          storedValues: () => ({ ...actionContext.testParams, ...actionContext.results }),
+        },
       );
       if (fakeFetch?.undeclaredRequests.length) {
         return { status: "error", message: undeclaredRequestsMessage(fakeFetch) };

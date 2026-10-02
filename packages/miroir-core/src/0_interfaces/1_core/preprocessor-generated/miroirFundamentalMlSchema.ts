@@ -7521,12 +7521,26 @@ export const miroirFundamentalMlSchema = {
           }
         }
       },
+      "reactComponentTestStoredValue": {
+        "type": "schemaReference",
+        "tag": {
+          "value": {
+            "defaultLabel": "Stored value",
+            "description": "In a reportTest, a value kept by an earlier compositeAction step or a test parameter, read with getFromContext (referenceName or referencePath); resolved when the step runs, an unresolved reference fails the step (#333)"
+          }
+        },
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "coreTransformerForBuildPlusRuntime_getFromContext"
+        },
+        "context": {}
+      },
       "reactComponentTestTextMatch": {
         "type": "union",
         "tag": {
           "value": {
             "defaultLabel": "Text match",
-            "description": "A string, a number, or a regular expression given as { regex, flags? } (#292)"
+            "description": "A string, a number, a regular expression given as { regex, flags? } (#292), or in a reportTest a stored value (#333)"
           }
         },
         "definition": [
@@ -7547,6 +7561,14 @@ export const miroirFundamentalMlSchema = {
                 "optional": true
               }
             }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "reactComponentTestStoredValue",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
           }
         ]
       },
@@ -7573,8 +7595,21 @@ export const miroirFundamentalMlSchema = {
             "context": {}
           },
           "byTestId": {
-            "type": "string",
-            "optional": true
+            "type": "union",
+            "optional": true,
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "reactComponentTestStoredValue",
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                },
+                "context": {}
+              }
+            ]
           },
           "byText": {
             "type": "schemaReference",
@@ -7739,6 +7774,14 @@ export const miroirFundamentalMlSchema = {
                   },
                   {
                     "type": "boolean"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "reactComponentTestStoredValue",
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                    },
+                    "context": {}
                   }
                 ]
               },
@@ -7828,7 +7871,20 @@ export const miroirFundamentalMlSchema = {
                 "context": {}
               },
               "text": {
-                "type": "string"
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "reactComponentTestStoredValue",
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                    },
+                    "context": {}
+                  }
+                ]
               }
             }
           },
@@ -7910,7 +7966,20 @@ export const miroirFundamentalMlSchema = {
                 "type": "string"
               },
               "content": {
-                "type": "string"
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "reactComponentTestStoredValue",
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                    },
+                    "context": {}
+                  }
+                ]
               },
               "mimeType": {
                 "type": "string",
@@ -7947,7 +8016,20 @@ export const miroirFundamentalMlSchema = {
                 "type": "string"
               },
               "value": {
-                "type": "string"
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "reactComponentTestStoredValue",
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                    },
+                    "context": {}
+                  }
+                ]
               },
               "timeout": {
                 "type": "number",
@@ -8006,7 +8088,20 @@ export const miroirFundamentalMlSchema = {
                 "type": "string"
               },
               "text": {
-                "type": "string"
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "reactComponentTestStoredValue",
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                    },
+                    "context": {}
+                  }
+                ]
               },
               "select": {
                 "type": "enum",
@@ -8039,7 +8134,20 @@ export const miroirFundamentalMlSchema = {
                 "type": "string"
               },
               "option": {
-                "type": "string"
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "reactComponentTestStoredValue",
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                    },
+                    "context": {}
+                  }
+                ]
               },
               "select": {
                 "type": "enum",
@@ -8168,7 +8276,20 @@ export const miroirFundamentalMlSchema = {
                 "type": "string"
               },
               "newName": {
-                "type": "string"
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "reactComponentTestStoredValue",
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                    },
+                    "context": {}
+                  }
+                ]
               }
             }
           },
@@ -8293,26 +8414,55 @@ export const miroirFundamentalMlSchema = {
                   },
                   {
                     "type": "boolean"
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "reactComponentTestStoredValue",
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                    },
+                    "context": {}
                   }
                 ]
               },
               "values": {
-                "type": "array",
+                "type": "union",
                 "optional": true,
-                "definition": {
-                  "type": "union",
-                  "definition": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "number"
-                    },
-                    {
-                      "type": "boolean"
+                "definition": [
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "reactComponentTestStoredValue",
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                          },
+                          "context": {}
+                        }
+                      ]
                     }
-                  ]
-                }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "reactComponentTestStoredValue",
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                    },
+                    "context": {}
+                  }
+                ]
               },
               "checked": {
                 "type": "boolean",
@@ -9588,12 +9738,25 @@ export const miroirFundamentalMlSchema = {
                   }
                 }
               },
+              "reactComponentTestStoredValue": {
+                "type": "schemaReference",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Stored value",
+                    "description": "In a reportTest, a value kept by an earlier compositeAction step or a test parameter, read with getFromContext (referenceName or referencePath); resolved when the step runs, an unresolved reference fails the step (#333)"
+                  }
+                },
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "coreTransformerForBuildPlusRuntime_getFromContext"
+                }
+              },
               "reactComponentTestTextMatch": {
                 "type": "union",
                 "tag": {
                   "value": {
                     "defaultLabel": "Text match",
-                    "description": "A string, a number, or a regular expression given as { regex, flags? } (#292)"
+                    "description": "A string, a number, a regular expression given as { regex, flags? } (#292), or in a reportTest a stored value (#333)"
                   }
                 },
                 "definition": [
@@ -9613,6 +9776,12 @@ export const miroirFundamentalMlSchema = {
                         "type": "string",
                         "optional": true
                       }
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "reactComponentTestStoredValue"
                     }
                   }
                 ]
@@ -9638,8 +9807,19 @@ export const miroirFundamentalMlSchema = {
                     }
                   },
                   "byTestId": {
-                    "type": "string",
-                    "optional": true
+                    "type": "union",
+                    "optional": true,
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "reactComponentTestStoredValue"
+                        }
+                      }
+                    ]
                   },
                   "byText": {
                     "type": "schemaReference",
@@ -9794,6 +9974,12 @@ export const miroirFundamentalMlSchema = {
                           },
                           {
                             "type": "boolean"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "reactComponentTestStoredValue"
+                            }
                           }
                         ]
                       },
@@ -9877,7 +10063,18 @@ export const miroirFundamentalMlSchema = {
                         }
                       },
                       "text": {
-                        "type": "string"
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "reactComponentTestStoredValue"
+                            }
+                          }
+                        ]
                       }
                     }
                   },
@@ -9955,7 +10152,18 @@ export const miroirFundamentalMlSchema = {
                         "type": "string"
                       },
                       "content": {
-                        "type": "string"
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "reactComponentTestStoredValue"
+                            }
+                          }
+                        ]
                       },
                       "mimeType": {
                         "type": "string",
@@ -9990,7 +10198,18 @@ export const miroirFundamentalMlSchema = {
                         "type": "string"
                       },
                       "value": {
-                        "type": "string"
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "reactComponentTestStoredValue"
+                            }
+                          }
+                        ]
                       },
                       "timeout": {
                         "type": "number",
@@ -10049,7 +10268,18 @@ export const miroirFundamentalMlSchema = {
                         "type": "string"
                       },
                       "text": {
-                        "type": "string"
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "reactComponentTestStoredValue"
+                            }
+                          }
+                        ]
                       },
                       "select": {
                         "type": "enum",
@@ -10082,7 +10312,18 @@ export const miroirFundamentalMlSchema = {
                         "type": "string"
                       },
                       "option": {
-                        "type": "string"
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "reactComponentTestStoredValue"
+                            }
+                          }
+                        ]
                       },
                       "select": {
                         "type": "enum",
@@ -10211,7 +10452,18 @@ export const miroirFundamentalMlSchema = {
                         "type": "string"
                       },
                       "newName": {
-                        "type": "string"
+                        "type": "union",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "reactComponentTestStoredValue"
+                            }
+                          }
+                        ]
                       }
                     }
                   },
@@ -10334,26 +10586,49 @@ export const miroirFundamentalMlSchema = {
                           },
                           {
                             "type": "boolean"
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "reactComponentTestStoredValue"
+                            }
                           }
                         ]
                       },
                       "values": {
-                        "type": "array",
+                        "type": "union",
                         "optional": true,
-                        "definition": {
-                          "type": "union",
-                          "definition": [
-                            {
-                              "type": "string"
-                            },
-                            {
-                              "type": "number"
-                            },
-                            {
-                              "type": "boolean"
+                        "definition": [
+                          {
+                            "type": "array",
+                            "definition": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "boolean"
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "reactComponentTestStoredValue"
+                                  }
+                                }
+                              ]
                             }
-                          ]
-                        }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "reactComponentTestStoredValue"
+                            }
+                          }
+                        ]
                       },
                       "checked": {
                         "type": "boolean",
