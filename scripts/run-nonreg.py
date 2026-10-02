@@ -8,6 +8,7 @@ Examples:
   python scripts/run-nonreg.py --tier default --run-all
   python scripts/run-nonreg.py --tier unit --fail-fast
   npm run nonreg -- --tier default --run-all
+  npm run nonreg -- --storage filesystem
   python scripts/run-nonreg.py --compare test-results/nonreg/<stamp>/summary.json
 """
 
@@ -18,6 +19,7 @@ import json
 import os
 import re
 import shutil
+import socket
 import subprocess
 import sys
 import time
@@ -25,10 +27,18 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Literal
+from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parent.parent
 MANIFEST_PATH = ROOT / "scripts" / "nonreg-manifest.json"
 RESULTS_ROOT = ROOT / "test-results" / "nonreg"
+ENVIRONMENTS_DIR = ROOT / "environments"
+
+# #390: `--storage <s>` runs the integration steps on profile `emulatedServer-<s>`, whose test
+# environment is `environments/test-<s>.json`. Steps with `"requires": "storage"` need that store.
+STORAGES = ("sql", "filesystem", "indexedDb", "mongodb")
+EMULATED_PROFILE_PREFIX = "emulatedServer-"
+REQUIRES_STORAGE = "storage"
 
 TierName = Literal["unit", "default", "full"]
 TIER_ORDER: dict[str, int] = {"unit": 0, "default": 1, "full": 2}
@@ -106,6 +116,68 @@ def resolve_argv(argv: list[str]) -> list[str]:
             if found:
                 return [found, *argv[1:]]
     return argv
+
+
+def profile_for_storage(storage: str) -> str:
+    return EMULATED_PROFILE_PREFIX + storage
+
+
+def storage_of_profile(profile: str) -> str | None:
+    """The store of an `emulatedServer-<storage>` profile; None for any other profile."""
+    if not profile.startswith(EMULATED_PROFILE_PREFIX):
+        return None
+    storage = profile[len(EMULATED_PROFILE_PREFIX) :]
+    return storage if storage in STORAGES else None
+
+
+def load_environment_connections(name: str, environments_dir: Path) -> dict[str, Any]:
+    """`connections` of environments/<name>.json, merged over the environments it extends."""
+    path = environments_dir / f"{name}.json"
+    if not path.is_file():
+        return {}
+    env = json.loads(path.read_text(encoding="utf-8"))
+    connections = dict(load_environment_connections(env["extends"], environments_dir)) if env.get("extends") else {}
+    connections.update(env.get("connections") or {})
+    return connections
+
+
+def storage_service(storage: str, environments_dir: Path) -> tuple[str, str, int] | None:
+    """(service, host, port) the store needs; None when it needs none.
+
+    The address comes from the store's test environment, overridden like the integration tests
+    do it (IntegrationTestSession.ts): `MIROIR_TEST_POSTGRES_HOST` replaces the PostgreSQL host,
+    `MIROIR_TEST_MONGODB_CONNECTION_STRING` the MongoDB url.
+    """
+    connections = load_environment_connections(f"test-{storage}", environments_dir)
+    if storage == "sql":
+        postgres = connections.get("postgres") or {}
+        host = os.environ.get("MIROIR_TEST_POSTGRES_HOST") or postgres.get("host") or "localhost"
+        return ("PostgreSQL", host, int(postgres.get("port") or 5432))
+    if storage == "mongodb":
+        url = urlsplit(
+            os.environ.get("MIROIR_TEST_MONGODB_CONNECTION_STRING")
+            or (connections.get("mongodb") or {}).get("url")
+            or "mongodb://localhost:27017"
+        )
+        return ("MongoDB", url.hostname or "localhost", url.port or 27017)
+    return None
+
+
+def check_storage_service(storage: str, environments_dir: Path) -> str | None:
+    """Error message when the store's service does not accept connections; None when it does."""
+    service = storage_service(storage, environments_dir)
+    if service is None:
+        return None
+    name, host, port = service
+    try:
+        with socket.create_connection((host, port), timeout=3):
+            return None
+    except OSError as exc:
+        return (
+            f"{name} is not reachable at {host}:{port} (environments/test-{storage}.json, "
+            f"MIROIR_TEST_POSTGRES_HOST, MIROIR_TEST_MONGODB_CONNECTION_STRING): {exc}. "
+            f"Start it, or choose another store with --storage ({', '.join(STORAGES)})."
+        )
 
 
 def step_in_tier(step_tier: str, selected: TierName) -> bool:
@@ -585,6 +657,7 @@ def write_summary_md(summary: dict[str, Any], path: Path, timings: dict[str, Any
         f"- Tier: `{summary['tier']}`",
         f"- Mode: `{summary['mode']}`",
         f"- Profile: `{summary['profile']}`",
+        f"- Storage: `{summary.get('storage') or '(not an emulatedServer profile)'}`",
         *([f"- Scopes: `{', '.join(summary['scopes'])}`"] if summary.get("scopes") else []),
         f"- Started: `{summary['started_at']}`",
         f"- Finished: `{summary['finished_at']}`",
@@ -812,7 +885,14 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Stop at first failed step",
     )
-    p.add_argument(
+    store = p.add_mutually_exclusive_group()
+    store.add_argument(
+        "--storage",
+        choices=STORAGES,
+        default=None,
+        help="Store of the integration steps: runs them on profile emulatedServer-<storage> (#390)",
+    )
+    store.add_argument(
         "--profile",
         default=None,
         help="Integration profile (default: manifest defaultProfile)",
@@ -878,18 +958,29 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Directory for snapshots (default: test-results/nonreg)",
     )
+    p.add_argument(
+        "--environments-dir",
+        default=None,
+        help="Where the test environments are read for the store check (default: environments)",
+    )
     return p
 
 
 def main(argv: list[str] | None = None) -> int:
-    global MANIFEST_PATH, RESULTS_ROOT
+    global MANIFEST_PATH, RESULTS_ROOT, ENVIRONMENTS_DIR
     args = build_parser().parse_args(argv)
     if args.manifest:
         MANIFEST_PATH = Path(args.manifest).resolve()
     if args.results_root:
         RESULTS_ROOT = Path(args.results_root).resolve()
+    if args.environments_dir:
+        ENVIRONMENTS_DIR = Path(args.environments_dir).resolve()
     manifest = load_manifest()
-    profile = args.profile or manifest.get("defaultProfile") or "emulatedServer-sql"
+    if args.storage:
+        profile = profile_for_storage(args.storage)
+    else:
+        profile = args.profile or manifest.get("defaultProfile") or "emulatedServer-sql"
+    storage = storage_of_profile(profile)
 
     compare_paths: list[str] = list(args.compare or [])
     if args.compare_only:
@@ -942,6 +1033,14 @@ def main(argv: list[str] | None = None) -> int:
     if not steps:
         print("No steps selected.", file=sys.stderr)
         return 2
+
+    # #390: stop before the first step when the store's service is down, instead of failing
+    # every step that needs it on ECONNREFUSED.
+    if storage and not args.dry_run and any(s.get("requires") == REQUIRES_STORAGE for s in steps):
+        error = check_storage_service(storage, ENVIRONMENTS_DIR)
+        if error:
+            print(f"error: {error}", file=sys.stderr)
+            return 2
 
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     snap_dir = RESULTS_ROOT / stamp
@@ -1009,6 +1108,7 @@ def main(argv: list[str] | None = None) -> int:
         "tier": selected_tier,
         "mode": mode_name,
         "profile": profile,
+        "storage": storage,
         "started_at": started_at,
         "finished_at": finished_at,
         "duration_s": duration_s,
