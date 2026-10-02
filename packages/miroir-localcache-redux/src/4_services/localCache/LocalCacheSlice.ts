@@ -428,7 +428,7 @@ function applyEntityInstancesToZone(
           entities: indexInstancesByCacheKey({ idAttribute }, serializableInstances),
         }
       : merge
-        ? adapter.upsertMany((state as any)[zone][entityInstancesLocationIndex], serializableInstances)
+        ? adapter.setMany((state as any)[zone][entityInstancesLocationIndex], serializableInstances)
         : adapter.setAll((state as any)[zone][entityInstancesLocationIndex], serializableInstances);
   // EntityAdapter.setAll drops custom fields — re-attach segment header (#214).
   (state as any)[zone][entityInstancesLocationIndex] = {
