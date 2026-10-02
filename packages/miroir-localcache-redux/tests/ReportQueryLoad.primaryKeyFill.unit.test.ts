@@ -70,8 +70,8 @@ function detailsRequest(instanceUuid: string = DETAILS_UUID): ReportQueryLoadReq
   };
 }
 
-/** A LocalCache behind a report load service, over a store holding `storedBlobs`. */
-function setup() {
+/** A LocalCache behind a report load service, over a store holding `store` (default `storedBlobs`). */
+function setup(store: EntityInstance[] = storedBlobs) {
   const localCache = new LocalCache();
   const handlePersistenceAction = vi.fn(async (action: any) => {
     if (action.actionType === "runBoxedQueryAction") {
@@ -82,13 +82,13 @@ function setup() {
       return {
         status: "ok" as const,
         returnedDomainElement: {
-          [extractorKey]: storedBlobs.find((b) => b.uuid === extractor.instanceUuid),
+          [extractorKey]: store.find((b) => b.uuid === extractor.instanceUuid),
         },
       };
     }
     return {
       status: "ok" as const,
-      returnedDomainElement: { parentUuid: BLOB, applicationSection: "data", instances: storedBlobs },
+      returnedDomainElement: { parentUuid: BLOB, applicationSection: "data", instances: store },
     };
   });
   const domainController = {
@@ -167,5 +167,19 @@ describe("381 — primary-key load on a lazily cached Entity keeps the full segm
 
     await expect(service.ensureLoaded(detailsRequest(storedBlobs[0].uuid))).resolves.toBe("ready");
     expect(handlePersistenceAction).toHaveBeenCalledTimes(2);
+  });
+
+  it("a refetched row replaces its cached value: a field removed in storage is gone", async () => {
+    const store = storedBlobs.map((b) => ({ ...b, description: "old" }) as EntityInstance);
+    const { service, fullSegment } = setup(store);
+    await service.ensureLoaded(listRequest());
+
+    const { description: _removed, ...withoutDescription } = store[1] as any;
+    store[1] = withoutDescription as EntityInstance;
+    await service.ensureLoaded({ ...detailsRequest(), forceRefresh: true });
+
+    expect(fullSegment()?.entities?.[DETAILS_UUID]).not.toHaveProperty("description");
+    expect(fullSegment()?.entities?.[storedBlobs[0].uuid]).toMatchObject({ description: "old" });
+    expect(Object.keys(fullSegment()?.entities ?? {})).toHaveLength(storedBlobs.length);
   });
 });
