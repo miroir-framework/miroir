@@ -39,10 +39,10 @@ This plan does **not** cover: editing keyless rows; keyless Miroir-owned Entitie
 | 3 | Zustand cache parity | ✅ | zustand vitest + phase1 integ on zustand |
 | 4 | Queries keep keyless rows and refuse key-based lookups | ✅ | `DomainStateQuerySelectors.pkLess.unit.test.ts` + phase1 integ |
 | 5 | CUD on keyless Entities refused before touching the cache | ✅ | phase1 integ, CUD cases |
-| 6 | Grids: all rows, stable ids, no edit / delete / details | ⬜ | `listDisplayByTransformer.unit.test.ts` + grid component test |
-| 7 | HTTP: sync writes `false` without `id`; keyless HTTP rows display | ⬜ | `tr.syncExternalServiceSchema` case + external-service scenario |
-| 8 | Postgres app: `pg_stat_activity` demo | ⬜ | `miroir-example-postgres` modelValidation + phase1 integ |
-| 9 | Nonreg, docs, cleanup, AC | ⬜ | nonreg step + tracer narrative |
+| 6 | Grids: all rows, stable ids, no edit / delete / details | ✅ | `listDisplayByTransformer.unit.test.ts` + grid component test |
+| 7 | HTTP: sync writes `false` without `id`; keyless HTTP rows display | ✅ | `tr.syncExternalServiceSchema` case + external-service scenario |
+| 8 | Postgres app: `pg_stat_activity` demo | ✅ | `miroir-example-postgres` modelValidation + phase1 integ |
+| 9 | Nonreg, docs, cleanup, AC | ✅ | nonreg step + tracer narrative |
 
 ---
 
@@ -463,7 +463,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui
 
 ## Slice 7 — HTTP: sync writes `false` without `id`; keyless HTTP rows display
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -498,11 +498,16 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,external,ui
 
 ### Realization
 
+- 0.2 / display path: HTTP rows reach the UI through `apiCallReportSection`, which renders the raw response read-only with `TypedValueObjectEditor`, keyed by nothing (`resolveApiCallReportSectionSchema.ts`, `ReportSectionViewWithEditor.tsx`). No Entity key is derived there, so no display change was needed; an HTTP Entity shown in a list section goes through the slice 6 grid changes.
+- `syncExternalServiceSchema`: `idAttribute: responseItemsHaveId(responseSchema) ? "id" : false`. The items are the array elements of an array response, else the response object itself.
+- `tr.syncExternalServiceSchema`: new case "sync get-playlist without id in boundPaths emits a createEntity without primary key" (red with `"id"` hard-coded); the existing Spotify case still expects `"id"`.
+- The emulated-service scenario was not extended: the display path above has no keyed step to prove.
+
 ---
 
 ## Slice 8 — Postgres app: `pg_stat_activity` demo
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -540,11 +545,16 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui
 
 ### Realization
 
+- Entity `7214c5a3-…` `pg_stat_activity` (`pg_catalog`, `idAttribute: false`, `datname`, `usename`, `application_name`, `state`, `query`, all optional, nullable, non-editable), Report `3fcaedd8-…` `ActivityList` ("Server Activity"), and a menu item in `dd168e5a-…`. `miroir-example-postgres` modelValidation: 14 passed.
+- The integ proof is a fifth test in `PkLessExternalEntity.integ`, which deploys the asset Entity next to `pk_less_rows` and asserts at least one session row after refresh, rather than a full Postgres app deployment.
+- `multistep.274.phase0` counts every Report in the asset trees: 87 → 88 reports, 71 → 72 without `type`.
+- No Sequelize type-mapping surprise on the five text columns.
+
 ---
 
 ## Slice 9 — Nonreg, docs, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### 9.1 Nonreg
 
@@ -573,10 +583,16 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui
 
 Automated equivalent: `PkLessExternalEntity.integ.test.ts` (two refreshes over `test_175.pk_less_rows`, plus the `pg_stat_activity` read).
 
+### Realization
+
+- Nonreg step `integ-175-pk-less-external` (scopes `actions`, `localcache`, `requires: postgres`, shared group `standalone-app-profile`). The test file already sat at its final path since slice 1.
+- Docs: use case 6 of `defining-entities.md` rewritten as the how-to, use-case map and "Good to know" updated; `reference/api/entity.md` lists `false`. `analysis.md` status set to implemented.
+- Full nonreg on both profiles after slices 6-8: every failure is either #379 (`describe.sequential` / `describe.skipIf(...).sequential` under vitest 5) or the tracked-assets guard catching asset files edited during the run, plus `multistep.274.phase0` (report count, fixed in slice 8).
+
 ### AC checklist (#175)
 
 | Criterion | Proven by | Status |
 |---|---|---|
-| An Entity without PK can be represented, distinct from absent `idAttribute` | Slice 1 integ (`idAttribute: false` deployed and read) + slice 2 validation cases + slice 7 (HTTP) | ⬜ |
-| On refresh, in-memory contents of a PK-less Entity are flushed, leaving only incoming rows | Slice 1 integ (second refresh, redux) + slice 3 (zustand) | ⬜ |
-| Editing PK-less instances not required | Slice 5 (CUD refused) + slice 6 (no affordances) | ⬜ |
+| An Entity without PK can be represented, distinct from absent `idAttribute` | Slice 1 integ (`idAttribute: false` deployed and read) + slice 2 validation cases + slice 7 (HTTP) | ✅ |
+| On refresh, in-memory contents of a PK-less Entity are flushed, leaving only incoming rows | Slice 1 integ (second refresh, redux) + slice 3 (zustand) | ✅ |
+| Editing PK-less instances not required | Slice 5 (CUD refused) + slice 6 (no affordances) | ✅ |
