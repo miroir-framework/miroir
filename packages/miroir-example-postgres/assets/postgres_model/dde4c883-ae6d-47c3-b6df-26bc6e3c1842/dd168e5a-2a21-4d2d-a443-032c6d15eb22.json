@@ -38,6 +38,15 @@
             "reportUuid": "5f8c2d19-7b3e-4a61-9d05-6e4b83f1c7a2",
             "icon": "category",
             "menuItemScope": "data"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Server Activity",
+            "section": "data",
+            "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
+            "reportUuid": "3fcaedd8-97eb-4e97-ba5f-133b9abf80de",
+            "icon": "category",
+            "menuItemScope": "data"
           }
         ]
       }

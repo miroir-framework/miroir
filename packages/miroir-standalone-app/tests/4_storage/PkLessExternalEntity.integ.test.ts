@@ -11,6 +11,9 @@
  * ```
  */
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import process from "process";
 import { Sequelize } from "sequelize";
 
@@ -119,7 +122,7 @@ const pkLessRowsEntity: Entity = {
   selfApplication: testApplicationUuid,
   name: "pk_less_rows",
   conceptLevel: "External",
-  description: "rows without primary key, they can repeat (#175)",
+  description: "rows without primary key, they can repeat",
   externalDataSource: { schema: externalSchema },
   idAttribute: false,
   mlSchema: {
@@ -130,6 +133,21 @@ const pkLessRowsEntity: Entity = {
     },
   },
 } as Entity;
+
+// The Postgres app's server-activity Entity (pg_catalog.pg_stat_activity), deployed here in the test application.
+const pgStatActivityEntity: Entity = {
+  ...JSON.parse(
+    readFileSync(
+      join(
+        dirname(fileURLToPath(import.meta.url)),
+        "../../../miroir-example-postgres/assets/postgres_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+        "7214c5a3-e5f4-4420-835f-fc2f9dc6a1d2.json",
+      ),
+      "utf8",
+    ),
+  ),
+  selfApplication: testApplicationUuid,
+};
 
 let domainController: DomainControllerInterface;
 let rawSql: Sequelize;
@@ -165,7 +183,7 @@ function rowValues(rows: Record<string, EntityInstance> | undefined) {
 // ################################################################################################
 const describeSql = isSqlBackend ? describe : describe.skip;
 
-describeSql("PkLessExternalEntity.integ (#175)", () => {
+describeSql("PkLessExternalEntity.integ", () => {
   beforeAll(async () => {
     rawSql = new Sequelize((testDeploymentStorageConfiguration.data as { connectionString: string }).connectionString, {
       logging: false,
@@ -222,9 +240,9 @@ describeSql("PkLessExternalEntity.integ (#175)", () => {
         [],
         {
           ...(defaultLibraryModelEnvironment.currentModel as MetaModel),
-          entities: [pkLessRowsEntity],
+          entities: [pkLessRowsEntity, pgStatActivityEntity],
         },
-        [pkLessRowsEntity.uuid],
+        [pkLessRowsEntity.uuid, pgStatActivityEntity.uuid],
       ),
       applicationDeploymentMap,
       libraryModelEnv(),
@@ -338,6 +356,21 @@ describeSql("PkLessExternalEntity.integ (#175)", () => {
         );
       }
       expect(cachedPkLessRows()).toEqual(before);
+    },
+    globalTimeOut,
+  );
+
+  // ##############################################################################################
+  it(
+    "pg_stat_activity, a system view without primary key, loads the server's current sessions",
+    async () => {
+      await refreshLibraryCache();
+      const sessions = Object.values(
+        domainController.getDomainState()[testApplicationDeploymentUuid]?.data?.[pgStatActivityEntity.uuid] ?? {},
+      ) as any[];
+      // at least this test's own connection to the database
+      expect(sessions.length).toBeGreaterThan(0);
+      expect(sessions.some((session) => typeof session.datname === "string")).toBe(true);
     },
     globalTimeOut,
   );

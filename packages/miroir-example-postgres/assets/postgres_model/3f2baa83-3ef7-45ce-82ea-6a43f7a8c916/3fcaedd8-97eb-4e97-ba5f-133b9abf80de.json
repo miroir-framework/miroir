@@ -1,0 +1,29 @@
+{
+  "uuid": "3fcaedd8-97eb-4e97-ba5f-133b9abf80de",
+  "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "ActivityList",
+  "defaultLabel": "Server Activity",
+  "definition": {
+    "reportParameters": {},
+    "extractorTemplates": {
+      "activity": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "parentName": "pg_stat_activity",
+        "parentUuid": "7214c5a3-e5f4-4420-835f-fc2f9dc6a1d2"
+      }
+    },
+    "section": {
+      "type": "objectListReportSection",
+      "definition": {
+        "parentName": "pg_stat_activity",
+        "parentUuid": "7214c5a3-e5f4-4420-835f-fc2f9dc6a1d2",
+        "label": "Server Activity",
+        "fetchedDataReference": "activity",
+        "sortByAttribute": "datname"
+      }
+    }
+  }
+}
