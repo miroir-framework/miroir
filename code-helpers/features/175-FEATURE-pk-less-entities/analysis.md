@@ -155,7 +155,7 @@ A column projection (a "partial" segment, `CacheSegmentKind = "full" \| "partial
 - Editing, creating or deleting PK-less instances (issue: "doesn't need to be possible for the moment").
 - PK-less Miroir-owned Entities in filesystem, IndexedDB, MongoDB or bundled stores (D2-c; later, unscheduled).
 - Keys stable across refreshes (D3-b; deferred).
-- Fixing the report-triggered `extractorByPrimaryKey` fill that replaces a whole segment with one row (§3.3, item 3): it affects keyed Entities and is out of scope.
+- Fixing the report-triggered `extractorByPrimaryKey` fill that replaces a whole segment with one row (§3.3, item 3): it affects keyed Entities and is owned by [#381](https://github.com/miroir-framework/miroir/issues/381).
 - MongoDB custom PK support (`MongoDbStoreSection.ts:63`: `return "uuid"; // MongoDB store does not yet support custom PKs`).
 
 ## 3. Current state
@@ -213,7 +213,7 @@ Today, for a batch of 3 keyless rows A, B, C loaded into an Entity whose rows ha
 
 1. Full refresh, `DomainController.loadConfigurationFromPersistenceStore` (L603): per Entity, `fetchEntityInstances` (L740), then one `loadNewInstancesInLocalCache` (L925-939), then `rollback` (L941-952). `rollback` (redux `handleModelAction`, L849-866) drops the deployment's `current` keys and sets `current = {...rest, ...loading}`: full replacement.
 2. Report-triggered fill, `createReportQueryLoadExecutor.ts` (L332-352): `loadNewInstancesInLocalCache` → `setAll` per segment on both zones, no merge.
-3. Side effect (keyed Entities too): an `extractorByPrimaryKey` target pushes `instances: [instance]` (L283-289), and its `setAll` reduces the segment to that one row. Out of scope (§2).
+3. Side effect (keyed Entities too): an `extractorByPrimaryKey` target pushes `instances: [instance]` (L283-289), and its `setAll` reduces the segment to that one row. Owned by #381 (§2).
 
 ### 3.4 Re-keying sites that collapse keyless rows (misaligned)
 
