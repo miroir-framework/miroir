@@ -5,6 +5,7 @@ import {
   Action2Error,
   TransformerFailure,
   buildOpenApiEndpointSyncComposite,
+  ensureYamlParser,
   extractSyncedEndpointFromComposite,
   MiroirLoggerFactory,
   type Action2VoidReturnType,
@@ -70,6 +71,7 @@ export const OpenApiEndpointSyncButton = (props: OpenApiEndpointSyncButtonProps)
         props.endpoint,
         formik.values?.elementToDisplay,
       ) ?? endpoint;
+    await ensureYamlParser(); // #370: the endpoint's OpenAPI document may be YAML
     const composite = buildOpenApiEndpointSyncComposite(current as any, props.modelEnvironment);
     if (composite instanceof TransformerFailure) {
       log.info("OpenAPI Endpoint sync transformer failed", composite.failureMessage);

@@ -1,4 +1,4 @@
-import _ from "lodash";
+import { merge } from "lodash-es";
 
 import { useCallback, useEffect, useMemo } from "react";
 
@@ -519,7 +519,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
       // log.info("handleAddObjectDialogFormSubmit called with dialogOuterFormObject", dialogOuterFormObject);
 
       let result: any;
-      const newVersion = _.merge(effectiveData, effectiveData["ROOT"]);
+      const newVersion = merge(effectiveData, effectiveData["ROOT"]);
       delete newVersion["ROOT"];
       // log.info(
       //   "handleAddObjectDialogFormSubmit producing",

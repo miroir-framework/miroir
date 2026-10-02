@@ -43,7 +43,10 @@ describe("gridPagination — ag-grid native pagination tracer", () => {
     renderBookListSectionIntegWithCount(60);
     await waitForProgressiveRendering();
 
-    expect(document.querySelector(".ag-paging-panel")).toBeInTheDocument();
+    // The report section renders its grid through React.lazy (#337, #370): wait for it to load.
+    await waitFor(() => {
+      expect(document.querySelector(".ag-paging-panel")).toBeInTheDocument();
+    });
     expect(
       document.querySelector(".ag-paging-row-summary-panel")?.textContent?.replace(/\s+/g, " "),
     ).toMatch(/1 to 50 of 60/);
@@ -187,7 +190,8 @@ describe("gridPagination — ValueObjectGrid both backends", () => {
     renderValueObjectGridHarness({ count: 60, gridType: "glide-data-grid" });
     await waitForProgressiveRendering();
 
-    expect(screen.getByTestId("grid-pagination-range")).toHaveTextContent(
+    // glide-data-grid loads through React.lazy (#370).
+    expect(await screen.findByTestId("grid-pagination-range")).toHaveTextContent(
       "Showing 1–50 of 60",
     );
 
@@ -207,7 +211,7 @@ describe("gridPagination — ValueObjectGrid both backends", () => {
 
     renderValueObjectGridHarness({ count: 60, gridType: "glide-data-grid", pageSize: 20 });
     await waitForProgressiveRendering();
-    expect(screen.getByTestId("grid-pagination-range")).toHaveTextContent(
+    expect(await screen.findByTestId("grid-pagination-range")).toHaveTextContent(
       "Showing 1–20 of 60",
     );
   });
@@ -221,6 +225,9 @@ describe("gridPagination — ValueObjectGrid both backends", () => {
 
     renderValueObjectGridHarness({ count: 60, gridType: "glide-data-grid", maxRows: 10 });
     await waitForProgressiveRendering();
+    await waitFor(() => {
+      expect(document.querySelector(".glide-data-grid-grid-container")).toBeInTheDocument();
+    });
     expect(screen.queryByTestId("grid-pagination-toolbar")).not.toBeInTheDocument();
     expect(document.querySelector(".glide-data-grid-grid-container")).toHaveAttribute(
       "data-page-rows",

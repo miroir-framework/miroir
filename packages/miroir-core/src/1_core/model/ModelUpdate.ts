@@ -1,6 +1,3 @@
-// import { diff } from "util";
-// import * as Diff from "diff";
-import { diffString, diff } from 'json-diff';
 import type { EntityVersion, ModelAction } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
@@ -15,6 +12,29 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
+
+/**
+ * #370: json-diff (with its `assert` polyfill) is not in the page's eager bundle. Node loads it
+ * with this module; elsewhere `ensureJsonDiff()` loads it before `getModelUpdate` runs.
+ */
+type JsonDiff = (before: unknown, after: unknown) => any;
+let jsonDiff: JsonDiff | undefined =
+  typeof process !== "undefined" && process.versions?.node
+    ? jsonDiffFromModule(await import("json-diff"))
+    : undefined;
+
+function jsonDiffFromModule(module: { diff?: JsonDiff; default?: { diff: JsonDiff } }): JsonDiff {
+  return (module.diff ?? module.default?.diff) as JsonDiff;
+}
+
+export async function ensureJsonDiff(): Promise<void> {
+  jsonDiff ??= jsonDiffFromModule(await import("json-diff"));
+}
+
+function diff(before: unknown, after: unknown) {
+  if (!jsonDiff) throw new Error("json-diff not loaded: await ensureJsonDiff() first");
+  return jsonDiff(before, after);
+}
 
 /**
  * 

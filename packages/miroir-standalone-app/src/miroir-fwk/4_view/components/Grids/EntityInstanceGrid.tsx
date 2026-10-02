@@ -4,7 +4,8 @@ import {
   GridApi
 } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CenteredSpinner } from "../CenteredSpinner.js";
 import { useNavigate } from 'react-router-dom';
 
 // import 'ag-grid-community/styles/ag-grid.css';
@@ -56,7 +57,7 @@ import {
   TableComponentTypeSchema,
 } from "./EntityInstanceGridInterface.js";
 import { ToolsCellRenderer } from './GenderCellRenderer.js';
-import { GlideDataGridComponent } from './GlideDataGridComponent.js';
+import { GlideDataGridComponent } from './LazyGrids.js';
 import { GridSizingDebugProbe } from './GridSizingDebugProbe.js';
 import {
   agGridModeProps,
@@ -1136,35 +1137,37 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
               </div>
             </>
           ) : (
-            <GlideDataGridComponent
-              tableComponentRows={tableComponentRows}
-              columnDefs={props.columnDefs}
-              styles={{
-                ...props.styles,
-                // height: `${containerHeight}px`,
-                fontFamily: contextTheme.typography.fontFamily,
-                fontSize: contextTheme.typography.fontSize,
-                borderRadius: contextTheme.components.table.borderRadius,
-                border: contextTheme.components.table.border,
-              }}
-              type={props.type}
-              toolsColumnDefinition={toolsColumnDefinition}
-              maxRows={props.maxRows}
-              pageSize={props.pageSize}
-              theme={contextTheme}
-              glideTheme={glideTheme}
-              onCellClicked={onGlideGridCellClicked}
-              onCellEdited={(cell, newValue) => {
-                // Handle cell edit for Glide Data Grid
-                log.info("Glide cell edited", cell, newValue);
-                // You might want to implement similar logic to onCellValueChanged
-              }}
-              onRowEdit={handleEditDialogFormOpen}
-              onRowDelete={handleDeleteDialogFormOpen}
-              onRowDuplicate={handleDuplicateDialogFormOpen}
-              onRowOpenReport={rowOpenReport ? handleRowOpenReport : undefined}
-              onDisplayedPageRowsChange={notifyDisplayedPageRowsChange}
-            />
+            <Suspense fallback={<CenteredSpinner />}>
+              <GlideDataGridComponent
+                tableComponentRows={tableComponentRows}
+                columnDefs={props.columnDefs}
+                styles={{
+                  ...props.styles,
+                  // height: `${containerHeight}px`,
+                  fontFamily: contextTheme.typography.fontFamily,
+                  fontSize: contextTheme.typography.fontSize,
+                  borderRadius: contextTheme.components.table.borderRadius,
+                  border: contextTheme.components.table.border,
+                }}
+                type={props.type}
+                toolsColumnDefinition={toolsColumnDefinition}
+                maxRows={props.maxRows}
+                pageSize={props.pageSize}
+                theme={contextTheme}
+                glideTheme={glideTheme}
+                onCellClicked={onGlideGridCellClicked}
+                onCellEdited={(cell, newValue) => {
+                  // Handle cell edit for Glide Data Grid
+                  log.info("Glide cell edited", cell, newValue);
+                  // You might want to implement similar logic to onCellValueChanged
+                }}
+                onRowEdit={handleEditDialogFormOpen}
+                onRowDelete={handleDeleteDialogFormOpen}
+                onRowDuplicate={handleDuplicateDialogFormOpen}
+                onRowOpenReport={rowOpenReport ? handleRowOpenReport : undefined}
+                onDisplayedPageRowsChange={notifyDisplayedPageRowsChange}
+              />
+            </Suspense>
           )}
         </div>
       ) : (

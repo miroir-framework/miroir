@@ -188,6 +188,7 @@ import {
   boundPathsForOperation,
   listConvertibleGetOperations,
   materializeExternalServiceOperations,
+  ensureYamlParser,
   openApiParameterNamesForOperation,
   parseOpenApiDocument,
 } from "../2_domain/syncExternalServiceSchema.js";
@@ -3892,6 +3893,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
     applicationDeploymentMap: ApplicationDeploymentMap,
     principal?: AuthPrincipal,
   ): Promise<Action2VoidReturnType> {
+    await ensureYamlParser(); // #370: the OpenAPI document may be YAML
     const rawBag = domainAction.payload as Record<string, unknown>;
     const probeOnly =
       rawBag.probeOnly === true ||
@@ -4419,6 +4421,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
     }
 
     try {
+      await ensureYamlParser();
       parseOpenApiDocument(trimmed);
     } catch (error: any) {
       return new Action2Error(

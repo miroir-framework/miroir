@@ -41,8 +41,13 @@ import {
 } from "../../ReduxHooks";
 import { FieldValidationContext } from "./FieldValidationContext";
 
-import { selfApplicationMiroir } from "miroir-app-miroir";
-import { selfApplicationLibrary } from "miroir-example-library";
+import { entitySelfApplication, selfApplicationMiroir } from "miroir-app-miroir";
+import { shallowEqual } from "react-redux";
+import {
+  selectInstanceArrayForDeploymentSectionEntity,
+  useSelector,
+  type ReduxStateWithUndoRedo,
+} from "miroir-react";
 import { adminSelfApplication } from "miroir-app-admin";
 import { useApplicationAccess } from "../../auth/useApplicationAccess.js";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlElementEditorHooks");
@@ -173,6 +178,40 @@ export function getItemsOrder(
 // ################################################################################################
 const count = 0;
 
+/**
+ * Labels of the applications of `applicationDeploymentMap`, read from the SelfApplication row each
+ * deployment's model section holds in the local cache (#370: no example application package is
+ * bundled to name its application). An application whose model is not in the cache has no label.
+ */
+function useSelfApplicationLabels(
+  applicationDeploymentMap: ApplicationDeploymentMap | undefined,
+): Record<string, string> {
+  return useSelector((state: ReduxStateWithUndoRedo) => {
+    const labels: Record<string, string> = {};
+    for (const application of Object.keys(applicationDeploymentMap ?? {})) {
+      const selfApplication = selectInstanceArrayForDeploymentSectionEntity(
+        state,
+        applicationDeploymentMap ?? {},
+        {
+          queryType: "localCacheEntityInstancesExtractor",
+          definition: {
+            application,
+            applicationSection: "model",
+            entityUuid: entitySelfApplication.uuid,
+          },
+        },
+      ).find((row) => row.uuid === application) as
+        | (EntityInstance & { defaultLabel?: string; name?: string })
+        | undefined;
+      const label = selfApplication?.name || selfApplication?.defaultLabel;
+      if (label) {
+        labels[application] = label;
+      }
+    }
+    return labels;
+  }, shallowEqual);
+}
+
 export function useMlElementEditorHooks(
   rootLessListKey: string,
   rootLessListKeyArray: (string | number)[],
@@ -266,6 +305,18 @@ export function useMlElementEditorHooks(
       return undefined;
     },
     [currentTypecheckKeyMap, currentValueObjectAtKey]
+  );
+  // Only the restricted application picker (#284 D22) needs application labels: other fields
+  // pass no map, so their selector returns at once.
+  const isRestrictedApplicationPicker =
+    localResolvedElementMlSchemaBasedOnValue?.type == "uuid" &&
+    !!(
+      localResolvedElementMlSchemaBasedOnValue.tag?.value as
+        | { display?: { uuid?: { restrictToApplicationDeploymentMap?: boolean } } }
+        | undefined
+    )?.display?.uuid?.restrictToApplicationDeploymentMap;
+  const selfApplicationLabels = useSelfApplicationLabels(
+    isRestrictedApplicationPicker ? applicationDeploymentMap : undefined,
   );
   // for objects, records
   const itemsOrder: any[] = useMemo(
@@ -502,10 +553,10 @@ export function useMlElementEditorHooks(
           labeled[uuid] = row as EntityInstance & { defaultLabel?: string; name?: string };
         }
       }
+      // #370: other applications are labelled from their cached SelfApplication rows, so the page
+      // does not bundle an example application to name it.
       const knownNames: Record<string, string> = {
-        [selfApplicationLibrary.uuid]:
-          (selfApplicationLibrary as { defaultLabel?: string }).defaultLabel ??
-          selfApplicationLibrary.name,
+        ...selfApplicationLabels,
         [selfApplicationMiroir.uuid]:
           (selfApplicationMiroir as { defaultLabel?: string }).defaultLabel ??
           selfApplicationMiroir.name,
@@ -549,6 +600,7 @@ export function useMlElementEditorHooks(
     foreignKeyObjects,
     applicationDeploymentMap,
     applications,
+    selfApplicationLabels,
     candidates,
     visible,
   ]);

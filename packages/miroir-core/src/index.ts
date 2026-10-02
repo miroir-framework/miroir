@@ -1470,6 +1470,7 @@ export {
   materializeExternalServiceOperations,
   openApiParameterNamesForOperation,
   previewOpenApiGetCall,
+  ensureYamlParser,
   parseOpenApiDocument,
 } from "./2_domain/syncExternalServiceSchema.js";
 export { redactCredentialSecretsFromValue } from "./4_services/redactCredentialSecrets.js";

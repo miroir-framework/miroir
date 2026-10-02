@@ -15,7 +15,7 @@ Internal reference for how the Miroir standalone web app (`packages/miroir-stand
 
 `manualChunks` does **not** lazy-load a library on its own. It only names and isolates vendor code. It can also make things worse: Rollup moves the dependencies of a manual chunk's modules into that chunk, so when eager code needs one of them, the whole vendor chunk loads with the page. Until #337, `vendor-copilotkit` and `vendor-ag-grid` loaded with every page for that reason. Only libraries the page needs anyway keep a rule (`vendor-react`, `vendor-mui`), plus `vendor-d3`, which is lazy.
 
-Besides the routes, components load heavy libraries through `React.lazy` (#337): the list grids (`components/Grids/LazyGrids.tsx`, ag-grid and glide-data-grid) and CodeMirror (`CodeBlock_ReadOnly` in `miroir-react`, `MlElementEditorReactCodeMirror`).
+Besides the routes, components load heavy libraries through `React.lazy` (#337): the list grids (`components/Grids/LazyGrids.tsx`, ag-grid and, since #370, glide-data-grid on its own) and CodeMirror (`CodeBlock_ReadOnly` in `miroir-react`, `MlElementEditorReactCodeMirror`). Libraries a feature needs only sometimes are loaded by a conditional dynamic import with an `ensureX()` that callers await: `node:crypto` in `SecretsService.ts` (#337), `yaml` in `syncExternalServiceSchema.ts` and `json-diff` in `ModelUpdate.ts` (#370). Node evaluates the import at module load; the browser fetches it on the first `ensureX()`.
 
 ### Tracing manual chunk loads
 
@@ -63,16 +63,16 @@ The app entry (`src/index.tsx`) is **eager**: core startup, `RootComponent`, `Pa
 
 ## What loads with the page
 
-Measured by the [bundle report](#bundle-report-and-guards-326) of the build of 2026-09-30 (#337). The build of the day prints the same table; chunk names are Rollup's and do not say what a chunk holds.
+Measured by the [bundle report](#bundle-report-and-guards-326) of the build of 2026-10-01 (#370). The build of the day prints the same table; chunk names are Rollup's and do not say what a chunk holds.
 
-`index.html` preloads 4 chunks: 4.66 MB of minified code, 867 kB gzipped (the `eagerGzipBaseline` of `bundle-policy.json`). Before #337 it preloaded 7 chunks, 2.73 MB gzipped.
+`index.html` preloads 5 chunks: 4.22 MB of minified code, 747 kB gzipped (the `eagerGzipBaseline` of `bundle-policy.json`). Before #337 it preloaded 7 chunks, 2.73 MB gzipped; after #337, 4 chunks, 867 kB (881 kB after the MUI 9 upgrade). The home page, with its route chunks, fetches 1.28 MB gzipped in 16 chunks (`tests/0_build/homePageLoad.unit.test.ts` caps it).
 
 | Chunk | Size, gzip | Largest content | Why it loads with the page |
 |---|---|---|---|
-| `index-*.js` (entry) | 4.04 MB, 675 kB | `miroir-app-miroir` (the meta-model deployment), `miroir-core`, `lodash`, the app, `yaml`, `miroir-example-library` | the entry; `ModelEnvironmentSync.tsx` and `miroir-core` import the meta-model statically |
-| `vendor-mui-*` | 339 kB, 103 kB | `@mui/material`, `@mui/system`, `@popperjs/core` | the app shell |
+| `index-*.js` (entry) | 3.58 MB, 547 kB | `miroir-app-miroir` (the meta-model deployment), `miroir-core`, the app, `@remix-run/router`, `miroir-localcache-redux`, `zod` | the entry; `ModelEnvironmentSync.tsx` and `miroir-core` import the meta-model statically |
+| `vendor-mui-*` | 380 kB, 117 kB | `@mui/material`, `@mui/system`, `@popperjs/core` | the app shell |
 | `vendor-react-*` | 227 kB, 73 kB | `react-dom`, `react`, `scheduler` | the app shell |
-| `___vite-browser-external_commonjs-proxy-*` | 49 kB, 16 kB | `vite-plugin-node-polyfills` shims | Node built-ins the entry's dependencies import |
+| two `index-*.js` | 29 kB, 9 kB | `vite-plugin-node-polyfills` shims | Node built-ins the entry's dependencies import; shared with lazy chunks since #370 |
 
 What #337 took off the page, each cut with the rule that keeps it off:
 
@@ -83,6 +83,16 @@ What #337 took off the page, each cut with the rule that keeps it off:
 | The test suite registry that read the whole `miroir-app-miroir` namespace deleted, so Rollup tree-shakes the meta-model | 332 kB | `eagerPackageMaxBytes` |
 | CodeMirror behind `React.lazy` | 168 kB | `forbiddenEager` `@codemirror/*`, `@uiw/react-codemirror`, `@lezer/*` |
 | Node store drivers aliased to `vite/nodeStoreStub.js` in the web build | 36 kB | `allowlist` (`sequelize`, `mongodb` left the policy) |
+
+What #370 took off the page (analysis and measurements: `code-helpers/features/370-BUILD-bundle-size-followup/`):
+
+| Cut | Gzip saved | Kept off by |
+|---|---|---|
+| `yaml` loaded by `ensureYamlParser()` (`syncExternalServiceSchema.ts`), awaited by the DomainController's OpenAPI handlers, the OpenAPI Endpoint sync button and the `transformerTest` runner | 31 kB | `forbiddenEager` `yaml` |
+| `miroir-store-indexedDb` factories import the store classes (and `level`) when they first run; the package exports only its startup function | 34 kB | `forbiddenEager` `level`, `browser-level`, `abstract-level` |
+| `json-diff` loaded by `ensureJsonDiff()` (`ModelUpdate.ts`); the function-call test registry accepts a module loader | 33 kB | `forbiddenEager` `json-diff`, `@ewoudenberg/difflib`, `assert` |
+| Bare `lodash` aliased to `vite/lodashMergeShim.js` (`merge` from `lodash-es`): its only importer, `@teroneko/redux-saga-promise`, requires it for `merge` | 27 kB | `forbiddenEager` `lodash`; `bundleReport.unit` |
+| The application picker names applications from the cache (Admin rows, then each application's SelfApplication row) instead of importing `miroir-example-library` | 11 kB | `forbiddenEager` `miroir-example-library` |
 
 ---
 
@@ -98,7 +108,7 @@ What #337 took off the page, each cut with the rule that keeps it off:
 | **Initial load?** | No (`forbiddenEager` `ag-grid-*`) |
 | **On feature use?** | Yes — the grid chunk loads with the first list section or test results grid, not with the report route |
 
-`EntityInstanceGrid` also statically imports `@glideapps/glide-data-grid` (`GlideDataGridComponent.tsx`). Both grid implementations ship in the same lazy chunk; runtime picks one via `gridType`, but both are fetched.
+`EntityInstanceGrid` and `ValueObjectGrid` render `GlideDataGridComponent` (`@glideapps/glide-data-grid`) through `React.lazy` from `LazyGrids.tsx` (#370), so a list on the default `gridType` (`ag-grid`) fetches the ag-grid chunk only, 268 kB gzipped instead of 372 kB; a `glide-data-grid` list also fetches the 104 kB glide chunk (`bundleReport.unit`: "the chunk holding ag-grid holds no glide-data-grid").
 
 ### CodeMirror (`@uiw/react-codemirror`, `@codemirror/lang-javascript`)
 
@@ -132,6 +142,8 @@ What #337 took off the page, each cut with the rule that keeps it off:
 
 Server-side CopilotKit (`@copilotkit/runtime` in `miroir-server` / `miroir-ai`) is unrelated to client bundle splitting.
 
+The chat renders markdown with `streamdown`, whose code blocks load shiki grammars on demand from `bundledLanguages`. `vite/shikiLanguagesPlugin.js` (#370) resolves shiki's `./langs.mjs` to a module listing 12 grammars (`SHIKI_LANGUAGES`: json, javascript, typescript, tsx, jsx, yaml, shellscript, python, sql, html, css, xml), with shiki's names and aliases. A block in another language renders as plain text. This takes nothing off the page; it removes 223 chunks from the release (`dist/assets` JavaScript 23.1 MB in 405 files → 16.6 MB in 182).
+
 ### Component test chunk (`@testing-library/dom`, `@testing-library/user-event`, #286)
 
 | | |
@@ -158,7 +170,9 @@ npm run testByFile -w miroir-standalone-app -- componentTestChunk.286.phase4
 | Library | Named vendor chunk | Deferred past first paint | Deferred until user uses the feature |
 |---|---|---|---|
 | ag-grid | — (lazy grid chunk) | Yes | Yes (first list section or test results grid) |
-| glide-data-grid | — (lazy grid chunk) | Yes | Yes (same) |
+| glide-data-grid | — (own lazy chunk, #370) | Yes | Yes (first list with `gridType: glide-data-grid`) |
+| `yaml`, `json-diff`, IndexedDB store (`level`) | — (lazy chunks, #370) | Yes | Yes (first OpenAPI parse, model diff or IndexedDB section) |
+| shiki grammars | — (12 lazy chunks, #370) | Yes | Yes (first code block in that language) |
 | CodeMirror | — (lazy chunks) | Yes | Yes (first code field or block) |
 | `crypto-browserify` (for `node:crypto`) | — (lazy chunks) | Yes | Yes (first secrets or MCP client use) |
 | Node store drivers (`sequelize`, `mongodb`) | not in the web build | N/A | N/A |
@@ -180,7 +194,9 @@ npm run testByFile -w miroir-standalone-app -- componentTestChunk.286.phase4
 
 3. **A dynamic import is defeated by any static import of the same module.** The bundle report lists these under "Dynamic imports that split nothing off"; the guard's `defeated` rule fails on a new one.
 
-4. **Store driver packages** (`miroir-store-filesystem`, `postgres`, `mongodb`) use dynamic `import()` in `IntegrationTestSession.ts` for vitest and the CLI. In `vite build` (not in test mode), `vite.config.js` aliases them to `vite/nodeStoreStub.js`, whose functions throw, so the web build ships no Node store driver (#337). Vitest resolves the real packages.
+4. **Store driver packages** (`miroir-store-filesystem`, `postgres`, `mongodb`) use dynamic `import()` in `IntegrationTestSession.ts` for vitest and the CLI. In `vite build` (not in test mode), `vite.config.js` aliases them to `vite/nodeStoreStub.js`, whose functions throw, so the web build ships no Node store driver (#337). Vitest resolves the real packages. The same config aliases bare `lodash` to `vite/lodashMergeShim.js` outside test mode (#370); app code imports `lodash-es`.
+
+5. **A local dynamic import in a package built without splitting is inlined.** `miroir-core` is built by tsup with `splitting: false`: `import("./module")` of its own module puts the module, and the static imports of its dependencies, in `dist/index.js`. Only a dynamic import of an external package (`yaml`, `json-diff`) stays dynamic in the package's output (#370).
 
 ---
 
@@ -192,6 +208,8 @@ Every production build prints a table and writes, next to the Vite manifest:
 - `dist/.vite/bundle-report.html`: a treemap of the same build (`rollup-plugin-visualizer`).
 
 The console table shows the eager chunks and the 15 largest lazy ones, each with its 5 largest packages. The attribution is in `vite/bundleReportCore.js`, the plugin in `vite/bundleReportPlugin.js`; `VITE_MIROIR_BUNDLE_REPORT=false` disables both. The Electron main process and preload are bundled with esbuild (`packages/miroir-standalone-app-electron/scripts/bundle-main.mjs`, run by its `npm run build`), which writes `dist/bundle-report.json` in the same format. That bundle is minified (names kept), and the Node processes (Electron main, server, CLI, MCP) import `miroir-localcache-redux/node`, an entry without React, so none of them bundles `react-dom` (#337). The package leaves the source maps out, so a stack from a packaged app names the functions (`keepNames`) but gives positions in the minified file; to map a position, rebuild the release's commit (`npm ci`, then `npm run build -w miroir-standalone-app-electron`: the same lockfile and sources give the same bundle) and look it up in `dist/src/main.js.map` with a source map tool. Pull request builds also keep these maps in the `bundle-reports` artifact.
+
+Since #370 the Electron main process is built with `splitting: true` into `dist/src/` (on-demand chunks in `dist/src/chunks/`). `environmentBoot.ts` registers each store type through `src/storesOnDemand.ts`: a placeholder factory imports the store package the first time a section on that store opens, then the package's real factories take over. `ipcServerSetup.ts` imports `miroir-ai` and `miroir-mcp` only when their feature is on. The main process reads 1.0 MB gzipped at start instead of 3.2 MB; the `desktop` environment never reads the MongoDB, PostgreSQL or IndexedDB stores (`electronBundle.unit`). esbuild sets `entryPoint` on the chunk of each dynamic import target, so `bundleReportCore.js` counts as entries only the outputs whose entry point is not a dynamic import target.
 
 The guard compares a report with the app's committed policy:
 
@@ -244,6 +262,9 @@ npm run coverageTour -w miroir-standalone-app -- --serve
 | `packages/miroir-react/src/components/CodeBlock_ReadOnly.tsx` | Lazy read-only CodeMirror block (#337) |
 | `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Grids/LazyGrids.tsx` | Lazy grids (#337) |
 | `packages/miroir-standalone-app/vite/nodeStoreStub.js` | Stands in for the Node store packages in the web build (#337) |
+| `packages/miroir-standalone-app/vite/lodashMergeShim.js` | Stands in for bare `lodash` in the web build and dev server (#370) |
+| `packages/miroir-standalone-app/vite/shikiLanguagesPlugin.js` | The 12 shiki grammars the release ships (#370) |
+| `packages/miroir-standalone-app-electron/src/storesOnDemand.ts` | Store packages loaded on first use in the Electron main process (#370) |
 | `packages/miroir-diagram-class/src/4_view/MermaidClassDiagram.tsx` | Mermaid static import |
 | `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Grids/ValueObjectGrid.tsx` | ag-grid static import (behind `LazyGrids.tsx`) |
 
@@ -253,9 +274,10 @@ npm run coverageTour -w miroir-standalone-app -- --serve
 
 - The cuts found by the bundle report and the coverage tour of #326: done in #337 (analysis and measurements: `code-helpers/features/337-BUILD-bundle-size-cuts/`). The ones left are listed below.
 - ~~Dynamic-import CodeMirror inside the JSON/code editor branch only.~~ Done in #337.
-- Load the Library deployment lazily: `MlElementEditorHooks.ts` imports it for one label (about 21 kB gzipped with the page).
-- Import single `lodash` functions, or `lodash-es`, and check what of `yaml` the entry needs.
-- Load shiki grammars on demand (markdown code blocks).
+- ~~Load the Library deployment lazily.~~ Done in #370 (the label comes from the cache).
+- ~~Import single `lodash` functions, or `lodash-es`, and check what of `yaml` the entry needs.~~ Done in #370 (shim; `yaml` on demand).
+- ~~Load shiki grammars on demand (markdown code blocks).~~ Done in #370 (12 grammars).
 - ~~Mount `AiActionsProvider` only when `showAiSidebar` is true to defer CopilotKit UI.~~ Done in #244.
 - ~~Lazy-load `@copilotkit/react-core` only when ViewParams `agents` is enabled.~~ Done in #244; #273 replaced that gate with snapshot `ai`. Operator flags: [Process capabilities](../reference/process-capabilities.md).
-- Dynamic-import `GlideDataGridComponent` vs `AgGridReact` based on `gridType` to avoid shipping both grid stacks on every report load.
+- ~~Dynamic-import `GlideDataGridComponent` vs `AgGridReact` based on `gridType`.~~ Done in #370 for glide; ag-grid is the default and stays in the grid chunk.
+- Electron: `iconv-lite` (10% of the main bundle, through `express` and `body-parser`) is still read at start (#370 E3, deferred).

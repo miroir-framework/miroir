@@ -229,7 +229,7 @@ export async function runMiroirFunctionCallTestInMemory(
     return;
   }
 
-  const fn = resolveFunctionCallTarget(miroirTest.functionRef);
+  const fn = await resolveFunctionCallTarget(miroirTest.functionRef);
   const args = prepareFunctionCallArguments(miroirTest);
   const testSuiteNamePathAsString = MiroirActivityTracker.testPathName(testNamePath);
 
