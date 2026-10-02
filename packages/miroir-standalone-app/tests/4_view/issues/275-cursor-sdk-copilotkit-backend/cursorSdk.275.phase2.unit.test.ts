@@ -40,11 +40,10 @@ if (runThis) {
   });
 
   describe("cursorSdk.275.phase2 — production callers pass capabilities", () => {
-    it("server.ts passes capabilities into createCopilotKitRouter", () => {
-      const src = readRepoFile("packages/miroir-server/src/server.ts");
-      expect(src).toContain(
-        "createCopilotKitRouter(domainController, applicationDeploymentMap, { capabilities, mcpHttpUrl })",
-      );
+    it("the server passes capabilities into createCopilotKitRouter (mountCopilotKitRoute.ts since #409)", () => {
+      const src = readRepoFile("packages/miroir-server/src/mountCopilotKitRoute.ts");
+      expect(src).toContain("capabilities: options.capabilities");
+      expect(readRepoFile("packages/miroir-server/src/server.ts")).toMatch(/mountCopilotKitRoute\(app, \{\s*capabilities,/);
     });
 
     it("ipcServerSetup.ts passes capabilities into createCopilotKitRouter", () => {
