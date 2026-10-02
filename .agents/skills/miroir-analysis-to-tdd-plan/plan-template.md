@@ -19,7 +19,7 @@ Working branch: `<branch>`
 
 ## Scope
 
-<What's in, 3–6 bullets.>
+<What's in: the analysis goals G1, G2…, one bullet each.>
 
 This plan does **not** <excluded work> (owned by #<NNN> / deferred).
 
@@ -40,10 +40,10 @@ This plan does **not** <excluded work> (owned by #<NNN> / deferred).
 
 <Copied from the analysis decision record; binding for this plan. Deviations go into the slice's Realization.>
 
-| Decision | Choice |
-|---|---|
-| <decision 1> | <choice> |
-| <decision 2> | <choice> |
+| Decision | Choice | Serves |
+|---|---|---|
+| <decision 1> | <choice> | G1 |
+| <decision 2> | <choice> | G1, G2 |
 
 ---
 
