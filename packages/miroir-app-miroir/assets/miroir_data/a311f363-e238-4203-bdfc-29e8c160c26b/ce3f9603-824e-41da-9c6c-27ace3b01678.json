@@ -156,9 +156,23 @@
                 "present": false
               },
               {
-                "step": "keyboard",
+                "step": "type",
                 "label": "close transformer types",
-                "keys": "{Escape}"
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "text": "{Escape}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "transformer types closed",
+                "target": {
+                  "widget": "selectState",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "attribute": "data-test-is-open",
+                "value": "false"
               },
               {
                 "step": "click",
@@ -195,6 +209,25 @@
                   "byRole": "option",
                   "name": "transformerEditor_transformer_selector.transformer.transformerType-option-aggregate"
                 }
+              },
+              {
+                "step": "type",
+                "label": "close transformer types again",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "text": "{Escape}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "transformer types closed again",
+                "target": {
+                  "widget": "selectState",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "attribute": "data-test-is-open",
+                "value": "false"
               }
             ]
           }
