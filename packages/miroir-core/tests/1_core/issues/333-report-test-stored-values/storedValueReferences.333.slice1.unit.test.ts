@@ -172,4 +172,39 @@ describe("resolveReportTestStepReferences (#333)", () => {
       'target.byText: no stored value "missing" (stored: none)',
     );
   });
+
+  it("lets one reference stand for the whole of expectElement.values", () => {
+    const step: ReactComponentTestStep = {
+      step: "expectElement",
+      target: { byRole: "textbox" },
+      values: { transformerType: "getFromContext", referenceName: "names" },
+    };
+    expect(resolveReportTestStepReferences(step, { names: ["Ubik", 1969, true] })).toEqual({
+      step: "expectElement",
+      target: { byRole: "textbox" },
+      values: ["Ubik", 1969, true],
+    });
+    expect(() => resolveReportTestStepReferences(step, { names: "Ubik" })).toThrow(
+      'values: the stored value "names" is a string, expected an array of strings, numbers or booleans',
+    );
+    expect(() => resolveReportTestStepReferences(step, { names: ["Ubik", { name: "Ubik" }] })).toThrow(
+      'values: the stored value "names" holds an object at index 1, expected an array of strings, numbers or booleans',
+    );
+  });
+
+  it("uploads a stored object or array as its JSON text, a stored string as is", () => {
+    const upload = (referenceName: string): ReactComponentTestStep => ({
+      step: "uploadFile",
+      target: { byTestId: "file-input" },
+      fileName: "book.json",
+      content: { transformerType: "getFromContext", referenceName },
+    });
+    const values = { book: { name: "Ubik", year: 1969 }, list: [1, 2], text: "plain", year: 1969 };
+    expect(resolveReportTestStepReferences(upload("book"), values)).toMatchObject({
+      content: '{"name":"Ubik","year":1969}',
+    });
+    expect(resolveReportTestStepReferences(upload("list"), values)).toMatchObject({ content: "[1,2]" });
+    expect(resolveReportTestStepReferences(upload("text"), values)).toMatchObject({ content: "plain" });
+    expect(resolveReportTestStepReferences(upload("year"), values)).toMatchObject({ content: "1969" });
+  });
 });

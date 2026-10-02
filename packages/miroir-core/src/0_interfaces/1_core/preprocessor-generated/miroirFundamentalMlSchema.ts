@@ -8426,30 +8426,43 @@ export const miroirFundamentalMlSchema = {
                 ]
               },
               "values": {
-                "type": "array",
+                "type": "union",
                 "optional": true,
-                "definition": {
-                  "type": "union",
-                  "definition": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "number"
-                    },
-                    {
-                      "type": "boolean"
-                    },
-                    {
-                      "type": "schemaReference",
-                      "definition": {
-                        "relativePath": "reactComponentTestStoredValue",
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-                      },
-                      "context": {}
+                "definition": [
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "union",
+                      "definition": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "reactComponentTestStoredValue",
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                          },
+                          "context": {}
+                        }
+                      ]
                     }
-                  ]
-                }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "reactComponentTestStoredValue",
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                    },
+                    "context": {}
+                  }
+                ]
               },
               "checked": {
                 "type": "boolean",
@@ -10583,28 +10596,39 @@ export const miroirFundamentalMlSchema = {
                         ]
                       },
                       "values": {
-                        "type": "array",
+                        "type": "union",
                         "optional": true,
-                        "definition": {
-                          "type": "union",
-                          "definition": [
-                            {
-                              "type": "string"
-                            },
-                            {
-                              "type": "number"
-                            },
-                            {
-                              "type": "boolean"
-                            },
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "relativePath": "reactComponentTestStoredValue"
-                              }
+                        "definition": [
+                          {
+                            "type": "array",
+                            "definition": {
+                              "type": "union",
+                              "definition": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "number"
+                                },
+                                {
+                                  "type": "boolean"
+                                },
+                                {
+                                  "type": "schemaReference",
+                                  "definition": {
+                                    "relativePath": "reactComponentTestStoredValue"
+                                  }
+                                }
+                              ]
                             }
-                          ]
-                        }
+                          },
+                          {
+                            "type": "schemaReference",
+                            "definition": {
+                              "relativePath": "reactComponentTestStoredValue"
+                            }
+                          }
+                        ]
                       },
                       "checked": {
                         "type": "boolean",

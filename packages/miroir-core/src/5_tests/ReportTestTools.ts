@@ -339,6 +339,10 @@ function kindOf(value: unknown): string {
   return Array.isArray(value) ? "an array" : typeof value === "object" ? "an object" : `a ${typeof value}`;
 }
 
+function isScalar(value: unknown): value is string | number | boolean {
+  return typeof value === "string" || typeof value === "number" || typeof value === "boolean";
+}
+
 function storedNames(value: unknown): string {
   const names = isPlainObject(value) ? Object.keys(value).sort() : [];
   return names.length > 0 ? names.join(", ") : "none";
@@ -380,7 +384,6 @@ const stringOnlyStepFields: Record<string, readonly string[]> = {
   filterSelect: ["text"],
   selectOption: ["option"],
   renameRecordEntry: ["newName"],
-  uploadFile: ["content"],
   waitForAttribute: ["value"],
 };
 
@@ -399,8 +402,12 @@ function isStringOnlyField(stepKind: string, fieldPath: readonly (string | numbe
  *
  * - A reference reads `referenceName`, or follows `referencePath`; `interpolation` is ignored,
  *   the reference is resolved when the step runs.
- * - Outside `expectedValue` (of `expectRenderedValues`), a reference must resolve to a string, a
- *   number or a boolean; a field that takes a string only gets a number or a boolean as text.
+ * - In `expectedValue` (of `expectRenderedValues`), a reference resolves to any value. In
+ *   `uploadFile.content`, to any JSON value, uploaded as its JSON text unless it is a string. A
+ *   reference standing for the whole of `expectElement.values` resolves to an array of strings,
+ *   numbers or booleans.
+ * - Elsewhere, a reference must resolve to a string, a number or a boolean; a field that takes a
+ *   string only gets a number or a boolean as text.
  * - An unresolved reference throws, naming the step field and what is missing.
  */
 export function resolveReportTestStepReferences(
@@ -416,11 +423,36 @@ export function resolveReportTestStepReferences(
       } catch (error) {
         throw new Error(`${field}: ${error instanceof Error ? error.message : String(error)}`);
       }
-      if (fieldPath[0] !== "expectedValue" && !["string", "number", "boolean"].includes(typeof stored)) {
-        const path = value.referencePath?.join(".") ?? value.referenceName;
-        throw new Error(
-          `${field}: the stored value "${path}" is ${kindOf(stored)}, expected a string, a number or a boolean`,
-        );
+      const path = value.referencePath?.join(".") ?? value.referenceName;
+      const wrongValue = (found: string, expected: string) =>
+        new Error(`${field}: the stored value "${path}" ${found}, expected ${expected}`);
+      if (fieldPath[0] === "expectedValue") {
+        return stored;
+      }
+      const singleField = fieldPath.length === 1 ? fieldPath[0] : undefined;
+      if (step.step === "uploadFile" && singleField === "content") {
+        // the content of the file: a string as is, any other JSON value as its JSON text
+        if (stored === undefined) {
+          throw wrongValue("is undefined", "a JSON value");
+        }
+        return typeof stored === "string" ? stored : JSON.stringify(stored);
+      }
+      if (step.step === "expectElement" && singleField === "values") {
+        // the whole list of values
+        if (!Array.isArray(stored)) {
+          throw wrongValue(`is ${kindOf(stored)}`, "an array of strings, numbers or booleans");
+        }
+        const index = stored.findIndex((item) => !isScalar(item));
+        if (index >= 0) {
+          throw wrongValue(
+            `holds ${kindOf(stored[index])} at index ${index}`,
+            "an array of strings, numbers or booleans",
+          );
+        }
+        return stored;
+      }
+      if (!isScalar(stored)) {
+        throw wrongValue(`is ${kindOf(stored)}`, "a string, a number or a boolean");
       }
       // a field that takes a string only receives a stored number or boolean as its text
       return isStringOnlyField(step.step, fieldPath) ? String(stored) : stored;
