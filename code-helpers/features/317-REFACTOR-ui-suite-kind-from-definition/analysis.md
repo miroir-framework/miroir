@@ -57,14 +57,14 @@ This is the only `startsWith` / `endsWith` on a suite key in `packages/*/src` (g
 |---|---|---|---|---|
 | `resolveUiIntegrationOrchestratorSessionKind` (registry `:121`) | runner | action | action | action |
 | `buildUiIntegrationOrchestratorCreateSessionParams` (registry `:136`) | runner branch | action branch | action branch | action branch |
-| `launchUiIntegrationTest` (launcher `:398-418`): pinned run target, `prepareReportTests` | no | no | no | yes |
+| `runUiIntegrationTestSuite` (launcher `:398-418`): pinned run target, `prepareReportTests` | no | no | no | yes |
 | `isUiIntegrationDomainControllerTestSuiteEntry` / `isUiIntegrationActionTestSuiteEntry` | not called anywhere outside their definitions | | | |
 
 `domainControllerTest` and `actionTest` columns are identical: the distinction carries no behaviour.
 
 ### Hardcoded kinds
 
-`UI_INTEGRATION_RUNNER_SUITE_REGISTRY_LEGACY` (registry `:271-352`) lists 16 suites with hand-written kinds: 7 `runnerTest`, 8 `domainControllerTest`, 1 `actionTest`. The launcher falls back to it (`uiIntegrationTestLauncher.ts:392`); tests in `uiIntegrationRunnerRegistry.unit.test.ts`, `uiIntegrationTestLauncher.unit.test.ts`, `uiIntegrationTestLauncher.integ.test.ts`, `uiIntegrationTestLauncher.realServer.integ.test.ts`, `integrationTestProfileCatalog.unit.test.ts` read it.
+`UI_INTEGRATION_RUNNER_SUITE_REGISTRY_LEGACY` (registry `:241-334`) lists 16 suites with hand-written kinds: 7 `runnerTest`, 8 `domainControllerTest`, 1 `actionTest`. The launcher falls back to it (`uiIntegrationTestLauncher.ts:392`); tests in `uiIntegrationRunnerRegistry.unit.test.ts`, `uiIntegrationTestLauncher.unit.test.ts`, `uiIntegrationTestLauncher.integ.test.ts`, `uiIntegrationTestLauncher.realServer.integ.test.ts`, `integrationTestProfileCatalog.unit.test.ts` read it.
 
 ### Tests asserting the name-based kind
 
