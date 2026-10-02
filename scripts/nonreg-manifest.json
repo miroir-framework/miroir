@@ -200,7 +200,7 @@
       "id": "unit-transformerResultSchema",
       "scopes": ["core"],
       "tier": "unit",
-      "title": "#88 — resolveTransformerResultSchema PLATFORM inventory",
+      "title": "#88 — resolveTransformerResultSchema PLATFORM inventory and failures",
       "requires": "none",
       "argv": [
         "npm",
@@ -209,7 +209,8 @@
         "-w",
         "miroir-core",
         "--",
-        "transformerResultSchema"
+        "transformerResultSchema",
+        "Transformer_ResultSchema.failures"
       ],
       "shared": {
         "group": "core-unit-files",
@@ -222,7 +223,8 @@
           "--"
         ],
         "files": [
-          "transformerResultSchema"
+          "transformerResultSchema",
+          "Transformer_ResultSchema.failures"
         ]
       }
     },
