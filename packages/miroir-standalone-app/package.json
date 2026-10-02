@@ -35,7 +35,7 @@
     "@testing-library/dom": "10.4.2",
     "@testing-library/user-event": "14.6.7",
     "@uiw/react-codemirror": "4.25.11",
-    "ag-grid-community": "31.3.4",
+    "ag-grid-community": "36.2.0",
     "ag-grid-react": "31.3.4",
     "cross-fetch": "4.1.0",
     "d3": "7.9.0",
