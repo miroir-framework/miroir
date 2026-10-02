@@ -36,7 +36,7 @@ This plan does **not** cover: editing keyless rows; keyless Miroir-owned Entitie
 | 0 | Characterize refresh replacement, keyless collapse, HTTP display keying | ✅ | cache vitests (redux, zustand), `fn.entityPrimaryKey`, HTTP display characterization |
 | 1 | Tracer: refresh a keyless External SQL table twice (redux) | ✅ | `PkLessExternalEntity.integ.test.ts` |
 | 2 | Model validation of `idAttribute: false` | ✅ | `fn.entityPrimaryKey` cases + deployments' modelValidation |
-| 3 | Zustand cache parity | ⬜ | zustand vitest + phase1 integ on zustand |
+| 3 | Zustand cache parity | ✅ | zustand vitest + phase1 integ on zustand |
 | 4 | Queries keep keyless rows and refuse key-based lookups | ⬜ | `DomainStateQuerySelectors.pkLess.unit.test.ts` + phase1 integ |
 | 5 | CUD on keyless Entities refused before touching the cache | ⬜ | phase1 integ, CUD cases |
 | 6 | Grids: all rows, stable ids, no edit / delete / details | ⬜ | `listDisplayByTransformer.unit.test.ts` + grid component test |
@@ -273,7 +273,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core
 
 ## Slice 3 — Zustand cache parity
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -310,6 +310,11 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,localcache
 **Full nonreg checkpoint** after this slice: `npm run nonreg:filesystem -- --runner shared` and `npm run nonreg:default -- --runner shared`.
 
 ### Realization
+
+- `LocalCache.segments.unit.test.ts`, `describe("LocalCache refresh replacement (#175) — Zustand")`: composite reload leaves exactly `[C]`; keyless rows get `ids` `#0…#2` and `entities` keyed alike, a reload replaces them; `createInstance` on a keyless entity leaves the rows unchanged.
+- `setAllInEntityState` uses `getInstanceCacheKeys`; `idAttributeByIndex` holds `false` for keyless entities; create, update and delete log `keylessEntityInstanceActionError` and return (the zustand slice logs its refusals, like its partial-mutation guard).
+- The phase1 integ is not run on zustand: no application wires the zustand cache (`miroir-standalone-app` only uses redux), so its parity is proven by the unit tests.
+- Full nonreg moved to after slice 5, when the CUD guard is in.
 
 ---
 
