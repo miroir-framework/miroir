@@ -88,6 +88,24 @@ RUN npm run build:release -w miroir-server
 # the final stage (saves several hundred MB).
 RUN npm prune --omit=dev
 
+# Keep only the agent SDK of the backend the image is built for (#409), as
+# features.agentBackend picks it: none (default), cursor or claude. The Claude
+# Agent SDK alone weighs about 250 MB. A server configured with a backend whose
+# SDK was removed fails at start, naming the SDK.
+#   docker build --build-arg AGENT_BACKEND=claude -t miroir-framework/miroir:claude .
+ARG AGENT_BACKEND=none
+RUN case "$AGENT_BACKEND" in none|cursor|claude) ;; \
+      *) echo "AGENT_BACKEND must be none, cursor or claude, not '$AGENT_BACKEND'" >&2; exit 1 ;; \
+    esac \
+ && if [ "$AGENT_BACKEND" != cursor ]; then \
+      rm -rf node_modules/@cursor/sdk node_modules/@cursor/sdk-* \
+             packages/*/node_modules/@cursor/sdk packages/*/node_modules/@cursor/sdk-*; \
+    fi \
+ && if [ "$AGENT_BACKEND" != claude ]; then \
+      rm -rf node_modules/@anthropic-ai/claude-agent-sdk* \
+             packages/*/node_modules/@anthropic-ai/claude-agent-sdk*; \
+    fi
+
 
 # =============================================================================
 # Stage 2: final — slim production image

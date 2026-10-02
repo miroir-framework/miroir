@@ -10,7 +10,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../275-FEATURE-cursor-sdk-copilotkit-backend/`](../275-FEATURE-cursor-sdk-copilotkit-backend/) ✅
 Working branch: `claude/409-claude-agent-sdk-backend`
 
-**Resume note:** Slices 0, 1 and 2 DONE. Slice 3 waits on A's choice about the nested zod 4 install.
+**Resume note:** Slices 0, 1, 2, 4, 5 and 6 DONE (slice 4 done before slice 3; its `claude` probe case moved to slice 3). Slice 3 waits on A's choice about the nested zod 4 install.
 
 ---
 
@@ -34,9 +34,9 @@ This plan does **not** make the token provider SDKs lazy (#410), give the Claude
 | 1 | `agentBackend` config drives the Cursor chat (tracer) | ✅ | `agentBackend.409.phase1` |
 | 2 | Browser asks for "the agent" and names the backend | ✅ | `agentBackend.409.phase2` (standalone-app) |
 | 3 | Claude agent chat through the shared bridge | ⬜ | `agentBackend.409.phase3` (miroir-ai) |
-| 4 | Only the picked SDK is loaded, `miroir-ai` lazy in the server | ⬜ | `agentBackend.409.phase4` (child-process probe) |
-| 5 | Start checks: packaged SDK, Electron, `miroir-env check` alias warning | ⬜ | `agentBackend.409.phase5` |
-| 6 | Docker image keeps only the picked SDK | ⬜ | `scripts/tests/test_dockerfile_agent_backend.py` |
+| 4 | Only the picked SDK is loaded, `miroir-ai` lazy in the server | ✅ | `agentBackend.409.phase4` (child-process probe) |
+| 5 | Start checks: packaged SDK, Electron, `miroir-env check` alias warning | ✅ | `agentBackend.409.phase5` |
+| 6 | Docker image keeps only the picked SDK | ✅ | `scripts/tests/test_dockerfile_agent_backend.py` |
 | 7 | Nonreg, docs, cleanup, AC | ⬜ | nonreg step `unit-409-agent-backend` + full nonreg |
 
 ---
@@ -261,6 +261,8 @@ Through the router with an injected `importSdk` returning the Claude stub (its `
 - `ANTHROPIC_API_KEY` is not added to `process.env`;
 - a missing `aiAnthropicKey` returns the same error shape as a missing `aiCursorKey`.
 
+Also add the `claude` case to `agentBackend.409.phase4.unit.test.ts` (moved from slice 4): an agent request loads only `@anthropic-ai/claude-agent-sdk`.
+
 ### GREEN
 
 - `npm install @anthropic-ai/claude-agent-sdk@0.3.288 -w miroir-ai --save-exact`; check `npm ls zod` (root 3.25.76, nested 4.x under `miroir-ai`) and `check_dependency_policy.py`.
@@ -291,7 +293,7 @@ _(pending)_
 
 ## Slice 4 — Only the picked SDK is loaded; `miroir-ai` lazy in the server
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -329,13 +331,19 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,external
 
 ### Realization
 
-_(pending)_
+- Done before slice 3 while the Claude SDK install waits on the zod decision; the probe's `claude` case moved to slice 3.
+- `miroir-ai` phase 4 probe: `none` refuses the request (403) and loads no agent SDK; `cursor` loads only `@cursor/sdk`.
+- New `miroir-server/src/mountCopilotKitRoute.ts`: mounts the authentication gate and the CopilotKit router only when `ai` is on, with `await import("miroir-ai")`. `server.ts` lost its static import and calls it.
+- Problem met: `ncc` hoisted the external dynamic import into a static `import ... from "miroir-ai"` at the top of `release/index.js`, so the release still loaded `miroir-ai` with `ai` off. Fix: `import(/* webpackIgnore: true */ "miroir-ai")`, plus `"removeComments": false` in `miroir-server/tsconfig.json`, because the root tsconfig strips the comment before webpack sees it. Checked in `release/index.js`; the release starts.
+- `miroir-server` now has a `testByFile` script and `vitest.config.ts`. Its first test, `serverAiImport.409.phase4.unit.test.ts`, runs the mount function from source in a child process (`--experimental-strip-types`) with the `miroir-ai` probe hooks, and source-checks `server.ts` and the `webpackIgnore` setup.
+- Four source-scan tests that read the CopilotKit mount in `server.ts` now read `mountCopilotKitRoute.ts` as well: `miroir-core` 273 phase 0 and #71 phase 6, `miroir-ai` 275 phase 0, `miroir-standalone-app` 275 phase 2.
+- Refactor checkpoint: Electron's `ipcServerSetup.ts` mount also checks for an existing server and the Cursor packaging, so the two mount functions differ; they were not merged.
 
 ---
 
 ## Slice 5 — Start checks: packaged SDK, Electron, alias warning
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -369,13 +377,16 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,external,tooling
 
 ### Realization
 
-_(pending)_
+- `assertCursorSdkPackaged.ts` was renamed with `git mv` to `assertAgentSdkPackaged.ts`. `assertAgentSdkPackaged(agentBackend, options)` resolves only the picked SDK (`AGENT_SDK_PACKAGES`), never throws for `none`, and its message names the SDK, the `features.agentBackend` value and the way out. The resolver falls back to `import.meta.resolve` for ESM-only packages. The old export is deleted because it had no caller left.
+- `ipcServerSetup.ts` calls it when packaged and `agentBackend !== "none"`. `bundle-main.mjs` `EXTERNALS` gained `@anthropic-ai/claude-agent-sdk`.
+- `miroir-env check` reports `agentBackendAliasWarnings`: `features.cursor` is deprecated (with the value to write instead), or ignored when `agentBackend` differs. The test fixture needs the `admin` application, which every environment must install.
+- Updated the #275 phase 7 tests (`miroir-ai`, `miroir-standalone-app`) for the new helper.
 
 ---
 
 ## Slice 6 — Docker image keeps only the picked SDK
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -404,7 +415,11 @@ npm run nonreg:filesystem -- --runner shared   # full run
 
 ### Realization
 
-_(pending)_
+- `Dockerfile`: `ARG AGENT_BACKEND=none`, then one `RUN` after `npm prune --omit=dev`. It rejects values other than `none`, `cursor` or `claude`, and removes `@cursor/sdk*` unless `cursor` and `@anthropic-ai/claude-agent-sdk*` unless `claude`, at the root and under `packages/*/node_modules`. `environments/docker.json` sets `agentBackend: "none"` explicitly.
+- `scripts/tests/test_dockerfile_agent_backend.py` checks the argument and the step order, and runs the removal step with `sh` on a fake `node_modules` tree for each value and for an unknown one.
+- Added (D6's start check, server side): `mountCopilotKitRoute` calls `assertAgentSdkPackaged` when `isAgentBackendAllowed`, so an image built for another backend fails at start, naming the SDK. Proof: `serverAgentSdkCheck.409.phase6.unit.test.ts`, through a new `importMiroirAi` test seam. The release bundle still imports `miroir-ai` dynamically.
+- `docker/miroir-server/Dockerfile` copies only the ncc release, with no `node_modules`, so it ships no agent SDK and needs no change.
+- Not run: a Docker build (no Docker in cloud sessions). The manual check stays in Validation.
 
 ---
 
