@@ -205,7 +205,7 @@ Helpers live in `packages/miroir-core/src/1_core/Entity/EntityPrimaryKey.ts`:
 
 ## Use case 5 — Instances without `parentUuid`
 
-**Status:** implemented for CRUD and covered by tests; tracking issue [#172](https://github.com/miroir-framework/miroir/issues/172) is still open.
+**Status:** implemented for CRUD and covered by tests ([#172](https://github.com/miroir-framework/miroir/issues/172)).
 
 **When:** Integrating payloads or stores that do not stamp every row with Miroir’s Entity uuid.
 

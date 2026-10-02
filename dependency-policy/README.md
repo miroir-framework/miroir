@@ -9,12 +9,13 @@ An override forces one version of a package everywhere in the tree, whatever its
 | Package | Version | Why | Added | Remove when |
 |---|---|---|---|---|
 | `rxjs` | 7.8.2 | One RxJS instance for the app and CopilotKit / AG-UI, which each asked for their own 7.8.1 copy | e3e3c32 ("deduped RxJS"), pinned in #326 | no dependency pins an `rxjs` version other than ours |
-| `yaml` | 2.8.4 | One `yaml` 2.x across the tree: `cosmiconfig` 7 (under `babel-plugin-macros`) asks for `^1.10.0`; also overrides the `2.9.0` pin of `nx` 23 (lerna 10) | 190d5ec (#246), pinned in #326 | no dependency asks for `yaml` 1.x |
+| `yaml` | 2.9.1 | One `yaml` 2.x across the tree: `cosmiconfig` 7 (under `babel-plugin-macros`) asks for `^1.10.0`; also overrides the `2.9.0` pin of `nx` 23 (lerna 10) | 190d5ec (#246), pinned in #326 | no dependency asks for `yaml` 1.x |
 | `lerna` > `js-yaml` | 4.3.2 | `lerna` 10.0.1 pins `js-yaml` 4.3.0: GHSA-2883-xcg3-v3hh, GHSA-5p4m-2wfm-xmqj (high) | #326 Slice 6 | `lerna` pins `js-yaml` ≥ 4.3.2 |
 | `lerna` > `pacote` | 21.5.1 | `lerna` 10.0.1 pins `pacote` 21.0.1: GHSA-w4pp-8pjf-rmxw (high) | #326 Slice 6 | `lerna` pins `pacote` ≥ 21.5.1 |
 | `nx` > `smol-toml` | 1.7.1 | `nx` 23.2.1 (under `lerna`) pins `smol-toml` 1.6.1: GHSA-7w5x-hrqm-74c2 (high) | #326 Slice 6 | `nx` pins `smol-toml` ≥ 1.7.1 |
 | `@connectrpc/connect-node` > `undici` | 6.28.1 | `@connectrpc/connect-node` 1.7.0 (under `miroir-ai` and `@cursor/sdk`) asks for `undici` `^5.28.4`; 5.x has high advisories fixed only in 6.24 and 6.27 (GHSA-vrm6-8vpv-qv8q, GHSA-v9p9-hfj2-hcw8, GHSA-vxpw-j846-p89q) and moderate ones fixed in 6.28. It imports only `Headers`, as a polyfill for Node < 18 | #326 Slice 7 | `@connectrpc/connect-node` asks for `undici` ≥ 6.28 |
 | `lodash-es` | 4.18.1 | `chevrotain` 11.1 (under `mermaid` > `langium`) pins `lodash-es` 4.17.23: GHSA-r5fr-rjxr-66jc (high), GHSA-f23m-r3pf-42rh | #326 Slice 7 | `mermaid` no longer brings a `chevrotain` that pins `lodash-es` ≤ 4.17.23 |
+| `vitest` | 5.0.1 | One hoisted `vitest` for the repo-root tools (nonreg shared runner, `scripts/tests`): `@copilotkit/channels-core` 0.11 (under `@copilotkit/runtime`) declares an optional `vitest` `^4.0.0` peer, which otherwise keeps vitest 5 out of the root `node_modules` | #374 | `@copilotkit/channels-core` accepts `vitest` 5 |
 
 ## Vendored packages
 

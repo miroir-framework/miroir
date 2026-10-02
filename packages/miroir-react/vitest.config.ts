@@ -7,10 +7,5 @@ export default defineConfig({
     environment: "node",
     testTimeout: 120_000,
     hookTimeout: 120_000,
-    poolOptions: {
-      threads: {
-        singleThread: true,
-      },
-    },
   },
 });

@@ -19,10 +19,5 @@ export default defineConfig({
     root: "./tests",
     globals: true,
     watch: false,
-    poolOptions: {
-      threads: {
-        singleThread: true,
-      },
-    },
   },
 });

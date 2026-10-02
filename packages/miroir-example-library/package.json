@@ -33,8 +33,8 @@
     "devBuild": "npm run build",
     "generate-library-model": "tsx ./scripts/generate-library-metamodel.ts",
     "extract-library-model": "tsx ./scripts/extract-library-model.ts",
-    "test": "vitest run --poolOptions.threads.singleThread -t",
-    "testByFile": "vitest run --poolOptions.forks.singleFork --reporter=verbose"
+    "test": "vitest run -t",
+    "testByFile": "vitest run --maxWorkers=1 --reporter=verbose"
   },
   "nx": {
     "implicitDependencies": [
@@ -50,8 +50,8 @@
     "miroir-app-admin": "*",
     "miroir-app-miroir": "*",
     "tsup": "8.5.1",
-    "tsx": "4.20.3",
+    "tsx": "4.23.15",
     "vite": "7.3.6",
-    "vitest": "3.2.7"
+    "vitest": "5.0.1"
   }
 }

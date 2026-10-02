@@ -9,8 +9,9 @@ import importedFs from "node:fs";
 import importedPath from "node:path";
 const { performance } = globalThis;
 
-import { getFn } from "@vitest/runner";
-import { VitestTestRunner } from "vitest/runners";
+import { TestRunner } from "vitest";
+
+const getFn = (test) => TestRunner.getTestFn(test);
 
 // Packages using vite-plugin-node-polyfills resolve `node:fs` to an empty stub inside the test
 // worker; the real modules come from the Node runtime itself.
@@ -27,7 +28,7 @@ function fullName(task) {
   return names.join(" > ");
 }
 
-export default class MiroirTimingRunner extends VitestTestRunner {
+export default class MiroirTimingRunner extends TestRunner {
   constructor(config) {
     super(config);
     this.timingMarks = new Map();
