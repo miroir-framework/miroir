@@ -10,7 +10,8 @@ import {
   MlUnion_RecursivelyUnfold_ReturnTypeOK,
   KeyMapEntry,
   Uuid,
-  type ApplicationDeploymentMap
+  type ApplicationDeploymentMap,
+  type InputOutputType,
 } from "miroir-core";
 import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
 
@@ -20,6 +21,16 @@ export interface UnionInformation {
   objectBranches: MlElement[];
   discriminator: string;
   discriminatorValues: string[];
+}
+
+/**
+ * #383 — input type of the transformer node at `path`: its `transformerType` select offers only
+ * the types accepting `input`.
+ */
+export interface TransformerTypeRestriction {
+  path: (string | number)[];
+  input: InputOutputType;
+  inputLabel: string;
 }
 
 export interface MlEditorPropsRoot {
@@ -62,6 +73,8 @@ export interface MlEditorPropsRoot {
   mlSchemaTypeAnnotations?: { path: (string | number)[]; label: string }[];
   /** Per-path getFromContext / getFromParameters names. */
   environmentAnnotations?: { path: (string | number)[]; label: string }[];
+  /** #383 — per-path input types restricting the `transformerType` select. */
+  transformerTypeRestrictions?: TransformerTypeRestriction[];
   // external field change observation
   onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>; // callbacks indexed by rootLessListKey for selective field observation
 }

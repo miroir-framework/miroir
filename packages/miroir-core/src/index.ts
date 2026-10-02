@@ -1325,9 +1325,13 @@ export {
 export {
   checkTransformerInterfaceCompatibility,
   checkTransformerInterfaceCompatibilityWithInference,
+  checkTransformerInterfaceRecursively,
   findInvalidStockTransformerInputOutputs,
   getTransformerDefinitionInputOutput,
+  inputOutputTypeOfValue,
   inputOutputTypesCompatible,
+  transformerTypesAcceptingInput,
+  type TransformerInterfaceWalkOptions,
 } from "./2_domain/TransformerInterfaceCheck.js";
 export {
   inferElementTransformerOutputType,
@@ -1337,6 +1341,9 @@ export type {
   TransformerInterfaceCompatibility,
   TransformerInterfaceGivenTypes,
   TransformerInterfaceMismatch,
+  TransformerInterfaceNodeReport,
+  TransformerInterfaceTreeCompatibility,
+  TransformerTypesAcceptingInput,
 } from "./0_interfaces/2_domain/TransformerInterfaceCheckInterface.js";
 export {
   checkTransformerMlSchemaCompatibility,

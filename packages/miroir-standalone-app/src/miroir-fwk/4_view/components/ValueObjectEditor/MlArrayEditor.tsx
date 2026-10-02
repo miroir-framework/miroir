@@ -56,7 +56,7 @@ import {
   MlElementEditor,
 } from "./MlElementEditor";
 import { getFoldedDisplayValue } from "./MlElementEditorHooks";
-import { MlArrayEditorProps } from "./MlElementEditorInterface";
+import { TransformerTypeRestriction, MlArrayEditorProps } from "./MlElementEditorInterface";
 import { emptyContainerMarker } from "./renderedValueMarkers";
 import { selfApplicationMiroir } from "miroir-app-miroir";
 // import { MlUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -176,6 +176,7 @@ interface ProgressiveArrayItemProps {
   showMlSchemaTypes?: boolean;
   mlSchemaTypeAnnotations?: { path: (string | number)[]; label: string }[];
   environmentAnnotations?: { path: (string | number)[]; label: string }[];
+  transformerTypeRestrictions?: TransformerTypeRestriction[];
   onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>;
   removeItemAtIndex?: (index: number) => void;
   duplicateItemAtIndex?: (index: number) => void;
@@ -212,6 +213,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   showMlSchemaTypes,
   mlSchemaTypeAnnotations,
   environmentAnnotations,
+  transformerTypeRestrictions,
   onChangeVector,
   removeItemAtIndex,
   duplicateItemAtIndex,
@@ -337,6 +339,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                 showMlSchemaTypes={showMlSchemaTypes}
                 mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
                 environmentAnnotations={environmentAnnotations}
+                transformerTypeRestrictions={transformerTypeRestrictions}
               />
             </ErrorBoundary>
           </>
@@ -379,6 +382,7 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
     showMlSchemaTypes,
     mlSchemaTypeAnnotations,
     environmentAnnotations,
+    transformerTypeRestrictions,
     onChangeVector,
     ...props
   }
@@ -758,6 +762,7 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
                 showMlSchemaTypes={showMlSchemaTypes}
                 mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
                 environmentAnnotations={environmentAnnotations}
+                transformerTypeRestrictions={transformerTypeRestrictions}
                   onChangeVector={onChangeVector}
                   removeItemAtIndex={!readOnly || insideAny ? removeItemAtIndex : undefined}
                   duplicateItemAtIndex={!readOnly ? duplicateItemAtIndex : undefined}
@@ -786,6 +791,7 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
       showMlSchemaTypes,
       mlSchemaTypeAnnotations,
       environmentAnnotations,
+      transformerTypeRestrictions,
     ]
   );
   ;

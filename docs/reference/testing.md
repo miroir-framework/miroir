@@ -273,6 +273,8 @@ PLATFORM files are the vitest tests that have **no MiroirTest equivalent**: CLI/
 
 **`fn.transformer.interfaceCheck`** (issue #249) uses these Entity uuids: Menu `dde4c883-ae6d-47c3-b6df-26bc6e3c1842`, User `ca794e28-b2dc-45b3-8137-00151557eea8`, EntityVersion `54b9c72f-d4f3-4db9-9e0e-0dc840b530bd`.
 
+**`fn.transformer.interfaceWalk`** (issue #383): input type at every position of a transformer tree and the transformer types offered there. Uses Book `e8ba151b-d68e-4cc3-9a83-3459d309ccf5` with a reduced inline schema, User and Menu as above. UI counterparts: `transformerChoiceByInputType.integ` (list transformer panel) and `transformerEditorChoiceByInputType.integ` (TransformerEditor switch).
+
 **Integration suite notes.** Setup facts that used to live in these suites' descriptions:
 
 | Suite | Notes |

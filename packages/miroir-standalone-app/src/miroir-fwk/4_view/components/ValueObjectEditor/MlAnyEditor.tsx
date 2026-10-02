@@ -351,6 +351,7 @@ export const MlAnyEditor: React.FC<MlAnyEditorProps> = (
             showMlSchemaTypes={props.showMlSchemaTypes}
             mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
             environmentAnnotations={props.environmentAnnotations}
+            transformerTypeRestrictions={props.transformerTypeRestrictions}
             onChangeVector={props.onChangeVector}
           />
         )}

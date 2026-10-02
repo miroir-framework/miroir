@@ -5,7 +5,6 @@ import {
   type MlElement,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { isFailedTransformerInterfaceFromDefinition } from "../0_interfaces/2_domain/TransformerResultSchemaInterface";
-import { safeStringify } from "../4_services/otherTools";
 import { resolveTransformerResultSchema } from "./Transformer_ResultSchema";
 
 function isTransformerExpression(
@@ -14,17 +13,24 @@ function isTransformerExpression(
   return typeof transformer === "object" && !Array.isArray(transformer) && "transformerType" in transformer;
 }
 
+/** Full comparison: `safeStringify` truncates long schemas, which would equate distinct entities. */
 function mlSchemasEquivalent(a: MlElement, b: MlElement): boolean {
-  return safeStringify(a) === safeStringify(b);
+  return JSON.stringify(a) === JSON.stringify(b);
 }
 
 /**
  * Map a resolved transformer result schema (#88) to an `inputOutput` type for adequacy checks.
- * When the schema is the list row entity ML schema, prefer the row entity uuid over bare `object`.
+ * When the schema is the list row entity ML schema, or another known entity's, prefer the entity
+ * uuid over bare `object`.
  */
 export function inferTransformerOutputTypeFromSchema(
   resultSchema: MlElement,
-  options?: { rowEntityUuid?: string; rowMlSchema?: MlElement },
+  options?: {
+    rowEntityUuid?: string;
+    rowMlSchema?: MlElement;
+    /** #383: ML schemas of known entities, by uuid; an equal schema gives that entity uuid. */
+    entityMlSchemas?: Record<string, MlElement>;
+  },
 ): InputOutputType {
   const type = resultSchema.type;
   if (type === "any") {
@@ -44,7 +50,10 @@ export function inferTransformerOutputTypeFromSchema(
     ) {
       return options.rowEntityUuid;
     }
-    return "object";
+    const entityUuid = Object.entries(options?.entityMlSchemas ?? {}).find(([, entityMlSchema]) =>
+      mlSchemasEquivalent(resultSchema, entityMlSchema),
+    )?.[0];
+    return entityUuid ?? "object";
   }
   if (type === "array") {
     let elementSchema: MlElement | undefined;

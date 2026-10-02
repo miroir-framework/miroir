@@ -11,6 +11,7 @@ import {
   renderBookListSectionIntegWithCount,
   renderListTransformerPanelInteg,
   setPanelElementTransformerToMissingContextReference,
+  getPanelTransformerTypeOptions,
   setPanelElementTransformerType,
   setPanelInterpolation,
 } from "./helpers/listTransformerIntegRig.js";
@@ -220,7 +221,7 @@ describe("listDisplayByTransformer — integration (app-stack)", () => {
       );
     });
 
-    it("borders the transformer editor orange when the transformer input does not accept rows", async () => {
+    it("does not offer a transformer whose input does not accept rows (#383)", async () => {
       renderBookListSectionInteg();
 
       await act(async () => {
@@ -231,20 +232,11 @@ describe("listDisplayByTransformer — integration (app-stack)", () => {
         expect(screen.getByTestId("list-transformer-panel")).toBeInTheDocument();
       });
 
-      // mustacheStringTemplate declares input "string" — Book entity rows do not fit
-      await setPanelElementTransformerType("mustacheStringTemplate");
-      await expectPanelTransformerType("mustacheStringTemplate");
-
-      await waitFor(
-        () => {
-          expect(
-            screen
-              .getByTestId("list-transformer-editor")
-              .getAttribute("data-transformer-inadequate"),
-          ).toBe("true");
-        },
-        { timeout: 15000 },
-      );
+      // mustacheStringTemplate declares input "string": Book entity rows do not fit, so the
+      // select hides it. Marking an already chosen one is covered by ListTransformerPanel.unit.
+      const options = await getPanelTransformerTypeOptions();
+      expect(options).not.toContain("mustacheStringTemplate");
+      expect(options).toContain("getFromContext");
     });
   });
 

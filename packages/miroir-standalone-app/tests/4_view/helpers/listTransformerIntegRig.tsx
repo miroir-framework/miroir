@@ -144,6 +144,7 @@ export function renderBookListSectionIntegWithCount(count: number): RenderResult
 
 export function renderListTransformerPanelInteg(
   instancesToDisplay = buildBooksIndex(book1, book2),
+  options: { rowEntityUuid?: string } = {},
 ): RenderResult {
   return render(
     <ListTransformerIntegShell>
@@ -154,6 +155,8 @@ export function renderListTransformerPanelInteg(
         deploymentUuid={deployment_Library_DO_NO_USE.uuid}
         sectionLabel="Books"
         rowMlSchema={entityMLSchema(entityBook as any)}
+        rowEntityUuid={options.rowEntityUuid}
+        entities={options.rowEntityUuid ? [entityBook as any] : undefined}
       />
     </ListTransformerIntegShell>,
   );
@@ -248,4 +251,39 @@ export async function setPanelElementTransformerToMissingContextReference() {
     fireEvent.change(referenceInput, { target: { value: "missingRef" } });
     fireEvent.blur(referenceInput);
   });
+}
+
+/** Option labels the transformerType select at `inputName` offers once opened (#383). */
+export async function getPanelTransformerTypeOptions(
+  inputName = "elementTransformer.transformerType",
+): Promise<string[]> {
+  const panel = await getListTransformerPanel();
+  const discriminatorInput = await waitFor(
+    () => {
+      const match = panel.querySelector(`input[name="${inputName}"]`) as HTMLInputElement | null;
+      if (!match) {
+        throw new Error(`${inputName} discriminator input not found yet`);
+      }
+      return match;
+    },
+    { timeout: 5000, interval: 100 },
+  );
+  await act(async () => {
+    fireEvent.focus(discriminatorInput);
+  });
+  const options = await waitFor(
+    () => {
+      const found = Array.from(document.querySelectorAll('[data-dropdown-option="true"]'));
+      if (found.length === 0) {
+        throw new Error("transformerType options not rendered yet");
+      }
+      return found.map((option) => option.textContent?.trim() ?? "");
+    },
+    { timeout: 5000, interval: 100 },
+  );
+  await act(async () => {
+    fireEvent.keyDown(discriminatorInput, { key: "Escape" });
+    fireEvent.blur(discriminatorInput);
+  });
+  return options;
 }

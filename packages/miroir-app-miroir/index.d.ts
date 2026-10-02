@@ -259,6 +259,7 @@ export declare const miroirTest_tr_resolveSchemaReferenceInContext: any;
 export declare const miroirTest_fn_mlsTypeCheck_selectUnionBranchFromDiscriminator: any;
 export declare const miroirTest_fn_tools_pathsAndMerges: any;
 export declare const miroirTest_fn_transformer_interfaceCheck: any;
+export declare const miroirTest_fn_transformer_interfaceWalk: any;
 export declare const miroirTest_fn_transformer_resultSchema: any;
 export declare const miroirTest_tr_unfoldSchemaOnce: any;
 export declare const miroirTest_action_domainController_dataCrud: any;
