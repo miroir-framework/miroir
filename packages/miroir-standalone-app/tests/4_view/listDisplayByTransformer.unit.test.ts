@@ -4,6 +4,7 @@ import {
   TransformerFailure,
   transformer_extended_apply_wrapper,
   type CoreTransformerForBuildPlusRuntime,
+  type EntityInstancesUuidIndex,
 } from "miroir-core";
 import { book1, book2 } from "miroir-example-library";
 import { describe, expect, it } from "vitest";
@@ -296,6 +297,24 @@ describe("listDisplayByTransformer — helper API", () => {
     expect(applyTransformerToListRows(page, DEFAULT_ROW_IDENTITY_TRANSFORMER)).toEqual(
       expect.arrayContaining([rowsByCode.alpha, rowsByCode.beta]),
     );
+  });
+
+  it("sliceInstancesToPage keeps every keyless row under its positional key", () => {
+    const keylessEntity = { idAttribute: false as const };
+    const rows = {
+      "#0": { label: "a", n: 1 },
+      "#1": { label: "a", n: 1 },
+      "#2": { label: "b", n: 2 },
+      "#3": { label: "c", n: 3 },
+      "#4": { label: "d", n: 4 },
+    } as unknown as EntityInstancesUuidIndex;
+
+    const pages = [0, 1, 2].map((pageIndex) =>
+      sliceInstancesToPage(rows, pageIndex, 2, "label", keylessEntity),
+    );
+
+    expect(pages.map((page) => Object.keys(page))).toEqual([["#0", "#1"], ["#2", "#3"], ["#4"]]);
+    expect(pages[0]).toEqual({ "#0": rows["#0"], "#1": rows["#1"] });
   });
 });
 

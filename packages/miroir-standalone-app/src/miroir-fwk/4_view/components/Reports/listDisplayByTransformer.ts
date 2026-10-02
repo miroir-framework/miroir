@@ -3,6 +3,7 @@ import {
   defaultTransformerInput,
   EntityInstance,
   EntityInstancesUuidIndex,
+  entityHasNoPrimaryKey,
   getInstancePrimaryKeyValue,
   isFailedTransformerInterfaceFromDefinition,
   resolveTransformerResultSchema,
@@ -50,16 +51,20 @@ export function sliceInstancesToPage(
   sortByAttribute?: string,
   entityPrimaryKeySource: EntityPrimaryKeySource = {},
 ): EntityInstancesUuidIndex {
-  const sorted = Object.values(instancesToDisplay ?? {})
+  const sorted = Object.entries(instancesToDisplay ?? {})
     .filter(
-      (instance): instance is EntityInstance =>
-        instance != null && typeof instance === "object" && !Array.isArray(instance),
+      (entry): entry is [string, EntityInstance] =>
+        entry[1] != null && typeof entry[1] === "object" && !Array.isArray(entry[1]),
     )
-    .sort((a, b) => compareInstancesByAttribute(a, b, sortByAttribute));
+    .sort(([, a], [, b]) => compareInstancesByAttribute(a, b, sortByAttribute));
 
   const pageRows = paginateRows(sorted, pageIndex, pageSize).pageRows;
+  // keyless rows have no primary key to recompute: they keep the key they were indexed under
+  if (entityHasNoPrimaryKey(entityPrimaryKeySource)) {
+    return Object.fromEntries(pageRows);
+  }
   return Object.fromEntries(
-    pageRows.map((instance) => [
+    pageRows.map(([, instance]) => [
       getInstancePrimaryKeyValue(entityPrimaryKeySource, instance),
       instance,
     ]),

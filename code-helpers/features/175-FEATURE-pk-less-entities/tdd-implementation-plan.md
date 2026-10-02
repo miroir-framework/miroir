@@ -411,7 +411,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions
 
 ## Slice 6 — Grids: all rows, stable ids, no edit / delete / details
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -450,6 +450,14 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui
 **Full nonreg checkpoint** after this slice.
 
 ### Realization
+
+- `sliceInstancesToPage` keeps the incoming keys for keyless Entities; keyed Entities are still re-keyed by PK value, unchanged.
+- `TableComponentRow` carries `instanceKey`, the key the row has in `instancesToDisplay`. AG Grid `getRowId` uses it (keyed rows: PK value instead of `uuid` / `id` / `Math.random()`), and `notifyDisplayedPageRowsChange` reports keyless rows under it.
+- `EntityInstanceGrid` derives `isKeylessEntity` once: no edit / duplicate / delete handlers, no `rowOpenReport`, no clickable `name` / PK columns.
+- The Glide tools cell drew its icons unconditionally: `toolsCellActions` now lists only the handlers it is given, for drawing and for click hit-testing, and `GlideDataGridComponent` passes a handler only when the grid gets one.
+- `ReportSectionListDisplay` hides the "add" button for keyless Entities. `onRowEdit` / `onRowDelete` are still passed down, but the grid never calls them for a keyless Entity, so it stays the single gate.
+- Tests: `listDisplayByTransformer.unit` (5 rows, two identical, pages of 2, 2, 1) and `keylessEntityGrid.integ` (AG Grid row ids `#0…#2`, no Open / Edit / Duplicate / Delete; red with random row ids before the change; Glide `toolsCellActions`).
+- 6.3: `TableActionButtonComponents.tsx` is no longer reached for keyless rows; its `rawValue.uuid` fallback for keyed non-uuid Entities is pre-existing and left as is.
 
 ---
 
