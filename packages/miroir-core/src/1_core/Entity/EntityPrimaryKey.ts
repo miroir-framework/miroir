@@ -52,6 +52,20 @@ export function checkEntityPrimaryKeyDeclaration(
 
 // ##############################################################################################
 /**
+ * Error returned by createEntity when an Entity declares an invalid primary key (`idAttribute: true`, or
+ * `false` outside External SQL and HTTP Entities): the same rule as model validation, at runtime.
+ */
+export function invalidEntityPrimaryKeyDeclarationError(
+  entities: (EntityPrimaryKeySource & EntityExternalDataSourceCarrier & { name?: string })[],
+): Action2Error | undefined {
+  const errors = entities.flatMap((entity) => checkEntityPrimaryKeyDeclaration(entity));
+  return errors.length > 0
+    ? new Action2Error("InvalidAction", `createEntity refused: ${errors.join("; ")}`, ["createEntity"])
+    : undefined;
+}
+
+// ##############################################################################################
+/**
  * Error returned when a key-based operation (create, update, delete instance) targets an entity
  * without primary key: its instances can not be addressed individually, they are read-only (#175).
  */

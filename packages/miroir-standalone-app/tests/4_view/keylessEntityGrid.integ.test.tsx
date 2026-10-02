@@ -4,7 +4,7 @@
  * action is offered.
  */
 import "@testing-library/jest-dom";
-import { render, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import React, { useMemo, useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 
@@ -88,7 +88,7 @@ function KeylessEntityGridHarness() {
 }
 
 describe("keylessEntityGrid", () => {
-  it("ag-grid shows every keyless row, identified by its cache key, without row actions", async () => {
+  it("ag-grid shows every keyless row, identified by its cache key, without row actions or cell editing", async () => {
     render(
       <GridPaginationIntegShell>
         <KeylessEntityGridHarness />
@@ -108,6 +108,16 @@ describe("keylessEntityGrid", () => {
     for (const title of ["Open", "Edit", "Duplicate", "Delete"]) {
       expect(document.querySelector(`[title="${title}"]`)).toBeNull();
     }
+
+    // cells are read-only: a double click opens no editor
+    const labelCell = document.querySelector(
+      '.ag-center-cols-container .ag-row [col-id="label"]',
+    ) as HTMLElement;
+    expect(labelCell).not.toBeNull();
+    await act(async () => {
+      fireEvent.doubleClick(labelCell);
+    });
+    expect(document.querySelector(".ag-cell-inline-editing, .ag-popup-editor")).toBeNull();
   });
 
   it("the Glide tools cell draws only the actions it is given", () => {

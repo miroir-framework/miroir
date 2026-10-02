@@ -826,6 +826,7 @@ export {
 // export { rootLessListKeyMapDEFUNCT } from "./1_core/mls/rootLessListKeyMap";
 export {
   checkEntityPrimaryKeyDeclaration,
+  invalidEntityPrimaryKeyDeclarationError,
   entityHasCompositePrimaryKey,
   entityHasNoPrimaryKey,
   entityHasUuidPrimaryKey,

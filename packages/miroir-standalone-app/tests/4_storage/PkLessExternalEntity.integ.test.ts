@@ -130,6 +130,8 @@ const pkLessRowsEntity: Entity = {
     definition: {
       label: { type: "string", optional: true },
       n: { type: "number", optional: true },
+      // an ordinary "id" column, not a key: its values repeat like the others
+      id: { type: "number", optional: true },
     },
   },
 } as Entity;
@@ -190,7 +192,7 @@ describeSql("PkLessExternalEntity.integ", () => {
     });
     await rawSql.query(`DROP SCHEMA IF EXISTS ${externalSchema} CASCADE`);
     await rawSql.query(`CREATE SCHEMA ${externalSchema}`);
-    await rawSql.query(`CREATE TABLE ${externalSchema}.pk_less_rows (label text, n int)`);
+    await rawSql.query(`CREATE TABLE ${externalSchema}.pk_less_rows (label text, n int, id int)`);
 
     const session = new DomainControllerIntegrationTestSession(
       miroirConfig,
@@ -225,7 +227,7 @@ describeSql("PkLessExternalEntity.integ", () => {
 
   beforeEach(async () => {
     await rawSql.query(`DELETE FROM ${externalSchema}.pk_less_rows`);
-    await rawSql.query(`INSERT INTO ${externalSchema}.pk_less_rows VALUES ('a', 1), ('a', 1), ('b', 2)`);
+    await rawSql.query(`INSERT INTO ${externalSchema}.pk_less_rows (label, n, id) VALUES ('a', 1, 7), ('a', 1, 7), ('b', 2, 8)`);
     const resetResult = await domainController.handleAction(
       resetAndinitializeDeploymentCompositeAction(
         testApplicationUuid,
@@ -275,9 +277,11 @@ describeSql("PkLessExternalEntity.integ", () => {
         { label: "a", n: 1 },
         { label: "b", n: 2 },
       ]);
+      // the source's own "id" column is read as an ordinary attribute
+      expect(Object.values(cachedPkLessRows() ?? {}).map((row: any) => row.id).sort()).toEqual([7, 7, 8]);
 
       await rawSql.query(`DELETE FROM ${externalSchema}.pk_less_rows WHERE label = 'b'`);
-      await rawSql.query(`INSERT INTO ${externalSchema}.pk_less_rows VALUES ('c', 3)`);
+      await rawSql.query(`INSERT INTO ${externalSchema}.pk_less_rows (label, n, id) VALUES ('c', 3, 9)`);
       await refreshLibraryCache();
       expect(rowValues(cachedPkLessRows())).toEqual([
         { label: "a", n: 1 },
@@ -371,6 +375,35 @@ describeSql("PkLessExternalEntity.integ", () => {
       // at least this test's own connection to the database
       expect(sessions.length).toBeGreaterThan(0);
       expect(sessions.some((session) => typeof session.datname === "string")).toBe(true);
+    },
+    globalTimeOut,
+  );
+
+  // ##############################################################################################
+  it(
+    "createEntity refuses idAttribute false on an entity that is not External",
+    async () => {
+      const ownedKeylessEntity = {
+        ...pkLessRowsEntity,
+        uuid: "9b0f0e52-6b0c-4d55-9a8b-4f3f3c1f7e21",
+        name: "owned_keyless",
+        conceptLevel: "Model",
+        externalDataSource: undefined,
+      } as Entity;
+      const result = await domainController.handleAction(
+        {
+          actionType: "createEntity",
+          endpoint: MODEL_ENDPOINT,
+          payload: { application: testApplicationUuid, entities: [ownedKeylessEntity] },
+        },
+        applicationDeploymentMap,
+        libraryModelEnv(),
+      );
+      expect(result instanceof Action2Error, "createEntity should be refused").toBe(true);
+      expect((result as Action2Error).errorMessage).toBe(
+        "createEntity refused: Entity owned_keyless: idAttribute false (no primary key) is only allowed on External SQL and HTTP entities",
+      );
+      expect(libraryModelEnv().currentModel?.entities.some((e) => e.uuid === ownedKeylessEntity.uuid)).toBe(false);
     },
     globalTimeOut,
   );

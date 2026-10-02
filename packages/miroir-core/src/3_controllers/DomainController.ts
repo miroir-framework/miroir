@@ -124,7 +124,11 @@ import {
   miroirModelEntities,
 } from "../1_core/Model";
 import { rejectPartialMutationInstanceAction } from "../1_core/localCache/partialMutationGuard.js";
-import { entityHasNoPrimaryKey, keylessEntityInstanceActionError } from "../1_core/Entity/EntityPrimaryKey.js";
+import {
+  entityHasNoPrimaryKey,
+  invalidEntityPrimaryKeyDeclarationError,
+  keylessEntityInstanceActionError,
+} from "../1_core/Entity/EntityPrimaryKey.js";
 import {
   assertProcessCapability,
   getProcessCapabilities,
@@ -1884,6 +1888,13 @@ export class DomainController implements DomainControllerInterface, DomainContro
         case "createEntity":
         case "renameEntity":
         case "dropEntity": {
+          const invalidDeclaration =
+            modelAction.actionType === "createEntity"
+              ? invalidEntityPrimaryKeyDeclarationError(modelAction.payload.entities)
+              : undefined;
+          if (invalidDeclaration) {
+            return invalidDeclaration;
+          }
           if (modelAction.payload.transactional == false) {
             // the modelAction is not transactional, we update the persistentStore directly
             log.warn("handleModelAction running for non-transactional action!");

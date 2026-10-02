@@ -146,9 +146,13 @@ export class SqlDbStoreSection
     const optionalNonNullableAttributes = this.forceNullOptionalAttributeToUndefined
       ? getOptionalNonNullableAttributes(entity)
       : undefined;
+    const attributes = fromMiroirPresentModelToSequelizeEntityDefinition(entity);
+    // #175: Sequelize refuses a non-primary-key "id" column at define time, so a keyless source's "id"
+    // column is added back only after the phantom "id" primary key is removed.
+    const { id: keylessIdColumn, ...keylessAttributes } = attributes as Record<string, any>;
     const sequelizeModel = this.sequelize.define(
       effectiveTableName,
-      fromMiroirPresentModelToSequelizeEntityDefinition(entity),
+      idAttribute === false ? keylessAttributes : attributes,
       {
         freezeTableName: true,
         schema: effectiveSchema,
@@ -157,6 +161,10 @@ export class SqlDbStoreSection
     if (idAttribute === false) {
       // #175: without this, Sequelize adds a phantom "id" primary key column to the model.
       sequelizeModel.removeAttribute("id");
+      if (keylessIdColumn !== undefined) {
+        sequelizeModel.rawAttributes.id = keylessIdColumn;
+        (sequelizeModel as unknown as { refreshAttributes(): void }).refreshAttributes(); // public in Sequelize 6, missing from its types
+      }
     }
     const result = {
       [entity.uuid]: {
