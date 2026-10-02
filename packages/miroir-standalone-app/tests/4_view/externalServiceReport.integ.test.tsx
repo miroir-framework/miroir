@@ -445,7 +445,7 @@ afterAll(async () => {
   }
 });
 
-describe.skipIf(!shouldRun).sequential(
+describe.skipIf(!shouldRun)(
   "externalServiceReport — report path + extractorTemplateForExternalService",
   () => {
     it("reportPageParamsFromSearchParams forwards unknown keys such as playlistId", () => {

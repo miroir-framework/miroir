@@ -615,6 +615,40 @@
               }
             ],
             "expectedValue": { "type": "number" }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "concatLists unions heterogeneous list element schemas",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "concatLists",
+                "interpolation": "runtime",
+                "lists": [
+                  {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "names"
+                  },
+                  {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "counts"
+                  }
+                ]
+              },
+              {
+                "names": { "type": "array", "definition": { "type": "string" } },
+                "counts": { "type": "array", "definition": { "type": "number" } }
+              }
+            ],
+            "expectedValue": {
+              "type": "array",
+              "definition": { "type": "union", "definition": [{ "type": "string" }, { "type": "number" }] }
+            }
           }
         ]
       },
@@ -850,6 +884,32 @@
               "type": "record",
               "definition": { "type": "string" }
             }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "object_fromEntries returns record of any when applyTo is array",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "object_fromEntries",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "entries"
+                }
+              },
+              {
+                "entries": {
+                  "type": "array",
+                  "definition": { "type": "tuple", "definition": [{ "type": "string" }, { "type": "number" }] }
+                }
+              }
+            ],
+            "expectedValue": { "type": "record", "definition": { "type": "any" } }
           }
         ]
       },
@@ -1003,6 +1063,57 @@
               "type": "union",
               "definition": [{ "type": "string" }, { "type": "number" }]
             }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "case unions then and else branch schemas",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "case",
+                "interpolation": "runtime",
+                "discriminator": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "mlSchema": { "type": "string" },
+                  "value": "a"
+                },
+                "whens": [
+                  {
+                    "value": "a",
+                    "then": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": { "type": "string" },
+                      "value": "x"
+                    }
+                  },
+                  {
+                    "value": "b",
+                    "then": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": { "type": "number" },
+                      "value": 1
+                    }
+                  }
+                ],
+                "else": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "mlSchema": { "type": "boolean" },
+                  "value": false
+                }
+              },
+              {}
+            ],
+            "expectedValue": {
+              "type": "union",
+              "definition": [{ "type": "string" }, { "type": "number" }, { "type": "boolean" }]
+            }
           }
         ]
       },
@@ -1044,6 +1155,23 @@
               {}
             ],
             "expectedValue": { "type": "string" }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "constantAsExtractor falls back to any without valueMlSchema",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "constantAsExtractor",
+                "interpolation": "runtime",
+                "value": { "a": 1 }
+              },
+              {}
+            ],
+            "expectedValue": { "type": "any" }
           }
         ]
       },
@@ -1300,6 +1428,673 @@
               "typePath": ["numericOp", "args", 0],
               "expectedSchema": { "type": "number" },
               "actualSchema": { "type": "string" }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "object_fromEntries fails when applyTo schema is not array",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "object_fromEntries",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "notList"
+                }
+              },
+              { "notList": { "type": "object", "definition": { "id": { "type": "string" } } } }
+            ],
+            "expectedValue": {
+              "status": "error",
+              "failureKind": "schemaShapeMismatch",
+              "error": "resolveTransformerResultSchema: object_fromEntries expected applyTo schema type \"array\" but got \"object\"",
+              "transformerType": "object_fromEntries",
+              "referenceName": "notList",
+              "expectedSchema": { "type": "array", "definition": { "type": "any" } },
+              "actualSchema": { "type": "object", "definition": { "id": { "type": "string" } } },
+              "typePath": ["object_fromEntries", "applyTo"]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "object_fromEntries propagates applyTo context failure",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "object_fromEntries",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "rows"
+                }
+              },
+              {}
+            ],
+            "expectedValue": {
+              "status": "error",
+              "failureKind": "contextMissingReference",
+              "error": "resolveTransformerResultSchema: context missing reference \"rows\"",
+              "transformerType": "getFromContext",
+              "referenceName": "rows",
+              "typePath": ["getFromContext", "referenceName"],
+              "transformerPath": ["object_fromEntries", "applyTo"],
+              "innerError": {
+                "status": "error",
+                "failureKind": "contextMissingReference",
+                "error": "resolveTransformerResultSchema: context missing reference \"rows\"",
+                "transformerType": "getFromContext",
+                "referenceName": "rows",
+                "typePath": ["getFromContext", "referenceName"]
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "getUniqueValues fails when applyTo schema is not array",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "getUniqueValues",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "notList"
+                },
+                "attribute": "id"
+              },
+              { "notList": { "type": "object", "definition": { "id": { "type": "string" } } } }
+            ],
+            "expectedValue": {
+              "status": "error",
+              "failureKind": "schemaShapeMismatch",
+              "error": "resolveTransformerResultSchema: getUniqueValues expected applyTo schema type \"array\" but got \"object\"",
+              "transformerType": "getUniqueValues",
+              "referenceName": "notList",
+              "expectedSchema": { "type": "array", "definition": { "type": "any" } },
+              "actualSchema": { "type": "object", "definition": { "id": { "type": "string" } } },
+              "typePath": ["getUniqueValues", "applyTo"]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "getUniqueValues propagates applyTo context failure",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "getUniqueValues",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "rows"
+                },
+                "attribute": "id"
+              },
+              {}
+            ],
+            "expectedValue": {
+              "status": "error",
+              "failureKind": "contextMissingReference",
+              "error": "resolveTransformerResultSchema: context missing reference \"rows\"",
+              "transformerType": "getFromContext",
+              "referenceName": "rows",
+              "typePath": ["getFromContext", "referenceName"],
+              "transformerPath": ["getUniqueValues", "applyTo"],
+              "innerError": {
+                "status": "error",
+                "failureKind": "contextMissingReference",
+                "error": "resolveTransformerResultSchema: context missing reference \"rows\"",
+                "transformerType": "getFromContext",
+                "referenceName": "rows",
+                "typePath": ["getFromContext", "referenceName"]
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "indexListBy fails when applyTo schema is not array",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "indexListBy",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "notList"
+                },
+                "indexAttribute": "id"
+              },
+              { "notList": { "type": "object", "definition": { "id": { "type": "string" } } } }
+            ],
+            "expectedValue": {
+              "status": "error",
+              "failureKind": "schemaShapeMismatch",
+              "error": "resolveTransformerResultSchema: indexListBy expected applyTo schema type \"array\" but got \"object\"",
+              "transformerType": "indexListBy",
+              "referenceName": "notList",
+              "expectedSchema": { "type": "array", "definition": { "type": "any" } },
+              "actualSchema": { "type": "object", "definition": { "id": { "type": "string" } } },
+              "typePath": ["indexListBy", "applyTo"]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "indexListBy propagates applyTo context failure",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "indexListBy",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "rows"
+                },
+                "indexAttribute": "id"
+              },
+              {}
+            ],
+            "expectedValue": {
+              "status": "error",
+              "failureKind": "contextMissingReference",
+              "error": "resolveTransformerResultSchema: context missing reference \"rows\"",
+              "transformerType": "getFromContext",
+              "referenceName": "rows",
+              "typePath": ["getFromContext", "referenceName"],
+              "transformerPath": ["indexListBy", "applyTo"],
+              "innerError": {
+                "status": "error",
+                "failureKind": "contextMissingReference",
+                "error": "resolveTransformerResultSchema: context missing reference \"rows\"",
+                "transformerType": "getFromContext",
+                "referenceName": "rows",
+                "typePath": ["getFromContext", "referenceName"]
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "listReducerToSpreadObject fails when applyTo schema is not array",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "listReducerToSpreadObject",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "notList"
+                }
+              },
+              { "notList": { "type": "object", "definition": { "id": { "type": "string" } } } }
+            ],
+            "expectedValue": {
+              "status": "error",
+              "failureKind": "schemaShapeMismatch",
+              "error": "resolveTransformerResultSchema: listReducerToSpreadObject expected applyTo schema type \"array\" but got \"object\"",
+              "transformerType": "listReducerToSpreadObject",
+              "referenceName": "notList",
+              "expectedSchema": { "type": "array", "definition": { "type": "any" } },
+              "actualSchema": { "type": "object", "definition": { "id": { "type": "string" } } },
+              "typePath": ["listReducerToSpreadObject", "applyTo"]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "listReducerToSpreadObject propagates applyTo context failure",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "listReducerToSpreadObject",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "rows"
+                }
+              },
+              {}
+            ],
+            "expectedValue": {
+              "status": "error",
+              "failureKind": "contextMissingReference",
+              "error": "resolveTransformerResultSchema: context missing reference \"rows\"",
+              "transformerType": "getFromContext",
+              "referenceName": "rows",
+              "typePath": ["getFromContext", "referenceName"],
+              "transformerPath": ["listReducerToSpreadObject", "applyTo"],
+              "innerError": {
+                "status": "error",
+                "failureKind": "contextMissingReference",
+                "error": "resolveTransformerResultSchema: context missing reference \"rows\"",
+                "transformerType": "getFromContext",
+                "referenceName": "rows",
+                "typePath": ["getFromContext", "referenceName"]
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "aggregate fails when applyTo schema is not array",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "aggregate",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "notList"
+                }
+              },
+              { "notList": { "type": "object", "definition": { "id": { "type": "string" } } } }
+            ],
+            "expectedValue": {
+              "status": "error",
+              "failureKind": "schemaShapeMismatch",
+              "error": "resolveTransformerResultSchema: aggregate expected applyTo schema type \"array\" but got \"object\"",
+              "transformerType": "aggregate",
+              "referenceName": "notList",
+              "expectedSchema": { "type": "array", "definition": { "type": "any" } },
+              "actualSchema": { "type": "object", "definition": { "id": { "type": "string" } } },
+              "typePath": ["aggregate", "applyTo"]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "getObjectEntries fails when applyTo schema is not object",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "getObjectEntries",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "notObject"
+                }
+              },
+              {
+                "notObject": {
+                  "type": "array",
+                  "definition": { "type": "object", "definition": { "id": { "type": "string" } } }
+                }
+              }
+            ],
+            "expectedValue": {
+              "status": "error",
+              "failureKind": "schemaShapeMismatch",
+              "error": "resolveTransformerResultSchema: getObjectEntries expected applyTo schema type \"object\" or \"record\" but got \"array\"",
+              "transformerType": "getObjectEntries",
+              "referenceName": "notObject",
+              "expectedSchema": { "type": "object", "definition": {} },
+              "actualSchema": {
+                "type": "array",
+                "definition": { "type": "object", "definition": { "id": { "type": "string" } } }
+              },
+              "typePath": ["getObjectEntries", "applyTo"]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "mergeIntoObject fails when applyTo schema is not object",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "mergeIntoObject",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "notObject"
+                },
+                "definition": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "mlSchema": { "type": "object", "definition": { "extra": { "type": "string" } } },
+                  "value": { "extra": "e" }
+                }
+              },
+              {
+                "notObject": {
+                  "type": "array",
+                  "definition": { "type": "object", "definition": { "id": { "type": "string" } } }
+                }
+              }
+            ],
+            "expectedValue": {
+              "status": "error",
+              "failureKind": "schemaShapeMismatch",
+              "error": "resolveTransformerResultSchema: mergeIntoObject expected applyTo schema type \"object\" or \"record\" but got \"array\"",
+              "transformerType": "mergeIntoObject",
+              "referenceName": "notObject",
+              "expectedSchema": { "type": "object", "definition": {} },
+              "actualSchema": {
+                "type": "array",
+                "definition": { "type": "object", "definition": { "id": { "type": "string" } } }
+              },
+              "typePath": ["mergeIntoObject", "applyTo"]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "getObjectEntries propagates applyTo context failure",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "getObjectEntries",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "row"
+                }
+              },
+              {}
+            ],
+            "expectedValue": {
+              "status": "error",
+              "failureKind": "contextMissingReference",
+              "error": "resolveTransformerResultSchema: context missing reference \"row\"",
+              "transformerType": "getFromContext",
+              "referenceName": "row",
+              "typePath": ["getFromContext", "referenceName"],
+              "transformerPath": ["getObjectEntries", "applyTo"],
+              "innerError": {
+                "status": "error",
+                "failureKind": "contextMissingReference",
+                "error": "resolveTransformerResultSchema: context missing reference \"row\"",
+                "transformerType": "getFromContext",
+                "referenceName": "row",
+                "typePath": ["getFromContext", "referenceName"]
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "mergeIntoObject propagates definition failure",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "mergeIntoObject",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "row"
+                },
+                "definition": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "overlay"
+                }
+              },
+              { "row": { "type": "object", "definition": { "id": { "type": "string" } } } }
+            ],
+            "expectedValue": {
+              "status": "error",
+              "failureKind": "contextMissingReference",
+              "error": "resolveTransformerResultSchema: context missing reference \"overlay\"",
+              "transformerType": "getFromContext",
+              "referenceName": "overlay",
+              "typePath": ["getFromContext", "referenceName"],
+              "transformerPath": ["mergeIntoObject", "definition"],
+              "innerError": {
+                "status": "error",
+                "failureKind": "contextMissingReference",
+                "error": "resolveTransformerResultSchema: context missing reference \"overlay\"",
+                "transformerType": "getFromContext",
+                "referenceName": "overlay",
+                "typePath": ["getFromContext", "referenceName"]
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "createObjectFromPairs propagates attributeValue context failure",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "createObjectFromPairs",
+                "interpolation": "runtime",
+                "definition": [
+                  {
+                    "attributeKey": "name",
+                    "attributeValue": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "name"
+                    }
+                  }
+                ]
+              },
+              {}
+            ],
+            "expectedValue": {
+              "status": "error",
+              "failureKind": "contextMissingReference",
+              "error": "resolveTransformerResultSchema: context missing reference \"name\"",
+              "transformerType": "getFromContext",
+              "referenceName": "name",
+              "typePath": ["getFromContext", "referenceName"],
+              "transformerPath": ["createObjectFromPairs", "definition.0.attributeValue"],
+              "innerError": {
+                "status": "error",
+                "failureKind": "contextMissingReference",
+                "error": "resolveTransformerResultSchema: context missing reference \"name\"",
+                "transformerType": "getFromContext",
+                "referenceName": "name",
+                "typePath": ["getFromContext", "referenceName"]
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "createObjectFromPairs propagates attributeValue shape failure",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "createObjectFromPairs",
+                "interpolation": "runtime",
+                "definition": [
+                  {
+                    "attributeKey": "first",
+                    "attributeValue": {
+                      "transformerType": "pickFromList",
+                      "interpolation": "runtime",
+                      "applyTo": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "notList"
+                      },
+                      "index": 0
+                    }
+                  }
+                ]
+              },
+              { "notList": { "type": "number" } }
+            ],
+            "expectedValue": {
+              "status": "error",
+              "failureKind": "schemaShapeMismatch",
+              "error": "resolveTransformerResultSchema: pickFromList expected applyTo schema type \"array\" but got \"number\"",
+              "transformerType": "pickFromList",
+              "referenceName": "notList",
+              "expectedSchema": { "type": "array", "definition": { "type": "any" } },
+              "actualSchema": { "type": "number" },
+              "typePath": ["pickFromList", "applyTo"],
+              "transformerPath": ["createObjectFromPairs", "definition.0.attributeValue"],
+              "innerError": {
+                "status": "error",
+                "failureKind": "schemaShapeMismatch",
+                "error": "resolveTransformerResultSchema: pickFromList expected applyTo schema type \"array\" but got \"number\"",
+                "transformerType": "pickFromList",
+                "referenceName": "notList",
+                "expectedSchema": { "type": "array", "definition": { "type": "any" } },
+                "actualSchema": { "type": "number" },
+                "typePath": ["pickFromList", "applyTo"]
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "case propagates when-branch failure",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "case",
+                "interpolation": "runtime",
+                "discriminator": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "mlSchema": { "type": "string" },
+                  "value": "a"
+                },
+                "whens": [
+                  {
+                    "value": "a",
+                    "then": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": { "type": "string" },
+                      "value": "x"
+                    }
+                  },
+                  {
+                    "value": "b",
+                    "then": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "missingThen"
+                    }
+                  }
+                ]
+              },
+              {}
+            ],
+            "expectedValue": {
+              "status": "error",
+              "failureKind": "contextMissingReference",
+              "error": "resolveTransformerResultSchema: context missing reference \"missingThen\"",
+              "transformerType": "getFromContext",
+              "referenceName": "missingThen",
+              "typePath": ["getFromContext", "referenceName"],
+              "transformerPath": ["case", "whens.1.then"],
+              "innerError": {
+                "status": "error",
+                "failureKind": "contextMissingReference",
+                "error": "resolveTransformerResultSchema: context missing reference \"missingThen\"",
+                "transformerType": "getFromContext",
+                "referenceName": "missingThen",
+                "typePath": ["getFromContext", "referenceName"]
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "case propagates else-branch failure",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "case",
+                "interpolation": "runtime",
+                "discriminator": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "mlSchema": { "type": "string" },
+                  "value": "a"
+                },
+                "whens": [
+                  {
+                    "value": "a",
+                    "then": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": { "type": "string" },
+                      "value": "x"
+                    }
+                  }
+                ],
+                "else": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "missingElse"
+                }
+              },
+              {}
+            ],
+            "expectedValue": {
+              "status": "error",
+              "failureKind": "contextMissingReference",
+              "error": "resolveTransformerResultSchema: context missing reference \"missingElse\"",
+              "transformerType": "getFromContext",
+              "referenceName": "missingElse",
+              "typePath": ["getFromContext", "referenceName"],
+              "transformerPath": ["case", "else"],
+              "innerError": {
+                "status": "error",
+                "failureKind": "contextMissingReference",
+                "error": "resolveTransformerResultSchema: context missing reference \"missingElse\"",
+                "transformerType": "getFromContext",
+                "referenceName": "missingElse",
+                "typePath": ["getFromContext", "referenceName"]
+              }
             }
           }
         ]

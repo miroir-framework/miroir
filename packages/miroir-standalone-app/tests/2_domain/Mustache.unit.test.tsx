@@ -12,7 +12,7 @@ import Mustache from "mustache";
 
 
 
-describe.sequential("Mustache.unit", () => {
+describe("Mustache.unit", () => {
   // ###########################################################################################
   // it("simple template", async () => {
 

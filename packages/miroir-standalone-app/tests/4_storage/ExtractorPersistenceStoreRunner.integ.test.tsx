@@ -236,7 +236,7 @@ beforeEach(async () => {
 // ##############################################################################################
 
 // TODO: duplicate test with ExtractorTemplatePersistenceStoreRunner.integ.test.tsx
-describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async () => {
+describe("ExtractorOrQueryPersistenceStoreRunner.integ.test", async () => {
   const runAsSql = true;
 
   // ################################################################################################

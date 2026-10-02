@@ -659,7 +659,7 @@ afterAll(async () => {
   );
 }, globalTimeOut);
 
-const describeSlice4 = isSqlBackend ? describe.sequential : describe.sequential.skip;
+const describeSlice4 = isSqlBackend ? describe : describe.skip;
 
 describeSlice4("232 Slice 4 — SQL modelVersion section persistence", () => {
   it(
@@ -764,7 +764,7 @@ describeSlice4("232 Slice 4 — SQL modelVersion section persistence", () => {
   );
 });
 
-describe.sequential("216 Phase 6 — freezeApplicationVersion persistence", () => {
+describe("216 Phase 6 — freezeApplicationVersion persistence", () => {
   it(
     "first freeze persists SAV + EntityVersions + Cross (Library EV section = modelVersion after #232)",
     async () => {
@@ -1051,7 +1051,7 @@ describe.sequential("216 Phase 6 — freezeApplicationVersion persistence", () =
   );
 });
 
-describe.sequential("227 — QueryVersion freeze persistence", () => {
+describe("227 — QueryVersion freeze persistence", () => {
   it(
     "first freeze persists QueryVersions + CrossQuery (Library modelVersion section)",
     async () => {
@@ -1177,7 +1177,7 @@ describe.sequential("227 — QueryVersion freeze persistence", () => {
   );
 });
 
-describe.sequential("227 — ReportVersion freeze persistence", () => {
+describe("227 — ReportVersion freeze persistence", () => {
   it(
     "first freeze persists ReportVersions + CrossReport (Library modelVersion section)",
     async () => {
@@ -1246,7 +1246,7 @@ describe.sequential("227 — ReportVersion freeze persistence", () => {
   );
 });
 
-describe.sequential("227 — MenuVersion freeze persistence", () => {
+describe("227 — MenuVersion freeze persistence", () => {
   it(
     "first freeze persists MenuVersions + CrossMenu (Library modelVersion section)",
     async () => {
@@ -1315,7 +1315,7 @@ describe.sequential("227 — MenuVersion freeze persistence", () => {
   );
 });
 
-describe.sequential("227 — EndpointVersion freeze persistence", () => {
+describe("227 — EndpointVersion freeze persistence", () => {
   it(
     "first freeze persists EndpointVersions + CrossEndpoint (Library modelVersion section)",
     async () => {
@@ -1388,7 +1388,7 @@ describe.sequential("227 — EndpointVersion freeze persistence", () => {
   );
 });
 
-describe.sequential("227 — RunnerVersion freeze persistence", () => {
+describe("227 — RunnerVersion freeze persistence", () => {
   it(
     "first freeze persists RunnerVersions + CrossRunner (Library modelVersion section)",
     async () => {
@@ -1459,7 +1459,7 @@ describe.sequential("227 — RunnerVersion freeze persistence", () => {
   );
 });
 
-describe.sequential("227 — ThemeVersion freeze persistence", () => {
+describe("227 — ThemeVersion freeze persistence", () => {
   it(
     "first freeze persists empty ThemeVersions + CrossTheme (Library has no themes)",
     async () => {
@@ -1499,7 +1499,7 @@ describe.sequential("227 — ThemeVersion freeze persistence", () => {
   );
 });
 
-describe.sequential("227 — TransformerDefinitionVersion freeze persistence", () => {
+describe("227 — TransformerDefinitionVersion freeze persistence", () => {
   it(
     "first freeze persists empty TransformerDefinitionVersions + Cross (Library has no transformers)",
     async () => {
@@ -1536,7 +1536,7 @@ describe.sequential("227 — TransformerDefinitionVersion freeze persistence", (
   );
 });
 
-describe.sequential("216 Phase 8 — end-to-end freeze tracer bullet", () => {
+describe("216 Phase 8 — end-to-end freeze tracer bullet", () => {
   it(
     "V1 freeze → mutate Entity attribute → V2 freeze with previousVersion + alterEntityAttribute",
     async () => {
@@ -1649,7 +1649,7 @@ describe.sequential("216 Phase 8 — end-to-end freeze tracer bullet", () => {
   );
 });
 
-describe.sequential("232 Slice 3 — modelVersion section persistence", () => {
+describe("232 Slice 3 — modelVersion section persistence", () => {
   it(
     "3.1 — freeze persists SAV and EntityVersions to modelVersion, not model",
     async () => {

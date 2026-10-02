@@ -1480,6 +1480,7 @@ export {
   openApiParameterNamesForOperation,
   previewOpenApiGetCall,
   ensureYamlParser,
+  isYamlParserLoaded,
   parseOpenApiDocument,
 } from "./2_domain/syncExternalServiceSchema.js";
 export { redactCredentialSecretsFromValue } from "./4_services/redactCredentialSecrets.js";

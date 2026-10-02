@@ -545,7 +545,7 @@ afterAll(async () => {
   }
 });
 
-describe.skipIf(!shouldRun).sequential("apiCallReport #281 phase2 — binding / schema lookup hard fail", () => {
+describe.skipIf(!shouldRun)("apiCallReport #281 phase2 — binding / schema lookup hard fail", () => {
   it("operationId mismatch names both section and extractor ids, without typed playlist UI", async () => {
     const clone = cloneSpotifyPlaylistReport();
     apiCallSectionOf(clone).definition.operationId = "not-get-playlist";

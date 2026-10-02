@@ -84,7 +84,7 @@ function openApiDocumentText(): string {
   });
 }
 
-describe.skipIf(!shouldRunPhase1).sequential("connectExternalService.284.phase1 — public Finish", () => {
+describe.skipIf(!shouldRunPhase1)("connectExternalService.284.phase1 — public Finish", () => {
   let harness: ConnectExternalService284Harness;
   let openApiDocument: string;
   let entityCountBefore: number;

@@ -384,7 +384,7 @@ describe("CLI Commands Integration Tests", () => {
     }
   });
 
-  describe.sequential(
+  describe(
     "CLI Command Handlers - All Tests",
     () => {
       it.each(ALL_CLI_TEST_CASES.map(test => [test.testName, test]))(

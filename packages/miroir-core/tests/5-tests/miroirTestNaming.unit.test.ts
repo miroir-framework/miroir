@@ -5,7 +5,6 @@
 import { describe, expect, it } from "vitest";
 
 import type { MiroirTestSuite } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { inferUiIntegrationRunnerSuiteKind } from "../../src/5_tests/applicationMiroirTestCatalog";
 import { walkMiroirTestLeaves } from "../../src/5_tests/inferIntegrationSessionKind";
 import {
   loadApplicationMiroirTestCatalog,
@@ -66,23 +65,4 @@ describe("MiroirTest naming", () => {
     expect(wrong).toEqual([]);
   });
 
-  it("UI launch kinds follow the name: action.domainController.*, action.scenario.*, runner.*, report.*", () => {
-    const wrong = catalog
-      .map((entry) => ({
-        name: entry.suiteKey,
-        kind: inferUiIntegrationRunnerSuiteKind(entry.suiteDefinition, entry.suiteKey),
-      }))
-      .filter(({ name, kind }) =>
-        name.startsWith("action.domainController.")
-          ? kind !== "domainControllerTest"
-          : name.startsWith("action.scenario.")
-            ? kind !== "actionTest"
-            : name.startsWith("runner.")
-              ? kind !== "runnerTest"
-              : name.startsWith("report.")
-                ? kind !== "reportTest"
-                : false,
-      );
-    expect(wrong).toEqual([]);
-  });
 });

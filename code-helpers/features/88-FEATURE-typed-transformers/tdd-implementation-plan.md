@@ -14,7 +14,7 @@ Issue: https://github.com/miroir-framework/miroir/issues/88
 Design reference: [`docs/proposals/dependent-types-for-transformer-composition.md`](../../../docs/proposals/dependent-types-for-transformer-composition.md) (Proposal B — schema derivation, incremental)  
 Working branch: *(current feature branch)*
 
-**Resume note:** Slices 1–12 ✅ (2026-08-24). Issue #88 implementation complete; optional asset tightening remains backlog.
+**Resume note:** Slices 1–13 ✅ (Slice 13 on 2026-10-02). Issue #88 implementation complete; asset tightening is backlog, outside #88's ACs.
 
 ---
 
@@ -54,6 +54,7 @@ Out of scope (this plan / separate issues):
 | 10 | Remaining core transformers (17) | ✅ | MiroirTest sub-suites + vitest failures |
 | 11 | Export, docs, nonreg, AC | ✅ | export + `transformer-result-schema.md` + nonreg |
 | 12 | Structured failures (`FailedTransformerInterfaceFromDefinition`) | ✅ | vitest + MiroirTest `failures` sub-suite |
+| 13 | Slice 10 test quota (from `review.md`) | ✅ | MiroirTest `failures` + success sub-suites, nonreg step loads the failures file |
 
 ---
 
@@ -711,3 +712,21 @@ Return structured failures instead of throws from `resolveTransformerResultSchem
 - Operand validation for `boolExpr`, `ifThenElse`, `numericOp`, `pickFromList`, `mapList`, `stringOp`, nested `dataflowObject` / `createObject` propagation.
 - `packages/miroir-core/tests/2_domain/Transformer_ResultSchema.failures.unit.test.ts` — 27 tests initially; extended to 41 in Slice 10.
 - MiroirTest `failures` sub-suite — 6 cases. All green (2026-08-24).
+
+---
+
+## Slice 13 — Slice 10 test quota
+
+**Status:** ✅ DONE (2026-10-02)
+
+### Goal
+
+Meet the Slice 10 rule (≥1 success and ≥2 failure tests per compositional transformer) for the gaps listed in [`review.md`](./review.md), as MiroirTest `functionCallTest` cases.
+
+### Realization
+
+- Success cases: `object_fromEntries` (record of any), `concatLists` with heterogeneous lists (union of element schemas), `case` with `else` (union of three), `constantAsExtractor` without `valueMlSchema` (`any`).
+- Failure cases (`failures` sub-suite, 17): applyTo shape mismatch and propagated applyTo failure for `object_fromEntries`, `getUniqueValues`, `indexListBy`, `listReducerToSpreadObject`, `getObjectEntries`; applyTo shape mismatch for `aggregate` and `mergeIntoObject`; propagated `definition` failure for `mergeIntoObject`; propagated `attributeValue` failures (context and shape) for `createObjectFromPairs`; propagated `whens` and `else` failures for `case`. Propagated failures assert `transformerPath` and `innerError`.
+- Suite `fn.transformer.resultSchema`: 39 → 60 cases, all green.
+- Nonreg step `unit-transformerResultSchema` now also loads `Transformer_ResultSchema.failures.unit.test.ts` (46 tests with the inventory file); before, no nonreg step ran it.
+- Not covered: `mustacheStringTemplate` has no failure path (context-key validation is not implemented); the inventory test still lists handled transformers by hand.

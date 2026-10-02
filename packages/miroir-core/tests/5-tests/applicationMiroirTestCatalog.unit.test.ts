@@ -113,7 +113,7 @@ describe("applicationMiroirTestCatalog", () => {
     );
   });
 
-  it("infers runner vs domain-controller vs action kinds", () => {
+  it("infers runner and action kinds from leaves", () => {
     const runnerSuite = runnerSuiteInstance("runner.returnDocument").definition as MiroirTestSuite;
     const dcSuite = actionSuiteInstance("action.domainController.dataCrud").definition as MiroirTestSuite;
     const actionSuite = actionSuiteInstance("action.scenario.evolutionTrace").definition as MiroirTestSuite;
@@ -122,9 +122,21 @@ describe("applicationMiroirTestCatalog", () => {
       "runnerTest",
     );
     expect(inferUiIntegrationRunnerSuiteKind(dcSuite, "action.domainController.dataCrud")).toBe(
-      "domainControllerTest",
+      "actionTest",
     );
     expect(inferUiIntegrationRunnerSuiteKind(actionSuite, "action.scenario.evolutionTrace")).toBe("actionTest");
+  });
+
+  it("gives a definition the same kind whatever its name (#317)", () => {
+    const names = [undefined, "action.domainController.x", "action.scenario.x", "runner.x", "anything"];
+    for (const [suite, expected] of [
+      [runnerSuiteInstance("runner.returnDocument").definition, "runnerTest"],
+      [actionSuiteInstance("action.domainController.dataCrud").definition, "actionTest"],
+    ] as const) {
+      for (const name of names) {
+        expect(inferUiIntegrationRunnerSuiteKind(suite as MiroirTestSuite, name), name).toBe(expected);
+      }
+    }
   });
 
   it("infers the reportTest kind from reportTest leaves, whatever the suite name (#330)", () => {

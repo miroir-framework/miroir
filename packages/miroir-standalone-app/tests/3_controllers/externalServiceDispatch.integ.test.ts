@@ -351,7 +351,7 @@ afterAll(async () => {
   }
 });
 
-describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 1 extractor restriction (D6)", () => {
+describe.skipIf(!shouldRun)("externalServiceDispatch — Cycle 1 extractor restriction (D6)", () => {
   it("extractorForExternalService targeting Library lendDocument (actions-branch) is a hard Action2Error", async () => {
     const result = await domainController.handleBoxedExtractorOrQueryAction(
       boxedFromActionQuery(LENDING_ENDPOINT_UUID, "lendDocument", {
@@ -410,7 +410,7 @@ async function expectNamedExtractorForExternalServiceFailure(
   }
 }
 
-describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 2 closed switches name extractorForExternalService", () => {
+describe.skipIf(!shouldRun)("externalServiceDispatch — Cycle 2 closed switches name extractorForExternalService", () => {
   it("QuerySelectors.runQuery names extractorForExternalService", async () => {
     await expectNamedExtractorForExternalServiceFailure(() =>
       runQuery(
@@ -520,7 +520,7 @@ describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 2 clos
   });
 });
 
-describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 3 composite invocation (Goal 5)", () => {
+describe.skipIf(!shouldRun)("externalServiceDispatch — Cycle 3 composite invocation (Goal 5)", () => {
   it("compositeActionSequence get-playlist returns the fixture playlist", async () => {
     const result = await serverDomainController.handleAction(
       {
@@ -600,7 +600,7 @@ describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 3 comp
   });
 });
 
-describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 4 client-side hard errors (D5)", () => {
+describe.skipIf(!shouldRun)("externalServiceDispatch — Cycle 4 client-side hard errors (D5)", () => {
   it("sync QuerySelectors.runQuery on extractorForExternalService names the extractor", async () => {
     const result = runQuery(
       {},

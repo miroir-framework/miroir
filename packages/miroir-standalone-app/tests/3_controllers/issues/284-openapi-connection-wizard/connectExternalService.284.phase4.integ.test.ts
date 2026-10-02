@@ -106,7 +106,7 @@ function connectSequence(payload: Record<string, unknown>) {
   };
 }
 
-describe.skipIf(!shouldRunPhase4).sequential(
+describe.skipIf(!shouldRunPhase4)(
   "connectExternalService.284.phase4 — authenticated probes",
   () => {
     let harness: ConnectExternalService284Harness;

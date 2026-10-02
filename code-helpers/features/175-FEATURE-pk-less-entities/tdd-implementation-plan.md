@@ -585,7 +585,7 @@ Automated equivalent: `PkLessExternalEntity.integ.test.ts` (two refreshes over `
 
 ### Realization
 
-- Nonreg step `integ-175-pk-less-external` (scopes `actions`, `localcache`, `requires: postgres`, shared group `standalone-app-profile`). The test file already sat at its final path since slice 1.
+- Nonreg step `integ-175-pk-less-external` (scopes `actions`, `localcache`, `requires: storage`, shared group `standalone-app-profile`). The test file already sat at its final path since slice 1.
 - Docs: use case 6 of `defining-entities.md` rewritten as the how-to, use-case map and "Good to know" updated; `reference/api/entity.md` lists `false`. `analysis.md` status set to implemented.
 - Full nonreg on both profiles after slices 6-8: every failure is either #379 (`describe.sequential` / `describe.skipIf(...).sequential` under vitest 5) or the tracked-assets guard catching asset files edited during the run, plus `multistep.274.phase0` (report count, fixed in slice 8).
 

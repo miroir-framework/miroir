@@ -37,6 +37,7 @@ import {
   ThemedSpan,
   ThemedStyledButton,
 } from "../Themes/index.js";
+import { useYamlParserStatus } from "./useYamlParserStatus.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(
   packageName,
@@ -498,6 +499,7 @@ function ProbeOutcome(props: { bag: Record<string, any> }) {
 }
 
 function ProbeCallParameterCheck(props: { bag: Record<string, any> }) {
+  const yamlParserStatus = useYamlParserStatus(); // #370: re-renders once the parser has loaded
   const operationId = props.bag?.operations?.probeOperationId;
   if (typeof operationId !== "string" || operationId.length === 0) {
     return null;
@@ -518,6 +520,8 @@ function ProbeCallParameterCheck(props: { bag: Record<string, any> }) {
         <p>
           Request: {preview.method} {preview.url}
         </p>
+      ) : yamlParserStatus === "failed" ? (
+        <p>Request preview unavailable: the YAML parser did not load.</p>
       ) : baseUrl ? (
         <p>Base URL: {String(baseUrl)}</p>
       ) : null}
