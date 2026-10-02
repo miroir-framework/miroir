@@ -12,20 +12,30 @@ Key sources: [`packages/...`](../../../packages/...)
 
 ---
 
-## Decision record
+## 1. Goals
 
-<Include only when design choices exist. Choices are confirmed with the user before finalizing.>
+- **G1 — <name>.** In order to <benefit> as a <role>, I can <capability>.
+- **G2 — <name>.** In order to <benefit> as a <role>, I can <capability>.
 
-| Decision | Choice |
-|---|---|
-| <question 1> | **<chosen option>** — <one-line justification> |
-| <question 2> | **<chosen option>** — <one-line justification> |
+## 2. Non-goals
+
+- <excluded work> (owned by #<NNN>).
+- <excluded work> (later, unscheduled).
+
+## 3. Decision record
+
+<Include only when design choices exist. Written after the goals are confirmed; choices are confirmed with the user before finalizing.>
+
+| Decision | Choice | Serves |
+|---|---|---|
+| <question 1> | **<chosen option>** — <one-line justification> | G1 |
+| <question 2> | **<chosen option>** — <one-line justification> | G1, G2 |
 
 **Rationale:** <shared drivers across decisions.>
 
 ### D1 — <decision question 1>
 
-**Status:** Accepted — <chosen option>.
+**Status:** Accepted — <chosen option>. **Serves:** G<n>.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
@@ -36,21 +46,11 @@ Key sources: [`packages/...`](../../../packages/...)
 
 ---
 
-## 1. Goals
-
-1. **<name>** — In order to <benefit> as a <role>, I can <capability>.
-2. **<name>** — In order to <benefit> as a <role>, I can <capability>.
-
-## 2. Non-goals
-
-- <excluded work> (owned by #<NNN>).
-- <excluded work> (later, unscheduled).
-
-## 3. Current state
+## 4. Current state
 
 <Factual baseline. Cite real paths / functions / UUIDs. Split into aligned vs misaligned when the issue fixes a drift between two parts of the system.>
 
-### 3.1 <Sub-area> (<aligned|misaligned>)
+### 4.1 <Sub-area> (<aligned|misaligned>)
 
 ```typescript
 // <real code illustrating the current behavior; mark removed/historical code explicitly>
@@ -59,7 +59,7 @@ Key sources: [`packages/...`](../../../packages/...)
 - <fact 1 with file reference>
 - <fact 2 with file reference>
 
-## 4. Key reuse
+## 5. Key reuse
 
 <Include when existing pieces are consumed rather than rebuilt.>
 
@@ -68,7 +68,7 @@ Key sources: [`packages/...`](../../../packages/...)
 | <name> | `packages/...` |
 | <model element> | uuid `<uuid>` |
 
-## 5. Proposals / options
+## 6. Proposals / options
 
 <Include when several implementation routes exist. Evaluate impact and effort.>
 

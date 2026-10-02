@@ -107,10 +107,10 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,<scope>[,<scope>]
 Use [plan-template.md](plan-template.md). Required sections, in order:
 
 1. **Header** — `# Issue #NNN — TDD Implementation Plan`, blockquote stating the testing posture (integration-first, no mocks, which interface the tests exercise).
-2. **Scope** — what's in / out; non-goals name their owning issues (carry from analysis).
+2. **Scope** — the analysis goals (G1, G2…) as what's in, then what's out; non-goals name their owning issues (carry from analysis).
 3. **Related links** — issue URL, `analysis.md`, prerequisite plans, working branch.
 4. **Progress summary** — `| Slice | Title | Status | Primary proof |` table, updated as slices land.
-5. **Locked implementation defaults** — the analysis's decision record copied as the plan's binding defaults; deviations discovered during implementation are recorded in the slice's *Realization* (see #229).
+5. **Locked implementation defaults** — the analysis's decision record copied as the plan's binding defaults, with the goals each decision serves; deviations discovered during implementation are recorded in the slice's *Realization* (see #229).
 6. **Allocated UUIDs / keys** — every new model element's uuid and every MiroirTest suite key (`<kind>.<subject>[.<variant>]`, see `docs/reference/testing.md` "Names and descriptions"), allocated up front.
 7. **Test execution conventions** — command table (`testMiroir`, `testByFile`, `modelValidation`, schema rebuild, `tsc` per touched package).
 8. **Slice 0** — characterization (when touching existing behavior).
@@ -133,7 +133,7 @@ Use [plan-template.md](plan-template.md). Required sections, in order:
 
 ## Checklist
 
-- [ ] Analysis read; decisions carried into "Locked implementation defaults" unchanged or explicitly re-flagged
+- [ ] Analysis read; its goals carried into Scope, its decisions carried into "Locked implementation defaults" (with the goals they serve) unchanged or explicitly re-flagged
 - [ ] Every slice delivers one observable behavior and cuts all touched layers (no shallow module slices); helper cycles grouped into one slice when coverage is helper-only
 - [ ] Slice 0 characterizes current behavior when modifying existing code
 - [ ] Every behavior assigned MiroirTest type or justified vitest exception
