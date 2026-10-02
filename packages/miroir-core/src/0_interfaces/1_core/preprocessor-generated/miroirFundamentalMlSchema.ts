@@ -16207,10 +16207,23 @@ export const miroirFundamentalMlSchema = {
                 "context": {}
               },
               "whenTrue": {
-                "type": "string"
+                "type": "string",
+                "optional": true
               },
               "whenFalse": {
-                "type": "string"
+                "type": "string",
+                "optional": true
+              },
+              "cases": {
+                "type": "record",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "default": {
+                "type": "string",
+                "optional": true
               }
             }
           },
