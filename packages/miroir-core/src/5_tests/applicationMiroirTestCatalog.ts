@@ -13,7 +13,6 @@ import {
 /** `reportTest`: the suite mounts Reports (#330), so the app gives it a sandbox to mount them in. */
 export type UiIntegrationRunnerSuiteKind =
   | "runnerTest"
-  | "domainControllerTest"
   | "actionTest"
   | "reportTest";
 
@@ -52,6 +51,10 @@ export function isMiroirTestSuiteInstance(value: unknown): value is MiroirTestDe
   return definition?.miroirTestType === "miroirTestSuite";
 }
 
+/**
+ * The kind comes from the suite's leaves only (#317): `suiteKey` does not affect it, so renaming a
+ * suite never changes how the UI launcher runs it.
+ */
 export function inferUiIntegrationRunnerSuiteKind(
   suite: MiroirTestSuite,
   suiteKey?: string,
@@ -63,10 +66,6 @@ export function inferUiIntegrationRunnerSuiteKind(
   if (sessionKind === "action") {
     if (miroirTestSuiteMountsReport(suite)) {
       return "reportTest";
-    }
-    // #316 stopgap: recognised by name until #317 derives it from the definition.
-    if (suiteKey?.startsWith("action.domainController.")) {
-      return "domainControllerTest";
     }
     return "actionTest";
   }
