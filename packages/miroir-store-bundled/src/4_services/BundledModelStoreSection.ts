@@ -69,7 +69,8 @@ export class BundledModelStoreSection
     // #217 Phase 11 — Entity present-model first; ED idAttribute as legacy fill-in only.
     for (const entity of entities) {
       const idAttr = entity.idAttribute ?? "uuid";
-      if (idAttr !== "uuid") {
+      // idAttribute false (#175) is for External SQL / HTTP entities only, never stored here.
+      if (typeof idAttr !== "boolean" && idAttr !== "uuid") {
         this.entityIdAttributes[entity.uuid] = idAttr;
       }
     }

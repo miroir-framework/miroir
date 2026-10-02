@@ -1,0 +1,93 @@
+{
+  "uuid": "7214c5a3-e5f4-4420-835f-fc2f9dc6a1d2",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
+  "name": "pg_stat_activity",
+  "conceptLevel": "External",
+  "description": "The current sessions of the PostgreSQL server, one row per server process. The view has no primary key and its rows change on every refresh, so the Entity has none either: its instances are read-only.",
+  "icon": "monitoring",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "idAttribute": false,
+  "externalDataSource": {
+    "schema": "pg_catalog"
+  },
+  "mlSchema": {
+    "type": "object",
+    "definition": {
+      "datname": {
+        "type": "string",
+        "optional": true,
+        "nullable": true,
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Database",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "usename": {
+        "type": "string",
+        "optional": true,
+        "nullable": true,
+        "tag": {
+          "value": {
+            "id": 2,
+            "defaultLabel": "User",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "application_name": {
+        "type": "string",
+        "optional": true,
+        "nullable": true,
+        "tag": {
+          "value": {
+            "id": 3,
+            "defaultLabel": "Application",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "state": {
+        "type": "string",
+        "optional": true,
+        "nullable": true,
+        "tag": {
+          "value": {
+            "id": 4,
+            "defaultLabel": "State",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "query": {
+        "type": "string",
+        "optional": true,
+        "nullable": true,
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Query",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      }
+    }
+  }
+}

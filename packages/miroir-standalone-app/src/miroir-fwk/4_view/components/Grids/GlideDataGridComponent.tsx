@@ -595,9 +595,9 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         const toolsCellData = {
           kind: "tools-cell",
           row: rowData,
-          onEdit: handleToolsEdit,
-          onDuplicate: handleToolsDuplicate,
-          onDelete: handleToolsDelete,
+          onEdit: onRowEdit ? handleToolsEdit : undefined,
+          onDuplicate: onRowDuplicate ? handleToolsDuplicate : undefined,
+          onDelete: onRowDelete ? handleToolsDelete : undefined,
           onOpen: onRowOpenReport ? handleToolsOpen : undefined,
         } as ToolsCellData;
 
@@ -689,6 +689,9 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
       handleToolsDuplicate,
       handleToolsDelete,
       handleToolsOpen,
+      onRowEdit,
+      onRowDuplicate,
+      onRowDelete,
       onRowOpenReport,
       toolsColumnDefinition,
     ],

@@ -40,7 +40,7 @@ interface Entity {
   viewAttributes?: string[];       // Columns shown in instance lists
   icon?: MiroirIcon;               // Optional UI icon
   cache?: { cacheAllInstancesOnRefresh?: boolean };
-  idAttribute?: string | string[]; // Primary key attribute(s) — defaults to "uuid"
+  idAttribute?: string | string[] | false; // Primary key attribute(s) — defaults to "uuid"; false: no primary key
   externalDataSource?: {           // Only for conceptLevel "External"
     kind?: "sql" | "http"; endpoint?: string; schema?: string; tableName?: string;
   };
@@ -61,7 +61,7 @@ interface Entity {
 | `description` | string | No | Optional documentation |
 | `conceptLevel` | `"MetaModel"` \| `"Model"` \| `"Data"` \| `"External"` | No | Level in meta-model hierarchy. `External` marks Entities whose instances live outside Miroir-managed storage (requires `externalDataSource`) |
 | `selfApplication` | string (UUID) | No | The SelfApplication this Entity belongs to |
-| `idAttribute` | string \| string[] | No | Primary key attribute(s). **Absent ⇒ `"uuid"`.** A string for a single non-UUID PK (e.g. `"code"`), a string array for a composite PK (e.g. `["region", "code"]`). See [Defining Entities](../../guides/developer/defining-entities.md) |
+| `idAttribute` | string \| string[] \| false | No | Primary key attribute(s). **Absent ⇒ `"uuid"`.** A string for a single non-UUID PK (e.g. `"code"`), a string array for a composite PK (e.g. `["region", "code"]`), `false` for an External SQL or HTTP Entity without primary key (read-only instances; `true` is rejected). See [Defining Entities](../../guides/developer/defining-entities.md) |
 | `externalDataSource` | object | No | Where External instances live: `kind` (`sql`, default, or `http`), `schema`, `tableName`, `endpoint` (for `http`) |
 | `viewAttributes` | string[] | No | Attributes shown when listing instances |
 | `defaultInstanceDetailsReportUuid` | string (UUID) | No | Default Report used to display an instance |

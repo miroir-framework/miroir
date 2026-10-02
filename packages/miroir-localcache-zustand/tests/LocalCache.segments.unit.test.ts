@@ -390,56 +390,76 @@ describe("LocalCache segments (#214 Phase 2) — Zustand", () => {
   });
 });
 
-describe("LocalCache merge loads (#381) — Zustand", () => {
-  const rows = ["a", "b", "c"].map(
-    (name, i) =>
-      ({
-        uuid: `44444444-4444-4444-4444-44444444444${i}`,
-        parentUuid: testEntityUuid,
-        name,
-      }) as EntityInstance
-  );
-  const merge = (row: EntityInstance): EntityInstanceCollection => ({
-    parentUuid: testEntityUuid,
-    applicationSection: "data",
-    cacheSegment: "full",
-    cacheLoadMode: "merge",
-    instances: [row],
-  });
-  const replace: EntityInstanceCollection = {
-    parentUuid: testEntityUuid,
-    applicationSection: "data",
-    instances: rows,
-  };
+// ################################################################################################
+// #175: a refresh replaces the cached rows of an Entity; rows of an Entity without primary key
+// are all kept, under positional keys.
+describe("LocalCache refresh replacement (#175) — Zustand", () => {
+  const entityEntityUuid = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
 
-  it("one row merged into an empty cache makes a stale full segment", () => {
+  function loadEntityPresentModel(localCache: LocalCache, entityUuid: string, idAttribute: unknown) {
+    loadCollection(localCache, {
+      parentUuid: entityEntityUuid,
+      applicationSection: "model",
+      instances: [{ uuid: entityUuid, parentUuid: entityEntityUuid, name: "TestEntity175", idAttribute } as any],
+    });
+  }
+
+  function cachedRows(localCache: LocalCache, entityUuid: string) {
+    return localCacheStateToDomainState(localCache.getState().presentModelSnapshot)[testDeploymentUuid]?.data?.[
+      entityUuid
+    ];
+  }
+
+  it("keyed (composite): loading [A, B] then [C] leaves exactly [C]", () => {
     const localCache = new LocalCache();
-    loadCollection(localCache, merge(rows[1]));
-
-    const snap = localCache.getState().presentModelSnapshot;
-    expect(snap.current[fullIndex]?.segment).toEqual({ kind: "full", freshness: "stale" });
-    expect(Object.keys(snap.current[fullIndex]?.entities ?? {})).toEqual([rows[1].uuid]);
-    expect(snap.loading[fullIndex]?.segment).toEqual({ kind: "full", freshness: "stale" });
-  });
-
-  it("a full load after a merged row replaces the segment and makes it fresh", () => {
-    const localCache = new LocalCache();
-    loadCollection(localCache, merge(rows[1]));
-    loadCollection(localCache, replace);
-
-    const snap = localCache.getState().presentModelSnapshot;
-    expect(snap.current[fullIndex]?.segment).toEqual({ kind: "full", freshness: "fresh" });
-    expect(Object.keys(snap.current[fullIndex]?.entities ?? {})).toHaveLength(3);
+    const entityUuid = "77777777-7777-7777-7777-777777777777";
+    loadEntityPresentModel(localCache, entityUuid, ["region", "code"]);
+    const [a, b, c] = [
+      { region: "EU", code: "A" },
+      { region: "EU", code: "B" },
+      { region: "US", code: "A" },
+    ].map((row) => ({ ...row, parentUuid: entityUuid }) as any);
+    loadCollection(localCache, { parentUuid: entityUuid, applicationSection: "data", instances: [a, b] });
+    expect(Object.keys(cachedRows(localCache, entityUuid) ?? {})).toEqual(["EU|A", "EU|B"]);
+    loadCollection(localCache, { parentUuid: entityUuid, applicationSection: "data", instances: [c] });
+    expect(cachedRows(localCache, entityUuid)).toEqual({ "US|A": c });
   });
 
-  it("a row merged into a fresh full segment keeps all rows and freshness", () => {
+  it("keyless (idAttribute: false): every row is kept, duplicates included, and a reload replaces them", () => {
     const localCache = new LocalCache();
-    loadCollection(localCache, replace);
-    loadCollection(localCache, merge({ ...rows[1], name: "b2" } as EntityInstance));
+    const entityUuid = "88888888-8888-8888-8888-888888888888";
+    loadEntityPresentModel(localCache, entityUuid, false);
+    const a = { label: "a", n: 1, parentUuid: entityUuid } as any;
+    const b = { label: "b", n: 2, parentUuid: entityUuid } as any;
+    loadCollection(localCache, { parentUuid: entityUuid, applicationSection: "data", instances: [a, { ...a }, b] });
+    const fullIndex175 = getReduxDeploymentsStateIndex(testDeploymentUuid, "data", entityUuid, "full");
+    expect(localCache.getState().presentModelSnapshot.current[fullIndex175]?.ids).toEqual(["#0", "#1", "#2"]);
+    expect(cachedRows(localCache, entityUuid)).toEqual({ "#0": a, "#1": a, "#2": b });
 
-    const snap = localCache.getState().presentModelSnapshot;
-    expect(snap.current[fullIndex]?.segment).toEqual({ kind: "full", freshness: "fresh" });
-    expect(Object.keys(snap.current[fullIndex]?.entities ?? {})).toHaveLength(3);
-    expect(snap.current[fullIndex]?.entities?.[rows[1].uuid]).toMatchObject({ name: "b2" });
+    const c = { label: "c", n: 3, parentUuid: entityUuid } as any;
+    loadCollection(localCache, { parentUuid: entityUuid, applicationSection: "data", instances: [a, c] });
+    expect(cachedRows(localCache, entityUuid)).toEqual({ "#0": a, "#1": c });
+  });
+
+  it("keyless (idAttribute: false): createInstance is refused and the rows are unchanged", () => {
+    const localCache = new LocalCache();
+    const entityUuid = "99999999-9999-9999-9999-999999999999";
+    loadEntityPresentModel(localCache, entityUuid, false);
+    const a = { label: "a", n: 1, parentUuid: entityUuid } as any;
+    loadCollection(localCache, { parentUuid: entityUuid, applicationSection: "data", instances: [a] });
+    localCache.handleLocalCacheAction(
+      {
+        actionType: "createInstance",
+        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+        payload: {
+          application: testApplicationUuid,
+          applicationSection: "data",
+          parentUuid: entityUuid,
+          objects: [{ label: "z", n: 9, parentUuid: entityUuid } as any],
+        },
+      },
+      applicationDeploymentMap
+    );
+    expect(cachedRows(localCache, entityUuid)).toEqual({ "#0": a });
   });
 });

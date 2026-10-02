@@ -103,6 +103,8 @@ export const tableComponentRowSchema = z.object({
   displayedValue: z.any(),
   deploymentUuid: z.string().uuid(),
   rawValue: entityInstance,
+  /** key the instance has in `instancesToDisplay` (the cache key: PK value, or `#n` for keyless Entities) */
+  instanceKey: z.string().optional(),
   mlSchema: z.record(mlElement),
   foreignKeyObjects: z.record(entityInstancesUuidIndex)
 })
