@@ -255,25 +255,19 @@
           },
           "branch": {
             "test": {
-              "transformerType": "boolExpr",
-              "operator": "==",
+              "transformerType": "getFromParameters",
               "interpolation": "runtime",
-              "left": {
-                "transformerType": "getFromParameters",
-                "interpolation": "runtime",
-                "referencePath": [
-                  "scheme",
-                  "scheme"
-                ]
-              },
-              "right": {
-                "transformerType": "returnValue",
-                "interpolation": "runtime",
-                "value": "authorizationCode"
-              }
+              "referencePath": [
+                "scheme",
+                "scheme"
+              ]
             },
-            "whenTrue": "secretsAuthCode",
-            "whenFalse": "secretsClient"
+            "cases": {
+              "authorizationCode": "secretsAuthCode",
+              "clientCredentials": "secretsClient",
+              "customToken": "secretsCustom"
+            },
+            "default": "secretsCustom"
           }
         },
         {
@@ -451,25 +445,12 @@
           },
           "branch": {
             "test": {
-              "transformerType": "boolExpr",
-              "operator": "==",
+              "transformerType": "returnValue",
               "interpolation": "runtime",
-              "left": {
-                "transformerType": "getFromParameters",
-                "interpolation": "runtime",
-                "referencePath": [
-                  "scheme",
-                  "scheme"
-                ]
-              },
-              "right": {
-                "transformerType": "returnValue",
-                "interpolation": "runtime",
-                "value": "clientCredentials"
-              }
+              "value": true
             },
             "whenTrue": "operations",
-            "whenFalse": "secretsCustom"
+            "whenFalse": "operations"
           }
         },
         {

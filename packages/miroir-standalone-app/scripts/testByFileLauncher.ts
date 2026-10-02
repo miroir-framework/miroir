@@ -95,5 +95,5 @@ export function buildTestByFileVitestArgs(userArgs: string[]): string[] {
     }
     forwarded.push(arg);
   }
-  return ["run", "--reporter=verbose", "--poolOptions.forks.singleFork", ...bailArgs, ...forwarded];
+  return ["run", "--reporter=verbose", "--maxWorkers=1", ...bailArgs, ...forwarded];
 }

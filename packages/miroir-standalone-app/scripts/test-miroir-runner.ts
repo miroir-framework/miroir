@@ -21,7 +21,7 @@ const launchEnv: NodeJS.ProcessEnv = {
 const vitestArgs = [
   "vitest",
   "run",
-  "--poolOptions.threads.singleThread",
+  "",
   "--reporter=verbose",
   ...forwardedVitestArgs(argv),
   // vitest root is `tests/` (vite.config.js); pass the entry relative to that root

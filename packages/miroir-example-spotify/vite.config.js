@@ -21,10 +21,5 @@ export default defineConfig({
     include: ["tests/**/*.{test,spec}.?(c|m)[jt]s?(x)"],
     globals: true,
     watch: false,
-    poolOptions: {
-      threads: {
-        singleThread: true,
-      },
-    },
   },
 });

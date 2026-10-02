@@ -141,13 +141,19 @@ export default defineConfig(({ command, mode }) => {
       miroirManualChunkLoadLogger(),
       // #326: prints which packages each chunk holds and why; writes dist/.vite/bundle-report.json
       miroirBundleReport({ root: path.resolve(__viteDirname, "../.."), app: "miroir-standalone-app" }),
-      nodePolyfills({
-        include: [ "crypto" ],
-        // To exclude specific polyfills, add them to this list. Note: if include is provided, this has no effect
-        exclude: [
-          "process"
-        ],
-      }),
+      // Browser builds only: vitest runs on Node, and since 0.28 the plugin also shims `process` there, which
+      // hides `process.versions.node` from getClientEnvironment ("window is not defined").
+      ...(mode === "test"
+        ? []
+        : [
+            nodePolyfills({
+              include: [ "crypto" ],
+              // To exclude specific polyfills, add them to this list. Note: if include is provided, this has no effect
+              exclude: [
+                "process"
+              ],
+            }),
+          ]),
       react({
         jsxImportSource: '@emotion/react',
         // Use React plugin in all *.jsx and *.tsx files
@@ -200,11 +206,7 @@ export default defineConfig(({ command, mode }) => {
       },
       // Configure React Testing Library act warnings
       pool: 'threads',
-      poolOptions: {
-        threads: {
-          singleThread: true
-        }
-      },
+      maxWorkers: 1,
       // Configure environment for React Testing Library
       environmentOptions: {
         happyDOM: {
