@@ -272,7 +272,7 @@ const expectedMiroirEntitiesWithEnInName = defaultMiroirMetaModel.entities
 // ##############################################################################################
 // ##############################################################################################
 
-describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => {
+describe("ExtractorTemplatePersistenceStoreRunner.integ.test", () => {
 
   // // ################################################################################################
   // it("get Entity Entity from Miroir", async () => {

@@ -404,7 +404,7 @@ afterAll(async () => {
   }
 });
 
-describe.skipIf(!shouldRun).sequential("externalServiceQuery — extractorForExternalService vs fake Spotify", () => {
+describe.skipIf(!shouldRun)("externalServiceQuery — extractorForExternalService vs fake Spotify", () => {
   it("boxed extractorForExternalService returns the fixture playlist through the emulated-server path", async () => {
     expect(PLAYLIST_OK.name).toBe(PLAYLIST_NAME_LITERAL);
 
@@ -591,7 +591,7 @@ describe.skipIf(!shouldRun).sequential("externalServiceQuery — extractorForExt
   });
 });
 
-describe.skipIf(!shouldRun).sequential("externalServiceQuery — oauth2ClientCredentials flow", () => {
+describe.skipIf(!shouldRun)("externalServiceQuery — oauth2ClientCredentials flow", () => {
   const EXPECTED_BASIC_AUTH = `Basic ${Buffer.from("id-123:secret-abc", "utf8").toString("base64")}`;
 
   it("exchanges client id/secret for a token, then calls the API with it", async () => {
@@ -686,7 +686,7 @@ describe.skipIf(!shouldRun).sequential("externalServiceQuery — oauth2ClientCre
   });
 });
 
-describe.skipIf(!shouldRun).sequential("externalServiceQuery — oauth2AuthorizationCode flow", () => {
+describe.skipIf(!shouldRun)("externalServiceQuery — oauth2AuthorizationCode flow", () => {
   const EXPECTED_BASIC_AUTH = `Basic ${Buffer.from("id-123:secret-abc", "utf8").toString("base64")}`;
 
   it("exchanges refresh token for an access token, then calls the API with it", async () => {

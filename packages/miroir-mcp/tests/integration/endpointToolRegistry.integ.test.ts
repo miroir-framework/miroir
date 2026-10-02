@@ -205,7 +205,7 @@ describe("EndpointToolRegistry integration", () => {
   });
 
   // ##############################################################################################
-  describe.sequential("listTools", () => {
+  describe("listTools", () => {
     it(
       "enumerates one tool per (endpoint, action) of all deployed applications",
       async () => {
@@ -237,7 +237,7 @@ describe("EndpointToolRegistry integration", () => {
   });
 
   // ##############################################################################################
-  describe.sequential("callTool", () => {
+  describe("callTool", () => {
     it(
       "executes a dynamically listed tool (createInstance + getInstance on Library books)",
       async () => {
@@ -294,7 +294,7 @@ describe("EndpointToolRegistry integration", () => {
   });
 
   // ##############################################################################################
-  describe.sequential("MiroirMcpServer wired to EndpointToolRegistry", () => {
+  describe("MiroirMcpServer wired to EndpointToolRegistry", () => {
     let mcpServer: MiroirMcpServer;
     let httpServer: any;
     let mcpServerUrl: string;
@@ -339,7 +339,7 @@ describe("EndpointToolRegistry integration", () => {
   });
 
   // ##############################################################################################
-  describe.sequential("hot-reload on model change", () => {
+  describe("hot-reload on model change", () => {
     const testEndpointUuid = "aa0d5f7e-1111-4a67-9c0d-0000000000e1";
 
     it(
@@ -456,7 +456,7 @@ describe("EndpointToolRegistry integration", () => {
   });
 
   // ##############################################################################################
-  describe.sequential("hot-reload on deployment change", () => {
+  describe("hot-reload on deployment change", () => {
     const pingAppUuid = "aa0d5f7e-2222-4a67-9c0d-0000000000a9";
     const pingDeploymentUuid = "aa0d5f7e-2222-4a67-9c0d-0000000000d9";
     const pingBranchUuid = "aa0d5f7e-2222-4a67-9c0d-0000000000b9";

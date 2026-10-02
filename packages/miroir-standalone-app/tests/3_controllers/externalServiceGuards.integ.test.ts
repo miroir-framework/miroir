@@ -391,7 +391,7 @@ afterAll(async () => {
   }
 });
 
-describe.skipIf(!shouldRun).sequential("externalServiceGuards — D12 HTTP mapping", () => {
+describe.skipIf(!shouldRun)("externalServiceGuards — D12 HTTP mapping", () => {
   it.each([
     {
       status: 401,
@@ -479,7 +479,7 @@ describe.skipIf(!shouldRun).sequential("externalServiceGuards — D12 HTTP mappi
   });
 });
 
-describe.skipIf(!shouldRun).sequential("externalServiceGuards — credential failures", () => {
+describe.skipIf(!shouldRun)("externalServiceGuards — credential failures", () => {
   it("unknown credentialKey fails closed before any fetch", async () => {
     const result = await executeExternalServiceOperation(
       syntheticEndpoint({ credentialKey: "does-not-exist" }),
@@ -504,7 +504,7 @@ describe.skipIf(!shouldRun).sequential("externalServiceGuards — credential fai
   });
 });
 
-describe.skipIf(!shouldRun).sequential("externalServiceGuards — SSRF default-deny", () => {
+describe.skipIf(!shouldRun)("externalServiceGuards — SSRF default-deny", () => {
   it("without the test opt-in, the fixture loopback http baseUrl is rejected", async () => {
     const result = await executeExternalServiceOperation(
       syntheticEndpoint({ baseUrl: fakeServer.baseUrl }),
@@ -532,7 +532,7 @@ describe.skipIf(!shouldRun).sequential("externalServiceGuards — SSRF default-d
   });
 });
 
-describe.skipIf(!shouldRun).sequential("externalServiceGuards — operation allowlist", () => {
+describe.skipIf(!shouldRun)("externalServiceGuards — operation allowlist", () => {
   it("operationId present in operations[] but not in enabledOperations is rejected", async () => {
     const result = await executeExternalServiceOperation(
       syntheticEndpoint({
@@ -558,7 +558,7 @@ describe.skipIf(!shouldRun).sequential("externalServiceGuards — operation allo
   });
 });
 
-describe.skipIf(!shouldRun).sequential("externalServiceGuards — oauth2ClientCredentials failures", () => {
+describe.skipIf(!shouldRun)("externalServiceGuards — oauth2ClientCredentials failures", () => {
   it("unknown clientSecretKey fails closed before any fetch", async () => {
     registerSecrets({ fakeClientId: "id-123" });
     const result = await executeExternalServiceOperation(
@@ -626,7 +626,7 @@ describe.skipIf(!shouldRun).sequential("externalServiceGuards — oauth2ClientCr
   });
 });
 
-describe.skipIf(!shouldRun).sequential("externalServiceGuards — oauth2AuthorizationCode failures", () => {
+describe.skipIf(!shouldRun)("externalServiceGuards — oauth2AuthorizationCode failures", () => {
   it("unknown refreshTokenKey fails closed before any fetch", async () => {
     registerSecrets({ fakeClientId: "id-123", fakeClientSecret: "secret-abc" });
     const result = await executeExternalServiceOperation(

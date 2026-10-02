@@ -516,7 +516,7 @@ afterAll(async () => {
   }
 });
 
-describe.skipIf(!shouldRun).sequential("apiCallReport #281 phase1 — typed playlist without parentUuid", () => {
+describe.skipIf(!shouldRun)("apiCallReport #281 phase1 — typed playlist without parentUuid", () => {
   it("HTTP playlist has no filesystem instance cache; Entity need not be in the example model", () => {
     const model = domainController.currentModelEnvironment(
       selfApplicationSpotify.uuid,

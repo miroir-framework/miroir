@@ -542,7 +542,7 @@ afterAll(async () => {
   }
 });
 
-describe.skipIf(!shouldRun).sequential("apiCallReport #281 phase4 — Entity-backed objectInstance fixture", () => {
+describe.skipIf(!shouldRun)("apiCallReport #281 phase4 — Entity-backed objectInstance fixture", () => {
   it("test seed includes the fixture HTTP Entity and creates no filesystem instance cache", () => {
     expect(defaultSpotifyAppModel.entities, "example package model must stay entity-free").toEqual([]);
     expect(fixtureHttpEntity.externalDataSource?.kind).toBe("http");

@@ -306,7 +306,7 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
   },
 };
 
-describe.sequential(
+describe(
   pageLabel,
   () => {
     it.each(Object.entries(runnerTestParams))(

@@ -13,7 +13,7 @@ import { domainStateToReduxDeploymentsState } from "../../src/tools";
 
 // console.log("@@@@@@@@@@@@@@@@@@ miroirConfig", miroirConfig);
 
-// describe.sequential("templatesDEFUNCT.unit.test", () => {
+// describe("templatesDEFUNCT.unit.test", () => {
 describe("domainStateToReduxDeploymentsState.unit.test", () => {
   // ################################################################################################
   it("domainStateToReduxDeploymentsState", async () => 
