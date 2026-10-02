@@ -34,7 +34,7 @@
     "@redux-devtools/core": "5.0.0",
     "@testing-library/dom": "10.4.2",
     "@testing-library/user-event": "14.6.7",
-    "@uiw/react-codemirror": "4.25.11",
+    "@uiw/react-codemirror": "4.25.12",
     "ag-grid-community": "36.2.0",
     "ag-grid-react": "31.3.4",
     "cross-fetch": "4.1.0",
@@ -102,7 +102,7 @@
     "vite": "7.3.6",
     "vite-plugin-babel-import": "2.0.5",
     "vite-plugin-node-polyfills": "0.28.0",
-    "vitest": "5.0.1",
+    "vitest": "5.0.2",
     "webpack": "5.111.1",
     "webpack-cli": "6.0.1"
   },

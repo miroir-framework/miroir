@@ -54,7 +54,7 @@
     "tsconfig-paths": "4.2.0",
     "tsup": "8.5.1",
     "vite": "7.3.6",
-    "vitest": "5.0.1"
+    "vitest": "5.0.2"
   },
   "peerDependencies": {
     "react": "18.3.1"

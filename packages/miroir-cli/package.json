@@ -60,6 +60,6 @@
     "cross-env": "10.1.0",
     "miroir-example-library": "*",
     "tsup": "8.5.1",
-    "vitest": "5.0.1"
+    "vitest": "5.0.2"
   }
 }
