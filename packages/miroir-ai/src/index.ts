@@ -1,7 +1,11 @@
 // miroir-ai public API
 export { createCopilotKitRouter } from "./routes/copilotKitRoute.js";
-export { assertCursorSdkPackaged, resolveCursorSdkPackageEntry } from "./runtime/assertCursorSdkPackaged.js";
-export type { AssertCursorSdkPackagedOptions } from "./runtime/assertCursorSdkPackaged.js";
+export {
+  AGENT_SDK_PACKAGES,
+  assertAgentSdkPackaged,
+  resolveAgentSdkPackageEntry,
+} from "./runtime/assertAgentSdkPackaged.js";
+export type { AssertAgentSdkPackagedOptions } from "./runtime/assertAgentSdkPackaged.js";
 export {
   createCursorAbstractAgent,
   createCursorDummyCwd,

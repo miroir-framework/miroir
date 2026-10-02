@@ -222,6 +222,26 @@ export function missingConnectionPasswords(resolved: ResolvedEnvironment, env: N
 }
 
 /**
+ * Warnings about `features.cursor`, kept for one release as an alias of
+ * `features.agentBackend: "cursor"` (#409); `agentBackend` wins when both are set.
+ */
+export function agentBackendAliasWarnings(resolved: ResolvedEnvironment): string[] {
+  const features = resolved.environment.features;
+  if (features?.cursor === undefined) {
+    return [];
+  }
+  const agentBackend = features.agentBackend;
+  if (agentBackend !== undefined && agentBackend !== (features.cursor ? "cursor" : "none")) {
+    return [
+      `environment "${resolved.name}": features.cursor is ignored, features.agentBackend "${agentBackend}" wins; remove features.cursor`,
+    ];
+  }
+  return [
+    `environment "${resolved.name}": features.cursor is deprecated, write features.agentBackend: "${features.cursor ? "cursor" : "none"}" instead`,
+  ];
+}
+
+/**
  * The deployment configuration with the Postgres password from `connections.postgres.passwordEnv`,
  * to open its stores. Admin Deployment rows keep the configuration without it.
  */
