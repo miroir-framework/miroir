@@ -7,6 +7,7 @@ so later slices (--timings, --runner shared) can prove the default run is unchan
 from __future__ import annotations
 
 import json
+import os
 import socket
 import subprocess
 import sys
@@ -681,7 +682,9 @@ def write_environments(tmp_path: Path, postgres_port: int, mongodb_port: int) ->
     return envs
 
 
-def run_raw(tmp_path: Path, manifest: Path, *extra: str) -> subprocess.CompletedProcess:
+def run_raw(
+    tmp_path: Path, manifest: Path, *extra: str, env: dict[str, str] | None = None
+) -> subprocess.CompletedProcess:
     return subprocess.run(
         [
             sys.executable,
@@ -696,6 +699,7 @@ def run_raw(tmp_path: Path, manifest: Path, *extra: str) -> subprocess.Completed
         capture_output=True,
         text=True,
         check=False,
+        env=env,
     )
 
 
@@ -785,3 +789,30 @@ def test_store_check_is_skipped_when_no_step_needs_a_service(tmp_path: Path, ext
     proc = run_raw(tmp_path, storage_manifest(tmp_path), "--environments-dir", str(envs), *extra)
 
     assert proc.returncode == 0, proc.stderr
+
+
+@pytest.mark.parametrize(
+    ("storage", "variable", "value"),
+    [
+        ("sql", "MIROIR_TEST_POSTGRES_HOST", "127.0.0.2"),
+        ("mongodb", "MIROIR_TEST_MONGODB_CONNECTION_STRING", "mongodb://127.0.0.2:{port}"),
+    ],
+)
+def test_store_check_follows_the_address_overrides_of_the_integration_tests(
+    tmp_path: Path, storage: str, variable: str, value: str
+):
+    # The environment points at a listening port; the override moves the tests (and the check)
+    # to another host where nothing listens.
+    with socket.socket() as server:
+        server.bind(("127.0.0.1", 0))
+        server.listen()
+        port = server.getsockname()[1]
+        envs = write_environments(tmp_path, postgres_port=port, mongodb_port=port)
+        env = {**os.environ, variable: value.format(port=port)}
+
+        proc = run_raw(
+            tmp_path, storage_manifest(tmp_path), "--storage", storage, "--environments-dir", str(envs), env=env
+        )
+
+    assert proc.returncode == 2
+    assert f"not reachable at 127.0.0.2:{port}" in proc.stderr

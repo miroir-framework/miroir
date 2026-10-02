@@ -142,13 +142,23 @@ def load_environment_connections(name: str, environments_dir: Path) -> dict[str,
 
 
 def storage_service(storage: str, environments_dir: Path) -> tuple[str, str, int] | None:
-    """(service, host, port) the store needs, from its test environment; None when it needs none."""
+    """(service, host, port) the store needs; None when it needs none.
+
+    The address comes from the store's test environment, overridden like the integration tests
+    do it (IntegrationTestSession.ts): `MIROIR_TEST_POSTGRES_HOST` replaces the PostgreSQL host,
+    `MIROIR_TEST_MONGODB_CONNECTION_STRING` the MongoDB url.
+    """
     connections = load_environment_connections(f"test-{storage}", environments_dir)
     if storage == "sql":
         postgres = connections.get("postgres") or {}
-        return ("PostgreSQL", postgres.get("host") or "localhost", int(postgres.get("port") or 5432))
+        host = os.environ.get("MIROIR_TEST_POSTGRES_HOST") or postgres.get("host") or "localhost"
+        return ("PostgreSQL", host, int(postgres.get("port") or 5432))
     if storage == "mongodb":
-        url = urlsplit((connections.get("mongodb") or {}).get("url") or "mongodb://localhost:27017")
+        url = urlsplit(
+            os.environ.get("MIROIR_TEST_MONGODB_CONNECTION_STRING")
+            or (connections.get("mongodb") or {}).get("url")
+            or "mongodb://localhost:27017"
+        )
         return ("MongoDB", url.hostname or "localhost", url.port or 27017)
     return None
 
@@ -164,7 +174,8 @@ def check_storage_service(storage: str, environments_dir: Path) -> str | None:
             return None
     except OSError as exc:
         return (
-            f"{name} is not reachable at {host}:{port} (environments/test-{storage}.json): {exc}. "
+            f"{name} is not reachable at {host}:{port} (environments/test-{storage}.json, "
+            f"MIROIR_TEST_POSTGRES_HOST, MIROIR_TEST_MONGODB_CONNECTION_STRING): {exc}. "
             f"Start it, or choose another store with --storage ({', '.join(STORAGES)})."
         )
 
