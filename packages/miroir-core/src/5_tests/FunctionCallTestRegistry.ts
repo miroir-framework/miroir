@@ -38,9 +38,11 @@ import { resolveTransformerResultSchema } from "../2_domain/Transformer_ResultSc
 import {
   checkTransformerInterfaceCompatibility,
   checkTransformerInterfaceCompatibilityWithInference,
+  checkTransformerInterfaceRecursively,
   findInvalidStockTransformerInputOutputs,
   getTransformerDefinitionInputOutput,
   inputOutputTypesCompatible,
+  transformerTypesAcceptingInput,
 } from "../2_domain/TransformerInterfaceCheck";
 import {
   checkTransformerMlSchemaCompatibility,
@@ -203,6 +205,9 @@ const FUNCTION_CALL_REGISTRY: Record<
       getTransformerDefinitionInputOutput as WhitelistedFunction,
     findInvalidStockTransformerInputOutputs:
       findInvalidStockTransformerInputOutputs as WhitelistedFunction,
+    transformerTypesAcceptingInput: transformerTypesAcceptingInput as WhitelistedFunction,
+    checkTransformerInterfaceRecursively:
+      checkTransformerInterfaceRecursively as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerMlSchemaCheck": {
     checkTransformerMlSchemaCompatibility:

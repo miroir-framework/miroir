@@ -3,6 +3,7 @@ import React, { useMemo, useState } from "react";
 
 import {
   checkTransformerInterfaceCompatibilityWithInference,
+  checkTransformerInterfaceRecursively,
   checkTransformerMlSchemaCompatibility,
   collectTransformerEnvironmentBindings,
   defaultTransformerInput,
@@ -305,6 +306,21 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
     [mlSchemaMode, mlSchemaCompatibility, mlSchemaNameResolver],
   );
 
+  // #383: input type given to every transformer node, restricting its transformerType select.
+  const interfaceWalk = useMemo(
+    () => checkTransformerInterfaceRecursively(elementTransformer, givenInputType),
+    [elementTransformer, givenInputType],
+  );
+  const transformerTypeRestrictions = useMemo(
+    () =>
+      interfaceWalk.nodes.map((node) => ({
+        path: node.path,
+        input: node.consumedInput,
+        inputLabel: formatInputOutputTypeLabel(node.consumedInput, entities),
+      })),
+    [interfaceWalk, entities],
+  );
+
   const environmentBindings = useMemo(
     () =>
       collectTransformerEnvironmentBindings(elementTransformer, {
@@ -511,6 +527,7 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
           showMlSchemaTypes={mlSchemaMode}
           mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
           environmentAnnotations={environmentAnnotations}
+          transformerTypeRestrictions={transformerTypeRestrictions}
         />
       </div>
 

@@ -29,7 +29,7 @@ Out (analysis non-goals): output-type filtering; full ML schemas for the restric
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize the #249 check and the panels | ✅ DONE | baseline recorded (2 pre-existing failures) |
-| 1 | Root restriction in ListTransformerPanel (tracer) | ⬜ pending | `fn.transformer.interfaceWalk` offered types; panel root select |
+| 1 | Root restriction in ListTransformerPanel (tracer) | ✅ DONE | `fn.transformer.interfaceWalk` offered types; panel root select |
 | 2 | Nested restriction by runtime slot rules | ⬜ pending | walk cases per slot; panel nested select |
 | 3 | Recursive marking in ListTransformerPanel | ⬜ pending | walk failures; panel nested warning |
 | 4 | TransformerEditor: root input, restriction, marking, toggle | ⬜ pending | `inputOutputTypeOfValue` cases; editor toggle test |
@@ -76,7 +76,7 @@ Entity uuids reused in cases: Book `e8ba151b-d68e-4cc3-9a83-3459d309ccf5` (Libra
 | Rebuild the deployment after MiroirTest JSON changes | `npm run build -w miroir-app-miroir` |
 | Core suite | `npm run testMiroir -w miroir-core -- --suites fn.transformer.interfaceWalk --mode unit` |
 | #249 suite (regression) | `npm run testMiroir -w miroir-core -- --suites fn.transformer.interfaceCheck --mode unit` |
-| Panel UI tests | `npm run testByFile -w miroir-standalone-app -- ListTransformerPanel.unit` |
+| Panel UI tests | `npm run testByFile -w miroir-standalone-app -- transformerChoiceByInputType.integ` (and `ListTransformerPanel.unit` for regressions) |
 | TransformerEditor UI tests | `npm run testByFile -w miroir-standalone-app -- TransformerEditor.test` |
 | Build core for the app | `npm run build -w miroir-core` |
 | Typecheck | `npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json` and `-p packages/miroir-standalone-app/tsconfig.json` |
@@ -108,7 +108,7 @@ Baseline on the branch base (2026-10-02):
 
 ## Slice 1 — Root restriction in ListTransformerPanel (tracer)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Goal: with Book rows, the root `transformerType` select of the list transformer panel no longer offers `array`-, `string`- and other-entity-input transformers, and shows the hint.
 
@@ -146,7 +146,11 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui
 
 ### Realization
 
-_(pending)_
+- Core: `transformerTypesAcceptingInput` and a root-only `checkTransformerInterfaceRecursively` in `TransformerInterfaceCheck.ts`, report types in `TransformerInterfaceCheckInterface.ts`, both whitelisted and exported. New MiroirTest `fn.transformer.interfaceWalk`: 11 offered-types cases and 1 root walk case, green.
+- UI: `transformerTypeRestrictions` threaded next to `environmentAnnotations` (22 lines across `TypedValueObjectEditor`, `MlElementEditor`, `MlObjectEditor`, `MlArrayEditor`, `MlAnyEditor`); `MlLiteralEditor` filters a `transformerType` select whose parent path has a restriction, keeps the current type, and shows the hint next to the select. `ListTransformerPanel` passes one restriction per walk node.
+- Deviation, UI test vehicle: `ListTransformerPanel.unit` replaces `TypedValueObjectEditor` with a `vi.mock` stub, so it cannot see the select. The UI proof is a new `tests/4_view/transformerChoiceByInputType.integ.test.tsx` on the existing no-mock app-stack rig (`helpers/listTransformerIntegRig.tsx`, which gained a `rowEntityUuid` option and `getPanelTransformerTypeOptions`). Feature-named from the start, so no issue directory to clean up.
+- Deviation, hint count: the select's candidates are the 37 discriminator values of the transformer union, not the 48 definitions; with Book rows 15 are hidden (the plan's 19 counted definitions absent from the union).
+- Typecheck: miroir-core clean; miroir-standalone-app has the same 32 pre-existing errors as the base, none in touched files.
 
 ## Slice 2 — Nested restriction by runtime slot rules
 
@@ -163,7 +167,7 @@ Goal: nested selects are restricted by the input their position receives (D1, D8
 - `ifThenElse.then` / `else`: parent's given input;
 - unresolvable output → `any` (no restriction);
 - `inferTransformerOutputTypeFromSchema` recognizes any known entity schema (new `entityMlSchemas` option), not only the row schema.
-- `ListTransformerPanel.unit`: root `mapList` with `applyTo: getFromContext("rows")`-like array context: `elementTransformer` select excludes `aggregate`; switching the outer `applyTo` updates it (issue AC 4).
+- `transformerChoiceByInputType.integ`: root `mapList` with `applyTo: getFromContext("rows")`-like array context: `elementTransformer` select excludes `aggregate`; switching the outer `applyTo` updates it (issue AC 4).
 
 **GREEN**
 - Recursive `walkNode` / `walkChildren` in `TransformerInterfaceCheck.ts` on `InputOutputType`, with a parallel ML context for #88 inference (root lifted with `liftInputOutputTypeToMlSchema`, element and step bindings added per D9).
@@ -188,7 +192,7 @@ Goal: in #249 mode, a nested node whose transformer does not accept its consumed
 
 **RED**
 - Walk cases: an `aggregate` under `ifThenElse.then` with Book input has an `input` failure `{ given: Book, declared: "array" }`; a `getFromContext` node never fails on input; an incompatible current type stays offered.
-- `ListTransformerPanel.unit`: nested `aggregate` under `ifThenElse.then` shows the warning marker with a title naming the path and both types; in #251 mode the existing warnings are unchanged.
+- `transformerChoiceByInputType.integ`: nested `aggregate` under `ifThenElse.then` shows the warning marker with a title naming the path and both types; in #251 mode the existing warnings are unchanged.
 
 **GREEN**
 - Walk fills `failures` with `checkTransformerInterfaceCompatibility` input failures per node (output failures only at the root, from the existing expected-output check).
@@ -232,7 +236,7 @@ _(pending)_
 
 **Status:** ⬜ pending
 
-- Nonreg: `fn.transformer.interfaceWalk` runs in `unit-miroir-core` (all unit MiroirTests); add a step for `ListTransformerPanel.unit` (scope `ui`, group `standalone-app-unit-files`), and for the TransformerEditor test file if new.
+- Nonreg: `fn.transformer.interfaceWalk` runs in `unit-miroir-core` (all unit MiroirTests); add a step for `transformerChoiceByInputType.integ` (scope `ui`, group `standalone-app-unit-files`), and for the TransformerEditor test file if new.
 - Docs: `docs/reference/testing.md` entity uuids for `fn.transformer.interfaceWalk`; transformer editor user doc (restriction, hint, toggle).
 - Cleanup: no `issues/383-*` directory is created; the MiroirTest `issue` field stays as metadata.
 - Tracer narrative: open Tools → Transformer editor with a Book instance, root select lacks `aggregate`; pick `mapList` over a list, nested select lacks `object`-input types; toggle off, full list. Automated equivalent: slices 1, 2, 4 UI tests.

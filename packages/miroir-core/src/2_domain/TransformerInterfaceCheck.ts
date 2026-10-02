@@ -9,6 +9,9 @@ import type {
   TransformerInterfaceCompatibility,
   TransformerInterfaceGivenTypes,
   TransformerInterfaceMismatch,
+  TransformerInterfaceNodeReport,
+  TransformerInterfaceTreeCompatibility,
+  TransformerTypesAcceptingInput,
 } from "../0_interfaces/2_domain/TransformerInterfaceCheckInterface";
 import { applicationTransformerDefinitions } from "./TransformersForRuntime";
 
@@ -181,4 +184,122 @@ export function checkTransformerInterfaceCompatibilityWithInference(
     return { status: "incompatible", failures: [inferredFailure] };
   }
   return { status: "incompatible", failures: [...base.failures, inferredFailure] };
+}
+
+// ################################################################################################
+// Issue #383 — the #249 check at every position of a transformer tree, and the transformer types
+// a position offers. Unknown inputs are "any": a position is never wrongly restricted.
+// ################################################################################################
+
+/**
+ * Does a transformer of type `transformerType` accept `consumedInput`? Declared input
+ * "undefined" (the transformer does not consume its input), no `inputOutput` and unknown types
+ * always accept.
+ */
+function transformerTypeAcceptsInput(
+  transformerType: string,
+  consumedInput: InputOutputType,
+  transformerDefinitions: Record<string, TransformerDefinition>,
+): boolean {
+  const declared = getTransformerDefinitionInputOutput(transformerType, transformerDefinitions);
+  return (
+    declared === undefined ||
+    declared.input === "undefined" ||
+    inputOutputTypesCompatible(consumedInput, declared.input)
+  );
+}
+
+/**
+ * Split candidate transformer types into those offered for `consumedInput` and those hidden.
+ * The current type stays offered even when incompatible, so an existing transformer still
+ * displays and can be changed.
+ */
+export function transformerTypesAcceptingInput(
+  consumedInput: InputOutputType,
+  options: {
+    transformerTypes?: string[];
+    currentType?: string;
+    transformerDefinitions?: Record<string, TransformerDefinition>;
+  } = {},
+): TransformerTypesAcceptingInput {
+  const transformerDefinitions = options.transformerDefinitions ?? applicationTransformerDefinitions;
+  const candidates = options.transformerTypes ?? Object.keys(transformerDefinitions);
+  const offered: string[] = [];
+  const hidden: string[] = [];
+  for (const transformerType of candidates) {
+    if (
+      transformerType === options.currentType ||
+      transformerTypeAcceptsInput(transformerType, consumedInput, transformerDefinitions)
+    ) {
+      offered.push(transformerType);
+    } else {
+      hidden.push(transformerType);
+    }
+  }
+  return { offered, hidden };
+}
+
+type TypedTransformerNode = { transformerType: string } & Record<string, unknown>;
+
+function isTypedTransformerNode(value: unknown): value is TypedTransformerNode {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    !Array.isArray(value) &&
+    typeof (value as { transformerType?: unknown }).transformerType === "string"
+  );
+}
+
+export interface TransformerInterfaceWalkOptions {
+  transformerDefinitions?: Record<string, TransformerDefinition>;
+}
+
+function walkNode(
+  transformer: TypedTransformerNode,
+  path: (string | number)[],
+  givenInput: InputOutputType,
+  transformerDefinitions: Record<string, TransformerDefinition>,
+  nodes: TransformerInterfaceNodeReport[],
+): TransformerInterfaceNodeReport {
+  const declared = getTransformerDefinitionInputOutput(
+    transformer.transformerType,
+    transformerDefinitions,
+  );
+  const consumedInput = givenInput;
+  const report: TransformerInterfaceNodeReport = {
+    path,
+    transformerType: transformer.transformerType,
+    givenInput,
+    consumedInput,
+    declared,
+    output: declared?.output ?? "any",
+    failures: [],
+  };
+  nodes.push(report);
+  return report;
+}
+
+/**
+ * #249 check at every typed node of `transformer`, given the root input type. One report per
+ * node, in tree order.
+ */
+export function checkTransformerInterfaceRecursively(
+  transformer: unknown,
+  rootInput: InputOutputType,
+  options: TransformerInterfaceWalkOptions = {},
+): TransformerInterfaceTreeCompatibility {
+  const transformerDefinitions = options.transformerDefinitions ?? applicationTransformerDefinitions;
+  const nodes: TransformerInterfaceNodeReport[] = [];
+  if (isTypedTransformerNode(transformer)) {
+    walkNode(transformer, [], rootInput, transformerDefinitions, nodes);
+  }
+  return {
+    status:
+      nodes.length === 0
+        ? "unchecked"
+        : nodes.some((node) => node.failures.length > 0)
+          ? "incompatible"
+          : "ok",
+    nodes,
+  };
 }

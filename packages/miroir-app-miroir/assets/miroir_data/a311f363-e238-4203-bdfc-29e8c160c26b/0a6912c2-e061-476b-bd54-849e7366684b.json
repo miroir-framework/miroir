@@ -1,0 +1,420 @@
+{
+  "uuid": "0a6912c2-e061-476b-bd54-849e7366684b",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "fn.transformer.interfaceWalk",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Input type given to every position of a transformer tree, and the transformer types offered there (issue #383).",
+  "tags": [
+    "unit",
+    "transformer"
+  ],
+  "issue": "383",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "fn.transformer.interfaceWalk",
+    "miroirTests": [
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "transformerTypesAcceptingInput",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "entity input hides array-input types",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "transformerTypesAcceptingInput"
+            },
+            "arguments": [
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              {
+                "transformerTypes": [
+                  "aggregate",
+                  "mapList",
+                  "filterList",
+                  "sortList",
+                  "listLength",
+                  "getObjectValues",
+                  "dataflowObject",
+                  "getFromContext",
+                  "ifThenElse"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "offered": [
+                "getObjectValues",
+                "dataflowObject",
+                "getFromContext",
+                "ifThenElse"
+              ],
+              "hidden": [
+                "aggregate",
+                "mapList",
+                "filterList",
+                "sortList",
+                "listLength"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "object input hides array-input types",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "transformerTypesAcceptingInput"
+            },
+            "arguments": [
+              "object",
+              {
+                "transformerTypes": [
+                  "aggregate",
+                  "mapList",
+                  "filterList",
+                  "sortList",
+                  "listLength",
+                  "getObjectValues",
+                  "dataflowObject"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "offered": [
+                "getObjectValues",
+                "dataflowObject"
+              ],
+              "hidden": [
+                "aggregate",
+                "mapList",
+                "filterList",
+                "sortList",
+                "listLength"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "string input hides array- and object-input types",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "transformerTypesAcceptingInput"
+            },
+            "arguments": [
+              "string",
+              {
+                "transformerTypes": [
+                  "aggregate",
+                  "mapList",
+                  "mustacheStringTemplate",
+                  "getObjectValues",
+                  "plus"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "offered": [
+                "mustacheStringTemplate",
+                "plus"
+              ],
+              "hidden": [
+                "aggregate",
+                "mapList",
+                "getObjectValues"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "number input hides array- and string-input types",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "transformerTypesAcceptingInput"
+            },
+            "arguments": [
+              "number",
+              {
+                "transformerTypes": [
+                  "aggregate",
+                  "listLength",
+                  "numericOp",
+                  "getActiveDeployment"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "offered": [
+                "numericOp"
+              ],
+              "hidden": [
+                "aggregate",
+                "listLength",
+                "getActiveDeployment"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "array input offers array-input types, hides object-input types",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "transformerTypesAcceptingInput"
+            },
+            "arguments": [
+              "array",
+              {
+                "transformerTypes": [
+                  "aggregate",
+                  "mapList",
+                  "dataflowObject",
+                  "getObjectValues",
+                  "returnValue"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "offered": [
+                "aggregate",
+                "mapList",
+                "returnValue"
+              ],
+              "hidden": [
+                "dataflowObject",
+                "getObjectValues"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "array of entities offers array-input types",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "transformerTypesAcceptingInput"
+            },
+            "arguments": [
+              {
+                "type": "array",
+                "payload": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+              },
+              {
+                "transformerTypes": [
+                  "aggregate",
+                  "mapList",
+                  "dataflowObject",
+                  "getObjectValues"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "offered": [
+                "aggregate",
+                "mapList"
+              ],
+              "hidden": [
+                "dataflowObject",
+                "getObjectValues"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "any, undefined, undeclared and unknown types are always offered",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "transformerTypesAcceptingInput"
+            },
+            "arguments": [
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              {
+                "transformerTypes": [
+                  "boolExpr",
+                  "generateUuid",
+                  "spreadSheetToMlSchema",
+                  "notAStockTransformer"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "offered": [
+                "boolExpr",
+                "generateUuid",
+                "spreadSheetToMlSchema",
+                "notAStockTransformer"
+              ],
+              "hidden": []
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "any input offers everything",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "transformerTypesAcceptingInput"
+            },
+            "arguments": [
+              "any",
+              {
+                "transformerTypes": [
+                  "aggregate",
+                  "getObjectValues",
+                  "mustacheStringTemplate",
+                  "transformer_menu_addItem"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "offered": [
+                "aggregate",
+                "getObjectValues",
+                "mustacheStringTemplate",
+                "transformer_menu_addItem"
+              ],
+              "hidden": []
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "entity input hides transformers declared for another entity",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "transformerTypesAcceptingInput"
+            },
+            "arguments": [
+              "ca794e28-b2dc-45b3-8137-00151557eea8",
+              {
+                "transformerTypes": [
+                  "transformer_menu_addItem",
+                  "entityDefinition_extractAttributes",
+                  "getObjectValues"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "offered": [
+                "getObjectValues"
+              ],
+              "hidden": [
+                "transformer_menu_addItem",
+                "entityDefinition_extractAttributes"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "entity input offers transformers declared for that entity",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "transformerTypesAcceptingInput"
+            },
+            "arguments": [
+              "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+              {
+                "transformerTypes": [
+                  "transformer_menu_addItem",
+                  "entityDefinition_extractAttributes"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "offered": [
+                "transformer_menu_addItem"
+              ],
+              "hidden": [
+                "entityDefinition_extractAttributes"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "current type stays offered when incompatible",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "transformerTypesAcceptingInput"
+            },
+            "arguments": [
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              {
+                "transformerTypes": [
+                  "aggregate",
+                  "getFromContext"
+                ],
+                "currentType": "aggregate"
+              }
+            ],
+            "expectedValue": {
+              "offered": [
+                "aggregate",
+                "getFromContext"
+              ],
+              "hidden": []
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "checkTransformerInterfaceRecursively",
+        "miroirTests": [
+          {
+            "miroirTestType": "miroirTestSuite",
+            "miroirTestLabel": "root",
+            "miroirTests": [
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "root node gets the root input",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "getFromContext",
+                    "referenceName": "defaultInput"
+                  },
+                  "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                ],
+                "assertions": [
+                  {
+                    "label": "one node",
+                    "resultAccessPath": [
+                      "nodes",
+                      "length"
+                    ],
+                    "expectedValue": 1
+                  },
+                  {
+                    "label": "root path",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "path"
+                    ],
+                    "expectedValue": []
+                  },
+                  {
+                    "label": "root given input",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "givenInput"
+                    ],
+                    "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  },
+                  {
+                    "label": "root consumed input",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "consumedInput"
+                    ],
+                    "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
