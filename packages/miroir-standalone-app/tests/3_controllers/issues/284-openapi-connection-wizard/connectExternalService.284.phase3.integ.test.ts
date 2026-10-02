@@ -137,7 +137,7 @@ function reportInputDefault(report: { definition?: unknown }, paramName: string)
   return inputSection?.definition?.inputMLSchema?.definition?.[paramName]?.tag?.value?.default;
 }
 
-describe.skipIf(!shouldRunPhase3).sequential(
+describe.skipIf(!shouldRunPhase3)(
   "connectExternalService.284.phase3 — second Finish upserts",
   () => {
     let harness: ConnectExternalService284Harness;

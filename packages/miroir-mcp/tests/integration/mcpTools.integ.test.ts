@@ -258,7 +258,7 @@ describe("MCP Tools Integration Tests", () => {
     log.info("MCP test teardown completed");
   });
 
-  describe.sequential(
+  describe(
     "MCP Tool Handlers via HTTP - All Tests",
     () => {
       it.each(ALL_MCP_TEST_CASES.map(test => [test.testName, test]))(

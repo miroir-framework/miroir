@@ -108,7 +108,7 @@ function publicBag(overrides?: {
   };
 }
 
-describe.skipIf(!shouldRunPhase2).sequential(
+describe.skipIf(!shouldRunPhase2)(
   "connectExternalService.284.phase2 — failed probe and name clash",
   () => {
     let harness: ConnectExternalService284Harness;

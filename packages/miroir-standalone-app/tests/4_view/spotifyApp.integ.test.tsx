@@ -536,7 +536,7 @@ afterAll(async () => {
   }
 });
 
-describe.skipIf(!shouldRun).sequential("spotifyApp — Spotify deployment boot + report", () => {
+describe.skipIf(!shouldRun)("spotifyApp — Spotify deployment boot + report", () => {
   it("registers the Spotify deployment in Admin data, test config, and the testbed map", () => {
     expect(deployment_Spotify_DO_NO_USE.uuid).toBe(SPOTIFY_DEPLOYMENT_UUID);
     expect(deployment_Spotify_DO_NO_USE.uuid).toBe(SPOTIFY_DEPLOYMENT_UUID);

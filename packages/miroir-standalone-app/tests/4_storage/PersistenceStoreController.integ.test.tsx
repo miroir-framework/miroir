@@ -308,7 +308,7 @@ const chainVitestSteps = async (
   }
 };
 
-describe.sequential("PersistenceStoreController.integ.test", () => {
+describe("PersistenceStoreController.integ.test", () => {
   // ################################################################################################
   // // TODO: rephrase as deployment of a module that is not yet deployed, neither miroir nor library
   // // it("Create miroir2 store", async () => { // TODO: test failure cases!

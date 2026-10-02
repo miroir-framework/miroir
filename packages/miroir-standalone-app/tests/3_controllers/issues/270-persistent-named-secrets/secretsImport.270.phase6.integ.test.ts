@@ -267,7 +267,7 @@ afterAll(async () => {
   expect(leftoverSecretJsonFiles()).toEqual([]);
 });
 
-describe.skipIf(!shouldRun).sequential(
+describe.skipIf(!shouldRun)(
   "secretsImport.270.phase6 — import persist then hydrate-from-store",
   () => {
     it("import + secrets.set then clearSecrets + hydrate-from-store resolves imported names", async () => {

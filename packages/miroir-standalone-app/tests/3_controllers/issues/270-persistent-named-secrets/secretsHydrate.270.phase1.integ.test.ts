@@ -451,7 +451,7 @@ afterAll(async () => {
   }
 });
 
-describe.skipIf(!shouldRun).sequential("secretsHydrate.270.phase1 — persist + hydrate + fake Spotify", () => {
+describe.skipIf(!shouldRun)("secretsHydrate.270.phase1 — persist + hydrate + fake Spotify", () => {
   it("hydrated row is used as Bearer token for get-playlist", async () => {
     const rows = await querySecretRows();
     expect(rows.length).toBeGreaterThan(0);
