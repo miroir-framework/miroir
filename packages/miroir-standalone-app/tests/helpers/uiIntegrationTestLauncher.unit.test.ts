@@ -78,7 +78,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
     expect(UI_INTEGRATION_RUNNER_SUITE_REGISTRY["runner.returnDocument"].kind).toBe("runnerTest");
     expect(UI_INTEGRATION_RUNNER_SUITE_REGISTRY["runner.createEntity"].kind).toBe("runnerTest");
     expect(UI_INTEGRATION_RUNNER_SUITE_REGISTRY["action.domainController.dataCrud"].kind).toBe(
-      "domainControllerTest",
+      "actionTest",
     );
     expect(UI_INTEGRATION_RUNNER_SUITE_REGISTRY["action.scenario.evolutionTrace"].kind).toBe("actionTest");
   });
