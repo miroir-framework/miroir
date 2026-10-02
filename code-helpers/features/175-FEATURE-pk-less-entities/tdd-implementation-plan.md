@@ -38,7 +38,7 @@ This plan does **not** cover: editing keyless rows; keyless Miroir-owned Entitie
 | 2 | Model validation of `idAttribute: false` | ✅ | `fn.entityPrimaryKey` cases + deployments' modelValidation |
 | 3 | Zustand cache parity | ✅ | zustand vitest + phase1 integ on zustand |
 | 4 | Queries keep keyless rows and refuse key-based lookups | ✅ | `DomainStateQuerySelectors.pkLess.unit.test.ts` + phase1 integ |
-| 5 | CUD on keyless Entities refused before touching the cache | ⬜ | phase1 integ, CUD cases |
+| 5 | CUD on keyless Entities refused before touching the cache | ✅ | phase1 integ, CUD cases |
 | 6 | Grids: all rows, stable ids, no edit / delete / details | ⬜ | `listDisplayByTransformer.unit.test.ts` + grid component test |
 | 7 | HTTP: sync writes `false` without `id`; keyless HTTP rows display | ⬜ | `tr.syncExternalServiceSchema` case + external-service scenario |
 | 8 | Postgres app: `pg_stat_activity` demo | ⬜ | `miroir-example-postgres` modelValidation + phase1 integ |
@@ -370,7 +370,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions
 
 ## Slice 5 — CUD on keyless Entities refused before touching the cache
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -401,6 +401,11 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions
 ```
 
 ### Realization
+
+- `DomainController.handleInstanceAction` calls `rejectInstanceActionOnKeylessEntity` after the partial-mutation guard: a data-section create, update or delete with objects whose target entity (in `currentModel`) is keyless returns `keylessEntityInstanceActionError` before the store and the cache are called. An empty `objects` list is let through (deployment resets send one per entity).
+- One message for every layer (`keylessEntityInstanceActionError`): DomainController, both caches, Postgres `deleteInstance`.
+- `PkLessExternalEntity.integ`: create, update and delete each return that error and the cached rows are unchanged; the store-side and cache-side ordered queries (slice 4) return `b, a, a`.
+- Bug found on the way, fixed here: `SqlDbStoreSection.clear()` (run by `resetModel`) called `sequelize.drop()`, which dropped the tables of External entities too, i.e. the source's own table. It now removes External models from the model manager before dropping. The second test's reset reproduced it (`relation "test_175.pk_less_rows" does not exist`).
 
 ---
 

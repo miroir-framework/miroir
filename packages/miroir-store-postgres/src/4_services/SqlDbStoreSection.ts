@@ -69,6 +69,12 @@ export class SqlDbStoreSection
   // ######################################################################################
   async clear(): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "clear start, entities", this.getEntityUuids());
+    // The tables of External entities belong to their source: forget their models instead of dropping them.
+    for (const access of Object.values(this.sqlSchemaTableAccess)) {
+      if (access.isExternal) {
+        this.sequelize.modelManager.removeModel(access.sequelizeModel);
+      }
+    }
     await this.sequelize.drop();
     this.sqlSchemaTableAccess = {};
     log.info(this.logHeader, "clear done, entities", this.getEntityUuids());

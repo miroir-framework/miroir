@@ -269,4 +269,76 @@ describeSql("PkLessExternalEntity.integ (#175)", () => {
     },
     globalTimeOut,
   );
+  // ##############################################################################################
+  it.each(["localCacheOrFail", "storage"] as const)(
+    "an ordered query (%s) returns every row, identical rows included",
+    async (queryExecutionStrategy) => {
+      await refreshLibraryCache();
+      const result: any = await domainController.handleBoxedExtractorOrQueryAction(
+        {
+          actionType: "runBoxedQueryAction",
+          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+          payload: {
+            application: testApplicationUuid,
+            applicationSection: "data",
+            queryExecutionStrategy,
+            query: {
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              application: testApplicationUuid,
+              pageParams: {},
+              queryParams: {},
+              contextResults: {},
+              extractors: {
+                rows: {
+                  extractorOrCombinerType: "extractorInstancesByEntity",
+                  applicationSection: "data",
+                  parentName: pkLessRowsEntity.name,
+                  parentUuid: pkLessRowsEntity.uuid,
+                  orderBy: { attributeName: "label", direction: "DESC" },
+                },
+              },
+            },
+          },
+        } as any,
+        applicationDeploymentMap,
+        libraryModelEnv(),
+      );
+      expect(result instanceof Action2Error, JSON.stringify(result)).toBe(false);
+      const rows = result?.returnedDomainElement?.rows;
+      expect(Object.values(rows ?? {}).map((row: any) => row.label), JSON.stringify(result)).toEqual(["b", "a", "a"]);
+    },
+    globalTimeOut,
+  );
+
+  // ##############################################################################################
+  it(
+    "create, update and delete on an entity without primary key are refused, the cache is unchanged",
+    async () => {
+      await refreshLibraryCache();
+      const before = cachedPkLessRows();
+      const row = { parentUuid: pkLessRowsEntity.uuid, label: "z", n: 9 } as unknown as EntityInstance;
+      for (const actionType of ["createInstance", "updateInstance", "deleteInstance"] as const) {
+        const result = await domainController.handleAction(
+          {
+            actionType,
+            endpoint: INSTANCE_ENDPOINT,
+            payload: {
+              application: testApplicationUuid,
+              applicationSection: "data",
+              parentUuid: pkLessRowsEntity.uuid,
+              objects: [row],
+            },
+          } as any,
+          applicationDeploymentMap,
+          libraryModelEnv(),
+        );
+        expect(result instanceof Action2Error, `${actionType} should be refused`).toBe(true);
+        expect((result as Action2Error).errorMessage).toBe(
+          `${actionType} refused: entity pk_less_rows has no primary key (idAttribute: false), its instances are read-only`,
+        );
+      }
+      expect(cachedPkLessRows()).toEqual(before);
+    },
+    globalTimeOut,
+  );
 });
