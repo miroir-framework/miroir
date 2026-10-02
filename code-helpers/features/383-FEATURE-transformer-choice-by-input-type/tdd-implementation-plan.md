@@ -282,4 +282,7 @@ npm run nonreg:filesystem -- --runner shared
 
 ### Realization
 
-_(pending)_
+- Two nonreg steps added (`integ-transformerChoiceByInputType`, `integ-transformerEditorChoiceByInputType`, scope `ui`).
+- Docs: `docs/reference/transformers.md` "Choosing a transformer by input type"; `docs/reference/testing.md` entry for `fn.transformer.interfaceWalk`.
+- Pre-push gate green: skills sync, pytest 200 passed, dependency policy, lint, `miroir-env check --strict --tracked-clean`, miroir-core tsc, miroir-core unit tests 2187 passed.
+- Full `nonreg:filesystem --runner shared`: 89/89 pass.
