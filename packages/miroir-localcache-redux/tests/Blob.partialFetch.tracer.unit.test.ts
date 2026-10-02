@@ -409,9 +409,10 @@ describe("214 Phase 5 — Blob partial-fetch tracer", () => {
     });
 
     const snap = localCache.getState().presentModelSnapshot;
+    // #381: one row does not make the full segment a complete set
     expect(snap.current[fullIndex]?.segment).toEqual({
       kind: "full",
-      freshness: "fresh",
+      freshness: "stale",
     });
     expect(snap.current[fullIndex]?.entities?.[BLOB_INSTANCE]).toMatchObject({
       name: "MiroirLogo",

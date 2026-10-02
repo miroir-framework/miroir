@@ -36,12 +36,14 @@ import {
   rejectPartialMutationInstanceAction,
   resolveInstanceParentUuid,
   resolveLoadCacheSegment,
+  resolveLoadSegmentWrite,
   serializeCompositeKeyValue,
   toReduxSerializable,
   assertVersioningEnabledImmutable,
   type ApplicationDeploymentMap,
   type CacheFreshness,
   type CacheSegmentKind,
+  type LocalCacheLoadSegmentHint,
   type LocalCacheSegmentHeader,
 } from "miroir-core";
 import {
@@ -374,10 +376,15 @@ function applyEntityInstancesToZone(
   entityUuid: string,
   zone: LocalCacheSliceStateZone,
   state: LocalCacheSliceState,
-  segment: CacheSegmentKind,
-  segmentHeader: LocalCacheSegmentHeader,
+  segmentHint: LocalCacheLoadSegmentHint,
   serializableInstances: EntityInstance[]
 ): void {
+  const segment = resolveLoadCacheSegment(segmentHint).kind;
+  const existingHeader: LocalCacheSegmentHeader | undefined = (state as any)[zone]?.[
+    getReduxDeploymentsStateIndex(deploymentUuid, section, entityUuid, segment)
+  ]?.segment;
+  // #381: a subset load (one row by primary key) is merged, never replaces the segment.
+  const { header: segmentHeader, merge } = resolveLoadSegmentWrite(segmentHint, existingHeader);
   const { adapter, entityInstancesLocationIndex } =
     initializeLocalCacheSliceStateWithEntityAdapter(
       deploymentUuid,
@@ -387,10 +394,10 @@ function applyEntityInstancesToZone(
       state,
       segment
     );
-  const next = adapter.setAll(
-    (state as any)[zone][entityInstancesLocationIndex],
-    serializableInstances
-  );
+  const previous = (state as any)[zone][entityInstancesLocationIndex];
+  const next = merge
+    ? adapter.upsertMany(previous, serializableInstances)
+    : adapter.setAll(previous, serializableInstances);
   // EntityAdapter.setAll drops custom fields — re-attach segment header (#214).
   (state as any)[zone][entityInstancesLocationIndex] = {
     ...next,
@@ -427,8 +434,7 @@ function loadNewEntityInstancesInLocalCache(
       state,
     );
   }
-  const { kind: segment, projection } = resolveLoadCacheSegment(instanceCollection);
-  const segmentHeader = buildLocalCacheSegmentHeader(segment, "fresh", projection);
+  const { kind: segment } = resolveLoadCacheSegment(instanceCollection);
   const instanceCollectionEntityIndex = getReduxDeploymentsStateIndex(
     deploymentUuid,
     section,
@@ -455,8 +461,7 @@ function loadNewEntityInstancesInLocalCache(
     instanceCollection.parentUuid,
     "loading",
     state,
-    segment,
-    segmentHeader,
+    instanceCollection,
     serializableInstances
   );
   // Also mirror into current so report-triggered fills (no full-deployment
@@ -468,8 +473,7 @@ function loadNewEntityInstancesInLocalCache(
     instanceCollection.parentUuid,
     "current",
     state,
-    segment,
-    segmentHeader,
+    instanceCollection,
     serializableInstances
   );
 }

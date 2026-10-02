@@ -389,3 +389,57 @@ describe("LocalCache segments (#214 Phase 2) — Zustand", () => {
     });
   });
 });
+
+describe("LocalCache merge loads (#381) — Zustand", () => {
+  const rows = ["a", "b", "c"].map(
+    (name, i) =>
+      ({
+        uuid: `44444444-4444-4444-4444-44444444444${i}`,
+        parentUuid: testEntityUuid,
+        name,
+      }) as EntityInstance
+  );
+  const merge = (row: EntityInstance): EntityInstanceCollection => ({
+    parentUuid: testEntityUuid,
+    applicationSection: "data",
+    cacheSegment: "full",
+    cacheLoadMode: "merge",
+    instances: [row],
+  });
+  const replace: EntityInstanceCollection = {
+    parentUuid: testEntityUuid,
+    applicationSection: "data",
+    instances: rows,
+  };
+
+  it("one row merged into an empty cache makes a stale full segment", () => {
+    const localCache = new LocalCache();
+    loadCollection(localCache, merge(rows[1]));
+
+    const snap = localCache.getState().presentModelSnapshot;
+    expect(snap.current[fullIndex]?.segment).toEqual({ kind: "full", freshness: "stale" });
+    expect(Object.keys(snap.current[fullIndex]?.entities ?? {})).toEqual([rows[1].uuid]);
+    expect(snap.loading[fullIndex]?.segment).toEqual({ kind: "full", freshness: "stale" });
+  });
+
+  it("a full load after a merged row replaces the segment and makes it fresh", () => {
+    const localCache = new LocalCache();
+    loadCollection(localCache, merge(rows[1]));
+    loadCollection(localCache, replace);
+
+    const snap = localCache.getState().presentModelSnapshot;
+    expect(snap.current[fullIndex]?.segment).toEqual({ kind: "full", freshness: "fresh" });
+    expect(Object.keys(snap.current[fullIndex]?.entities ?? {})).toHaveLength(3);
+  });
+
+  it("a row merged into a fresh full segment keeps all rows and freshness", () => {
+    const localCache = new LocalCache();
+    loadCollection(localCache, replace);
+    loadCollection(localCache, merge({ ...rows[1], name: "b2" } as EntityInstance));
+
+    const snap = localCache.getState().presentModelSnapshot;
+    expect(snap.current[fullIndex]?.segment).toEqual({ kind: "full", freshness: "fresh" });
+    expect(Object.keys(snap.current[fullIndex]?.entities ?? {})).toHaveLength(3);
+    expect(snap.current[fullIndex]?.entities?.[rows[1].uuid]).toMatchObject({ name: "b2" });
+  });
+});

@@ -30,6 +30,7 @@ import {
   rejectPartialMutationInstanceAction,
   resolveInstanceParentUuid,
   resolveLoadCacheSegment,
+  resolveLoadSegmentWrite,
   stripLocalCacheSegmentSuffix,
   toReduxSerializable,
   assertVersioningEnabledImmutable,
@@ -37,6 +38,7 @@ import {
   type ApplicationDeploymentMap,
   type CacheFreshness,
   type CacheSegmentKind,
+  type LocalCacheLoadSegmentHint,
   type LocalCacheSegmentHeader,
 } from "miroir-core";
 import { entityEntity, entitySelfApplication } from "miroir-app-miroir";
@@ -262,10 +264,15 @@ function applyEntityInstancesToZone(
   entityUuid: string,
   zone: LocalCacheSliceStateZone,
   state: LocalCacheSliceState,
-  segment: CacheSegmentKind,
-  segmentHeader: LocalCacheSegmentHeader,
+  segmentHint: LocalCacheLoadSegmentHint,
   instances: EntityInstance[]
 ): void {
+  const segment = resolveLoadCacheSegment(segmentHint).kind;
+  const existingHeader: LocalCacheSegmentHeader | undefined = (state as any)[zone]?.[
+    getReduxDeploymentsStateIndex(deploymentUuid, section, entityUuid, segment)
+  ]?.segment;
+  // #381: a subset load (one row by primary key) is merged, never replaces the segment.
+  const { header: segmentHeader, merge } = resolveLoadSegmentWrite(segmentHint, existingHeader);
   const index = initializeLocalCacheSliceState(
     deploymentUuid,
     section,
@@ -276,7 +283,9 @@ function applyEntityInstancesToZone(
   );
   const idAttribute = getIdAttributeForIndex(index);
   (state as any)[zone][index] = {
-    ...setAllInEntityState(instances, idAttribute),
+    ...(merge
+      ? addManyToEntityState((state as any)[zone][index], instances, idAttribute)
+      : setAllInEntityState(instances, idAttribute)),
     segment: segmentHeader,
   };
 }
@@ -452,9 +461,6 @@ function handleLoadNewInstancesAction(
   
   for (const instanceCollection of action.payload.objects ?? []) {
     const section: ApplicationSection = instanceCollection.applicationSection ?? "data";
-    const { kind: segment, projection } = resolveLoadCacheSegment(instanceCollection);
-    const segmentHeader = buildLocalCacheSegmentHeader(segment, "fresh", projection);
-    
     // #217 Phase 11: register PK from Entity only (ED is historical).
     if (instanceCollection.parentUuid === entityEntity.uuid) {
       for (const entity of instanceCollection.instances ?? []) {
@@ -470,8 +476,7 @@ function handleLoadNewInstancesAction(
       instanceCollection.parentUuid,
       "loading",
       state,
-      segment,
-      segmentHeader,
+      instanceCollection,
       instances
     );
     // Mirror into current so report-triggered fills are visible without full rollback.
@@ -481,8 +486,7 @@ function handleLoadNewInstancesAction(
       instanceCollection.parentUuid,
       "current",
       state,
-      segment,
-      segmentHeader,
+      instanceCollection,
       instances
     );
   }

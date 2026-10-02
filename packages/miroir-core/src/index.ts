@@ -1050,10 +1050,12 @@ export {
   projectionsEqual,
   resolveCacheSegmentKind,
   resolveLoadCacheSegment,
+  resolveLoadSegmentWrite,
   stripLocalCacheSegmentSuffix,
 } from "./1_core/localCache/localCacheSegment.js";
 export type {
   CacheFreshness,
+  CacheLoadMode,
   CacheSegmentKind,
   LocalCacheLoadSegmentHint,
   LocalCacheSegmentHeader,
@@ -1211,6 +1213,7 @@ export {
 export {
   createSegmentHeaderLookupFromLocalCacheSnapshot,
   isLocalCacheSegmentHeaderSufficient,
+  isLocalCacheSegmentHeaderSufficientForInstance,
   isReportQueryLoadSegmentSufficient,
   attributesFromResolvedReportQueryExtractors,
   resolveReportQueryLoadAttributes,

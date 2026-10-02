@@ -6515,6 +6515,22 @@ export const miroirFundamentalMlSchema = {
                 "canBeTemplate": true
               }
             }
+          },
+          "cacheLoadMode": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "replace",
+              "merge"
+            ],
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Cache Load Mode",
+                "editable": false,
+                "canBeTemplate": true
+              }
+            }
           }
         }
       },
@@ -43602,6 +43618,48 @@ export const miroirFundamentalMlSchema = {
               "value": {
                 "id": 4,
                 "defaultLabel": "Attributes Projection",
+                "editable": false,
+                "canBeTemplate": true,
+                "isTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ]
+          },
+          "cacheLoadMode": {
+            "type": "union",
+            "optional": true,
+            "definition": [
+              {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "replace",
+                  "merge"
+                ],
+                "tag": {
+                  "value": {
+                    "id": 5,
+                    "defaultLabel": "Cache Load Mode",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "coreTransformerForBuildPlusRuntime"
+                }
+              }
+            ],
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Cache Load Mode",
                 "editable": false,
                 "canBeTemplate": true,
                 "isTemplate": true

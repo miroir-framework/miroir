@@ -343,6 +343,7 @@ describe("createReportQueryLoadExecutor (Phase 4)", () => {
           {
             parentUuid: BLOB_UUID,
             cacheSegment: "full",
+            cacheLoadMode: "merge",
             instances: [{ uuid: INSTANCE, name: "MiroirLogo" }],
           },
         ],

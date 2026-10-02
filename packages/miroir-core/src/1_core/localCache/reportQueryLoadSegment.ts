@@ -196,6 +196,21 @@ export function isLocalCacheSegmentHeaderSufficient(
   return true;
 }
 
+/**
+ * #381 — a primary-key target only needs its row. A stale full segment holds rows
+ * merged by earlier primary-key loads (not all instances), and those rows are
+ * current. A stale partial segment may hold outdated rows (sibling full segment
+ * mutated), so it still needs a reload.
+ */
+export function isLocalCacheSegmentHeaderSufficientForInstance(
+  header: LocalCacheSegmentHeader | undefined | null,
+  kind: CacheSegmentKind,
+  projection?: readonly string[] | null
+): boolean {
+  if (header?.kind === "full" && kind === "full") return true;
+  return isLocalCacheSegmentHeaderSufficient(header, kind, projection);
+}
+
 export type LocalCacheSegmentSlice = {
   segment?: LocalCacheSegmentHeader;
   entities?: Record<string, unknown>;
@@ -256,14 +271,18 @@ export function isReportQueryLoadSegmentSufficient(
       kind
     );
     const header = segmentHeaderFromLookupResult(lookupResult);
-    if (!isLocalCacheSegmentHeaderSufficient(header, kind, projection)) {
-      return false;
-    }
     if (target.instanceUuid) {
+      if (!isLocalCacheSegmentHeaderSufficientForInstance(header, kind, projection)) {
+        return false;
+      }
       const entities = segmentEntitiesFromLookupResult(lookupResult);
       if (!entities?.[target.instanceUuid]) {
         return false;
       }
+      continue;
+    }
+    if (!isLocalCacheSegmentHeaderSufficient(header, kind, projection)) {
+      return false;
     }
   }
   return true;
