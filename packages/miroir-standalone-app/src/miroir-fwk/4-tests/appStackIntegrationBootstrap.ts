@@ -3,6 +3,8 @@ import type {
   DeployMiroirStrategy,
   Deployment,
   DomainControllerInterface,
+  ExternalServiceEnvironment,
+  FakeOutboundHttp,
   IntegrationTestBootstrapPhase,
   IntegrationTestHostMode,
   LibraryPlayfieldEnsureMode,
@@ -58,6 +60,8 @@ export type AppStackBootstrapOptions = {
   hostExecutionEnvironment?: Partial<MiroirTestExecutionEnvironment>;
   skipBootstrapPhases?: readonly IntegrationTestBootstrapPhase[];
   platformEnsureMode?: MiroirPlatformEnsureMode;
+  /** #339: what the session's external service environment changes from the default one. */
+  externalServiceEnvironment?: Partial<ExternalServiceEnvironment>;
 };
 
 function isPhaseSkipped(
@@ -133,6 +137,7 @@ export async function runAppStackIntegrationBootstrap(
     hostExecutionEnvironment,
     skipBootstrapPhases,
     platformEnsureMode = "createIfAbsent",
+    externalServiceEnvironment,
   } = options;
 
   if (!phases.includes("wireEmulatedStack")) {
@@ -150,6 +155,8 @@ export async function runAppStackIntegrationBootstrap(
   let domainControllerForClient: DomainControllerInterface;
   let domainControllerForServer: DomainControllerInterface | undefined;
   let persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
+  // absent when the session reuses the host's controllers, whose environment it does not own
+  let fakeOutboundHttp: FakeOutboundHttp | undefined;
 
   if (usesEmbeddedHost(options)) {
     domainControllerForClient = hostExecutionEnvironment!.domainController!;
@@ -166,12 +173,15 @@ export async function runAppStackIntegrationBootstrap(
       domainControllerForClient: wiredClient,
       domainControllerForServer: wiredServer,
       persistenceStoreControllerManagerForServer,
+      fakeOutboundHttp: wiredFakeOutboundHttp,
     } = await setupMiroirTest(
       miroirConfig,
       miroirActivityTracker,
       miroirEventService,
       customFetch,
+      externalServiceEnvironment,
     );
+    fakeOutboundHttp = wiredFakeOutboundHttp;
 
     if (!persistenceStoreControllerManagerForServer) {
       throw new Error(
@@ -323,5 +333,6 @@ export async function runAppStackIntegrationBootstrap(
       hostExecutionEnvironment?.applicationDeploymentMap ?? applicationDeploymentMap,
     testApplicationUuid,
     persistenceStoreControllerManager,
+    ...(fakeOutboundHttp ? { fakeOutboundHttp } : {}),
   };
 }

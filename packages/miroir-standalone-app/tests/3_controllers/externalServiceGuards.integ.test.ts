@@ -19,15 +19,14 @@ import type {
 } from "miroir-core";
 import {
   Action2Error,
-  allowInsecureBaseUrlsForTests,
-  clearAllowedInsecureBaseUrlsForTests,
-  clearExternalServiceTokenCacheForTests,
   clearSecrets,
+  createExternalServiceTokenCache,
+  defaultExternalServiceClient,
+  type ExternalServiceClientInterface,
   ConfigurationService,
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
-  executeExternalServiceOperation,
   LoggerInterface,
   LoggerOptions,
   MiroirActivityTracker,
@@ -323,6 +322,26 @@ async function queryPlaylist(playlistId: string, actionType?: string): Promise<u
   );
 }
 
+// #339: the OAuth2 tokens of the session's external service environment
+const tokenCache = createExternalServiceTokenCache();
+
+/**
+ * #339: runs an operation on a client of the session's environment, whose insecure base URLs are
+ * `insecureBaseUrls` (the fake server's by default).
+ */
+function executeExternalServiceOperation(
+  endpoint: Parameters<ExternalServiceClientInterface["executeOperation"]>[0],
+  actionType: string,
+  bindings: Record<string, unknown>,
+  insecureBaseUrls: string[] = [fakeServer.baseUrl],
+) {
+  return defaultExternalServiceClient({ insecureBaseUrls, tokenCache }).executeOperation(
+    endpoint,
+    actionType,
+    bindings,
+  );
+}
+
 beforeAll(async () => {
   if (!miroirConfig.client.emulateServer) {
     throw new Error(
@@ -332,9 +351,8 @@ beforeAll(async () => {
 
   fakeServer = await startFakeExternalServiceServer();
   registerSecrets({ fakeSpotify: "test-token" });
-  allowInsecureBaseUrlsForTests([fakeServer.baseUrl]);
-
   const session = new AppStackIntegrationTestSession(miroirConfig, {
+    externalServiceEnvironment: { insecureBaseUrls: [fakeServer.baseUrl], tokenCache },
     applicationDeploymentMap,
     adminDeployment,
     libraryDeploymentStorageConfiguration,
@@ -362,13 +380,12 @@ beforeAll(async () => {
 
 beforeEach(() => {
   fakeServer.receivedRequests.length = 0;
-  clearExternalServiceTokenCacheForTests();
+  tokenCache.clear();
 });
 
 afterAll(async () => {
   clearSecrets();
-  clearAllowedInsecureBaseUrlsForTests();
-  clearExternalServiceTokenCacheForTests();
+  tokenCache.clear();
   if (fakeServer) {
     await fakeServer.close();
   }
@@ -451,12 +468,11 @@ describe.skipIf(!shouldRun).sequential("externalServiceGuards — D12 HTTP mappi
     const closedServer = await startFakeExternalServiceServer();
     const closedUrl = closedServer.baseUrl;
     await closedServer.close();
-    allowInsecureBaseUrlsForTests([closedUrl]);
-
     const result = await executeExternalServiceOperation(
       syntheticEndpoint({ baseUrl: closedUrl }),
       "get-playlist",
       { playlist_id: PLAYLIST_ID_OK },
+      [closedUrl],
     );
     expectActionError(result, "ExternalServiceUpstreamFailure", /fail|network|unreachable|connect/i);
     expect(fakeServer.receivedRequests).toHaveLength(0);
@@ -490,18 +506,14 @@ describe.skipIf(!shouldRun).sequential("externalServiceGuards — credential fai
 
 describe.skipIf(!shouldRun).sequential("externalServiceGuards — SSRF default-deny", () => {
   it("without the test opt-in, the fixture loopback http baseUrl is rejected", async () => {
-    clearAllowedInsecureBaseUrlsForTests();
-    try {
-      const result = await executeExternalServiceOperation(
-        syntheticEndpoint({ baseUrl: fakeServer.baseUrl }),
-        "get-playlist",
-        { playlist_id: PLAYLIST_ID_OK },
-      );
-      expectActionError(result, "InvalidAction", /insecure|private|not allowed/i);
-      expect(fakeServer.receivedRequests).toHaveLength(0);
-    } finally {
-      allowInsecureBaseUrlsForTests([fakeServer.baseUrl]);
-    }
+    const result = await executeExternalServiceOperation(
+      syntheticEndpoint({ baseUrl: fakeServer.baseUrl }),
+      "get-playlist",
+      { playlist_id: PLAYLIST_ID_OK },
+      [],
+    );
+    expectActionError(result, "InvalidAction", /insecure|private|not allowed/i);
+    expect(fakeServer.receivedRequests).toHaveLength(0);
   });
 
   it.each([

@@ -98,7 +98,8 @@ describe("listDisplayByTransformer — integration (app-stack)", () => {
       await waitFor(() => {
         expect(screen.getByRole("heading", { name: "Books" })).toBeInTheDocument();
       });
-      expect(screen.getByText(book1.name, { exact: false })).toBeInTheDocument();
+      // The list grid is lazy (#337): its rows appear once its chunk has loaded.
+      expect(await screen.findByText(book1.name, { exact: false })).toBeInTheDocument();
     });
 
     it("uses pageSize 10 while the transformer is enabled and restores default paging when disabled", async () => {

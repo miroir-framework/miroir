@@ -6,7 +6,8 @@ import {
   GridApi,
 } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
-import { useCallback, useMemo, useRef, useState, type FC } from "react";
+import { Suspense, useCallback, useMemo, useRef, useState, type FC } from "react";
+import { CenteredSpinner } from "../CenteredSpinner.js";
 
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
@@ -32,7 +33,7 @@ import {
 } from "../Themes/TableStyleGenerators.js";
 import { DeepPartial, TableTheme } from "../Themes/TableTheme.js";
 import { ToolsCellRenderer } from "./GenderCellRenderer.js";
-import { GlideDataGridComponent } from "./GlideDataGridComponent.js";
+import { GlideDataGridComponent } from "./LazyGrids.js";
 import {
   agGridModeProps,
   computeAgGridScrollHeight,
@@ -545,33 +546,35 @@ export const ValueObjectGrid: FC<any> = (
           />
         </div>
       ) : (
-        <GlideDataGridComponent
-          tableComponentRows={tableComponentRows}
-          columnDefs={{ columnDefs: effectiveColumnDefs }}
-          styles={{
-            ...props.styles,
-            fontFamily: contextTheme.typography.fontFamily,
-            fontSize: contextTheme.typography.fontSize,
-            borderRadius: contextTheme.components.table.borderRadius,
-            border: contextTheme.components.table.border,
-          }}
-          type="JSON_ARRAY"
-          // calculatedColumnWidths={calculatedColumnWidths}
-          containerWidth={containerWidth}
-          toolsColumnDefinition={toolsColumnDefinition}
-          maxRows={props.maxRows}
-          pageSize={props.pageSize}
-          theme={contextTheme}
-          glideTheme={glideTheme}
-          onCellClicked={onGlideGridCellClicked}
-          onCellEdited={(cell, newValue) => {
-            log.info("ValueObjectGrid Glide cell edited (read-only)", cell, newValue);
-          }}
-          onRowEdit={props.onRowEdit ? handleGlideEditDialogFormOpen : undefined}
-          onRowDelete={props.onRowDelete ? handleGlideDeleteDialogFormOpen : undefined}
-          // onRowDuplicate={props.onRowDuplicate ? handleGlideDuplicateDialogFormOpen : undefined}
-          onRowDuplicate={handleGlideDuplicateDialogFormOpen}
-        />
+        <Suspense fallback={<CenteredSpinner />}>
+          <GlideDataGridComponent
+            tableComponentRows={tableComponentRows}
+            columnDefs={{ columnDefs: effectiveColumnDefs }}
+            styles={{
+              ...props.styles,
+              fontFamily: contextTheme.typography.fontFamily,
+              fontSize: contextTheme.typography.fontSize,
+              borderRadius: contextTheme.components.table.borderRadius,
+              border: contextTheme.components.table.border,
+            }}
+            type="JSON_ARRAY"
+            // calculatedColumnWidths={calculatedColumnWidths}
+            containerWidth={containerWidth}
+            toolsColumnDefinition={toolsColumnDefinition}
+            maxRows={props.maxRows}
+            pageSize={props.pageSize}
+            theme={contextTheme}
+            glideTheme={glideTheme}
+            onCellClicked={onGlideGridCellClicked}
+            onCellEdited={(cell, newValue) => {
+              log.info("ValueObjectGrid Glide cell edited (read-only)", cell, newValue);
+            }}
+            onRowEdit={props.onRowEdit ? handleGlideEditDialogFormOpen : undefined}
+            onRowDelete={props.onRowDelete ? handleGlideDeleteDialogFormOpen : undefined}
+            // onRowDuplicate={props.onRowDuplicate ? handleGlideDuplicateDialogFormOpen : undefined}
+            onRowDuplicate={handleGlideDuplicateDialogFormOpen}
+          />
+        </Suspense>
       )}
     </div>
   );

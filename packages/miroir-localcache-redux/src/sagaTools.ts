@@ -6,7 +6,9 @@ import {
 import {
   DomainController,
   DomainControllerInterface,
-  MiroirContext
+  MiroirContext,
+  defaultExternalServiceClient,
+  type ExternalServiceClientInterface,
 } from "miroir-core";
 import { call } from "typed-redux-saga";
 import { LocalCache } from "./4_services/LocalCache.js";
@@ -26,6 +28,8 @@ import PersistenceReduxSaga, {
 export function setupMiroirDomainController(
   miroirContext: MiroirContext,
   persistenceReduxSagaParams: PersistenceStoreAccessParams,
+  /** #339: the client of the external services; defaults to the global fetch and the process secrets. */
+  externalServiceClient: ExternalServiceClientInterface = defaultExternalServiceClient(),
 ): DomainControllerInterface {
   if (persistenceReduxSagaParams.persistenceStoreAccessMode === "none") {
     throw new Error("Persistence access mode 'none' is not supported when setting up a DomainController. Please use 'local' or 'remote' and pass a persistence store along with it.");
@@ -45,7 +49,7 @@ export function setupMiroirDomainController(
     miroirContext,
     localCache, // implements LocalCacheInterface
     persistenceSaga, // implements PersistenceStoreLocalOrRemoteInterface
-    // {} as any// new Endpoint(localCache)
+    externalServiceClient,
   );
   return domainController
 }

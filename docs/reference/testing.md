@@ -70,6 +70,30 @@ npm run nonreg -- --compare \
 
 Step list: [`scripts/nonreg-manifest.json`](../../scripts/nonreg-manifest.json). Runner: [`scripts/run-nonreg.py`](../../scripts/run-nonreg.py). Default integ profile: `emulatedServer-sql` (override with `--profile`).
 
+#### Scopes (#351)
+
+A **scope** is a named subset of the manifest for a quick check between implementation slices, when the full run (about 25 min on filesystem) is too long. Each step lists its scopes (`"scopes": ["actions", "runners"]`); the top-level `scopes` object describes them. `--scope a,b` runs the steps of those scopes plus the run bracket (scope `always`: environment record first, tracked-assets check last), still filtered by `--tier`; `--only` ids are added to the selection. `summary.json` records `scopes`; an empty or unknown scope name is an error. `--compare` with a scoped run on either side compares only the steps both runs selected and lists the others as ignored. Without `--scope` a run is unchanged.
+
+```bash
+npm run nonreg:filesystem -- --runner shared --scope smoke,actions
+npm run nonreg:filesystem -- --runner shared --scope ui --only integ-runner.dropEntity
+```
+
+| Scope | Steps (default tier, incl. bracket) | Measured | Covers |
+|---|---|---|---|
+| `smoke` | 8 | 2.4 min | wide and thin: one step per layer (model validation, `tr.core`, DomainController dataCrud, runner lendDocument, report bookDetails, MlElementEditor component tests) |
+| `core` | 14 | 1.5 min | miroir-core unit catalog, transformers, queries, schemas, deployment `modelValidation`, access and authentication |
+| `actions` | 14 | 1.8 min | DomainController, persistence stores, model evolution |
+| `runners` | 13 | 1.9 min (before `unit-345-mcp` joined) | runners, MCP runners, scenarios, multistep processes |
+| `ui` | 21 | 10.2 min | React components, reports, Miroir Tests UI, grids and lists |
+| `localcache` | 13 | 1.2 min | local cache memory measure and monitor |
+| `external` | 14 | 8.5 min | external services, OpenAPI connection wizard, secrets, process capabilities, AI backend |
+| `tooling` | 15 | 2.8 min | repo guards, test harness and launchers, build tooling, runtimes (env, CLI, MCP, Electron) |
+
+Measured on 2026-09-30 (cloud container, `emulatedServer-filesystem`, `--runner shared`, all green). `ui` is dominated by the React component MiroirTests (`unit-286`, `unit-292`: 4.5 min together), `external` by `externalServices-spotify` and `apiCallReport-281` (4 min together). Running all scopes one after the other takes about 30 min, a little more than a full run, because the bracket and shared launches repeat.
+
+Which scopes a slice runs is decided in its TDD plan, from the files it changes (skill `miroir-analysis-to-tdd-plan`, § Nonreg scope per slice). A guard in `scripts/tests/test_run_nonreg.py` fails when a step has no scope besides `smoke` or names an undeclared one, so the scopes together always cover the manifest.
+
 #### Timing profile and shared runner (#318)
 
 Both are opt-in; without the flags a run behaves as before.
@@ -683,6 +707,15 @@ A `reportTest` leaf holds `steps` and may override `instanceUuid`.
 - `compositeAction`: runs an action or a query (`action`, a `compositeActionTemplate`) through the session's DomainController, with the session parameters (`testApplicationUuid`, `testApplicationDeploymentUuid`, …) and the results kept by the earlier steps as parameters. Its result is kept under `nameGivenToResult`, or the action's own.
 - `expectActionResult`: runs a `compositeRunTestAssertion` over the kept results, as a Runner test does. A failure names the step, the assertion and the compared values.
 
+**Stored values in UI steps (#333).** A component test step reads the session parameters and the results kept so far with a `getFromContext` reference (`referenceName`, or `referencePath` into a kept result), resolved when the step starts; `interpolation` is ignored. References are accepted in the values a step enters or compares (`change.value`, `type.text`, `filterSelect.text`, `selectOption.option`, `renameRecordEntry.newName`, `uploadFile.content`, `waitForAttribute.value`, `expectElement.value` and `values`, anywhere in `expectRenderedValues.expectedValue`) and in the text locators of a target (`byText`, `byDisplayValue`, `byLabelText`, `name`, `byTestId`). Form field names (`field`, `fieldName`, `entry`, `attribute`, `ref`) stay literal. In `expectedValue` a reference resolves to any value. In `uploadFile.content` it resolves to any JSON value, uploaded as its JSON text unless it is a string. One reference may stand for the whole of `expectElement.values`, as an array of strings, numbers or booleans. Elsewhere a reference must resolve to a string, a number or a boolean, because these fields reach the DOM as text; a field that takes text only (`text`, `option`, `newName`, `waitForAttribute.value`, `byTestId`) gets a number or a boolean as text. An unresolved reference fails the step, naming the field and what is missing:
+
+```json
+{ "step": "type", "target": { "ref": "nameField" },
+  "text": { "transformerType": "getFromContext", "referencePath": ["otherBook", "book", "name"] } }
+```
+
+`step 4 (type "…"): text: no stored value at "otherBook.book.nme": "otherBook.book" has no "nme" (has: author, …)`. The step schema is shared with `reactComponentTest` leaves, which keep no values: a reference there fails as unresolved.
+
 **Waiting.** After each interaction step, the test waits until the actions the step started have settled and React has rendered their effects, again while those renders start new actions. It fails after the suite's `actionTimeoutMs` (10000 when absent), naming the actions still running. For what appears later without an action, `expectElement` takes a `timeout`.
 
 **Fake HTTP.** `fakeHttpResponses` answers the outbound requests of the Report's actions (an OpenAPI document, an external service): `method`, full `url`, `status` (200 when absent), `headers`, `body` (JSON unless a string). During each leaf they answer the outbound requests of the session's DomainControllers (client and emulated server), not those of the rest of the app; a request with no answer fails the leaf, naming its method and URL. On a `realServer-*` profile the requests leave from the server process, which the test cannot answer: a leaf of a suite with `fakeHttpResponses` is recorded as skipped there.
@@ -707,7 +740,7 @@ In the app, "Run Integration Tests" on the suite's display (Miroir Tests page) m
 
 | Suite | Report | Covers |
 |---|---|---|
-| `report.bookDetails` | Library BookDetails (instance details) | display, store check, edit saved, invalid value not saved |
+| `report.bookDetails` | Library BookDetails (instance details) | display, store check, edit saved, stored value typed (#333), invalid value not saved |
 | `report.connectExternalServiceWizard` | Miroir ConnectExternalServiceWizard (multistep), and the home Report's launcher | document by URL, pasted or uploaded, and its errors; refused private URL; custom token kept out of the page; Finish checked in the store |
 
 Tests of the mechanism, in `packages/miroir-standalone-app/tests/4_view/`: `reportTestLauncher.unit` (routing of `testMiroir`), `reportTestActionsIdle.unit` (the wait), `reportTestFailure.integ` (a failed assertion step), `reportTestFakeHttp.integ` (an undeclared request), `reportTestInApp.integ` (the Miroir Tests display drives the wizard).

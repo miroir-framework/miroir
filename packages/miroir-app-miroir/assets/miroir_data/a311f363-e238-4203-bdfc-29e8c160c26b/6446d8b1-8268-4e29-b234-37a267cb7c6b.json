@@ -1319,23 +1319,7 @@
               },
               {
                 "step": "expectElement",
-                "label": "the Client credentials secrets step, which a customToken user sees first (#338)",
-                "target": {
-                  "byTestId": "multistep-step-label"
-                },
-                "containsHtml": "Client credentials secrets",
-                "timeout": 5000
-              },
-              {
-                "step": "click",
-                "label": "Next",
-                "target": {
-                  "byTestId": "multistep-next"
-                }
-              },
-              {
-                "step": "expectElement",
-                "label": "the Custom token step",
+                "label": "the Custom token step, straight after Scheme (#338)",
                 "target": {
                   "byTestId": "multistep-step-label"
                 },

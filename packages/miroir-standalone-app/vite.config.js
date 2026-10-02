@@ -11,6 +11,7 @@ import { miroirBundleReport } from "./vite/bundleReportPlugin.js";
 import { miroirManualChunkLoadLogger } from "./vite/chunkLoadLoggerPlugin.js";
 import { MIROIR_TEST_CLIENT_CONFIGS, webClientEnvironment, webTestClientConfigs } from "./vite/environmentConfig.js";
 import { resolveManualChunk } from "./vite/manualChunks.js";
+import { shikiLanguages } from "./vite/shikiLanguagesPlugin.js";
 import { miroirTestTimingConfig } from "../../scripts/vitest/timing.mjs";
 
 // Resolve certificate paths (same defaults as miroir-server)
@@ -56,6 +57,19 @@ function realServerTestClientConfigs(command, mode) {
   return { [MIROIR_TEST_CLIENT_CONFIGS]: JSON.stringify(configs) };
 }
 
+const NODE_STORE_PACKAGES = ["miroir-store-filesystem", "miroir-store-postgres", "miroir-store-mongodb"];
+const nodeStoreAliases = NODE_STORE_PACKAGES.map((name) => ({
+  find: new RegExp(`^${name}$`),
+  replacement: path.resolve(__viteDirname, "vite/nodeStoreStub.js"),
+}));
+
+// #370: bare `lodash` (only @teroneko/redux-saga-promise requires it, for `merge`) becomes a shim on
+// lodash-es in the browser build and dev server; vitest keeps the real package.
+const lodashMergeShimAlias = {
+  find: /^lodash$/,
+  replacement: path.resolve(__viteDirname, "vite/lodashMergeShim.js"),
+};
+
 export default defineConfig(({ command, mode }) => {
   const web = selectedWebClientEnvironment(command, mode);
   const apiBase = web?.rootApiUrl ?? (certsReady ? 'https://localhost:3080' : 'http://localhost:3080');
@@ -87,6 +101,11 @@ export default defineConfig(({ command, mode }) => {
     },
     resolve: {
       dedupe: ['react', 'react-dom', '@emotion/react', '@emotion/styled', '@mui/material'],
+      // #337: the web build ships no Node store driver (sequelize, mongodb, …); vitest keeps the real ones.
+      alias:
+        mode === "test"
+          ? []
+          : [lodashMergeShimAlias, ...(command === "build" ? nodeStoreAliases : [])],
     },
     optimizeDeps: {
       include: [
@@ -117,16 +136,24 @@ export default defineConfig(({ command, mode }) => {
       ],
     },
     plugins: [
+      // #370: Copilot code blocks highlight 12 languages; the other 223 shiki grammars are not shipped
+      shikiLanguages(),
       miroirManualChunkLoadLogger(),
       // #326: prints which packages each chunk holds and why; writes dist/.vite/bundle-report.json
       miroirBundleReport({ root: path.resolve(__viteDirname, "../.."), app: "miroir-standalone-app" }),
-      nodePolyfills({
-        include: [ "crypto" ],
-        // To exclude specific polyfills, add them to this list. Note: if include is provided, this has no effect
-        exclude: [
-          "process"
-        ],
-      }),
+      // Browser builds only: vitest runs on Node, and since 0.28 the plugin also shims `process` there, which
+      // hides `process.versions.node` from getClientEnvironment ("window is not defined").
+      ...(mode === "test"
+        ? []
+        : [
+            nodePolyfills({
+              include: [ "crypto" ],
+              // To exclude specific polyfills, add them to this list. Note: if include is provided, this has no effect
+              exclude: [
+                "process"
+              ],
+            }),
+          ]),
       react({
         jsxImportSource: '@emotion/react',
         // Use React plugin in all *.jsx and *.tsx files
@@ -179,11 +206,7 @@ export default defineConfig(({ command, mode }) => {
       },
       // Configure React Testing Library act warnings
       pool: 'threads',
-      poolOptions: {
-        threads: {
-          singleThread: true
-        }
-      },
+      maxWorkers: 1,
       // Configure environment for React Testing Library
       environmentOptions: {
         happyDOM: {

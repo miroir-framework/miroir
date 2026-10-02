@@ -118,7 +118,7 @@ Library `Book`, abridged from `packages/miroir-example-library/assets/library_mo
 
 Instances (e.g. a Book) conform to the Entity's `mlSchema`. The generic `EntityInstance` type has **optional** `uuid` and `parentUuid`:
 
-- `parentUuid` is the uuid of the instance's **Entity** (`e8ba151b-…` for a Book). It is still present on all shipped assets and remains the recommended default; [#172](https://github.com/miroir-framework/miroir/issues/172) makes it optional, the owning Entity then being taken from the action / collection context (`resolveInstanceParentUuid` in `packages/miroir-core/src/1_core/Entity/EntityPrimaryKey.ts`).
+- `parentUuid` is the uuid of the instance's **Entity** (`e8ba151b-…` for a Book). It is still present on all shipped assets and remains the recommended default. It is optional ([#172](https://github.com/miroir-framework/miroir/issues/172)): without it, the owning Entity is taken from the action / collection context (`resolveInstanceParentUuid` in `packages/miroir-core/src/1_core/Entity/EntityPrimaryKey.ts`).
 - `uuid` is the primary key only when `idAttribute` is absent or `"uuid"`; with a non-UUID or composite `idAttribute`, the PK attributes identify the instance.
 
 ### Virtual attributes

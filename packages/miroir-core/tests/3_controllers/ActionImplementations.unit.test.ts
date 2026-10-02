@@ -18,6 +18,7 @@ import { DomainController } from "../../src/3_controllers/DomainController";
 import { MiroirActivityTracker } from "../../src/3_controllers/MiroirActivityTracker";
 import { MiroirContext } from "../../src/3_controllers/MiroirContext";
 import { MiroirEventService } from "../../src/3_controllers/MiroirEventService";
+import { defaultExternalServiceClient } from "../../src/5_setup/externalServiceEnvironment";
 
 const MIROIR_APPLICATION_UUID = "360fcf1f-f0d4-4f8a-9262-07886e70fa15";
 const DOMAIN_ENDPOINT_UUID = "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5";
@@ -34,9 +35,13 @@ function newDomainController(): DomainController {
     miroirActivityTracker,
     new MiroirEventService(miroirActivityTracker),
   );
-  const controller = new DomainController("local", miroirContext, {} as any, {} as any);
-  controller.setOutboundFetch(async () => new Response(OPENAPI_DOCUMENT, { status: 200 }));
-  return controller;
+  return new DomainController(
+    "local",
+    miroirContext,
+    {} as any,
+    {} as any,
+    defaultExternalServiceClient({ fetch: async () => new Response(OPENAPI_DOCUMENT, { status: 200 }) }),
+  );
 }
 
 const prepareOpenApiDocumentAction = {
@@ -51,7 +56,7 @@ function newRemoteDomainController(): DomainController {
     miroirActivityTracker,
     new MiroirEventService(miroirActivityTracker),
   );
-  return new DomainController("remote", miroirContext, {} as any, {} as any);
+  return new DomainController("remote", miroirContext, {} as any, {} as any, defaultExternalServiceClient());
 }
 
 /** A copy of the DomainEndpoint whose prepareOpenApiDocument definition is changed by `change`. */

@@ -24,13 +24,13 @@
     "devBuild": "npm run build",
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
     "test": "jest --verbose --silent=false -t",
-    "vitest": "cross-env VITE_TEST_MODE='true' vitest run --reporter=verbose --poolOptions.forks.singleFork --bail=1",
+    "vitest": "cross-env VITE_TEST_MODE='true' vitest run --reporter=verbose --maxWorkers=1 --bail=1",
     "generate-ts-types": "tsx ./scripts/postgres-generate-ts-types.ts"
   },
   "dependencies": {
     "miroir-core": "*",
     "miroir-app-miroir": "*",
-    "pg": "8.16.0",
+    "pg": "8.23.0",
     "pg-hstore": "2.3.4",
     "sequelize": "6.37.8"
   },
@@ -41,7 +41,7 @@
     "copyfiles": "2.4.1",
     "loglevelnext": "6.0.0",
     "rimraf": "4.4.1",
-    "ts-jest": "29.4.0",
+    "ts-jest": "29.4.13",
     "tsconfig-paths": "4.2.0",
     "tsup": "8.5.1"
   }

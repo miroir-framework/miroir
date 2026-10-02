@@ -4,7 +4,7 @@
  * Bundles @copilotkit/react-core (provider) and, when an AI AppBar control is
  * open, AiActionsProvider (@copilotkit/react-ui). RootComponent first mounts
  * this when processCapabilities.ai is enabled and the user opens the assistant
- * sidebar or dev console (so vendor-copilotkit is not fetched at startup), then
+ * sidebar or dev console (so CopilotKit is not fetched at startup), then
  * keeps it mounted while snapshot ai stays enabled so CopilotKit chat state
  * survives closing both controls.
  *

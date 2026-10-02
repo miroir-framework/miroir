@@ -1541,6 +1541,348 @@
             "syncExternalServiceSchema: anyOf is outside the bounded OpenAPI subset and cannot be converted"
           ]
         ]
+      },
+      {
+        "miroirTestType": "transformerTest",
+        "miroirTestLabel": "parses a YAML OpenAPI document (#370: yaml loads on demand)",
+        "transformerName": "syncExternalServiceSchema",
+        "runTestStep": "runtime",
+        "transformer": {
+          "transformerType": "syncExternalServiceSchema",
+          "interpolation": "runtime"
+        },
+        "transformerParams": {
+          "openApiDocument": "openapi: 3.0.0\ninfo:\n  title: Spotify Web API excerpt — get-playlist\n  version: 0.0.1\n  description: Faithful subset of https://developer.spotify.com/reference/web-api/open-api-schema.yaml\n    for GET /playlists/{playlist_id} (operationId get-playlist) plus PUT change-playlist-details.\n    Includes PlaylistObject, TrackObject, SimplifiedArtistObject, ImageObject, paging/owner\n    allOf, ImageObject nullable height/width, and PlaylistTrackObject.track oneOf.\npaths:\n  /playlists/{playlist_id}:\n    parameters:\n    - $ref: '#/components/parameters/PathPlaylistId'\n    get:\n      operationId: get-playlist\n      summary: Get Playlist\n      parameters:\n      - name: fields\n        in: query\n        required: false\n        schema:\n          type: string\n      responses:\n        '200':\n          description: A playlist\n          content:\n            application/json:\n              schema:\n                $ref: '#/components/schemas/PlaylistObject'\n    put:\n      operationId: change-playlist-details\n      summary: Change Playlist Details\n      responses:\n        '200':\n          description: Playlist updated\ncomponents:\n  parameters:\n    PathPlaylistId:\n      name: playlist_id\n      in: path\n      required: true\n      schema:\n        type: string\n  schemas:\n    ImageObject:\n      type: object\n      required:\n      - url\n      - height\n      - width\n      properties:\n        url:\n          type: string\n        height:\n          type: integer\n          nullable: true\n        width:\n          type: integer\n          nullable: true\n    PlaylistUserObject:\n      type: object\n      properties:\n        id:\n          type: string\n        href:\n          type: string\n        type:\n          type: string\n        uri:\n          type: string\n    PlaylistOwnerObject:\n      allOf:\n      - $ref: '#/components/schemas/PlaylistUserObject'\n      - type: object\n        properties:\n          display_name:\n            type: string\n            nullable: true\n    PagingObject:\n      type: object\n      required:\n      - href\n      - items\n      - limit\n      - next\n      - offset\n      - previous\n      - total\n      properties:\n        href:\n          type: string\n        limit:\n          type: integer\n        next:\n          type: string\n          nullable: true\n        offset:\n          type: integer\n        previous:\n          type: string\n          nullable: true\n        total:\n          type: integer\n        items:\n          type: array\n          items: {}\n    SimplifiedArtistObject:\n      type: object\n      properties:\n        id:\n          type: string\n        name:\n          type: string\n        type:\n          type: string\n          enum:\n          - artist\n    TrackObject:\n      type: object\n      properties:\n        id:\n          type: string\n        name:\n          type: string\n        artists:\n          type: array\n          items:\n            $ref: '#/components/schemas/SimplifiedArtistObject'\n        duration_ms:\n          type: integer\n        href:\n          type: string\n        type:\n          type: string\n          enum:\n          - track\n    EpisodeObject:\n      type: object\n      properties:\n        id:\n          type: string\n        name:\n          type: string\n        type:\n          type: string\n          enum:\n          - episode\n    PlaylistTrackObject:\n      type: object\n      properties:\n        track:\n          oneOf:\n          - $ref: '#/components/schemas/TrackObject'\n          - $ref: '#/components/schemas/EpisodeObject'\n    PagingPlaylistTrackObject:\n      allOf:\n      - $ref: '#/components/schemas/PagingObject'\n      - type: object\n        properties:\n          items:\n            type: array\n            items:\n              $ref: '#/components/schemas/PlaylistTrackObject'\n    PlaylistObject:\n      type: object\n      properties:\n        collaborative:\n          type: boolean\n        description:\n          type: string\n          nullable: true\n        href:\n          type: string\n        id:\n          type: string\n        images:\n          type: array\n          items:\n            $ref: '#/components/schemas/ImageObject'\n        name:\n          type: string\n        owner:\n          allOf:\n          - $ref: '#/components/schemas/PlaylistOwnerObject'\n        public:\n          type: boolean\n        snapshot_id:\n          type: string\n        tracks:\n          type: object\n          allOf:\n          - $ref: '#/components/schemas/PagingPlaylistTrackObject'\n        type:\n          type: string\n        uri:\n          type: string\n",
+          "appModel": {
+            "endpoints": [
+              {
+                "uuid": "0e5cb172-12ea-4467-8598-5889338ae454",
+                "parentName": "Endpoint",
+                "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+                "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "name": "SpotifyService",
+                "version": "1",
+                "description": "Slice 6 sync-input endpoint (Library playfield). operations[] start empty; the sync transformer upserts get-playlist.",
+                "definition": {
+                  "externalService": {
+                    "openApiDocument": "",
+                    "baseUrl": "https://api.spotify.com/v1",
+                    "securityScheme": {
+                      "type": "http",
+                      "scheme": "bearer",
+                      "bearerFormat": "JWT"
+                    },
+                    "credentialKey": "spotifyUser",
+                    "enabledOperations": [
+                      "get-playlist"
+                    ],
+                    "operations": [],
+                    "operationSync": {
+                      "get-playlist": {
+                        "boundPaths": [
+                          "id",
+                          "name",
+                          "owner.id",
+                          "owner.display_name",
+                          "images.url",
+                          "images.height",
+                          "images.width",
+                          "tracks.total",
+                          "tracks.items.track.id",
+                          "tracks.items.track.name",
+                          "tracks.items.track.artists.id",
+                          "tracks.items.track.artists.name",
+                          "tracks.items.track.duration_ms"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "scope": [
+            "get-playlist",
+            "change-playlist-details"
+          ],
+          "endpointUuid": "0e5cb172-12ea-4467-8598-5889338ae454"
+        },
+        "subExpectedValue": [
+          [
+            "actionType",
+            "compositeActionSequence"
+          ],
+          [
+            "payload.actionSequence.0.actionType",
+            "updateInstance"
+          ],
+          [
+            "payload.actionSequence.0.payload.objects.0.definition.externalService.operations.0",
+            {
+              "operationId": "get-playlist",
+              "method": "GET",
+              "path": "/playlists/{playlist_id}",
+              "parameterMappings": [
+                {
+                  "name": "playlist_id",
+                  "in": "path",
+                  "required": true
+                },
+                {
+                  "name": "fields",
+                  "in": "query"
+                }
+              ],
+              "responseSchema": {
+                "type": "object",
+                "definition": {
+                  "id": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "name": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "owner": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "id": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "display_name": {
+                        "type": "string",
+                        "nullable": true,
+                        "optional": true
+                      }
+                    }
+                  },
+                  "images": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "object",
+                      "definition": {
+                        "url": {
+                          "type": "string"
+                        },
+                        "height": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "width": {
+                          "type": "number",
+                          "nullable": true
+                        }
+                      }
+                    }
+                  },
+                  "tracks": {
+                    "type": "object",
+                    "optional": true,
+                    "definition": {
+                      "total": {
+                        "type": "number"
+                      },
+                      "items": {
+                        "type": "array",
+                        "definition": {
+                          "type": "object",
+                          "definition": {
+                            "track": {
+                              "type": "object",
+                              "optional": true,
+                              "definition": {
+                                "id": {
+                                  "type": "string",
+                                  "optional": true
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "optional": true
+                                },
+                                "artists": {
+                                  "type": "array",
+                                  "optional": true,
+                                  "definition": {
+                                    "type": "object",
+                                    "definition": {
+                                      "id": {
+                                        "type": "string",
+                                        "optional": true
+                                      },
+                                      "name": {
+                                        "type": "string",
+                                        "optional": true
+                                      }
+                                    }
+                                  }
+                                },
+                                "duration_ms": {
+                                  "type": "number",
+                                  "optional": true
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          [
+            "payload.actionSequence.0.payload.objects.0.definition.externalService.operations",
+            [
+              {
+                "operationId": "get-playlist",
+                "method": "GET",
+                "path": "/playlists/{playlist_id}",
+                "parameterMappings": [
+                  {
+                    "name": "playlist_id",
+                    "in": "path",
+                    "required": true
+                  },
+                  {
+                    "name": "fields",
+                    "in": "query"
+                  }
+                ],
+                "responseSchema": {
+                  "type": "object",
+                  "definition": {
+                    "id": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "name": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "owner": {
+                      "type": "object",
+                      "optional": true,
+                      "definition": {
+                        "id": {
+                          "type": "string",
+                          "optional": true
+                        },
+                        "display_name": {
+                          "type": "string",
+                          "nullable": true,
+                          "optional": true
+                        }
+                      }
+                    },
+                    "images": {
+                      "type": "array",
+                      "optional": true,
+                      "definition": {
+                        "type": "object",
+                        "definition": {
+                          "url": {
+                            "type": "string"
+                          },
+                          "height": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "width": {
+                            "type": "number",
+                            "nullable": true
+                          }
+                        }
+                      }
+                    },
+                    "tracks": {
+                      "type": "object",
+                      "optional": true,
+                      "definition": {
+                        "total": {
+                          "type": "number"
+                        },
+                        "items": {
+                          "type": "array",
+                          "definition": {
+                            "type": "object",
+                            "definition": {
+                              "track": {
+                                "type": "object",
+                                "optional": true,
+                                "definition": {
+                                  "id": {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "optional": true
+                                  },
+                                  "artists": {
+                                    "type": "array",
+                                    "optional": true,
+                                    "definition": {
+                                      "type": "object",
+                                      "definition": {
+                                        "id": {
+                                          "type": "string",
+                                          "optional": true
+                                        },
+                                        "name": {
+                                          "type": "string",
+                                          "optional": true
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "duration_ms": {
+                                    "type": "number",
+                                    "optional": true
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          ],
+          [
+            "payload.actionSequence.1",
+            null
+          ],
+          [
+            "payload.actionSequence.0.payload.objects.0.definition.externalService.operations.0.responseSchema.definition.id",
+            {
+              "type": "string",
+              "optional": true
+            }
+          ],
+          [
+            "payload.actionSequence.0.payload.objects.0.definition.externalService.operations.0.responseSchema.definition.name",
+            {
+              "type": "string",
+              "optional": true
+            }
+          ],
+          [
+            "payload.actionSequence.0.payload.objects.0.definition.externalService.operations.0.responseSchema.definition.owner.definition.display_name",
+            {
+              "type": "string",
+              "nullable": true,
+              "optional": true
+            }
+          ]
+        ]
       }
     ]
   }

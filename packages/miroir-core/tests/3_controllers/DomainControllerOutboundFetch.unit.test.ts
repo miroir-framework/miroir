@@ -1,11 +1,13 @@
 /**
- * #330 PR review: a Report test answers the outbound requests of its session's DomainController,
- * not those of the other controllers of the process (the app around the test sandbox).
+ * #330 PR review, #339: a DomainController sends its outbound requests through the external service
+ * client it is built with, not through those of the other controllers of the process.
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { Action2Error, executeExternalServiceOperation } from "miroir-core";
+import { Action2Error } from "miroir-core";
 import { DomainController } from "../../src/3_controllers/DomainController";
+import type { OutboundFetch } from "../../src/0_interfaces/4-services/ExternalServiceClientInterface";
+import { defaultExternalServiceClient } from "../../src/5_setup/externalServiceEnvironment";
 
 const DOCUMENT_URL = "https://api.example.com/openapi.json";
 const OPENAPI_DOCUMENT = JSON.stringify({
@@ -36,6 +38,16 @@ function publicServiceEndpoint() {
   };
 }
 
+function controllerOn(fetch?: OutboundFetch): DomainController {
+  return new DomainController(
+    "local",
+    {} as any,
+    {} as any,
+    {} as any,
+    defaultExternalServiceClient(fetch ? { fetch } : {}),
+  );
+}
+
 function prepareOpenApiDocument(controller: DomainController) {
   return (controller as any).handlePrepareOpenApiDocument({
     actionType: "prepareOpenApiDocument",
@@ -48,14 +60,13 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe("DomainController outbound fetch (#330)", () => {
-  it("answers the requests of the controller it is set on, not those of another controller", async () => {
+describe("DomainController outbound fetch (#330, #339)", () => {
+  it("sends the requests of a controller through the fetch of its client, not through another controller's", async () => {
     const globalFetch = vi.fn(async () => new Response("", { status: 503 }));
     vi.stubGlobal("fetch", globalFetch);
-    const sessionController = new DomainController("local", {} as any, {} as any, {} as any);
-    const otherController = new DomainController("local", {} as any, {} as any, {} as any);
     const fakeFetch = vi.fn(async () => new Response(OPENAPI_DOCUMENT, { status: 200 }));
-    sessionController.setOutboundFetch(fakeFetch);
+    const sessionController = controllerOn(fakeFetch);
+    const otherController = controllerOn();
 
     expect(await prepareOpenApiDocument(sessionController)).not.toBeInstanceOf(Action2Error);
     expect(fakeFetch).toHaveBeenCalledWith(DOCUMENT_URL, { redirect: "manual" });
@@ -67,28 +78,15 @@ describe("DomainController outbound fetch (#330)", () => {
     expect(fakeFetch).toHaveBeenCalledTimes(1);
   });
 
-  it("goes back to the global fetch when the replacement is removed", async () => {
-    const globalFetch = vi.fn(async () => new Response("", { status: 503 }));
-    vi.stubGlobal("fetch", globalFetch);
-    const controller = new DomainController("local", {} as any, {} as any, {} as any);
-    controller.setOutboundFetch(async () => new Response(OPENAPI_DOCUMENT, { status: 200 }));
-    controller.setOutboundFetch(undefined);
-
-    expect(await prepareOpenApiDocument(controller)).toBeInstanceOf(Action2Error);
-    expect(globalFetch).toHaveBeenCalledTimes(1);
-  });
-
-  it("sends an external service operation through the fetch it is given", async () => {
+  it("sends an external service operation through the fetch of the client", async () => {
     const globalFetch = vi.fn(async () => new Response("", { status: 503 }));
     vi.stubGlobal("fetch", globalFetch);
     const fakeFetch = vi.fn(async () => new Response(JSON.stringify({ id: "42" }), { status: 200 }));
 
-    const result = await executeExternalServiceOperation(
+    const result = await defaultExternalServiceClient({ fetch: fakeFetch }).executeOperation(
       publicServiceEndpoint() as any,
       "get-item",
       { item_id: "42" },
-      undefined,
-      fakeFetch,
     );
 
     expect(result).not.toBeInstanceOf(Action2Error);

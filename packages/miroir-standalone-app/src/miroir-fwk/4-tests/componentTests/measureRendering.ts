@@ -1,4 +1,4 @@
-import type { ComponentRenderMeasurement, ReactComponentTestStep } from "miroir-core";
+import type { ComponentRenderMeasurement, ResolvedReactComponentTestStep } from "miroir-core";
 
 import { renderInsightRegistry, type RenderInsightNode } from "../../4_view/tools/renderInsightRegistry.js";
 import type { ComponentTestEnvironment } from "./componentTestEnvironment.js";
@@ -14,7 +14,7 @@ import type { ComponentTestEnvironment } from "./componentTestEnvironment.js";
 // never make the step fail (D9): only a render error or an empty sample set does.
 // ################################################################################################
 
-export type MeasureRenderingStep = Extract<ReactComponentTestStep, { step: "measureRendering" }>;
+export type MeasureRenderingStep = Extract<ResolvedReactComponentTestStep, { step: "measureRendering" }>;
 export type MeasureRenderingMode = ComponentRenderMeasurement["mode"];
 
 /** The render time of one component in one iteration, all its formik paths together. */

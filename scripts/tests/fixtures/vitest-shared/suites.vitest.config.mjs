@@ -12,7 +12,7 @@ export default defineConfig({
     include: ["suites.fixture.suites.mjs"],
     watch: false,
     pool: "threads",
-    poolOptions: { threads: { singleThread: true } },
+    maxWorkers: 1,
     ...miroirTestTimingConfig(),
   },
 });

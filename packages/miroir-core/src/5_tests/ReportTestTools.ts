@@ -4,7 +4,10 @@ type VitestNamespace = typeof vitest;
 
 import type {
   CompositeActionTemplate,
+  CoreTransformerForBuildPlusRuntime_getFromContext,
   MiroirTestForReport,
+  ReactComponentTestStep,
+  ReactComponentTestTarget,
   ReportTestCompositeActionStep,
   ReportTestExpectActionResultStep,
   TestAssertionResult,
@@ -293,4 +296,176 @@ export async function runReportTestExpectActionResultStep(
     };
   }
   return { status: "ok" };
+}
+
+// ################################################################################################
+// Stored values in the UI steps of a `reportTest` leaf (#333).
+// ################################################################################################
+
+/** `T` without its stored value references: the type of a UI step once they are resolved. */
+export type WithoutStoredValueReferences<T> = 0 extends 1 & T
+  ? T // any
+  : T extends CoreTransformerForBuildPlusRuntime_getFromContext
+    ? never
+    : T extends readonly (infer Item)[]
+      ? WithoutStoredValueReferences<Item>[]
+      : T extends object
+        ? { [K in keyof T]: WithoutStoredValueReferences<T[K]> }
+        : T;
+
+/** A UI step of a `reportTest` (or a `reactComponentTest`), its stored value references resolved. */
+export type ResolvedReactComponentTestStep = WithoutStoredValueReferences<ReactComponentTestStep>;
+
+/** A target of a resolved UI step. */
+export type ResolvedReactComponentTestTarget = WithoutStoredValueReferences<ReactComponentTestTarget>;
+
+function isStoredValueReference(value: unknown): value is CoreTransformerForBuildPlusRuntime_getFromContext {
+  return (
+    !!value &&
+    typeof value === "object" &&
+    !Array.isArray(value) &&
+    (value as { transformerType?: unknown }).transformerType === "getFromContext"
+  );
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === "object" && !Array.isArray(value);
+}
+
+function kindOf(value: unknown): string {
+  if (value === null || value === undefined) {
+    return String(value);
+  }
+  return Array.isArray(value) ? "an array" : typeof value === "object" ? "an object" : `a ${typeof value}`;
+}
+
+function isScalar(value: unknown): value is string | number | boolean {
+  return typeof value === "string" || typeof value === "number" || typeof value === "boolean";
+}
+
+function storedNames(value: unknown): string {
+  const names = isPlainObject(value) ? Object.keys(value).sort() : [];
+  return names.length > 0 ? names.join(", ") : "none";
+}
+
+/** The value of `reference` in `storedValues`; throws naming what is missing. */
+function storedValueOf(
+  reference: CoreTransformerForBuildPlusRuntime_getFromContext,
+  storedValues: Record<string, unknown>,
+): unknown {
+  const path =
+    reference.referencePath ?? (reference.referenceName !== undefined ? [reference.referenceName] : undefined);
+  if (!path || path.length === 0) {
+    throw new Error("a getFromContext reference needs referenceName or referencePath");
+  }
+  let current: unknown = storedValues;
+  for (const [index, segment] of path.entries()) {
+    if (!isPlainObject(current) && !Array.isArray(current)) {
+      throw new Error(
+        `no stored value at "${path.join(".")}": "${path.slice(0, index).join(".")}" is ${JSON.stringify(current)}`,
+      );
+    }
+    if (!Object.prototype.hasOwnProperty.call(current, segment)) {
+      if (index === 0) {
+        throw new Error(`no stored value "${segment}" (stored: ${storedNames(current)})`);
+      }
+      throw new Error(
+        `no stored value at "${path.join(".")}": "${path.slice(0, index).join(".")}" has no "${segment}" (has: ${storedNames(current)})`,
+      );
+    }
+    current = (current as Record<string, unknown>)[segment];
+  }
+  return current;
+}
+
+/** The step fields of type `string` that accept a reference, by step kind (#333). */
+const stringOnlyStepFields: Record<string, readonly string[]> = {
+  type: ["text"],
+  filterSelect: ["text"],
+  selectOption: ["option"],
+  renameRecordEntry: ["newName"],
+  waitForAttribute: ["value"],
+};
+
+/** Whether the field at `fieldPath` of a `stepKind` step takes a string only. */
+function isStringOnlyField(stepKind: string, fieldPath: readonly (string | number)[]): boolean {
+  if (fieldPath.length === 1) {
+    return stringOnlyStepFields[stepKind]?.includes(String(fieldPath[0])) ?? false;
+  }
+  // `byTestId` of a target (`target`, `parentContains`)
+  return fieldPath.length === 2 && fieldPath[1] === "byTestId";
+}
+
+/**
+ * `step` with each `getFromContext` reference replaced by its value in `storedValues` (#333): the
+ * test parameters and the values kept by the earlier `compositeAction` steps of the leaf.
+ *
+ * - A reference reads `referenceName`, or follows `referencePath`; `interpolation` is ignored,
+ *   the reference is resolved when the step runs.
+ * - In `expectedValue` (of `expectRenderedValues`), a reference resolves to any value. In
+ *   `uploadFile.content`, to any JSON value, uploaded as its JSON text unless it is a string. A
+ *   reference standing for the whole of `expectElement.values` resolves to an array of strings,
+ *   numbers or booleans.
+ * - Elsewhere, a reference must resolve to a string, a number or a boolean; a field that takes a
+ *   string only gets a number or a boolean as text.
+ * - An unresolved reference throws, naming the step field and what is missing.
+ */
+export function resolveReportTestStepReferences(
+  step: ReactComponentTestStep,
+  storedValues: Record<string, unknown>,
+): ResolvedReactComponentTestStep {
+  const resolve = (value: unknown, fieldPath: readonly (string | number)[]): unknown => {
+    if (isStoredValueReference(value)) {
+      const field = fieldPath.join(".");
+      let stored: unknown;
+      try {
+        stored = storedValueOf(value, storedValues);
+      } catch (error) {
+        throw new Error(`${field}: ${error instanceof Error ? error.message : String(error)}`);
+      }
+      const path = value.referencePath?.join(".") ?? value.referenceName;
+      const wrongValue = (found: string, expected: string) =>
+        new Error(`${field}: the stored value "${path}" ${found}, expected ${expected}`);
+      if (fieldPath[0] === "expectedValue") {
+        return stored;
+      }
+      const singleField = fieldPath.length === 1 ? fieldPath[0] : undefined;
+      if (step.step === "uploadFile" && singleField === "content") {
+        // the content of the file: a string as is, any other JSON value as its JSON text
+        if (stored === undefined) {
+          throw wrongValue("is undefined", "a JSON value");
+        }
+        return typeof stored === "string" ? stored : JSON.stringify(stored);
+      }
+      if (step.step === "expectElement" && singleField === "values") {
+        // the whole list of values
+        if (!Array.isArray(stored)) {
+          throw wrongValue(`is ${kindOf(stored)}`, "an array of strings, numbers or booleans");
+        }
+        const index = stored.findIndex((item) => !isScalar(item));
+        if (index >= 0) {
+          throw wrongValue(
+            `holds ${kindOf(stored[index])} at index ${index}`,
+            "an array of strings, numbers or booleans",
+          );
+        }
+        return stored;
+      }
+      if (!isScalar(stored)) {
+        throw wrongValue(`is ${kindOf(stored)}`, "a string, a number or a boolean");
+      }
+      // a field that takes a string only receives a stored number or boolean as its text
+      return isStringOnlyField(step.step, fieldPath) ? String(stored) : stored;
+    }
+    if (Array.isArray(value)) {
+      return value.map((item, index) => resolve(item, [...fieldPath, index]));
+    }
+    if (isPlainObject(value)) {
+      return Object.fromEntries(
+        Object.entries(value).map(([key, item]) => [key, resolve(item, [...fieldPath, key])]),
+      );
+    }
+    return value;
+  };
+  return resolve(step, []) as ResolvedReactComponentTestStep;
 }

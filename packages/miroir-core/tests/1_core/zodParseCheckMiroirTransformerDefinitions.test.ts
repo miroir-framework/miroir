@@ -387,7 +387,7 @@ const createEntityZodParseTests: Record<string, ZodParseTest> = {
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
-describe("test_createEntityAndReportFromSpreadsheetAndUpdateMenu", () => {
+describe("test_createEntityAndReportFromSpreadsheetAndUpdateMenu", { timeout: 20_000 }, () => {
   it.each(Object.entries(createEntityZodParseTests))("%s", (testName, testParams) => {
     const { zodSchema, transformer } = testParams;
     console.log(expect.getState().currentTestName, "transformer to test=", JSON.stringify(transformer, null, 2));
@@ -402,7 +402,7 @@ describe("test_createEntityAndReportFromSpreadsheetAndUpdateMenu", () => {
     }
     // expect(() => zodSchema.parse(transformer)).not.toThrow();
   });
-}, { timeout: 20_000 });
+});
 
 
   // it("reportCountryList.definition.extractorTemplates.countries is parsable by extractorOrCombinerTemplate", () => {

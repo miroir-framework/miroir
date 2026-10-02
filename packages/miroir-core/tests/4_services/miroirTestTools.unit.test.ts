@@ -125,16 +125,16 @@ describe("miroir leaf zod schemas", () => {
 });
 
 describe("runMiroirTestInMemory — functionCallTest", () => {
-  it("resolveFunctionCallTarget rejects non-whitelisted module/export", () => {
-    expect(() =>
+  it("resolveFunctionCallTarget rejects non-whitelisted module/export", async () => {
+    await expect(
       resolveFunctionCallTarget({ module: "evil/module", export: "hack" }),
-    ).toThrow(/not whitelisted/);
-    expect(() =>
+    ).rejects.toThrow(/not whitelisted/);
+    await expect(
       resolveFunctionCallTarget({
         module: "miroir-core/1_core/mustache",
         export: "unknownExport",
       }),
-    ).toThrow(/not whitelisted/);
+    ).rejects.toThrow(/not whitelisted/);
   });
 
   it("whitelist includes mustache and mlsToJsonSchema exports", () => {

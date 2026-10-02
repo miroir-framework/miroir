@@ -138,7 +138,13 @@ function stepLabelText(): string {
   return screen.getByTestId("multistep-step-label").textContent ?? "";
 }
 
-function buildBranchFixtureReport(): any {
+const BINARY_CHOICE_BRANCH = {
+  whenTrue: "secret",
+  whenFalse: "review",
+};
+
+/** `targets` replaces the `choice` step's `whenTrue` / `whenFalse`, and `test` if given (#338: multi-way `cases`). */
+function buildBranchFixtureReport(targets: Record<string, unknown> = BINARY_CHOICE_BRANCH): any {
   return {
     uuid: BRANCH_REPORT_UUID,
     selfApplication: LIBRARY_APPLICATION_UUID,
@@ -260,8 +266,7 @@ function buildBranchFixtureReport(): any {
                 interpolation: "runtime",
                 referencePath: ["choice", "takeSecretPath"],
               },
-              whenTrue: "secret",
-              whenFalse: "review",
+              ...targets,
             },
           },
           {
@@ -310,13 +315,13 @@ function buildBranchFixtureReport(): any {
   };
 }
 
-function mountBranchFixture() {
+function mountBranchFixture(targets?: Record<string, unknown>) {
   currentUseParams.reportUuid = BRANCH_REPORT_UUID;
-  upsertLibraryReportInMlEditorTestCache(buildBranchFixtureReport());
+  upsertLibraryReportInMlEditorTestCache(buildBranchFixtureReport(targets));
 }
 
-function branchFixtureProps(): ReportViewProps {
-  mountBranchFixture();
+function branchFixtureProps(targets?: Record<string, unknown>): ReportViewProps {
+  mountBranchFixture(targets);
   return {
     application: selfApplicationLibrary.uuid,
     applicationSection: "data",
@@ -327,7 +332,7 @@ function branchFixtureProps(): ReportViewProps {
       deploymentUuid: deployment_Library.uuid,
       reportUuid: BRANCH_REPORT_UUID,
     },
-    reportDefinition: buildBranchFixtureReport(),
+    reportDefinition: buildBranchFixtureReport(targets),
     applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
   };
 }
@@ -423,6 +428,76 @@ const mlElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> = {
                   expect(country?.name).toEqual("BranchFinishLand");
                 });
                 expect(navigateMock).toHaveBeenCalledWith(-1);
+              },
+            },
+            "cases-branch-follows-the-case-of-the-test-value": {
+              props: () => branchFixtureProps({ cases: { true: "secret", false: "review" } }),
+              tests: async (expect: ExpectStatic, container: Container) => {
+                await waitForHost();
+                await goToChoiceStep(container);
+                await setTakeSecretPath(true);
+                fireEvent.click(screen.getByRole("button", { name: "Next" }));
+                await waitAfterUserInteraction();
+                await waitFor(() => {
+                  expect(stepLabelText()).toMatch(/Secret/i);
+                });
+              },
+            },
+            "cases-branch-follows-another-case": {
+              props: () => branchFixtureProps({ cases: { true: "secret", false: "review" } }),
+              tests: async (expect: ExpectStatic, container: Container) => {
+                await waitForHost();
+                await goToChoiceStep(container);
+                await setTakeSecretPath(false);
+                fireEvent.click(screen.getByRole("button", { name: "Next" }));
+                await waitAfterUserInteraction();
+                await waitFor(() => {
+                  expect(stepLabelText()).toMatch(/Review/i);
+                });
+              },
+            },
+            "cases-branch-falls-back-to-default": {
+              props: () => branchFixtureProps({ cases: { true: "secret" }, default: "review" }),
+              tests: async (expect: ExpectStatic, container: Container) => {
+                await waitForHost();
+                await goToChoiceStep(container);
+                await setTakeSecretPath(false);
+                fireEvent.click(screen.getByRole("button", { name: "Next" }));
+                await waitAfterUserInteraction();
+                await waitFor(() => {
+                  expect(stepLabelText()).toMatch(/Review/i);
+                });
+              },
+            },
+            "cases-branch-inherited-key-falls-back-to-default": {
+              props: () =>
+                branchFixtureProps({
+                  test: { transformerType: "returnValue", interpolation: "runtime", value: "toString" },
+                  cases: { true: "secret" },
+                  default: "review",
+                }),
+              tests: async (expect: ExpectStatic, container: Container) => {
+                await waitForHost();
+                await goToChoiceStep(container);
+                fireEvent.click(screen.getByRole("button", { name: "Next" }));
+                await waitAfterUserInteraction();
+                await waitFor(() => {
+                  expect(stepLabelText()).toMatch(/Review/i);
+                });
+              },
+            },
+            "cases-branch-without-matching-case-stays-on-step": {
+              props: () => branchFixtureProps({ cases: { true: "secret" } }),
+              tests: async (expect: ExpectStatic, container: Container) => {
+                await waitForHost();
+                await goToChoiceStep(container);
+                await setTakeSecretPath(false);
+                fireEvent.click(screen.getByRole("button", { name: "Next" }));
+                await waitAfterUserInteraction();
+                await waitFor(() => {
+                  expect(screen.getByText("No branch case for value: false")).toBeTruthy();
+                });
+                expect(stepLabelText()).toMatch(/Choice/i);
               },
             },
             "back-from-review-to-choice": {

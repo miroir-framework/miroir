@@ -19,7 +19,7 @@ Working branch: `<branch>`
 
 ## Scope
 
-<What's in, 3–6 bullets.>
+<What's in: the analysis goals G1, G2…, one bullet each.>
 
 This plan does **not** <excluded work> (owned by #<NNN> / deferred).
 
@@ -40,10 +40,10 @@ This plan does **not** <excluded work> (owned by #<NNN> / deferred).
 
 <Copied from the analysis decision record; binding for this plan. Deviations go into the slice's Realization.>
 
-| Decision | Choice |
-|---|---|
-| <decision 1> | <choice> |
-| <decision 2> | <choice> |
+| Decision | Choice | Serves |
+|---|---|---|
+| <decision 1> | <choice> | G1 |
+| <decision 2> | <choice> | G1, G2 |
 
 ---
 
@@ -67,6 +67,8 @@ This plan does **not** <excluded work> (owned by #<NNN> / deferred).
 | Deployment validation | `npm run testByFile -w miroir-<app|example|fixture>-<name> -- tests/modelValidation.unit.test.ts` |
 | Schema rebuild (if schemas touched) | `npm run build -w miroir-app-miroir && npm run devBuild -w miroir-core` |
 | Type check | `npx tsc --noEmit --skipLibCheck -p packages/<pkg>/tsconfig.json` |
+| Scoped nonreg (per slice) | `npm run nonreg:filesystem -- --runner shared --scope smoke,<scopes>` |
+| Full nonreg (every 2 or 3 slices, final slice) | `npm run nonreg:filesystem -- --runner shared` |
 
 ---
 
@@ -124,8 +126,11 @@ Behavior asserted:
 
 ### Validation
 
+**Nonreg scopes:** `smoke,<scopes>`, because <files changed → scope, per the skill's table>.
+
 ```bash
 <commands>
+npm run nonreg:filesystem -- --runner shared --scope smoke,<scopes>
 ```
 
 ### Realization
@@ -144,7 +149,8 @@ Behavior asserted:
 
 ### N.1 Nonreg
 
-- Add `<step-name>` to `scripts/nonreg-manifest.json`.
+- Add `<step-name>` to `scripts/nonreg-manifest.json`, with its `scopes` (at least one besides `smoke`).
+- Run the full `npm run nonreg:filesystem -- --runner shared`.
 
 ### N.2 Docs
 

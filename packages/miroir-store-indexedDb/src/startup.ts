@@ -11,16 +11,16 @@ import {
   StoreSectionConfiguration,
   type ConfigurationServiceInner
 } from "miroir-core";
-import { IndexedDb } from "./4_services/IndexedDb.js";
-import { IndexedDbAdminStore } from "./4_services/IndexedDbAdminStore.js";
-import { IndexedDbDataStoreSection } from "./4_services/IndexedDbDataStoreSection.js";
-import { IndexedDbModelStoreSection } from "./4_services/IndexedDbModelStoreSection.js";
 import { cleanLevel } from "./4_services/constants.js";
 import { packageName } from "./constants.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "startup");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
+
+// #370: the store classes (and the `level` IndexedDB driver under them) load when a factory
+// first runs, so a page whose environment has no IndexedDB section never downloads them.
+const loadIndexedDb = () => import("./4_services/IndexedDb.js");
 
 
 export function miroirIndexedDbStoreSectionStartup(
@@ -33,6 +33,10 @@ export function miroirIndexedDbStoreSectionStartup(
       filesystemDeploymentRootDirectory: string,
     ): Promise<PersistenceStoreAdminSectionInterface> => {
       if (config.emulatedServerType == "indexedDb") {
+        const [{ IndexedDb }, { IndexedDbAdminStore }] = await Promise.all([
+          loadIndexedDb(),
+          import("./4_services/IndexedDbAdminStore.js"),
+        ]);
         const indexedDbStoreName: string = config.indexedDbName + "-model";
         return Promise.resolve(
           new IndexedDbAdminStore(
@@ -57,6 +61,10 @@ export function miroirIndexedDbStoreSectionStartup(
       log.info('called registerStoreSectionFactory model function for',section, config.emulatedServerType);
       
       if (config.emulatedServerType == "indexedDb" && dataStore) {
+        const [{ IndexedDb }, { IndexedDbModelStoreSection }] = await Promise.all([
+          loadIndexedDb(),
+          import("./4_services/IndexedDbModelStoreSection.js"),
+        ]);
         const indexedDbStoreName = config.indexedDbName + '-model'
         const db = new IndexedDbModelStoreSection(
           indexedDbStoreName,
@@ -81,6 +89,10 @@ export function miroirIndexedDbStoreSectionStartup(
     ): Promise<PersistenceStoreDataOrModelSectionInterface> => {
       if (config.emulatedServerType == "indexedDb") {
         log.info("called registerStoreSectionFactory data function for", section, config);
+        const [{ IndexedDb }, { IndexedDbDataStoreSection }] = await Promise.all([
+          loadIndexedDb(),
+          import("./4_services/IndexedDbDataStoreSection.js"),
+        ]);
         const indexedDbStoreName = config.indexedDbName + '-data'
         const db = new IndexedDbDataStoreSection(
           indexedDbStoreName,
@@ -103,6 +115,10 @@ export function miroirIndexedDbStoreSectionStartup(
     ): Promise<PersistenceStoreDataOrModelSectionInterface> => {
       if (config.emulatedServerType == "indexedDb") {
         log.info("called registerStoreSectionFactory modelVersion function for", section, config);
+        const [{ IndexedDb }, { IndexedDbDataStoreSection }] = await Promise.all([
+          loadIndexedDb(),
+          import("./4_services/IndexedDbDataStoreSection.js"),
+        ]);
         const indexedDbStoreName = config.indexedDbName + "-modelVersion";
         return Promise.resolve(
           new IndexedDbDataStoreSection(

@@ -23,11 +23,11 @@
     "build": "tsup --target=node20 --format esm src/index.ts",
     "devBuild": "npm run build",
     "dev": "npm run build && node ./dist/index.js",
-    "test": "cross-env NODE_ENV=test vitest run --poolOptions.threads.singleThread --bail=1",
+    "test": "cross-env NODE_ENV=test vitest run --bail=1",
     "testByFile": "cross-env NODE_ENV=test vitest run"
   },
   "dependencies": {
-    "commander": "12.1.0",
+    "commander": "15.0.0",
     "loglevelnext": "6.0.0",
     "miroir-app-admin": "*",
     "miroir-app-miroir": "*",
@@ -55,11 +55,11 @@
     }
   },
   "devDependencies": {
-    "@types/node": "22.19.17",
+    "@types/node": "26.6.2",
     "@types/uuid": "10.0.0",
     "cross-env": "7.0.3",
     "miroir-example-library": "*",
     "tsup": "8.5.1",
-    "vitest": "3.2.7"
+    "vitest": "5.0.1"
   }
 }

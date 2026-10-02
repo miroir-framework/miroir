@@ -11,6 +11,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "import": "./dist/node.js"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
@@ -19,7 +23,7 @@
     "devBuild": "npm run build",
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
     "test": "cross-env NODE_ENV=test jest --verbose --debug --silent=false -t",
-    "vitest": "vitest run --poolOptions.threads.singleThread --passWithNoTests"
+    "vitest": "vitest run --passWithNoTests"
   },
   "tsup": {
     "dts": true,
@@ -31,7 +35,8 @@
       "esm"
     ],
     "entry": [
-      "src/index.ts"
+      "src/index.ts",
+      "src/node.ts"
     ],
     "external": [
       "fs",
@@ -43,36 +48,36 @@
   "peerDependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-redux": "^8.1.0 || ^9.0.0"
+    "react-redux": "9.3.0"
   },
   "dependencies": {
-    "@reduxjs/toolkit": "2.2.1",
+    "@reduxjs/toolkit": "2.12.0",
     "@teroneko/redux-saga-promise": "3.0.1",
     "diff": "8.0.3",
     "fast-deep-equal": "3.1.3",
     "http-proxy-middleware": "3.0.7",
     "lodash": "4.18.1",
+    "miroir-app-miroir": "*",
     "miroir-core": "*",
     "miroir-example-library": "*",
-    "miroir-app-miroir": "*",
-    "redux-saga": "1.3.0",
+    "redux-saga": "1.5.1",
     "typed-redux-saga": "1.5.0",
     "zod": "3.25.76"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",
     "@types/jest": "29.5.14",
-    "babel-loader": "10.0.0",
+    "babel-loader": "10.1.1",
     "copyfiles": "2.4.1",
     "cross-env": "7.0.3",
     "happy-dom": "20.14.5",
     "rimraf": "4.4.1",
-    "ts-loader": "9.5.4",
+    "ts-loader": "9.6.2",
     "tsconfig-paths": "4.2.0",
     "tsup": "8.5.1",
     "vite": "7.3.6",
-    "vite-plugin-node-polyfills": "0.25.0",
-    "vitest": "3.2.7"
+    "vite-plugin-node-polyfills": "0.28.0",
+    "vitest": "5.0.1"
   },
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT"

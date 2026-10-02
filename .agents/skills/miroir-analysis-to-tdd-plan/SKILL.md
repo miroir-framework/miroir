@@ -79,15 +79,38 @@ Slice 0 is the only exception to "observable behavior": when modifying existing 
 - On successful completion of a slice, **append its `### Realization` summary** (what was actually done, deviations, problems met & solved) and set Status to `✅ DONE` + update the progress table row. The plan is a living resume document (`**Resume note:**` in the header).
 - Every slice carries a **`### Validation`** block with the exact commands proving the slice (test run, modelValidation, rebuild, typecheck). A slice without validation commands is incomplete.
 
+## Nonreg scope per slice (#351)
+
+A full `npm run nonreg:filesystem` takes about 25 min, so slices run a **scoped** nonreg: the steps of named scopes from `scripts/nonreg-manifest.json` (`"scopes"` on each step), plus the run bracket (`always`). While writing the plan, pick each slice's scopes from the files it changes, always add `smoke`, and put the command in the slice's Validation block:
+
+```bash
+npm run nonreg:filesystem -- --runner shared --scope smoke,<scope>[,<scope>]
+```
+
+| Files the slice changes | Scopes |
+|---|---|
+| `miroir-core` `0_interfaces`, `1_core`, `2_domain` (transformers, queries, schemas, templates); ML schemas and deployment assets (`miroir-app-*`, `miroir-example-*`) | `core` |
+| `3_controllers`, `4_services`, `miroir-store-*`, persistence and model-evolution paths | `actions` |
+| Runner definitions and execution, `miroir-mcp`, scenarios, multistep processes | `runners` |
+| `miroir-react`, `miroir-standalone-app/src/4_view`, Report assets, Miroir Tests UI | `ui` |
+| `miroir-localcache*`, local cache monitor | `localcache` |
+| External services, OpenAPI connection wizard, secrets, process capabilities, `miroir-ai` | `external` |
+| `scripts/`, `.agents/`, test launchers, `miroir-env`, `miroir-cli`, Electron | `tooling` |
+
+- A slice spanning several areas lists each of their scopes; a change to a shared foundation (e.g. `miroirFundamentalType.ts` or the DomainController interface) takes the scopes of its main consumers.
+- `--only <step-id>` adds a single step to the scopes (union), e.g. the step of the suite the slice adds.
+- The full `nonreg:filesystem` still runs every 2 or 3 slices and before a PR is marked ready; the final slice's Validation always has it.
+- A new nonreg step gets a `scopes` list (at least one scope other than `smoke`); a guard in `scripts/tests/test_run_nonreg.py` enforces it.
+
 ## Plan structure
 
 Use [plan-template.md](plan-template.md). Required sections, in order:
 
 1. **Header** — `# Issue #NNN — TDD Implementation Plan`, blockquote stating the testing posture (integration-first, no mocks, which interface the tests exercise).
-2. **Scope** — what's in / out; non-goals name their owning issues (carry from analysis).
+2. **Scope** — the analysis goals (G1, G2…) as what's in, then what's out; non-goals name their owning issues (carry from analysis).
 3. **Related links** — issue URL, `analysis.md`, prerequisite plans, working branch.
 4. **Progress summary** — `| Slice | Title | Status | Primary proof |` table, updated as slices land.
-5. **Locked implementation defaults** — the analysis's decision record copied as the plan's binding defaults; deviations discovered during implementation are recorded in the slice's *Realization* (see #229).
+5. **Locked implementation defaults** — the analysis's decision record copied as the plan's binding defaults, with the goals each decision serves; deviations discovered during implementation are recorded in the slice's *Realization* (see #229).
 6. **Allocated UUIDs / keys** — every new model element's uuid and every MiroirTest suite key (`<kind>.<subject>[.<variant>]`, see `docs/reference/testing.md` "Names and descriptions"), allocated up front.
 7. **Test execution conventions** — command table (`testMiroir`, `testByFile`, `modelValidation`, schema rebuild, `tsc` per touched package).
 8. **Slice 0** — characterization (when touching existing behavior).
@@ -97,7 +120,7 @@ Use [plan-template.md](plan-template.md). Required sections, in order:
 ## Conventions
 
 - Issue-scoped vitest files live in `tests/<layer>/issues/<NNN>-<slug>/`, named `<feature>.<NNN>.phaseN.unit|integ.test.ts`; MiroirTest assets live in the deployment package they test, carry `tags` from the vocabulary in `docs/reference/testing.md` (Tags), and carry the issue number in their `description` until cleanup.
-- Run: `npm run testMiroir -w miroir-core -- --suites <suite> --mode unit` / `-w miroir-standalone-app --mode integration`; vitest via `RUN_TEST=<name> npm run testByFile -w <pkg> -- <name>`; deployment assets proven by `modelValidation`; full safety net `npm run nonreg`.
+- Run: `npm run testMiroir -w miroir-core -- --suites <suite> --mode unit` / `-w miroir-standalone-app --mode integration`; vitest via `RUN_TEST=<name> npm run testByFile -w <pkg> -- <name>`; deployment assets proven by `modelValidation`; per slice a scoped nonreg (§ Nonreg scope per slice); full safety net `npm run nonreg:filesystem`.
 - Update the plan's progress table as slices complete — the plan is a living resume document (`**Resume note:**` line in the header, see #225).
 
 ## Workflow
@@ -110,13 +133,14 @@ Use [plan-template.md](plan-template.md). Required sections, in order:
 
 ## Checklist
 
-- [ ] Analysis read; decisions carried into "Locked implementation defaults" unchanged or explicitly re-flagged
+- [ ] Analysis read; its goals carried into Scope, its decisions carried into "Locked implementation defaults" (with the goals they serve) unchanged or explicitly re-flagged
 - [ ] Every slice delivers one observable behavior and cuts all touched layers (no shallow module slices); helper cycles grouped into one slice when coverage is helper-only
 - [ ] Slice 0 characterizes current behavior when modifying existing code
 - [ ] Every behavior assigned MiroirTest type or justified vitest exception
 - [ ] No mocks anywhere; real DomainController/localCache/store profiles used; helper tests import real applicative assets, not fixture copies
 - [ ] Applicative interfaces (JSON/schema/uuids) locked early; schema rebuild step planned where needed
 - [ ] Each slice has: Status line, RED (named test + assertions), GREEN (minimal notes), Refactor checkpoint, **Validation commands** — no exceptions
+- [ ] Each slice's Validation names its nonreg scopes (`--scope smoke,<scopes>`) from the files it changes; full nonreg every 2 or 3 slices and in the final slice
 - [ ] Pure-data slices validate via the touched package's `modelValidation` + rebuild (not "no automated test")
 - [ ] **No commit steps anywhere in the plan** (human-in-the-loop; commits only on explicit user request)
 - [ ] Realization subsection placeholder present per slice; Status flips to ✅ DONE only on success, with Realization appended

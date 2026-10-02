@@ -854,7 +854,24 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
         );
         return;
       }
-      const nextStepId = testResult ? currentChild.branch.whenTrue : currentChild.branch.whenFalse;
+      const branch = currentChild.branch;
+      // `cases` (multi-way) wins over `whenTrue` / `whenFalse` (binary)
+      // own keys only: a value like "toString" must fall back to `default`
+      const nextStepId = branch.cases
+        ? Object.prototype.hasOwnProperty.call(branch.cases, String(testResult))
+          ? branch.cases[String(testResult)]
+          : branch.default
+        : testResult
+          ? branch.whenTrue
+          : branch.whenFalse;
+      if (nextStepId === undefined) {
+        setFinishError(
+          branch.cases
+            ? `No branch case for value: ${String(testResult)}`
+            : `No branch target for value: ${String(testResult)}`,
+        );
+        return;
+      }
       const nextIndex = indexOfStepId(nextStepId);
       if (nextIndex < 0) {
         setFinishError(`Unknown branch target stepId: ${nextStepId}`);

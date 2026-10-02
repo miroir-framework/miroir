@@ -1,5 +1,6 @@
 // ONLY A DEV DEPENDENCY! USED FOR THE TYPE ONLY, PRUNED BY THE TRANSPILER
 import * as vitest from "vitest";
+import type { FakeOutboundHttp } from "./FakeHttpResponses.js";
 export type VitestNamespace = typeof vitest;
 
 
@@ -25,6 +26,7 @@ import type {
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
 import { runMiroirActionTest } from "./ActionTestTools.js";
+import { ensureYamlParser } from "../2_domain/syncExternalServiceSchema.js";
 import { runMiroirFunctionCallTestInMemory } from "./FunctionCallTestTools";
 import {
   runMiroirTransformerIntegrationTest,
@@ -97,6 +99,11 @@ export type MiroirTestExecutionEnvironment = {
   compositeActionTestContext?: CompositeActionTestContext;
   /** Runner integ; also usable as Action context under 1.3-a. Absent on transformer-only sessions. */
   runnerTestContext?: RunnerTestContext;
+  /**
+   * #339: the fetch of the session's external service environment, on which a Report test installs
+   * its fake HTTP answers. Absent when the session did not build its DomainControllers.
+   */
+  fakeOutboundHttp?: FakeOutboundHttp;
 };
 
 export interface RunnerTestSessionInterface {
@@ -225,6 +232,8 @@ export async function runMiroirTest(
       );
     }
     case "transformerTest": {
+      // #370: syncExternalServiceSchema parses YAML synchronously; the browser loads the parser here.
+      await ensureYamlParser();
       if (executionOptions?.executionMode === "integration") {
         const env = executionOptions.executionEnvironment;
         if (env?.domainController === undefined) {

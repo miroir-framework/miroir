@@ -1,3 +1,4 @@
+import type { ExternalServiceEnvironment } from "../0_interfaces/4-services/ExternalServiceClientInterface.js";
 import type {
   Deployment,
   EntityInstance,
@@ -30,6 +31,12 @@ export type IntegTestHostOptions = {
   hostExecutionEnvironment?: Partial<MiroirTestExecutionEnvironment>;
   skipBootstrapPhases?: readonly IntegrationTestBootstrapPhase[];
   platformEnsureMode?: MiroirPlatformEnsureMode;
+  /**
+   * #339: what the session's external service environment changes from the default one (e.g. the
+   * insecure base URL of a local fake server). Used by the emulated app stack, whose controllers the
+   * session builds; on a real server the requests go out from the server process.
+   */
+  externalServiceEnvironment?: Partial<ExternalServiceEnvironment>;
 };
 
 export type TestApplicationStoreOptions =

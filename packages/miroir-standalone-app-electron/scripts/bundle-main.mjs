@@ -1,6 +1,7 @@
 /**
- * Builds the Electron main process and preload with esbuild (#326), so the package ships one
- * bundled `dist/src/main.js` and `dist/src/preload.js` plus the few packages that must stay in
+ * Builds the Electron main process and preload with esbuild (#326), so the package ships a
+ * bundled `dist/src/main.js` (with its on-demand chunks in `dist/src/chunks/`, #370) and
+ * `dist/src/preload.js` plus the few packages that must stay in
  * `node_modules` (EXTERNALS), instead of every workspace package and its dependencies.
  *
  * Writes `dist/bundle-report.json` in the format of the standalone app's report and prints its
@@ -59,8 +60,10 @@ const common = {
   platform: "node",
   target: "node22",
   external: EXTERNALS,
-  // Class and function names stay as written: esbuild renames clashing top-level names, and
-  // some libraries read `constructor.name`.
+  // #337: smaller file to read at startup; stack traces map back through the source maps.
+  minify: true,
+  // Class and function names stay as written: esbuild renames clashing top-level names (and
+  // minifies them), and some libraries read `constructor.name`.
   keepNames: true,
   sourcemap: true,
   metafile: true,
@@ -68,10 +71,15 @@ const common = {
 };
 
 rmSync(path.join(outDir), { recursive: true, force: true });
+// #370: split, so that the store drivers, miroir-ai and miroir-mcp are chunks the main process
+// imports only when the environment uses them; the banner goes on every chunk.
 const main = await build({
   ...common,
   entryPoints: ["src/main.ts"],
-  outfile: "dist/src/main.js",
+  outdir: "dist/src",
+  outbase: "src",
+  splitting: true,
+  chunkNames: "chunks/[name]-[hash]",
   format: "esm",
   banner: { js: ESM_BANNER },
 });

@@ -17,7 +17,7 @@
   "scripts": {
     "build": "tsup",
     "devBuild": "npm run build",
-    "test": "cross-env NODE_ENV=test vitest run --poolOptions.threads.singleThread",
+    "test": "cross-env NODE_ENV=test vitest run",
     "testByFile": "cross-env NODE_ENV=test vitest run"
   },
   "dependencies": {

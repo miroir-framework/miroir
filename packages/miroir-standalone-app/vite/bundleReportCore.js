@@ -252,12 +252,18 @@ export function reportInputFromEsbuildMetafile(metafile, workingDir, outDir) {
       dynamicallyImportedIds: internal.filter((entry) => entry.kind === "dynamic-import").map((entry) => absolute(entry.path)),
     });
   }
+  // With `splitting`, esbuild also sets `entryPoint` on the chunk of each dynamic import target.
+  const dynamicImportTargets = new Set(
+    Object.values(metafile.inputs).flatMap((input) =>
+      input.imports.filter((entry) => !entry.external && entry.kind === "dynamic-import").map((entry) => entry.path),
+    ),
+  );
   const chunks = Object.entries(metafile.outputs)
     .filter(([path]) => path.endsWith(".js"))
     .map(([path, output]) => ({
       file: outFile(path),
       name: path.replace(/^.*\//, "").replace(/\.js$/, ""),
-      isEntry: Boolean(output.entryPoint),
+      isEntry: Boolean(output.entryPoint) && !dynamicImportTargets.has(output.entryPoint),
       imports: output.imports
         .filter((entry) => !entry.external && entry.kind === "import-statement")
         .map((entry) => outFile(entry.path)),
