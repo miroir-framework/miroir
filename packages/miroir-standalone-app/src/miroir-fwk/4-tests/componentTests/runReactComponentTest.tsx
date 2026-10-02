@@ -25,7 +25,11 @@ import {
   type ComponentTestCaseControls,
   type MountedComponent,
 } from "./componentTestEnvironment.js";
-import { componentRegistry as defaultComponentRegistry, type ComponentRegistry } from "./componentRegistry.js";
+import {
+  componentRegistration,
+  componentRegistry as defaultComponentRegistry,
+  type ComponentRegistry,
+} from "./componentRegistry.js";
 import { reviveComponentProps } from "./componentTestTargets.js";
 import { buildComponentTestWrapper, type ComponentTestWrapper } from "./componentTestTools.js";
 import { formatMeasurementTable } from "./measureRendering.js";
@@ -193,6 +197,8 @@ export function createReactComponentTestRunner(
       wrapper = buildComponentTestWrapper({
         applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
         trackRenders,
+        // #406: each case starts from the same TransformerEditor state, the app's is left untouched
+        isolateToolsPageState: true,
       });
       suiteWrappers.set(key, wrapper);
     }
@@ -224,13 +230,16 @@ export function createReactComponentTestRunner(
         message: `reactComponentTest "${leaf.miroirTestLabel}" has no steps`,
       };
     }
-    const Component = componentRegistry[suite.component];
-    if (!Component) {
+    const registryEntry = Object.prototype.hasOwnProperty.call(componentRegistry, suite.component)
+      ? componentRegistry[suite.component]
+      : undefined;
+    if (!registryEntry) {
       return {
         status: "error",
         message: `component "${suite.component}" of suite "${suite.suitePath.join(" > ")}" is not in the component registry`,
       };
     }
+    const { component: Component, fieldNamePrefix } = componentRegistration(registryEntry);
     // one wrapper per reactComponentTestSuite node, keyed by its path (T4)
     const wrapperKey = JSON.stringify(suite.suitePath);
     const testName = MiroirActivityTracker.testPathName(testNamePath);
@@ -242,7 +251,15 @@ export function createReactComponentTestRunner(
         reviveComponentProps({ ...suite.componentProps, ...(leaf.componentProps ?? {}) }),
       );
       const { measurements } = await runComponentTestSteps(
-        createComponentTestEnvironment({ testName, container, sandboxElement, portalElement, log, caseControls }),
+        createComponentTestEnvironment({
+          testName,
+          container,
+          sandboxElement,
+          portalElement,
+          log,
+          caseControls,
+          fieldNamePrefix,
+        }),
         leaf.steps,
         { iterationsOverride: host.iterationsOverride },
       );

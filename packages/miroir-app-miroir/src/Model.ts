@@ -153,6 +153,7 @@ import {
   miroirTest_ui_mlElementEditor_any,
   miroirTest_ui_mlElementEditor_allTypesPattern,
   miroirTest_ui_mlElementEditor_renderPerformance,
+  miroirTest_ui_transformerEditor,
   modelEndpointV1,
   queryVersionBundleProducerV1,
   persistenceEndpointVersionV1,
@@ -416,6 +417,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     miroirTest_ui_mlElementEditor_any as MiroirTestDefinition,
     miroirTest_ui_mlElementEditor_allTypesPattern as MiroirTestDefinition,
     miroirTest_ui_mlElementEditor_renderPerformance as MiroirTestDefinition,
+    miroirTest_ui_transformerEditor as MiroirTestDefinition,
     // miroirTest_fn_mustache_extractDoubleBracePatterns as MiroirTestDefinition
   ],
   themes: [

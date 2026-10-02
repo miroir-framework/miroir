@@ -61,10 +61,11 @@ const instanceName = (editor: string) => {
 /** #316 D12: the deployment export of an instance, dots as underscores. */
 const exportName = (name: string) => `miroirTest_${name.replace(/\./g, "_")}`;
 
-/** Component test instances added after #292, not per-editor: name to uuid (#303 plan). */
+/** Component test instances added after #292, not per-editor: name to uuid (#303 plan, #406). */
 const laterComponentInstances: Record<string, string> = {
   "ui.mlElementEditor.allTypesPattern": "26ef2886-2cd8-4f91-b846-1525b24d5f41",
   "ui.mlElementEditor.renderPerformance": "2da30877-d248-44bd-9786-5c091b1bc8fc",
+  "ui.transformerEditor": "ce3f9603-824e-41da-9c6c-27ace3b01678",
 };
 
 /** The attributes of `miroirTestForReactComponent` since #292 M1. */

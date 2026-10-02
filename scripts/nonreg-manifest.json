@@ -1706,6 +1706,18 @@
       }
     },
     {
+      "id": "unit-ui-transformerEditor",
+      "scopes": ["ui"],
+      "tier": "unit",
+      "title": "#406 TransformerEditor component MiroirTests (ui.transformerEditor) and testMiroir routing of component suites",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testMiroir -w miroir-standalone-app -- --suites ui.transformerEditor && npm run testByFile -w miroir-standalone-app -- componentTestLauncher.unit"
+      ]
+    },
+    {
       "id": "integ-gridPagination",
       "scopes": ["ui"],
       "tier": "unit",

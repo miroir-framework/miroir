@@ -1,15 +1,31 @@
 import type React from "react";
 
 import { getMlElementEditorForTest } from "./componentTestTools.js";
+import { TransformerEditorForTest } from "./transformerEditorForTest.js";
 
 // ################################################################################################
 // Component registry of the declarative component tests (#292, analysis T13): the `component`
 // name of a `reactComponentTestSuite` MiroirTest node to the React component it renders.
+//
+// An entry is the component, or the component with the `fieldNamePrefix` of its form fields
+// (#406): the `field` / `fieldName` of the steps are relative to it. The default prefix is
+// `TESTSECTION.`, the form root of `getMlElementEditorForTest`.
 // ################################################################################################
 
-export type ComponentRegistry = Record<string, React.FC<any>>;
+export interface ComponentRegistration {
+  component: React.FC<any>;
+  fieldNamePrefix?: string;
+}
+
+export type ComponentRegistry = Record<string, React.FC<any> | ComponentRegistration>;
+
+export function componentRegistration(entry: React.FC<any> | ComponentRegistration): ComponentRegistration {
+  return typeof entry === "function" ? { component: entry } : entry;
+}
 
 export const componentRegistry: ComponentRegistry = {
   // Same page label as the former TypeScript suites, so that the rendered DOM is the same.
   MlElementEditor: getMlElementEditorForTest("MlElementEditor.test"),
+  // its Formik form has no section root: fields are named from the form values root
+  TransformerEditor: { component: TransformerEditorForTest, fieldNamePrefix: "" },
 };

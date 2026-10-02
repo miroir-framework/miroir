@@ -291,6 +291,7 @@ export declare const miroirTest_ui_mlElementEditor_union: any;
 export declare const miroirTest_ui_mlElementEditor_any: any;
 export declare const miroirTest_ui_mlElementEditor_allTypesPattern: any;
 export declare const miroirTest_ui_mlElementEditor_renderPerformance: any;
+export declare const miroirTest_ui_transformerEditor: any;
 export declare const transformerMenuV1: any;
 export declare const transformer_spreadSheetToMlSchema_json: any;
 export declare const transformer_ifThenElse_json: any;
