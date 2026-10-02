@@ -1316,6 +1316,7 @@ export {
   checkTransformerInterfaceRecursively,
   findInvalidStockTransformerInputOutputs,
   getTransformerDefinitionInputOutput,
+  inputOutputTypeOfValue,
   inputOutputTypesCompatible,
   transformerTypesAcceptingInput,
   type TransformerInterfaceWalkOptions,

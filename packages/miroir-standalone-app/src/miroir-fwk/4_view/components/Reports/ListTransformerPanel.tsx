@@ -307,9 +307,14 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
   );
 
   // #383: input type given to every transformer node, restricting its transformerType select.
+  // As in the #249 check, the root input is the row (the runtime binds it as `row`).
   const interfaceWalk = useMemo(
-    () => checkTransformerInterfaceRecursively(elementTransformer, givenInputType),
-    [elementTransformer, givenInputType],
+    () =>
+      checkTransformerInterfaceRecursively(elementTransformer, givenInputType, {
+        entityMlSchemas,
+        context: rowMlSchema ? { row: rowMlSchema } : {},
+      }),
+    [elementTransformer, givenInputType, entityMlSchemas, rowMlSchema],
   );
   const transformerTypeRestrictions = useMemo(
     () =>

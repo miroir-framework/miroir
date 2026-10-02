@@ -412,6 +412,1496 @@
                 ]
               }
             ]
+          },
+          {
+            "miroirTestType": "miroirTestSuite",
+            "miroirTestLabel": "own applyTo (D1)",
+            "miroirTests": [
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "a node consumes its applyTo output",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "aggregate",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "rows"
+                    }
+                  },
+                  "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  {
+                    "entityMlSchemas": {
+                      "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": {
+                        "type": "object",
+                        "definition": {
+                          "uuid": {
+                            "type": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "context": {
+                      "rows": {
+                        "type": "array",
+                        "definition": {
+                          "type": "object",
+                          "definition": {
+                            "uuid": {
+                              "type": "uuid"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "assertions": [
+                  {
+                    "label": "node 0 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "path"
+                    ],
+                    "expectedValue": []
+                  },
+                  {
+                    "label": "node 0 given input",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "givenInput"
+                    ],
+                    "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  },
+                  {
+                    "label": "node 0 consumed input",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "consumedInput"
+                    ],
+                    "expectedValue": {
+                      "type": "array",
+                      "payload": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                    }
+                  },
+                  {
+                    "label": "node 1 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      1,
+                      "path"
+                    ],
+                    "expectedValue": [
+                      "applyTo"
+                    ]
+                  },
+                  {
+                    "label": "node 1 given input",
+                    "resultAccessPath": [
+                      "nodes",
+                      1,
+                      "givenInput"
+                    ],
+                    "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  },
+                  {
+                    "label": "node 1 output",
+                    "resultAccessPath": [
+                      "nodes",
+                      1,
+                      "output"
+                    ],
+                    "expectedValue": {
+                      "type": "array",
+                      "payload": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                    }
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "a literal applyTo gives the kind of its value",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "aggregate",
+                    "interpolation": "runtime",
+                    "applyTo": [
+                      1,
+                      2
+                    ]
+                  },
+                  "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                ],
+                "assertions": [
+                  {
+                    "label": "node 0 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "path"
+                    ],
+                    "expectedValue": []
+                  },
+                  {
+                    "label": "node 0 given input",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "givenInput"
+                    ],
+                    "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  },
+                  {
+                    "label": "node 0 consumed input",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "consumedInput"
+                    ],
+                    "expectedValue": "array"
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "an unresolved applyTo gives any",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "aggregate",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "missing"
+                    }
+                  },
+                  "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                ],
+                "assertions": [
+                  {
+                    "label": "node 0 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "path"
+                    ],
+                    "expectedValue": []
+                  },
+                  {
+                    "label": "node 0 consumed input",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "consumedInput"
+                    ],
+                    "expectedValue": "any"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "miroirTestSuite",
+            "miroirTestLabel": "list element slots",
+            "miroirTests": [
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "mapList elementTransformer gets the element",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "mapList",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "rows"
+                    },
+                    "elementTransformer": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "defaultInput"
+                    }
+                  },
+                  "object",
+                  {
+                    "entityMlSchemas": {
+                      "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": {
+                        "type": "object",
+                        "definition": {
+                          "uuid": {
+                            "type": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "context": {
+                      "rows": {
+                        "type": "array",
+                        "definition": {
+                          "type": "object",
+                          "definition": {
+                            "uuid": {
+                              "type": "uuid"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "assertions": [
+                  {
+                    "label": "node 0 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "path"
+                    ],
+                    "expectedValue": []
+                  },
+                  {
+                    "label": "node 0 given input",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "givenInput"
+                    ],
+                    "expectedValue": "object"
+                  },
+                  {
+                    "label": "node 0 consumed input",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "consumedInput"
+                    ],
+                    "expectedValue": {
+                      "type": "array",
+                      "payload": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                    }
+                  },
+                  {
+                    "label": "node 2 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "path"
+                    ],
+                    "expectedValue": [
+                      "elementTransformer"
+                    ]
+                  },
+                  {
+                    "label": "node 2 given input",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "givenInput"
+                    ],
+                    "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  },
+                  {
+                    "label": "node 2 output",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "output"
+                    ],
+                    "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "with referenceToOuterObject the element is bound by name",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "mapList",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "rows"
+                    },
+                    "referenceToOuterObject": "book",
+                    "elementTransformer": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "book"
+                    }
+                  },
+                  "object",
+                  {
+                    "entityMlSchemas": {
+                      "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": {
+                        "type": "object",
+                        "definition": {
+                          "uuid": {
+                            "type": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "context": {
+                      "rows": {
+                        "type": "array",
+                        "definition": {
+                          "type": "object",
+                          "definition": {
+                            "uuid": {
+                              "type": "uuid"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "assertions": [
+                  {
+                    "label": "node 2 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "path"
+                    ],
+                    "expectedValue": [
+                      "elementTransformer"
+                    ]
+                  },
+                  {
+                    "label": "node 2 given input",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "givenInput"
+                    ],
+                    "expectedValue": "object"
+                  },
+                  {
+                    "label": "node 2 output",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "output"
+                    ],
+                    "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "filterList predicate gets the element",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "rows"
+                    },
+                    "predicate": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "defaultInput"
+                    }
+                  },
+                  "object",
+                  {
+                    "entityMlSchemas": {
+                      "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": {
+                        "type": "object",
+                        "definition": {
+                          "uuid": {
+                            "type": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "context": {
+                      "rows": {
+                        "type": "array",
+                        "definition": {
+                          "type": "object",
+                          "definition": {
+                            "uuid": {
+                              "type": "uuid"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "assertions": [
+                  {
+                    "label": "node 2 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "path"
+                    ],
+                    "expectedValue": [
+                      "predicate"
+                    ]
+                  },
+                  {
+                    "label": "node 2 given input",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "givenInput"
+                    ],
+                    "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "find predicate gets the element",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "find",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "rows"
+                    },
+                    "predicate": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "defaultInput"
+                    }
+                  },
+                  "object",
+                  {
+                    "entityMlSchemas": {
+                      "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": {
+                        "type": "object",
+                        "definition": {
+                          "uuid": {
+                            "type": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "context": {
+                      "rows": {
+                        "type": "array",
+                        "definition": {
+                          "type": "object",
+                          "definition": {
+                            "uuid": {
+                              "type": "uuid"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "assertions": [
+                  {
+                    "label": "node 2 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "path"
+                    ],
+                    "expectedValue": [
+                      "predicate"
+                    ]
+                  },
+                  {
+                    "label": "node 2 given input",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "givenInput"
+                    ],
+                    "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "mapList over the slot input",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "mapList",
+                    "interpolation": "runtime",
+                    "elementTransformer": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "defaultInput"
+                    }
+                  },
+                  {
+                    "type": "array",
+                    "payload": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  },
+                  {
+                    "entityMlSchemas": {
+                      "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": {
+                        "type": "object",
+                        "definition": {
+                          "uuid": {
+                            "type": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "context": {
+                      "rows": {
+                        "type": "array",
+                        "definition": {
+                          "type": "object",
+                          "definition": {
+                            "uuid": {
+                              "type": "uuid"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "assertions": [
+                  {
+                    "label": "node 1 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      1,
+                      "path"
+                    ],
+                    "expectedValue": [
+                      "elementTransformer"
+                    ]
+                  },
+                  {
+                    "label": "node 1 given input",
+                    "resultAccessPath": [
+                      "nodes",
+                      1,
+                      "givenInput"
+                    ],
+                    "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "miroirTestSuite",
+            "miroirTestLabel": "dataflowObject steps",
+            "miroirTests": [
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "earlier step outputs are in context by key; steps get the parent input",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "dataflowObject",
+                    "interpolation": "runtime",
+                    "definition": {
+                      "books": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "rows"
+                      },
+                      "count": {
+                        "transformerType": "listLength",
+                        "interpolation": "runtime",
+                        "applyTo": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referenceName": "books"
+                        }
+                      },
+                      "values": {
+                        "transformerType": "getObjectValues",
+                        "interpolation": "runtime"
+                      }
+                    }
+                  },
+                  "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  {
+                    "entityMlSchemas": {
+                      "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": {
+                        "type": "object",
+                        "definition": {
+                          "uuid": {
+                            "type": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "context": {
+                      "rows": {
+                        "type": "array",
+                        "definition": {
+                          "type": "object",
+                          "definition": {
+                            "uuid": {
+                              "type": "uuid"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "assertions": [
+                  {
+                    "label": "node 1 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      1,
+                      "path"
+                    ],
+                    "expectedValue": [
+                      "definition",
+                      "books"
+                    ]
+                  },
+                  {
+                    "label": "node 1 given input",
+                    "resultAccessPath": [
+                      "nodes",
+                      1,
+                      "givenInput"
+                    ],
+                    "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  },
+                  {
+                    "label": "node 1 output",
+                    "resultAccessPath": [
+                      "nodes",
+                      1,
+                      "output"
+                    ],
+                    "expectedValue": {
+                      "type": "array",
+                      "payload": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                    }
+                  },
+                  {
+                    "label": "node 2 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "path"
+                    ],
+                    "expectedValue": [
+                      "definition",
+                      "count"
+                    ]
+                  },
+                  {
+                    "label": "node 2 given input",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "givenInput"
+                    ],
+                    "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  },
+                  {
+                    "label": "node 2 consumed input",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "consumedInput"
+                    ],
+                    "expectedValue": {
+                      "type": "array",
+                      "payload": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                    }
+                  },
+                  {
+                    "label": "node 3 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      3,
+                      "path"
+                    ],
+                    "expectedValue": [
+                      "definition",
+                      "count",
+                      "applyTo"
+                    ]
+                  },
+                  {
+                    "label": "node 3 output",
+                    "resultAccessPath": [
+                      "nodes",
+                      3,
+                      "output"
+                    ],
+                    "expectedValue": {
+                      "type": "array",
+                      "payload": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                    }
+                  },
+                  {
+                    "label": "node 4 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      4,
+                      "path"
+                    ],
+                    "expectedValue": [
+                      "definition",
+                      "values"
+                    ]
+                  },
+                  {
+                    "label": "node 4 given input",
+                    "resultAccessPath": [
+                      "nodes",
+                      4,
+                      "givenInput"
+                    ],
+                    "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  },
+                  {
+                    "label": "node 4 consumed input",
+                    "resultAccessPath": [
+                      "nodes",
+                      4,
+                      "consumedInput"
+                    ],
+                    "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "miroirTestSuite",
+            "miroirTestLabel": "outer object bindings",
+            "miroirTests": [
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "mergeIntoObject definition gets its applyTo output",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "mergeIntoObject",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "aBook"
+                    },
+                    "definition": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "defaultInput"
+                    }
+                  },
+                  "object",
+                  {
+                    "entityMlSchemas": {
+                      "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": {
+                        "type": "object",
+                        "definition": {
+                          "uuid": {
+                            "type": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "context": {
+                      "aBook": {
+                        "type": "object",
+                        "definition": {
+                          "uuid": {
+                            "type": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "assertions": [
+                  {
+                    "label": "node 2 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "path"
+                    ],
+                    "expectedValue": [
+                      "definition"
+                    ]
+                  },
+                  {
+                    "label": "node 2 given input",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "givenInput"
+                    ],
+                    "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  },
+                  {
+                    "label": "node 2 output",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "output"
+                    ],
+                    "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "mergeIntoObject with referenceToOuterObject binds applyTo by name",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "mergeIntoObject",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "aBook"
+                    },
+                    "referenceToOuterObject": "outer",
+                    "definition": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "outer"
+                    }
+                  },
+                  "string",
+                  {
+                    "entityMlSchemas": {
+                      "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": {
+                        "type": "object",
+                        "definition": {
+                          "uuid": {
+                            "type": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "context": {
+                      "aBook": {
+                        "type": "object",
+                        "definition": {
+                          "uuid": {
+                            "type": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "assertions": [
+                  {
+                    "label": "node 2 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "path"
+                    ],
+                    "expectedValue": [
+                      "definition"
+                    ]
+                  },
+                  {
+                    "label": "node 2 given input",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "givenInput"
+                    ],
+                    "expectedValue": "string"
+                  },
+                  {
+                    "label": "node 2 output",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "output"
+                    ],
+                    "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "createObjectFromPairs pairs get the applyTo output",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "createObjectFromPairs",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "rows"
+                    },
+                    "definition": [
+                      {
+                        "attributeKey": {
+                          "transformerType": "returnValue",
+                          "interpolation": "runtime",
+                          "value": "k"
+                        },
+                        "attributeValue": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referenceName": "defaultInput"
+                        }
+                      }
+                    ]
+                  },
+                  "string",
+                  {
+                    "entityMlSchemas": {
+                      "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": {
+                        "type": "object",
+                        "definition": {
+                          "uuid": {
+                            "type": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "context": {
+                      "rows": {
+                        "type": "array",
+                        "definition": {
+                          "type": "object",
+                          "definition": {
+                            "uuid": {
+                              "type": "uuid"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "assertions": [
+                  {
+                    "label": "node 3 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      3,
+                      "path"
+                    ],
+                    "expectedValue": [
+                      "definition",
+                      0,
+                      "attributeValue"
+                    ]
+                  },
+                  {
+                    "label": "node 3 given input",
+                    "resultAccessPath": [
+                      "nodes",
+                      3,
+                      "givenInput"
+                    ],
+                    "expectedValue": {
+                      "type": "array",
+                      "payload": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                    }
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "createObjectFromPairs without applyTo binds an object",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "createObjectFromPairs",
+                    "interpolation": "runtime",
+                    "definition": [
+                      {
+                        "attributeKey": {
+                          "transformerType": "returnValue",
+                          "interpolation": "runtime",
+                          "value": "k"
+                        },
+                        "attributeValue": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referenceName": "defaultInput"
+                        }
+                      }
+                    ]
+                  },
+                  "string"
+                ],
+                "assertions": [
+                  {
+                    "label": "node 2 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "path"
+                    ],
+                    "expectedValue": [
+                      "definition",
+                      0,
+                      "attributeValue"
+                    ]
+                  },
+                  {
+                    "label": "node 2 given input",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "givenInput"
+                    ],
+                    "expectedValue": "object"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "miroirTestSuite",
+            "miroirTestLabel": "other slots",
+            "miroirTests": [
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "ifThenElse branches get the parent input",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "ifThenElse",
+                    "interpolation": "runtime",
+                    "then": {
+                      "transformerType": "getObjectValues",
+                      "interpolation": "runtime"
+                    },
+                    "else": {
+                      "transformerType": "listLength",
+                      "interpolation": "runtime"
+                    }
+                  },
+                  "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                ],
+                "assertions": [
+                  {
+                    "label": "node 1 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      1,
+                      "path"
+                    ],
+                    "expectedValue": [
+                      "then"
+                    ]
+                  },
+                  {
+                    "label": "node 1 given input",
+                    "resultAccessPath": [
+                      "nodes",
+                      1,
+                      "givenInput"
+                    ],
+                    "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  },
+                  {
+                    "label": "node 2 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "path"
+                    ],
+                    "expectedValue": [
+                      "else"
+                    ]
+                  },
+                  {
+                    "label": "node 2 given input",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "givenInput"
+                    ],
+                    "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "createObject attributes get the parent input",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "createObject",
+                    "interpolation": "runtime",
+                    "definition": {
+                      "n": {
+                        "transformerType": "listLength",
+                        "interpolation": "runtime"
+                      }
+                    }
+                  },
+                  {
+                    "type": "array",
+                    "payload": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  }
+                ],
+                "assertions": [
+                  {
+                    "label": "node 1 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      1,
+                      "path"
+                    ],
+                    "expectedValue": [
+                      "definition",
+                      "n"
+                    ]
+                  },
+                  {
+                    "label": "node 1 given input",
+                    "resultAccessPath": [
+                      "nodes",
+                      1,
+                      "givenInput"
+                    ],
+                    "expectedValue": {
+                      "type": "array",
+                      "payload": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "inputOutputTypeOfValue",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "array",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "inputOutputTypeOfValue"
+            },
+            "arguments": [
+              [
+                1
+              ]
+            ],
+            "expectedValue": "array"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "object",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "inputOutputTypeOfValue"
+            },
+            "arguments": [
+              {
+                "a": 1
+              }
+            ],
+            "expectedValue": "object"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "string",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "inputOutputTypeOfValue"
+            },
+            "arguments": [
+              "s"
+            ],
+            "expectedValue": "string"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "number",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "inputOutputTypeOfValue"
+            },
+            "arguments": [
+              3
+            ],
+            "expectedValue": "number"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "boolean",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "inputOutputTypeOfValue"
+            },
+            "arguments": [
+              true
+            ],
+            "expectedValue": "boolean"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "null",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "inputOutputTypeOfValue"
+            },
+            "arguments": [
+              null
+            ],
+            "expectedValue": "any"
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "inferTransformerOutputTypeFromSchema",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a known entity schema gives its entity uuid",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceInference",
+              "export": "inferTransformerOutputTypeFromSchema"
+            },
+            "arguments": [
+              {
+                "type": "object",
+                "definition": {
+                  "uuid": {
+                    "type": "uuid"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "entityMlSchemas": {
+                  "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": {
+                    "type": "object",
+                    "definition": {
+                      "uuid": {
+                        "type": "uuid"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an array of a known entity schema gives an array of it",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceInference",
+              "export": "inferTransformerOutputTypeFromSchema"
+            },
+            "arguments": [
+              {
+                "type": "array",
+                "definition": {
+                  "type": "object",
+                  "definition": {
+                    "uuid": {
+                      "type": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              {
+                "entityMlSchemas": {
+                  "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": {
+                    "type": "object",
+                    "definition": {
+                      "uuid": {
+                        "type": "uuid"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": {
+              "type": "array",
+              "payload": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an unknown object schema gives object",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceInference",
+              "export": "inferTransformerOutputTypeFromSchema"
+            },
+            "arguments": [
+              {
+                "type": "object",
+                "definition": {
+                  "x": {
+                    "type": "number"
+                  }
+                }
+              },
+              {
+                "entityMlSchemas": {
+                  "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": {
+                    "type": "object",
+                    "definition": {
+                      "uuid": {
+                        "type": "uuid"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": "object"
           }
         ]
       }

@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from "@testing-library/react";
+import { waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { describe, expect, it } from "vitest";
 
@@ -9,6 +9,7 @@ import {
   getListTransformerPanel,
   getPanelTransformerTypeOptions,
   renderListTransformerPanelInteg,
+  setPanelElementTransformerType,
 } from "./helpers/listTransformerIntegRig.js";
 
 // #383 — the transformerType select only offers the transformer types whose declared
@@ -30,10 +31,23 @@ describe("transformer choice by input type (#383)", () => {
       // Book input the 15 with an `array`, `string` or other-entity declared input are hidden.
       const panel = await getListTransformerPanel();
       await waitFor(() =>
-        expect(within(panel).getByTestId("transformer-type-restriction-hint")).toHaveTextContent(
-          "15 transformers hidden for input Book",
-        ),
+        expect(
+          panel.querySelector('[data-testid="transformer-type-restriction-hint"][data-restriction-path=""]'),
+        ).toHaveTextContent("15 transformers hidden for input Book"),
       );
+    });
+
+    it("restricts a nested select by the input of its position", async () => {
+      renderListTransformerPanelInteg(buildBooksIndex(book1, book2), {
+        rowEntityUuid: entityBook.uuid,
+      });
+      await setPanelElementTransformerType("ifThenElse");
+
+      // The `if` condition receives the row, like its parent.
+      const options = await getPanelTransformerTypeOptions("elementTransformer.if.transformerType");
+
+      expect(options).toContain("getObjectValues");
+      expect(options).not.toContain("aggregate");
     });
   });
 });

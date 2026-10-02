@@ -30,7 +30,7 @@ Out (analysis non-goals): output-type filtering; full ML schemas for the restric
 |---|---|---|---|
 | 0 | Characterize the #249 check and the panels | ✅ DONE | baseline recorded (2 pre-existing failures) |
 | 1 | Root restriction in ListTransformerPanel (tracer) | ✅ DONE | `fn.transformer.interfaceWalk` offered types; panel root select |
-| 2 | Nested restriction by runtime slot rules | ⬜ pending | walk cases per slot; panel nested select |
+| 2 | Nested restriction by runtime slot rules | ✅ DONE | walk cases per slot; panel nested select |
 | 3 | Recursive marking in ListTransformerPanel | ⬜ pending | walk failures; panel nested warning |
 | 4 | TransformerEditor: root input, restriction, marking, toggle | ⬜ pending | `inputOutputTypeOfValue` cases; editor toggle test |
 | 5 | Nonreg, docs, AC checklist | ⬜ pending | full `nonreg:filesystem` |
@@ -155,7 +155,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui
 
 ## Slice 2 — Nested restriction by runtime slot rules
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Goal: nested selects are restricted by the input their position receives (D1, D8, D9), and re-derive when an outer transformer changes.
 
@@ -183,7 +183,12 @@ Same commands as slice 1, plus a full `npm run nonreg:filesystem -- --runner sha
 
 ### Realization
 
-_(pending)_
+- Core: recursive `walkNode` / `walkChildren` / `walkNested` in `TransformerInterfaceCheck.ts`, carrying a coarse type and an ML schema per bound value (`liftInputOutputTypeToMlSchema` for lifts, `resolveTransformerResultSchema` for outputs). Options `entityMlSchemas` and `context`. `inferTransformerOutputTypeFromSchema` gained the `entityMlSchemas` option. `inputOutputTypeOfValue` moved forward from slice 4 because a literal `applyTo` (D1) needs it; its cases are in this slice.
+- `fn.transformer.interfaceWalk`: 36 tests (offered types, root, own `applyTo`, list element slots, `dataflowObject` steps, outer-object bindings, other slots, value kinds, entity inference). A sabotaged expectation fails, so the assertions are live.
+- UI: ListTransformerPanel passes `entityMlSchemas` and `{ row }`. New integ case: after choosing `ifThenElse` at the root, the `if` select hides `aggregate`. `then` / `else` are optional and not rendered by default, hence `if`. The root hint is found by its new `data-restriction-path` attribute, since the default identity transformer has nested nodes with their own hints.
+- Deviation, panel root: the runtime binds each row as `row` and `defaultInput` stays the list (`buildRowMapListTransformer`). The walk keeps the #249 convention (root input = row entity, also bound as `defaultInput` for inference), as the issue states for ListTransformerPanel.
+- AC 4 (re-derivation) rests on the walk being a pure function of the edited tree, recomputed on every change (`useMemo` on the Formik value); its core proof is the own-`applyTo` and list-element cases. Driving an `applyTo` change through the real editor was not practical with the rig.
+- Regressions: `fn.transformer.interfaceCheck` + `fn.transformer.resultSchema` 100/100; `ListTransformerPanel.unit` + `listDisplayByTransformer.integ` 29/30 (the pre-existing failure only).
 
 ## Slice 3 — Recursive marking in ListTransformerPanel
 

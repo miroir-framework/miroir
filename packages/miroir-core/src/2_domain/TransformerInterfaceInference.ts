@@ -20,11 +20,17 @@ function mlSchemasEquivalent(a: MlElement, b: MlElement): boolean {
 
 /**
  * Map a resolved transformer result schema (#88) to an `inputOutput` type for adequacy checks.
- * When the schema is the list row entity ML schema, prefer the row entity uuid over bare `object`.
+ * When the schema is the list row entity ML schema, or another known entity's, prefer the entity
+ * uuid over bare `object`.
  */
 export function inferTransformerOutputTypeFromSchema(
   resultSchema: MlElement,
-  options?: { rowEntityUuid?: string; rowMlSchema?: MlElement },
+  options?: {
+    rowEntityUuid?: string;
+    rowMlSchema?: MlElement;
+    /** #383: ML schemas of known entities, by uuid; an equal schema gives that entity uuid. */
+    entityMlSchemas?: Record<string, MlElement>;
+  },
 ): InputOutputType {
   const type = resultSchema.type;
   if (type === "any") {
@@ -44,7 +50,10 @@ export function inferTransformerOutputTypeFromSchema(
     ) {
       return options.rowEntityUuid;
     }
-    return "object";
+    const entityUuid = Object.entries(options?.entityMlSchemas ?? {}).find(([, entityMlSchema]) =>
+      mlSchemasEquivalent(resultSchema, entityMlSchema),
+    )?.[0];
+    return entityUuid ?? "object";
   }
   if (type === "array") {
     let elementSchema: MlElement | undefined;

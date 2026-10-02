@@ -582,6 +582,7 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
             {hiddenTransformerTypeCount > 0 && transformerTypeRestriction && (
               <span
                 data-testid="transformer-type-restriction-hint"
+                data-restriction-path={transformerTypeRestriction.path.join(".")}
                 style={{ fontSize: "0.85em", opacity: 0.7, whiteSpace: "nowrap" }}
               >
                 {hiddenTransformerTypeCount} transformers hidden for input{" "}

@@ -41,6 +41,7 @@ import {
   checkTransformerInterfaceRecursively,
   findInvalidStockTransformerInputOutputs,
   getTransformerDefinitionInputOutput,
+  inputOutputTypeOfValue,
   inputOutputTypesCompatible,
   transformerTypesAcceptingInput,
 } from "../2_domain/TransformerInterfaceCheck";
@@ -206,6 +207,7 @@ const FUNCTION_CALL_REGISTRY: Record<
     findInvalidStockTransformerInputOutputs:
       findInvalidStockTransformerInputOutputs as WhitelistedFunction,
     transformerTypesAcceptingInput: transformerTypesAcceptingInput as WhitelistedFunction,
+    inputOutputTypeOfValue: inputOutputTypeOfValue as WhitelistedFunction,
     checkTransformerInterfaceRecursively:
       checkTransformerInterfaceRecursively as WhitelistedFunction,
   },
