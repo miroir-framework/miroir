@@ -381,6 +381,13 @@ function walkNode(
     consumed = walkValueOfType(inputOutputTypeOfValue(transformer.applyTo), environment);
   }
   report.consumedInput = consumed.type;
+  if (
+    declared !== undefined &&
+    declared.input !== "undefined" &&
+    !inputOutputTypesCompatible(consumed.type, declared.input)
+  ) {
+    report.failures.push({ direction: "input", given: consumed.type, declared: declared.input });
+  }
 
   walkChildren(transformer, path, given, consumed, context, environment);
   return { report, output };

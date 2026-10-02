@@ -31,7 +31,7 @@ Out (analysis non-goals): output-type filtering; full ML schemas for the restric
 | 0 | Characterize the #249 check and the panels | ✅ DONE | baseline recorded (2 pre-existing failures) |
 | 1 | Root restriction in ListTransformerPanel (tracer) | ✅ DONE | `fn.transformer.interfaceWalk` offered types; panel root select |
 | 2 | Nested restriction by runtime slot rules | ✅ DONE | walk cases per slot; panel nested select |
-| 3 | Recursive marking in ListTransformerPanel | ⬜ pending | walk failures; panel nested warning |
+| 3 | Recursive marking in ListTransformerPanel | ✅ DONE | walk failures; panel nested warning |
 | 4 | TransformerEditor: root input, restriction, marking, toggle | ⬜ pending | `inputOutputTypeOfValue` cases; editor toggle test |
 | 5 | Nonreg, docs, AC checklist | ⬜ pending | full `nonreg:filesystem` |
 
@@ -192,13 +192,13 @@ Same commands as slice 1, plus a full `npm run nonreg:filesystem -- --runner sha
 
 ## Slice 3 — Recursive marking in ListTransformerPanel
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Goal: in #249 mode, a nested node whose transformer does not accept its consumed input is marked at its own level (G2); #251 mode unchanged.
 
 **RED**
 - Walk cases: an `aggregate` under `ifThenElse.then` with Book input has an `input` failure `{ given: Book, declared: "array" }`; a `getFromContext` node never fails on input; an incompatible current type stays offered.
-- `transformerChoiceByInputType.integ`: nested `aggregate` under `ifThenElse.then` shows the warning marker with a title naming the path and both types; in #251 mode the existing warnings are unchanged.
+- `ListTransformerPanel.unit`: nested `aggregate` under `ifThenElse.then` shows the warning marker with a title naming the path and both types; in #251 mode the existing warnings are unchanged.
 
 **GREEN**
 - Walk fills `failures` with `checkTransformerInterfaceCompatibility` input failures per node (output failures only at the root, from the existing expected-output check).
@@ -212,7 +212,10 @@ Same commands as slice 1.
 
 ### Realization
 
-_(pending)_
+- Core: each node report gets an `input` failure when its declared input (other than `undefined`) does not accept its consumed input. 4 marking cases added to `fn.transformer.interfaceWalk` (40 tests).
+- UI: in #249 mode ListTransformerPanel takes the walk's nested failures (the root's stay with the existing root check, which also checks the output) into `compatibilityWarnings`, `data-inadequate-paths`, the orange border and its title. #251 mode unchanged.
+- Deviation, test vehicle: a selected incompatible nested transformer cannot be produced through the real select any more (the select hides it), so the marking test is in `ListTransformerPanel.unit`, whose stub editor sets the Formik value directly (existing `set-mapList-mustache-transformer` button): `mapList` over `array<Book>` with a `mustacheStringTemplate` element.
+- Full nonreg after slice 2 (filesystem, shared): 86 pass, 1 fail, `unit-312-miroir-test-tags`: a MiroirTest description may not carry an issue number (`miroirTestNaming.unit`). The `fn.transformer.interfaceWalk` description no longer mentions #383 (the `issue` field still does).
 
 ## Slice 4 — TransformerEditor: root input, restriction, marking, toggle
 

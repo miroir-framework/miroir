@@ -5,7 +5,7 @@
   "name": "fn.transformer.interfaceWalk",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Input type given to every position of a transformer tree, and the transformer types offered there (issue #383).",
+  "description": "Input type given to every position of a transformer tree, and the transformer types offered there.",
   "tags": [
     "unit",
     "transformer"
@@ -1696,6 +1696,233 @@
                       "type": "array",
                       "payload": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
                     }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "input failures (marking)",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a nested node not accepting its input fails at its own path",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "checkTransformerInterfaceRecursively"
+            },
+            "arguments": [
+              {
+                "transformerType": "ifThenElse",
+                "interpolation": "runtime",
+                "then": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime"
+                }
+              },
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            ],
+            "assertions": [
+              {
+                "label": "status",
+                "resultAccessPath": [
+                  "status"
+                ],
+                "expectedValue": "incompatible"
+              },
+              {
+                "label": "root has no failure",
+                "resultAccessPath": [
+                  "nodes",
+                  0,
+                  "failures"
+                ],
+                "expectedValue": []
+              },
+              {
+                "label": "nested path",
+                "resultAccessPath": [
+                  "nodes",
+                  1,
+                  "path"
+                ],
+                "expectedValue": [
+                  "then"
+                ]
+              },
+              {
+                "label": "nested failure",
+                "resultAccessPath": [
+                  "nodes",
+                  1,
+                  "failures"
+                ],
+                "expectedValue": [
+                  {
+                    "direction": "input",
+                    "given": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "declared": "array"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a node fed by its own applyTo does not fail",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "checkTransformerInterfaceRecursively"
+            },
+            "arguments": [
+              {
+                "transformerType": "aggregate",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "rows"
+                }
+              },
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              {
+                "entityMlSchemas": {
+                  "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": {
+                    "type": "object",
+                    "definition": {
+                      "uuid": {
+                        "type": "uuid"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "context": {
+                  "rows": {
+                    "type": "array",
+                    "definition": {
+                      "type": "object",
+                      "definition": {
+                        "uuid": {
+                          "type": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "assertions": [
+              {
+                "label": "status",
+                "resultAccessPath": [
+                  "status"
+                ],
+                "expectedValue": "ok"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a transformer not consuming its input never fails",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "checkTransformerInterfaceRecursively"
+            },
+            "arguments": [
+              {
+                "transformerType": "getFromContext",
+                "interpolation": "runtime",
+                "referenceName": "defaultInput"
+              },
+              "string"
+            ],
+            "assertions": [
+              {
+                "label": "status",
+                "resultAccessPath": [
+                  "status"
+                ],
+                "expectedValue": "ok"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a list element not accepted by the element transformer fails",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "checkTransformerInterfaceRecursively"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "rows"
+                },
+                "elementTransformer": {
+                  "transformerType": "mustacheStringTemplate",
+                  "interpolation": "runtime",
+                  "definition": "{{x}}"
+                }
+              },
+              "object",
+              {
+                "entityMlSchemas": {
+                  "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": {
+                    "type": "object",
+                    "definition": {
+                      "uuid": {
+                        "type": "uuid"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "context": {
+                  "rows": {
+                    "type": "array",
+                    "definition": {
+                      "type": "object",
+                      "definition": {
+                        "uuid": {
+                          "type": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "assertions": [
+              {
+                "label": "element failure",
+                "resultAccessPath": [
+                  "nodes",
+                  2,
+                  "failures"
+                ],
+                "expectedValue": [
+                  {
+                    "direction": "input",
+                    "given": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "declared": "string"
                   }
                 ]
               }
