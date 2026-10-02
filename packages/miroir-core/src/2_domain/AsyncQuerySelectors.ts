@@ -1,6 +1,7 @@
 // ################################################################################################
 
 import { Uuid } from "../0_interfaces/1_core/EntityVersion";
+import { keylessEntityQueryFailureForTarget } from "../1_core/Entity/EntityPrimaryKey";
 import {
   BoxedExtractorOrCombinerReturningObject,
   BoxedExtractorOrCombinerReturningObjectList,
@@ -216,6 +217,10 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
     }
     case "combinerOneToOne":
     case "extractorByPrimaryKey": {
+      const keylessTargetFailure = keylessEntityQueryFailureForTarget(modelEnvironment?.currentModel, extractorOrCombiner);
+      if (keylessTargetFailure) {
+        return Promise.resolve(keylessTargetFailure);
+      }
       // log.info(
       //   "############ asyncInnerSelectElementFromQuery",
       //   extractorOrCombiner.extractorOrCombinerType,

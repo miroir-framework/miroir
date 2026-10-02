@@ -838,6 +838,7 @@ export {
   instanceMatchesForeignKey,
   keylessEntityInstanceActionError,
   keylessEntityQueryFailure,
+  keylessEntityQueryFailureForTarget,
   POSITIONAL_KEY_PREFIX,
   parseCompositeKeyValue,
   resolveInstanceParentUuid,

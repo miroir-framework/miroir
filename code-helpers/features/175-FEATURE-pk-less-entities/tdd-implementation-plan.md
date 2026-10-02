@@ -37,7 +37,7 @@ This plan does **not** cover: editing keyless rows; keyless Miroir-owned Entitie
 | 1 | Tracer: refresh a keyless External SQL table twice (redux) | ✅ | `PkLessExternalEntity.integ.test.ts` |
 | 2 | Model validation of `idAttribute: false` | ✅ | `fn.entityPrimaryKey` cases + deployments' modelValidation |
 | 3 | Zustand cache parity | ✅ | zustand vitest + phase1 integ on zustand |
-| 4 | Queries keep keyless rows and refuse key-based lookups | ⬜ | `DomainStateQuerySelectors.pkLess.unit.test.ts` + phase1 integ |
+| 4 | Queries keep keyless rows and refuse key-based lookups | ✅ | `DomainStateQuerySelectors.pkLess.unit.test.ts` + phase1 integ |
 | 5 | CUD on keyless Entities refused before touching the cache | ⬜ | phase1 integ, CUD cases |
 | 6 | Grids: all rows, stable ids, no edit / delete / details | ⬜ | `listDisplayByTransformer.unit.test.ts` + grid component test |
 | 7 | HTTP: sync writes `false` without `id`; keyless HTTP rows display | ⬜ | `tr.syncExternalServiceSchema` case + external-service scenario |
@@ -320,7 +320,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,localcache
 
 ## Slice 4 — Queries keep keyless rows and refuse key-based lookups
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -359,6 +359,12 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions
 ```
 
 ### Realization
+
+- `DomainStateQuerySelectors.pkLess.unit.test.ts`: `orderBy` and a filter keep identical rows (re-keyed `#0…`); `extractorByPrimaryKey` on a keyless entity is a `QueryNotExecutable` failure ("has no primary key").
+- `indexInstancesByPrimaryKey` re-keys keyless rows positionally in their filtered / ordered order (instead of reusing source keys, which would not match the new order).
+- Key-based refusal at one place per runner family: `innerSelectDomainElementFromExtractorOrCombiner` (sync) and `asyncInnerSelectElementFromQuery` call `keylessEntityQueryFailureForTarget(modelEnvironment.currentModel, extractorOrCombiner)` for `combinerOneToOne` and `extractorByPrimaryKey`, so redux, domain-state and in-memory runners all refuse. The SQL generator refusals were added in slice 1.
+- The `ExtractorRunnerInMemory`, `SqlDbQueryRunner` and `FileSystemExtractorRunner` re-keying moved to `indexInstancesByCacheKey` in slice 1 (compile).
+- The integration proof of a store-side query (`queryExecutionStrategy: "storage"`, through `SqlDbQueryRunner`) is in `PkLessExternalEntity.integ`, committed with slice 5 (it shares the test file with the CUD cases).
 
 ---
 

@@ -81,6 +81,22 @@ export function keylessEntityQueryFailure(extractorType: string, entityUuid: str
 
 // ##############################################################################################
 /**
+ * For a key-based extractor or combiner (extractorByPrimaryKey, combinerOneToOne), returns the
+ * query failure to give when its target entity, looked up in `currentModel`, has no primary key;
+ * undefined otherwise.
+ */
+export function keylessEntityQueryFailureForTarget(
+  currentModel: { entities?: ({ uuid: string } & EntityPrimaryKeySource)[] } | undefined,
+  extractorOrCombiner: { extractorOrCombinerType: string; parentUuid: string },
+): Domain2ElementFailed | undefined {
+  const targetEntity = currentModel?.entities?.find((entity) => entity.uuid === extractorOrCombiner.parentUuid);
+  return entityHasNoPrimaryKey(targetEntity)
+    ? keylessEntityQueryFailure(extractorOrCombiner.extractorOrCombinerType, extractorOrCombiner.parentUuid)
+    : undefined;
+}
+
+// ##############################################################################################
+/**
  * Returns the attribute name(s) used as the primary key for instances of the given entity.
  * Defaults to "uuid" when the source does not specify an idAttribute.
  * For backward compatibility, returns a single string for single-attribute PKs.
