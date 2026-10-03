@@ -20,6 +20,21 @@ export interface MountCopilotKitRouteOptions {
   importMiroirAi?: () => Promise<Pick<typeof import("miroir-ai"), "createCopilotKitRouter" | "assertAgentSdkPackaged">>;
 }
 
+/**
+ * The MCP URL handed to the agent subprocess (#409). With TLS on, the API port speaks HTTPS with a
+ * local certificate the subprocess may not trust, so the agent goes to the dedicated MCP listener
+ * (`server.mcpUrl`), which always speaks plain HTTP. Without one, it uses HTTPS on the API port.
+ */
+export function agentMcpHttpUrl(ports: { restPort: number; mcpPort: number; tls: boolean }): string {
+  if (!ports.tls) {
+    return `http://127.0.0.1:${ports.restPort}/mcp`;
+  }
+  if (ports.mcpPort) {
+    return `http://127.0.0.1:${ports.mcpPort}/mcp`;
+  }
+  return `https://127.0.0.1:${ports.restPort}/mcp`;
+}
+
 // webpackIgnore keeps the import dynamic in the ncc release bundle, which otherwise hoists
 // an external dynamic import into a static one.
 const defaultImportMiroirAi = () => import(/* webpackIgnore: true */ "miroir-ai");

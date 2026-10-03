@@ -177,7 +177,7 @@ You can keep both a token provider and the agent configured. The AppBar pick cho
 
 1. Sparkle icon: open the assistant (needs snapshot `ai`).
 2. Robot icon, labelled with the backend (**Cursor** or **Claude**): appears only when snapshot `agentBackend` is not `"none"` **and** the AI shell is shown. Click until the tooltip says the agent is on. The pick is sessionStorage key `miroirAiBackend` (this browser tab), stored as `"agent"`; an older `"cursor"` value reads the same. Clearing it returns to the token path.
-3. Chat as usual. The agent calls Miroir MCP at `http://127.0.0.1:<apiPort>/mcp` (ungated, no extra Bearer). Write tools such as `Library_lendDocument` run immediately. Sidebar **forms** (`propose_generateMiroirEntity`, `propose_lendDocument`) stay CopilotKit review steps: Accept on lend POSTs `/lendDocument`; Reject does not.
+3. Chat as usual. The agent calls Miroir MCP at `http://127.0.0.1:<apiPort>/mcp` (ungated, no extra Bearer). When the server runs with TLS certificates, it calls the dedicated MCP listener (`server.mcpUrl` port, plain HTTP) instead. Write tools such as `Library_lendDocument` run immediately. Sidebar **forms** (`propose_generateMiroirEntity`, `propose_lendDocument`) stay CopilotKit review steps: Accept on lend POSTs `/lendDocument`; Reject does not.
 
 If the robot icon is missing, `GET /capabilities` still has `agentBackend: "none"` (config not saved, or you did not restart).
 
