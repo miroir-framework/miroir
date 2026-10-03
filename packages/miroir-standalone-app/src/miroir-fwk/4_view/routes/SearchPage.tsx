@@ -94,6 +94,7 @@ export function SearchPage() {
         <EntityInstanceSelectorPanel
           deploymentUuid={deploymentUuid}
           applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
+          initialApplicationUuid={selfApplicationLibrary.uuid}
           initialEntityUuid={initialEntityUuid}
           showAllInstances={showAllInstances}
         />
