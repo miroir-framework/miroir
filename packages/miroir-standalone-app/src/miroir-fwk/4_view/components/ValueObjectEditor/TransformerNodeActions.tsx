@@ -4,7 +4,9 @@ import React, { useMemo, useState } from "react";
 import {
   pipeCandidates,
   pipeTransformerNode,
+  transformerChildren,
   transformerSlots,
+  unwrapTransformerNode,
   wrapCandidates,
   wrapTransformerNode,
   type InputOutputType,
@@ -45,7 +47,7 @@ export interface TransformerNodeActionsProps {
 }
 
 type NewNodeAction = "wrap" | "pipe";
-type OpenDialog = { kind: NewNodeAction } | undefined;
+type OpenDialog = { kind: NewNodeAction } | { kind: "unwrap" } | undefined;
 
 /** Wrap in and Pipe into share the dialog: a new transformer takes the node's place. */
 const newNodeDialogText: Record<NewNodeAction, { title: string; ariaLabel: string; confirm: string }> = {
@@ -75,6 +77,7 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
   const [dialog, setDialog] = useState<OpenDialog>(undefined);
   const [chosenType, setChosenType] = useState<string | undefined>(undefined);
   const [chosenSlot, setChosenSlot] = useState<string | undefined>(undefined);
+  const [chosenChild, setChosenChild] = useState<string | undefined>(undefined);
   const nodePathKey = nodePath.join(".");
 
   const wrapTypes = useMemo(
@@ -94,11 +97,16 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
   );
   const slot = chosenTypeSlots.length === 1 ? chosenTypeSlots[0].name : chosenSlot;
   const canConfirm = !!chosenType && (dialog?.kind === "pipe" || !!slot);
+  // Unwrap: a child takes the node's place; with several children, the dialog names the dropped ones.
+  const children = useMemo(() => transformerChildren(nodeValue), [nodeValue]);
+  const childKey = (path: (string | number)[]) => path.join(".");
+  const droppedChildren = children.filter((child) => childKey(child.path) !== chosenChild);
 
   const closeDialog = () => {
     setDialog(undefined);
     setChosenType(undefined);
     setChosenSlot(undefined);
+    setChosenChild(undefined);
   };
 
   const openDialog = (next: OpenDialog) => {
@@ -106,8 +114,29 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
     setDialog(next);
   };
 
+  const unwrap = (childPath: (string | number)[]) => {
+    onReplaceNode(unwrapTransformerNode(nodeValue, childPath));
+    closeDialog();
+  };
+
+  const startUnwrap = () => {
+    setMenuAnchor(null);
+    if (children.length === 1) {
+      unwrap(children[0].path);
+      return;
+    }
+    setDialog({ kind: "unwrap" });
+  };
+
+  const confirmUnwrap = () => {
+    const child = children.find((candidate) => childKey(candidate.path) === chosenChild);
+    if (child) {
+      unwrap(child.path);
+    }
+  };
+
   const confirmNewNode = () => {
-    if (!dialog || !chosenType || !canConfirm) {
+    if (!dialog || dialog.kind === "unwrap" || !chosenType || !canConfirm) {
       return;
     }
     const defaultNode = defaultNodeForType(chosenType);
@@ -159,8 +188,61 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
         >
           Pipe into…
         </ThemedMenuItem>
+        <ThemedMenuItem
+          data-testid="transformer-node-action-unwrap"
+          disabled={children.length === 0}
+          onClick={startUnwrap}
+        >
+          {children.length > 1 ? "Unwrap…" : "Unwrap"}
+        </ThemedMenuItem>
       </Menu>
-      {dialog && (
+      {dialog?.kind === "unwrap" && (
+        <ThemedDialog
+          open={true}
+          onClose={closeDialog}
+          disableEnforceFocus
+          data-testid="transformer-node-dialog"
+          aria-label="Replace the transformer by one of its children"
+        >
+          <ThemedDialogTitle>Unwrap: keep one child</ThemedDialogTitle>
+          <ThemedDialogContent>
+            <ThemedLabeledEditor
+              labelElement={<span>Keep</span>}
+              editor={
+                <ThemedSelectWithPortal
+                  name="transformer-node-dialog-child"
+                  filterable={true}
+                  options={children.map((child) => ({ value: childKey(child.path), label: childKey(child.path) }))}
+                  value={chosenChild ?? ""}
+                  onChange={(event: React.ChangeEvent<HTMLSelectElement>) => setChosenChild(event.target.value)}
+                  placeholder="Select a child..."
+                  minWidth="200px"
+                />
+              }
+            />
+            {chosenChild && (
+              <div data-testid="transformer-node-dialog-dropped" style={{ marginTop: "8px" }}>
+                Also removes: {droppedChildren.map((child) => `${childKey(child.path)} (${child.transformerType})`).join(", ")}
+              </div>
+            )}
+          </ThemedDialogContent>
+          <ThemedDialogActions>
+            <ThemedStyledButton type="button" variant="outlined" onClick={closeDialog} data-testid="transformer-node-dialog-cancel">
+              Cancel
+            </ThemedStyledButton>
+            <ThemedStyledButton
+              type="button"
+              variant="contained"
+              disabled={!chosenChild}
+              onClick={confirmUnwrap}
+              data-testid="transformer-node-dialog-confirm"
+            >
+              Unwrap
+            </ThemedStyledButton>
+          </ThemedDialogActions>
+        </ThemedDialog>
+      )}
+      {dialog && dialog.kind !== "unwrap" && (
         <ThemedDialog
           open={true}
           onClose={closeDialog}

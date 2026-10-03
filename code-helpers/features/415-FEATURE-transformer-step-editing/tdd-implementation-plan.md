@@ -33,7 +33,7 @@ Out (analysis non-goals): undo and redo; rewriting references after a wrap or an
 | 1 | Wrap the root in `mapList` (tracer) | ✅ DONE | `fn.transformer.treeEdit` wrap cases; UI wrap case |
 | 2 | Wrap at any level, slot choice, type filter | ✅ DONE | nested and multi-slot wrap cases; filtered dialog |
 | 3 | Pipe into (D14) | ✅ DONE | pipe cases; filtered by the node's output |
-| 4 | Unwrap: remove a node, keep a child | ⬜ pending | unwrap cases; UI unwrap with confirmation |
+| 4 | Unwrap: remove a node, keep a child | ✅ DONE | unwrap cases; UI unwrap with confirmation |
 | 5 | Remove a subtree | ⬜ pending | remove cases per position kind; UI remove |
 | 6 | Type change keeps valid attributes | ⬜ pending | merge cases; UI `filterList` to `find` keeps `predicate` |
 | 7 | Use case end to end, `getFromParameters` hint (D15, D16) | ⬜ pending | UI case: one instance, then all, wrapped in `mapList` |
@@ -211,7 +211,7 @@ Same as Slice 1.
 
 ## Slice 4. Unwrap: remove a node, keep a child
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Goal: the designer removes a node and one of its transformer children takes its place.
 
@@ -229,7 +229,12 @@ Same as Slice 1, plus `fn.transformer.interfaceWalk` if the walk traversal chang
 
 ### Realization
 
-(pending)
+- `transformerChildren` and `unwrapTransformerNode` came with Slice 1. Cases: 7 `transformerChildren` (`mapList` with a typed `applyTo`, `ifThenElse`, `+` skipping a literal argument, `createObject`, `case`, `returnValue`, a plain record) and 5 `unwrapTransformerNode` (four kept children, a literal path failing). 37 cases.
+- `transformerChildren` reads the slots of the definition; the #383 `walkChildren` finds typed values anywhere and binds their inputs per transformer type. Sharing the traversal would tie the slot list to the binding rules, so the refactor checkpoint leaves them apart.
+- Unwrap with one child replaces the node at once, without a dialog: nothing else is lost (D5). With several children, the dialog's `transformer-node-dialog-child` select lists them by path and, once a child is picked, `transformer-node-dialog-dropped` names the others with their types; choosing and confirming happen in that one dialog. The menu entry is disabled when the node has no transformer child.
+- Unwrapping a nested node needs no path argument: the node's own menu writes the kept child at the node's path.
+- UI cases: "unwrapping a mapList with one child puts the child back at its place" (also checks the entry is disabled on `returnValue`) and "unwrapping an ifThenElse asks which child to keep and names the others" (the default `if` of `ifThenElse` is a typed transformer, so it is named as dropped). Leaf count 97.
+- Validation: `fn.transformer.treeEdit` 37/37, `ui.transformerEditor` 12/12, app `tsc` 32 errors (baseline), lint clean, scoped nonreg (`smoke,core,ui`) for Slices 3 and 4: see Slice 5.
 
 ## Slice 5. Remove a subtree
 

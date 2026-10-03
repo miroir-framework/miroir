@@ -728,6 +728,435 @@
             ]
           }
         ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "transformerChildren",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "mapList: the element transformer, then applyTo",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "transformerChildren"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "referenceToOuterObject": "book",
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                },
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "referenceName": "defaultInput"
+                }
+              }
+            ],
+            "expectedValue": [
+              {
+                "path": [
+                  "elementTransformer"
+                ],
+                "slot": "elementTransformer",
+                "transformerType": "getFromContext"
+              },
+              {
+                "path": [
+                  "applyTo"
+                ],
+                "slot": "applyTo",
+                "transformerType": "getFromContext"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "ifThenElse: if, then and else",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "transformerChildren"
+            },
+            "arguments": [
+              {
+                "transformerType": "ifThenElse",
+                "if": {
+                  "transformerType": "boolExpr",
+                  "operator": "==",
+                  "left": 1,
+                  "right": 1
+                },
+                "then": {
+                  "transformerType": "getFromContext",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                },
+                "else": {
+                  "transformerType": "returnValue",
+                  "value": "x"
+                }
+              }
+            ],
+            "expectedValue": [
+              {
+                "path": [
+                  "if"
+                ],
+                "slot": "if",
+                "transformerType": "boolExpr"
+              },
+              {
+                "path": [
+                  "then"
+                ],
+                "slot": "then",
+                "transformerType": "getFromContext"
+              },
+              {
+                "path": [
+                  "else"
+                ],
+                "slot": "else",
+                "transformerType": "returnValue"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "+: each transformer argument, literals skipped",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "transformerChildren"
+            },
+            "arguments": [
+              {
+                "transformerType": "+",
+                "args": [
+                  {
+                    "transformerType": "getFromContext",
+                    "referenceName": "defaultInput"
+                  },
+                  1,
+                  {
+                    "transformerType": "returnValue",
+                    "value": "x"
+                  }
+                ]
+              }
+            ],
+            "expectedValue": [
+              {
+                "path": [
+                  "args",
+                  0
+                ],
+                "slot": "args[]",
+                "transformerType": "getFromContext"
+              },
+              {
+                "path": [
+                  "args",
+                  2
+                ],
+                "slot": "args[]",
+                "transformerType": "returnValue"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "createObject: each transformer value",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "transformerChildren"
+            },
+            "arguments": [
+              {
+                "transformerType": "createObject",
+                "definition": {
+                  "a": {
+                    "transformerType": "getFromContext",
+                    "referenceName": "defaultInput"
+                  },
+                  "b": "literal"
+                }
+              }
+            ],
+            "expectedValue": [
+              {
+                "path": [
+                  "definition",
+                  "a"
+                ],
+                "slot": "definition{}",
+                "transformerType": "getFromContext"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "case: discriminator, whens then, else",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "transformerChildren"
+            },
+            "arguments": [
+              {
+                "transformerType": "case",
+                "discriminator": {
+                  "transformerType": "getFromContext",
+                  "referenceName": "defaultInput"
+                },
+                "whens": [
+                  {
+                    "when": "a",
+                    "then": {
+                      "transformerType": "returnValue",
+                      "value": "x"
+                    }
+                  }
+                ],
+                "else": {
+                  "transformerType": "getFromContext",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                }
+              }
+            ],
+            "expectedValue": [
+              {
+                "path": [
+                  "discriminator"
+                ],
+                "slot": "discriminator",
+                "transformerType": "getFromContext"
+              },
+              {
+                "path": [
+                  "whens",
+                  0,
+                  "then"
+                ],
+                "slot": "whens[].then",
+                "transformerType": "returnValue"
+              },
+              {
+                "path": [
+                  "else"
+                ],
+                "slot": "else",
+                "transformerType": "getFromContext"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "returnValue: no child",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "transformerChildren"
+            },
+            "arguments": [
+              {
+                "transformerType": "returnValue",
+                "value": "x"
+              }
+            ],
+            "expectedValue": []
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a value that is not a transformer: no child",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "transformerChildren"
+            },
+            "arguments": [
+              {
+                "a": {
+                  "transformerType": "getFromContext",
+                  "referenceName": "defaultInput"
+                }
+              }
+            ],
+            "expectedValue": []
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "unwrapTransformerNode",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "unwrap mapList keeps its element transformer",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "unwrapTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "referenceToOuterObject": "book",
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                },
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "referenceName": "defaultInput"
+                }
+              },
+              [
+                "elementTransformer"
+              ]
+            ],
+            "expectedValue": {
+              "transformerType": "getFromContext",
+              "referencePath": [
+                "defaultInput",
+                "name"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "unwrap ifThenElse keeps the chosen branch",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "unwrapTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "ifThenElse",
+                "if": {
+                  "transformerType": "boolExpr",
+                  "operator": "==",
+                  "left": 1,
+                  "right": 1
+                },
+                "then": {
+                  "transformerType": "getFromContext",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                },
+                "else": {
+                  "transformerType": "returnValue",
+                  "value": "x"
+                }
+              },
+              [
+                "else"
+              ]
+            ],
+            "expectedValue": {
+              "transformerType": "returnValue",
+              "value": "x"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "unwrap + keeps an argument",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "unwrapTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "+",
+                "args": [
+                  {
+                    "transformerType": "getFromContext",
+                    "referenceName": "defaultInput"
+                  },
+                  1,
+                  {
+                    "transformerType": "returnValue",
+                    "value": "x"
+                  }
+                ]
+              },
+              [
+                "args",
+                2
+              ]
+            ],
+            "expectedValue": {
+              "transformerType": "returnValue",
+              "value": "x"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "unwrap createObject keeps a value",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "unwrapTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "createObject",
+                "definition": {
+                  "a": {
+                    "transformerType": "getFromContext",
+                    "referenceName": "defaultInput"
+                  },
+                  "b": "literal"
+                }
+              },
+              [
+                "definition",
+                "a"
+              ]
+            ],
+            "expectedValue": {
+              "transformerType": "getFromContext",
+              "referenceName": "defaultInput"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "unwrap at a literal fails",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "unwrapTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "+",
+                "args": [
+                  {
+                    "transformerType": "getFromContext",
+                    "referenceName": "defaultInput"
+                  },
+                  1,
+                  {
+                    "transformerType": "returnValue",
+                    "value": "x"
+                  }
+                ]
+              },
+              [
+                "args",
+                1
+              ]
+            ],
+            "expectedError": "no transformer child at args.1"
+          }
+        ]
       }
     ]
   }
