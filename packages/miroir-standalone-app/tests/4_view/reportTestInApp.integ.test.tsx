@@ -5,7 +5,8 @@
  * the session (the wizard is a Miroir Report the session does not bootstrap).
  *
  * The browser launcher environment is replaced by the Node one, on the profile of the launch; the
- * app's domain controller only serves the Miroir Reports of `miroir_data`.
+ * app's domain controller only serves the Miroir Reports of `miroir_data`. An empty `LocalCache`
+ * stands for the app's store: the sandbox header's step-delay slider (#435) reads ViewParams from it.
  *
  * Run:
  * ```bash
@@ -33,7 +34,7 @@ import {
   type EntityInstance,
 } from "miroir-core";
 import { loadApplicationMiroirTestCatalog } from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
-import { MiroirContextReactProvider } from "miroir-react";
+import { LocalCache, LocalCacheProvider, MiroirContextReactProvider } from "miroir-react";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
@@ -114,6 +115,11 @@ function appDomainController(): DomainControllerInterface {
   return { getDomainState: () => domainState } as unknown as DomainControllerInterface;
 }
 
+/** The app's store, empty: the step-delay slider then shows 0 ms. */
+function appLocalCacheStore() {
+  return new LocalCache().getInnerStore();
+}
+
 const miroirActivityTracker = new MiroirActivityTracker();
 const miroirEventService = new MiroirEventService(miroirActivityTracker);
 const miroirContext = {
@@ -150,17 +156,19 @@ describe("Report MiroirTests from the Miroir Tests page (#330)", () => {
     expect(catalogEntry?.uiRunnerKind).toBe("reportTest");
 
     render(
-      <MiroirContextReactProvider miroirContext={miroirContext} domainController={appDomainController()}>
-        <ReportPageContextProvider>
-          <MiroirTestDisplay
-            miroirTest={catalogEntry!.instance}
-            testLabel={suiteKey}
-            gridType="glide-data-grid"
-            useSnackBar={false}
-            testFilter={{ testList: { [suiteKey]: { ConnectExternalServiceWizard: [leafLabel] } } }}
-          />
-        </ReportPageContextProvider>
-      </MiroirContextReactProvider>,
+      <LocalCacheProvider store={appLocalCacheStore()}>
+        <MiroirContextReactProvider miroirContext={miroirContext} domainController={appDomainController()}>
+          <ReportPageContextProvider>
+            <MiroirTestDisplay
+              miroirTest={catalogEntry!.instance}
+              testLabel={suiteKey}
+              gridType="glide-data-grid"
+              useSnackBar={false}
+              testFilter={{ testList: { [suiteKey]: { ConnectExternalServiceWizard: [leafLabel] } } }}
+            />
+          </ReportPageContextProvider>
+        </MiroirContextReactProvider>
+      </LocalCacheProvider>,
     );
 
     const sandboxPanel = screen.getByTestId("component-test-sandbox-panel");
