@@ -5,7 +5,7 @@
   "name": "ui.transformerEditor",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "TransformerEditor on the Miroir application: renders the default transformer and its result, edits it, chooses a transformer type, and switches the input type restriction off.",
+  "description": "TransformerEditor on the Miroir application: renders the default transformer and its result, edits it, chooses a transformer type, switches the input type restriction off, and builds nested transformers (mapList to strings and objects, a reduce of a mapList, a list from an object).",
   "tags": [
     "ui",
     "editor",
@@ -228,6 +228,529 @@
                 },
                 "attribute": "data-test-is-open",
                 "value": "false"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: mapList maps the items of a list to strings",
+            "steps": [
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "show the input type",
+                "field": "transformerEditor_inputModeSelector.input"
+              },
+              {
+                "step": "selectOption",
+                "label": "input is a list",
+                "field": "transformerEditor_inputModeSelector.input",
+                "select": "unionType",
+                "option": "array"
+              },
+              {
+                "step": "click",
+                "label": "add a second item",
+                "target": {
+                  "byRole": "button",
+                  "name": "input.add"
+                }
+              },
+              {
+                "step": "change",
+                "label": "first item",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_inputModeSelector.input.0"
+                },
+                "value": "apple"
+              },
+              {
+                "step": "change",
+                "label": "second item",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_inputModeSelector.input.1"
+                },
+                "value": "pear"
+              },
+              {
+                "step": "selectOption",
+                "label": "root mapList",
+                "field": "transformerEditor_transformer_selector.transformer.transformerType",
+                "option": "mapList"
+              },
+              {
+                "step": "selectOption",
+                "label": "element type",
+                "field": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType",
+                "option": "mustacheStringTemplate"
+              },
+              {
+                "step": "change",
+                "label": "element template",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_transformer_selector.transformer.elementTransformer.definition"
+                },
+                "value": "fruit: {{defaultInput}}"
+              },
+              {
+                "step": "clickObjectButton",
+                "label": "add element interpolation",
+                "field": "transformerEditor_transformer_selector.transformer.elementTransformer",
+                "action": "addOptionalAttribute",
+                "attribute": "interpolation"
+              },
+              {
+                "step": "selectOption",
+                "label": "element interpolation at runtime",
+                "field": "transformerEditor_transformer_selector.transformer.elementTransformer.interpolation",
+                "option": "runtime"
+              },
+              {
+                "step": "expectElement",
+                "label": "first string",
+                "target": {
+                  "byText": "fruit: apple"
+                },
+                "count": 1,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "second string",
+                "target": {
+                  "byText": "fruit: pear"
+                },
+                "count": 1,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: mapList maps the items of a list to objects",
+            "steps": [
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "show the input type",
+                "field": "transformerEditor_inputModeSelector.input"
+              },
+              {
+                "step": "selectOption",
+                "label": "input is a list",
+                "field": "transformerEditor_inputModeSelector.input",
+                "select": "unionType",
+                "option": "array"
+              },
+              {
+                "step": "click",
+                "label": "add a second item",
+                "target": {
+                  "byRole": "button",
+                  "name": "input.add"
+                }
+              },
+              {
+                "step": "change",
+                "label": "first item",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_inputModeSelector.input.0"
+                },
+                "value": "apple"
+              },
+              {
+                "step": "change",
+                "label": "second item",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_inputModeSelector.input.1"
+                },
+                "value": "pear"
+              },
+              {
+                "step": "selectOption",
+                "label": "root mapList",
+                "field": "transformerEditor_transformer_selector.transformer.transformerType",
+                "option": "mapList"
+              },
+              {
+                "step": "openSelect",
+                "label": "open element createObject",
+                "field": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType"
+              },
+              {
+                "step": "click",
+                "label": "element createObject",
+                "target": {
+                  "byRole": "option",
+                  "name": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType-option-createObject"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "element createObject closed",
+                "target": {
+                  "widget": "selectState",
+                  "field": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType"
+                },
+                "attribute": "data-test-is-open",
+                "value": "false"
+              },
+              {
+                "step": "clickObjectButton",
+                "label": "add an attribute to the element object",
+                "field": "transformerEditor_transformer_selector.transformer.elementTransformer.definition",
+                "action": "addRecordEntry"
+              },
+              {
+                "step": "renameRecordEntry",
+                "label": "name it fruit",
+                "field": "transformerEditor_transformer_selector.transformer.elementTransformer.definition",
+                "entry": "newRecordEntry",
+                "newName": "fruit"
+              },
+              {
+                "step": "selectOption",
+                "label": "fruit attribute type",
+                "field": "transformerEditor_transformer_selector.transformer.elementTransformer.definition.fruit.transformerType",
+                "option": "mustacheStringTemplate"
+              },
+              {
+                "step": "change",
+                "label": "fruit attribute template",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_transformer_selector.transformer.elementTransformer.definition.fruit.definition"
+                },
+                "value": "{{defaultInput}}"
+              },
+              {
+                "step": "clickObjectButton",
+                "label": "add fruit attribute interpolation",
+                "field": "transformerEditor_transformer_selector.transformer.elementTransformer.definition.fruit",
+                "action": "addOptionalAttribute",
+                "attribute": "interpolation"
+              },
+              {
+                "step": "selectOption",
+                "label": "fruit attribute interpolation at runtime",
+                "field": "transformerEditor_transformer_selector.transformer.elementTransformer.definition.fruit.interpolation",
+                "option": "runtime"
+              },
+              {
+                "step": "expectElement",
+                "label": "one fruit attribute per object",
+                "target": {
+                  "byText": "fruit"
+                },
+                "count": 2,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "first object value",
+                "target": {
+                  "byText": "apple"
+                },
+                "count": 1,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "second object value",
+                "target": {
+                  "byText": "pear"
+                },
+                "count": 1,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: listReducerToSpreadObject reduces the objects mapped from a list",
+            "steps": [
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "show the input type",
+                "field": "transformerEditor_inputModeSelector.input"
+              },
+              {
+                "step": "selectOption",
+                "label": "input is a list",
+                "field": "transformerEditor_inputModeSelector.input",
+                "select": "unionType",
+                "option": "array"
+              },
+              {
+                "step": "click",
+                "label": "add a second item",
+                "target": {
+                  "byRole": "button",
+                  "name": "input.add"
+                }
+              },
+              {
+                "step": "change",
+                "label": "first item",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_inputModeSelector.input.0"
+                },
+                "value": "apple"
+              },
+              {
+                "step": "change",
+                "label": "second item",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_inputModeSelector.input.1"
+                },
+                "value": "pear"
+              },
+              {
+                "step": "openSelect",
+                "label": "open root listReducerToSpreadObject",
+                "field": "transformerEditor_transformer_selector.transformer.transformerType"
+              },
+              {
+                "step": "click",
+                "label": "root listReducerToSpreadObject",
+                "target": {
+                  "byRole": "option",
+                  "name": "transformerEditor_transformer_selector.transformer.transformerType-option-listReducerToSpreadObject"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "root listReducerToSpreadObject closed",
+                "target": {
+                  "widget": "selectState",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "attribute": "data-test-is-open",
+                "value": "false"
+              },
+              {
+                "step": "clickObjectButton",
+                "label": "add applyTo",
+                "field": "transformerEditor_transformer_selector.transformer",
+                "action": "addOptionalAttribute",
+                "attribute": "applyTo"
+              },
+              {
+                "step": "selectOption",
+                "label": "applyTo mapList",
+                "field": "transformerEditor_transformer_selector.transformer.applyTo.transformerType",
+                "option": "mapList"
+              },
+              {
+                "step": "openSelect",
+                "label": "open element createObject",
+                "field": "transformerEditor_transformer_selector.transformer.applyTo.elementTransformer.transformerType"
+              },
+              {
+                "step": "click",
+                "label": "element createObject",
+                "target": {
+                  "byRole": "option",
+                  "name": "transformerEditor_transformer_selector.transformer.applyTo.elementTransformer.transformerType-option-createObject"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "element createObject closed",
+                "target": {
+                  "widget": "selectState",
+                  "field": "transformerEditor_transformer_selector.transformer.applyTo.elementTransformer.transformerType"
+                },
+                "attribute": "data-test-is-open",
+                "value": "false"
+              },
+              {
+                "step": "clickObjectButton",
+                "label": "add an attribute to the element object",
+                "field": "transformerEditor_transformer_selector.transformer.applyTo.elementTransformer.definition",
+                "action": "addRecordEntry"
+              },
+              {
+                "step": "renameRecordEntry",
+                "label": "name it last",
+                "field": "transformerEditor_transformer_selector.transformer.applyTo.elementTransformer.definition",
+                "entry": "newRecordEntry",
+                "newName": "last"
+              },
+              {
+                "step": "selectOption",
+                "label": "last attribute type",
+                "field": "transformerEditor_transformer_selector.transformer.applyTo.elementTransformer.definition.last.transformerType",
+                "option": "mustacheStringTemplate"
+              },
+              {
+                "step": "change",
+                "label": "last attribute template",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_transformer_selector.transformer.applyTo.elementTransformer.definition.last.definition"
+                },
+                "value": "{{defaultInput}}"
+              },
+              {
+                "step": "clickObjectButton",
+                "label": "add last attribute interpolation",
+                "field": "transformerEditor_transformer_selector.transformer.applyTo.elementTransformer.definition.last",
+                "action": "addOptionalAttribute",
+                "attribute": "interpolation"
+              },
+              {
+                "step": "selectOption",
+                "label": "last attribute interpolation at runtime",
+                "field": "transformerEditor_transformer_selector.transformer.applyTo.elementTransformer.definition.last.interpolation",
+                "option": "runtime"
+              },
+              {
+                "step": "expectElement",
+                "label": "one attribute",
+                "target": {
+                  "byText": "last"
+                },
+                "count": 1,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the last item wins",
+                "target": {
+                  "byText": "pear"
+                },
+                "count": 1,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the first item is overridden",
+                "target": {
+                  "byText": "apple"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: mapList over getObjectValues makes a list from an object",
+            "steps": [
+              {
+                "step": "renameRecordEntry",
+                "label": "name the input attribute first",
+                "field": "transformerEditor_inputModeSelector.input",
+                "entry": "placeholder",
+                "newName": "first"
+              },
+              {
+                "step": "change",
+                "label": "first value",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_inputModeSelector.input.first"
+                },
+                "value": "apple"
+              },
+              {
+                "step": "clickObjectButton",
+                "label": "add an input attribute",
+                "field": "transformerEditor_inputModeSelector.input",
+                "action": "addRecordEntry"
+              },
+              {
+                "step": "renameRecordEntry",
+                "label": "name it second",
+                "field": "transformerEditor_inputModeSelector.input",
+                "entry": "newRecordEntry",
+                "newName": "second"
+              },
+              {
+                "step": "change",
+                "label": "second value",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_inputModeSelector.input.second"
+                },
+                "value": "pear"
+              },
+              {
+                "step": "click",
+                "label": "switch the restriction off: mapList takes a list",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "root mapList",
+                "field": "transformerEditor_transformer_selector.transformer.transformerType",
+                "option": "mapList"
+              },
+              {
+                "step": "clickObjectButton",
+                "label": "add applyTo",
+                "field": "transformerEditor_transformer_selector.transformer",
+                "action": "addOptionalAttribute",
+                "attribute": "applyTo"
+              },
+              {
+                "step": "selectOption",
+                "label": "applyTo getObjectValues",
+                "field": "transformerEditor_transformer_selector.transformer.applyTo.transformerType",
+                "option": "getObjectValues"
+              },
+              {
+                "step": "selectOption",
+                "label": "element type",
+                "field": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType",
+                "option": "mustacheStringTemplate"
+              },
+              {
+                "step": "change",
+                "label": "element template",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_transformer_selector.transformer.elementTransformer.definition"
+                },
+                "value": "{{defaultInput}} juice"
+              },
+              {
+                "step": "clickObjectButton",
+                "label": "add element interpolation",
+                "field": "transformerEditor_transformer_selector.transformer.elementTransformer",
+                "action": "addOptionalAttribute",
+                "attribute": "interpolation"
+              },
+              {
+                "step": "selectOption",
+                "label": "element interpolation at runtime",
+                "field": "transformerEditor_transformer_selector.transformer.elementTransformer.interpolation",
+                "option": "runtime"
+              },
+              {
+                "step": "expectElement",
+                "label": "first item",
+                "target": {
+                  "byText": "apple juice"
+                },
+                "count": 1,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "second item",
+                "target": {
+                  "byText": "pear juice"
+                },
+                "count": 1,
+                "timeout": 2000
               }
             ]
           }
