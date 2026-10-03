@@ -102,7 +102,7 @@ The core functions are `checkTransformerInterfaceRecursively` and `transformerTy
 
 Every `transformerType` select has a `⋯` menu next to it, for the node it belongs to (issue #415). Its actions change the tree around the node and keep the node's subtree:
 
-- **Wrap in…** puts the node inside a new transformer. When the new transformer has one place for a transformer (`mapList.elementTransformer`), the node goes there; otherwise the dialog asks for the place (`then` or `else` of `ifThenElse`). An array place gets a one-item array, and a record place a one-entry record keyed by the node's `label`, else `value`. `applyTo` is never offered here.
+- **Wrap in…** puts the node inside a new transformer. When the new transformer has one place for a transformer (`mapList.elementTransformer`), the node goes there; otherwise the dialog asks for the place (`then` or `else` of `ifThenElse`). An array place gets a one-item array, whose other required places get a `returnValue` (the `then` next to a `when` of `case`). A record place gets a one-entry record keyed by the node's `label`, else `value`. `applyTo` is never offered here.
 - **Pipe into…** puts the node in the `applyTo` of a new transformer, for example a `mapList` piped into `sortList`.
 - **Unwrap** replaces the node by one of its transformer children. With one child it applies at once; with several, the dialog asks which child to keep and names the ones it drops.
 - **Remove…** deletes the node and everything below it, after a confirmation. An optional attribute, an array item or a record entry disappears; the root and a required place get the default `returnValue` of their position.

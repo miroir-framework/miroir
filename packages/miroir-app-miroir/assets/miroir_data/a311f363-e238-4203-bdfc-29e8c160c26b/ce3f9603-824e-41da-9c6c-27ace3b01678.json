@@ -1082,6 +1082,107 @@
           },
           {
             "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: wrapping the root in case at a when fills its then with returnValue",
+            "steps": [
+              {
+                "step": "click",
+                "label": "switch the restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                },
+                "checked": false
+              },
+              {
+                "step": "click",
+                "label": "open the root node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "enclosing case",
+                "field": "transformer-node-dialog-type",
+                "option": "case"
+              },
+              {
+                "step": "openSelect",
+                "label": "open the slot select (typing a bracket is a key descriptor)",
+                "field": "transformer-node-dialog-slot"
+              },
+              {
+                "step": "click",
+                "label": "slot whens[].when",
+                "target": {
+                  "byRole": "option",
+                  "name": "transformer-node-dialog-slot-option-whens[].when"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "slot select closed",
+                "target": {
+                  "widget": "selectState",
+                  "field": "transformer-node-dialog-slot"
+                },
+                "attribute": "data-test-is-open",
+                "value": "false"
+              },
+              {
+                "step": "click",
+                "label": "confirm the wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "root is case",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "case",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the when is the former root",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.whens.0.when.transformerType"
+                },
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the then is filled",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.whens.0.then.transformerType"
+                },
+                "value": "returnValue",
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "TransformerEditor: with the input type restriction, Wrap in offers only transformers accepting the input",
             "steps": [
               {

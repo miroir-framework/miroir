@@ -199,21 +199,49 @@ function slotOf(
  * Enclose `node` in `enclosingNode` (the new transformer, usually the default value of its type)
  * at the slot `slot`, which may be omitted when the enclosing type has exactly one non-`applyTo`
  * slot. An array slot gets a one-item array; a record slot a one-entry record keyed by the
- * node's `label`, else `value`.
+ * node's `label`, else `value`. When the array item is new, its other required slots
+ * (`whens[].then` next to `whens[].when`) get `options.slotDefault`.
  */
 export function wrapTransformerNode(
   node: unknown,
   enclosingNode: Record<string, unknown>,
   slot?: string,
-  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
+  options: {
+    slotDefault?: unknown;
+    transformerDefinitions?: Record<string, TransformerDefinition>;
+  } = {},
 ): Record<string, unknown> {
   if (!isTransformerNode(enclosingNode)) {
     throw new Error("wrapTransformerNode: the enclosing node has no transformerType");
   }
+  const transformerDefinitions = options.transformerDefinitions ?? applicationTransformerDefinitions;
   const target = slotOf(enclosingNode.transformerType, slot, transformerDefinitions);
   const recordKey =
     isPlainRecord(node) && typeof node.label === "string" && node.label.length > 0 ? node.label : "value";
-  return placeAt(enclosingNode, target.template, node, recordKey) as Record<string, unknown>;
+  const wrapped = placeAt(enclosingNode, target.template, node, recordKey) as Record<string, unknown>;
+  const itemPrefixLength = target.template.indexOf(ARRAY_ITEM) + 1;
+  if (itemPrefixLength === 0) {
+    return wrapped;
+  }
+  const itemPrefix = target.template.slice(0, itemPrefixLength);
+  const itemPath = target.template.slice(0, itemPrefixLength - 1);
+  const siblingSlots = transformerSlots(enclosingNode.transformerType, transformerDefinitions).filter(
+    (candidate) =>
+      candidate.name !== target.name &&
+      !candidate.optional &&
+      slotName(candidate.template.slice(0, itemPrefixLength)) === slotName(itemPrefix) &&
+      !candidate.template.slice(itemPrefixLength).some((segment) => segment === ARRAY_ITEM || segment === RECORD_VALUE),
+  );
+  return siblingSlots.reduce((result, sibling) => {
+    const siblingPath = [...itemPath, 0, ...sibling.template.slice(itemPrefixLength)];
+    if (valueAt(result, siblingPath) !== undefined) {
+      return result;
+    }
+    if (options.slotDefault === undefined) {
+      throw new Error(`wrapTransformerNode: ${sibling.name} is required and no slotDefault was given`);
+    }
+    return updateAt(result, siblingPath, () => options.slotDefault) as Record<string, unknown>;
+  }, wrapped);
 }
 
 /** Put `node` in the `applyTo` of `enclosingNode` (Pipe into, D14). */

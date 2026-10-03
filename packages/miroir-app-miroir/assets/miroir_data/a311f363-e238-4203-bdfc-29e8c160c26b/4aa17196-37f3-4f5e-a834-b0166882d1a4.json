@@ -421,6 +421,108 @@
           },
           {
             "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "wrap in case with no when-then item fills then with the slot default",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "wrapTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "getFromContext",
+                "referenceName": "defaultInput"
+              },
+              {
+                "transformerType": "case",
+                "discriminator": "x",
+                "whens": []
+              },
+              "whens[].when",
+              {
+                "slotDefault": {
+                  "transformerType": "returnValue",
+                  "value": 0
+                }
+              }
+            ],
+            "expectedValue": {
+              "transformerType": "case",
+              "discriminator": "x",
+              "whens": [
+                {
+                  "when": {
+                    "transformerType": "getFromContext",
+                    "referenceName": "defaultInput"
+                  },
+                  "then": {
+                    "transformerType": "returnValue",
+                    "value": 0
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "wrap in createObjectFromPairs at definition[].attributeValue fills attributeKey with the slot default",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "wrapTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "getFromContext",
+                "referenceName": "defaultInput"
+              },
+              {
+                "transformerType": "createObjectFromPairs"
+              },
+              "definition[].attributeValue",
+              {
+                "slotDefault": {
+                  "transformerType": "returnValue",
+                  "value": 0
+                }
+              }
+            ],
+            "expectedValue": {
+              "transformerType": "createObjectFromPairs",
+              "definition": [
+                {
+                  "attributeKey": {
+                    "transformerType": "returnValue",
+                    "value": 0
+                  },
+                  "attributeValue": {
+                    "transformerType": "getFromContext",
+                    "referenceName": "defaultInput"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "wrap in case with no when-then item and no slot default fails",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "wrapTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "getFromContext",
+                "referenceName": "defaultInput"
+              },
+              {
+                "transformerType": "case",
+                "discriminator": "x",
+                "whens": []
+              },
+              "whens[].when"
+            ],
+            "expectedError": "whens[].then is required and no slotDefault was given"
+          },
+          {
+            "miroirTestType": "functionCallTest",
             "miroirTestLabel": "wrap in a type with several slots needs a slot name",
             "functionRef": {
               "module": "miroir-core/2_domain/TransformerTreeEdit",

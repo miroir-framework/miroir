@@ -159,10 +159,19 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
       return;
     }
     const newNode = { ...defaultNode, transformerType: chosenType };
+    // a new array item gets returnValue in its other required slots (whens[].then)
+    let returnValueNode: Record<string, unknown> | undefined;
+    try {
+      returnValueNode = defaultNodeForType("returnValue");
+    } catch {
+      returnValueNode = undefined;
+    }
     onReplaceNode(
       dialog.kind === "pipe"
         ? pipeTransformerNode(nodeValue, newNode)
-        : wrapTransformerNode(nodeValue, newNode, slot),
+        : wrapTransformerNode(nodeValue, newNode, slot, {
+            slotDefault: returnValueNode ? { ...returnValueNode, transformerType: "returnValue" } : undefined,
+          }),
     );
     closeDialog();
   };
