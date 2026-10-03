@@ -57,14 +57,15 @@ const MIROIR_TEST_DATA_FOLDER = join(
  * the test pattern instance `ui.mlElementEditor.allTypesPattern` (#303: 1 display leaf, Slice 1, and 3
  * interaction leaves, Slice 2), plus the render-performance instance
  * `ui.mlElementEditor.renderPerformance` (#303 Slice 5: 15 leaves, `runOnDemand`), plus the
- * TransformerEditor instance `ui.transformerEditor` (#406: 8 leaves; #415: 11 leaves, the node actions, type changes and hint).
+ * TransformerEditor instance `ui.transformerEditor` (#406: 8 leaves; #415: 11 leaves, the node actions, type changes and hint;
+ * #411: 2 leaves, a getFromContext element in mapList and the instance mode use case).
  *
  * `EXPECTED_LEAF_COUNT` counts every leaf of the folder, on-demand ones included (it checks the
  * folder content, not what the run executes); `EXPECTED_ON_DEMAND_LEAF_COUNT` is the part under a
  * `runOnDemand` suite, skipped unless `MIROIR_COMPONENT_PERF=1`.
  */
 const EXPECTED_INSTANCE_COUNT = 10;
-const EXPECTED_LEAF_COUNT = 106;
+const EXPECTED_LEAF_COUNT = 108;
 const EXPECTED_ON_DEMAND_LEAF_COUNT = 15;
 
 /** On-demand suites (`runOnDemand: true`) run only with this environment variable set to `1`. */

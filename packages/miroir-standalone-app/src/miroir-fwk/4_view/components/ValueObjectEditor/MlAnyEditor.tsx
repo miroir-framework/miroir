@@ -325,7 +325,10 @@ export const MlAnyEditor: React.FC<MlAnyEditorProps> = (
         ]}
       />
       {localResolvedElementMlSchemaBasedOnValue &&
-        localResolvedElementMlSchemaBasedOnValue.type !== "any" && (
+        localResolvedElementMlSchemaBasedOnValue.type !== "any" &&
+        // MlElementEditor renders an "undefined" value with an MlAnyEditor at the same key: rendering
+        // it back would nest the two editors without end (#411)
+        localResolvedElementMlSchemaBasedOnValue.type !== "undefined" && (
           // NOT USED IN PRACTICE: the MlAnyEditor is used by MlElementEditor only when rawSchema type is "nay" and currentTypecheckKeyMap?.rawSchema?.tag?.value?.display?.any?.format is true
           <MlElementEditor
             valueObjectEditMode={props.valueObjectEditMode}
@@ -356,7 +359,8 @@ export const MlAnyEditor: React.FC<MlAnyEditorProps> = (
           />
         )}
       {!localResolvedElementMlSchemaBasedOnValue ||
-        (localResolvedElementMlSchemaBasedOnValue.type === "any" && (
+        ((localResolvedElementMlSchemaBasedOnValue.type === "any" ||
+          localResolvedElementMlSchemaBasedOnValue.type === "undefined") && (
           <div style={{ display: "flex", flexFlow: "row nowrap", justifyContent: "flex-start" }}>
             {labelElement ?? <>{label}</>}:{JSON.stringify(currentValueObjectAtKey, null, 2)}
           </div>

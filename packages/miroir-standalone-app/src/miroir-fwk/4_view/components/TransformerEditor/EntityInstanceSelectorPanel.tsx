@@ -37,7 +37,6 @@ import {
   adminSelfApplication,
   entityApplicationForAdmin,
 } from "miroir-app-admin";
-import { selfApplicationLibrary } from 'miroir-example-library';
 import { selfApplicationMiroir } from "miroir-app-miroir";
 import { packageName } from '../../../../constants';
 import { cleanLevel } from '../../constants';
@@ -80,6 +79,8 @@ function createGenericObjectSchema(): MlElement {
 // ################################################################################################
 export function EntityInstanceSelectorPanel(props:{
   applicationDeploymentMap: ApplicationDeploymentMap;
+  /** The application the panel starts on when none was chosen before: the editor's. */
+  initialApplicationUuid: Uuid;
   deploymentUuid: Uuid;
   initialEntityUuid: Uuid;
   showAllInstances: boolean;
@@ -87,6 +88,7 @@ export function EntityInstanceSelectorPanel(props:{
   const {
     deploymentUuid,
     showAllInstances,
+    initialApplicationUuid,
     initialEntityUuid,
   } = props;
 
@@ -155,7 +157,7 @@ export function EntityInstanceSelectorPanel(props:{
     formikContext.values[formikPath_EntityInstanceSelectorPanel]?.application ||
     persistedState?.selectedApplicationUuid ||
     context.toolsPageState?.[formikPath_EntityInstanceSelectorPanel]?.application ||
-    selfApplicationLibrary.uuid;
+    initialApplicationUuid;
 
   const inputSelector_deploymentUuidFromApplicationUuid: Uuid = 
     !inputSelector_applicationUuid || inputSelector_applicationUuid == noValue.uuid
@@ -457,7 +459,7 @@ export function EntityInstanceSelectorPanel(props:{
       const restoredApplication =
         context.toolsPageState?.[formikPath_EntityInstanceSelectorPanel]?.application ||
         context.toolsPageState.transformerEditor?.selectedApplicationUuid ||
-        selfApplicationLibrary.uuid;
+        initialApplicationUuid;
       formikContext.setFieldValue(formikPath_EntityInstanceSelectorPanel, {
         ...(formikContext.values[formikPath_EntityInstanceSelectorPanel] ?? {}),
         application: restoredApplication,
@@ -574,6 +576,7 @@ export function EntityInstanceSelectorPanel(props:{
               Section:
             </label>
             <select
+              aria-label="Section"
               value={applicationSection}
               onChange={(e) => handleApplicationSectionChange(e.target.value as ApplicationSection)}
               style={{
@@ -597,6 +600,7 @@ export function EntityInstanceSelectorPanel(props:{
               Entity:
             </label>
             <select
+              aria-label="Entity"
               value={selectedEntityUuid}
               onChange={(e) => handleEntityChange(e.target.value as Uuid)}
               style={{

@@ -927,6 +927,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                   </ThemedFoldableContainer>
                   {inputSelectorMode == "instance" && (
                     <EntityInstanceSelectorPanel
+                      initialApplicationUuid={editorApplication}
                       initialEntityUuid={initialEntityUuid}
                       deploymentUuid={editorDeploymentUuid}
                       applicationDeploymentMap={applicationDeploymentMap}
