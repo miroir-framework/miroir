@@ -12,6 +12,8 @@ export class ParseServerArgsError extends Error {
 
 export type ParsedServerArgs = {
   configFilePath: string;
+  /** true when `--config` was given; the path is then relative to the working directory (#323). */
+  configFileGiven: boolean;
   certsDir?: string;
   certFile?: string;
   keyFile?: string;
@@ -78,6 +80,7 @@ export function parseServerArgs(
 ): ParsedServerArgs {
   const result: ParsedServerArgs = {
     configFilePath: DEFAULT_CONFIG_FILE_PATH,
+    configFileGiven: false,
     help: false,
     secrets: secretsFromEnv(env),
   };
@@ -93,6 +96,7 @@ export function parseServerArgs(
     } else if (arg === "--config") {
       const next = requireValue(argv, i, "--config");
       result.configFilePath = next.value;
+      result.configFileGiven = true;
       i = next.nextIndex;
     } else if (arg === "--certsdir") {
       const next = requireValue(argv, i, "--certsdir");
