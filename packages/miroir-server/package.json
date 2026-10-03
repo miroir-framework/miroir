@@ -46,7 +46,6 @@
     "cross-fetch": "4.1.0",
     "diff": "9.0.0",
     "express": "4.22.1",
-    "http-proxy-middleware": "3.0.7",
     "isomorphic-git": "1.42.2",
     "json-diff": "1.0.6",
     "loglevelnext": "6.0.0",

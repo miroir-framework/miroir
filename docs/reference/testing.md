@@ -1102,7 +1102,7 @@ Every step has a `step` kind and an optional `label` (required for `expectRender
 | `keyboard` | `keys` | `userEvent.keyboard` on the focused element | `{"step": "keyboard", "keys": "{Enter}"}` |
 | `uploadFile` | `target`, `fileName`, `content` (the file's text), `mimeType?` | `userEvent.upload` of that file into the file input `target` | `{"step": "uploadFile", "target": {"byTestId": "openapi-document-upload"}, "fileName": "openapi.json", "content": "{}", "mimeType": "application/json"}` |
 | `waitForAttribute` | `target`, `attribute`, `value`, `timeout?` (default 1000 ms) | Waits until the attribute of the target equals `value` | `{"step": "waitForAttribute", "target": {"widget": "selectState", "field": "testField"}, "attribute": "data-test-selected-value", "value": "value3"}` |
-| `openSelect` | `field`, `select?` | Clicks the combobox, then waits until its state tracker has `data-test-is-open="true"` (1000 ms) | `{"step": "openSelect", "field": "testField"}` |
+| `openSelect` | `field`, `select?` | Clicks the combobox, then waits until its state tracker has `data-test-is-open="true"` and `data-test-dropdown-just-opened="false"` (1000 ms each): the select ignores option clicks for 150 ms after it opens | `{"step": "openSelect", "field": "testField"}` |
 | `filterSelect` | `field`, `text`, `select?` | Clears the combobox and types `text`, then waits until `data-test-filter-text` equals `text` (1000 ms) | `{"step": "filterSelect", "field": "testField", "text": "value3"}` |
 | `selectOption` | `field`, `option`, `select?` | Opens the select if it is closed, clears it, types `option`, waits until one option is left (1000 ms), presses Enter, then waits until the select is closed and `data-test-selected-value` equals `option` (2000 ms) | `{"step": "selectOption", "field": "testField", "select": "unionType", "option": "string"}` |
 | `toggleUnionTypeSelector` | `field` | Clicks the union type star, then waits until the union type selector input has appeared or disappeared (1000 ms) | `{"step": "toggleUnionTypeSelector", "field": "testField"}` |
@@ -1159,7 +1159,7 @@ For `expectRenderedValues`, the runner result also carries `expected` and `actua
 **Run the vitest entry**
 
 ```bash
-# The 76 default cases plus 2 entry checks (78 passed); the 15 on-demand cases are listed as skipped.
+# The 80 default cases plus 2 entry checks (82 passed); the 15 on-demand cases are listed as skipped.
 # No --profile: the in-memory LocalCache reads no store.
 npm run testByFile -w miroir-standalone-app -- miroir-component-tests
 
@@ -1184,7 +1184,7 @@ The entry `tests/4_view/miroir-component-tests.unit.test.tsx` loads every instan
 **Add or change a case**
 
 1. Edit the instance JSON of the editor: add or change a leaf in its `reactComponentTestSuite`, with the label `<editor>: <case>`.
-2. When a case of a per-editor instance is added, removed, or renamed, update the reduced case list `tests/4_view/issues/292-declarative-react-component-tests/baseline-component-cases.txt` (checked by `componentTestInstances.292.phase1`). For any new leaf, update `EXPECTED_LEAF_COUNT` in the vitest entry (today 91: it counts every leaf of the folder, on-demand ones included), and `EXPECTED_ON_DEMAND_LEAF_COUNT` (today 15) for a leaf under a `runOnDemand` suite.
+2. When a case of a per-editor instance is added, removed, or renamed, update the reduced case list `tests/4_view/issues/292-declarative-react-component-tests/baseline-component-cases.txt` (checked by `componentTestInstances.292.phase1`). For any new leaf, update `EXPECTED_LEAF_COUNT` in the vitest entry (today 95: it counts every leaf of the folder, on-demand ones included), and `EXPECTED_ON_DEMAND_LEAF_COUNT` (today 15) for a leaf under a `runOnDemand` suite.
 3. Rebuild the deployment package and check the instances:
 
 ```bash

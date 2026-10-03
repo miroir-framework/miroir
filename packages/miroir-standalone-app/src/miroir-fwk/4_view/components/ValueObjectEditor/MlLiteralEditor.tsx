@@ -213,21 +213,13 @@ export const discriminatorBranchDefaultValue = (
     );
   }
 
-
-  const newMlSchemaWithOptional = parentKeyMap.rawSchema.optional
-    ? {
-        ...newMlSchema,
-        optional: true,
-      }
-    : newMlSchema;
-
   log.info(`handleDiscriminatorChange (${discriminatorType})`, "newMlSchema", JSON.stringify(newMlSchema, null, 2));
   
   const defaultValue = modelEnvironment
     ? {
       ...getDefaultValueForMlSchemaWithResolutionNonHook(
         "build",
-        newMlSchemaWithOptional,
+        newMlSchema, // a chosen branch is filled, even under an optional attribute (#406)
         formik.values[reportSectionPathAsString],
         rootLessListKey,
         undefined,
