@@ -225,13 +225,6 @@ const handleDiscriminatorChange = (
     );
   }
 
-  const newMlSchemaWithOptional = parentKeyMap.rawSchema.optional
-    ? {
-        ...newMlSchema,
-        optional: true,
-      }
-    : newMlSchema;
-
   log.info(
     `handleDiscriminatorChange (${discriminatorType})`,
     "newMlSchema",
@@ -241,7 +234,7 @@ const handleDiscriminatorChange = (
     ? {
         ...getDefaultValueForMlSchemaWithResolutionNonHook(
           "build",
-          newMlSchemaWithOptional,
+          newMlSchema, // a chosen branch is filled, even under an optional attribute (#406)
           formik.values[reportSectionPathAsString],
           rootLessListKey,
           undefined, // currentDefaultValue

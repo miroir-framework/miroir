@@ -464,6 +464,9 @@ export async function runComponentTestSteps<ExtraStep extends AnyStep = never>(
       await interact(async () => {
         env.fireEvent.click(combobox);
         await waitForAttributeValue(env, state, "data-test-is-open", "true", selectOpenTimeout, context.elements);
+        // the select ignores option clicks for 150 ms after it opens (`ThemedSelectWithPortal`): a
+        // `click` on an option right after this step would be dropped in a fast run (the app, #406)
+        await waitForAttributeValue(env, state, "data-test-dropdown-just-opened", "false", selectOpenTimeout, context.elements);
       });
     },
     filterSelect: async (step) => {
