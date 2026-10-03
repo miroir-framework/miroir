@@ -12,7 +12,8 @@ import { attachFeedbackGlow, feedbackGlowAttribute, type FeedbackGlowOptions } f
 //
 // Attaching and detaching go through a callback ref, not an effect: React calls the previous ref
 // with `null` when `enabled` changes and on unmount, then the new ref with the element.
-// The wrapper is `display: contents`, so it does not change the layout. Colour and duration come
+// The wrapper is `display: contents`, so it does not change the layout. Colour, duration and
+// intensity come
 // from the props, else from the current theme (`components.feedbackGlow`). Only the boundary reads
 // the theme: the controls it wraps read nothing, so the glow adds no re-render to them.
 // ################################################################################################
@@ -31,6 +32,7 @@ export const FeedbackGlowBoundary: React.FC<FeedbackGlowBoundaryProps> = ({
   target = "element",
   color,
   durationMs,
+  intensity,
   children,
   style,
   "data-testid": dataTestId,
@@ -39,6 +41,7 @@ export const FeedbackGlowBoundary: React.FC<FeedbackGlowBoundaryProps> = ({
   const themeGlow = useMiroirTheme().currentTheme.components?.feedbackGlow;
   const glowColor = color ?? themeGlow?.color;
   const glowDurationMs = durationMs ?? themeGlow?.durationMs;
+  const glowIntensity = intensity ?? themeGlow?.intensity;
 
   const ref = useCallback(
     (element: HTMLDivElement | null) => {
@@ -49,13 +52,17 @@ export const FeedbackGlowBoundary: React.FC<FeedbackGlowBoundaryProps> = ({
       }
       const host = target === "document" ? element.ownerDocument.documentElement : element;
       if (enabled) {
-        detachRef.current = attachFeedbackGlow(host, { color: glowColor, durationMs: glowDurationMs });
+        detachRef.current = attachFeedbackGlow(host, {
+          color: glowColor,
+          durationMs: glowDurationMs,
+          intensity: glowIntensity,
+        });
         return;
       }
       host.setAttribute(feedbackGlowAttribute, "off");
       detachRef.current = () => host.removeAttribute(feedbackGlowAttribute);
     },
-    [enabled, target, glowColor, glowDurationMs],
+    [enabled, target, glowColor, glowDurationMs, glowIntensity],
   );
 
   return (

@@ -5,7 +5,10 @@ import {
   attachFeedbackGlow,
   feedbackGlowAttribute,
   feedbackGlowClass,
+  defaultFeedbackGlow,
   feedbackGlowDurationBoundsMs,
+  feedbackGlowIntensityBounds,
+  feedbackGlowIntensityProperty,
   feedbackGlowStylesAttribute,
 } from "../src/components/FeedbackGlow/feedbackGlow.js";
 
@@ -58,7 +61,7 @@ describe("feedbackGlow", () => {
   it("a click glows the button, and the glow ends after the duration", () => {
     click(byId("button"));
     expect(glows(byId("button"))).toBe(true);
-    vi.advanceTimersByTime(399);
+    vi.advanceTimersByTime(defaultFeedbackGlow.durationMs - 1);
     expect(glows(byId("button"))).toBe(true);
     vi.advanceTimersByTime(1);
     expect(glows(byId("button"))).toBe(false);
@@ -101,6 +104,25 @@ describe("feedbackGlow", () => {
     expect(glows(byId("button"))).toBe(true);
   });
 
+  it("the intensity is set on the boundary, default 2.5, and clamped", () => {
+    const defaultIntensity = boundary.style.getPropertyValue(feedbackGlowIntensityProperty);
+    detach?.();
+    detach = attachFeedbackGlow(boundary, { intensity: 100 });
+    const clampedHigh = boundary.style.getPropertyValue(feedbackGlowIntensityProperty);
+    detach();
+    detach = attachFeedbackGlow(boundary, { intensity: 0 });
+    expect([defaultIntensity, clampedHigh, boundary.style.getPropertyValue(feedbackGlowIntensityProperty)]).toEqual([
+      "2.5",
+      String(feedbackGlowIntensityBounds.max),
+      String(feedbackGlowIntensityBounds.min),
+    ]);
+  });
+
+  it("the halo's blur radii scale with the intensity", () => {
+    const css = document.head.querySelector("style[data-miroir-feedback-glow-styles]")?.textContent ?? "";
+    expect(css).toContain(`calc(6px * var(${feedbackGlowIntensityProperty}, 2.5))`);
+  });
+
   it("a click on a child of a button glows the button", () => {
     click(byId("label"));
     expect(glows(byId("button"))).toBe(true);
@@ -119,7 +141,7 @@ describe("feedbackGlow", () => {
 
   it("a second event on a glowing control does not restart the glow", () => {
     click(byId("button"));
-    vi.advanceTimersByTime(300);
+    vi.advanceTimersByTime(defaultFeedbackGlow.durationMs - 100);
     focusIn(byId("button"));
     vi.advanceTimersByTime(100);
     expect(glows(byId("button"))).toBe(false);

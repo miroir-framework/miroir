@@ -23,7 +23,7 @@ import { FeedbackGlowBoundary } from "miroir-react";
 
 - `enabled`: `true`, `false` or `"inherit"`. The innermost boundary with `true` or `false` decides.
 - `target="document"`: the document element is the boundary (used by the global switch, so that option lists portalled to `document.body` glow too). A scoped boundary does not see portals rendered outside it.
-- `color`, `durationMs`: override the theme values.
+- `color`, `durationMs`, `intensity`: override the theme values.
 - `attachFeedbackGlow(element, options)` does the same for a DOM element outside React and returns the function that detaches it.
 - A control under an element with `data-miroir-no-glow` never glows.
 
@@ -31,7 +31,7 @@ Glowing controls: `button`, `input`, `select`, `textarea`, and elements with rol
 
 ## Theme
 
-`components.feedbackGlow` in a Theme sets `color` (default `#ffd54f`) and `durationMs` (default `400`, clamped to 100-3000). The halo is a `filter: drop-shadow(...)`, so it shows on top of a control's own focus ring or elevation, including focus `box-shadow`s declared `!important`. With `prefers-reduced-motion: reduce`, the halo stays static for the same duration instead of fading.
+`components.feedbackGlow` in a Theme sets `color` (default `#ffd54f`), `durationMs` (default `1000`, clamped to 100-3000) and `intensity` (default `2.5`, clamped to 0.5-5). The intensity scales the halo's blur radii: at 1 they are 1, 3 and 6 px. The glow stays at full strength for the first 40% of the duration, then fades. The halo is a `filter: drop-shadow(...)`, so it shows on top of a control's own focus ring or elevation, including focus `box-shadow`s declared `!important`. With `prefers-reduced-motion: reduce`, the halo stays static for the same duration instead of fading.
 
 ## Cost
 

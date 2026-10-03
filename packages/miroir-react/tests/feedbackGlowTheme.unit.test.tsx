@@ -10,12 +10,13 @@ import {
   feedbackGlowClass,
   feedbackGlowColorProperty,
   feedbackGlowDurationProperty,
+  feedbackGlowIntensityProperty,
   feedbackGlowStylesAttribute,
 } from "../src/components/FeedbackGlow/feedbackGlow.js";
 import { resolveThemeColors } from "../src/components/Themes/ThemeColorDefaults.js";
 import { MiroirThemeProvider } from "../src/contexts/MiroirThemeContext.js";
 
-// Feedback glow (#438): glow colour and duration come from the Theme (`components.feedbackGlow`), and
+// Feedback glow (#438): glow colour, duration and intensity come from the Theme (`components.feedbackGlow`), and
 // reduced motion gets a static glow.
 
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
@@ -24,7 +25,7 @@ const orangeTheme = {
   ...defaultStoredMiroirTheme.definition,
   components: {
     ...defaultStoredMiroirTheme.definition.components,
-    feedbackGlow: { color: "#ff9800", durationMs: 800 },
+    feedbackGlow: { color: "#ff9800", durationMs: 800, intensity: 4 },
   },
 };
 
@@ -44,18 +45,23 @@ describe("feedbackGlow theme", () => {
     vi.useRealTimers();
   });
 
-  it("the default theme resolves the glow to #ffd54f and 400 ms", () => {
+  it("the default theme resolves the glow to #ffd54f, 1000 ms and intensity 2.5", () => {
     expect(resolveThemeColors(defaultStoredMiroirTheme.definition).components.feedbackGlow).toEqual({
       color: "#ffd54f",
-      durationMs: 400,
+      durationMs: 1000,
+      intensity: 2.5,
     });
   });
 
-  it("a theme's glow colour and duration are kept", () => {
-    expect(resolveThemeColors(orangeTheme).components.feedbackGlow).toEqual({ color: "#ff9800", durationMs: 800 });
+  it("a theme's glow colour, duration and intensity are kept", () => {
+    expect(resolveThemeColors(orangeTheme).components.feedbackGlow).toEqual({
+      color: "#ff9800",
+      durationMs: 800,
+      intensity: 4,
+    });
   });
 
-  it("the boundary takes colour and duration from the current theme", () => {
+  it("the boundary takes colour, duration and intensity from the current theme", () => {
     vi.useFakeTimers();
     act(() =>
       root.render(
@@ -78,9 +84,10 @@ describe("feedbackGlow theme", () => {
     expect([
       boundary.style.getPropertyValue(feedbackGlowColorProperty),
       boundary.style.getPropertyValue(feedbackGlowDurationProperty),
+      boundary.style.getPropertyValue(feedbackGlowIntensityProperty),
       glowingAt400,
       button.classList.contains(feedbackGlowClass),
-    ]).toEqual(["#ff9800", "800ms", true, false]);
+    ]).toEqual(["#ff9800", "800ms", "4", true, false]);
   });
 
   it("under reduced motion the glow is static", () => {

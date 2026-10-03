@@ -20,6 +20,7 @@ export const feedbackGlowOptOutAttribute = "data-miroir-no-glow";
 export const feedbackGlowStylesAttribute = "data-miroir-feedback-glow-styles";
 export const feedbackGlowColorProperty = "--miroir-feedback-glow-color";
 export const feedbackGlowDurationProperty = "--miroir-feedback-glow-duration";
+export const feedbackGlowIntensityProperty = "--miroir-feedback-glow-intensity";
 
 /** The controls that glow: the event target's nearest match inside the boundary. */
 export const feedbackGlowTargetSelector = [
@@ -38,11 +39,14 @@ export const feedbackGlowTargetSelector = [
 export interface FeedbackGlowOptions {
   color?: string;
   durationMs?: number;
+  /** Scales the halo's blur radii: 1 is a thin halo (blur radii 1, 3 and 6 px). */
+  intensity?: number;
 }
 
 export const defaultFeedbackGlow: Required<FeedbackGlowOptions> = {
   color: "#ffd54f",
-  durationMs: 400,
+  durationMs: 1000,
+  intensity: 2.5,
 };
 
 const glowEventTypes = ["focusin", "click", "change", "keydown"] as const;
@@ -72,14 +76,18 @@ function isElement(target: EventTarget | null): target is Element {
 // ################################################################################################
 // The halo is a `filter: drop-shadow(...)`, not a `box-shadow`: themed inputs set their focus
 // `box-shadow` with `!important`, which would hide an animated `box-shadow`, and a filter leaves a
-// control's own shadow (MUI elevation, focus ring) visible under the halo.
-const glowFilter = (color: string) => `drop-shadow(0 0 2px ${color}) drop-shadow(0 0 6px ${color})`;
+// control's own shadow (MUI elevation, focus ring) visible under the halo. Three stacked shadows
+// make the halo dense near the control; the intensity scales their blur radii. The glow stays at
+// full strength for the first 40% of the duration, then fades.
+const glowIntensity = `var(${feedbackGlowIntensityProperty}, ${defaultFeedbackGlow.intensity})`;
+const glowFilter = (color: string) =>
+  [1, 3, 6].map((radiusPx) => `drop-shadow(0 0 calc(${radiusPx}px * ${glowIntensity}) ${color})`).join(" ");
 const glowColor = `var(${feedbackGlowColorProperty}, ${defaultFeedbackGlow.color})`;
 
 const feedbackGlowStyles = (selector: string) => `
 @keyframes miroir-feedback-glow-fade {
-  from { filter: ${glowFilter(glowColor)}; }
-  to { filter: ${glowFilter("transparent")}; }
+  0%, 40% { filter: ${glowFilter(glowColor)}; }
+  100% { filter: ${glowFilter("transparent")}; }
 }
 ${selector} {
   animation: miroir-feedback-glow-fade var(${feedbackGlowDurationProperty}, ${defaultFeedbackGlow.durationMs}ms) ease-out forwards;
@@ -128,6 +136,11 @@ export function acquireFeedbackGlowStyles(document: Document): () => void {
 
 /** Durations outside these bounds (e.g. a Theme value of 0) are clamped. */
 export const feedbackGlowDurationBoundsMs = { min: 100, max: 3000 };
+/** Intensities outside these bounds are clamped. */
+export const feedbackGlowIntensityBounds = { min: 0.5, max: 5 };
+
+const clamp = (value: number, bounds: { min: number; max: number }) =>
+  Math.min(bounds.max, Math.max(bounds.min, value));
 
 // ################################################################################################
 /**
@@ -136,14 +149,13 @@ export const feedbackGlowDurationBoundsMs = { min: 100, max: 3000 };
  */
 export function attachFeedbackGlow(element: HTMLElement, options: FeedbackGlowOptions = {}): () => void {
   const color = options.color ?? defaultFeedbackGlow.color;
-  const durationMs = Math.min(
-    feedbackGlowDurationBoundsMs.max,
-    Math.max(feedbackGlowDurationBoundsMs.min, options.durationMs ?? defaultFeedbackGlow.durationMs),
-  );
+  const durationMs = clamp(options.durationMs ?? defaultFeedbackGlow.durationMs, feedbackGlowDurationBoundsMs);
+  const intensity = clamp(options.intensity ?? defaultFeedbackGlow.intensity, feedbackGlowIntensityBounds);
   const releaseStyles = acquireFeedbackGlowStyles(element.ownerDocument);
   element.setAttribute(feedbackGlowAttribute, "on");
   element.style.setProperty(feedbackGlowColorProperty, color);
   element.style.setProperty(feedbackGlowDurationProperty, `${durationMs}ms`);
+  element.style.setProperty(feedbackGlowIntensityProperty, String(intensity));
 
   const flash = (control: Element) => {
     if (control.classList.contains(feedbackGlowClass)) {
@@ -188,6 +200,7 @@ export function attachFeedbackGlow(element: HTMLElement, options: FeedbackGlowOp
     element.removeAttribute(feedbackGlowAttribute);
     element.style.removeProperty(feedbackGlowColorProperty);
     element.style.removeProperty(feedbackGlowDurationProperty);
+    element.style.removeProperty(feedbackGlowIntensityProperty);
     releaseStyles();
   };
 }

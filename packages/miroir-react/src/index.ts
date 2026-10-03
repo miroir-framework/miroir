@@ -45,6 +45,8 @@ export {
   feedbackGlowColorProperty,
   feedbackGlowDurationBoundsMs,
   feedbackGlowDurationProperty,
+  feedbackGlowIntensityBounds,
+  feedbackGlowIntensityProperty,
   feedbackGlowOptOutAttribute,
   feedbackGlowStylesAttribute,
   feedbackGlowTargetSelector,

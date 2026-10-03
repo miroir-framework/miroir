@@ -2,7 +2,7 @@ import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 
-import { feedbackGlowAttribute, feedbackGlowClass } from "miroir-react";
+import { defaultFeedbackGlow, feedbackGlowAttribute, feedbackGlowClass } from "miroir-react";
 
 import { ComponentTestSandboxProvider } from "../../src/miroir-fwk/4_view/components/Reports/ComponentTestSandbox.js";
 
@@ -32,7 +32,7 @@ describe("componentTestSandboxGlow", () => {
 
     fireEvent.click(button);
     const glowedOnClick = button.classList.contains(feedbackGlowClass);
-    vi.advanceTimersByTime(400);
+    vi.advanceTimersByTime(defaultFeedbackGlow.durationMs);
 
     expect([glowedOnClick, button.classList.contains(feedbackGlowClass)]).toEqual([true, false]);
   });
