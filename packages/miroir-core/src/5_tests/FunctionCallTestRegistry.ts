@@ -1,10 +1,13 @@
 import { extractDoubleBracePatterns } from "../1_core/mustache";
 import {
+  checkEntityPrimaryKeyDeclaration,
   entityHasCompositePrimaryKey,
+  entityHasNoPrimaryKey,
   entityHasUuidPrimaryKey,
   getEntityPrimaryKeyAttribute,
   getEntityPrimaryKeyAttributes,
   getForeignKeyValue,
+  getInstanceCacheKeys,
   getInstancePrimaryKeyValue,
   instanceMatchesForeignKey,
   parseCompositeKeyValue,
@@ -38,9 +41,12 @@ import { resolveTransformerResultSchema } from "../2_domain/Transformer_ResultSc
 import {
   checkTransformerInterfaceCompatibility,
   checkTransformerInterfaceCompatibilityWithInference,
+  checkTransformerInterfaceRecursively,
   findInvalidStockTransformerInputOutputs,
   getTransformerDefinitionInputOutput,
+  inputOutputTypeOfValue,
   inputOutputTypesCompatible,
+  transformerTypesAcceptingInput,
 } from "../2_domain/TransformerInterfaceCheck";
 import {
   checkTransformerMlSchemaCompatibility,
@@ -173,6 +179,9 @@ const FUNCTION_CALL_REGISTRY: Record<
     getEntityPrimaryKeyAttributes: getEntityPrimaryKeyAttributes as WhitelistedFunction,
     entityHasCompositePrimaryKey: entityHasCompositePrimaryKey as WhitelistedFunction,
     entityHasUuidPrimaryKey: entityHasUuidPrimaryKey as WhitelistedFunction,
+    entityHasNoPrimaryKey: entityHasNoPrimaryKey as WhitelistedFunction,
+    getInstanceCacheKeys: getInstanceCacheKeys as WhitelistedFunction,
+    checkEntityPrimaryKeyDeclaration: checkEntityPrimaryKeyDeclaration as WhitelistedFunction,
     serializeCompositeKeyValue: serializeCompositeKeyValue as WhitelistedFunction,
     parseCompositeKeyValue: parseCompositeKeyValue as WhitelistedFunction,
     getInstancePrimaryKeyValue: getInstancePrimaryKeyValue as WhitelistedFunction,
@@ -203,6 +212,10 @@ const FUNCTION_CALL_REGISTRY: Record<
       getTransformerDefinitionInputOutput as WhitelistedFunction,
     findInvalidStockTransformerInputOutputs:
       findInvalidStockTransformerInputOutputs as WhitelistedFunction,
+    transformerTypesAcceptingInput: transformerTypesAcceptingInput as WhitelistedFunction,
+    inputOutputTypeOfValue: inputOutputTypeOfValue as WhitelistedFunction,
+    checkTransformerInterfaceRecursively:
+      checkTransformerInterfaceRecursively as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerMlSchemaCheck": {
     checkTransformerMlSchemaCompatibility:

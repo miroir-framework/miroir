@@ -58,6 +58,7 @@ import { ActionButtonWithSnackbar } from '../Page/ActionButtonWithSnackbar.js';
 import { ThemedStyledButton } from '../Themes/index.js';
 import { FieldValidationProvider, useFieldValidationContext } from '../ValueObjectEditor/FieldValidationContext.js';
 import { MlElementEditor } from '../ValueObjectEditor/MlElementEditor.js';
+import type { TransformerTypeRestriction } from '../ValueObjectEditor/MlElementEditorInterface.js';
 import type { ValueObjectEditMode } from './ReportSectionEntityInstance.js';
 
 import { selfApplicationMiroir } from "miroir-app-miroir";
@@ -101,6 +102,7 @@ export interface TypedValueObjectEditorProps {
   showMlSchemaTypes?: boolean;
   mlSchemaTypeAnnotations?: { path: (string | number)[]; label: string }[];
   environmentAnnotations?: { path: (string | number)[]; label: string }[];
+  transformerTypeRestrictions?: TransformerTypeRestriction[];
   // fold / unfold element
   // depth control
   maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
@@ -165,6 +167,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
   showMlSchemaTypes,
   mlSchemaTypeAnnotations,
   environmentAnnotations,
+  transformerTypeRestrictions,
   // 
   formLabel, // TODO: remove
   displaySubmitButton,
@@ -623,6 +626,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
               showMlSchemaTypes={showMlSchemaTypes}
               mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
               environmentAnnotations={environmentAnnotations}
+              transformerTypeRestrictions={transformerTypeRestrictions}
               onChangeVector={onChangeVector}
             />
           </ErrorBoundary>
@@ -696,6 +700,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
               showMlSchemaTypes={showMlSchemaTypes}
               mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
               environmentAnnotations={environmentAnnotations}
+              transformerTypeRestrictions={transformerTypeRestrictions}
               submitButton={
                 !displaySubmitButton || displaySubmitButton === "onTop" ? submitButton : <></>
               }

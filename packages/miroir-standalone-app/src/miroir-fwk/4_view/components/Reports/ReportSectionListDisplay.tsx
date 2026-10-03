@@ -10,6 +10,7 @@ import {
   ApplicationSection,
   applicationSection,
   defaultSelfApplicationDeploymentMap,
+  entityHasNoPrimaryKey,
   defaultViewParamsFromAdminStorageFetchQueryParams,
   Deployment,
   domain2ElementObjectZodSchema,
@@ -288,6 +289,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const currentReportTargetEntity: Entity | undefined =
     entities.find((e) => e.uuid === objectListReportSection?.definition.parentUuid) ??
     currentModel.entities.find((e) => e.uuid === objectListReportSection?.definition.parentUuid);
+  // keyless Entity (idAttribute: false): instances are read-only, so no "add" button
+  const isKeylessEntity = entityHasNoPrimaryKey(currentReportTargetEntity ?? {});
 
   const navigate = useNavigate();
   const rowOpenReport = objectListReportSection?.definition?.openReport as OpenReportSpec | undefined;
@@ -890,20 +893,22 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   currentReportTargetEntity?.name ??
                   "No Entity Found!"} */}
               </h3>
-              <ThemedButton
-                style={{
-                  padding: "4px 8px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-                variant="secondary"
-                onClick={() => {
-                  handleAddObjectDialogFormOpen();
-                }}
-              >
-                <AddBox style={{ fontSize: "1em", display: "block" }} />
-              </ThemedButton>
+              {!isKeylessEntity && (
+                <ThemedButton
+                  style={{
+                    padding: "4px 8px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  variant="secondary"
+                  onClick={() => {
+                    handleAddObjectDialogFormOpen();
+                  }}
+                >
+                  <AddBox style={{ fontSize: "1em", display: "block" }} />
+                </ThemedButton>
+              )}
               <ListTransformerToggle
                 enabled={transformerPanelEnabled}
                 onToggle={handleTransformerToggle}

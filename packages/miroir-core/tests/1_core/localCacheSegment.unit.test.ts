@@ -7,6 +7,7 @@ import {
   projectionsEqual,
   resolveCacheSegmentKind,
   resolveLoadCacheSegment,
+  resolveLoadSegmentWrite,
   stripLocalCacheSegmentSuffix,
 } from "../../src/1_core/localCache/localCacheSegment.js";
 import {
@@ -58,6 +59,46 @@ describe("localCacheSegment helpers", () => {
     expect(() =>
       resolveLoadCacheSegment({ cacheSegment: "partial" })
     ).toThrow();
+  });
+});
+
+describe("resolveLoadSegmentWrite (#381)", () => {
+  it("replace loads (default) make a fresh segment", () => {
+    expect(resolveLoadSegmentWrite({}, { kind: "full", freshness: "stale" })).toEqual({
+      kind: "full",
+      header: { kind: "full", freshness: "fresh" },
+      merge: false,
+    });
+  });
+
+  it("merge loads keep the header of a same-shape segment", () => {
+    expect(
+      resolveLoadSegmentWrite({ cacheLoadMode: "merge" }, { kind: "full", freshness: "fresh" })
+    ).toEqual({ kind: "full", header: { kind: "full", freshness: "fresh" }, merge: true });
+    expect(
+      resolveLoadSegmentWrite(
+        { cacheLoadMode: "merge", attributes: ["uuid", "name"] },
+        { kind: "partial", freshness: "fresh", projection: ["name", "uuid"] }
+      )
+    ).toMatchObject({ merge: true, header: { freshness: "fresh" } });
+  });
+
+  it("merge loads start a stale segment when none matches", () => {
+    expect(resolveLoadSegmentWrite({ cacheLoadMode: "merge" }, undefined)).toEqual({
+      kind: "full",
+      header: { kind: "full", freshness: "stale" },
+      merge: false,
+    });
+    expect(
+      resolveLoadSegmentWrite(
+        { cacheLoadMode: "merge", attributes: ["uuid"] },
+        { kind: "partial", freshness: "fresh", projection: ["name", "uuid"] }
+      )
+    ).toEqual({
+      kind: "partial",
+      header: { kind: "partial", freshness: "stale", projection: ["uuid"] },
+      merge: false,
+    });
   });
 });
 

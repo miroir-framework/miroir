@@ -32,7 +32,7 @@ import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import {
   // getEntityPrimaryKeyAttributes,
   getForeignKeyValue,
-  serializeCompositeKeyValue,
+  indexInstancesByCacheKey,
 } from "../1_core/Entity/EntityPrimaryKey";
 import { findEntityFromUuid } from "../tools";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
@@ -433,8 +433,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
         }
         const entityUuid = extractorRunnerParams.extractor.select.parentUuid;
         const idAttribute = this.persistenceStoreController.getEntityIdAttribute(entityUuid);
-        const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
-        const entityInstanceUuidIndex = Object.fromEntries(result.map((i: any) => [serializeCompositeKeyValue(pkAttrs, i), i]));
+        const entityInstanceUuidIndex = indexInstancesByCacheKey({ idAttribute }, result);
         return entityInstanceUuidIndex;
       }
     );

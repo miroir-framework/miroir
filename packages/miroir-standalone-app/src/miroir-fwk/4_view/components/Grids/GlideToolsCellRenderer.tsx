@@ -1,6 +1,6 @@
 import { CustomCell, CustomRenderer, GridCellKind } from '@glideapps/glide-data-grid';
 import { TableComponentRow } from './EntityInstanceGridInterface.js';
-import { renderMaterialIconToCanvas } from '../MaterialIconCanvasRenderer.js';
+import { renderMaterialIconToCanvas, type MaterialIconName } from '../MaterialIconCanvasRenderer.js';
 import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
@@ -21,52 +21,47 @@ export interface ToolsCellData {
 
 export type ToolsCell = CustomCell<ToolsCellData>;
 
+type ToolsCellAction = {
+  icon: MaterialIconName;
+  action: (row: TableComponentRow, event?: any) => void;
+};
+
+/** The actions a tools cell offers, left to right; an undefined handler is not drawn. */
+export function toolsCellActions(data: ToolsCellData): ToolsCellAction[] {
+  const candidates: [MaterialIconName, ToolsCellData["onEdit"]][] = [
+    ["OpenInNew", data.onOpen],
+    ["Create", data.onEdit],
+    ["ContentCopy", data.onDuplicate],
+    ["Delete", data.onDelete],
+  ];
+  return candidates.flatMap(([icon, action]) => (action ? [{ icon, action }] : []));
+}
+
+const iconSpacing = 25;
+
 const glideToolsCellRenderer: CustomRenderer<ToolsCell> = {
   kind: GridCellKind.Custom,
   isMatch: (c): c is ToolsCell => (c.data as any)?.kind === 'tools-cell',
   draw: (args, cell) => {
     const { ctx, theme, rect } = args;
-    const { onOpen } = cell.data;
+    const actions = toolsCellActions(cell.data);
 
     ctx.fillStyle = theme.bgCell;
     ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
 
-    const iconSpacing = 25;
-    const iconCount = onOpen ? 4 : 3;
-    const totalWidth = iconSpacing * (iconCount - 1);
+    const totalWidth = iconSpacing * Math.max(actions.length - 1, 0);
     const startX = rect.x + (rect.width - totalWidth) / 2;
     const centerY = rect.y + rect.height / 2;
     const iconSize = 16;
     const iconColor = theme.textDark || '#313139';
 
-    let iconIndex = 0;
-    if (onOpen) {
-      renderMaterialIconToCanvas(ctx, 'OpenInNew', {
+    actions.forEach(({ icon }, iconIndex) => {
+      renderMaterialIconToCanvas(ctx, icon, {
         x: startX + iconSpacing * iconIndex,
         y: centerY,
         size: iconSize,
         color: iconColor
       });
-      iconIndex += 1;
-    }
-
-    renderMaterialIconToCanvas(ctx, 'Create', {
-      x: startX + iconSpacing * iconIndex,
-      y: centerY,
-      size: iconSize,
-      color: iconColor
-    });
-    renderMaterialIconToCanvas(ctx, 'ContentCopy', {
-      x: startX + iconSpacing * (iconIndex + 1),
-      y: centerY,
-      size: iconSize,
-      color: iconColor
-    });
-    renderMaterialIconToCanvas(ctx, 'Delete', {
-      x: startX + iconSpacing * (iconIndex + 2),
-      y: centerY,
-      size: iconSize,
-      color: iconColor
     });
 
     return true;
@@ -75,23 +70,18 @@ const glideToolsCellRenderer: CustomRenderer<ToolsCell> = {
   onDelete: () => undefined,
   onClick: (args) => {
     const { cell, posX } = args;
-    const { row, onEdit, onDuplicate, onDelete, onOpen } = cell.data;
+    const { row } = cell.data;
+    const actions = toolsCellActions(cell.data);
 
-    const iconSpacing = 25;
-    const iconCount = onOpen ? 4 : 3;
-    const totalWidth = iconSpacing * (iconCount - 1);
+    const totalWidth = iconSpacing * Math.max(actions.length - 1, 0);
     const rect = args.bounds;
     const cellStartX = (rect.width - totalWidth) / 2;
     const relativeX = posX - cellStartX;
 
-    const actions = onOpen
-      ? [onOpen, onEdit, onDuplicate, onDelete]
-      : [onEdit, onDuplicate, onDelete];
-
     for (let index = 0; index < actions.length; index += 1) {
       const center = iconSpacing * index;
       if (relativeX >= center - 15 && relativeX <= center + 15) {
-        actions[index]?.(row, args);
+        actions[index].action(row, args);
         break;
       }
     }

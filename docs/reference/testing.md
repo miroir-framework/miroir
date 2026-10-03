@@ -39,7 +39,16 @@ npm run nonreg                         # --tier default --run-all
 npm run nonreg:unit                    # tier unit only
 npm run nonreg:fail-fast               # tier default, stop on first failure
 npm run nonreg -- --tier full --run-all
+npm run nonreg -- --storage filesystem # integration steps on another store
 ```
+
+#### Storage (#390)
+
+`--storage sql|filesystem|indexedDb|mongodb` runs the integration steps on profile `emulatedServer-<storage>`, whose test environment is `environments/test-<storage>.json`. Without it the run uses the manifest's `defaultProfile`, `emulatedServer-sql`. `--profile` still takes any profile name, and cannot be combined with `--storage`. Shortcuts: `nonreg:filesystem`, `nonreg:indexedDb`, `nonreg:mongodb`; `nonreg:default` is sql.
+
+Steps that run on the store of the run say `"requires": "storage"` in the manifest. When the run selects one of them and the store needs a database (PostgreSQL for `sql`, MongoDB for `mongodb`), the runner first opens a connection to the address in the `connections` of the test environment, or to the one the tests use instead: `MIROIR_TEST_POSTGRES_HOST` replaces the PostgreSQL host, `MIROIR_TEST_MONGODB_CONNECTION_STRING` the MongoDB url. If that fails, it prints the address and exits with code 2 before running any step. `--dry-run` and unit-tier runs skip the check. `summary.json` and `summary.md` record `storage` (`null` for a profile that is not `emulatedServer-*`).
+
+A few steps pin `emulatedServer-filesystem` in their argv and run on filesystem whatever the storage: `integ-runner.freezeApplicationVersion`, `externalServices-spotify`, `appstack-270-persistent-secrets`.
 
 | Tier | Contents |
 |------|----------|
@@ -68,7 +77,7 @@ npm run nonreg -- --compare \
   test-results/nonreg/20260717T234407Z
 ```
 
-Step list: [`scripts/nonreg-manifest.json`](../../scripts/nonreg-manifest.json). Runner: [`scripts/run-nonreg.py`](../../scripts/run-nonreg.py). Default integ profile: `emulatedServer-sql` (override with `--profile`).
+Step list: [`scripts/nonreg-manifest.json`](../../scripts/nonreg-manifest.json). Runner: [`scripts/run-nonreg.py`](../../scripts/run-nonreg.py). Default integ profile: `emulatedServer-sql` (override with `--storage` or `--profile`).
 
 #### Scopes (#351)
 
@@ -102,8 +111,8 @@ Both are opt-in; without the flags a run behaves as before.
 - `--runner shared` runs the steps that carry a `shared` descriptor in the manifest together, one vitest launch per `group`, which saves about 9 s of launch overhead per step. A `files` group adds `--no-isolate` and the files of its steps to the group's `argv`; a `suites` group passes the MiroirTest suite keys to `testMiroir ... --shared` (entry `miroir-runner-tests-shared.integ.test.ts`: one session per suite). Results are split back per step. A step that fails or has no result in the group re-runs alone in legacy mode: `summary.json` records `mode: "shared→legacy"`, and `shared_state_leak_suspected` when it then passes. So does every member when the launch fails while none of its tests failed (`shared_status: "launch-failed"`). A group runs where its first member is listed, so its later members run earlier than in a legacy run; with `--fail-fast` they still report their real result. With `--timings`, a shared file's collect and setup times are charged to its first member only. `--runner legacy` (the default) ignores the descriptors.
 
 ```bash
-python scripts/run-nonreg.py --tier default --profile emulatedServer-filesystem --timings
-python scripts/run-nonreg.py --tier default --profile emulatedServer-filesystem --runner shared
+python scripts/run-nonreg.py --tier default --storage filesystem --timings
+python scripts/run-nonreg.py --tier default --storage filesystem --runner shared
 ```
 
 A step joins a group by adding, next to its `argv`:
@@ -263,6 +272,8 @@ PLATFORM files are the vitest tests that have **no MiroirTest equivalent**: CLI/
 **`fn.transformer.resultSchema`** — issue #88: `functionCallTest` leaves call `resolveTransformerResultSchema` (pure schema inference, no transformer runtime). Reference: [transformer-result-schema.md](./transformer-result-schema.md). Nonreg step: `unit-transformerResultSchema`.
 
 **`fn.transformer.interfaceCheck`** (issue #249) uses these Entity uuids: Menu `dde4c883-ae6d-47c3-b6df-26bc6e3c1842`, User `ca794e28-b2dc-45b3-8137-00151557eea8`, EntityVersion `54b9c72f-d4f3-4db9-9e0e-0dc840b530bd`.
+
+**`fn.transformer.interfaceWalk`** (issue #383): input type at every position of a transformer tree and the transformer types offered there. Uses Book `e8ba151b-d68e-4cc3-9a83-3459d309ccf5` with a reduced inline schema, User and Menu as above. UI counterparts: `transformerChoiceByInputType.integ` (list transformer panel) and `transformerEditorChoiceByInputType.integ` (TransformerEditor switch).
 
 **Integration suite notes.** Setup facts that used to live in these suites' descriptions:
 
@@ -956,7 +967,7 @@ Identity under projection uses `resolveProjectionIdentityFields` → `getEntityP
 
 | File | Store / config | Focus |
 |------|----------------|-------|
-| `miroir-component-tests.unit.test.tsx` | In-memory `LocalCache`; no `--profile` | ML editor components, run from the 9 component MiroirTest instances: 7 per-editor instances (`ui.mlElementEditor.enum`, …), the test pattern and the on-demand render-performance suite (#286, #292, #303) |
+| `miroir-component-tests.unit.test.tsx` | In-memory `LocalCache`; no `--profile` | ML editor components and the TransformerEditor, run from the 10 component MiroirTest instances: 7 per-editor instances (`ui.mlElementEditor.enum`, …), the test pattern, the on-demand render-performance suite (#286, #292, #303) and `ui.transformerEditor` (#406) |
 | `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` | Node emulated SQL via mocked launcher environment | `MiroirTestDisplay` launches integration and shows the result inspector |
 | `MiroirTestListIntegrationLaunch.integ.test.tsx` | Node emulated SQL via mocked launcher environment | List **Run All Integration Tests** batch for `tr.core` (filtered leaf) |
 | `MlElementEditorReactCodeMirror.test.tsx` | — | CodeMirror sub-editor (currently commented out) |
@@ -1016,7 +1027,7 @@ The root of `definition` is a `miroirTestSuite` whose label is the instance name
 
 | Node | Attribute | Meaning |
 |---|---|---|
-| `reactComponentTestSuite` | `component` | Name of the rendered component in the app's component registry (`componentTests/componentRegistry.ts`). The registry has one entry, `MlElementEditor` |
+| `reactComponentTestSuite` | `component` | Name of the rendered component in the app's component registry (`componentTests/componentRegistry.ts`). The registry has two entries, `MlElementEditor` and `TransformerEditor` (#406) |
 | | `componentProps` (optional) | Default props of the leaves |
 | | `skip` (optional) | Skips every leaf of the suite |
 | | `runOnDemand` (optional) | `true`: the suite runs only when asked for. The vitest entry skips it unless `MIROIR_COMPONENT_PERF=1`; Miroir Tests "Run All Unit Tests" records its leaves as skipped; the unit Run button of the instance runs it. Unlike `skip`, the suite still runs when launched on its own (#303) |
@@ -1091,7 +1102,7 @@ Every step has a `step` kind and an optional `label` (required for `expectRender
 | `keyboard` | `keys` | `userEvent.keyboard` on the focused element | `{"step": "keyboard", "keys": "{Enter}"}` |
 | `uploadFile` | `target`, `fileName`, `content` (the file's text), `mimeType?` | `userEvent.upload` of that file into the file input `target` | `{"step": "uploadFile", "target": {"byTestId": "openapi-document-upload"}, "fileName": "openapi.json", "content": "{}", "mimeType": "application/json"}` |
 | `waitForAttribute` | `target`, `attribute`, `value`, `timeout?` (default 1000 ms) | Waits until the attribute of the target equals `value` | `{"step": "waitForAttribute", "target": {"widget": "selectState", "field": "testField"}, "attribute": "data-test-selected-value", "value": "value3"}` |
-| `openSelect` | `field`, `select?` | Clicks the combobox, then waits until its state tracker has `data-test-is-open="true"` (1000 ms) | `{"step": "openSelect", "field": "testField"}` |
+| `openSelect` | `field`, `select?` | Clicks the combobox, then waits until its state tracker has `data-test-is-open="true"` and `data-test-dropdown-just-opened="false"` (1000 ms each): the select ignores option clicks for 150 ms after it opens | `{"step": "openSelect", "field": "testField"}` |
 | `filterSelect` | `field`, `text`, `select?` | Clears the combobox and types `text`, then waits until `data-test-filter-text` equals `text` (1000 ms) | `{"step": "filterSelect", "field": "testField", "text": "value3"}` |
 | `selectOption` | `field`, `option`, `select?` | Opens the select if it is closed, clears it, types `option`, waits until one option is left (1000 ms), presses Enter, then waits until the select is closed and `data-test-selected-value` equals `option` (2000 ms) | `{"step": "selectOption", "field": "testField", "select": "unionType", "option": "string"}` |
 | `toggleUnionTypeSelector` | `field` | Clicks the union type star, then waits until the union type selector input has appeared or disappeared (1000 ms) | `{"step": "toggleUnionTypeSelector", "field": "testField"}` |
@@ -1148,7 +1159,7 @@ For `expectRenderedValues`, the runner result also carries `expected` and `actua
 **Run the vitest entry**
 
 ```bash
-# The 72 default cases plus 2 entry checks (74 passed); the 15 on-demand cases are listed as skipped.
+# The 80 default cases plus 2 entry checks (82 passed); the 15 on-demand cases are listed as skipped.
 # No --profile: the in-memory LocalCache reads no store.
 npm run testByFile -w miroir-standalone-app -- miroir-component-tests
 
@@ -1159,7 +1170,12 @@ npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "MlTest
 # The render-performance suite (runOnDemand), with its measurement tables in the log
 MIROIR_COMPONENT_PERF=1 VITE_MIROIR_LOG_CONFIG_FILENAME=catch-all-detailed \
   npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "MlEditorRenderPerformance"
+
+# Some component suites by name, through testMiroir (#406)
+npm run testMiroir -w miroir-standalone-app -- --suites ui.transformerEditor
 ```
+
+`testMiroir --suites` routes a selection of component suites to this entry, which then runs only these instances (`MIROIR_TEST_SUITES`). A selected `runOnDemand` suite runs (the launcher sets `MIROIR_COMPONENT_PERF=1`). The launcher refuses a selection mixing component suites with other suites, and `--mode integ` or `--filter` with component suites: the entry runs whole suites in unit mode, so pick cases with `testByFile … -t` instead.
 
 `testByFile` (`scripts/test-by-file.ts`) passes `--bail=1` to vitest by default: after the first failing case, the later cases are reported as not run, not as passed. To see every failure at once, add `--no-bail` (or `--bail=0`); any other `--bail=<n>` replaces the default. Arguments reach vitest exactly as given, so a `-t` pattern may contain spaces (`-t "field at 1"`).
 
@@ -1168,7 +1184,7 @@ The entry `tests/4_view/miroir-component-tests.unit.test.tsx` loads every instan
 **Add or change a case**
 
 1. Edit the instance JSON of the editor: add or change a leaf in its `reactComponentTestSuite`, with the label `<editor>: <case>`.
-2. When a case of a per-editor instance is added, removed, or renamed, update the reduced case list `tests/4_view/issues/292-declarative-react-component-tests/baseline-component-cases.txt` (checked by `componentTestInstances.292.phase1`). For any new leaf, update `EXPECTED_LEAF_COUNT` in the vitest entry (today 87: it counts every leaf of the folder, on-demand ones included), and `EXPECTED_ON_DEMAND_LEAF_COUNT` (today 15) for a leaf under a `runOnDemand` suite.
+2. When a case of a per-editor instance is added, removed, or renamed, update the reduced case list `tests/4_view/issues/292-declarative-react-component-tests/baseline-component-cases.txt` (checked by `componentTestInstances.292.phase1`). For any new leaf, update `EXPECTED_LEAF_COUNT` in the vitest entry (today 95: it counts every leaf of the folder, on-demand ones included), and `EXPECTED_ON_DEMAND_LEAF_COUNT` (today 15) for a leaf under a `runOnDemand` suite.
 3. Rebuild the deployment package and check the instances:
 
 ```bash
@@ -1178,7 +1194,7 @@ npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency
 npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "<editor>"
 ```
 
-A new instance also needs its export and declaration in `miroir-app-miroir` (`index.ts`, `index.d.ts`), its entry in `defaultMiroirMetaModel.tests` (`src/Model.ts`), and the instance counts of the vitest entry (`EXPECTED_INSTANCE_COUNT`, today 9) and `componentMiroirTests.consistency` (9), plus its name and uuid in `laterComponentInstances` of `componentTestInstances.292.phase1`. A component other than `MlElementEditor` needs an entry in `componentTests/componentRegistry.ts`. A new step kind needs a schema change (the `reactComponentTestStep` union in the MiroirTest Entity and EntityVersion, then `npm run devBuild -w miroir-core`) and a handler in `runComponentTestSteps.ts`.
+A new instance also needs its export and declaration in `miroir-app-miroir` (`index.ts`, `index.d.ts`), its entry in `defaultMiroirMetaModel.tests` (`src/Model.ts`), and the instance counts of the vitest entry (`EXPECTED_INSTANCE_COUNT`, today 10) and `componentMiroirTests.consistency` (10), plus its name and uuid in `laterComponentInstances` of `componentTestInstances.292.phase1`. A component other than `MlElementEditor` needs an entry in `componentTests/componentRegistry.ts`: the component, or `{component, fieldNamePrefix}` when its form fields are not under `TESTSECTION.` (the `field` of the steps is relative to that prefix; the TransformerEditor's is `""`). The runner gives each case a context whose `toolsPageState` starts empty and is not written to `sessionStorage`, so a TransformerEditor case does not see the previous case's state, nor touch the app's. A new step kind needs a schema change (the `reactComponentTestStep` union in the MiroirTest Entity and EntityVersion, then `npm run devBuild -w miroir-core`) and a handler in `runComponentTestSteps.ts`.
 
 To check that a new case asserts something, change one value of its `expectedValue` or `expectElement` check, run it, and see it fail with the message above.
 

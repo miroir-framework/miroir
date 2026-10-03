@@ -20,7 +20,8 @@ import {
   RunBoxedQueryTemplateAction,
   type ApplicationDeploymentMap,
   type Domain2QueryReturnType,
-  type MiroirModelEnvironment
+  type MiroirModelEnvironment,
+  keylessEntityInstanceActionError,
 } from "miroir-core";
 import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection";
 
@@ -667,6 +668,9 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
       try {
         const sequelizeModel = this.sqlSchemaTableAccess[parentUuid].sequelizeModel;
         const idAttribute = this.sqlSchemaTableAccess[parentUuid].idAttribute ?? "uuid";
+        if (idAttribute === false) {
+          return keylessEntityInstanceActionError("deleteInstance", parentUuid);
+        }
         if (Array.isArray(idAttribute)) {
           // Composite PK: build WHERE clause with all PK columns
           const whereClause: Record<string, any> = {};

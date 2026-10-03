@@ -1392,6 +1392,22 @@ export function getMiroirFundamentalMlSchema(
                 },
               },
             },
+            // #381 — "replace" (default): the instances are the whole segment, which becomes fresh;
+            // "merge": the instances are a subset (e.g. one row fetched by primary key), upserted
+            // without claiming the segment is complete
+            cacheLoadMode: {
+              type: "enum",
+              optional: true,
+              definition: ["replace", "merge"],
+              tag: {
+                value: {
+                  id: 5,
+                  defaultLabel: "Cache Load Mode",
+                  editable: false,
+                  canBeTemplate: true,
+                },
+              },
+            },
           },
         },
         conceptLevel: entityDefinitionRoot.definition.conceptLevel,
@@ -1906,6 +1922,8 @@ export function getMiroirFundamentalMlSchema(
                 ai: { type: "boolean", optional: true },
                 mcp: { type: "boolean", optional: true },
                 cursor: { type: "boolean", optional: true },
+                agentBackend: { type: "enum", optional: true, definition: ["cursor", "claude", "none"] },
+                agentModel: { type: "string", optional: true },
                 designerTools: { type: "boolean", optional: true },
               },
             },
@@ -1962,6 +1980,8 @@ export function getMiroirFundamentalMlSchema(
                 ai: { type: "boolean", optional: true },
                 mcp: { type: "boolean", optional: true },
                 cursor: { type: "boolean", optional: true },
+                agentBackend: { type: "enum", optional: true, definition: ["cursor", "claude", "none"] },
+                agentModel: { type: "string", optional: true },
                 designerTools: { type: "boolean", optional: true },
               },
             },
@@ -2105,6 +2125,8 @@ export function getMiroirFundamentalMlSchema(
                 ai: { type: "boolean", optional: true },
                 mcp: { type: "boolean", optional: true },
                 cursor: { type: "boolean", optional: true },
+                agentBackend: { type: "enum", optional: true, definition: ["cursor", "claude", "none"] },
+                agentModel: { type: "string", optional: true },
                 designerTools: { type: "boolean", optional: true },
               },
             },

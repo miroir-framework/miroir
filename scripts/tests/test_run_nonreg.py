@@ -7,6 +7,8 @@ so later slices (--timings, --runner shared) can prove the default run is unchan
 from __future__ import annotations
 
 import json
+import os
+import socket
 import subprocess
 import sys
 from pathlib import Path
@@ -38,6 +40,7 @@ LEGACY_SUMMARY_KEYS = {
     "tier",
     "mode",
     "profile",
+    "storage",
     "started_at",
     "finished_at",
     "duration_s",
@@ -618,3 +621,198 @@ def test_compare_with_a_scoped_run_only_looks_at_the_steps_both_runs_selected(tm
     assert "missing steps (0)" in proc.stdout
     assert "still failing (0)" in proc.stdout
     assert "scoped compare: 1 step(s) selected by only one run ignored: b1" in proc.stdout
+
+
+# ------------------------------------------------------------------------------------------------
+# #390: choose the store of a run with --storage
+
+
+def storage_manifest(tmp_path: Path) -> Path:
+    return write_manifest(
+        tmp_path,
+        [
+            {
+                "id": "echo-profile",
+                "tier": "unit",
+                "title": "echo argv with profile",
+                "requires": "none",
+                "argv": ["python", "-c", ECHO_ARGV, "--profile", "{profile}"],
+            },
+            {
+                "id": "needs-store",
+                "tier": "default",
+                "title": "integration step on the run's store",
+                "requires": "storage",
+                "argv": ["python", "-c", ECHO_ARGV, "--profile", "{profile}"],
+            },
+        ],
+    )
+
+
+def free_port() -> int:
+    with socket.socket() as sock:
+        sock.bind(("127.0.0.1", 0))
+        return sock.getsockname()[1]
+
+
+def write_environments(tmp_path: Path, postgres_port: int, mongodb_port: int) -> Path:
+    envs = tmp_path / "environments"
+    envs.mkdir()
+    (envs / "test-filesystem.json").write_text(json.dumps({"name": "test-filesystem"}), encoding="utf-8")
+    (envs / "test-sql.json").write_text(
+        json.dumps(
+            {
+                "name": "test-sql",
+                "extends": "test-filesystem",
+                "connections": {"postgres": {"host": "127.0.0.1", "port": postgres_port}},
+            }
+        ),
+        encoding="utf-8",
+    )
+    (envs / "test-mongodb.json").write_text(
+        json.dumps(
+            {
+                "name": "test-mongodb",
+                "extends": "test-filesystem",
+                "connections": {"mongodb": {"url": f"mongodb://127.0.0.1:{mongodb_port}"}},
+            }
+        ),
+        encoding="utf-8",
+    )
+    return envs
+
+
+def run_raw(
+    tmp_path: Path, manifest: Path, *extra: str, env: dict[str, str] | None = None
+) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        [
+            sys.executable,
+            str(SCRIPT),
+            "--manifest",
+            str(manifest),
+            "--results-root",
+            str(tmp_path / "results"),
+            *extra,
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+        env=env,
+    )
+
+
+def test_storage_selects_the_emulated_server_profile_and_is_recorded(tmp_path: Path):
+    manifest = storage_manifest(tmp_path)
+    by_storage = tmp_path / "by-storage"
+    by_profile = tmp_path / "by-profile"
+    by_storage.mkdir()
+    by_profile.mkdir()
+
+    code, summary, snap_dir = run_nonreg(by_storage, manifest, "--storage", "filesystem")
+    _, profile_summary, _ = run_nonreg(by_profile, manifest, "--profile", "emulatedServer-filesystem")
+
+    assert code == 0
+    assert summary["profile"] == "emulatedServer-filesystem"
+    assert summary["storage"] == "filesystem"
+    assert [s["argv"] for s in summary["steps"]] == [s["argv"] for s in profile_summary["steps"]]
+    assert summary["steps"][1]["requires"] == "storage"
+    assert "- Storage: `filesystem`" in (snap_dir / "summary.md").read_text(encoding="utf-8")
+
+
+def test_default_run_records_the_sql_storage(tmp_path: Path):
+    _, summary, _ = run_nonreg(tmp_path, storage_manifest(tmp_path), "--tier", "unit")
+
+    assert summary["profile"] == "emulatedServer-sql"
+    assert summary["storage"] == "sql"
+
+
+def test_a_profile_that_is_not_emulated_server_has_no_storage(tmp_path: Path):
+    _, summary, _ = run_nonreg(tmp_path, storage_manifest(tmp_path), "--tier", "unit", "--profile", "realServer-sql")
+
+    assert summary["storage"] is None
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        ("--storage", "oracle"),
+        ("--storage", "sql", "--profile", "emulatedServer-sql"),
+    ],
+)
+def test_unknown_storage_or_storage_with_profile_is_rejected(tmp_path: Path, extra: tuple[str, ...]):
+    proc = run_raw(tmp_path, storage_manifest(tmp_path), *extra)
+
+    assert proc.returncode == 2
+    assert not (tmp_path / "results").exists()
+
+
+@pytest.mark.parametrize(("storage", "service"), [("sql", "PostgreSQL"), ("mongodb", "MongoDB")])
+def test_unreachable_store_service_stops_the_run_before_any_step(tmp_path: Path, storage: str, service: str):
+    port = free_port()
+    envs = write_environments(tmp_path, postgres_port=port, mongodb_port=port)
+
+    proc = run_raw(tmp_path, storage_manifest(tmp_path), "--storage", storage, "--environments-dir", str(envs))
+
+    assert proc.returncode == 2
+    assert f"{service} is not reachable at 127.0.0.1:{port}" in proc.stderr
+    assert not (tmp_path / "results").exists()
+
+
+def test_reachable_store_service_lets_the_run_proceed(tmp_path: Path):
+    with socket.socket() as server:
+        server.bind(("127.0.0.1", 0))
+        server.listen()
+        port = server.getsockname()[1]
+        envs = write_environments(tmp_path, postgres_port=port, mongodb_port=port)
+
+        code, summary, _ = run_nonreg(
+            tmp_path, storage_manifest(tmp_path), "--storage", "sql", "--environments-dir", str(envs)
+        )
+
+    assert code == 0
+    assert [s["status"] for s in summary["steps"]] == ["passed", "passed"]
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        ("--tier", "unit"),
+        ("--dry-run",),
+        ("--storage", "indexedDb"),
+    ],
+)
+def test_store_check_is_skipped_when_no_step_needs_a_service(tmp_path: Path, extra: tuple[str, ...]):
+    envs = write_environments(tmp_path, postgres_port=free_port(), mongodb_port=free_port())
+
+    proc = run_raw(tmp_path, storage_manifest(tmp_path), "--environments-dir", str(envs), *extra)
+
+    assert proc.returncode == 0, proc.stderr
+
+
+@pytest.mark.parametrize(
+    ("storage", "variable", "value"),
+    [
+        ("sql", "MIROIR_TEST_POSTGRES_HOST", "127.0.0.2"),
+        ("mongodb", "MIROIR_TEST_MONGODB_CONNECTION_STRING", "mongodb://127.0.0.2:{port}"),
+    ],
+)
+def test_store_check_follows_the_address_overrides_of_the_integration_tests(
+    tmp_path: Path, storage: str, variable: str, value: str
+):
+    # The environment points at a listening port; the override moves the tests (and the check)
+    # to another host where nothing listens.
+    with socket.socket() as server:
+        server.bind(("127.0.0.1", 0))
+        server.listen()
+        port = server.getsockname()[1]
+        envs = write_environments(tmp_path, postgres_port=port, mongodb_port=port)
+        env = {**os.environ, variable: value.format(port=port)}
+
+        proc = run_raw(
+            tmp_path, storage_manifest(tmp_path), "--storage", storage, "--environments-dir", str(envs), env=env
+        )
+
+    assert proc.returncode == 2
+    assert f"not reachable at 127.0.0.2:{port}" in proc.stderr

@@ -308,6 +308,7 @@ export { default as miroirTest_tr_resolveSchemaReferenceInContext } from "./asse
 export { default as miroirTest_fn_mlsTypeCheck_selectUnionBranchFromDiscriminator } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/84e67b10-17f0-4340-8c1f-5f19a8b94e05.json" with { type: "json" };
 export { default as miroirTest_fn_tools_pathsAndMerges } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/e5940340-a73b-4d30-88a5-0f45072e146b.json" with { type: "json" };
 export { default as miroirTest_fn_transformer_interfaceCheck } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/c9f0a3e1-7b2d-4e6a-8f1c-5d3b9a7e2c84.json" with { type: "json" };
+export { default as miroirTest_fn_transformer_interfaceWalk } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/0a6912c2-e061-476b-bd54-849e7366684b.json" with { type: "json" };
 export { default as miroirTest_fn_transformer_resultSchema } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/0d3bd258-a8f9-4a0c-8cd9-bcf5607b50ad.json" with { type: "json" };
 export { default as miroirTest_tr_unfoldSchemaOnce } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/dd06922d-d4cd-4057-9dc1-bab3a0ed6276.json" with { type: "json" };
 export { default as miroirTest_action_domainController_dataCrud } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/c8e2a104-5b6d-4f91-a2c3-9d0e1f2a3b4c.json" with { type: "json" };
@@ -338,6 +339,7 @@ export { default as miroirTest_ui_mlElementEditor_union } from "./assets/miroir_
 export { default as miroirTest_ui_mlElementEditor_any } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/ec601bcc-a27d-450d-9c37-bdd6a12a1575.json" with { type: "json" };
 export { default as miroirTest_ui_mlElementEditor_allTypesPattern } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/26ef2886-2cd8-4f91-b846-1525b24d5f41.json" with { type: "json" };
 export { default as miroirTest_ui_mlElementEditor_renderPerformance } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/2da30877-d248-44bd-9786-5c091b1bc8fc.json" with { type: "json" };
+export { default as miroirTest_ui_transformerEditor } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/ce3f9603-824e-41da-9c6c-27ace3b01678.json" with { type: "json" };
 
 // ################################################################################################
 // Miroir Data - TestConfiguration (parentUuid = entityTestConfiguration = 675ccd46)

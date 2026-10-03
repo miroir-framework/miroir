@@ -3045,16 +3045,27 @@ export const miroirFundamentalMlSchema = {
           "message": {
             "type": "string"
           },
-          "unionErrors": {
+          "errors": {
             "type": "array",
             "definition": {
-              "type": "schemaReference",
+              "type": "array",
               "definition": {
-                "relativePath": "zodParseError",
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-              },
-              "context": {}
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "zodParseErrorIssue",
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                },
+                "context": {}
+              }
             }
+          },
+          "note": {
+            "type": "string",
+            "optional": true
+          },
+          "discriminator": {
+            "type": "string",
+            "optional": true
           }
         }
       },
@@ -3090,15 +3101,18 @@ export const miroirFundamentalMlSchema = {
           }
         }
       },
-      "zodParseErrorIssueInvalidLiteral": {
+      "zodParseErrorIssueInvalidValue": {
         "type": "object",
         "definition": {
           "code": {
             "type": "literal",
-            "definition": "invalid_literal"
+            "definition": "invalid_value"
           },
-          "expected": {
-            "type": "string"
+          "values": {
+            "type": "array",
+            "definition": {
+              "type": "any"
+            }
           },
           "path": {
             "type": "array",
@@ -3142,7 +3156,7 @@ export const miroirFundamentalMlSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "zodParseErrorIssueInvalidLiteral",
+              "relativePath": "zodParseErrorIssueInvalidValue",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
@@ -3155,9 +3169,6 @@ export const miroirFundamentalMlSchema = {
                 "definition": "invalid_type"
               },
               "expected": {
-                "type": "string"
-              },
-              "received": {
                 "type": "string"
               },
               "path": {
@@ -6511,6 +6522,22 @@ export const miroirFundamentalMlSchema = {
               "value": {
                 "id": 4,
                 "defaultLabel": "Attributes Projection",
+                "editable": false,
+                "canBeTemplate": true
+              }
+            }
+          },
+          "cacheLoadMode": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "replace",
+              "merge"
+            ],
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Cache Load Mode",
                 "editable": false,
                 "canBeTemplate": true
               }
@@ -11828,7 +11855,7 @@ export const miroirFundamentalMlSchema = {
             "tag": {
               "value": {
                 "defaultLabel": "Id Attribute",
-                "description": "The attribute(s) used as primary key for instances of this entity. Defaults to 'uuid' when absent. Can be a single attribute name (string) or an array of attribute names for composite primary keys.",
+                "description": "The attribute(s) used as primary key for instances of this entity. Defaults to 'uuid' when absent. Can be a single attribute name (string), an array of attribute names for composite primary keys, or false when instances have no primary key (External SQL and HTTP entities only; such instances are read-only).",
                 "id": 16
               }
             },
@@ -11841,6 +11868,9 @@ export const miroirFundamentalMlSchema = {
                 "definition": {
                   "type": "string"
                 }
+              },
+              {
+                "type": "boolean"
               }
             ]
           },
@@ -12110,7 +12140,7 @@ export const miroirFundamentalMlSchema = {
             "tag": {
               "value": {
                 "defaultLabel": "Id Attribute",
-                "description": "The attribute(s) used as primary key for instances of this entity. Defaults to 'uuid' when absent. Can be a single attribute name (string) or an array of attribute names for composite primary keys."
+                "description": "The attribute(s) used as primary key for instances of this entity. Defaults to 'uuid' when absent. Can be a single attribute name (string), an array of attribute names for composite primary keys, or false when instances have no primary key (External SQL and HTTP entities only; such instances are read-only)."
               }
             },
             "definition": [
@@ -12122,6 +12152,9 @@ export const miroirFundamentalMlSchema = {
                 "definition": {
                   "type": "string"
                 }
+              },
+              {
+                "type": "boolean"
               }
             ]
           },
@@ -17006,6 +17039,19 @@ export const miroirFundamentalMlSchema = {
                 "type": "boolean",
                 "optional": true
               },
+              "agentBackend": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "cursor",
+                  "claude",
+                  "none"
+                ]
+              },
+              "agentModel": {
+                "type": "string",
+                "optional": true
+              },
               "designerTools": {
                 "type": "boolean",
                 "optional": true
@@ -17072,6 +17118,19 @@ export const miroirFundamentalMlSchema = {
               },
               "cursor": {
                 "type": "boolean",
+                "optional": true
+              },
+              "agentBackend": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "cursor",
+                  "claude",
+                  "none"
+                ]
+              },
+              "agentModel": {
+                "type": "string",
                 "optional": true
               },
               "designerTools": {
@@ -17273,6 +17332,19 @@ export const miroirFundamentalMlSchema = {
               },
               "cursor": {
                 "type": "boolean",
+                "optional": true
+              },
+              "agentBackend": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "cursor",
+                  "claude",
+                  "none"
+                ]
+              },
+              "agentModel": {
+                "type": "string",
                 "optional": true
               },
               "designerTools": {
@@ -43611,6 +43683,48 @@ export const miroirFundamentalMlSchema = {
               "transformerType",
               "interpolation"
             ]
+          },
+          "cacheLoadMode": {
+            "type": "union",
+            "optional": true,
+            "definition": [
+              {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "replace",
+                  "merge"
+                ],
+                "tag": {
+                  "value": {
+                    "id": 5,
+                    "defaultLabel": "Cache Load Mode",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "coreTransformerForBuildPlusRuntime"
+                }
+              }
+            ],
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Cache Load Mode",
+                "editable": false,
+                "canBeTemplate": true,
+                "isTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ]
           }
         }
       },
@@ -43906,7 +44020,7 @@ export const miroirFundamentalMlSchema = {
             "tag": {
               "value": {
                 "defaultLabel": "Id Attribute",
-                "description": "The attribute(s) used as primary key for instances of this entity. Defaults to 'uuid' when absent. Can be a single attribute name (string) or an array of attribute names for composite primary keys.",
+                "description": "The attribute(s) used as primary key for instances of this entity. Defaults to 'uuid' when absent. Can be a single attribute name (string), an array of attribute names for composite primary keys, or false when instances have no primary key (External SQL and HTTP entities only; such instances are read-only).",
                 "id": 16,
                 "isTemplate": true
               }
@@ -43920,6 +44034,9 @@ export const miroirFundamentalMlSchema = {
                 "definition": {
                   "type": "string"
                 }
+              },
+              {
+                "type": "boolean"
               }
             ]
           },

@@ -3,6 +3,7 @@ import React, { useMemo, useState } from "react";
 
 import {
   checkTransformerInterfaceCompatibilityWithInference,
+  checkTransformerInterfaceRecursively,
   checkTransformerMlSchemaCompatibility,
   collectTransformerEnvironmentBindings,
   defaultTransformerInput,
@@ -19,6 +20,7 @@ import {
   type Entity,
   type InputOutputType,
   type MlElement,
+  type TransformerInterfaceNodeReport,
   type TransformerMlSchemaNodeReport,
   type TransformerReturnType,
   type Uuid,
@@ -119,6 +121,16 @@ function formatInputOutputTypeLabel(type: InputOutputType, entities?: Entity[]):
     return `${type.type}<${payloadLabel}>`;
   }
   return entities?.find((entity) => entity.uuid === type)?.name ?? type;
+}
+
+/** #383: one line per #249 failure of a nested transformer node. */
+function formatInterfaceNodeMismatch(node: TransformerInterfaceNodeReport, entities?: Entity[]): string {
+  return node.failures
+    .map(
+      (failure) =>
+        `${node.path.join(".")} (${node.transformerType}) ${failure.direction}: given ${formatInputOutputTypeLabel(failure.given, entities)}, declared ${formatInputOutputTypeLabel(failure.declared, entities)}`,
+    )
+    .join("; ");
 }
 
 const ListTransformerResultViewer: React.FC<{
@@ -250,6 +262,19 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
     [transformerType, rowEntityUuid, expectedOutputType, inferredOutputType],
   );
 
+  // #383: input type given to every transformer node, restricting its transformerType select.
+  // As in the #249 check, the root input (what the select restricts by) is the row.
+  const interfaceWalk = useMemo(
+    () =>
+      checkTransformerInterfaceRecursively(elementTransformer, givenInputType, {
+        entityMlSchemas,
+        // The runtime keeps the whole list as `defaultInput` and binds each row as `row`.
+        context: rowMlSchema
+          ? { row: rowMlSchema, [defaultTransformerInput]: { type: "array", definition: rowMlSchema } as MlElement }
+          : {},
+      }),
+    [elementTransformer, givenInputType, entityMlSchemas, rowMlSchema],
+  );
   const givenInputMlSchema: MlElement = rowMlSchema ?? liftInputOutputTypeToMlSchema(givenInputType, entityMlSchemas);
   const expectedOutputMlSchema = liftInputOutputTypeToMlSchema(expectedOutputType, entityMlSchemas);
   const mlSchemaCompatibility = useMemo(
@@ -264,23 +289,29 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
     [elementTransformer, givenInputMlSchema, expectedOutputMlSchema, rowMlSchema, entityMlSchemas],
   );
 
+  // #383: nested #249 input failures (the root's are in interfaceCompatibility already).
+  const nestedInterfaceFailureNodes = useMemo(
+    () => interfaceWalk.nodes.filter((node) => node.path.length > 0 && node.failures.length > 0),
+    [interfaceWalk],
+  );
   const transformerInadequate = mlSchemaMode
     ? mlSchemaCompatibility.status === "incompatible"
-    : interfaceCompatibility.status === "incompatible";
+    : interfaceCompatibility.status === "incompatible" || nestedInterfaceFailureNodes.length > 0;
   const interfaceMismatchTitle = mlSchemaMode
     ? mlSchemaCompatibility.nodes
         .filter((node) => node.failures.length > 0)
         .map((node) => formatMlSchemaNodeMismatch(node, mlSchemaNameResolver))
         .join("; ") || undefined
-    : interfaceCompatibility.status === "incompatible"
-      ? interfaceCompatibility.failures
-          .map((failure) => {
-            const actualLabel =
-              failure.source === "inferred" ? "inferred actual" : "transformer declares";
-            return `${failure.direction}: expected ${safeStringify(failure.given)}, ${actualLabel} ${safeStringify(failure.declared)}`;
-          })
-          .join("; ")
-      : undefined;
+    : [
+        ...(interfaceCompatibility.status === "incompatible"
+          ? interfaceCompatibility.failures.map((failure) => {
+              const actualLabel =
+                failure.source === "inferred" ? "inferred actual" : "transformer declares";
+              return `${failure.direction}: expected ${safeStringify(failure.given)}, ${actualLabel} ${safeStringify(failure.declared)}`;
+            })
+          : []),
+        ...nestedInterfaceFailureNodes.map((node) => formatInterfaceNodeMismatch(node, entities)),
+      ].join("; ") || undefined;
 
   const compatibilityWarnings = useMemo(
     () =>
@@ -291,8 +322,11 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
               path: node.path,
               title: formatMlSchemaNodeMismatch(node, mlSchemaNameResolver),
             }))
-        : undefined,
-    [mlSchemaMode, mlSchemaCompatibility, mlSchemaNameResolver],
+        : nestedInterfaceFailureNodes.map((node) => ({
+            path: node.path,
+            title: formatInterfaceNodeMismatch(node, entities),
+          })),
+    [mlSchemaMode, mlSchemaCompatibility, mlSchemaNameResolver, nestedInterfaceFailureNodes, entities],
   );
   const mlSchemaTypeAnnotations = useMemo(
     () =>
@@ -303,6 +337,16 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
           }))
         : undefined,
     [mlSchemaMode, mlSchemaCompatibility, mlSchemaNameResolver],
+  );
+
+  const transformerTypeRestrictions = useMemo(
+    () =>
+      interfaceWalk.nodes.map((node) => ({
+        path: node.path,
+        input: node.consumedInput,
+        inputLabel: formatInputOutputTypeLabel(node.consumedInput, entities),
+      })),
+    [interfaceWalk, entities],
   );
 
   const environmentBindings = useMemo(
@@ -338,8 +382,8 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
         ? mlSchemaCompatibility.nodes
             .filter((node) => node.failures.length > 0)
             .map((node) => (node.path.length === 0 ? "root" : node.path.map(String).join(".")))
-        : [],
-    [mlSchemaMode, mlSchemaCompatibility],
+        : nestedInterfaceFailureNodes.map((node) => node.path.map(String).join(".")),
+    [mlSchemaMode, mlSchemaCompatibility, nestedInterfaceFailureNodes],
   );
 
   const transformationResult = useMemo(
@@ -511,6 +555,7 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
           showMlSchemaTypes={mlSchemaMode}
           mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
           environmentAnnotations={environmentAnnotations}
+          transformerTypeRestrictions={transformerTypeRestrictions}
         />
       </div>
 

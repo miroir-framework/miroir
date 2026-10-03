@@ -54,11 +54,6 @@
       "count": 1
     }
   },
-  "packages/miroir-core/src/2_domain/TransformerInterfaceInference.ts": {
-    "miroir/layers": {
-      "count": 1
-    }
-  },
   "packages/miroir-core/src/3_controllers/DomainController.ts": {
     "miroir/layers": {
       "count": 5

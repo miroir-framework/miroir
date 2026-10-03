@@ -12,11 +12,11 @@ import { LocalCache } from "miroir-localcache-redux";
 // ################################################################################################
 // ################################################################################################
 //  TEST CONSTANTS
-const testApplicationUuid = "11111111-1111-1111-1111-111111111111";
-const testDeploymentUuid = "22222222-2222-2222-2222-222222222222";
-const testEntityUuid = "33333333-3333-3333-3333-333333333333";
-const testInstanceUuid = "44444444-4444-4444-4444-444444444444";
-const testInstance2Uuid = "55555555-5555-5555-5555-555555555555";
+const testApplicationUuid = "11111111-1111-4111-8111-111111111111";
+const testDeploymentUuid = "22222222-2222-4222-8222-222222222222";
+const testEntityUuid = "33333333-3333-4333-8333-333333333333";
+const testInstanceUuid = "44444444-4444-4444-8444-444444444444";
+const testInstance2Uuid = "55555555-5555-4555-8555-555555555555";
 
 const applicationDeploymentMap: ApplicationDeploymentMap = {
   [testApplicationUuid]: testDeploymentUuid,

@@ -27,7 +27,7 @@
       "undici": "6.28.1"
     },
     "lodash-es": "4.18.1",
-    "vitest": "5.0.1"
+    "vitest": "5.0.2"
   },
   "devDependencies": {
     "@eslint/js": "9.39.5",
@@ -38,7 +38,8 @@
     "globals": "17.12.0",
     "lerna": "10.0.1",
     "typescript": "npm:@typescript/typescript6@6.0.2",
-    "typescript-eslint": "8.70.1"
+    "typescript-eslint": "8.70.1",
+    "zod": "4.6.5"
   },
   "scripts": {
     "postinstall": "node scripts/patch-tsup-baseurl.cjs",
@@ -46,7 +47,9 @@
     "nonreg": "python scripts/run-nonreg.py",
     "nonreg:unit": "python scripts/run-nonreg.py --tier unit --run-all",
     "nonreg:default": "python scripts/run-nonreg.py --tier default --run-all",
-    "nonreg:filesystem": "python scripts/run-nonreg.py --tier default --run-all --profile emulatedServer-filesystem",
+    "nonreg:filesystem": "python scripts/run-nonreg.py --tier default --run-all --storage filesystem",
+    "nonreg:indexedDb": "python scripts/run-nonreg.py --tier default --run-all --storage indexedDb",
+    "nonreg:mongodb": "python scripts/run-nonreg.py --tier default --run-all --storage mongodb",
     "nonreg:fail-fast": "python scripts/run-nonreg.py --tier default --fail-fast",
     "lint": "node --test eslint-rules/miroir-layers.test.mjs eslint-rules/ml-adapter-imports.test.mjs && eslint packages",
     "check:console": "python scripts/check_bare_console.py",

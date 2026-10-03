@@ -1,5 +1,5 @@
 /**
- * #275 Slice 1 — features.cursor snapshot.
+ * #275 (capability renamed to agentBackend / "agent" by #409) Slice 1 — features.cursor snapshot.
  * Do not register in FunctionCallTestRegistry.
  */
 import { describe, expect, it } from "vitest";
@@ -25,7 +25,7 @@ const emptyMap = new Map<string, unknown>();
 const snapshotWithCursorFalse: ProcessCapabilities = {
   ai: false,
   mcp: false,
-  cursor: false,
+  agentBackend: "none" as const,
   designerTools: true,
   availableStoreTypes: [],
   creatableStoreTypes: [],
@@ -34,7 +34,7 @@ const snapshotWithCursorFalse: ProcessCapabilities = {
 
 const snapshotWithCursorTrue: ProcessCapabilities = {
   ...snapshotWithCursorFalse,
-  cursor: true,
+  agentBackend: "cursor" as const,
 };
 
 if (runThis) {
@@ -46,7 +46,7 @@ if (runThis) {
         storeSectionFactoryRegister: emptyMap,
         adminStoreFactoryRegister: emptyMap,
       });
-      expect(snapshot.cursor).toBe(false);
+      expect(snapshot.agentBackend).toBe("none");
     });
 
     it("{ features: {} } yields cursor false", () => {
@@ -56,7 +56,7 @@ if (runThis) {
         storeSectionFactoryRegister: emptyMap,
         adminStoreFactoryRegister: emptyMap,
       });
-      expect(snapshot.cursor).toBe(false);
+      expect(snapshot.agentBackend).toBe("none");
     });
   });
 
@@ -68,7 +68,7 @@ if (runThis) {
         storeSectionFactoryRegister: emptyMap,
         adminStoreFactoryRegister: emptyMap,
       });
-      expect(snapshot.cursor).toBe(true);
+      expect(snapshot.agentBackend).toBe("cursor");
     });
 
     it("cursor true when features.ai is false", () => {
@@ -78,7 +78,7 @@ if (runThis) {
         storeSectionFactoryRegister: emptyMap,
         adminStoreFactoryRegister: emptyMap,
       });
-      expect(snapshot.cursor).toBe(true);
+      expect(snapshot.agentBackend).toBe("cursor");
       expect(snapshot.ai).toBe(false);
     });
   });
@@ -91,25 +91,25 @@ if (runThis) {
         storeSectionFactoryRegister: emptyMap,
         adminStoreFactoryRegister: emptyMap,
       });
-      expect(snapshot.cursor).toBe(true);
+      expect(snapshot.agentBackend).toBe("cursor");
       expect(snapshot.ai).toBe(false);
     });
   });
 
-  describe("cursorSdk.275.phase1 — FAIL_CLOSED_PROCESS_CAPABILITIES.cursor", () => {
-    it("is false", () => {
-      expect(FAIL_CLOSED_PROCESS_CAPABILITIES.cursor).toBe(false);
+  describe("cursorSdk.275.phase1 — FAIL_CLOSED_PROCESS_CAPABILITIES.agentBackend", () => {
+    it("is none", () => {
+      expect(FAIL_CLOSED_PROCESS_CAPABILITIES.agentBackend).toBe("none");
     });
   });
 
   describe("cursorSdk.275.phase1 — assertProcessCapability FeatureUnavailable", () => {
     it("returns Action2Error FeatureUnavailable when cursor is false", () => {
-      const result = assertProcessCapability("cursor", snapshotWithCursorFalse);
+      const result = assertProcessCapability("agent", snapshotWithCursorFalse);
       expect(result).toBeInstanceOf(Action2Error);
       expect(result).toMatchObject({
         status: "error",
         errorType: "FeatureUnavailable",
-        errorContext: { capability: "cursor" },
+        errorContext: { capability: "agent" },
       });
     });
   });

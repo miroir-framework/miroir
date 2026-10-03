@@ -36,8 +36,8 @@ type YamlModule = typeof import("yaml");
 
 /**
  * `yaml`, loaded without a static import (#370): a static import puts the parser in the web page.
- * On Node it loads with this module; elsewhere `ensureYamlParser()` loads it first (the web app
- * starts it after its first render, `DomainController` before preparing an OpenAPI document).
+ * On Node it loads with this module; elsewhere `ensureYamlParser()` loads it first (`DomainController`
+ * before preparing an OpenAPI document, the web views that parse one before they use it).
  * JSON documents never need it.
  */
 let yamlModule: YamlModule | undefined =
@@ -45,6 +45,10 @@ let yamlModule: YamlModule | undefined =
 
 export async function ensureYamlParser(): Promise<void> {
   yamlModule ??= await import("yaml");
+}
+
+export function isYamlParserLoaded(): boolean {
+  return yamlModule !== undefined;
 }
 
 function parseYaml(text: string): unknown {
@@ -610,6 +614,18 @@ export function previewOpenApiGetCall(
   return { method: "GET", path, url };
 }
 
+/** Whether the items of a response (the array elements, or the object itself) declare an "id" attribute. */
+function responseItemsHaveId(responseSchema: unknown): boolean {
+  const schema = responseSchema as { type?: string; definition?: any } | undefined;
+  const item = schema?.type === "array" ? schema.definition : schema;
+  return (
+    item?.type === "object" &&
+    item.definition != null &&
+    typeof item.definition === "object" &&
+    Object.prototype.hasOwnProperty.call(item.definition, "id")
+  );
+}
+
 export function openApiParameterNamesForOperation(
   openApiDocument: unknown,
   operationId: string,
@@ -844,7 +860,8 @@ function syncExternalServiceSchemaValue(
           name: entitySpec.name ?? operationId,
           conceptLevel: "Model",
           description: `External HTTP entity for ${operationId}`,
-          idAttribute: "id",
+          // responses without "id" give an Entity without primary key: read-only, positional rows
+          idAttribute: responseItemsHaveId(responseSchema) ? "id" : false,
           externalDataSource: {
             kind: "http",
             endpoint: endpointInstance.uuid,

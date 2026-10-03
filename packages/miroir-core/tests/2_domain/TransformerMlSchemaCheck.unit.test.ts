@@ -62,7 +62,7 @@ describe("liftInputOutputTypeToMlSchema (#251)", () => {
   });
 
   it("lifts entity uuids to the provided entity mlSchema", () => {
-    const uuid = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
+    const uuid = "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee";
     expect(liftInputOutputTypeToMlSchema(uuid, { [uuid]: bookSchema })).toBe(bookSchema);
   });
 });

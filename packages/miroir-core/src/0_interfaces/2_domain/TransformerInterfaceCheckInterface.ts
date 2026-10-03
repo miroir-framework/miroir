@@ -1,4 +1,7 @@
-import type { InputOutputType } from "../1_core/preprocessor-generated/miroirFundamentalType";
+import type {
+  InputOutputObject,
+  InputOutputType,
+} from "../1_core/preprocessor-generated/miroirFundamentalType";
 
 /**
  * Types provided / expected by the calling context of a transformer (issue #249).
@@ -20,3 +23,29 @@ export interface TransformerInterfaceMismatch {
 export type TransformerInterfaceCompatibility =
   | { status: "ok" }
   | { status: "incompatible"; failures: TransformerInterfaceMismatch[] };
+
+/**
+ * Issue #383 — #249 check at one typed node of a transformer tree.
+ * `givenInput`: the input the node's slot provides. `consumedInput`: what the node actually
+ * reads, its own `applyTo` output when it has one, else `givenInput`.
+ */
+export interface TransformerInterfaceNodeReport {
+  path: (string | number)[];
+  transformerType: string;
+  givenInput: InputOutputType;
+  consumedInput: InputOutputType;
+  declared: InputOutputObject | undefined;
+  output: InputOutputType;
+  failures: TransformerInterfaceMismatch[];
+}
+
+export interface TransformerInterfaceTreeCompatibility {
+  status: "ok" | "incompatible" | "unchecked";
+  nodes: TransformerInterfaceNodeReport[];
+}
+
+/** Transformer types offered at a position, and the ones hidden there (#383). */
+export interface TransformerTypesAcceptingInput {
+  offered: string[];
+  hidden: string[];
+}

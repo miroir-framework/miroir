@@ -41,20 +41,20 @@
     "fast-deep-equal": "3.1.3",
     "immer": "10.1.1",
     "lodash": "4.18.1",
+    "miroir-app-miroir": "*",
     "miroir-core": "*",
     "miroir-example-library": "*",
-    "miroir-app-miroir": "*",
-    "zod": "3.25.76",
-    "zustand": "4.5.7"
+    "zod": "4.6.5",
+    "zustand": "5.0.15"
   },
   "devDependencies": {
     "copyfiles": "2.4.1",
-    "cross-env": "7.0.3",
+    "cross-env": "10.1.0",
     "rimraf": "4.4.1",
     "tsconfig-paths": "4.2.0",
     "tsup": "8.5.1",
     "vite": "7.3.6",
-    "vitest": "5.0.1"
+    "vitest": "5.0.2"
   },
   "peerDependencies": {
     "react": "^18.2.0"

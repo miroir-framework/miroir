@@ -27,17 +27,17 @@ import { bundleReportLines, readWorkspaces } from "../../miroir-standalone-app/v
 /**
  * Packages left outside the bundle:
  * - `electron`: provided by the Electron runtime.
- * - `@cursor/sdk`: native binaries, imported dynamically by `miroir-ai` only when the `cursor`
- *   capability is on. Not in `dependencies`, so the package does not ship it: #275 keeps Cursor off
- *   in the packaged app, where `assertCursorSdkPackaged` fails loud if someone turns it on, and
- *   keeps the SDK a dependency of `miroir-ai` alone.
+ * - `@cursor/sdk`, `@anthropic-ai/claude-agent-sdk`: agent SDKs with native binaries, imported
+ *   dynamically by `miroir-ai` only for the configured `agentBackend`. Not in `dependencies`, so
+ *   the package ships neither (#275, #409): `assertAgentSdkPackaged` fails loud at start when the
+ *   packaged app is configured with an agent backend, and the SDKs stay dependencies of `miroir-ai`.
  * - `classic-level`: native module (the Node side of `miroir-store-indexedDb`, through `level`),
  *   found by `node-gyp-build` next to its own files; in `dependencies`, so electron-builder ships it.
  * - `pg`: sequelize loads its dialect driver with a computed `require("pg")`; in `dependencies`.
  * `electron-squirrel-startup` is not imported but required at run time by `main.ts`
  * (`createRequire`), so it is in `dependencies` too.
  */
-export const EXTERNALS = ["electron", "@cursor/sdk", "classic-level", "pg"];
+export const EXTERNALS = ["electron", "@cursor/sdk", "@anthropic-ai/claude-agent-sdk", "classic-level", "pg"];
 
 const packageDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const root = path.resolve(packageDir, "../..");

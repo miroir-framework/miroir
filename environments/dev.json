@@ -11,7 +11,7 @@
     ]
   },
   "client": { "mode": "realServer" },
-  "features": { "ai": true, "mcp": true },
+  "features": { "ai": true, "mcp": true, "agentBackend": "claude", "agentModel": "claude-haiku-4-5-20251001" },
   "logPreset": "catch-all",
   "connections": {
     "postgres": { "host": "localhost", "port": 5432, "user": "postgres", "passwordEnv": "MIROIR_POSTGRES_PASSWORD" },

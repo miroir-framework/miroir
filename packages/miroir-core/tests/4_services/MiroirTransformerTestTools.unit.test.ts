@@ -7,7 +7,7 @@ import { runMiroirTransformerIntegrationTest, resolveTransformerIntegrationRunAs
 import type { MiroirTestForTransformer } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { defaultMetaModelEnvironment } from "../../src/1_core/Model";
 
-const TEST_APPLICATION_UUID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
+const TEST_APPLICATION_UUID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 
 describe("runMiroirTransformerIntegrationTest", () => {
   it("calls domainController.handleBoxedExtractorOrQueryAction for runtime step", async () => {

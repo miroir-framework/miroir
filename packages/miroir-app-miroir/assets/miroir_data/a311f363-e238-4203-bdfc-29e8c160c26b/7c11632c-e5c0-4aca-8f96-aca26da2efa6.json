@@ -5,7 +5,7 @@
   "name": "fn.entityPrimaryKey",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "EntityPrimaryKey parentUuid resolution with its fallbacks.",
+  "description": "EntityPrimaryKey helpers: parentUuid resolution with its fallbacks, primary key attributes and the keys of entities without primary key.",
   "tags": [
     "unit",
     "primary-key"
@@ -24,13 +24,13 @@
         },
         "arguments": [
           {
-            "uuid": "00000000-0000-0000-0000-000000000001",
-            "parentUuid": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+            "uuid": "00000000-0000-4000-8000-000000000001",
+            "parentUuid": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
             "parentName": "SomeEntity"
           },
-          "11111111-2222-3333-4444-555555555555"
+          "11111111-2222-4333-8444-555555555555"
         ],
-        "expectedValue": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+        "expectedValue": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"
       },
       {
         "miroirTestType": "functionCallTest",
@@ -41,11 +41,11 @@
         },
         "arguments": [
           {
-            "uuid": "00000000-0000-0000-0000-000000000002"
+            "uuid": "00000000-0000-4000-8000-000000000002"
           },
-          "11111111-2222-3333-4444-555555555555"
+          "11111111-2222-4333-8444-555555555555"
         ],
-        "expectedValue": "11111111-2222-3333-4444-555555555555"
+        "expectedValue": "11111111-2222-4333-8444-555555555555"
       },
       {
         "miroirTestType": "functionCallTest",
@@ -56,14 +56,14 @@
         },
         "arguments": [
           {
-            "uuid": "00000000-0000-0000-0000-000000000003",
+            "uuid": "00000000-0000-4000-8000-000000000003",
             "parentUuid": {
               "__miroirJsonUndefined": true
             }
           },
-          "11111111-2222-3333-4444-555555555555"
+          "11111111-2222-4333-8444-555555555555"
         ],
-        "expectedValue": "11111111-2222-3333-4444-555555555555"
+        "expectedValue": "11111111-2222-4333-8444-555555555555"
       },
       {
         "miroirTestType": "functionCallTest",
@@ -74,7 +74,7 @@
         },
         "arguments": [
           {
-            "uuid": "00000000-0000-0000-0000-000000000004"
+            "uuid": "00000000-0000-4000-8000-000000000004"
           },
           {
             "__miroirJsonUndefined": true
@@ -91,7 +91,7 @@
         },
         "arguments": [
           {
-            "uuid": "00000000-0000-0000-0000-000000000005",
+            "uuid": "00000000-0000-4000-8000-000000000005",
             "parentUuid": ""
           },
           ""
@@ -107,12 +107,12 @@
         },
         "arguments": [
           {
-            "uuid": "00000000-0000-0000-0000-000000000006",
-            "parentUuid": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+            "uuid": "00000000-0000-4000-8000-000000000006",
+            "parentUuid": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"
           },
-          "11111111-2222-3333-4444-555555555555"
+          "11111111-2222-4333-8444-555555555555"
         ],
-        "expectedValue": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+        "expectedValue": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"
       },
       {
         "miroirTestType": "functionCallTest",
@@ -123,12 +123,12 @@
         },
         "arguments": [
           {
-            "uuid": "00000000-0000-0000-0000-000000000007",
+            "uuid": "00000000-0000-4000-8000-000000000007",
             "name": "plain"
           },
-          "11111111-2222-3333-4444-555555555555"
+          "11111111-2222-4333-8444-555555555555"
         ],
-        "expectedValue": "11111111-2222-3333-4444-555555555555"
+        "expectedValue": "11111111-2222-4333-8444-555555555555"
       },
       {
         "miroirTestType": "functionCallTest",
@@ -273,6 +273,221 @@
           }
         ],
         "expectedValue": false
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "entityHasNoPrimaryKey: true for idAttribute false",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "entityHasNoPrimaryKey"
+        },
+        "arguments": [
+          {
+            "idAttribute": false
+          }
+        ],
+        "expectedValue": true
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "entityHasNoPrimaryKey: false when idAttribute is not set",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "entityHasNoPrimaryKey"
+        },
+        "arguments": [
+          {}
+        ],
+        "expectedValue": false
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "entityHasNoPrimaryKey: false for a composite PK",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "entityHasNoPrimaryKey"
+        },
+        "arguments": [
+          {
+            "idAttribute": [
+              "a",
+              "b"
+            ]
+          }
+        ],
+        "expectedValue": false
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "entityHasUuidPrimaryKey: false for an entity without PK",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "entityHasUuidPrimaryKey"
+        },
+        "arguments": [
+          {
+            "idAttribute": false
+          }
+        ],
+        "expectedValue": false
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "getInstanceCacheKeys: positional keys for an entity without PK, identical rows kept",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "getInstanceCacheKeys"
+        },
+        "arguments": [
+          {
+            "idAttribute": false
+          },
+          [
+            {
+              "label": "a",
+              "n": 1
+            },
+            {
+              "label": "a",
+              "n": 1
+            },
+            {
+              "label": "b",
+              "n": 2
+            }
+          ]
+        ],
+        "expectedValue": [
+          "#0",
+          "#1",
+          "#2"
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "getInstanceCacheKeys: serialized PK for a composite PK",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "getInstanceCacheKeys"
+        },
+        "arguments": [
+          {
+            "idAttribute": [
+              "region",
+              "code"
+            ]
+          },
+          [
+            {
+              "region": "EU",
+              "code": "A"
+            },
+            {
+              "region": "US",
+              "code": "B"
+            }
+          ]
+        ],
+        "expectedValue": [
+          "EU|A",
+          "US|B"
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "getInstanceCacheKeys: uuid when idAttribute is not set",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "getInstanceCacheKeys"
+        },
+        "arguments": [
+          {},
+          [
+            {
+              "uuid": "00000000-0000-4000-8000-000000000001"
+            }
+          ]
+        ],
+        "expectedValue": [
+          "00000000-0000-4000-8000-000000000001"
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "checkEntityPrimaryKeyDeclaration: idAttribute false allowed on an External SQL entity",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "checkEntityPrimaryKeyDeclaration"
+        },
+        "arguments": [
+          {
+            "name": "rows",
+            "conceptLevel": "External",
+            "externalDataSource": {
+              "schema": "pg_catalog"
+            },
+            "idAttribute": false
+          }
+        ],
+        "expectedValue": []
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "checkEntityPrimaryKeyDeclaration: idAttribute false allowed on an HTTP entity",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "checkEntityPrimaryKeyDeclaration"
+        },
+        "arguments": [
+          {
+            "name": "rows",
+            "externalDataSource": {
+              "kind": "http",
+              "endpoint": "3d8da4d4-8f76-4bb4-9212-14869d81c00c"
+            },
+            "idAttribute": false
+          }
+        ],
+        "expectedValue": []
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "checkEntityPrimaryKeyDeclaration: idAttribute false rejected on a Model entity",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "checkEntityPrimaryKeyDeclaration"
+        },
+        "arguments": [
+          {
+            "name": "rows",
+            "conceptLevel": "Model",
+            "idAttribute": false
+          }
+        ],
+        "expectedValue": [
+          "Entity rows: idAttribute false (no primary key) is only allowed on External SQL and HTTP entities"
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "checkEntityPrimaryKeyDeclaration: idAttribute true rejected",
+        "functionRef": {
+          "module": "miroir-core/1_core/EntityPrimaryKey",
+          "export": "checkEntityPrimaryKeyDeclaration"
+        },
+        "arguments": [
+          {
+            "name": "rows",
+            "conceptLevel": "External",
+            "externalDataSource": {
+              "schema": "pg_catalog"
+            },
+            "idAttribute": true
+          }
+        ],
+        "expectedValue": [
+          "Entity rows: idAttribute true is not allowed, use false for an entity without primary key"
+        ]
       },
       {
         "miroirTestType": "functionCallTest",

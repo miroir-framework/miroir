@@ -1035,6 +1035,7 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
               showMlSchemaTypes={props.showMlSchemaTypes}
               mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
               environmentAnnotations={props.environmentAnnotations}
+              transformerTypeRestrictions={props.transformerTypeRestrictions}
               onChangeVector={props.onChangeVector}
             />
           </>
@@ -1095,6 +1096,7 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
               showMlSchemaTypes={props.showMlSchemaTypes}
               mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
               environmentAnnotations={props.environmentAnnotations}
+              transformerTypeRestrictions={props.transformerTypeRestrictions}
               onChangeVector={props.onChangeVector}
             />
           );
@@ -1132,6 +1134,7 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
               showMlSchemaTypes={props.showMlSchemaTypes}
               mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
               environmentAnnotations={props.environmentAnnotations}
+              transformerTypeRestrictions={props.transformerTypeRestrictions}
               onChangeVector={props.onChangeVector}
             />
           );
@@ -1529,6 +1532,7 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
               showMlSchemaTypes={props.showMlSchemaTypes}
               mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
               environmentAnnotations={props.environmentAnnotations}
+              transformerTypeRestrictions={props.transformerTypeRestrictions}
                 onChangeVector={props.onChangeVector}
               />
             // </div>
@@ -1567,6 +1571,7 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
               showMlSchemaTypes={props.showMlSchemaTypes}
               mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
               environmentAnnotations={props.environmentAnnotations}
+              transformerTypeRestrictions={props.transformerTypeRestrictions}
                 onChangeVector={props.onChangeVector}
               />
             // </div>
@@ -1606,6 +1611,7 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
               showMlSchemaTypes={props.showMlSchemaTypes}
               mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
               environmentAnnotations={props.environmentAnnotations}
+              transformerTypeRestrictions={props.transformerTypeRestrictions}
               onChangeVector={props.onChangeVector}
             />
             </>

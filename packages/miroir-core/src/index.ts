@@ -776,9 +776,9 @@ export { ACTION_OK, BLOB_SIZE_WARNING_THRESHOLD, MAX_BLOB_FILE_SIZE } from "./1_
 export {
   assertProcessCapability,
   getProcessCapabilities,
-  isCursorBackendAllowed,
+  isAgentBackendAllowed,
 } from "./1_core/processCapabilities";
-export type { ProcessCapabilities, ProcessCapabilityName } from "./1_core/processCapabilities";
+export type { AgentBackend, ProcessCapabilities, ProcessCapabilityName } from "./1_core/processCapabilities";
 export {
   FAIL_CLOSED_PROCESS_CAPABILITIES,
   fetchProcessCapabilities,
@@ -825,13 +825,22 @@ export {
 } from "./3_controllers/MiroirEventService.js";
 // export { rootLessListKeyMapDEFUNCT } from "./1_core/mls/rootLessListKeyMap";
 export {
+  checkEntityPrimaryKeyDeclaration,
+  invalidEntityPrimaryKeyDeclarationError,
   entityHasCompositePrimaryKey,
+  entityHasNoPrimaryKey,
   entityHasUuidPrimaryKey,
   getEntityPrimaryKeyAttribute,
   getEntityPrimaryKeyAttributes,
   getForeignKeyValue,
+  getInstanceCacheKeys,
   getInstancePrimaryKeyValue,
+  indexInstancesByCacheKey,
   instanceMatchesForeignKey,
+  keylessEntityInstanceActionError,
+  keylessEntityQueryFailure,
+  keylessEntityQueryFailureForTarget,
+  POSITIONAL_KEY_PREFIX,
   parseCompositeKeyValue,
   resolveInstanceParentUuid,
   serializeCompositeKeyValue
@@ -1050,10 +1059,12 @@ export {
   projectionsEqual,
   resolveCacheSegmentKind,
   resolveLoadCacheSegment,
+  resolveLoadSegmentWrite,
   stripLocalCacheSegmentSuffix,
 } from "./1_core/localCache/localCacheSegment.js";
 export type {
   CacheFreshness,
+  CacheLoadMode,
   CacheSegmentKind,
   LocalCacheLoadSegmentHint,
   LocalCacheSegmentHeader,
@@ -1211,6 +1222,7 @@ export {
 export {
   createSegmentHeaderLookupFromLocalCacheSnapshot,
   isLocalCacheSegmentHeaderSufficient,
+  isLocalCacheSegmentHeaderSufficientForInstance,
   isReportQueryLoadSegmentSufficient,
   attributesFromResolvedReportQueryExtractors,
   resolveReportQueryLoadAttributes,
@@ -1313,9 +1325,13 @@ export {
 export {
   checkTransformerInterfaceCompatibility,
   checkTransformerInterfaceCompatibilityWithInference,
+  checkTransformerInterfaceRecursively,
   findInvalidStockTransformerInputOutputs,
   getTransformerDefinitionInputOutput,
+  inputOutputTypeOfValue,
   inputOutputTypesCompatible,
+  transformerTypesAcceptingInput,
+  type TransformerInterfaceWalkOptions,
 } from "./2_domain/TransformerInterfaceCheck.js";
 export {
   inferElementTransformerOutputType,
@@ -1325,6 +1341,9 @@ export type {
   TransformerInterfaceCompatibility,
   TransformerInterfaceGivenTypes,
   TransformerInterfaceMismatch,
+  TransformerInterfaceNodeReport,
+  TransformerInterfaceTreeCompatibility,
+  TransformerTypesAcceptingInput,
 } from "./0_interfaces/2_domain/TransformerInterfaceCheckInterface.js";
 export {
   checkTransformerMlSchemaCompatibility,
@@ -1471,6 +1490,7 @@ export {
   openApiParameterNamesForOperation,
   previewOpenApiGetCall,
   ensureYamlParser,
+  isYamlParserLoaded,
   parseOpenApiDocument,
 } from "./2_domain/syncExternalServiceSchema.js";
 export { redactCredentialSecretsFromValue } from "./4_services/redactCredentialSecrets.js";

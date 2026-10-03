@@ -5,7 +5,7 @@
 import { createContext, useContext, createElement, ReactNode, useRef, useMemo } from "react";
 import { StoreApi, useStore } from "zustand";
 import { useStoreWithEqualityFn } from "zustand/traditional";
-import shallow from "zustand/shallow";
+import { shallow } from "zustand/shallow";
 
 import { LocalCacheStore } from "../4_services/localCache/UndoRedoStore.js";
 import { ZustandStateWithUndoRedo } from "../4_services/localCache/localCacheZustandInterface.js";

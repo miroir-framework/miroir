@@ -29,7 +29,7 @@ describe("handleMcpAction validation", () => {
     const parsed = result.content[0]?.parsed;
     expect(parsed?.status).toBe("error");
     expect(parsed?.error?.type).toBe("validation_error");
-    expect(String(parsed?.error?.message)).toContain("book: Required");
+    expect(String(parsed?.error?.message)).toContain("book: Invalid input: expected string, received undefined");
     expect(result.content[0]?.text).not.toContain("ZodError");
   });
 });

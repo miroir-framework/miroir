@@ -75,8 +75,9 @@ if (runThis) {
       const src = readRepoFile("packages/miroir-ai/src/runtime/cursorAgent.ts");
       expect(src).toContain("createCursorDummyCwd");
       expect(src).toContain(".miroir-cursor-cwd");
-      expect(src).toMatch(/\btmpdir\s*\(/);
       expect(src).toMatch(/const cwd = createCursorDummyCwd/);
+      // #409: the scratch directory helper moved to agentBridge.ts.
+      expect(readRepoFile("packages/miroir-ai/src/runtime/agentBridge.ts")).toMatch(/\btmpdir\s*\(/);
       expect(src).not.toContain("getDefaultFilesystemFolder");
     });
 
@@ -95,21 +96,21 @@ if (runThis) {
       expect(electronBuilderPackagingText(pkg)).not.toMatch(/@cursor\/sdk/);
     });
 
-    it("assertCursorSdkPackaged is referenced from main.ts or ipcServerSetup.ts", () => {
+    it("assertAgentSdkPackaged (#409) is referenced from main.ts or ipcServerSetup.ts", () => {
       const ipcSrc = readRepoFile("packages/miroir-standalone-app-electron/src/ipcServerSetup.ts");
       const mainSrc = readRepoFile("packages/miroir-standalone-app-electron/src/main.ts");
-      expect(ipcSrc.includes("assertCursorSdkPackaged") || mainSrc.includes("assertCursorSdkPackaged")).toBe(
+      expect(ipcSrc.includes("assertAgentSdkPackaged") || mainSrc.includes("assertAgentSdkPackaged")).toBe(
         true,
       );
     });
 
-    it("assertCursorSdkPackaged throws when the SDK path is missing", async () => {
+    it("assertAgentSdkPackaged throws when the Cursor SDK path is missing", async () => {
       const helperHref = pathToFileURL(
-        join(REPO_ROOT, "packages/miroir-ai/src/runtime/assertCursorSdkPackaged.ts"),
+        join(REPO_ROOT, "packages/miroir-ai/src/runtime/assertAgentSdkPackaged.ts"),
       ).href;
-      const { assertCursorSdkPackaged } = await import(helperHref);
+      const { assertAgentSdkPackaged } = await import(helperHref);
       expect(() =>
-        assertCursorSdkPackaged({
+        assertAgentSdkPackaged("cursor", {
           resolveSdkPath: () => "/missing/@cursor/sdk",
           existsSync: () => false,
         }),

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "description": "Repo-wide non-regression steps. Tiers: unit \u2282 default \u2282 full. Integration steps use {profile} (default: defaultProfile). Override: npm run nonreg -- --profile emulatedServer-filesystem",
+  "description": "Repo-wide non-regression steps. Tiers: unit \u2282 default \u2282 full. Integration steps use {profile} (default: defaultProfile). Choose the store with --storage sql|filesystem|indexedDb|mongodb (profile emulatedServer-<storage>) or a profile with --profile. Steps with requires=storage need the store of the run (#390).",
   "defaultProfile": "emulatedServer-sql",
   "profiles": [
     "emulatedServer-sql",
@@ -686,7 +686,7 @@
       "scopes": ["smoke", "core"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 tr.core",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "npm",
         "run",
@@ -707,7 +707,7 @@
       "scopes": ["smoke", "runners"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 runner.lendDocument",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "npm",
         "run",
@@ -747,7 +747,7 @@
       "scopes": ["runners"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 runner.returnDocument",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "npm",
         "run",
@@ -787,7 +787,7 @@
       "scopes": ["runners"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 runner.mcp.getInstances",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "npm",
         "run",
@@ -827,7 +827,7 @@
       "scopes": ["runners"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 runner.deployApplication",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "npm",
         "run",
@@ -867,7 +867,7 @@
       "scopes": ["runners"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 runner.mcp.lendDocument",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "npm",
         "run",
@@ -907,7 +907,7 @@
       "scopes": ["smoke", "actions"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 action.domainController.dataCrud (actionTest)",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "npm",
         "run",
@@ -947,7 +947,7 @@
       "scopes": ["actions"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 action.domainController.modelCrud (actionTest)",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "npm",
         "run",
@@ -987,7 +987,7 @@
       "scopes": ["actions"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 action.domainController.dataCrud.compositePk (actionTest)",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "npm",
         "run",
@@ -1027,7 +1027,7 @@
       "scopes": ["actions"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 action.domainController.modelCrud.nonUuidPk (actionTest)",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "npm",
         "run",
@@ -1067,7 +1067,7 @@
       "scopes": ["actions"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 action.domainController.dataCrud.nonUuidPk (actionTest)",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "npm",
         "run",
@@ -1107,7 +1107,7 @@
       "scopes": ["actions"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 action.domainController.dataCrud.noParentUuid (actionTest)",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "npm",
         "run",
@@ -1147,7 +1147,7 @@
       "scopes": ["actions"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 action.domainController.modelUndoRedo (actionTest)",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "npm",
         "run",
@@ -1187,7 +1187,7 @@
       "scopes": ["actions"],
       "tier": "default",
       "title": "MiroirTest integ \u2014 action.domainController.freezeApplicationVersion (actionTest)",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "npm",
         "run",
@@ -1248,7 +1248,7 @@
       "scopes": ["actions", "runners"],
       "tier": "default",
       "title": "MiroirTest integ — runner.dropEntity (skipReset, no playfield)",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "npm",
         "run",
@@ -1288,7 +1288,7 @@
       "scopes": ["actions"],
       "tier": "default",
       "title": "MiroirTest integ — action.scenario.evolutionTrace (actionTest)",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "bash",
         "-c",
@@ -1300,7 +1300,7 @@
       "scopes": ["smoke", "ui"],
       "tier": "default",
       "title": "MiroirTest integ — report.bookDetails (Report mounted at its route, edit saved)",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "npm",
         "run",
@@ -1340,7 +1340,7 @@
       "scopes": ["external"],
       "tier": "default",
       "title": "MiroirTest integ — report.connectExternalServiceWizard (multistep wizard, fake HTTP, Finish persisted)",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "npm",
         "run",
@@ -1380,7 +1380,7 @@
       "scopes": ["actions"],
       "tier": "default",
       "title": "App-stack \u2014 PersistenceStoreController.integ",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "npm",
         "run",
@@ -1411,11 +1411,46 @@
       }
     },
     {
+      "id": "integ-175-pk-less-external",
+      "scopes": ["actions", "localcache"],
+      "tier": "default",
+      "title": "App-stack \u2014 External SQL Entities without primary key (refresh, queries, read-only)",
+      "requires": "storage",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "PkLessExternalEntity.integ"
+      ],
+      "shared": {
+        "group": "standalone-app-profile",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--no-bail"
+        ],
+        "files": [
+          "PkLessExternalEntity.integ"
+        ]
+      }
+    },
+    {
       "id": "appstack-ExtractorPersistenceStoreRunner.integ",
       "scopes": ["core"],
       "tier": "default",
       "title": "App-stack \u2014 ExtractorPersistenceStoreRunner.integ",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "npm",
         "run",
@@ -1450,7 +1485,7 @@
       "scopes": ["core"],
       "tier": "default",
       "title": "App-stack \u2014 ExtractorTemplatePersistenceStoreRunner.integ",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "npm",
         "run",
@@ -1485,7 +1520,7 @@
       "scopes": ["ui"],
       "tier": "default",
       "title": "UI launcher Node proof \u2014 runner + transformer leaves",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "npm",
         "run",
@@ -1503,7 +1538,7 @@
       "scopes": ["ui"],
       "tier": "default",
       "title": "UI details integ launch (B6-d1)",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "npm",
         "run",
@@ -1521,7 +1556,7 @@
       "scopes": ["ui"],
       "tier": "default",
       "title": "UI list integ batch (T5)",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "npm",
         "run",
@@ -1607,6 +1642,80 @@
           "listDisplayByTransformer.unit"
         ]
       }
+    },
+    {
+      "id": "integ-transformerChoiceByInputType",
+      "scopes": ["ui"],
+      "tier": "unit",
+      "title": "#383 list transformer panel offers transformers by input type",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "transformerChoiceByInputType.integ"
+      ],
+      "shared": {
+        "group": "standalone-app-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--no-bail"
+        ],
+        "files": [
+          "transformerChoiceByInputType.integ"
+        ]
+      }
+    },
+    {
+      "id": "integ-transformerEditorChoiceByInputType",
+      "scopes": ["ui"],
+      "tier": "unit",
+      "title": "#383 TransformerEditor restriction switch",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "transformerEditorChoiceByInputType.integ"
+      ],
+      "shared": {
+        "group": "standalone-app-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--no-bail"
+        ],
+        "files": [
+          "transformerEditorChoiceByInputType.integ"
+        ]
+      }
+    },
+    {
+      "id": "unit-ui-transformerEditor",
+      "scopes": ["ui"],
+      "tier": "unit",
+      "title": "#406 TransformerEditor component MiroirTests (ui.transformerEditor) and testMiroir routing of component suites",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testMiroir -w miroir-standalone-app -- --suites ui.transformerEditor && npm run testByFile -w miroir-standalone-app -- componentTestLauncher.unit"
+      ]
     },
     {
       "id": "integ-gridPagination",
@@ -1746,6 +1855,18 @@
         "bash",
         "-c",
         "npm run testByFile -w miroir-core -- 275-cursor-sdk-copilotkit-backend && npm run testByFile -w miroir-ai -- 275-cursor-sdk-copilotkit-backend && npm run testByFile -w miroir-standalone-app -- 4_view/issues/275-cursor-sdk-copilotkit-backend"
+      ]
+    },
+    {
+      "id": "unit-agent-backend",
+      "scopes": ["external", "tooling"],
+      "tier": "unit",
+      "title": "Agent backend (#409): pick, lazy agent SDKs and miroir-ai (core + ai + standalone + server + env unit)",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w miroir-core -- agentBackendCapabilities && npm run testByFile -w miroir-ai -- agentBackendRoute claudeAgent agentSdkModuleLoading assertAgentSdkPackaged && npm run testByFile -w miroir-standalone-app -- agentBackendPick && npm run testByFile -w miroir-server -- mountCopilotKitRoute && npm run testByFile -w miroir-env -- agentBackendAlias"
       ]
     },
     {
@@ -2050,7 +2171,7 @@
       "scopes": ["ui"],
       "tier": "default",
       "title": "Report tests — failed assertion, undeclared request, run from the Miroir Tests display (#330)",
-      "requires": "postgres",
+      "requires": "storage",
       "argv": [
         "bash",
         "-c",

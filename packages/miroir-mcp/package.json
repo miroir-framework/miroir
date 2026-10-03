@@ -44,7 +44,7 @@
     "miroir-example-library": "*",
     "miroir-app-miroir": "*",
     "uuid": "11.1.0",
-    "zod": "3.25.76"
+    "zod": "4.6.5"
   },
   "peerDependencies": {
     "miroir-store-filesystem": "*",
@@ -66,9 +66,9 @@
     "@types/express": "4.17.25",
     "@types/node": "26.6.2",
     "@types/uuid": "10.0.0",
-    "cross-env": "7.0.3",
+    "cross-env": "10.1.0",
     "miroir-env": "*",
     "tsup": "8.5.1",
-    "vitest": "5.0.1"
+    "vitest": "5.0.2"
   }
 }

@@ -10,12 +10,12 @@ function baseRequest(
   overrides: Partial<ReportQueryLoadRequest> = {},
 ): ReportQueryLoadRequest {
   return {
-    application: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-    deploymentUuid: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
-    reportUuid: "cccccccc-cccc-cccc-cccc-cccccccccccc",
+    application: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+    deploymentUuid: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+    reportUuid: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
     resolvedQuery: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
-      application: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      application: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
       extractors: {
         blobs: {
           extractorOrCombinerType: "extractorInstancesByEntity",
@@ -51,7 +51,7 @@ describe("fingerprintReportQueryLoadRequest (2.1)", () => {
         extractors: {
           other: {
             extractorOrCombinerType: "extractorInstancesByEntity",
-            parentUuid: "11111111-1111-1111-1111-111111111111",
+            parentUuid: "11111111-1111-4111-8111-111111111111",
           },
         },
       },
@@ -65,12 +65,12 @@ describe("fingerprintReportQueryLoadRequest (2.1)", () => {
     const a = baseRequest();
     expect(fingerprintReportQueryLoadRequest(a)).not.toBe(
       fingerprintReportQueryLoadRequest(
-        baseRequest({ reportUuid: "dddddddd-dddd-dddd-dddd-dddddddddddd" }),
+        baseRequest({ reportUuid: "dddddddd-dddd-4ddd-8ddd-dddddddddddd" }),
       ),
     );
     expect(fingerprintReportQueryLoadRequest(a)).not.toBe(
       fingerprintReportQueryLoadRequest(
-        baseRequest({ deploymentUuid: "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee" }),
+        baseRequest({ deploymentUuid: "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee" }),
       ),
     );
   });

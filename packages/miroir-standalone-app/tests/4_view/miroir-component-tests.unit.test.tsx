@@ -17,9 +17,13 @@
  * is set to `false` in a `beforeAll`: RTL's own `beforeAll` (registered by `tests/setup.ts`) sets it
  * to `true` after module scope.
  *
+ * With `MIROIR_TEST_SUITES` (comma-separated instance names, set by `testMiroir --suites`, #406),
+ * it runs only these instances; the entry checks still count every instance of the folder.
+ *
  * Run:
  * ```bash
  * npm run testByFile -w miroir-standalone-app -- miroir-component-tests
+ * npm run testMiroir -w miroir-standalone-app -- --suites ui.transformerEditor
  * npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "MlArrayEditor"
  * MIROIR_COMPONENT_PERF=1 npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "MlEditorRenderPerformance"
  * ```
@@ -36,6 +40,7 @@ import {
   MiroirActivityTracker,
   MiroirEventService,
   runMiroirTests,
+  splitSuiteKeys,
   type MiroirTestSuite,
 } from "miroir-core";
 
@@ -51,14 +56,15 @@ const MIROIR_TEST_DATA_FOLDER = join(
  * Expected content of the folder: 7 per-editor instances, 68 leaves (#292 Slice 0 baseline), plus
  * the test pattern instance `ui.mlElementEditor.allTypesPattern` (#303: 1 display leaf, Slice 1, and 3
  * interaction leaves, Slice 2), plus the render-performance instance
- * `ui.mlElementEditor.renderPerformance` (#303 Slice 5: 15 leaves, `runOnDemand`).
+ * `ui.mlElementEditor.renderPerformance` (#303 Slice 5: 15 leaves, `runOnDemand`), plus the
+ * TransformerEditor instance `ui.transformerEditor` (#406: 8 leaves).
  *
  * `EXPECTED_LEAF_COUNT` counts every leaf of the folder, on-demand ones included (it checks the
  * folder content, not what the run executes); `EXPECTED_ON_DEMAND_LEAF_COUNT` is the part under a
  * `runOnDemand` suite, skipped unless `MIROIR_COMPONENT_PERF=1`.
  */
-const EXPECTED_INSTANCE_COUNT = 9;
-const EXPECTED_LEAF_COUNT = 87;
+const EXPECTED_INSTANCE_COUNT = 10;
+const EXPECTED_LEAF_COUNT = 95;
 const EXPECTED_ON_DEMAND_LEAF_COUNT = 15;
 
 /** On-demand suites (`runOnDemand: true`) run only with this environment variable set to `1`. */
@@ -90,6 +96,20 @@ function loadComponentTestSuiteInstances(): ComponentTestSuiteInstance[] {
 }
 
 const componentTestSuiteInstances = loadComponentTestSuiteInstances();
+
+/** The instances named by `MIROIR_TEST_SUITES` (#406), every instance without it. */
+const selectedSuiteNames = splitSuiteKeys(process.env.MIROIR_TEST_SUITES);
+const selectedInstances =
+  selectedSuiteNames.length > 0
+    ? componentTestSuiteInstances.filter((instance) => selectedSuiteNames.includes(instance.name))
+    : componentTestSuiteInstances;
+if (selectedSuiteNames.length > 0 && selectedInstances.length !== selectedSuiteNames.length) {
+  throw new Error(
+    `MIROIR_TEST_SUITES names suites that are not component test instances: ${selectedSuiteNames
+      .filter((name) => !componentTestSuiteInstances.some((instance) => instance.name === name))
+      .join(", ")}`,
+  );
+}
 
 const miroirActivityTracker = new MiroirActivityTracker();
 new MiroirEventService(miroirActivityTracker);
@@ -148,7 +168,7 @@ describe("entry checks", () => {
 });
 
 // ################################################################################################
-for (const instance of componentTestSuiteInstances) {
+for (const instance of selectedInstances) {
   for (const child of instance.definition.miroirTests) {
     if (child.miroirTestType !== "miroirTestSuite" && child.miroirTestType !== "reactComponentTestSuite") {
       throw new Error(

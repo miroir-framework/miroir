@@ -17,7 +17,11 @@ export interface LocalCacheSegmentHeader {
 export interface LocalCacheLoadSegmentHint {
   cacheSegment?: CacheSegmentKind | null;
   attributes?: string[] | null;
+  /** #381: "merge" upserts a subset of rows; default "replace" sets the whole segment. */
+  cacheLoadMode?: CacheLoadMode | null;
 }
+
+export type CacheLoadMode = "replace" | "merge";
 
 /** Suffix appended to the cache index key for the partial segment. */
 export const LOCAL_CACHE_PARTIAL_SEGMENT_SUFFIX = "__partial";
@@ -88,6 +92,31 @@ export function buildLocalCacheSegmentHeader(
     };
   }
   return { kind: "full", freshness };
+}
+
+/**
+ * #381 — how a load writes one zone's segment, given that zone's current header.
+ * - "replace" (default): the rows are the whole segment, which becomes fresh.
+ * - "merge": the rows are a subset (e.g. one row fetched by primary key). They are
+ *   upserted into a segment of the same shape, keeping its header. Otherwise they
+ *   start a new segment marked stale: it holds some rows, not all of them.
+ */
+export function resolveLoadSegmentWrite(
+  hint: LocalCacheLoadSegmentHint,
+  existingHeader: LocalCacheSegmentHeader | undefined | null
+): { kind: CacheSegmentKind; header: LocalCacheSegmentHeader; merge: boolean } {
+  const { kind, projection } = resolveLoadCacheSegment(hint);
+  if (hint.cacheLoadMode !== "merge") {
+    return { kind, header: buildLocalCacheSegmentHeader(kind, "fresh", projection), merge: false };
+  }
+  const sameShape =
+    !!existingHeader &&
+    existingHeader.kind === kind &&
+    (kind === "full" || projectionsEqual(existingHeader.projection, projection));
+  if (sameShape) {
+    return { kind, header: existingHeader, merge: true };
+  }
+  return { kind, header: buildLocalCacheSegmentHeader(kind, "stale", projection), merge: false };
 }
 
 /** True when index key addresses the partial segment. */

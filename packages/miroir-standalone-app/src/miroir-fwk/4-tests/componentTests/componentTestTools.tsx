@@ -461,6 +461,8 @@ export interface BuildComponentTestWrapperOptions {
   applicationDeploymentMap: ApplicationDeploymentMap;
   /** Opt-in: real handleCompositeActionTemplate writes the wrapper localCache (issue #274). */
   wireLocalCacheCompositeAction?: boolean;
+  /** See `MiroirTestProvidersProps.isolateToolsPageState`. Off by default. */
+  isolateToolsPageState?: boolean;
 }
 
 export interface ComponentTestWrapper {
@@ -484,6 +486,12 @@ export interface MiroirTestProvidersProps {
   /** Render insight tracking (#303), see `BuildComponentTestWrapperOptions.trackRenders`. */
   trackRenders?: boolean;
   /**
+   * The context starts from an empty `toolsPageState` and does not write it to `sessionStorage`
+   * (#406): the TransformerEditor of a case does not see the state of the previous case, nor
+   * that of the app session.
+   */
+  isolateToolsPageState?: boolean;
+  /**
    * Gives the context the reports and entities of Admin, Miroir and `testingApplication`, read
    * from the local cache, as RootComponent does in the app: the pages mounted without
    * RootComponent need them (the report test runner, #330).
@@ -493,6 +501,7 @@ export interface MiroirTestProvidersProps {
 }
 
 const testTheme = createTheme(testThemeParams);
+const emptyToolsPageState = {};
 const noOutlineAction = () => {};
 
 /**
@@ -530,6 +539,7 @@ function MiroirTestContext(
       testingDeploymentUuid={props.testingDeploymentUuid}
       testingApplicationDeploymentMap={props.testingApplicationDeploymentMap}
       initialShowPerformanceDisplay={props.trackRenders ?? false}
+      initialToolsPageState={props.isolateToolsPageState ? emptyToolsPageState : undefined}
       deploymentUuidToReportsEntitiesMapping={props.deploymentUuidToReportsEntitiesMapping}
     >
       <DocumentOutlineContextProvider
@@ -857,6 +867,7 @@ export function buildComponentTestWrapper(
         }
         testingDeploymentUuid={deployment_Library_DO_NO_USE.uuid}
         trackRenders={trackRenders}
+        isolateToolsPageState={options.isolateToolsPageState}
       >
         {options.wireLocalCacheCompositeAction ? (
           <MemoryRouter>{props.children}</MemoryRouter>

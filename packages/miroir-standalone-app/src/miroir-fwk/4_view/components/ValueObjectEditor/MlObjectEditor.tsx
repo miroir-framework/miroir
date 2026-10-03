@@ -67,7 +67,7 @@ import {
 } from "../Themes/index";
 import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, MlElementEditor } from "./MlElementEditor";
 import { getFoldedDisplayValue, useMlElementEditorHooks } from "./MlElementEditorHooks";
-import { MlObjectEditorProps } from "./MlElementEditorInterface";
+import { TransformerTypeRestriction, MlObjectEditorProps } from "./MlElementEditorInterface";
 import { emptyContainerMarker, isPlainObjectValue } from "./renderedValueMarkers";
 import {
   findPathAnnotation,
@@ -200,6 +200,7 @@ const ProgressiveAttribute: FC<{
   showMlSchemaTypes?: boolean;
   mlSchemaTypeAnnotations?: { path: (string | number)[]; label: string }[];
   environmentAnnotations?: { path: (string | number)[]; label: string }[];
+  transformerTypeRestrictions?: TransformerTypeRestriction[];
 }> = ({
   valueObjectEditMode,
   attribute,
@@ -244,6 +245,7 @@ const ProgressiveAttribute: FC<{
   showMlSchemaTypes,
   mlSchemaTypeAnnotations,
   environmentAnnotations,
+  transformerTypeRestrictions,
 }) => {
   // Viewport-gated: cheap placeholder until this attribute intersects the
   // scrollport. Unfolding a huge parent then only mounts editors that are
@@ -413,6 +415,7 @@ const ProgressiveAttribute: FC<{
             showMlSchemaTypes={showMlSchemaTypes}
             mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
             environmentAnnotations={environmentAnnotations}
+            transformerTypeRestrictions={transformerTypeRestrictions}
             deleteButtonElement={
               !readOnly && !hideOptionalButton ? (
                 <>
@@ -590,6 +593,7 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
     showMlSchemaTypes,
     mlSchemaTypeAnnotations,
     environmentAnnotations,
+    transformerTypeRestrictions,
   } = props;
 
   // Memoize the onChangeVector callback for this field to avoid repeated lookups
@@ -1300,6 +1304,7 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
             showMlSchemaTypes={showMlSchemaTypes}
             mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
             environmentAnnotations={environmentAnnotations}
+            transformerTypeRestrictions={transformerTypeRestrictions}
               />
             ))}
       </div>
@@ -1335,6 +1340,7 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
     showMlSchemaTypes,
     mlSchemaTypeAnnotations,
     environmentAnnotations,
+    transformerTypeRestrictions,
   ]);
 
   // Records resolve to objects: the declared type decides.

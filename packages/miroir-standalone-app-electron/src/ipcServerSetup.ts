@@ -112,9 +112,9 @@ export async function setupIpcServer(): Promise<void> {
   domainController.setProcessCapabilities(capabilities);
 
   // #370: miroir-ai and miroir-mcp load only when their feature is on.
-  if (app.isPackaged && capabilities.cursor) {
-    const { assertCursorSdkPackaged } = await import("miroir-ai");
-    assertCursorSdkPackaged();
+  if (app.isPackaged && capabilities.agentBackend !== "none") {
+    const { assertAgentSdkPackaged } = await import("miroir-ai");
+    assertAgentSdkPackaged(capabilities.agentBackend);
   }
 
   if (shouldListenLoopbackHttp({ ai: capabilities.ai, mcp: capabilities.mcp })) {
@@ -151,7 +151,11 @@ export async function setupIpcServer(): Promise<void> {
       const mcpHttpUrl = `http://127.0.0.1:${Number(listenUrl.port) || 3080}/mcp`;
       loopbackApp.use(
         "/api/copilotkit",
-        createCopilotKitRouter(domainController, defaultSelfApplicationDeploymentMap, { capabilities, mcpHttpUrl }),
+        createCopilotKitRouter(domainController, defaultSelfApplicationDeploymentMap, {
+          capabilities,
+          mcpHttpUrl,
+          agentModel: electronServerConfig.features?.agentModel,
+        }),
       );
     }
 

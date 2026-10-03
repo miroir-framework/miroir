@@ -619,6 +619,18 @@ describe("ListTransformerPanel — list section integration", () => {
     );
   });
 
+  it("in #249 mode, marks a nested mapList.elementTransformer not accepting its element (#383)", () => {
+    renderBookListSection();
+    fireEvent.click(getTransformerToggle());
+    fireEvent.click(screen.getByTestId("set-mapList-mustache-transformer"));
+
+    const editor = screen.getByTestId("list-transformer-editor");
+    expect(editor.getAttribute("data-inadequate-paths") ?? "").toContain("elementTransformer");
+    expect(editor.getAttribute("title") ?? "").toContain(
+      "elementTransformer (mustacheStringTemplate) input: given",
+    );
+  });
+
   it("lists getFromContext and getFromParameters names per node", () => {
     renderBookListSection({ pageSize: 10 });
     fireEvent.click(getTransformerToggle());

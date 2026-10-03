@@ -241,7 +241,7 @@ export const coreTransformerForBuildPlusRuntime: z.ZodType<CoreTransformerForBui
     // obj => !('transformerType' in obj || 'interpolation' in obj),
     obj => !('transformerType' in obj),
     {
-      message: "Object must not contain 'transformerType'",
+      error: "Object must not contain 'transformerType'",
       path: ['transformerType']
     }
   );

@@ -12,6 +12,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   resolvePathOnObject,
+  transformerTypesAcceptingInput,
   type ApplicationDeploymentMap,
   type Domain2QueryReturnType,
   type DomainElementSuccess,
@@ -47,6 +48,7 @@ import {
 } from "../Themes/index";
 import { MlLiteralEditorProps } from "./MlElementEditorInterface";
 import { isPrimaryUnionDiscriminatorField } from "./unionDiscriminatorField.js";
+import { findPathAnnotation } from "../Reports/TransformerTypeAnnotation.js";
 import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlLiteralEditor");
@@ -238,21 +240,13 @@ const handleDiscriminatorChange = (
     );
   }
 
-
-  const newMlSchemaWithOptional = parentKeyMap.rawSchema.optional
-    ? {
-        ...newMlSchema,
-        optional: true,
-      }
-    : newMlSchema;
-
   log.info(`handleDiscriminatorChange (${discriminatorType})`, "newMlSchema", JSON.stringify(newMlSchema, null, 2));
   
   const defaultValue = modelEnvironment
     ? {
       ...getDefaultValueForMlSchemaWithResolutionNonHook(
         "build",
-        newMlSchemaWithOptional,
+        newMlSchema, // a chosen branch is filled, even under an optional attribute (#406)
         formik.values[reportSectionPathAsString],
         rootLessListKey,
         undefined,
@@ -334,6 +328,7 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
     readOnly,
     hasPathError,
     onChangeVector,
+    transformerTypeRestrictions,
   }
 ) => {
   MlLiteralEditorRenderCount++;
@@ -510,16 +505,34 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
   const currentDiscriminatorValues = parentKeyMap?.discriminatorValues && discriminatorIndex !== -1
     ? parentKeyMap.discriminatorValues[discriminatorIndex]
     : [];
+  // #383: a transformerType select is restricted to the types accepting its node's input.
+  const transformerTypeRestriction =
+    isDiscriminator && name === "transformerType"
+      ? findPathAnnotation(transformerTypeRestrictions, rootLessListKeyArray.slice(0, -1))
+      : undefined;
+  const acceptedDiscriminatorValues = useMemo(
+    () =>
+      transformerTypeRestriction && currentDiscriminatorValues
+        ? transformerTypesAcceptingInput(transformerTypeRestriction.input, {
+            transformerTypes: currentDiscriminatorValues,
+            currentType: typeof currentValue === "string" ? currentValue : undefined,
+          })
+        : undefined,
+    [transformerTypeRestriction, currentDiscriminatorValues, currentValue],
+  );
   // Memoize discriminator options for the filterable select
   const discriminatorSelectOptions = useMemo(() => {
     if (isDiscriminator && currentDiscriminatorValues) {
-      return currentDiscriminatorValues.sort().map((v) => ({
-        value: v,
-        label: v
-      }));
+      return [...(acceptedDiscriminatorValues?.offered ?? currentDiscriminatorValues)]
+        .sort()
+        .map((v) => ({
+          value: v,
+          label: v,
+        }));
     }
     return [];
-  }, [isDiscriminator, currentDiscriminatorValues]);
+  }, [isDiscriminator, currentDiscriminatorValues, acceptedDiscriminatorValues]);
+  const hiddenTransformerTypeCount = acceptedDiscriminatorValues?.hidden.length ?? 0;
   // log.info(
   //   "MlLiteralEditor render",
   //   MlLiteralEditorRenderCount,
@@ -558,6 +571,16 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
             <div style={{ fontSize: "1.2em", color: "#87CEEB" }} title="Literal discriminator">
               ★
             </div>
+            {hiddenTransformerTypeCount > 0 && transformerTypeRestriction && (
+              <span
+                data-testid="transformer-type-restriction-hint"
+                data-restriction-path={transformerTypeRestriction.path.join(".")}
+                style={{ fontSize: "0.85em", opacity: 0.7, whiteSpace: "nowrap" }}
+              >
+                {hiddenTransformerTypeCount} transformers hidden for input{" "}
+                {transformerTypeRestriction.inputLabel}
+              </span>
+            )}
           </div>
         ) : (
           <>
