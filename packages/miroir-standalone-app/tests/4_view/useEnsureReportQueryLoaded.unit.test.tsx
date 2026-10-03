@@ -12,12 +12,12 @@ function baseRequest(
   overrides: Partial<ReportQueryLoadRequest> = {},
 ): ReportQueryLoadRequest {
   return {
-    application: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-    deploymentUuid: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
-    reportUuid: "cccccccc-cccc-cccc-cccc-cccccccccccc",
+    application: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+    deploymentUuid: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+    reportUuid: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
     resolvedQuery: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
-      application: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      application: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
       extractors: {
         blobs: {
           extractorOrCombinerType: "extractorInstancesByEntity",

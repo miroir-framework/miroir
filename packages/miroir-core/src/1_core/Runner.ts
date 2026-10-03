@@ -129,7 +129,7 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
                   : {}),
               },
               applicationModelBranch: {
-                uuid: "00000000-0000-0000-0000-000000000001",
+                uuid: "00000000-0000-4000-8000-000000000001",
                 parentName: "ApplicationModelBranch",
                 parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
                 conceptLevel: "Model",
@@ -139,7 +139,7 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
                 selfApplication: testApplicationUuid,
               } as ApplicationModelBranch,
               applicationVersion: {
-                uuid: "00000000-0000-0000-0000-000000000001",
+                uuid: "00000000-0000-4000-8000-000000000001",
                 parentName: "ApplicationVersion",
                 parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
               } as ApplicationVersion,

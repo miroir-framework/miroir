@@ -23,8 +23,8 @@ const ENTITY_DEF_PARENT_UUID = "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd";
 const REPORT_PARENT_UUID = "952d2c65-4da2-45c2-9394-a0920ceedfb6";
 const TRANSFORMER_PARENT_UUID = "54a16d69-c1f0-4dd7-aba4-a2cda883586c";
 
-const TEST_DEPLOYMENT_UUID = "aaaaaaaa-0000-0000-0000-000000000001";
-const TEST_ENTITY_UUID = "bbbbbbbb-0000-0000-0000-000000000002";
+const TEST_DEPLOYMENT_UUID = "aaaaaaaa-0000-4000-8000-000000000001";
+const TEST_ENTITY_UUID = "bbbbbbbb-0000-4000-8000-000000000002";
 
 
 // const miroirCopilotKitActions = createMiroirCopilotKitActions(domainController, applicationDeploymentMap)

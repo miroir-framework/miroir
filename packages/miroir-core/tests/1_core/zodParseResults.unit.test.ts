@@ -1,6 +1,6 @@
 /**
- * #375 Slice 0: parse results of the real deployment assets, and the deepest-issue report of a few invalid ones,
- * locked before Miroir moves to zod 4. Paths are compared, not issue codes or messages, which zod 4 renames.
+ * Parse results of the real deployment assets, and the deepest-issue report of a few invalid ones. Written before the
+ * zod 4 migration (#375): paths are compared, not issue codes or messages, which change between zod versions.
  */
 import { describe, expect, it } from "vitest";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
@@ -15,10 +15,10 @@ import {
   report,
   transformerDefinition,
   type ZodParseError,
-} from "../../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { zodErrorDeepestIssueLeaves } from "../../../../src/1_core/mls/zodParseErrorHandler";
+} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { zodErrorDeepestIssueLeaves } from "../../src/1_core/mls/zodParseErrorHandler";
 
-const packagesDir = join(dirname(fileURLToPath(import.meta.url)), "../../../../..");
+const packagesDir = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 
 /** The JSON instances of an Entity, in every deployment package. */
 function assetInstances(entityUuid: string): { file: string; value: any }[] {
@@ -58,7 +58,7 @@ function deepestPaths(schema: ZodTypeAny, value: unknown): string[] {
   return [...new Set(paths)].sort();
 }
 
-describe("zodParseResults.375", () => {
+describe("zodParseResults", () => {
   describe("deployment assets parse with the generated schemas", () => {
     it.each(concepts)("$name instances", ({ name, entityUuid, schema }) => {
       const instances = assetInstances(entityUuid);

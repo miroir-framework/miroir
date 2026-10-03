@@ -16,10 +16,10 @@ import {
   setLocalCacheSegmentFreshness,
 } from "../src/index.js";
 
-const testApplicationUuid = "11111111-1111-1111-1111-111111111111";
-const testDeploymentUuid = "22222222-2222-2222-2222-222222222222";
-const testEntityUuid = "33333333-3333-3333-3333-333333333333";
-const testInstanceUuid = "44444444-4444-4444-4444-444444444444";
+const testApplicationUuid = "11111111-1111-4111-8111-111111111111";
+const testDeploymentUuid = "22222222-2222-4222-8222-222222222222";
+const testEntityUuid = "33333333-3333-4333-8333-333333333333";
+const testInstanceUuid = "44444444-4444-4444-8444-444444444444";
 
 const applicationDeploymentMap: ApplicationDeploymentMap = {
   [testApplicationUuid]: testDeploymentUuid,
@@ -244,7 +244,7 @@ describe("LocalCache segments (#214 Phase 2) — Redux", () => {
           applicationSection: "data",
           objects: [
             {
-              uuid: "66666666-6666-6666-6666-666666666666",
+              uuid: "66666666-6666-4666-8666-666666666666",
               parentUuid: testEntityUuid,
               name: "nope",
               [MIROIR_CACHE_SEGMENT_MARKER]: "partial",
@@ -312,7 +312,7 @@ describe("LocalCache segments (#214 Phase 2) — Redux", () => {
           applicationSection: "data",
           objects: [
             {
-              uuid: "77777777-7777-7777-7777-777777777777",
+              uuid: "77777777-7777-4777-8777-777777777777",
               parentUuid: testEntityUuid,
               name: "new-full",
               body: "x",

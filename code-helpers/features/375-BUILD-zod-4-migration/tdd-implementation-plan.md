@@ -4,7 +4,7 @@
 > MiroirTests) while one repository moves to the zod 4 API. No mocks: tests parse the real deployment assets through
 > the real `mlToZod` / generated schemas. New tests only where zod 4 changes behaviour (parse errors, uuids, functions).
 
-**Resume note:** Slices 0-2 done. D1 changed during Slice 1 (see its Realization): jzod / jzod-ts 1.0.0 require zod ^4.5, so the
+**Resume note:** all slices done (PR #414). D1 changed during Slice 1 (see its Realization): jzod / jzod-ts 1.0.0 require zod ^4.5, so the
 `zod/v4` stage is dropped and Slice 3 bumps Miroir's zod package itself; Slice 6 keeps only the cleanup. A asked for the
 implementation on 2026-10-03 (#413 and #375 share one goal).
 
@@ -25,13 +25,13 @@ Out: TS generation without zod (D3-b), `z.strictObject` / zod-mini output (D4), 
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize parse results and errors | ✅ DONE | `zodParseResults.375.phase0.unit.test.ts` |
+| 0 | Characterize parse results and errors | ✅ DONE | `zodParseResults.unit.test.ts` (moved in Slice 6) |
 | 1 | jzod builds runtime schemas with zod 4 | ✅ DONE | jzod 1.0.0 (jzod#28), 52/52 tests |
 | 2 | jzod-ts generates TS through zod-to-ts 2 | ✅ DONE | jzod-ts 1.0.0 (jzod-ts#11), 10/10 tests |
 | 3 | Miroir builds on zod 4 and jzod 1.0 (tracer) | ✅ DONE | miroir-core unit tests + `modelValidation` |
 | 4 | Union parse errors keep their deepest-issue report | ✅ DONE | `zodParseError` tests on zod 4 issues |
 | 5 | Hand-written app schemas on the v4 API | ✅ DONE | `gridPagination` tests, standalone-app typecheck |
-| 6 | Cleanup and full non-regression | ⬜ pending | full PR gate + `nonreg:filesystem` |
+| 6 | Cleanup and full non-regression | ✅ DONE | full PR gate + `nonreg:filesystem` |
 
 ## Locked implementation defaults (proposed, from the analysis)
 
@@ -167,7 +167,8 @@ Slices 3 to 5 landed in one commit: the bump breaks union error reporting at onc
 - D5: zod 4's `.uuid()` checks RFC version bits. All deployment assets of Slice 0 still parse, but 7 miroir-core unit
   tests fail on hand-made fixture ids (`aaaaaaaa-aaaa-…`, `00000000-…-0001`); `Runner.ts`, two MiroirTest assets and
   33 test files use such ids. jzod 1.0.1 (miroir-framework/jzod#29) emits `z.guid()`, zod 3's loose check; the
-  choice (lenient vs strict) is A's. With jzod 1.0.1: 2248/2248 miroir-core unit tests.
+  choice (lenient vs strict) is A's. With jzod 1.0.1: 2248/2248 miroir-core unit tests. A chose strict (2026-10-03):
+  see Slice 6.
 
 ## Slice 4 — Union parse errors keep their deepest-issue report
 
@@ -219,7 +220,7 @@ rule (4 high advisories).
 
 ## Slice 6 — Package bump to zod 4
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** Goal 1: Miroir, jzod and jzod-ts install zod 4.
 
@@ -241,4 +242,14 @@ full non-regression.
 | Dependabot no longer blocked | ignore removed, next zod bump green |
 
 ### Realization
-_pending_
+
+- D5, strict: miroir-core keeps jzod 1.0.0 and `.uuid()`. A Python pass replaced the 28 distinct non-RFC ids of 37
+  tracked files under `packages/` (tests, `Runner.ts`, `IntegrationTestSession.ts`, two MiroirTest assets) by setting
+  the version nibble to 4 and the variant nibble to 8 (`aaaaaaaa-aaaa-aaaa-…` becomes `aaaaaaaa-aaaa-4aaa-8aaa-…`), the
+  form other tests already used. No two ids of one file map to the same value. jzod#29 (`z.guid()`) is not needed.
+- D6: the Dependabot ignore rule for zod majors is removed.
+- The Slice 0 test moved to `tests/1_core/zodParseResults.unit.test.ts` (kept whole: it is the parse-result lock for
+  future zod upgrades); `issues/375-zod-4/` is gone. No doc names a zod version.
+- Bundle guards: the zod 4 package raises the eager baselines (page +3.1%, Electron start +9.0%); openai 7 drops four
+  packages from the Electron allowlist.
+- Validation: miroir-core unit tests 2248/2248, `./build-all.sh`, `nonreg:filesystem --runner shared` 91/91.

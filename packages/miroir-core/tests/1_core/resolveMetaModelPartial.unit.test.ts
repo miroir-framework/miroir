@@ -11,7 +11,7 @@ import { noValue } from "../../src/1_core/Instance";
 describe("resolveMetaModelPartial", () => {
   it("defaults omitted array fields to empty arrays", () => {
     const partial: MetaModelPartial = {
-      applicationUuid: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      applicationUuid: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
       applicationName: "partial-app",
     };
 
@@ -34,7 +34,7 @@ describe("resolveMetaModelPartial", () => {
   });
 
   it("preserves provided entities and coerces explicit undefined arrays to []", () => {
-    const entity = { uuid: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", name: "Book" } as Entity;
+    const entity = { uuid: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", name: "Book" } as Entity;
     const resolved = resolveMetaModelPartial({
       entities: [entity],
       menus: undefined,
@@ -47,10 +47,10 @@ describe("resolveMetaModelPartial", () => {
 
 describe("buildResetAndinitializeDeploymentActionSequence with MetaModelPartial", () => {
   it("accepts entity-only partial without throwing on spread", () => {
-    const entityUuid = "cccccccc-cccc-cccc-cccc-cccccccccccc";
+    const entityUuid = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
     const actionSequence = buildResetAndinitializeDeploymentActionSequence(
-      "dddddddd-dddd-dddd-dddd-dddddddddddd",
-      "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+      "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
+      "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
       {
         dataStoreType: "app",
         selfApplication: { uuid: noValue.uuid!, name: "test" } as any,

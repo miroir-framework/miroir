@@ -10,8 +10,8 @@ import {
   type ReduxDeploymentsState,
 } from "../../src/index.js";
 
-const APP = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
-const DEPLOY = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb";
+const APP = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+const DEPLOY = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
 const ENT = "62209e4a-e429-4d7d-9b28-dcc1da6b51a2";
 const INST = "f7f2fe87-df2e-4467-9a6c-ed11f8b6c34c";
 
