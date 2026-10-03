@@ -190,22 +190,7 @@ export const ComponentTestSandbox: React.FC<{
     {/* #438: steps of a displayed run glow; every case container and the portal element are inside. */}
     <FeedbackGlowBoundary enabled>
       <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "4px", fontSize: "0.85em" }}>
-        <span style={{ fontWeight: "bold", color: "#4527a0" }}>Component test sandbox</span>
-        <span
-          data-testid="component-test-sandbox-test-name"
-          title={testName}
-          style={{
-            flexGrow: 1,
-            minWidth: 0,
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            fontFamily: "monospace",
-            color: "#555",
-          }}
-        >
-          {testName ?? ""}
-        </span>
+        <span style={{ fontWeight: "bold", color: "#4527a0", flexGrow: 1 }}>Component test sandbox</span>
         {/* mounted with the panel only: it reads ViewParams, which needs the app's providers */}
         {open && stepDelayMsRef && <ComponentTestStepDelaySlider stepDelayMsRef={stepDelayMsRef} />}
         <button
@@ -217,6 +202,24 @@ export const ComponentTestSandbox: React.FC<{
         >
           Close
         </button>
+      </div>
+      {/* the whole name, wrapped: its last segment, the case, matters most */}
+      <div
+        data-testid="component-test-sandbox-test-name"
+        style={{
+          display: testName ? "block" : "none",
+          marginBottom: "6px",
+          padding: "4px 8px",
+          borderLeft: "4px solid #7e57c2",
+          backgroundColor: "#ede7f6",
+          color: "#311b92",
+          fontFamily: "monospace",
+          fontSize: "1.05em",
+          fontWeight: "bold",
+          overflowWrap: "anywhere",
+        }}
+      >
+        {testName ?? ""}
       </div>
       {/* Never a render target: the runner adds one container per case and a portal element. */}
       <div data-testid="component-test-sandbox" ref={sandboxRef} />
