@@ -53,6 +53,13 @@ TEST_FILES_RE = re.compile(
     re.IGNORECASE,
 )
 
+# ANSI color codes for terminal output
+GREEN = "\033[92m"
+RED = "\033[91m"
+YELLOW = "\033[93m"
+GRAY = "\033[90m"
+RESET = "\033[0m"
+
 
 @dataclass
 class StepResult:
@@ -324,7 +331,7 @@ def run_step(
         result.duration_s = round(time.perf_counter() - started, 3)
         result.error_tail = str(exc)
         log_path.write_text(f"OSError: {exc}\nargv: {argv}\n", encoding="utf-8")
-        print(f"FAILED (spawn): {exc}", flush=True)
+        print(f"{RED}FAILED{RESET} (spawn): {exc}", flush=True)
         return result
 
     duration = time.perf_counter() - started
@@ -335,11 +342,11 @@ def run_step(
     result.vitest = parse_vitest_counts(combined)
     if proc.returncode == 0:
         result.status = "passed"
-        print(f"PASSED ({result.duration_s}s)", flush=True)
+        print(f"{GREEN}PASSED{RESET} ({result.duration_s}s)", flush=True)
     else:
         result.status = "failed"
         result.error_tail = tail_text(combined)
-        print(f"FAILED exit={proc.returncode} ({result.duration_s}s)", flush=True)
+        print(f"{RED}FAILED{RESET} exit={proc.returncode} ({result.duration_s}s)", flush=True)
     return result
 
 
@@ -629,10 +636,10 @@ def run_shared_group(
         )
         if passed:
             result.status = "passed"
-            print(f"PASSED [shared] {member['id']} ({result.duration_s}s)", flush=True)
+            print(f"{GREEN}PASSED{RESET} [shared] {member['id']} ({result.duration_s}s)", flush=True)
             results[member["id"]] = result
             continue
-        print(f"FAILED [shared] {member['id']}; re-running legacy", flush=True)
+        print(f"{RED}FAILED{RESET} [shared] {member['id']}; re-running legacy", flush=True)
         fallback = run_step(member, profile=profile, snap_dir=snap_dir, dry_run=False, timings=timings)
         fallback.extra = {
             "mode": "shared→legacy",
@@ -713,19 +720,27 @@ def print_synthetic_report(summary: dict[str, Any]) -> None:
     )
     print("-" * 72)
     for step in summary["steps"]:
-        mark = {
+        status = step["status"]
+        mark_text = {
             "passed": "PASS",
             "failed": "FAIL",
             "skipped": "SKIP",
             "not_run": "----",
-        }[step["status"]]
+        }[status]
+        color = {
+            "passed": GREEN,
+            "failed": RED,
+            "skipped": YELLOW,
+            "not_run": GRAY,
+        }[status]
+        mark = f"{color}[{mark_text}]{RESET}"
         extra = ""
-        if step["status"] == "skipped" and step.get("skip_reason"):
+        if status == "skipped" and step.get("skip_reason"):
             extra = f" ({step['skip_reason']})"
-        elif step["status"] == "failed":
+        elif status == "failed":
             extra = f" exit={step.get('exit_code')}"
         dur = f" {step['duration_s']}s" if step.get("duration_s") is not None else ""
-        print(f"  [{mark}] {step['id']}{dur}{extra}")
+        print(f"  {mark} {step['id']}{dur}{extra}")
     print("-" * 72)
     print(f"snapshot: {summary['snapshot_dir']}")
     print(f"summary:  {summary['summary_json']}")
