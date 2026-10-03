@@ -30,12 +30,11 @@ import {
   MiroirActivityTracker,
   MiroirEventService,
   miroirCoreStartup,
-  PersistenceStoreControllerManager,
   type DomainControllerInterface,
   type EntityInstance,
 } from "miroir-core";
 import { loadApplicationMiroirTestCatalog } from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
-import { LocalCache, LocalCacheProvider, MiroirContextReactProvider, PersistenceReduxSaga } from "miroir-react";
+import { LocalCache, LocalCacheProvider, MiroirContextReactProvider } from "miroir-react";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
@@ -118,15 +117,7 @@ function appDomainController(): DomainControllerInterface {
 
 /** The app's store, empty: the step-delay slider then shows 0 ms. */
 function appLocalCacheStore() {
-  const persistenceSaga = new PersistenceReduxSaga({
-    persistenceStoreAccessMode: "remote",
-    localPersistenceStoreControllerManager: new PersistenceStoreControllerManager(
-      ConfigurationService.configurationService.adminStoreFactoryRegister,
-      ConfigurationService.configurationService.StoreSectionFactoryRegister,
-    ),
-    remotePersistenceStoreRestClient: undefined as any,
-  });
-  return new LocalCache(persistenceSaga).getInnerStore();
+  return new LocalCache().getInnerStore();
 }
 
 const miroirActivityTracker = new MiroirActivityTracker();
