@@ -16,7 +16,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Related: #435 / PR #436 (sandbox header, needed by Slice 5)
 Working branch: `claude/438-feedback-glow`
 
-**Resume note:** plan written 2026-10-03, no slice started.
+**Resume note:** Slices 0-4 and 6 done 2026-10-03 (issue-scoped tests already moved to feature-named files, see 6.4); Slice 5 waits for PR #436.
 
 ---
 
@@ -35,13 +35,13 @@ This plan does **not** add environment or URL sources for the switch, enable the
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize: render-performance baseline, ui nonreg green | ⬜ | baseline table in Realization |
-| 1 | Tracer: a click in the Component Test Sandbox glows, then stops | ⬜ | `feedbackGlow.438.phase1` (miroir-react) + `componentTestSandboxGlow.438.phase1` (standalone-app) |
-| 2 | Nested boundaries: innermost decides, "off" attaches nothing | ⬜ | `feedbackGlow.438.phase2` |
-| 3 | Theme tokens and reduced motion | ⬜ | `feedbackGlowTheme.438.phase3` + `modelValidation` |
-| 4 | Global switch: AppBar toggle, persisted, off by default | ⬜ | `feedbackGlowGlobalSwitch.438.phase4` |
+| 0 | Characterize: render-performance baseline, ui nonreg green | ✅ | baseline table in Realization |
+| 1 | Tracer: a click in the Component Test Sandbox glows, then stops | ✅ | `feedbackGlow.438.phase1` (miroir-react) + `componentTestSandboxGlow.438.phase1` (standalone-app) |
+| 2 | Nested boundaries: innermost decides, "off" attaches nothing | ✅ | `feedbackGlow.438.phase2` |
+| 3 | Theme tokens and reduced motion | ✅ | `feedbackGlowTheme.438.phase3` + `modelValidation` |
+| 4 | Global switch: AppBar toggle, persisted, off by default | ✅ | `feedbackGlowGlobalSwitch.438.phase4` |
 | 5 | Sandbox header toggle (after #436) | ⬜ | `componentTestSandboxGlow.438.phase5` |
-| 6 | Cost measurement, nonreg step, docs, cleanup, AC | ⬜ | nonreg step `unit-438-feedback-glow` + perf table |
+| 6 | Cost measurement, nonreg step, docs, cleanup, AC | ✅ | nonreg step `unit-438-feedback-glow` + perf table |
 
 ---
 
@@ -103,7 +103,7 @@ Test files: `packages/miroir-react/tests/issues/438-feedback-glow/*.438.phaseN.u
 
 ## Slice 0 — Characterize the render-performance baseline
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -122,13 +122,17 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui
 
 ### Realization
 
-_(pending: baseline table, per case median render time)_
+Container first: node_modules predated the package split, so `npm ci` then `./build-all.sh devBuild`. Baseline: three runs of the on-demand suite (vitest, happy-dom) on the branch before any component used the glow; per-case test duration in ms, median of 3:
+
+Total of the 15 case medians: 4936 ms. This first baseline ran right after the build and came out faster than every later run, the "before" re-run included, so Slice 6 compares against a re-run made in the same machine state (code without any glow, through `git stash` and a miroir-react rebuild).
+
+`nonreg:filesystem --scope smoke,ui` (shared runner): 28/28 passed after Slice 4.
 
 ---
 
 ## Slice 1 — Tracer: a click in the Component Test Sandbox glows, then stops
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -181,13 +185,17 @@ Manual: run a component suite from the Miroir Tests page; each step's control gl
 
 ### Realization
 
-_(pending)_
+- `miroir-react/src/components/FeedbackGlow/feedbackGlow.ts` (`attachFeedbackGlow`, `injectFeedbackGlowStyles`, exported constants) and `FeedbackGlowBoundary.tsx` (callback ref, `display: contents` wrapper), exported from `index.ts`.
+- `ComponentTestSandbox` wraps its panel content in `FeedbackGlowBoundary enabled`.
+- Deviation: the miroir-react tests dispatch DOM events with `dispatchEvent` instead of `@testing-library` `fireEvent` (no new dependency in miroir-react); same untrusted events. The standalone-app tests use `fireEvent`.
+- Deviation: the class is removed by the global `setTimeout`, not `window.setTimeout` of the element's document, so vitest fake timers drive it.
+- `happy-dom` 20.14.5 added to miroir-react devDependencies; the lockfile change is that one line (a plain `npm install` rewrote unrelated esbuild flags, reverted).
 
 ---
 
 ## Slice 2 — Nested boundaries: innermost decides, "off" attaches nothing
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -220,13 +228,13 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-react/tsconfig.json
 
 ### Realization
 
-_(pending)_
+Written with Slice 1 (same files): the handler guard `target.closest("[data-miroir-feedback-glow]") === element` gives "innermost decides"; `enabled={false}` sets `off` and attaches nothing; the stylesheet is only injected by an enabled boundary. 6 tests.
 
 ---
 
 ## Slice 3 — Theme tokens and reduced motion
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -266,13 +274,17 @@ npm run nonreg:filesystem -- --runner shared
 
 ### Realization
 
-_(pending)_
+- Theme Entity `mlSchema` and its EntityVersion copy (`miroir_modelVersion/54b9c72f-…/31b88b03-….json`, identical to the Entity's schema before the change) get the optional `components.feedbackGlow { color, durationMs }`; `miroirFundamentalType.ts` / `miroirFundamentalMlSchema.ts` regenerated.
+- `resolveThemeColors` resolves the defaults. `miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/ThemeColorDefaults.ts` is an unused copy of the miroir-react file that typechecks against the same type; it got the same lines so the typecheck stays clean.
+- `FeedbackGlowBoundary` reads `useMiroirTheme().currentTheme.components.feedbackGlow`; props override it.
+- The dark theme instance keeps the default `#ffd54f`: yellow reads well on its dark background, so no instance changed.
+- `modelValidation` of miroir-app-miroir: 164 passed.
 
 ---
 
 ## Slice 4 — Global switch: AppBar toggle, persisted, off by default
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -311,7 +323,11 @@ Manual: toggle in the AppBar, tab through a form, reload.
 
 ### Realization
 
-_(pending)_
+- `MiroirContextReactProvider`: `feedbackGlowEnabled`, `setFeedbackGlowEnabled`, `initialFeedbackGlowEnabled`; exported `feedbackGlowStorageKey` (`miroirFeedbackGlow`).
+- `GlobalFeedbackGlow` (standalone-app `Page/GlobalFeedbackGlow.tsx`) renders `FeedbackGlowBoundary target="document"`; `RootComponent` mounts it inside `MiroirThemeProvider`.
+- `FeedbackGlowAppBarButton` exported from `AppBar.tsx`, placed before the Debug Info toggle.
+- `componentTestTools` passes `initialFeedbackGlowEnabled={false}` to the case providers (D10: they never read the stored switch).
+- miroir-standalone-app `tsc`: 32 errors, none in touched files (33 on the stashed tree).
 
 ---
 
@@ -355,7 +371,7 @@ _(pending)_
 
 ## Slice 6 — Cost measurement, nonreg step, docs, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### 6.1 Cost (AC9)
 
@@ -409,4 +425,31 @@ npm run nonreg:filesystem -- --runner shared
 
 ### Realization
 
-_(pending)_
+- 6.1: see the cost tables below.
+- 6.2: nonreg step `unit-438-feedback-glow` (scope `ui`).
+- 6.3: new guide `docs/guides/advanced/interaction-glow.md`, listed in `docs/DOCUMENTATION-STRUCTURE.md`; sandbox sentence in `docs/reference/testing.md`.
+- 6.4: done before Slice 5, so Slice 5 adds its cases to `componentTestSandboxGlow.unit.test.tsx` directly. Files: `miroir-react/tests/feedbackGlow.unit.test.ts`, `feedbackGlowBoundary.unit.test.tsx`, `feedbackGlowTheme.unit.test.tsx`; `miroir-standalone-app/tests/4_view/componentTestSandboxGlow.unit.test.tsx`, `feedbackGlowGlobalSwitch.unit.test.tsx`. They were never committed under `issues/`, so no `git mv`.
+- Deviation for 6.1: the "on" measurement runs in vitest, not in the app: `MIROIR_FEEDBACK_GLOW=1` makes the vitest sandbox element an enabled boundary (`miroir-component-tests.unit.test.tsx`), the same setup as the app sandbox, and the run is repeatable.
+
+Cost, `ui.mlElementEditor.renderPerformance` under vitest, per-case test duration in ms, median of 3 runs each. "Glow on" sets `MIROIR_FEEDBACK_GLOW=1`; runs A were interleaved with the "on" runs, runs B ran alone afterwards:
+
+| Case | Before (no glow code) | Glow off, run A | Glow off, run B | Glow on |
+|---|---|---|---|---|
+| string | 296 | 320 | 331 | 284 |
+| number | 162 | 172 | 162 | 165 |
+| bigint | 155 | 170 | 160 | 158 |
+| boolean | 154 | 165 | 157 | 169 |
+| date | 162 | 161 | 155 | 146 |
+| uuid | 146 | 155 | 150 | 146 |
+| enum | 174 | 191 | 172 | 171 |
+| literal | 158 | 186 | 166 | 171 |
+| array | 284 | 290 | 304 | 274 |
+| tuple | 222 | 241 | 234 | 227 |
+| record | 334 | 350 | 366 | 336 |
+| object | 219 | 219 | 225 | 216 |
+| union | 176 | 195 | 184 | 185 |
+| any | 220 | 238 | 239 | 226 |
+| test pattern | 2597 | 2541 | 2516 | 2551 |
+| **total** | **5459** | **5594** | **5521** | **5425** |
+
+The totals stay within 3% of each other, and so do the two "off" series (5594 and 5521 ms) for identical code: that spread is noise. Glow on (5425 ms) is no slower than the code without glow (5459 ms).

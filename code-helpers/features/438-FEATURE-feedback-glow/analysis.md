@@ -7,7 +7,9 @@ Related: #435 (Component Test Sandbox header: running test name and step-delay s
 Related analyses: [`../286-FEATURE-react-component-miroir-tests/`](../286-FEATURE-react-component-miroir-tests/) · [`../303-FEATURE-test-pattern-and-render-performance/`](../303-FEATURE-test-pattern-and-render-performance/)
 Key sources: [`MiroirThemeContext.tsx`](../../../packages/miroir-react/src/contexts/MiroirThemeContext.tsx) · [`ThemeColorDefaults.ts`](../../../packages/miroir-react/src/components/Themes/ThemeColorDefaults.ts) · [`MiroirContextReactProvider.tsx`](../../../packages/miroir-react/src/contexts/MiroirContextReactProvider.tsx) · [`ComponentTestSandbox.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ComponentTestSandbox.tsx) · [`runReactComponentTest.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/runReactComponentTest.tsx) · [`AppBar.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/AppBar.tsx)
 
-**Status:** decisions confirmed in grilling round 1 (2026-10-03, project file `focus-glow/grilling-round-1.md`); refinements R1 and R2 (§3) to confirm. Implementation: see [`tdd-implementation-plan.md`](./tdd-implementation-plan.md).
+**Status:** decisions confirmed in grilling round 1 (2026-10-03, project file `focus-glow/grilling-round-1.md`); refinements R1, R2 and the callback-ref approach (no `useEffect`) confirmed by A on 2026-10-03. Implementation: see [`tdd-implementation-plan.md`](./tdd-implementation-plan.md).
+
+**Document history:** after implementation (2026-10-03), three details differ from the text below, which is kept as written: (1) the document-level boundary is `FeedbackGlowBoundary target="document"`, rendered by `GlobalFeedbackGlow` in `RootComponent`, not a `useDocumentFeedbackGlow` hook (D7, D8); (2) the component test case providers pass `initialFeedbackGlowEnabled={false}` rather than leaving it unset (D10); (3) the "on" cost is measured in vitest with `MIROIR_FEEDBACK_GLOW=1`, which enables a boundary on the vitest sandbox element, rather than in the app (D11). See the plan's Realization sections.
 
 ---
 
@@ -99,7 +101,7 @@ Key sources: [`MiroirThemeContext.tsx`](../../../packages/miroir-react/src/conte
 
 ### R1 — End of the glow: timer instead of `animationend`
 
-**Status:** Proposed, to confirm. **Serves:** G1, G3.
+**Status:** Accepted (A, 2026-10-03). **Serves:** G1, G3.
 
 | Option | Pros | Cons |
 |---|---|---|
@@ -108,7 +110,7 @@ Key sources: [`MiroirThemeContext.tsx`](../../../packages/miroir-react/src/conte
 
 ### R2 — Storage of the global switch
 
-**Status:** Proposed, to confirm (issue decision 8 left it open). **Serves:** G1.
+**Status:** Accepted (A, 2026-10-03; issue decision 8 left it open). **Serves:** G1.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
