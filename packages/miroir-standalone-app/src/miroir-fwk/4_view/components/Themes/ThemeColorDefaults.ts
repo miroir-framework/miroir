@@ -13,6 +13,7 @@
 // ################################################################################################
 
 import type { MiroirThemeFull } from 'miroir-core';
+import { defaultFeedbackGlow } from 'miroir-react';
 import { defaultMiroirTheme, MiroirTheme } from "./MiroirTheme.js";
 import { ResolvedTableTheme, TableTheme } from './TableTheme.js';
 
@@ -300,6 +301,11 @@ const colors: MiroirThemeFull['definition']['colors'] = {
         md: theme?.components?.icon?.size?.md ?? '24px',
         lg: theme?.components?.icon?.size?.lg ?? '32px',
       },
+    },
+
+    feedbackGlow: {
+      color: theme?.components?.feedbackGlow?.color ?? defaultFeedbackGlow.color,
+      durationMs: theme?.components?.feedbackGlow?.durationMs ?? defaultFeedbackGlow.durationMs,
     },
 
     // Not yet on StoredMiroirTheme schema — read optional overrides via cast until schema catches up.

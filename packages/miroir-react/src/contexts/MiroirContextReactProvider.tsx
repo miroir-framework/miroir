@@ -64,6 +64,9 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
 // TODO: remove formikPath_EntityInstanceSelectorPanel from this file, it belongs with EntityInstanceSelectorPanel
 export const formikPath_EntityInstanceSelectorPanel = "entityInstanceSelector";
 
+/** #438: `localStorage` key of the global feedback glow switch. */
+export const feedbackGlowStorageKey = "miroirFeedbackGlow";
+
 /**
  * Tree structure representing folded state where each node is either
  * a branch (object with more nodes) or a leaf with value "true"
@@ -213,6 +216,9 @@ export interface MiroirReactContext {
   setShowAiSidebar: (value: boolean | ((prev: boolean) => boolean)) => void;
   showCopilotDevConsole: boolean;
   setShowCopilotDevConsole: (value: boolean | ((prev: boolean) => boolean)) => void;
+  /** #438: the global feedback glow switch (off by default, kept in `localStorage`). */
+  feedbackGlowEnabled: boolean;
+  setFeedbackGlowEnabled: (value: boolean) => void;
   // ##################################################################################################
   // Snackbar functionality
   snackbarOpen: boolean;
@@ -263,6 +269,11 @@ export function MiroirContextReactProvider(props: {
    * tests (#406), so that each case starts from the same state and none leaks into the app session.
    */
   initialToolsPageState?: ToolsPageState;
+  /**
+   * Initial value of `feedbackGlowEnabled` (#438), replacing the `localStorage` value; its updates
+   * are then not written to `localStorage`. Used by tests, so that none leaks into the app.
+   */
+  initialFeedbackGlowEnabled?: boolean;
   /**
    * The reports and entities by deployment, computed by the host instead of set by RootComponent:
    * the report test runner mounts a page without RootComponent (#330). When given, it replaces
@@ -451,6 +462,14 @@ export function MiroirContextReactProvider(props: {
   const [showCopilotDevConsole, setShowCopilotDevConsole] = useState(() => {
     const saved = sessionStorage.getItem("showCopilotDevConsole");
     return saved ? JSON.parse(saved) : false;
+  });
+
+  // #438: kept in localStorage, not sessionStorage: an accessibility setting survives a restart.
+  const [feedbackGlowEnabled, setFeedbackGlowEnabledState] = useState<boolean>(() => {
+    if (props.initialFeedbackGlowEnabled !== undefined) {
+      return props.initialFeedbackGlowEnabled;
+    }
+    return localStorage.getItem(feedbackGlowStorageKey) === "true";
   });
 
   // Snackbar state
@@ -755,6 +774,13 @@ export function MiroirContextReactProvider(props: {
         setShowCopilotDevConsole(newValue);
         sessionStorage.setItem("showCopilotDevConsole", JSON.stringify(newValue));
       },
+      feedbackGlowEnabled,
+      setFeedbackGlowEnabled: (value: boolean) => {
+        setFeedbackGlowEnabledState(value);
+        if (props.initialFeedbackGlowEnabled === undefined) {
+          localStorage.setItem(feedbackGlowStorageKey, String(value));
+        }
+      },
       // // ###################################################################################################
       // // Outline for Instance Editor
       setFoldedObjectAttributeOrArrayItems,
@@ -805,6 +831,8 @@ export function MiroirContextReactProvider(props: {
       showModelTools,
       showAiSidebar,
       showCopilotDevConsole,
+      feedbackGlowEnabled,
+      props.initialFeedbackGlowEnabled,
       snackbarOpen,
       snackbarMessage,
       snackbarSeverity,
