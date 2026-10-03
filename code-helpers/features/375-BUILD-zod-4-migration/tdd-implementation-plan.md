@@ -4,7 +4,9 @@
 > MiroirTests) while one repository moves to the zod 4 API. No mocks: tests parse the real deployment assets through
 > the real `mlToZod` / generated schemas. New tests only where zod 4 changes behaviour (parse errors, uuids, functions).
 
-**Resume note:** nothing started. Decisions D1-D6 in [`analysis.md`](analysis.md) are *proposed*; confirm them with A before Slice 1.
+**Resume note:** Slices 0-2 done. D1 changed during Slice 1 (see its Realization): jzod / jzod-ts 1.0.0 require zod ^4.5, so the
+`zod/v4` stage is dropped and Slice 3 bumps Miroir's zod package itself; Slice 6 keeps only the cleanup. A asked for the
+implementation on 2026-10-03 (#413 and #375 share one goal).
 
 ## Scope
 
@@ -23,19 +25,19 @@ Out: TS generation without zod (D3-b), `z.strictObject` / zod-mini output (D4), 
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize parse results and errors | ⬜ pending | parse-error snapshot test, uuid inventory |
-| 1 | jzod builds runtime schemas with the v4 API | ⬜ pending | jzod test suite on `zod/v4` |
-| 2 | jzod-ts generates TS through zod-to-ts 2 | ⬜ pending | jzod-ts test suite, bootstrap schema regenerated |
-| 3 | Miroir generates and validates on `zod/v4` (tracer) | ⬜ pending | miroir-core unit tests + `modelValidation` |
+| 0 | Characterize parse results and errors | ✅ DONE | `zodParseResults.375.phase0.unit.test.ts` |
+| 1 | jzod builds runtime schemas with zod 4 | ✅ DONE | jzod 1.0.0 (jzod#28), 52/52 tests |
+| 2 | jzod-ts generates TS through zod-to-ts 2 | ✅ DONE | jzod-ts 1.0.0 (jzod-ts#11), 10/10 tests |
+| 3 | Miroir builds on zod 4 and jzod 1.0 (tracer) | ⬜ pending | miroir-core unit tests + `modelValidation` |
 | 4 | Union parse errors keep their deepest-issue report | ⬜ pending | `zodParseError` tests on zod 4 issues |
 | 5 | Hand-written app schemas on the v4 API | ⬜ pending | `gridPagination` tests, standalone-app typecheck |
-| 6 | Package bump to zod 4 | ⬜ pending | full PR gate + `nonreg:filesystem` |
+| 6 | Cleanup and full non-regression | ⬜ pending | full PR gate + `nonreg:filesystem` |
 
 ## Locked implementation defaults (proposed, from the analysis)
 
 | Decision | Default |
 |---|---|
-| D1 Route | Staged: import `zod/v4` while on zod 3.25.x; bump the package last (Slice 6) |
+| D1 Route | ~~Staged through `zod/v4`~~ Changed in Slice 1: jzod / jzod-ts 1.0 on `zod ^4.5`; Miroir bumps its zod package in Slice 3 |
 | D2 jzod introspection | Port `JzodToZod.ts` (what Miroir calls); `ZodToJzod` / `ZodToZodText` / `compare` decided in jzod |
 | D3 TS generation | zod-to-ts 2.x |
 | D4 Generated style | keep `.strict()` |
@@ -44,7 +46,7 @@ Out: TS generation without zod (D3-b), `z.strictObject` / zod-mini output (D4), 
 
 ## Allocated keys
 
-No new model element. Vitest files: `packages/miroir-core/tests/1_core/issues/375-zod-4/zodParseErrors.375.phase0.unit.test.ts`
+No new model element. Vitest files: `packages/miroir-core/tests/1_core/issues/375-zod-4/zodParseResults.375.phase0.unit.test.ts`
 (Slice 0, folded into `zodParseError.test.ts` in Slice 6). Vitest because parse-error formatting is framework machinery,
 not reachable through a MiroirTest.
 
@@ -75,14 +77,22 @@ Inventory script (Python, scratch): which of the 11 non-RFC uuids sit in fields 
 
 **Refactor checkpoint:** none (no production change).
 
-**Validation:** `RUN_TEST=zodParseErrors.375 npm run testByFile -w miroir-core -- zodParseErrors.375`
+**Validation:** `npm run testByFile -w miroir-core -- zodParseResults.375`
 
 ### Realization
-_pending_
+**Status:** ✅ DONE. `zodParseResults.375.phase0.unit.test.ts` (8 tests, zod 3.25.76) locks:
+- for Entity, Query, Report, TransformerDefinition and Endpoint, every instance in `packages/*/assets/*/<entity uuid>/`
+  parsed with its generated schema; the 14 that already fail on zod 3 are listed (an Entity whose mlSchema uses the
+  `color` string format, stored Queries parsed with `query` = `queryWithExtractorCombinerTransformer`, two postgres
+  Reports with `null` fields, one TransformerDefinition rejected by a `refine`);
+- the deepest-issue paths (not codes or messages, which zod 4 renames) of three altered real elements.
+Deviation: parsing every instance through its Entity's mlSchema with `mlToZodTextAndZodSchema` was dropped: 300 s, and
+623 instances already fail on zod 3, so it locks nothing useful. The uuid inventory moves to Slice 3, where zod 4's
+`.uuid()` can be run on the assets directly.
 
-## Slice 1 — jzod builds runtime schemas with the v4 API
+## Slice 1 — jzod builds runtime schemas with zod 4
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** `jzodToZod` / `jzodToZodTextAndZodSchema` return zod 4 schemas (imported from `zod/v4`, zod 3.25.x installed).
 
@@ -96,11 +106,15 @@ Release jzod 0.9.0.
 **Validation:** `npm test` and `npm run build` in jzod.
 
 ### Realization
-_pending_
+jzod 1.0.0 (miroir-framework/jzod#28, published 2026-10-03), `zod ^4.5.0`, imports `zod` directly. The `zod/v4`
+subpath of zod 3.25 (zod 4.0 core) and zod 4.0 to 4.4 read `z.tuple` items' `_zod.optin` at construction, which
+resolves `z.lazy` references to schemas declared later and throws ("could not find eager reference jzodMap"); fixed in
+zod 4.5.0 (bisected). So D1-a was dropped. `z.function({ input, output })`; `ZodToZodText` / `ZodToJzod` ported to
+`_zod.def`; `compare.ts` removed (D2-b). 52/52 tests on zod 4.5.0 and 4.6.5.
 
 ## Slice 2 — jzod-ts generates TS through zod-to-ts 2
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** `jzodToTsCode` produces the same TypeScript text for Miroir's schemas, on zod-to-ts 2.x.
 
@@ -113,17 +127,22 @@ _pending_
 **Validation:** `npm test` and `npm run build` in jzod-ts; diff of the generated bootstrap schema reviewed.
 
 ### Realization
-_pending_
+jzod-ts 1.0.0 (miroir-framework/jzod-ts#11, published 2026-10-03) on zod-to-ts 2.1.0: `zodToTs` passes an override
+function that prints lazy references as type references and keeps zod-to-ts 1 output for objects (no
+`[x: string]: never` index signature, optional only when the schema is) and records. Bootstrap schema unchanged.
+With both 1.0 builds in `_integration` (78fcd8ccb), `miroirFundamentalType.ts`, `miroirFundamentalMlSchema.ts` and
+postgres `generated.ts` regenerate unchanged (timestamp and the hand-added `distinctOn` aside), and the 554 generated
+schemas load and parse under zod 4.6.5.
 
-## Slice 3 — Miroir generates and validates on `zod/v4` (tracer)
+## Slice 3 — Miroir builds on zod 4 and jzod 1.0 (tracer)
 
 **Status:** ⬜ pending
 
-**Goal:** Miroir builds against jzod / jzod-ts 0.9.0 and validates every deployment's model as before.
+**Goal:** Miroir builds against zod 4 and jzod / jzod-ts 1.0.0 and validates every deployment's model as before.
 
-**RED:** bump jzod / jzod-ts; miroir-core typecheck fails on `MlZodTextAndZodSchema` (zod 3 `ZodTypeAny`).
-**GREEN:** `mlJzodAdapter.ts`, `mlJzodTsAdapter.ts`, `generate-ts-types.ts` header and `postgres-generate-ts-types.ts`
-import `zod/v4`; `z.ZodType<>` annotations adjusted; regenerate `miroirFundamentalType.ts` and miroir-store-postgres
+**RED:** bump `zod` to `^4.5.0` in the six manifests and jzod / jzod-ts to 1.0.0, relock; miroir-core typecheck fails
+on `MlZodTextAndZodSchema` (zod 3 `ZodTypeAny`), Slice 0 test shows what zod 4 parses differently.
+**GREEN:** `mlJzodAdapter.ts`, `mlJzodTsAdapter.ts` and the generators' headers on zod 4 types; `z.ZodType<>` annotations adjusted; regenerate `miroirFundamentalType.ts` and miroir-store-postgres
 `generated.ts`. miroir-cli and miroir-mcp follow (`ZodTypeAny` imports). Apply D5 to the uuids Slice 0 found.
 
 **Refactor checkpoint:** `DomainElement.ts:230` `z.record(z.any())` gets its key schema.
@@ -179,8 +198,8 @@ _pending_
 
 **Goal:** Goal 1: Miroir, jzod and jzod-ts install zod 4.
 
-**RED:** bump `zod` to 4.x in jzod, jzod-ts (release 0.9.1) and the six Miroir manifests; imports still `zod/v4`.
-**GREEN:** rewrite `zod/v4` imports back to `zod`, regenerate, relock (`npx npm@11 install --package-lock-only`), remove the Dependabot ignore (D6).
+**Goal (revised):** the package bump happened in Slice 3; this slice removes the Dependabot zod ignore (D6) and runs the
+full non-regression.
 
 **Cleanup:** fold `issues/375-zod-4/` assertions into `zodParseError.test.ts`, delete the issue directory; docs
 (`docs/reference/ml-nomenclature.md` if it names zod versions).
