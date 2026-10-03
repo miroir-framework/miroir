@@ -6,7 +6,7 @@
 > exercised by `reactComponentTest` cases in `ui.transformerEditor`, which render the real
 > `TransformerEditor` with the real editor tree, menu and dialogs.
 
-**Resume note:** read the progress table, then the first slice whose Status is not ✅ DONE. Slices 3 and 7 depend on the round 2 answers (D14 to D16); check the analysis decision record before starting them.
+**Resume note:** read the progress table, then the first slice whose Status is not ✅ DONE. A accepted D14-b, D15-b and D16-a in round 2; the `getFromContext` case of Slice 7 waits for the #411 fix.
 
 ## Scope
 
@@ -170,7 +170,7 @@ Same as Slice 1, plus `fn.transformer.interfaceWalk` (regression).
 
 ## Slice 3. Pipe into (D14)
 
-**Status:** ⬜ pending (depends on D14; with D14-a this slice folds into Slice 2, with D14-c it goes away)
+**Status:** ⬜ pending
 
 Goal: the designer puts a node in the `applyTo` of a new transformer, for example `sortList` over a `mapList`.
 

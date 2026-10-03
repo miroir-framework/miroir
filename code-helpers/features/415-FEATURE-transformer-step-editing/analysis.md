@@ -19,7 +19,7 @@ Key sources:
 - [`packages/miroir-core/src/2_domain/TransformersForRuntime.ts`](../../../packages/miroir-core/src/2_domain/TransformersForRuntime.ts) (runtime bindings, `applicationTransformerDefinitions`)
 
 **Document role:** analysis and architectural decision record.
-**Status:** round 1 decisions confirmed (2026-10-03). D14 to D16 came out of reading the code after round 1 and wait for A's answer. TDD plan: [`tdd-implementation-plan.md`](./tdd-implementation-plan.md).
+**Status:** all decisions confirmed with A (round 1 and round 2, 2026-10-03). D14 to D16 came out of reading the code after round 1; their record is `/mnt/project-files/issue-415/grilling-round-2.md`. TDD plan: [`tdd-implementation-plan.md`](./tdd-implementation-plan.md).
 
 ---
 
@@ -58,9 +58,9 @@ After each operation the TransformerEditor recomputes the result and the #383 ma
 | D11. Editors | Every editor rendering a `transformerType` select, since the menu sits next to it | G4 | Accepted (Q11) |
 | D12. Out of scope | Copy, paste, move, multi-select | | Accepted (Q12) |
 | D13. Tests | `fn.*` cases per operation, plus `ui.transformerEditor` cases for the use case | G1 to G4 | Accepted (Q13) |
-| D14. `applyTo` as a target | A separate "Pipe into" action puts the node in `applyTo`; Wrap never uses `applyTo` | G1 | Waiting for A (round 2) |
-| D15. `getFromParameters` after a wrap | Keep D6, and show a one-line hint when the wrapped subtree reads `defaultInput` through `getFromParameters` | G1 | Waiting for A (round 2) |
-| D16. #411 | Fix #411 in its own PR before the `mapList` + `getFromContext` UI case | G1 | Waiting for A (round 2) |
+| D14. `applyTo` as a target | A separate "Pipe into" action puts the node in `applyTo`; Wrap never uses `applyTo` | G1 | Accepted (round 2, Q1) |
+| D15. `getFromParameters` after a wrap | Keep D6, and show a one-line hint when the wrapped subtree reads `defaultInput` through `getFromParameters` | G1 | Accepted (round 2, Q2) |
+| D16. #411 | Fix #411 in its own PR before the `mapList` + `getFromContext` UI case | G1 | Accepted (round 2, Q3) |
 
 Defaults chosen while writing this analysis (no question to A, reversible):
 - Remove subtree deletes an optional attribute, an array item or a record entry; in a required attribute it puts back the default value a new form would hold; at the root it puts back the editor's default transformer (`DEFAULT_TRANSFORMER_EDITOR_TRANSFORMER`).
@@ -69,7 +69,7 @@ Defaults chosen while writing this analysis (no question to A, reversible):
 
 ### D2 and D14. Where the wrapped node goes
 
-**Status:** D2 accepted; D14 waiting for A. **Serves:** G1.
+**Status:** D2 accepted; D14 accepted, D14-b. **Serves:** G1.
 
 In round 1, the rationale for D2 assumed `mapList` has one transformer slot. It has two: `elementTransformer` and the optional `applyTo` (§4.3). Under D2 as accepted, wrapping in `mapList` would ask the designer which slot to use every time.
 
@@ -83,7 +83,7 @@ The two slots mean two different steps. Putting the node in `elementTransformer`
 
 ### D15. `getFromParameters` after a wrap
 
-**Status:** waiting for A. **Serves:** G1.
+**Status:** accepted, D15-b. **Serves:** G1.
 
 The TransformerEditor passes its input both as parameters and as context (§4.4). `mapList` rebinds `defaultInput` in the context only. So a node written for one instance with `getFromParameters` on `defaultInput.name` (the screenshot attached to the issue) still reads the whole list after a wrap in `mapList`. The same node written with `getFromContext` reads each element.
 
@@ -95,7 +95,7 @@ The TransformerEditor passes its input both as parameters and as context (§4.4)
 
 ### D16. Order with #411
 
-**Status:** waiting for A. **Serves:** G1.
+**Status:** accepted, D16-a. **Serves:** G1.
 
 #411: in the component test runner, choosing `getFromContext` as the `elementTransformer` of a `mapList` blocks the JavaScript thread. Wrapping a `getFromContext` node in `mapList` creates exactly that tree, so the UI case for the use case cannot pass before a #411 fix.
 
