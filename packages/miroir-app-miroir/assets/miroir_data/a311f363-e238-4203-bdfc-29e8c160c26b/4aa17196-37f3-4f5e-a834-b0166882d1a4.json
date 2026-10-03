@@ -1,0 +1,270 @@
+{
+  "uuid": "4aa17196-37f3-4f5e-a834-b0166882d1a4",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "fn.transformer.treeEdit",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Structural edits of a transformer tree: slots of a transformer type, wrap, pipe into, unwrap, remove, and the attributes kept on a type change.",
+  "tags": [
+    "unit",
+    "transformer"
+  ],
+  "issue": "415",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "fn.transformer.treeEdit",
+    "miroirTests": [
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "transformerSlots",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "mapList: the element transformer, then applyTo",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "transformerSlots"
+            },
+            "arguments": [
+              "mapList"
+            ],
+            "expectedValue": [
+              {
+                "name": "elementTransformer",
+                "template": [
+                  "elementTransformer"
+                ],
+                "optional": false,
+                "isApplyTo": false
+              },
+              {
+                "name": "applyTo",
+                "template": [
+                  "applyTo"
+                ],
+                "optional": true,
+                "isApplyTo": true
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "ifThenElse: if, then and else",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "transformerSlots"
+            },
+            "arguments": [
+              "ifThenElse"
+            ],
+            "expectedValue": [
+              {
+                "name": "if",
+                "template": [
+                  "if"
+                ],
+                "optional": false,
+                "isApplyTo": false
+              },
+              {
+                "name": "then",
+                "template": [
+                  "then"
+                ],
+                "optional": true,
+                "isApplyTo": false
+              },
+              {
+                "name": "else",
+                "template": [
+                  "else"
+                ],
+                "optional": true,
+                "isApplyTo": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "case: slots inside an array of objects",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "transformerSlots"
+            },
+            "arguments": [
+              "case"
+            ],
+            "expectedValue": [
+              {
+                "name": "discriminator",
+                "template": [
+                  "discriminator"
+                ],
+                "optional": false,
+                "isApplyTo": false
+              },
+              {
+                "name": "whens[].when",
+                "template": [
+                  "whens",
+                  "[]",
+                  "when"
+                ],
+                "optional": false,
+                "isApplyTo": false
+              },
+              {
+                "name": "whens[].then",
+                "template": [
+                  "whens",
+                  "[]",
+                  "then"
+                ],
+                "optional": false,
+                "isApplyTo": false
+              },
+              {
+                "name": "else",
+                "template": [
+                  "else"
+                ],
+                "optional": true,
+                "isApplyTo": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "+: an array slot",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "transformerSlots"
+            },
+            "arguments": [
+              "+"
+            ],
+            "expectedValue": [
+              {
+                "name": "args[]",
+                "template": [
+                  "args",
+                  "[]"
+                ],
+                "optional": false,
+                "isApplyTo": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "createObject: a record slot",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "transformerSlots"
+            },
+            "arguments": [
+              "createObject"
+            ],
+            "expectedValue": [
+              {
+                "name": "definition{}",
+                "template": [
+                  "definition",
+                  "{}"
+                ],
+                "optional": false,
+                "isApplyTo": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "sortList: applyTo only",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "transformerSlots"
+            },
+            "arguments": [
+              "sortList"
+            ],
+            "expectedValue": [
+              {
+                "name": "applyTo",
+                "template": [
+                  "applyTo"
+                ],
+                "optional": true,
+                "isApplyTo": true
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "returnValue: no slot",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "transformerSlots"
+            },
+            "arguments": [
+              "returnValue"
+            ],
+            "expectedValue": []
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "unknown type: no slot",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "transformerSlots"
+            },
+            "arguments": [
+              "notATransformer"
+            ],
+            "expectedValue": []
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "wrapTransformerNode",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "wrap in mapList puts the node in elementTransformer",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "wrapTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "returnValue",
+                "mlSchema": {
+                  "type": "string"
+                },
+                "value": "seize value..."
+              },
+              {
+                "transformerType": "mapList",
+                "elementTransformer": {
+                  "transformerType": "returnValue",
+                  "value": "default"
+                }
+              }
+            ],
+            "expectedValue": {
+              "transformerType": "mapList",
+              "elementTransformer": {
+                "transformerType": "returnValue",
+                "mlSchema": {
+                  "type": "string"
+                },
+                "value": "seize value..."
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

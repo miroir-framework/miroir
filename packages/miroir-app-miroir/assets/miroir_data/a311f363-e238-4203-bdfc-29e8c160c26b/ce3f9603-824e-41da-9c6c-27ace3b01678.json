@@ -5,7 +5,7 @@
   "name": "ui.transformerEditor",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "TransformerEditor on the Miroir application: renders the default transformer and its result, edits it, chooses a transformer type, and switches the input type restriction off.",
+  "description": "TransformerEditor on the Miroir application: renders the default transformer and its result, edits it, chooses a transformer type, and switches the input type restriction off, and wraps the root transformer in a new one (#415).",
   "tags": [
     "ui",
     "editor",
@@ -228,6 +228,66 @@
                 },
                 "attribute": "data-test-is-open",
                 "value": "false"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: wrapping the root in mapList keeps it as the element transformer",
+            "steps": [
+              {
+                "step": "click",
+                "label": "open the root node actions",
+                "target": {
+                  "byTestId": "transformer-node-actions"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "enclosing transformer",
+                "field": "transformer-node-dialog-type",
+                "option": "mapList"
+              },
+              {
+                "step": "click",
+                "label": "confirm the wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "root is mapList",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "mapList",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "element transformer is the former root",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType"
+                },
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "former returned value kept",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                }
               }
             ]
           }

@@ -49,6 +49,18 @@ import {
   transformerTypesAcceptingInput,
 } from "../2_domain/TransformerInterfaceCheck";
 import {
+  keepAttributesOnTypeChange,
+  parameterReadsOfDefaultInput,
+  pipeCandidates,
+  pipeTransformerNode,
+  removeTransformerNode,
+  transformerChildren,
+  transformerSlots,
+  unwrapTransformerNode,
+  wrapCandidates,
+  wrapTransformerNode,
+} from "../2_domain/TransformerTreeEdit";
+import {
   checkTransformerMlSchemaCompatibility,
   formatMlSchemaTypeLabel,
   getDeclaredInputMlSchema,
@@ -216,6 +228,18 @@ const FUNCTION_CALL_REGISTRY: Record<
     inputOutputTypeOfValue: inputOutputTypeOfValue as WhitelistedFunction,
     checkTransformerInterfaceRecursively:
       checkTransformerInterfaceRecursively as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/TransformerTreeEdit": {
+    transformerSlots: transformerSlots as WhitelistedFunction,
+    wrapCandidates: wrapCandidates as WhitelistedFunction,
+    pipeCandidates: pipeCandidates as WhitelistedFunction,
+    wrapTransformerNode: wrapTransformerNode as WhitelistedFunction,
+    pipeTransformerNode: pipeTransformerNode as WhitelistedFunction,
+    transformerChildren: transformerChildren as WhitelistedFunction,
+    unwrapTransformerNode: unwrapTransformerNode as WhitelistedFunction,
+    removeTransformerNode: removeTransformerNode as WhitelistedFunction,
+    keepAttributesOnTypeChange: keepAttributesOnTypeChange as WhitelistedFunction,
+    parameterReadsOfDefaultInput: parameterReadsOfDefaultInput as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerMlSchemaCheck": {
     checkTransformerMlSchemaCompatibility:

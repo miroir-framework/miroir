@@ -29,8 +29,8 @@ Out (analysis non-goals): undo and redo; rewriting references after a wrap or an
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize the editor and the suites | ⬜ pending | baseline recorded |
-| 1 | Wrap the root in `mapList` (tracer) | ⬜ pending | `fn.transformer.treeEdit` wrap cases; UI wrap case |
+| 0 | Characterize the editor and the suites | ✅ DONE | baseline recorded |
+| 1 | Wrap the root in `mapList` (tracer) | ✅ DONE | `fn.transformer.treeEdit` wrap cases; UI wrap case |
 | 2 | Wrap at any level, slot choice, type filter | ⬜ pending | nested and multi-slot wrap cases; filtered dialog |
 | 3 | Pipe into (D14) | ⬜ pending | pipe cases; filtered by the node's output |
 | 4 | Unwrap: remove a node, keep a child | ⬜ pending | unwrap cases; UI unwrap with confirmation |
@@ -87,7 +87,7 @@ Entity reused in UI cases: Entity `16dbfe28-e1d7-4f20-9ba4-c1a9873202ad` (instan
 | #383 walk (regression) | `npm run testMiroir -w miroir-core -- --suites fn.transformer.interfaceWalk --mode unit` |
 | UI suite | `npm run testMiroir -w miroir-standalone-app -- --suites ui.transformerEditor` |
 | Build core for the app | `npm run build -w miroir-core` |
-| Typecheck | `npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json` and `-p packages/miroir-standalone-app/tsconfig.json` (40 pre-existing errors in the app, compare counts) |
+| Typecheck | `npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json` and `-p packages/miroir-standalone-app/tsconfig.json` (32 pre-existing errors in the app at the Slice 0 baseline, compare counts) |
 | Lint | `npm run lint` |
 | Scoped nonreg | `npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui` |
 | Model validation | `npm run miroir-env -- check --strict --tracked-clean` (after commit) |
@@ -96,7 +96,7 @@ Entity reused in UI cases: Entity `16dbfe28-e1d7-4f20-9ba4-c1a9873202ad` (instan
 
 ## Slice 0. Characterize
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Goal: a green baseline for the code the slices change.
 
@@ -114,11 +114,14 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json 
 
 ### Realization
 
-(pending)
+Baseline on `78fcd8cc` after `npm ci` and `./build-all.sh` (the container had stale `node_modules` links from before #344):
+- miroir-core `fn` suites: 113 pass, no failure. `ui.transformerEditor`: 6 pass.
+- miroir-standalone-app `tsc`: 32 errors (the plan said 40; 32 is the number to compare against). miroir-core `tsc` clean, `npm run lint` clean.
+- Slot inventory of analysis §4.3 confirmed; the counts became the `transformerSlots` cases of Slice 1.
 
 ## Slice 1. Wrap the root in `mapList` (tracer)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Goal: in the TransformerEditor, the designer opens the root node's menu, picks Wrap in, chooses `mapList`, and the root becomes a `mapList` whose `elementTransformer` is the previous root.
 
@@ -144,7 +147,13 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui
 
 ### Realization
 
-(pending)
+- `TransformerTreeEdit.ts` and `TransformerTreeEditInterface.ts` hold all ten functions of the plan, registered under `"miroir-core/2_domain/TransformerTreeEdit"` and exported from `miroir-core`. Only `transformerSlots` and `wrapTransformerNode` have cases so far; the later slices add the cases of the other functions.
+- `wrapTransformerNode(node, enclosingNode, slot?)` takes the enclosing node already built (the editor builds it from the union branch default) rather than a path and a type: the editor writes the result at the node's own path, so the tree-level path helper is only needed by Remove (Slice 5).
+- `fn.transformer.treeEdit`: 8 `transformerSlots` cases (`mapList`, `ifThenElse`, `case`, `+`, `createObject`, `sortList`, `returnValue`, an unknown type) and 1 wrap case.
+- `MlLiteralEditor`: the branch default of `handleDiscriminatorChange` is now the exported `discriminatorBranchDefaultValue`, also used by the node menu. `TransformerNodeActions` renders the `⋯` button, the menu (Wrap in) and the wrap dialog.
+- `ui.transformerEditor`: new case "wrapping the root in mapList keeps it as the element transformer"; the component-test leaf count goes from 91 to 92.
+- Deviation: the code was written before running the new cases; every case passed on its first run.
+- Validation: `fn.transformer.treeEdit` 9/9, `ui.transformerEditor` 7/7, core `tsc` clean, app `tsc` 32 errors (baseline), lint clean. Scoped nonreg (`smoke,core,ui`): no failure up to `unit-ui-transformerEditor` when this slice was committed; the full result is recorded in Slice 2.
 
 ## Slice 2. Wrap at any level, slot choice, type filter
 
