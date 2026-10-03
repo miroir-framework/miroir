@@ -156,6 +156,8 @@ const TransformerDefinitionEditor: React.FC<{
             path: ["transformer", ...node.path],
             input: node.consumedInput,
             inputLabel: formatInputOutputType(node.consumedInput),
+            givenInput: node.givenInput,
+            output: node.output,
           }))
         : undefined,
     [interfaceWalk, restrictTransformersToInputType],

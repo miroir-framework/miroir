@@ -205,6 +205,13 @@ export async function setPanelElementTransformerType(transformerType: string) {
   await act(async () => {
     fireEvent.keyDown(discriminatorInput, { key: "Enter" });
   });
+  // #415: a type change that drops attributes waits for a confirmation
+  const confirmTypeChange = screen.queryByTestId("transformer-node-dialog-confirm");
+  if (confirmTypeChange) {
+    await act(async () => {
+      fireEvent.click(confirmTypeChange);
+    });
+  }
 }
 
 export async function setPanelInterpolation(interpolation: "runtime" | "build", inputName = "elementTransformer.interpolation") {
