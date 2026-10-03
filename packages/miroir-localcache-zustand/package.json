@@ -44,7 +44,7 @@
     "miroir-app-miroir": "*",
     "miroir-core": "*",
     "miroir-example-library": "*",
-    "zod": "3.25.76",
+    "zod": "4.6.5",
     "zustand": "5.0.15"
   },
   "devDependencies": {

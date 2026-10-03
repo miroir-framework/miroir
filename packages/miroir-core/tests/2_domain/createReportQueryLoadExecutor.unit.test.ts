@@ -8,14 +8,14 @@ import { reportQueryLoadTargetsFromResolvedReportQuery } from "../../src/1_core/
 import type { ReportQueryLoadRequest } from "../../src/2_domain/ReportQueryLoadService.js";
 
 const BLOB_UUID = "62209e4a-e429-4d7d-9b28-dcc1da6b51a2";
-const APP = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
-const DEPLOY = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb";
+const APP = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+const DEPLOY = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
 
 function blobListRequest(): ReportQueryLoadRequest {
   return {
     application: APP,
     deploymentUuid: DEPLOY,
-    reportUuid: "cccccccc-cccc-cccc-cccc-cccccccccccc",
+    reportUuid: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
     resolvedQuery: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",
       application: APP,
@@ -89,7 +89,7 @@ describe("createReportQueryLoadExecutor (Phase 4)", () => {
       returnedDomainElement: {
         parentUuid: BLOB_UUID,
         applicationSection: "data",
-        instances: [{ uuid: "dddddddd-dddd-dddd-dddd-dddddddddddd", parentUuid: BLOB_UUID }],
+        instances: [{ uuid: "dddddddd-dddd-4ddd-8ddd-dddddddddddd", parentUuid: BLOB_UUID }],
       },
     }));
     const handleLocalCacheAction = vi.fn((_action: unknown, _map?: unknown) => ({
@@ -169,7 +169,7 @@ describe("createReportQueryLoadExecutor (Phase 4)", () => {
       returnedDomainElement: {
         parentUuid: BLOB_UUID,
         applicationSection: "data",
-        instances: [{ uuid: "dddddddd-dddd-dddd-dddd-dddddddddddd", name: "x" }],
+        instances: [{ uuid: "dddddddd-dddd-4ddd-8ddd-dddddddddddd", name: "x" }],
       },
     }));
     const handleLocalCacheAction = vi.fn((_action: unknown, _map?: unknown) => ({

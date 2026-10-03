@@ -41,10 +41,10 @@ const sqlDbStoreName = "testStoreName"
 const connectionString = "postgres://postgres:postgres@localhost:5432/postgres"
 // const schema = "testSchema"
 const schema = testApplicationName;
-const paramSelfApplicationUuid = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
+const paramSelfApplicationUuid = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 const paramAdminConfigurationDeploymentUuid: Uuid = "bbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb";
-const applicationModelBranchUuid: Uuid = "cccccccc-cccc-cccc-cccc-cccccccccccc";
-const selfApplicationVersionUuid: Uuid = "dddddddd-dddd-dddd-dddd-dddddddddddd";
+const applicationModelBranchUuid: Uuid = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
+const selfApplicationVersionUuid: Uuid = "dddddddd-dddd-4ddd-8ddd-dddddddddddd";
 
 const testApplicationConfig: InitApplicationParameters = getBasicApplicationConfiguration(
   testApplicationName,
@@ -192,7 +192,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         entityName: "newEntity",
-        entityUuid: "00000000-0000-0000-0000-000000000002",
+        entityUuid: "00000000-0000-4000-8000-000000000002",
         addColumns: [
           {
             name: "aNewColumnForTest",
@@ -214,7 +214,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         entityName: "newEntity",
-        entityUuid: "00000000-0000-0000-0000-000000000002",
+        entityUuid: "00000000-0000-4000-8000-000000000002",
         targetValue: "renamedEntity",
       },
     },
@@ -237,7 +237,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        entityUuid: "00000000-0000-0000-0000-000000000002",
+        entityUuid: "00000000-0000-4000-8000-000000000002",
       },
     },
   },
@@ -436,8 +436,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             name: "TestApplicationSqlDeployment",
             defaultLabel: "TestApplicationSqlDeployment",
             description: "The default Sql Deployment for TestApplication",
-            selfApplication: "00000000-0000-0000-0000-000000000001",
-            bundle: "00000000-0000-0000-0000-000000000002",
+            selfApplication: "00000000-0000-4000-8000-000000000001",
+            bundle: "00000000-0000-4000-8000-000000000002",
             configuration: {
               admin: {
                 emulatedServerType: "sql",

@@ -9,8 +9,8 @@ import {
 
 describe("instanceProjection", () => {
   const full = {
-    uuid: "11111111-1111-1111-1111-111111111111",
-    parentUuid: "22222222-2222-2222-2222-222222222222",
+    uuid: "11111111-1111-4111-8111-111111111111",
+    parentUuid: "22222222-2222-4222-8222-222222222222",
     parentName: "Blob",
     name: "logo",
     contents: "huge-binary-payload",
@@ -38,7 +38,7 @@ describe("instanceProjection", () => {
   it("retains non-uuid primary key attributes when EntityVersion is supplied", () => {
     const coded = {
       code: "FR",
-      parentUuid: "22222222-2222-2222-2222-222222222222",
+      parentUuid: "22222222-2222-4222-8222-222222222222",
       parentName: "Country",
       name: "France",
       population: 67000000,
@@ -56,7 +56,7 @@ describe("instanceProjection", () => {
   });
 
   it("projects each instance in a collection", () => {
-    const other = { ...full, uuid: "33333333-3333-3333-3333-333333333333", name: "other" };
+    const other = { ...full, uuid: "33333333-3333-4333-8333-333333333333", name: "other" };
     const result = projectEntityInstancesOnAttributes([full, other], ["name"]);
     expect(result).toHaveLength(2);
     expect(result[0]).not.toHaveProperty("contents");

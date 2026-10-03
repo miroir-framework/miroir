@@ -11,10 +11,10 @@ import { Action2Error } from "../../src/0_interfaces/2_domain/DomainElement.js";
 import { getReduxDeploymentsStateIndex } from "../../src/2_domain/ReduxDeploymentsState.js";
 import type { InstanceAction } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
-const APP = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
-const DEPLOY = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb";
-const ENT = "33333333-3333-3333-3333-333333333333";
-const INST = "44444444-4444-4444-4444-444444444444";
+const APP = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+const DEPLOY = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
+const ENT = "33333333-3333-4333-8333-333333333333";
+const INST = "44444444-4444-4444-8444-444444444444";
 
 function createAction(
   objects: Record<string, unknown>[],

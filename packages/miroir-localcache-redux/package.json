@@ -61,7 +61,7 @@
     "miroir-example-library": "*",
     "redux-saga": "1.5.1",
     "typed-redux-saga": "1.5.0",
-    "zod": "3.25.76"
+    "zod": "4.6.5"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",

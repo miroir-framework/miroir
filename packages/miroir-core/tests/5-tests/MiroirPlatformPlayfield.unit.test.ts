@@ -9,8 +9,8 @@ import {
   type EnsureMiroirPlatformParams,
 } from "../../src/5_tests/MiroirPlatformPlayfield";
 
-const MIROIR_DEPLOYMENT_UUID = "33333333-3333-3333-3333-333333333333";
-const MIROIR_APP_UUID = "44444444-4444-4444-4444-444444444444";
+const MIROIR_DEPLOYMENT_UUID = "33333333-3333-4333-8333-333333333333";
+const MIROIR_APP_UUID = "44444444-4444-4444-8444-444444444444";
 
 function baseEnsureParams(
   overrides: Partial<EnsureMiroirPlatformParams> = {},
