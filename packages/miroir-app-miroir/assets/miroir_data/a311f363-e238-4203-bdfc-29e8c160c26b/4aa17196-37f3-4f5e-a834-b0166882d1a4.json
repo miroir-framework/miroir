@@ -262,6 +262,253 @@
                 "value": "seize value..."
               }
             }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "wrap in ifThenElse at the chosen slot",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "wrapTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "getFromContext",
+                "referenceName": "defaultInput"
+              },
+              {
+                "transformerType": "ifThenElse",
+                "if": true
+              },
+              "then"
+            ],
+            "expectedValue": {
+              "transformerType": "ifThenElse",
+              "if": true,
+              "then": {
+                "transformerType": "getFromContext",
+                "referenceName": "defaultInput"
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "wrap in + creates a one-item args array",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "wrapTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "getFromContext",
+                "referenceName": "defaultInput"
+              },
+              {
+                "transformerType": "+",
+                "args": []
+              }
+            ],
+            "expectedValue": {
+              "transformerType": "+",
+              "args": [
+                {
+                  "transformerType": "getFromContext",
+                  "referenceName": "defaultInput"
+                }
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "wrap in createObject keys the entry by the node label",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "wrapTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "getFromContext",
+                "label": "name",
+                "referencePath": [
+                  "defaultInput",
+                  "name"
+                ]
+              },
+              {
+                "transformerType": "createObject",
+                "definition": {}
+              }
+            ],
+            "expectedValue": {
+              "transformerType": "createObject",
+              "definition": {
+                "name": {
+                  "transformerType": "getFromContext",
+                  "label": "name",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "wrap in createObject keys an unlabelled node as value",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "wrapTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "getFromContext",
+                "referenceName": "defaultInput"
+              },
+              {
+                "transformerType": "createObject",
+                "definition": {
+                  "a": 1
+                }
+              }
+            ],
+            "expectedValue": {
+              "transformerType": "createObject",
+              "definition": {
+                "value": {
+                  "transformerType": "getFromContext",
+                  "referenceName": "defaultInput"
+                }
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "wrap in case at whens[].when keeps the first when-then item",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "wrapTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "getFromContext",
+                "referenceName": "defaultInput"
+              },
+              {
+                "transformerType": "case",
+                "discriminator": "x",
+                "whens": [
+                  {
+                    "when": "a",
+                    "then": "b"
+                  }
+                ]
+              },
+              "whens[].when"
+            ],
+            "expectedValue": {
+              "transformerType": "case",
+              "discriminator": "x",
+              "whens": [
+                {
+                  "when": {
+                    "transformerType": "getFromContext",
+                    "referenceName": "defaultInput"
+                  },
+                  "then": "b"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "wrapCandidates",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "array of Book: list transformers with a slot and any-input ones",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "wrapCandidates"
+            },
+            "arguments": [
+              {
+                "type": "array",
+                "payload": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+              },
+              {
+                "transformerTypes": [
+                  "mapList",
+                  "filterList",
+                  "ifThenElse",
+                  "sortList",
+                  "returnValue",
+                  "mustacheStringTemplate",
+                  "+"
+                ]
+              }
+            ],
+            "expectedValue": [
+              "mapList",
+              "filterList",
+              "ifThenElse",
+              "+"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "string: no list transformer",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "wrapCandidates"
+            },
+            "arguments": [
+              "string",
+              {
+                "transformerTypes": [
+                  "mapList",
+                  "filterList",
+                  "ifThenElse",
+                  "sortList",
+                  "returnValue",
+                  "mustacheStringTemplate",
+                  "+"
+                ]
+              }
+            ],
+            "expectedValue": [
+              "ifThenElse",
+              "+"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "any: every type with a non-applyTo slot",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "wrapCandidates"
+            },
+            "arguments": [
+              "any",
+              {
+                "transformerTypes": [
+                  "mapList",
+                  "filterList",
+                  "ifThenElse",
+                  "sortList",
+                  "returnValue",
+                  "mustacheStringTemplate",
+                  "+"
+                ]
+              }
+            ],
+            "expectedValue": [
+              "mapList",
+              "filterList",
+              "ifThenElse",
+              "+"
+            ]
           }
         ]
       }

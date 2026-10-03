@@ -31,7 +31,7 @@ Out (analysis non-goals): undo and redo; rewriting references after a wrap or an
 |---|---|---|---|
 | 0 | Characterize the editor and the suites | ✅ DONE | baseline recorded |
 | 1 | Wrap the root in `mapList` (tracer) | ✅ DONE | `fn.transformer.treeEdit` wrap cases; UI wrap case |
-| 2 | Wrap at any level, slot choice, type filter | ⬜ pending | nested and multi-slot wrap cases; filtered dialog |
+| 2 | Wrap at any level, slot choice, type filter | ✅ DONE | nested and multi-slot wrap cases; filtered dialog |
 | 3 | Pipe into (D14) | ⬜ pending | pipe cases; filtered by the node's output |
 | 4 | Unwrap: remove a node, keep a child | ⬜ pending | unwrap cases; UI unwrap with confirmation |
 | 5 | Remove a subtree | ⬜ pending | remove cases per position kind; UI remove |
@@ -153,11 +153,11 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui
 - `MlLiteralEditor`: the branch default of `handleDiscriminatorChange` is now the exported `discriminatorBranchDefaultValue`, also used by the node menu. `TransformerNodeActions` renders the `⋯` button, the menu (Wrap in) and the wrap dialog.
 - `ui.transformerEditor`: new case "wrapping the root in mapList keeps it as the element transformer"; the component-test leaf count goes from 91 to 92.
 - Deviation: the code was written before running the new cases; every case passed on its first run.
-- Validation: `fn.transformer.treeEdit` 9/9, `ui.transformerEditor` 7/7, core `tsc` clean, app `tsc` 32 errors (baseline), lint clean. Scoped nonreg (`smoke,core,ui`): no failure up to `unit-ui-transformerEditor` when this slice was committed; the full result is recorded in Slice 2.
+- Validation: `fn.transformer.treeEdit` 9/9, `ui.transformerEditor` 7/7, core `tsc` clean, app `tsc` 32 errors (baseline), lint clean. Scoped nonreg (`smoke,core,ui`): 37 of 38 steps pass; `unit-321-tracked-assets` failed only because this slice's two asset files were committed while the run was going, and the guard is clean when re-run on its own.
 
 ## Slice 2. Wrap at any level, slot choice, type filter
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Goal: Wrap works on nested nodes (attribute, array item, record value), asks for the slot when the enclosing type has several, and offers only types accepting the position's input when the switch is on.
 
@@ -175,7 +175,13 @@ Same as Slice 1, plus `fn.transformer.interfaceWalk` (regression).
 
 ### Realization
 
-(pending)
+- No new core code: `wrapCandidates` and the slot handling of `wrapTransformerNode` came with Slice 1. `fn.transformer.treeEdit` gains 5 wrap cases (`ifThenElse` at `then`, `+` one-item `args`, `createObject` keyed by `label` and by `value`, `case` at `whens[].when` keeping the first item's `then`) and 3 `wrapCandidates` cases (array of Book, `string`, `any`): 17 cases.
+- Wrap works on node values, not on paths in the tree: each node's menu writes its result at its own path, so nested positions need no path argument. The plan's "one path helper" refactor is `valueAt` / `updateAt` in `TransformerTreeEdit.ts`, used by Unwrap and Remove.
+- `TransformerTypeRestriction` gains `givenInput` and `output`, filled by `TransformerEditor` and `ListTransformerPanel` from the #383 walk. The node menu passes `givenInput` to the dialog only when a restriction applies to the node, so the switch turns the filter off.
+- The menu button's label names its node (`Transformer node actions transformer.elementTransformer`), which lets the UI cases address nested nodes with `byLabelText`.
+- `ui.transformerEditor`: the Slice 1 case now switches the restriction off first, since the editor's input is one Entity instance and `mapList` is no longer offered for it. New cases: "wrapping a nested transformer in ifThenElse asks for the slot" and "with the input type restriction, Wrap in offers only transformers accepting the input" (the plan said a string input; the editor's default input is an Entity instance, which hides `mapList` the same way). Leaf count 94.
+- RED checked for the filter case: without the `givenInput` prop it fails, with it it passes.
+- Validation: `fn.transformer.treeEdit` 17/17, `fn.transformer.interfaceWalk` 43/43, `ui.transformerEditor` 9/9, core `tsc` clean, app `tsc` 32 errors (baseline), lint clean.
 
 ## Slice 3. Pipe into (D14)
 

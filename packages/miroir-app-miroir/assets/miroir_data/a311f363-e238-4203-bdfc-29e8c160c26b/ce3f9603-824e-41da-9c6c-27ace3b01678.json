@@ -5,7 +5,7 @@
   "name": "ui.transformerEditor",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "TransformerEditor on the Miroir application: renders the default transformer and its result, edits it, chooses a transformer type, and switches the input type restriction off, and wraps the root transformer in a new one (#415).",
+  "description": "TransformerEditor on the Miroir application: renders the default transformer and its result, edits it, chooses a transformer type, and switches the input type restriction off, and wraps transformers in new ones at any level, with the type filter of #383 (#415).",
   "tags": [
     "ui",
     "editor",
@@ -237,9 +237,24 @@
             "steps": [
               {
                 "step": "click",
+                "label": "switch the restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                },
+                "checked": false
+              },
+              {
+                "step": "click",
                 "label": "open the root node actions",
                 "target": {
-                  "byTestId": "transformer-node-actions"
+                  "byLabelText": "Transformer node actions transformer"
                 }
               },
               {
@@ -287,6 +302,265 @@
                 "label": "former returned value kept",
                 "target": {
                   "byDisplayValue": "seize value..."
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: wrapping a nested transformer in ifThenElse asks for the slot",
+            "steps": [
+              {
+                "step": "click",
+                "label": "switch the restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                },
+                "checked": false
+              },
+              {
+                "step": "click",
+                "label": "open the root node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "enclosing mapList",
+                "field": "transformer-node-dialog-type",
+                "option": "mapList"
+              },
+              {
+                "step": "click",
+                "label": "confirm the root wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "root is mapList",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "mapList",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the element transformer actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer.elementTransformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in the element transformer",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "enclosing ifThenElse",
+                "field": "transformer-node-dialog-type",
+                "option": "ifThenElse"
+              },
+              {
+                "step": "selectOption",
+                "label": "slot then",
+                "field": "transformer-node-dialog-slot",
+                "option": "then"
+              },
+              {
+                "step": "click",
+                "label": "confirm the nested wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "element transformer is ifThenElse",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType"
+                },
+                "value": "ifThenElse",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "then is the former element transformer",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.elementTransformer.then.transformerType"
+                },
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "root still mapList",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "mapList",
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: with the input type restriction, Wrap in offers only transformers accepting the input",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "restriction on",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                },
+                "checked": true
+              },
+              {
+                "step": "click",
+                "label": "open the root node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "openSelect",
+                "label": "open enclosing types",
+                "field": "transformer-node-dialog-type"
+              },
+              {
+                "step": "expectElement",
+                "label": "ifThenElse offered",
+                "target": {
+                  "byRole": "option",
+                  "name": "transformer-node-dialog-type-option-ifThenElse"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "mapList hidden",
+                "target": {
+                  "byRole": "option",
+                  "name": "transformer-node-dialog-type-option-mapList"
+                },
+                "present": false
+              },
+              {
+                "step": "selectOption",
+                "label": "pick ifThenElse to close the list",
+                "field": "transformer-node-dialog-type",
+                "option": "ifThenElse"
+              },
+              {
+                "step": "click",
+                "label": "cancel",
+                "target": {
+                  "byTestId": "transformer-node-dialog-cancel"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "dialog closed",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformer-node-dialog-type"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "root unchanged",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "switch the restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                },
+                "checked": false
+              },
+              {
+                "step": "click",
+                "label": "reopen the root node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in again",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "openSelect",
+                "label": "reopen enclosing types",
+                "field": "transformer-node-dialog-type"
+              },
+              {
+                "step": "expectElement",
+                "label": "mapList offered",
+                "target": {
+                  "byRole": "option",
+                  "name": "transformer-node-dialog-type-option-mapList"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "pick mapList to close the list",
+                "field": "transformer-node-dialog-type",
+                "option": "mapList"
+              },
+              {
+                "step": "click",
+                "label": "cancel again",
+                "target": {
+                  "byTestId": "transformer-node-dialog-cancel"
                 }
               }
             ]

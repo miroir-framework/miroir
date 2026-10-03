@@ -27,7 +27,7 @@ import { useMiroirTheme } from "../../contexts/MiroirThemeContext";
 // ################################################################################################
 
 export interface TransformerNodeActionsProps {
-  /** Path of the node in the edited section, used in the test ids. */
+  /** Path of the node in the edited section, in `data-node-path` and the button's label. */
   nodePath: (string | number)[];
   nodeValue: unknown;
   /** The transformer types the node's position accepts (its union's discriminator values). */
@@ -96,7 +96,7 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
         type="button"
         data-testid="transformer-node-actions"
         data-node-path={nodePathKey}
-        aria-label="Transformer node actions"
+        aria-label={`Transformer node actions ${nodePathKey}`}
         title="Transformer node actions"
         onClick={(event) => setMenuAnchor(event.currentTarget)}
         style={{
