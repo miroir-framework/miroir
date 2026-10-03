@@ -6,7 +6,7 @@
 > exercised by `reactComponentTest` cases in `ui.transformerEditor`, which render the real
 > `TransformerEditor` with the real editor tree, menu and dialogs.
 
-**Resume note:** read the progress table, then the first slice whose Status is not ✅ DONE. A accepted D14-b, D15-b and D16-a in round 2; the `getFromContext` case of Slice 7 waits for the #411 fix.
+**Resume note:** all slices are done except the use case UI case of Slice 7, which waits for the #411 fix. A accepted D14-b, D15-b and D16-a in round 2.
 
 ## Scope
 
@@ -37,7 +37,7 @@ Out (analysis non-goals): undo and redo; rewriting references after a wrap or an
 | 5 | Remove a subtree | ✅ DONE | remove cases per position kind; UI remove |
 | 6 | Type change keeps valid attributes | ✅ DONE | merge cases; UI `filterList` to `find` keeps `predicate` |
 | 7 | Use case end to end, `getFromParameters` hint (D15, D16) | 🟡 PARTIAL (use case UI case waits for #411) | UI case: one instance, then all, wrapped in `mapList` |
-| 8 | Nonreg, docs, AC checklist | ⬜ pending | full `nonreg:filesystem` |
+| 8 | Nonreg, docs, AC checklist | ✅ DONE | full `nonreg:filesystem` 90/91, the one failure fixed |
 
 ## Locked implementation defaults
 
@@ -322,7 +322,7 @@ Same as Slice 1.
 
 ## Slice 8. Nonreg, docs, AC checklist
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 - `docs/reference/transformers.md`: a section on the node actions, next to the #383 section.
 - This plan creates no issue-scoped vitest directory, so there is nothing to clean up; remove the issue number from MiroirTest descriptions only if the suite convention asks for it.
@@ -352,4 +352,19 @@ npm run nonreg:filesystem -- --runner shared
 
 ### Realization
 
-(pending)
+- Docs: section "Editing a transformer tree step by step" in `docs/reference/transformers.md`, after the #383 section.
+- Merged `_integration` (#412 nested cases, #416 audit fix). The 4 nested cases of #412 change types from `returnValue` defaults, so they drop `mlSchema` and `value` and now confirm each such change (12 confirm steps). Leaf count 91 + 4 + 10 = 105. #412 is merged, but the `MlEnumEditor` dedupe stays out of this PR: only `MlLiteralEditor` renders `transformerType`.
+- The MiroirTest naming rule (`unit-312-miroir-test-tags`) rejects issue numbers in descriptions: the `ui.transformerEditor` description lost its `#383` and `#415`.
+- Tracer narrative: not run by hand in the cloud session. The UI cases cover wrap, pipe, unwrap, remove and type change; the instance-mode use case waits for #411.
+- Validation: full `npm run nonreg:filesystem -- --runner shared` 90/91 on the merged head; the failure was the description rule above, and its step passes after the fix. `ui.transformerEditor` 18/18, skills sync check, `scripts/tests` 215 passed, dependency policy, lint, `miroir-env check --strict --tracked-clean`, core `tsc`, miroir-core unit 2316 passed, app `tsc` 32 errors (the `_integration` baseline, none in files this branch changes).
+
+AC check:
+
+| Issue target | Status |
+|---|---|
+| Wrap a node in a new transformer (`mapList` first) | met: `wrapTransformerNode` and `pipeTransformerNode` fn cases; UI cases for the root in `mapList`, a nested node in `ifThenElse`, the filtered list, Pipe into |
+| Remove a subtree | met: `removeTransformerNode` fn cases; UI cases for optional and required positions |
+| Remove one node, keep a child | met: `unwrapTransformerNode` fn cases; UI cases with one and with several children |
+| Replace one node, keep what fits | met: `keepAttributesOnTypeChange` fn cases; UI cases `filterList` to `find` and the getObjectValues dialog |
+| Any level | met: nested fn cases for every operation; UI wrap of a nested node |
+| The use case in instance mode | waits for #411 (D16) |
