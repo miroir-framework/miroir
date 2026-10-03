@@ -35,6 +35,26 @@ export {
 
 export { CodeBlock_ReadOnly } from "./components/CodeBlock_ReadOnly.js";
 
+// Feedback glow (#438)
+export {
+  acquireFeedbackGlowStyles,
+  attachFeedbackGlow,
+  defaultFeedbackGlow,
+  feedbackGlowAttribute,
+  feedbackGlowClass,
+  feedbackGlowColorProperty,
+  feedbackGlowDurationBoundsMs,
+  feedbackGlowDurationProperty,
+  feedbackGlowOptOutAttribute,
+  feedbackGlowStylesAttribute,
+  feedbackGlowTargetSelector,
+  type FeedbackGlowOptions,
+} from "./components/FeedbackGlow/feedbackGlow.js";
+export {
+  FeedbackGlowBoundary,
+  type FeedbackGlowBoundaryProps,
+} from "./components/FeedbackGlow/FeedbackGlowBoundary.js";
+
 // Context provider for global state and services
 export {
   evaluateSchemaRevisionChange,
@@ -46,6 +66,7 @@ export {
 export {
   FoldedStateTree,
   formikPath_EntityInstanceSelectorPanel,
+  feedbackGlowStorageKey,
   MiroirContextReactProvider,
   MiroirReactContext,
   ToolsPageState,

@@ -59,6 +59,7 @@ import {
   useSnackbar,
 } from "miroir-react";
 import { MiroirThemeProvider, useMiroirTheme, type MiroirThemeOption } from '../../contexts/MiroirThemeContext.js';
+import { GlobalFeedbackGlow } from './GlobalFeedbackGlow.js';
 import { RenderInsightHeader } from "../RenderInsightHeader.js";
 import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
@@ -851,6 +852,7 @@ export const RootComponent = (props: RootComponentProps) => {
         currentThemeOptions={currentThemeOptions}
       >
         <ReportPageContextProvider>
+          <GlobalFeedbackGlow />
           <ModelEnvironmentSync
             applicationDeploymentMap={
               applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap

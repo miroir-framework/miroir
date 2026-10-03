@@ -2072,6 +2072,18 @@
       ]
     },
     {
+      "id": "unit-438-feedback-glow",
+      "scopes": ["ui"],
+      "tier": "unit",
+      "title": "#438 — feedback glow (mechanism, nested boundaries, theme tokens, sandbox boundary, AppBar global switch)",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w miroir-react -- feedbackGlow && npm run testByFile -w miroir-standalone-app -- componentTestSandboxGlow feedbackGlowGlobalSwitch"
+      ]
+    },
+    {
       "id": "unit-307-testByFile-launcher",
       "scopes": ["tooling"],
       "tier": "unit",

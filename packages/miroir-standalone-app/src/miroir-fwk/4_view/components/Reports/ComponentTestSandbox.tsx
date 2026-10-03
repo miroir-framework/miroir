@@ -13,7 +13,11 @@ import {
   type ViewParamsData,
 } from "miroir-core";
 import { deployment_Admin } from "miroir-app-admin";
-import { getMemoizedReduxDeploymentsStateSelectorMap, useDomainControllerService } from "miroir-react";
+import {
+  FeedbackGlowBoundary,
+  getMemoizedReduxDeploymentsStateSelectorMap,
+  useDomainControllerService,
+} from "miroir-react";
 
 import { packageName } from "../../../../constants.js";
 import type { ComponentTestRegistration } from "../../../4-tests/componentTests/index.js";
@@ -183,37 +187,40 @@ export const ComponentTestSandbox: React.FC<{
       backgroundColor: "white",
     }}
   >
-    <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "4px", fontSize: "0.85em" }}>
-      <span style={{ fontWeight: "bold", color: "#4527a0" }}>Component test sandbox</span>
-      <span
-        data-testid="component-test-sandbox-test-name"
-        title={testName}
-        style={{
-          flexGrow: 1,
-          minWidth: 0,
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-          fontFamily: "monospace",
-          color: "#555",
-        }}
-      >
-        {testName ?? ""}
-      </span>
-      {/* mounted with the panel only: it reads ViewParams, which needs the app's providers */}
-      {open && stepDelayMsRef && <ComponentTestStepDelaySlider stepDelayMsRef={stepDelayMsRef} />}
-      <button
-        type="button"
-        aria-label="Close component test sandbox"
-        title={running ? "A component test run is in progress" : undefined}
-        disabled={running}
-        onClick={onClose}
-      >
-        Close
-      </button>
-    </div>
-    {/* Never a render target: the runner adds one container per case and a portal element. */}
-    <div data-testid="component-test-sandbox" ref={sandboxRef} />
+    {/* #438: steps of a displayed run glow; every case container and the portal element are inside. */}
+    <FeedbackGlowBoundary enabled>
+      <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "4px", fontSize: "0.85em" }}>
+        <span style={{ fontWeight: "bold", color: "#4527a0" }}>Component test sandbox</span>
+        <span
+          data-testid="component-test-sandbox-test-name"
+          title={testName}
+          style={{
+            flexGrow: 1,
+            minWidth: 0,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            fontFamily: "monospace",
+            color: "#555",
+          }}
+        >
+          {testName ?? ""}
+        </span>
+        {/* mounted with the panel only: it reads ViewParams, which needs the app's providers */}
+        {open && stepDelayMsRef && <ComponentTestStepDelaySlider stepDelayMsRef={stepDelayMsRef} />}
+        <button
+          type="button"
+          aria-label="Close component test sandbox"
+          title={running ? "A component test run is in progress" : undefined}
+          disabled={running}
+          onClick={onClose}
+        >
+          Close
+        </button>
+      </div>
+      {/* Never a render target: the runner adds one container per case and a portal element. */}
+      <div data-testid="component-test-sandbox" ref={sandboxRef} />
+    </FeedbackGlowBoundary>
   </div>
 );
 

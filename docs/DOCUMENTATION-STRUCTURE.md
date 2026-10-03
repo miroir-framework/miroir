@@ -196,6 +196,7 @@ docs-new/
 8. [Deployment Guide](guides/deployment.md) - Production architecture (20 min)
 9. [Custom Stores](guides/advanced/custom-stores.md) - Extensibility (20 min)
 10. [UI Performance Monitoring](guides/advanced/performance.md) - Timer toggle & render insights (10 min)
+11. [Interaction Glow](guides/advanced/interaction-glow.md) - Feedback on the control just used, test-run visibility (5 min)
 
 **Next Steps**: Architecture design for specific use case
 

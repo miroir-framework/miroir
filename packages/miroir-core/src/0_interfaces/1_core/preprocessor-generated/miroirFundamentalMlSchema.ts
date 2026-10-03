@@ -28849,6 +28849,41 @@ export const miroirFundamentalMlSchema = {
                         }
                       }
                     }
+                  },
+                  "feedbackGlow": {
+                    "type": "object",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Feedback Glow",
+                        "description": "Short glow on the control that was just focused, clicked, activated or committed (#438), when the glow is enabled."
+                      }
+                    },
+                    "definition": {
+                      "color": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Feedback Glow Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "durationMs": {
+                        "type": "number",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Feedback Glow Duration (ms)"
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               },
@@ -31170,6 +31205,40 @@ export const miroirFundamentalMlSchema = {
                           "lg": {
                             "type": "string",
                             "optional": true
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "feedbackGlow": {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Feedback Glow",
+                        "description": "Short glow on the control that was just focused, clicked, activated or committed (#438), when the glow is enabled."
+                      }
+                    },
+                    "definition": {
+                      "color": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Feedback Glow Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "durationMs": {
+                        "type": "number",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Feedback Glow Duration (ms)"
                           }
                         }
                       }
