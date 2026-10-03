@@ -28882,6 +28882,16 @@ export const miroirFundamentalMlSchema = {
                             "defaultLabel": "Feedback Glow Duration (ms)"
                           }
                         }
+                      },
+                      "intensity": {
+                        "type": "number",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Feedback Glow Intensity",
+                            "description": "Scales the halo size: 1 is thin, default 2.5, clamped to 0.5-5."
+                          }
+                        }
                       }
                     }
                   }
@@ -31239,6 +31249,16 @@ export const miroirFundamentalMlSchema = {
                         "tag": {
                           "value": {
                             "defaultLabel": "Feedback Glow Duration (ms)"
+                          }
+                        }
+                      },
+                      "intensity": {
+                        "type": "number",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Feedback Glow Intensity",
+                            "description": "Scales the halo size: 1 is thin, default 2.5, clamped to 0.5-5."
                           }
                         }
                       }

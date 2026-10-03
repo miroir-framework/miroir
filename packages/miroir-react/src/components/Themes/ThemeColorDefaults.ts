@@ -306,6 +306,7 @@ const colors: MiroirThemeFull['definition']['colors'] = {
     feedbackGlow: {
       color: theme?.components?.feedbackGlow?.color ?? defaultFeedbackGlow.color,
       durationMs: theme?.components?.feedbackGlow?.durationMs ?? defaultFeedbackGlow.durationMs,
+      intensity: theme?.components?.feedbackGlow?.intensity ?? defaultFeedbackGlow.intensity,
     },
 
     // Not yet on StoredMiroirTheme schema — read optional overrides via cast until schema catches up.
