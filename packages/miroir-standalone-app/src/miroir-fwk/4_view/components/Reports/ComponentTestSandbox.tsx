@@ -50,7 +50,8 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger:
 // The panel's header (#435) shows the name of the case being run (the last one after the run) and
 // a slider of the delay the runner waits before each step. The delay is the ViewParams attribute
 // `componentTestStepDelayMs`, saved when the slider is released; the runner reads the current
-// value when each step starts, so moving the slider acts on the running case.
+// value when each step starts, so moving the slider acts on the running case. The slider mounts
+// with the panel, so that a closed sandbox needs no Redux store or DomainController.
 // ################################################################################################
 
 export interface ComponentTestSandboxContextValue {
@@ -116,6 +117,46 @@ function useComponentTestStepDelay(): { stepDelayMs: number; saveStepDelayMs: (v
 }
 
 // ################################################################################################
+/**
+ * #435: the slider of the step delay. It shows its own value while it moves, the saved one
+ * otherwise, and writes the shown value to `stepDelayMsRef` for the runner.
+ */
+const ComponentTestStepDelaySlider: React.FC<{ stepDelayMsRef: React.MutableRefObject<number> }> = ({
+  stepDelayMsRef,
+}) => {
+  const { stepDelayMs: savedStepDelayMs, saveStepDelayMs } = useComponentTestStepDelay();
+  const [movingStepDelayMs, setMovingStepDelayMs] = useState<number | undefined>(undefined);
+  if (movingStepDelayMs !== undefined && movingStepDelayMs === savedStepDelayMs) {
+    setMovingStepDelayMs(undefined);
+  }
+  const stepDelayMs = movingStepDelayMs ?? savedStepDelayMs;
+  stepDelayMsRef.current = stepDelayMs;
+  const onCommit = () => {
+    if (movingStepDelayMs !== undefined) {
+      saveStepDelayMs(movingStepDelayMs);
+    }
+  };
+  return (
+    <label style={{ display: "flex", alignItems: "center", gap: "4px", color: "#555", whiteSpace: "nowrap" }}>
+      Step delay
+      <input
+        type="range"
+        aria-label="Component test step delay"
+        min={0}
+        max={maxStepDelayMs}
+        step={100}
+        value={stepDelayMs}
+        onChange={(event) => setMovingStepDelayMs(Number(event.target.value))}
+        onPointerUp={onCommit}
+        onKeyUp={onCommit}
+        style={{ width: "100px" }}
+      />
+      <span style={{ display: "inline-block", minWidth: "4.5em", textAlign: "right" }}>{stepDelayMs} ms</span>
+    </label>
+  );
+};
+
+// ################################################################################################
 export const ComponentTestSandbox: React.FC<{
   open: boolean;
   /** A run is active: the close button is disabled. */
@@ -124,22 +165,9 @@ export const ComponentTestSandbox: React.FC<{
   sandboxRef: React.RefObject<HTMLDivElement>;
   /** #435: the name of the case being run, or of the last case run. */
   testName?: string;
-  /** #435: the delay before each step, in milliseconds. */
-  stepDelayMs?: number;
-  /** #435: the slider moves. */
-  onStepDelayChange?: (value: number) => void;
-  /** #435: the slider is released: the delay is saved. */
-  onStepDelayCommit?: () => void;
-}> = ({
-  open,
-  running = false,
-  onClose,
-  sandboxRef,
-  testName,
-  stepDelayMs = 0,
-  onStepDelayChange,
-  onStepDelayCommit,
-}) => (
+  /** #435: receives the step delay of the slider, for the runner. */
+  stepDelayMsRef?: React.MutableRefObject<number>;
+}> = ({ open, running = false, onClose, sandboxRef, testName, stepDelayMsRef }) => (
   <div
     data-testid="component-test-sandbox-panel"
     style={{
@@ -168,22 +196,8 @@ export const ComponentTestSandbox: React.FC<{
       >
         {testName ?? ""}
       </span>
-      <label style={{ display: "flex", alignItems: "center", gap: "4px", color: "#555", whiteSpace: "nowrap" }}>
-        Step delay
-        <input
-          type="range"
-          aria-label="Component test step delay"
-          min={0}
-          max={maxStepDelayMs}
-          step={100}
-          value={stepDelayMs}
-          onChange={(event) => onStepDelayChange?.(Number(event.target.value))}
-          onPointerUp={onStepDelayCommit}
-          onKeyUp={onStepDelayCommit}
-          style={{ width: "100px" }}
-        />
-        <span style={{ display: "inline-block", minWidth: "4.5em", textAlign: "right" }}>{stepDelayMs} ms</span>
-      </label>
+      {/* mounted with the panel only: it reads ViewParams, which needs the app's providers */}
+      {open && stepDelayMsRef && <ComponentTestStepDelaySlider stepDelayMsRef={stepDelayMsRef} />}
       <button
         type="button"
         aria-label="Close component test sandbox"
@@ -210,21 +224,8 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
   const [running, setRunning] = useState(false);
   const [testName, setTestName] = useState<string | undefined>(undefined);
 
-  // #435: the slider shows its own value while it moves, the saved one otherwise
-  const { stepDelayMs: savedStepDelayMs, saveStepDelayMs } = useComponentTestStepDelay();
-  const [movingStepDelayMs, setMovingStepDelayMs] = useState<number | undefined>(undefined);
-  if (movingStepDelayMs !== undefined && movingStepDelayMs === savedStepDelayMs) {
-    setMovingStepDelayMs(undefined);
-  }
-  const stepDelayMs = movingStepDelayMs ?? savedStepDelayMs;
-  // read by the runner when each step starts
-  const stepDelayMsRef = useRef(stepDelayMs);
-  stepDelayMsRef.current = stepDelayMs;
-  const onStepDelayCommit = useCallback(() => {
-    if (movingStepDelayMs !== undefined) {
-      saveStepDelayMs(movingStepDelayMs);
-    }
-  }, [movingStepDelayMs, saveStepDelayMs]);
+  // #435: set by the slider, read by the runner when each step starts
+  const stepDelayMsRef = useRef(0);
   const runControls = useMemo(
     () => ({ onCaseStart: setTestName, stepDelayMs: () => stepDelayMsRef.current }),
     [],
@@ -333,9 +334,7 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
         onClose={onClose}
         sandboxRef={sandboxRef}
         testName={testName}
-        stepDelayMs={stepDelayMs}
-        onStepDelayChange={setMovingStepDelayMs}
-        onStepDelayCommit={onStepDelayCommit}
+        stepDelayMsRef={stepDelayMsRef}
       />
     </ComponentTestSandboxContext.Provider>
   );

@@ -2055,6 +2055,22 @@
       ]
     },
     {
+      "id": "unit-435-test-sandbox-header",
+      "scopes": ["ui"],
+      "tier": "unit",
+      "title": "#435 \u2014 Component Test Sandbox header: running test name, step-delay slider saved in ViewParams",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "componentTestSandboxHeader.435"
+      ]
+    },
+    {
       "id": "unit-307-testByFile-launcher",
       "scopes": ["tooling"],
       "tier": "unit",
