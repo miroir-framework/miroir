@@ -16,7 +16,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Related: #435 / PR #436 (sandbox header, needed by Slice 5)
 Working branch: `claude/438-feedback-glow`
 
-**Resume note:** Slices 0-4 and 6 done 2026-10-03 (issue-scoped tests already moved to feature-named files, see 6.4); Slice 5 waits for PR #436.
+**Resume note:** all slices done 2026-10-03: Slices 0-4 and 6 in PR #440, Slice 5 after PR #436 merged (issue-scoped tests already moved to feature-named files, see 6.4).
 
 ---
 
@@ -40,7 +40,7 @@ This plan does **not** add environment or URL sources for the switch, enable the
 | 2 | Nested boundaries: innermost decides, "off" attaches nothing | ✅ | `feedbackGlow.438.phase2` |
 | 3 | Theme tokens and reduced motion | ✅ | `feedbackGlowTheme.438.phase3` + `modelValidation` |
 | 4 | Global switch: AppBar toggle, persisted, off by default | ✅ | `feedbackGlowGlobalSwitch.438.phase4` |
-| 5 | Sandbox header toggle (after #436) | ⬜ | `componentTestSandboxGlow.438.phase5` |
+| 5 | Sandbox header toggle (after #436) | ✅ | `componentTestSandboxGlow` |
 | 6 | Cost measurement, nonreg step, docs, cleanup, AC | ✅ | nonreg step `unit-438-feedback-glow` + perf table |
 
 ---
@@ -333,7 +333,7 @@ Manual: toggle in the AppBar, tab through a form, reload.
 
 ## Slice 5 — Sandbox header toggle
 
-**Status:** ⬜ pending (starts once PR #436 is merged into `_integration`; merge `_integration` into the branch first)
+**Status:** ✅ DONE (2026-10-03, after PR #436 merged)
 
 ### Goal
 
@@ -365,7 +365,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui
 
 ### Realization
 
-_(pending)_
+Cases added to `componentTestSandboxGlow.unit.test.tsx` (feature-named file, see 6.4): checked by default; unchecking marks the sandbox boundary `off` and a click adds no class, under an enabled `target="document"` boundary; checking again restores the glow. `ComponentTestSandbox` takes `glowOn` / `onGlowOnChange` (glow on when omitted) and renders the checkbox in the #435 header line, after the step-delay slider; it needs no provider, so it renders whether or not the panel is open. `ComponentTestSandboxProvider` keeps `glowOn` in `useState(true)`. Guide and testing reference mention the checkbox.
 
 ---
 

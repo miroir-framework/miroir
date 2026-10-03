@@ -175,7 +175,10 @@ export const ComponentTestSandbox: React.FC<{
   testName?: string;
   /** #435: receives the step delay of the slider, for the runner. */
   stepDelayMsRef?: React.MutableRefObject<number>;
-}> = ({ open, running = false, onClose, sandboxRef, testName, stepDelayMsRef }) => (
+  /** #438: the header checkbox "Glow on interactions"; the glow is on when omitted. */
+  glowOn?: boolean;
+  onGlowOnChange?: (glowOn: boolean) => void;
+}> = ({ open, running = false, onClose, sandboxRef, testName, stepDelayMsRef, glowOn = true, onGlowOnChange }) => (
   <div
     data-testid="component-test-sandbox-panel"
     style={{
@@ -187,12 +190,19 @@ export const ComponentTestSandbox: React.FC<{
       backgroundColor: "white",
     }}
   >
-    {/* #438: steps of a displayed run glow; every case container and the portal element are inside. */}
-    <FeedbackGlowBoundary enabled>
+    {/* #438: steps of a displayed run glow; every case container and the portal element are inside.
+        Unchecking the header box marks the boundary "off", which also overrides the global switch. */}
+    <FeedbackGlowBoundary enabled={glowOn}>
       <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "4px", fontSize: "0.85em" }}>
         <span style={{ fontWeight: "bold", color: "#4527a0", flexGrow: 1 }}>Component test sandbox</span>
         {/* mounted with the panel only: it reads ViewParams, which needs the app's providers */}
         {open && stepDelayMsRef && <ComponentTestStepDelaySlider stepDelayMsRef={stepDelayMsRef} />}
+        {onGlowOnChange && (
+          <label style={{ display: "flex", alignItems: "center", gap: "4px", color: "#555", whiteSpace: "nowrap" }}>
+            <input type="checkbox" checked={glowOn} onChange={(event) => onGlowOnChange(event.target.checked)} />
+            Glow on interactions
+          </label>
+        )}
         <button
           type="button"
           aria-label="Close component test sandbox"
@@ -237,6 +247,8 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
   const [open, setOpen] = useState(false);
   const [running, setRunning] = useState(false);
   const [testName, setTestName] = useState<string | undefined>(undefined);
+  // #438: in memory only, so every page load starts with the glow on
+  const [glowOn, setGlowOn] = useState(true);
 
   // #435: set by the slider, read by the runner when each step starts
   const stepDelayMsRef = useRef(0);
@@ -349,6 +361,8 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
         sandboxRef={sandboxRef}
         testName={testName}
         stepDelayMsRef={stepDelayMsRef}
+        glowOn={glowOn}
+        onGlowOnChange={setGlowOn}
       />
     </ComponentTestSandboxContext.Provider>
   );

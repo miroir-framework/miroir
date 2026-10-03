@@ -5,7 +5,7 @@ The interaction glow is a short yellow halo around the control that was just foc
 ## Turning it on
 
 - **Whole app.** The AppBar button "Interaction glow" (highlight icon) switches it on or off. The choice is stored in the browser's `localStorage` under `miroirFeedbackGlow`, so it survives a reload or a browser restart.
-- **Component Test Sandbox.** The glow is always on inside the sandbox panel of the Miroir Tests page, so each step of a displayed test run shows the control it acted on. The runner's `fireEvent` / `userEvent` events trigger it like real ones.
+- **Component Test Sandbox.** The glow is on by default inside the sandbox panel of the Miroir Tests page, so each step of a displayed test run shows the control it acted on. The "Glow on interactions" checkbox in the panel header turns it off for the sandbox, also when the global switch is on; every page load starts with it checked. The runner's `fireEvent` / `userEvent` events trigger it like real ones.
 - **Vitest component runs.** Off. `MIROIR_FEEDBACK_GLOW=1` turns it on for the sandbox element of `miroir-component-tests.unit.test.tsx`, to measure its cost with the render-performance suite.
 
 ## In code (`miroir-react`)
