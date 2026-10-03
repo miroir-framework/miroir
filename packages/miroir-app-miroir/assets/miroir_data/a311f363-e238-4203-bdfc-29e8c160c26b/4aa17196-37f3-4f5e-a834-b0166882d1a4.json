@@ -1821,6 +1821,265 @@
             }
           }
         ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "parameterReadsOfDefaultInput",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a read by referenceName",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "parameterReadsOfDefaultInput"
+            },
+            "arguments": [
+              {
+                "transformerType": "getFromParameters",
+                "referenceName": "defaultInput"
+              }
+            ],
+            "expectedValue": [
+              []
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a read by referencePath",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "parameterReadsOfDefaultInput"
+            },
+            "arguments": [
+              {
+                "transformerType": "getFromParameters",
+                "referencePath": [
+                  "defaultInput",
+                  "name"
+                ]
+              }
+            ],
+            "expectedValue": [
+              []
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a parameter other than defaultInput is not a read",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "parameterReadsOfDefaultInput"
+            },
+            "arguments": [
+              {
+                "transformerType": "getFromParameters",
+                "referenceName": "book"
+              }
+            ],
+            "expectedValue": []
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "getFromContext is not a parameter read",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "parameterReadsOfDefaultInput"
+            },
+            "arguments": [
+              {
+                "transformerType": "getFromContext",
+                "referencePath": [
+                  "defaultInput",
+                  "name"
+                ]
+              }
+            ],
+            "expectedValue": []
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "nested reads, with their paths",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "parameterReadsOfDefaultInput"
+            },
+            "arguments": [
+              {
+                "transformerType": "createObject",
+                "definition": {
+                  "a": {
+                    "transformerType": "getFromParameters",
+                    "referencePath": [
+                      "defaultInput",
+                      "name"
+                    ]
+                  },
+                  "b": {
+                    "transformerType": "+",
+                    "args": [
+                      1,
+                      {
+                        "transformerType": "getFromParameters",
+                        "referenceName": "defaultInput"
+                      }
+                    ]
+                  },
+                  "c": {
+                    "transformerType": "getFromContext",
+                    "referencePath": [
+                      "defaultInput",
+                      "name"
+                    ]
+                  }
+                }
+              }
+            ],
+            "expectedValue": [
+              [
+                "definition",
+                "a"
+              ],
+              [
+                "definition",
+                "b",
+                "args",
+                1
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "elementParameterReadsOfDefaultInput",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "mapList: a read in the element transformer",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "elementParameterReadsOfDefaultInput"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "elementTransformer": {
+                  "transformerType": "getFromParameters",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                }
+              }
+            ],
+            "expectedValue": [
+              [
+                "elementTransformer"
+              ]
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "mapList: a read in applyTo reads the list, as intended",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "elementParameterReadsOfDefaultInput"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                },
+                "applyTo": {
+                  "transformerType": "getFromParameters",
+                  "referenceName": "defaultInput"
+                }
+              }
+            ],
+            "expectedValue": []
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "filterList: a read nested in the predicate",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "elementParameterReadsOfDefaultInput"
+            },
+            "arguments": [
+              {
+                "transformerType": "filterList",
+                "predicate": {
+                  "transformerType": "boolExpr",
+                  "operator": "==",
+                  "left": {
+                    "transformerType": "getFromParameters",
+                    "referencePath": [
+                      "defaultInput",
+                      "name"
+                    ]
+                  },
+                  "right": "x"
+                }
+              }
+            ],
+            "expectedValue": [
+              [
+                "predicate",
+                "left"
+              ]
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "find: a read in the predicate",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "elementParameterReadsOfDefaultInput"
+            },
+            "arguments": [
+              {
+                "transformerType": "find",
+                "predicate": {
+                  "transformerType": "getFromParameters",
+                  "referenceName": "defaultInput"
+                }
+              }
+            ],
+            "expectedValue": [
+              [
+                "predicate"
+              ]
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a transformer without element slot",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "elementParameterReadsOfDefaultInput"
+            },
+            "arguments": [
+              {
+                "transformerType": "createObject",
+                "definition": {
+                  "a": {
+                    "transformerType": "getFromParameters",
+                    "referencePath": [
+                      "defaultInput",
+                      "name"
+                    ]
+                  }
+                }
+              }
+            ],
+            "expectedValue": []
+          }
+        ]
       }
     ]
   }

@@ -5,7 +5,7 @@
   "name": "ui.transformerEditor",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "TransformerEditor on the Miroir application: renders the default transformer and its result, edits it, chooses a transformer type, and switches the input type restriction off, and wraps transformers in new ones at any level, with the type filter of #383, pipes them into new ones, unwraps and removes them, and keeps what fits on a type change (#415).",
+  "description": "TransformerEditor on the Miroir application: renders the default transformer and its result, edits it, chooses a transformer type, and switches the input type restriction off, and wraps transformers in new ones at any level, with the type filter of #383, pipes them into new ones, unwraps and removes them, keeps what fits on a type change, and hints at getFromParameters reads after a wrap (#415).",
   "tags": [
     "ui",
     "editor",
@@ -1313,6 +1313,112 @@
                   "byTestId": "transformer-node-dialog-dropped"
                 },
                 "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: after a wrap in mapList, a hint says getFromParameters reads the whole input",
+            "steps": [
+              {
+                "step": "selectOption",
+                "label": "root getFromParameters",
+                "field": "transformerEditor_transformer_selector.transformer.transformerType",
+                "option": "getFromParameters"
+              },
+              {
+                "step": "click",
+                "label": "confirm dropping the returned value",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "root is getFromParameters",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "getFromParameters",
+                "timeout": 2000
+              },
+              {
+                "step": "clickObjectButton",
+                "label": "add referenceName",
+                "field": "transformerEditor_transformer_selector.transformer",
+                "action": "addOptionalAttribute",
+                "attribute": "referenceName"
+              },
+              {
+                "step": "change",
+                "label": "read defaultInput",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_transformer_selector.transformer.referenceName"
+                },
+                "value": "defaultInput"
+              },
+              {
+                "step": "expectElement",
+                "label": "no hint at the root",
+                "target": {
+                  "byTestId": "transformer-wrap-parameter-hint"
+                },
+                "present": false
+              },
+              {
+                "step": "click",
+                "label": "switch the restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the root node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "enclosing mapList",
+                "field": "transformer-node-dialog-type",
+                "option": "mapList"
+              },
+              {
+                "step": "click",
+                "label": "confirm the wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "root is mapList",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "mapList",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the hint names the element transformer",
+                "target": {
+                  "byTestId": "transformer-wrap-parameter-hint"
+                },
+                "containsHtml": "getFromParameters at elementTransformer reads the whole input",
+                "timeout": 2000
               }
             ]
           }

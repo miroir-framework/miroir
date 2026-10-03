@@ -49,6 +49,7 @@ import {
   transformerTypesAcceptingInput,
 } from "../2_domain/TransformerInterfaceCheck";
 import {
+  elementParameterReadsOfDefaultInput,
   keepAttributesOnTypeChange,
   parameterReadsOfDefaultInput,
   pipeCandidates,
@@ -240,6 +241,7 @@ const FUNCTION_CALL_REGISTRY: Record<
     removeTransformerNode: removeTransformerNode as WhitelistedFunction,
     keepAttributesOnTypeChange: keepAttributesOnTypeChange as WhitelistedFunction,
     parameterReadsOfDefaultInput: parameterReadsOfDefaultInput as WhitelistedFunction,
+    elementParameterReadsOfDefaultInput: elementParameterReadsOfDefaultInput as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerMlSchemaCheck": {
     checkTransformerMlSchemaCompatibility:

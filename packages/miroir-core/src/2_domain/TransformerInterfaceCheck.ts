@@ -363,7 +363,8 @@ function nodeOutput(
 }
 
 const SKIP_WALK_KEYS = new Set(["transformerType", "interpolation", "mlSchema", "applyTo"]);
-const LIST_ELEMENT_SLOTS: Record<string, string> = {
+/** The slot of a list transformer whose input is each element of the list (#415 D15 reads it too). */
+export const LIST_ELEMENT_SLOTS: Record<string, string> = {
   mapList: "elementTransformer",
   filterList: "predicate",
   find: "predicate",

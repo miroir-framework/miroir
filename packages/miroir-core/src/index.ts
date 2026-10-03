@@ -1346,6 +1346,7 @@ export type {
   TransformerTypesAcceptingInput,
 } from "./0_interfaces/2_domain/TransformerInterfaceCheckInterface.js";
 export {
+  elementParameterReadsOfDefaultInput,
   keepAttributesOnTypeChange,
   parameterReadsOfDefaultInput,
   pipeCandidates,

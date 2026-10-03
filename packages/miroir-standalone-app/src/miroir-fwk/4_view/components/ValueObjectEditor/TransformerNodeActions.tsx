@@ -2,6 +2,7 @@ import { Menu } from "@mui/material";
 import React, { useMemo, useState } from "react";
 
 import {
+  elementParameterReadsOfDefaultInput,
   pipeCandidates,
   pipeTransformerNode,
   transformerChildren,
@@ -107,6 +108,8 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
       ? String((nodeValue as { transformerType: unknown }).transformerType)
       : undefined;
   const childKey = (path: (string | number)[]) => path.join(".");
+  // D15: after a wrap in a list transformer, getFromParameters still reads the whole input
+  const elementParameterReads = useMemo(() => elementParameterReadsOfDefaultInput(nodeValue), [nodeValue]);
   const droppedChildren = children.filter((child) => childKey(child.path) !== chosenChild);
 
   const closeDialog = () => {
@@ -185,6 +188,17 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
       >
         ⋯
       </button>
+      {elementParameterReads.length > 0 && (
+        <span
+          data-testid="transformer-wrap-parameter-hint"
+          data-node-path={nodePathKey}
+          style={{ fontSize: "0.85em", opacity: 0.8 }}
+        >
+          getFromParameters at {elementParameterReads.map(childKey).join(", ")}{" "}
+          {elementParameterReads.length > 1 ? "read" : "reads"} the whole input, not each element: getFromContext
+          reads the element.
+        </span>
+      )}
       <Menu anchorEl={menuAnchor} open={menuAnchor !== null} onClose={() => setMenuAnchor(null)}>
         <ThemedMenuItem
           data-testid="transformer-node-action-wrap"

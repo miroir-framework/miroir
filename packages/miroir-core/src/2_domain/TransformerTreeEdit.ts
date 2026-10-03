@@ -13,7 +13,7 @@ import type {
 } from "../0_interfaces/2_domain/TransformerTreeEditInterface";
 import { mlsTypeCheck } from "../1_core/mls/mlsTypeCheck";
 import { resolveMlSchemaReferenceInContext } from "../1_core/mls/mlsResolveSchemaReferenceInContext";
-import { transformerTypesAcceptingInput } from "./TransformerInterfaceCheck";
+import { LIST_ELEMENT_SLOTS, transformerTypesAcceptingInput } from "./TransformerInterfaceCheck";
 import { applicationTransformerDefinitions } from "./TransformersForRuntime";
 
 // ################################################################################################
@@ -534,4 +534,17 @@ export function parameterReadsOfDefaultInput(
       (Array.isArray(node.referencePath) && node.referencePath[0] === defaultTransformerInput));
   const nested = Object.entries(node).flatMap(([key, value]) => parameterReadsOfDefaultInput(value, [...path, key]));
   return readsDefaultInput ? [path, ...nested] : nested;
+}
+
+/**
+ * Paths, from `node`, of the `getFromParameters` reads of `defaultInput` in the element slot of a
+ * list transformer (`mapList`, `filterList`, `find`): they read the whole input, not each
+ * element (D15). `applyTo` is not an element slot.
+ */
+export function elementParameterReadsOfDefaultInput(node: unknown): (string | number)[][] {
+  if (!isTransformerNode(node)) {
+    return [];
+  }
+  const elementSlot = LIST_ELEMENT_SLOTS[node.transformerType];
+  return elementSlot ? parameterReadsOfDefaultInput(node[elementSlot], [elementSlot]) : [];
 }

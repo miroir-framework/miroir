@@ -36,7 +36,7 @@ Out (analysis non-goals): undo and redo; rewriting references after a wrap or an
 | 4 | Unwrap: remove a node, keep a child | ✅ DONE | unwrap cases; UI unwrap with confirmation |
 | 5 | Remove a subtree | ✅ DONE | remove cases per position kind; UI remove |
 | 6 | Type change keeps valid attributes | ✅ DONE | merge cases; UI `filterList` to `find` keeps `predicate` |
-| 7 | Use case end to end, `getFromParameters` hint (D15, D16) | ⬜ pending | UI case: one instance, then all, wrapped in `mapList` |
+| 7 | Use case end to end, `getFromParameters` hint (D15, D16) | 🟡 PARTIAL (use case UI case waits for #411) | UI case: one instance, then all, wrapped in `mapList` |
 | 8 | Nonreg, docs, AC checklist | ⬜ pending | full `nonreg:filesystem` |
 
 ## Locked implementation defaults
@@ -290,11 +290,11 @@ Same as Slice 1.
 - The dialog does not restore the focus on close: back on the `transformerType` select, the focus reopened its list and blanked the input.
 - Deviation: `MlEnumEditor` keeps its own `handleDiscriminatorChange`. `transformerType` is a literal in every transformer branch, so only `MlLiteralEditor` renders it, and open PR #412 rewrites both copies; the dedupe of the refactor checkpoint is left to after #412.
 - UI: the existing getObjectValues case now goes through the dialog (names `mlSchema, value`, Cancel keeps the root, then Change type). New case "changing filterList to find keeps its predicate". The plan's `ifThenElse` to `case` UI case is covered by the fn case and the getObjectValues dialog. Leaf count 100. The list transformer test rig confirms the dialog when a type change opens it.
-- Validation: `fn.transformer.treeEdit` 52/52, `ui.transformerEditor` 15/15, `transformerChoiceByInputType.integ` 2/2, `listDisplayByTransformer.integ` 13/13, `listDisplayByTransformer.loopSafety.integ` 2/2, core `tsc` clean, app `tsc` 32 errors (baseline), lint clean. `ListTransformerPanel.unit` has 1 failure ("shows transformer toggle in the header"), the same on the base commit `78fcd8cc`.
+- Validation (scoped nonreg for Slices 5 and 6: 38/38): `fn.transformer.treeEdit` 52/52, `ui.transformerEditor` 15/15, `transformerChoiceByInputType.integ` 2/2, `listDisplayByTransformer.integ` 13/13, `listDisplayByTransformer.loopSafety.integ` 2/2, core `tsc` clean, app `tsc` 32 errors (baseline), lint clean. `ListTransformerPanel.unit` has 1 failure ("shows transformer toggle in the header"), the same on the base commit `78fcd8cc`.
 
 ## Slice 7. Use case end to end, `getFromParameters` hint (D15, D16)
 
-**Status:** ⬜ pending (the `getFromContext` case needs #411 fixed, D16)
+**Status:** 🟡 PARTIAL: the hint is done; the use case UI case waits for #411 (D16)
 
 Goal: the issue's use case runs in the editor, and a wrap that leaves `getFromParameters` reading the whole input says so.
 
@@ -313,7 +313,12 @@ Same as Slice 1.
 
 ### Realization
 
-(pending)
+- `parameterReadsOfDefaultInput` came with Slice 1. This slice adds `elementParameterReadsOfDefaultInput(node)`: the reads in the element slot of `mapList`, `filterList` or `find`, from the slot table of the #383 walk (`LIST_ELEMENT_SLOTS`, now exported from `TransformerInterfaceCheck.ts`), so `applyTo` reads are not reported. 5 + 5 cases; 62 cases in the suite.
+- Deviation: the hint is not shown once after a wrap but derived from the tree. Every `mapList`, `filterList` or `find` whose element subtree reads `defaultInput` through `getFromParameters` shows `transformer-wrap-parameter-hint` next to its menu, naming the paths. It holds no state and stays right after later edits.
+- UI case "after a wrap in mapList, a hint says getFromParameters reads the whole input": root `getFromParameters` with `referenceName` `defaultInput`, no hint at the root, wrap in `mapList`, the hint names `elementTransformer`. Leaf count 101.
+- Probe for #411 (not committed): wrapping a `getFromContext` root that already has `referenceName` `defaultInput` in `mapList` does not freeze the component test runner. #411 seems limited to choosing a fresh `getFromContext` inside a `mapList`.
+- Left for #411 (D16): the use case case in instance mode (one Entity instance, then Show All and Wrap in `mapList`). #411's own criteria ask for a `ui.transformerEditor` case with a `getFromContext` element and its result; the use case case fits there.
+- Validation: `fn.transformer.treeEdit` 62/62, `fn.transformer.interfaceWalk` 43/43, `ui.transformerEditor` 16/16, core `tsc` clean, app `tsc` 32 errors (baseline), lint clean.
 
 ## Slice 8. Nonreg, docs, AC checklist
 
