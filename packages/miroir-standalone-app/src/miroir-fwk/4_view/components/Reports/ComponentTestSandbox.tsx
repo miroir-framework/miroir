@@ -1,11 +1,26 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
-import { MiroirLoggerFactory, type LoggerInterface } from "miroir-core";
+import {
+  defaultSelfApplicationDeploymentMap,
+  defaultViewParamsFromAdminStorageFetchQueryParams,
+  MiroirLoggerFactory,
+  type Domain2QueryReturnType,
+  type DomainElementSuccess,
+  type EntityInstancesUuidIndex,
+  type LoggerInterface,
+  type ReduxDeploymentsState,
+  type SyncQueryRunner,
+  type ViewParamsData,
+} from "miroir-core";
+import { deployment_Admin } from "miroir-app-admin";
+import { getMemoizedReduxDeploymentsStateSelectorMap, useDomainControllerService } from "miroir-react";
 
 import { packageName } from "../../../../constants.js";
 import type { ComponentTestRegistration } from "../../../4-tests/componentTests/index.js";
 import type { UiIntegrationReportTestSession } from "../../../4-tests/uiIntegrationTestLauncherTypes.js";
 import { cleanLevel } from "../../constants.js";
+import { useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
+import { ViewParamsUpdateQueue } from "../ViewParamsUpdateQueue.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ComponentTestSandbox");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -31,6 +46,12 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger:
 // `prepareReportTests()` (#330) is the same for an integration run of a suite of `reportTest`
 // leaves: it registers a report test runner over the sandbox, for the run's session, and returns
 // the release that ends the run. Each Report is unmounted when its leaf ends.
+//
+// The panel's header (#435) shows the name of the case being run (the last one after the run) and
+// a slider of the delay the runner waits before each step. The delay is the ViewParams attribute
+// `componentTestStepDelayMs`, saved when the slider is released; the runner reads the current
+// value when each step starts, so moving the slider acts on the running case. The slider mounts
+// with the panel, so that a closed sandbox needs no Redux store or DomainController.
 // ################################################################################################
 
 export interface ComponentTestSandboxContextValue {
@@ -63,6 +84,82 @@ export function useComponentTestSandbox(): ComponentTestSandboxContextValue | un
   return useContext(ComponentTestSandboxContext);
 }
 
+const maxStepDelayMs = 2000;
+
+// ################################################################################################
+/**
+ * #435: the step delay of the ViewParams instance, within the slider's range, and its save. Before
+ * the admin store is loaded, the delay is 0 and the save does nothing.
+ */
+function useComponentTestStepDelay(): { stepDelayMs: number; saveStepDelayMs: (value: number) => void } {
+  const domainController = useDomainControllerService();
+  const selectorMap = useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);
+  const queryParams = useMemo(() => defaultViewParamsFromAdminStorageFetchQueryParams(selectorMap), [selectorMap]);
+  const queryResults: Record<string, EntityInstancesUuidIndex> = useReduxDeploymentsStateQuerySelectorForCleanedResult(
+    selectorMap.runQuery as SyncQueryRunner<ReduxDeploymentsState, Domain2QueryReturnType<DomainElementSuccess>>,
+    queryParams,
+    defaultSelfApplicationDeploymentMap, // ViewParams are in the admin deployment
+  );
+  const viewParamsData = queryResults?.["viewParams"] as unknown as ViewParamsData | undefined;
+  const saveStepDelayMs = useCallback(
+    (value: number) => {
+      if (!viewParamsData?.uuid) {
+        return;
+      }
+      ViewParamsUpdateQueue.getInstance(
+        { delayMs: 5000, deploymentUuid: deployment_Admin.uuid, viewParamsInstanceUuid: viewParamsData.uuid },
+        domainController,
+      ).queueUpdate({ currentValue: viewParamsData, updates: { componentTestStepDelayMs: value } }, true);
+    },
+    [viewParamsData, domainController],
+  );
+  // the attribute is editable elsewhere (ViewParams report): kept in the slider's range
+  const saved = Number(viewParamsData?.componentTestStepDelayMs ?? 0);
+  const stepDelayMs = Number.isFinite(saved) ? Math.min(Math.max(saved, 0), maxStepDelayMs) : 0;
+  return { stepDelayMs, saveStepDelayMs };
+}
+
+// ################################################################################################
+/**
+ * #435: the slider of the step delay. It shows its own value while it moves, the saved one
+ * otherwise, and writes the shown value to `stepDelayMsRef` for the runner.
+ */
+const ComponentTestStepDelaySlider: React.FC<{ stepDelayMsRef: React.MutableRefObject<number> }> = ({
+  stepDelayMsRef,
+}) => {
+  const { stepDelayMs: savedStepDelayMs, saveStepDelayMs } = useComponentTestStepDelay();
+  const [movingStepDelayMs, setMovingStepDelayMs] = useState<number | undefined>(undefined);
+  if (movingStepDelayMs !== undefined && movingStepDelayMs === savedStepDelayMs) {
+    setMovingStepDelayMs(undefined);
+  }
+  const stepDelayMs = movingStepDelayMs ?? savedStepDelayMs;
+  stepDelayMsRef.current = stepDelayMs;
+  const onCommit = () => {
+    if (movingStepDelayMs !== undefined) {
+      saveStepDelayMs(movingStepDelayMs);
+    }
+  };
+  return (
+    <label style={{ display: "flex", alignItems: "center", gap: "4px", color: "#555", whiteSpace: "nowrap" }}>
+      Step delay
+      <input
+        type="range"
+        aria-label="Component test step delay"
+        min={0}
+        max={maxStepDelayMs}
+        step={100}
+        value={stepDelayMs}
+        onChange={(event) => setMovingStepDelayMs(Number(event.target.value))}
+        onPointerUp={onCommit}
+        onPointerCancel={onCommit}
+        onKeyUp={onCommit}
+        style={{ width: "100px" }}
+      />
+      <span style={{ display: "inline-block", minWidth: "4.5em", textAlign: "right" }}>{stepDelayMs} ms</span>
+    </label>
+  );
+};
+
 // ################################################################################################
 export const ComponentTestSandbox: React.FC<{
   open: boolean;
@@ -70,7 +167,11 @@ export const ComponentTestSandbox: React.FC<{
   running?: boolean;
   onClose: () => void;
   sandboxRef: React.RefObject<HTMLDivElement>;
-}> = ({ open, running = false, onClose, sandboxRef }) => (
+  /** #435: the name of the case being run, or of the last case run. */
+  testName?: string;
+  /** #435: receives the step delay of the slider, for the runner. */
+  stepDelayMsRef?: React.MutableRefObject<number>;
+}> = ({ open, running = false, onClose, sandboxRef, testName, stepDelayMsRef }) => (
   <div
     data-testid="component-test-sandbox-panel"
     style={{
@@ -82,8 +183,25 @@ export const ComponentTestSandbox: React.FC<{
       backgroundColor: "white",
     }}
   >
-    <div style={{ display: "flex", alignItems: "center", marginBottom: "4px" }}>
-      <span style={{ fontWeight: "bold", color: "#4527a0", flexGrow: 1 }}>Component test sandbox</span>
+    <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "4px", fontSize: "0.85em" }}>
+      <span style={{ fontWeight: "bold", color: "#4527a0" }}>Component test sandbox</span>
+      <span
+        data-testid="component-test-sandbox-test-name"
+        title={testName}
+        style={{
+          flexGrow: 1,
+          minWidth: 0,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          fontFamily: "monospace",
+          color: "#555",
+        }}
+      >
+        {testName ?? ""}
+      </span>
+      {/* mounted with the panel only: it reads ViewParams, which needs the app's providers */}
+      {open && stepDelayMsRef && <ComponentTestStepDelaySlider stepDelayMsRef={stepDelayMsRef} />}
       <button
         type="button"
         aria-label="Close component test sandbox"
@@ -108,6 +226,14 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
   const runningRef = useRef(false);
   const [open, setOpen] = useState(false);
   const [running, setRunning] = useState(false);
+  const [testName, setTestName] = useState<string | undefined>(undefined);
+
+  // #435: set by the slider, read by the runner when each step starts
+  const stepDelayMsRef = useRef(0);
+  const runControls = useMemo(
+    () => ({ onCaseStart: setTestName, stepDelayMs: () => stepDelayMsRef.current }),
+    [],
+  );
 
   const closeRegistration = useCallback(() => {
     const registration = registrationRef.current;
@@ -128,15 +254,17 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
     if (!sandboxElement) {
       throw new Error("component test sandbox element is not mounted");
     }
+    setTestName(undefined);
     registrationRef.current = registerComponentTests({
       sandboxElement,
+      ...runControls,
       ...(options?.iterationsOverride !== undefined ? { iterationsOverride: options.iterationsOverride } : {}),
     });
     runningRef.current = true;
     setRunning(true);
     setOpen(true);
     log.info("component test sandbox ready", options ?? {});
-  }, [closeRegistration]);
+  }, [closeRegistration, runControls]);
 
   const finishComponentTests = useCallback(() => {
     runningRef.current = false;
@@ -155,8 +283,10 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
     if (!sandboxElement) {
       throw new Error("component test sandbox element is not mounted");
     }
+    setTestName(undefined);
     const registration = registerReportTests({
       sandboxElement,
+      ...runControls,
       miroirActivityTracker: session.miroirActivityTracker,
       miroirEventService: session.miroirEventService,
       ...(session.miroirReports ? { miroirReports: session.miroirReports } : {}),
@@ -171,7 +301,7 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
       setRunning(false);
       registration.endRun();
     };
-  }, [closeRegistration]);
+  }, [closeRegistration, runControls]);
 
   const onClose = useCallback(() => {
     if (runningRef.current) {
@@ -202,7 +332,14 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
   return (
     <ComponentTestSandboxContext.Provider value={contextValue}>
       {children}
-      <ComponentTestSandbox open={open} running={running} onClose={onClose} sandboxRef={sandboxRef} />
+      <ComponentTestSandbox
+        open={open}
+        running={running}
+        onClose={onClose}
+        sandboxRef={sandboxRef}
+        testName={testName}
+        stepDelayMsRef={stepDelayMsRef}
+      />
     </ComponentTestSandboxContext.Provider>
   );
 };

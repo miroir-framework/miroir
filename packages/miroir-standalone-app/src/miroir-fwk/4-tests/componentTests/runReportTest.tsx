@@ -47,6 +47,7 @@ import {
   ComponentTestStepError,
   StepValuesMismatch,
   runComponentTestSteps,
+  type ComponentTestRunControls,
 } from "./runComponentTestSteps.js";
 import { createActionsIdleWaiter, defaultReportTestActionTimeoutMs } from "./waitForActionsIdle.js";
 
@@ -56,7 +57,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
   log = logger;
 });
 
-export interface ReportTestSandboxHost {
+export interface ReportTestSandboxHost extends ComponentTestRunControls {
   /** Element that receives the portal element and one container per case. Never a render target. */
   sandboxElement: HTMLElement;
   /** Target of the Report's portals. Created as a child of `sandboxElement` when absent. */
@@ -292,6 +293,7 @@ export function createReportTestRunner(host: ReportTestSandboxHost): ClosableRep
   // ##############################################################################################
   const runner: ReportTestRunner = async ({ testNamePath, leaf, suite, executionEnvironment }) => {
     const testName = MiroirActivityTracker.testPathName(testNamePath);
+    host.onCaseStart?.(testName);
     const sessionContext = executionEnvironment.runnerTestContext;
     if (!sessionContext) {
       return {
@@ -389,6 +391,7 @@ export function createReportTestRunner(host: ReportTestSandboxHost): ClosableRep
           afterInteraction,
           // UI steps read the test parameters and the results kept so far, as the action steps do (#333)
           storedValues: () => ({ ...actionContext.testParams, ...actionContext.results }),
+          stepDelayMs: host.stepDelayMs,
         },
       );
       if (fakeFetch?.undeclaredRequests.length) {

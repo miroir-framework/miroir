@@ -142,6 +142,20 @@
             }
           }
         }
+      },
+      "componentTestStepDelayMs": {
+        "type": "number",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 14,
+            "defaultLabel": "Component test step delay (ms)",
+            "description": "Milliseconds a UI test run in the app waits before each step, set by the slider of the Component Test Sandbox (#435). Absent or 0: no delay.",
+            "display": {
+              "editable": true
+            }
+          }
+        }
       }
     }
   }
