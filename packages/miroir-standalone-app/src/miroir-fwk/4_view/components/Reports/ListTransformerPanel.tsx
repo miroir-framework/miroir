@@ -345,6 +345,8 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
         path: node.path,
         input: node.consumedInput,
         inputLabel: formatInputOutputTypeLabel(node.consumedInput, entities),
+        givenInput: node.givenInput,
+        output: node.output,
       })),
     [interfaceWalk, entities],
   );

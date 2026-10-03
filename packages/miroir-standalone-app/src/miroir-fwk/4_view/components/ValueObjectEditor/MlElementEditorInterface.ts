@@ -25,12 +25,15 @@ export interface UnionInformation {
 
 /**
  * #383 — input type of the transformer node at `path`: its `transformerType` select offers only
- * the types accepting `input`.
+ * the types accepting `input`. #415: `givenInput` (the input of the node's position) filters the
+ * types offered by Wrap in, `output` (the node's output) those offered by Pipe into.
  */
 export interface TransformerTypeRestriction {
   path: (string | number)[];
   input: InputOutputType;
   inputLabel: string;
+  givenInput: InputOutputType;
+  output: InputOutputType;
 }
 
 export interface MlEditorPropsRoot {
