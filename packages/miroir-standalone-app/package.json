@@ -72,7 +72,8 @@
     "remark-gfm": "4.0.1",
     "util": "0.12.5",
     "uuid": "11.1.0",
-    "xlsx": "file:../../dependency-policy/vendor/xlsx-0.20.3.tgz"
+    "xlsx": "file:../../dependency-policy/vendor/xlsx-0.20.3.tgz",
+    "zod": "4.6.5"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "6.6.3",

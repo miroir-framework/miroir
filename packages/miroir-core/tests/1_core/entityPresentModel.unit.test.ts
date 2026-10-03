@@ -144,7 +144,7 @@ describe("Entity mlSchema resolution", () => {
 
   it("throws when Entity has no mlSchema", () => {
     const incomplete: Entity = {
-      uuid: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      uuid: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
       name: "Incomplete",
       parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
     };

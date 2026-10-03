@@ -9,7 +9,7 @@ import { pageUrl, reportUrl } from "../../src/miroir-fwk/4_view/navigation.js";
 const LIBRARY_APP = "5af03c98-fe5e-490b-b08f-e1230971c57f";
 const LIBRARY_DEPLOYMENT = "f714bb2f-a12d-4e71-a03b-74dcedea6eb4";
 const LIBRARY_HOME_REPORT = "9c0cdb97-9537-4ee2-8053-a6ece3e0afe8";
-const NO_VALUE = "cccccccc-cccc-cccc-cccc-cccccccccccc";
+const NO_VALUE = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
 
 const libraryHomePageUrl = {
   label: "Library Home Page",

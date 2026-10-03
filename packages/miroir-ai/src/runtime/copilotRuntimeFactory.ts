@@ -60,7 +60,7 @@ class GithubOpenAIAdapter extends OpenAIAdapter {
     const oi = this.openai;
     const factory = createOpenAI({
       baseURL: oi.baseURL,
-      apiKey: oi.apiKey,
+      apiKey: oi.apiKey ?? undefined,
     });
     return factory.chat(this.model);
   }

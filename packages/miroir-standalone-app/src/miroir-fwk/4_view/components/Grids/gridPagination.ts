@@ -36,7 +36,7 @@ export const gridPagedSizingPropsSchema = z.object({
     .number()
     .int()
     .positive(), // Paged mode: rows per page, exact uncapped page height, pager, no in-grid scrollbar. Default 50
-  maxRows: z.never({ invalid_type_error: sizingModeXorMessage }).optional(),
+  maxRows: z.never({ error: sizingModeXorMessage }).optional(),
 });
 
 export const gridScrollSizingPropsSchema = z.object({
@@ -45,7 +45,7 @@ export const gridScrollSizingPropsSchema = z.object({
     .number()
     .int()
     .positive(), // Scroll mode: no paging; height capped at maxRows rows; in-grid scrollbar over the full set
-  pageSize: z.never({ invalid_type_error: sizingModeXorMessage }).optional(),
+  pageSize: z.never({ error: sizingModeXorMessage }).optional(),
 });
 
 export const gridDefaultSizingPropsSchema = z.object({

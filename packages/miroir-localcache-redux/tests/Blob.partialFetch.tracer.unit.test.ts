@@ -32,8 +32,8 @@ import {
 
 import { LocalCache } from "../src/index.js";
 
-const APP = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
-const DEPLOY = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb";
+const APP = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+const DEPLOY = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
 const BLOB = entityBlob.uuid as string;
 const BLOB_PROJECTION = ["defaultLabel", "name", "uuid"]; // canonical sort
 const BLOB_INSTANCE = "f7f2fe87-df2e-4467-9a6c-ed11f8b6c34c";

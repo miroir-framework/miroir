@@ -48,7 +48,7 @@
     "miroir-app-miroir": "*",
     "miroir-core": "*",
     "miroir-example-library": "*",
-    "openai": "4.104.0",
+    "openai": "7.27.0",
     "rxjs": "7.8.2",
     "uuid": "11.1.0"
   },

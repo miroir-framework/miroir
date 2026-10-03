@@ -10,7 +10,7 @@ describe("214 Phase 1 — PersistenceStoreController projection", () => {
       getInstances: vi.fn(async () => ({
         status: "ok",
         returnedDomainElement: {
-          parentUuid: instances[0]?.parentUuid ?? "22222222-2222-2222-2222-222222222222",
+          parentUuid: instances[0]?.parentUuid ?? "22222222-2222-4222-8222-222222222222",
           applicationSection: "data",
           instances,
         },
@@ -27,8 +27,8 @@ describe("214 Phase 1 — PersistenceStoreController projection", () => {
 
   it("projects getInstances when attributes are provided", async () => {
     const full = {
-      uuid: "11111111-1111-1111-1111-111111111111",
-      parentUuid: "22222222-2222-2222-2222-222222222222",
+      uuid: "11111111-1111-4111-8111-111111111111",
+      parentUuid: "22222222-2222-4222-8222-222222222222",
       parentName: "Blob",
       name: "logo",
       contents: "huge",
@@ -49,8 +49,8 @@ describe("214 Phase 1 — PersistenceStoreController projection", () => {
 
   it("returns full instances when attributes are omitted", async () => {
     const full = {
-      uuid: "11111111-1111-1111-1111-111111111111",
-      parentUuid: "22222222-2222-2222-2222-222222222222",
+      uuid: "11111111-1111-4111-8111-111111111111",
+      parentUuid: "22222222-2222-4222-8222-222222222222",
       name: "logo",
       contents: "huge",
     };

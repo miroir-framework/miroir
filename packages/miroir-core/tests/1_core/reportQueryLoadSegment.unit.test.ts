@@ -11,8 +11,8 @@ import {
 import { getReduxDeploymentsStateIndex } from "../../src/2_domain/ReduxDeploymentsState.js";
 import type { ReportQueryLoadRequest } from "../../src/2_domain/ReportQueryLoadService.js";
 
-const APP = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
-const DEPLOY = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb";
+const APP = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+const DEPLOY = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
 const ENT = "62209e4a-e429-4d7d-9b28-dcc1da6b51a2";
 
 function request(
@@ -21,7 +21,7 @@ function request(
   return {
     application: APP,
     deploymentUuid: DEPLOY,
-    reportUuid: "cccccccc-cccc-cccc-cccc-cccccccccccc",
+    reportUuid: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
     applicationSection: "data",
     resolvedQuery: {
       queryType: "boxedQueryWithExtractorCombinerTransformer",

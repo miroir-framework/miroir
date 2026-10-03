@@ -89,10 +89,10 @@ export type {
   TestSessionForIntegOptions,
 };
 export const INTEG_TEST_APPLICATION_NAME = "testApplication";
-export const INTEG_TEST_SELF_APPLICATION_UUID: Uuid = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
+export const INTEG_TEST_SELF_APPLICATION_UUID: Uuid = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 export const INTEG_TEST_DEPLOYMENT_UUID: Uuid = "bbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb";
-export const INTEG_TEST_MODEL_BRANCH_UUID: Uuid = "cccccccc-cccc-cccc-cccc-cccccccccccc";
-export const INTEG_TEST_VERSION_UUID: Uuid = "dddddddd-dddd-dddd-dddd-dddddddddddd";
+export const INTEG_TEST_MODEL_BRANCH_UUID: Uuid = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
+export const INTEG_TEST_VERSION_UUID: Uuid = "dddddddd-dddd-4ddd-8ddd-dddddddddddd";
 
 /** The default, shared, well-known identity used by most integration test sessions. */
 export const PINNED_INTEG_TEST_APPLICATION_IDENTITY: IntegrationTestApplicationIdentity = {

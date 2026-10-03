@@ -6,9 +6,9 @@ import {
   restPersistenceAction,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
-const PARENT = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
-const APP = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb";
-const INSTANCE = "cccccccc-cccc-cccc-cccc-cccccccccccc";
+const PARENT = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+const APP = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
+const INSTANCE = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
 
 describe("214 Phase 1 — projection schema contract", () => {
   it("accepts attributes on extractorInstancesByEntity", () => {

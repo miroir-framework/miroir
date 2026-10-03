@@ -23,7 +23,7 @@ function Wrapper({ children }: { children: React.ReactNode }) {
 // ──────────────────────────────────────────────────────────────────────────────
 const sampleEntityProposal = {
   entity: {
-    uuid: "aaaaaaaa-0001-0000-0000-000000000001",
+    uuid: "aaaaaaaa-0001-4000-8000-000000000001",
     parentName: "Entity",
     parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
     parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
@@ -32,12 +32,12 @@ const sampleEntityProposal = {
     description: "A sellable product",
   },
   entityVersion: {
-    uuid: "aaaaaaaa-0001-0000-0000-000000000002",
+    uuid: "aaaaaaaa-0001-4000-8000-000000000002",
     parentName: "EntityVersion",
     parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
     parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
     name: "ProductDefinition",
-    entityUuid: "aaaaaaaa-0001-0000-0000-000000000001",
+    entityUuid: "aaaaaaaa-0001-4000-8000-000000000001",
     conceptLevel: "Model",
     mlSchema: {
       type: "object",
@@ -58,7 +58,7 @@ const sampleEntityProposal = {
       },
     },
   },
-  deploymentUuid: "11111111-1111-1111-1111-111111111111",
+  deploymentUuid: "11111111-1111-4111-8111-111111111111",
   summary: "Created entity Product with description 'A sellable product'",
 };
 
