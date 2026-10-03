@@ -35,7 +35,7 @@
     "miroir-env": "*",
     "miroir-example-library": "*",
     "miroir-localcache-redux": "*",
-    "uuid": "11.1.0",
+    "uuid": "14.0.2",
     "zod": "4.6.5"
   },
   "peerDependencies": {

@@ -51,7 +51,7 @@
     "miroir-example-library": "*",
     "openai": "7.27.0",
     "rxjs": "7.8.2",
-    "uuid": "11.1.0"
+    "uuid": "14.0.2"
   },
   "devDependencies": {
     "@types/express": "5.0.6",
