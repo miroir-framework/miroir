@@ -2,6 +2,8 @@ import { Menu } from "@mui/material";
 import React, { useMemo, useState } from "react";
 
 import {
+  pipeCandidates,
+  pipeTransformerNode,
   transformerSlots,
   wrapCandidates,
   wrapTransformerNode,
@@ -34,19 +36,37 @@ export interface TransformerNodeActionsProps {
   candidateTypes: string[];
   /** Input of the node's position when the restriction is on (#383); undefined: no filter. */
   givenInput?: InputOutputType;
+  /** Output of the node when the restriction is on (#383); undefined: no filter. */
+  output?: InputOutputType;
   /** The default value of a transformer type at the node's position. */
   defaultNodeForType: (transformerType: string) => Record<string, unknown> | undefined;
   /** Writes the new value of the node. */
   onReplaceNode: (newNode: unknown) => void;
 }
 
-type OpenDialog = { kind: "wrap" } | undefined;
+type NewNodeAction = "wrap" | "pipe";
+type OpenDialog = { kind: NewNodeAction } | undefined;
+
+/** Wrap in and Pipe into share the dialog: a new transformer takes the node's place. */
+const newNodeDialogText: Record<NewNodeAction, { title: string; ariaLabel: string; confirm: string }> = {
+  wrap: {
+    title: "Wrap in a new transformer",
+    ariaLabel: "Wrap the transformer in a new transformer",
+    confirm: "Wrap",
+  },
+  pipe: {
+    title: "Pipe into a new transformer",
+    ariaLabel: "Put the transformer in the applyTo of a new transformer",
+    confirm: "Pipe",
+  },
+};
 
 export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
   nodePath,
   nodeValue,
   candidateTypes,
   givenInput,
+  output,
   defaultNodeForType,
   onReplaceNode,
 }) => {
@@ -61,11 +81,19 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
     () => [...wrapCandidates(givenInput ?? "any", { transformerTypes: candidateTypes })].sort(),
     [candidateTypes, givenInput],
   );
+  const pipeTypes = useMemo(
+    () => [...pipeCandidates(output ?? "any", { transformerTypes: candidateTypes })].sort(),
+    [candidateTypes, output],
+  );
+  const dialogTypes = dialog?.kind === "pipe" ? pipeTypes : wrapTypes;
+  // Pipe into always uses `applyTo`; Wrap in asks for the slot when there are several.
   const chosenTypeSlots = useMemo(
-    () => (chosenType ? transformerSlots(chosenType).filter((slot) => !slot.isApplyTo) : []),
-    [chosenType],
+    () =>
+      dialog?.kind === "wrap" && chosenType ? transformerSlots(chosenType).filter((slot) => !slot.isApplyTo) : [],
+    [dialog, chosenType],
   );
   const slot = chosenTypeSlots.length === 1 ? chosenTypeSlots[0].name : chosenSlot;
+  const canConfirm = !!chosenType && (dialog?.kind === "pipe" || !!slot);
 
   const closeDialog = () => {
     setDialog(undefined);
@@ -78,15 +106,20 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
     setDialog(next);
   };
 
-  const confirmWrap = () => {
-    if (!chosenType || !slot) {
+  const confirmNewNode = () => {
+    if (!dialog || !chosenType || !canConfirm) {
       return;
     }
-    const enclosingNode = defaultNodeForType(chosenType);
-    if (!enclosingNode) {
+    const defaultNode = defaultNodeForType(chosenType);
+    if (!defaultNode) {
       return;
     }
-    onReplaceNode(wrapTransformerNode(nodeValue, { ...enclosingNode, transformerType: chosenType }, slot));
+    const newNode = { ...defaultNode, transformerType: chosenType };
+    onReplaceNode(
+      dialog.kind === "pipe"
+        ? pipeTransformerNode(nodeValue, newNode)
+        : wrapTransformerNode(nodeValue, newNode, slot),
+    );
     closeDialog();
   };
 
@@ -119,16 +152,23 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
         >
           Wrap in…
         </ThemedMenuItem>
+        <ThemedMenuItem
+          data-testid="transformer-node-action-pipe"
+          disabled={pipeTypes.length === 0}
+          onClick={() => openDialog({ kind: "pipe" })}
+        >
+          Pipe into…
+        </ThemedMenuItem>
       </Menu>
-      {dialog?.kind === "wrap" && (
+      {dialog && (
         <ThemedDialog
           open={true}
           onClose={closeDialog}
           disableEnforceFocus
           data-testid="transformer-node-dialog"
-          aria-label="Wrap the transformer in a new transformer"
+          aria-label={newNodeDialogText[dialog.kind].ariaLabel}
         >
-          <ThemedDialogTitle>Wrap in a new transformer</ThemedDialogTitle>
+          <ThemedDialogTitle>{newNodeDialogText[dialog.kind].title}</ThemedDialogTitle>
           <ThemedDialogContent>
             <ThemedLabeledEditor
               labelElement={<span>Transformer</span>}
@@ -136,7 +176,7 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
                 <ThemedSelectWithPortal
                   name="transformer-node-dialog-type"
                   filterable={true}
-                  options={wrapTypes.map((type) => ({ value: type, label: type }))}
+                  options={dialogTypes.map((type) => ({ value: type, label: type }))}
                   value={chosenType ?? ""}
                   onChange={(event: React.ChangeEvent<HTMLSelectElement>) => {
                     setChosenType(event.target.value);
@@ -171,11 +211,11 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
             <ThemedStyledButton
               type="button"
               variant="contained"
-              disabled={!chosenType || !slot}
-              onClick={confirmWrap}
+              disabled={!canConfirm}
+              onClick={confirmNewNode}
               data-testid="transformer-node-dialog-confirm"
             >
-              Wrap
+              {newNodeDialogText[dialog.kind].confirm}
             </ThemedStyledButton>
           </ThemedDialogActions>
         </ThemedDialog>

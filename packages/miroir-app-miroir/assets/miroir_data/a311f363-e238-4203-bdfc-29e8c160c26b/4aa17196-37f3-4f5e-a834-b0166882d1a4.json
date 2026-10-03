@@ -418,6 +418,25 @@
                 }
               ]
             }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "wrap in a type with several slots needs a slot name",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "wrapTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "getFromContext",
+                "referenceName": "defaultInput"
+              },
+              {
+                "transformerType": "ifThenElse",
+                "if": true
+              }
+            ],
+            "expectedError": "a slot name is required"
           }
         ]
       },
@@ -508,6 +527,204 @@
               "filterList",
               "ifThenElse",
               "+"
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "pipeTransformerNode",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "pipe into sortList puts the node in applyTo",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "pipeTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "getFromContext",
+                "referenceName": "defaultInput"
+              },
+              {
+                "transformerType": "sortList",
+                "interpolation": "runtime",
+                "attributeName": "name"
+              }
+            ],
+            "expectedValue": {
+              "transformerType": "sortList",
+              "interpolation": "runtime",
+              "attributeName": "name",
+              "applyTo": {
+                "transformerType": "getFromContext",
+                "referenceName": "defaultInput"
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "pipe into stringOp keeps the new node's attributes",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "pipeTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "getObjectValues",
+                "interpolation": "runtime"
+              },
+              {
+                "transformerType": "stringOp",
+                "op": "toUpperCase"
+              }
+            ],
+            "expectedValue": {
+              "transformerType": "stringOp",
+              "op": "toUpperCase",
+              "applyTo": {
+                "transformerType": "getObjectValues",
+                "interpolation": "runtime"
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "pipe replaces an applyTo the new node already has",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "pipeTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "getFromContext",
+                "referenceName": "defaultInput"
+              },
+              {
+                "transformerType": "listLength",
+                "applyTo": {
+                  "transformerType": "returnValue",
+                  "value": []
+                }
+              }
+            ],
+            "expectedValue": {
+              "transformerType": "listLength",
+              "applyTo": {
+                "transformerType": "getFromContext",
+                "referenceName": "defaultInput"
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "pipe into a type without applyTo fails",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "pipeTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "getFromContext",
+                "referenceName": "defaultInput"
+              },
+              {
+                "transformerType": "+",
+                "args": []
+              }
+            ],
+            "expectedError": "+ has no applyTo"
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "pipeCandidates",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "array output: list transformers, not getObjectValues",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "pipeCandidates"
+            },
+            "arguments": [
+              {
+                "type": "array",
+                "payload": "any"
+              },
+              {
+                "transformerTypes": [
+                  "sortList",
+                  "listLength",
+                  "mapList",
+                  "stringOp",
+                  "getObjectValues",
+                  "+",
+                  "returnValue"
+                ]
+              }
+            ],
+            "expectedValue": [
+              "sortList",
+              "listLength",
+              "mapList",
+              "stringOp"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "string output: no list transformer",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "pipeCandidates"
+            },
+            "arguments": [
+              "string",
+              {
+                "transformerTypes": [
+                  "sortList",
+                  "listLength",
+                  "mapList",
+                  "stringOp",
+                  "getObjectValues",
+                  "+",
+                  "returnValue"
+                ]
+              }
+            ],
+            "expectedValue": [
+              "stringOp"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "any output: every type declaring applyTo",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "pipeCandidates"
+            },
+            "arguments": [
+              "any",
+              {
+                "transformerTypes": [
+                  "sortList",
+                  "listLength",
+                  "mapList",
+                  "stringOp",
+                  "getObjectValues",
+                  "+",
+                  "returnValue"
+                ]
+              }
+            ],
+            "expectedValue": [
+              "sortList",
+              "listLength",
+              "mapList",
+              "stringOp",
+              "getObjectValues"
             ]
           }
         ]

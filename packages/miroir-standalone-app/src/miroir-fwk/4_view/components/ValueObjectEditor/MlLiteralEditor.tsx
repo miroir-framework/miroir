@@ -687,6 +687,7 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
                 nodeValue={transformerNodeValue}
                 candidateTypes={currentDiscriminatorValues ?? []}
                 givenInput={transformerTypeRestriction?.givenInput}
+                output={transformerTypeRestriction?.output}
                 defaultNodeForType={defaultTransformerNodeForType}
                 onReplaceNode={replaceTransformerNode}
               />

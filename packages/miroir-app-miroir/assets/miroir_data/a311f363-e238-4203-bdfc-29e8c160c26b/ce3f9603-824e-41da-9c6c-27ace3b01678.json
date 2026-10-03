@@ -5,7 +5,7 @@
   "name": "ui.transformerEditor",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "TransformerEditor on the Miroir application: renders the default transformer and its result, edits it, chooses a transformer type, and switches the input type restriction off, and wraps transformers in new ones at any level, with the type filter of #383 (#415).",
+  "description": "TransformerEditor on the Miroir application: renders the default transformer and its result, edits it, chooses a transformer type, and switches the input type restriction off, and wraps transformers in new ones at any level, with the type filter of #383, and pipes them into new ones (#415).",
   "tags": [
     "ui",
     "editor",
@@ -562,6 +562,64 @@
                 "target": {
                   "byTestId": "transformer-node-dialog-cancel"
                 }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: piping the root into stringOp applies it to the former root's result",
+            "steps": [
+              {
+                "step": "click",
+                "label": "open the root node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Pipe into",
+                "target": {
+                  "byTestId": "transformer-node-action-pipe"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "new transformer",
+                "field": "transformer-node-dialog-type",
+                "option": "stringOp"
+              },
+              {
+                "step": "click",
+                "label": "confirm the pipe",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "root is stringOp",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "stringOp",
+                "timeout": 2000
+              },
+              {
+                "step": "selectOption",
+                "label": "operation",
+                "field": "transformerEditor_transformer_selector.transformer.op",
+                "option": "toUpperCase"
+              },
+              {
+                "step": "expectElement",
+                "label": "result: the former root's value in upper case",
+                "target": {
+                  "byText": "SEIZE VALUE..."
+                },
+                "count": 1,
+                "timeout": 2000
               }
             ]
           }

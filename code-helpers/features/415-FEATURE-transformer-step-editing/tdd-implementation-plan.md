@@ -32,7 +32,7 @@ Out (analysis non-goals): undo and redo; rewriting references after a wrap or an
 | 0 | Characterize the editor and the suites | ✅ DONE | baseline recorded |
 | 1 | Wrap the root in `mapList` (tracer) | ✅ DONE | `fn.transformer.treeEdit` wrap cases; UI wrap case |
 | 2 | Wrap at any level, slot choice, type filter | ✅ DONE | nested and multi-slot wrap cases; filtered dialog |
-| 3 | Pipe into (D14) | ⬜ pending | pipe cases; filtered by the node's output |
+| 3 | Pipe into (D14) | ✅ DONE | pipe cases; filtered by the node's output |
 | 4 | Unwrap: remove a node, keep a child | ⬜ pending | unwrap cases; UI unwrap with confirmation |
 | 5 | Remove a subtree | ⬜ pending | remove cases per position kind; UI remove |
 | 6 | Type change keeps valid attributes | ⬜ pending | merge cases; UI `filterList` to `find` keeps `predicate` |
@@ -181,11 +181,11 @@ Same as Slice 1, plus `fn.transformer.interfaceWalk` (regression).
 - The menu button's label names its node (`Transformer node actions transformer.elementTransformer`), which lets the UI cases address nested nodes with `byLabelText`.
 - `ui.transformerEditor`: the Slice 1 case now switches the restriction off first, since the editor's input is one Entity instance and `mapList` is no longer offered for it. New cases: "wrapping a nested transformer in ifThenElse asks for the slot" and "with the input type restriction, Wrap in offers only transformers accepting the input" (the plan said a string input; the editor's default input is an Entity instance, which hides `mapList` the same way). Leaf count 94.
 - RED checked for the filter case: without the `givenInput` prop it fails, with it it passes.
-- Validation: `fn.transformer.treeEdit` 17/17, `fn.transformer.interfaceWalk` 43/43, `ui.transformerEditor` 9/9, core `tsc` clean, app `tsc` 32 errors (baseline), lint clean.
+- Validation: `fn.transformer.treeEdit` 17/17, `fn.transformer.interfaceWalk` 43/43, `ui.transformerEditor` 9/9, core `tsc` clean, app `tsc` 32 errors (baseline), lint clean. Scoped nonreg (`smoke,core,ui`) 38/38.
 
 ## Slice 3. Pipe into (D14)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Goal: the designer puts a node in the `applyTo` of a new transformer, for example `sortList` over a `mapList`.
 
@@ -203,7 +203,11 @@ Same as Slice 1.
 
 ### Realization
 
-(pending)
+- `pipeTransformerNode(node, newNode)` and `pipeCandidates(output)` came with Slice 1; this slice adds their cases: 4 `pipeTransformerNode` cases (`sortList`, `stringOp` keeping `op`, an existing `applyTo` replaced, a type without `applyTo` failing) and 3 `pipeCandidates` cases (array, `string`, `any` outputs), plus a wrap case failing without a slot on `ifThenElse`. 25 cases.
+- `stringOp` declares `applyTo` as `any`, not as a transformer; `transformerSlots` still reports its `applyTo` slot, since the slot comes from the attribute's presence.
+- The menu gains Pipe into. Wrap in and Pipe into share one dialog, with a title, a candidate list and a confirm label per action; Pipe into never shows the slot select. The node menu receives the node's `output` from the restriction, so the filter follows the switch as Wrap in does.
+- UI case: the plan's `listLength` over all Entity instances needs the instance input mode, which is Slice 7's ground. The case pipes the default root `returnValue` into `stringOp`, picks `toUpperCase`, and checks the result `SEIZE VALUE...`, which proves the former root is the new `applyTo`. Leaf count 95.
+- Validation: `fn.transformer.treeEdit` 25/25, `ui.transformerEditor` 10/10, app `tsc` 32 errors (baseline), lint clean. The scoped nonreg runs once for Slices 3 and 4, which change the same component.
 
 ## Slice 4. Unwrap: remove a node, keep a child
 
