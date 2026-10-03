@@ -1,5 +1,5 @@
 /**
- * #409 Slice 3: with agentBackend "claude", an agent request runs a Claude Agent SDK session
+ * Claude agent (#409): with agentBackend "claude", an agent request runs a Claude Agent SDK session
  * (offline stub through the injected importer) and streams its text and CopilotKit tool calls
  * back as AG-UI events.
  * Do not register in FunctionCallTestRegistry.
@@ -10,10 +10,10 @@ import { afterEach, describe, expect, it } from "vitest";
 import { EventType, type BaseEvent, type RunAgentInput } from "@ag-ui/core";
 import { clearSecrets, registerSecrets } from "miroir-core";
 
-import { createClaudeAbstractAgent } from "../../../../src/runtime/claudeAgent.js";
+import { createClaudeAbstractAgent } from "../../src/runtime/claudeAgent.js";
 
 const RUN_TEST = process.env.RUN_TEST;
-const runThis = !RUN_TEST || RUN_TEST.startsWith("agentBackend.409");
+const runThis = !RUN_TEST || RUN_TEST.startsWith("claudeAgent");
 
 const TEST_ANTHROPIC_KEY = "anthropic-probe-key";
 const TEST_MCP_HTTP_URL = "http://127.0.0.1:4173/mcp";
@@ -65,7 +65,7 @@ async function runEvents(agent: { run: (input: RunAgentInput) => any }): Promise
 }
 
 if (runThis) {
-  describe("agentBackend.409.phase3: Claude agent session", () => {
+  describe("claudeAgent: Claude agent session", () => {
     afterEach(() => {
       clearSecrets();
     });

@@ -59,8 +59,8 @@ Welcome to the Miroir Framework documentation. This guide will help you find the
 ### 🤖 AI/LLM Integrators
 **Goal**: Integrate Miroir with AI agents and LLM tools
 
-1. [Using AI in Miroir](guides/using-ai.md) - In-app assistant: OpenAI / Anthropic / Google / GitHub / OpenAI-compatible keys, or a Cursor subscription
-2. [Process capabilities](reference/process-capabilities.md) - Turn AI, MCP, and Cursor on or off; what each flag enables
+1. [Using AI in Miroir](guides/using-ai.md) - In-app assistant: OpenAI / Anthropic / Google / GitHub / OpenAI-compatible keys, or a Cursor or Claude agent
+2. [Process capabilities](reference/process-capabilities.md) - Turn AI and MCP on or off, pick the agent backend; what each flag enables
 3. [MCP Integration Guide](guides/mcp-integration.md) - Model Context Protocol for external clients
 4. [Natural Language Interface](tutorials/natural-language-interface.md) - **Coming Soon**
 5. [API Reference](reference/api/) - Complete API for programmatic access
@@ -116,8 +116,8 @@ Welcome to the Miroir Framework documentation. This guide will help you find the
 - [Creating Simple Apps](guides/user/creating-simple-apps.md) - No-code app building
 
 ### Configuration & Deployment
-- [Using AI in Miroir](guides/using-ai.md) - In-app CopilotKit assistant (token providers or Cursor)
-- [Process capabilities](reference/process-capabilities.md) - Feature switches: AI, MCP, Cursor, designer tools, store types
+- [Using AI in Miroir](guides/using-ai.md) - In-app CopilotKit assistant (token providers, or a Cursor or Claude agent)
+- [Process capabilities](reference/process-capabilities.md) - Feature switches: AI, MCP, agent backend, designer tools, store types
 - [Data architecture: deployments](reference/data-architecture-deployments.md) - Store backends, `emulateServer`, product scenarios
 - [Environments](reference/environments.md) - Which applications run where: `environments/*.json`, `.miroir/<environment>/` state, `miroir-env show|check|import|prune` (#321)
 - [Versioning](reference/versioning.md) - Model history: versioning modes, freeze, EntityVersion, `modelVersion` section

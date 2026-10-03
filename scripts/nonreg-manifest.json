@@ -1858,15 +1858,15 @@
       ]
     },
     {
-      "id": "unit-409-agent-backend",
+      "id": "unit-agent-backend",
       "scopes": ["external", "tooling"],
       "tier": "unit",
-      "title": "#409 — agent backend pick, lazy agent SDKs and miroir-ai (core + ai + standalone + server + env unit)",
+      "title": "Agent backend (#409): pick, lazy agent SDKs and miroir-ai (core + ai + standalone + server + env unit)",
       "requires": "none",
       "argv": [
         "bash",
         "-c",
-        "npm run testByFile -w miroir-core -- 409-agent-backend && npm run testByFile -w miroir-ai -- 409-agent-backend && npm run testByFile -w miroir-standalone-app -- 4_view/issues/409-agent-backend && npm run testByFile -w miroir-server -- 409-agent-backend && npm run testByFile -w miroir-env -- 409-agent-backend"
+        "npm run testByFile -w miroir-core -- agentBackendCapabilities && npm run testByFile -w miroir-ai -- agentBackendRoute claudeAgent agentSdkModuleLoading assertAgentSdkPackaged && npm run testByFile -w miroir-standalone-app -- agentBackendPick && npm run testByFile -w miroir-server -- mountCopilotKitRoute && npm run testByFile -w miroir-env -- agentBackendAlias"
       ]
     },
     {

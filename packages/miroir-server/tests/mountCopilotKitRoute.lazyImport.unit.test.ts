@@ -1,5 +1,5 @@
 /**
- * #409 Slice 4: the server loads miroir-ai only when the `ai` capability is on.
+ * Agent backends (#409): the server loads miroir-ai only when the `ai` capability is on.
  * Child-process probe: a resolve hook records every specifier the child resolves while it
  * mounts the CopilotKit route from `src/mountCopilotKitRoute.ts`.
  * Requires built miroir-core and miroir-ai.
@@ -12,10 +12,10 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 const RUN_TEST = process.env.RUN_TEST;
-const runThis = !RUN_TEST || RUN_TEST.startsWith("serverAiImport.409");
+const runThis = !RUN_TEST || RUN_TEST.startsWith("mountCopilotKitRoute");
 
 const TEST_DIR = dirname(fileURLToPath(import.meta.url));
-const SERVER_DIR = join(TEST_DIR, "../../..");
+const SERVER_DIR = join(TEST_DIR, "..");
 const PROBE_REGISTER = join(SERVER_DIR, "../miroir-ai/tests/support/moduleLoadProbeRegister.mjs");
 const PROBE_CHILD = join(SERVER_DIR, "tests/support/mountProbeChild.mjs");
 
@@ -67,7 +67,7 @@ function runMountProbe(ai: boolean): { resolved: Set<string>; stdout: string } {
 }
 
 if (runThis) {
-  describe("serverAiImport.409.phase4: miroir-ai is imported only when ai is on", () => {
+  describe("mountCopilotKitRoute: miroir-ai is imported only when ai is on", () => {
     it("with ai off, the server mounts no CopilotKit route and never resolves miroir-ai", () => {
       const probe = runMountProbe(false);
       expect(probe.stdout).toContain("probe-mounted:false:");

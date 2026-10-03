@@ -1,8 +1,8 @@
-// #409 Slice 5: `miroir-env check` warns about the `features.cursor` alias of `agentBackend`.
+// Agent backends (#409): `miroir-env check` warns about the `features.cursor` alias of `agentBackend`.
 // vitest, not MiroirTest: the check command reads environment files and reports through the CLI.
 import { describe, expect, it } from "vitest";
 
-import { run, temporaryRepository } from "../../cliTestSupport";
+import { run, temporaryRepository } from "./cliTestSupport";
 
 const miroir = {
   package: "miroir-app-miroir",
@@ -23,7 +23,7 @@ function check(features: Record<string, unknown>) {
   return run(["check", "--name", "dev"], temporaryRepository({ dev: { applications: { miroir, admin }, features } }));
 }
 
-describe("agentBackend.409.phase5: miroir-env check and the features.cursor alias", () => {
+describe("agentBackendAlias: miroir-env check and the features.cursor alias", () => {
   it("warns that features.cursor is replaced by features.agentBackend", async () => {
     const result = await check({ ai: true, mcp: true, cursor: true });
     expect(result.stdout).toMatch(/warning: .*features\.cursor.*features\.agentBackend: "cursor"/);

@@ -1,15 +1,15 @@
 /**
- * #409 Slice 4: a process loads only the agent SDK of its configured backend.
+ * Agent backends (#409): a process loads only the agent SDK of its configured backend.
  * Child-process probe (built miroir-ai, stub SDKs): the child builds the router and sends one
  * agent request.
  * Do not register in FunctionCallTestRegistry.
  */
 import { describe, expect, it } from "vitest";
 
-import { loadedAgentSdks, runModuleLoadProbe } from "../../../support/moduleLoadProbe.js";
+import { loadedAgentSdks, runModuleLoadProbe } from "../support/moduleLoadProbe.js";
 
 const RUN_TEST = process.env.RUN_TEST;
-const runThis = !RUN_TEST || RUN_TEST.startsWith("agentBackend.409");
+const runThis = !RUN_TEST || RUN_TEST.startsWith("agentSdkModuleLoading");
 
 function capabilities(agentBackend: string) {
   return {
@@ -24,7 +24,18 @@ function capabilities(agentBackend: string) {
 }
 
 if (runThis) {
-  describe("agentBackend.409.phase4: only the picked agent SDK is loaded", () => {
+  describe("agentSdkModuleLoading: only the picked agent SDK is loaded", () => {
+    it("building the router loads no agent SDK", () => {
+      const result = runModuleLoadProbe({ capabilities: capabilities("cursor") });
+      expect(loadedAgentSdks(result)).toEqual([]);
+    }, 60_000);
+
+    it("importing miroir-ai still loads the token provider SDKs eagerly (#410)", () => {
+      const result = runModuleLoadProbe({ capabilities: capabilities("none") });
+      expect(result.resolvedSpecifiers.has("openai")).toBe(true);
+      expect(result.resolvedSpecifiers.has("@anthropic-ai/sdk")).toBe(true);
+    }, 60_000);
+
     it("none: an agent request is refused and no agent SDK is loaded", () => {
       const result = runModuleLoadProbe({
         capabilities: capabilities("none"),

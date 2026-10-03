@@ -1,13 +1,13 @@
 /**
- * #409 Slice 6: a server configured with an agent backend whose SDK is missing (a Docker image
+ * Agent backends (#409): a server configured with an agent backend whose SDK is missing (a Docker image
  * built for another AGENT_BACKEND) fails at start, before mounting the CopilotKit route.
  */
 import { describe, expect, it } from "vitest";
 
-import { mountCopilotKitRoute } from "../../../src/mountCopilotKitRoute.js";
+import { mountCopilotKitRoute } from "../src/mountCopilotKitRoute.js";
 
 const RUN_TEST = process.env.RUN_TEST;
-const runThis = !RUN_TEST || RUN_TEST.startsWith("serverAgentSdkCheck.409");
+const runThis = !RUN_TEST || RUN_TEST.startsWith("mountCopilotKitRoute");
 
 function capabilities(agentBackend: "none" | "cursor" | "claude") {
   return {
@@ -48,7 +48,7 @@ async function mount(agentBackend: "none" | "cursor" | "claude", checked: string
 }
 
 if (runThis) {
-  describe("serverAgentSdkCheck.409.phase6: start check of the picked agent SDK", () => {
+  describe("mountCopilotKitRoute: start check of the picked agent SDK", () => {
     it("a missing SDK fails the mount and mounts nothing", async () => {
       const checked: string[] = [];
       const mounted: string[] = [];

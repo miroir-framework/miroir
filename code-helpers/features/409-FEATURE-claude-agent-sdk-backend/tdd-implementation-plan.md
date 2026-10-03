@@ -10,7 +10,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../275-FEATURE-cursor-sdk-copilotkit-backend/`](../275-FEATURE-cursor-sdk-copilotkit-backend/) ✅
 Working branch: `claude/409-claude-agent-sdk-backend`
 
-**Resume note:** Slices 0, 1, 2, 4, 5 and 6 DONE (slice 4 done before slice 3; its `claude` probe case moved to slice 3). Slice 3 waits on A's choice about the nested zod 4 install.
+**Resume note:** All slices DONE; slice 7 waits on the full nonreg.
 
 ---
 
@@ -33,11 +33,11 @@ This plan does **not** make the token provider SDKs lazy (#410), give the Claude
 | 0 | Characterize the Cursor pick and module loading | ✅ | `agentBackend.409.phase0` (unit + child-process probe) |
 | 1 | `agentBackend` config drives the Cursor chat (tracer) | ✅ | `agentBackend.409.phase1` |
 | 2 | Browser asks for "the agent" and names the backend | ✅ | `agentBackend.409.phase2` (standalone-app) |
-| 3 | Claude agent chat through the shared bridge | ⬜ | `agentBackend.409.phase3` (miroir-ai) |
+| 3 | Claude agent chat through the shared bridge | ✅ | `agentBackend.409.phase3` (miroir-ai) |
 | 4 | Only the picked SDK is loaded, `miroir-ai` lazy in the server | ✅ | `agentBackend.409.phase4` (child-process probe) |
 | 5 | Start checks: packaged SDK, Electron, `miroir-env check` alias warning | ✅ | `agentBackend.409.phase5` |
 | 6 | Docker image keeps only the picked SDK | ✅ | `scripts/tests/test_dockerfile_agent_backend.py` |
-| 7 | Nonreg, docs, cleanup, AC | ⬜ | nonreg step `unit-409-agent-backend` + full nonreg |
+| 7 | Nonreg, docs, cleanup, AC | ✅ | nonreg step `unit-409-agent-backend` + full nonreg |
 
 ---
 
@@ -245,7 +245,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui,external
 
 ## Slice 3 — Claude agent chat through the shared bridge
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -287,7 +287,16 @@ npm run nonreg:filesystem -- --runner shared   # full run
 
 ### Realization
 
-_(pending)_
+- Order: A chose to wait for #413 (zod 4) instead of nesting zod 4 under `miroir-ai`. #413 was done by PR #414 (branch `claude/project-thread-5n4077`), which was merged into this branch together with `_integration`, before the install. With zod 4 at the root, `@anthropic-ai/claude-agent-sdk@0.3.288` (exact pin) resolves next to the root zod, `@anthropic-ai/sdk` and `@modelcontextprotocol/sdk` with no nesting. The lockfile lists the eight platform binaries, Alpine musl included. `check_dependency_policy.py` passes.
+- New `runtime/agentBridge.ts`: `AgentSession` / `AgentRun` seam, `BridgedAbstractAgent` (the run loop moved from `CursorSdkAbstractAgent`), prompt building, tool fences, SDK message mapping, `loadSdkOnce`, `requireSecret`, `createScratchCwd`, MCP URL helpers. The prompt no longer names Cursor ("Do not look for them among your own tools").
+- `cursorAgent.ts` keeps the Node floor, the Cursor session and `Agent.create`. `claudeAgent.ts` opens a `query()` per prompt with the D9/D10 options. A `result` message with `is_error` or an `error_*` subtype fails the run with its text.
+- Deviation: `createAgentForBackend` lives in `runtime/agentBackends.ts`, not `agentBridge.ts`, because the bridge is imported by both backends and the dispatcher imports both, which would make a cycle.
+- Deviation (D7): the subprocess `env` holds `ANTHROPIC_API_KEY` plus a short allowlist (`PATH`, `HOME`, temp directories, proxy variables, `NODE_EXTRA_CA_CERTS`), not the whole `process.env`. The server's own secrets (the secrets wrapping key, database passwords) stay out of the agent's subprocess.
+- Missing secrets now fail with ``missing secret `aiAnthropicKey` `` (or `aiCursorKey`), before any SDK import. The route reports it as 503 `AI configuration error`.
+- Router option `agentModel`, passed from `features.agentModel` by `miroir-server` (`mountCopilotKitRoute`) and Electron (`ipcServerSetup.ts`).
+- Slice 4's probe gained its `claude` case: an agent request loads only `@anthropic-ai/claude-agent-sdk`.
+- Not verified: a live Claude run. In this cloud container the Claude Code CLI bundled with the SDK (2.1.288) hangs with no output even when run directly (`claude -p hi`), while `curl` reaches the API. The tracer narrative of slice 7 is left to a local run.
+- `miroir-ai` tests: all pass except the 14 `miroirTools.unit.test.ts` failures that already fail on `_integration` (listed in #414).
 
 ---
 
@@ -425,7 +434,7 @@ npm run nonreg:filesystem -- --runner shared   # full run
 
 ## Slice 7 — Nonreg, docs, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -442,11 +451,11 @@ The feature is covered by nonreg, documented, and the issue-scoped tests are fol
 
 | Acceptance criterion (#409) | Proof |
 |---|---|
-| The environment config selects `cursor`, `claude` or `none`, and the capabilities report it | slice 1 core test |
-| Each backend loads only its SDK; `none` loads neither | slice 4 child-process probe |
-| A Claude chat runs through CopilotKit with Miroir MCP tools | slice 3 route test + tracer narrative |
-| Web client and Electron main bundle contain neither SDK | `electronBundle.unit.test.ts` (slice 5) + existing web bundle budget tests |
-| Packaged Electron fails clearly when the picked SDK is missing | slice 5 test |
+| The environment config selects `cursor`, `claude` or `none`, and the capabilities report it | `miroir-core` `agentBackendCapabilities.unit.test.ts` |
+| Each backend loads only its SDK; `none` loads neither | `miroir-ai` `agentSdkModuleLoading.unit.test.ts` (child-process probe), `miroir-server` `mountCopilotKitRoute.lazyImport.unit.test.ts` |
+| A Claude chat runs through CopilotKit with Miroir MCP tools | `miroir-ai` `claudeAgent.unit.test.ts` and `agentBackendRoute.unit.test.ts`; live run not done in the cloud container (see slice 3) |
+| Web client and Electron main bundle contain neither SDK | `electronBundle.unit.test.ts` + existing web bundle budget tests |
+| Packaged Electron fails clearly when the picked SDK is missing | `miroir-ai` `assertAgentSdkPackaged.unit.test.ts`, `miroir-server` `mountCopilotKitRoute.agentSdkCheck.unit.test.ts` |
 
 ### Validation
 
@@ -457,4 +466,7 @@ npm run nonreg:filesystem -- --runner shared
 
 ### Realization
 
-_(pending)_
+- Nonreg step `unit-agent-backend` (scopes `external`, `tooling`) runs the feature-named suites below. It was first added as `unit-409-agent-backend` on the issue directories, then renamed by the cleanup.
+- Cleanup (`git mv`): `miroir-core` `tests/1_core/agentBackendCapabilities.unit.test.ts`; `miroir-ai` `tests/unit/agentBackendRoute`, `claudeAgent`, `agentSdkModuleLoading` (slice 4 probe plus the slice 0 characterization, folded in), `assertAgentSdkPackaged`; `miroir-standalone-app` `tests/4_view/agentBackendPick.unit.test.ts`; `miroir-server` `tests/mountCopilotKitRoute.lazyImport` and `.agentSdkCheck`; `miroir-env` `tests/agentBackendAlias.unit.test.ts`. The `issues/409-agent-backend/` directories are gone. The #275 issue directories stay for #275's own cleanup; their tests were only updated.
+- Docs: `process-capabilities.md` (`agentBackend`, `agentModel`, the `agent` refusal, the `cursor` alias), `using-ai.md` (one "Agent backend (Cursor or Claude)" section with keys, model, sandboxing, Docker and Electron), and the index lines that named Cursor only.
+- Tracer narrative not run: the Claude Code CLI hangs in this cloud container (slice 3). On a local machine: `agentBackend: "claude"` in `environments/local.json`, `AI_ANTHROPIC_KEY` imported, server and client started, "Claude" toggle on, ask for a new Report.

@@ -1,5 +1,5 @@
 /**
- * #409 Slice 1: the CopilotKit route sends an agent request ("agent", or the "cursor" alias) to
+ * Agent backends (#409): the CopilotKit route sends an agent request ("agent", or the "cursor" alias) to
  * the configured backend, and refuses it with capability "agent" when the backend is none.
  * Do not register in FunctionCallTestRegistry.
  */
@@ -10,10 +10,10 @@ import { describe, expect, it } from "vitest";
 import { AbstractAgent } from "@ag-ui/client";
 import { FAIL_CLOSED_PROCESS_CAPABILITIES, type ProcessCapabilities } from "miroir-core";
 
-import { createCopilotKitRouter } from "../../../../src/routes/copilotKitRoute.js";
+import { createCopilotKitRouter } from "../../src/routes/copilotKitRoute.js";
 
 const RUN_TEST = process.env.RUN_TEST;
-const runThis = !RUN_TEST || RUN_TEST.startsWith("agentBackend.409");
+const runThis = !RUN_TEST || RUN_TEST.startsWith("agentBackendRoute");
 
 class StubAgent extends AbstractAgent {
   override run(): any {
@@ -63,7 +63,7 @@ function routerFor(capabilities: ProcessCapabilities, agentFactoryCalls: string[
 }
 
 if (runThis) {
-  describe("agentBackend.409.phase1: agent requests follow agentBackend", () => {
+  describe("agentBackendRoute: agent requests follow agentBackend", () => {
     it("sends an 'agent' request to the configured cursor backend", async () => {
       const calls: string[] = [];
       const response = await postJson(routerFor(snapshot({ agentBackend: "cursor" }), calls), agentRequest("agent"));

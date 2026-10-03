@@ -1,5 +1,5 @@
 /**
- * #409 Slice 2: the browser asks for "the agent" and names the configured backend.
+ * Agent backends (#409): the browser asks for "the agent" and names the configured backend.
  * Do not register in FunctionCallTestRegistry.
  */
 import { readFileSync } from "node:fs";
@@ -11,17 +11,17 @@ import { FAIL_CLOSED_PROCESS_CAPABILITIES, type ProcessCapabilities } from "miro
 import {
   agentBackendLabel,
   agentRequestProperties,
-} from "../../../../src/miroir-fwk/4_view/routes/ai/agentBackendPick.js";
+} from "../../src/miroir-fwk/4_view/routes/ai/agentBackendPick.js";
 import {
   MIROIR_AI_BACKEND_STORAGE_KEY,
   readMiroirAiBackend,
   writeMiroirAiBackend,
-} from "../../../../src/miroir-fwk/4_view/routes/ai/miroirAiBackend.js";
+} from "../../src/miroir-fwk/4_view/routes/ai/miroirAiBackend.js";
 
 const RUN_TEST = process.env.RUN_TEST;
-const runThis = !RUN_TEST || RUN_TEST.startsWith("agentBackend.409");
+const runThis = !RUN_TEST || RUN_TEST.startsWith("agentBackendPick");
 
-const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../../../..");
+const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
 const AI_ROUTES = "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai";
 
 function capabilities(overrides: Partial<ProcessCapabilities>): ProcessCapabilities {
@@ -33,7 +33,7 @@ function readRepoFile(relativePath: string): string {
 }
 
 if (runThis) {
-  describe("agentBackend.409.phase2: toggle label", () => {
+  describe("agentBackendPick: toggle label", () => {
     it("names the configured backend", () => {
       expect(agentBackendLabel(capabilities({ agentBackend: "claude" }))).toBe("Claude");
       expect(agentBackendLabel(capabilities({ agentBackend: "cursor" }))).toBe("Cursor");
@@ -44,7 +44,7 @@ if (runThis) {
     });
   });
 
-  describe("agentBackend.409.phase2: session pick", () => {
+  describe("agentBackendPick: session pick", () => {
     beforeEach(() => {
       sessionStorage.removeItem(MIROIR_AI_BACKEND_STORAGE_KEY);
     });
@@ -67,7 +67,7 @@ if (runThis) {
     });
   });
 
-  describe("agentBackend.409.phase2: chat request properties", () => {
+  describe("agentBackendPick: chat request properties", () => {
     it("asks for the agent when picked and a backend is configured", () => {
       expect(agentRequestProperties("agent", "claude")).toEqual({
         aiConfig: { backend: "agent" },

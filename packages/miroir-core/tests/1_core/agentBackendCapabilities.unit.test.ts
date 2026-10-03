@@ -1,5 +1,5 @@
 /**
- * #409 Slice 1: `features.agentBackend` picks the agent backend before start, and the process
+ * Agent backends (#409): `features.agentBackend` picks the agent backend before start, and the process
  * capabilities report it. `features.cursor: true` stays readable as an alias for one release.
  * Do not register in FunctionCallTestRegistry.
  */
@@ -14,7 +14,7 @@ import {
 } from "miroir-core";
 
 const RUN_TEST = process.env.RUN_TEST;
-const runThis = !RUN_TEST || RUN_TEST.startsWith("agentBackend.409");
+const runThis = !RUN_TEST || RUN_TEST.startsWith("agentBackendCapabilities");
 
 const emptyMap = new Map<string, unknown>();
 
@@ -32,7 +32,7 @@ function snapshot(overrides: Partial<ProcessCapabilities>): ProcessCapabilities 
 }
 
 if (runThis) {
-  describe("agentBackend.409.phase1: agentBackend in process capabilities", () => {
+  describe("agentBackendCapabilities: agentBackend in process capabilities", () => {
     it("reports the configured backend", () => {
       expect(agentBackendFor({ agentBackend: "cursor" })).toBe("cursor");
       expect(agentBackendFor({ agentBackend: "claude" })).toBe("claude");
@@ -64,7 +64,7 @@ if (runThis) {
     });
   });
 
-  describe("agentBackend.409.phase1: agentBackend and agentModel in the environment schema", () => {
+  describe("agentBackendCapabilities: agentBackend and agentModel in the environment schema", () => {
     const features = { ai: true, mcp: true, agentBackend: "claude", agentModel: "claude-sonnet-5-5" };
 
     it("accepts them in an environment definition", () => {
