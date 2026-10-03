@@ -278,6 +278,30 @@ describe("zodParseError", () => {
       });
     });
 
+    it("should keep an invalid_union with no branch errors as a leaf", () => {
+      const unionIssue: ZodParseErrorIssueInvalidUnion = {
+        code: "invalid_union",
+        path: ["section", "type"],
+        errors: [],
+        note: "No matching discriminator",
+        discriminator: "type",
+        message: "Invalid input"
+      };
+      const error: ZodParseError = {
+        name: "ZodError",
+        issues: [
+          unionIssue,
+          {
+            code: "invalid_type",
+            expected: "string",
+            path: ["label"],
+            message: "Error outside union"
+          }
+        ]
+      };
+      expect(zodErrorDeepestIssueLeaves(error)).toEqual({ depth: 2, issues: [unionIssue] });
+    });
+
     it("should handle nested union errors", () => {
       const error: ZodParseError = {
         name: "ZodError",
