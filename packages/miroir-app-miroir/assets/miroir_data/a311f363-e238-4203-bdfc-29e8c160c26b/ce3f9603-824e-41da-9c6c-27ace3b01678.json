@@ -5,7 +5,7 @@
   "name": "ui.transformerEditor",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "TransformerEditor on the Miroir application: renders the default transformer and its result, edits it, chooses a transformer type, switches the input type restriction off, and builds nested transformers (mapList to strings and objects, a reduce of a mapList, a list from an object).",
+  "description": "TransformerEditor on the Miroir application: renders the default transformer and its result, edits it, chooses a transformer type, switches the input type restriction off, builds nested transformers (mapList to strings and objects, a reduce of a mapList, a list from an object), wraps transformers in new ones at any level with the input type filter, pipes them into new ones, unwraps and removes them, keeps what fits on a type change, and hints at getFromParameters reads after a wrap.",
   "tags": [
     "ui",
     "editor",
@@ -95,13 +95,59 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "TransformerEditor: choosing getObjectValues returns the values of the input",
+            "miroirTestLabel": "TransformerEditor: choosing getObjectValues asks before dropping the returned value, then returns the values of the input",
             "steps": [
               {
                 "step": "selectOption",
                 "label": "transformer type",
                 "field": "transformerEditor_transformer_selector.transformer.transformerType",
                 "option": "getObjectValues"
+              },
+              {
+                "step": "expectElement",
+                "label": "the dropped attributes are named",
+                "target": {
+                  "byTestId": "transformer-node-dialog-dropped"
+                },
+                "containsHtml": "getObjectValues does not take: mlSchema, value.",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "cancel the type change",
+                "target": {
+                  "byTestId": "transformer-node-dialog-cancel"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "root is still returnValue",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "returned value kept",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "transformer type again",
+                "field": "transformerEditor_transformer_selector.transformer.transformerType",
+                "option": "getObjectValues"
+              },
+              {
+                "step": "click",
+                "label": "confirm the type change",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
               },
               {
                 "step": "expectElement",
@@ -280,10 +326,24 @@
                 "option": "mapList"
               },
               {
+                "step": "click",
+                "label": "confirm the type change (root mapList)",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
                 "step": "selectOption",
                 "label": "element type",
                 "field": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType",
                 "option": "mustacheStringTemplate"
+              },
+              {
+                "step": "click",
+                "label": "confirm the type change (element type)",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
               },
               {
                 "step": "change",
@@ -376,6 +436,13 @@
                 "option": "mapList"
               },
               {
+                "step": "click",
+                "label": "confirm the type change (root mapList)",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
                 "step": "openSelect",
                 "label": "open element createObject",
                 "field": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType"
@@ -399,6 +466,13 @@
                 "value": "false"
               },
               {
+                "step": "click",
+                "label": "confirm the type change (element createObject)",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
                 "step": "clickObjectButton",
                 "label": "add an attribute to the element object",
                 "field": "transformerEditor_transformer_selector.transformer.elementTransformer.definition",
@@ -416,6 +490,13 @@
                 "label": "fruit attribute type",
                 "field": "transformerEditor_transformer_selector.transformer.elementTransformer.definition.fruit.transformerType",
                 "option": "mustacheStringTemplate"
+              },
+              {
+                "step": "click",
+                "label": "confirm the type change (fruit attribute type)",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
               },
               {
                 "step": "change",
@@ -534,6 +615,13 @@
                 "value": "false"
               },
               {
+                "step": "click",
+                "label": "confirm the type change (root listReducerToSpreadObject)",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
                 "step": "clickObjectButton",
                 "label": "add applyTo",
                 "field": "transformerEditor_transformer_selector.transformer",
@@ -545,6 +633,13 @@
                 "label": "applyTo mapList",
                 "field": "transformerEditor_transformer_selector.transformer.applyTo.transformerType",
                 "option": "mapList"
+              },
+              {
+                "step": "click",
+                "label": "confirm the type change (applyTo mapList)",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
               },
               {
                 "step": "openSelect",
@@ -570,6 +665,13 @@
                 "value": "false"
               },
               {
+                "step": "click",
+                "label": "confirm the type change (element createObject)",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
                 "step": "clickObjectButton",
                 "label": "add an attribute to the element object",
                 "field": "transformerEditor_transformer_selector.transformer.applyTo.elementTransformer.definition",
@@ -587,6 +689,13 @@
                 "label": "last attribute type",
                 "field": "transformerEditor_transformer_selector.transformer.applyTo.elementTransformer.definition.last.transformerType",
                 "option": "mustacheStringTemplate"
+              },
+              {
+                "step": "click",
+                "label": "confirm the type change (last attribute type)",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
               },
               {
                 "step": "change",
@@ -694,6 +803,13 @@
                 "option": "mapList"
               },
               {
+                "step": "click",
+                "label": "confirm the type change (root mapList)",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
                 "step": "clickObjectButton",
                 "label": "add applyTo",
                 "field": "transformerEditor_transformer_selector.transformer",
@@ -707,10 +823,24 @@
                 "option": "getObjectValues"
               },
               {
+                "step": "click",
+                "label": "confirm the type change (applyTo getObjectValues)",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
                 "step": "selectOption",
                 "label": "element type",
                 "field": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType",
                 "option": "mustacheStringTemplate"
+              },
+              {
+                "step": "click",
+                "label": "confirm the type change (element type)",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
               },
               {
                 "step": "change",
@@ -750,6 +880,1252 @@
                   "byText": "pear juice"
                 },
                 "count": 1,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: wrapping the root in mapList keeps it as the element transformer",
+            "steps": [
+              {
+                "step": "click",
+                "label": "switch the restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                },
+                "checked": false
+              },
+              {
+                "step": "click",
+                "label": "open the root node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "enclosing transformer",
+                "field": "transformer-node-dialog-type",
+                "option": "mapList"
+              },
+              {
+                "step": "click",
+                "label": "confirm the wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "root is mapList",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "mapList",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "element transformer is the former root",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType"
+                },
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "former returned value kept",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: wrapping a nested transformer in ifThenElse asks for the slot",
+            "steps": [
+              {
+                "step": "click",
+                "label": "switch the restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                },
+                "checked": false
+              },
+              {
+                "step": "click",
+                "label": "open the root node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "enclosing mapList",
+                "field": "transformer-node-dialog-type",
+                "option": "mapList"
+              },
+              {
+                "step": "click",
+                "label": "confirm the root wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "root is mapList",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "mapList",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the element transformer actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer.elementTransformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in the element transformer",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "enclosing ifThenElse",
+                "field": "transformer-node-dialog-type",
+                "option": "ifThenElse"
+              },
+              {
+                "step": "selectOption",
+                "label": "slot then",
+                "field": "transformer-node-dialog-slot",
+                "option": "then"
+              },
+              {
+                "step": "click",
+                "label": "confirm the nested wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "element transformer is ifThenElse",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType"
+                },
+                "value": "ifThenElse",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "then is the former element transformer",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.elementTransformer.then.transformerType"
+                },
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "root still mapList",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "mapList",
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: wrapping the root in case at a when fills its then with returnValue",
+            "steps": [
+              {
+                "step": "click",
+                "label": "switch the restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                },
+                "checked": false
+              },
+              {
+                "step": "click",
+                "label": "open the root node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "enclosing case",
+                "field": "transformer-node-dialog-type",
+                "option": "case"
+              },
+              {
+                "step": "openSelect",
+                "label": "open the slot select (typing a bracket is a key descriptor)",
+                "field": "transformer-node-dialog-slot"
+              },
+              {
+                "step": "click",
+                "label": "slot whens[].when",
+                "target": {
+                  "byRole": "option",
+                  "name": "transformer-node-dialog-slot-option-whens[].when"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "slot select closed",
+                "target": {
+                  "widget": "selectState",
+                  "field": "transformer-node-dialog-slot"
+                },
+                "attribute": "data-test-is-open",
+                "value": "false"
+              },
+              {
+                "step": "click",
+                "label": "confirm the wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "root is case",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "case",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the when is the former root",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.whens.0.when.transformerType"
+                },
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the then is filled",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.whens.0.then.transformerType"
+                },
+                "value": "returnValue",
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: with the input type restriction, Wrap in offers only transformers accepting the input",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "restriction on",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                },
+                "checked": true
+              },
+              {
+                "step": "click",
+                "label": "open the root node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "openSelect",
+                "label": "open enclosing types",
+                "field": "transformer-node-dialog-type"
+              },
+              {
+                "step": "expectElement",
+                "label": "ifThenElse offered",
+                "target": {
+                  "byRole": "option",
+                  "name": "transformer-node-dialog-type-option-ifThenElse"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "mapList hidden",
+                "target": {
+                  "byRole": "option",
+                  "name": "transformer-node-dialog-type-option-mapList"
+                },
+                "present": false
+              },
+              {
+                "step": "selectOption",
+                "label": "pick ifThenElse to close the list",
+                "field": "transformer-node-dialog-type",
+                "option": "ifThenElse"
+              },
+              {
+                "step": "click",
+                "label": "cancel",
+                "target": {
+                  "byTestId": "transformer-node-dialog-cancel"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "dialog closed",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformer-node-dialog-type"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "root unchanged",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "switch the restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                },
+                "checked": false
+              },
+              {
+                "step": "click",
+                "label": "reopen the root node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in again",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "openSelect",
+                "label": "reopen enclosing types",
+                "field": "transformer-node-dialog-type"
+              },
+              {
+                "step": "expectElement",
+                "label": "mapList offered",
+                "target": {
+                  "byRole": "option",
+                  "name": "transformer-node-dialog-type-option-mapList"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "pick mapList to close the list",
+                "field": "transformer-node-dialog-type",
+                "option": "mapList"
+              },
+              {
+                "step": "click",
+                "label": "cancel again",
+                "target": {
+                  "byTestId": "transformer-node-dialog-cancel"
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: piping the root into stringOp applies it to the former root's result",
+            "steps": [
+              {
+                "step": "click",
+                "label": "open the root node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Pipe into",
+                "target": {
+                  "byTestId": "transformer-node-action-pipe"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "new transformer",
+                "field": "transformer-node-dialog-type",
+                "option": "stringOp"
+              },
+              {
+                "step": "click",
+                "label": "confirm the pipe",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "root is stringOp",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "stringOp",
+                "timeout": 2000
+              },
+              {
+                "step": "selectOption",
+                "label": "operation",
+                "field": "transformerEditor_transformer_selector.transformer.op",
+                "option": "toUpperCase"
+              },
+              {
+                "step": "expectElement",
+                "label": "result: the former root's value in upper case",
+                "target": {
+                  "byText": "SEIZE VALUE..."
+                },
+                "count": 1,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: unwrapping a mapList with one child puts the child back at its place",
+            "steps": [
+              {
+                "step": "click",
+                "label": "open the root node actions on returnValue",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "Unwrap disabled: returnValue has no child",
+                "target": {
+                  "byTestId": "transformer-node-action-unwrap"
+                },
+                "attribute": {
+                  "name": "aria-disabled",
+                  "value": "true"
+                }
+              },
+              {
+                "step": "keyboard",
+                "label": "close the menu",
+                "keys": "{Escape}"
+              },
+              {
+                "step": "expectElement",
+                "label": "menu closed",
+                "target": {
+                  "byTestId": "transformer-node-action-unwrap"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "switch the restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                },
+                "checked": false
+              },
+              {
+                "step": "click",
+                "label": "open the root node actions to wrap in mapList",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "enclosing mapList",
+                "field": "transformer-node-dialog-type",
+                "option": "mapList"
+              },
+              {
+                "step": "click",
+                "label": "confirm the wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "root is mapList",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "mapList",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the root node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Unwrap",
+                "target": {
+                  "byTestId": "transformer-node-action-unwrap"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "root is the former element transformer",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "its returned value kept",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "no dialog for a single child",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformer-node-dialog-child"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: unwrapping an ifThenElse asks which child to keep and names the others",
+            "steps": [
+              {
+                "step": "click",
+                "label": "open the root node actions to wrap in ifThenElse",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "enclosing ifThenElse",
+                "field": "transformer-node-dialog-type",
+                "option": "ifThenElse"
+              },
+              {
+                "step": "selectOption",
+                "label": "slot then",
+                "field": "transformer-node-dialog-slot",
+                "option": "then"
+              },
+              {
+                "step": "click",
+                "label": "confirm the wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "root is ifThenElse",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "ifThenElse",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the root node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Unwrap",
+                "target": {
+                  "byTestId": "transformer-node-action-unwrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "keep then",
+                "field": "transformer-node-dialog-child",
+                "option": "then"
+              },
+              {
+                "step": "expectElement",
+                "label": "the dropped children are named",
+                "target": {
+                  "byText": {
+                    "regex": "^Also removes: if \\("
+                  }
+                }
+              },
+              {
+                "step": "click",
+                "label": "confirm the unwrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "root is the former then",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "its returned value kept",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: removing an optional transformer deletes it, after a confirmation",
+            "steps": [
+              {
+                "step": "click",
+                "label": "open the transformer node actions to wrap in ifThenElse",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "enclosing ifThenElse",
+                "field": "transformer-node-dialog-type",
+                "option": "ifThenElse"
+              },
+              {
+                "step": "selectOption",
+                "label": "slot then",
+                "field": "transformer-node-dialog-slot",
+                "option": "then"
+              },
+              {
+                "step": "click",
+                "label": "confirm the wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "transformer is ifThenElse",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "ifThenElse",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the transformer.then node actions to remove it",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer.then"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Remove",
+                "target": {
+                  "byTestId": "transformer-node-action-remove"
+                }
+              },
+              {
+                "step": "click",
+                "label": "cancel the removal",
+                "target": {
+                  "byTestId": "transformer-node-dialog-cancel"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "cancel keeps then",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.then.transformerType"
+                },
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the transformer.then node actions to remove it",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer.then"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Remove",
+                "target": {
+                  "byTestId": "transformer-node-action-remove"
+                }
+              },
+              {
+                "step": "click",
+                "label": "confirm the removal",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "then is gone",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.then.transformerType"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "root is still ifThenElse",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "ifThenElse",
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: removing a required transformer or the root resets it to returnValue",
+            "steps": [
+              {
+                "step": "click",
+                "label": "switch the restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                },
+                "checked": false
+              },
+              {
+                "step": "click",
+                "label": "open the transformer node actions to wrap in mapList",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "enclosing mapList",
+                "field": "transformer-node-dialog-type",
+                "option": "mapList"
+              },
+              {
+                "step": "click",
+                "label": "confirm the wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "transformer is mapList",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "mapList",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the transformer.elementTransformer node actions to wrap in ifThenElse",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer.elementTransformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "enclosing ifThenElse",
+                "field": "transformer-node-dialog-type",
+                "option": "ifThenElse"
+              },
+              {
+                "step": "selectOption",
+                "label": "slot then",
+                "field": "transformer-node-dialog-slot",
+                "option": "then"
+              },
+              {
+                "step": "click",
+                "label": "confirm the wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "transformer.elementTransformer is ifThenElse",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType"
+                },
+                "value": "ifThenElse",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the transformer.elementTransformer node actions to remove it",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer.elementTransformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Remove",
+                "target": {
+                  "byTestId": "transformer-node-action-remove"
+                }
+              },
+              {
+                "step": "click",
+                "label": "confirm the removal",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the element transformer is reset",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType"
+                },
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "its subtree is gone",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.elementTransformer.then.transformerType"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "root is still mapList",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "mapList",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the transformer node actions to remove it",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Remove",
+                "target": {
+                  "byTestId": "transformer-node-action-remove"
+                }
+              },
+              {
+                "step": "click",
+                "label": "confirm the removal",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the root is reset",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the root's subtree is gone",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType"
+                },
+                "present": false,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: changing filterList to find keeps its predicate",
+            "steps": [
+              {
+                "step": "click",
+                "label": "switch the restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                },
+                "checked": false
+              },
+              {
+                "step": "selectOption",
+                "label": "root filterList",
+                "field": "transformerEditor_transformer_selector.transformer.transformerType",
+                "option": "filterList"
+              },
+              {
+                "step": "click",
+                "label": "confirm dropping the returned value",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "root is filterList",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "filterList",
+                "timeout": 2000
+              },
+              {
+                "step": "selectOption",
+                "label": "predicate boolExpr",
+                "field": "transformerEditor_transformer_selector.transformer.predicate.transformerType",
+                "option": "boolExpr"
+              },
+              {
+                "step": "click",
+                "label": "confirm dropping the predicate's value",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "predicate is boolExpr",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.predicate.transformerType"
+                },
+                "value": "boolExpr",
+                "timeout": 2000
+              },
+              {
+                "step": "selectOption",
+                "label": "root find",
+                "field": "transformerEditor_transformer_selector.transformer.transformerType",
+                "option": "find"
+              },
+              {
+                "step": "expectElement",
+                "label": "root is find",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "find",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "predicate kept",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.predicate.transformerType"
+                },
+                "value": "boolExpr",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no confirmation: nothing dropped",
+                "target": {
+                  "byTestId": "transformer-node-dialog-dropped"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: after a wrap in mapList, a hint says getFromParameters reads the whole input",
+            "steps": [
+              {
+                "step": "selectOption",
+                "label": "root getFromParameters",
+                "field": "transformerEditor_transformer_selector.transformer.transformerType",
+                "option": "getFromParameters"
+              },
+              {
+                "step": "click",
+                "label": "confirm dropping the returned value",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "root is getFromParameters",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "getFromParameters",
+                "timeout": 2000
+              },
+              {
+                "step": "clickObjectButton",
+                "label": "add referenceName",
+                "field": "transformerEditor_transformer_selector.transformer",
+                "action": "addOptionalAttribute",
+                "attribute": "referenceName"
+              },
+              {
+                "step": "change",
+                "label": "read defaultInput",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_transformer_selector.transformer.referenceName"
+                },
+                "value": "defaultInput"
+              },
+              {
+                "step": "expectElement",
+                "label": "no hint at the root",
+                "target": {
+                  "byTestId": "transformer-wrap-parameter-hint"
+                },
+                "present": false
+              },
+              {
+                "step": "click",
+                "label": "switch the restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the root node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "enclosing mapList",
+                "field": "transformer-node-dialog-type",
+                "option": "mapList"
+              },
+              {
+                "step": "click",
+                "label": "confirm the wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "root is mapList",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "mapList",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the hint names the element transformer",
+                "target": {
+                  "byTestId": "transformer-wrap-parameter-hint"
+                },
+                "containsHtml": "getFromParameters at elementTransformer reads the whole input",
                 "timeout": 2000
               }
             ]

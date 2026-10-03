@@ -1346,6 +1346,24 @@ export type {
   TransformerTypesAcceptingInput,
 } from "./0_interfaces/2_domain/TransformerInterfaceCheckInterface.js";
 export {
+  elementParameterReadsOfDefaultInput,
+  keepAttributesOnTypeChange,
+  parameterReadsOfDefaultInput,
+  pipeCandidates,
+  pipeTransformerNode,
+  removeTransformerNode,
+  transformerChildren,
+  transformerSlots,
+  unwrapTransformerNode,
+  wrapCandidates,
+  wrapTransformerNode,
+} from "./2_domain/TransformerTreeEdit.js";
+export type {
+  TransformerChild,
+  TransformerSlot,
+  TransformerTypeChange,
+} from "./0_interfaces/2_domain/TransformerTreeEditInterface.js";
+export {
   checkTransformerMlSchemaCompatibility,
   formatMlSchemaTypeLabel,
   getDeclaredInputMlSchema,
