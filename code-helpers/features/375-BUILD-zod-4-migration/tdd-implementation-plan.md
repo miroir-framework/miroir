@@ -28,9 +28,9 @@ Out: TS generation without zod (D3-b), `z.strictObject` / zod-mini output (D4), 
 | 0 | Characterize parse results and errors | ✅ DONE | `zodParseResults.375.phase0.unit.test.ts` |
 | 1 | jzod builds runtime schemas with zod 4 | ✅ DONE | jzod 1.0.0 (jzod#28), 52/52 tests |
 | 2 | jzod-ts generates TS through zod-to-ts 2 | ✅ DONE | jzod-ts 1.0.0 (jzod-ts#11), 10/10 tests |
-| 3 | Miroir builds on zod 4 and jzod 1.0 (tracer) | ⬜ pending | miroir-core unit tests + `modelValidation` |
-| 4 | Union parse errors keep their deepest-issue report | ⬜ pending | `zodParseError` tests on zod 4 issues |
-| 5 | Hand-written app schemas on the v4 API | ⬜ pending | `gridPagination` tests, standalone-app typecheck |
+| 3 | Miroir builds on zod 4 and jzod 1.0 (tracer) | ✅ DONE | miroir-core unit tests + `modelValidation` |
+| 4 | Union parse errors keep their deepest-issue report | ✅ DONE | `zodParseError` tests on zod 4 issues |
+| 5 | Hand-written app schemas on the v4 API | ✅ DONE | `gridPagination` tests, standalone-app typecheck |
 | 6 | Cleanup and full non-regression | ⬜ pending | full PR gate + `nonreg:filesystem` |
 
 ## Locked implementation defaults (proposed, from the analysis)
@@ -65,7 +65,7 @@ not reachable through a MiroirTest.
 
 ## Slice 0 — Characterize parse results and errors
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** a safety net for Goals 2 and 3 before any API change.
 
@@ -136,7 +136,7 @@ schemas load and parse under zod 4.6.5.
 
 ## Slice 3 — Miroir builds on zod 4 and jzod 1.0 (tracer)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** Miroir builds against zod 4 and jzod / jzod-ts 1.0.0 and validates every deployment's model as before.
 
@@ -155,11 +155,23 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions,runners
 ```
 
 ### Realization
-_pending_
+Slices 3 to 5 landed in one commit: the bump breaks union error reporting at once, so no smaller step is green.
+- zod `4.6.5` (exact pin, dependency policy) in the six manifests, declared in miroir-standalone-app and
+  miroir-store-postgres, and pinned at the root as a devDependency so a single zod 4 is hoisted; third-party packages
+  that need zod 3 (CopilotKit, @cursor/sdk, @ag-ui) get nested 3.25.76 copies.
+- npm then moved openai 4.104 (optional peer `zod ^3`) under miroir-ai and gave CopilotKit openai 7.27 at the root;
+  miroir-ai hands its client to CopilotKit, so miroir-ai moves to openai `7.27.0` (one shared copy;
+  `apiKey ?? undefined` for openai 7's `string | null`). A root `overrides` on openai left CopilotKit without openai.
+- miroir-core needed one change: `DomainElement.ts` `z.record(z.string(), z.any())`. Types regenerate unchanged
+  (timestamp aside); the generator header uses `error` instead of the deprecated `message` in `.refine`.
+- D5: zod 4's `.uuid()` checks RFC version bits. All deployment assets of Slice 0 still parse, but 7 miroir-core unit
+  tests fail on hand-made fixture ids (`aaaaaaaa-aaaa-…`, `00000000-…-0001`); `Runner.ts`, two MiroirTest assets and
+  33 test files use such ids. jzod 1.0.1 (miroir-framework/jzod#29) emits `z.guid()`, zod 3's loose check; the
+  choice (lenient vs strict) is A's. With jzod 1.0.1: 2248/2248 miroir-core unit tests.
 
 ## Slice 4 — Union parse errors keep their deepest-issue report
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** Goal 3: an invalid model element still reports its deepest issue under zod 4's issue shape.
 
@@ -172,11 +184,16 @@ zod 4 issue shape; regenerate types; `zodParseError.test.ts` updated to the new 
 **Validation:** `RUN_TEST=zodParseError npm run testByFile -w miroir-core -- zodParseError`; scoped nonreg `smoke,core`.
 
 ### Realization
-_pending_
+zod 4 reports union branches in `issue.errors` (one issue array per branch) with paths **relative** to the union
+issue, and renames `invalid_literal` to `invalid_value` (`values`), drops `received`. `zodParseError.ts` describes
+that shape (`errors`, optional `note` / `discriminator`, `zodParseErrorIssueInvalidValue`); `zodParseErrorHandler.ts`
+prefixes branch paths so the leaves keep absolute paths. Slice 0's deepest-path expectations pass unchanged.
+`zodParseError.test.ts` uses zod 4 issues; the 822 kB zod 3 `zodParseErrorExample.json` is replaced by a live parse
+error of a real TransformerDefinition asset (it covers the four described codes).
 
 ## Slice 5 — Hand-written app schemas on the v4 API
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** the grid, pagination and check views validate their props as before.
 
@@ -190,7 +207,15 @@ two-argument `z.record`, `.default` semantics), `gridPagination.ts` (`error` par
 **Validation:** standalone-app and mcp typecheck; `RUN_TEST=gridPagination npm run testByFile -w miroir-standalone-app -- gridPagination`; scoped nonreg `smoke,ui,runners`.
 
 ### Realization
-_pending_
+miroir-standalone-app: `z.function({ input, output })` in the two grid interfaces, `z.record(z.string(), …)`,
+`z.never({ error })` in `gridPagination.ts`, `Check.tsx` record. Two zod 4 typing changes surfaced: a `z.any()`
+property is no longer optional in inferred types (`children`, `defaultFormValuesObject` get `.optional()`), and a
+generated `z.ZodType<T>` has an `unknown` input type, so a function schema over it loses its parameter type
+(`z.custom<EntityInstancesUuidIndex>()`). No new standalone-app type error against `_integration` (32 vs 35 there).
+miroir-mcp: the validation message now reads zod 4's `book: Invalid input: expected string, received undefined`
+(was `book: Required`). `Check.tsx` reads only `code` / `message` / `path` of the first leaf, unchanged.
+Pre-existing on `_integration`, not this change: miroir-ai `miroirTools.unit.test.ts` (14 failures), the npm audit
+rule (4 high advisories).
 
 ## Slice 6 — Package bump to zod 4
 

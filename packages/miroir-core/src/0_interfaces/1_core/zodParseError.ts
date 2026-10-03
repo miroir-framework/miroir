@@ -12,15 +12,21 @@ export const zodParseErrorMlSchema: MlReference = {
           definition: { type: "union", definition: [{ type: "string" }, { type: "number" }] },
         },
         message: { type: "string" },
-        unionErrors: {
+        // the issues of each union branch, with paths relative to this issue's path
+        errors: {
           type: "array",
           definition: {
-            type: "schemaReference",
+            type: "array",
             definition: {
-              relativePath: "zodParseError",
+              type: "schemaReference",
+              definition: {
+                relativePath: "zodParseErrorIssue",
+              },
             },
           },
         },
+        note: { type: "string", optional: true },
+        discriminator: { type: "string", optional: true },
       },
     },
     zodParseErrorIssueUnrecognizedKeys: {
@@ -35,11 +41,11 @@ export const zodParseErrorMlSchema: MlReference = {
         message: { type: "string" },
       },
     },
-    zodParseErrorIssueInvalidLiteral: {
+    zodParseErrorIssueInvalidValue: {
       type: "object",
       definition: {
-        code: { type: "literal", definition: "invalid_literal" },
-        expected: { type: "string" },
+        code: { type: "literal", definition: "invalid_value" },
+        values: { type: "array", definition: { type: "any" } },
         path: {
           type: "array",
           definition: { type: "union", definition: [{ type: "string" }, { type: "number" }] },
@@ -66,27 +72,14 @@ export const zodParseErrorMlSchema: MlReference = {
         {
           type: "schemaReference",
           definition: {
-            relativePath: "zodParseErrorIssueInvalidLiteral",
+            relativePath: "zodParseErrorIssueInvalidValue",
           },
         },
-        // {
-        //   type: "object",
-        //   definition: {
-        //     code: { type: "literal", definition: "invalid_literal" },
-        //     expected: { type: "string" },
-        //     path: {
-        //       type: "array",
-        //       definition: { type: "union", definition: [{ type: "string" }, { type: "number" }] },
-        //     },
-        //     message: { type: "string" },
-        //   },
-        // },
         {
           type: "object",
           definition: {
             code: { type: "literal", definition: "invalid_type" },
             expected: { type: "string" },
-            received: { type: "string" },
             path: {
               type: "array",
               definition: { type: "union", definition: [{ type: "string" }, { type: "number" }] },

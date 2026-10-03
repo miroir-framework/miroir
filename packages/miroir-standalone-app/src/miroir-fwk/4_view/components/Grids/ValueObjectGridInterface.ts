@@ -17,7 +17,7 @@ export const valueObjectGridRowSchema = z.object({
   localId: z.string(), // Local identifier for row identification
   displayedValue: z.any(),
   rawValue: z.any(), // The value object itself (not necessarily an EntityInstance)
-  mlSchema: z.record(mlElement),
+  mlSchema: z.record(z.string(), mlElement),
 })
 
 export type ValueObjectGridRow = z.infer<typeof valueObjectGridRowSchema>;
@@ -76,9 +76,9 @@ const valueObjectGridBasePropsSchema = z.object({
   gridType: z.enum(["ag-grid", "glide", "glide-data-grid"]).optional().default("ag-grid"),
 
   // Optional editing capabilities (when EntityInstanceGrid wants to enable editing)
-  onRowEdit: z.function().args(z.any()).returns(z.void()).optional(),
-  onRowDelete: z.function().args(z.any()).returns(z.void()).optional(),
-  onRowDuplicate: z.function().args(z.any()).returns(z.void()).optional(),
+  onRowEdit: z.function({ input: [z.any()], output: z.void() }).optional(),
+  onRowDelete: z.function({ input: [z.any()], output: z.void() }).optional(),
+  onRowDuplicate: z.function({ input: [z.any()], output: z.void() }).optional(),
 
   // Additional optional props for display
   displayTools: z.boolean().default(false),

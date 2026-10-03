@@ -227,7 +227,7 @@ export type Domain2QueryReturnType<T> =
   | Domain2ElementFailed
 export type Domain2Element = Domain2QueryReturnType<any>;
 
-export const domain2ElementObjectZodSchema = z.record(z.any());
+export const domain2ElementObjectZodSchema = z.record(z.string(), z.any());
   
 
 // ################################################################################################
