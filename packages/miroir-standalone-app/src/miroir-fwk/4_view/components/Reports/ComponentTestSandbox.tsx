@@ -88,8 +88,8 @@ const maxStepDelayMs = 2000;
 
 // ################################################################################################
 /**
- * #435: the step delay of the ViewParams instance, and its save. Before the admin store is loaded,
- * the delay is 0 and the save does nothing.
+ * #435: the step delay of the ViewParams instance, within the slider's range, and its save. Before
+ * the admin store is loaded, the delay is 0 and the save does nothing.
  */
 function useComponentTestStepDelay(): { stepDelayMs: number; saveStepDelayMs: (value: number) => void } {
   const domainController = useDomainControllerService();
@@ -113,7 +113,10 @@ function useComponentTestStepDelay(): { stepDelayMs: number; saveStepDelayMs: (v
     },
     [viewParamsData, domainController],
   );
-  return { stepDelayMs: viewParamsData?.componentTestStepDelayMs ?? 0, saveStepDelayMs };
+  // the attribute is editable elsewhere (ViewParams report): kept in the slider's range
+  const saved = Number(viewParamsData?.componentTestStepDelayMs ?? 0);
+  const stepDelayMs = Number.isFinite(saved) ? Math.min(Math.max(saved, 0), maxStepDelayMs) : 0;
+  return { stepDelayMs, saveStepDelayMs };
 }
 
 // ################################################################################################
@@ -148,6 +151,7 @@ const ComponentTestStepDelaySlider: React.FC<{ stepDelayMsRef: React.MutableRefO
         value={stepDelayMs}
         onChange={(event) => setMovingStepDelayMs(Number(event.target.value))}
         onPointerUp={onCommit}
+        onPointerCancel={onCommit}
         onKeyUp={onCommit}
         style={{ width: "100px" }}
       />
