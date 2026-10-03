@@ -1,6 +1,6 @@
 {
-  "$comment": "Bundle guard (#326), checked by scripts/check_bundle_policy.py against the build's bundle-report.json. See docs/internals/code-splitting.md. The npm minor/patch group (#358) added a2ui and MCP middleware, yauzl and standardwebhooks; they load with miroir-ai on demand since #370.",
-  "eagerGzipBaseline": 1005067,
+  "$comment": "Bundle guard (#326), checked by scripts/check_bundle_policy.py against the build's bundle-report.json. See docs/internals/code-splitting.md. The npm minor/patch group (#358) added a2ui and MCP middleware, yauzl and standardwebhooks; they load with miroir-ai on demand since #370. zod 4 (#375) adds about 90 kB gzipped at start; openai 7 dropped agentkeepalive, form-data-encoder, formdata-node and humanize-ms.",
+  "eagerGzipBaseline": 1095651,
   "eagerGzipTolerance": 0.02,
   "forbiddenEager": [
     "@testing-library/*",
@@ -147,7 +147,6 @@
     "@vercel/oidc",
     "abort-controller",
     "agent-base",
-    "agentkeepalive",
     "ai",
     "ajv",
     "ajv-formats",
@@ -185,8 +184,6 @@
     "fast-uri",
     "fd-slicer",
     "fetch-blob",
-    "form-data-encoder",
-    "formdata-node",
     "formdata-polyfill",
     "gaxios",
     "gcp-metadata",
@@ -198,7 +195,6 @@
     "heap",
     "hono",
     "https-proxy-agent",
-    "humanize-ms",
     "inflection",
     "ip-address",
     "jose",
