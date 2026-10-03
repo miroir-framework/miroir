@@ -466,6 +466,15 @@
                 "timeout": 2000
               },
               {
+                "step": "expectElement",
+                "label": "one error per item while the reference is missing",
+                "target": {
+                  "byText": "ReferenceNotFound"
+                },
+                "count": 2,
+                "timeout": 2000
+              },
+              {
                 "step": "clickObjectButton",
                 "label": "add the element referenceName",
                 "field": "transformerEditor_transformer_selector.transformer.elementTransformer",
