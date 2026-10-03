@@ -195,7 +195,7 @@ To install applications of your own or use other stores, create the gitignored `
 
 Applications you install from the UI while it is selected are recorded in it. `MIROIR_ENV=<name>` selects another environment for one run.
 
-**Release binary:** outside the repository (no `environments/` folder above the working directory, and no `MIROIR_ROOT`), or with `--config <path>`, the server reads a configuration file instead, `packages/miroir-server/config/miroirConfig.server.json` by default. Its `filesystemDeploymentRootDirectory` must point to a directory that contains both the `admin` and `miroir` application deployments:
+**Release binary:** outside the repository (no `environments/` folder above the working directory, and no `MIROIR_ROOT`), or with `--config <path>`, the server reads a configuration file instead: the `--config` path, relative to the working directory, or by default `packages/miroir-server/config/miroirConfig.server.json` (for a `release/` folder copied elsewhere, its `config/miroirConfig.server.json`). Its `filesystemDeploymentRootDirectory` must point to a directory that contains both the `admin` and `miroir` application deployments:
 
 ```json
 {
@@ -217,7 +217,7 @@ Applications you install from the UI while it is selected are recorded in it. `M
 
 The server now accepts parameters via explicit CLI flags:
 
-- `--config <path>`: Path to a server configuration file, used instead of the selected environment (outside the repository the default is `../config/miroirConfig.server.json`)
+- `--config <path>`: Path to a server configuration file, relative to the working directory or absolute, used instead of the selected environment (outside the repository the default is `../config/miroirConfig.server.json`, relative to the server bundle)
 - `--certsdir <dir>`: Path to the directory containing TLS certificates (default: `<repo-root>/certs/`)
 - `--cert <file>`: Path to the TLS certificate file (default: `<certsdir>/localhost.pem`)
 - `--key <file>`: Path to the TLS key file (default: `<certsdir>/localhost-key.pem`)

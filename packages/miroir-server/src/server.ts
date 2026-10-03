@@ -97,6 +97,7 @@ import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirMongoDbStoreSectionStartup } from 'miroir-store-mongodb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 import { agentMcpHttpUrl, mountCopilotKitRoute } from './mountCopilotKitRoute.js';
+import { resolveServerConfigFilePath } from './serverConfigFile.js';
 
 const packageName = "server"
 const cleanLevel = "5"
@@ -159,8 +160,8 @@ function printUsageAndExit(exitCode = 1): never {
   console.error(`Usage: node server.js [OPTIONS]`);
   myLogger.error(``);
   console.error(`OPTIONS:`);
-  console.error(`  --config   <path>   Path to the server config JSON file, instead of the selected environment`);
-  myLogger.error(`                      (default: ../config/miroirConfig.server.json, used when no environments/ folder is found)`);
+  console.error(`  --config   <path>   Path to the server config JSON file, relative to the working directory, instead of the selected environment`);
+  myLogger.error(`                      (default: ../config/miroirConfig.server.json relative to the server bundle, used when no environments/ folder is found)`);
   console.error(`  --certsdir <dir>    Directory containing TLS certificate files`);
   myLogger.error(`                      (default: <repo-root>/certs/)`);
   console.error(`  --cert     <path>   Path to the TLS certificate file (.pem)`);
@@ -180,6 +181,7 @@ function printUsageAndExit(exitCode = 1): never {
 }
 
 let configFilePath = "../config/miroirConfig.server.json";
+let configFileGiven = false;
 let argCertsDir: string | undefined;
 let argCertFile: string | undefined;
 let argKeyFile: string | undefined;
@@ -193,6 +195,7 @@ try {
     printUsageAndExit(0);
   }
   configFilePath = parsed.configFilePath;
+  configFileGiven = parsed.configFileGiven;
   argCertsDir = parsed.certsDir;
   argCertFile = parsed.certFile;
   argKeyFile = parsed.keyFile;
@@ -230,7 +233,7 @@ console.log(`  --secrets-master-key : ${secretsMasterKey ? "(set)" : "(not set)"
 // settings and the deployments to open. The config file is used when --config is given or when no
 // environments/ folder is found above the working directory (release binary, Docker image).
 function loadEnvironment(): ResolvedEnvironment | undefined {
-  if (process.argv.includes("--config") || !hasEnvironmentDefinitions(process.cwd(), process.env)) {
+  if (configFileGiven || !hasEnvironmentDefinitions(process.cwd(), process.env)) {
     return undefined;
   }
   try {
@@ -260,8 +263,14 @@ if (resolvedEnvironment) {
   }
   miroirConfig = environmentServerConfig(resolvedEnvironment);
 } else {
-  console.log(`  environment: none, server settings and boot deployments from ${configFilePath}`);
-  miroirConfig = JSON.parse(readFileSync(new URL(configFilePath, import.meta.url)).toString()) as MiroirConfigServer;
+  const configFile = resolveServerConfigFilePath({
+    configFilePath,
+    configFileGiven,
+    cwd: process.cwd(),
+    serverModuleDir: path.dirname(fileURLToPath(import.meta.url)),
+  });
+  console.log(`  environment: none, server settings and boot deployments from ${configFile}`);
+  miroirConfig = JSON.parse(readFileSync(configFile, "utf8")) as MiroirConfigServer;
 }
 myLogger.info('miroirConfig',miroirConfig)
 myLogger.info(`import.meta`, JSON.stringify((import.meta as any), null, 2));
