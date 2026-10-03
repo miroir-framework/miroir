@@ -44,7 +44,7 @@
     "@cursor/sdk": "1.0.32",
     "@google/generative-ai": "0.24.1",
     "@statsig/js-client": "3.33.5",
-    "express": "4.22.1",
+    "express": "5.2.1",
     "loglevelnext": "6.0.0",
     "miroir-app-miroir": "*",
     "miroir-core": "*",
@@ -54,7 +54,7 @@
     "uuid": "11.1.0"
   },
   "devDependencies": {
-    "@types/express": "4.17.25",
+    "@types/express": "5.0.6",
     "@types/node": "26.6.3",
     "cross-env": "10.1.0",
     "tsup": "8.5.1",
