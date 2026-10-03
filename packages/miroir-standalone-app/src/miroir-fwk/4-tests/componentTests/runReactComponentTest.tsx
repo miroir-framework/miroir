@@ -33,7 +33,11 @@ import {
 import { reviveComponentProps } from "./componentTestTargets.js";
 import { buildComponentTestWrapper, type ComponentTestWrapper } from "./componentTestTools.js";
 import { formatMeasurementTable } from "./measureRendering.js";
-import { ComponentTestStepError, runComponentTestSteps } from "./runComponentTestSteps.js";
+import {
+  ComponentTestStepError,
+  runComponentTestSteps,
+  type ComponentTestRunControls,
+} from "./runComponentTestSteps.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "runReactComponentTest");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -41,7 +45,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
   log = logger;
 });
 
-export interface ComponentTestSandboxHost {
+export interface ComponentTestSandboxHost extends ComponentTestRunControls {
   /** Element that receives the portal element and one container per case. Never a render target. */
   sandboxElement: HTMLElement;
   /** Target of the components' portals. Created as a child of `sandboxElement` when absent. */
@@ -243,6 +247,7 @@ export function createReactComponentTestRunner(
     // one wrapper per reactComponentTestSuite node, keyed by its path (T4)
     const wrapperKey = JSON.stringify(suite.suitePath);
     const testName = MiroirActivityTracker.testPathName(testNamePath);
+    host.onCaseStart?.(testName);
     try {
       const container = await mountCase(
         // #303 T3: render tracking only for a suite that measures renders (other suites: same DOM)
@@ -261,7 +266,7 @@ export function createReactComponentTestRunner(
           fieldNamePrefix,
         }),
         leaf.steps,
-        { iterationsOverride: host.iterationsOverride },
+        { iterationsOverride: host.iterationsOverride, stepDelayMs: host.stepDelayMs },
       );
       if (measurements.length === 0) {
         return { status: "ok" };

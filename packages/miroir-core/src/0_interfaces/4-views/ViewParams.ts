@@ -26,6 +26,8 @@ export const viewParams: MlElement = {
     mongoConnectionString: { type: "string", optional: true },
     /** When true, transformer editors use mlSchema compatibility (#251). Default false — #249 inputOutput path. */
     mlSchemaTransformerCompatibility: { type: "boolean", optional: true },
+    /** Milliseconds a UI test run in the app waits before each step (#435). Absent or 0: no delay. */
+    componentTestStepDelayMs: { type: "number", optional: true },
     toolsPage: { type: "object", definition: {} }, // Add toolsPage to the schema
   },
 };
@@ -62,6 +64,8 @@ export interface ViewParamsData {
   mongoConnectionString?: string;
   /** #251 mlSchema transformer compatibility. Absent or false = #249 inputOutput path only. */
   mlSchemaTransformerCompatibility?: boolean;
+  /** #435: milliseconds a UI test run in the app waits before each step. Absent or 0: no delay. */
+  componentTestStepDelayMs?: number;
   toolsPage?: ToolsPageState;
   generalEditMode?: boolean;
 }

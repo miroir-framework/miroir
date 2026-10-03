@@ -38,6 +38,7 @@ import {
 //   Report test, #330).
 // - Before a component test step runs, its `getFromContext` references are replaced by the values
 //   of `options.storedValues` (#333); an unresolved reference fails the step.
+// - `options.stepDelayMs` slows a run down: it waits that long before each step (#435).
 //
 // It does not import `@testing-library/react`: it runs in the app too.
 // ################################################################################################
@@ -248,6 +249,19 @@ export interface ComponentTestStepsOptions<ExtraStep extends AnyStep = never> {
    * step starts (#333): a Report test's parameters and kept results. Without it, a reference fails.
    */
   storedValues?: () => Record<string, unknown>;
+  /** Milliseconds to wait before each step, read when the step starts (#435, the sandbox's slider). */
+  stepDelayMs?: () => number;
+}
+
+/**
+ * What the app's test sandbox shows and controls during a run (#435): the name of the case that
+ * starts, and the delay before each step. Absent under vitest.
+ */
+export interface ComponentTestRunControls {
+  /** Called with the test name of each case, when it starts. */
+  onCaseStart?: (testName: string) => void;
+  /** Milliseconds to wait before each step, read when the step starts. */
+  stepDelayMs?: () => number;
 }
 
 export interface ComponentTestStepsResult {
@@ -551,6 +565,10 @@ export async function runComponentTestSteps<ExtraStep extends AnyStep = never>(
   const extraStepHandlers: Record<string, ((step: never) => Promise<void>) | undefined> =
     options.extraStepHandlers ?? {};
   for (const [index, step] of steps.entries()) {
+    const stepDelayMs = options.stepDelayMs?.() ?? 0;
+    if (stepDelayMs > 0) {
+      await new Promise((resolve) => setTimeout(resolve, stepDelayMs));
+    }
     try {
       const isComponentTestStep = Object.prototype.hasOwnProperty.call(handlers, step.step);
       const handler = (isComponentTestStep
