@@ -154,8 +154,11 @@ if (runThis) {
         join(REPO_ROOT, "packages/miroir-server/src/server.ts"),
         "utf8",
       );
-      expect(src).toContain('app.use("/api/copilotkit"');
-      expect(src).toContain("shouldMountCopilotKitRoute");
+      // #409: the CopilotKit mount moved to mountCopilotKitRoute.ts (miroir-ai imported on demand).
+      const mount = readFileSync(join(REPO_ROOT, "packages/miroir-server/src/mountCopilotKitRoute.ts"), "utf8");
+      expect(src).toContain("await mountCopilotKitRoute(app");
+      expect(mount).toContain('"/api/copilotkit"');
+      expect(mount).toContain("shouldMountCopilotKitRoute");
       expect(src).toContain("shouldMountMcpHttp");
       expect(src).toContain("mountHttpRoutes");
       expect(src).toContain("mcpServer.run");

@@ -6,6 +6,8 @@
     "moduleResolution": "NodeNext",
     "outDir": "./dist",
     "rootDir": "./",
+    // keeps the webpackIgnore comment of mountCopilotKitRoute.ts for the ncc release bundle (#409)
+    "removeComments": false,
   },
   "exclude": [
     "./node_modules/**",

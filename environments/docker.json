@@ -7,7 +7,7 @@
     "corsAllowedOrigins": ["https://localhost:3080", "https://localhost:5173", "https://localhost:3000"]
   },
   "client": { "mode": "realServer" },
-  "features": { "ai": true, "mcp": true },
+  "features": { "ai": true, "mcp": true, "agentBackend": "none" },
   "applications": {
     "miroir": {
       "package": "miroir-app-miroir",

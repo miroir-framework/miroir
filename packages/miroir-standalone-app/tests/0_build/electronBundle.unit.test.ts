@@ -81,7 +81,7 @@ describe("electronBundle", () => {
   });
 
   it("keeps Electron and the native modules outside the bundle", () => {
-    expect(report.externals).toEqual(expect.arrayContaining(["electron", "classic-level", "pg", "@cursor/sdk"]));
+    expect(report.externals).toEqual(expect.arrayContaining(["electron", "classic-level", "pg", "@cursor/sdk", "@anthropic-ai/claude-agent-sdk"]));
     expect(names.has("classic-level")).toBe(false);
   });
 });

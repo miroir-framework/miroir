@@ -17,15 +17,16 @@ const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../../../
 if (runThis) {
   describe("authentication.71.phase6 R1 surface and hatch docs", () => {
     it("CopilotKit mount reuses assertRequestAllowed", () => {
+      // #409: server.ts passes the gate to mountCopilotKitRoute, which mounts it before the router.
       const server = readFileSync(join(REPO_ROOT, "packages/miroir-server/src/server.ts"), "utf8");
-      expect(server).toContain('app.use("/api/copilotkit"');
-      expect(server).toContain("assertRequestAllowed({");
-      const mountIdx = server.indexOf('app.use("/api/copilotkit"');
-      const gateIdx = server.indexOf("shouldMountCopilotKitRoute");
+      const mount = readFileSync(join(REPO_ROOT, "packages/miroir-server/src/mountCopilotKitRoute.ts"), "utf8");
+      const mountIdx = server.indexOf("await mountCopilotKitRoute(app");
+      expect(mountIdx).toBeGreaterThanOrEqual(0);
+      expect(server.slice(mountIdx)).toMatch(/requestGate:[\s\S]*assertRequestAllowed\(\{/);
+      const gateIdx = mount.indexOf('app.use("/api/copilotkit", options.requestGate)');
+      const routerIdx = mount.indexOf("createCopilotKitRouter(options.domainController");
       expect(gateIdx).toBeGreaterThanOrEqual(0);
-      expect(gateIdx).toBeLessThan(mountIdx);
-      const copilotBlock = server.slice(mountIdx);
-      expect(copilotBlock).toContain("assertRequestAllowed");
+      expect(gateIdx).toBeLessThan(routerIdx);
     });
 
     it("AuthenticationPolicy has no Express import", () => {

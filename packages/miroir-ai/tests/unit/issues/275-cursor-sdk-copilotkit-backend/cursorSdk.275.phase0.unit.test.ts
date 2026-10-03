@@ -88,15 +88,18 @@ if (runThis) {
   });
 
   describe("cursorSdk.275.phase0 — server CopilotKit mount and auth gate", () => {
-    it("server.ts statically imports createCopilotKitRouter and gates with assertRequestAllowed", () => {
+    // #409: the mount moved to mountCopilotKitRoute.ts, which imports miroir-ai on demand.
+    it("server.ts mounts CopilotKit through mountCopilotKitRoute, gated with assertRequestAllowed", () => {
       const src = readRepoFile("packages/miroir-server/src/server.ts");
-      expect(src).toContain('import { createCopilotKitRouter } from "miroir-ai"');
-      expect(src).toContain("shouldMountCopilotKitRoute");
-      expect(src).toContain('app.use("/api/copilotkit"');
-      expect(src).toContain("assertRequestAllowed");
-      const copilotMount = src.indexOf('app.use("/api/copilotkit"');
-      const authGateBeforeMount = src.lastIndexOf("assertRequestAllowed", copilotMount);
-      expect(authGateBeforeMount).toBeGreaterThanOrEqual(0);
+      const mount = readRepoFile("packages/miroir-server/src/mountCopilotKitRoute.ts");
+      expect(mount).toMatch(/=\s*\(\)\s*=>\s*import\([^)]*"miroir-ai"\)/);
+      expect(mount).not.toMatch(/from\s*"miroir-ai"/);
+      expect(mount).toContain("shouldMountCopilotKitRoute");
+      expect(mount).toContain('app.use("/api/copilotkit", options.requestGate)');
+      const mountCall = src.indexOf("await mountCopilotKitRoute(app");
+      expect(mountCall).toBeGreaterThanOrEqual(0);
+      expect(src.indexOf("assertRequestAllowed", mountCall)).toBeGreaterThan(mountCall);
+      expect(src).toContain("requestGate:");
     });
   });
 

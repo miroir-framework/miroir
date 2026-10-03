@@ -31,7 +31,8 @@
     "buildNOK": "npm run build:devNOK",
     "devBuildNOK": "npm run buildNOK",
     "run:devNOK": "cross-env NODE_ENV=development nodemon ./release/server.js",
-    "test": "cross-env NODE_ENV=test vitest"
+    "test": "cross-env NODE_ENV=test vitest",
+    "testByFile": "cross-env NODE_ENV=test vitest run"
   },
   "nodemonConfig": {
     "ignore": [
