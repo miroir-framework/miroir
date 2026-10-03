@@ -34,7 +34,7 @@ Out (analysis non-goals): undo and redo; rewriting references after a wrap or an
 | 2 | Wrap at any level, slot choice, type filter | ✅ DONE | nested and multi-slot wrap cases; filtered dialog |
 | 3 | Pipe into (D14) | ✅ DONE | pipe cases; filtered by the node's output |
 | 4 | Unwrap: remove a node, keep a child | ✅ DONE | unwrap cases; UI unwrap with confirmation |
-| 5 | Remove a subtree | ⬜ pending | remove cases per position kind; UI remove |
+| 5 | Remove a subtree | ✅ DONE | remove cases per position kind; UI remove |
 | 6 | Type change keeps valid attributes | ⬜ pending | merge cases; UI `filterList` to `find` keeps `predicate` |
 | 7 | Use case end to end, `getFromParameters` hint (D15, D16) | ⬜ pending | UI case: one instance, then all, wrapped in `mapList` |
 | 8 | Nonreg, docs, AC checklist | ⬜ pending | full `nonreg:filesystem` |
@@ -234,11 +234,11 @@ Same as Slice 1, plus `fn.transformer.interfaceWalk` if the walk traversal chang
 - Unwrap with one child replaces the node at once, without a dialog: nothing else is lost (D5). With several children, the dialog's `transformer-node-dialog-child` select lists them by path and, once a child is picked, `transformer-node-dialog-dropped` names the others with their types; choosing and confirming happen in that one dialog. The menu entry is disabled when the node has no transformer child.
 - Unwrapping a nested node needs no path argument: the node's own menu writes the kept child at the node's path.
 - UI cases: "unwrapping a mapList with one child puts the child back at its place" (also checks the entry is disabled on `returnValue`) and "unwrapping an ifThenElse asks which child to keep and names the others" (the default `if` of `ifThenElse` is a typed transformer, so it is named as dropped). Leaf count 97.
-- Validation: `fn.transformer.treeEdit` 37/37, `ui.transformerEditor` 12/12, app `tsc` 32 errors (baseline), lint clean, scoped nonreg (`smoke,core,ui`) for Slices 3 and 4: see Slice 5.
+- Validation: `fn.transformer.treeEdit` 37/37, `ui.transformerEditor` 12/12, app `tsc` 32 errors (baseline), lint clean, scoped nonreg (`smoke,core,ui`) for Slices 3 and 4: 38/38.
 
 ## Slice 5. Remove a subtree
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Goal: the designer removes a node and everything below it, at any position, with a confirmation.
 
@@ -256,7 +256,12 @@ Same as Slice 1.
 
 ### Realization
 
-(pending)
+- `removeTransformerNode` came with Slice 1. 8 cases: an optional attribute, an array item, a record entry and an optional `applyTo` deleted; a required attribute given the slot default; the root given the root default; a nested node removed in its owner; a required attribute without a slot default failing. 45 cases.
+- The menu gains Remove, with a confirmation dialog (`transformer-node-dialog-removed` says what goes). The editor applies the removal to the outermost transformer holding the node, found by walking up the node's path, so that deleting from an array or a record rewrites the container.
+- Deviation from the planned defaults: the root and a required slot both get the default `returnValue` of the node's position (the branch default the select would write), instead of `DEFAULT_TRANSFORMER_EDITOR_TRANSFORMER` for the root. The menu works in every editor (D11), and that constant belongs to the TransformerEditor. When a position does not offer `returnValue`, the first type in alphabetical order is used.
+- Refactor checkpoint: `MlObjectEditor.deleteElement` serves every value, transformer or not, the same way; it stays as is.
+- UI cases: "removing an optional transformer deletes it, after a confirmation" (cancel keeps `then`, confirm deletes it) and "removing a required transformer or the root resets it to returnValue". Leaf count 99.
+- Validation: `fn.transformer.treeEdit` 45/45, `ui.transformerEditor` 14/14, app `tsc` 32 errors (baseline), lint clean.
 
 ## Slice 6. Type change keeps valid attributes
 

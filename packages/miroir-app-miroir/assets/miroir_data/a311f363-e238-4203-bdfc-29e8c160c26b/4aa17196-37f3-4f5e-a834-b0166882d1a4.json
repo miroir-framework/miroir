@@ -1157,6 +1157,345 @@
             "expectedError": "no transformer child at args.1"
           }
         ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "removeTransformerNode",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an optional attribute is deleted",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "removeTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "ifThenElse",
+                "if": {
+                  "transformerType": "boolExpr",
+                  "operator": "==",
+                  "left": 1,
+                  "right": 1
+                },
+                "then": {
+                  "transformerType": "getFromContext",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                },
+                "else": {
+                  "transformerType": "returnValue",
+                  "value": "x"
+                }
+              },
+              [
+                "else"
+              ]
+            ],
+            "expectedValue": {
+              "transformerType": "ifThenElse",
+              "if": {
+                "transformerType": "boolExpr",
+                "operator": "==",
+                "left": 1,
+                "right": 1
+              },
+              "then": {
+                "transformerType": "getFromContext",
+                "referencePath": [
+                  "defaultInput",
+                  "name"
+                ]
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an array item is deleted",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "removeTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "+",
+                "args": [
+                  {
+                    "transformerType": "getFromContext",
+                    "referenceName": "defaultInput"
+                  },
+                  1,
+                  {
+                    "transformerType": "returnValue",
+                    "value": "x"
+                  }
+                ]
+              },
+              [
+                "args",
+                2
+              ]
+            ],
+            "expectedValue": {
+              "transformerType": "+",
+              "args": [
+                {
+                  "transformerType": "getFromContext",
+                  "referenceName": "defaultInput"
+                },
+                1
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a record entry is deleted",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "removeTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "createObject",
+                "definition": {
+                  "a": {
+                    "transformerType": "getFromContext",
+                    "referenceName": "defaultInput"
+                  },
+                  "b": "literal"
+                }
+              },
+              [
+                "definition",
+                "a"
+              ]
+            ],
+            "expectedValue": {
+              "transformerType": "createObject",
+              "definition": {
+                "b": "literal"
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an optional applyTo is deleted",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "removeTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "referenceToOuterObject": "book",
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                },
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "referenceName": "defaultInput"
+                }
+              },
+              [
+                "applyTo"
+              ]
+            ],
+            "expectedValue": {
+              "transformerType": "mapList",
+              "referenceToOuterObject": "book",
+              "elementTransformer": {
+                "transformerType": "getFromContext",
+                "referencePath": [
+                  "defaultInput",
+                  "name"
+                ]
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a required attribute gets the slot default",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "removeTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "referenceToOuterObject": "book",
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                },
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "referenceName": "defaultInput"
+                }
+              },
+              [
+                "elementTransformer"
+              ],
+              {
+                "slotDefault": {
+                  "transformerType": "returnValue",
+                  "value": ""
+                }
+              }
+            ],
+            "expectedValue": {
+              "transformerType": "mapList",
+              "referenceToOuterObject": "book",
+              "elementTransformer": {
+                "transformerType": "returnValue",
+                "value": ""
+              },
+              "applyTo": {
+                "transformerType": "getFromContext",
+                "referenceName": "defaultInput"
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the root gets the root default",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "removeTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "referenceToOuterObject": "book",
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                },
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "referenceName": "defaultInput"
+                }
+              },
+              [],
+              {
+                "rootDefault": {
+                  "transformerType": "returnValue",
+                  "value": ""
+                }
+              }
+            ],
+            "expectedValue": {
+              "transformerType": "returnValue",
+              "value": ""
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a nested node is removed in its owner",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "removeTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "referenceToOuterObject": "book",
+                "elementTransformer": {
+                  "transformerType": "ifThenElse",
+                  "if": {
+                    "transformerType": "boolExpr",
+                    "operator": "==",
+                    "left": 1,
+                    "right": 1
+                  },
+                  "then": {
+                    "transformerType": "getFromContext",
+                    "referencePath": [
+                      "defaultInput",
+                      "name"
+                    ]
+                  },
+                  "else": {
+                    "transformerType": "returnValue",
+                    "value": "x"
+                  }
+                },
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "referenceName": "defaultInput"
+                }
+              },
+              [
+                "elementTransformer",
+                "else"
+              ]
+            ],
+            "expectedValue": {
+              "transformerType": "mapList",
+              "referenceToOuterObject": "book",
+              "elementTransformer": {
+                "transformerType": "ifThenElse",
+                "if": {
+                  "transformerType": "boolExpr",
+                  "operator": "==",
+                  "left": 1,
+                  "right": 1
+                },
+                "then": {
+                  "transformerType": "getFromContext",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                }
+              },
+              "applyTo": {
+                "transformerType": "getFromContext",
+                "referenceName": "defaultInput"
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a required attribute without a slot default fails",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "removeTransformerNode"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "referenceToOuterObject": "book",
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                },
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "referenceName": "defaultInput"
+                }
+              },
+              [
+                "elementTransformer"
+              ]
+            ],
+            "expectedError": "elementTransformer is required and no slotDefault was given"
+          }
+        ]
       }
     ]
   }

@@ -11,6 +11,7 @@ import {
   mlUnionResolvedTypeForObject,
   LoggerInterface,
   MiroirLoggerFactory,
+  removeTransformerNode,
   resolvePathOnObject,
   transformerTypesAcceptingInput,
   type ApplicationDeploymentMap,
@@ -633,6 +634,41 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
     },
     [formik, onChangeCallback, rootLessListKey, reportSectionPathAsString, transformerNodePath],
   );
+  // #415 Remove: the edit applies to the outermost transformer holding this node, so that an
+  // optional attribute, an array item or a record entry is deleted from its container. The root
+  // and required slots get the default `returnValue` of this position.
+  const removeTransformerNodeFromTree = useCallback(() => {
+    const valueAt = (path: (string | number)[]) =>
+      path.length > 0 ? resolvePathOnObject(currentReportSectionFormikValues, path) : currentReportSectionFormikValues;
+    const isTransformerNode = (value: unknown) =>
+      typeof value === "object" && value !== null && typeof (value as { transformerType?: unknown }).transformerType === "string";
+    let treeRootLength = 0;
+    while (treeRootLength < transformerNodePath.length && !isTransformerNode(valueAt(transformerNodePath.slice(0, treeRootLength)))) {
+      treeRootLength++;
+    }
+    const treeRootPath = transformerNodePath.slice(0, treeRootLength);
+    const resetType = (currentDiscriminatorValues ?? []).includes("returnValue")
+      ? "returnValue"
+      : [...(currentDiscriminatorValues ?? [])].sort()[0];
+    const resetNode = resetType ? defaultTransformerNodeForType(resetType) : undefined;
+    const newTree = removeTransformerNode(valueAt(treeRootPath), transformerNodePath.slice(treeRootLength), {
+      rootDefault: resetNode,
+      slotDefault: resetNode,
+    });
+    if (onChangeCallback) {
+      onChangeCallback(newTree, rootLessListKey);
+    }
+    formik.setFieldValue([reportSectionPathAsString, ...treeRootPath].join("."), newTree, false);
+  }, [
+    currentReportSectionFormikValues,
+    transformerNodePath,
+    currentDiscriminatorValues,
+    defaultTransformerNodeForType,
+    onChangeCallback,
+    rootLessListKey,
+    formik,
+    reportSectionPathAsString,
+  ]);
   // log.info(
   //   "MlLiteralEditor render",
   //   MlLiteralEditorRenderCount,
@@ -690,6 +726,7 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
                 output={transformerTypeRestriction?.output}
                 defaultNodeForType={defaultTransformerNodeForType}
                 onReplaceNode={replaceTransformerNode}
+                onRemoveNode={removeTransformerNodeFromTree}
               />
             )}
           </div>

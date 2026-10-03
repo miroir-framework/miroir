@@ -44,10 +44,12 @@ export interface TransformerNodeActionsProps {
   defaultNodeForType: (transformerType: string) => Record<string, unknown> | undefined;
   /** Writes the new value of the node. */
   onReplaceNode: (newNode: unknown) => void;
+  /** Removes the node and its subtree from the edited tree (#415 Remove). */
+  onRemoveNode: () => void;
 }
 
 type NewNodeAction = "wrap" | "pipe";
-type OpenDialog = { kind: NewNodeAction } | { kind: "unwrap" } | undefined;
+type OpenDialog = { kind: NewNodeAction } | { kind: "unwrap" } | { kind: "remove" } | undefined;
 
 /** Wrap in and Pipe into share the dialog: a new transformer takes the node's place. */
 const newNodeDialogText: Record<NewNodeAction, { title: string; ariaLabel: string; confirm: string }> = {
@@ -71,6 +73,7 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
   output,
   defaultNodeForType,
   onReplaceNode,
+  onRemoveNode,
 }) => {
   const { currentTheme } = useMiroirTheme();
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
@@ -99,6 +102,10 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
   const canConfirm = !!chosenType && (dialog?.kind === "pipe" || !!slot);
   // Unwrap: a child takes the node's place; with several children, the dialog names the dropped ones.
   const children = useMemo(() => transformerChildren(nodeValue), [nodeValue]);
+  const nodeType =
+    typeof nodeValue === "object" && nodeValue !== null && "transformerType" in nodeValue
+      ? String((nodeValue as { transformerType: unknown }).transformerType)
+      : undefined;
   const childKey = (path: (string | number)[]) => path.join(".");
   const droppedChildren = children.filter((child) => childKey(child.path) !== chosenChild);
 
@@ -128,6 +135,11 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
     setDialog({ kind: "unwrap" });
   };
 
+  const confirmRemove = () => {
+    onRemoveNode();
+    closeDialog();
+  };
+
   const confirmUnwrap = () => {
     const child = children.find((candidate) => childKey(candidate.path) === chosenChild);
     if (child) {
@@ -136,7 +148,7 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
   };
 
   const confirmNewNode = () => {
-    if (!dialog || dialog.kind === "unwrap" || !chosenType || !canConfirm) {
+    if (!dialog || dialog.kind === "unwrap" || dialog.kind === "remove" || !chosenType || !canConfirm) {
       return;
     }
     const defaultNode = defaultNodeForType(chosenType);
@@ -195,7 +207,40 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
         >
           {children.length > 1 ? "Unwrap…" : "Unwrap"}
         </ThemedMenuItem>
+        <ThemedMenuItem data-testid="transformer-node-action-remove" onClick={() => openDialog({ kind: "remove" })}>
+          Remove…
+        </ThemedMenuItem>
       </Menu>
+      {dialog?.kind === "remove" && (
+        <ThemedDialog
+          open={true}
+          onClose={closeDialog}
+          disableEnforceFocus
+          data-testid="transformer-node-dialog"
+          aria-label="Remove the transformer and its subtree"
+        >
+          <ThemedDialogTitle>Remove the transformer</ThemedDialogTitle>
+          <ThemedDialogContent>
+            <div data-testid="transformer-node-dialog-removed">
+              Removes {nodeType ?? "the transformer"}
+              {children.length > 0 ? " and every transformer below it" : ""}.
+            </div>
+          </ThemedDialogContent>
+          <ThemedDialogActions>
+            <ThemedStyledButton type="button" variant="outlined" onClick={closeDialog} data-testid="transformer-node-dialog-cancel">
+              Cancel
+            </ThemedStyledButton>
+            <ThemedStyledButton
+              type="button"
+              variant="contained"
+              onClick={confirmRemove}
+              data-testid="transformer-node-dialog-confirm"
+            >
+              Remove
+            </ThemedStyledButton>
+          </ThemedDialogActions>
+        </ThemedDialog>
+      )}
       {dialog?.kind === "unwrap" && (
         <ThemedDialog
           open={true}
@@ -242,7 +287,7 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
           </ThemedDialogActions>
         </ThemedDialog>
       )}
-      {dialog && dialog.kind !== "unwrap" && (
+      {dialog && dialog.kind !== "unwrap" && dialog.kind !== "remove" && (
         <ThemedDialog
           open={true}
           onClose={closeDialog}
