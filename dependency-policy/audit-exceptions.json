@@ -1,6 +1,6 @@
 {
   "exceptions": [
-    {"package": "braces", "advisory": "GHSA-vfj7-8cjw-p6xm", "reason": "no fixed version; reached only through micromatch (http-proxy-middleware) and chokidar (nodemon), on dev and build paths", "expires": "2026-11-02"},
+    {"package": "braces", "advisory": "GHSA-vfj7-8cjw-p6xm", "reason": "no fixed version; reached only through devDependencies: micromatch (jest, ts-jest) and chokidar (nodemon)", "expires": "2026-11-02"},
     {"package": "http-cache-semantics", "advisory": "GHSA-ch52-4w7c-c8xp", "reason": "no fixed version; reached only through make-fetch-happen (lerna) and cacheable-request (electron-builder), on build and release tooling", "expires": "2026-11-02"}
   ]
 }
