@@ -88,6 +88,35 @@ function AppBarIconButton({
   );
 }
 
+// ################################################################################################
+/** #438: the global feedback glow switch. */
+export function FeedbackGlowAppBarButton() {
+  const context = useMiroirContextService();
+  return (
+    <AppBarIconButton
+      title={
+        context.feedbackGlowEnabled
+          ? "Interaction glow: ON (click to turn off)"
+          : "Interaction glow: OFF (click to turn on)"
+      }
+      aria-label="Interaction glow"
+      onClick={() => context.setFeedbackGlowEnabled(!context.feedbackGlowEnabled)}
+    >
+      <ThemedIcon
+        icon={
+          context.feedbackGlowEnabled
+            ? {
+                iconType: "mui",
+                name: "highlight",
+                color: { colorType: "themeColor", currentThemeColorPath: "colors.warning" },
+              }
+            : { iconType: "mui", name: "highlight" }
+        }
+      />
+    </AppBarIconButton>
+  );
+}
+
 export interface AppBarProps extends MuiAppBarProps {
   // open?: boolean;
   handleSidebarOpen?: ()=>void,
@@ -737,6 +766,7 @@ export function AppBar(props:AppBarProps) {
                   </ThemedIconButton>
                 </Tooltip>
               )} */}
+            <FeedbackGlowAppBarButton />
             {/* Debug Info Indicator */}
             {context.setShowDebugInfo && (
               <AppBarIconButton

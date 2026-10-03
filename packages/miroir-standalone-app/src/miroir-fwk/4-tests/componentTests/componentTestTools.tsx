@@ -540,6 +540,7 @@ function MiroirTestContext(
       testingApplicationDeploymentMap={props.testingApplicationDeploymentMap}
       initialShowPerformanceDisplay={props.trackRenders ?? false}
       initialToolsPageState={props.isolateToolsPageState ? emptyToolsPageState : undefined}
+      initialFeedbackGlowEnabled={false}
       deploymentUuidToReportsEntitiesMapping={props.deploymentUuidToReportsEntitiesMapping}
     >
       <DocumentOutlineContextProvider

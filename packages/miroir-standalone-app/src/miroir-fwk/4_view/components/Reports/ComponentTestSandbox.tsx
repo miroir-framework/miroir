@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 import { MiroirLoggerFactory, type LoggerInterface } from "miroir-core";
+import { FeedbackGlowBoundary } from "miroir-react";
 
 import { packageName } from "../../../../constants.js";
 import type { ComponentTestRegistration } from "../../../4-tests/componentTests/index.js";
@@ -82,20 +83,23 @@ export const ComponentTestSandbox: React.FC<{
       backgroundColor: "white",
     }}
   >
-    <div style={{ display: "flex", alignItems: "center", marginBottom: "4px" }}>
-      <span style={{ fontWeight: "bold", color: "#4527a0", flexGrow: 1 }}>Component test sandbox</span>
-      <button
-        type="button"
-        aria-label="Close component test sandbox"
-        title={running ? "A component test run is in progress" : undefined}
-        disabled={running}
-        onClick={onClose}
-      >
-        Close
-      </button>
-    </div>
-    {/* Never a render target: the runner adds one container per case and a portal element. */}
-    <div data-testid="component-test-sandbox" ref={sandboxRef} />
+    {/* #438: steps of a displayed run glow; every case container and the portal element are inside. */}
+    <FeedbackGlowBoundary enabled>
+      <div style={{ display: "flex", alignItems: "center", marginBottom: "4px" }}>
+        <span style={{ fontWeight: "bold", color: "#4527a0", flexGrow: 1 }}>Component test sandbox</span>
+        <button
+          type="button"
+          aria-label="Close component test sandbox"
+          title={running ? "A component test run is in progress" : undefined}
+          disabled={running}
+          onClick={onClose}
+        >
+          Close
+        </button>
+      </div>
+      {/* Never a render target: the runner adds one container per case and a portal element. */}
+      <div data-testid="component-test-sandbox" ref={sandboxRef} />
+    </FeedbackGlowBoundary>
   </div>
 );
 

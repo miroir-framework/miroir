@@ -17,6 +17,10 @@
  * is set to `false` in a `beforeAll`: RTL's own `beforeAll` (registered by `tests/setup.ts`) sets it
  * to `true` after module scope.
  *
+ * With `MIROIR_FEEDBACK_GLOW=1` (#438), the sandbox element is an enabled feedback glow boundary, as
+ * in the app's Component Test Sandbox, so that the render-performance suite can be measured with the
+ * glow on; by default no boundary is enabled.
+ *
  * With `MIROIR_TEST_SUITES` (comma-separated instance names, set by `testMiroir --suites`, #406),
  * it runs only these instances; the entry checks still count every instance of the folder.
  *
@@ -43,6 +47,8 @@ import {
   splitSuiteKeys,
   type MiroirTestSuite,
 } from "miroir-core";
+
+import { attachFeedbackGlow } from "miroir-react";
 
 import { createReactComponentTestRunner } from "../../src/miroir-fwk/4-tests/componentTests/runReactComponentTest";
 import { resolveRepoRoot } from "../helpers/integrationTestProfiles.js";
@@ -120,6 +126,7 @@ sandboxElement.setAttribute("data-testid", "component-test-sandbox");
 document.body.appendChild(sandboxElement);
 
 let runner: ReturnType<typeof createReactComponentTestRunner> | undefined;
+const detachFeedbackGlow = process.env.MIROIR_FEEDBACK_GLOW === "1" ? attachFeedbackGlow(sandboxElement) : undefined;
 
 beforeAll(() => {
   (globalThis as any).IS_REACT_ACT_ENVIRONMENT = false;
@@ -133,6 +140,7 @@ afterAll(() => {
     runner?.close();
   } finally {
     ConfigurationService.configurationService.registerReactComponentTestRunner(undefined);
+    detachFeedbackGlow?.();
     sandboxElement.remove();
   }
   // The last case's React root is unmounted and the sandbox element is removed.
