@@ -1,10 +1,11 @@
 import { useFormikContext } from "formik";
-import React, { FC, useCallback, useMemo } from "react";
+import React, { FC, useCallback, useMemo, useState } from "react";
 
 
 import {
   defaultViewParamsFromAdminStorageFetchQueryParams,
   getDefaultValueForMlSchemaWithResolutionNonHook,
+  keepAttributesOnTypeChange,
   MlElement,
   MlEnum,
   MlLiteral,
@@ -50,7 +51,7 @@ import {
 import { MlLiteralEditorProps } from "./MlElementEditorInterface";
 import { isPrimaryUnionDiscriminatorField } from "./unionDiscriminatorField.js";
 import { findPathAnnotation } from "../Reports/TransformerTypeAnnotation.js";
-import { TransformerNodeActions } from "./TransformerNodeActions.js";
+import { TransformerNodeActions, TransformerTypeChangeDialog } from "./TransformerNodeActions.js";
 import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlLiteralEditor");
@@ -669,6 +670,44 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
     formik,
     reportSectionPathAsString,
   ]);
+  // #415 D4, D5: a transformerType change keeps the attributes the new type accepts. When it drops
+  // attributes, a dialog names them first.
+  const [pendingTypeChange, setPendingTypeChange] = useState<
+    { transformerType: string; node: Record<string, unknown>; dropped: string[] } | undefined
+  >(undefined);
+  const handleTransformerTypeChange = useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      const newType = event.target.value;
+      const oldNode = transformerNodeValue as Record<string, unknown> | undefined;
+      let newDefault: Record<string, unknown> | undefined;
+      try {
+        newDefault = defaultTransformerNodeForType(newType);
+      } catch (error) {
+        log.warn("handleTransformerTypeChange: no default value, falling back to a plain type change", error);
+      }
+      if (!newDefault || typeof oldNode !== "object" || oldNode === null) {
+        handleFilterableSelectChange(event);
+        return;
+      }
+      const change = keepAttributesOnTypeChange(
+        oldNode,
+        { ...newDefault, transformerType: newType },
+        currentMiroirModelEnvironment,
+      );
+      if (change.dropped.length === 0) {
+        replaceTransformerNode(change.node);
+        return;
+      }
+      setPendingTypeChange({ transformerType: newType, node: change.node, dropped: change.dropped });
+    },
+    [
+      transformerNodeValue,
+      defaultTransformerNodeForType,
+      handleFilterableSelectChange,
+      currentMiroirModelEnvironment,
+      replaceTransformerNode,
+    ],
+  );
   // log.info(
   //   "MlLiteralEditor render",
   //   MlLiteralEditorRenderCount,
@@ -699,7 +738,7 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
               filterable={true}
               options={discriminatorSelectOptions}
               value={currentValue}
-              onChange={handleFilterableSelectChange}
+              onChange={isTransformerTypeSelect ? handleTransformerTypeChange : handleFilterableSelectChange}
               placeholder={`Select ${name}...`}
               filterPlaceholder="Type to filter options..."
               minWidth="200px"
@@ -727,6 +766,17 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
                 defaultNodeForType={defaultTransformerNodeForType}
                 onReplaceNode={replaceTransformerNode}
                 onRemoveNode={removeTransformerNodeFromTree}
+              />
+            )}
+            {pendingTypeChange && (
+              <TransformerTypeChangeDialog
+                transformerType={pendingTypeChange.transformerType}
+                dropped={pendingTypeChange.dropped}
+                onConfirm={() => {
+                  replaceTransformerNode(pendingTypeChange.node);
+                  setPendingTypeChange(undefined);
+                }}
+                onCancel={() => setPendingTypeChange(undefined)}
               />
             )}
           </div>

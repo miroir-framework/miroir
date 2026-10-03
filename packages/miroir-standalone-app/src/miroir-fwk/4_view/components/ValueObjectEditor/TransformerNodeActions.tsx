@@ -350,3 +350,44 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
     </>
   );
 };
+
+export interface TransformerTypeChangeDialogProps {
+  transformerType: string;
+  /** The attributes of the node the new type does not take (D4, D5). */
+  dropped: string[];
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+/** Confirmation of a `transformerType` change that drops attributes (#415 D4, D5). */
+export const TransformerTypeChangeDialog: React.FC<TransformerTypeChangeDialogProps> = ({
+  transformerType,
+  dropped,
+  onConfirm,
+  onCancel,
+}) => (
+  // no focus restore: the transformerType select would reopen its list on getting the focus back
+  <ThemedDialog
+    open={true}
+    onClose={onCancel}
+    disableEnforceFocus
+    disableRestoreFocus
+    data-testid="transformer-node-dialog"
+    aria-label="Change the transformer type"
+  >
+    <ThemedDialogTitle>Change to {transformerType}</ThemedDialogTitle>
+    <ThemedDialogContent>
+      <div data-testid="transformer-node-dialog-dropped">
+        {transformerType} does not take: {dropped.join(", ")}.
+      </div>
+    </ThemedDialogContent>
+    <ThemedDialogActions>
+      <ThemedStyledButton type="button" variant="outlined" onClick={onCancel} data-testid="transformer-node-dialog-cancel">
+        Cancel
+      </ThemedStyledButton>
+      <ThemedStyledButton type="button" variant="contained" onClick={onConfirm} data-testid="transformer-node-dialog-confirm">
+        Change type
+      </ThemedStyledButton>
+    </ThemedDialogActions>
+  </ThemedDialog>
+);

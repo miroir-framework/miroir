@@ -5,7 +5,7 @@
   "name": "ui.transformerEditor",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "TransformerEditor on the Miroir application: renders the default transformer and its result, edits it, chooses a transformer type, and switches the input type restriction off, and wraps transformers in new ones at any level, with the type filter of #383, pipes them into new ones, unwraps and removes them (#415).",
+  "description": "TransformerEditor on the Miroir application: renders the default transformer and its result, edits it, chooses a transformer type, and switches the input type restriction off, and wraps transformers in new ones at any level, with the type filter of #383, pipes them into new ones, unwraps and removes them, and keeps what fits on a type change (#415).",
   "tags": [
     "ui",
     "editor",
@@ -95,13 +95,59 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "TransformerEditor: choosing getObjectValues returns the values of the input",
+            "miroirTestLabel": "TransformerEditor: choosing getObjectValues asks before dropping the returned value, then returns the values of the input",
             "steps": [
               {
                 "step": "selectOption",
                 "label": "transformer type",
                 "field": "transformerEditor_transformer_selector.transformer.transformerType",
                 "option": "getObjectValues"
+              },
+              {
+                "step": "expectElement",
+                "label": "the dropped attributes are named",
+                "target": {
+                  "byTestId": "transformer-node-dialog-dropped"
+                },
+                "containsHtml": "getObjectValues does not take: mlSchema, value.",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "cancel the type change",
+                "target": {
+                  "byTestId": "transformer-node-dialog-cancel"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "root is still returnValue",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "returned value kept",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "transformer type again",
+                "field": "transformerEditor_transformer_selector.transformer.transformerType",
+                "option": "getObjectValues"
+              },
+              {
+                "step": "click",
+                "label": "confirm the type change",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
               },
               {
                 "step": "expectElement",
@@ -1166,6 +1212,107 @@
                 },
                 "present": false,
                 "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: changing filterList to find keeps its predicate",
+            "steps": [
+              {
+                "step": "click",
+                "label": "switch the restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                },
+                "checked": false
+              },
+              {
+                "step": "selectOption",
+                "label": "root filterList",
+                "field": "transformerEditor_transformer_selector.transformer.transformerType",
+                "option": "filterList"
+              },
+              {
+                "step": "click",
+                "label": "confirm dropping the returned value",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "root is filterList",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "filterList",
+                "timeout": 2000
+              },
+              {
+                "step": "selectOption",
+                "label": "predicate boolExpr",
+                "field": "transformerEditor_transformer_selector.transformer.predicate.transformerType",
+                "option": "boolExpr"
+              },
+              {
+                "step": "click",
+                "label": "confirm dropping the predicate's value",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "predicate is boolExpr",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.predicate.transformerType"
+                },
+                "value": "boolExpr",
+                "timeout": 2000
+              },
+              {
+                "step": "selectOption",
+                "label": "root find",
+                "field": "transformerEditor_transformer_selector.transformer.transformerType",
+                "option": "find"
+              },
+              {
+                "step": "expectElement",
+                "label": "root is find",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "find",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "predicate kept",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.predicate.transformerType"
+                },
+                "value": "boolExpr",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no confirmation: nothing dropped",
+                "target": {
+                  "byTestId": "transformer-node-dialog-dropped"
+                },
+                "present": false
               }
             ]
           }

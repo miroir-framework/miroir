@@ -35,7 +35,7 @@ Out (analysis non-goals): undo and redo; rewriting references after a wrap or an
 | 3 | Pipe into (D14) | ✅ DONE | pipe cases; filtered by the node's output |
 | 4 | Unwrap: remove a node, keep a child | ✅ DONE | unwrap cases; UI unwrap with confirmation |
 | 5 | Remove a subtree | ✅ DONE | remove cases per position kind; UI remove |
-| 6 | Type change keeps valid attributes | ⬜ pending | merge cases; UI `filterList` to `find` keeps `predicate` |
+| 6 | Type change keeps valid attributes | ✅ DONE | merge cases; UI `filterList` to `find` keeps `predicate` |
 | 7 | Use case end to end, `getFromParameters` hint (D15, D16) | ⬜ pending | UI case: one instance, then all, wrapped in `mapList` |
 | 8 | Nonreg, docs, AC checklist | ⬜ pending | full `nonreg:filesystem` |
 
@@ -265,7 +265,7 @@ Same as Slice 1.
 
 ## Slice 6. Type change keeps valid attributes
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Goal: changing a node's `transformerType` keeps the attributes still valid for the new type and asks for confirmation when it drops some.
 
@@ -283,7 +283,14 @@ Same as Slice 1.
 
 ### Realization
 
-(pending)
+- RED found a real gap: the model's `transformer` schema is the narrow legacy union (`objectTransformer`, `recordOfTransformers`), so `mlsTypeCheck` rejected every real transformer in a transformer position and `filterList` to `find` dropped `predicate`. `keepAttributesOnTypeChange` now checks an attribute's shape with its transformer references read as `any`, and requires the transformers found at the attribute's slot positions to be known types.
+- 7 `keepAttributesOnTypeChange` cases (`filterList` to `find`, `mapList` to `filterList`, `ifThenElse` to `case`, an unknown type in a slot, `returnValue` to `getObjectValues`, a value of the wrong type, an undeclared attribute). The environment is injected by `environmentRef`, which inserts it at `environmentArgumentIndex`: the arguments hold no placeholder. 52 cases.
+- `MlLiteralEditor` routes the `transformerType` select to a new handler: it builds the new type's default, keeps what fits, and writes the node at once when nothing is dropped. Otherwise `TransformerTypeChangeDialog` names the dropped attributes; Cancel keeps the node as it was.
+- A first version skipped the dialog when the dropped values equalled the old type's defaults. The branch default helper fills defaults from the current values, so that comparison hid real losses; the dialog now shows for every dropped attribute, as the analysis default says.
+- The dialog does not restore the focus on close: back on the `transformerType` select, the focus reopened its list and blanked the input.
+- Deviation: `MlEnumEditor` keeps its own `handleDiscriminatorChange`. `transformerType` is a literal in every transformer branch, so only `MlLiteralEditor` renders it, and open PR #412 rewrites both copies; the dedupe of the refactor checkpoint is left to after #412.
+- UI: the existing getObjectValues case now goes through the dialog (names `mlSchema, value`, Cancel keeps the root, then Change type). New case "changing filterList to find keeps its predicate". The plan's `ifThenElse` to `case` UI case is covered by the fn case and the getObjectValues dialog. Leaf count 100. The list transformer test rig confirms the dialog when a type change opens it.
+- Validation: `fn.transformer.treeEdit` 52/52, `ui.transformerEditor` 15/15, `transformerChoiceByInputType.integ` 2/2, `listDisplayByTransformer.integ` 13/13, `listDisplayByTransformer.loopSafety.integ` 2/2, core `tsc` clean, app `tsc` 32 errors (baseline), lint clean. `ListTransformerPanel.unit` has 1 failure ("shows transformer toggle in the header"), the same on the base commit `78fcd8cc`.
 
 ## Slice 7. Use case end to end, `getFromParameters` hint (D15, D16)
 

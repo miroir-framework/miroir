@@ -411,6 +411,72 @@ function declaredAttributeSchemas(
 }
 
 /**
+ * `schema` with its transformer references replaced by `any`: the `transformer` schema of the
+ * model is the narrow legacy union (`objectTransformer`, `recordOfTransformers`), while a
+ * transformer position holds any transformer. The transformers found there are checked apart.
+ */
+function withTransformerPositionsAsAny(schema: MlElement): MlElement {
+  switch (schema.type) {
+    case "schemaReference": {
+      const relativePath = (schema as MlReference).definition?.relativePath;
+      return relativePath && TRANSFORMER_SCHEMA_NAMES.has(relativePath)
+        ? ({ type: "any", optional: schema.optional } as MlElement)
+        : schema;
+    }
+    case "object":
+      return {
+        ...schema,
+        definition: Object.fromEntries(
+          Object.entries((schema as MlObject).definition ?? {}).map(([key, value]) => [
+            key,
+            withTransformerPositionsAsAny(value as MlElement),
+          ]),
+        ),
+      } as MlElement;
+    case "array":
+    case "record":
+      return { ...schema, definition: withTransformerPositionsAsAny(schema.definition as MlElement) } as MlElement;
+    case "union":
+      return {
+        ...schema,
+        definition: (schema.definition as MlElement[]).map((member) => withTransformerPositionsAsAny(member)),
+      } as MlElement;
+    default:
+      return schema;
+  }
+}
+
+/** True when `value` fits `attribute` of `transformerType` (D4). */
+function attributeAccepts(
+  transformerType: string,
+  attribute: string,
+  attributeSchema: MlElement,
+  value: unknown,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerDefinitions: Record<string, TransformerDefinition>,
+): boolean {
+  let shapeAccepted: boolean;
+  try {
+    shapeAccepted =
+      mlsTypeCheck(withTransformerPositionsAsAny(attributeSchema), value, [attribute], [attribute], modelEnvironment, {})
+        .status === "ok";
+  } catch {
+    shapeAccepted = false;
+  }
+  if (!shapeAccepted) {
+    return false;
+  }
+  // the transformers at the attribute's transformer positions must be known types
+  return transformerSlots(transformerType, transformerDefinitions)
+    .filter((slot) => slot.template[0] === attribute)
+    .every((slot) =>
+      valuesAlong(value, slot.template.slice(1), []).every(
+        (found) => !isTransformerNode(found.value) || found.value.transformerType in transformerDefinitions,
+      ),
+    );
+}
+
+/**
  * The node a type change produces (D4): `newNode` (the default value of the new type) with every
  * attribute of `oldNode` that the new type declares and whose value type-checks against it, plus
  * `label` and `interpolation`. `dropped` lists the other attributes of `oldNode`.
@@ -438,7 +504,7 @@ export function keepAttributesOnTypeChange(
     const attributeSchema = declared[attribute];
     const accepted =
       attributeSchema !== undefined &&
-      mlsTypeCheck(attributeSchema, value, [attribute], [attribute], modelEnvironment, {}).status === "ok";
+      attributeAccepts(newNode.transformerType, attribute, attributeSchema, value, modelEnvironment, transformerDefinitions);
     if (accepted) {
       kept[attribute] = value;
     } else {
