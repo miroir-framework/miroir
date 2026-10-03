@@ -50,8 +50,8 @@ if (runThis) {
       const src = readRepoFile(
         "packages/miroir-standalone-app-electron/src/ipcServerSetup.ts",
       );
-      expect(src).toContain(
-        "createCopilotKitRouter(domainController, defaultSelfApplicationDeploymentMap, { capabilities, mcpHttpUrl })",
+      expect(src).toMatch(
+        /createCopilotKitRouter\(domainController, defaultSelfApplicationDeploymentMap, \{\s*capabilities,\s*mcpHttpUrl,/,
       );
     });
   });

@@ -1,7 +1,7 @@
 /**
  * #409 Slice 4: a process loads only the agent SDK of its configured backend.
  * Child-process probe (built miroir-ai, stub SDKs): the child builds the router and sends one
- * agent request. The `claude` case joins once the Claude agent exists (slice 3).
+ * agent request.
  * Do not register in FunctionCallTestRegistry.
  */
 import { describe, expect, it } from "vitest";
@@ -43,6 +43,16 @@ if (runThis) {
       });
       expect(result.status).toBe(200);
       expect(loadedAgentSdks(result)).toEqual(["@cursor/sdk"]);
+    }, 60_000);
+
+    it("claude: an agent request loads @anthropic-ai/claude-agent-sdk only", () => {
+      const result = runModuleLoadProbe({
+        capabilities: capabilities("claude"),
+        secrets: { aiCursorKey: "cursor-probe-key", aiAnthropicKey: "anthropic-probe-key" },
+        request: "agent",
+      });
+      expect(result.status).toBe(200);
+      expect(loadedAgentSdks(result)).toEqual(["@anthropic-ai/claude-agent-sdk"]);
     }, 60_000);
   });
 }

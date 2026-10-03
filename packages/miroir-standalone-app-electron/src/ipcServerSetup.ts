@@ -151,7 +151,11 @@ export async function setupIpcServer(): Promise<void> {
       const mcpHttpUrl = `http://127.0.0.1:${Number(listenUrl.port) || 3080}/mcp`;
       loopbackApp.use(
         "/api/copilotkit",
-        createCopilotKitRouter(domainController, defaultSelfApplicationDeploymentMap, { capabilities, mcpHttpUrl }),
+        createCopilotKitRouter(domainController, defaultSelfApplicationDeploymentMap, {
+          capabilities,
+          mcpHttpUrl,
+          agentModel: electronServerConfig.features?.agentModel,
+        }),
       );
     }
 

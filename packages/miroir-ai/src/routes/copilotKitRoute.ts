@@ -15,7 +15,6 @@ import {
   defaultMetaModelEnvironment,
   FAIL_CLOSED_PROCESS_CAPABILITIES,
   isAgentBackendAllowed,
-  type AgentBackend,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type ProcessCapabilities,
@@ -29,17 +28,18 @@ import {
 } from "../runtime/copilotRuntimeFactory.js";
 import { createMiroirCopilotKitActions, createLendDocumentExecutor } from "../tools/miroirCopilotKitActions.js";
 import {
-  createCursorAbstractAgent as createDefaultCursorAbstractAgent,
-  type ImportCursorSdk,
-} from "../runtime/cursorAgent.js";
+  createAgentForBackend as createDefaultAgentForBackend,
+  type ActiveAgentBackend,
+} from "../runtime/agentBackends.js";
+import type { ImportClaudeSdk } from "../runtime/claudeAgent.js";
+import type { ImportCursorSdk } from "../runtime/cursorAgent.js";
+
+export type { ActiveAgentBackend } from "../runtime/agentBackends.js";
 
 const AGENT_RUNTIME_EXCLUDED_ACTION_NAMES = new Set([
   "generateMiroirReport",
   "getMiroirContext",
 ]);
-
-/** A configured agent backend (#409): every `AgentBackend` except `"none"`. */
-export type ActiveAgentBackend = Exclude<AgentBackend, "none">;
 
 export type CreateCopilotKitRouterOptions = {
   capabilities?: ProcessCapabilities;
@@ -49,7 +49,10 @@ export type CreateCopilotKitRouterOptions = {
   mcpHttpUrl?: string;
   apiPort?: number;
   nodeVersion?: string;
+  /** `features.agentModel` (#409); used by the Claude backend. */
+  agentModel?: string;
   importSdk?: ImportCursorSdk;
+  importClaudeSdk?: ImportClaudeSdk;
   createCopilotRuntime?: (options: {
     agents: Record<string, AbstractAgent>;
     actions: Action<Parameter[]>[];
@@ -350,17 +353,15 @@ export function createCopilotKitRouter(
 
       const createAgentForBackend =
         options?.createAgentForBackend ??
-        ((picked: ActiveAgentBackend) => {
-          if (picked !== "cursor") {
-            throw new Error(`agent backend "${picked}" is not available yet`);
-          }
-          return createDefaultCursorAbstractAgent({
+        ((picked: ActiveAgentBackend) =>
+          createDefaultAgentForBackend(picked, {
             mcpHttpUrl: options?.mcpHttpUrl,
             apiPort: options?.apiPort,
             nodeVersion: options?.nodeVersion,
-            importSdk: options?.importSdk,
-          });
-        });
+            agentModel: options?.agentModel,
+            importCursorSdk: options?.importSdk,
+            importClaudeSdk: options?.importClaudeSdk,
+          }));
 
       let runtime: ReturnType<typeof createRuntime>;
       try {

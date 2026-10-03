@@ -75,8 +75,9 @@ if (runThis) {
       const src = readRepoFile("packages/miroir-ai/src/runtime/cursorAgent.ts");
       expect(src).toContain("createCursorDummyCwd");
       expect(src).toContain(".miroir-cursor-cwd");
-      expect(src).toMatch(/\btmpdir\s*\(/);
       expect(src).toMatch(/const cwd = createCursorDummyCwd/);
+      // #409: the scratch directory helper moved to agentBridge.ts.
+      expect(readRepoFile("packages/miroir-ai/src/runtime/agentBridge.ts")).toMatch(/\btmpdir\s*\(/);
       expect(src).not.toContain("getDefaultFilesystemFolder");
     });
 

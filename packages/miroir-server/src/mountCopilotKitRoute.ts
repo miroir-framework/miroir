@@ -12,6 +12,8 @@ export interface MountCopilotKitRouteOptions {
   domainController: DomainControllerInterface;
   applicationDeploymentMap: ApplicationDeploymentMap;
   mcpHttpUrl: string;
+  /** `features.agentModel` (#409). */
+  agentModel?: string;
   /** Runs before the CopilotKit router, e.g. the authentication gate. */
   requestGate?: RequestHandler;
   /** Test seam; defaults to the dynamic import of `miroir-ai`. */
@@ -49,6 +51,7 @@ export async function mountCopilotKitRoute(
     createCopilotKitRouter(options.domainController, options.applicationDeploymentMap, {
       capabilities: options.capabilities,
       mcpHttpUrl: options.mcpHttpUrl,
+      agentModel: options.agentModel,
     }),
   );
   return true;

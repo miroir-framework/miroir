@@ -934,6 +934,7 @@ await mountCopilotKitRoute(app, {
   domainController,
   applicationDeploymentMap,
   mcpHttpUrl: `http://127.0.0.1:${restPortFromConfig}/mcp`,
+  agentModel: miroirConfig.features?.agentModel,
   requestGate: async (request: any, response: any, next: any) => {
     const principal = authenticationEnabled
       ? await resolveGatedPrincipal(
