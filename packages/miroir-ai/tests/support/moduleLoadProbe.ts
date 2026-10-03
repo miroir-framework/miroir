@@ -38,7 +38,12 @@ export function runModuleLoadProbe(scenario: ModuleLoadProbeScenario): ModuleLoa
     };
     const child = spawnSync(
       process.execPath,
-      ["--import", join(SUPPORT_DIR, "moduleLoadProbeRegister.mjs"), join(SUPPORT_DIR, "moduleLoadProbeChild.mjs")],
+      [
+        // `--import` takes a module specifier: a bare Windows path (C:\...) reads as a URL scheme.
+        "--import",
+        pathToFileURL(join(SUPPORT_DIR, "moduleLoadProbeRegister.mjs")).href,
+        join(SUPPORT_DIR, "moduleLoadProbeChild.mjs"),
+      ],
       {
         cwd: workDir,
         encoding: "utf8",

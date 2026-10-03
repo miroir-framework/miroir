@@ -8,7 +8,7 @@ import { spawnSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { describe, expect, it } from "vitest";
 
 const RUN_TEST = process.env.RUN_TEST;
@@ -16,7 +16,10 @@ const runThis = !RUN_TEST || RUN_TEST.startsWith("mountCopilotKitRoute");
 
 const TEST_DIR = dirname(fileURLToPath(import.meta.url));
 const SERVER_DIR = join(TEST_DIR, "..");
-const PROBE_REGISTER = join(SERVER_DIR, "../miroir-ai/tests/support/moduleLoadProbeRegister.mjs");
+// `--import` takes a module specifier: a bare Windows path (C:\...) reads as a URL scheme.
+const PROBE_REGISTER = pathToFileURL(
+  join(SERVER_DIR, "../miroir-ai/tests/support/moduleLoadProbeRegister.mjs"),
+).href;
 const PROBE_CHILD = join(SERVER_DIR, "tests/support/mountProbeChild.mjs");
 
 function capabilities(ai: boolean) {
