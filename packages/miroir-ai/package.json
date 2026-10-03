@@ -40,7 +40,7 @@
     "@connectrpc/connect": "1.7.0",
     "@connectrpc/connect-node": "1.7.0",
     "@connectrpc/connect-web": "1.7.0",
-    "@copilotkit/runtime": "1.73.3",
+    "@copilotkit/runtime": "1.74.0",
     "@cursor/sdk": "1.0.32",
     "@google/generative-ai": "0.24.1",
     "@statsig/js-client": "3.33.5",
@@ -55,7 +55,7 @@
   },
   "devDependencies": {
     "@types/express": "4.17.25",
-    "@types/node": "26.6.2",
+    "@types/node": "26.6.3",
     "cross-env": "10.1.0",
     "tsup": "8.5.1",
     "vitest": "5.0.2"
