@@ -5,6 +5,7 @@ import {
   attachFeedbackGlow,
   feedbackGlowAttribute,
   feedbackGlowClass,
+  feedbackGlowDurationBoundsMs,
   feedbackGlowStylesAttribute,
 } from "../src/components/FeedbackGlow/feedbackGlow.js";
 
@@ -35,6 +36,7 @@ describe("feedbackGlow", () => {
       <div id="boundary">
         <button id="button"><span id="label">Go</span></button>
         <input id="text" type="text" />
+        <textarea id="area"></textarea>
         <input id="checkbox" type="checkbox" />
         <select id="select"><option value="a">a</option></select>
         <div id="roleButton" role="button" tabindex="0">act</div>
@@ -78,8 +80,25 @@ describe("feedbackGlow", () => {
   it("typing in a text input does not glow", () => {
     keyDown(byId("text"), "a");
     keyDown(byId("text"), " ");
-    keyDown(byId("text"), "Enter");
     expect(glows(byId("text"))).toBe(false);
+  });
+
+  it("Enter in a text input glows it (commit, e.g. the option chosen in a filtered select)", () => {
+    keyDown(byId("text"), "Enter");
+    expect(glows(byId("text"))).toBe(true);
+  });
+
+  it("Enter in a textarea does not glow (new line)", () => {
+    keyDown(byId("area"), "Enter");
+    expect(glows(byId("area"))).toBe(false);
+  });
+
+  it("a duration outside the bounds is clamped", () => {
+    detach?.();
+    detach = attachFeedbackGlow(boundary, { durationMs: 0 });
+    click(byId("button"));
+    vi.advanceTimersByTime(feedbackGlowDurationBoundsMs.min - 1);
+    expect(glows(byId("button"))).toBe(true);
   });
 
   it("a click on a child of a button glows the button", () => {
@@ -119,5 +138,18 @@ describe("feedbackGlow", () => {
     const detachSecond = attachFeedbackGlow(second);
     expect(document.head.querySelectorAll(`style[${feedbackGlowStylesAttribute}]`).length).toBe(1);
     detachSecond();
+  });
+
+  it("the stylesheet is removed when the last boundary detaches", () => {
+    const second = document.createElement("div");
+    document.body.appendChild(second);
+    const detachSecond = attachFeedbackGlow(second);
+    detach?.();
+    detach = undefined;
+    const afterFirst = document.head.querySelectorAll(`style[${feedbackGlowStylesAttribute}]`).length;
+    detachSecond();
+    expect([afterFirst, document.head.querySelectorAll(`style[${feedbackGlowStylesAttribute}]`).length]).toEqual([
+      1, 0,
+    ]);
   });
 });

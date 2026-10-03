@@ -61,15 +61,25 @@ function isTextEntry(element: Element): boolean {
   return (element as HTMLElement).isContentEditable === true;
 }
 
+function isMultiLineTextEntry(element: Element): boolean {
+  return element.tagName.toLowerCase() === "textarea" || (element as HTMLElement).isContentEditable === true;
+}
+
 function isElement(target: EventTarget | null): target is Element {
   return !!target && typeof (target as Element).closest === "function";
 }
 
 // ################################################################################################
+// The halo is a `filter: drop-shadow(...)`, not a `box-shadow`: themed inputs set their focus
+// `box-shadow` with `!important`, which would hide an animated `box-shadow`, and a filter leaves a
+// control's own shadow (MUI elevation, focus ring) visible under the halo.
+const glowFilter = (color: string) => `drop-shadow(0 0 2px ${color}) drop-shadow(0 0 6px ${color})`;
+const glowColor = `var(${feedbackGlowColorProperty}, ${defaultFeedbackGlow.color})`;
+
 const feedbackGlowStyles = (selector: string) => `
 @keyframes miroir-feedback-glow-fade {
-  from { box-shadow: 0 0 0 3px var(${feedbackGlowColorProperty}, ${defaultFeedbackGlow.color}), 0 0 10px 4px var(${feedbackGlowColorProperty}, ${defaultFeedbackGlow.color}); }
-  to { box-shadow: 0 0 0 3px transparent, 0 0 10px 4px transparent; }
+  from { filter: ${glowFilter(glowColor)}; }
+  to { filter: ${glowFilter("transparent")}; }
 }
 ${selector} {
   animation: miroir-feedback-glow-fade var(${feedbackGlowDurationProperty}, ${defaultFeedbackGlow.durationMs}ms) ease-out forwards;
@@ -77,27 +87,47 @@ ${selector} {
 @media (prefers-reduced-motion: reduce) {
   ${selector} {
     animation: none;
-    box-shadow: 0 0 0 3px var(${feedbackGlowColorProperty}, ${defaultFeedbackGlow.color});
+    filter: ${glowFilter(glowColor)};
   }
 }
 `;
 
-const documentsWithStyles = new WeakSet<Document>();
+/** Per document: the glow stylesheet and the number of enabled boundaries using it. */
+const stylesByDocument = new WeakMap<Document, { style: HTMLStyleElement; users: number }>();
 
-/** Adds the glow stylesheet to `document.head`, once per document. */
-export function injectFeedbackGlowStyles(document: Document): void {
-  if (documentsWithStyles.has(document)) {
-    return;
+/**
+ * Adds the glow stylesheet to `document.head` for one more enabled boundary. Returns the release:
+ * the stylesheet is removed when the last boundary of the document releases it.
+ */
+export function acquireFeedbackGlowStyles(document: Document): () => void {
+  let entry = stylesByDocument.get(document);
+  if (!entry) {
+    const style =
+      document.head.querySelector<HTMLStyleElement>(`style[${feedbackGlowStylesAttribute}]`) ?? // hot reload
+      document.createElement("style");
+    style.setAttribute(feedbackGlowStylesAttribute, "");
+    style.textContent = feedbackGlowStyles(`[${feedbackGlowAttribute}="on"] .${feedbackGlowClass}`);
+    document.head.appendChild(style);
+    entry = { style, users: 0 };
+    stylesByDocument.set(document, entry);
   }
-  documentsWithStyles.add(document);
-  if (document.head.querySelector(`style[${feedbackGlowStylesAttribute}]`)) {
-    return; // left by a previous module instance (hot reload)
-  }
-  const style = document.createElement("style");
-  style.setAttribute(feedbackGlowStylesAttribute, "");
-  style.textContent = feedbackGlowStyles(`[${feedbackGlowAttribute}="on"] .${feedbackGlowClass}`);
-  document.head.appendChild(style);
+  entry.users += 1;
+  let released = false;
+  return () => {
+    if (released || !entry) {
+      return;
+    }
+    released = true;
+    entry.users -= 1;
+    if (entry.users === 0) {
+      entry.style.remove();
+      stylesByDocument.delete(document);
+    }
+  };
 }
+
+/** Durations outside these bounds (e.g. a Theme value of 0) are clamped. */
+export const feedbackGlowDurationBoundsMs = { min: 100, max: 3000 };
 
 // ################################################################################################
 /**
@@ -106,8 +136,11 @@ export function injectFeedbackGlowStyles(document: Document): void {
  */
 export function attachFeedbackGlow(element: HTMLElement, options: FeedbackGlowOptions = {}): () => void {
   const color = options.color ?? defaultFeedbackGlow.color;
-  const durationMs = options.durationMs ?? defaultFeedbackGlow.durationMs;
-  injectFeedbackGlowStyles(element.ownerDocument);
+  const durationMs = Math.min(
+    feedbackGlowDurationBoundsMs.max,
+    Math.max(feedbackGlowDurationBoundsMs.min, options.durationMs ?? defaultFeedbackGlow.durationMs),
+  );
+  const releaseStyles = acquireFeedbackGlowStyles(element.ownerDocument);
   element.setAttribute(feedbackGlowAttribute, "on");
   element.style.setProperty(feedbackGlowColorProperty, color);
   element.style.setProperty(feedbackGlowDurationProperty, `${durationMs}ms`);
@@ -126,8 +159,10 @@ export function attachFeedbackGlow(element: HTMLElement, options: FeedbackGlowOp
       return;
     }
     if (event.type === "keydown") {
+      // Space types in a text field; Enter commits there (e.g. the option chosen in a filtered
+      // select), except in multi-line fields.
       const key = (event as KeyboardEvent).key;
-      if ((key !== "Enter" && key !== " ") || isTextEntry(target)) {
+      if (key === " " ? isTextEntry(target) : key !== "Enter" || isMultiLineTextEntry(target)) {
         return;
       }
     }
@@ -153,5 +188,6 @@ export function attachFeedbackGlow(element: HTMLElement, options: FeedbackGlowOp
     element.removeAttribute(feedbackGlowAttribute);
     element.style.removeProperty(feedbackGlowColorProperty);
     element.style.removeProperty(feedbackGlowDurationProperty);
+    releaseStyles();
   };
 }

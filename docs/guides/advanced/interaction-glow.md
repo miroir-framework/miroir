@@ -27,12 +27,12 @@ import { FeedbackGlowBoundary } from "miroir-react";
 - `attachFeedbackGlow(element, options)` does the same for a DOM element outside React and returns the function that detaches it.
 - A control under an element with `data-miroir-no-glow` never glows.
 
-Glowing controls: `button`, `input`, `select`, `textarea`, and elements with role `button`, `option`, `checkbox`, `tab`, `menuitem` or a non-negative `tabindex`, found from the event target with `closest()`. Typing in a text field does not glow.
+Glowing controls: `button`, `input`, `select`, `textarea`, and elements with role `button`, `option`, `checkbox`, `tab`, `menuitem` or a non-negative `tabindex`, found from the event target with `closest()`. Typing in a text field does not glow; Enter in a single-line field does (it commits, e.g. the option chosen in a filtered select), Enter in a textarea does not.
 
 ## Theme
 
-`components.feedbackGlow` in a Theme sets `color` (default `#ffd54f`) and `durationMs` (default `400`). With `prefers-reduced-motion: reduce`, the halo stays static for the same duration instead of fading.
+`components.feedbackGlow` in a Theme sets `color` (default `#ffd54f`) and `durationMs` (default `400`, clamped to 100-3000). The halo is a `filter: drop-shadow(...)`, so it shows on top of a control's own focus ring or elevation, including focus `box-shadow`s declared `!important`. With `prefers-reduced-motion: reduce`, the halo stays static for the same duration instead of fading.
 
 ## Cost
 
-When no boundary is enabled, nothing is attached: no listener, no stylesheet. An enabled boundary adds four capture-phase listeners (`focusin`, `click`, `change`, `keydown`) on its element; each interaction adds a CSS class and a timer. No React state is involved, so the glow never re-renders a component. Only the boundary reads the theme.
+When no boundary is enabled, nothing is attached: no listener, no stylesheet (the stylesheet is removed when the last boundary detaches). An enabled boundary adds four capture-phase listeners (`focusin`, `click`, `change`, `keydown`) on its element; each interaction adds a CSS class and a timer. No React state is involved, so the glow never re-renders a component. Only the boundary reads the theme.

@@ -425,6 +425,7 @@ npm run nonreg:filesystem -- --runner shared
 
 ### Realization
 
+- Review of PR #440 (Greptile): halo moved from `box-shadow` to `filter: drop-shadow` (the themed select's focus `box-shadow !important` hid it), Enter in a single-line text field now glows (keyboard choice in `ThemedSelectWithPortal` commits through a constructed React event, no DOM `change`), stylesheet reference-counted (`acquireFeedbackGlowStyles` replaces `injectFeedbackGlowStyles`) and removed with the last boundary, duration clamped to 100-3000 ms. 4 new mechanism tests (23 in miroir-react).
 - 6.1: see the cost tables below.
 - 6.2: nonreg step `unit-438-feedback-glow` (scope `ui`).
 - 6.3: new guide `docs/guides/advanced/interaction-glow.md`, listed in `docs/DOCUMENTATION-STRUCTURE.md`; sandbox sentence in `docs/reference/testing.md`.

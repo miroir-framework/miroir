@@ -37,16 +37,17 @@ export { CodeBlock_ReadOnly } from "./components/CodeBlock_ReadOnly.js";
 
 // Feedback glow (#438)
 export {
+  acquireFeedbackGlowStyles,
   attachFeedbackGlow,
   defaultFeedbackGlow,
   feedbackGlowAttribute,
   feedbackGlowClass,
   feedbackGlowColorProperty,
+  feedbackGlowDurationBoundsMs,
   feedbackGlowDurationProperty,
   feedbackGlowOptOutAttribute,
   feedbackGlowStylesAttribute,
   feedbackGlowTargetSelector,
-  injectFeedbackGlowStyles,
   type FeedbackGlowOptions,
 } from "./components/FeedbackGlow/feedbackGlow.js";
 export {
