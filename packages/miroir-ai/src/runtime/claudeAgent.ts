@@ -73,7 +73,13 @@ function subprocessEnv(apiKey: string): Record<string, string> {
 /** Fails the run on an error result, which the SDK reports as a message rather than a throw. */
 async function* failOnErrorResult(messages: AsyncIterable<unknown>): AsyncIterable<unknown> {
   for await (const message of messages) {
-    const typed = message as { type?: string; subtype?: string; is_error?: boolean; result?: string; errors?: string[] };
+    const typed = message as {
+      type?: string;
+      subtype?: string;
+      is_error?: boolean;
+      result?: string;
+      errors?: string[];
+    };
     if (typed?.type === "result" && (typed.is_error || (typed.subtype ?? "").startsWith("error"))) {
       const detail = typed.result || typed.errors?.join("; ") || typed.subtype || "unknown error";
       throw new Error(`Claude agent run failed: ${detail}`);
@@ -104,6 +110,13 @@ export async function createClaudeAbstractAgent(
       // Only the Miroir MCP tools: no built-in tool, no settings or MCP servers from disk.
       tools: [],
       allowedTools: [`mcp__${MIROIR_MCP_SERVER_NAME}__*`],
+      disallowedTools: [
+        "mcp__miroir__Miroir_compositeActionSequence",
+        "mcp__miroir__Miroir_compositeRunBoxedQueryAction",
+        "mcp__miroir__Miroir_compositeRunBoxedQueryTemplateAction",
+        "mcp__miroir__Miroir_runBoxedQueryAction",
+        "mcp__miroir__Miroir_runBoxedQueryTemplateAction",
+      ],
       permissionMode: "dontAsk",
       settingSources: [],
       strictMcpConfig: true,
