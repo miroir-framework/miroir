@@ -16,7 +16,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 });
 
 export interface ErrorFallbackComponentProps {
-  error: Error;
+  error: unknown; // react-error-boundary 6 types a thrown value as unknown
   resetErrorBoundary?: () => void;
   context: {
     origin?: string; // used to identify the origin of the error, e.g., "MlElementEditor"
@@ -78,7 +78,7 @@ export const ErrorFallbackComponent: React.FC<ErrorFallbackComponentProps> = ({
         )}
         <ThemedOnScreenHelper
           label="ErrorFallbackComponent error"
-          data={error.toString()}
+          data={String(error)}
           initiallyUnfolded={true}
           copyButton={true}
           useCodeBlock={true}
@@ -144,7 +144,7 @@ export const ErrorFallbackComponent: React.FC<ErrorFallbackComponentProps> = ({
             </pre>
           </>
         )} */}
-        <div>error {error.message}</div>
+        <div>error {error instanceof Error ? error.message : String(error)}</div>
       </div>
     </div>
   );

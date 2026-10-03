@@ -985,7 +985,7 @@ if (getMiroirEnvironmentMode() === 'prod') {
   }));
   
   // SPA catch-all: serve index.html for all routes not matched above
-  app.get('*', (req: any, res: any) => {
+  app.get('/{*splat}', (req: any, res: any) => {
     
     if (existsSync(indexPath)) {
       res.sendFile(indexPath);
