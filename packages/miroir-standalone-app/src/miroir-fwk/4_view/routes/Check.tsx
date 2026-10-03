@@ -65,7 +65,7 @@ export const CheckPage: React.FC<any> = (
       try {
         // const result = test_createEntityAndReportFromSpreadsheetAndUpdateMenu(inputValue);
 
-        z.record(coreTransformerForBuildPlusRuntime).parse(testSubPart);
+        z.record(z.string(), coreTransformerForBuildPlusRuntime).parse(testSubPart);
         setTestResult(<div style={{ color: "green" }}>Input is valid!</div>);
         // log.info("Result:", result);
       } catch (error) {

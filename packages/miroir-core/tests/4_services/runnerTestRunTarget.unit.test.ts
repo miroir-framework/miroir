@@ -9,7 +9,7 @@ import {
 
 const PINNED_APPLICATION_UUID = "5af03c98-fe5e-490b-b08f-e1230971c57f";
 const PINNED_DEPLOYMENT_UUID = "f714bb2f-a12d-4e71-a03b-74dcedea6eb4";
-const OVERRIDE_APPLICATION_UUID = "aaaaaaaa-bbbb-4ccc-dddd-eeeeeeeeeeee";
+const OVERRIDE_APPLICATION_UUID = "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee";
 const OVERRIDE_DEPLOYMENT_UUID = "11111111-2222-4333-8444-555555555555";
 
 function sequentialUuidFactory(): () => string {

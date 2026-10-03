@@ -257,7 +257,7 @@ describe("computeSchemaRevision — meta full carry-on changes (3.3)", () => {
     transformerMutated.runners = [
       ...transformerMutated.runners,
       {
-        uuid: "bbbbbbbb-cccc-dddd-eeee-ffffffffffff",
+        uuid: "bbbbbbbb-cccc-4ddd-8eee-ffffffffffff",
         name: "SyntheticTransformer",
         definition: { transformerType: "noop" },
       },

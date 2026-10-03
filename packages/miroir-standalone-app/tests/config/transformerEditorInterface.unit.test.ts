@@ -24,7 +24,7 @@ describe("transformerEditorPersistedUpdateMatchesPersistedState", () => {
     transformerEditor_input: {},
     selectedEntityInstance: undefined,
     entityInstances: [],
-    deploymentUuid: "00000000-0000-0000-0000-000000000001",
+    deploymentUuid: "00000000-0000-4000-8000-000000000001",
     transformerEditor_editor: {
       currentTransformerDefinition: {
         transformerType: "returnValue",

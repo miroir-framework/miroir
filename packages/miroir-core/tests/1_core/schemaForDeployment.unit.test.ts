@@ -93,7 +93,7 @@ describe("getMiroirFundamentalSchemaForDeployment (Phase 2.2 — extended domain
 
     const duplicateLendingEndpoint = {
       ...lendingEndpoint!,
-      uuid: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+      uuid: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
       name: "Lending duplicate",
     };
     const modelWithDuplicateEndpoint = {
@@ -114,7 +114,7 @@ describe("getMiroirFundamentalSchemaForDeployment (Phase 2.2 — extended domain
       expect.stringContaining('actionType "returnDocument"'),
     );
     expect(warnSpy).toHaveBeenCalledWith(
-      expect.stringContaining("endpoint aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"),
+      expect.stringContaining("endpoint aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"),
     );
 
     warnSpy.mockRestore();
@@ -129,7 +129,7 @@ describe("getMiroirFundamentalSchemaForDeployment (Phase 2.2 — extended domain
     const firstAction = getEndpointActions(lendingEndpoint)![0];
     const collisionEndpoint = {
       ...lendingEndpoint!,
-      uuid: "bbbbbbbb-cccc-dddd-eeee-ffffffffffff",
+      uuid: "bbbbbbbb-cccc-4ddd-8eee-ffffffffffff",
       name: "Lending collision",
       definition: {
         actions: [
@@ -159,7 +159,7 @@ describe("getMiroirFundamentalSchemaForDeployment (Phase 2.2 — extended domain
       expect.stringContaining('actionType "transactionalInstanceAction"'),
     );
     expect(warnSpy).toHaveBeenCalledWith(
-      expect.stringContaining("endpoint bbbbbbbb-cccc-dddd-eeee-ffffffffffff"),
+      expect.stringContaining("endpoint bbbbbbbb-cccc-4ddd-8eee-ffffffffffff"),
     );
 
     warnSpy.mockRestore();

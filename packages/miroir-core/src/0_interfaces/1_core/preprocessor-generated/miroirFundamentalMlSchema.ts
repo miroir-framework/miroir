@@ -3045,16 +3045,27 @@ export const miroirFundamentalMlSchema = {
           "message": {
             "type": "string"
           },
-          "unionErrors": {
+          "errors": {
             "type": "array",
             "definition": {
-              "type": "schemaReference",
+              "type": "array",
               "definition": {
-                "relativePath": "zodParseError",
-                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
-              },
-              "context": {}
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "zodParseErrorIssue",
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                },
+                "context": {}
+              }
             }
+          },
+          "note": {
+            "type": "string",
+            "optional": true
+          },
+          "discriminator": {
+            "type": "string",
+            "optional": true
           }
         }
       },
@@ -3090,15 +3101,18 @@ export const miroirFundamentalMlSchema = {
           }
         }
       },
-      "zodParseErrorIssueInvalidLiteral": {
+      "zodParseErrorIssueInvalidValue": {
         "type": "object",
         "definition": {
           "code": {
             "type": "literal",
-            "definition": "invalid_literal"
+            "definition": "invalid_value"
           },
-          "expected": {
-            "type": "string"
+          "values": {
+            "type": "array",
+            "definition": {
+              "type": "any"
+            }
           },
           "path": {
             "type": "array",
@@ -3142,7 +3156,7 @@ export const miroirFundamentalMlSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "zodParseErrorIssueInvalidLiteral",
+              "relativePath": "zodParseErrorIssueInvalidValue",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
@@ -3155,9 +3169,6 @@ export const miroirFundamentalMlSchema = {
                 "definition": "invalid_type"
               },
               "expected": {
-                "type": "string"
-              },
-              "received": {
                 "type": "string"
               },
               "path": {

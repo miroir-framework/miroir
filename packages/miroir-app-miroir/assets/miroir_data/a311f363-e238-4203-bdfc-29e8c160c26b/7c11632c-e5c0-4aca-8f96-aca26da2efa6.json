@@ -24,13 +24,13 @@
         },
         "arguments": [
           {
-            "uuid": "00000000-0000-0000-0000-000000000001",
-            "parentUuid": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+            "uuid": "00000000-0000-4000-8000-000000000001",
+            "parentUuid": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
             "parentName": "SomeEntity"
           },
-          "11111111-2222-3333-4444-555555555555"
+          "11111111-2222-4333-8444-555555555555"
         ],
-        "expectedValue": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+        "expectedValue": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"
       },
       {
         "miroirTestType": "functionCallTest",
@@ -41,11 +41,11 @@
         },
         "arguments": [
           {
-            "uuid": "00000000-0000-0000-0000-000000000002"
+            "uuid": "00000000-0000-4000-8000-000000000002"
           },
-          "11111111-2222-3333-4444-555555555555"
+          "11111111-2222-4333-8444-555555555555"
         ],
-        "expectedValue": "11111111-2222-3333-4444-555555555555"
+        "expectedValue": "11111111-2222-4333-8444-555555555555"
       },
       {
         "miroirTestType": "functionCallTest",
@@ -56,14 +56,14 @@
         },
         "arguments": [
           {
-            "uuid": "00000000-0000-0000-0000-000000000003",
+            "uuid": "00000000-0000-4000-8000-000000000003",
             "parentUuid": {
               "__miroirJsonUndefined": true
             }
           },
-          "11111111-2222-3333-4444-555555555555"
+          "11111111-2222-4333-8444-555555555555"
         ],
-        "expectedValue": "11111111-2222-3333-4444-555555555555"
+        "expectedValue": "11111111-2222-4333-8444-555555555555"
       },
       {
         "miroirTestType": "functionCallTest",
@@ -74,7 +74,7 @@
         },
         "arguments": [
           {
-            "uuid": "00000000-0000-0000-0000-000000000004"
+            "uuid": "00000000-0000-4000-8000-000000000004"
           },
           {
             "__miroirJsonUndefined": true
@@ -91,7 +91,7 @@
         },
         "arguments": [
           {
-            "uuid": "00000000-0000-0000-0000-000000000005",
+            "uuid": "00000000-0000-4000-8000-000000000005",
             "parentUuid": ""
           },
           ""
@@ -107,12 +107,12 @@
         },
         "arguments": [
           {
-            "uuid": "00000000-0000-0000-0000-000000000006",
-            "parentUuid": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+            "uuid": "00000000-0000-4000-8000-000000000006",
+            "parentUuid": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"
           },
-          "11111111-2222-3333-4444-555555555555"
+          "11111111-2222-4333-8444-555555555555"
         ],
-        "expectedValue": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+        "expectedValue": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"
       },
       {
         "miroirTestType": "functionCallTest",
@@ -123,12 +123,12 @@
         },
         "arguments": [
           {
-            "uuid": "00000000-0000-0000-0000-000000000007",
+            "uuid": "00000000-0000-4000-8000-000000000007",
             "name": "plain"
           },
-          "11111111-2222-3333-4444-555555555555"
+          "11111111-2222-4333-8444-555555555555"
         ],
-        "expectedValue": "11111111-2222-3333-4444-555555555555"
+        "expectedValue": "11111111-2222-4333-8444-555555555555"
       },
       {
         "miroirTestType": "functionCallTest",
@@ -404,12 +404,12 @@
           {},
           [
             {
-              "uuid": "00000000-0000-0000-0000-000000000001"
+              "uuid": "00000000-0000-4000-8000-000000000001"
             }
           ]
         ],
         "expectedValue": [
-          "00000000-0000-0000-0000-000000000001"
+          "00000000-0000-4000-8000-000000000001"
         ]
       },
       {

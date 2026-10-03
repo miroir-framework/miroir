@@ -8,8 +8,8 @@ import type {
 import { Domain2ElementFailed } from "../../src/0_interfaces/2_domain/DomainElement.js";
 import { selectEntityInstanceUuidIndexFromDomainState } from "../../src/2_domain/DomainStateQuerySelectors.js";
 
-const testApplicationUuid = "11111111-1111-1111-1111-111111111111";
-const testDeploymentUuid = "22222222-2222-2222-2222-222222222222";
+const testApplicationUuid = "11111111-1111-4111-8111-111111111111";
+const testDeploymentUuid = "22222222-2222-4222-8222-222222222222";
 const testEntityUuid = "44691d2c-d7c1-48e0-8363-71c51195e104";
 
 const applicationDeploymentMap: ApplicationDeploymentMap = {

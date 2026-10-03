@@ -18,8 +18,8 @@ import {
   selectEntityInstanceUuidIndexFromDomainState,
 } from "../../src/2_domain/DomainStateQuerySelectors.js";
 
-const testApplicationUuid = "11111111-1111-1111-1111-111111111111";
-const testDeploymentUuid = "22222222-2222-2222-2222-222222222222";
+const testApplicationUuid = "11111111-1111-4111-8111-111111111111";
+const testDeploymentUuid = "22222222-2222-4222-8222-222222222222";
 const entityEntityUuid = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
 const keylessEntityUuid = "22275459-d657-48cc-b72e-834e2ba3947c";
 
