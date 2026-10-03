@@ -86,7 +86,7 @@ docs-new/
 │   ├── deployment.md               # Production deployment
 │   ├── desktop-app.md              # Electron-based deployment
 │   ├── mcp-integration.md          # Model Context Protocol for AI ⚠️⚠️⚠️
-│   ├── using-ai.md                 # In-app CopilotKit assistant (token keys or Cursor)
+│   ├── using-ai.md                 # In-app CopilotKit assistant (token keys, Cursor or Claude agent)
 │   │
 │   ├── developer/                  # Developer-focused guides
 │   │   ├── creating-applications.md ⚠️⚠️⚠️
@@ -256,7 +256,7 @@ docs-new/
 
 1. [README-new.md](README-new.md) - Overview (5 min)
 2. [Core Concepts](guides/core-concepts.md) - Understanding Miroir (25 min)
-3. [Using AI in Miroir](guides/using-ai.md) - In-app assistant, token keys and Cursor (30 min)
+3. [Using AI in Miroir](guides/using-ai.md) - In-app assistant, token keys, Cursor and Claude agents (30 min)
 4. [MCP Integration Guide](guides/mcp-integration.md) - Model Context Protocol for external clients (45 min)
 5. [API Reference](reference/api/) - Complete API (60 min)
 6. [Natural Language Interface](tutorials/natural-language-interface.md) - **Coming Soon**

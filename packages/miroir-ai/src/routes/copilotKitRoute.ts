@@ -14,7 +14,7 @@ import {
   assertProcessCapability,
   defaultMetaModelEnvironment,
   FAIL_CLOSED_PROCESS_CAPABILITIES,
-  isCursorBackendAllowed,
+  isAgentBackendAllowed,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type ProcessCapabilities,
@@ -28,11 +28,15 @@ import {
 } from "../runtime/copilotRuntimeFactory.js";
 import { createMiroirCopilotKitActions, createLendDocumentExecutor } from "../tools/miroirCopilotKitActions.js";
 import {
-  createCursorAbstractAgent as createDefaultCursorAbstractAgent,
-  type ImportCursorSdk,
-} from "../runtime/cursorAgent.js";
+  createAgentForBackend as createDefaultAgentForBackend,
+  type ActiveAgentBackend,
+} from "../runtime/agentBackends.js";
+import type { ImportClaudeSdk } from "../runtime/claudeAgent.js";
+import type { ImportCursorSdk } from "../runtime/cursorAgent.js";
 
-const CURSOR_RUNTIME_EXCLUDED_ACTION_NAMES = new Set([
+export type { ActiveAgentBackend } from "../runtime/agentBackends.js";
+
+const AGENT_RUNTIME_EXCLUDED_ACTION_NAMES = new Set([
   "generateMiroirReport",
   "getMiroirContext",
 ]);
@@ -40,32 +44,40 @@ const CURSOR_RUNTIME_EXCLUDED_ACTION_NAMES = new Set([
 export type CreateCopilotKitRouterOptions = {
   capabilities?: ProcessCapabilities;
   getCapabilities?: () => ProcessCapabilities;
-  createCursorAbstractAgent?: () => AbstractAgent | Promise<AbstractAgent>;
+  /** Builds the agent of the configured backend; defaults to the real SDK-backed agents. */
+  createAgentForBackend?: (backend: ActiveAgentBackend) => AbstractAgent | Promise<AbstractAgent>;
   mcpHttpUrl?: string;
   apiPort?: number;
   nodeVersion?: string;
+  /** `features.agentModel` (#409); used by the Claude backend. */
+  agentModel?: string;
   importSdk?: ImportCursorSdk;
+  importClaudeSdk?: ImportClaudeSdk;
   createCopilotRuntime?: (options: {
-    agents: { default: AbstractAgent; cursor: AbstractAgent };
+    agents: Record<string, AbstractAgent>;
     actions: Action<Parameter[]>[];
   }) => unknown;
   buildCopilotRuntime?: typeof buildCopilotRuntime;
   copilotRuntimeNodeHttpEndpoint?: typeof copilotRuntimeNodeHttpEndpoint;
 };
 
+/** `"cursor"` is the pre-#409 request value, accepted as an alias of `"agent"` for one release. */
+const AGENT_PICK_VALUES = new Set(["agent", "cursor"]);
+
 /**
  * Resolve the CopilotKit backend pick from a 1.59 request envelope.
  * 1. forwardedProps on the nested body (properties sent by the client)
  * 2. top-level request aiConfig backend (fallback)
+ * Returns "agent" when the request asks for the configured agent backend (#409).
  */
-export function resolveBackendPick(req: Request): "cursor" | undefined {
+export function resolveBackendPick(req: Request): "agent" | undefined {
   const forwardedBackend = (req as any).body?.body?.forwardedProps?.aiConfig?.backend;
-  if (forwardedBackend === "cursor") {
-    return "cursor";
+  if (AGENT_PICK_VALUES.has(forwardedBackend)) {
+    return "agent";
   }
   const topLevelBackend = (req as any).body?.aiConfig?.backend;
-  if (topLevelBackend === "cursor") {
-    return "cursor";
+  if (AGENT_PICK_VALUES.has(topLevelBackend)) {
+    return "agent";
   }
   return undefined;
 }
@@ -73,13 +85,13 @@ export function resolveBackendPick(req: Request): "cursor" | undefined {
 /**
  * CopilotKit 1.59 CopilotSidebar POSTs `params.agentId: "default"`.
  * Runtime lookup is `agents[agentId]` (404 Agent not found otherwise).
- * Keep `cursor` as an alias for an explicit pick.
+ * Keep the backend name as an alias for an explicit pick.
  */
-export function cursorRuntimeAgents(agent: AbstractAgent): {
-  default: AbstractAgent;
-  cursor: AbstractAgent;
-} {
-  return { default: agent, cursor: agent };
+export function agentRuntimeAgents(
+  agent: AbstractAgent,
+  backend: ActiveAgentBackend,
+): Record<string, AbstractAgent> {
+  return { default: agent, [backend]: agent };
 }
 
 function resolveInjectedCapabilities(
@@ -91,18 +103,18 @@ function resolveInjectedCapabilities(
   return options?.capabilities ?? FAIL_CLOSED_PROCESS_CAPABILITIES;
 }
 
-function cursorRefuseCapability(snapshot: ProcessCapabilities): ProcessCapabilityName {
-  if (snapshot.cursor !== true) {
-    return "cursor";
+function agentRefuseCapability(snapshot: ProcessCapabilities): ProcessCapabilityName {
+  if (snapshot.agentBackend === "none") {
+    return "agent";
   }
   if (snapshot.mcp !== true) {
     return "mcp";
   }
-  return "cursor";
+  return "ai";
 }
 
-function filterCursorRuntimeActions(actions: Action<Parameter[]>[]): Action<Parameter[]>[] {
-  return actions.filter((action) => !CURSOR_RUNTIME_EXCLUDED_ACTION_NAMES.has(action.name));
+function filterAgentRuntimeActions(actions: Action<Parameter[]>[]): Action<Parameter[]>[] {
+  return actions.filter((action) => !AGENT_RUNTIME_EXCLUDED_ACTION_NAMES.has(action.name));
 }
 
 const ENDPOINT_PATH = "/api/copilotkit";
@@ -325,31 +337,37 @@ export function createCopilotKitRouter(
       }
     }
 
-    if (resolveBackendPick(req) === "cursor") {
+    if (resolveBackendPick(req) === "agent") {
       const snapshot = resolveInjectedCapabilities(options);
-      if (!isCursorBackendAllowed(snapshot)) {
-        const refused = assertProcessCapability(cursorRefuseCapability(snapshot), snapshot);
-        if (refused) {
-          res.status(403).json(refused);
-          return;
-        }
+      if (!isAgentBackendAllowed(snapshot)) {
+        const refused = assertProcessCapability(agentRefuseCapability(snapshot), snapshot);
+        res.status(403).json(
+          refused ??
+            new Action2Error("FeatureUnavailable", "Agent backend is not available", undefined, undefined, {
+              capability: "agent",
+            }),
+        );
+        return;
       }
+      const backend = snapshot.agentBackend as ActiveAgentBackend;
 
-      const createCursorAbstractAgent =
-        options?.createCursorAbstractAgent ??
-        (() =>
-          createDefaultCursorAbstractAgent({
+      const createAgentForBackend =
+        options?.createAgentForBackend ??
+        ((picked: ActiveAgentBackend) =>
+          createDefaultAgentForBackend(picked, {
             mcpHttpUrl: options?.mcpHttpUrl,
             apiPort: options?.apiPort,
             nodeVersion: options?.nodeVersion,
-            importSdk: options?.importSdk,
+            agentModel: options?.agentModel,
+            importCursorSdk: options?.importSdk,
+            importClaudeSdk: options?.importClaudeSdk,
           }));
 
       let runtime: ReturnType<typeof createRuntime>;
       try {
         runtime = createRuntime({
-          agents: cursorRuntimeAgents(await createCursorAbstractAgent()),
-          actions: filterCursorRuntimeActions(actions),
+          agents: agentRuntimeAgents(await createAgentForBackend(backend), backend),
+          actions: filterAgentRuntimeActions(actions),
         });
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);

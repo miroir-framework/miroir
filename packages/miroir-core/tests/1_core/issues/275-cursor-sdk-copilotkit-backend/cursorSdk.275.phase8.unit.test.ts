@@ -39,11 +39,12 @@ if (runThis) {
       expect(doc).toContain("22.13");
     });
 
-    it("shipped server JSON omits cursor; using-ai.md says the shipped file does not turn it on", () => {
+    // #409: features.cursor became features.agentBackend (cursor stays an alias for one release).
+    it("shipped environments omit agentBackend; using-ai.md says they do not set it", () => {
       const capabilities = readText("docs/reference/process-capabilities.md");
       const usingAi = readText("docs/guides/using-ai.md");
-      expect(capabilities).toMatch(/Shipped `miroirConfig\.server\.json` \/ `\.docker\.json` omit `cursor`/);
-      expect(usingAi).toContain("does **not** turn `cursor` on");
+      expect(capabilities).toMatch(/The shipped environments omit it/);
+      expect(usingAi).toContain("The shipped environments do not set `agentBackend`");
     });
   });
 }

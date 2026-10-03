@@ -1858,6 +1858,18 @@
       ]
     },
     {
+      "id": "unit-agent-backend",
+      "scopes": ["external", "tooling"],
+      "tier": "unit",
+      "title": "Agent backend (#409): pick, lazy agent SDKs and miroir-ai (core + ai + standalone + server + env unit)",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w miroir-core -- agentBackendCapabilities && npm run testByFile -w miroir-ai -- agentBackendRoute claudeAgent agentSdkModuleLoading assertAgentSdkPackaged && npm run testByFile -w miroir-standalone-app -- agentBackendPick && npm run testByFile -w miroir-server -- mountCopilotKitRoute && npm run testByFile -w miroir-env -- agentBackendAlias"
+      ]
+    },
+    {
       "id": "appstack-273-process-capabilities",
       "scopes": ["external"],
       "tier": "default",

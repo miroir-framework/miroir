@@ -7,7 +7,6 @@ import loglevelnextLib from 'loglevelnext'; // TODO: use this? or plain "console
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import { createCopilotKitRouter } from "miroir-ai";
 import {
   Action2Error,
   type ApplicationDeploymentMap,
@@ -20,7 +19,6 @@ import {
   getClientEnvironment,
   getMiroirEnvironmentMode,
   getProcessCapabilities,
-  shouldMountCopilotKitRoute,
   shouldMountMcpHttp,
   LoggerFactoryInterface,
   LoggerInterface,
@@ -98,6 +96,7 @@ import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirMongoDbStoreSectionStartup } from 'miroir-store-mongodb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
+import { agentMcpHttpUrl, mountCopilotKitRoute } from './mountCopilotKitRoute.js';
 
 const packageName = "server"
 const cleanLevel = "5"
@@ -928,9 +927,22 @@ if (shouldMountMcpHttp(capabilities.mcp)) {
   mcpServer.mountHttpRoutes(app);
 }
 
+// TLS certificates: present → HTTPS on the API port (listener at the end of this file).
+// run scripts/setup-https.sh (or .ps1) once to generate the certificates.
+const defaultCertsDir = argCertsDir ?? path.resolve(__dirname, '../../../certs');
+const certFile = argCertFile ?? process.env.MIROIR_TLS_CERT ?? path.join(defaultCertsDir, 'localhost.pem');
+const keyFile  = argKeyFile  ?? process.env.MIROIR_TLS_KEY  ?? path.join(defaultCertsDir, 'localhost-key.pem');
+const tlsEnabled = existsSync(certFile) && existsSync(keyFile);
+
 // AI / CopilotKit endpoint — MUST be after API routes and MCP, before SPA catch-all.
-if (shouldMountCopilotKitRoute(capabilities.ai)) {
-  app.use("/api/copilotkit", async (request: any, response: any, next: any) => {
+// miroir-ai is imported only when the ai capability is on (#409).
+await mountCopilotKitRoute(app, {
+  capabilities,
+  domainController,
+  applicationDeploymentMap,
+  mcpHttpUrl: agentMcpHttpUrl({ restPort: restPortFromConfig, mcpPort: mcpPortFromConfig, tls: tlsEnabled }),
+  agentModel: miroirConfig.features?.agentModel,
+  requestGate: async (request: any, response: any, next: any) => {
     const principal = authenticationEnabled
       ? await resolveGatedPrincipal(
           typeof request.headers?.authorization === "string" ? request.headers.authorization : undefined,
@@ -945,10 +957,8 @@ if (shouldMountCopilotKitRoute(capabilities.ai)) {
       return;
     }
     next();
-  });
-  const mcpHttpUrl = `http://127.0.0.1:${restPortFromConfig}/mcp`;
-  app.use('/api/copilotkit', createCopilotKitRouter(domainController, applicationDeploymentMap, { capabilities, mcpHttpUrl }));
-}
+  },
+});
 
 // ##############################################################################################
 // ##############################################################################################
@@ -994,17 +1004,12 @@ if (getMiroirEnvironmentMode() === 'prod') {
 // Start HTTPS server. Certificate paths are resolved from environment variables
 // (MIROIR_TLS_CERT / MIROIR_TLS_KEY) or default to <repo-root>/certs/ relative to this file.
 // If the certificate files are absent, the server falls back to plain HTTP with a warning —
-// run scripts/setup-https.sh (or .ps1) once to generate the certificates.
-const defaultCertsDir = argCertsDir ?? path.resolve(__dirname, '../../../certs');
-const certFile = argCertFile ?? process.env.MIROIR_TLS_CERT ?? path.join(defaultCertsDir, 'localhost.pem');
-const keyFile  = argKeyFile  ?? process.env.MIROIR_TLS_KEY  ?? path.join(defaultCertsDir, 'localhost-key.pem');
-
 myLogger.info(`TLS configuration:`);
 myLogger.info(`  certsdir : ${defaultCertsDir}`);
 myLogger.info(`  certFile : ${certFile}`);
 myLogger.info(`  keyFile  : ${keyFile}`);
 
-if (existsSync(certFile) && existsSync(keyFile)) {
+if (tlsEnabled) {
   const tlsOptions = {
     cert: readFileSync(certFile),
     key:  readFileSync(keyFile),

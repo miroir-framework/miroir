@@ -6,10 +6,13 @@ import type {
   StoreSectionFactoryRegister,
 } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
 
+/** Agent backend picked in the environment config before start (#409). */
+export type AgentBackend = "cursor" | "claude" | "none";
+
 export type ProcessCapabilities = {
   ai: boolean;
   mcp: boolean;
-  cursor: boolean;
+  agentBackend: AgentBackend;
   availableStoreTypes: StorageType[];
   creatableStoreTypes: StorageType[];
   storeAdministration: boolean;
@@ -19,7 +22,7 @@ export type ProcessCapabilities = {
 export type ProcessCapabilityName =
   | "ai"
   | "mcp"
-  | "cursor"
+  | "agent"
   | "storeAdministration"
   | "availableStoreTypes"
   | "designerTools";
@@ -28,6 +31,8 @@ type ProcessCapabilitiesConfig = {
   features?: {
     ai?: boolean;
     mcp?: boolean;
+    agentBackend?: AgentBackend;
+    /** #409: read as `agentBackend: "cursor"` when `agentBackend` is absent, for one release. */
     cursor?: boolean;
     designerTools?: boolean;
   };
@@ -89,7 +94,7 @@ export function getProcessCapabilities({
   return {
     ai: features?.ai === true && environment !== "sandbox",
     mcp: features?.mcp === true,
-    cursor: features?.cursor === true,
+    agentBackend: features?.agentBackend ?? (features?.cursor === true ? "cursor" : "none"),
     designerTools: features?.designerTools !== false,
     availableStoreTypes,
     creatableStoreTypes: availableStoreTypes.filter((storageType) => storageType !== "bundled"),
@@ -97,15 +102,20 @@ export function getProcessCapabilities({
   };
 }
 
-export function isCursorBackendAllowed(snapshot: ProcessCapabilities): boolean {
-  return snapshot.ai === true && snapshot.cursor === true && snapshot.mcp === true;
+export function isAgentBackendAllowed(snapshot: ProcessCapabilities): boolean {
+  return snapshot.ai === true && snapshot.mcp === true && snapshot.agentBackend !== "none";
 }
 
 export function assertProcessCapability(
   name: ProcessCapabilityName,
   snapshot: ProcessCapabilities,
 ): Action2Error | void {
-  const allowed = name === "availableStoreTypes" ? true : snapshot[name] === true;
+  const allowed =
+    name === "availableStoreTypes"
+      ? true
+      : name === "agent"
+        ? snapshot.agentBackend !== "none"
+        : snapshot[name] === true;
   if (allowed) {
     return;
   }

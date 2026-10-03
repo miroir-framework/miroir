@@ -1,10 +1,10 @@
 /**
- * #275 Slice 7 — assertCursorSdkPackaged fail-loud helper.
+ * #275 Slice 7 — fail-loud Cursor SDK packaging check (assertAgentSdkPackaged since #409).
  * Do not register in FunctionCallTestRegistry.
  */
 import { describe, expect, it } from "vitest";
 
-import { assertCursorSdkPackaged } from "../../../../src/runtime/assertCursorSdkPackaged.js";
+import { assertAgentSdkPackaged } from "../../../../src/runtime/assertAgentSdkPackaged.js";
 
 const RUN_TEST = process.env.RUN_TEST;
 const runThis =
@@ -14,10 +14,10 @@ const runThis =
   RUN_TEST === "cursorSdk.275.phase7";
 
 if (runThis) {
-  describe("cursorSdk.275.phase7 — assertCursorSdkPackaged", () => {
+  describe("cursorSdk.275.phase7 — assertAgentSdkPackaged(\"cursor\")", () => {
     it("throws when resolveSdkPath returns undefined", () => {
       expect(() =>
-        assertCursorSdkPackaged({
+        assertAgentSdkPackaged("cursor", {
           resolveSdkPath: () => undefined,
         }),
       ).toThrow(/not packaged|@cursor\/sdk/i);
@@ -25,7 +25,7 @@ if (runThis) {
 
     it("throws when the resolved path does not exist", () => {
       expect(() =>
-        assertCursorSdkPackaged({
+        assertAgentSdkPackaged("cursor", {
           resolveSdkPath: () => "/missing/@cursor/sdk",
           existsSync: () => false,
         }),
@@ -34,7 +34,7 @@ if (runThis) {
 
     it("does not throw when an injectable path exists", () => {
       expect(() =>
-        assertCursorSdkPackaged({
+        assertAgentSdkPackaged("cursor", {
           resolveSdkPath: () => "/packaged/@cursor/sdk",
           existsSync: (candidate) => candidate === "/packaged/@cursor/sdk",
         }),

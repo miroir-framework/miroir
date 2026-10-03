@@ -12,7 +12,12 @@ import {
   validateEnvironmentDefinitions,
   type ResolvedEnvironment,
 } from "./environmentFiles.js";
-import { describeEnvironmentStateStatus, environmentStateStatus, missingConnectionPasswords } from "./environmentState.js";
+import {
+  agentBackendAliasWarnings,
+  describeEnvironmentStateStatus,
+  environmentStateStatus,
+  missingConnectionPasswords,
+} from "./environmentState.js";
 import { importExtras, inspectEnvironmentState, pruneExtras } from "./stateCommands.js";
 import { changedAssetFiles } from "./trackedAssets.js";
 
@@ -114,6 +119,7 @@ function check(args: string[], io: CliIo): number {
       report(finding.level, finding.message);
     }
     missingConnectionPasswords(resolved, io.env).forEach((warning) => report("warning", warning));
+    agentBackendAliasWarnings(resolved).forEach((warning) => report("warning", warning));
   }
   if (args.includes("--tracked-clean")) {
     try {

@@ -776,9 +776,9 @@ export { ACTION_OK, BLOB_SIZE_WARNING_THRESHOLD, MAX_BLOB_FILE_SIZE } from "./1_
 export {
   assertProcessCapability,
   getProcessCapabilities,
-  isCursorBackendAllowed,
+  isAgentBackendAllowed,
 } from "./1_core/processCapabilities";
-export type { ProcessCapabilities, ProcessCapabilityName } from "./1_core/processCapabilities";
+export type { AgentBackend, ProcessCapabilities, ProcessCapabilityName } from "./1_core/processCapabilities";
 export {
   FAIL_CLOSED_PROCESS_CAPABILITIES,
   fetchProcessCapabilities,

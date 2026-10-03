@@ -31,6 +31,7 @@ import {
   subscribeMiroirAiBackend,
   writeMiroirAiBackend,
 } from '../../routes/ai/miroirAiBackend.js';
+import { agentBackendLabel } from '../../routes/ai/agentBackendPick.js';
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ResponsiveAppBar");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -152,6 +153,8 @@ export function AppBar(props:AppBarProps) {
     readMiroirAiBackend,
     readMiroirAiBackend,
   );
+  const agentLabel = agentBackendLabel(context.processCapabilities);
+  const agentPicked = miroirAiBackend === "agent";
   const { designerToolsVisible, showModelTools } = useDesignerToolsVisibility();
   const applicationSelector = context.toolsPageState?.applicationSelector;
   const applicationDeploymentMap =
@@ -348,31 +351,31 @@ export function AppBar(props:AppBarProps) {
     ) : (
       <> </>
     ),
-    showAgentUi && context.processCapabilities.cursor === true ? (
+    showAgentUi && agentLabel ? (
       <AppBarIconButton
-        key="ai-backend-cursor"
-        aria-label="Cursor"
+        key="ai-backend-agent"
+        aria-label={agentLabel}
         title={
-          miroirAiBackend === "cursor"
-            ? "Cursor: ON (click to use token AI)"
-            : "Cursor: OFF (click to use Cursor)"
+          agentPicked
+            ? `${agentLabel}: ON (click to use token AI)`
+            : `${agentLabel}: OFF (click to use ${agentLabel})`
         }
         onClick={() => {
-          if (miroirAiBackend === "cursor") {
+          if (agentPicked) {
             writeMiroirAiBackend();
           } else {
-            writeMiroirAiBackend("cursor");
+            writeMiroirAiBackend("agent");
           }
         }}
         color={
-          miroirAiBackend === "cursor"
+          agentPicked
             ? miroirTheme.currentTheme.colors.warningLight || "orange"
             : undefined
         }
       >
         <ThemedIcon
           icon={
-            miroirAiBackend === "cursor"
+            agentPicked
               ? {
                   iconType: "mui",
                   name: "smart_toy",
