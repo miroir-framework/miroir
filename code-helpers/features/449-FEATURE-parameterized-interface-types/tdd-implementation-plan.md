@@ -16,7 +16,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisites: [#383](../383-FEATURE-transformer-choice-by-input-type/) ✅, [#453](../453-FEATURE-transformer-type-display/) ✅
 Working branch: `claude/449-payload-sub-choice` (from `_integration` 04ae35bb)
 
-**Resume note:** Slices 0-2 DONE.
+**Resume note:** Slices 0-3 DONE.
 
 ---
 
@@ -38,7 +38,7 @@ Out: full ML schema types, nested type parameters, `object<P>`, saving the chose
 | 0 | Characterize the interface check suites | ✅ | baseline runs of `fn.transformer.interfaceCheck`, `fn.transformer.interfaceWalk`, `ListTransformerPanel.unit` |
 | 1 | Declare and match `record` and `tuple` (tracer) | ✅ | `fn.transformer.interfaceCheck` new suites "record forms", "tuple forms", "payload values" |
 | 2 | Coarse inference, lift and walk for the new types | ✅ | `fn.transformer.interfaceCheck` "inference" / "lift" suites, `fn.transformer.interfaceWalk` cases |
-| 3 | Chooser: type parameter for `array` and `record` | ⬜ | `ListTransformerPanel.unit` cases |
+| 3 | Chooser: type parameter for `array` and `record` | ✅ | `ListTransformerPanel.unit` cases |
 | 4 | Chooser: tuple elements | ⬜ | `ListTransformerPanel.unit` cases |
 | 5 | One type formatter (G4) | ⬜ | `fn.transformer.interfaceCheck` "format" suite, `unit-453-transformer-types-display` |
 | 6 | Stock definition sweep (D11, after A's approval) | ⬜ | `stockTransformerDefinitions` suite, `fn.transformer.resultSchema` case |
@@ -88,7 +88,7 @@ No new model element. Tests go into existing suites:
 |---|---|
 | Interface check suites | `npm run testMiroir -w miroir-core -- --suites fn.transformer.interfaceCheck,fn.transformer.interfaceWalk --mode unit` |
 | Result schema suite (#88) | `npm run testMiroir -w miroir-core -- --suites fn.transformer.resultSchema --mode unit` |
-| Panel | `npm run testByFile -w miroir-standalone-app -- ListTransformerPanel.unit` |
+| Panel | `npm run testByFile -w miroir-standalone-app -- --no-bail ListTransformerPanel.unit` |
 | Schema rebuild | `npm run build -w miroir-app-miroir && npm run devBuild -w miroir-core` |
 | Type check | `npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json`, same for `miroir-standalone-app` |
 | Gate | `npm run lint`, `npm run test -w miroir-core -- ''` |
@@ -114,7 +114,7 @@ Run the three suites and `fn.transformer.resultSchema`; record pass counts here.
 ```bash
 npm run build -w miroir-app-miroir && npm run build -w miroir-core
 npm run testMiroir -w miroir-core -- --suites fn.transformer.interfaceCheck,fn.transformer.interfaceWalk,fn.transformer.resultSchema --mode unit
-npm run testByFile -w miroir-standalone-app -- ListTransformerPanel.unit
+npm run testByFile -w miroir-standalone-app -- --no-bail ListTransformerPanel.unit
 ```
 
 ### Realization
@@ -219,7 +219,7 @@ New suite "lift" (`liftInputOutputTypeToMlSchema`): `record<string>`, `tuple<str
 ```bash
 npm run build -w miroir-app-miroir && npm run build -w miroir-core
 npm run testMiroir -w miroir-core -- --suites fn.transformer.interfaceCheck,fn.transformer.interfaceWalk,fn.transformer.resultSchema --mode unit
-npm run testByFile -w miroir-standalone-app -- ListTransformerPanel.unit transformerTypesDisplay
+npm run testByFile -w miroir-standalone-app -- --no-bail ListTransformerPanel.unit transformerTypesDisplay
 npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui
 ```
@@ -231,12 +231,13 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui
 - `TransformerMlSchemaCheck.ts`: bare `record` lifts to a record of `any`; `liftPayloadToMlSchema` folded into `liftInputOutputTypeToMlSchema` (2.3).
 - `TransformerInterfaceCheck.ts`: `commonTypeParameter` for array values and tuple elements; `filterList` over a tuple outputs an array of the element type; a `returnValue` value is typed in the shape of its declared `mlSchema` (`inputOutputTypeOfValueAs`): an array declared as a tuple types element-wise, a plain object declared as a record types as the record of its values. Without it, `["a", 1]` with a `tuple<string, number>` schema typed as `array<any>` and failed, and `{a: 1}` against `record<string>` typed as `object` and passed.
 - RED: 11 failing cases (3 already passed: lifts that reuse the type's own branch, and array of plain objects / of `undefined` inference). GREEN: the three suites 226/226; miroir-core unit 2417 passed; lint clean; `ListTransformerPanel.unit` + `transformerTypesDisplay` 17/18 (the pre-existing failure only); `transformerChoiceByInputType.integ`, `transformerEditorChoiceByInputType.integ`, `listDisplayByTransformer.unit`, `typedValueObjectEditorSchema.unit` 21/21.
+- Scoped nonreg `smoke,core,ui`: 41/42. The one failure, `unit-321-tracked-assets`, came from committing the slice while the run was going: the guard's before-snapshot lists the asset files that differ from HEAD, and the commit made the edited MiroirTest file match HEAD. Same content hash before and after; commit after the run, not during it.
 
 ---
 
 ## Slice 3 — Chooser: type parameter for `array` and `record`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -266,13 +267,18 @@ A report designer on a Book list picks `array` or `record` and its type paramete
 **Nonreg scopes:** `smoke,ui`.
 
 ```bash
-npm run testByFile -w miroir-standalone-app -- ListTransformerPanel.unit
+npm run testByFile -w miroir-standalone-app -- --no-bail ListTransformerPanel.unit
 npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 npm run lint
 npm run nonreg:filesystem -- --runner shared --scope smoke,ui
 ```
 
 ### Realization
+
+- `ExpectedOutputTypeChooser.tsx` (new, same folder): main select on the type's kind (`array`, `record` for a parameterized type), then an "of" select (`list-transformer-expected-output-payload`) for `array` / `record` with the D2 values then the entities; parameter `any` stores the bare literal. `ListTransformerPanel` renders it and drops `INPUT_OUTPUT_BASE_TYPES` (3.3 done in this slice: the panel was already long). The stale doc comment above `formatMlSchemaNodeMismatch` is fixed.
+- Test mock: a `set-transformer-from-test` button sets the transformer the test put in `globalThis.__listTransformerToSet`, so each case builds its own `returnValue` with an `mlSchema`.
+- `testByFile` stops at the first failure: the pre-existing failing case runs first, so these runs need `--no-bail`.
+- RED: 5 new cases failing. GREEN: `ListTransformerPanel.unit` 22/23 (the pre-existing failure only); standalone `tsc` still 32 errors, none in the touched files; lint clean.
 
 ---
 
@@ -304,7 +310,7 @@ Element list in the chooser; value `{ type: "tuple", payload: [...] }`.
 **Nonreg scopes:** `smoke,ui`. Full nonreg here (after 2 slices since the last one).
 
 ```bash
-npm run testByFile -w miroir-standalone-app -- ListTransformerPanel.unit
+npm run testByFile -w miroir-standalone-app -- --no-bail ListTransformerPanel.unit
 npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 npm run lint
 npm run nonreg:filesystem -- --runner shared
@@ -343,7 +349,7 @@ Move `formatInputOutputTypeLabel` to miroir-core (`TransformerInterfaceCheck.ts`
 ```bash
 npm run build -w miroir-core
 npm run testMiroir -w miroir-core -- --suites fn.transformer.interfaceCheck --mode unit
-npm run testByFile -w miroir-standalone-app -- ListTransformerPanel.unit transformerTypesDisplay
+npm run testByFile -w miroir-standalone-app -- --no-bail ListTransformerPanel.unit transformerTypesDisplay
 npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui
 ```
 
@@ -390,7 +396,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core
 
 ### 7.1 Nonreg
 
-- Add `unit-449-parameterized-interface-types` (`npm run testByFile -w miroir-standalone-app -- ListTransformerPanel.unit`, scopes `["ui"]`) to `scripts/nonreg-manifest.json`. The core suites already run in `unit-miroir-core`.
+- Add `unit-449-parameterized-interface-types` (`npm run testByFile -w miroir-standalone-app -- --no-bail ListTransformerPanel.unit`, scopes `["ui"]`) to `scripts/nonreg-manifest.json`. The core suites already run in `unit-miroir-core`.
 - Full `npm run nonreg:filesystem -- --runner shared`.
 
 ### 7.2 Docs

@@ -95,6 +95,15 @@ vi.mock("../../src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditor.j
         </button>
         <button
           type="button"
+          data-testid="set-transformer-from-test"
+          onClick={() =>
+            formik.setFieldValue(formikValuePathAsString, (globalThis as any).__listTransformerToSet)
+          }
+        >
+          Set transformer from test
+        </button>
+        <button
+          type="button"
           data-testid="set-failing-transformer"
           onClick={() =>
             formik.setFieldValue(formikValuePathAsString, {
@@ -553,6 +562,101 @@ describe("ListTransformerPanel — list section integration", () => {
     fireEvent.change(screen.getByTestId("list-transformer-expected-output-type"), {
       target: { value: "number" },
     });
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), false);
+  });
+
+  // #449: array / record type parameter.
+  const setTransformer = (transformer: unknown) => {
+    (globalThis as any).__listTransformerToSet = transformer;
+    fireEvent.click(screen.getByTestId("set-transformer-from-test"));
+  };
+  const returnValueWithMlSchema = (value: unknown, mlSchema: unknown) => ({
+    interpolation: "runtime",
+    transformerType: "returnValue",
+    mlSchema,
+    value,
+  });
+  const chooseExpectedOutput = (value: string) =>
+    fireEvent.change(screen.getByTestId("list-transformer-expected-output-type"), {
+      target: { value },
+    });
+  const chooseTypeParameter = (value: string) =>
+    fireEvent.change(screen.getByTestId("list-transformer-expected-output-payload"), {
+      target: { value },
+    });
+
+  it("offers record, with no type parameter select for an entity or a base type (#449)", () => {
+    renderBookListSection();
+    fireEvent.click(getTransformerToggle());
+
+    const chooser = screen.getByTestId("list-transformer-expected-output-type") as HTMLSelectElement;
+    expect(Array.from(chooser.options).map((o) => o.value)).toEqual(
+      expect.arrayContaining(["array", "record"]),
+    );
+    expect(screen.queryByTestId("list-transformer-expected-output-payload")).not.toBeInTheDocument();
+    chooseExpectedOutput("string");
+    expect(screen.queryByTestId("list-transformer-expected-output-payload")).not.toBeInTheDocument();
+  });
+
+  it("choosing array shows its type parameter select at any (#449)", () => {
+    renderBookListSection();
+    fireEvent.click(getTransformerToggle());
+    chooseExpectedOutput("array");
+
+    expect(
+      (screen.getByTestId("list-transformer-expected-output-type") as HTMLSelectElement).value,
+    ).toBe("array");
+    const parameter = screen.getByTestId(
+      "list-transformer-expected-output-payload",
+    ) as HTMLSelectElement;
+    expect(parameter.value).toBe("any");
+    const parameterOptions = Array.from(parameter.options).map((o) => o.value);
+    expect(parameterOptions).toEqual(
+      expect.arrayContaining(["any", "undefined", "string", "object", entityBook.uuid]),
+    );
+    expect(parameterOptions).not.toContain("array");
+    expect(parameterOptions).not.toContain("record");
+  });
+
+  it("expected array of string: an array of string fits, an array of number is bordered (#449)", () => {
+    renderBookListSection();
+    fireEvent.click(getTransformerToggle());
+    chooseExpectedOutput("array");
+    chooseTypeParameter("string");
+    expect(
+      (screen.getByTestId("list-transformer-expected-output-type") as HTMLSelectElement).value,
+    ).toBe("array");
+
+    setTransformer(returnValueWithMlSchema(["a"], { type: "array", definition: { type: "string" } }));
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), false);
+
+    setTransformer(returnValueWithMlSchema([1], { type: "array", definition: { type: "number" } }));
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), true);
+  });
+
+  it("expected record of string: the identity (Book) is bordered, a record of string fits (#449)", () => {
+    renderBookListSection();
+    fireEvent.click(getTransformerToggle());
+    chooseExpectedOutput("record");
+    chooseTypeParameter("string");
+
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), true);
+
+    setTransformer(
+      returnValueWithMlSchema({ a: "x" }, { type: "record", definition: { type: "string" } }),
+    );
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), false);
+  });
+
+  it("switching back to the row entity drops the type parameter and restores the default (#449)", () => {
+    renderBookListSection();
+    fireEvent.click(getTransformerToggle());
+    chooseExpectedOutput("array");
+    chooseTypeParameter("string");
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), true);
+
+    chooseExpectedOutput(entityBook.uuid);
+    expect(screen.queryByTestId("list-transformer-expected-output-payload")).not.toBeInTheDocument();
     expectOrangeBorder(screen.getByTestId("list-transformer-editor"), false);
   });
 

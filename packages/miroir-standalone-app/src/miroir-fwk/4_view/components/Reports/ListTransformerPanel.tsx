@@ -38,6 +38,7 @@ import {
 } from "./listDisplayByTransformer.js";
 import { hasDisplayableTransformationResult } from "../TransformerEditor/TransformationResultPanel.js";
 import { ReportInstanceLink } from "../ReportInstanceLink.js";
+import { ExpectedOutputTypeChooser } from "./ExpectedOutputTypeChooser.js";
 import {
   TransformerNamedBindings,
   TransformerTitleSignature,
@@ -49,7 +50,6 @@ import {
   ThemedHeaderSection,
   ThemedLabel,
   ThemedLabeledEditor,
-  ThemedSelectWithPortal,
   ThemedSwitch,
   ThemedText,
   ThemedTitle,
@@ -87,18 +87,7 @@ export interface ListTransformerPanelProps {
   transformerParams?: Record<string, any>;
 }
 
-const INPUT_OUTPUT_BASE_TYPES = [
-  "any",
-  "undefined",
-  "bigint",
-  "number",
-  "string",
-  "boolean",
-  "object",
-  "array",
-] as const;
-
-/** Human-readable label for an input/output type (entity uuid → entity name when known). */
+/** #251: one line per mlSchema failure of a transformer node. */
 function formatMlSchemaNodeMismatch(
   node: TransformerMlSchemaNodeReport,
   schemaNameResolver?: (schema: MlElement) => string | undefined,
@@ -476,32 +465,13 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
         <ThemedLabeledEditor
           labelElement={<ThemedLabel>Expected output type:</ThemedLabel>}
           editor={
-            <ThemedSelectWithPortal
-              id="list-transformer-expected-output-type"
-              data-testid="list-transformer-expected-output-type"
-              value={typeof expectedOutputType === "string" ? expectedOutputType : "any"}
-              onChange={(event) =>
-                setChosenOutputType(
-                  event.target.value === defaultExpectedOutputType
-                    ? undefined
-                    : (event.target.value as InputOutputType),
-                )
+            <ExpectedOutputTypeChooser
+              value={expectedOutputType}
+              onChange={(type) =>
+                setChosenOutputType(type === defaultExpectedOutputType ? undefined : type)
               }
-              minWidth="160px"
-            >
-              {INPUT_OUTPUT_BASE_TYPES.map((baseType) => (
-                <option key={baseType} value={baseType}>
-                  {baseType}
-                </option>
-              ))}
-              {[...(entities ?? [])]
-                .sort((a, b) => a.name.localeCompare(b.name))
-                .map((entity) => (
-                  <option key={entity.uuid} value={entity.uuid}>
-                    {entity.name}
-                  </option>
-                ))}
-            </ThemedSelectWithPortal>
+              entities={entities}
+            />
           }
         />
         <ThemedLabeledEditor
