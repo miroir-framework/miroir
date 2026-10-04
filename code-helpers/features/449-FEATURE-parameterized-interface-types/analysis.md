@@ -53,7 +53,7 @@ All **Accepted** by A on 2026-10-04, except D11.
 | D4 | Bare literals: `object` (any object), `array` (= `array<any>`), `record` (= `record<any>`, new). No bare `tuple`. | Bare `tuple` (no arity, same as `array<any>`). | G1, G2 |
 | D5 | Representation: `{ "type": "array" \| "record", "payload"?: P }` and `{ "type": "tuple", "payload": [P1, ..., Pn] }`, two union arms of `inputOutputType`. An absent payload is `any`. | `items` key for tuples (Q8). | G2 |
 | D6 | Compatibility rules of §3.1. A type parameter follows the same rules as a top-level type, restricted to the D2 values. | | G1, G3 |
-| D7 | The old `{ "type": "object", "payload" }` form leaves the schema. Its 3 MiroirTests move to `record`. | Keeping it as an alias. | G2 |
+| D7 | The old `{ "type": "object", "payload" }` form leaves the schema. Its 4 MiroirTests move to `record`. | Keeping it as an alias. | G2 |
 | D8 | Inference, lift and walk handle the new types coarsely (§3.2). Any ML construct without a coarse counterpart infers `any`. | Detailed ML typing (A, Q13). | G3 |
 | D9 | Chooser: the main select lists `any, undefined, bigint, number, string, boolean, object, array, record, tuple`, then the entities by name. `array` and `record` show a second select for P, defaulting to `any`. `tuple` shows one select per element with + and − buttons, starting at `tuple<any, any>`, minimum 1 element. A P of `any` is stored as the bare literal. | One flat select of every combination; a cascading menu (Q2); P defaulting to the row entity (Q4). | G1 |
 | D10 | One formatter, `formatInputOutputTypeLabel`, moves to miroir-core and prints tuples. The list panel, the editor badges and the editor's mismatch titles use it, replacing `safeStringify` in `TransformerEditor.tsx`. | Keep per-component formatting. | G4 |
@@ -135,7 +135,7 @@ Generated (`miroirFundamentalType.ts`): `InputOutputPayloadType`, `InputOutputTy
 ### 4.2 Uses of the object form
 
 - No stock TransformerDefinition declares an object form (§4.3).
-- `fn.transformer.interfaceCheck` (`c9f0a3e1-7b2d-4e6a-8f1c-5d3b9a7e2c84`), suite "object and array payload forms" (13 cases): 3 use `{ "type": "object", "payload" }`.
+- `fn.transformer.interfaceCheck` (`c9f0a3e1-7b2d-4e6a-8f1c-5d3b9a7e2c84`), suite "object and array payload forms" (13 cases): 4 use `{ "type": "object", "payload" }` (grilling round 2 said 3).
 - Code that builds object forms: `inputOutputTypeOfValue` and `listCombinatorOutput` (`array` only), `inferTransformerOutputTypeFromSchema` (`array` only), `TransformerEditor.tsx` none since #453 (it calls `inputOutputTypeOfValue`).
 
 ### 4.3 Stock declarations

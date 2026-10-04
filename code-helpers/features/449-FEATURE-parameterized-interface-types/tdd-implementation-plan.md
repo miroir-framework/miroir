@@ -58,7 +58,7 @@ Analysis decision record, binding for this plan.
 | D4 | Bare literals `object`, `array`, `record` (new); no bare `tuple` | G1, G2 |
 | D5 | `{ type: "array" \| "record", payload?: P }`, `{ type: "tuple", payload: P[] }` | G2 |
 | D6 | Compatibility per analysis §3.1, payloads by the same relation | G1, G3 |
-| D7 | Object form removed; its 3 MiroirTests move to `record` | G2 |
+| D7 | Object form removed; its 4 MiroirTests move to `record` | G2 |
 | D8 | Coarse inference, lift and walk per analysis §3.2 | G3 |
 | D9 | Chooser: main select + parameter select (`array`, `record`), element selects with + and − (`tuple`, start `<any, any>`, min 1); P `any` stored as the bare literal | G1 |
 | D10 | `formatInputOutputTypeLabel` in miroir-core, used by the panel and the editor | G4 |
@@ -134,7 +134,7 @@ A transformer definition author can declare `record`, `record<P>`, `tuple<P1..Pn
 ### 1.1 RED
 
 `fn.transformer.interfaceCheck`:
-- Suite "object and array payload forms" renamed "array and record payload forms"; its 3 object-form cases rewritten with `record` (D7).
+- Suite "object and array payload forms" renamed "array and record payload forms"; its 4 object-form cases rewritten with `record` (D7).
 - New suite "record forms": every `record` row of §3.1 (entity ⇒ `record<any>` yes, entity ⇒ `record<string>` no, `record<string>` ⇒ `object` yes, `object` ⇒ `record` yes, `object` ⇒ `record<string>` no, `record<string>` ⇒ `record<number>` no, bare `record` ⇒ `record<Book>` yes by `any`).
 - New suite "tuple forms": `tuple<string, number>` ⇒ `array<any>` yes, ⇒ `array<string>` no, `tuple<string, string>` ⇒ `array<string>` yes, `array<string>` ⇒ `tuple<string>` no, arity mismatch no, element-wise match yes, `tuple<...>` ⇒ `object` no.
 - New suite "payload values": `array<Book>` ⇒ `array<object>` yes, `array<object>` ⇒ `array<Book>` no, `array<undefined>` ⇒ `array<undefined>` yes, `array<undefined>` ⇒ `array<string>` no.
