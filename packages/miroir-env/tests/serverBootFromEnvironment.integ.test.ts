@@ -1,8 +1,9 @@
 // #321 Slice 3: the server boots from the selected environment. Admin data is a copy seeded in
 // .miroir/<environment>/, the Deployment and AdminApplication rows are generated from the
 // definition, and writes to Admin data (rights, ViewParams) leave the package assets untouched.
+// An Admin data section left without ViewParams gets the seed ones back at start.
 // vitest, not MiroirTest: this is boot wiring on a real DomainController and filesystem stores.
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -134,6 +135,22 @@ describe("server boot from the dev environment", () => {
       `deployment ${DESIGNER_DEPLOYMENT} (Designer) is in the Admin data of environment "dev" but not in its definition: it is opened anyway; record it with "miroir-env import" or remove it with "miroir-env prune"`,
     ]);
     expect(second.reconciliation.opened).toContain(DESIGNER_DEPLOYMENT);
+    expect(contentHashes(path.join(root, "packages"))).toEqual(packagesBefore);
+  }, 120000);
+
+  it("restores the default ViewParams from the Admin seed when Admin data has none left", async () => {
+    rmSync(path.join(adminData, ENTITY_VIEW_PARAMS, `${DEFAULT_VIEW_PARAMS}.json`));
+    expect(readRows(path.join(adminData, ENTITY_VIEW_PARAMS))).toEqual({});
+
+    const third = await boot(root);
+    const seed = readRows(path.join(root, "packages/miroir-app-admin/assets/admin_data", ENTITY_VIEW_PARAMS));
+    expect(readRows(path.join(adminData, ENTITY_VIEW_PARAMS))).toEqual(seed);
+    expect(third.reconciliation.changes).toEqual([
+      `restored ViewParams ${DEFAULT_VIEW_PARAMS} (Default ViewParams) from the Admin seed`,
+    ]);
+
+    const fourth = await boot(root);
+    expect(fourth.reconciliation.changes).toEqual([]);
     expect(contentHashes(path.join(root, "packages"))).toEqual(packagesBefore);
   }, 120000);
 });

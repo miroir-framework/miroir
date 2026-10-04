@@ -1,5 +1,9 @@
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import path from "node:path";
+
 import {
   Action2Error,
+  applicationAssetsDirectory,
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   ENTITY_ADMIN_APPLICATION_UUID,
@@ -32,6 +36,13 @@ const ADMIN_APPLICATION = "55af124e-8c05-4bae-a3ef-0933d41daa92";
 const INSTANCE_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";
 const QUERY_ENDPOINT = "9e404b3c-368c-40cb-be8b-e3c28550c25e";
 const STORE_MANAGEMENT_ENDPOINT = "bbd08cbb-79ff-4539-b91f-7a14f15ac55f";
+const ENTITY_VIEW_PARAMS_UUID = "b9765b7c-b614-4126-a0e2-634463f99937";
+
+/**
+ * Admin data entities the UI needs at least one row of: an Admin data section left without one
+ * gets the rows of the application package seed back at start.
+ */
+const REQUIRED_ADMIN_ENTITIES = [{ uuid: ENTITY_VIEW_PARAMS_UUID, name: "ViewParams" }];
 
 /** Opened first, with the platform's default application → deployment map. */
 const BOOT_APPLICATIONS = ["admin", "miroir"];
@@ -137,6 +148,17 @@ export async function openEnvironmentBootDeployments(
 }
 
 async function queryAdminRows(domainController: DomainControllerInterface) {
+  const rows = await queryAdminEntities(domainController, {
+    deployments: ENTITY_DEPLOYMENT_UUID,
+    applications: ENTITY_ADMIN_APPLICATION_UUID,
+  });
+  return { deployments: rows.deployments, applications: rows.applications };
+}
+
+async function queryAdminEntities(
+  domainController: DomainControllerInterface,
+  entities: Record<string, string>,
+): Promise<Record<string, AdminRow[]>> {
   const result = await domainController.handleBoxedExtractorOrQueryAction(
     {
       actionType: "runBoxedQueryAction",
@@ -148,10 +170,12 @@ async function queryAdminRows(domainController: DomainControllerInterface) {
         query: {
           application: ADMIN_APPLICATION,
           queryType: "boxedQueryWithExtractorCombinerTransformer",
-          extractors: {
-            deployments: { extractorOrCombinerType: "extractorInstancesByEntity", parentUuid: ENTITY_DEPLOYMENT_UUID },
-            applications: { extractorOrCombinerType: "extractorInstancesByEntity", parentUuid: ENTITY_ADMIN_APPLICATION_UUID },
-          },
+          extractors: Object.fromEntries(
+            Object.entries(entities).map(([key, parentUuid]) => [
+              key,
+              { extractorOrCombinerType: "extractorInstancesByEntity", parentUuid },
+            ]),
+          ),
         },
       },
     },
@@ -159,10 +183,54 @@ async function queryAdminRows(domainController: DomainControllerInterface) {
     defaultMetaModelEnvironment,
   );
   if (result instanceof Action2Error) {
-    throw new EnvironmentError(`could not read the Deployment rows of Admin: ${result.errorMessage}`);
+    throw new EnvironmentError(`could not read the Admin rows of ${Object.keys(entities).join(", ")}: ${result.errorMessage}`);
   }
-  const element = (result as { returnedDomainElement?: { deployments?: unknown; applications?: unknown } }).returnedDomainElement;
-  return { deployments: rowsOf(element?.deployments), applications: rowsOf(element?.applications) };
+  const element = (result as { returnedDomainElement?: Record<string, unknown> }).returnedDomainElement;
+  return Object.fromEntries(Object.keys(entities).map((key) => [key, rowsOf(element?.[key])]));
+}
+
+/** The rows of an Admin data entity in the package seed of the admin application, if any. */
+function adminSeedRows(resolved: ResolvedEnvironment, entityUuid: string): EntityInstance[] {
+  const admin = resolved.environment.applications?.admin;
+  if (!admin?.package) {
+    return [];
+  }
+  const directory = path.join(
+    resolved.repositoryRoot,
+    applicationAssetsDirectory("admin", { ...admin, package: admin.package }, "data", resolved.environment.packagesDirectory),
+    entityUuid,
+  );
+  if (!existsSync(directory)) {
+    return [];
+  }
+  return readdirSync(directory)
+    .filter((file) => file.endsWith(".json"))
+    .map((file) => JSON.parse(readFileSync(path.join(directory, file), "utf-8")) as EntityInstance);
+}
+
+/**
+ * Gives back the seed rows of every required Admin entity that has no row left in Admin data
+ * (e.g. the default ViewParams, without which the Settings page and the sidebar have nothing to
+ * read). Returns the restored rows, as change descriptions.
+ */
+async function restoreRequiredAdminRows(
+  domainController: DomainControllerInterface,
+  resolved: ResolvedEnvironment,
+): Promise<string[]> {
+  const existing = await queryAdminEntities(
+    domainController,
+    Object.fromEntries(REQUIRED_ADMIN_ENTITIES.map((entity) => [entity.name, entity.uuid])),
+  );
+  const changes: string[] = [];
+  for (const entity of REQUIRED_ADMIN_ENTITIES) {
+    if (existing[entity.name].length > 0) {
+      continue;
+    }
+    const rows = adminSeedRows(resolved, entity.uuid);
+    await persistAdminRows(domainController, "createInstance", entity.uuid, rows);
+    changes.push(...rows.map((row) => `restored ${entity.name} ${row.uuid} (${(row as AdminRow).name}) from the Admin seed`));
+  }
+  return changes;
 }
 
 /** Writes the created and rewritten rows of one entity. */
@@ -194,6 +262,7 @@ export async function reconcileEnvironmentDeployments(
   const comparison = compareAdminRows(resolved, await queryAdminRows(domainController));
   await applyChanges(domainController, { uuid: ENTITY_ADMIN_APPLICATION_UUID, name: "AdminApplication" }, comparison.changes);
   await applyChanges(domainController, { uuid: ENTITY_DEPLOYMENT_UUID, name: "Deployment" }, comparison.changes);
+  const restored = await restoreRequiredAdminRows(domainController, resolved);
   const deployments = comparison.rows.deployments as Deployment[];
 
   const applicationDeploymentMap: ApplicationDeploymentMap = Object.fromEntries(
@@ -234,7 +303,7 @@ export async function reconcileEnvironmentDeployments(
     deployments,
     applicationDeploymentMap,
     opened,
-    changes: comparison.changes.map(appliedChange),
+    changes: [...comparison.changes.map(appliedChange), ...restored],
     warnings,
   };
 }
