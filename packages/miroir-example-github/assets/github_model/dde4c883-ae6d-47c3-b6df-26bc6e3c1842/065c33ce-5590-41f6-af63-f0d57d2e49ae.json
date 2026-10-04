@@ -14,6 +14,14 @@
         "items": [
           {
             "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Connect",
+            "section": "data",
+            "selfApplication": "6c4edcb2-e165-407a-b728-fbf8a18b6bf7",
+            "reportUuid": "295d0905-3480-49cd-9b92-6318a96dce01",
+            "icon": "key"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
             "label": "Repositories",
             "section": "data",
             "selfApplication": "6c4edcb2-e165-407a-b728-fbf8a18b6bf7",

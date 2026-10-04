@@ -14,6 +14,7 @@ export declare const selfApplicationModelBranchGitHubMasterBranch: any;
 export declare const githubInitApplicationVersion: EntityInstance;
 export declare const menuDefaultGitHub: Menu;
 export declare const githubServiceEndpoint: EndpointDefinition;
+export declare const reportGitHubConnect: Report;
 export declare const reportGitHubRepositories: Report;
 export declare const queryGitHubListMyRepositories: any;
 export declare const defaultGitHubAppModel: MetaModel;
@@ -21,3 +22,8 @@ export declare function getDefaultGitHubModelEnvironment(
   defaultMiroirMetaModelParam: MetaModel,
   githubDeploymentUuid: string,
 ): MiroirModelEnvironment;
+export declare const testConfiguration_githubModel: {
+  uuid: string;
+  testbedModel: MetaModel;
+  testbedEntitiesAndInstances: [];
+};

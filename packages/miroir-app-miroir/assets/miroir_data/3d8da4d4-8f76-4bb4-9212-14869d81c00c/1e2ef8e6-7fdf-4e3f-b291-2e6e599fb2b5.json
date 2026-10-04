@@ -467,29 +467,64 @@
           },
           "payload": {
             "type": "object",
+            "tag": {
+              "value": {
+                "canBeTemplate": true
+              }
+            },
             "definition": {
               "application": {
-                "type": "uuid"
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
               },
               "endpointUuid": {
-                "type": "uuid"
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
               },
               "credential": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
               },
               "probeOperationId": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
               },
               "probeParameters": {
                 "type": "record",
                 "optional": true,
                 "definition": {
                   "type": "any"
+                },
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
                 }
               },
               "probeOnly": {
                 "type": "boolean",
-                "optional": true
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
               }
             }
           }

@@ -5,5 +5,11 @@
   "name": "GitHub",
   "defaultLabel": "The GitHub selfApplication.",
   "description": "Lists the repositories of the connected GitHub user through an external-service Endpoint.",
-  "versioningMode": "unversioned"
+  "versioningMode": "unversioned",
+  "homePageUrl": {
+    "label": "Connect to GitHub",
+    "section": "data",
+    "selfApplication": "6c4edcb2-e165-407a-b728-fbf8a18b6bf7",
+    "reportUuid": "295d0905-3480-49cd-9b92-6318a96dce01"
+  }
 }

@@ -10,6 +10,7 @@ import {
   type SelfApplication,
 } from "miroir-core";
 
+import reportGitHubConnectJson from "../assets/github_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/295d0905-3480-49cd-9b92-6318a96dce01.json" with { type: "json" };
 import reportGitHubRepositoriesJson from "../assets/github_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/9bd8a57a-19e4-4911-b4ae-d1bbebbde338.json" with { type: "json" };
 import queryGitHubListMyRepositoriesJson from "../assets/github_model/e4320b9e-ab45-4abe-85d8-359604b3c62f/ae2b3612-b960-43f1-9e7a-17ef61ef725b.json" with { type: "json" };
 import githubServiceEndpointJson from "../assets/github_model/3d8da4d4-8f76-4bb4-9212-14869d81c00c/0c642e2a-3922-4ce7-99a6-88f91f6a103f.json" with { type: "json" };
@@ -22,6 +23,7 @@ export const selfApplicationModelBranchGitHubMasterBranch =
   selfApplicationModelBranchGitHubMasterBranchJson;
 export const menuDefaultGitHub = menuDefaultGitHubJson as Menu;
 export const githubServiceEndpoint = githubServiceEndpointJson as EndpointDefinition;
+export const reportGitHubConnect = reportGitHubConnectJson as Report;
 export const reportGitHubRepositories = reportGitHubRepositoriesJson as Report;
 export const queryGitHubListMyRepositories = queryGitHubListMyRepositoriesJson;
 
@@ -47,7 +49,7 @@ export const defaultGitHubAppModel: MetaModel = {
   entityVersions: [],
   endpoints: [githubServiceEndpoint],
   menus: [menuDefaultGitHub],
-  reports: [reportGitHubRepositories],
+  reports: [reportGitHubConnect, reportGitHubRepositories],
   runners: [],
   tests: [],
   themes: [],
@@ -70,6 +72,16 @@ export const defaultGitHubAppModel: MetaModel = {
   storedQueries: [queryGitHubListMyRepositories as Query],
   mlSchemas: [],
   applicationVersions: [],
+};
+
+/**
+ * Playfield of the GitHub report MiroirTests (#472): the GitHub model, no instances.
+ * Registered by uuid in the standalone app's TestConfiguration index.
+ */
+export const testConfiguration_githubModel = {
+  uuid: "3efa3e53-f9ff-4922-85e6-e94f35df8f0d",
+  testbedModel: defaultGitHubAppModel,
+  testbedEntitiesAndInstances: [],
 };
 
 export function getDefaultGitHubModelEnvironment(

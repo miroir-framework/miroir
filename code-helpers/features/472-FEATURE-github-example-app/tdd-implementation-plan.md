@@ -229,7 +229,7 @@ Deviation: the RED case is `finish-open-report` in `multistepProcess.274.integ.t
 
 ## Slice 6 — GitHub home page: connect walk
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 **Goal (G1):** the GitHub app opens on the multistep Report `295d0905-…`: token, Next, "Connected as <login>", Finish, repositories.
 
@@ -246,6 +246,16 @@ npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesyst
 npm run testByFile -w miroir-example-github -- tests/modelValidation.unit.test.ts
 npm run nonreg:filesystem -- --runner shared --scope smoke,ui,external
 ```
+
+**Realization:** `report.githubConnect` passes (2/2) with two suites, because a fake HTTP answer matches on method and URL only, not on the token: "refused token" (GET `/user` answers 401; the token step shows the error and stays) and "accepted token" (the account shows on step 2; Finish saves the token and the repositories Report lists the fixture repositories). The SelfApplication's `homePageUrl` and a "Connect" menu item open Report `295d0905-…`.
+
+What the walk needed besides the Report:
+- A GitHub testbed for report MiroirTests: the `githubTestbedInitParams` literal on the MiroirTest Entity (and its EntityVersion), its case in `testbedInitApplicationParametersIndex.ts`, and `testConfiguration_githubModel` (the package's `defaultGitHubAppModel`, no instances), built in TypeScript in `miroir-example-github` and registered in `testConfigurationInstanceIndex.ts` instead of a JSON TestConfiguration that would copy the model.
+- A wrapping key in report MiroirTests (analysis §6 risk confirmed): `runReportTest` sets a test key for a fake-HTTP suite when the session has none and clears it after the leaf.
+- `setExternalServiceCredential` payload fields are `canBeTemplate`, like `connectExternalService`, so a Report's `onNext` and Finish can read the typed token from the step bag.
+- `jsonReportSection` renders with `data-testid="json-report-section"`, so a step can check the account it shows.
+
+Deviations: step 2 shows the whole `/user` body in a `jsonReportSection` rather than a "Connected as <login>" line (no runtime transformer needed). The repositories URL in the fake answers is `?sort=updated&per_page=100`: parameters follow the operation's order in the OpenAPI document. The #274 seed inventory counts 90 Reports, 3 multistep.
 
 ## Slice 7 — Live test, nonreg steps, docs, cleanup
 

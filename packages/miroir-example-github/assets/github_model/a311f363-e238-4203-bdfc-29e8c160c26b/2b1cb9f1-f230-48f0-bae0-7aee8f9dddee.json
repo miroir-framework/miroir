@@ -1,0 +1,239 @@
+{
+  "uuid": "2b1cb9f1-f230-48f0-bae0-7aee8f9dddee",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "selfApplication": "6c4edcb2-e165-407a-b728-fbf8a18b6bf7",
+  "branch": "1625a4bc-bf32-40b3-b3ef-243a6a0dd637",
+  "name": "report.githubConnect",
+  "description": "The GitHub app's Connect Report, with GitHub answered by fake HTTP responses: a refused token shows GitHub's refusal on the token step; an accepted token shows the GitHub account, and Finish saves it and opens the repositories Report.",
+  "tags": [
+    "integ",
+    "ui",
+    "report"
+  ],
+  "issue": "472",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "report.githubConnect",
+    "runTarget": {
+      "applicationUuid": "6c4edcb2-e165-407a-b728-fbf8a18b6bf7",
+      "applicationName": "GitHub",
+      "deploymentUuid": "752c2412-a2cc-4632-94f3-937168969998"
+    },
+    "testConfiguration": "3efa3e53-f9ff-4922-85e6-e94f35df8f0d",
+    "testbedInitApplicationParameters": "githubTestbedInitParams",
+    "miroirTests": [
+      {
+        "miroirTestType": "reportTestSuite",
+        "miroirTestLabel": "refused token",
+        "report": {
+          "application": "6c4edcb2-e165-407a-b728-fbf8a18b6bf7",
+          "applicationSection": "data",
+          "reportUuid": "295d0905-3480-49cd-9b92-6318a96dce01"
+        },
+        "fakeHttpResponses": [
+          {
+            "method": "GET",
+            "url": "https://api.github.com/user",
+            "status": 401,
+            "body": {
+              "message": "Bad credentials",
+              "status": "401"
+            }
+          }
+        ],
+        "miroirTests": [
+          {
+            "miroirTestType": "reportTest",
+            "miroirTestLabel": "shows GitHub's refusal and stays on the token step",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the GitHub token step",
+                "target": {
+                  "byTestId": "multistep-step-label"
+                },
+                "containsHtml": "GitHub token",
+                "timeout": 15000
+              },
+              {
+                "step": "change",
+                "label": "type the token",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "token.token"
+                },
+                "value": "ghp_revoked"
+              },
+              {
+                "step": "click",
+                "label": "Next",
+                "target": {
+                  "byTestId": "multistep-next"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "GitHub's refusal",
+                "target": {
+                  "byTestId": "multistep-finish-error"
+                },
+                "containsHtml": "401",
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "the GitHub token step",
+                "target": {
+                  "byTestId": "multistep-step-label"
+                },
+                "containsHtml": "GitHub token",
+                "timeout": 5000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "reportTestSuite",
+        "miroirTestLabel": "accepted token",
+        "report": {
+          "application": "6c4edcb2-e165-407a-b728-fbf8a18b6bf7",
+          "applicationSection": "data",
+          "reportUuid": "295d0905-3480-49cd-9b92-6318a96dce01"
+        },
+        "fakeHttpResponses": [
+          {
+            "method": "GET",
+            "url": "https://api.github.com/user",
+            "body": {
+              "login": "octocat",
+              "id": 1,
+              "name": "The Octocat",
+              "avatar_url": "https://example.test/octocat.png",
+              "html_url": "https://github.com/octocat"
+            }
+          },
+          {
+            "method": "GET",
+            "url": "https://api.github.com/user/repos?sort=updated&per_page=100",
+            "body": [
+              {
+                "id": 11,
+                "name": "hello-miroir",
+                "full_name": "octocat/hello-miroir",
+                "owner": {
+                  "login": "octocat",
+                  "id": 1,
+                  "avatar_url": "https://example.test/octocat.png",
+                  "html_url": "https://github.com/octocat"
+                },
+                "private": false,
+                "html_url": "https://github.com/octocat/hello-miroir",
+                "description": null,
+                "language": "TypeScript",
+                "stargazers_count": 3,
+                "updated_at": "2026-10-01T10:00:00Z"
+              },
+              {
+                "id": 12,
+                "name": "private-notes",
+                "full_name": "octocat/private-notes",
+                "owner": {
+                  "login": "octocat",
+                  "id": 1,
+                  "avatar_url": "https://example.test/octocat.png",
+                  "html_url": "https://github.com/octocat"
+                },
+                "private": true,
+                "html_url": "https://github.com/octocat/private-notes",
+                "description": null,
+                "language": null,
+                "stargazers_count": 3,
+                "updated_at": "2026-10-01T10:00:00Z"
+              }
+            ]
+          }
+        ],
+        "miroirTests": [
+          {
+            "miroirTestType": "reportTest",
+            "miroirTestLabel": "shows the account, saves the token and lists the repositories",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the GitHub token step",
+                "target": {
+                  "byTestId": "multistep-step-label"
+                },
+                "containsHtml": "GitHub token",
+                "timeout": 15000
+              },
+              {
+                "step": "change",
+                "label": "type the token",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "token.token"
+                },
+                "value": "ghp_good-token"
+              },
+              {
+                "step": "click",
+                "label": "Next",
+                "target": {
+                  "byTestId": "multistep-next"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the Connected GitHub account step",
+                "target": {
+                  "byTestId": "multistep-step-label"
+                },
+                "containsHtml": "Connected GitHub account",
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "the connected login",
+                "target": {
+                  "byTestId": "json-report-section"
+                },
+                "timeout": 5000,
+                "containsHtml": "\"login\": \"octocat\""
+              },
+              {
+                "step": "click",
+                "label": "Finish",
+                "target": {
+                  "byTestId": "multistep-finish"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the repositories Report lists the account's repositories",
+                "target": {
+                  "byText": {
+                    "regex": "^octocat/hello-miroir$"
+                  }
+                },
+                "timeout": 15000
+              },
+              {
+                "step": "expectElement",
+                "label": "the token is nowhere in the page",
+                "target": {
+                  "byText": {
+                    "regex": "ghp_good-token"
+                  }
+                },
+                "present": false
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
