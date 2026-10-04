@@ -9,6 +9,7 @@ Examples:
   python scripts/run-nonreg.py --tier unit --fail-fast
   npm run nonreg -- --tier default --run-all
   npm run nonreg -- --storage filesystem
+  npm run nonreg -- --storage filesystem --local-cache zustand
   python scripts/run-nonreg.py --compare test-results/nonreg/<stamp>/summary.json
 """
 
@@ -39,6 +40,13 @@ ENVIRONMENTS_DIR = ROOT / "environments"
 STORAGES = ("sql", "filesystem", "indexedDb", "mongodb")
 EMULATED_PROFILE_PREFIX = "emulatedServer-"
 REQUIRES_STORAGE = "storage"
+
+# #446: `--local-cache <c>` builds the tests' DomainControllers on miroir-localcache-<c>. The runner
+# passes it to every step in MIROIR_TEST_LOCAL_CACHE, read by the test setup (setupMiroirTest,
+# IntegrationTestSession). Without the option, steps run on redux.
+LOCAL_CACHES = ("redux", "zustand")
+DEFAULT_LOCAL_CACHE = "redux"
+LOCAL_CACHE_ENV = "MIROIR_TEST_LOCAL_CACHE"
 
 TierName = Literal["unit", "default", "full"]
 TIER_ORDER: dict[str, int] = {"unit": 0, "default": 1, "full": 2}
@@ -665,6 +673,7 @@ def write_summary_md(summary: dict[str, Any], path: Path, timings: dict[str, Any
         f"- Mode: `{summary['mode']}`",
         f"- Profile: `{summary['profile']}`",
         f"- Storage: `{summary.get('storage') or '(not an emulatedServer profile)'}`",
+        f"- Local cache: `{summary.get('local_cache') or DEFAULT_LOCAL_CACHE}`",
         *([f"- Scopes: `{', '.join(summary['scopes'])}`"] if summary.get("scopes") else []),
         f"- Started: `{summary['started_at']}`",
         f"- Finished: `{summary['finished_at']}`",
@@ -913,6 +922,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Integration profile (default: manifest defaultProfile)",
     )
     p.add_argument(
+        "--local-cache",
+        choices=LOCAL_CACHES,
+        default=None,
+        help=f"LocalCache implementation of the tests' DomainControllers (default: {DEFAULT_LOCAL_CACHE}) (#446)",
+    )
+    p.add_argument(
         "--only",
         default=None,
         help="Comma-separated step ids to run (still filtered by --tier)",
@@ -996,6 +1011,9 @@ def main(argv: list[str] | None = None) -> int:
     else:
         profile = args.profile or manifest.get("defaultProfile") or "emulatedServer-sql"
     storage = storage_of_profile(profile)
+    # Set even for the default, so a value left in the calling shell does not leak into the run.
+    local_cache = args.local_cache or DEFAULT_LOCAL_CACHE
+    os.environ[LOCAL_CACHE_ENV] = local_cache
 
     compare_paths: list[str] = list(args.compare or [])
     if args.compare_only:
@@ -1124,6 +1142,7 @@ def main(argv: list[str] | None = None) -> int:
         "mode": mode_name,
         "profile": profile,
         "storage": storage,
+        "local_cache": local_cache,
         "started_at": started_at,
         "finished_at": finished_at,
         "duration_s": duration_s,
