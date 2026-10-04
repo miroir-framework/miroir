@@ -28,7 +28,7 @@
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.1",
     "@glideapps/glide-data-grid": "6.0.3",
-    "@hilla/react-components": "1.6.0",
+    "@hilla/react-components": "2.3.22",
     "@hookform/resolvers": "3.10.0",
     "@mui/material": "9.4.0",
     "@redux-devtools/core": "5.0.0",
