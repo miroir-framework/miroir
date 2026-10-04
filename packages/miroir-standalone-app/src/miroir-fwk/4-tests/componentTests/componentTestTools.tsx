@@ -70,6 +70,7 @@ import { deploymentReportsEntitiesMapping } from "../../4_view/components/Page/d
 import { ReportPageContextProvider } from "../../4_view/components/Reports/ReportPageContext.js";
 import { DocumentOutlineContextProvider } from "../../4_view/components/ValueObjectEditor/InstanceEditorOutlineContext.js";
 import { MlElementEditor } from "../../4_view/components/ValueObjectEditor/MlElementEditor.js";
+import type { TransformerTypeBadge } from "../../4_view/components/ValueObjectEditor/MlElementEditorInterface.js";
 import {
   EMPTY_CONTAINER_ATTRIBUTE,
   ML_JSON_ATTRIBUTE,
@@ -215,6 +216,8 @@ export interface MlElementEditorProps_Test {
   rootLessListKeyArray: string[];
   initialFormState: any;
   rawMlSchema: MlElement | undefined;
+  /** #453: type badges of the rendered value, at their editor paths. */
+  transformerTypeBadges?: TransformerTypeBadge[];
   // isPerformanceTest?: boolean;
 }
 
@@ -412,6 +415,7 @@ export const getMlElementEditorForTest: (pageLabel: string) => React.FC<MlElemen
                         insideAny={false}
                         anyRootLessListKey=""
                         indentLevel={0}
+                        transformerTypeBadges={props.transformerTypeBadges}
                       />
                       <button type="submit" role="form" name={pageLabel} form={"form." + pageLabel}>
                         submit form.{pageLabel}

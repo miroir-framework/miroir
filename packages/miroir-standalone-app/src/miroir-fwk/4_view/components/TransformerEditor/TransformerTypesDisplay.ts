@@ -21,22 +21,30 @@ export interface TransformerTypesDisplaySetting {
 
 export const TransformerTypesDisplayContext = createContext<TransformerTypesDisplaySetting | undefined>(undefined);
 
-/** The switch value, shown at once when changed, and its change, which also saves it. */
+/**
+ * The switch value, shown at once when changed, and its change, which also saves it. A change
+ * holds while the saved value stays the one it was made over: when the saved value moves (the
+ * save lands, or the setting is changed elsewhere, e.g. in the ViewParams report), it is shown.
+ */
 export function useShowTransformerTypes(): [boolean, (showTransformerTypes: boolean) => void] {
   const caseSetting = useContext(TransformerTypesDisplayContext);
   const { viewParamsData, saveViewParams } = useAdminViewParams();
   const persisted = caseSetting ? caseSetting.initial : viewParamsData?.showTransformerTypes === true;
-  const [changed, setChanged] = useState<boolean | undefined>(undefined);
+  const [local, setLocal] = useState<{ persisted: boolean; changed?: boolean }>({ persisted });
+  if (local.persisted !== persisted) {
+    // state adjusted while rendering, see https://react.dev/learn/you-might-not-need-an-effect
+    setLocal({ persisted });
+  }
   const setShowTransformerTypes = useCallback(
     (showTransformerTypes: boolean) => {
-      setChanged(showTransformerTypes);
+      setLocal({ persisted, changed: showTransformerTypes });
       if (caseSetting) {
         caseSetting.save(showTransformerTypes);
       } else {
         saveViewParams({ showTransformerTypes });
       }
     },
-    [caseSetting, saveViewParams],
+    [caseSetting, saveViewParams, persisted],
   );
-  return [changed ?? persisted, setShowTransformerTypes];
+  return [local.persisted === persisted ? (local.changed ?? persisted) : persisted, setShowTransformerTypes];
 }

@@ -7,6 +7,8 @@
  *   through the host, so the next case starts with it.
  * - Sandbox: the host it registers reads the app's ViewParams `showTransformerTypes`; a save from
  *   a case is the host value at once and an `updateInstance` of the ViewParams instance.
+ * - Editor switch: a toggle shows at once; a later ViewParams change made elsewhere replaces it.
+ * - Primitive literals: an `applyTo: "a"` has no title row, its badge follows its label.
  * - Badge labels (D18): an entity type shows the entity name, an unknown entity uuid its first
  *   8 characters.
  *
@@ -51,6 +53,7 @@ import {
   useComponentTestSandbox,
 } from "../../src/miroir-fwk/4_view/components/Reports/ComponentTestSandbox";
 import { transformerTypeBadges } from "../../src/miroir-fwk/4_view/components/TransformerEditor/TransformerEditor";
+import { useShowTransformerTypes } from "../../src/miroir-fwk/4_view/components/TransformerEditor/TransformerTypesDisplay";
 import type { TransformerTypeBadge } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/MlElementEditorInterface";
 
 const RUN_TEST_TIMEOUT = 120_000;
@@ -161,19 +164,79 @@ describe("transformerTypesDisplay: badge labels (D18)", () => {
 });
 
 // ################################################################################################
-function buildAppHarness(showTransformerTypes: boolean) {
-  const miroirActivityTracker = new MiroirActivityTracker();
-  const miroirEventService = new MiroirEventService(miroirActivityTracker);
-  const miroirContext = new MiroirContext(miroirActivityTracker, miroirEventService, undefined as any);
-  const persistenceSaga = new PersistenceReduxSaga({
-    persistenceStoreAccessMode: "remote",
-    localPersistenceStoreControllerManager: new PersistenceStoreControllerManager(
-      ConfigurationService.configurationService.adminStoreFactoryRegister,
-      ConfigurationService.configurationService.StoreSectionFactoryRegister,
-    ),
-    remotePersistenceStoreRestClient: undefined as any,
+describe("transformerTypesDisplay: badges of primitive literals", () => {
+  let sandboxElement: HTMLElement;
+  let runner: ReturnType<typeof createReactComponentTestRunner> | undefined;
+
+  beforeAll(() => {
+    (globalThis as any).IS_REACT_ACT_ENVIRONMENT = false;
   });
-  const localCache: LocalCacheInterface = new LocalCache(persistenceSaga);
+  beforeEach(() => {
+    sandboxElement = document.createElement("div");
+    document.body.appendChild(sandboxElement);
+  });
+  afterEach(() => {
+    runner?.close();
+    runner = undefined;
+    sandboxElement.remove();
+  });
+
+  it(
+    "a primitive literal applyTo shows its badge after its label, an object node once on its title row",
+    async () => {
+      runner = createReactComponentTestRunner({ sandboxElement });
+      const badge = (path: string[], outputLabel: string): TransformerTypeBadge => ({
+        path,
+        outputLabel,
+        status: "unknown",
+        title: `value ${outputLabel}`,
+      });
+      const suite: ReactComponentTestSuiteContext = {
+        suitePath: ["transformerTypesDisplay", "MlElementEditor"],
+        component: "MlElementEditor",
+        componentProps: {
+          name: "testField",
+          listKey: "ROOT.testField",
+          rootLessListKey: "testField",
+          rootLessListKeyArray: ["testField"],
+          rawMlSchema: {
+            type: "object",
+            definition: { transformerType: { type: "string" }, applyTo: { type: "string" } },
+          },
+          initialFormState: { transformerType: "aggregate", applyTo: "a" },
+          transformerTypeBadges: [badge(["testField", "applyTo"], "string"), badge(["testField"], "number")],
+        },
+        caseLabels: ["badges"],
+      };
+      const result = await runner({
+        testNamePath: [...suite.suitePath, "badges"],
+        leaf: leaf("badges", [
+          {
+            step: "expectElement",
+            label: "the literal's badge",
+            target: { byTestId: "transformer-type-badge-testField.applyTo" },
+            attribute: { name: "data-transformer-type-output", value: "string" },
+            count: 1,
+            timeout: 2000,
+          },
+          {
+            step: "expectElement",
+            label: "the object's badge, once",
+            target: { byTestId: "transformer-type-badge-testField" },
+            count: 1,
+          },
+        ]),
+        suite,
+      });
+      expect(result).toEqual({ status: "ok" });
+    },
+    RUN_TEST_TIMEOUT,
+  );
+});
+
+// ################################################################################################
+/** Puts the Admin ViewParams with `showTransformerTypes` in the local cache, as a save landing. */
+function loadViewParams(localCache: LocalCacheInterface, showTransformerTypes: boolean) {
   // no rollback: a rollback of the admin application drops the ViewParams instance just loaded
   const loadResult = localCache.handleLocalCacheAction(
     {
@@ -196,6 +259,22 @@ function buildAppHarness(showTransformerTypes: boolean) {
   if (loadResult.status !== "ok") {
     throw new Error(`harness: loading ViewParams failed: ${JSON.stringify(loadResult)}`);
   }
+}
+
+function buildAppHarness(showTransformerTypes: boolean) {
+  const miroirActivityTracker = new MiroirActivityTracker();
+  const miroirEventService = new MiroirEventService(miroirActivityTracker);
+  const miroirContext = new MiroirContext(miroirActivityTracker, miroirEventService, undefined as any);
+  const persistenceSaga = new PersistenceReduxSaga({
+    persistenceStoreAccessMode: "remote",
+    localPersistenceStoreControllerManager: new PersistenceStoreControllerManager(
+      ConfigurationService.configurationService.adminStoreFactoryRegister,
+      ConfigurationService.configurationService.StoreSectionFactoryRegister,
+    ),
+    remotePersistenceStoreRestClient: undefined as any,
+  });
+  const localCache: LocalCacheInterface = new LocalCache(persistenceSaga);
+  loadViewParams(localCache, showTransformerTypes);
   return { miroirContext, localCache };
 }
 
@@ -251,6 +330,47 @@ describe("transformerTypesDisplay: the sandbox host and the app's ViewParams", (
           objects: [{ uuid: defaultAdminViewParams.uuid, showTransformerTypes: false }],
         },
       });
+      unmount();
+    },
+    RUN_TEST_TIMEOUT,
+  );
+});
+
+// ################################################################################################
+const SwitchProbe: React.FC = () => {
+  const [showTransformerTypes, setShowTransformerTypes] = useShowTransformerTypes();
+  return (
+    <button type="button" onClick={() => setShowTransformerTypes(!showTransformerTypes)}>
+      {showTransformerTypes ? "types on" : "types off"}
+    </button>
+  );
+};
+
+describe("transformerTypesDisplay: the editor's switch and the app's ViewParams", () => {
+  afterEach(() => {
+    handledActions.length = 0;
+  });
+
+  it(
+    "a toggle shows at once, and a later ViewParams change made elsewhere replaces it",
+    async () => {
+      const harness = buildAppHarness(false);
+      const { unmount } = render(
+        <LocalCacheProvider store={harness.localCache.getInnerStore()}>
+          <MiroirContextReactProvider miroirContext={harness.miroirContext} domainController={domainController}>
+            <SwitchProbe />
+          </MiroirContextReactProvider>
+        </LocalCacheProvider>,
+      );
+      await waitFor(() => screen.getByRole("button", { name: "types off" }));
+      fireEvent.click(screen.getByRole("button", { name: "types off" }));
+      await waitFor(() => screen.getByRole("button", { name: "types on" }));
+      await waitFor(() => expect(handledActions).toHaveLength(1));
+
+      loadViewParams(harness.localCache, true); // the save lands
+      await waitFor(() => screen.getByRole("button", { name: "types on" }));
+      loadViewParams(harness.localCache, false); // changed in the ViewParams report
+      await waitFor(() => screen.getByRole("button", { name: "types off" }));
       unmount();
     },
     RUN_TEST_TIMEOUT,
