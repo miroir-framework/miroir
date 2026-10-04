@@ -26,14 +26,14 @@ Out: `tools/list` filtering, a CLI credentials file, stdio MCP, #421, #422, and 
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize the open doors | ⬜ pending | `doors.263.phase0` |
-| 1 | Shared gate: loader in core, stub gate on action bodies, MCP switch | ⬜ pending | `gate.263.phase1.unit` |
-| 2 | MCP: 401 without identity, AccessDenied per tool, switch off | ⬜ pending | `mcpAuth.263.phase2.integ` |
-| 3 | In-app agent forwards the caller's Bearer to MCP | ⬜ pending | `agentMcpHeaders.263.phase3.unit` |
-| 4 | CLI: hatch, `--token`, `--user` | ⬜ pending | `cliAuth.263.phase4.integ` |
-| 5 | Electron main: gated `miroir-ipc` and loopback | ⬜ pending | `electronIpcAuth.263.phase5.unit` |
-| 6 | Electron renderer: login over IPC, token on every call | ⬜ pending | `electronIpcProxyAuth.263.phase6.unit` |
-| 7 | Server wiring, launchers, docs, nonreg, cleanup | ⬜ pending | full `nonreg:filesystem` |
+| 0 | Characterize the open doors | ⏭ skipped | `doors.263.phase0` |
+| 1 | Shared gate: loader in core, stub gate on action bodies, MCP switch | ✅ done | `gate.263.phase1.unit` |
+| 2 | MCP: 401 without identity, AccessDenied per tool, switch off | ✅ done | `mcpAuth.263.phase2.integ` |
+| 3 | In-app agent forwards the caller's Bearer to MCP | ✅ done | `agentMcpHeaders.263.phase3.unit` |
+| 4 | CLI: hatch, `--token`, `--user` | ✅ done | `cliAuth.263.phase4.integ` |
+| 5 | Electron main: gated `miroir-ipc` and loopback | ✅ done | `electronIpcAuth.263.phase5.unit` |
+| 6 | Electron renderer: login over IPC, token on every call | ✅ done | `electronIpcProxyAuth.263.phase6.unit` |
+| 7 | Server wiring, launchers, docs, nonreg, cleanup | ✅ done | full `nonreg:filesystem` |
 
 ## Locked implementation defaults
 
@@ -89,7 +89,7 @@ No new model elements and no MiroirTest suites.
 
 ## Slice 0 — Characterize the open doors
 
-**Status:** ⬜ pending
+**Status:** ⏭ skipped
 
 **Goal:** lock today's behavior before changing it, so slice 7 can show the hatch-off path unchanged.
 
@@ -108,13 +108,13 @@ RUN_TEST=doors.263 npm run testByFile -w miroir-core -- doors.263
 ```
 
 ### Realization
-_(pending)_
+Skipped: the slices were drafted before dependencies could be reinstalled, so there was no pre-change state left to characterize. The hatch-off cases of slices 1, 2, 4 and 5 cover the open path instead.
 
 ---
 
 ## Slice 1 — Shared gate pieces
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 **Goal:** a host can hand `RestClientStub` an explicit `enabled` and a directory loader, and the stub gates action bodies the way the server does. The MCP switch resolves per D5.
 
@@ -148,13 +148,13 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions
 ```
 
 ### Realization
-_(pending)_
+`AccessGate.ts` (`authenticateRequest`, `authorizeDeployment`), `loadAccessDirectory.ts` (Admin query moved from `server.ts`, plus `persistPasswordChange`), `authenticationMiddleware.ts` (`createIdentityGateMiddleware`). `RestClientStub.setAuthenticationGate`; the stub reads the deployment with `deploymentUuidFromHttpRequest`. `server.authentication {enabled, mcp}` added to the environment schema. `gate.263.phase1`: 11 tests.
 
 ---
 
 ## Slice 2 — MCP gate
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 **Goal:** an MCP client without a Bearer gets 401; with one, tool calls on a denied application return `AccessDenied`; with the MCP switch off, `/mcp` is open.
 
@@ -183,13 +183,13 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,runners
 ```
 
 ### Realization
-_(pending)_
+`mountHttpRoutes(app, gate)` puts `createIdentityGateMiddleware` before the MCP handler; `EndpointToolRegistry.callTool` checks the tool's application and any deployment its arguments name, and returns an `AccessDenied` tool error. `server.ts` passes one MCP gate to both mounts. `mcpAuth.263.phase2`: 5 tests.
 
 ---
 
 ## Slice 3 — The agent forwards the caller's Bearer
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 **Goal:** an agent run started by a logged-in user calls MCP with that user's `Authorization`.
 
@@ -211,13 +211,13 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,external
 ```
 
 ### Realization
-_(pending)_
+`miroirMcpServerConfig(url, headers)`; `createCopilotKitRouter` passes `{ mcpHeaders: { Authorization } }` to `createAgentForBackend`. `agentMcpHeaders.263.phase3`: 4 tests.
 
 ---
 
 ## Slice 4 — CLI
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 **Goal:** the CLI refuses data commands without identity when auth is on, and runs them as the given user otherwise.
 
@@ -249,13 +249,13 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling,actions
 ```
 
 ### Realization
-_(pending)_
+`src/authentication.ts` (`authenticateCli`, terminal password prompt). Found: the stub's 403 reached the CLI as `FailedToHandlePersistenceAction`; the remote-store sagas (redux and zustand) now keep the server's error body as `innerError`, and the CLI reports `AccessDenied` / `AuthenticationRequired` from that chain. `vitest.config.ts`: `fileParallelism: false`, since both test files reseed the same environment. `cliAuth.263.phase4`: 7 tests.
 
 ---
 
 ## Slice 5 — Electron main process
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 **Goal:** the main process refuses `rest-call`, `server-action` and `server-query` without a principal when auth is on, applies access after identity, and gates its loopback routes.
 
@@ -282,13 +282,13 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
 ```
 
 ### Realization
-_(pending)_
+`miroirIpcHandler.ts` (`electronAuthenticationGates`, `handleMiroirIpc`, free of `electron` imports); `ipcServerSetup.ts` delegates to it and gates loopback `/api/copilotkit` and `/mcp`. `electronIpcAuth.263.phase5`: 6 tests.
 
 ---
 
 ## Slice 6 — Electron renderer
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 **Goal:** in Electron, the app reads the main process's auth status, logs in over IPC, sends the token on every IPC call, and returns to the login page when the token stops working.
 
@@ -315,13 +315,13 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui,tooling
 ```
 
 ### Realization
-_(pending)_
+`ElectronIpcProxy` sends `authorization` on every data message and clears the session on `AuthenticationRequired`; `auth/authTransport.ts` routes `/auth/status` and `/auth/login` over IPC in Electron. `electronIpcProxyAuth.263.phase6`: 5 tests.
 
 ---
 
 ## Slice 7 — Server wiring, launchers, docs, nonreg, cleanup
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 **Goal:** miroir-server gates both MCP mounts; launchers keep tests open; operators can read how to pass identity.
 
@@ -361,4 +361,4 @@ npm run nonreg:filesystem -- --runner shared
 | Operator docs | slice 7 |
 
 ### Realization
-_(pending)_
+Server wiring pinned by `mcpServerGate.263.phase7` (source pin: `server.ts` is a top-level-await script). Launchers default `MIROIR_MCP_AUTH_ENABLED=0`. Docs: authentication reference, MCP guide, AI guide, CLI and Electron READMEs. Nonreg step `unit-263-identity-doors`. The `issues/263-*` test directories stay for now, like the #273 and #275 ones; moving them into feature-named suites is left for a later cleanup.

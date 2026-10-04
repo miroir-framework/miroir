@@ -210,6 +210,7 @@ export function resolveVitestEntry(
         ...env,
         ...miroirTestCliConfigToEnv(resolvedCoreConfig),
         MIROIR_AUTH_ENABLED: env.MIROIR_AUTH_ENABLED ?? "0",
+        MIROIR_MCP_AUTH_ENABLED: env.MIROIR_MCP_AUTH_ENABLED ?? "0",
       },
     };
   }
@@ -230,6 +231,7 @@ export function resolveVitestEntry(
       ...env,
       ...miroirTestCliConfigToEnv(resolvedRunnerConfig),
       MIROIR_AUTH_ENABLED: env.MIROIR_AUTH_ENABLED ?? "0",
+      MIROIR_MCP_AUTH_ENABLED: env.MIROIR_MCP_AUTH_ENABLED ?? "0",
     },
   };
 }
