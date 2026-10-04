@@ -1600,6 +1600,7 @@ export {
 } from "./1_core/authentication/TestbedAccessGrant.js";
 export {
   deploymentUuidFromHttpRequest,
+  deploymentUuidsFromHttpRequest,
 } from "./1_core/authentication/deploymentUuidFromHttpRequest.js";
 export {
   authenticateRequest,

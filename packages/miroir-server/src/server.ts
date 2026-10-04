@@ -41,7 +41,7 @@ import {
   persistPasswordChange,
   buildAuthStatusBody,
   ENTITY_MIROIR_SECRET_UUID,
-  deploymentUuidFromHttpRequest,
+  deploymentUuidsFromHttpRequest,
   getProcessTokenSecret,
   loginWithPassword,
   persistChangedPasswordHash,
@@ -633,11 +633,11 @@ for (const op of restServerDefaultHandlers) {
     const access = authorizeDeployment(
       authenticationEnabled,
       authenticated,
-      deploymentUuidFromHttpRequest(request),
+      deploymentUuidsFromHttpRequest(request),
     );
     if (!access.allowed) {
       myLogger.warn(
-        `access denied: user=${principal?.username ?? "anonymous"} deployment=${deploymentUuidFromHttpRequest(request) ?? "(none)"} url=${request.originalUrl}`
+        `access denied: user=${principal?.username ?? "anonymous"} deployments=${deploymentUuidsFromHttpRequest(request).join(",") || "(none)"} url=${request.originalUrl}`
       );
       response.status(access.status).json(access.body ?? ACCESS_DENIED);
       return;

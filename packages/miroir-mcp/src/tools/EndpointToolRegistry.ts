@@ -1,6 +1,6 @@
 import {
   authorizeDeployment,
-  deploymentUuidFromHttpRequest,
+  deploymentUuidsFromHttpRequest,
   type ApplicationDeploymentMap,
   type AdminApplication,
   type AuthPrincipal,
@@ -251,21 +251,18 @@ export class EndpointToolRegistry {
     const currentMap = this.resolveCurrentApplicationDeploymentMap();
     if (context?.enabled) {
       // The tool's own application, and any other deployment its payload names (#263).
-      const deployments = new Set<string | undefined>([currentMap[entry.applicationUuid]]);
-      const named = deploymentUuidFromHttpRequest({
-        body: { action: { payload: args }, applicationDeploymentMap: currentMap },
-      });
-      if (named) {
-        deployments.add(named);
-      }
-      for (const deploymentUuid of deployments) {
-        const access = authorizeDeployment(true, context, deploymentUuid);
-        if (!access.allowed) {
-          log.warn(
-            `callTool ${name}: access denied for ${context.principal?.username ?? "anonymous"} on deployment ${deploymentUuid ?? "(none)"}`,
-          );
-          return toolErrorResult(name, access.body.errorType, "Access denied");
-        }
+      const deployments = [
+        currentMap[entry.applicationUuid],
+        ...deploymentUuidsFromHttpRequest({
+          body: { action: { payload: args }, applicationDeploymentMap: currentMap },
+        }),
+      ];
+      const access = authorizeDeployment(true, context, deployments as string[]);
+      if (!access.allowed) {
+        log.warn(
+          `callTool ${name}: access denied for ${context.principal?.username ?? "anonymous"} on deployments ${deployments.join(",")}`,
+        );
+        return toolErrorResult(name, access.body.errorType, "Access denied");
       }
     }
     const modelEnvironment = this.domainController

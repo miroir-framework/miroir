@@ -80,14 +80,25 @@ export async function authenticateRequest(
 export function authorizeDeployment(
   enabled: boolean,
   authenticated: { principal: AuthPrincipal | undefined; access: LoadedAccessDirectory | undefined },
-  deploymentUuid: string | undefined,
+  deploymentUuids: string | undefined | string[],
 ): AccessDecision {
-  return assertAccessForDeployment({
-    enabled,
-    principal: authenticated.principal,
-    deploymentUuid,
-    grants: authenticated.access?.grants ?? [],
-    deployments: authenticated.access?.deployments ?? [],
-    alwaysAllow: ALWAYS_ALLOW_APPLICATION_TARGETS,
-  });
+  // A list must be allowed as a whole; an empty one is checked as "no deployment" (denied when on).
+  const targets = Array.isArray(deploymentUuids)
+    ? deploymentUuids.length > 0 ? deploymentUuids : [undefined]
+    : [deploymentUuids];
+  let decision: AccessDecision | undefined;
+  for (const deploymentUuid of targets) {
+    decision = assertAccessForDeployment({
+      enabled,
+      principal: authenticated.principal,
+      deploymentUuid,
+      grants: authenticated.access?.grants ?? [],
+      deployments: authenticated.access?.deployments ?? [],
+      alwaysAllow: ALWAYS_ALLOW_APPLICATION_TARGETS,
+    });
+    if (!decision.allowed) {
+      return decision;
+    }
+  }
+  return decision!;
 }

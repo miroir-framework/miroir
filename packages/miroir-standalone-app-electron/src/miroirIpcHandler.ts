@@ -13,7 +13,7 @@ import {
   accessDirectoryLoader,
   authenticateRequest,
   authorizeDeployment,
-  deploymentUuidFromHttpRequest,
+  deploymentUuidsFromHttpRequest,
   persistPasswordChange,
   resolveAuthenticationEnabled,
   resolveMcpAuthenticationEnabled,
@@ -102,7 +102,7 @@ async function gateServerCall(deps: MiroirIpcDeps, payload: MiroirIpcPayload) {
   const access = authorizeDeployment(
     deps.gate.enabled,
     authenticated,
-    deploymentUuidFromHttpRequest({
+    deploymentUuidsFromHttpRequest({
       body: { action: payload.action, applicationDeploymentMap: payload.applicationDeploymentMap },
     }),
   );

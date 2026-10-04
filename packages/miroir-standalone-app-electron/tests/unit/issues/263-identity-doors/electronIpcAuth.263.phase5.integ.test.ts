@@ -107,6 +107,14 @@ describe("#263 Electron miroir-ipc with authentication", () => {
     expect((await handleMiroirIpc(serverQuery(ADMIN_APP, ADMIN_DEPLOYMENT, ENTITY_MIROIR_USER, bearer), deps)).status).toBe("ok");
   });
 
+  it("denies carol a Library query that also names the Admin deployment", async () => {
+    const deps = depsFor({ MIROIR_AUTH_ENABLED: "1" });
+    const loggedIn = await login(deps, "carol", "carol-dev");
+    const message = serverQuery(LIBRARY_APP, LIBRARY_DEPLOYMENT, ENTITY_BOOK, `Bearer ${loggedIn.data.token}`);
+    (message.action.payload as Record<string, unknown>).deploymentUuid = ADMIN_DEPLOYMENT;
+    expect(await handleMiroirIpc(message, deps)).toMatchObject({ status: "error", errorType: "AccessDenied" });
+  });
+
   it("does not tell an inactive user from a wrong password", async () => {
     const deps = depsFor({ MIROIR_AUTH_ENABLED: "1" });
     const bob = await login(deps, "bob", "bob-dev");

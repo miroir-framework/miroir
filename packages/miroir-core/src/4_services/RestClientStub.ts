@@ -18,7 +18,7 @@ import {
   type IdentityDirectory,
 } from "../1_core/authentication/AuthenticationPolicy.js";
 import { handleAuthHttpRoute } from "../1_core/authentication/AuthenticationHttp.js";
-import { deploymentUuidFromHttpRequest } from "../1_core/authentication/deploymentUuidFromHttpRequest.js";
+import { deploymentUuidsFromHttpRequest } from "../1_core/authentication/deploymentUuidFromHttpRequest.js";
 import type { ProcessCapabilities } from "../1_core/processCapabilities.js";
 import { handleProcessCapabilitiesHttpRoute } from "./ProcessCapabilitiesHttp.js";
 import { packageName } from "../constants";
@@ -110,10 +110,12 @@ export class RestClientStub implements RestClientInterface {
       customConfig?.headers?.Authorization ??
       customConfig?.headers?.authorization ??
       (tokenFromGetter ? `Bearer ${tokenFromGetter}` : undefined);
-    const isAuthRoute = /\/auth\/(status|login|change-password)\/?(\?|$)/.test(rawUrl) ||
-      /\/auth\/(status|login|change-password)\/?(\?|$)/.test(endpoint);
+    // `/auth/status` needs only the gate's hatch value: only login and change-password read the
+    // directory.
+    const needsDirectory = /\/auth\/(login|change-password)\/?(\?|$)/.test(rawUrl) ||
+      /\/auth\/(login|change-password)\/?(\?|$)/.test(endpoint);
     const directoryForAuthRoute: LoadedAccessDirectory | undefined =
-      isAuthRoute && gate ? await gate.loadDirectory() : undefined;
+      needsDirectory && gate ? await gate.loadDirectory() : undefined;
     const authHttp = await handleAuthHttpRoute({
       url: rawUrl,
       endpoint,
@@ -193,7 +195,7 @@ export class RestClientStub implements RestClientInterface {
     const access = authorizeDeployment(
       authEnabled,
       authenticated,
-      deploymentUuidFromHttpRequest({ params: args, body }),
+      deploymentUuidsFromHttpRequest({ params: args, body }),
     );
     if (!access.allowed) {
       return {

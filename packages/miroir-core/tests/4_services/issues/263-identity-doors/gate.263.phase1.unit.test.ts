@@ -150,6 +150,20 @@ if (runThis) {
       expect(await postQuery(stub, ADMIN_APP, ADMIN_DEPLOYMENT, carol)).toMatchObject({ passedGate: true });
     });
 
+    it("checks every deployment the body names, not only payload.deploymentUuid", async () => {
+      const result = await gatedStub(true).call("/action", "post", "/action", {
+        body: {
+          action: {
+            actionType: "runBoxedQueryAction",
+            payload: { deploymentUuid: ADMIN_DEPLOYMENT, application: LIBRARY_APP, applicationSection: "data", query: {} },
+          },
+          applicationDeploymentMap: { [LIBRARY_APP]: LIBRARY_DEPLOYMENT },
+        },
+        headers: { Authorization: await bearer("carol") },
+      });
+      expect(result).toMatchObject({ status: 403, data: ACCESS_DENIED });
+    });
+
     it("refuses a valid token of an inactive user", async () => {
       const token = await issueBearerToken({ miroirUserUuid: BOB_UUID, username: "bob" }, SECRET);
       const result = await postQuery(gatedStub(true), ADMIN_APP, ADMIN_DEPLOYMENT, `Bearer ${token}`);
@@ -169,8 +183,16 @@ if (runThis) {
       expect((result.data as { token?: string }).token).toBeTruthy();
     });
 
-    it("answers /auth/status with the host's hatch value", async () => {
-      const result = await gatedStub(true).call("/auth/status", "get", "/auth/status", {});
+    it("answers /auth/status with the host's hatch value, without reading the directory", async () => {
+      const stub = new RestClientStub("http://test");
+      stub.setAuthenticationGate({
+        enabled: true,
+        secret: SECRET,
+        loadDirectory: async () => {
+          throw new Error("directory unavailable");
+        },
+      });
+      const result = await stub.call("/auth/status", "get", "/auth/status", {});
       expect(result.data).toEqual({ enabled: true });
       expect(await handleAuthHttpRoute({ url: "/auth/status", enabled: false, env: { MIROIR_AUTH_ENABLED: "1" } })).toEqual({
         status: 200,
