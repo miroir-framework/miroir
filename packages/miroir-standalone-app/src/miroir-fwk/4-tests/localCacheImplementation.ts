@@ -5,7 +5,7 @@ import type {
   RestClientInterface,
   RestPersistenceClientAndRestClientInterface,
 } from "miroir-core";
-import type * as LocalCacheRedux from "miroir-localcache-redux";
+import * as LocalCacheRedux from "miroir-localcache-redux";
 
 // #446: the LocalCache implementation the tests build their DomainControllers on, chosen by
 // MIROIR_TEST_LOCAL_CACHE (set by `run-nonreg.py --local-cache`). Unset means redux.
@@ -48,12 +48,16 @@ export function testLocalCacheImplementation(value: string | undefined): LocalCa
   return value as LocalCacheImplementation;
 }
 
-/** Loads the package lazily, so a run on one implementation does not evaluate the other. */
+// A computed specifier keeps zustand out of the webapp bundle, which reaches this file through the
+// Miroir Tests UI: the browser has no MIROIR_TEST_LOCAL_CACHE, so it always runs on redux.
+const zustandPackage = "miroir-localcache-zustand";
+
+/** Redux is already in the bundle; zustand is loaded only when chosen. */
 export async function loadLocalCacheImplementation(
   implementation: LocalCacheImplementation = testLocalCacheImplementation(localCacheEnvValue()),
 ): Promise<LocalCacheImplementationModule> {
   if (implementation === "zustand") {
-    return await import("miroir-localcache-zustand");
+    return await import(/* @vite-ignore */ zustandPackage);
   }
-  return await import("miroir-localcache-redux");
+  return LocalCacheRedux;
 }
