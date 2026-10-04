@@ -215,4 +215,27 @@ describe.skipIf(!shouldRun)("setExternalServiceCredential", () => {
     expect((result as Action2Error).errorMessage).toMatch(/wrapping key/i);
     expect(await credentialRows()).toEqual([]);
   });
+
+  describe("through the REST route", () => {
+    it("runs on the server and returns whom the token identifies to the client", async () => {
+      const result = await setCredential(testbed.domainController, { credential: GOOD_TOKEN });
+
+      expect(result instanceof Action2Error, JSON.stringify(result)).toBe(false);
+      expect((result as { returnedDomainElement: { login?: string } }).returnedDomainElement.login).toBe(
+        "octocat",
+      );
+      // RestClientStub carries no identity, so the server saves the process credential.
+      expect((await credentialRows()).map((row) => row.uuid)).toEqual([
+        miroirSecretInstanceUuid(CREDENTIAL_KEY, "process"),
+      ]);
+    });
+
+    it("returns the service's refusal to the client as an error", async () => {
+      const result = await setCredential(testbed.domainController, { credential: "ghp_revoked" });
+
+      expect(result).toBeInstanceOf(Action2Error);
+      expect((result as Action2Error).errorMessage).toMatch(/401/);
+      expect(await credentialRows()).toEqual([]);
+    });
+  });
 });

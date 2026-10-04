@@ -182,7 +182,7 @@ Deviations: test 3 checks that the saved token resolves for the process instead 
 
 ## Slice 4 — The action runs on the server with the caller's principal
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 **Goal (D11):** a client DomainController in remote mode forwards the action to `/action/setExternalServiceCredential`; the server runs it with the request's principal and returns the probe body.
 
@@ -199,6 +199,10 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-localcache-redux/tsconfig.jso
 npx tsc --noEmit --skipLibCheck -p packages/miroir-localcache-zustand/tsconfig.json
 npm run nonreg:filesystem -- --runner shared --scope smoke,actions,localcache,external
 ```
+
+**Realization:** 8/8 tests green on redux and on zustand (`MIROIR_TEST_LOCAL_CACHE=zustand`). The refactor checkpoint applied: `SERVER_ROUTED_MIROIR_ACTION_TYPES` and `isServerRoutedMiroirAction` (miroir-core `1_core/constants.ts`) replace the four `probeExternalService` tests, and the REST clients post to `/action/<actionType>`. `DomainController.forwardServerRoutedAction` sends either action and turns a JSON error back into an `Action2Error`.
+
+Deviation: RestClientStub sends no identity, so the REST test checks the process row only. The principal reaching the server controller is covered by the Slice 3 user-row tests.
 
 ## Slice 5 — `finishOpenReport` opens a Report after Finish
 

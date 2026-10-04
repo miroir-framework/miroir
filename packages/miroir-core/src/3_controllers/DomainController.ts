@@ -3705,7 +3705,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
       typeof targetApplication === "string"
         ? applicationDeploymentMap[targetApplication]
         : undefined;
-    const remoteResult = await this.persistenceStoreLocalOrRemote.handlePersistenceActionForRemoteStore(
+    return this.forwardServerRoutedAction(
       {
         actionType: "probeExternalService",
         endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
@@ -3722,7 +3722,21 @@ export class DomainController implements DomainControllerInterface, DomainContro
       } as any,
       applicationDeploymentMap,
     );
-    // The HTTP hop JSON-parses the result, so a failed probe is a plain object.
+  }
+
+  /**
+   * Sends a server-routed Miroir action (`SERVER_ROUTED_MIROIR_ACTION_TYPES`) to the server
+   * and returns its own result.
+   */
+  private async forwardServerRoutedAction(
+    action: unknown,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2ReturnType> {
+    const remoteResult = await this.persistenceStoreLocalOrRemote.handlePersistenceActionForRemoteStore(
+      action as any,
+      applicationDeploymentMap,
+    );
+    // The HTTP hop JSON-parses the result, so a failed action is a plain object.
     if (
       remoteResult &&
       typeof remoteResult === "object" &&
@@ -3810,7 +3824,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
   /**
    * #472: checks a token against an external service with one GET operation, then saves it
    * as the Endpoint's credential: a MiroirSecret row for the principal's user, or for the
-   * process when nobody is logged in. Runs where the persistence store is local.
+   * process when nobody is logged in. A remote client forwards it to the server.
    */
   async handleSetExternalServiceCredential(
     domainAction: SetExternalServiceCredentialAction,
@@ -3830,10 +3844,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
       );
     }
     if (this.persistenceStoreAccessMode !== "local") {
-      return new Action2Error(
-        "InvalidAction",
-        "setExternalServiceCredential runs on the server only",
-      );
+      return this.forwardServerRoutedAction(domainAction, applicationDeploymentMap);
     }
     if (!payload.probeOnly && !getSecretsMasterKey()) {
       return new Action2Error(
