@@ -25411,6 +25411,56 @@ export const miroirFundamentalMlSchema = {
                 }
               }
             }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "setExternalServiceCredential"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid"
+                  },
+                  "endpointUuid": {
+                    "type": "uuid"
+                  },
+                  "credential": {
+                    "type": "string"
+                  },
+                  "probeOperationId": {
+                    "type": "string"
+                  },
+                  "probeParameters": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
+                    }
+                  },
+                  "probeOnly": {
+                    "type": "boolean",
+                    "optional": true
+                  }
+                }
+              }
+            }
           }
         ]
       },
@@ -39965,6 +40015,56 @@ export const miroirFundamentalMlSchema = {
                 }
               }
             }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "setExternalServiceCredential"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid"
+                  },
+                  "endpointUuid": {
+                    "type": "uuid"
+                  },
+                  "credential": {
+                    "type": "string"
+                  },
+                  "probeOperationId": {
+                    "type": "string"
+                  },
+                  "probeParameters": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
+                    }
+                  },
+                  "probeOnly": {
+                    "type": "boolean",
+                    "optional": true
+                  }
+                }
+              }
+            }
           }
         ]
       },
@@ -46541,6 +46641,56 @@ export const miroirFundamentalMlSchema = {
                   },
                   "deploymentUuid": {
                     "type": "uuid",
+                    "optional": true
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "setExternalServiceCredential"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid"
+                  },
+                  "endpointUuid": {
+                    "type": "uuid"
+                  },
+                  "credential": {
+                    "type": "string"
+                  },
+                  "probeOperationId": {
+                    "type": "string"
+                  },
+                  "probeParameters": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
+                    }
+                  },
+                  "probeOnly": {
+                    "type": "boolean",
                     "optional": true
                   }
                 }

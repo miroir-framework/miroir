@@ -144,11 +144,11 @@ The slice found two gaps in `ExternalServiceClient` that Spotify never hit, both
 - query parameters were never sent: `substitutePath` only filled path parameters, so `per_page` and `sort` were dropped. A `queryString` helper now appends bound `in: "query"` mappings, encoded like `previewOpenApiGetCall`.
 - `lenientValidateMl` ignored `nullable`, so GitHub's `description: null` failed the response check.
 
-Deviations: a refused token shows the report's generic "Report async load failed" line, not GitHub's 401 message (existing report behaviour; the home walk in Slice 6 shows the message on the token step). `fakeExternalServiceServer` records the query string (`search`). The new Query is listed in `zodParseResults.unit` next to the Spotify query (external-service queries fail the generated Query schema). No shared boot helper was extracted: the GitHub test needs a third of the Spotify setup.
+Deviations: a refused token shows the report's generic "Report async load failed" line, not GitHub's 401 message (existing report behaviour; the home walk in Slice 6 shows the message on the token step). `fakeExternalServiceServer` records the query string (`search`). The new Query is listed in `zodParseResults.unit` next to the Spotify query (external-service queries fail the generated Query schema). The GitHub boot moved to `tests/helpers/githubAppTestbed.ts` in Slice 3, shared with the action test.
 
 ## Slice 3 — `setExternalServiceCredential` checks and saves a token
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 **Goal (G1, G4):** on a local DomainController, the action probes with the candidate token and saves it.
 
@@ -175,6 +175,10 @@ npm run test -w miroir-core -- ''
 npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions,external
 ```
+
+**Realization:** 6/6 tests green on `emulatedServer-filesystem`. The handler runs only where the persistence store is local and returns an error elsewhere until Slice 4 routes it. It checks the wrapping key before probing, so a save without one makes no HTTP call. The probe runs on an in-memory copy of the Endpoint whose `credentialKey` is a one-shot `__probe_<uuid>` process secret, removed in a `finally`. `persistRotatedSecretRow` and `persistSecretRow` share one row writer; only `persistSecretRow` creates a missing row. `registerHydratedUserSecret` is now exported from miroir-core (the test seeds a stored user token with it).
+
+Deviations: test 3 checks that the saved token resolves for the process instead of calling the repositories Report again (Slice 2 already covers that call with a registered token). The `multistep.274.phase0` seed inventory counts the repositories Report (89 Reports, 73 without `type`).
 
 ## Slice 4 — The action runs on the server with the caller's principal
 

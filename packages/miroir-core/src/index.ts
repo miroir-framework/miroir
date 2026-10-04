@@ -1461,6 +1461,7 @@ export { PersistenceStoreControllerManager } from "./4_services/PersistenceStore
 export {
   clearSecrets,
   registerHydratedProcessSecret,
+  registerHydratedUserSecret,
   registerSecrets,
   resolveSecret,
   restoreProcessSecretsFromSnapshot,
@@ -1481,6 +1482,7 @@ export {
   miroirSecretInstanceUuid,
   persistImportedProcessSecrets,
   persistRotatedSecretRow,
+  persistSecretRow,
   requireWrappingKeyForSecretImport,
   setSecretsMasterKey,
   type AiSecretProvider,

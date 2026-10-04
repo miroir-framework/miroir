@@ -43,11 +43,35 @@ export type ConnectExternalServiceAction = {
   };
 };
 
+/** Payload of the setExternalServiceCredential action (#472), as DomainController reads it. */
+export type SetExternalServiceCredentialAction = {
+  actionType: "setExternalServiceCredential";
+  actionLabel?: string;
+  endpoint: string;
+  payload: {
+    /** Application holding the external-service Endpoint. */
+    application: string;
+    endpointUuid: string;
+    /** The token to check, then save under the Endpoint's credentialKey. */
+    credential: string;
+    /** GET operation called with the token to check it. */
+    probeOperationId: string;
+    probeParameters?: Record<string, unknown>;
+    /** Check the token and return the probe's result, saving nothing. */
+    probeOnly?: boolean;
+  };
+};
+
 /**
  * #341: what a library action implementation may call on the DomainController running it.
  * Grows with each migrated action; handlers depend on this interface, not on the class.
  */
 export interface DomainControllerActionHost {
+  handleSetExternalServiceCredential(
+    domainAction: SetExternalServiceCredentialAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    principal?: AuthPrincipal,
+  ): Promise<Action2ReturnType>;
   handleProbeExternalService(
     domainAction: {
       payload?: {
