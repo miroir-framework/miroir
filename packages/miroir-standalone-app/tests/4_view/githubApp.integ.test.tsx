@@ -17,66 +17,27 @@ import { MemoryRouter, type Params } from "react-router-dom";
 import * as RRDom from "react-router-dom";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import type {
-  ApplicationDeploymentMap,
-  Deployment,
-  DomainControllerInterface,
-  EndpointDefinition,
-  EntityInstance,
-  LoggerOptions,
-  MiroirConfigForClientStub,
-  Report,
-  StoreUnitConfiguration,
-} from "miroir-core";
-import {
-  Action2Error,
-  clearSecrets,
-  ConfigurationService,
-  createDeploymentCompositeAction,
-  createExternalServiceTokenCache,
-  defaultMiroirModelEnvironment,
-  defaultSelfApplicationDeploymentMap,
-  MiroirActivityTracker,
-  MiroirContext,
-  miroirCoreStartup,
-  MiroirEventService,
-  MiroirLoggerFactory,
-  registerSecrets,
-  resetAndinitializeDeploymentCompositeAction,
-  resetAndInitApplicationDeployment,
-} from "miroir-core";
+import type { DomainControllerInterface, Report } from "miroir-core";
+import { clearSecrets, MiroirContext, registerSecrets } from "miroir-core";
 import { LocalCacheProvider, MiroirContextReactProvider } from "miroir-react";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
-import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
-import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
-import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from "miroir-example-library";
-import { defaultMiroirMetaModel, defaultStoredMiroirTheme } from "miroir-app-miroir";
+import { defaultStoredMiroirTheme } from "miroir-app-miroir";
 import {
-  defaultGitHubAppModel,
   deployment_GitHub_DO_NOT_USE,
-  getDefaultGitHubModelEnvironment,
-  githubInitApplicationVersion,
-  githubServiceEndpoint,
   reportGitHubRepositories,
   selfApplicationGitHub,
-  selfApplicationModelBranchGitHubMasterBranch,
 } from "miroir-example-github";
 
-import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { ReportPageContextProvider } from "../../src/miroir-fwk/4_view/components/Reports/ReportPageContext.js";
 import { ReportViewWithEditor } from "../../src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.js";
 import { DocumentOutlineContextProvider } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/InstanceEditorOutlineContext.js";
 import { MiroirThemeProvider } from "../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js";
-import { miroirAppStartup } from "../../src/startup.js";
 import { ReportUrlParamKeys } from "../../src/constants.js";
-import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSession.js";
-import { loadTestConfigFiles } from "../utils/fileTools.js";
 import {
-  startFakeExternalServiceServer,
-  type FakeExternalServiceServer,
-} from "../utils/fakeExternalServiceServer.js";
+  applicationDeploymentMap,
+  bootGitHubTestbed,
+  reseedGitHub,
+  type GitHubTestbed,
+} from "../helpers/githubAppTestbed.js";
 
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual<typeof import("react-router-dom")>("react-router-dom");
@@ -102,10 +63,6 @@ vi.mock("../../src/miroir-fwk/4_view/components/Reports/ModelDiagramReportSectio
 const RUN_TEST = process.env.RUN_TEST;
 const shouldRun = !RUN_TEST || RUN_TEST === "githubApp" || RUN_TEST === "githubApp.integ.test";
 
-const GITHUB_DEPLOYMENT_UUID = "752c2412-a2cc-4632-94f3-937168969998";
-const GITHUB_APPLICATION_UUID = "6c4edcb2-e165-407a-b728-fbf8a18b6bf7";
-const INSTANCE_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";
-const MODEL_ENDPOINT = "7947ae40-eb34-4149-887b-15a9021e714e";
 const TEST_TOKEN = "ghp_test-token";
 
 function repository(id: number, name: string, extra: Record<string, unknown> = {}) {
@@ -131,61 +88,6 @@ const REPOSITORIES = [
   repository(12, "private-notes", { private: true, language: null, stargazers_count: 0 }),
 ];
 
-const env: any = process.env;
-const { miroirConfig, logConfig } = await loadTestConfigFiles(env);
-if (!miroirConfig || !logConfig) {
-  throw new Error("githubApp: test configuration is missing");
-}
-if (!miroirConfig.client.emulateServer) {
-  throw new Error("githubApp requires emulateServer: true (in-process server path).");
-}
-const emulatedClient: MiroirConfigForClientStub = miroirConfig.client;
-const loggerOptions: LoggerOptions = logConfig;
-
-miroirAppStartup();
-miroirCoreStartup();
-miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
-miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
-miroirMongoDbStoreSectionStartup(ConfigurationService.configurationService);
-miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
-ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
-
-const miroirActivityTracker = new MiroirActivityTracker();
-const miroirEventService = new MiroirEventService(miroirActivityTracker);
-MiroirLoggerFactory.startRegisteredLoggers(
-  miroirActivityTracker,
-  miroirEventService,
-  loglevelnext,
-  loggerOptions,
-);
-
-const githubDeploymentStorageConfiguration: StoreUnitConfiguration | undefined =
-  emulatedClient.deploymentStorageConfig[GITHUB_DEPLOYMENT_UUID];
-
-const adminDeployment: Deployment = {
-  ...deployment_Admin,
-  configuration: emulatedClient.deploymentStorageConfig[deployment_Admin.uuid],
-};
-
-const applicationDeploymentMap: ApplicationDeploymentMap = {
-  ...defaultSelfApplicationDeploymentMap,
-  [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
-  [selfApplicationGitHub.uuid]: deployment_GitHub_DO_NOT_USE.uuid,
-};
-
-const githubModelEnvironment = getDefaultGitHubModelEnvironment(
-  defaultMiroirMetaModel,
-  deployment_GitHub_DO_NOT_USE.uuid,
-);
-
-const githubTestbedInitParams = {
-  dataStoreType: "app" as const,
-  metaModel: defaultMiroirMetaModel,
-  selfApplication: selfApplicationGitHub,
-  applicationModelBranch: selfApplicationModelBranchGitHubMasterBranch as any,
-  applicationVersion: githubInitApplicationVersion,
-};
-
 const testThemeOptions = [
   {
     id: "default",
@@ -195,44 +97,9 @@ const testThemeOptions = [
   },
 ];
 
+let testbed: GitHubTestbed;
 let domainController: DomainControllerInterface;
 let miroirContext: MiroirContext;
-let fakeServer: FakeExternalServiceServer;
-const tokenCache = createExternalServiceTokenCache();
-
-async function overrideEndpointBaseUrl(baseUrl: string): Promise<void> {
-  const existing = (githubServiceEndpoint as EndpointDefinition).definition as {
-    externalService: Record<string, unknown>;
-  };
-  const updated = {
-    ...githubServiceEndpoint,
-    definition: { externalService: { ...existing.externalService, baseUrl } },
-  } as EntityInstance;
-  const updateResult = await domainController.handleAction(
-    {
-      actionType: "updateInstance",
-      endpoint: INSTANCE_ENDPOINT,
-      payload: {
-        application: selfApplicationGitHub.uuid,
-        applicationSection: "model",
-        objects: [updated],
-      },
-    },
-    applicationDeploymentMap,
-    githubModelEnvironment,
-  );
-  expect(updateResult instanceof Action2Error, JSON.stringify(updateResult)).toBe(false);
-  const commitResult = await domainController.handleAction(
-    {
-      actionType: "commit",
-      endpoint: MODEL_ENDPOINT,
-      payload: { application: selfApplicationGitHub.uuid },
-    },
-    applicationDeploymentMap,
-    githubModelEnvironment,
-  );
-  expect(commitResult instanceof Action2Error, JSON.stringify(commitResult)).toBe(false);
-}
 
 function renderGitHubReport(reportDefinition: Report) {
   const pageParams: Params<ReportUrlParamKeys> = {
@@ -285,75 +152,24 @@ function shownOnPage(text: string): boolean {
 }
 
 beforeAll(async () => {
-  fakeServer = await startFakeExternalServiceServer();
-  miroirContext = new MiroirContext(miroirActivityTracker, miroirEventService, miroirConfig);
-  const session = new AppStackIntegrationTestSession(miroirConfig, {
-    externalServiceEnvironment: { insecureBaseUrls: [fakeServer.baseUrl], tokenCache },
-    applicationDeploymentMap,
-    adminDeployment,
-    libraryDeploymentStorageConfiguration:
-      emulatedClient.deploymentStorageConfig[deployment_Library_DO_NO_USE.uuid],
-    miroirActivityTracker,
-    miroirEventService,
-  });
-  domainController = (await session.initSession()).domainController;
-
-  await resetAndInitApplicationDeployment(domainController, applicationDeploymentMap, [
-    deployment_Miroir as Deployment,
-  ]);
-  expect(githubDeploymentStorageConfiguration, "GitHub deployment must be in the test environment").toBeDefined();
-  const createResult = await domainController.handleCompositeAction(
-    createDeploymentCompositeAction(
-      "GitHub",
-      GITHUB_DEPLOYMENT_UUID,
-      GITHUB_APPLICATION_UUID,
-      adminDeployment,
-      githubDeploymentStorageConfiguration as StoreUnitConfiguration,
-    ),
-    applicationDeploymentMap,
-    defaultMiroirModelEnvironment,
-    {},
+  testbed = await bootGitHubTestbed();
+  domainController = testbed.domainController;
+  miroirContext = new MiroirContext(
+    testbed.miroirActivityTracker,
+    testbed.miroirEventService,
+    testbed.miroirConfig,
   );
-  if (createResult.status !== "ok") {
-    const openResult = await domainController.handleAction(
-      {
-        actionType: "storeManagementAction_openStore",
-        endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-        payload: {
-          application: GITHUB_APPLICATION_UUID,
-          deploymentUuid: GITHUB_DEPLOYMENT_UUID,
-          configuration: { [GITHUB_DEPLOYMENT_UUID]: githubDeploymentStorageConfiguration },
-        },
-      },
-      applicationDeploymentMap,
-      defaultMiroirModelEnvironment,
-    );
-    expect(openResult instanceof Action2Error, JSON.stringify(openResult)).toBe(false);
-  }
 }, 60000);
 
 beforeEach(async () => {
-  fakeServer.receivedRequests.length = 0;
+  testbed.fakeServer.receivedRequests.length = 0;
   registerSecrets({ githubToken: TEST_TOKEN });
-  fakeServer.setFixture("GET", "/user/repos", { body: REPOSITORIES });
-  fakeServer.setFixtureForAuth("GET", "/user/repos", "Bearer ghp_revoked", {
+  testbed.fakeServer.setFixture("GET", "/user/repos", { body: REPOSITORIES });
+  testbed.fakeServer.setFixtureForAuth("GET", "/user/repos", "Bearer ghp_revoked", {
     status: 401,
     body: { message: "Bad credentials", status: "401" },
   });
-  const initResult = await domainController.handleCompositeAction(
-    resetAndinitializeDeploymentCompositeAction(
-      selfApplicationGitHub.uuid,
-      deployment_GitHub_DO_NOT_USE.uuid,
-      githubTestbedInitParams,
-      [],
-      defaultGitHubAppModel,
-    ),
-    applicationDeploymentMap,
-    defaultMiroirModelEnvironment,
-    {},
-  );
-  expect(initResult.status, JSON.stringify(initResult)).toBe("ok");
-  await overrideEndpointBaseUrl(fakeServer.baseUrl);
+  await reseedGitHub(testbed);
 }, 60000);
 
 afterEach(() => {
@@ -363,7 +179,7 @@ afterEach(() => {
 
 afterAll(async () => {
   clearSecrets();
-  await fakeServer?.close();
+  await testbed?.fakeServer.close();
 });
 
 describe.skipIf(!shouldRun)("githubApp: GitHub deployment and repositories Report", () => {
@@ -380,10 +196,10 @@ describe.skipIf(!shouldRun)("githubApp: GitHub deployment and repositories Repor
 
   it("asks GitHub for the 100 most recently updated repositories with the user's token and GitHub's headers", async () => {
     renderGitHubReport(reportGitHubRepositories);
-    await waitFor(() => expect(fakeServer.receivedRequests.length).toBeGreaterThan(0), {
+    await waitFor(() => expect(testbed.fakeServer.receivedRequests.length).toBeGreaterThan(0), {
       timeout: 15000,
     });
-    const request = fakeServer.receivedRequests[0];
+    const request = testbed.fakeServer.receivedRequests[0];
     expect(request.path).toBe("/user/repos");
     expect(new URLSearchParams(request.search).get("per_page")).toBe("100");
     expect(new URLSearchParams(request.search).get("sort")).toBe("updated");
@@ -398,7 +214,7 @@ describe.skipIf(!shouldRun)("githubApp: GitHub deployment and repositories Repor
     renderGitHubReport(reportGitHubRepositories);
     await waitFor(
       () => {
-        expect(fakeServer.receivedRequests.length).toBeGreaterThan(0);
+        expect(testbed.fakeServer.receivedRequests.length).toBeGreaterThan(0);
         expect(shownOnPage("octocat/hello-miroir")).toBe(false);
         expect(screen.queryAllByText(/Report async load failed/).length).toBeGreaterThan(0);
       },
