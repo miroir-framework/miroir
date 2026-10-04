@@ -139,3 +139,18 @@ test("theme-bypass: colors written in components, not in theme definitions nor a
   await spares(THEME_VIEW, `export const Badge = () => <span style={{ color: "#2e7d32" }}>ok</span>;\n`, "theme-bypass");
   await spares(LIB, `export const defaultColor = "#2e7d32";\n`, "theme-bypass");
 });
+
+test("views of the 4-tests root keep the view checks; an app entry stays a root", async () => {
+  const SESSION_HOOK = "packages/miroir-standalone-app/src/miroir-fwk/4-tests/useSample.ts";
+  const SESSION_VIEW = "packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/Sample.tsx";
+  const SESSION = "packages/miroir-standalone-app/src/miroir-fwk/4-tests/SampleTestSession.ts";
+  const ENTRY = "packages/miroir-standalone-app/src/index.tsx";
+  const subscribe = `declare const bus: { subscribe(f: () => void): () => void };\nexport const useOff = () => bus.subscribe(() => undefined);\n`;
+  await flags(SESSION_HOOK, subscribe, "pub-sub");
+  await flags(SESSION_HOOK, `export async function useLoad() { return fetch("/api/x"); }\n`, "component-io");
+  await flags(SESSION_VIEW, `export const Badge = () => <span style={{ color: "#2e7d32" }}>ok</span>;\n`, "theme-bypass");
+  await spares(SESSION_HOOK, `export const useMode = () => process.env.MIROIR_SCHEMA_MODE;\n`, "global-environment");
+  await spares(SESSION, subscribe, "pub-sub");
+  // The entry reads the auth status at boot, before any component renders.
+  await spares(ENTRY, `export async function start() { return fetch("/auth/status"); }\n`, "component-io");
+});

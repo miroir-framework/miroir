@@ -17,6 +17,8 @@ const ROOTS = [
 ];
 // React components and hooks.
 const VIEW = ["packages/*/src/**/*.tsx", "packages/*/src/**/4_view/**/*.ts", "packages/*/src/**/use[A-Z]*.ts"];
+// The components and hooks of the 4-tests folder are views like any other.
+const TEST_SESSION_VIEWS = ["packages/*/src/miroir-fwk/4-tests/**/*.tsx", "packages/*/src/miroir-fwk/4-tests/**/use[A-Z]*.ts"];
 // The views that define the themes and the Themed components: where colors are written down.
 const THEME_VIEWS = [
   "packages/*/src/**/Themes/**/*.tsx",
@@ -152,6 +154,11 @@ const anywhereInSrc = [
   ),
 ];
 
+const fetchInView = {
+  name: "fetch",
+  message: "[component-io] fetch in a component or hook: call a DomainController action, or a service passed in.",
+};
+
 const outsideCompositionRoots = [
   smell(
     "global-environment",
@@ -225,10 +232,7 @@ export default [
     files: VIEW,
     ignores: [...TESTS, ...ROOTS],
     rules: {
-      "no-restricted-globals": [
-        "warn",
-        { name: "fetch", message: "[component-io] fetch in a component or hook: call a DomainController action, or a service passed in." },
-      ],
+      "no-restricted-globals": ["warn", fetchInView],
       "no-restricted-syntax": ["warn", ...anywhereInSrc, ...outsideCompositionRoots, ...inViews, ...outsideThemes],
     },
   },
@@ -236,6 +240,15 @@ export default [
     files: THEME_VIEWS,
     ignores: [...TESTS, ...ROOTS],
     rules: { "no-restricted-syntax": ["warn", ...anywhereInSrc, ...outsideCompositionRoots, ...inViews] },
+  },
+  {
+    // Views inside the 4-tests root get the view checks; the folder stays a root for process.env and wiring.
+    files: TEST_SESSION_VIEWS,
+    ignores: TESTS,
+    rules: {
+      "no-restricted-globals": ["warn", fetchInView],
+      "no-restricted-syntax": ["warn", ...anywhereInSrc, ...inViews, ...outsideThemes],
+    },
   },
   {
     files: TESTS,
