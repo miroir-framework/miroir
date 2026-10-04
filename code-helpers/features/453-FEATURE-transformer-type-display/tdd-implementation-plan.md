@@ -29,7 +29,7 @@ Out: ML schemas in badges; slot expectations other than `applyTo` (#454); runtim
 | 2 | `returnValue` typing, contradiction, literals, status (D6, D12, D13, D16, D17) | ✅ DONE | walk cases |
 | 3 | Badges and switch in the TransformerEditor (D1, D3, D7, D18, D19) | ✅ DONE | `ui.transformerEditor` cases |
 | 4 | Switch value in ViewParams and through sandbox cases (D2) | ✅ DONE | runner test with a fake host |
-| 5 | Nonreg, docs, AC check | ⬜ | full `nonreg:filesystem` |
+| 5 | Nonreg, docs, AC check | ✅ DONE | full `nonreg:filesystem` |
 
 ## Locked implementation defaults
 
@@ -75,7 +75,7 @@ The container's builds predated `_integration` (miroir-env failed to build again
 
 ## Slice 1 — Value typing (D15)
 
-**Status:** ⬜
+**Status:** ✅ DONE
 
 **RED**
 - `inputOutputTypeOfValue` cases: `[1]` → `array<number>`; `[1, "a"]` → `array<any>`; `[]` → `array`; `[{parentUuid: Book}]` → `array<Book>`; `{parentUuid: Book}` → Book; `{a: 1}` → `object` (existing case kept).
@@ -90,7 +90,7 @@ Committed together with slice 2 (the same MiroirTest file and walk). Extra cases
 
 ## Slice 2 — `returnValue`, literals, status
 
-**Status:** ⬜
+**Status:** ✅ DONE
 
 **RED** (walk cases)
 - `returnValue` `value: "a"` without `mlSchema` → output `string`; `value: [1, 2]` → `array<number>`.
@@ -109,7 +109,7 @@ Committed together with slice 2 (the same MiroirTest file and walk). Extra cases
 
 ## Slice 3 — Badges and switch
 
-**Status:** ⬜
+**Status:** ✅ DONE
 
 **RED** (`ui.transformerEditor` cases)
 - Switch off (default): no `transformer-type-badge-*` element.
@@ -129,7 +129,7 @@ Committed together with slice 2 (the same MiroirTest file and walk). Extra cases
 
 ## Slice 4 — Switch value (D2)
 
-**Status:** ⬜
+**Status:** ✅ DONE
 
 **RED**
 - Runner test: with a host whose `showTransformerTypes()` returns true, a case rendering the TransformerEditor shows the switch on; toggling it calls `saveShowTransformerTypes(false)`, and the next case starts off.
@@ -146,6 +146,12 @@ Committed together with slice 2 (the same MiroirTest file and walk). Extra cases
 
 ## Slice 5 — Nonreg, docs, AC
 
-**Status:** ⬜
+**Status:** ✅ DONE
 
 - Full `npm run nonreg:filesystem -- --runner shared`; nonreg step for the runner test if the manifest needs one; AC check against the issue.
+
+### Realization
+
+- `npm run nonreg:filesystem -- --runner shared`: 96/96 (new step `unit-453-transformer-types-display`). `unit-localCacheMonitorSummary` failed in the shared batch and passed on its legacy re-run, as the runner allows.
+- AC check against the issue: every criterion has a proof. The entity-name criterion (D18) had none, so the runner test file gained two label cases over a real walk (entity name, its uuid in the tooltip; an unknown uuid shortened to 8 characters); each fails when labels stop using entity names.
+- PR #457 CI green (core typecheck and unit tests, bundle guards).

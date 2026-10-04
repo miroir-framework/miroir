@@ -7,6 +7,8 @@
  *   through the host, so the next case starts with it.
  * - Sandbox: the host it registers reads the app's ViewParams `showTransformerTypes`; a save from
  *   a case is the host value at once and an `updateInstance` of the ViewParams instance.
+ * - Badge labels (D18): an entity type shows the entity name, an unknown entity uuid its first
+ *   8 characters.
  *
  * Run:
  * ```bash
@@ -18,6 +20,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
+  checkTransformerInterfaceRecursively,
   ConfigurationService,
   defaultSelfApplicationDeploymentMap,
   MiroirActivityTracker,
@@ -47,6 +50,8 @@ import {
   ComponentTestSandboxProvider,
   useComponentTestSandbox,
 } from "../../src/miroir-fwk/4_view/components/Reports/ComponentTestSandbox";
+import { transformerTypeBadges } from "../../src/miroir-fwk/4_view/components/TransformerEditor/TransformerEditor";
+import type { TransformerTypeBadge } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/MlElementEditorInterface";
 
 const RUN_TEST_TIMEOUT = 120_000;
 const switchTarget = { byTestId: "transformer-editor-show-types-switch" };
@@ -124,6 +129,35 @@ describe("transformerTypesDisplay: the switch value through the runner's host", 
     },
     RUN_TEST_TIMEOUT,
   );
+});
+
+// ################################################################################################
+describe("transformerTypesDisplay: badge labels (D18)", () => {
+  const bookUuid = "e8ba151b-d68e-4cc3-9a83-3459d309ccf5";
+  const walk = checkTransformerInterfaceRecursively(
+    {
+      transformerType: "mapList",
+      interpolation: "runtime",
+      elementTransformer: { transformerType: "getFromContext", interpolation: "runtime", referenceName: "defaultInput" },
+    },
+    { type: "array", payload: bookUuid },
+    { entityMlSchemas: { [bookUuid]: { type: "object", definition: { uuid: { type: "uuid" } } } } },
+  );
+  const badgeAt = (badges: TransformerTypeBadge[], path: string[]) =>
+    badges.find((badge) => badge.path.join(".") === path.join("."));
+
+  it("an entity type shows the entity name, its uuid stays in the tooltip", () => {
+    const badges = transformerTypeBadges(walk, [{ uuid: bookUuid, name: "Book" }]);
+    expect(badgeAt(badges, ["transformer"])).toMatchObject({ givenLabel: "array<Book>" });
+    expect(badgeAt(badges, ["transformer", "elementTransformer"])).toMatchObject({ givenLabel: "Book" });
+    expect(badgeAt(badges, ["transformer"])?.title).toContain(bookUuid);
+  });
+
+  it("an unknown entity uuid shows its first 8 characters", () => {
+    const badges = transformerTypeBadges(walk, []);
+    expect(badgeAt(badges, ["transformer"])).toMatchObject({ givenLabel: "array<e8ba151b>" });
+    expect(badgeAt(badges, ["transformer", "elementTransformer"])).toMatchObject({ givenLabel: "e8ba151b" });
+  });
 });
 
 // ################################################################################################
