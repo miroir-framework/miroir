@@ -36,6 +36,7 @@ SKIPPED_DIRS = {"node_modules", "dist", "release", "tmp", "preprocessor-generate
 # Checklist order of the skill: silent wrong behaviour first, then the cost of change, then readability.
 SMELL_ORDER = [
     "swallowed-error",
+    "action-result",
     "precedence-trap",
     "positional-mixup",
     "module-state",

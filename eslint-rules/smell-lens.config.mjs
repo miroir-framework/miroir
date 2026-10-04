@@ -20,6 +20,11 @@ const VIEW = ["packages/*/src/**/*.tsx", "packages/*/src/**/4_view/**/*.ts", "pa
 
 const UUID = "/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/";
 const SERVICE = "/(Service|Controller|Tracker|Registry|Store|Cache)$/i";
+// A function declared to return Action2ReturnType or Action2VoidReturnType, directly or in a Promise.
+const RETURNS_ACTION =
+  ":function:matches([returnType.typeAnnotation.typeName.name=/^Action2(Void)?ReturnType$/], [returnType.typeAnnotation.typeArguments.params.0.typeName.name=/^Action2(Void)?ReturnType$/])";
+// A parameter named `...Uuid` or typed `Uuid`.
+const UUID_PARAM = "Identifier.params:matches([name=/Uuid$/], [typeAnnotation.typeAnnotation.typeName.name='Uuid'])";
 const smell = (id, selector, text) => ({ selector, message: `[${id}] ${text}` });
 
 const anywhereInSrc = [
@@ -32,6 +37,16 @@ const anywhereInSrc = [
     "swallowed-error",
     "CallExpression[callee.property.name='catch'] > :function.arguments[body.type='BlockStatement'][body.body.length=0]",
     "Empty .catch handler: the rejection disappears.",
+  ),
+  smell(
+    "action-result",
+    `${RETURNS_ACTION} ThrowStatement`,
+    "throw in a function that returns an action result: callers check `status`, not exceptions. Return an Action2Error (`NotImplemented` for a stub).",
+  ),
+  smell(
+    "action-result",
+    `${RETURNS_ACTION} ReturnStatement > TSAsExpression[typeAnnotation.type='TSAnyKeyword']`,
+    "`return … as any` in a function that returns an action result: the declared result type checks nothing.",
   ),
   smell(
     "module-state",
@@ -50,6 +65,12 @@ const anywhereInSrc = [
   ),
   smell(
     "module-state",
+    // `const EMPTY = {}` kept as a stable reference is fine: names starting with empty/default/none are skipped.
+    "Program > :matches(VariableDeclaration, ExportNamedDeclaration > VariableDeclaration)[kind='const'] > VariableDeclarator[id.name!=/^(empty|default|none|no[A-Z_])/i] > :matches(ObjectExpression[properties.length=0], ArrayExpression[elements.length=0]).init",
+    "Module-level empty object or array: if it is filled at run time, it is a process-wide registry shared by every instance.",
+  ),
+  smell(
+    "module-state",
     "PropertyDefinition[static=true][readonly!=true][value.type='NewExpression']",
     "Mutable static singleton: a global reached by name instead of injected.",
   ),
@@ -60,7 +81,7 @@ const anywhereInSrc = [
   ),
   smell(
     "positional-mixup",
-    ":function > Identifier.params[name=/Uuid$/] ~ Identifier.params[name=/Uuid$/]",
+    `:matches(:function, TSFunctionType, TSMethodSignature, TSDeclareFunction, TSEmptyBodyFunctionExpression) > ${UUID_PARAM} ~ ${UUID_PARAM}`,
     "Second uuid parameter in one positional list: `Uuid` is a string, so swapped arguments still type-check. Take one options object.",
   ),
   smell(
