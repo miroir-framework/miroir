@@ -6,7 +6,8 @@ checks (commented-out code, a logger named after another file, a near-identical 
 through many files), keeps only the lines the branch adds when --diff is given (lines it moves from elsewhere
 are counted apart), and prints the findings grouped by smell id, in the impact order of the
 miroir-code-quality skill (.agents/skills/miroir-code-quality/), which holds the remedies.
-It reports and always exits 0: the findings are review prompts, not a gate.
+It exits 0 whatever it finds: the findings are review prompts, not a gate. A path outside the
+repository, or one that does not exist, is a usage error (exit 2).
 
 Examples:
   python scripts/code_smells.py --diff                       # this branch and working tree vs origin/_integration
@@ -401,6 +402,13 @@ def main(argv: list[str] | None = None) -> int:
         files = sorted(set(added) | set(moved))
         scope = f"lines added since {args.diff}"
     else:
+        # A path that matches nothing would print "No smell found", which reads as a clean result.
+        outside = [p for p in args.paths if not (root / p).resolve().is_relative_to(root)]
+        if outside:
+            parser.error(f"outside the repository: {', '.join(outside)}")
+        missing = [p for p in args.paths if not (root / p).exists()]
+        if missing:
+            parser.error(f"no such file or folder: {', '.join(missing)}")
         files = expand(args.paths, root)
         scope = ", ".join(args.paths)
     findings = (eslint_findings(files, root) if files else []) + [f for p in files for f in text_findings(p, root)]

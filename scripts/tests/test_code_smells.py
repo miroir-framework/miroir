@@ -6,6 +6,8 @@ import re
 import subprocess
 from pathlib import Path
 
+import pytest
+
 import code_smells
 from code_smells import Finding
 
@@ -188,6 +190,17 @@ def test_expand_keeps_typescript_sources_only(tmp_path: Path) -> None:
     ]:
         _write(tmp_path, path, "")
     assert code_smells.expand(["packages/a"], tmp_path) == ["packages/a/src/View.tsx", "packages/a/src/x.ts"]
+
+
+def test_paths_outside_the_repository_or_missing_are_input_errors(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    root = tmp_path / "repo"
+    _write(root, "packages/a/src/x.ts", "")
+    _write(tmp_path, "sibling/src/y.ts", "")
+    for path, error in [("..", "outside the repository"), (str(tmp_path / "sibling"), "outside the repository"), ("packages/b", "no such file")]:
+        with pytest.raises(SystemExit) as exited:
+            code_smells.main(["--root", str(root), path])
+        assert exited.value.code == 2
+        assert error in capsys.readouterr().err
 
 
 def test_diff_scope_covers_commits_working_tree_and_untracked_files(tmp_path: Path) -> None:

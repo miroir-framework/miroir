@@ -81,6 +81,6 @@ Most harmful first. *Lens*: a warn-level ESLint check reported by `npm run smell
 
 ## Tools
 
-- `npm run smells -- --diff [base]` or `npm run smells -- <paths>`: a Markdown report, one section per smell in checklist order, each message stating the remedy. It always exits 0. `--limit N` lists N findings per smell (default 25).
+- `npm run smells -- --diff [base]` or `npm run smells -- <paths>`: a Markdown report, one section per smell in checklist order, each message stating the remedy. It exits 0 whatever it finds, and 2 on a path that is missing or outside the repository. `--limit N` lists N findings per smell (default 25).
 - `npm run lint` blocks a PR; `npm run smells` informs a review. How the lens works, how to add a detector and how to make one blocking: [lens.md](lens.md).
 - Repository examples and counts for every smell, measured on 2026-10-04: [`code-helpers/features/340-FEATURE-code-quality-skill/analysis.md`](../../../code-helpers/features/340-FEATURE-code-quality-skill/analysis.md).
