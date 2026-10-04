@@ -56,6 +56,10 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger:
 // `componentTestStepDelayMs`, saved when the slider is released; the runner reads the current
 // value when each step starts, so moving the slider acts on the running case. The slider mounts
 // with the panel, so that a closed sandbox needs no Redux store or DomainController.
+//
+// The header's play / pause button (#443) holds the run before its next step: the runner awaits
+// `waitWhilePaused()` before each step, after the step delay. The end of a run resumes it, so the
+// next run starts unpaused. The paused state is in memory only.
 // ################################################################################################
 
 export interface ComponentTestSandboxContextValue {
@@ -89,6 +93,40 @@ export function useComponentTestSandbox(): ComponentTestSandboxContextValue | un
 }
 
 const maxStepDelayMs = 2000;
+
+// ################################################################################################
+/**
+ * #443: the pause of a run. `waitWhilePaused()` resolves at once when the run is not paused, or
+ * when `resume()` is called otherwise.
+ */
+export interface ComponentTestPauseGate {
+  pause: () => void;
+  resume: () => void;
+  isPaused: () => boolean;
+  waitWhilePaused: () => Promise<void>;
+}
+
+export function createComponentTestPauseGate(): ComponentTestPauseGate {
+  let held: { promise: Promise<void>; release: () => void } | undefined;
+  return {
+    pause: () => {
+      if (held) {
+        return;
+      }
+      let release: () => void = () => {};
+      const promise = new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      held = { promise, release };
+    },
+    resume: () => {
+      held?.release();
+      held = undefined;
+    },
+    isPaused: () => held !== undefined,
+    waitWhilePaused: () => held?.promise ?? Promise.resolve(),
+  };
+}
 
 // ################################################################################################
 /**
@@ -178,7 +216,21 @@ export const ComponentTestSandbox: React.FC<{
   /** #438: the header checkbox "Glow on interactions"; the glow is on when omitted. */
   glowOn?: boolean;
   onGlowOnChange?: (glowOn: boolean) => void;
-}> = ({ open, running = false, onClose, sandboxRef, testName, stepDelayMsRef, glowOn = true, onGlowOnChange }) => (
+  /** #443: the run is paused; the play / pause button shows only with `onPausedChange`. */
+  paused?: boolean;
+  onPausedChange?: (paused: boolean) => void;
+}> = ({
+  open,
+  running = false,
+  onClose,
+  sandboxRef,
+  testName,
+  stepDelayMsRef,
+  glowOn = true,
+  onGlowOnChange,
+  paused = false,
+  onPausedChange,
+}) => (
   <div
     data-testid="component-test-sandbox-panel"
     style={{
@@ -197,6 +249,18 @@ export const ComponentTestSandbox: React.FC<{
         <span style={{ fontWeight: "bold", color: "#4527a0", flexGrow: 1 }}>Component test sandbox</span>
         {/* mounted with the panel only: it reads ViewParams, which needs the app's providers */}
         {open && stepDelayMsRef && <ComponentTestStepDelaySlider stepDelayMsRef={stepDelayMsRef} />}
+        {onPausedChange && (
+          <button
+            type="button"
+            aria-label={paused ? "Resume component test run" : "Pause component test run"}
+            title={running ? undefined : "No component test run in progress"}
+            disabled={!running}
+            onClick={() => onPausedChange(!paused)}
+            style={{ minWidth: "5.5em" }}
+          >
+            {paused ? "\u25B6 Play" : "\u23F8 Pause"}
+          </button>
+        )}
         {onGlowOnChange && (
           <label style={{ display: "flex", alignItems: "center", gap: "4px", color: "#555", whiteSpace: "nowrap" }}>
             <input type="checkbox" checked={glowOn} onChange={(event) => onGlowOnChange(event.target.checked)} />
@@ -249,11 +313,26 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
   const [testName, setTestName] = useState<string | undefined>(undefined);
   // #438: in memory only, so every page load starts with the glow on
   const [glowOn, setGlowOn] = useState(true);
+  // #443: read by the runner before each step; `paused` mirrors it for the button
+  const pauseGateRef = useRef(createComponentTestPauseGate());
+  const [paused, setPaused] = useState(false);
+  const onPausedChange = useCallback((pause: boolean) => {
+    if (pause) {
+      pauseGateRef.current.pause();
+    } else {
+      pauseGateRef.current.resume();
+    }
+    setPaused(pauseGateRef.current.isPaused());
+  }, []);
 
   // #435: set by the slider, read by the runner when each step starts
   const stepDelayMsRef = useRef(0);
   const runControls = useMemo(
-    () => ({ onCaseStart: setTestName, stepDelayMs: () => stepDelayMsRef.current }),
+    () => ({
+      onCaseStart: setTestName,
+      stepDelayMs: () => stepDelayMsRef.current,
+      waitWhilePaused: () => pauseGateRef.current.waitWhilePaused(),
+    }),
     [],
   );
 
@@ -291,8 +370,9 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
   const finishComponentTests = useCallback(() => {
     runningRef.current = false;
     setRunning(false);
+    onPausedChange(false);
     registrationRef.current?.endRun();
-  }, []);
+  }, [onPausedChange]);
 
   const prepareReportTests = useCallback(async (session: UiIntegrationReportTestSession) => {
     const { componentTestRunInProgressMessage, isComponentTestRunActive, registerReportTests } =
@@ -321,9 +401,10 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
     return () => {
       runningRef.current = false;
       setRunning(false);
+      onPausedChange(false);
       registration.endRun();
     };
-  }, [closeRegistration, runControls]);
+  }, [closeRegistration, runControls, onPausedChange]);
 
   const onClose = useCallback(() => {
     if (runningRef.current) {
@@ -335,8 +416,10 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
 
   // On unmount, close after the current commit: unmounting the case's React root synchronously
   // while React commits this tree makes React warn about a race.
+  // A run paused at that time is resumed, so that it ends instead of waiting for a gone button.
   useEffect(
     () => () => {
+      pauseGateRef.current.resume();
       const registration = registrationRef.current;
       registrationRef.current = undefined;
       if (registration) {
@@ -363,6 +446,8 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
         stepDelayMsRef={stepDelayMsRef}
         glowOn={glowOn}
         onGlowOnChange={setGlowOn}
+        paused={paused}
+        onPausedChange={onPausedChange}
       />
     </ComponentTestSandboxContext.Provider>
   );
