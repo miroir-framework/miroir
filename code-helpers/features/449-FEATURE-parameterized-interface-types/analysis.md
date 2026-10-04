@@ -18,7 +18,7 @@
   - [`ListTransformerPanel.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ListTransformerPanel.tsx) (expected-output chooser)
   - [`TransformerTypeAnnotation.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/TransformerTypeAnnotation.tsx) (`formatInputOutputTypeLabel`), [`TransformerEditor.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/TransformerEditor/TransformerEditor.tsx) (badges, mismatch titles)
 
-**Status:** decisions confirmed (D1-D14); A approved all four D11 rows on 2026-10-04.
+**Status:** implemented (slices 0-7 of the TDD plan, 2026-10-04); decisions D1-D14 confirmed, A approved all four D11 rows.
 
 ---
 

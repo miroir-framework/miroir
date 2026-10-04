@@ -399,12 +399,13 @@ function renderBookListSection(pageParams: Record<string, unknown> = {}) {
 describe("ListTransformerPanel — list section integration", () => {
   const getTransformerToggle = () => screen.getByRole("button", { name: /functions/i });
 
-  it("shows transformer toggle in the header; panel hidden by default", () => {
+  it("shows transformer toggle in the header; panel hidden by default", async () => {
     renderBookListSection();
 
     expect(getTransformerToggle()).toBeInTheDocument();
     expect(screen.queryByTestId("list-transformer-panel")).not.toBeInTheDocument();
-    expect(screen.getByTestId("entity-instance-grid-stub")).toBeInTheDocument();
+    // The grid's report display is lazy: the first render of the file shows its Suspense spinner.
+    expect(await screen.findByTestId("entity-instance-grid-stub")).toBeInTheDocument();
   });
 
   it("mounts the panel below the grid and shows identity-transformed rows", () => {

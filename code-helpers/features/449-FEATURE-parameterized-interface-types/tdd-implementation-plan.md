@@ -16,7 +16,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisites: [#383](../383-FEATURE-transformer-choice-by-input-type/) ✅, [#453](../453-FEATURE-transformer-type-display/) ✅
 Working branch: `claude/449-payload-sub-choice` (from `_integration` 04ae35bb)
 
-**Resume note:** Slices 0-6 DONE.
+**Resume note:** All slices DONE.
 
 ---
 
@@ -36,13 +36,13 @@ Out: full ML schema types, nested type parameters, `object<P>`, saving the chose
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize the interface check suites | ✅ | baseline runs of `fn.transformer.interfaceCheck`, `fn.transformer.interfaceWalk`, `ListTransformerPanel.unit` |
-| 1 | Declare and match `record` and `tuple` (tracer) | ✅ | `fn.transformer.interfaceCheck` new suites "record forms", "tuple forms", "payload values" |
-| 2 | Coarse inference, lift and walk for the new types | ✅ | `fn.transformer.interfaceCheck` "inference" / "lift" suites, `fn.transformer.interfaceWalk` cases |
+| 1 | Declare and match `record` and `tuple` (tracer) | ✅ | `fn.transformer.interfaceCheck` new suites "record forms", "tuple forms", "type parameter values" |
+| 2 | Coarse inference, lift and walk for the new types | ✅ | `fn.transformer.interfaceWalk` "inferTransformerOutputTypeFromSchema" / "liftInputOutputTypeToMlSchema" suites, walk cases |
 | 3 | Chooser: type parameter for `array` and `record` | ✅ | `ListTransformerPanel.unit` cases |
 | 4 | Chooser: tuple elements | ✅ | `ListTransformerPanel.unit` cases |
-| 5 | One type formatter (G4) | ✅ | `fn.transformer.interfaceCheck` "format" suite, `unit-453-transformer-types-display` |
-| 6 | Stock definition sweep (D11, after A's approval) | ✅ | `stockTransformerDefinitions` suite, `fn.transformer.resultSchema` case |
-| 7 | Nonreg, docs, AC | ⬜ | `unit-449-parameterized-interface-types` step, full nonreg |
+| 5 | One type formatter (G4) | ✅ | `fn.transformer.interfaceCheck` "formatInputOutputTypeLabel" suite, `unit-453-transformer-types-display` |
+| 6 | Stock definition sweep (D11, after A's approval) | ✅ | `stockTransformerDefinitions` suite, `fn.transformer.resultSchema` case, walk "record builders" |
+| 7 | Nonreg, docs, AC | ✅ | `unit-449-parameterized-interface-types` step, full nonreg |
 
 ---
 
@@ -409,16 +409,18 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core
 
 ## Slice 7 — Nonreg, docs, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### 7.1 Nonreg
 
-- Add `unit-449-parameterized-interface-types` (`npm run testByFile -w miroir-standalone-app -- --no-bail ListTransformerPanel.unit`, scopes `["ui"]`) to `scripts/nonreg-manifest.json`. The core suites already run in `unit-miroir-core`.
+- Add `unit-449-parameterized-interface-types` (`npm run testByFile -w miroir-standalone-app -- ListTransformerPanel.unit`, scopes `["ui"]`) to `scripts/nonreg-manifest.json`. The core suites already run in `unit-miroir-core`.
+- The pre-existing failure of slice 0 is fixed here, since the step runs the whole file: the first test of the file met the Suspense spinner of the lazy report display, it now awaits the grid (`findByTestId`). `--no-bail` is no longer needed.
 - Full `npm run nonreg:filesystem -- --runner shared`.
 
 ### 7.2 Docs
 
 - `analysis.md` status → implemented; progress table; `docs/` mention of `inputOutput` types if one exists (search `inputOutput` in `docs/`).
+- Done: `docs/reference/transformers.md` gets a section "The `inputOutput` types" (forms, parameters, compatibility, inference, the panel chooser); the stock rows of `indexListBy`, `object_fromEntries`, `listReducerToSpreadObject` show their new declarations; the root input bullet mentions `array<object>`.
 
 ### 7.3 Tracer bullet (narrative)
 
@@ -431,9 +433,12 @@ Automated equivalent: `ListTransformerPanel.unit` slices 3-4 cases.
 
 ### AC checklist (#449)
 
-| Criterion | Proven by | Status |
+| Criterion (issue #449) | Proven by | Status |
 |---|---|---|
-| A parameter control appears for the parameterized types only | slice 3 case 1, slice 4 case 1 | ⬜ |
-| `array<string>` expected: `array<string>` adequate, `array<number>` inadequate | slice 3 | ⬜ |
-| Entity and record rules | slice 1 "record forms" | ⬜ |
-| Panel tests cover the chooser | `ListTransformerPanel.unit` | ⬜ |
+| `inputOutput` accepts `record`, `record<P>`, `tuple<...>`, `array<object>`, `array<undefined>`, rejects `object<P>`; every stock definition validates | `fn.transformer.interfaceCheck` / `stockTransformerDefinitions` (slice 1 cases, "all stock ... validate"), `modelValidation` | ✅ |
+| The compatibility rules hold | `fn.transformer.interfaceCheck` "array and record payload forms", "record forms", "tuple forms", "type parameter values" | ✅ |
+| Inference gives `record<P>` / `tuple<...>`, `any` in nested positions | `fn.transformer.interfaceWalk` / `inferTransformerOutputTypeFromSchema` (slice 2) | ✅ |
+| Parameter select for `array` and `record` only, element selects for `tuple` | `ListTransformerPanel.unit` slice 3 cases 1-2, slice 4 case 1 | ✅ |
+| Book list, expected `array<string>`: `array<string>` accepted, `array<number>` bordered | `ListTransformerPanel.unit` "expected array of string ..." | ✅ |
+| Types print as `array<Book>`, `record<string>`, `tuple<string, number>` in the panel and the editor | `fn.transformer.interfaceCheck` / `formatInputOutputTypeLabel`, `transformerTypesDisplay.unit` tuple and record cases, panel title case | ✅ |
+| Panel tests in `ListTransformerPanel.unit.test.tsx`, run by a nonreg step | `unit-449-parameterized-interface-types` | ✅ |
