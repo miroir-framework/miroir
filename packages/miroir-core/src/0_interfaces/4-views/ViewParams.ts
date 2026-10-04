@@ -28,6 +28,8 @@ export const viewParams: MlElement = {
     mlSchemaTransformerCompatibility: { type: "boolean", optional: true },
     /** Milliseconds a UI test run in the app waits before each step (#435). Absent or 0: no delay. */
     componentTestStepDelayMs: { type: "number", optional: true },
+    /** The TransformerEditor shows the types of every transformer node (#453). Absent: false. */
+    showTransformerTypes: { type: "boolean", optional: true },
     toolsPage: { type: "object", definition: {} }, // Add toolsPage to the schema
   },
 };
@@ -66,6 +68,8 @@ export interface ViewParamsData {
   mlSchemaTransformerCompatibility?: boolean;
   /** #435: milliseconds a UI test run in the app waits before each step. Absent or 0: no delay. */
   componentTestStepDelayMs?: number;
+  /** #453: the TransformerEditor shows the types of every transformer node. Absent or false: hidden. */
+  showTransformerTypes?: boolean;
   toolsPage?: ToolsPageState;
   generalEditMode?: boolean;
 }

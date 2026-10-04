@@ -58,7 +58,7 @@ import { ActionButtonWithSnackbar } from '../Page/ActionButtonWithSnackbar.js';
 import { ThemedStyledButton } from '../Themes/index.js';
 import { FieldValidationProvider, useFieldValidationContext } from '../ValueObjectEditor/FieldValidationContext.js';
 import { MlElementEditor } from '../ValueObjectEditor/MlElementEditor.js';
-import type { TransformerTypeRestriction } from '../ValueObjectEditor/MlElementEditorInterface.js';
+import type { TransformerTypeBadge, TransformerTypeRestriction } from '../ValueObjectEditor/MlElementEditorInterface.js';
 import type { ValueObjectEditMode } from './ReportSectionEntityInstance.js';
 
 import { selfApplicationMiroir } from "miroir-app-miroir";
@@ -101,6 +101,7 @@ export interface TypedValueObjectEditorProps {
   compatibilityWarnings?: { path: (string | number)[]; title: string }[];
   showMlSchemaTypes?: boolean;
   mlSchemaTypeAnnotations?: { path: (string | number)[]; label: string }[];
+  transformerTypeBadges?: TransformerTypeBadge[];
   environmentAnnotations?: { path: (string | number)[]; label: string }[];
   transformerTypeRestrictions?: TransformerTypeRestriction[];
   // fold / unfold element
@@ -166,6 +167,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
   compatibilityWarnings,
   showMlSchemaTypes,
   mlSchemaTypeAnnotations,
+  transformerTypeBadges,
   environmentAnnotations,
   transformerTypeRestrictions,
   // 
@@ -625,6 +627,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
               compatibilityWarnings={compatibilityWarnings}
               showMlSchemaTypes={showMlSchemaTypes}
               mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
+              transformerTypeBadges={transformerTypeBadges}
               environmentAnnotations={environmentAnnotations}
               transformerTypeRestrictions={transformerTypeRestrictions}
               onChangeVector={onChangeVector}
@@ -699,6 +702,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
               compatibilityWarnings={compatibilityWarnings}
               showMlSchemaTypes={showMlSchemaTypes}
               mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
+              transformerTypeBadges={transformerTypeBadges}
               environmentAnnotations={environmentAnnotations}
               transformerTypeRestrictions={transformerTypeRestrictions}
               submitButton={

@@ -13,9 +13,11 @@ import {
   getInnermostTransformerError,
   noValue,
   safeStringify,
+  transformerNodeTypeStatus,
   transformer_extended_apply_wrapper,
   type InputOutputType,
   type MlElement,
+  type TransformerInterfaceTreeCompatibility,
   type MlObject,
   type MlUnion,
   type MiroirModelEnvironment,
@@ -40,6 +42,8 @@ import {
 import { useCurrentModel } from "../../ReduxHooks.js";
 import { useReportPageContext } from '../Reports/ReportPageContext';
 import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
+import { formatInputOutputTypeLabel } from '../Reports/TransformerTypeAnnotation';
+import type { TransformerTypeBadge } from '../ValueObjectEditor/MlElementEditorInterface';
 import {
   ThemedContainer,
   ThemedFoldableContainer,
@@ -62,6 +66,7 @@ import {
   type TransformerEditorProps,
 } from "./TransformerEditorInterface";
 import { TransformerEventsPanel } from './TransformerEventsPanel';
+import { useShowTransformerTypes } from './TransformerTypesDisplay';
 
 import { entityDefinitionTransformerDefinition } from 'miroir-app-miroir';
 // ################################################################################################
@@ -79,8 +84,9 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 // ################################################################################################
 /**
  * #383: root input type of the edited transformer, from the input it actually runs on (D7).
- * "here": the kind of the value. "instance": the `defaultInput` the instance selector bound, an
- * entity instance (its entity uuid) or an array of them (array of that entity).
+ * "here": the type of the value. "instance": the type of the `defaultInput` the instance selector
+ * bound, an entity instance (its entity uuid) or an array of them (array of that entity). Both
+ * modes type the value the same way (#453 D15).
  */
 function transformerEditorRootInputType(
   inputSelector: { mode?: string; input?: unknown } | undefined,
@@ -92,25 +98,67 @@ function transformerEditorRootInputType(
   if (inputSelector?.mode !== "instance") {
     return "any";
   }
-  const value = instanceInput?.[defaultTransformerInput];
-  const entityUuidOf = (instance: unknown): string | undefined => {
-    const parentUuid = (instance as { parentUuid?: unknown } | undefined)?.parentUuid;
-    return typeof parentUuid === "string" ? parentUuid : undefined;
-  };
-  if (Array.isArray(value)) {
-    return { type: "array", payload: entityUuidOf(value[0]) ?? "any" };
-  }
-  return entityUuidOf(value) ?? inputOutputTypeOfValue(value);
+  return inputOutputTypeOfValue(instanceInput?.[defaultTransformerInput]);
 }
 
 function formatInputOutputType(type: InputOutputType): string {
   return typeof type === "string" ? type : safeStringify(type);
 }
 
+type EditorEntity = { uuid: Uuid; name?: string; mlSchema?: unknown };
+
+/**
+ * #453: one type badge per node of the walk and per literal `applyTo`, at its editor path. Labels
+ * name known entities and shorten unknown entity uuids (D18); the title keeps the full types.
+ */
+export function transformerTypeBadges(
+  interfaceWalk: TransformerInterfaceTreeCompatibility,
+  entities: EditorEntity[] | undefined,
+): TransformerTypeBadge[] {
+  const label = (type: InputOutputType) => formatInputOutputTypeLabel(type, entities, { shortenUnknownUuids: true });
+  const nodeBadges = interfaceWalk.nodes.map((node): TransformerTypeBadge => {
+    const consumedDiffers = safeStringify(node.consumedInput) !== safeStringify(node.givenInput);
+    const failures = node.failures.map(
+      (failure) =>
+        `${failure.direction}: given ${formatInputOutputType(failure.given)}, declared ${formatInputOutputType(failure.declared)}`,
+    );
+    return {
+      path: ["transformer", ...node.path],
+      givenLabel: label(node.givenInput),
+      consumedLabel: consumedDiffers ? label(node.consumedInput) : undefined,
+      declaredLabel: node.declared
+        ? { input: label(node.declared.input), output: label(node.declared.output) }
+        : undefined,
+      outputLabel: label(node.output),
+      status: transformerNodeTypeStatus(node),
+      title: [
+        `${node.transformerType}`,
+        `given ${formatInputOutputType(node.givenInput)}`,
+        ...(consumedDiffers ? [`applyTo ${formatInputOutputType(node.consumedInput)}`] : []),
+        ...(node.declared
+          ? [`declared ${formatInputOutputType(node.declared.input)} → ${formatInputOutputType(node.declared.output)}`]
+          : []),
+        `output ${formatInputOutputType(node.output)}`,
+        ...failures,
+      ].join("\n"),
+    };
+  });
+  const literalBadges = interfaceWalk.literals.map(
+    (literal): TransformerTypeBadge => ({
+      path: ["transformer", ...literal.path],
+      outputLabel: label(literal.type),
+      status: "unknown",
+      title: `value ${formatInputOutputType(literal.type)}`,
+    }),
+  );
+  return [...nodeBadges, ...literalBadges];
+}
+
 /**
  * The transformer definition editor with its "Restrict transformers to the input type" switch.
  * Every transformerType select is restricted to the input of its position while the switch is
- * on; nested mismatches are always marked (#383 D4, D6).
+ * on; nested mismatches are always marked (#383 D4, D6). The "Show transformer types" switch
+ * (#453) puts a type badge on the title row of every node and literal `applyTo`.
  */
 const TransformerDefinitionEditor: React.FC<{
   formValueMLSchema: MlElement;
@@ -119,7 +167,7 @@ const TransformerDefinitionEditor: React.FC<{
   deploymentUuid: Uuid;
   editedTransformer: unknown;
   rootInputType: InputOutputType;
-  entities?: { uuid: Uuid; mlSchema?: unknown }[];
+  entities?: EditorEntity[];
   restrictTransformersToInputType: boolean;
   onRestrictTransformersToInputTypeChange: (checked: boolean) => void;
 }> = ({
@@ -177,6 +225,11 @@ const TransformerDefinitionEditor: React.FC<{
         })),
     [interfaceWalk],
   );
+  const [showTransformerTypes, setShowTransformerTypes] = useShowTransformerTypes();
+  const typeBadges = useMemo(
+    () => (showTransformerTypes ? transformerTypeBadges(interfaceWalk, entities) : undefined),
+    [showTransformerTypes, interfaceWalk, entities],
+  );
 
   return (
     <>
@@ -195,6 +248,21 @@ const TransformerDefinitionEditor: React.FC<{
           />
         }
       />
+      <ThemedLabeledEditor
+        labelElement={<ThemedLabel>Show transformer types</ThemedLabel>}
+        editor={
+          <ThemedSwitch
+            id="transformer-editor-show-types-switch"
+            name="transformer-editor-show-types-switch"
+            inputProps={{
+              "data-testid": "transformer-editor-show-types-switch",
+            } as React.InputHTMLAttributes<HTMLInputElement>}
+            checked={showTransformerTypes}
+            onChange={(event) => setShowTransformerTypes(event.target.checked)}
+            size="small"
+          />
+        }
+      />
       <TypedValueObjectEditor
         labelElement={<>Transformer Definition</>}
         formValueMLSchema={formValueMLSchema}
@@ -209,6 +277,7 @@ const TransformerDefinitionEditor: React.FC<{
         maxRenderDepth={Infinity}
         compatibilityWarnings={compatibilityWarnings}
         transformerTypeRestrictions={transformerTypeRestrictions}
+        transformerTypeBadges={typeBadges}
       />
     </>
   );

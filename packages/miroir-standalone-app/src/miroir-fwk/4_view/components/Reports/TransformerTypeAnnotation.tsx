@@ -1,8 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
+import type { InputOutputType } from "miroir-core";
 import React from "react";
 
 import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
+import type { TransformerTypeBadge } from "../ValueObjectEditor/MlElementEditorInterface.js";
 
 export type TransformerAnnotationPath = (string | number)[];
 
@@ -52,6 +54,32 @@ export function parseMlSchemaAnnotationLabel(label: string): {
 export function shortTypeName(label: string): string {
   const brace = label.indexOf("{");
   return (brace >= 0 ? label.slice(0, brace) : label).trim();
+}
+
+const ENTITY_UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Human-readable label of an `inputOutput` type: an entity uuid gives the entity name when known,
+ * arrays and objects their payload, `array<Book>`. With `shortenUnknownUuids` (#453 D18), an
+ * unknown entity uuid gives its first 8 characters.
+ */
+export function formatInputOutputTypeLabel(
+  type: InputOutputType,
+  entities?: { uuid: string; name?: string }[],
+  options?: { shortenUnknownUuids?: boolean },
+): string {
+  if (typeof type === "object") {
+    const payloadLabel =
+      type.payload === undefined || type.payload === "any"
+        ? "any"
+        : formatInputOutputTypeLabel(type.payload as InputOutputType, entities, options);
+    return `${type.type}<${payloadLabel}>`;
+  }
+  const entityName = entities?.find((entity) => entity.uuid === type)?.name;
+  if (entityName) {
+    return entityName;
+  }
+  return options?.shortenUnknownUuids && ENTITY_UUID_REGEX.test(type) ? type.slice(0, 8) : type;
 }
 
 function uniqueBindingNames(names: string[] | undefined): string[] {
@@ -182,6 +210,63 @@ export const TransformerNamedBindings: React.FC<{
   );
 };
 
+/** #453: text of a type badge, the given input first and the output last. */
+export function transformerTypeBadgeText(badge: TransformerTypeBadge): string {
+  if (badge.givenLabel === undefined) {
+    return `value ${badge.outputLabel}`;
+  }
+  return [
+    `in ${badge.givenLabel}`,
+    ...(badge.consumedLabel !== undefined ? [`applyTo ${badge.consumedLabel}`] : []),
+    ...(badge.declaredLabel ? [`declared ${badge.declaredLabel.input} → ${badge.declaredLabel.output}`] : []),
+    `out ${badge.outputLabel}`,
+  ].join(" · ");
+}
+
+/**
+ * #453: the type badge of a transformer node or literal value. Green when the input the node reads
+ * fits its declared input, red on a mismatch, grey when there is nothing to compare.
+ */
+export const TransformerTypeBadgeChip: React.FC<{ badge: TransformerTypeBadge }> = ({ badge }) => {
+  const { currentTheme } = useMiroirTheme();
+  const colors = {
+    match: { color: "#2e7d32", background: "rgba(46, 125, 50, 0.10)", border: "#66bb6a" },
+    mismatch: { color: "#c62828", background: "rgba(198, 40, 40, 0.10)", border: "#ef5350" },
+    unknown: {
+      color: currentTheme.colors.textSecondary || currentTheme.colors.text,
+      background: "rgba(128, 128, 128, 0.10)",
+      border: "rgba(128, 128, 128, 0.45)",
+    },
+  }[badge.status];
+  return (
+    <span
+      data-testid={`transformer-type-badge-${annotationPathKey(badge.path)}`}
+      data-transformer-type-status={badge.status}
+      data-transformer-type-given={badge.givenLabel}
+      data-transformer-type-consumed={badge.consumedLabel}
+      data-transformer-type-declared={
+        badge.declaredLabel ? `${badge.declaredLabel.input} → ${badge.declaredLabel.output}` : undefined
+      }
+      data-transformer-type-output={badge.outputLabel}
+      title={badge.title}
+      css={css({
+        ...typeNameStyles,
+        fontWeight: 500,
+        fontSize: "11px",
+        color: colors.color,
+        backgroundColor: colors.background,
+        border: `1px solid ${colors.border}`,
+        borderRadius: currentTheme.borderRadius.sm,
+        padding: "0 6px",
+        lineHeight: "18px",
+        whiteSpace: "nowrap",
+      })}
+    >
+      {transformerTypeBadgeText(badge)}
+    </span>
+  );
+};
+
 /** Title-row types + bindings for one editor path. Root is skipped when the panel already shows it. */
 export const TransformerTitleRowAnnotations: React.FC<{
   path: TransformerAnnotationPath;
@@ -189,6 +274,8 @@ export const TransformerTitleRowAnnotations: React.FC<{
   showMlSchemaTypes?: boolean;
   mlSchemaTypeAnnotations?: { path: TransformerAnnotationPath; label: string }[];
   environmentAnnotations?: TransformerEnvironmentAnnotation[];
+  /** #453: type badges of the TransformerEditor, shown when the path has one. */
+  transformerTypeBadges?: TransformerTypeBadge[];
   inadequate?: boolean;
   inadequateTitle?: string;
 }> = ({
@@ -197,6 +284,7 @@ export const TransformerTitleRowAnnotations: React.FC<{
   showMlSchemaTypes,
   mlSchemaTypeAnnotations,
   environmentAnnotations,
+  transformerTypeBadges,
   inadequate = false,
   inadequateTitle,
 }) => {
@@ -209,7 +297,8 @@ export const TransformerTitleRowAnnotations: React.FC<{
     ? findPathAnnotation(mlSchemaTypeAnnotations, path)
     : undefined;
   const environmentAnnotation = findPathAnnotation(environmentAnnotations, path);
-  if (!typeAnnotation && !environmentAnnotation) {
+  const typeBadge = findPathAnnotation(transformerTypeBadges, path);
+  if (!typeAnnotation && !environmentAnnotation && !typeBadge) {
     return null;
   }
 
@@ -228,6 +317,7 @@ export const TransformerTitleRowAnnotations: React.FC<{
           data-testid={`list-transformer-mlschema-node-${pathKey}`}
         />
       ) : null}
+      {typeBadge ? <TransformerTypeBadgeChip badge={typeBadge} /> : null}
       {environmentAnnotation ? (
         <TransformerNamedBindings
           kind="context"

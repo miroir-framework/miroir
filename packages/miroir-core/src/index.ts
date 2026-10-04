@@ -1330,6 +1330,7 @@ export {
   getTransformerDefinitionInputOutput,
   inputOutputTypeOfValue,
   inputOutputTypesCompatible,
+  transformerNodeTypeStatus,
   transformerTypesAcceptingInput,
   type TransformerInterfaceWalkOptions,
 } from "./2_domain/TransformerInterfaceCheck.js";
@@ -1340,9 +1341,11 @@ export {
 export type {
   TransformerInterfaceCompatibility,
   TransformerInterfaceGivenTypes,
+  TransformerInterfaceLiteralReport,
   TransformerInterfaceMismatch,
   TransformerInterfaceNodeReport,
   TransformerInterfaceTreeCompatibility,
+  TransformerNodeTypeStatus,
   TransformerTypesAcceptingInput,
 } from "./0_interfaces/2_domain/TransformerInterfaceCheckInterface.js";
 export {

@@ -2119,6 +2119,22 @@
       ]
     },
     {
+      "id": "unit-453-transformer-types-display",
+      "scopes": ["ui"],
+      "tier": "unit",
+      "title": "#453 TransformerEditor \"Show transformer types\" switch: value from the sandbox host and the app's ViewParams, kept across cases",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "transformerTypesDisplay"
+      ]
+    },
+    {
       "id": "unit-438-feedback-glow",
       "scopes": ["ui"],
       "tier": "unit",

@@ -5,7 +5,7 @@
   "name": "ui.transformerEditor",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "TransformerEditor on the Miroir application: renders the default transformer and its result, edits it, chooses a transformer type, switches the input type restriction off, builds nested transformers (mapList to strings and objects, mapList with a getFromContext element, a reduce of a mapList, a list from an object), wraps transformers in new ones at any level with the input type filter, pipes them into new ones, unwraps and removes them, keeps what fits on a type change and asks only before dropping edited values, hints at getFromParameters reads after a wrap, and runs a getFromContext on one Entity instance, then on all of them wrapped in mapList.",
+  "description": "TransformerEditor on the Miroir application: renders the default transformer and its result, edits it, chooses a transformer type, switches the input type restriction off, builds nested transformers (mapList to strings and objects, mapList with a getFromContext element, a reduce of a mapList, a list from an object), wraps transformers in new ones at any level with the input type filter, pipes them into new ones, unwraps and removes them, keeps what fits on a type change and asks only before dropping edited values, hints at getFromParameters reads after a wrap, and runs a getFromContext on one Entity instance, then on all of them wrapped in mapList, and shows the input, declared and output types of every node, matched or mismatched, behind a switch.",
   "tags": [
     "ui",
     "editor",
@@ -2400,6 +2400,411 @@
                   "byTestId": "transformation-result"
                 },
                 "containsHtml": "TransformerDefinition",
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: the type display is off by default and shows no badge",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "types hidden",
+                "target": {
+                  "byTestId": "transformer-editor-show-types-switch"
+                },
+                "checked": false
+              },
+              {
+                "step": "expectElement",
+                "label": "no root badge",
+                "target": {
+                  "byTestId": "transformer-type-badge-transformer"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: with the type display on, the default returnValue shows the type of its value",
+            "steps": [
+              {
+                "step": "click",
+                "label": "show the types",
+                "target": {
+                  "byTestId": "transformer-editor-show-types-switch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "types shown",
+                "target": {
+                  "byTestId": "transformer-editor-show-types-switch"
+                },
+                "checked": true
+              },
+              {
+                "step": "expectElement",
+                "label": "root output",
+                "target": {
+                  "byTestId": "transformer-type-badge-transformer"
+                },
+                "attribute": {
+                  "name": "data-transformer-type-output",
+                  "value": "string"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "nothing to compare",
+                "target": {
+                  "byTestId": "transformer-type-badge-transformer"
+                },
+                "attribute": {
+                  "name": "data-transformer-type-status",
+                  "value": "unknown"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "hide the types",
+                "target": {
+                  "byTestId": "transformer-editor-show-types-switch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "badge gone",
+                "target": {
+                  "byTestId": "transformer-type-badge-transformer"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: a mapList fed by a reference matches its declared input, its constant element shows its own type",
+            "steps": [
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "show the input type",
+                "field": "transformerEditor_inputModeSelector.input"
+              },
+              {
+                "step": "selectOption",
+                "label": "input is a list",
+                "field": "transformerEditor_inputModeSelector.input",
+                "select": "unionType",
+                "option": "array"
+              },
+              {
+                "step": "click",
+                "label": "add a second item",
+                "target": {
+                  "byRole": "button",
+                  "name": "input.add"
+                }
+              },
+              {
+                "step": "change",
+                "label": "first item",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_inputModeSelector.input.0"
+                },
+                "value": "apple"
+              },
+              {
+                "step": "change",
+                "label": "second item",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_inputModeSelector.input.1"
+                },
+                "value": "pear"
+              },
+              {
+                "step": "click",
+                "label": "show the types",
+                "target": {
+                  "byTestId": "transformer-editor-show-types-switch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "types shown",
+                "target": {
+                  "byTestId": "transformer-editor-show-types-switch"
+                },
+                "checked": true
+              },
+              {
+                "step": "selectOption",
+                "label": "root getFromContext",
+                "field": "transformerEditor_transformer_selector.transformer.transformerType",
+                "option": "getFromContext"
+              },
+              {
+                "step": "clickObjectButton",
+                "label": "add the referenceName",
+                "field": "transformerEditor_transformer_selector.transformer",
+                "action": "addOptionalAttribute",
+                "attribute": "referenceName"
+              },
+              {
+                "step": "change",
+                "label": "the root reads defaultInput",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_transformer_selector.transformer.referenceName"
+                },
+                "value": "defaultInput"
+              },
+              {
+                "step": "expectElement",
+                "label": "the reference returns the list",
+                "target": {
+                  "byTestId": "transformer-type-badge-transformer"
+                },
+                "attribute": {
+                  "name": "data-transformer-type-output",
+                  "value": "array<string>"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the root node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Pipe into",
+                "target": {
+                  "byTestId": "transformer-node-action-pipe"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "new transformer",
+                "field": "transformer-node-dialog-type",
+                "option": "mapList"
+              },
+              {
+                "step": "click",
+                "label": "confirm the pipe",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "root is mapList",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "mapList",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "mapList gets the list",
+                "target": {
+                  "byTestId": "transformer-type-badge-transformer"
+                },
+                "attribute": {
+                  "name": "data-transformer-type-given",
+                  "value": "array<string>"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "mapList declares a list input",
+                "target": {
+                  "byTestId": "transformer-type-badge-transformer"
+                },
+                "attribute": {
+                  "name": "data-transformer-type-declared",
+                  "value": "array → array"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "mapList input matches",
+                "target": {
+                  "byTestId": "transformer-type-badge-transformer"
+                },
+                "attribute": {
+                  "name": "data-transformer-type-status",
+                  "value": "match"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the reference in applyTo returns the list",
+                "target": {
+                  "byTestId": "transformer-type-badge-transformer.applyTo"
+                },
+                "attribute": {
+                  "name": "data-transformer-type-output",
+                  "value": "array<string>"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the element gets an item",
+                "target": {
+                  "byTestId": "transformer-type-badge-transformer.elementTransformer"
+                },
+                "attribute": {
+                  "name": "data-transformer-type-given",
+                  "value": "string"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the constant element returns a number",
+                "target": {
+                  "byTestId": "transformer-type-badge-transformer.elementTransformer"
+                },
+                "attribute": {
+                  "name": "data-transformer-type-output",
+                  "value": "number"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "mapList returns a list of the element type",
+                "target": {
+                  "byTestId": "transformer-type-badge-transformer"
+                },
+                "attribute": {
+                  "name": "data-transformer-type-output",
+                  "value": "array<number>"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: a constant string piped into mapList is a mismatch",
+            "steps": [
+              {
+                "step": "click",
+                "label": "switch the restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "restriction off",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                },
+                "checked": false
+              },
+              {
+                "step": "click",
+                "label": "show the types",
+                "target": {
+                  "byTestId": "transformer-editor-show-types-switch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "types shown",
+                "target": {
+                  "byTestId": "transformer-editor-show-types-switch"
+                },
+                "checked": true
+              },
+              {
+                "step": "click",
+                "label": "open the root node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Pipe into",
+                "target": {
+                  "byTestId": "transformer-node-action-pipe"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "new transformer",
+                "field": "transformer-node-dialog-type",
+                "option": "mapList"
+              },
+              {
+                "step": "click",
+                "label": "confirm the pipe",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "root is mapList",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "mapList",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "mapList reads the string of its applyTo",
+                "target": {
+                  "byTestId": "transformer-type-badge-transformer"
+                },
+                "attribute": {
+                  "name": "data-transformer-type-consumed",
+                  "value": "string"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "mapList input mismatch",
+                "target": {
+                  "byTestId": "transformer-type-badge-transformer"
+                },
+                "attribute": {
+                  "name": "data-transformer-type-status",
+                  "value": "mismatch"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the constant in applyTo returns a string",
+                "target": {
+                  "byTestId": "transformer-type-badge-transformer.applyTo"
+                },
+                "attribute": {
+                  "name": "data-transformer-type-output",
+                  "value": "string"
+                },
                 "timeout": 2000
               }
             ]

@@ -67,7 +67,7 @@ import {
 } from "../Themes/index";
 import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, MlElementEditor } from "./MlElementEditor";
 import { getFoldedDisplayValue, useMlElementEditorHooks } from "./MlElementEditorHooks";
-import { TransformerTypeRestriction, MlObjectEditorProps } from "./MlElementEditorInterface";
+import { TransformerTypeBadge, TransformerTypeRestriction, MlObjectEditorProps } from "./MlElementEditorInterface";
 import { emptyContainerMarker, isPlainObjectValue } from "./renderedValueMarkers";
 import {
   findPathAnnotation,
@@ -199,6 +199,7 @@ const ProgressiveAttribute: FC<{
   compatibilityWarnings?: { path: (string | number)[]; title: string }[];
   showMlSchemaTypes?: boolean;
   mlSchemaTypeAnnotations?: { path: (string | number)[]; label: string }[];
+  transformerTypeBadges?: TransformerTypeBadge[];
   environmentAnnotations?: { path: (string | number)[]; label: string }[];
   transformerTypeRestrictions?: TransformerTypeRestriction[];
 }> = ({
@@ -244,6 +245,7 @@ const ProgressiveAttribute: FC<{
   compatibilityWarnings,
   showMlSchemaTypes,
   mlSchemaTypeAnnotations,
+  transformerTypeBadges,
   environmentAnnotations,
   transformerTypeRestrictions,
 }) => {
@@ -414,6 +416,7 @@ const ProgressiveAttribute: FC<{
             compatibilityWarnings={compatibilityWarnings}
             showMlSchemaTypes={showMlSchemaTypes}
             mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
+            transformerTypeBadges={transformerTypeBadges}
             environmentAnnotations={environmentAnnotations}
             transformerTypeRestrictions={transformerTypeRestrictions}
             deleteButtonElement={
@@ -592,6 +595,7 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
     compatibilityWarnings,
     showMlSchemaTypes,
     mlSchemaTypeAnnotations,
+    transformerTypeBadges,
     environmentAnnotations,
     transformerTypeRestrictions,
   } = props;
@@ -1303,6 +1307,7 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
             compatibilityWarnings={compatibilityWarnings}
             showMlSchemaTypes={showMlSchemaTypes}
             mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
+            transformerTypeBadges={transformerTypeBadges}
             environmentAnnotations={environmentAnnotations}
             transformerTypeRestrictions={transformerTypeRestrictions}
               />
@@ -1339,6 +1344,7 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
     compatibilityWarnings,
     showMlSchemaTypes,
     mlSchemaTypeAnnotations,
+    transformerTypeBadges,
     environmentAnnotations,
     transformerTypeRestrictions,
   ]);
@@ -1410,6 +1416,7 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
                 skipRoot
                 showMlSchemaTypes={showMlSchemaTypes}
                 mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
+                transformerTypeBadges={transformerTypeBadges}
                 environmentAnnotations={environmentAnnotations}
                 inadequate={!!titleRowWarning}
                 inadequateTitle={titleRowWarning?.title}

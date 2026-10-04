@@ -41,6 +41,7 @@ import { ReportInstanceLink } from "../ReportInstanceLink.js";
 import {
   TransformerNamedBindings,
   TransformerTitleSignature,
+  formatInputOutputTypeLabel,
 } from "./TransformerTypeAnnotation.js";
 import {
   ThemedContainer,
@@ -110,17 +111,6 @@ function formatMlSchemaNodeMismatch(
       return `${pathLabel} ${failure.direction}: given ${givenLabel}, declared ${declaredLabel}`;
     })
     .join("; ");
-}
-
-function formatInputOutputTypeLabel(type: InputOutputType, entities?: Entity[]): string {
-  if (typeof type === "object") {
-    const payloadLabel =
-      type.payload === undefined || type.payload === "any"
-        ? "any"
-        : formatInputOutputTypeLabel(type.payload as InputOutputType, entities);
-    return `${type.type}<${payloadLabel}>`;
-  }
-  return entities?.find((entity) => entity.uuid === type)?.name ?? type;
 }
 
 /** #383: one line per #249 failure of a nested transformer node. */

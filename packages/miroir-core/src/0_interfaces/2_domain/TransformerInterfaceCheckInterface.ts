@@ -13,7 +13,8 @@ export interface TransformerInterfaceGivenTypes {
 }
 
 export interface TransformerInterfaceMismatch {
-  direction: "input" | "output";
+  /** "value" (#453): a `returnValue` whose `value` (given) does not fit its `mlSchema` (declared). */
+  direction: "input" | "output" | "value";
   given: InputOutputType;
   declared: InputOutputType;
   /** When set to "inferred", `declared` holds the schema-inferred actual output type. */
@@ -39,10 +40,23 @@ export interface TransformerInterfaceNodeReport {
   failures: TransformerInterfaceMismatch[];
 }
 
+/** #453: a literal `applyTo` value of a typed node, at its own path, with the type of its value. */
+export interface TransformerInterfaceLiteralReport {
+  path: (string | number)[];
+  type: InputOutputType;
+}
+
 export interface TransformerInterfaceTreeCompatibility {
   status: "ok" | "incompatible" | "unchecked";
   nodes: TransformerInterfaceNodeReport[];
+  literals: TransformerInterfaceLiteralReport[];
 }
+
+/**
+ * #453: how a node's consumed input compares with its declared input. "mismatch": the node has a
+ * failure; "unknown": nothing to compare (no declared input, or `any` on a side); "match" otherwise.
+ */
+export type TransformerNodeTypeStatus = "match" | "mismatch" | "unknown";
 
 /** Transformer types offered at a position, and the ones hidden there (#383). */
 export interface TransformerTypesAcceptingInput {

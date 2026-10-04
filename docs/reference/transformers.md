@@ -80,8 +80,9 @@ position receives (issue #383). A hint next to the select gives the number of hi
 and the input type. The currently selected type always stays in the list.
 
 - **Root input**: the list row entity in the list transformer panel; in the TransformerEditor, the
-  kind of the "here" value (`array`, `object` or a primitive), the selected entity for one
-  instance, an array of it when all instances are shown.
+  type of the "here" value or of the selected instances: a primitive kind, an entity for an object
+  with a `parentUuid`, `object` otherwise, and for an array the common type of its elements
+  (`array<number>`, `array<Book>`, `array<any>` when they differ).
 - **Nested positions** follow the runtime: a transformer with an `applyTo` consumes the `applyTo`
   output; `mapList.elementTransformer`, `filterList.predicate` and `find.predicate` receive a list
   element; `mergeIntoObject.definition` and `createObjectFromPairs` pairs receive the `applyTo`
@@ -97,6 +98,27 @@ and the input type. The currently selected type always stays in the list.
 The core functions are `checkTransformerInterfaceRecursively` and `transformerTypesAcceptingInput`
 (`miroir-core/src/2_domain/TransformerInterfaceCheck.ts`), tested by the MiroirTest
 `fn.transformer.interfaceWalk`.
+
+### Showing the types of a transformer tree
+
+The TransformerEditor switch "Show transformer types" (off by default) puts a badge on the title
+row of every transformer node, and of every literal `applyTo` value (issue #453). A node's badge
+reads `in <given> · applyTo <its applyTo output, when different> · declared <input> → <output> ·
+out <output>`; entity types show their names. The badge is green when the input the node reads
+fits its declared input, red on a mismatch, grey when there is nothing to compare (no declared
+input, or `any` on a side).
+
+- Outputs come from the result schema inference (`resolveTransformerResultSchema`), reduced to
+  `inputOutput` types. A `returnValue` without `mlSchema` has the type of its `value`; a
+  `returnValue` whose `value` does not fit its `mlSchema` is a mismatch.
+- The switch is the ViewParams attribute `showTransformerTypes`. In the Component Test Sandbox,
+  each case starts with the app's value and saves its changes there, so the switch keeps its value
+  from one case to the next and the badges follow a run step by step.
+- Only the parent's `applyTo` constrains a child today (expected types for other places: #454);
+  the types are static (actual values per node: #455).
+
+The badge status is `transformerNodeTypeStatus` in the same file, tested by
+`fn.transformer.interfaceWalk`; the editor behaviour is tested by `ui.transformerEditor`.
 
 ### Editing a transformer tree step by step
 

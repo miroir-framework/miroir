@@ -16,6 +16,7 @@ import {
   componentTestSandboxMode,
 } from "../../4_view/tools/ComponentTestModeContext.js";
 import { PortalContainerProvider } from "../../4_view/tools/PortalContainerContext.js";
+import { TransformerTypesDisplayContext } from "../../4_view/components/TransformerEditor/TransformerTypesDisplay.js";
 import {
   applyComponentTestDomConfig,
   configureComponentTestDom,
@@ -54,6 +55,12 @@ export interface ComponentTestSandboxHost extends ComponentTestRunControls {
   componentRegistry?: ComponentRegistry;
   /** Replaces the `iterations` of every `measureRendering` step of the run (#303 T7). */
   iterationsOverride?: number;
+  /**
+   * #453: the TransformerEditor's "Show transformer types" switch, read when a case is rendered
+   * and saved when it changes, so that it keeps its value across the cases of a run.
+   */
+  showTransformerTypes?: () => boolean;
+  saveShowTransformerTypes?: (showTransformerTypes: boolean) => void;
 }
 
 /**
@@ -92,7 +99,8 @@ export type ClosableReactComponentTestRunner = ReactComponentTestRunner & {
  *
  * The component is rendered inside `ComponentTestModeContext` set to the sandbox mode, so that in
  * the app it renders the same DOM as under vitest, and inside `PortalContainerProvider` set to
- * the portal element, so that its option lists and MUI popups render inside the sandbox. The
+ * the portal element, so that its option lists and MUI popups render inside the sandbox. With
+ * the host's `showTransformerTypes`, it is also inside `TransformerTypesDisplayContext` (#453). The
  * last case stays mounted until `close()`, with its wrapper's `MiroirEventService` destroyed.
  */
 export function createReactComponentTestRunner(
@@ -166,6 +174,13 @@ export function createReactComponentTestRunner(
     wrapper.miroirEventService.destroy();
   };
 
+  const saveShowTransformerTypes = host.saveShowTransformerTypes ?? (() => {});
+  /** #453: the switch value of the host when the case is rendered; none without a host value. */
+  const transformerTypesDisplaySetting = () =>
+    host.showTransformerTypes
+      ? { initial: host.showTransformerTypes(), save: saveShowTransformerTypes }
+      : undefined;
+
   /** Mounts `component` with `props` in a fresh case container, the previous case being unmounted. */
   const mountCase = async (
     wrapper: ComponentTestWrapper,
@@ -181,11 +196,13 @@ export function createReactComponentTestRunner(
     const { Wrapper } = wrapper;
     const element = (elementProps: Record<string, any>) => (
       <ComponentTestModeContext.Provider value={componentTestSandboxMode}>
-        <Wrapper>
-          <PortalContainerProvider portalElement={portalElement}>
-            <Component {...elementProps} />
-          </PortalContainerProvider>
-        </Wrapper>
+        <TransformerTypesDisplayContext.Provider value={transformerTypesDisplaySetting()}>
+          <Wrapper>
+            <PortalContainerProvider portalElement={portalElement}>
+              <Component {...elementProps} />
+            </PortalContainerProvider>
+          </Wrapper>
+        </TransformerTypesDisplayContext.Provider>
       </ComponentTestModeContext.Provider>
     );
     currentCase = { container, mounted: undefined, element, props };
