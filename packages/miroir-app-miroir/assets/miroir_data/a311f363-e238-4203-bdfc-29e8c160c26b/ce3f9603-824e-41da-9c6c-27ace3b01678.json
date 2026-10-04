@@ -726,6 +726,13 @@
                 "value": "pear"
               },
               {
+                "step": "click",
+                "label": "switch the restriction off: the reducer takes the objects of its own applyTo, not the strings",
+                "target": {
+                  "byTestId": "transformer-editor-restrict-switch"
+                }
+              },
+              {
                 "step": "openSelect",
                 "label": "open root listReducerToSpreadObject",
                 "field": "transformerEditor_transformer_selector.transformer.transformerType"
