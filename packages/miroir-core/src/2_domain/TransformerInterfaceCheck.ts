@@ -19,7 +19,7 @@ import type {
   TransformerTypesAcceptingInput,
 } from "../0_interfaces/2_domain/TransformerInterfaceCheckInterface";
 import { isFailedTransformerInterfaceFromDefinition } from "../0_interfaces/2_domain/TransformerResultSchemaInterface";
-import { inferTransformerOutputTypeFromSchema } from "./TransformerInterfaceInference";
+import { inferTransformerOutputTypeFromSchema, inputOutputTypeParameter } from "./TransformerInterfaceInference";
 import { liftInputOutputTypeToMlSchema } from "./TransformerMlSchemaCheck";
 import {
   resolveTransformerResultSchema,
@@ -276,11 +276,19 @@ function isPlainRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+/** The type parameter common to `types`, `any` when they differ or there are none (#449 D3). */
+function commonTypeParameter(types: InputOutputType[]): InputOutputPayloadType {
+  const parameters = types.map(inputOutputTypeParameter);
+  return parameters.length > 0 && parameters.every((parameter) => parameter === parameters[0])
+    ? parameters[0]
+    : "any";
+}
+
 /**
  * Coarse `inputOutput` type of a value: its primitive kind; an object with a uuid `parentUuid` is
  * an instance of that entity, any other object is `object`; an array has the common type of its
- * elements as payload (`any` when they differ), an empty array is `array`; `null` and `undefined`
- * give `any` (#383, root input of the TransformerEditor; #453 D15).
+ * elements as type parameter (`any` when they differ), an empty array is `array`; `null` and
+ * `undefined` give `any` (#383, root input of the TransformerEditor; #453 D15; #449 §3.2).
  */
 export function inputOutputTypeOfValue(value: unknown): InputOutputType {
   if (value === null || value === undefined) {
@@ -290,8 +298,7 @@ export function inputOutputTypeOfValue(value: unknown): InputOutputType {
     if (value.length === 0) {
       return "array";
     }
-    const payloads = value.map((element) => payloadOf(inputOutputTypeOfValue(element)));
-    return { type: "array", payload: payloads.every((payload) => payload === payloads[0]) ? payloads[0] : "any" };
+    return { type: "array", payload: commonTypeParameter(value.map(inputOutputTypeOfValue)) };
   }
   switch (typeof value) {
     case "object": {
@@ -324,12 +331,22 @@ function arrayElementValue(array: WalkValue, environment: WalkEnvironment): Walk
   return walkValueOfType(type, environment);
 }
 
-/** Element type of an array type; anything else gives `any`. */
+/**
+ * Element type of an array type, or the common element type of a tuple (#449 §3.2); anything else
+ * gives `any`.
+ */
 function arrayElementInputOutputType(type: InputOutputType): InputOutputType {
-  if (typeof type === "object" && type.type === "array") {
-    return type.payload ?? "any";
+  if (typeof type !== "object") {
+    return "any";
   }
-  return "any";
+  switch (type.type) {
+    case "array":
+      return type.payload ?? "any";
+    case "tuple":
+      return commonTypeParameter(type.payload);
+    default:
+      return "any";
+  }
 }
 
 export interface TransformerInterfaceWalkOptions {
@@ -451,6 +468,22 @@ function walkNode(
   return { report, output: listOutput ?? output };
 }
 
+/**
+ * Coarse type of a value in the shape of the type it is declared with: an array declared as a tuple
+ * types element-wise, a plain object declared as a record types as the record of its values (#449).
+ */
+function inputOutputTypeOfValueAs(value: unknown, declared: InputOutputType): InputOutputType {
+  if (typeof declared === "object" && declared.type === "tuple" && Array.isArray(value)) {
+    return { type: "tuple", payload: value.map((element) => inputOutputTypeParameter(inputOutputTypeOfValue(element))) };
+  }
+  const isRecordDeclared = declared === "record" || (typeof declared === "object" && declared.type === "record");
+  if (isRecordDeclared && isPlainRecord(value) && inputOutputTypeOfValue(value) === "object") {
+    const values = Object.values(value).map(inputOutputTypeOfValue);
+    return values.length === 0 ? "record" : { type: "record", payload: commonTypeParameter(values) };
+  }
+  return inputOutputTypeOfValue(value);
+}
+
 /** #453 D13: a `returnValue` whose `value` does not fit its `mlSchema`, compared as coarse types. */
 function returnValueFailure(
   transformer: TypedTransformerNode,
@@ -459,17 +492,11 @@ function returnValueFailure(
   if (transformer.transformerType !== "returnValue" || transformer.mlSchema === undefined) {
     return undefined;
   }
-  const given = inputOutputTypeOfValue(transformer.value);
   const declared = inferTransformerOutputTypeFromSchema(transformer.mlSchema as MlElement, {
     entityMlSchemas: environment.entityMlSchemas,
   });
+  const given = inputOutputTypeOfValueAs(transformer.value, declared);
   return inputOutputTypesCompatible(given, declared) ? undefined : { direction: "value", given, declared };
-}
-
-function payloadOf(type: InputOutputType): InputOutputPayloadType {
-  return typeof type === "object" || type === "object" || type === "array" || type === "undefined"
-    ? "any"
-    : type;
 }
 
 function listCombinatorOutput(
@@ -480,11 +507,17 @@ function listCombinatorOutput(
   switch (transformerType) {
     case "mapList":
       return {
-        type: { type: "array", payload: payloadOf(element.output.type) },
+        type: { type: "array", payload: inputOutputTypeParameter(element.output.type) },
         schema: { type: "array", definition: element.output.schema } as MlElement,
       };
     case "filterList":
-      return consumed;
+      // Filtering a tuple keeps some of its elements: an array of its element type (#449 §3.2).
+      return typeof consumed.type === "object" && consumed.type.type === "tuple"
+        ? {
+            type: { type: "array", payload: inputOutputTypeParameter(element.bound.type) },
+            schema: { type: "array", definition: element.bound.schema } as MlElement,
+          }
+        : consumed;
     case "find":
       return element.bound;
     default:

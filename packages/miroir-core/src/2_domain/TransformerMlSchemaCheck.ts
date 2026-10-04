@@ -1,6 +1,5 @@
 import type {
   CoreTransformerForBuildPlusRuntime,
-  InputOutputPayloadType,
   InputOutputType,
   MlElement,
   TransformerDefinition,
@@ -38,7 +37,8 @@ function isTypedTransformer(
 }
 
 /**
- * Lift an input/output type to an ML schema.
+ * Lift an input/output type to an ML schema. A bare `array` or `record` has `any` elements, a type
+ * parameter lifts like the type it names (#449 §3.2).
  * @param type - The input/output type to lift.
  * @param entityMlSchemas - The entity ML schemas to use.
  * @returns The lifted ML schema.
@@ -51,18 +51,19 @@ export function liftInputOutputTypeToMlSchema(
     if (type.type === "tuple") {
       return {
         type: "tuple",
-        definition: type.payload.map((element) => liftPayloadToMlSchema(element, entityMlSchemas)),
+        definition: type.payload.map((element) => liftInputOutputTypeToMlSchema(element, entityMlSchemas)),
       } as MlElement;
     }
-    const payload = type.payload ?? "any";
-    const inner = liftPayloadToMlSchema(payload, entityMlSchemas);
-    return { type: type.type, definition: inner } as MlElement;
+    return {
+      type: type.type,
+      definition: liftInputOutputTypeToMlSchema(type.payload ?? "any", entityMlSchemas),
+    } as MlElement;
   }
   if (type === "object") {
     return { type: "object", nonStrict: true, definition: {} } as MlElement;
   }
-  if (type === "array") {
-    return { type: "array", definition: ANY_SCHEMA } as MlElement;
+  if (type === "array" || type === "record") {
+    return { type, definition: ANY_SCHEMA } as MlElement;
   }
   if (type === "any" || type === "undefined" || type === "bigint" || type === "number" || type === "string" || type === "boolean") {
     return { type } as MlElement;
@@ -72,22 +73,6 @@ export function liftInputOutputTypeToMlSchema(
     return entitySchema;
   }
   return { type: "object", definition: {} } as MlElement;
-}
-
-/**
- * Lift a payload type to an ML schema.
- * @param payload - The payload type to lift.
- * @param entityMlSchemas - The entity ML schemas to use.
- * @returns The lifted ML schema.
- */
-function liftPayloadToMlSchema(
-  payload: InputOutputPayloadType,
-  entityMlSchemas?: Record<string, MlElement>,
-): MlElement {
-  if (payload === "any" || payload === "bigint" || payload === "number" || payload === "string" || payload === "boolean") {
-    return { type: payload } as MlElement;
-  }
-  return liftInputOutputTypeToMlSchema(payload, entityMlSchemas);
 }
 
 /**

@@ -13,15 +13,28 @@ function isTransformerExpression(
   return typeof transformer === "object" && !Array.isArray(transformer) && "transformerType" in transformer;
 }
 
+function isMlElement(value: unknown): value is MlElement {
+  return typeof value === "object" && value !== null && !Array.isArray(value) && "type" in value;
+}
+
 /** Full comparison: `safeStringify` truncates long schemas, which would equate distinct entities. */
 function mlSchemasEquivalent(a: MlElement, b: MlElement): boolean {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
 /**
+ * #449 D2-D3: a coarse type as a type parameter. Primitives, `undefined`, `object` and entity
+ * uuids stay; arrays, records and tuples would nest, so they give `any`.
+ */
+export function inputOutputTypeParameter(type: InputOutputType): InputOutputPayloadType {
+  return typeof type === "object" || type === "array" || type === "record" ? "any" : type;
+}
+
+/**
  * Map a resolved transformer result schema (#88) to an `inputOutput` type for adequacy checks.
  * When the schema is the list row entity ML schema, or another known entity's, prefer the entity
- * uuid over bare `object`.
+ * uuid over bare `object`. Arrays, records and tuples carry the coarse types of their elements as
+ * type parameters, nested ones giving `any` (#449 §3.2).
  */
 export function inferTransformerOutputTypeFromSchema(
   resultSchema: MlElement,
@@ -32,6 +45,8 @@ export function inferTransformerOutputTypeFromSchema(
     entityMlSchemas?: Record<string, MlElement>;
   },
 ): InputOutputType {
+  const parameterOf = (schema: MlElement): InputOutputPayloadType =>
+    inputOutputTypeParameter(inferTransformerOutputTypeFromSchema(schema, options));
   const type = resultSchema.type;
   if (type === "any") {
     return "any";
@@ -56,24 +71,18 @@ export function inferTransformerOutputTypeFromSchema(
     return entityUuid ?? "object";
   }
   if (type === "array") {
-    let elementSchema: MlElement | undefined;
-    if (Array.isArray(resultSchema.definition)) {
-      elementSchema = resultSchema.definition[0] as MlElement | undefined;
-    } else if (
-      resultSchema.definition &&
-      typeof resultSchema.definition === "object" &&
-      "type" in resultSchema.definition
-    ) {
-      elementSchema = resultSchema.definition as MlElement;
-    }
-    const payload: InputOutputPayloadType =
-      elementSchema === undefined
-        ? "any"
-        : (inferTransformerOutputTypeFromSchema(elementSchema, options) as InputOutputPayloadType);
-    if (typeof payload === "object") {
-      return { type: "array", payload: "any" };
-    }
-    return { type: "array", payload };
+    // A list `definition` is not valid ML for an array: its element types are unknown.
+    const definition = resultSchema.definition;
+    return {
+      type: "array",
+      payload: isMlElement(definition) ? parameterOf(definition) : "any",
+    };
+  }
+  if (type === "record") {
+    return { type: "record", payload: parameterOf(resultSchema.definition) };
+  }
+  if (type === "tuple") {
+    return { type: "tuple", payload: resultSchema.definition.map(parameterOf) };
   }
   return "any";
 }

@@ -16,7 +16,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisites: [#383](../383-FEATURE-transformer-choice-by-input-type/) ✅, [#453](../453-FEATURE-transformer-type-display/) ✅
 Working branch: `claude/449-payload-sub-choice` (from `_integration` 04ae35bb)
 
-**Resume note:** Slices 0-1 DONE.
+**Resume note:** Slices 0-2 DONE.
 
 ---
 
@@ -37,7 +37,7 @@ Out: full ML schema types, nested type parameters, `object<P>`, saving the chose
 |---|---|---|---|
 | 0 | Characterize the interface check suites | ✅ | baseline runs of `fn.transformer.interfaceCheck`, `fn.transformer.interfaceWalk`, `ListTransformerPanel.unit` |
 | 1 | Declare and match `record` and `tuple` (tracer) | ✅ | `fn.transformer.interfaceCheck` new suites "record forms", "tuple forms", "payload values" |
-| 2 | Coarse inference, lift and walk for the new types | ⬜ | `fn.transformer.interfaceCheck` "inference" / "lift" suites, `fn.transformer.interfaceWalk` cases |
+| 2 | Coarse inference, lift and walk for the new types | ✅ | `fn.transformer.interfaceCheck` "inference" / "lift" suites, `fn.transformer.interfaceWalk` cases |
 | 3 | Chooser: type parameter for `array` and `record` | ⬜ | `ListTransformerPanel.unit` cases |
 | 4 | Chooser: tuple elements | ⬜ | `ListTransformerPanel.unit` cases |
 | 5 | One type formatter (G4) | ⬜ | `fn.transformer.interfaceCheck` "format" suite, `unit-453-transformer-types-display` |
@@ -181,7 +181,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core
 
 ## Slice 2 — Coarse inference, lift and walk
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -225,6 +225,12 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui
 ```
 
 ### Realization
+
+- Tests went to `fn.transformer.interfaceWalk`, which already holds the `inferTransformerOutputTypeFromSchema` and `inputOutputTypeOfValue` suites: 9 inference cases, a new "liftInputOutputTypeToMlSchema" suite (6 cases, exact ML schemas instead of a validation call), 2 tuple cases in "list element slots", 3 record/tuple cases in "returnValue"; "array of objects" now expects `array<object>` (R3).
+- `TransformerInterfaceInference.ts`: `inputOutputTypeParameter` (exported; replaces the walk's `payloadOf`, which turned `object` and `undefined` into `any` and let a bare `record` through as a parameter); record, tuple and list-form array branches.
+- `TransformerMlSchemaCheck.ts`: bare `record` lifts to a record of `any`; `liftPayloadToMlSchema` folded into `liftInputOutputTypeToMlSchema` (2.3).
+- `TransformerInterfaceCheck.ts`: `commonTypeParameter` for array values and tuple elements; `filterList` over a tuple outputs an array of the element type; a `returnValue` value is typed in the shape of its declared `mlSchema` (`inputOutputTypeOfValueAs`): an array declared as a tuple types element-wise, a plain object declared as a record types as the record of its values. Without it, `["a", 1]` with a `tuple<string, number>` schema typed as `array<any>` and failed, and `{a: 1}` against `record<string>` typed as `object` and passed.
+- RED: 11 failing cases (3 already passed: lifts that reuse the type's own branch, and array of plain objects / of `undefined` inference). GREEN: the three suites 226/226; miroir-core unit 2417 passed; lint clean; `ListTransformerPanel.unit` + `transformerTypesDisplay` 17/18 (the pre-existing failure only); `transformerChoiceByInputType.integ`, `transformerEditorChoiceByInputType.integ`, `listDisplayByTransformer.unit`, `typedValueObjectEditorSchema.unit` 21/21.
 
 ---
 
