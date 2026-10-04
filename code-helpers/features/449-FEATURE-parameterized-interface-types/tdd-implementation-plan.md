@@ -16,7 +16,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisites: [#383](../383-FEATURE-transformer-choice-by-input-type/) ✅, [#453](../453-FEATURE-transformer-type-display/) ✅
 Working branch: `claude/449-payload-sub-choice` (from `_integration` 04ae35bb)
 
-**Resume note:** Slices 0-4 DONE.
+**Resume note:** Slices 0-5 DONE.
 
 ---
 
@@ -40,7 +40,7 @@ Out: full ML schema types, nested type parameters, `object<P>`, saving the chose
 | 2 | Coarse inference, lift and walk for the new types | ✅ | `fn.transformer.interfaceCheck` "inference" / "lift" suites, `fn.transformer.interfaceWalk` cases |
 | 3 | Chooser: type parameter for `array` and `record` | ✅ | `ListTransformerPanel.unit` cases |
 | 4 | Chooser: tuple elements | ✅ | `ListTransformerPanel.unit` cases |
-| 5 | One type formatter (G4) | ⬜ | `fn.transformer.interfaceCheck` "format" suite, `unit-453-transformer-types-display` |
+| 5 | One type formatter (G4) | ✅ | `fn.transformer.interfaceCheck` "format" suite, `unit-453-transformer-types-display` |
 | 6 | Stock definition sweep (D11, after A's approval) | ⬜ | `stockTransformerDefinitions` suite, `fn.transformer.resultSchema` case |
 | 7 | Nonreg, docs, AC | ⬜ | `unit-449-parameterized-interface-types` step, full nonreg |
 
@@ -322,12 +322,13 @@ npm run nonreg:filesystem -- --runner shared
 - `ExpectedOutputTypeChooser`: `tuple` in the main select starts at `tuple<any, any>`; one select per element (`list-transformer-expected-output-tuple-<i>`), + appends `any`, − drops the last and is disabled at one element (`ThemedButton` secondary: `ThemedIconButton` does not forward `data-testid`).
 - 4.3: `TypeParameterSelect` serves the "of" select and the element selects.
 - RED: 4 new cases plus the record case now also asking for `tuple`. GREEN: `ListTransformerPanel.unit` 25/26 (the pre-existing failure only); standalone `tsc` 32 errors, none in the touched files; lint clean.
+- Full nonreg `nonreg:filesystem --runner shared`: 97/97 (slices 2-4).
 
 ---
 
 ## Slice 5 — One type formatter (G4)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -359,6 +360,12 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui
 ```
 
 ### Realization
+
+- `formatInputOutputTypeLabel` moved to `TransformerInterfaceCheck.ts` (it shares `ENTITY_UUID_REGEX`), exported from miroir-core and whitelisted; tuple branch `tuple<string, Book>`. The standalone copy in `TransformerTypeAnnotation.tsx` and `TransformerEditor`'s `formatInputOutputType` (JSON for any non-string type) are gone (5.3).
+- The editor badge tooltips call it without entities, so entity uuids stay whole there as #453 D18 wants; the labels still shorten them.
+- The list panel's root mismatch title (`output: expected ..., inferred actual ...`) used JSON too; it now reads `array<string>`.
+- Tests: suite "formatInputOutputTypeLabel" (10 cases) in `fn.transformer.interfaceCheck`; 2 tooltip cases in `transformerTypesDisplay.unit` (a tuple output, a record value mismatch); the panel's `array<number>` case checks the title.
+- RED: 10 core cases (not whitelisted), 3 standalone cases. GREEN: the three core suites 236/236; miroir-core unit 2427 passed; standalone `ListTransformerPanel.unit`, `transformerTypesDisplay`, both `*ChoiceByInputType.integ` 37/38 (the pre-existing failure only); `tsc` core clean, standalone 32 errors, none in the touched files; lint clean.
 
 ---
 

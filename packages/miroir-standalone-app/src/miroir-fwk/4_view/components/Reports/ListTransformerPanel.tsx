@@ -8,6 +8,7 @@ import {
   collectTransformerEnvironmentBindings,
   defaultTransformerInput,
   entityMLSchema,
+  formatInputOutputTypeLabel,
   formatMlSchemaTypeLabel,
   formatTransformerEnvironmentLabel,
   getApplicationSection,
@@ -42,7 +43,6 @@ import { ExpectedOutputTypeChooser } from "./ExpectedOutputTypeChooser.js";
 import {
   TransformerNamedBindings,
   TransformerTitleSignature,
-  formatInputOutputTypeLabel,
 } from "./TransformerTypeAnnotation.js";
 import {
   ThemedContainer,
@@ -286,7 +286,7 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
           ? interfaceCompatibility.failures.map((failure) => {
               const actualLabel =
                 failure.source === "inferred" ? "inferred actual" : "transformer declares";
-              return `${failure.direction}: expected ${safeStringify(failure.given)}, ${actualLabel} ${safeStringify(failure.declared)}`;
+              return `${failure.direction}: expected ${formatInputOutputTypeLabel(failure.given, entities)}, ${actualLabel} ${formatInputOutputTypeLabel(failure.declared, entities)}`;
             })
           : []),
         ...nestedInterfaceFailureNodes.map((node) => formatInterfaceNodeMismatch(node, entities)),

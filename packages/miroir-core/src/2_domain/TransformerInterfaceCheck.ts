@@ -127,6 +127,30 @@ export function inputOutputTypesCompatible(
 }
 
 /**
+ * Human-readable label of an `inputOutput` type (#453, #449 G4): a known entity uuid gives the
+ * entity name, type parameters follow their type, `array<Book>`, `record<string>`,
+ * `tuple<string, Book>`. With `shortenUnknownUuids` (#453 D18), an unknown entity uuid gives its
+ * first 8 characters.
+ */
+export function formatInputOutputTypeLabel(
+  type: InputOutputType,
+  entities?: { uuid: string; name?: string }[],
+  options?: { shortenUnknownUuids?: boolean },
+): string {
+  const label = (element: InputOutputType) => formatInputOutputTypeLabel(element, entities, options);
+  if (typeof type === "object") {
+    return type.type === "tuple"
+      ? `tuple<${type.payload.map(label).join(", ")}>`
+      : `${type.type}<${label(type.payload ?? "any")}>`;
+  }
+  const entityName = entities?.find((entity) => entity.uuid === type)?.name;
+  if (entityName) {
+    return entityName;
+  }
+  return options?.shortenUnknownUuids && ENTITY_UUID_REGEX.test(type) ? type.slice(0, 8) : type;
+}
+
+/**
  * Adequacy of a transformer's declared `inputOutput` against the types its calling context
  * provides / expects. Input: the declared input must accept the given input — except when the
  * declared input is "undefined", meaning the transformer does not consume its piped input

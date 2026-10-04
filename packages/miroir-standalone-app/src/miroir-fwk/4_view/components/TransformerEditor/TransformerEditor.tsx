@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   checkTransformerInterfaceRecursively,
   Domain2ElementFailed,
+  formatInputOutputTypeLabel,
   inputOutputTypeOfValue,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -42,7 +43,6 @@ import {
 import { useCurrentModel } from "../../ReduxHooks.js";
 import { useReportPageContext } from '../Reports/ReportPageContext';
 import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
-import { formatInputOutputTypeLabel } from '../Reports/TransformerTypeAnnotation';
 import type { TransformerTypeBadge } from '../ValueObjectEditor/MlElementEditorInterface';
 import {
   ThemedContainer,
@@ -101,10 +101,6 @@ function transformerEditorRootInputType(
   return inputOutputTypeOfValue(instanceInput?.[defaultTransformerInput]);
 }
 
-function formatInputOutputType(type: InputOutputType): string {
-  return typeof type === "string" ? type : safeStringify(type);
-}
-
 type EditorEntity = { uuid: Uuid; name?: string; mlSchema?: unknown };
 
 /**
@@ -120,7 +116,7 @@ export function transformerTypeBadges(
     const consumedDiffers = safeStringify(node.consumedInput) !== safeStringify(node.givenInput);
     const failures = node.failures.map(
       (failure) =>
-        `${failure.direction}: given ${formatInputOutputType(failure.given)}, declared ${formatInputOutputType(failure.declared)}`,
+        `${failure.direction}: given ${formatInputOutputTypeLabel(failure.given)}, declared ${formatInputOutputTypeLabel(failure.declared)}`,
     );
     return {
       path: ["transformer", ...node.path],
@@ -133,12 +129,12 @@ export function transformerTypeBadges(
       status: transformerNodeTypeStatus(node),
       title: [
         `${node.transformerType}`,
-        `given ${formatInputOutputType(node.givenInput)}`,
-        ...(consumedDiffers ? [`applyTo ${formatInputOutputType(node.consumedInput)}`] : []),
+        `given ${formatInputOutputTypeLabel(node.givenInput)}`,
+        ...(consumedDiffers ? [`applyTo ${formatInputOutputTypeLabel(node.consumedInput)}`] : []),
         ...(node.declared
-          ? [`declared ${formatInputOutputType(node.declared.input)} → ${formatInputOutputType(node.declared.output)}`]
+          ? [`declared ${formatInputOutputTypeLabel(node.declared.input)} → ${formatInputOutputTypeLabel(node.declared.output)}`]
           : []),
-        `output ${formatInputOutputType(node.output)}`,
+        `output ${formatInputOutputTypeLabel(node.output)}`,
         ...failures,
       ].join("\n"),
     };
@@ -148,7 +144,7 @@ export function transformerTypeBadges(
       path: ["transformer", ...literal.path],
       outputLabel: label(literal.type),
       status: "unknown",
-      title: `value ${formatInputOutputType(literal.type)}`,
+      title: `value ${formatInputOutputTypeLabel(literal.type)}`,
     }),
   );
   return [...nodeBadges, ...literalBadges];
@@ -203,7 +199,7 @@ const TransformerDefinitionEditor: React.FC<{
         ? interfaceWalk.nodes.map((node) => ({
             path: ["transformer", ...node.path],
             input: node.consumedInput,
-            inputLabel: formatInputOutputType(node.consumedInput),
+            inputLabel: formatInputOutputTypeLabel(node.consumedInput),
             givenInput: node.givenInput,
             output: node.output,
           }))
@@ -219,7 +215,7 @@ const TransformerDefinitionEditor: React.FC<{
           title: node.failures
             .map(
               (failure) =>
-                `${node.path.join(".") || "root"} (${node.transformerType}) ${failure.direction}: given ${formatInputOutputType(failure.given)}, declared ${formatInputOutputType(failure.declared)}`,
+                `${node.path.join(".") || "root"} (${node.transformerType}) ${failure.direction}: given ${formatInputOutputTypeLabel(failure.given)}, declared ${formatInputOutputTypeLabel(failure.declared)}`,
             )
             .join("; "),
         })),

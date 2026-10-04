@@ -1327,6 +1327,7 @@ export {
   checkTransformerInterfaceCompatibilityWithInference,
   checkTransformerInterfaceRecursively,
   findInvalidStockTransformerInputOutputs,
+  formatInputOutputTypeLabel,
   getTransformerDefinitionInputOutput,
   inputOutputTypeOfValue,
   inputOutputTypesCompatible,

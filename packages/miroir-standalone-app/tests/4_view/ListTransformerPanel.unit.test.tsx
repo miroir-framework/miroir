@@ -632,6 +632,9 @@ describe("ListTransformerPanel — list section integration", () => {
 
     setTransformer(returnValueWithMlSchema([1], { type: "array", definition: { type: "number" } }));
     expectOrangeBorder(screen.getByTestId("list-transformer-editor"), true);
+    expect(screen.getByTestId("list-transformer-editor").getAttribute("title") ?? "").toContain(
+      "output: expected array<string>, inferred actual array<number>",
+    );
   });
 
   it("expected record of string: the identity (Book) is bordered, a record of string fits (#449)", () => {

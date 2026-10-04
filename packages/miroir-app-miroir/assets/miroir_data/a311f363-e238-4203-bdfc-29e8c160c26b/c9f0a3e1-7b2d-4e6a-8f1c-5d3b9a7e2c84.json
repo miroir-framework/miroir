@@ -415,6 +415,22 @@
             "expectedValue": ["arrayOfArray", "objectOfString", "tupleOfTuple"]
           }
         ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "formatInputOutputTypeLabel",
+        "miroirTests": [
+          { "miroirTestType": "functionCallTest", "miroirTestLabel": "a base type is its own label", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "formatInputOutputTypeLabel" }, "arguments": ["string"], "expectedValue": "string" },
+          { "miroirTestType": "functionCallTest", "miroirTestLabel": "a known entity gives its name", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "formatInputOutputTypeLabel" }, "arguments": ["e8ba151b-d68e-4cc3-9a83-3459d309ccf5", [{ "uuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5", "name": "Book" }]], "expectedValue": "Book" },
+          { "miroirTestType": "functionCallTest", "miroirTestLabel": "an unknown entity uuid stays whole", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "formatInputOutputTypeLabel" }, "arguments": ["ca794e28-b2dc-45b3-8137-00151557eea8", [{ "uuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5", "name": "Book" }]], "expectedValue": "ca794e28-b2dc-45b3-8137-00151557eea8" },
+          { "miroirTestType": "functionCallTest", "miroirTestLabel": "an unknown entity uuid is shortened on request", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "formatInputOutputTypeLabel" }, "arguments": ["ca794e28-b2dc-45b3-8137-00151557eea8", [{ "uuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5", "name": "Book" }], { "shortenUnknownUuids": true }], "expectedValue": "ca794e28" },
+          { "miroirTestType": "functionCallTest", "miroirTestLabel": "an array of a known entity", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "formatInputOutputTypeLabel" }, "arguments": [{ "type": "array", "payload": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5" }, [{ "uuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5", "name": "Book" }]], "expectedValue": "array<Book>" },
+          { "miroirTestType": "functionCallTest", "miroirTestLabel": "an array without a type parameter", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "formatInputOutputTypeLabel" }, "arguments": [{ "type": "array" }], "expectedValue": "array<any>" },
+          { "miroirTestType": "functionCallTest", "miroirTestLabel": "a bare record", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "formatInputOutputTypeLabel" }, "arguments": ["record"], "expectedValue": "record" },
+          { "miroirTestType": "functionCallTest", "miroirTestLabel": "a record of string", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "formatInputOutputTypeLabel" }, "arguments": [{ "type": "record", "payload": "string" }], "expectedValue": "record<string>" },
+          { "miroirTestType": "functionCallTest", "miroirTestLabel": "a tuple of string and a known entity", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "formatInputOutputTypeLabel" }, "arguments": [{ "type": "tuple", "payload": ["string", "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"] }, [{ "uuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5", "name": "Book" }]], "expectedValue": "tuple<string, Book>" },
+          { "miroirTestType": "functionCallTest", "miroirTestLabel": "a tuple element uuid is shortened on request", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "formatInputOutputTypeLabel" }, "arguments": [{ "type": "tuple", "payload": ["ca794e28-b2dc-45b3-8137-00151557eea8"] }, [], { "shortenUnknownUuids": true }], "expectedValue": "tuple<ca794e28>" }
+        ]
       }
     ]
   }
