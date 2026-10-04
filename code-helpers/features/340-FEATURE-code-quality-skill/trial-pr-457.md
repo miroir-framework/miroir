@@ -54,9 +54,12 @@ The other manual row, `logic-in-code`, finds nothing: the MiroirTest literals in
 
 All 18 are true: the two hex lines of `TransformerTypeBadgeChip` and the 16 places that pass `transformerTypeBadges` on.
 
+After the review of PR #476 (Greptile), a finding covers the construct it judges (a parameter list, a hook call, a catch block) and counts when the change edits inside it, unless the base version of the file already had it. The same diff still gives these 18, and counts 3 more apart: #457 passes `transformerTypeBadges` inside three `useMemo` calls of the value editors (`MlArrayEditor.tsx:686`, `MlElementEditor.tsx:940`, `MlObjectEditor.tsx:1248`) whose missing dependencies were the same before it.
+
 ## 5. Lessons
 
 - **A catalogue drawn from old code misses what new code repeats.** The survey counted what the code base had piled up. The trial, on a careful recent PR, found two smells the survey had no row for: a sixth annotation threaded through the value editors, and status colors typed by hand.
 - **Noise trains reviewers to skip the report.** The first run gave five findings and nothing to act on. Each kind of false positive was one selector condition away from silence.
 - **Count moved code apart rather than hide it.** An extracted hook takes its old smells along. They deserve a line in the review, not a demand on the PR that moved them.
 - **Try a search on a case you know before trusting its silence.** The skill's own `git grep` command printed nothing over the whole repository, which looks exactly like a clean result.
+- **Judge the construct, not the line, then compare with the base.** A change can create a smell on a line it leaves alone: a sixth parameter under an unchanged function head, a value read in a hook whose dependency list stays put, a rethrow cut from a catch. Widening the check to the construct finds these, and brings older findings into view: the base comparison keeps the report to what the change adds.

@@ -13,7 +13,7 @@ Rules already stated elsewhere stay there, and this skill points to them: [AGENT
 
 ### Review a change
 
-1. Run `npm run smells -- --diff` from the repository root. It lists the smells on lines added since the merge base with `origin/_integration`, commits, working tree and untracked files included; pass `--diff <base>` for another base. Lines the change moves from elsewhere are only counted: that code is not new.
+1. Run `npm run smells -- --diff` from the repository root. It lists the smells on code changed since the merge base with `origin/_integration`, commits, working tree and untracked files included; pass `--diff <base>` for another base. A finding covers the construct it judges (a parameter list, a hook call, a catch block), so a change anywhere inside it counts. Findings on lines the change moves from elsewhere, and findings the construct had before the change, are only counted: that code is not new.
 2. Take each finding in report order. Open its smell in the checklist below, then its entry in the reference file, and classify it: **fix** (apply the remedy), **propose** (the remedy is larger than the change; write it in the review), or **sanctioned** (the entry's "Leave it" case applies; say which).
 3. Walk the checklist rows marked *manual* against the diff: the runner cannot see them.
 

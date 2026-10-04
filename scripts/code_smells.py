@@ -3,8 +3,10 @@
 
 The smell lens (eslint-rules/smell-lens.config.mjs) finds the syntax smells. This script adds four text
 checks (commented-out code, a logger named after another file, a near-identical twin file, a prop passed on
-through many files), keeps only the lines the branch adds when --diff is given (lines it moves from elsewhere
-are counted apart), and prints the findings grouped by smell id, in the impact order of the
+through many files). With --diff it keeps the findings on code the branch changes: a finding spans the construct
+it reports (a parameter list, a hook call, a catch block), so a line added or cut inside it counts, unless the
+base version of the file already had it. Findings on lines moved from elsewhere, and findings the branch only
+edits around, are counted apart. It prints the findings grouped by smell id, in the impact order of the
 miroir-code-quality skill (.agents/skills/miroir-code-quality/), which holds the remedies.
 It exits 0 whatever it finds: the findings are review prompts, not a gate. A path outside the
 repository, or one that does not exist, is a usage error (exit 2).
@@ -24,7 +26,8 @@ import json
 import re
 import subprocess
 import sys
-from collections import defaultdict
+import tempfile
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -74,7 +77,7 @@ RULE_SMELLS = {
     "react-hooks/exhaustive-deps": "unstable-deps",
     "miroir/layers": "upward-import",
     "@typescript-eslint/no-explicit-any": "type-escape",
-    "max-params": "long-parameter-list",
+    "lens/max-params": "long-parameter-list",
     "max-depth": "deep-nesting",
     "@typescript-eslint/no-unused-vars": "dead-code",
 }
@@ -123,13 +126,15 @@ def smell_of(rule_id: str | None, message: str) -> str:
     return RULE_SMELLS.get(rule_id or "", rule_id or "parse-error")
 
 
-def parse_added_lines(diff_text: str) -> tuple[dict[str, set[int]], dict[str, set[int]]]:
-    """Added lines per file, from `git diff -U0` output: (new lines, moved lines).
+def parse_added_lines(diff_text: str) -> tuple[dict[str, set[int]], dict[str, set[int]], dict[str, set[int]]]:
+    """Added lines per file, from `git diff -U0` output: (new lines, moved lines, cuts).
 
     A moved line is painted in the MOVED color (see diff_scope): the same diff removes it elsewhere.
+    A cut n means lines were removed, and none added, between new lines n and n + 1.
     """
     new: dict[str, set[int]] = defaultdict(set)
     moved: dict[str, set[int]] = defaultdict(set)
+    cuts: dict[str, set[int]] = defaultdict(set)
     current: str | None = None
     number = old_left = new_left = 0
     for raw in diff_text.splitlines():
@@ -153,9 +158,12 @@ def parse_added_lines(diff_text: str) -> tuple[dict[str, set[int]], dict[str, se
         match = HUNK.match(line)
         if match:
             old_left, number, new_left = int(match.group(1) or "1"), int(match.group(2)), int(match.group(3) or "1")
+            if new_left == 0 and current:
+                cuts[current].add(number)
     return (
         {path: lines for path, lines in new.items() if lines},
         {path: lines for path, lines in moved.items() if lines},
+        dict(cuts),
     )
 
 
@@ -271,14 +279,15 @@ def text_findings(path: str, root: Path) -> list[Finding]:
 
 
 def eslint_findings(paths: list[str], root: Path) -> list[Finding]:
-    eslint = root / "node_modules" / "eslint" / "bin" / "eslint.js"
+    """Lens findings in `paths`, relative to `root`. ESLint and the lens come from this script's repository."""
+    eslint = ROOT / "node_modules" / "eslint" / "bin" / "eslint.js"
     if not eslint.is_file():
         sys.exit("ESLint is not installed: run `npm ci` first.")
     findings: list[Finding] = []
     for start in range(0, len(paths), 200):  # stays under the Windows command-line limit
         chunk = paths[start : start + 200]
         result = subprocess.run(
-            ["node", str(eslint), "-c", LENS, "--format", "json", "--no-warn-ignored", *chunk],
+            ["node", str(eslint), "-c", str(ROOT / LENS), "--format", "json", "--no-warn-ignored", *chunk],
             cwd=root,
             capture_output=True,
             text=True,
@@ -289,27 +298,65 @@ def eslint_findings(paths: list[str], root: Path) -> list[Finding]:
         except json.JSONDecodeError:
             sys.exit(f"ESLint failed (exit {result.returncode}):\n{result.stderr or result.stdout}")
         for file in report:
-            relative = Path(file["filePath"]).resolve().relative_to(root).as_posix()
-            for message in file["messages"]:
-                findings.append(
-                    Finding(
-                        smell_of(message.get("ruleId"), message["message"]),
-                        relative,
-                        message.get("line", 1),
-                        message["message"].split("\n")[0],
-                    )
-                )
+            relative = Path(file["filePath"]).resolve().relative_to(root.resolve()).as_posix()
+            findings += [eslint_finding(relative, message) for message in file["messages"]]
     return findings
 
 
-def keep_added(findings: list[Finding], added: dict[str, set[int]]) -> list[Finding]:
-    """Findings that cover an added line; a whole-file finding stays when its file has added lines."""
+def eslint_finding(path: str, message: dict) -> Finding:
+    """A finding over the lines of the reported node: a whole parameter list or hook call for the lens rules."""
+    line = message.get("line", 1)
+    return Finding(
+        smell_of(message.get("ruleId"), message["message"]),
+        path,
+        line,
+        message["message"].split("\n")[0],
+        max(1, message.get("endLine", line) - line + 1),
+    )
+
+
+def keep_added(
+    findings: list[Finding], added: dict[str, set[int]], cuts: dict[str, set[int]] | None = None
+) -> list[Finding]:
+    """Findings whose lines hold an added line, or a cut between two of them.
+
+    A finding spans the construct it judges (a parameter list, a hook call, a catch block), so a change
+    anywhere inside it counts. A whole-file finding stays when its file has added lines.
+    """
     kept = []
     for finding in findings:
         lines = added.get(finding.path, set())
-        if lines and (finding.lines == 0 or lines & set(range(finding.line, finding.line + finding.lines))):
+        if finding.lines == 0:
+            if lines:
+                kept.append(finding)
+            continue
+        last = finding.line + finding.lines - 1
+        inside_cut = any(finding.line <= cut < last for cut in (cuts or {}).get(finding.path, set()))
+        if inside_cut or lines & set(range(finding.line, last + 1)):
             kept.append(finding)
     return kept
+
+
+def base_counts(base: str, paths: list[str], root: Path) -> Counter[tuple[str, str, str]]:
+    """Lens findings per (path, smell, message) in the `base` version of `paths`; a new file has none."""
+    with tempfile.TemporaryDirectory() as mirror:
+        present = []
+        for path in paths:
+            shown = subprocess.run(["git", "show", f"{base}:{path}"], cwd=root, capture_output=True)
+            if shown.returncode == 0:
+                (Path(mirror) / path).parent.mkdir(parents=True, exist_ok=True)
+                (Path(mirror) / path).write_bytes(shown.stdout)
+                present.append(path)
+        findings = eslint_findings(present, Path(mirror)) if present else []
+    return Counter((f.path, f.smell, f.message) for f in findings)
+
+
+def already_there(
+    candidates: list[Finding], findings: list[Finding], base: Counter[tuple[str, str, str]]
+) -> list[Finding]:
+    """The candidates whose file had as many findings with their smell and message before the change."""
+    head = Counter((f.path, f.smell, f.message) for f in findings)
+    return [f for f in candidates if head[(f.path, f.smell, f.message)] <= base[(f.path, f.smell, f.message)]]
 
 
 def order_key(finding: Finding) -> tuple[int, str, int]:
@@ -317,9 +364,11 @@ def order_key(finding: Finding) -> tuple[int, str, int]:
     return (rank, finding.path, finding.line)
 
 
-def render(findings: list[Finding], scope: str, limit: int, moved: int = 0) -> str:
+def render(findings: list[Finding], scope: str, limit: int, moved: int = 0, edited: int = 0) -> str:
     """Markdown report: a count per smell, then each smell's findings grouped by message."""
     moved_note = f"{moved} more on lines the change moves from elsewhere, not listed: that code is not new.\n" if moved else ""
+    if edited:
+        moved_note += f"{edited} more in code that had them before the change, not listed.\n"
     if not findings:
         return f"No smell found ({scope}).\n" + moved_note
     by_smell: dict[str, dict[str, list[Finding]]] = defaultdict(lambda: defaultdict(list))
@@ -347,26 +396,29 @@ def _git(root: Path, *args: str) -> str:
     return subprocess.run(["git", *args], cwd=root, capture_output=True, text=True, check=True).stdout
 
 
-def diff_scope(base: str, root: Path) -> tuple[dict[str, set[int]], dict[str, set[int]]]:
+def merge_base(base: str, root: Path) -> str:
+    return _git(root, "merge-base", base, "HEAD").strip()
+
+
+def diff_scope(base: str, root: Path) -> tuple[dict[str, set[int]], dict[str, set[int]], dict[str, set[int]]]:
     """Lines added since the merge base with `base`: commits, working tree and untracked files.
 
-    Returns (new lines, moved lines); git finds the moved blocks, re-indented ones included.
+    Returns (new lines, moved lines, cuts) as parse_added_lines; git finds the moved blocks, re-indented ones included.
     """
-    merge_base = _git(root, "merge-base", base, "HEAD").strip()
     diff = _git(
         root, *MOVED_COLORS, "diff", "-U0", "--color=always", "--color-moved=blocks",
-        "--color-moved-ws=allow-indentation-change", "--no-ext-diff", merge_base, "--", "packages",
+        "--color-moved-ws=allow-indentation-change", "--no-ext-diff", merge_base(base, root), "--", "packages",
     )
-    added, moved = parse_added_lines(diff)
+    added, moved, cuts = parse_added_lines(diff)
     for path in _git(root, "ls-files", "--others", "--exclude-standard", "--", "packages").splitlines():
         if not _is_source(Path(path)):
             continue
         lines = (root / path).read_text(encoding="utf-8", errors="replace").count("\n") + 1
         added[path] = set(range(1, lines + 1))
-    return (
-        {p: lines for p, lines in added.items() if _is_source(Path(p))},
-        {p: lines for p, lines in moved.items() if _is_source(Path(p))},
-    )
+    def sources(by_path: dict[str, set[int]]) -> dict[str, set[int]]:
+        return {p: lines for p, lines in by_path.items() if _is_source(Path(p))}
+
+    return sources(added), sources(moved), sources(cuts)
 
 
 def _is_source(path: Path) -> bool:
@@ -398,9 +450,9 @@ def main(argv: list[str] | None = None) -> int:
 
     moved: dict[str, set[int]] = {}
     if args.diff:
-        added, moved = diff_scope(args.diff, root)
-        files = sorted(set(added) | set(moved))
-        scope = f"lines added since {args.diff}"
+        added, moved, cuts = diff_scope(args.diff, root)
+        files = sorted(set(added) | set(moved) | set(cuts))
+        scope = f"code changed since {args.diff}"
     else:
         # A path that matches nothing would print "No smell found", which reads as a clean result.
         outside = [p for p in args.paths if not (root / p).resolve().is_relative_to(root)]
@@ -411,13 +463,20 @@ def main(argv: list[str] | None = None) -> int:
             parser.error(f"no such file or folder: {', '.join(missing)}")
         files = expand(args.paths, root)
         scope = ", ".join(args.paths)
-    findings = (eslint_findings(files, root) if files else []) + [f for p in files for f in text_findings(p, root)]
+    lens = eslint_findings(files, root) if files else []
+    findings = lens + [f for p in files for f in text_findings(p, root)]
     on_moved: set[Finding] = set()
+    edited: list[Finding] = []
     if args.diff:
-        kept = keep_added(findings, added)
+        kept = keep_added(findings, added, cuts)
         on_moved = set(keep_added(findings, moved)) - set(kept)
-        findings = kept
-    sys.stdout.write(render(findings, scope, args.limit, moved=len(on_moved)))
+        # A construct the change edits inside, without adding its first line, may have had the smell already.
+        inside = [f for f in set(kept) & set(lens) if f.line not in added.get(f.path, set())]
+        if inside:
+            base = base_counts(merge_base(args.diff, root), sorted({f.path for f in inside}), root)
+            edited = already_there(inside, lens, base)
+        findings = [f for f in kept if f not in edited]
+    sys.stdout.write(render(findings, scope, args.limit, moved=len(on_moved), edited=len(edited)))
     return 0
 
 

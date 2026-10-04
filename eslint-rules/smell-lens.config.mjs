@@ -4,6 +4,8 @@
 // Every custom message starts with a smell id of the miroir-code-quality skill (.agents/skills/miroir-code-quality/).
 // Run: npm run smells -- --diff origin/_integration   or   npm run smells -- <paths>
 // Tests: node --test eslint-rules/smell-lens.test.mjs (part of npm run lint)
+import { builtinRules } from "eslint/use-at-your-own-risk";
+import reactHooks from "eslint-plugin-react-hooks";
 import base from "../eslint.config.mjs";
 
 const SRC = ["packages/*/src/**/*.{ts,tsx}"];
@@ -200,8 +202,57 @@ const inTests = [
   ),
 ];
 
+// `npm run smells -- --diff` keeps a finding when the change touches a line it spans. max-params reports the function
+// head and exhaustive-deps the dependency list, so a sixth parameter added on its own line, or a value newly read in a
+// hook body, would be dropped. These copies report the parameter list, and the whole hook call.
+const spanning = (rule, spanOf, stockId) => ({
+  meta: rule.meta,
+  create: (context) =>
+    rule.create(
+      Object.create(context, {
+        report: {
+          value: (problem) => {
+            const span = problem.node && spanOf(problem.node);
+            if (!span) return context.report(problem);
+            const reported = problem.loc?.start ?? problem.loc ?? problem.node.loc.start;
+            if (!silencedOnLine(context, reported.line, [context.id, stockId])) context.report({ ...problem, loc: span });
+          },
+        },
+      }),
+    ),
+});
+// An `eslint-disable-next-line` or `eslint-disable-line` comment names the line the rule reported: once the report
+// starts higher up, ESLint no longer matches the two, so the copy applies the comment itself.
+const silencedOnLine = (context, line, ruleIds) =>
+  context.sourceCode.getAllComments().some((comment) => {
+    const directive = /^\s*eslint-disable-(next-line|line)\b(.*)$/s.exec(comment.value);
+    if (!directive) return false;
+    const target = directive[1] === "line" ? comment.loc.start.line : comment.loc.end.line + 1;
+    const rules = directive[2].split("--")[0].split(",").map((rule) => rule.trim()).filter(Boolean);
+    return target === line && (rules.length === 0 || rules.some((rule) => ruleIds.includes(rule)));
+  });
+const parameterList = (fn) => (fn.params?.length ? { start: fn.loc.start, end: fn.params.at(-1).loc.end } : undefined);
+// The hook call, when the report is on its dependency list (a missing dependency) or on the hook's name (no list).
+// A report on one entry of the list (a complex expression) stays on that entry.
+const hookCall = (node) =>
+  node.parent?.type === "CallExpression" && (node.parent.callee === node || node.parent.arguments.at(-1) === node)
+    ? node.parent.loc
+    : undefined;
+const lens = { rules: { "max-params": spanning(builtinRules.get("max-params"), parameterList, "max-params") } };
+// exhaustive-deps keeps its id, so the `eslint-disable` comments that name it still apply: the base config's
+// react-hooks plugin is swapped for a copy that carries the spanning rule.
+const reactHooksSpanning = {
+  ...reactHooks,
+  rules: {
+    ...reactHooks.rules,
+    "exhaustive-deps": spanning(reactHooks.rules["exhaustive-deps"], hookCall, "react-hooks/exhaustive-deps"),
+  },
+};
+const withSpanningHooks = (config) =>
+  config.plugins?.["react-hooks"] ? { ...config, plugins: { ...config.plugins, "react-hooks": reactHooksSpanning } } : config;
+
 export default [
-  ...base,
+  ...base.map(withSpanningHooks),
   {
     files: [...SRC, ...TESTS],
     rules: {
@@ -212,8 +263,9 @@ export default [
   {
     files: SRC,
     ignores: TESTS,
+    plugins: { lens },
     rules: {
-      "max-params": ["warn", 5],
+      "lens/max-params": ["warn", 5],
       "max-depth": ["warn", 4],
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unused-vars": "warn",

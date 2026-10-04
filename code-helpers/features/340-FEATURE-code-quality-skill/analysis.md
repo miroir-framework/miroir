@@ -58,7 +58,9 @@ The four checks a selector cannot express are plain text checks in the runner: c
 
 ### D3. Review scope
 
-`--diff BASE` keeps the findings on lines added since the merge base with `BASE` (default `origin/_integration`), committed or not, untracked files included. A commented-out block counts when one of its lines is added; a twin file counts when the file has an added line. Lines that git marks as moved (`--color-moved=blocks`, re-indentation allowed) are counted, not listed: the trial's only type escape was moved code. Rejected: scanning every changed file in full, because a one-line change to `DomainController.ts` would list its 300 existing findings.
+`--diff BASE` keeps the findings on code changed since the merge base with `BASE` (default `origin/_integration`), committed or not, untracked files included. A finding counts when a line is added, or cut, inside the span it reports; a twin file counts when the file has an added line. Lines that git marks as moved (`--color-moved=blocks`, re-indentation allowed) are counted, not listed: the trial's only type escape was moved code. Rejected: scanning every changed file in full, because a one-line change to `DomainController.ts` would list its 300 existing findings.
+
+The review of PR #476 (Greptile) showed that added lines alone miss smells a change creates elsewhere in a construct: a sixth parameter on its own line (`max-params` reports the function head), a value newly read in a hook body (`exhaustive-deps` reports the dependency list), a rethrow cut from a catch. The lens now reports the parameter list and the whole hook call, and cuts count. Wider spans bring older findings into view, so a finding that the change only edits inside is listed when the base version of the file had fewer findings with its smell and message: on the #457 diff, three `useMemo` calls that already missed dependencies are counted, not listed.
 
 ### D5. Order
 
@@ -82,7 +84,7 @@ The trial on PR #457 ([trial-pr-457.md](trial-pr-457.md)) found two smells the s
 
 ## 4. Current state
 
-Measured on `_integration` at `1180c7c9` (2026-10-04) with `python scripts/code_smells.py packages`, after the trial changes (D9): 1,281 TypeScript files under `packages/` (sources, tests and scripts), 7,167 findings in 581 files. One finding is one line, one block of commented-out code, or one file for twins. Counts in `packages/*/src` exclude `preprocessor-generated/`.
+Measured on `_integration` at `1180c7c9` (2026-10-04) with `python scripts/code_smells.py packages`, after the trial changes (D9) and the review of PR #476: 1,281 TypeScript files under `packages/` (sources, tests and scripts), 7,168 findings in 581 files. One finding is one reported node (a line, a parameter list, a hook call), one block of commented-out code, or one file for twins. Counts in `packages/*/src` exclude `preprocessor-generated/`.
 
 ### 4.1 Already enforced
 
@@ -118,7 +120,7 @@ The lens includes `eslint.config.mjs` and its suppressions, so `hooks-order` and
 | `global-environment` | 29 (18) | `schemaModePolicy.ts:12` reads `MIROIR_SCHEMA_MODE` in layer 1; `MiroirActivityTracker.ts:25` reads `MIROIR_TEST_VERBOSE_TRACKING` | The value cannot differ per instance or per test; tests set and restore `process.env`; the browser bundle needs a shim |
 | `wiring` | 2 (2) | `PersistenceStoreControllerTools.ts:61`: `mountApplicationDeployment`, a setup helper in `4_services`, builds a manager from the `ConfigurationService.configurationService` singleton. `PersistenceStoreControllerManager.ts:204` is the manager's factory job: a false positive | Wiring spread outside the roots hides which instance a caller gets |
 | `component-io` | 4 (2) | `LoginPage.tsx:49`: `fetch("/auth/login")` in the submit handler; `AiActionsProvider.tsx:459, 511, 568` | The component cannot render without a server; the request bypasses DomainController and its activity tracking |
-| `pub-sub` | 2 (2) | `MiroirContextReactProvider.tsx:956`: `useMiroirEvents` subscribes in an effect and copies events into state. The sanctioned form is next door: `useYamlParserStatus.ts:67-69` and `authSession.ts:89-91` use `useSyncExternalStore` | Effect plus state copy: an extra render, and a window where the copy is stale (AGENTS.md, "React") |
+| `pub-sub` | 3 (3) | `MiroirContextReactProvider.tsx:956`: `useMiroirEvents` subscribes in an effect and copies events into state; `useIntegTestRunCoordinator.ts:10` does the same. The sanctioned form is next door: `useYamlParserStatus.ts:67-69` and `authSession.ts:89-91` use `useSyncExternalStore` | Effect plus state copy: an extra render, and a window where the copy is stale (AGENTS.md, "React") |
 | `service-read-in-render` | 1 (1) | `ErrorLogsPageDEFUNCT.tsx:110`: `useMemo(() => errorLogService.getErrorStats(), [errors])` tracks `errors`, not the service. The page is still routed (`PageDispatcher.tsx:181, 232`) | Nothing re-renders when the service changes (AGENTS.md, "React") |
 | `unstable-deps` | 206 (64) | `TransformerEditor.tsx:644, 646, 647`: three `safeStringify(…)` calls in the dependency list of the debounce effect. Split: 197 `exhaustive-deps`, 9 serialisations | Serialising on every render; missing dependencies read stale values |
 | `prop-drilling` | 389 (45) | `applicationDeploymentMap` is passed on as is at 48 places in 22 files, `deploymentUuid` at 34 in 16, `application` at 29 in 15. The value editors pass six per-path annotations the same way (`transformerTypeBadges`, #453, the latest), 15 or 16 places each. `useApplicationDeploymentMap()` (miroir-react) reads the map from the Miroir context and has one caller: `RootComponent.tsx:310-315` copies the map into the context in an effect, one render late | Each new value costs an edit per hop, and the components in between depend on data they do not use |
@@ -161,7 +163,7 @@ The before and after of each remedy, and the forms to leave alone, are in the sk
 | `global-environment` | Read the environment once in the composition root (`environments/*.json`, #321) and pass the value in | Graduate: `no-restricted-properties` on `process.env` outside roots, 29 counted |
 | `wiring` | Build in `5_setup` or the runtime's startup file; inject | Lens only (1 true finding) |
 | `component-io` | A DomainController action, or a client passed in through props or context | Graduate: `no-restricted-globals` `fetch` in views, 4 counted |
-| `pub-sub` | `useSyncExternalStore(service.subscribe, service.getSnapshot)` inside a hook | Graduate, 2 counted |
+| `pub-sub` | `useSyncExternalStore(service.subscribe, service.getSnapshot)` inside a hook | Graduate, 3 counted |
 | `service-read-in-render` | The same hook; `useMemo` only for pure computation over props and state | Lens only (1) |
 | `unstable-deps` | Depend on stable values (ids, memoised objects), never on serialisations; list every dependency | `react-hooks/exhaustive-deps` as an error would count 197 (#325 left it off) |
 | `prop-drilling` | Provide the value once in a context and read it with a hook; pass props that travel together as one object | Runner only (cross-file) |

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 import subprocess
+from collections import Counter
 from pathlib import Path
 
 import pytest
@@ -12,6 +13,7 @@ import code_smells
 from code_smells import Finding
 
 ROOT = Path(__file__).resolve().parents[2]
+ESLINT = ROOT / "node_modules" / "eslint" / "bin" / "eslint.js"
 SKILL = ROOT / ".agents" / "skills" / "miroir-code-quality"
 
 
@@ -70,7 +72,8 @@ def test_parse_added_lines_reads_unified_zero_context_hunks() -> None:
             "@@ -1,2 +0,0 @@",
         ]
     )
-    assert code_smells.parse_added_lines(diff) == ({"packages/a/src/x.ts": {4, 5, 12}}, {})
+    # Lines 20-22 of the old file are cut between new lines 21 and 22; the deleted file has no new lines.
+    assert code_smells.parse_added_lines(diff) == ({"packages/a/src/x.ts": {4, 5, 12}}, {}, {"packages/a/src/x.ts": {21}})
 
 
 def test_parse_added_lines_tells_moved_lines_from_new_ones() -> None:
@@ -86,7 +89,7 @@ def test_parse_added_lines_tells_moved_lines_from_new_ones() -> None:
             f"{new}+{reset}",
         ]
     )
-    assert code_smells.parse_added_lines(diff) == ({"packages/a/src/y.ts": {2, 3}}, {"packages/a/src/y.ts": {1}})
+    assert code_smells.parse_added_lines(diff) == ({"packages/a/src/y.ts": {2, 3}}, {"packages/a/src/y.ts": {1}}, {})
 
 
 def test_commented_out_code_finds_runs_of_code_lines_and_leaves_prose() -> None:
@@ -131,6 +134,40 @@ def test_keep_added_keeps_findings_that_cover_an_added_line() -> None:
     other_file = Finding("duplicated-logic", "packages/b/src/x.ts", 1, "twin", 0)
     findings = [on_added, elsewhere, run_overlapping, run_before, whole_file, other_file]
     assert code_smells.keep_added(findings, added) == [on_added, run_overlapping, whole_file]
+
+
+def test_keep_added_keeps_a_construct_the_change_touches() -> None:
+    path = "packages/a/src/x.ts"
+    # A parameter list over lines 20-26 gets a sixth parameter on line 25; ESLint reports the whole list.
+    long_list = Finding("long-parameter-list", path, 20, "m", 7)
+    assert code_smells.keep_added([long_list], {path: {25}}) == [long_list]
+    # Lines cut between 31 and 32, inside a catch block over lines 30-34: the rethrow is gone.
+    catch = Finding("swallowed-error", path, 30, "m", 5)
+    one_line = Finding("type-escape", path, 31, "m")
+    assert code_smells.keep_added([catch, one_line], {}, {path: {31}}) == [catch]
+    # A cut right before or right after the block leaves it as it was.
+    assert code_smells.keep_added([catch], {}, {path: {29, 34}}) == []
+
+
+def test_a_finding_inside_a_touched_construct_stays_when_the_change_adds_it() -> None:
+    path = "packages/a/src/x.ts"
+    memo = Finding("unstable-deps", path, 10, "React Hook useMemo has a missing dependency: 'a'.", 90)
+    catch = Finding("swallowed-error", path, 120, "This catch only logs.", 4)
+    other_catch = Finding("swallowed-error", path, 200, "This catch only logs.", 4)
+    base = Counter({(path, "unstable-deps", memo.message): 1, (path, "swallowed-error", catch.message): 1})
+    # The memo already missed `a`; the file has one swallowing catch more than before.
+    assert code_smells.already_there([memo, catch], [memo, catch, other_catch], base) == [memo]
+
+
+def test_an_eslint_message_covers_the_lines_of_its_node() -> None:
+    message = {"ruleId": "lens/max-params", "message": "Function has too many parameters (6).", "line": 3, "endLine": 9}
+    assert code_smells.eslint_finding("packages/a/src/x.ts", message) == Finding(
+        "long-parameter-list", "packages/a/src/x.ts", 3, "Function has too many parameters (6).", 7
+    )
+    parse_error = {"ruleId": None, "fatal": True, "message": "Parsing error: ';' expected\nmore", "line": 4}
+    assert code_smells.eslint_finding("packages/a/src/x.ts", parse_error) == Finding(
+        "parse-error", "packages/a/src/x.ts", 4, "Parsing error: ';' expected"
+    )
 
 
 def test_drilled_props_are_props_passed_on_as_is_in_many_files(tmp_path: Path) -> None:
@@ -217,16 +254,59 @@ def test_diff_scope_covers_commits_working_tree_and_untracked_files(tmp_path: Pa
     git("commit", "-q", "-m", "base")
     git("checkout", "-q", "-b", "feature")
     _write(tmp_path, "packages/a/src/x.ts", "line1\nadded\nline2\n")
-    _write(tmp_path, "packages/a/src/Panel.tsx", "// panel\n")
+    _write(tmp_path, "packages/a/src/Panel.tsx", "// panel\n")  # the hook moves out: lines cut after line 1
     _write(tmp_path, "packages/a/src/useViewParams.ts", f"import x from 'y';\n\n{hook}")  # moved, not new
     git("add", ".")
     git("commit", "-q", "-am", "feature")
     _write(tmp_path, "packages/a/src/x.ts", "line1\nadded\nline2\nworking\n")
     _write(tmp_path, "packages/a/src/New.tsx", "a\nb\n")
     _write(tmp_path, "packages/a/src/notes.md", "not a source\n")
-    added, moved = code_smells.diff_scope("base", tmp_path)
+    added, moved, cuts = code_smells.diff_scope("base", tmp_path)
     assert added["packages/a/src/x.ts"] == {2, 4}
     assert {1, 2} <= added["packages/a/src/New.tsx"]
     assert "packages/a/src/notes.md" not in added
     assert added["packages/a/src/useViewParams.ts"] == {1, 2}
     assert moved == {"packages/a/src/useViewParams.ts": {3, 4, 5}}
+    assert cuts == {"packages/a/src/Panel.tsx": {1}}
+
+
+def _git(root: Path, *args: str) -> None:
+    subprocess.run(["git", *args], cwd=root, check=True, capture_output=True)
+
+
+@pytest.mark.skipif(not ESLINT.is_file(), reason="ESLint is not installed: run npm ci")
+def test_diff_reports_the_smells_a_change_adds_inside_existing_constructs(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    _git(tmp_path, "init", "-q", "-b", "base")
+    _git(tmp_path, "config", "user.email", "test@example.com")
+    _git(tmp_path, "config", "user.name", "test")
+    params = "".join(f"  {p}: number,\n" for p in "abcde")
+    domain = (
+        f"export function place(\n{params}): number {{\n  return a + b + c + d + e;\n}}\n\n"
+        "export function load(read: () => number, log: Console): number {\n"
+        "  try {\n    return read();\n  } catch (error) {\n    log.warn(error);\n    throw error;\n  }\n}\n"
+    )
+    hooks = (
+        'import { useEffect, useMemo } from "react";\n\n'
+        "export function useProbe(a: string, b: string, log: Console): string {\n"
+        "  useEffect(() => {\n    log.info(a);\n  }, [a, log]);\n"
+        "  return useMemo(() => {\n    const label = a + b;\n    return label;\n  }, [a]);\n}\n"
+    )
+    _write(tmp_path, "packages/a/src/domain.ts", domain)
+    _write(tmp_path, "packages/a/src/useProbe.ts", hooks)
+    _git(tmp_path, "add", ".")
+    _git(tmp_path, "commit", "-q", "-m", "base")
+    _git(tmp_path, "checkout", "-q", "-b", "feature")
+    # A sixth parameter on its own line, a rethrow removed, `b` read in an effect that does not list it, and an edit
+    # inside a memo that already missed `b`.
+    domain = domain.replace("  e: number,\n", "  e: number,\n  f: number,\n").replace("c + d + e;", "c + d + e + f;")
+    _write(tmp_path, "packages/a/src/domain.ts", domain.replace("    throw error;\n", ""))
+    hooks = hooks.replace("    log.info(a);\n", "    log.info(a);\n    log.info(b);\n")
+    _write(tmp_path, "packages/a/src/useProbe.ts", hooks.replace("const label = a + b;", "const label = `${a}${b}`;"))
+    code_smells.main(["--root", str(tmp_path), "--diff", "base"])
+    report = capsys.readouterr().out
+    for smell in ["swallowed-error", "unstable-deps", "long-parameter-list"]:
+        assert f"| {smell} | 1 |" in report, report
+    assert "missing dependency: 'b'" in report
+    assert "1 more in code that had them before the change" in report

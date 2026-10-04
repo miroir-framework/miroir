@@ -193,7 +193,7 @@ handleAction(action, applicationDeploymentMap, undefined, undefined, undefined, 
 handleAction(action, applicationDeploymentMap, { principal });
 ```
 
-**Lint.** Lens (`max-params` 5).
+**Lint.** Lens (`lens/max-params` 5: `max-params`, reporting the whole parameter list).
 
 ## boolean-flag
 

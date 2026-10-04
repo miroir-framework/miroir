@@ -74,7 +74,7 @@ test("positional-mixup and boolean-flag: parameter lists", async () => {
   await spares(LIB, `export function f(options: { verbose: boolean }) { return options.verbose; }\n`, "boolean-flag");
   // A setter's only parameter is the value it sets.
   await spares(LIB, `export const setShowTypes = (showTypes: boolean) => showTypes;\n`, "boolean-flag");
-  await flags(LIB, `export function f(a: number, b: number, c: number, d: number, e: number, g: number) { return a + b + c + d + e + g; }\n`, "max-params");
+  await flags(LIB, `export function f(a: number, b: number, c: number, d: number, e: number, g: number) { return a + b + c + d + e + g; }\n`, "lens/max-params");
 });
 
 test("type-escape and magic-value", async () => {
@@ -153,4 +153,26 @@ test("views of the 4-tests root keep the view checks; an app entry stays a root"
   await spares(SESSION, subscribe, "pub-sub");
   // The entry reads the auth status at boot, before any component renders.
   await spares(ENTRY, `export async function start() { return fetch("/auth/status"); }\n`, "component-io");
+});
+
+test("spans: a long parameter list and a hook call are reported whole, so a change anywhere inside them counts", async () => {
+  const spans = async (filePath, code, ruleId) => {
+    const [result] = await eslint.lintText(code, { filePath });
+    return result.messages.filter((m) => m.ruleId === ruleId).map((m) => [m.line, m.endLine]);
+  };
+  const params = ["a", "b", "c", "d", "e", "g"].map((p) => `  ${p}: number,\n`).join("");
+  // max-params alone reports the head, line 1: a sixth parameter added on line 7 would not count.
+  assert.deepEqual(await spans(LIB, `export function f(\n${params}) {\n  return a + b + c + d + e + g;\n}\n`, "lens/max-params"), [[1, 7]]);
+  assert.deepEqual(await spans(LIB, `export const f = (\n${params}) => a + b + c + d + e + g;\n`, "lens/max-params"), [[1, 7]]);
+  // exhaustive-deps alone reports the list, line 6: `b`, read on the new line 5, would not count.
+  const effect = `import { useEffect } from "react";\nexport function useLog(a: string, b: string) {\n  useEffect(() => {\n    console.log(a);\n    console.log(b);\n  }, [a]);\n}\n`;
+  assert.deepEqual(await spans(VIEW, effect, "react-hooks/exhaustive-deps"), [[3, 6]]);
+  // A report on another node keeps its own place.
+  const construction = `import { useMemo } from "react";\nexport function useTotal(xs: number[]) {\n  const options = { xs };\n  return useMemo(() => options.xs.length, [options]);\n}\n`;
+  assert.deepEqual(await spans(VIEW, construction, "react-hooks/exhaustive-deps"), [[3, 3]]);
+  // A comment that silences the line of the dependency list still applies once the report spans the call.
+  const silenced = effect.replace("  }, [a]);", "    // eslint-disable-next-line react-hooks/exhaustive-deps -- logs b once\n  }, [a]);");
+  assert.deepEqual(await spans(VIEW, silenced, "react-hooks/exhaustive-deps"), []);
+  const otherRule = effect.replace("  }, [a]);", "    // eslint-disable-next-line no-console\n  }, [a]);");
+  assert.deepEqual(await spans(VIEW, otherRule, "react-hooks/exhaustive-deps"), [[3, 7]]);
 });
