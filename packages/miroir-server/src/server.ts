@@ -31,24 +31,18 @@ import {
   MiroirLoggerFactory,
   PersistenceStoreControllerManager,
   ACCESS_DENIED,
-  ALWAYS_ALLOW_APPLICATION_TARGETS,
-  AUTH_CHANGE_PASSWORD_ACTION_LABEL,
-  accessGrantsFromInstances,
-  assertAccessForDeployment,
-  assertRequestAllowed,
-  bindPrincipalToDirectory,
+  accessDirectoryLoader,
+  authenticateRequest,
+  createIdentityGateMiddleware,
+  authorizeDeployment,
+  type AuthenticationGate,
+  type AuthPrincipal,
+  loadAccessDirectory,
+  persistPasswordChange,
   buildAuthStatusBody,
-  deploymentsFromInstances,
-  ENTITY_DEPLOYMENT_UUID,
-  ENTITY_MIROIR_RIGHT_UUID,
   ENTITY_MIROIR_SECRET_UUID,
-  ENTITY_MIROIR_USER_CREDENTIAL_UUID,
-  ENTITY_MIROIR_USER_UUID,
   deploymentUuidFromHttpRequest,
-  extractPrincipalFromAuthorizationHeader,
-  findCredentialInstance,
   getProcessTokenSecret,
-  identityDirectoryFromInstances,
   loginWithPassword,
   persistChangedPasswordHash,
   ParseServerArgsError,
@@ -62,6 +56,7 @@ import {
   defaultExternalServiceClient,
   type DomainControllerInterface,
   resolveAuthenticationEnabled,
+  resolveMcpAuthenticationEnabled,
   restServerDefaultHandlers,
   setProcessTokenSecret,
   setSecretsMasterKey,
@@ -304,14 +299,22 @@ app.use(cors({
 
 app.use(bodyParser.json({limit: '50mb'}));
 
-const serverAuthentication = (miroirConfig.server as { authentication?: { enabled?: boolean; tokenSecret?: string } })
-  .authentication;
+const serverAuthentication = (
+  miroirConfig.server as { authentication?: { enabled?: boolean; tokenSecret?: string; mcp?: boolean } }
+).authentication;
 const authenticationEnabled = resolveAuthenticationEnabled({
   argv: process.argv,
   env: process.env,
   config: { enabled: serverAuthentication?.enabled },
 });
-myLogger.info(`Authentication enabled: ${authenticationEnabled}`);
+// #263: MCP gating has its own switch; global hatch off wins.
+const mcpAuthenticationEnabled = resolveMcpAuthenticationEnabled({
+  argv: process.argv,
+  env: process.env,
+  config: { mcp: serverAuthentication?.mcp },
+  globalEnabled: authenticationEnabled,
+});
+myLogger.info(`Authentication enabled: ${authenticationEnabled}, on MCP: ${mcpAuthenticationEnabled}`);
 if (serverAuthentication?.tokenSecret) {
   setProcessTokenSecret(serverAuthentication.tokenSecret);
 } else {
@@ -602,84 +605,17 @@ if (resolvedEnvironment) {
   recordInstallsOf(domainController, resolvedEnvironment, (line) => console.log(`[miroir-env] ${line}`));
 }
 
-async function loadAdminIdentityDirectory(): Promise<
-  | {
-      ok: true;
-      directory: ReturnType<typeof identityDirectoryFromInstances>;
-      credentialsValue: unknown;
-      grants: ReturnType<typeof accessGrantsFromInstances>;
-      deployments: ReturnType<typeof deploymentsFromInstances>;
-    }
-  | { ok: false; errorMessage: string }
-> {
-  const identityQuery = await domainController.handleBoxedExtractorOrQueryAction(
-    {
-      actionType: "runBoxedQueryAction",
-      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-      payload: {
-        application: adminSelfApplication.uuid,
-        applicationSection: "data",
-        queryExecutionStrategy: "storage",
-        query: {
-          application: adminSelfApplication.uuid,
-          queryType: "boxedQueryWithExtractorCombinerTransformer",
-          extractors: {
-            users: {
-              extractorOrCombinerType: "extractorInstancesByEntity",
-              parentUuid: ENTITY_MIROIR_USER_UUID,
-            },
-            credentials: {
-              extractorOrCombinerType: "extractorInstancesByEntity",
-              parentUuid: ENTITY_MIROIR_USER_CREDENTIAL_UUID,
-            },
-            rights: {
-              extractorOrCombinerType: "extractorInstancesByEntity",
-              parentUuid: ENTITY_MIROIR_RIGHT_UUID,
-            },
-            deployments: {
-              extractorOrCombinerType: "extractorInstancesByEntity",
-              parentUuid: ENTITY_DEPLOYMENT_UUID,
-            },
-          },
-        },
-      },
-    },
-    applicationDeploymentMap,
-    defaultMetaModelEnvironment,
-  );
-  if (identityQuery instanceof Action2Error) {
-    return {
-      ok: false,
-      errorMessage: identityQuery.errorMessage ?? "Authentication directory query failed",
-    };
-  }
-  return {
-    ok: true,
-    directory: identityDirectoryFromInstances(
-      identityQuery.returnedDomainElement?.users,
-      identityQuery.returnedDomainElement?.credentials,
-    ),
-    credentialsValue: identityQuery.returnedDomainElement?.credentials,
-    grants: accessGrantsFromInstances(identityQuery.returnedDomainElement?.rights),
-    deployments: deploymentsFromInstances(identityQuery.returnedDomainElement?.deployments),
-  };
-}
+// #263: one gate for REST, CopilotKit and MCP; the Admin directory is read on every gated request.
+const authenticationGate: AuthenticationGate = {
+  enabled: authenticationEnabled,
+  loadDirectory: accessDirectoryLoader(domainController, applicationDeploymentMap),
+};
 
 async function resolveGatedPrincipal(
   authorizationHeader: string | undefined,
-): Promise<ReturnType<typeof bindPrincipalToDirectory>> {
-  const extracted = await extractPrincipalFromAuthorizationHeader(
-    authorizationHeader,
-    getProcessTokenSecret(),
-  );
-  if (!extracted) {
-    return undefined;
-  }
-  const identity = await loadAdminIdentityDirectory();
-  if (!identity.ok) {
-    return undefined;
-  }
-  return bindPrincipalToDirectory(extracted, identity.directory);
+): Promise<AuthPrincipal | undefined> {
+  const authenticated = await authenticateRequest({ ...authenticationGate, enabled: true }, authorizationHeader);
+  return authenticated.allowed ? authenticated.principal : undefined;
 }
 
 // ##############################################################################################
@@ -688,39 +624,17 @@ for (const op of restServerDefaultHandlers) {
   const operationHandler = async (request: CustomRequest, response: any, context: any) => {
     const authorizationHeader =
       typeof request.headers?.authorization === "string" ? request.headers.authorization : undefined;
-    let principal = undefined;
-    let grants: ReturnType<typeof accessGrantsFromInstances> = [];
-    let deployments: ReturnType<typeof deploymentsFromInstances> = [];
-    if (authenticationEnabled) {
-      const extracted = await extractPrincipalFromAuthorizationHeader(
-        authorizationHeader,
-        getProcessTokenSecret(),
-      );
-      const directory = await loadAdminIdentityDirectory();
-      if (extracted && directory.ok) {
-        principal = bindPrincipalToDirectory(extracted, directory.directory);
-      }
-      if (directory.ok) {
-        grants = directory.grants;
-        deployments = directory.deployments;
-      }
-    }
-    const gate = assertRequestAllowed({
-      enabled: authenticationEnabled,
-      principal,
-    });
-    if (!gate.allowed) {
-      response.status(gate.status).json(gate.body);
+    const authenticated = await authenticateRequest(authenticationGate, authorizationHeader);
+    if (!authenticated.allowed) {
+      response.status(authenticated.status).json(authenticated.body);
       return;
     }
-    const access = assertAccessForDeployment({
-      enabled: authenticationEnabled,
-      principal,
-      deploymentUuid: deploymentUuidFromHttpRequest(request),
-      grants,
-      deployments,
-      alwaysAllow: ALWAYS_ALLOW_APPLICATION_TARGETS,
-    });
+    const principal = authenticated.principal;
+    const access = authorizeDeployment(
+      authenticationEnabled,
+      authenticated,
+      deploymentUuidFromHttpRequest(request),
+    );
     if (!access.allowed) {
       myLogger.warn(
         `access denied: user=${principal?.username ?? "anonymous"} deployment=${deploymentUuidFromHttpRequest(request) ?? "(none)"} url=${request.originalUrl}`
@@ -805,7 +719,7 @@ for (const op of restServerDefaultHandlers) {
 }
 
 app.post("/auth/login", async (request: CustomRequest, response: any) => {
-  const identity = await loadAdminIdentityDirectory();
+  const identity = await loadAccessDirectory(domainController, applicationDeploymentMap);
   if (!identity.ok) {
     response.status(500).json({
       status: "error",
@@ -840,7 +754,7 @@ app.post("/auth/change-password", async (request: CustomRequest, response: any) 
     });
     return;
   }
-  const identity = await loadAdminIdentityDirectory();
+  const identity = await loadAccessDirectory(domainController, applicationDeploymentMap);
   if (!identity.ok) {
     response.status(500).json({
       status: "error",
@@ -859,45 +773,20 @@ app.post("/auth/change-password", async (request: CustomRequest, response: any) 
     response.status(changed.status).json(changed.body);
     return;
   }
-  const existing = findCredentialInstance(identity.credentialsValue, principal.miroirUserUuid);
   const updatedHash = changed.directory.credentials.find(
     (row) => row.miroirUser === principal.miroirUserUuid,
   )?.passwordHash;
-  if (!existing || !updatedHash) {
+  const persisted =
+    !!updatedHash &&
+    (await persistPasswordChange(domainController, applicationDeploymentMap, {
+      principal,
+      credentialsValue: identity.credentialsValue,
+      passwordHash: updatedHash,
+    }));
+  if (!persisted) {
     response.status(401).json({
       status: "error",
       errorType: "AuthenticationFailed",
-    });
-    return;
-  }
-  const persistResult = await domainController.handleAction(
-    {
-      actionType: "updateInstance",
-      actionLabel: AUTH_CHANGE_PASSWORD_ACTION_LABEL,
-      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-      payload: {
-        application: adminSelfApplication.uuid,
-        applicationSection: "data",
-        parentUuid: ENTITY_MIROIR_USER_CREDENTIAL_UUID,
-        objects: [
-          {
-            ...existing,
-            passwordHash: updatedHash,
-          } as any,
-        ],
-      },
-    },
-    applicationDeploymentMap,
-    defaultMetaModelEnvironment,
-    undefined,
-    undefined,
-    principal,
-  );
-  if (persistResult instanceof Action2Error) {
-    response.status(500).json({
-      status: "error",
-      errorType: "AuthenticationDirectoryMissing",
-      errorMessage: persistResult.errorMessage,
     });
     return;
   }
@@ -926,14 +815,16 @@ mcpApp.use(cors({
 mcpApp.use(bodyParser.json({limit: '50mb'}));
 
 myLogger.info(`MCP Server being set-up, going to execute on the port::${mcpPortFromConfig}`);
+const mcpAuthenticationGate: AuthenticationGate = { ...authenticationGate, enabled: mcpAuthenticationEnabled };
 const mcpServer = await setupMcpServer(
   mcpApp,
   applicationDeploymentMap,
   endpointToolRegistry,
   domainController,
+  mcpAuthenticationGate,
 );
 if (shouldMountMcpHttp(capabilities.mcp)) {
-  mcpServer.mountHttpRoutes(app);
+  mcpServer.mountHttpRoutes(app, mcpAuthenticationGate);
 }
 
 // TLS certificates: present → HTTPS on the API port (listener at the end of this file).
@@ -951,22 +842,7 @@ await mountCopilotKitRoute(app, {
   applicationDeploymentMap,
   mcpHttpUrl: agentMcpHttpUrl({ restPort: restPortFromConfig, mcpPort: mcpPortFromConfig, tls: tlsEnabled }),
   agentModel: miroirConfig.features?.agentModel,
-  requestGate: async (request: any, response: any, next: any) => {
-    const principal = authenticationEnabled
-      ? await resolveGatedPrincipal(
-          typeof request.headers?.authorization === "string" ? request.headers.authorization : undefined,
-        )
-      : undefined;
-    const gate = assertRequestAllowed({
-      enabled: authenticationEnabled,
-      principal,
-    });
-    if (!gate.allowed) {
-      response.status(gate.status).json(gate.body);
-      return;
-    }
-    next();
-  },
+  requestGate: createIdentityGateMiddleware(authenticationGate) as any,
 });
 
 // ##############################################################################################
