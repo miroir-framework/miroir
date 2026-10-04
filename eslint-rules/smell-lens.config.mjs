@@ -114,6 +114,13 @@ const anywhereInSrc = [
     "CallExpression[callee.name='setTimeout'][arguments.1.value=0]",
     "setTimeout(…, 0) defers work to dodge an ordering problem: make the ordering explicit.",
   ),
+  ...["", "IfStatement > BlockStatement > "].map((nested) =>
+    smell(
+      "effect-derived-state",
+      `CallExpression[callee.name=/^(React\\.)?useMemo$/] > :function.arguments:first-child > BlockStatement > ${nested}ExpressionStatement > CallExpression[callee.name=/^set[A-Z]/]`,
+      "setState inside useMemo: a memo must be pure. Derive the value during render, or reset the state where the change happens (the event handler, or a `key`).",
+    ),
+  ),
   smell(
     "state-from-props",
     "CallExpression[callee.name=/^(React\\.)?useState$/] > MemberExpression.arguments[object.name='props']",

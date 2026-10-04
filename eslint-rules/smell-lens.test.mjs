@@ -95,6 +95,8 @@ test("React: derived state in effects, state from props, unstable deps, service 
   // The React Compiler rules only analyse functions that return JSX.
   await flags(VIEW, `import { useEffect, useState } from "react";\nexport function C({ items }: { items: string[] }) { const [n, setN] = useState(0); useEffect(() => { setN(items.length); }, [items]); return <div>{n}</div>; }\n`, "react-hooks/set-state-in-effect");
   await flags(VIEW, `import { useState } from "react";\nexport function C(props: { initial: string }) { const [v] = useState(props.initial); return v; }\n`, "state-from-props");
+  await flags(VIEW, `import { useMemo, useState } from "react";\nexport function C(props: { open: boolean; initial: string }) { const [v, setV] = useState(""); useMemo(() => { if (props.open) { setV(props.initial); } }, [props.open, props.initial]); return v; }\n`, "effect-derived-state");
+  await spares(VIEW, `import { useMemo, useState } from "react";\nexport function C() { const [v, setV] = useState(""); const api = useMemo(() => ({ update: (x: string) => setV(x) }), []); return [v, api]; }\n`, "effect-derived-state");
   await flags(VIEW, `import { useMemo } from "react";\nexport function C({ o }: { o: object }) { return useMemo(() => Object.keys(o), [JSON.stringify(o)]); }\n`, "unstable-deps");
   await flags(VIEW, `import { useMemo } from "react";\ndeclare const errorLogService: { getErrorStats(): number };\nexport function C() { return useMemo(() => errorLogService.getErrorStats(), []); }\n`, "service-read-in-render");
   await spares(VIEW, `import { useMemo } from "react";\nexport function C({ xs }: { xs: string[] }) { return useMemo(() => xs.find((x) => x === "a"), [xs]); }\n`, "service-read-in-render");
