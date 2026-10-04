@@ -418,16 +418,16 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
             ? { attributes: readAttributes }
             : {}),
         };
-        log.info(
-          "handleNetworkPersistenceAction action",
-          persistenceAction,
-          "section",
-          persistenceAction.payload.section,
-          "callParams",
-          callParams,
-          "completeArgs",
-          completeArgs
-        );
+        // log.info(
+        //   "handleNetworkPersistenceAction action",
+        //   persistenceAction,
+        //   "section",
+        //   persistenceAction.payload.section,
+        //   "callParams",
+        //   callParams,
+        //   "completeArgs",
+        //   completeArgs
+        // );
         const result = callParams.operation(
           "/CRUD/:deploymentUuid/:section/entity" +
             (effectiveAction == "read" ? "/:parentUuid/all" : ""),
