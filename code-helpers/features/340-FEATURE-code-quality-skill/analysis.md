@@ -30,7 +30,7 @@ Key sources: [`eslint-rules/smell-lens.config.mjs`](../../../eslint-rules/smell-
 |---|---|---|
 | D1. Invocation | **Model-invoked**, with three branches: review a change, refactor an area, write new code | G1, G2, G3 |
 | D2. Detection | **A warn-level ESLint "smell lens" plus a Python runner**, `npm run smells` | G1, G4 |
-| D3. Review scope | **`--diff`: only the lines the branch adds**; paths: whole files | G1, G2 |
+| D3. Review scope | **`--diff`: the findings on constructs the branch changes**, unless the base already had them; paths: whole files | G1, G2 |
 | D4. Vocabulary | **One kebab-case smell id per smell**, shared by the lens messages, the runner's sections and the skill | G1, G2, G3 |
 | D5. Order | **Wrong behaviour, then cost of change, then readability** | G1, G3 |
 | D6. Where things live | **Examples, counts and lint verdicts here; patterns, remedies with before and after, and sanctioned forms in the skill** | G2 |
@@ -49,9 +49,9 @@ Key sources: [`eslint-rules/smell-lens.config.mjs`](../../../eslint-rules/smell-
 
 | Option | Pros | Cons |
 |---|---|---|
-| **D2-a. Warn-level lens on top of `eslint.config.mjs`, run by a Python runner** ★ | AST precision: catch bodies, hook arguments, parameter types. Reuses ESLint 10 and typescript-eslint already in the repo. Each detector has a test. `--diff` keeps a review to the branch's own lines | A second config to keep in step (it imports the first) |
+| **D2-a. Warn-level lens on top of `eslint.config.mjs`, run by a Python runner** ★ | AST precision: catch bodies, hook arguments, parameter types. Reuses ESLint 10 and typescript-eslint already in the repo. Each detector has a test. `--diff` keeps a review to what the branch changes | A second config to keep in step (it imports the first) |
 | D2-b. grep commands in the skill | Nothing to maintain | grep cannot tell a catch that rethrows from one that only logs, and each run retypes the commands differently |
-| D2-c. Warning rules in `eslint.config.mjs` | One config | Breaks #325 D2 (errors only); 6,500 warnings in `npm run lint` |
+| D2-c. Warning rules in `eslint.config.mjs` | One config | Breaks #325 D2 (errors only); 5,600 warnings in `npm run lint` |
 | D2-d. One `miroir/*` rule per smell | Full control | 25 rules to write and test, where `no-restricted-syntax` selectors cover all but three checks |
 
 The four checks a selector cannot express are plain text checks in the runner: commented-out code (comments are not AST nodes), a logger named after another file (needs the file name), twin files across packages (needs two files), and a prop passed on as is in many files (needs every file).
