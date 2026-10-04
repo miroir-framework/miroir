@@ -407,6 +407,7 @@
     "minimalistic-assert",
     "minimalistic-crypto-utils",
     "miroir-diagram-class",
+    "miroir-example-github",
     "miroir-example-library",
     "miroir-fixture-appForTest",
     "miroir-mcp",
