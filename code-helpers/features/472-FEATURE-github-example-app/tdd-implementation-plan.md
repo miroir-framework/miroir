@@ -206,7 +206,7 @@ Deviation: RestClientStub sends no identity, so the REST test checks the process
 
 ## Slice 5 — `finishOpenReport` opens a Report after Finish
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 **Goal (D15):** a multistep Report with `finishOpenReport` navigates to that Report after a successful Finish; without it the host still calls `navigate(-1)`.
 
@@ -222,6 +222,10 @@ npm run build -w miroir-app-miroir && npm run devBuild -w miroir-core
 RUN_TEST=multistepFinishOpenReport npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepFinishOpenReport
 npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui,runners
 ```
+
+**Realization:** `finishOpenReport` is an optional `{reportUuid, application?, applicationSection?, deploymentUuid?}` on the Report definition (Report entity and its EntityVersion), the same fields as an `openReportSection` route. `MultistepReportHost.leaveAfterFinish` builds the route with `openReportHref` after a successful Finish; Cancel and a modal host (`onDismissed`) are unchanged.
+
+Deviation: the RED case is `finish-open-report` in `multistepProcess.274.integ.test.tsx` (20/20 green) instead of a new file, because that suite already boots the Library multistep tracer. It checks that a failing Finish navigates nowhere, then that a valid Finish navigates once to the target route.
 
 ## Slice 6 — GitHub home page: connect walk
 

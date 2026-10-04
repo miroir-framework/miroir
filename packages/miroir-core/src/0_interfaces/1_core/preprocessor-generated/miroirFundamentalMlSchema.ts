@@ -16342,6 +16342,57 @@ export const miroirFundamentalMlSchema = {
               }
             },
             "context": {}
+          },
+          "finishOpenReport": {
+            "type": "object",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Report Opened After Finish"
+              }
+            },
+            "definition": {
+              "reportUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Report"
+                  }
+                }
+              },
+              "application": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Application"
+                  }
+                }
+              },
+              "applicationSection": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "data",
+                  "model",
+                  "modelVersion"
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Application Section"
+                  }
+                }
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Deployment"
+                  }
+                }
+              }
+            }
           }
         }
       },

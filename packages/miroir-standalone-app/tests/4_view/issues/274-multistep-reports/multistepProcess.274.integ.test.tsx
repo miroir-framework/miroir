@@ -43,6 +43,8 @@ const INSTANCE_WALK_FINISH_COUNTRY_UUID = "e8a1c4b2-7d3f-4a91-9e05-b6c84d0f2e71"
 const INSTANCE_STEP_BAG_KEY = "definition_section_definition_1";
 const PRE_EXISTING_COUNTRY_UUID = "b62fc20b-dcf5-4e3b-a247-62d0475cf60f";
 const LEND_BOOK_RUNNER_UUID = "cc853632-f158-43fa-b9ed-437c9c25f539";
+/** A Library Report; the host only builds its route. */
+const FINISH_OPEN_REPORT_UUID = "08176cc7-43ae-4fca-91b7-bf869d19e4b9";
 
 const deployment_Library: Deployment = {
   uuid: LIBRARY_DEPLOYMENT_UUID,
@@ -875,6 +877,44 @@ const mlElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> = {
                   expect(country?.uuid).toEqual(LIBRARY_TEST_TRACER_COUNTRY_UUID);
                 });
                 expect(navigateMock).toHaveBeenCalledWith(-1);
+              },
+            },
+            // #472 D15: finishOpenReport opens a Report after a successful Finish.
+            "finish-open-report": {
+              props: {
+                application: selfApplicationLibrary.uuid,
+                applicationSection: "data",
+                deploymentUuid: deployment_Library.uuid,
+                pageParams: tracerPageParams,
+                reportDefinition: reportMultistepCountryCreate as any,
+                applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+              },
+              tests: async (expect: ExpectStatic, container: Container) => {
+                await waitForHost();
+                const leaf = cloneFrozenTracer();
+                leaf.definition.section = leaf.definition.section.definition[0];
+                leaf.definition.finishOpenReport = { reportUuid: FINISH_OPEN_REPORT_UUID };
+                upsertLibraryReportInMlEditorTestCache(leaf);
+                await waitFor(() => {
+                  expect(screen.getByRole("button", { name: "Finish" })).toBeTruthy();
+                });
+                fireEvent.click(screen.getByRole("button", { name: "Finish" }));
+                await waitAfterUserInteraction();
+                expect(screen.getByTestId("multistep-finish-error")).toBeTruthy();
+                expect(navigateMock).not.toHaveBeenCalled();
+
+                await typeStepOne(container, "Testland", "TL");
+                fireEvent.click(screen.getByRole("button", { name: "Finish" }));
+                await waitAfterUserInteraction();
+                await waitFor(() => {
+                  expect(getLibraryCountryFromMlEditorTestCache()?.name).toEqual("Testland");
+                  expect(navigateMock).toHaveBeenCalledTimes(1);
+                });
+                const target = String(navigateMock.mock.calls[0][0]);
+                expect(target).toContain(`reportUuid=${FINISH_OPEN_REPORT_UUID}`);
+                expect(target).toContain(`application=${LIBRARY_APPLICATION_UUID}`);
+                expect(target).toContain(`deploymentUuid=${deployment_Library.uuid}`);
+                expect(target).toContain("applicationSection=data");
               },
             },
           },
