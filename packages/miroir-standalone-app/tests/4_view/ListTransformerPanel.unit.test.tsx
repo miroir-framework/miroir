@@ -585,13 +585,13 @@ describe("ListTransformerPanel — list section integration", () => {
       target: { value },
     });
 
-  it("offers record, with no type parameter select for an entity or a base type (#449)", () => {
+  it("offers record and tuple, with no type parameter select for an entity or a base type (#449)", () => {
     renderBookListSection();
     fireEvent.click(getTransformerToggle());
 
     const chooser = screen.getByTestId("list-transformer-expected-output-type") as HTMLSelectElement;
     expect(Array.from(chooser.options).map((o) => o.value)).toEqual(
-      expect.arrayContaining(["array", "record"]),
+      expect.arrayContaining(["array", "record", "tuple"]),
     );
     expect(screen.queryByTestId("list-transformer-expected-output-payload")).not.toBeInTheDocument();
     chooseExpectedOutput("string");
@@ -658,6 +658,72 @@ describe("ListTransformerPanel — list section integration", () => {
     chooseExpectedOutput(entityBook.uuid);
     expect(screen.queryByTestId("list-transformer-expected-output-payload")).not.toBeInTheDocument();
     expectOrangeBorder(screen.getByTestId("list-transformer-editor"), false);
+  });
+
+  // #449: tuple elements.
+  const tupleElementSelect = (index: number) =>
+    screen.getByTestId(`list-transformer-expected-output-tuple-${index}`) as HTMLSelectElement;
+  const tupleElementValues = () =>
+    screen
+      .queryAllByTestId(/^list-transformer-expected-output-tuple-\d+$/)
+      .map((select) => (select as HTMLSelectElement).value);
+
+  it("choosing tuple shows two element selects at any; remove stops at one element (#449)", () => {
+    renderBookListSection();
+    fireEvent.click(getTransformerToggle());
+    chooseExpectedOutput("tuple");
+
+    expect(
+      (screen.getByTestId("list-transformer-expected-output-type") as HTMLSelectElement).value,
+    ).toBe("tuple");
+    expect(tupleElementValues()).toEqual(["any", "any"]);
+    expect(screen.queryByTestId("list-transformer-expected-output-payload")).not.toBeInTheDocument();
+    expect(screen.getByTestId("list-transformer-expected-output-tuple-add")).toBeEnabled();
+    expect(screen.getByTestId("list-transformer-expected-output-tuple-remove")).toBeEnabled();
+
+    fireEvent.click(screen.getByTestId("list-transformer-expected-output-tuple-remove"));
+    expect(tupleElementValues()).toEqual(["any"]);
+    expect(screen.getByTestId("list-transformer-expected-output-tuple-remove")).toBeDisabled();
+  });
+
+  it("expected tuple of string and number: such a tuple fits, a tuple of two strings is bordered (#449)", () => {
+    renderBookListSection();
+    fireEvent.click(getTransformerToggle());
+    chooseExpectedOutput("tuple");
+    fireEvent.change(tupleElementSelect(0), { target: { value: "string" } });
+    fireEvent.change(tupleElementSelect(1), { target: { value: "number" } });
+    expect(tupleElementValues()).toEqual(["string", "number"]);
+
+    setTransformer(
+      returnValueWithMlSchema(["a", 1], {
+        type: "tuple",
+        definition: [{ type: "string" }, { type: "number" }],
+      }),
+    );
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), false);
+
+    setTransformer(
+      returnValueWithMlSchema(["a", "b"], {
+        type: "tuple",
+        definition: [{ type: "string" }, { type: "string" }],
+      }),
+    );
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), true);
+  });
+
+  it("add appends an element at any, remove drops the last one (#449)", () => {
+    renderBookListSection();
+    fireEvent.click(getTransformerToggle());
+    chooseExpectedOutput("tuple");
+    fireEvent.change(tupleElementSelect(0), { target: { value: "string" } });
+    fireEvent.change(tupleElementSelect(1), { target: { value: entityBook.uuid } });
+
+    fireEvent.click(screen.getByTestId("list-transformer-expected-output-tuple-add"));
+    expect(tupleElementValues()).toEqual(["string", entityBook.uuid, "any"]);
+
+    fireEvent.click(screen.getByTestId("list-transformer-expected-output-tuple-remove"));
+    fireEvent.click(screen.getByTestId("list-transformer-expected-output-tuple-remove"));
+    expect(tupleElementValues()).toEqual(["string"]);
   });
 
   it("keeps the #249 inputOutput path while the mlSchema switch is off", () => {

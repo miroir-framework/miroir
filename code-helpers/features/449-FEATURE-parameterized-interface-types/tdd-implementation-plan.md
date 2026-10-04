@@ -16,7 +16,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisites: [#383](../383-FEATURE-transformer-choice-by-input-type/) ✅, [#453](../453-FEATURE-transformer-type-display/) ✅
 Working branch: `claude/449-payload-sub-choice` (from `_integration` 04ae35bb)
 
-**Resume note:** Slices 0-3 DONE.
+**Resume note:** Slices 0-4 DONE.
 
 ---
 
@@ -39,7 +39,7 @@ Out: full ML schema types, nested type parameters, `object<P>`, saving the chose
 | 1 | Declare and match `record` and `tuple` (tracer) | ✅ | `fn.transformer.interfaceCheck` new suites "record forms", "tuple forms", "payload values" |
 | 2 | Coarse inference, lift and walk for the new types | ✅ | `fn.transformer.interfaceCheck` "inference" / "lift" suites, `fn.transformer.interfaceWalk` cases |
 | 3 | Chooser: type parameter for `array` and `record` | ✅ | `ListTransformerPanel.unit` cases |
-| 4 | Chooser: tuple elements | ⬜ | `ListTransformerPanel.unit` cases |
+| 4 | Chooser: tuple elements | ✅ | `ListTransformerPanel.unit` cases |
 | 5 | One type formatter (G4) | ⬜ | `fn.transformer.interfaceCheck` "format" suite, `unit-453-transformer-types-display` |
 | 6 | Stock definition sweep (D11, after A's approval) | ⬜ | `stockTransformerDefinitions` suite, `fn.transformer.resultSchema` case |
 | 7 | Nonreg, docs, AC | ⬜ | `unit-449-parameterized-interface-types` step, full nonreg |
@@ -279,12 +279,13 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui
 - Test mock: a `set-transformer-from-test` button sets the transformer the test put in `globalThis.__listTransformerToSet`, so each case builds its own `returnValue` with an `mlSchema`.
 - `testByFile` stops at the first failure: the pre-existing failing case runs first, so these runs need `--no-bail`.
 - RED: 5 new cases failing. GREEN: `ListTransformerPanel.unit` 22/23 (the pre-existing failure only); standalone `tsc` still 32 errors, none in the touched files; lint clean.
+- Scoped nonreg `smoke,ui`: 32/32.
 
 ---
 
 ## Slice 4 — Chooser: tuple elements
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -317,6 +318,10 @@ npm run nonreg:filesystem -- --runner shared
 ```
 
 ### Realization
+
+- `ExpectedOutputTypeChooser`: `tuple` in the main select starts at `tuple<any, any>`; one select per element (`list-transformer-expected-output-tuple-<i>`), + appends `any`, − drops the last and is disabled at one element (`ThemedButton` secondary: `ThemedIconButton` does not forward `data-testid`).
+- 4.3: `TypeParameterSelect` serves the "of" select and the element selects.
+- RED: 4 new cases plus the record case now also asking for `tuple`. GREEN: `ListTransformerPanel.unit` 25/26 (the pre-existing failure only); standalone `tsc` 32 errors, none in the touched files; lint clean.
 
 ---
 
