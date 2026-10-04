@@ -26,7 +26,7 @@ const DEFAULT_CONFIG_FILE_PATH = "../config/miroirConfig.server.json";
 const SECRET_ENV_PREFIX = "MIROIR_SECRET_";
 
 const USAGE =
-  "Usage: node server.js [--config <path>] [--certsdir <dir>] [--cert <path>] [--key <path>] [--secret <name>=<value>] [--secrets-master-key <value>] [--disable-auth] [--enable-auth] [-h|--help]";
+  "Usage: node server.js [--config <path>] [--certsdir <dir>] [--cert <path>] [--key <path>] [--secret <name>=<value>] [--secrets-master-key <value>] [--disable-auth] [--enable-auth] [--disable-mcp-auth] [--enable-mcp-auth] [-h|--help]";
 
 function requireValue(args: string[], index: number, flag: string): { value: string; nextIndex: number } {
   if (index + 1 >= args.length) {
@@ -121,6 +121,8 @@ export function parseServerArgs(
       i = next.nextIndex;
     } else if (arg === "--disable-auth" || arg === "--enable-auth") {
       // consumed by resolveAuthenticationEnabled(process.argv)
+    } else if (arg === "--disable-mcp-auth" || arg === "--enable-mcp-auth") {
+      // consumed by resolveMcpAuthenticationEnabled(process.argv) (#263)
     } else if (arg.startsWith("-")) {
       throw new ParseServerArgsError(`Error: Unknown option: ${arg}\n${USAGE}`);
     }

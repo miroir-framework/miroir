@@ -209,6 +209,7 @@ export function environmentServerConfig(resolved: ResolvedEnvironment): MiroirCo
       ...(server.mcpUrl ? { mcpUrl: server.mcpUrl } : {}),
       filesystemDeploymentRootDirectory: resolved.repositoryRoot,
       ...(server.corsAllowedOrigins ? { corsAllowedOrigins: server.corsAllowedOrigins } : {}),
+      ...(server.authentication ? { authentication: server.authentication } : {}),
     },
     environment: configEnvironment(resolved),
     ...(resolved.environment.features ? { features: resolved.environment.features } : {}),

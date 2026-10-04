@@ -80,6 +80,44 @@ export function resolveAuthenticationEnabled(
   return true;
 }
 
+export type McpAuthenticationEnabledInputs = {
+  argv?: string[];
+  env?: Record<string, string | undefined>;
+  config?: { mcp?: boolean };
+  /** The global hatch, as resolveAuthenticationEnabled returned it. */
+  globalEnabled: boolean;
+};
+
+/**
+ * #263: MCP gating has its own switch, for non-regression runs that keep REST gated and MCP open.
+ * Global hatch off wins. Otherwise last CLI --enable-mcp-auth / --disable-mcp-auth, then
+ * MIROIR_MCP_AUTH_ENABLED, then config.mcp, then the global hatch (on).
+ */
+export function resolveMcpAuthenticationEnabled(inputs: McpAuthenticationEnabledInputs): boolean {
+  if (!inputs.globalEnabled) {
+    return false;
+  }
+  let cliOverride: boolean | undefined;
+  for (const arg of inputs.argv ?? []) {
+    if (arg === "--disable-mcp-auth") {
+      cliOverride = false;
+    } else if (arg === "--enable-mcp-auth") {
+      cliOverride = true;
+    }
+  }
+  if (cliOverride !== undefined) {
+    return cliOverride;
+  }
+  const envOverride = parseEnabledFlag(inputs.env?.MIROIR_MCP_AUTH_ENABLED);
+  if (envOverride !== undefined) {
+    return envOverride;
+  }
+  if (typeof inputs.config?.mcp === "boolean") {
+    return inputs.config.mcp;
+  }
+  return true;
+}
+
 export function buildAuthStatusBody(enabled: boolean): AuthStatusBody {
   return { enabled };
 }

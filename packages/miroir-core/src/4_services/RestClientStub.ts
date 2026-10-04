@@ -6,20 +6,19 @@ import { DomainControllerInterface } from "../0_interfaces/2_domain/DomainContro
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4-services/PersistenceInterface";
 import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
+import { type AccessDirectory } from "../1_core/authentication/AccessPolicy.js";
 import {
-  ALWAYS_ALLOW_APPLICATION_TARGETS,
-  assertAccessForDeployment,
-  type AccessDirectory,
-} from "../1_core/authentication/AccessPolicy.js";
+  authenticateRequest,
+  authorizeDeployment,
+  type AuthenticationGate,
+  type LoadedAccessDirectory,
+} from "../1_core/authentication/AccessGate.js";
 import {
-  assertRequestAllowed,
-  bindPrincipalToDirectory,
-  extractPrincipalFromAuthorizationHeader,
-  getProcessTokenSecret,
   resolveAuthenticationEnabled,
-  type AuthPrincipal,
+  type IdentityDirectory,
 } from "../1_core/authentication/AuthenticationPolicy.js";
 import { handleAuthHttpRoute } from "../1_core/authentication/AuthenticationHttp.js";
+import { deploymentUuidFromHttpRequest } from "../1_core/authentication/deploymentUuidFromHttpRequest.js";
 import type { ProcessCapabilities } from "../1_core/processCapabilities.js";
 import { handleProcessCapabilitiesHttpRoute } from "./ProcessCapabilitiesHttp.js";
 import { packageName } from "../constants";
@@ -40,15 +39,24 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 export class RestClientStub implements RestClientInterface {
   private persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface | undefined;
   private serverDomainController: DomainControllerInterface | undefined;
-  private identityDirectory: import("../1_core/authentication/AuthenticationPolicy.js").IdentityDirectory | undefined;
+  private identityDirectory: IdentityDirectory | undefined;
   private accessDirectory: AccessDirectory | undefined;
+  /** #263: set by the hosts (CLI, Electron); otherwise built from the two snapshot setters. */
+  private authenticationGate: AuthenticationGate | undefined;
   private processCapabilities: ProcessCapabilities | undefined;
 
   constructor(private rootApiUrl: string) {}
 
-  setIdentityDirectory(
-    directory: import("../1_core/authentication/AuthenticationPolicy.js").IdentityDirectory,
-  ) {
+  /**
+   * #263: the host's resolved hatch and a loader read on every gated call. Isolated emulated
+   * sessions (setupMiroirTest) never set a gate nor a directory, and stay open.
+   */
+  setAuthenticationGate(gate: AuthenticationGate) {
+    this.authenticationGate = gate;
+  }
+
+  /** Test seam (#71): a fixed directory, the hatch read from process.env. */
+  setIdentityDirectory(directory: IdentityDirectory) {
     this.identityDirectory = directory;
   }
 
@@ -70,6 +78,23 @@ export class RestClientStub implements RestClientInterface {
     this.serverDomainController = domainController;
   }
 
+  private currentAuthenticationGate(): AuthenticationGate | undefined {
+    if (this.authenticationGate) {
+      return this.authenticationGate;
+    }
+    if (this.identityDirectory === undefined) {
+      return undefined;
+    }
+    return {
+      enabled: resolveAuthenticationEnabled({ env: process.env }),
+      loadDirectory: async () => ({
+        directory: this.identityDirectory!,
+        grants: this.accessDirectory?.grants ?? [],
+        deployments: this.accessDirectory?.deployments ?? [],
+      }),
+    };
+  }
+
   // ##############################################################################################
   async call(
     rawUrl: string,
@@ -79,21 +104,50 @@ export class RestClientStub implements RestClientInterface {
   ): Promise<RestClientCallReturnType> {
     // log.info("RestClient call", method, endpoint, args)
     const { body, ...customConfig } = args;
-    const tokenFromGetter =
-      this.identityDirectory !== undefined ? getRestClientAuthorizationToken() : undefined;
+    const gate = this.currentAuthenticationGate();
+    const tokenFromGetter = gate !== undefined ? getRestClientAuthorizationToken() : undefined;
     const authorizationHeader =
       customConfig?.headers?.Authorization ??
       customConfig?.headers?.authorization ??
       (tokenFromGetter ? `Bearer ${tokenFromGetter}` : undefined);
+    const isAuthRoute = /\/auth\/(status|login|change-password)\/?(\?|$)/.test(rawUrl) ||
+      /\/auth\/(status|login|change-password)\/?(\?|$)/.test(endpoint);
+    const directoryForAuthRoute: LoadedAccessDirectory | undefined =
+      isAuthRoute && gate ? await gate.loadDirectory() : undefined;
     const authHttp = await handleAuthHttpRoute({
       url: rawUrl,
       endpoint,
       body,
       authorizationHeader,
-      directory: this.identityDirectory,
+      directory: directoryForAuthRoute?.directory ?? this.identityDirectory,
+      enabled: gate?.enabled,
+      secret: gate?.secret,
     });
     if (authHttp) {
-      if (authHttp.directory) {
+      if (authHttp.directory && gate?.persistPasswordChange && directoryForAuthRoute) {
+        const authenticated = await authenticateRequest({ ...gate, enabled: true }, authorizationHeader);
+        const passwordHash = authenticated.allowed && authenticated.principal
+          ? authHttp.directory.credentials.find(
+              (row) => row.miroirUser === authenticated.principal!.miroirUserUuid,
+            )?.passwordHash
+          : undefined;
+        const persisted =
+          authenticated.allowed && authenticated.principal && passwordHash
+            ? await gate.persistPasswordChange({
+                principal: authenticated.principal,
+                credentialsValue: directoryForAuthRoute.credentialsValue,
+                passwordHash,
+              })
+            : false;
+        if (!persisted) {
+          return {
+            status: 401,
+            data: { status: "error", errorType: "AuthenticationFailed" },
+            headers: new Headers(),
+            url: this.rootApiUrl + endpoint,
+          };
+        }
+      } else if (authHttp.directory && this.identityDirectory !== undefined) {
         this.identityDirectory = authHttp.directory;
       }
       return {
@@ -118,53 +172,29 @@ export class RestClientStub implements RestClientInterface {
       };
     }
 
-    // Isolated emulated sessions (setupMiroirTest) never install an identity
-    // directory. In the browser, process.env.MIROIR_AUTH_ENABLED is often
-    // unset so resolveAuthenticationEnabled defaults ON — every action 401s.
-    // Enforce auth only when a directory is present (the live host stub).
-    const authEnabled =
-      this.identityDirectory !== undefined &&
-      resolveAuthenticationEnabled({ env: process.env });
-    // Isolated stubs have no directory: skip token verify. The SPA Bearer is
-    // issued by the real server; verifying it here used Buffer "base64url",
-    // which the browser polyfill rejects (`Unknown encoding: base64url`).
-    let principal: AuthPrincipal | undefined;
-    if (authEnabled) {
-      const extracted = await extractPrincipalFromAuthorizationHeader(
-        authorizationHeader,
-        getProcessTokenSecret(),
-      );
-      principal =
-        extracted && this.identityDirectory
-          ? bindPrincipalToDirectory(extracted, this.identityDirectory)
-          : extracted;
-    }
-    const gate = assertRequestAllowed({
-      enabled: authEnabled,
-      principal,
-    });
-    if (!gate.allowed) {
+    // Isolated emulated sessions (setupMiroirTest) install no gate: no token verify, no 401. In
+    // the browser, process.env.MIROIR_AUTH_ENABLED is often unset, so the hatch would default ON.
+    const authEnabled = gate?.enabled ?? false;
+    const authenticated = gate
+      ? await authenticateRequest(gate, authorizationHeader)
+      : ({ allowed: true, principal: undefined, access: undefined } as const);
+    if (!authenticated.allowed) {
       return {
-        status: gate.status,
-        data: gate.body,
+        status: authenticated.status,
+        data: authenticated.body,
         headers: new Headers(),
         url: this.rootApiUrl + endpoint,
       };
     }
+    const principal = authenticated.principal;
 
-    const deploymentUuidForAccess =
-      args["deploymentUuid"] ??
-      (body ?? {})["deploymentUuid"] ??
-      ((body ?? {})["payload"] ?? {})["deploymentUuid"];
-    const access = assertAccessForDeployment({
-      enabled: authEnabled,
-      principal,
-      deploymentUuid:
-        typeof deploymentUuidForAccess === "string" ? deploymentUuidForAccess : undefined,
-      grants: this.accessDirectory?.grants ?? [],
-      deployments: this.accessDirectory?.deployments ?? [],
-      alwaysAllow: ALWAYS_ALLOW_APPLICATION_TARGETS,
-    });
+    // Same extraction as the server's REST gate (#263): action bodies are
+    // `{ action, applicationDeploymentMap }`, query actions name the application.
+    const access = authorizeDeployment(
+      authEnabled,
+      authenticated,
+      deploymentUuidFromHttpRequest({ params: args, body }),
+    );
     if (!access.allowed) {
       return {
         status: access.status,
