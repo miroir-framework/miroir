@@ -197,6 +197,9 @@ describe("Component Test Sandbox header (#435)", () => {
 
       const host = vi.mocked(componentTestsEntry.registerComponentTests).mock.calls[0][0];
       expect(host.stepDelayMs?.()).toBe(savedStepDelayMs);
+      // #443: the sandbox passes its pause to the runner; after the run, the run is not paused
+      await expect(host.waitWhilePaused?.()).resolves.toBeUndefined();
+      expect(screen.getByRole("button", { name: "Pause component test run" })).toBeDisabled();
 
       const testName = screen.getByTestId("component-test-sandbox-test-name");
       expect(testName.textContent).toContain(enumLeafLabels[enumLeafLabels.length - 1]);

@@ -2072,6 +2072,22 @@
       ]
     },
     {
+      "id": "unit-443-test-sandbox-play-pause",
+      "scopes": ["ui"],
+      "tier": "unit",
+      "title": "#443 Component Test Sandbox play / pause button: pause gate, runner holds before the next step, header button",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "playPause.443"
+      ]
+    },
+    {
       "id": "unit-438-feedback-glow",
       "scopes": ["ui"],
       "tier": "unit",

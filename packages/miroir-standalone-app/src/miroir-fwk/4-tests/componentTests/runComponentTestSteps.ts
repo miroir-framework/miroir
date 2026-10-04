@@ -39,6 +39,7 @@ import {
 // - Before a component test step runs, its `getFromContext` references are replaced by the values
 //   of `options.storedValues` (#333); an unresolved reference fails the step.
 // - `options.stepDelayMs` slows a run down: it waits that long before each step (#435).
+// - `options.waitWhilePaused` holds a run: it is awaited before each step, after the delay (#443).
 //
 // It does not import `@testing-library/react`: it runs in the app too.
 // ################################################################################################
@@ -251,17 +252,21 @@ export interface ComponentTestStepsOptions<ExtraStep extends AnyStep = never> {
   storedValues?: () => Record<string, unknown>;
   /** Milliseconds to wait before each step, read when the step starts (#435, the sandbox's slider). */
   stepDelayMs?: () => number;
+  /** Awaited before each step, after the step delay; it resolves when the run is not paused (#443, the sandbox's play / pause button). */
+  waitWhilePaused?: () => Promise<void>;
 }
 
 /**
  * What the app's test sandbox shows and controls during a run (#435): the name of the case that
- * starts, and the delay before each step. Absent under vitest.
+ * starts, the delay before each step, and the pause before each step (#443). Absent under vitest.
  */
 export interface ComponentTestRunControls {
   /** Called with the test name of each case, when it starts. */
   onCaseStart?: (testName: string) => void;
   /** Milliseconds to wait before each step, read when the step starts. */
   stepDelayMs?: () => number;
+  /** Awaited before each step, after the step delay: resolves when the run is not paused. */
+  waitWhilePaused?: () => Promise<void>;
 }
 
 export interface ComponentTestStepsResult {
@@ -569,6 +574,7 @@ export async function runComponentTestSteps<ExtraStep extends AnyStep = never>(
     if (stepDelayMs > 0) {
       await new Promise((resolve) => setTimeout(resolve, stepDelayMs));
     }
+    await options.waitWhilePaused?.();
     try {
       const isComponentTestStep = Object.prototype.hasOwnProperty.call(handlers, step.step);
       const handler = (isComponentTestStep

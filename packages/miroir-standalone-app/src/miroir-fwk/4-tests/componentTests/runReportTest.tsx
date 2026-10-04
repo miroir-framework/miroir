@@ -392,6 +392,7 @@ export function createReportTestRunner(host: ReportTestSandboxHost): ClosableRep
           // UI steps read the test parameters and the results kept so far, as the action steps do (#333)
           storedValues: () => ({ ...actionContext.testParams, ...actionContext.results }),
           stepDelayMs: host.stepDelayMs,
+          waitWhilePaused: host.waitWhilePaused,
         },
       );
       if (fakeFetch?.undeclaredRequests.length) {
