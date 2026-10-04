@@ -5,7 +5,7 @@
   "name": "ui.transformerEditor",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "TransformerEditor on the Miroir application: renders the default transformer and its result, edits it, chooses a transformer type, switches the input type restriction off, builds nested transformers (mapList to strings and objects, mapList with a getFromContext element, a reduce of a mapList, a list from an object), wraps transformers in new ones at any level with the input type filter, pipes them into new ones, unwraps and removes them, keeps what fits on a type change, hints at getFromParameters reads after a wrap, and runs a getFromContext on one Entity instance, then on all of them wrapped in mapList, and shows the input, declared and output types of every node, matched or mismatched, behind a switch.",
+  "description": "TransformerEditor on the Miroir application: renders the default transformer and its result, edits it, chooses a transformer type, switches the input type restriction off, builds nested transformers (mapList to strings and objects, mapList with a getFromContext element, a reduce of a mapList, a list from an object), wraps transformers in new ones at any level with the input type filter, pipes them into new ones, unwraps and removes them, keeps what fits on a type change and asks only before dropping edited values, hints at getFromParameters reads after a wrap, and runs a getFromContext on one Entity instance, then on all of them wrapped in mapList, and shows the input, declared and output types of every node, matched or mismatched, behind a switch.",
   "tags": [
     "ui",
     "editor",
@@ -95,8 +95,55 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "TransformerEditor: choosing getObjectValues asks before dropping the returned value, then returns the values of the input",
+            "miroirTestLabel": "TransformerEditor: choosing getObjectValues on the default returnValue drops its defaults without asking",
             "steps": [
+              {
+                "step": "selectOption",
+                "label": "transformer type",
+                "field": "transformerEditor_transformer_selector.transformer.transformerType",
+                "option": "getObjectValues"
+              },
+              {
+                "step": "expectElement",
+                "label": "root is getObjectValues",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "getObjectValues",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no dialog",
+                "target": {
+                  "byTestId": "transformer-node-dialog-dropped"
+                },
+                "present": false
+              },
+              {
+                "step": "expectElement",
+                "label": "result: the input value",
+                "target": {
+                  "byText": "put your input here..."
+                },
+                "count": 1,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: choosing getObjectValues after editing the returned value asks before dropping it, then returns the values of the input",
+            "steps": [
+              {
+                "step": "change",
+                "label": "edit the returned value",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "value": "my value"
+              },
               {
                 "step": "selectOption",
                 "label": "transformer type",
@@ -133,7 +180,7 @@
                 "step": "expectElement",
                 "label": "returned value kept",
                 "target": {
-                  "byDisplayValue": "seize value..."
+                  "byDisplayValue": "my value"
                 }
               },
               {
@@ -326,24 +373,10 @@
                 "option": "mapList"
               },
               {
-                "step": "click",
-                "label": "confirm the type change (root mapList)",
-                "target": {
-                  "byTestId": "transformer-node-dialog-confirm"
-                }
-              },
-              {
                 "step": "selectOption",
                 "label": "element type",
                 "field": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType",
                 "option": "mustacheStringTemplate"
-              },
-              {
-                "step": "click",
-                "label": "confirm the type change (element type)",
-                "target": {
-                  "byTestId": "transformer-node-dialog-confirm"
-                }
               },
               {
                 "step": "change",
@@ -436,24 +469,10 @@
                 "option": "mapList"
               },
               {
-                "step": "click",
-                "label": "confirm the type change (root mapList)",
-                "target": {
-                  "byTestId": "transformer-node-dialog-confirm"
-                }
-              },
-              {
                 "step": "selectOption",
                 "label": "element getFromContext",
                 "field": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType",
                 "option": "getFromContext"
-              },
-              {
-                "step": "click",
-                "label": "confirm the type change (element getFromContext)",
-                "target": {
-                  "byTestId": "transformer-node-dialog-confirm"
-                }
               },
               {
                 "step": "expectElement",
@@ -572,13 +591,6 @@
                 "option": "mapList"
               },
               {
-                "step": "click",
-                "label": "confirm the type change (root mapList)",
-                "target": {
-                  "byTestId": "transformer-node-dialog-confirm"
-                }
-              },
-              {
                 "step": "openSelect",
                 "label": "open element createObject",
                 "field": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType"
@@ -602,13 +614,6 @@
                 "value": "false"
               },
               {
-                "step": "click",
-                "label": "confirm the type change (element createObject)",
-                "target": {
-                  "byTestId": "transformer-node-dialog-confirm"
-                }
-              },
-              {
                 "step": "clickObjectButton",
                 "label": "add an attribute to the element object",
                 "field": "transformerEditor_transformer_selector.transformer.elementTransformer.definition",
@@ -626,13 +631,6 @@
                 "label": "fruit attribute type",
                 "field": "transformerEditor_transformer_selector.transformer.elementTransformer.definition.fruit.transformerType",
                 "option": "mustacheStringTemplate"
-              },
-              {
-                "step": "click",
-                "label": "confirm the type change (fruit attribute type)",
-                "target": {
-                  "byTestId": "transformer-node-dialog-confirm"
-                }
               },
               {
                 "step": "change",
@@ -751,13 +749,6 @@
                 "value": "false"
               },
               {
-                "step": "click",
-                "label": "confirm the type change (root listReducerToSpreadObject)",
-                "target": {
-                  "byTestId": "transformer-node-dialog-confirm"
-                }
-              },
-              {
                 "step": "clickObjectButton",
                 "label": "add applyTo",
                 "field": "transformerEditor_transformer_selector.transformer",
@@ -769,13 +760,6 @@
                 "label": "applyTo mapList",
                 "field": "transformerEditor_transformer_selector.transformer.applyTo.transformerType",
                 "option": "mapList"
-              },
-              {
-                "step": "click",
-                "label": "confirm the type change (applyTo mapList)",
-                "target": {
-                  "byTestId": "transformer-node-dialog-confirm"
-                }
               },
               {
                 "step": "openSelect",
@@ -801,13 +785,6 @@
                 "value": "false"
               },
               {
-                "step": "click",
-                "label": "confirm the type change (element createObject)",
-                "target": {
-                  "byTestId": "transformer-node-dialog-confirm"
-                }
-              },
-              {
                 "step": "clickObjectButton",
                 "label": "add an attribute to the element object",
                 "field": "transformerEditor_transformer_selector.transformer.applyTo.elementTransformer.definition",
@@ -825,13 +802,6 @@
                 "label": "last attribute type",
                 "field": "transformerEditor_transformer_selector.transformer.applyTo.elementTransformer.definition.last.transformerType",
                 "option": "mustacheStringTemplate"
-              },
-              {
-                "step": "click",
-                "label": "confirm the type change (last attribute type)",
-                "target": {
-                  "byTestId": "transformer-node-dialog-confirm"
-                }
               },
               {
                 "step": "change",
@@ -939,13 +909,6 @@
                 "option": "mapList"
               },
               {
-                "step": "click",
-                "label": "confirm the type change (root mapList)",
-                "target": {
-                  "byTestId": "transformer-node-dialog-confirm"
-                }
-              },
-              {
                 "step": "clickObjectButton",
                 "label": "add applyTo",
                 "field": "transformerEditor_transformer_selector.transformer",
@@ -959,24 +922,10 @@
                 "option": "getObjectValues"
               },
               {
-                "step": "click",
-                "label": "confirm the type change (applyTo getObjectValues)",
-                "target": {
-                  "byTestId": "transformer-node-dialog-confirm"
-                }
-              },
-              {
                 "step": "selectOption",
                 "label": "element type",
                 "field": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType",
                 "option": "mustacheStringTemplate"
-              },
-              {
-                "step": "click",
-                "label": "confirm the type change (element type)",
-                "target": {
-                  "byTestId": "transformer-node-dialog-confirm"
-                }
               },
               {
                 "step": "change",
@@ -2085,13 +2034,6 @@
                 "option": "filterList"
               },
               {
-                "step": "click",
-                "label": "confirm dropping the returned value",
-                "target": {
-                  "byTestId": "transformer-node-dialog-confirm"
-                }
-              },
-              {
                 "step": "expectElement",
                 "label": "root is filterList",
                 "target": {
@@ -2106,13 +2048,6 @@
                 "label": "predicate boolExpr",
                 "field": "transformerEditor_transformer_selector.transformer.predicate.transformerType",
                 "option": "boolExpr"
-              },
-              {
-                "step": "click",
-                "label": "confirm dropping the predicate's value",
-                "target": {
-                  "byTestId": "transformer-node-dialog-confirm"
-                }
               },
               {
                 "step": "expectElement",
@@ -2169,13 +2104,6 @@
                 "label": "root getFromParameters",
                 "field": "transformerEditor_transformer_selector.transformer.transformerType",
                 "option": "getFromParameters"
-              },
-              {
-                "step": "click",
-                "label": "confirm dropping the returned value",
-                "target": {
-                  "byTestId": "transformer-node-dialog-confirm"
-                }
               },
               {
                 "step": "expectElement",
@@ -2300,13 +2228,6 @@
                 "label": "root getFromContext",
                 "field": "transformerEditor_transformer_selector.transformer.transformerType",
                 "option": "getFromContext"
-              },
-              {
-                "step": "click",
-                "label": "confirm the type change (root getFromContext)",
-                "target": {
-                  "byTestId": "transformer-node-dialog-confirm"
-                }
               },
               {
                 "step": "clickObjectButton",
@@ -2627,13 +2548,6 @@
                 "label": "root getFromContext",
                 "field": "transformerEditor_transformer_selector.transformer.transformerType",
                 "option": "getFromContext"
-              },
-              {
-                "step": "click",
-                "label": "confirm the type change (root getFromContext)",
-                "target": {
-                  "byTestId": "transformer-node-dialog-confirm"
-                }
               },
               {
                 "step": "clickObjectButton",

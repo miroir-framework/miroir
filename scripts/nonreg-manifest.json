@@ -542,6 +542,37 @@
       ]
     },
     {
+      "id": "unit-testLocalCacheImplementation",
+      "scopes": ["localcache", "tooling"],
+      "tier": "unit",
+      "title": "#446 \u2014 test LocalCache implementation from MIROIR_TEST_LOCAL_CACHE",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "tests/helpers/localCacheImplementation.unit.test.ts"
+      ],
+      "shared": {
+        "group": "standalone-app-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--no-bail"
+        ],
+        "files": [
+          "tests/helpers/localCacheImplementation.unit.test.ts"
+        ]
+      }
+    },
+    {
       "id": "unit-localCacheMonitorGate",
       "scopes": ["localcache"],
       "tier": "unit",
