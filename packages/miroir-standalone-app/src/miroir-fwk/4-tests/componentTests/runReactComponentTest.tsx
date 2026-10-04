@@ -266,7 +266,11 @@ export function createReactComponentTestRunner(
           fieldNamePrefix,
         }),
         leaf.steps,
-        { iterationsOverride: host.iterationsOverride, stepDelayMs: host.stepDelayMs },
+        {
+          iterationsOverride: host.iterationsOverride,
+          stepDelayMs: host.stepDelayMs,
+          waitWhilePaused: host.waitWhilePaused,
+        },
       );
       if (measurements.length === 0) {
         return { status: "ok" };
