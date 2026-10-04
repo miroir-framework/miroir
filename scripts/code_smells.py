@@ -373,7 +373,8 @@ def render(findings: list[Finding], scope: str, limit: int, moved: int = 0, edit
         return f"No smell found ({scope}).\n" + moved_note
     by_smell: dict[str, dict[str, list[Finding]]] = defaultdict(lambda: defaultdict(list))
     for finding in sorted(set(findings), key=order_key):
-        by_smell[finding.smell][SMELL_ID.sub("", finding.message, count=1).strip()].append(finding)
+        # The id can sit mid-message (`Unexpected use of 'fetch'. [component-io] …`): one space stays.
+        by_smell[finding.smell][" ".join(SMELL_ID.sub("", finding.message, count=1).split())].append(finding)
     counts = {smell: sum(len(items) for items in groups.values()) for smell, groups in by_smell.items()}
     files = {f.path for f in findings}
     out = [f"## Smells: {sum(counts.values())} findings in {len(files)} files ({scope})", ""]

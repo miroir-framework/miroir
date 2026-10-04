@@ -195,6 +195,8 @@ def test_render_orders_by_impact_and_groups_by_message() -> None:
     assert "| swallowed-error | 3 |" in report
     assert code_smells.render([], "test", limit=2) == "No smell found (test).\n"
     assert "2 more on lines the change moves" in code_smells.render(findings, "test", limit=2, moved=2)
+    fetch = Finding("component-io", "packages/a/src/V.tsx", 3, "Unexpected use of 'fetch'. [component-io] fetch in a view.")
+    assert "\nUnexpected use of 'fetch'. fetch in a view.\n" in code_smells.render([fetch], "test", limit=2)
 
 
 def _write(root: Path, path: str, text: str) -> None:
