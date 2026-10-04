@@ -1,0 +1,158 @@
+"""#340: the smell runner (scripts/code_smells.py) without ESLint: text checks, diff filtering, report."""
+
+from __future__ import annotations
+
+import subprocess
+from pathlib import Path
+
+import code_smells
+from code_smells import Finding
+
+
+def test_smell_of_reads_the_bracketed_id_of_custom_messages_only() -> None:
+    assert code_smells.smell_of("no-restricted-syntax", "[module-state] Module-level `let`") == "module-state"
+    assert code_smells.smell_of("no-restricted-globals", "[component-io] fetch in a component") == "component-io"
+    # A rule's own message can hold brackets that are not smell ids.
+    assert code_smells.smell_of("react-hooks/exhaustive-deps", "missing dependency: [items]") == "unstable-deps"
+    assert code_smells.smell_of("no-mixed-operators", "Unexpected mix of '??' and '=='") == "precedence-trap"
+    assert code_smells.smell_of("some/other-rule", "message") == "some/other-rule"
+    assert code_smells.smell_of(None, "Parsing error: ';' expected") == "parse-error"
+
+
+def test_parse_added_lines_reads_unified_zero_context_hunks() -> None:
+    diff = "\n".join(
+        [
+            "diff --git a/packages/a/src/x.ts b/packages/a/src/x.ts",
+            "--- a/packages/a/src/x.ts",
+            "+++ b/packages/a/src/x.ts",
+            "@@ -3,0 +4,2 @@ export function f() {",
+            "+  const a = 1;",
+            "+  const b = 2;",
+            "@@ -10 +12 @@",
+            "-old",
+            "+new",
+            "@@ -20,3 +21,0 @@",
+            "-gone",
+            "diff --git a/packages/a/src/old.ts b/packages/a/src/old.ts",
+            "--- a/packages/a/src/old.ts",
+            "+++ /dev/null",
+            "@@ -1,2 +0,0 @@",
+        ]
+    )
+    assert code_smells.parse_added_lines(diff) == {"packages/a/src/x.ts": {4, 5, 12}}
+
+
+def test_commented_out_code_finds_runs_of_code_lines_and_leaves_prose() -> None:
+    text = "\n".join(
+        [
+            "// Explains why the cache is per deployment.",  # 1 prose
+            "// See docs/reference/testing.md for the profiles.",  # 2 prose
+            "const a = 1;",  # 3
+            "// const b = f(a);",  # 4 run start
+            "// if (b) {",  # 5
+            "//   activityId: b.id,",  # 6 object property continues the run
+            "//",  # 7 empty comment line inside the run
+            "// }",  # 8
+            "export const c = 2;",  # 9
+            "// TODO: fix(this);",  # 10 marker comments are prose
+            "// return x;",  # 11
+            "// return y;",  # 12 only two code lines: too short to report
+        ]
+    )
+    assert code_smells.commented_out_code(text) == [(4, 5)]
+
+
+def test_logger_name_mismatches_report_copied_logger_names() -> None:
+    text = (
+        "import { MiroirLoggerFactory } from 'miroir-core';\n"
+        'const loggerName: string = getLoggerName(packageName, cleanLevel, "Other");\n'
+        'const second = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Sample");\n'
+    )
+    assert code_smells.logger_name_mismatches("packages/a/src/Sample.ts", text) == [(2, "Other")]
+    named_with_extension = 'const n = getLoggerName(packageName, cleanLevel, "index.tsx");\n'
+    assert code_smells.logger_name_mismatches("packages/a/src/index.tsx", named_with_extension) == []
+
+
+def test_keep_added_keeps_findings_that_cover_an_added_line() -> None:
+    path = "packages/a/src/x.ts"
+    added = {path: {10, 11}}
+    on_added = Finding("type-escape", path, 10, "m")
+    elsewhere = Finding("type-escape", path, 3, "m")
+    run_overlapping = Finding("dead-code", path, 8, "4 lines", 4)
+    run_before = Finding("dead-code", path, 1, "3 lines", 3)
+    whole_file = Finding("duplicated-logic", path, 1, "twin", 0)
+    other_file = Finding("duplicated-logic", "packages/b/src/x.ts", 1, "twin", 0)
+    findings = [on_added, elsewhere, run_overlapping, run_before, whole_file, other_file]
+    assert code_smells.keep_added(findings, added) == [on_added, run_overlapping, whole_file]
+
+
+def test_render_orders_by_impact_and_groups_by_message() -> None:
+    findings = [
+        Finding("dead-code", "packages/a/src/x.ts", 5, "3 lines of commented-out code", 3),
+        Finding("swallowed-error", "packages/a/src/x.ts", 9, "[swallowed-error] This catch only logs."),
+        Finding("swallowed-error", "packages/a/src/y.ts", 2, "[swallowed-error] This catch only logs."),
+        Finding("swallowed-error", "packages/a/src/y.ts", 7, "[swallowed-error] Empty .catch handler."),
+    ]
+    report = code_smells.render(findings, "test", limit=2)
+    assert report.index("### swallowed-error") < report.index("### dead-code")
+    assert report.count("This catch only logs.") == 1
+    assert "[swallowed-error]" not in report
+    assert "- `packages/a/src/y.ts:2`" in report
+    assert "Empty .catch handler." not in report  # over the limit of 2
+    assert "… 1 more (raise --limit)" in report
+    assert "| swallowed-error | 3 |" in report
+    assert code_smells.render([], "test", limit=2) == "No smell found (test).\n"
+
+
+def _write(root: Path, path: str, text: str) -> None:
+    (root / path).parent.mkdir(parents=True, exist_ok=True)
+    (root / path).write_text(text, encoding="utf-8")
+
+
+def test_twins_finds_near_identical_files_in_other_packages(tmp_path: Path) -> None:
+    body = "".join(f"export const v{i} = {i};\n" for i in range(40))
+    _write(tmp_path, "packages/a/src/tools/Helper.ts", body)
+    _write(tmp_path, "packages/b/src/other/Helper.ts", body + "export const extra = 1;\n")
+    _write(tmp_path, "packages/c/src/Helper.ts", "export const unrelated = true;\n")
+    _write(tmp_path, "packages/a/src/more/Helper.ts", body)  # same package: not a twin
+    assert [other for other, _ in code_smells.twins("packages/a/src/tools/Helper.ts", tmp_path)] == [
+        "packages/b/src/other/Helper.ts"
+    ]
+    _write(tmp_path, "packages/a/src/constants.ts", 'export const cleanLevel = "4";\n')
+    _write(tmp_path, "packages/b/src/constants.ts", 'export const cleanLevel = "4";\n')
+    assert code_smells.twins("packages/a/src/constants.ts", tmp_path) == []  # too small to matter
+
+
+def test_expand_keeps_typescript_sources_only(tmp_path: Path) -> None:
+    for path in [
+        "packages/a/src/x.ts",
+        "packages/a/src/View.tsx",
+        "packages/a/src/types.d.ts",
+        "packages/a/dist/x.ts",
+        "packages/a/src/preprocessor-generated/gen.ts",
+        "packages/a/src/data.json",
+    ]:
+        _write(tmp_path, path, "")
+    assert code_smells.expand(["packages/a"], tmp_path) == ["packages/a/src/View.tsx", "packages/a/src/x.ts"]
+
+
+def test_diff_scope_covers_commits_working_tree_and_untracked_files(tmp_path: Path) -> None:
+    def git(*args: str) -> None:
+        subprocess.run(["git", *args], cwd=tmp_path, check=True, capture_output=True)
+
+    git("init", "-q", "-b", "base")
+    git("config", "user.email", "test@example.com")
+    git("config", "user.name", "test")
+    _write(tmp_path, "packages/a/src/x.ts", "line1\nline2\n")
+    git("add", ".")
+    git("commit", "-q", "-m", "base")
+    git("checkout", "-q", "-b", "feature")
+    _write(tmp_path, "packages/a/src/x.ts", "line1\nadded\nline2\n")
+    git("commit", "-q", "-am", "feature")
+    _write(tmp_path, "packages/a/src/x.ts", "line1\nadded\nline2\nworking\n")
+    _write(tmp_path, "packages/a/src/New.tsx", "a\nb\n")
+    _write(tmp_path, "packages/a/src/notes.md", "not a source\n")
+    added = code_smells.diff_scope("base", tmp_path)
+    assert added["packages/a/src/x.ts"] == {2, 4}
+    assert {1, 2} <= added["packages/a/src/New.tsx"]
+    assert "packages/a/src/notes.md" not in added
