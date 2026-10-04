@@ -49,7 +49,9 @@ import {
   transformerTypesAcceptingInput,
 } from "../2_domain/TransformerInterfaceCheck";
 import {
+  editedAttributes,
   elementParameterReadsOfDefaultInput,
+  holdsOneDefault,
   keepAttributesOnTypeChange,
   parameterReadsOfDefaultInput,
   pipeCandidates,
@@ -240,6 +242,8 @@ const FUNCTION_CALL_REGISTRY: Record<
     unwrapTransformerNode: unwrapTransformerNode as WhitelistedFunction,
     removeTransformerNode: removeTransformerNode as WhitelistedFunction,
     keepAttributesOnTypeChange: keepAttributesOnTypeChange as WhitelistedFunction,
+    editedAttributes: editedAttributes as WhitelistedFunction,
+    holdsOneDefault: holdsOneDefault as WhitelistedFunction,
     parameterReadsOfDefaultInput: parameterReadsOfDefaultInput as WhitelistedFunction,
     elementParameterReadsOfDefaultInput: elementParameterReadsOfDefaultInput as WhitelistedFunction,
   },
