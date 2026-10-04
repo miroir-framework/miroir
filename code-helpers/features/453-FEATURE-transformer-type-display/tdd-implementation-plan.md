@@ -28,7 +28,7 @@ Out: ML schemas in badges; slot expectations other than `applyTo` (#454); runtim
 | 1 | Value typing (D15) | ✅ DONE | `inputOutputTypeOfValue` cases, literal `applyTo` case |
 | 2 | `returnValue` typing, contradiction, literals, status (D6, D12, D13, D16, D17) | ✅ DONE | walk cases |
 | 3 | Badges and switch in the TransformerEditor (D1, D3, D7, D18, D19) | ✅ DONE | `ui.transformerEditor` cases |
-| 4 | Switch value in ViewParams and through sandbox cases (D2) | ⬜ | runner test with a fake host |
+| 4 | Switch value in ViewParams and through sandbox cases (D2) | ✅ DONE | runner test with a fake host |
 | 5 | Nonreg, docs, AC check | ⬜ | full `nonreg:filesystem` |
 
 ## Locked implementation defaults
@@ -136,6 +136,13 @@ Committed together with slice 2 (the same MiroirTest file and walk). Extra cases
 
 **GREEN**
 - ViewParams attribute `showTransformerTypes` (admin entity, `ViewParams.ts`); `TransformerTypesDisplayContext`; runner wraps each case; sandbox passes the controls (ref + ViewParams save); `useShowTransformerTypes` in the editor.
+
+### Realization
+
+- New test file `tests/4_view/transformerTypesDisplay.unit.test.tsx` (nonreg step `unit-453-transformer-types-display`): the runner case over the real TransformerEditor, and the sandbox host over a store with the Admin ViewParams. Each fails on the slice 3 code (runner: the case starts off; sandbox: the host has no value).
+- `useAdminViewParams` (`4_view/components/useAdminViewParams.ts`) reads the Admin ViewParams and saves attributes through `ViewParamsUpdateQueue`; the #435 step-delay hook now uses it. `componentTestSandboxHeader.435` still passes 3/3.
+- `TransformerTypesDisplay.ts` holds the context and `useShowTransformerTypes`. The sandbox mounts `ComponentTestTransformerTypesSetting` with the panel, like the slider: it copies the saved ViewParams value into a ref when that value changes, so a save from a case is the next case's value before the ViewParams update arrives.
+- Docs: `docs/reference/transformers.md`, section "Showing the types of a transformer tree", and the root input rule of D15.
 
 ## Slice 5 — Nonreg, docs, AC
 

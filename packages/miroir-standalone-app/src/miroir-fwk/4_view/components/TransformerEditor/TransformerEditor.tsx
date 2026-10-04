@@ -66,6 +66,7 @@ import {
   type TransformerEditorProps,
 } from "./TransformerEditorInterface";
 import { TransformerEventsPanel } from './TransformerEventsPanel';
+import { useShowTransformerTypes } from './TransformerTypesDisplay';
 
 import { entityDefinitionTransformerDefinition } from 'miroir-app-miroir';
 // ################################################################################################
@@ -224,7 +225,7 @@ const TransformerDefinitionEditor: React.FC<{
         })),
     [interfaceWalk],
   );
-  const [showTransformerTypes, setShowTransformerTypes] = useState(false);
+  const [showTransformerTypes, setShowTransformerTypes] = useShowTransformerTypes();
   const typeBadges = useMemo(
     () => (showTransformerTypes ? transformerTypeBadges(interfaceWalk, entities) : undefined),
     [showTransformerTypes, interfaceWalk, entities],
