@@ -64,8 +64,8 @@
     "miroir-app-miroir": "*"
   },
   "devDependencies": {
-    "@babel/core": "7.29.0",
-    "@babel/preset-env": "7.27.2",
+    "@babel/core": "8.0.6",
+    "@babel/preset-env": "8.0.6",
     "@babel/register": "8.0.6",
     "@types/body-parser": "1.19.6",
     "@types/cors": "2.8.19",
@@ -80,7 +80,7 @@
     "tsup": "8.5.1",
     "vite-plugin-node": "7.0.0",
     "webpack": "5.111.1",
-    "webpack-cli": "6.0.1",
+    "webpack-cli": "7.2.3",
     "webpack-node-externals": "3.0.0"
   }
 }
