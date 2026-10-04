@@ -39,8 +39,8 @@ const STORE_MANAGEMENT_ENDPOINT = "bbd08cbb-79ff-4539-b91f-7a14f15ac55f";
 const ENTITY_VIEW_PARAMS_UUID = "b9765b7c-b614-4126-a0e2-634463f99937";
 
 /**
- * Admin data entities the UI needs at least one row of: an Admin data section left without one
- * gets the rows of the application package seed back at start.
+ * Admin data entities whose seed rows the UI reads by uuid (the default ViewParams): a seed row
+ * missing from Admin data is created again at start.
  */
 const REQUIRED_ADMIN_ENTITIES = [{ uuid: ENTITY_VIEW_PARAMS_UUID, name: "ViewParams" }];
 
@@ -209,9 +209,9 @@ function adminSeedRows(resolved: ResolvedEnvironment, entityUuid: string): Entit
 }
 
 /**
- * Gives back the seed rows of every required Admin entity that has no row left in Admin data
- * (e.g. the default ViewParams, without which the Settings page and the sidebar have nothing to
- * read). Returns the restored rows, as change descriptions.
+ * Creates again every seed row of a required Admin entity that Admin data lacks (e.g. the default
+ * ViewParams, without which the Settings page and the sidebar have nothing to read). Returns the
+ * restored rows, as change descriptions.
  */
 async function restoreRequiredAdminRows(
   domainController: DomainControllerInterface,
@@ -223,12 +223,10 @@ async function restoreRequiredAdminRows(
   );
   const changes: string[] = [];
   for (const entity of REQUIRED_ADMIN_ENTITIES) {
-    if (existing[entity.name].length > 0) {
-      continue;
-    }
-    const rows = adminSeedRows(resolved, entity.uuid);
-    await persistAdminRows(domainController, "createInstance", entity.uuid, rows);
-    changes.push(...rows.map((row) => `restored ${entity.name} ${row.uuid} (${(row as AdminRow).name}) from the Admin seed`));
+    const present = new Set(existing[entity.name].map((row) => row.uuid));
+    const missing = adminSeedRows(resolved, entity.uuid).filter((row) => !present.has(row.uuid));
+    await persistAdminRows(domainController, "createInstance", entity.uuid, missing);
+    changes.push(...missing.map((row) => `restored ${entity.name} ${row.uuid} (${(row as AdminRow).name}) from the Admin seed`));
   }
   return changes;
 }

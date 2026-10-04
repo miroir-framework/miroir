@@ -1,7 +1,7 @@
 // #321 Slice 3: the server boots from the selected environment. Admin data is a copy seeded in
 // .miroir/<environment>/, the Deployment and AdminApplication rows are generated from the
 // definition, and writes to Admin data (rights, ViewParams) leave the package assets untouched.
-// An Admin data section left without ViewParams gets the seed ones back at start.
+// A seed ViewParams row missing from Admin data is created again at start.
 // vitest, not MiroirTest: this is boot wiring on a real DomainController and filesystem stores.
 import { readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -138,19 +138,26 @@ describe("server boot from the dev environment", () => {
     expect(contentHashes(path.join(root, "packages"))).toEqual(packagesBefore);
   }, 120000);
 
-  it("restores the default ViewParams from the Admin seed when Admin data has none left", async () => {
-    rmSync(path.join(adminData, ENTITY_VIEW_PARAMS, `${DEFAULT_VIEW_PARAMS}.json`));
-    expect(readRows(path.join(adminData, ENTITY_VIEW_PARAMS))).toEqual({});
-
-    const third = await boot(root);
+  it("restores the default ViewParams from the Admin seed when Admin data lost it", async () => {
     const seed = readRows(path.join(root, "packages/miroir-app-admin/assets/admin_data", ENTITY_VIEW_PARAMS));
-    expect(readRows(path.join(adminData, ENTITY_VIEW_PARAMS))).toEqual(seed);
-    expect(third.reconciliation.changes).toEqual([
-      `restored ViewParams ${DEFAULT_VIEW_PARAMS} (Default ViewParams) from the Admin seed`,
-    ]);
+    const restored = [`restored ViewParams ${DEFAULT_VIEW_PARAMS} (Default ViewParams) from the Admin seed`];
 
+    // the entity directory itself is gone
+    rmSync(path.join(adminData, ENTITY_VIEW_PARAMS), { recursive: true });
+    const third = await boot(root);
+    expect(readRows(path.join(adminData, ENTITY_VIEW_PARAMS))).toEqual(seed);
+    expect(third.reconciliation.changes).toEqual(restored);
+
+    // another ViewParams row is left, the UI still reads the default one
+    const other = { ...seed[DEFAULT_VIEW_PARAMS], uuid: "5d0c7a4e-1f3b-4c2a-9e8d-7b6a5c4d3e2f", name: "Other ViewParams" };
+    await persist(third.domainController, "createInstance", ENTITY_VIEW_PARAMS, other);
+    rmSync(path.join(adminData, ENTITY_VIEW_PARAMS, `${DEFAULT_VIEW_PARAMS}.json`));
     const fourth = await boot(root);
-    expect(fourth.reconciliation.changes).toEqual([]);
+    expect(readRows(path.join(adminData, ENTITY_VIEW_PARAMS))).toEqual({ ...seed, [other.uuid]: other });
+    expect(fourth.reconciliation.changes).toEqual(restored);
+
+    const fifth = await boot(root);
+    expect(fifth.reconciliation.changes).toEqual([]);
     expect(contentHashes(path.join(root, "packages"))).toEqual(packagesBefore);
   }, 120000);
 });
