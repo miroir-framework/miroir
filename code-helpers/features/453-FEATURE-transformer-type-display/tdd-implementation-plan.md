@@ -27,7 +27,7 @@ Out: ML schemas in badges; slot expectations other than `applyTo` (#454); runtim
 | 0 | Characterize | ✅ DONE | baseline of the touched suites |
 | 1 | Value typing (D15) | ✅ DONE | `inputOutputTypeOfValue` cases, literal `applyTo` case |
 | 2 | `returnValue` typing, contradiction, literals, status (D6, D12, D13, D16, D17) | ✅ DONE | walk cases |
-| 3 | Badges and switch in the TransformerEditor (D1, D3, D7, D18, D19) | ⬜ | `ui.transformerEditor` cases |
+| 3 | Badges and switch in the TransformerEditor (D1, D3, D7, D18, D19) | ✅ DONE | `ui.transformerEditor` cases |
 | 4 | Switch value in ViewParams and through sandbox cases (D2) | ⬜ | runner test with a fake host |
 | 5 | Nonreg, docs, AC check | ⬜ | full `nonreg:filesystem` |
 
@@ -118,6 +118,14 @@ Committed together with slice 2 (the same MiroirTest file and walk). Extra cases
 
 **GREEN**
 - `formatInputOutputTypeLabel` exported from a shared module (D18); `TransformerTypeBadge` type; `transformerTypeBadges` drilled next to `mlSchemaTypeAnnotations`; badge chip in `TransformerTitleRowAnnotations`; switch with local state.
+
+### Realization
+
+- `ui.transformerEditor`: 4 new cases (26 leaves); on the slice 2 UI code the 4 fail, with this slice the suite passes 27/27 (with its suite wrapper). The cases build trees with Pipe into, which drops nothing, and one type change (root `getFromContext`) with its confirmation: the dialog may stop asking once #452 is merged.
+- Badge text: `in <given> · applyTo <consumed> · declared <in> → <out> · out <output>`, a literal `value <type>`. Each part is also a `data-transformer-type-*` attribute, which the cases assert.
+- `formatInputOutputTypeLabel` moved from `ListTransformerPanel` to `TransformerTypeAnnotation.tsx`, with the `shortenUnknownUuids` option (the panel keeps full uuids). `transformerTypeBadges(walk, entities)` is exported from `TransformerEditor.tsx`.
+- Regressions: `ListTransformerPanel.unit`, `transformerChoiceByInputType.integ`, `transformerEditorChoiceByInputType.integ`: 17/18, the failure is the pre-existing "shows transformer toggle in the header" (#383 slice 0).
+- App typecheck: the 32 errors of `_integration`, none in touched files.
 
 ## Slice 4 — Switch value (D2)
 

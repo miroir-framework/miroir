@@ -1034,6 +1034,7 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
               compatibilityWarnings={props.compatibilityWarnings}
               showMlSchemaTypes={props.showMlSchemaTypes}
               mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
+              transformerTypeBadges={props.transformerTypeBadges}
               environmentAnnotations={props.environmentAnnotations}
               transformerTypeRestrictions={props.transformerTypeRestrictions}
               onChangeVector={props.onChangeVector}
@@ -1095,6 +1096,7 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
               compatibilityWarnings={props.compatibilityWarnings}
               showMlSchemaTypes={props.showMlSchemaTypes}
               mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
+              transformerTypeBadges={props.transformerTypeBadges}
               environmentAnnotations={props.environmentAnnotations}
               transformerTypeRestrictions={props.transformerTypeRestrictions}
               onChangeVector={props.onChangeVector}
@@ -1133,6 +1135,7 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
               compatibilityWarnings={props.compatibilityWarnings}
               showMlSchemaTypes={props.showMlSchemaTypes}
               mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
+              transformerTypeBadges={props.transformerTypeBadges}
               environmentAnnotations={props.environmentAnnotations}
               transformerTypeRestrictions={props.transformerTypeRestrictions}
               onChangeVector={props.onChangeVector}
@@ -1531,6 +1534,7 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
               compatibilityWarnings={props.compatibilityWarnings}
               showMlSchemaTypes={props.showMlSchemaTypes}
               mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
+              transformerTypeBadges={props.transformerTypeBadges}
               environmentAnnotations={props.environmentAnnotations}
               transformerTypeRestrictions={props.transformerTypeRestrictions}
                 onChangeVector={props.onChangeVector}
@@ -1570,6 +1574,7 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
               compatibilityWarnings={props.compatibilityWarnings}
               showMlSchemaTypes={props.showMlSchemaTypes}
               mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
+              transformerTypeBadges={props.transformerTypeBadges}
               environmentAnnotations={props.environmentAnnotations}
               transformerTypeRestrictions={props.transformerTypeRestrictions}
                 onChangeVector={props.onChangeVector}
@@ -1610,6 +1615,7 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
               compatibilityWarnings={props.compatibilityWarnings}
               showMlSchemaTypes={props.showMlSchemaTypes}
               mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
+              transformerTypeBadges={props.transformerTypeBadges}
               environmentAnnotations={props.environmentAnnotations}
               transformerTypeRestrictions={props.transformerTypeRestrictions}
               onChangeVector={props.onChangeVector}
