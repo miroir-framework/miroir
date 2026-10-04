@@ -2,11 +2,40 @@
 
 from __future__ import annotations
 
+import re
 import subprocess
 from pathlib import Path
 
 import code_smells
 from code_smells import Finding
+
+ROOT = Path(__file__).resolve().parents[2]
+SKILL = ROOT / ".agents" / "skills" / "miroir-code-quality"
+
+
+def _checklist_ids() -> list[str]:
+    return re.findall(r"^\| \d+ \| `([a-z-]+)` \|", (SKILL / "SKILL.md").read_text(encoding="utf-8"), re.MULTILINE)
+
+
+def test_the_runner_orders_smells_as_the_skill_checklist() -> None:
+    ids = _checklist_ids()
+    assert len(ids) == len(set(ids))
+    assert [smell for smell in ids if smell in code_smells.SMELL_ORDER] == code_smells.SMELL_ORDER
+    assert set(code_smells.RULE_SMELLS.values()) <= set(ids)
+
+
+def test_every_lens_smell_has_a_checklist_row_and_a_reference_entry() -> None:
+    lens = (ROOT / "eslint-rules" / "smell-lens.config.mjs").read_text(encoding="utf-8")
+    lens_ids = set(re.findall(r'smell\(\s*"([a-z-]+)"', lens)) | set(re.findall(r'"\[([a-z-]+)\]', lens))
+    assert lens_ids and lens_ids <= set(_checklist_ids())
+    headings = {
+        (md.name, heading)
+        for md in SKILL.glob("*.md")
+        for heading in re.findall(r"^## ([a-z-]+)$", md.read_text(encoding="utf-8"), re.MULTILINE)
+    }
+    links = re.findall(r"\]\(([a-z]+\.md)#([a-z-]+)\)", (SKILL / "SKILL.md").read_text(encoding="utf-8"))
+    assert {smell for _, smell in links} == set(_checklist_ids())
+    assert [link for link in links if link not in headings] == []
 
 
 def test_smell_of_reads_the_bracketed_id_of_custom_messages_only() -> None:
