@@ -1,4 +1,5 @@
 import type {
+  EndpointDefinition,
   EntityInstance,
   Menu,
   MetaModel,
@@ -11,6 +12,7 @@ export declare const selfApplicationGitHub: SelfApplication;
 export declare const selfApplicationModelBranchGitHubMasterBranch: any;
 export declare const githubInitApplicationVersion: EntityInstance;
 export declare const menuDefaultGitHub: Menu;
+export declare const githubServiceEndpoint: EndpointDefinition;
 export declare const defaultGitHubAppModel: MetaModel;
 export declare function getDefaultGitHubModelEnvironment(
   defaultMiroirMetaModelParam: MetaModel,

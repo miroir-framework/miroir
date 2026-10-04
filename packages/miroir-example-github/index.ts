@@ -2,6 +2,7 @@ export {
   defaultGitHubAppModel,
   getDefaultGitHubModelEnvironment,
   githubInitApplicationVersion,
+  githubServiceEndpoint,
   menuDefaultGitHub,
   selfApplicationGitHub,
   selfApplicationModelBranchGitHubMasterBranch,

@@ -8,6 +8,7 @@ import {
   type SelfApplication,
 } from "miroir-core";
 
+import githubServiceEndpointJson from "../assets/github_model/3d8da4d4-8f76-4bb4-9212-14869d81c00c/0c642e2a-3922-4ce7-99a6-88f91f6a103f.json" with { type: "json" };
 import selfApplicationGitHubJson from "../assets/github_model/a659d350-dd97-4da9-91de-524fa01745dc/6c4edcb2-e165-407a-b728-fbf8a18b6bf7.json" with { type: "json" };
 import menuDefaultGitHubJson from "../assets/github_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/065c33ce-5590-41f6-af63-f0d57d2e49ae.json" with { type: "json" };
 import selfApplicationModelBranchGitHubMasterBranchJson from "../assets/github_model/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/1625a4bc-bf32-40b3-b3ef-243a6a0dd637.json" with { type: "json" };
@@ -16,6 +17,7 @@ export const selfApplicationGitHub = selfApplicationGitHubJson as SelfApplicatio
 export const selfApplicationModelBranchGitHubMasterBranch =
   selfApplicationModelBranchGitHubMasterBranchJson;
 export const menuDefaultGitHub = menuDefaultGitHubJson as Menu;
+export const githubServiceEndpoint = githubServiceEndpointJson as EndpointDefinition;
 
 /** Init-only ApplicationVersion for unversioned GitHub (not shipped as a model asset). */
 export const githubInitApplicationVersion: EntityInstance = {
@@ -37,7 +39,7 @@ export const defaultGitHubAppModel: MetaModel = {
   applications: [selfApplicationGitHub],
   entities: [],
   entityVersions: [],
-  endpoints: [],
+  endpoints: [githubServiceEndpoint],
   menus: [menuDefaultGitHub],
   reports: [],
   runners: [],

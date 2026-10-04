@@ -25,8 +25,8 @@ Out: OAuth / device flow / GitHub Apps, GitHub Enterprise, other GitHub Reports,
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | GitHub package skeleton, registered like Spotify | ⬜ pending | `modelValidation` of miroir-example-github, `testEnvironmentConfig.unit` |
-| 1 | GitHubService Endpoint synced from the excerpt | ⬜ pending | `githubEndpointSync.unit` (committed operations = sync of the excerpt) |
+| 0 | GitHub package skeleton, registered like Spotify | ✅ DONE | `modelValidation` of miroir-example-github, `testEnvironmentConfig.unit` |
+| 1 | GitHubService Endpoint synced from the excerpt | ✅ DONE | `githubEndpointSync.unit` (committed operations = sync of the excerpt) |
 | 2 | Repositories Report lists my repositories | ⬜ pending | `githubApp.integ` "lists the connected user's repositories" |
 | 3 | `setExternalServiceCredential` checks and saves a token | ⬜ pending | `setExternalServiceCredential.integ` |
 | 4 | The action runs on the server with the caller's principal | ⬜ pending | `setExternalServiceCredential.integ` "through the REST route" |
@@ -71,7 +71,7 @@ See analysis §5 for the model uuids. Suite key: `report.githubConnect` (MiroirT
 
 ## Slice 0 — GitHub package skeleton, registered like Spotify
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** the GitHub application deploys in the test environment with no Endpoint yet (SelfApplication, branch, menu, deployment rows).
 
@@ -92,9 +92,13 @@ npm run miroir-env -- check --strict --tracked-clean
 npm run nonreg:filesystem -- --runner shared --scope smoke,core,tooling
 ```
 
+### Realization
+
+Package, registration and lockfile entries as planned; the lockfile was edited by hand (two package entries and the standalone-app dependency) because `npm install` in this container also rewrites unrelated `dev`/`peer` flags. Scoped nonreg (smoke, core, tooling, shared runner): 33 passed, 0 failed.
+
 ## Slice 1 — GitHubService Endpoint synced from the excerpt
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** the Endpoint `0c642e2a-…` carries the excerpt and `operations[]` for both operations, produced by `syncExternalServiceSchema`.
 
@@ -110,6 +114,10 @@ npm run build -w miroir-example-github
 npm run testByFile -w miroir-example-github -- githubEndpointSync
 npm run testByFile -w miroir-example-github -- tests/modelValidation.unit.test.ts
 ```
+
+### Realization
+
+`scripts/sync-github-schema.ts` calls miroir-core's exported `materializeExternalServiceOperations` (the conversion `syncExternalServiceSchema` uses) instead of copying the Spotify script, so there was nothing to share with it and the refactor checkpoint had no work. The test failed on the empty `operations[]` before `npm run dogfood-sync -w miroir-example-github` filled it. Bound fields: `/user` login, id, name, avatar_url, html_url; `/user/repos` id, name, full_name, owner.login, private, html_url, description, language, stargazers_count, updated_at.
 
 ## Slice 2 — Repositories Report lists my repositories
 
