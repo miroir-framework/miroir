@@ -18,7 +18,7 @@
   - [`ListTransformerPanel.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ListTransformerPanel.tsx) (expected-output chooser)
   - [`TransformerTypeAnnotation.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/TransformerTypeAnnotation.tsx) (`formatInputOutputTypeLabel`), [`TransformerEditor.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/TransformerEditor/TransformerEditor.tsx) (badges, mismatch titles)
 
-**Status:** decisions confirmed (D1-D10, D12-D14); D11 (stock definition sweep) waits for A's approval of each row.
+**Status:** decisions confirmed (D1-D14); A approved all four D11 rows on 2026-10-04.
 
 ---
 
@@ -43,7 +43,7 @@
 
 ## 3. Decision record
 
-All **Accepted** by A on 2026-10-04, except D11.
+All **Accepted** by A on 2026-10-04 (D11 after the grilling, by decision card: all four rows).
 
 | # | Decision | Rejected | Serves |
 |---|---|---|---|
@@ -57,7 +57,7 @@ All **Accepted** by A on 2026-10-04, except D11.
 | D8 | Inference, lift and walk handle the new types coarsely (§3.2). Any ML construct without a coarse counterpart infers `any`. | Detailed ML typing (A, Q13). | G3 |
 | D9 | Chooser: the main select lists `any, undefined, bigint, number, string, boolean, object, array, record, tuple`, then the entities by name. `array` and `record` show a second select for P, defaulting to `any`. `tuple` shows one select per element with + and − buttons, starting at `tuple<any, any>`, minimum 1 element. A P of `any` is stored as the bare literal. | One flat select of every combination; a cascading menu (Q2); P defaulting to the row entity (Q4). | G1 |
 | D10 | One formatter, `formatInputOutputTypeLabel`, moves to miroir-core and prints tuples. The list panel, the editor badges and the editor's mismatch titles use it, replacing `safeStringify` in `TransformerEditor.tsx`. | Keep per-component formatting. | G4 |
-| D11 | Stock definition sweep, §3.3. **Pending A's approval of each row.** | No sweep (Q15 b). | G2, G3 |
+| D11 | Stock definition sweep, §3.3, all four rows (A, 2026-10-04). | No sweep (Q15 b). | G2, G3 |
 | D12 | Type generation keeps reading the TransformerDefinition Entity. The EntityVersion snapshot is not edited. | Mirroring the change into the snapshot (#249 hints). | G2 |
 | D13 | Tests: `inputOutputTypesCompatible`, inference, lift and value typing as MiroirTest `functionCallTest` cases (`fn.transformer.interfaceCheck`, `fn.transformer.interfaceWalk`). The chooser as `ListTransformerPanel.unit.test.tsx` cases. | Vitest-only unit tests for core functions. | G1-G4 |
 | D14 | The schema union gets `discriminator: "type"` on its object arms, so that the generic instance editor can tell `array`/`record` from `tuple` (risk R1). | No discriminator. | G2 |
@@ -97,7 +97,7 @@ As type parameters: `object` ⇒ `object`, entity E ⇒ `object`, `object` ⇏ e
 | Element of a list in the walk (`arrayElementInputOutputType`) | `array<P>` → P; `tuple<P1..Pn>` → P1 when all Pi are equal, else `any`; anything else → `any`. |
 | `filterList` output in the walk | A `tuple` input gives `array<element>` (filtering changes the length), other inputs unchanged. |
 
-### 3.3 Stock definition sweep (D11, pending)
+### 3.3 Stock definition sweep (D11, approved)
 
 Enumerated programmatically from the 31 stock definitions that declare `object` or `array` on either side (§4.3). Only the rows below would change; for the others `object` and `record<any>` are mutually compatible, so `record` would add nothing.
 

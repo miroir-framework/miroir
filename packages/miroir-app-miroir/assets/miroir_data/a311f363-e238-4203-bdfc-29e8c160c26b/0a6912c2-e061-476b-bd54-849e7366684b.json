@@ -2499,6 +2499,221 @@
                 ]
               }
             ]
+          },
+          {
+            "miroirTestType": "miroirTestSuite",
+            "miroirTestLabel": "record builders",
+            "miroirTests": [
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "indexListBy over Book rows outputs a record of Book",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "indexListBy",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "rows"
+                    },
+                    "indexAttribute": "uuid"
+                  },
+                  "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  {
+                    "entityMlSchemas": {
+                      "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": {
+                        "type": "object",
+                        "definition": {
+                          "uuid": {
+                            "type": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "context": {
+                      "rows": {
+                        "type": "array",
+                        "definition": {
+                          "type": "object",
+                          "definition": {
+                            "uuid": {
+                              "type": "uuid"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "assertions": [
+                  {
+                    "label": "consumed input",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "consumedInput"
+                    ],
+                    "expectedValue": {
+                      "type": "array",
+                      "payload": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                    }
+                  },
+                  {
+                    "label": "failures",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "failures"
+                    ],
+                    "expectedValue": []
+                  },
+                  {
+                    "label": "output",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "output"
+                    ],
+                    "expectedValue": {
+                      "type": "record",
+                      "payload": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                    }
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "listReducerToSpreadObject over Book rows outputs an object",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "listReducerToSpreadObject",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "rows"
+                    }
+                  },
+                  "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  {
+                    "entityMlSchemas": {
+                      "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": {
+                        "type": "object",
+                        "definition": {
+                          "uuid": {
+                            "type": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "context": {
+                      "rows": {
+                        "type": "array",
+                        "definition": {
+                          "type": "object",
+                          "definition": {
+                            "uuid": {
+                              "type": "uuid"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "assertions": [
+                  {
+                    "label": "failures",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "failures"
+                    ],
+                    "expectedValue": []
+                  },
+                  {
+                    "label": "output",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "output"
+                    ],
+                    "expectedValue": "object"
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "listReducerToSpreadObject over a list of strings fails its input",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "listReducerToSpreadObject",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "array",
+                        "definition": {
+                          "type": "string"
+                        }
+                      },
+                      "value": [
+                        "a"
+                      ]
+                    }
+                  },
+                  "any"
+                ],
+                "assertions": [
+                  {
+                    "label": "input failure",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "failures"
+                    ],
+                    "expectedValue": [
+                      {
+                        "direction": "input",
+                        "given": {
+                          "type": "array",
+                          "payload": "string"
+                        },
+                        "declared": {
+                          "type": "array",
+                          "payload": "object"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         ]
       },

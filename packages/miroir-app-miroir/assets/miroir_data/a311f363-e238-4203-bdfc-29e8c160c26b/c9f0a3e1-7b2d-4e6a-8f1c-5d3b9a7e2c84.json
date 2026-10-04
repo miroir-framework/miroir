@@ -388,6 +388,27 @@
           },
           {
             "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "indexListBy declares an array of object to a record",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "getTransformerDefinitionInputOutput" },
+            "arguments": ["indexListBy"],
+            "expectedValue": {"input": {"type": "array", "payload": "object"}, "output": "record"}
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "object_fromEntries declares an array to a record",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "getTransformerDefinitionInputOutput" },
+            "arguments": ["object_fromEntries"],
+            "expectedValue": {"input": "array", "output": "record"}
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "listReducerToSpreadObject declares an array of object to an object",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "getTransformerDefinitionInputOutput" },
+            "arguments": ["listReducerToSpreadObject"],
+            "expectedValue": {"input": {"type": "array", "payload": "object"}, "output": "object"}
+          },
+          {
+            "miroirTestType": "functionCallTest",
             "miroirTestLabel": "unknown transformerType yields undefined inputOutput",
             "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "getTransformerDefinitionInputOutput" },
             "arguments": ["nonExistentTransformer"],

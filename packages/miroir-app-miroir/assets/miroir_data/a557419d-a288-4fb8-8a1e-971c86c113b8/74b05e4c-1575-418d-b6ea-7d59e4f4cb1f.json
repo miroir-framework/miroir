@@ -10,7 +10,7 @@
   "transformerInterface": {
     "inputOutput": {
       "input": "array",
-      "output": "any"
+      "output": "record"
     },
     "transformerParameterSchema": {
       "transformerType": {

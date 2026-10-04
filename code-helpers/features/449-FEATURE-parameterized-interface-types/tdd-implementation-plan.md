@@ -16,7 +16,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisites: [#383](../383-FEATURE-transformer-choice-by-input-type/) ✅, [#453](../453-FEATURE-transformer-type-display/) ✅
 Working branch: `claude/449-payload-sub-choice` (from `_integration` 04ae35bb)
 
-**Resume note:** Slices 0-5 DONE.
+**Resume note:** Slices 0-6 DONE.
 
 ---
 
@@ -41,7 +41,7 @@ Out: full ML schema types, nested type parameters, `object<P>`, saving the chose
 | 3 | Chooser: type parameter for `array` and `record` | ✅ | `ListTransformerPanel.unit` cases |
 | 4 | Chooser: tuple elements | ✅ | `ListTransformerPanel.unit` cases |
 | 5 | One type formatter (G4) | ✅ | `fn.transformer.interfaceCheck` "format" suite, `unit-453-transformer-types-display` |
-| 6 | Stock definition sweep (D11, after A's approval) | ⬜ | `stockTransformerDefinitions` suite, `fn.transformer.resultSchema` case |
+| 6 | Stock definition sweep (D11, after A's approval) | ✅ | `stockTransformerDefinitions` suite, `fn.transformer.resultSchema` case |
 | 7 | Nonreg, docs, AC | ⬜ | `unit-449-parameterized-interface-types` step, full nonreg |
 
 ---
@@ -366,12 +366,13 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui
 - The list panel's root mismatch title (`output: expected ..., inferred actual ...`) used JSON too; it now reads `array<string>`.
 - Tests: suite "formatInputOutputTypeLabel" (10 cases) in `fn.transformer.interfaceCheck`; 2 tooltip cases in `transformerTypesDisplay.unit` (a tuple output, a record value mismatch); the panel's `array<number>` case checks the title.
 - RED: 10 core cases (not whitelisted), 3 standalone cases. GREEN: the three core suites 236/236; miroir-core unit 2427 passed; standalone `ListTransformerPanel.unit`, `transformerTypesDisplay`, both `*ChoiceByInputType.integ` 37/38 (the pre-existing failure only); `tsc` core clean, standalone 32 errors, none in the touched files; lint clean.
+- Scoped nonreg `smoke,core,ui`: 42/42.
 
 ---
 
 ## Slice 6 — Stock definition sweep (D11)
 
-**Status:** ⬜ pending (waits for A's approval of analysis §3.3, row by row)
+**Status:** ✅ DONE (A chose all four rows of analysis §3.3, 2026-10-04)
 
 ### Goal
 
@@ -399,6 +400,10 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core
 ```
 
 ### Realization
+
+- Definitions: `indexListBy` `array<object>` → `record`, `object_fromEntries` `array` → `record`, `listReducerToSpreadObject` `array<object>` → `object`. #88: `listReducerToSpreadObject` resolves to `{ type: "object", nonStrict: true, definition: {} }`; `indexListBy` keeps `record<element>`.
+- Tests: 3 declaration cases in `stockTransformerDefinitions`; the `fn.transformer.resultSchema` case "listReducerToSpreadObject maps array element to record" now expects the open object (renamed); a walk suite "record builders" (indexListBy over Book rows outputs `record<Book>`, listReducerToSpreadObject over Book rows outputs `object`, over strings fails its input). The plan's compatibility case on `indexListBy`'s output is covered by slice 1's "record forms" and the walk case.
+- RED: 6 failing (the indexListBy walk case passed already: #88 gave `record<Book>` since slice 2). GREEN: the three core suites 242/242; miroir-core unit 2433 passed; `modelValidation` (miroir-app-miroir) 164/164; standalone transformer tests 53/54 (the pre-existing failure only); lint clean.
 
 ---
 
