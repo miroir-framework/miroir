@@ -41,6 +41,7 @@ LEGACY_SUMMARY_KEYS = {
     "mode",
     "profile",
     "storage",
+    "local_cache",
     "started_at",
     "finished_at",
     "duration_s",
@@ -816,3 +817,54 @@ def test_store_check_follows_the_address_overrides_of_the_integration_tests(
 
     assert proc.returncode == 2
     assert f"not reachable at 127.0.0.2:{port}" in proc.stderr
+
+
+# #446: choose the local cache implementation of a run with --local-cache
+
+ECHO_LOCAL_CACHE = "import os; print('LOCAL_CACHE=' + repr(os.environ.get('MIROIR_TEST_LOCAL_CACHE')))"
+
+
+def local_cache_manifest(tmp_path: Path) -> Path:
+    return write_manifest(
+        tmp_path,
+        [
+            {
+                "id": "echo-local-cache",
+                "tier": "unit",
+                "title": "echo the local cache of the run",
+                "requires": "none",
+                "argv": ["python", "-c", ECHO_LOCAL_CACHE],
+            },
+        ],
+    )
+
+
+def step_log(snap_dir: Path, step_id: str) -> str:
+    return (snap_dir / "logs" / f"{step_id}.log").read_text(encoding="utf-8")
+
+
+def test_local_cache_is_passed_to_the_steps_and_recorded(tmp_path: Path):
+    code, summary, snap_dir = run_nonreg(tmp_path, local_cache_manifest(tmp_path), "--local-cache", "zustand")
+
+    assert code == 0
+    assert summary["local_cache"] == "zustand"
+    assert "LOCAL_CACHE='zustand'" in step_log(snap_dir, "echo-local-cache")
+    assert "- Local cache: `zustand`" in (snap_dir / "summary.md").read_text(encoding="utf-8")
+
+
+def test_local_cache_defaults_to_redux_whatever_the_calling_shell_sets(tmp_path: Path):
+    env = {**os.environ, "MIROIR_TEST_LOCAL_CACHE": "zustand"}
+    proc = run_raw(tmp_path, local_cache_manifest(tmp_path), env=env)
+    snap_dir = next(p for p in (tmp_path / "results").iterdir() if p.is_dir() and p.name != "latest")
+    summary = json.loads((snap_dir / "summary.json").read_text(encoding="utf-8"))
+
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert summary["local_cache"] == "redux"
+    assert "LOCAL_CACHE='redux'" in step_log(snap_dir, "echo-local-cache")
+
+
+def test_unknown_local_cache_is_rejected(tmp_path: Path):
+    proc = run_raw(tmp_path, local_cache_manifest(tmp_path), "--local-cache", "mobx")
+
+    assert proc.returncode == 2
+    assert "invalid choice" in proc.stderr

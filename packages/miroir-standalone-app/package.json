@@ -49,6 +49,7 @@
     "miroir-mcp": "*",
     "miroir-diagram-class": "*",
     "miroir-localcache-redux": "*",
+    "miroir-localcache-zustand": "*",
     "miroir-react": "*",
     "miroir-store-bundled": "*",
     "miroir-store-indexedDb": "*",
