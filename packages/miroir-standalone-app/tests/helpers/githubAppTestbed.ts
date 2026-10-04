@@ -189,8 +189,14 @@ export async function bootGitHubTestbed(): Promise<GitHubTestbed> {
   };
 }
 
-/** Reseeds the GitHub model and points GitHubService at the fake server. Call before each test. */
-export async function reseedGitHub(testbed: GitHubTestbed): Promise<void> {
+/**
+ * Reseeds the GitHub model and points GitHubService at `baseUrl`, the fake server by default.
+ * Call before each test.
+ */
+export async function reseedGitHub(
+  testbed: GitHubTestbed,
+  baseUrl: string = testbed.fakeServer.baseUrl,
+): Promise<void> {
   const { domainController } = testbed;
   const initResult = await domainController.handleCompositeAction(
     resetAndinitializeDeploymentCompositeAction(
@@ -217,7 +223,7 @@ export async function reseedGitHub(testbed: GitHubTestbed): Promise<void> {
   };
   const updated = {
     ...githubServiceEndpoint,
-    definition: { externalService: { ...existing.externalService, baseUrl: testbed.fakeServer.baseUrl } },
+    definition: { externalService: { ...existing.externalService, baseUrl } },
   } as EntityInstance;
   const updateResult = await domainController.handleAction(
     {

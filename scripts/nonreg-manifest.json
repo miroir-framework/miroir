@@ -321,6 +321,22 @@
       ]
     },
     {
+      "id": "default-github-modelValidation",
+      "scopes": ["core"],
+      "tier": "default",
+      "title": "Deployment modelValidation \u2014 github (#472)",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-example-github",
+        "--",
+        "tests/modelValidation.unit.test.ts"
+      ]
+    },
+    {
       "id": "default-library-modelValidation",
       "scopes": ["core"],
       "tier": "default",
@@ -1367,6 +1383,44 @@
       }
     },
     {
+      "id": "integ-report.githubConnect",
+      "scopes": ["external", "ui"],
+      "tier": "default",
+      "title": "MiroirTest integ \u2014 report.githubConnect (GitHub home Report: token check, save, repositories; fake HTTP) (#472)",
+      "requires": "storage",
+      "argv": [
+        "npm",
+        "run",
+        "testMiroir",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "--suites",
+        "report.githubConnect",
+        "--mode",
+        "integ"
+      ],
+      "shared": {
+        "group": "standalone-app-report-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": ["report.githubConnect"]
+      }
+    },
+    {
       "id": "integ-report.connectExternalServiceWizard",
       "scopes": ["external"],
       "tier": "default",
@@ -1820,6 +1874,18 @@
         "bash",
         "-c",
         "npm run testMiroir -w miroir-core -- --suites tr.syncExternalServiceSchema --mode unit && npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites action.scenario.externalServiceSync --mode integ && npm run testByFile -w miroir-core -- serverSecrets && npm run testByFile -w miroir-core -- externalServiceHttpStoreSkip && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceQuery && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceGuards && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceDispatch && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceReport && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem spotifyApp"
+      ]
+    },
+    {
+      "id": "externalServices-github",
+      "scopes": ["external"],
+      "tier": "default",
+      "title": "#472 \u2014 GitHub example app (endpoint sync, repositories Report, setExternalServiceCredential)",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w miroir-example-github -- tests/githubEndpointSync.unit.test.ts && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem githubApp && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem setExternalServiceCredential"
       ]
     },
     {
