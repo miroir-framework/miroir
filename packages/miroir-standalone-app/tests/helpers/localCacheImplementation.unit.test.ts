@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import * as localCacheRedux from "miroir-localcache-redux";
 import * as localCacheZustand from "miroir-localcache-zustand";
@@ -35,5 +35,29 @@ describe("test LocalCache implementation (#446)", () => {
 
     expect(module.setupMiroirDomainController).toBe(expected.setupMiroirDomainController);
     expect(module.RestPersistenceClientAndRestClient).toBe(expected.RestPersistenceClientAndRestClient);
+  });
+
+  describe("without an argument, from MIROIR_TEST_LOCAL_CACHE", () => {
+    afterEach(() => {
+      vi.unstubAllEnvs();
+    });
+
+    it.each([
+      [undefined, localCacheRedux],
+      ["redux", localCacheRedux],
+      ["zustand", localCacheZustand],
+    ] as const)("%s loads the matching package", async (value, expected) => {
+      vi.stubEnv(LOCAL_CACHE_ENV, value);
+
+      const module = await loadLocalCacheImplementation();
+
+      expect(module.setupMiroirDomainController).toBe(expected.setupMiroirDomainController);
+    });
+
+    it("throws on an unknown value", async () => {
+      vi.stubEnv(LOCAL_CACHE_ENV, "mobx");
+
+      await expect(loadLocalCacheImplementation()).rejects.toThrow(`${LOCAL_CACHE_ENV}=mobx`);
+    });
   });
 });
