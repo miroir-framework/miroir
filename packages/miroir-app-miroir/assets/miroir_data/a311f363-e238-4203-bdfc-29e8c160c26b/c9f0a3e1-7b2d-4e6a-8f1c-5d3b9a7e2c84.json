@@ -334,7 +334,7 @@
           },
           {
             "miroirTestType": "functionCallTest",
-            "miroirTestLabel": "entityDefinition_extractAttributes declares EntityVersion uuid to array",
+            "miroirTestLabel": "entityDefinition_extractAttributes declares Entity uuid to array",
             "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "getTransformerDefinitionInputOutput" },
             "arguments": ["entityDefinition_extractAttributes"],
             "expectedValue": { "input": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad", "output": "array" }
