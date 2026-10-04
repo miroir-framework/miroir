@@ -6,6 +6,7 @@
     "miroir": { "store": "indexedDb" },
     "library": { "store": "indexedDb" },
     "appForTest": { "store": "indexedDb" },
-    "spotify": { "store": "indexedDb" }
+    "spotify": { "store": "indexedDb" },
+    "github": { "store": "indexedDb" }
   }
 }

@@ -1,0 +1,9 @@
+{
+  "uuid": "6c4edcb2-e165-407a-b728-fbf8a18b6bf7",
+  "parentName": "SelfApplication",
+  "parentUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
+  "name": "GitHub",
+  "defaultLabel": "The GitHub selfApplication.",
+  "description": "Lists the repositories of the connected GitHub user through an external-service Endpoint.",
+  "versioningMode": "unversioned"
+}

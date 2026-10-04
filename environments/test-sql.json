@@ -9,6 +9,7 @@
     "miroir": { "store": "sql" },
     "library": { "store": "sql" },
     "appForTest": { "store": "sql" },
-    "spotify": { "store": "sql" }
+    "spotify": { "store": "sql" },
+    "github": { "store": "sql" }
   }
 }

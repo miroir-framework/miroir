@@ -56,6 +56,7 @@ const ASSET_TREES = [
   "packages/miroir-app-admin/assets",
   "packages/miroir-example-library/assets",
   "packages/miroir-example-designer/assets",
+  "packages/miroir-example-github/assets",
   "packages/miroir-example-postgres/assets",
   "packages/miroir-example-spotify/assets",
 ];

@@ -1,0 +1,18 @@
+{
+  "uuid": "065c33ce-5590-41f6-af63-f0d57d2e49ae",
+  "parentName": "Menu",
+  "parentUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+  "name": "GitHubMenu",
+  "defaultLabel": "GitHub Menu",
+  "description": "Default menu for the GitHub SelfApplication.",
+  "definition": {
+    "menuType": "complexMenu",
+    "definition": [
+      {
+        "title": "GitHub",
+        "label": "github",
+        "items": []
+      }
+    ]
+  }
+}
