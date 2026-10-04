@@ -14,12 +14,14 @@ import {
   PersistenceAction,
   PersistenceStoreLocalOrRemoteInterface,
   StoreOrBundleAction,
+  storeActionOrBundleActionStoreRunner,
   type ApplicationDeploymentMap,
   type BoxedExtractorOrCombinerReturningObjectOrObjectList,
   type BoxedQueryWithExtractorCombinerTransformer,
   type EntityInstance,
   type MiroirModelEnvironment,
   type PersistenceStoreControllerAction,
+  type PersistenceStoreControllerManagerInterface,
 } from "miroir-core";
 import type { LocalCache } from "../LocalCache.js";
 
@@ -33,7 +35,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 // ###############################################################################
 export interface PersistenceStoreAccessParams {
   persistenceStoreAccessMode: "local" | "remote";
-  localPersistenceStoreControllerManager?: any; // PersistenceStoreControllerManagerInterface
+  localPersistenceStoreControllerManager?: PersistenceStoreControllerManagerInterface;
   remotePersistenceStoreRestClient?: any; // RestPersistenceClientAndRestClientInterface
 }
 
@@ -94,8 +96,13 @@ export class PersistenceAsyncStore implements PersistenceStoreLocalOrRemoteInter
     }
 
     try {
-      const result = await this.params.localPersistenceStoreControllerManager.handleAction(action);
-      return result;
+      // as PersistenceReduxSaga does (#451)
+      return await storeActionOrBundleActionStoreRunner(
+        action.actionType,
+        action,
+        applicationDeploymentMap,
+        this.params.localPersistenceStoreControllerManager,
+      );
     } catch (error: any) {
       log.error("handleStoreOrBundleActionForLocalStore error:", error);
       return new Action2Error("FailedToHandleAction", error.message, error.stack);
@@ -117,9 +124,15 @@ export class PersistenceAsyncStore implements PersistenceStoreLocalOrRemoteInter
     }
 
     try {
-      // Convert persistence action to local cache action and handle
-      const localCacheAction: LocalCacheAction = action as any; // TODO: proper conversion
-      return this.localCache.handleLocalCacheAction(localCacheAction, applicationDeploymentMap);
+      // as PersistenceReduxSaga does (#451): the local cache only answers queries
+      if (action.actionType !== "runBoxedQueryAction") {
+        return new Action2Error(
+          "FailedToHandleLocalCacheAction",
+          "PersistenceAsyncStore handlePersistenceActionForLocalCache could not handle action " +
+            action.actionType,
+        );
+      }
+      return this.localCache.runBoxedExtractorOrQueryAction(action, applicationDeploymentMap);
     } catch (error: any) {
       log.error("handlePersistenceActionForLocalCache error:", error);
       return new Action2Error("FailedToHandleLocalCacheAction", error.message, error.stack);
