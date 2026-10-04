@@ -275,12 +275,13 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
     persistenceAction: PersistenceAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<RestClientCallReturnType> {
-    log.info(
-      "handleNetworkPersistenceAction called for persistenceAction",
-      persistenceAction,
-      "applicationDeploymentMap",
-      applicationDeploymentMap
-    );
+    // #451: as in miroir-localcache-redux, actions are not logged: their payload can carry secrets
+    // log.info(
+    //   "handleNetworkPersistenceAction called for persistenceAction",
+    //   persistenceAction,
+    //   "applicationDeploymentMap",
+    //   applicationDeploymentMap
+    // );
     if ((persistenceAction as { actionType?: string }).actionType === "probeExternalService") {
       return this.restClient.post(
         "/action/:actionType",
@@ -321,13 +322,13 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
           this.rootApiUrl + "/action/" + persistenceAction.actionType,
           applicationDeploymentMap,
         );
-        log.info("handleNetworkPersistenceAction called for action", persistenceAction, "callParams", callParams);
+        // log.info("handleNetworkPersistenceAction called for action", persistenceAction, "callParams", callParams);
         const result = await callParams.operation(
           "/action/:actionType",
           callParams.url,
           callParams.args
         );
-        log.info("handleNetworkPersistenceAction", persistenceAction, "result", result);
+        // log.info("handleNetworkPersistenceAction", persistenceAction, "result", result);
         return Promise.resolve(result);
         break;
       }
@@ -341,22 +342,22 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
       }
       case "runBoxedQueryAction": {
         const callParams = this.getRestCallParams(persistenceAction, this.rootApiUrl + "/query", applicationDeploymentMap);
-        log.info("handleNetworkPersistenceAction", persistenceAction, "callParams", callParams);
+        // log.info("handleNetworkPersistenceAction", persistenceAction, "callParams", callParams);
         const result = await callParams.operation("/query", callParams.url, callParams.args);
-        log.info("handleNetworkPersistenceAction", persistenceAction, "result", result);
+        // log.info("handleNetworkPersistenceAction", persistenceAction, "result", result);
         return result;
         break;
       }
       case "runBoxedQueryTemplateAction":
         {
         const callParams = this.getRestCallParams(persistenceAction, this.rootApiUrl + "/queryTemplate", applicationDeploymentMap);
-        log.debug("handleNetworkPersistenceAction", persistenceAction, "callParams", callParams);
+        // log.debug("handleNetworkPersistenceAction", persistenceAction, "callParams", callParams);
         const result = await callParams.operation(
           "/queryTemplate",
           callParams.url,
           callParams.args
         );
-        log.info("handleNetworkPersistenceAction", persistenceAction, "result", result);
+        // log.info("handleNetworkPersistenceAction", persistenceAction, "result", result);
         return result;
         break;
       }
@@ -391,7 +392,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
           );
         }
         const effectiveAction = persistenceAction.actionType.split('_')[1];
-        log.info("handleNetworkPersistenceAction effectiveAction", effectiveAction);
+        // log.info("handleNetworkPersistenceAction effectiveAction", effectiveAction);
         const callParams = this.getRestCallParams(
           persistenceAction,
           this.rootApiUrl +
