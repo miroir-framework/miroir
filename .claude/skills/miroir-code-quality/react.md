@@ -98,18 +98,31 @@ A `.subscribe(…)` call in a component or hook, usually in an effect that copie
 
 **Why.** AGENTS.md: publish-subscribe between components is an anti-pattern here. The effect plus the state copy add a render, and the copy is stale between the event and the effect.
 
-**Fix.** Read the service through `useSyncExternalStore`, inside a hook named after the data.
+**Fix.** Read the service through `useSyncExternalStore`, inside a hook named after the data. Its `getSnapshot` must return the same object until the data changes, or React renders in a loop ("The result of getSnapshot should be cached to avoid an infinite loop"). `MiroirEventService.getAllEvents()` returns a new array on each call, so it cannot be the snapshot: the service keeps one and replaces it on change.
 
 ```tsx
 // Before
 const [events, setEvents] = useState(() => eventService.getAllEvents());
 useEffect(() => eventService.subscribe((newEvents) => setEvents(newEvents)), [eventService]);
 
-// After
-return useSyncExternalStore(eventService.subscribe, eventService.getAllEvents);
+// After, in the service: one snapshot per change
+private snapshot: MiroirEvent[] = [];
+private listeners = new Set<() => void>();
+getSnapshot = (): MiroirEvent[] => this.snapshot;
+onChange = (listener: () => void): (() => void) => {
+  this.listeners.add(listener);
+  return () => this.listeners.delete(listener);
+};
+private notifySubscribers(): void {
+  this.snapshot = this.getAllEvents();
+  this.listeners.forEach((listener) => listener());
+}
+
+// After, in the hook
+return useSyncExternalStore(eventService.onChange, eventService.getSnapshot);
 ```
 
-`getSnapshot` (here `getAllEvents`) must return the same object until the data changes, or React re-renders forever: the service keeps the snapshot and replaces it on change. `subscribe` must not depend on `this`: bind it or define it as an arrow. Sanctioned forms: `useYamlParserStatus` (`Reports/useYamlParserStatus.ts`) and `useAuthSession` (`auth/authSession.ts`).
+Both are arrows because React calls them without `this`. Sanctioned forms: `useAuthSession` (`auth/authSession.ts`), whose `currentSnapshot` returns the cached object while nothing changed, and `useYamlParserStatus` (`Reports/useYamlParserStatus.ts`), whose snapshot is a string.
 
 **Leave it** outside React: services, sagas and the server subscribe as they need.
 
@@ -121,13 +134,14 @@ return useSyncExternalStore(eventService.subscribe, eventService.getAllEvents);
 
 **Why.** AGENTS.md: "a `useMemo` around a plain service call does not track the data". The memo re-runs when its dependencies change, not when the service's data does.
 
-**Fix.** The same hook as for `pub-sub`.
+**Fix.** Read the data through a hook built as for `pub-sub`, then derive from it during render. `getErrorStats()` builds a new object on each call, so it cannot be the snapshot either: the errors are the snapshot, and the stats a pure function of them.
 
 ```tsx
 // Before
 const stats = useMemo(() => errorLogService.getErrorStats(), [errors]);
 // After
-const stats = useSyncExternalStore(errorLogService.subscribe, errorLogService.getErrorStats);
+const errors = useSyncExternalStore(errorLogService.onChange, errorLogService.getSnapshot); // one array per change
+const stats = useMemo(() => errorStats(errors), [errors]);
 ```
 
 **Leave it** when the call is a pure computation over its arguments (the lens only flags objects named `…Service`, `…Controller`, `…Tracker`, `…Registry`, `…Store` or `…Cache`).
