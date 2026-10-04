@@ -1348,6 +1348,7 @@ export type {
 export {
   elementParameterReadsOfDefaultInput,
   keepAttributesOnTypeChange,
+  editedAttributes,
   parameterReadsOfDefaultInput,
   pipeCandidates,
   pipeTransformerNode,

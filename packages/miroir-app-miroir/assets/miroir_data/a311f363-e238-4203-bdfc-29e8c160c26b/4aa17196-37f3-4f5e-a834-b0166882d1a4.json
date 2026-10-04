@@ -5,7 +5,7 @@
   "name": "fn.transformer.treeEdit",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Structural edits of a transformer tree: slots of a transformer type, wrap, pipe into, unwrap, remove, and the attributes kept on a type change.",
+  "description": "Structural edits of a transformer tree: slots of a transformer type, wrap, pipe into, unwrap, remove, the attributes kept on a type change, and which of them the user edited.",
   "tags": [
     "unit",
     "transformer"
@@ -1921,6 +1921,169 @@
                 "attributeName"
               ]
             }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "editedAttributes",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the defaults of returnValue are not edited",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "editedAttributes"
+            },
+            "arguments": [
+              {
+                "transformerType": "returnValue",
+                "mlSchema": {
+                  "type": "string"
+                },
+                "value": "seize value..."
+              },
+              {
+                "transformerType": "returnValue",
+                "mlSchema": {
+                  "type": "string"
+                },
+                "value": "seize value..."
+              },
+              [
+                "mlSchema",
+                "value"
+              ]
+            ],
+            "expectedValue": []
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an edited value is",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "editedAttributes"
+            },
+            "arguments": [
+              {
+                "transformerType": "returnValue",
+                "mlSchema": {
+                  "type": "string"
+                },
+                "value": "apple"
+              },
+              {
+                "transformerType": "returnValue",
+                "mlSchema": {
+                  "type": "string"
+                },
+                "value": "seize value..."
+              },
+              [
+                "mlSchema",
+                "value"
+              ]
+            ],
+            "expectedValue": [
+              "value"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an attribute the default lacks is",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "editedAttributes"
+            },
+            "arguments": [
+              {
+                "transformerType": "getFromContext",
+                "referenceName": "defaultInput"
+              },
+              {
+                "transformerType": "getFromContext"
+              },
+              [
+                "referenceName"
+              ]
+            ],
+            "expectedValue": [
+              "referenceName"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an object value equal to the default in another key order is not",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "editedAttributes"
+            },
+            "arguments": [
+              {
+                "transformerType": "returnValue",
+                "mlSchema": {
+                  "type": "object",
+                  "definition": {
+                    "a": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "value": {
+                  "b": 1,
+                  "a": 2
+                }
+              },
+              {
+                "transformerType": "returnValue",
+                "value": {
+                  "a": 2,
+                  "b": 1
+                },
+                "mlSchema": {
+                  "definition": {
+                    "a": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              [
+                "mlSchema",
+                "value"
+              ]
+            ],
+            "expectedValue": []
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "only the listed attributes are compared",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "editedAttributes"
+            },
+            "arguments": [
+              {
+                "transformerType": "returnValue",
+                "mlSchema": {
+                  "type": "string"
+                },
+                "value": "apple",
+                "label": "fruit"
+              },
+              {
+                "transformerType": "returnValue",
+                "mlSchema": {
+                  "type": "string"
+                },
+                "value": "seize value..."
+              },
+              [
+                "mlSchema"
+              ]
+            ],
+            "expectedValue": []
           }
         ]
       },

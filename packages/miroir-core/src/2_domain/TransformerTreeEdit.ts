@@ -1,3 +1,5 @@
+import equal from "fast-deep-equal";
+
 import type {
   InputOutputType,
   MlElement,
@@ -540,6 +542,19 @@ export function keepAttributesOnTypeChange(
     }
   }
   return { node: { ...newNode, ...kept, transformerType: newNode.transformerType }, dropped };
+}
+
+/**
+ * The attributes of `attributes` whose value in `node` differs from the one in `defaultNode`, the
+ * node the editor builds for `node`'s type (#447). A type change that drops only attributes still
+ * holding these defaults loses nothing the user wrote.
+ */
+export function editedAttributes(
+  node: Record<string, unknown>,
+  defaultNode: Record<string, unknown>,
+  attributes: string[],
+): string[] {
+  return attributes.filter((attribute) => !equal(node[attribute], defaultNode[attribute]));
 }
 
 /**
