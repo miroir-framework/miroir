@@ -5,7 +5,7 @@ import React, { FC, useCallback, useMemo, useState } from "react";
 import {
   defaultViewParamsFromAdminStorageFetchQueryParams,
   getDefaultValueForMlSchemaWithResolutionNonHook,
-  editedAttributes,
+  holdsOneDefault,
   keepAttributesOnTypeChange,
   MlElement,
   MlEnum,
@@ -745,12 +745,8 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
         { ...newDefault, transformerType: newType },
         currentMiroirModelEnvironment,
       );
-      // #447: dropping only the defaults the editor filled in for the old type asks nothing
-      let droppedEdits = change.dropped;
-      for (const oldDefault of editorDefaultsOfTransformerNode(oldNode.transformerType)) {
-        droppedEdits = editedAttributes(oldNode, oldDefault, droppedEdits);
-      }
-      if (droppedEdits.length === 0) {
+      // #447: dropping only values of one default the editor filled in for the old type asks nothing
+      if (holdsOneDefault(oldNode, editorDefaultsOfTransformerNode(oldNode.transformerType), change.dropped)) {
         replaceTransformerNode(change.node);
         return;
       }

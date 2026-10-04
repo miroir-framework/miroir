@@ -2089,6 +2089,193 @@
       },
       {
         "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "holdsOneDefault",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the editor's root returnValue holds the type default with its optional attributes",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "holdsOneDefault"
+            },
+            "arguments": [
+              {
+                "transformerType": "returnValue",
+                "mlSchema": {
+                  "type": "string"
+                },
+                "value": "seize value..."
+              },
+              [
+                {
+                  "transformerType": "returnValue",
+                  "value": "seize value..."
+                },
+                {
+                  "transformerType": "returnValue",
+                  "mlSchema": {
+                    "type": "string"
+                  },
+                  "value": "seize value..."
+                },
+                {
+                  "transformerType": "returnValue",
+                  "value": 0
+                }
+              ],
+              [
+                "mlSchema",
+                "value"
+              ]
+            ],
+            "expectedValue": true
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a returnValue filled in by its slot holds the slot default",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "holdsOneDefault"
+            },
+            "arguments": [
+              {
+                "transformerType": "returnValue",
+                "value": 0
+              },
+              [
+                {
+                  "transformerType": "returnValue",
+                  "value": "seize value..."
+                },
+                {
+                  "transformerType": "returnValue",
+                  "mlSchema": {
+                    "type": "string"
+                  },
+                  "value": "seize value..."
+                },
+                {
+                  "transformerType": "returnValue",
+                  "value": 0
+                }
+              ],
+              [
+                "value"
+              ]
+            ],
+            "expectedValue": true
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a value edited to the slot default's 0 next to the type default's mlSchema holds no single default",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "holdsOneDefault"
+            },
+            "arguments": [
+              {
+                "transformerType": "returnValue",
+                "mlSchema": {
+                  "type": "string"
+                },
+                "value": 0
+              },
+              [
+                {
+                  "transformerType": "returnValue",
+                  "value": "seize value..."
+                },
+                {
+                  "transformerType": "returnValue",
+                  "mlSchema": {
+                    "type": "string"
+                  },
+                  "value": "seize value..."
+                },
+                {
+                  "transformerType": "returnValue",
+                  "value": 0
+                }
+              ],
+              [
+                "mlSchema",
+                "value"
+              ]
+            ],
+            "expectedValue": false
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an edited value holds no default",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "holdsOneDefault"
+            },
+            "arguments": [
+              {
+                "transformerType": "returnValue",
+                "value": "apple"
+              },
+              [
+                {
+                  "transformerType": "returnValue",
+                  "value": "seize value..."
+                },
+                {
+                  "transformerType": "returnValue",
+                  "mlSchema": {
+                    "type": "string"
+                  },
+                  "value": "seize value..."
+                },
+                {
+                  "transformerType": "returnValue",
+                  "value": 0
+                }
+              ],
+              [
+                "value"
+              ]
+            ],
+            "expectedValue": false
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "no attribute to compare holds any default",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "holdsOneDefault"
+            },
+            "arguments": [
+              {
+                "transformerType": "returnValue",
+                "value": "apple"
+              },
+              [
+                {
+                  "transformerType": "returnValue",
+                  "value": "seize value..."
+                },
+                {
+                  "transformerType": "returnValue",
+                  "mlSchema": {
+                    "type": "string"
+                  },
+                  "value": "seize value..."
+                },
+                {
+                  "transformerType": "returnValue",
+                  "value": 0
+                }
+              ],
+              []
+            ],
+            "expectedValue": true
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
         "miroirTestLabel": "parameterReadsOfDefaultInput",
         "miroirTests": [
           {

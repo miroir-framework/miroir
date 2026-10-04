@@ -558,6 +558,20 @@ export function editedAttributes(
 }
 
 /**
+ * Whether one of `defaultNodes`, the nodes the editor may have filled in at `node`'s place, holds the
+ * value of `node` for every attribute of `attributes` (#447). Each attribute matching some default is
+ * not enough: an edited value can equal the default of another source, such as a root value edited to
+ * the `0` of the slot default while it keeps the type default's `mlSchema`.
+ */
+export function holdsOneDefault(
+  node: Record<string, unknown>,
+  defaultNodes: Record<string, unknown>[],
+  attributes: string[],
+): boolean {
+  return defaultNodes.some((defaultNode) => editedAttributes(node, defaultNode, attributes).length === 0);
+}
+
+/**
  * Paths of the `getFromParameters` nodes of `node` that read `defaultInput`: after a wrap in a
  * list transformer they still read the whole input, since only the context is rebound (D15).
  */

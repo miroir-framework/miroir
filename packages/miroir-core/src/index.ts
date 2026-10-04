@@ -1349,6 +1349,7 @@ export {
   elementParameterReadsOfDefaultInput,
   keepAttributesOnTypeChange,
   editedAttributes,
+  holdsOneDefault,
   parameterReadsOfDefaultInput,
   pipeCandidates,
   pipeTransformerNode,

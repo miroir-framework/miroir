@@ -51,6 +51,7 @@ import {
 import {
   editedAttributes,
   elementParameterReadsOfDefaultInput,
+  holdsOneDefault,
   keepAttributesOnTypeChange,
   parameterReadsOfDefaultInput,
   pipeCandidates,
@@ -242,6 +243,7 @@ const FUNCTION_CALL_REGISTRY: Record<
     removeTransformerNode: removeTransformerNode as WhitelistedFunction,
     keepAttributesOnTypeChange: keepAttributesOnTypeChange as WhitelistedFunction,
     editedAttributes: editedAttributes as WhitelistedFunction,
+    holdsOneDefault: holdsOneDefault as WhitelistedFunction,
     parameterReadsOfDefaultInput: parameterReadsOfDefaultInput as WhitelistedFunction,
     elementParameterReadsOfDefaultInput: elementParameterReadsOfDefaultInput as WhitelistedFunction,
   },
