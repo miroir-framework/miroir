@@ -608,12 +608,9 @@ const mlElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> = {
                 await waitAfterUserInteraction();
                 expect(screen.getByRole("button", { name: "Finish" })).toBeTruthy();
                 await waitFor(() => {
-                  const echoDocument = Array.from(container.querySelectorAll("pre")).find((node) => {
-                    if (node.getAttribute("data-testid")) {
-                      return false;
-                    }
-                    return (node.textContent ?? "").includes("Testland");
-                  });
+                  const echoDocument = Array.from(
+                    container.querySelectorAll('pre[data-testid="json-report-section"]'),
+                  ).find((node) => (node.textContent ?? "").includes("Testland"));
                   expect(echoDocument).toBeTruthy();
                 });
               },
