@@ -571,11 +571,25 @@ describe("ListTransformerPanel — list section integration", () => {
     (globalThis as any).__listTransformerToSet = transformer;
     fireEvent.click(screen.getByTestId("set-transformer-from-test"));
   };
+  // The returnValue parameter schema offers scalar mlSchemas only; a collection mlSchema is an
+  // in-memory fixture for a typed output (as in tr.core), used where no stock transformer infers
+  // that type (record of string, tuples).
   const returnValueWithMlSchema = (value: unknown, mlSchema: unknown) => ({
     interpolation: "runtime",
     transformerType: "returnValue",
     mlSchema,
     value,
+  });
+  // Maps over the attribute values of the row: the root consumes its applyTo output, not the row.
+  const mapListOverRowValues = (elementTransformer: unknown) => ({
+    interpolation: "runtime",
+    transformerType: "mapList",
+    applyTo: {
+      interpolation: "runtime",
+      transformerType: "getObjectValues",
+      applyTo: { interpolation: "runtime", transformerType: "getFromContext", referenceName: "row" },
+    },
+    elementTransformer,
   });
   const chooseExpectedOutput = (value: string) =>
     fireEvent.change(screen.getByTestId("list-transformer-expected-output-type"), {
@@ -628,10 +642,23 @@ describe("ListTransformerPanel — list section integration", () => {
       (screen.getByTestId("list-transformer-expected-output-type") as HTMLSelectElement).value,
     ).toBe("array");
 
-    setTransformer(returnValueWithMlSchema(["a"], { type: "array", definition: { type: "string" } }));
+    setTransformer(
+      mapListOverRowValues({
+        interpolation: "runtime",
+        transformerType: "mustacheStringTemplate",
+        definition: "item {{defaultInput}}",
+      }),
+    );
     expectOrangeBorder(screen.getByTestId("list-transformer-editor"), false);
 
-    setTransformer(returnValueWithMlSchema([1], { type: "array", definition: { type: "number" } }));
+    setTransformer(
+      mapListOverRowValues({
+        interpolation: "runtime",
+        transformerType: "returnValue",
+        mlSchema: { type: "number" },
+        value: 1,
+      }),
+    );
     expectOrangeBorder(screen.getByTestId("list-transformer-editor"), true);
     expect(screen.getByTestId("list-transformer-editor").getAttribute("title") ?? "").toContain(
       "output: expected array<string>, inferred actual array<number>",

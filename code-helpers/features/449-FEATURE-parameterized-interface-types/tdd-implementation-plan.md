@@ -250,7 +250,7 @@ A report designer on a Book list picks `array` or `record` and its type paramete
 `ListTransformerPanel.unit.test.tsx` (Book rows):
 - The main select offers `record` and `tuple`; no parameter select while the type is `Book` or `string` (`list-transformer-expected-output-payload` absent).
 - Choosing `array` shows the parameter select at `any`; the main select shows `array` (not `any`).
-- Expected `array<string>`: a row transformer returning `array<string>` (a `returnValue` with that `mlSchema`) has no border; one returning `array<number>` is bordered orange.
+- Expected `array<string>`: a row transformer returning `array<string>` has no border; one returning `array<number>` is bordered orange. (Since the PR review: a `mapList` over the row's attribute values, see "Review" below.)
 - Expected `record<string>`: a `returnValue` with `mlSchema` `record<string>` has no border; the default identity transformer (Book) is bordered.
 - Switching back to `Book` removes the parameter select and restores the default (no border for identity).
 
@@ -426,7 +426,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core
 ### 7.3 Tracer bullet (narrative)
 
 1. Open a Book list report, show the transformer panel.
-2. Set the expected output to `array`, parameter `string`; set the row transformer to `mapList` of titles over a list attribute or a `returnValue` of `["a"]`: no border.
+2. Set the expected output to `array`, parameter `string`; set the row transformer to a `mapList` over `getObjectValues` of the row, with a `mustacheStringTemplate` element: no border.
 3. Change the parameter to `number`: orange border, title `array<string>` vs `array<number>`.
 4. Set the expected output to `tuple<string, number>`: element selects, border follows.
 
@@ -443,3 +443,8 @@ Automated equivalent: `ListTransformerPanel.unit` slices 3-4 cases.
 | Book list, expected `array<string>`: `array<string>` accepted, `array<number>` bordered | `ListTransformerPanel.unit` "expected array of string ..." | ✅ |
 | Types print as `array<Book>`, `record<string>`, `tuple<string, number>` in the panel and the editor | `fn.transformer.interfaceCheck` / `formatInputOutputTypeLabel`, `transformerTypesDisplay.unit` tuple and record cases, panel title case | ✅ |
 | Panel tests in `ListTransformerPanel.unit.test.tsx`, run by a nonreg step | `unit-449-parameterized-interface-types` | ✅ |
+
+## Review (PR #475)
+
+- Greptile: the `returnValue` parameter schema admits scalar `mlSchema`s only (string, number, boolean, uuid), so a `returnValue` declared as an array, a record or a tuple cannot be saved. The AC case "expected array of string" now uses saveable nodes: a `mapList` over `getObjectValues` of the row, with a `mustacheStringTemplate` element (`array<string>`, no border) or a `returnValue` of `mlSchema` `number` (`array<number>`, bordered). The record and tuple panel cases keep the in-memory fixture (as tr.core does), with a comment: no stock transformer infers `record<string>` or a tuple. Widening the `returnValue` schema is left to A.
+- Found by that rewrite: the panel's #249 root check took the row as the root's input even when the root has its own `applyTo`, so the `mapList` over the row's values was bordered with "input: expected Book, transformer declares array". The root check now uses the root's consumed input from the #383 walk (#383 D1). Without the fix, the rewritten case fails.

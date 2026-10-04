@@ -218,6 +218,20 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
     () => inferElementTransformerOutputType(elementTransformer, rowMlSchema, rowEntityUuid),
     [elementTransformer, rowMlSchema, rowEntityUuid],
   );
+  // #383: input type given to every transformer node, restricting its transformerType select.
+  // The root input (what the root select restricts by) is the row.
+  const interfaceWalk = useMemo(
+    () =>
+      checkTransformerInterfaceRecursively(elementTransformer, givenInputType, {
+        entityMlSchemas,
+        // The runtime keeps the whole list as `defaultInput` and binds each row as `row`.
+        context: rowMlSchema
+          ? { row: rowMlSchema, [defaultTransformerInput]: { type: "array", definition: rowMlSchema } as MlElement }
+          : {},
+      }),
+    [elementTransformer, givenInputType, entityMlSchemas, rowMlSchema],
+  );
+
   const interfaceCompatibility = useMemo(
     () => {
       if (!transformerType) {
@@ -232,27 +246,15 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
         declared
           ? { ...declared, output: inferredOutputType }
           : declared;
+      // A root with its own applyTo consumes the applyTo output, not the row (#383 D1, #449).
+      const consumedInput = interfaceWalk.nodes[0]?.consumedInput ?? givenInputType;
       return checkTransformerInterfaceCompatibilityWithInference(
-        { input: rowEntityUuid ?? "any", output: expectedOutputType },
+        { input: consumedInput, output: expectedOutputType },
         declaredForCheck,
         inferredOutputType,
       );
     },
-    [transformerType, rowEntityUuid, expectedOutputType, inferredOutputType],
-  );
-
-  // #383: input type given to every transformer node, restricting its transformerType select.
-  // As in the #249 check, the root input (what the select restricts by) is the row.
-  const interfaceWalk = useMemo(
-    () =>
-      checkTransformerInterfaceRecursively(elementTransformer, givenInputType, {
-        entityMlSchemas,
-        // The runtime keeps the whole list as `defaultInput` and binds each row as `row`.
-        context: rowMlSchema
-          ? { row: rowMlSchema, [defaultTransformerInput]: { type: "array", definition: rowMlSchema } as MlElement }
-          : {},
-      }),
-    [elementTransformer, givenInputType, entityMlSchemas, rowMlSchema],
+    [transformerType, interfaceWalk, givenInputType, expectedOutputType, inferredOutputType],
   );
   const givenInputMlSchema: MlElement = rowMlSchema ?? liftInputOutputTypeToMlSchema(givenInputType, entityMlSchemas);
   const expectedOutputMlSchema = liftInputOutputTypeToMlSchema(expectedOutputType, entityMlSchemas);
