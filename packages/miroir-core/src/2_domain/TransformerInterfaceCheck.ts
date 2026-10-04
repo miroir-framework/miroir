@@ -11,9 +11,11 @@ import { defaultTransformerInput } from "../0_interfaces/1_core/Transformer";
 import type {
   TransformerInterfaceCompatibility,
   TransformerInterfaceGivenTypes,
+  TransformerInterfaceLiteralReport,
   TransformerInterfaceMismatch,
   TransformerInterfaceNodeReport,
   TransformerInterfaceTreeCompatibility,
+  TransformerNodeTypeStatus,
   TransformerTypesAcceptingInput,
 } from "../0_interfaces/2_domain/TransformerInterfaceCheckInterface";
 import { isFailedTransformerInterfaceFromDefinition } from "../0_interfaces/2_domain/TransformerResultSchemaInterface";
@@ -265,19 +267,27 @@ function isPlainRecord(value: unknown): value is Record<string, unknown> {
 }
 
 /**
- * Coarse `inputOutput` type of a value: `array`, `object` or its primitive kind; `null` and
- * `undefined` give `any` (#383, root input of the TransformerEditor "here" mode).
+ * Coarse `inputOutput` type of a value: its primitive kind; an object with a uuid `parentUuid` is
+ * an instance of that entity, any other object is `object`; an array has the common type of its
+ * elements as payload (`any` when they differ), an empty array is `array`; `null` and `undefined`
+ * give `any` (#383, root input of the TransformerEditor; #453 D15).
  */
 export function inputOutputTypeOfValue(value: unknown): InputOutputType {
   if (value === null || value === undefined) {
     return "any";
   }
   if (Array.isArray(value)) {
-    return "array";
+    if (value.length === 0) {
+      return "array";
+    }
+    const payloads = value.map((element) => payloadOf(inputOutputTypeOfValue(element)));
+    return { type: "array", payload: payloads.every((payload) => payload === payloads[0]) ? payloads[0] : "any" };
   }
   switch (typeof value) {
-    case "object":
-      return "object";
+    case "object": {
+      const parentUuid = (value as { parentUuid?: unknown }).parentUuid;
+      return typeof parentUuid === "string" && ENTITY_UUID_REGEX.test(parentUuid) ? parentUuid : "object";
+    }
     case "string":
     case "number":
     case "boolean":
@@ -327,6 +337,7 @@ interface WalkEnvironment {
   transformerDefinitions: Record<string, TransformerDefinition>;
   entityMlSchemas: Record<string, MlElement>;
   nodes: TransformerInterfaceNodeReport[];
+  literals: TransformerInterfaceLiteralReport[];
 }
 
 /** A value bound in the walk: its coarse type and, for #88 inference, its ML schema. */
@@ -339,13 +350,19 @@ function walkValueOfType(type: InputOutputType, environment: WalkEnvironment): W
   return { type, schema: liftInputOutputTypeToMlSchema(type, environment.entityMlSchemas) };
 }
 
-/** Output of a node: #88 inference converted to a coarse type, else the declared output (D8). */
+/**
+ * Output of a node: #88 inference converted to a coarse type, else the declared output (D8). A
+ * `returnValue` without `mlSchema` has the type of its `value` (#453 D12), which #88 leaves `any`.
+ */
 function nodeOutput(
   transformer: TypedTransformerNode,
   declared: InputOutputObject | undefined,
   context: TransformerResultSchemaContext,
   environment: WalkEnvironment,
 ): WalkValue {
+  if (transformer.transformerType === "returnValue" && transformer.mlSchema === undefined) {
+    return walkValueOfType(inputOutputTypeOfValue(transformer.value), environment);
+  }
   const resolved = resolveTransformerResultSchema(
     transformer as unknown as CoreTransformerForBuildPlusRuntime,
     context,
@@ -399,6 +416,7 @@ function walkNode(
     consumed = walkNode(transformer.applyTo, [...path, "applyTo"], given, context, environment).output;
   } else if (transformer.applyTo !== undefined) {
     consumed = walkValueOfType(inputOutputTypeOfValue(transformer.applyTo), environment);
+    environment.literals.push({ path: [...path, "applyTo"], type: consumed.type });
   }
   report.consumedInput = consumed.type;
   if (
@@ -407,6 +425,10 @@ function walkNode(
     !inputOutputTypesCompatible(consumed.type, declared.input)
   ) {
     report.failures.push({ direction: "input", given: consumed.type, declared: declared.input });
+  }
+  const valueFailure = returnValueFailure(transformer, environment);
+  if (valueFailure) {
+    report.failures.push(valueFailure);
   }
 
   const element = walkChildren(transformer, path, given, consumed, context, environment);
@@ -417,6 +439,21 @@ function walkNode(
     report.output = listOutput.type;
   }
   return { report, output: listOutput ?? output };
+}
+
+/** #453 D13: a `returnValue` whose `value` does not fit its `mlSchema`, compared as coarse types. */
+function returnValueFailure(
+  transformer: TypedTransformerNode,
+  environment: WalkEnvironment,
+): TransformerInterfaceMismatch | undefined {
+  if (transformer.transformerType !== "returnValue" || transformer.mlSchema === undefined) {
+    return undefined;
+  }
+  const given = inputOutputTypeOfValue(transformer.value);
+  const declared = inferTransformerOutputTypeFromSchema(transformer.mlSchema as MlElement, {
+    entityMlSchemas: environment.entityMlSchemas,
+  });
+  return inputOutputTypesCompatible(given, declared) ? undefined : { direction: "value", given, declared };
 }
 
 function payloadOf(type: InputOutputType): InputOutputPayloadType {
@@ -553,6 +590,7 @@ export function checkTransformerInterfaceRecursively(
     transformerDefinitions: options.transformerDefinitions ?? applicationTransformerDefinitions,
     entityMlSchemas: options.entityMlSchemas ?? {},
     nodes: [],
+    literals: [],
   };
   if (isTypedTransformerNode(transformer)) {
     const root = walkValueOfType(rootInput, environment);
@@ -569,5 +607,22 @@ export function checkTransformerInterfaceRecursively(
           ? "incompatible"
           : "ok",
     nodes,
+    literals: environment.literals,
   };
+}
+
+/** #453 D17: badge status of a node of the walk. */
+export function transformerNodeTypeStatus(node: TransformerInterfaceNodeReport): TransformerNodeTypeStatus {
+  if (node.failures.length > 0) {
+    return "mismatch";
+  }
+  if (
+    node.declared === undefined ||
+    node.declared.input === "any" ||
+    node.declared.input === "undefined" ||
+    node.consumedInput === "any"
+  ) {
+    return "unknown";
+  }
+  return "match";
 }

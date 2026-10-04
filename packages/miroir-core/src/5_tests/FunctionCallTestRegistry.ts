@@ -46,6 +46,7 @@ import {
   getTransformerDefinitionInputOutput,
   inputOutputTypeOfValue,
   inputOutputTypesCompatible,
+  transformerNodeTypeStatus,
   transformerTypesAcceptingInput,
 } from "../2_domain/TransformerInterfaceCheck";
 import {
@@ -229,6 +230,7 @@ const FUNCTION_CALL_REGISTRY: Record<
     inputOutputTypeOfValue: inputOutputTypeOfValue as WhitelistedFunction,
     checkTransformerInterfaceRecursively:
       checkTransformerInterfaceRecursively as WhitelistedFunction,
+    transformerNodeTypeStatus: transformerNodeTypeStatus as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerTreeEdit": {
     transformerSlots: transformerSlots as WhitelistedFunction,

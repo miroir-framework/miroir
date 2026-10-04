@@ -79,8 +79,9 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 // ################################################################################################
 /**
  * #383: root input type of the edited transformer, from the input it actually runs on (D7).
- * "here": the kind of the value. "instance": the `defaultInput` the instance selector bound, an
- * entity instance (its entity uuid) or an array of them (array of that entity).
+ * "here": the type of the value. "instance": the type of the `defaultInput` the instance selector
+ * bound, an entity instance (its entity uuid) or an array of them (array of that entity). Both
+ * modes type the value the same way (#453 D15).
  */
 function transformerEditorRootInputType(
   inputSelector: { mode?: string; input?: unknown } | undefined,
@@ -92,15 +93,7 @@ function transformerEditorRootInputType(
   if (inputSelector?.mode !== "instance") {
     return "any";
   }
-  const value = instanceInput?.[defaultTransformerInput];
-  const entityUuidOf = (instance: unknown): string | undefined => {
-    const parentUuid = (instance as { parentUuid?: unknown } | undefined)?.parentUuid;
-    return typeof parentUuid === "string" ? parentUuid : undefined;
-  };
-  if (Array.isArray(value)) {
-    return { type: "array", payload: entityUuidOf(value[0]) ?? "any" };
-  }
-  return entityUuidOf(value) ?? inputOutputTypeOfValue(value);
+  return inputOutputTypeOfValue(instanceInput?.[defaultTransformerInput]);
 }
 
 function formatInputOutputType(type: InputOutputType): string {
