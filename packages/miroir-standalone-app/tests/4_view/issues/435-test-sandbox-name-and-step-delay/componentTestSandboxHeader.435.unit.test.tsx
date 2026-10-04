@@ -11,6 +11,9 @@
  * ViewParams instance loaded in the admin deployment of the `LocalCache`. `registerComponentTests`
  * is wrapped in a `vi.fn` only to read its host; the DomainController records the actions it gets.
  *
+ * #443: the play / pause button of the same header holds the run before its next step, and
+ * unmounting the sandbox during a pause lets the run end.
+ *
  * Run:
  * ```bash
  * npm run testByFile -w miroir-standalone-app -- componentTestSandboxHeader.435
@@ -169,6 +172,7 @@ function renderDisplay(onTestComplete: (key: string, results: TestResultData[]) 
 }
 
 afterEach(() => {
+  vi.mocked(componentTestsEntry.registerComponentTests).mockClear();
   ConfigurationService.configurationService.registerReactComponentTestRunner(undefined);
 });
 
@@ -221,6 +225,66 @@ describe("Component Test Sandbox header (#435)", () => {
           objects: [{ uuid: defaultAdminViewParams.uuid, componentTestStepDelayMs: 700 }],
         },
       });
+    },
+    RUN_TEST_TIMEOUT,
+  );
+
+  it(
+    "#443: Pause holds the run before its next step, Play lets it end",
+    async () => {
+      let results: TestResultData[] | undefined;
+      renderDisplay((_key, structuredResults) => {
+        results = structuredResults;
+      });
+
+      const savedDomConfig = { ...getDomConfig() };
+      try {
+        fireEvent.click(screen.getByRole("button", { name: `Run ${enumInstance.name} Unit Tests` }));
+        const pauseButton = await screen.findByRole("button", { name: "Pause component test run" });
+        await waitFor(() => expect(pauseButton).toBeEnabled());
+        fireEvent.click(pauseButton);
+        const playButton = screen.getByRole("button", { name: "Resume component test run" });
+
+        const host = vi.mocked(componentTestsEntry.registerComponentTests).mock.calls[0][0];
+        let released = false;
+        void host.waitWhilePaused?.().then(() => {
+          released = true;
+        });
+        const testName = screen.getByTestId("component-test-sandbox-test-name");
+        const heldName = testName.textContent;
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        expect(released).toBe(false);
+        expect(results).toBeUndefined();
+        expect(testName.textContent).toBe(heldName);
+
+        fireEvent.click(playButton);
+        await waitFor(() => expect(released).toBe(true));
+        await waitFor(() => expect(results, "onTestComplete was called").toBeDefined(), {
+          timeout: 250_000,
+          interval: 200,
+        });
+      } finally {
+        configureDom(savedDomConfig);
+      }
+
+      expect(results!.filter((row) => row.testResult === "ok")).toHaveLength(enumLeafLabels.length);
+      expect(screen.getByRole("button", { name: "Pause component test run" })).toBeDisabled();
+    },
+    RUN_TEST_TIMEOUT,
+  );
+
+  it(
+    "#443: unmounting the sandbox during a pause releases the run",
+    async () => {
+      const { unmount } = renderDisplay(() => {});
+      fireEvent.click(screen.getByRole("button", { name: `Run ${enumInstance.name} Unit Tests` }));
+      const pauseButton = await screen.findByRole("button", { name: "Pause component test run" });
+      await waitFor(() => expect(pauseButton).toBeEnabled());
+      fireEvent.click(pauseButton);
+      const host = vi.mocked(componentTestsEntry.registerComponentTests).mock.calls[0][0];
+
+      unmount();
+      await expect(host.waitWhilePaused?.()).resolves.toBeUndefined();
     },
     RUN_TEST_TIMEOUT,
   );

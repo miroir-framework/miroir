@@ -416,8 +416,10 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
 
   // On unmount, close after the current commit: unmounting the case's React root synchronously
   // while React commits this tree makes React warn about a race.
+  // A run paused at that time is resumed, so that it ends instead of waiting for a gone button.
   useEffect(
     () => () => {
+      pauseGateRef.current.resume();
       const registration = registrationRef.current;
       registrationRef.current = undefined;
       if (registration) {
