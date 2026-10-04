@@ -34,24 +34,26 @@ export async function storeActionOrBundleActionStoreRunner(
   applicationDeploymentMap: ApplicationDeploymentMap,
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface
 ): Promise<Action2ReturnType> {
+  // #451: store configurations can carry connection strings with credentials, so the action
+  // itself is not logged.
   log.info(
     "###################################### storeActionOrBundleActionStoreRunner started ",
     "actionType",
     actionType,
+    "application",
+    action.payload.application,
     "with deployment map",
     applicationDeploymentMap,
-    "and action", action
   );
   const deploymentUuid = applicationDeploymentMap[action.payload.application];
   // log.debug('storeActionOrBundleActionStoreRunner getEntityUuids()', miroirDataStoreProxy.getEntityUuids());
   // const update: StoreManagementAction = action;
 
-  log.info("storeActionOrBundleActionStoreRunner action", JSON.stringify(action, undefined, 2));
   switch (action.actionType) {
     case "storeManagementAction_createStore": {
       // log.warn("storeActionOrBundleActionStoreRunner createStore does nothing!")
       if (!action.payload.deploymentUuid) {
-        return new Action2Error("FailedToCreateStore", "storeActionOrBundleActionStoreRunner no deploymentUuid in action " + JSON.stringify(action));
+        return new Action2Error("FailedToCreateStore", "storeActionOrBundleActionStoreRunner no deploymentUuid in action " + action.actionType);
       }
 
       const localAppPersistenceStoreController =
@@ -116,7 +118,7 @@ export async function storeActionOrBundleActionStoreRunner(
         return new Action2Error(
           "FailedToDeleteStore",
           "storeActionOrBundleActionStoreRunner no application matching applicationDeploymentMap in action " +
-            JSON.stringify(action) + " applicationDeploymentMap keys: " + JSON.stringify(Object.keys(applicationDeploymentMap))
+            action.actionType + " applicationDeploymentMap keys: " + JSON.stringify(Object.keys(applicationDeploymentMap))
         );
       }
 
@@ -138,8 +140,6 @@ export async function storeActionOrBundleActionStoreRunner(
         action.payload.application,
         "deployment",
         deploymentUuid,
-        "configuration",
-        JSON.stringify(action.payload.configuration, null, 2)
       );
       const appModelStoreDeleted: Action2ReturnType =
         await localAppPersistenceStoreController.deleteStore(action.payload.configuration.model);
@@ -209,8 +209,8 @@ export async function storeActionOrBundleActionStoreRunner(
         log.error(
           "storeActionOrBundleActionStoreRunner openStore no configuration entry found for deployment uuid ",
           deploymentUuid,
-          "configuration: ",
-          JSON.stringify(action.payload.configuration, null, 2),
+          "configured deployments: ",
+          JSON.stringify(Object.keys(action.payload.configuration)),
           "applicationDeploymentMap",
           JSON.stringify(applicationDeploymentMap, null, 2)
         );
@@ -221,7 +221,7 @@ export async function storeActionOrBundleActionStoreRunner(
             undefined, // errorStack
             undefined, // innerError
             { 
-              configuration: action.payload.configuration,
+              configuredDeployments: Object.keys(action.payload.configuration),
               application: action.payload.application,
               applicationDeploymentMap
             } // errorContext

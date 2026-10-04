@@ -40,6 +40,7 @@ npm run nonreg:unit                    # tier unit only
 npm run nonreg:fail-fast               # tier default, stop on first failure
 npm run nonreg -- --tier full --run-all
 npm run nonreg -- --storage filesystem # integration steps on another store
+npm run nonreg:zustand                 # filesystem store, zustand LocalCache
 ```
 
 #### Storage (#390)
@@ -47,6 +48,12 @@ npm run nonreg -- --storage filesystem # integration steps on another store
 `--storage sql|filesystem|indexedDb|mongodb` runs the integration steps on profile `emulatedServer-<storage>`, whose test environment is `environments/test-<storage>.json`. Without it the run uses the manifest's `defaultProfile`, `emulatedServer-sql`. `--profile` still takes any profile name, and cannot be combined with `--storage`. Shortcuts: `nonreg:filesystem`, `nonreg:indexedDb`, `nonreg:mongodb`; `nonreg:default` is sql.
 
 Steps that run on the store of the run say `"requires": "storage"` in the manifest. When the run selects one of them and the store needs a database (PostgreSQL for `sql`, MongoDB for `mongodb`), the runner first opens a connection to the address in the `connections` of the test environment, or to the one the tests use instead: `MIROIR_TEST_POSTGRES_HOST` replaces the PostgreSQL host, `MIROIR_TEST_MONGODB_CONNECTION_STRING` the MongoDB url. If that fails, it prints the address and exits with code 2 before running any step. `--dry-run` and unit-tier runs skip the check. `summary.json` and `summary.md` record `storage` (`null` for a profile that is not `emulatedServer-*`).
+
+#### Local cache (#446)
+
+`--local-cache redux|zustand` chooses the LocalCache implementation of the DomainControllers the tests build (`setupMiroirTest`, `IntegrationTestSession`). The runner passes it to every step in `MIROIR_TEST_LOCAL_CACHE`; without the option it sets `redux`, so a value left in the shell does not leak into the run. Outside nonreg, an unset `MIROIR_TEST_LOCAL_CACHE` also means redux, and an unknown value makes the test setup throw. `summary.json` and `summary.md` record `local_cache`. The shortcut `nonreg:zustand` runs the default tier on the filesystem store with zustand.
+
+The React components still read the cache through `miroir-react`, which imports `miroir-localcache-redux` at build time, so the option changes what the DomainController-level tests exercise, not the UI layer.
 
 A few steps pin `emulatedServer-filesystem` in their argv and run on filesystem whatever the storage: `integ-runner.freezeApplicationVersion`, `externalServices-spotify`, `appstack-270-persistent-secrets`.
 

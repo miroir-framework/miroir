@@ -109,7 +109,7 @@ Every `transformerType` select has a `⋯` menu next to it, for the node it belo
 
 With the restriction switch on, Wrap in offers the transformers that accept the input of the node's position, and Pipe into those that accept the node's output.
 
-Changing a node's `transformerType` keeps the attributes the new type declares and accepts, such as `predicate` and `applyTo` from `filterList` to `find`. When the change drops attributes, a dialog names them first.
+Changing a node's `transformerType` keeps the attributes the new type declares and accepts, such as `predicate` and `applyTo` from `filterList` to `find`. When the change drops an attribute the user edited, a dialog names the dropped attributes first. It stays quiet when the dropped attributes all hold the values of one node the editor fills in itself: the default of the old type, with or without its optional attributes, or the default of the slot holding the node (issue #447).
 
 Wrapping a node in `mapList` does not rewrite its references. `getFromContext` on `defaultInput` then reads each element, but `getFromParameters` on `defaultInput` still reads the whole input, since only the context is rebound. A hint next to a `mapList`, `filterList` or `find` names such reads in its element transformer or predicate.
 

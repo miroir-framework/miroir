@@ -23,13 +23,7 @@ import {
   RestPersistenceClientAndRestClientInterface
 } from "miroir-core";
 
-
-// TODO: depends on miroir-localcache-redux / miroir-localcache-zustand by way of miroir-react
-import {
-  RestPersistenceClientAndRestClient,
-  setupMiroirDomainController
-} from 'miroir-react';
-
+import { loadLocalCacheImplementation } from "./localCacheImplementation";
 import { packageName } from "../../constants";
 import { cleanLevel } from "../4_view/constants";
 
@@ -77,6 +71,9 @@ export async function setupMiroirTest(
   if (process.env.MIROIR_TEST_VERBOSE === "1") {
     log.debug("setupMiroirTest miroirConfig", JSON.stringify(miroirConfig, null, 2));
   }
+  // #446: redux, or the implementation MIROIR_TEST_LOCAL_CACHE names
+  const { RestPersistenceClientAndRestClient, setupMiroirDomainController } =
+    await loadLocalCacheImplementation();
   let client: RestClientInterface | undefined = undefined;
   let remotePersistenceStoreRestClient: RestPersistenceClientAndRestClientInterface | undefined = undefined;
   if (miroirConfig.client.emulateServer) {

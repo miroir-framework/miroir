@@ -585,8 +585,7 @@ function handleModelAction(
     const handleInstanceActionsResult = localInstanceActions.map((instanceAction) =>
       handleInstanceAction(state, instanceAction, applicationDeploymentMap),
     );
-    // const errors = handleInstanceActionsResult.filter((r) => r instanceof Action2Error);
-    const errors = handleInstanceActionsResult.filter((r:any) => Array.isArray(r) || !r || (r as any)["status"] !== "error");
+    const errors = handleInstanceActionsResult.filter((r) => (r as unknown) instanceof Action2Error);
     if (errors.length > 0) {
       return new Action2Error(
         "FailedToHandleAction",
@@ -599,16 +598,24 @@ function handleModelAction(
   }
   switch (modelAction.actionType) {
     case "initModel": {
-      // Copy from loading to current
-      state.current = { ...state.loading };
+      // Copy from loading to current, keeping the other deployments (#451)
+      state.current = { ...state.current, ...state.loading };
       state.loading = {};
       state.status.initialLoadDone = true;
       break;
     }
     case "resetModel":
     case "resetData": {
-      // Clear current state
-      state.current = {};
+      // Clear the deployment's segments only (resetData: its data section), not the other
+      // deployments' (#451)
+      state.current = Object.fromEntries(
+        Object.entries(state.current).filter(
+          ([key]) =>
+            getLocalCacheIndexDeploymentUuid(key) !== deploymentUuid ||
+            (modelAction.actionType === "resetData" &&
+              getLocalCacheIndexDeploymentSection(key) !== "data"),
+        ),
+      );
       break;
     }
     case "commit": {
@@ -616,9 +623,15 @@ function handleModelAction(
       break;
     }
     case "rollback": {
-      // Copy from loading to current (same as Redux implementation)
+      // As the Redux implementation (#451): drop the deployment's entries, uncommitted ones
+      // included, then take the fresh data loaded from the persistent store.
+      const currentWithoutDeployment = Object.fromEntries(
+        Object.entries(state.current).filter(
+          ([key]) => getLocalCacheIndexDeploymentUuid(key) !== deploymentUuid,
+        ),
+      );
       state.current = {
-        ...state.current,
+        ...currentWithoutDeployment,
         ...state.loading
       };
       state.loading = {};
