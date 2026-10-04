@@ -1,0 +1,398 @@
+# Issue #449 — TDD Implementation Plan
+
+> Vertical TDD slices (RED → GREEN each). Core behavior is tested through MiroirTest
+> `functionCallTest` cases on the public functions of the transformer interface check
+> (`inputOutputTypesCompatible`, `inferTransformerOutputTypeFromSchema`,
+> `liftInputOutputTypeToMlSchema`, `inputOutputTypeOfValue`, `checkTransformerInterfaceRecursively`),
+> against the real stock TransformerDefinitions. The chooser is tested by rendering the real
+> list section with Book rows (`ListTransformerPanel.unit.test.tsx`). No mocks. The tracer bullet
+> proves that a definition can declare `record<P>` and `tuple<...>` and that the check judges them.
+>
+> **Execution model:** one green commit per slice (A's flow for sizeable work). Each slice ends
+> with its Validation commands; on success its Realization summary is appended and its Status
+> flips to ✅ DONE.
+
+Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/449
+Prerequisites: [#383](../383-FEATURE-transformer-choice-by-input-type/) ✅, [#453](../453-FEATURE-transformer-type-display/) ✅
+Working branch: `claude/449-payload-sub-choice` (from `_integration` 04ae35bb)
+
+**Resume note:** plan written, no slice started.
+
+---
+
+## Scope
+
+- G1: the expected-output chooser expresses `array<P>`, `record<P>`, `tuple<P1..Pn>`.
+- G2: `inputOutput` declares them.
+- G3: inference, lift and walk stay coarse and sound with the new types.
+- G4: one type formatter for the list panel, the editor badges and the mismatch titles.
+
+Out: full ML schema types, nested type parameters, `object<P>`, saving the chosen type, the EntityVersion snapshot, slot expectations (#454). See analysis §2.
+
+---
+
+## Progress summary
+
+| Slice | Title | Status | Primary proof |
+|---|---|---|---|
+| 0 | Characterize the interface check suites | ⬜ | baseline runs of `fn.transformer.interfaceCheck`, `fn.transformer.interfaceWalk`, `ListTransformerPanel.unit` |
+| 1 | Declare and match `record` and `tuple` (tracer) | ⬜ | `fn.transformer.interfaceCheck` new suites "record forms", "tuple forms", "payload values" |
+| 2 | Coarse inference, lift and walk for the new types | ⬜ | `fn.transformer.interfaceCheck` "inference" / "lift" suites, `fn.transformer.interfaceWalk` cases |
+| 3 | Chooser: type parameter for `array` and `record` | ⬜ | `ListTransformerPanel.unit` cases |
+| 4 | Chooser: tuple elements | ⬜ | `ListTransformerPanel.unit` cases |
+| 5 | One type formatter (G4) | ⬜ | `fn.transformer.interfaceCheck` "format" suite, `unit-453-transformer-types-display` |
+| 6 | Stock definition sweep (D11, after A's approval) | ⬜ | `stockTransformerDefinitions` suite, `fn.transformer.resultSchema` case |
+| 7 | Nonreg, docs, AC | ⬜ | `unit-449-parameterized-interface-types` step, full nonreg |
+
+---
+
+## Locked implementation defaults
+
+Analysis decision record, binding for this plan.
+
+| # | Choice | Serves |
+|---|---|---|
+| D1 | `array<P>`, `record<P>`, `tuple<P1..Pn>`; no `object<P>` | G1, G2 |
+| D2 | P ∈ `any, undefined, bigint, number, string, boolean, object` or an entity uuid | G1, G2 |
+| D3 | A nested position is `any` | G3 |
+| D4 | Bare literals `object`, `array`, `record` (new); no bare `tuple` | G1, G2 |
+| D5 | `{ type: "array" \| "record", payload?: P }`, `{ type: "tuple", payload: P[] }` | G2 |
+| D6 | Compatibility per analysis §3.1, payloads by the same relation | G1, G3 |
+| D7 | Object form removed; its 3 MiroirTests move to `record` | G2 |
+| D8 | Coarse inference, lift and walk per analysis §3.2 | G3 |
+| D9 | Chooser: main select + parameter select (`array`, `record`), element selects with + and − (`tuple`, start `<any, any>`, min 1); P `any` stored as the bare literal | G1 |
+| D10 | `formatInputOutputTypeLabel` in miroir-core, used by the panel and the editor | G4 |
+| D11 | Sweep per analysis §3.3, rows approved by A | G2, G3 |
+| D12 | Types generated from the Entity; snapshot untouched | G2 |
+| D13 | MiroirTest `functionCallTest` for core, `ListTransformerPanel.unit` for the chooser | all |
+| D14 | `discriminator: "type"` on the union | G2 |
+
+---
+
+## Allocated UUIDs / keys
+
+No new model element. Tests go into existing suites:
+
+| Artefact | Value |
+|---|---|
+| MiroirTest `fn.transformer.interfaceCheck` | `c9f0a3e1-7b2d-4e6a-8f1c-5d3b9a7e2c84` (miroir-app-miroir) |
+| MiroirTest `fn.transformer.interfaceWalk` | `0a6912c2-e061-476b-bd54-849e7366684b` (miroir-app-miroir) |
+| Vitest | `packages/miroir-standalone-app/tests/4_view/ListTransformerPanel.unit.test.tsx` (React rendering of the chooser, not reachable through `functionCallTest`; a `ui.*` component case would need a deployment-backed list report for one select) |
+| Nonreg step | `unit-449-parameterized-interface-types`, scopes `["ui"]` |
+
+---
+
+## Test execution conventions
+
+| Purpose | Command |
+|---|---|
+| Interface check suites | `npm run testMiroir -w miroir-core -- --suites fn.transformer.interfaceCheck,fn.transformer.interfaceWalk --mode unit` |
+| Result schema suite (#88) | `npm run testMiroir -w miroir-core -- --suites fn.transformer.resultSchema --mode unit` |
+| Panel | `npm run testByFile -w miroir-standalone-app -- ListTransformerPanel.unit` |
+| Schema rebuild | `npm run build -w miroir-app-miroir && npm run devBuild -w miroir-core` |
+| Type check | `npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json`, same for `miroir-standalone-app` |
+| Gate | `npm run lint`, `npm run test -w miroir-core -- ''` |
+| Scoped nonreg | `npm run nonreg:filesystem -- --runner shared --scope smoke,<scopes>` |
+| Full nonreg | `npm run nonreg:filesystem -- --runner shared` |
+
+---
+
+## Slice 0 — Characterize the interface check suites
+
+**Status:** ⬜ pending
+
+### Goal
+
+Record which tests pass on `_integration` before any change, so later failures are attributable.
+
+### 0.1 Baseline
+
+Run the three suites and `fn.transformer.resultSchema`; record pass counts here. Pre-existing failures are noted, not fixed.
+
+### Validation
+
+```bash
+npm run build -w miroir-app-miroir && npm run build -w miroir-core
+npm run testMiroir -w miroir-core -- --suites fn.transformer.interfaceCheck,fn.transformer.interfaceWalk,fn.transformer.resultSchema --mode unit
+npm run testByFile -w miroir-standalone-app -- ListTransformerPanel.unit
+```
+
+### Realization
+
+---
+
+## Slice 1 — Declare and match `record` and `tuple` (tracer)
+
+**Status:** ⬜ pending
+
+### Goal
+
+A transformer definition author can declare `record`, `record<P>`, `tuple<P1..Pn>`, `array<object>`, `array<undefined>` in `inputOutput`, and the adequacy check judges them by analysis §3.1.
+
+**Layers cut:** TransformerDefinition Entity schema → generated types → `TransformerInterfaceCheck.ts`.
+
+### 1.1 RED
+
+`fn.transformer.interfaceCheck`:
+- Suite "object and array payload forms" renamed "array and record payload forms"; its 3 object-form cases rewritten with `record` (D7).
+- New suite "record forms": every `record` row of §3.1 (entity ⇒ `record<any>` yes, entity ⇒ `record<string>` no, `record<string>` ⇒ `object` yes, `object` ⇒ `record` yes, `object` ⇒ `record<string>` no, `record<string>` ⇒ `record<number>` no, bare `record` ⇒ `record<Book>` yes by `any`).
+- New suite "tuple forms": `tuple<string, number>` ⇒ `array<any>` yes, ⇒ `array<string>` no, `tuple<string, string>` ⇒ `array<string>` yes, `array<string>` ⇒ `tuple<string>` no, arity mismatch no, element-wise match yes, `tuple<...>` ⇒ `object` no.
+- New suite "payload values": `array<Book>` ⇒ `array<object>` yes, `array<object>` ⇒ `array<Book>` no, `array<undefined>` ⇒ `array<undefined>` yes, `array<undefined>` ⇒ `array<string>` no.
+- `stockTransformerDefinitions`: `findInvalidStockTransformerInputOutputs` on a definitions map holding `record<string>`, `tuple<string, Book>` and `array<object>` declarations returns `[]`; on one holding `{ type: "object", payload: "string" }` returns its name.
+
+### 1.2 GREEN
+
+- Entity `a557419d-...` `inputOutput.context`: payload enum gains `undefined`, `object`; type enum gains `record`; object arm `type` enum becomes `["array", "record"]`; new arm `{ type: literal "tuple", payload: array of inputOutputPayloadType }`; `discriminator: "type"` (D14). Rebuild.
+- `TransformerInterfaceCheck.ts`: one normalized form `any | primitive | object | entity | array<P> | record<P> | tuple<P[]>`; payloads normalized into the same form; one recursive `compatible(a, e)` replaces `inputOutputPayloadsCompatible`. Header comment rewritten for §3.1.
+
+### 1.3 Refactor checkpoint
+
+- The two normalizers and two relations of §4.4 become one.
+- Check every other `InputOutputType` consumer still typechecks against the new union (`TransformerInterfaceInference.ts`, `TransformerMlSchemaCheck.ts`, `TransformerEditor.tsx`, `ListTransformerPanel.tsx`, `TransformerTypeAnnotation.tsx`).
+
+### Validation
+
+**Nonreg scopes:** `smoke,core`, because the slice changes a core schema and `2_domain`.
+
+```bash
+npm run build -w miroir-app-miroir && npm run devBuild -w miroir-core
+npm run testMiroir -w miroir-core -- --suites fn.transformer.interfaceCheck,fn.transformer.interfaceWalk --mode unit
+npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+npm run test -w miroir-core -- ''
+npm run nonreg:filesystem -- --runner shared --scope smoke,core
+```
+
+### Realization
+
+---
+
+## Slice 2 — Coarse inference, lift and walk
+
+**Status:** ⬜ pending
+
+### Goal
+
+The list panel's inferred output and the #383/#453 walk give `record<P>` and `tuple<...>` where #88 knows them, and never a type more precise than the truth (analysis §3.2).
+
+**Layers cut:** `TransformerInterfaceInference.ts`, `TransformerMlSchemaCheck.ts` (lift), `TransformerInterfaceCheck.ts` (walk, value typing).
+
+### 2.1 RED
+
+`fn.transformer.interfaceCheck`, new suite "inference" (`inferTransformerOutputTypeFromSchema`):
+- `record` of string → `record<string>`; `record` of a Book schema with Book known → `record<Book>`; `record` of an array → `record<any>`.
+- `tuple` [string, number] → `tuple<string, number>`; `tuple` [string, array] → `tuple<string, any>`.
+- `array` of plain object → `array<object>`; `array` of `undefined` → `array<undefined>`; `array` with a list `definition` → `array<any>`.
+
+New suite "lift" (`liftInputOutputTypeToMlSchema`): `record<string>`, `tuple<string, number>`, `array<object>`, `array<undefined>` lift to the ML schemas of §3.2; each lifted schema passes `mlElement` validation (assert through `isMlSchemaSubtype` of itself, or the existing validation function the suite already uses).
+
+`fn.transformer.interfaceWalk`:
+- `inputOutputTypeOfValue([{a: 1}, {b: 2}])` → `array<object>` (was `array<any>`; R3).
+- `mapList` whose `applyTo` is a `returnValue` with `mlSchema` `tuple<string, string>`: the element bound is `string`.
+- `filterList` over the same tuple outputs `array<string>`, not the tuple.
+
+### 2.2 GREEN
+
+`payloadOf` per §3.2; `inferTransformerOutputTypeFromSchema` record/tuple/list-form branches; `liftInputOutputTypeToMlSchema` record/tuple/object/undefined payloads; `arrayElementInputOutputType` reads tuples; `listCombinatorOutput` `filterList` case.
+
+### 2.3 Refactor checkpoint
+
+- `liftPayloadToMlSchema` folds into `liftInputOutputTypeToMlSchema` if payloads are now a subset of types.
+- Update #453 walk expectations that asserted `array<any>` for arrays of plain objects (R3), with a note in the test label.
+
+### Validation
+
+**Nonreg scopes:** `smoke,core,ui` (core functions; the walk feeds the editor badges and the list panel).
+
+```bash
+npm run build -w miroir-app-miroir && npm run build -w miroir-core
+npm run testMiroir -w miroir-core -- --suites fn.transformer.interfaceCheck,fn.transformer.interfaceWalk,fn.transformer.resultSchema --mode unit
+npm run testByFile -w miroir-standalone-app -- ListTransformerPanel.unit transformerTypesDisplay
+npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
+npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui
+```
+
+### Realization
+
+---
+
+## Slice 3 — Chooser: type parameter for `array` and `record`
+
+**Status:** ⬜ pending
+
+### Goal
+
+A report designer on a Book list picks `array` or `record` and its type parameter, and the orange border follows (G1).
+
+**Layers cut:** `ListTransformerPanel.tsx`.
+
+### 3.1 RED
+
+`ListTransformerPanel.unit.test.tsx` (Book rows):
+- The main select offers `record` and `tuple`; no parameter select while the type is `Book` or `string` (`list-transformer-expected-output-payload` absent).
+- Choosing `array` shows the parameter select at `any`; the main select shows `array` (not `any`).
+- Expected `array<string>`: a row transformer returning `array<string>` (a `returnValue` with that `mlSchema`) has no border; one returning `array<number>` is bordered orange.
+- Expected `record<string>`: a `returnValue` with `mlSchema` `record<string>` has no border; the default identity transformer (Book) is bordered.
+- Switching back to `Book` removes the parameter select and restores the default (no border for identity).
+
+### 3.2 GREEN
+
+`INPUT_OUTPUT_BASE_TYPES` gains `record`, `tuple`; main select value = type kind of `expectedOutputType`; a second `ThemedSelectWithPortal` (`data-testid="list-transformer-expected-output-payload"`) for `array` / `record` with D2 values then entities; P `any` stored as the bare literal (D9).
+
+### 3.3 Refactor checkpoint
+
+- The chooser grows into its own small component in the same folder (`ExpectedOutputTypeChooser`), props `value`, `onChange`, `entities`, if `ListTransformerPanelInner` gets harder to read.
+
+### Validation
+
+**Nonreg scopes:** `smoke,ui`.
+
+```bash
+npm run testByFile -w miroir-standalone-app -- ListTransformerPanel.unit
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+npm run lint
+npm run nonreg:filesystem -- --runner shared --scope smoke,ui
+```
+
+### Realization
+
+---
+
+## Slice 4 — Chooser: tuple elements
+
+**Status:** ⬜ pending
+
+### Goal
+
+A report designer picks `tuple` and edits its element types (G1).
+
+### 4.1 RED
+
+`ListTransformerPanel.unit.test.tsx`:
+- Choosing `tuple` shows two element selects at `any` (`list-transformer-expected-output-tuple-0`, `-1`) and a + button; − is disabled at one element.
+- Setting elements to `string`, `number`: a `returnValue` with `mlSchema` `tuple<string, number>` has no border, one with `tuple<string, string>` is bordered.
+- + adds a third element at `any`; − removes the last.
+
+### 4.2 GREEN
+
+Element list in the chooser; value `{ type: "tuple", payload: [...] }`.
+
+### 4.3 Refactor checkpoint
+
+- Shared option list for the parameter select and the element selects.
+
+### Validation
+
+**Nonreg scopes:** `smoke,ui`. Full nonreg here (after 2 slices since the last one).
+
+```bash
+npm run testByFile -w miroir-standalone-app -- ListTransformerPanel.unit
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+npm run lint
+npm run nonreg:filesystem -- --runner shared
+```
+
+### Realization
+
+---
+
+## Slice 5 — One type formatter (G4)
+
+**Status:** ⬜ pending
+
+### Goal
+
+`tuple<string, number>`, `record<Book>` and `array<Book>` read the same in the list panel, the editor badges and the editor's mismatch titles.
+
+### 5.1 RED
+
+`fn.transformer.interfaceCheck`, new suite "format" (`formatInputOutputTypeLabel`, whitelisted): `array<Book>` with a Book entity list, `record<string>`, `tuple<string, Book>`, an unknown uuid shortened with `shortenUnknownUuids`, bare `record`.
+
+`transformerTypesDisplay` (#453): a mismatch title shows `tuple<string, number>`, not JSON.
+
+### 5.2 GREEN
+
+Move `formatInputOutputTypeLabel` to miroir-core (`TransformerInterfaceCheck.ts` or a sibling `InputOutputTypeLabel.ts`), export it, tuple branch; `TransformerTypeAnnotation.tsx` re-exports or callers import from miroir-core; `TransformerEditor.tsx` `formatInputOutputType` replaced by it.
+
+### 5.3 Refactor checkpoint
+
+- Delete the standalone copy and `formatInputOutputType`.
+
+### Validation
+
+**Nonreg scopes:** `smoke,core,ui`.
+
+```bash
+npm run build -w miroir-core
+npm run testMiroir -w miroir-core -- --suites fn.transformer.interfaceCheck --mode unit
+npm run testByFile -w miroir-standalone-app -- ListTransformerPanel.unit transformerTypesDisplay
+npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui
+```
+
+### Realization
+
+---
+
+## Slice 6 — Stock definition sweep (D11)
+
+**Status:** ⬜ pending (waits for A's approval of analysis §3.3, row by row)
+
+### Goal
+
+Stock definitions that build records declare them; #88 stops claiming `record<element>` for a spread object (G2, G3).
+
+### 6.1 RED
+
+- `stockTransformerDefinitions`: `getTransformerDefinitionInputOutput("indexListBy")` is `{ input: { type: "array", payload: "object" }, output: "record" }`; same for each approved row.
+- `fn.transformer.resultSchema`: `listReducerToSpreadObject` over Book rows resolves to an `object` schema.
+- `fn.transformer.interfaceCheck`: `indexListBy` declared output satisfies expected `record` and `object`, and not `array`.
+
+### 6.2 GREEN
+
+Edit the approved definitions under `miroir_data/a557419d-.../`; the `case "listReducerToSpreadObject"` of `Transformer_ResultSchema.ts`.
+
+### Validation
+
+**Nonreg scopes:** `smoke,core`.
+
+```bash
+npm run build -w miroir-app-miroir && npm run build -w miroir-core
+npm run testMiroir -w miroir-core -- --suites fn.transformer.interfaceCheck,fn.transformer.resultSchema --mode unit
+npm run testByFile -w miroir-app-miroir -- tests/modelValidation.unit.test.ts
+npm run nonreg:filesystem -- --runner shared --scope smoke,core
+```
+
+### Realization
+
+---
+
+## Slice 7 — Nonreg, docs, AC
+
+**Status:** ⬜ pending
+
+### 7.1 Nonreg
+
+- Add `unit-449-parameterized-interface-types` (`npm run testByFile -w miroir-standalone-app -- ListTransformerPanel.unit`, scopes `["ui"]`) to `scripts/nonreg-manifest.json`. The core suites already run in `unit-miroir-core`.
+- Full `npm run nonreg:filesystem -- --runner shared`.
+
+### 7.2 Docs
+
+- `analysis.md` status → implemented; progress table; `docs/` mention of `inputOutput` types if one exists (search `inputOutput` in `docs/`).
+
+### 7.3 Tracer bullet (narrative)
+
+1. Open a Book list report, show the transformer panel.
+2. Set the expected output to `array`, parameter `string`; set the row transformer to `mapList` of titles over a list attribute or a `returnValue` of `["a"]`: no border.
+3. Change the parameter to `number`: orange border, title `array<string>` vs `array<number>`.
+4. Set the expected output to `tuple<string, number>`: element selects, border follows.
+
+Automated equivalent: `ListTransformerPanel.unit` slices 3-4 cases.
+
+### AC checklist (#449)
+
+| Criterion | Proven by | Status |
+|---|---|---|
+| A parameter control appears for the parameterized types only | slice 3 case 1, slice 4 case 1 | ⬜ |
+| `array<string>` expected: `array<string>` adequate, `array<number>` inadequate | slice 3 | ⬜ |
+| Entity and record rules | slice 1 "record forms" | ⬜ |
+| Panel tests cover the chooser | `ListTransformerPanel.unit` | ⬜ |
