@@ -30,6 +30,10 @@ export default tseslint.config(
       "@typescript-eslint/no-empty-object-type": "off", // 14, type-level style
       "@typescript-eslint/no-unsafe-function-type": "off", // 5, type-level style
       "no-fallthrough": "off", // 47, each case needs a decision: `break` or `// falls through`
+      // Added to js.configs.recommended by eslint 10.
+      "no-useless-assignment": "off", // 64
+      "preserve-caught-error": "off", // 5
+      "no-unassigned-vars": "off", // 1
 
       // Hooks called conditionally or in callbacks break React's state ordering.
       "react-hooks/rules-of-hooks": "error",
