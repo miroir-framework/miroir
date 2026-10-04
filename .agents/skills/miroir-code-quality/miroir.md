@@ -1,6 +1,6 @@
 # Miroir smells
 
-Smells that come from Miroir's own conventions: action results, the model, MiroirTest, loggers and ML names. Names in the snippets are illustrations unless an entry cites them as a sanctioned form.
+Smells that come from Miroir's own conventions: action results, themes, the model, MiroirTest, loggers and ML names. Names in the snippets are illustrations unless an entry cites them as a sanctioned form.
 
 ## action-result
 
@@ -25,6 +25,31 @@ async open(): Promise<Action2VoidReturnType> {
 **Leave it** for a throw that signals a programming error the caller cannot handle (a broken invariant), with a comment saying so.
 
 **Lint.** Lens. When reviewing a new action handler, also check its signature: an action returns `Action2ReturnType` or `Action2VoidReturnType`, never `void` or `any`.
+
+## theme-bypass
+
+A color written as a literal in a component: `"#333"`, `"1px solid #e0e0e0"`, `"rgb(51, 51, 51)"`, `"white"`.
+
+**Why.** Themes are model data (the MiroirTheme Entity of `miroir-app-miroir`) and the theme selector offers a dark theme. A literal color ignores the theme the user picked: `#333` text vanishes on the dark background, a `#f5f5f5` panel glares on it, and a status color written by hand drifts from the theme's own.
+
+**Fix.** Read the color from the theme with `useMiroirTheme()`, or use a `Themed…` component that does.
+
+```tsx
+// Before: TransformerTypeBadgeChip (#453)
+match: { color: "#2e7d32", border: "#66bb6a", /* … */ },
+mismatch: { color: "#c62828", border: "#ef5350", /* … */ },
+
+// After
+const { currentTheme } = useMiroirTheme();
+match: { color: currentTheme.colors.success, border: currentTheme.colors.success, /* … */ },
+mismatch: { color: currentTheme.colors.error, border: currentTheme.colors.error, /* … */ },
+```
+
+Sanctioned form: the same badge reads `currentTheme.colors.textSecondary` for its third status. The dark theme copies `successLight` and `errorLight` from the light one (`#e8f5e8`, `#ffebee`): check a light variant on the dark theme before relying on it.
+
+**Leave it** where the lens already skips it: the theme definitions and the `Themed…` components (`Themes/` folders), a fallback after a theme value (`theme.colors?.text || "#000"`), and a translucent tint (`rgba(0, 0, 0, 0.1)`), which reads on any background. Leave it also for a data palette that does not depend on the background, such as chart series.
+
+**Lint.** Lens only.
 
 ## mocked-own-module
 

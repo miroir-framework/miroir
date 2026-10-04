@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Report code smells on what a branch adds, or on paths (#340).
 
-The smell lens (eslint-rules/smell-lens.config.mjs) finds the syntax smells. This script adds three text
-checks (commented-out code, a logger named after another file, a near-identical twin file), keeps only the
-lines the branch adds when --diff is given (lines it moves from elsewhere are counted apart), and prints the findings grouped by smell id, in the impact order of the
+The smell lens (eslint-rules/smell-lens.config.mjs) finds the syntax smells. This script adds four text
+checks (commented-out code, a logger named after another file, a near-identical twin file, a prop passed on
+through many files), keeps only the lines the branch adds when --diff is given (lines it moves from elsewhere
+are counted apart), and prints the findings grouped by smell id, in the impact order of the
 miroir-code-quality skill (.agents/skills/miroir-code-quality/), which holds the remedies.
 It reports and always exits 0: the findings are review prompts, not a gate.
 
@@ -44,6 +45,7 @@ SMELL_ORDER = [
     "effect-derived-state",
     "state-from-props",
     "timing",
+    "theme-bypass",
     "upward-import",
     "global-environment",
     "wiring",
@@ -51,6 +53,7 @@ SMELL_ORDER = [
     "pub-sub",
     "service-read-in-render",
     "unstable-deps",
+    "prop-drilling",
     "mocked-own-module",
     "duplicated-logic",
     "logger",
@@ -88,6 +91,15 @@ CODE_COMMENT = re.compile(
 )
 PROSE_COMMENT = re.compile(r"^(?:TODO|FIXME|NOTE|HACK|XXX|eslint|@ts-|#)", re.IGNORECASE)
 MIN_COMMENTED_RUN = 3
+# A prop handed on as is: `name={name}` or `name={props.name}`.
+FORWARDED_PROP = re.compile(r"\b([a-z]\w*)=\{(?:props\.)?\1\}")
+# Props that a component hands to the element it wraps: not drilling.
+WRAPPER_PROPS = {
+    "checked", "children", "className", "color", "disabled", "error", "height", "id", "key", "label", "name",
+    "onBlur", "onChange", "onClick", "onClose", "onFocus", "open", "placeholder", "readOnly", "ref", "size",
+    "style", "sx", "theme", "title", "type", "value", "variant", "width",
+}
+MIN_DRILLED_FILES = 5
 TWIN_RATIO = 0.9
 MIN_TWIN_LINES = 20  # one-line constants files are alike by design
 
@@ -210,6 +222,29 @@ def twins(path: str, root: Path) -> list[tuple[str, float]]:
     return found
 
 
+@lru_cache(maxsize=None)
+def _forwarding_files(root: Path) -> dict[str, frozenset[str]]:
+    """Files of packages/*/src that pass each prop on as is, by prop name."""
+    index: dict[str, set[str]] = defaultdict(set)
+    for candidate in (root / "packages").glob("*/src/**/*.tsx"):
+        relative = candidate.relative_to(root)
+        if _is_source(relative) and ".test." not in candidate.name:
+            for match in FORWARDED_PROP.finditer(candidate.read_text(encoding="utf-8", errors="replace")):
+                index[match.group(1)].add(relative.as_posix())
+    return {prop: frozenset(paths) for prop, paths in index.items()}
+
+
+def drilled_props(path: str, text: str, root: Path) -> list[tuple[int, str, int]]:
+    """(line, prop, files) of each prop passed on as is that MIN_DRILLED_FILES or more files pass on."""
+    found = []
+    for match in FORWARDED_PROP.finditer(text):
+        prop = match.group(1)
+        files = len(_forwarding_files(root).get(prop, frozenset()) | {path})
+        if prop not in WRAPPER_PROPS and files >= MIN_DRILLED_FILES:
+            found.append((text.count("\n", 0, match.start()) + 1, prop, files))
+    return found
+
+
 def text_findings(path: str, root: Path) -> list[Finding]:
     text = (root / path).read_text(encoding="utf-8", errors="replace")
     findings = [
@@ -220,6 +255,11 @@ def text_findings(path: str, root: Path) -> list[Finding]:
         Finding("logger", path, line, f'Logger named "{name}" in {Path(path).name}: name it after the file.')
         for line, name in logger_name_mismatches(path, text)
     ]
+    if path.endswith(".tsx") and "/src/" in path and ".test." not in path:
+        findings += [
+            Finding("prop-drilling", path, line, f"`{prop}` is passed on as is in {files} files: provide it once in a context, read it with a hook.")
+            for line, prop, files in drilled_props(path, text, root)
+        ]
     found = twins(path, root)
     if found:
         listed = ", ".join(f"{other} ({ratio:.0%})" for other, ratio in found)

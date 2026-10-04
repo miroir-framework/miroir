@@ -8,7 +8,7 @@ Read this to add a detector, to tune one that reports false positives, or to mak
 |---|---|
 | `eslint-rules/smell-lens.config.mjs` | The **lens**: `eslint.config.mjs` plus warn-level rules. Custom messages start with `[smell-id]`. Bulk suppressions (`eslint-suppressions.json`) apply, so blocking rules show only new violations |
 | `eslint-rules/smell-lens.test.mjs` | One test per smell family: each detector flags its pattern and spares the sanctioned form. Part of `npm run lint` |
-| `scripts/code_smells.py` (`npm run smells`) | The **runner**: ESLint with the lens, plus three text checks (commented-out code, logger names, twin files); `--diff` keeps added lines and counts apart the lines git marks as moved; prints the findings grouped by smell in checklist order |
+| `scripts/code_smells.py` (`npm run smells`) | The **runner**: ESLint with the lens, plus four text checks (commented-out code, logger names, twin files, props passed on as is); `--diff` keeps added lines and counts apart the lines git marks as moved; prints the findings grouped by smell in checklist order |
 | `scripts/tests/test_code_smells.py` | The runner's tests, and a check that its smell order matches this skill's checklist |
 
 ## Add or tune a detector

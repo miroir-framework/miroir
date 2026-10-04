@@ -18,6 +18,7 @@ const smellsIn = async (filePath, code) => {
 
 const LIB = "packages/miroir-core/src/2_domain/sample.ts";
 const VIEW = "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Sample.tsx";
+const THEME_VIEW = "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/Sample.tsx";
 const ROOT = "packages/miroir-cli/src/startup/setup.ts";
 const TEST = "packages/miroir-core/tests/sample.unit.test.ts";
 
@@ -126,4 +127,15 @@ test("mocked-own-module: vi.mock of Miroir code in tests, not of libraries", asy
     `import { vi } from "vitest";\nvi.mock("../../src/tests/index", async (importOriginal) => {\n  const actual = await importOriginal<typeof import("../../src/tests/index")>();\n  return { ...actual, ${properties} };\n});\n`;
   await spares(TEST, factory("register: vi.fn(actual.register)"), "mocked-own-module");
   await flags(TEST, factory("register: vi.fn(actual.register), Grid: () => null"), "mocked-own-module");
+});
+
+test("theme-bypass: colors written in components, not in theme definitions nor as a fallback", async () => {
+  await flags(VIEW, `export const Badge = () => <span style={{ color: "#2e7d32" }}>ok</span>;\n`, "theme-bypass");
+  await flags(VIEW, `export const style = { border: "1px solid #e0e0e0" };\n`, "theme-bypass");
+  await flags(VIEW, `export const style = { color: "rgb(51, 51, 51)" };\n`, "theme-bypass");
+  await flags(VIEW, `export const style = { backgroundColor: "white" };\n`, "theme-bypass");
+  await spares(VIEW, `export const style = { boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" };\n`, "theme-bypass");
+  await spares(VIEW, `declare const theme: { colors?: { text?: string } };\nexport const fill = theme.colors?.text || "#000";\n`, "theme-bypass");
+  await spares(THEME_VIEW, `export const Badge = () => <span style={{ color: "#2e7d32" }}>ok</span>;\n`, "theme-bypass");
+  await spares(LIB, `export const defaultColor = "#2e7d32";\n`, "theme-bypass");
 });

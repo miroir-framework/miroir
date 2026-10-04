@@ -48,34 +48,36 @@ Most harmful first. *Lens*: a warn-level ESLint check reported by `npm run smell
 | 7 | `effect-derived-state` | `setState` in an effect or in `useMemo` to compute a value | lens | [react.md](react.md#effect-derived-state) |
 | 8 | `state-from-props` | `useState(props.x)` | lens | [react.md](react.md#state-from-props) |
 | 9 | `timing` | debounce, `setTimeout(…, 0)`, a timer in an effect | lens | [typescript.md](typescript.md#timing) |
+| 10 | `theme-bypass` | a color literal (`"#333"`, `rgba(…)`) in a component | lens | [miroir.md](miroir.md#theme-bypass) |
 
 **Cost of change:** the code works and makes the next change slower.
 
 | # | Smell | Look for | Detect | Detail |
 |---|---|---|---|---|
-| 10 | `upward-import` | an implementation import from a higher layer | lint | [layering.md](layering.md#upward-import) |
-| 11 | `global-environment` | `process.env` read outside a composition root | lens | [layering.md](layering.md#global-environment) |
-| 12 | `wiring` | a core service built outside a composition root | lens | [layering.md](layering.md#wiring) |
-| 13 | `component-io` | `fetch` in a component or hook | lens | [react.md](react.md#component-io) |
-| 14 | `pub-sub` | `.subscribe(…)` called in a component or hook | lens | [react.md](react.md#pub-sub) |
-| 15 | `service-read-in-render` | `useMemo` around a service call | lens | [react.md](react.md#service-read-in-render) |
-| 16 | `unstable-deps` | a serialisation or a missing entry in a dependency list | lens | [react.md](react.md#unstable-deps) |
-| 17 | `mocked-own-module` | `vi.mock` of Miroir code | lens | [miroir.md](miroir.md#mocked-own-module) |
-| 18 | `logic-in-code` | transformers, queries or composite actions written in TypeScript | manual | [miroir.md](miroir.md#logic-in-code) |
-| 19 | `duplicated-logic` | a near-identical file in another package | runner | [typescript.md](typescript.md#duplicated-logic) |
-| 20 | `logger` | a logger not named after its file; two loggers in a file | runner, lens | [miroir.md](miroir.md#logger) |
+| 11 | `upward-import` | an implementation import from a higher layer | lint | [layering.md](layering.md#upward-import) |
+| 12 | `global-environment` | `process.env` read outside a composition root | lens | [layering.md](layering.md#global-environment) |
+| 13 | `wiring` | a core service built outside a composition root | lens | [layering.md](layering.md#wiring) |
+| 14 | `component-io` | `fetch` in a component or hook | lens | [react.md](react.md#component-io) |
+| 15 | `pub-sub` | `.subscribe(…)` called in a component or hook | lens | [react.md](react.md#pub-sub) |
+| 16 | `service-read-in-render` | `useMemo` around a service call | lens | [react.md](react.md#service-read-in-render) |
+| 17 | `unstable-deps` | a serialisation or a missing entry in a dependency list | lens | [react.md](react.md#unstable-deps) |
+| 18 | `prop-drilling` | a prop passed on as is (`x={x}`) through many components | runner | [react.md](react.md#prop-drilling) |
+| 19 | `mocked-own-module` | `vi.mock` of Miroir code | lens | [miroir.md](miroir.md#mocked-own-module) |
+| 20 | `logic-in-code` | transformers, queries or composite actions written in TypeScript | manual | [miroir.md](miroir.md#logic-in-code) |
+| 21 | `duplicated-logic` | a near-identical file in another package | runner | [typescript.md](typescript.md#duplicated-logic) |
+| 22 | `logger` | a logger not named after its file; two loggers in a file | runner, lens | [miroir.md](miroir.md#logger) |
 
 **Readability:** the code is harder to read than it needs to be.
 
 | # | Smell | Look for | Detect | Detail |
 |---|---|---|---|---|
-| 21 | `type-escape` | `any`, `as unknown as`, `as any as` | lens | [typescript.md](typescript.md#type-escape) |
-| 22 | `magic-value` | a uuid literal in code | lens | [miroir.md](miroir.md#magic-value) |
-| 23 | `ml-naming` | `Jzod` in the name of an ML construct | `npm run check:ml` | [miroir.md](miroir.md#ml-naming) |
-| 24 | `long-parameter-list` | more than 5 parameters | lens | [typescript.md](typescript.md#long-parameter-list) |
-| 25 | `boolean-flag` | a boolean parameter next to others | lens | [typescript.md](typescript.md#boolean-flag) |
-| 26 | `deep-nesting` | blocks nested more than 4 deep | lens | [typescript.md](typescript.md#deep-nesting) |
-| 27 | `dead-code` | commented-out code, unused variables, files nothing imports | runner, lens | [typescript.md](typescript.md#dead-code) |
+| 23 | `type-escape` | `any`, `as unknown as`, `as any as` | lens | [typescript.md](typescript.md#type-escape) |
+| 24 | `magic-value` | a uuid literal in code | lens | [miroir.md](miroir.md#magic-value) |
+| 25 | `ml-naming` | `Jzod` in the name of an ML construct | `npm run check:ml` | [miroir.md](miroir.md#ml-naming) |
+| 26 | `long-parameter-list` | more than 5 parameters | lens | [typescript.md](typescript.md#long-parameter-list) |
+| 27 | `boolean-flag` | a boolean parameter next to others | lens | [typescript.md](typescript.md#boolean-flag) |
+| 28 | `deep-nesting` | blocks nested more than 4 deep | lens | [typescript.md](typescript.md#deep-nesting) |
+| 29 | `dead-code` | commented-out code, unused variables, files nothing imports | runner, lens | [typescript.md](typescript.md#dead-code) |
 
 ## Tools
 

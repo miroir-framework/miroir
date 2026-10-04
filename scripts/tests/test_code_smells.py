@@ -131,6 +131,14 @@ def test_keep_added_keeps_findings_that_cover_an_added_line() -> None:
     assert code_smells.keep_added(findings, added) == [on_added, run_overlapping, whole_file]
 
 
+def test_drilled_props_are_props_passed_on_as_is_in_many_files(tmp_path: Path) -> None:
+    for name in "ABCDE":
+        _write(tmp_path, f"packages/a/src/{name}.tsx", "<Child deploymentUuid={props.deploymentUuid} className={className} />\n")
+    _write(tmp_path, "packages/a/src/F.tsx", "<Child\n  badges={badges}\n/>\n")
+    text = "<Child deploymentUuid={deploymentUuid} />\n<Other badges={badges} />\n"
+    assert code_smells.drilled_props("packages/a/src/G.tsx", text, tmp_path) == [(1, "deploymentUuid", 6)]
+
+
 def test_render_orders_by_impact_and_groups_by_message() -> None:
     findings = [
         Finding("dead-code", "packages/a/src/x.ts", 5, "3 lines of commented-out code", 3),

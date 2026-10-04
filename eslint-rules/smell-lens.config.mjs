@@ -17,8 +17,16 @@ const ROOTS = [
 ];
 // React components and hooks.
 const VIEW = ["packages/*/src/**/*.tsx", "packages/*/src/**/4_view/**/*.ts", "packages/*/src/**/use[A-Z]*.ts"];
+// The views that define the themes and the Themed components: where colors are written down.
+const THEME_VIEWS = [
+  "packages/*/src/**/Themes/**/*.tsx",
+  "packages/*/src/**/4_view/**/Themes/**/*.ts",
+  "packages/*/src/**/Themes/**/use[A-Z]*.ts",
+];
 
 const UUID = "/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/";
+// A hex color (`#333`, `1px solid #e0e0e0`), an rgb() color, white or black. A translucent rgba() tint reads on any background.
+const COLOR = "/(^|[\\s(,:])#([0-9a-fA-F]{3}){1,2}([0-9a-fA-F]{2})?\\b|\\brgb\\(|^(white|black)$/";
 const SERVICE = "/(Service|Controller|Tracker|Registry|Store|Cache)$/i";
 // A function declared to return Action2ReturnType or Action2VoidReturnType, directly or in a Promise.
 const RETURNS_ACTION =
@@ -166,6 +174,14 @@ const inViews = [
   ),
 ];
 
+// Outside the theme definitions. A fallback after a theme value (`theme.colors?.text || "#000"`) is not reported.
+const themeBypass =
+  "Color written in a component: it ignores the theme the user picked, the dark one included. Read it from useMiroirTheme(), e.g. currentTheme.colors.error.";
+const outsideThemes = [
+  smell("theme-bypass", `Literal[value=${COLOR}]:not(LogicalExpression > Literal.right)`, themeBypass),
+  smell("theme-bypass", `TemplateElement[value.raw=${COLOR}]`, themeBypass),
+];
+
 // `vi.fn(actual.f)`: a spy over the real export, which the test observes without replacing it.
 const SPY = "CallExpression[callee.object.name='vi'][callee.property.name='fn'][arguments.0.type='MemberExpression']";
 const inTests = [
@@ -213,8 +229,13 @@ export default [
         "warn",
         { name: "fetch", message: "[component-io] fetch in a component or hook: call a DomainController action, or a service passed in." },
       ],
-      "no-restricted-syntax": ["warn", ...anywhereInSrc, ...outsideCompositionRoots, ...inViews],
+      "no-restricted-syntax": ["warn", ...anywhereInSrc, ...outsideCompositionRoots, ...inViews, ...outsideThemes],
     },
+  },
+  {
+    files: THEME_VIEWS,
+    ignores: [...TESTS, ...ROOTS],
+    rules: { "no-restricted-syntax": ["warn", ...anywhereInSrc, ...outsideCompositionRoots, ...inViews] },
   },
   {
     files: TESTS,

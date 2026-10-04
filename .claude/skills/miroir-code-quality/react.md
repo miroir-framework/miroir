@@ -152,3 +152,26 @@ A dependency list that serialises a value (`JSON.stringify`, `safeStringify`), o
 For a function that changes on every render, define it with `useCallback` where it is created, or move it inside the hook.
 
 **Lint.** Lens (`react-hooks/exhaustive-deps`, plus serialisation in a dependency list).
+
+## prop-drilling
+
+A prop that components pass on as is (`x={x}`, `x={props.x}`) through many files, or a group of props that always travel together.
+
+**Why.** Each new value costs an edit in every component on the way, and those components depend on data they do not use. #453 added `transformerTypeBadges` at 16 places in 6 files of the value editors, the sixth per-path annotation to take that route; a hop that forgets it drops the value without an error.
+
+**Fix.** Provide the value once in a context and read it with a hook where it is used. For props that travel together, pass one object.
+
+```tsx
+// Before: each editor in the tree declares the prop and passes it on
+<MlObjectEditor {...rest} transformerTypeBadges={transformerTypeBadges} environmentAnnotations={environmentAnnotations} />
+
+// After: the top editor provides the annotations once, the title row reads them
+<EditorAnnotationsContext.Provider value={{ transformerTypeBadges, environmentAnnotations }}>…</EditorAnnotationsContext.Provider>
+const { transformerTypeBadges } = useEditorAnnotations();
+```
+
+Sanctioned form: `TransformerTypesDisplayContext` (#453) hands a setting to the component test cases. The most drilled prop, `applicationDeploymentMap` (22 files), is also in the Miroir context (`useApplicationDeploymentMap()`, miroir-react), but `RootComponent` copies it there in an effect, one render late: give the context the value in the same render before removing the drilled copies.
+
+**Leave it** for one or two levels, and for the props a component hands to the element it wraps (`className`, `style`, `id`, `onChange` …: the runner skips them).
+
+**Lint.** Runner only: a prop passed on as is in 5 or more files.
