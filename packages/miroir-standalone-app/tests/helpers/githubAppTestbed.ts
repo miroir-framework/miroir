@@ -13,6 +13,7 @@ import type {
   MiroirConfigClient,
   MiroirConfigForClientStub,
   MiroirModelEnvironment,
+  PersistenceStoreControllerManagerInterface,
   StoreUnitConfiguration,
 } from "miroir-core";
 import {
@@ -70,6 +71,8 @@ export type GitHubTestbed = {
   domainController: DomainControllerInterface;
   /** The emulated server's own controller (persistenceStoreAccessMode "local"). */
   domainControllerForServer: DomainControllerInterface;
+  /** The emulated server's store manager, for a RestClientStub built by a test. */
+  persistenceStoreControllerManagerForServer: PersistenceStoreControllerManagerInterface;
   applicationDeploymentMap: ApplicationDeploymentMap;
   githubModelEnvironment: MiroirModelEnvironment;
   fakeServer: FakeExternalServiceServer;
@@ -181,6 +184,7 @@ export async function bootGitHubTestbed(): Promise<GitHubTestbed> {
     miroirConfig,
     domainController,
     domainControllerForServer: executionEnvironment.domainControllerForServer,
+    persistenceStoreControllerManagerForServer: executionEnvironment.persistenceStoreControllerManager!,
     applicationDeploymentMap,
     githubModelEnvironment,
     fakeServer,

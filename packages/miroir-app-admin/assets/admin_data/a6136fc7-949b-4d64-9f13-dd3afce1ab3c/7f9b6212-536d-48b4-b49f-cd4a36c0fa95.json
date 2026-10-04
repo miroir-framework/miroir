@@ -1,0 +1,11 @@
+{
+  "uuid": "7f9b6212-536d-48b4-b49f-cd4a36c0fa95",
+  "parentName": "MiroirRight",
+  "parentUuid": "a6136fc7-949b-4d64-9f13-dd3afce1ab3c",
+  "name": "Alice — GitHub deployment",
+  "miroirUser": "1c39328c-7de4-44ae-bcf1-5bbc38d8e267",
+  "targetType": "deployment",
+  "targetUuid": "752c2412-a2cc-4632-94f3-937168969998",
+  "capability": "read",
+  "description": "Alice Admin — illustrative read capability on the GitHub Deployment (#472)."
+}

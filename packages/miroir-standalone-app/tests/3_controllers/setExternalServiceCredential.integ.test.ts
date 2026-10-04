@@ -12,16 +12,31 @@
  */
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
-import type { AuthPrincipal, DomainControllerInterface } from "miroir-core";
+import type { AuthPrincipal, DomainControllerInterface, EndpointDefinition } from "miroir-core";
 import {
+  accessGrantsFromInstances,
   Action2Error,
   clearSecrets,
   clearSecretsMasterKey,
+  deploymentsFromInstances,
+  identityDirectoryFromInstances,
+  loginWithPassword,
   miroirSecretInstanceUuid,
   registerHydratedUserSecret,
   resolveSecret,
+  RestClientStub,
+  setProcessTokenSecret,
   setSecretsMasterKey,
 } from "miroir-core";
+import {
+  miroirRight_AliceGitHubAppAdmin,
+  miroirRight_AliceGitHubDeploymentRead,
+  miroirUser_AliceAdmin,
+  miroirUser_Carol,
+  miroirUserCredential_AliceDev,
+  miroirUserCredential_CarolDev,
+} from "miroir-app-admin";
+import { deployment_GitHub_DO_NOT_USE, githubServiceEndpoint } from "miroir-example-github";
 
 import {
   ADMIN_APPLICATION_UUID,
@@ -235,6 +250,133 @@ describe.skipIf(!shouldRun)("setExternalServiceCredential", () => {
 
       expect(result).toBeInstanceOf(Action2Error);
       expect((result as Action2Error).errorMessage).toMatch(/401/);
+      expect(await credentialRows()).toEqual([]);
+    });
+  });
+
+  describe("through the REST route, logged in", () => {
+    const TOKEN_SECRET = "test-token-secret-472";
+    const REPOS = [{ id: 1, name: "hello-miroir", full_name: "octocat/hello-miroir" }];
+    let stub: RestClientStub;
+    let savedAuthEnabled: string | undefined;
+
+    async function bearerFor(username: string, password: string): Promise<string> {
+      const directory = identityDirectoryFromInstances(
+        [miroirUser_AliceAdmin, miroirUser_Carol],
+        [miroirUserCredential_AliceDev, miroirUserCredential_CarolDev],
+      );
+      const login = await loginWithPassword({ username, password }, directory, TOKEN_SECRET);
+      if (!login.ok) {
+        throw new Error(`login failed for ${username}`);
+      }
+      return `Bearer ${login.token}`;
+    }
+
+    function postAction(action: Record<string, unknown>, authorization: string) {
+      return stub.post(
+        "/action/:actionType",
+        "http://test/action/" + action.actionType,
+        { action, applicationDeploymentMap },
+        { headers: { Authorization: authorization } },
+      );
+    }
+
+    function saveCredentialAction(credential: string) {
+      return {
+        actionType: "setExternalServiceCredential",
+        actionLabel: "connectGitHub",
+        endpoint: DOMAIN_ENDPOINT,
+        payload: {
+          application: GITHUB_APPLICATION_UUID,
+          endpointUuid: GITHUB_ENDPOINT_UUID,
+          probeOperationId: "users/get-authenticated",
+          credential,
+        },
+      };
+    }
+
+    beforeAll(() => {
+      savedAuthEnabled = process.env.MIROIR_AUTH_ENABLED;
+      process.env.MIROIR_AUTH_ENABLED = "true";
+      setProcessTokenSecret(TOKEN_SECRET);
+      stub = new RestClientStub("http://test");
+      stub.setServerDomainController(testbed.domainControllerForServer);
+      stub.setPersistenceStoreControllerManager(testbed.persistenceStoreControllerManagerForServer);
+      stub.setIdentityDirectory(
+        identityDirectoryFromInstances(
+          [miroirUser_AliceAdmin, miroirUser_Carol],
+          [miroirUserCredential_AliceDev, miroirUserCredential_CarolDev],
+        ),
+      );
+      // The seeded GitHub grants (Admin assets); Carol has none.
+      stub.setAccessDirectory({
+        grants: accessGrantsFromInstances([
+          miroirRight_AliceGitHubAppAdmin,
+          miroirRight_AliceGitHubDeploymentRead,
+        ]),
+        deployments: deploymentsFromInstances([deployment_GitHub_DO_NOT_USE]),
+      });
+    });
+
+    afterAll(() => {
+      if (savedAuthEnabled === undefined) {
+        delete process.env.MIROIR_AUTH_ENABLED;
+      } else {
+        process.env.MIROIR_AUTH_ENABLED = savedAuthEnabled;
+      }
+    });
+
+    it("saves the token for the logged-in user, then lists that user's repositories with it", async () => {
+      testbed.fakeServer.setFixtureForAuth("GET", "/user/repos", `Bearer ${GOOD_TOKEN}`, { body: REPOS });
+      const alice = await bearerFor("alice", "alice-dev");
+
+      const saved = await postAction(saveCredentialAction(GOOD_TOKEN), alice);
+
+      expect(saved.status).toBe(200);
+      expect(saved.data instanceof Action2Error || saved.data?.status === "error", JSON.stringify(saved.data)).toBe(
+        false,
+      );
+      expect((await credentialRows()).map((row) => row.uuid)).toEqual([
+        miroirSecretInstanceUuid(CREDENTIAL_KEY, "user", ALICE.miroirUserUuid),
+      ]);
+
+      testbed.fakeServer.receivedRequests.length = 0;
+      const existing = (githubServiceEndpoint as EndpointDefinition).definition as {
+        externalService: Record<string, unknown>;
+      };
+      const listed = await postAction(
+        {
+          actionType: "probeExternalService",
+          actionLabel: "listRepositories",
+          endpoint: DOMAIN_ENDPOINT,
+          payload: {
+            endpoint: {
+              ...githubServiceEndpoint,
+              definition: {
+                externalService: { ...existing.externalService, baseUrl: testbed.fakeServer.baseUrl },
+              },
+            },
+            operationId: "repos/list-for-authenticated-user",
+            parameters: { sort: "updated", per_page: "100" },
+          },
+        },
+        alice,
+      );
+
+      expect(listed.status, JSON.stringify(listed.data)).toBe(200);
+      expect(testbed.fakeServer.receivedRequests.map((request) => request.headers.authorization)).toEqual([
+        `Bearer ${GOOD_TOKEN}`,
+      ]);
+      expect(JSON.stringify(listed.data)).toContain("octocat/hello-miroir");
+    });
+
+    it("refuses a user with no GitHub grant before checking the token", async () => {
+      const carol = await bearerFor("carol", "carol-dev");
+
+      const result = await postAction(saveCredentialAction(GOOD_TOKEN), carol);
+
+      expect(result.status).toBe(403);
+      expect(testbed.fakeServer.receivedRequests).toEqual([]);
       expect(await credentialRows()).toEqual([]);
     });
   });
