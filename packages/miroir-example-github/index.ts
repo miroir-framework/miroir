@@ -4,6 +4,8 @@ export {
   githubInitApplicationVersion,
   githubServiceEndpoint,
   menuDefaultGitHub,
+  queryGitHubListMyRepositories,
+  reportGitHubRepositories,
   selfApplicationGitHub,
   selfApplicationModelBranchGitHubMasterBranch,
 } from "./src/GitHub";

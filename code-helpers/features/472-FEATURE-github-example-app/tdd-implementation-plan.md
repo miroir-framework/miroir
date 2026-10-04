@@ -27,7 +27,7 @@ Out: OAuth / device flow / GitHub Apps, GitHub Enterprise, other GitHub Reports,
 |---|---|---|---|
 | 0 | GitHub package skeleton, registered like Spotify | ✅ DONE | `modelValidation` of miroir-example-github, `testEnvironmentConfig.unit` |
 | 1 | GitHubService Endpoint synced from the excerpt | ✅ DONE | `githubEndpointSync.unit` (committed operations = sync of the excerpt) |
-| 2 | Repositories Report lists my repositories | ⬜ pending | `githubApp.integ` "lists the connected user's repositories" |
+| 2 | Repositories Report lists my repositories | ✅ DONE | `githubApp.integ` "lists the connected user's repositories" |
 | 3 | `setExternalServiceCredential` checks and saves a token | ⬜ pending | `setExternalServiceCredential.integ` |
 | 4 | The action runs on the server with the caller's principal | ⬜ pending | `setExternalServiceCredential.integ` "through the REST route" |
 | 5 | `finishOpenReport` opens a Report after Finish | ⬜ pending | `multistepFinishOpenReport.integ` |
@@ -121,7 +121,7 @@ npm run testByFile -w miroir-example-github -- tests/modelValidation.unit.test.t
 
 ## Slice 2 — Repositories Report lists my repositories
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal (G2):** with `githubToken` registered, the Report `9bd8a57a-…` shows the repositories returned by `GET /user/repos`, and the request carries the token, the three headers and `per_page=100&sort=updated`.
 
@@ -137,6 +137,14 @@ RUN_TEST=githubApp npm run testByFile -w miroir-standalone-app -- --profile emul
 npm run testByFile -w miroir-example-github -- tests/modelValidation.unit.test.ts
 npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 ```
+
+### Realization
+
+The slice found two gaps in `ExternalServiceClient` that Spotify never hit, both fixed with `packages/miroir-core/tests/4_services/externalServiceOperationCall.unit.test.ts` (RED first):
+- query parameters were never sent: `substitutePath` only filled path parameters, so `per_page` and `sort` were dropped. A `queryString` helper now appends bound `in: "query"` mappings, encoded like `previewOpenApiGetCall`.
+- `lenientValidateMl` ignored `nullable`, so GitHub's `description: null` failed the response check.
+
+Deviations: a refused token shows the report's generic "Report async load failed" line, not GitHub's 401 message (existing report behaviour; the home walk in Slice 6 shows the message on the token step). `fakeExternalServiceServer` records the query string (`search`). The new Query is listed in `zodParseResults.unit` next to the Spotify query (external-service queries fail the generated Query schema). No shared boot helper was extracted: the GitHub test needs a third of the Spotify setup.
 
 ## Slice 3 — `setExternalServiceCredential` checks and saves a token
 

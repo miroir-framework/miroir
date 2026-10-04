@@ -4,6 +4,7 @@ import type {
   Menu,
   MetaModel,
   MiroirModelEnvironment,
+  Report,
   SelfApplication,
 } from "miroir-core";
 export declare const adminApplication_GitHub_DO_NOT_USE: any;
@@ -13,6 +14,8 @@ export declare const selfApplicationModelBranchGitHubMasterBranch: any;
 export declare const githubInitApplicationVersion: EntityInstance;
 export declare const menuDefaultGitHub: Menu;
 export declare const githubServiceEndpoint: EndpointDefinition;
+export declare const reportGitHubRepositories: Report;
+export declare const queryGitHubListMyRepositories: any;
 export declare const defaultGitHubAppModel: MetaModel;
 export declare function getDefaultGitHubModelEnvironment(
   defaultMiroirMetaModelParam: MetaModel,

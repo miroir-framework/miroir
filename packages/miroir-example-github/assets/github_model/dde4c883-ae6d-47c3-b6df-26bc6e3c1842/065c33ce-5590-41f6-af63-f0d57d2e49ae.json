@@ -11,7 +11,16 @@
       {
         "title": "GitHub",
         "label": "github",
-        "items": []
+        "items": [
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Repositories",
+            "section": "data",
+            "selfApplication": "6c4edcb2-e165-407a-b728-fbf8a18b6bf7",
+            "reportUuid": "9bd8a57a-19e4-4911-b4ae-d1bbebbde338",
+            "icon": "folder"
+          }
+        ]
       }
     ]
   }

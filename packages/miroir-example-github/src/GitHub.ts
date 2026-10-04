@@ -5,9 +5,13 @@ import {
   type Menu,
   type MetaModel,
   type MiroirModelEnvironment,
+  type Query,
+  type Report,
   type SelfApplication,
 } from "miroir-core";
 
+import reportGitHubRepositoriesJson from "../assets/github_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/9bd8a57a-19e4-4911-b4ae-d1bbebbde338.json" with { type: "json" };
+import queryGitHubListMyRepositoriesJson from "../assets/github_model/e4320b9e-ab45-4abe-85d8-359604b3c62f/ae2b3612-b960-43f1-9e7a-17ef61ef725b.json" with { type: "json" };
 import githubServiceEndpointJson from "../assets/github_model/3d8da4d4-8f76-4bb4-9212-14869d81c00c/0c642e2a-3922-4ce7-99a6-88f91f6a103f.json" with { type: "json" };
 import selfApplicationGitHubJson from "../assets/github_model/a659d350-dd97-4da9-91de-524fa01745dc/6c4edcb2-e165-407a-b728-fbf8a18b6bf7.json" with { type: "json" };
 import menuDefaultGitHubJson from "../assets/github_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/065c33ce-5590-41f6-af63-f0d57d2e49ae.json" with { type: "json" };
@@ -18,6 +22,8 @@ export const selfApplicationModelBranchGitHubMasterBranch =
   selfApplicationModelBranchGitHubMasterBranchJson;
 export const menuDefaultGitHub = menuDefaultGitHubJson as Menu;
 export const githubServiceEndpoint = githubServiceEndpointJson as EndpointDefinition;
+export const reportGitHubRepositories = reportGitHubRepositoriesJson as Report;
+export const queryGitHubListMyRepositories = queryGitHubListMyRepositoriesJson;
 
 /** Init-only ApplicationVersion for unversioned GitHub (not shipped as a model asset). */
 export const githubInitApplicationVersion: EntityInstance = {
@@ -41,7 +47,7 @@ export const defaultGitHubAppModel: MetaModel = {
   entityVersions: [],
   endpoints: [githubServiceEndpoint],
   menus: [menuDefaultGitHub],
-  reports: [],
+  reports: [reportGitHubRepositories],
   runners: [],
   tests: [],
   themes: [],
@@ -61,7 +67,7 @@ export const defaultGitHubAppModel: MetaModel = {
   themeVersions: [],
   applicationVersionCrossTransformerDefinitionVersion: [],
   transformerDefinitionVersions: [],
-  storedQueries: [],
+  storedQueries: [queryGitHubListMyRepositories as Query],
   mlSchemas: [],
   applicationVersions: [],
 };
