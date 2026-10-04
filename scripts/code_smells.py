@@ -2,9 +2,9 @@
 """Report code smells on what a branch adds, or on paths (#340).
 
 The smell lens (eslint-rules/smell-lens.config.mjs) finds the syntax smells. This script adds three text
-checks (commented-out code, a logger named after another file, a near-identical twin file), keeps only
-the lines the branch adds when --diff is given, and prints the findings grouped by smell id, in the
-impact order of the miroir-code-quality skill (.agents/skills/miroir-code-quality/), which holds the remedies.
+checks (commented-out code, a logger named after another file, a near-identical twin file), keeps only the
+lines the branch adds when --diff is given (lines it moves from elsewhere are counted apart), and prints the findings grouped by smell id, in the impact order of the
+miroir-code-quality skill (.agents/skills/miroir-code-quality/), which holds the remedies.
 It reports and always exits 0: the findings are review prompts, not a gate.
 
 Examples:
@@ -76,7 +76,11 @@ RULE_SMELLS = {
 }
 
 SMELL_ID = re.compile(r"\[([a-z][a-z-]+)\]")
-HUNK = re.compile(r"^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@")
+HUNK = re.compile(r"^@@ -\d+(?:,(\d+))? \+(\d+)(?:,(\d+))? @@")
+ANSI = re.compile(r"\x1b\[[0-9;]*m")
+# diff_scope has git paint the lines that a diff moves (removed in one place, added in another) in blue.
+MOVED_COLORS = ["-c", "color.diff.new=green", "-c", "color.diff.newMoved=blue"]
+MOVED = "\x1b[34m"
 LOGGER_NAME = re.compile(r"getLoggerName\(\s*[^,()]+,\s*[^,()]+,\s*\"([^\"]+)\"")
 # A comment line that reads as code: it ends with code punctuation, holds an arrow, starts with a keyword, or is JSX.
 CODE_COMMENT = re.compile(
@@ -106,20 +110,40 @@ def smell_of(rule_id: str | None, message: str) -> str:
     return RULE_SMELLS.get(rule_id or "", rule_id or "parse-error")
 
 
-def parse_added_lines(diff_text: str) -> dict[str, set[int]]:
-    """Lines added per file, from `git diff -U0` output."""
-    added: dict[str, set[int]] = defaultdict(set)
+def parse_added_lines(diff_text: str) -> tuple[dict[str, set[int]], dict[str, set[int]]]:
+    """Added lines per file, from `git diff -U0` output: (new lines, moved lines).
+
+    A moved line is painted in the MOVED color (see diff_scope): the same diff removes it elsewhere.
+    """
+    new: dict[str, set[int]] = defaultdict(set)
+    moved: dict[str, set[int]] = defaultdict(set)
     current: str | None = None
-    for line in diff_text.splitlines():
+    number = old_left = new_left = 0
+    for raw in diff_text.splitlines():
+        line = ANSI.sub("", raw)
+        if old_left or new_left:  # inside a hunk: a line can start with "+++" or "---"
+            if line.startswith("+"):
+                if current:
+                    (moved if raw.startswith(MOVED) else new)[current].add(number)
+                number, new_left = number + 1, new_left - 1
+                continue
+            if line.startswith("-"):
+                old_left -= 1
+                continue
+            if line.startswith("\\"):  # "\ No newline at end of file"
+                continue
+            old_left = new_left = 0
         if line.startswith("+++ "):
             target = line[4:].strip()
             current = target[2:] if target.startswith("b/") else None
             continue
         match = HUNK.match(line)
-        if match and current:
-            start, count = int(match.group(1)), int(match.group(2) or "1")
-            added[current].update(range(start, start + count))
-    return {path: lines for path, lines in added.items() if lines}
+        if match:
+            old_left, number, new_left = int(match.group(1) or "1"), int(match.group(2)), int(match.group(3) or "1")
+    return (
+        {path: lines for path, lines in new.items() if lines},
+        {path: lines for path, lines in moved.items() if lines},
+    )
 
 
 def commented_out_code(text: str) -> list[tuple[int, int]]:
@@ -252,16 +276,18 @@ def order_key(finding: Finding) -> tuple[int, str, int]:
     return (rank, finding.path, finding.line)
 
 
-def render(findings: list[Finding], scope: str, limit: int) -> str:
+def render(findings: list[Finding], scope: str, limit: int, moved: int = 0) -> str:
     """Markdown report: a count per smell, then each smell's findings grouped by message."""
+    moved_note = f"{moved} more on lines the change moves from elsewhere, not listed: that code is not new.\n" if moved else ""
     if not findings:
-        return f"No smell found ({scope}).\n"
+        return f"No smell found ({scope}).\n" + moved_note
     by_smell: dict[str, dict[str, list[Finding]]] = defaultdict(lambda: defaultdict(list))
     for finding in sorted(set(findings), key=order_key):
         by_smell[finding.smell][SMELL_ID.sub("", finding.message, count=1).strip()].append(finding)
     counts = {smell: sum(len(items) for items in groups.values()) for smell, groups in by_smell.items()}
     files = {f.path for f in findings}
     out = [f"## Smells: {sum(counts.values())} findings in {len(files)} files ({scope})", ""]
+    out += [moved_note] if moved_note else []
     out += ["| Smell | Findings |", "|---|---:|"] + [f"| {smell} | {count} |" for smell, count in counts.items()]
     for smell, groups in by_smell.items():
         out += ["", f"### {smell}"]
@@ -280,16 +306,26 @@ def _git(root: Path, *args: str) -> str:
     return subprocess.run(["git", *args], cwd=root, capture_output=True, text=True, check=True).stdout
 
 
-def diff_scope(base: str, root: Path) -> dict[str, set[int]]:
-    """Lines added since the merge base with `base`: commits, working tree and untracked files."""
+def diff_scope(base: str, root: Path) -> tuple[dict[str, set[int]], dict[str, set[int]]]:
+    """Lines added since the merge base with `base`: commits, working tree and untracked files.
+
+    Returns (new lines, moved lines); git finds the moved blocks, re-indented ones included.
+    """
     merge_base = _git(root, "merge-base", base, "HEAD").strip()
-    added = parse_added_lines(_git(root, "diff", "-U0", "--no-color", "--no-ext-diff", merge_base, "--", "packages"))
+    diff = _git(
+        root, *MOVED_COLORS, "diff", "-U0", "--color=always", "--color-moved=blocks",
+        "--color-moved-ws=allow-indentation-change", "--no-ext-diff", merge_base, "--", "packages",
+    )
+    added, moved = parse_added_lines(diff)
     for path in _git(root, "ls-files", "--others", "--exclude-standard", "--", "packages").splitlines():
         if not _is_source(Path(path)):
             continue
         lines = (root / path).read_text(encoding="utf-8", errors="replace").count("\n") + 1
         added[path] = set(range(1, lines + 1))
-    return {p: lines for p, lines in added.items() if _is_source(Path(p))}
+    return (
+        {p: lines for p, lines in added.items() if _is_source(Path(p))},
+        {p: lines for p, lines in moved.items() if _is_source(Path(p))},
+    )
 
 
 def _is_source(path: Path) -> bool:
@@ -319,17 +355,21 @@ def main(argv: list[str] | None = None) -> int:
     if bool(args.paths) == bool(args.diff):
         parser.error("give either --diff [BASE] or paths")
 
+    moved: dict[str, set[int]] = {}
     if args.diff:
-        added = diff_scope(args.diff, root)
-        files = sorted(added)
+        added, moved = diff_scope(args.diff, root)
+        files = sorted(set(added) | set(moved))
         scope = f"lines added since {args.diff}"
     else:
         files = expand(args.paths, root)
         scope = ", ".join(args.paths)
     findings = (eslint_findings(files, root) if files else []) + [f for p in files for f in text_findings(p, root)]
+    on_moved: set[Finding] = set()
     if args.diff:
-        findings = keep_added(findings, added)
-    sys.stdout.write(render(findings, scope, args.limit))
+        kept = keep_added(findings, added)
+        on_moved = set(keep_added(findings, moved)) - set(kept)
+        findings = kept
+    sys.stdout.write(render(findings, scope, args.limit, moved=len(on_moved)))
     return 0
 
 

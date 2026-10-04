@@ -57,6 +57,8 @@ test("module-state: module-level let, collections, static singletons, ForTests r
   await spares(LIB, `const levels = { debug: 1, info: 2 };\nexport const level = (k: "debug" | "info") => levels[k];\n`, "module-state");
   await spares(LIB, `const EMPTY_ROWS: string[] = [];\nexport const rows = (r?: string[]) => r ?? EMPTY_ROWS;\n`, "module-state");
   await flags(LIB, `export class Config { public static instance = new Map(); }\n`, "module-state");
+  await flags(LIB, `export class Queue { private static instance: Queue | null = null; static getInstance() { return (Queue.instance ??= new Queue()); } }\n`, "module-state");
+  await spares(LIB, `export class Limits { static readonly maxRows = 100; static clamp = (n: number) => Math.min(n, Limits.maxRows); }\n`, "module-state");
   await flags(LIB, `const s = new Set<string>();\nexport function clearForTests(): void { s.clear(); }\n`, "module-state");
   await spares(LIB, `let log = console;\nexport const f = () => log.info("x");\n`, "module-state");
 });
@@ -69,6 +71,8 @@ test("positional-mixup and boolean-flag: parameter lists", async () => {
   await flags(LIB, `export function f(x: number, verbose: boolean) { return verbose ? x : 0; }\n`, "boolean-flag");
   await flags(LIB, `export const f = (x: number, strict = false) => (strict ? x : 0);\n`, "boolean-flag");
   await spares(LIB, `export function f(options: { verbose: boolean }) { return options.verbose; }\n`, "boolean-flag");
+  // A setter's only parameter is the value it sets.
+  await spares(LIB, `export const setShowTypes = (showTypes: boolean) => showTypes;\n`, "boolean-flag");
   await flags(LIB, `export function f(a: number, b: number, c: number, d: number, e: number, g: number) { return a + b + c + d + e + g; }\n`, "max-params");
 });
 
@@ -116,4 +120,10 @@ test("mocked-own-module: vi.mock of Miroir code in tests, not of libraries", asy
   await flags(TEST, `import { vi } from "vitest";\nvi.mock("../../src/4_services/Store.js", () => ({}));\n`, "mocked-own-module");
   await flags(TEST, `import { vi } from "vitest";\nvi.mock("miroir-localcache-redux", () => ({}));\n`, "mocked-own-module");
   await spares(TEST, `import { vi } from "vitest";\nvi.mock("react-router-dom", () => ({}));\n`, "mocked-own-module");
+  await flags(TEST, `import { vi } from "vitest";\nvi.mock("../../src/4_services/Store.js");\n`, "mocked-own-module");
+  // A spy keeps the real code; a factory that also stubs an export is a mock.
+  const factory = (properties) =>
+    `import { vi } from "vitest";\nvi.mock("../../src/tests/index", async (importOriginal) => {\n  const actual = await importOriginal<typeof import("../../src/tests/index")>();\n  return { ...actual, ${properties} };\n});\n`;
+  await spares(TEST, factory("register: vi.fn(actual.register)"), "mocked-own-module");
+  await flags(TEST, factory("register: vi.fn(actual.register), Grid: () => null"), "mocked-own-module");
 });

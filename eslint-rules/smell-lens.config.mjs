@@ -71,8 +71,8 @@ const anywhereInSrc = [
   ),
   smell(
     "module-state",
-    "PropertyDefinition[static=true][readonly!=true][value.type='NewExpression']",
-    "Mutable static singleton: a global reached by name instead of injected.",
+    "PropertyDefinition[static=true][readonly!=true]:not([value.type=/FunctionExpression$/])",
+    "Mutable static field: a global reached by name instead of injected. A lazy `getInstance(args)` keeps the arguments of its first call.",
   ),
   smell(
     "module-state",
@@ -86,7 +86,8 @@ const anywhereInSrc = [
   ),
   smell(
     "boolean-flag",
-    ":function > :matches(Identifier.params[typeAnnotation.typeAnnotation.type='TSBooleanKeyword'], AssignmentPattern.params[right.type='Literal'][right.raw=/^(true|false)$/])",
+    // A one-parameter function's boolean is the value it sets (`setShowTypes(show: boolean)`), not a flag.
+    ":function[params.length>1] > :matches(Identifier.params[typeAnnotation.typeAnnotation.type='TSBooleanKeyword'], AssignmentPattern.params[right.type='Literal'][right.raw=/^(true|false)$/])",
     "Boolean flag parameter: the call site reads `f(x, true)`. Split the function, or take a named option.",
   ),
   smell(
@@ -165,10 +166,13 @@ const inViews = [
   ),
 ];
 
+// `vi.fn(actual.f)`: a spy over the real export, which the test observes without replacing it.
+const SPY = "CallExpression[callee.object.name='vi'][callee.property.name='fn'][arguments.0.type='MemberExpression']";
 const inTests = [
   smell(
     "mocked-own-module",
-    "CallExpression[callee.object.name='vi'][callee.property.name='mock'] > Literal.arguments:first-child[value=/^(\\.|miroir-)/]",
+    // A factory whose properties are all spies keeps the real code: it is not reported.
+    `CallExpression[callee.object.name='vi'][callee.property.name='mock']:not([arguments.length=2]:has(${SPY}):not(:has(Property:not([value.callee.property.name='fn'][value.arguments.0.type='MemberExpression'])))) > Literal.arguments:first-child[value=/^(\\.|miroir-)/]`,
     "vi.mock of Miroir's own code: the test checks the mock, not the integration. Prefer a MiroirTest or a real in-memory adapter.",
   ),
 ];

@@ -86,9 +86,9 @@ handler(step, /* … */ { deploymentUuid });
 
 ## module-state
 
-Module-level `let`, `Map`, `Set`, or empty object filled at run time; a mutable static field; an exported `…ForTests` function that resets any of these.
+Module-level `let`, `Map`, `Set`, or empty object filled at run time; a mutable static field, lazy singletons included; an exported `…ForTests` function that resets any of these.
 
-**Why.** Every importer shares one copy. A setter creates call-order rules ("call X before Y"). Two instances in one process collide: an emulated server runs a client and a server cache side by side. Tests reset the state by hand and leak it when they forget.
+**Why.** Every importer shares one copy. A setter creates call-order rules ("call X before Y"). Two instances in one process collide: an emulated server runs a client and a server cache side by side. Tests reset the state by hand and leak it when they forget. A lazy singleton keeps the arguments of its first call: `ViewParamsUpdateQueue.getInstance(config, domainController)` ignores both on every later call.
 
 **Fix.** Keep the state in an instance that the composition root builds and passes in; a test builds its own. #339 did this for the external service client:
 
@@ -108,7 +108,7 @@ export interface ExternalServiceEnvironment {
 const client = createExternalServiceClient(defaultExternalServiceEnvironment({ fetch: fakeFetch }));
 ```
 
-**Leave it** for the logger (`let log`, see `code-style.md`), constants, a stable empty reference (`const EMPTY_ROWS = []`, names starting with `empty`, `default` or `none` are skipped), and a memo of a pure function that no test needs to reset.
+**Leave it** for the logger (`let log`, see `code-style.md`, and `MiroirLoggerFactory`'s process-wide registry), constants, a stable empty reference (`const EMPTY_ROWS = []`, names starting with `empty`, `default` or `none` are skipped), and a memo of a pure function that no test needs to reset.
 
 **Lint.** Lens only.
 
@@ -197,7 +197,7 @@ handleAction(action, applicationDeploymentMap, { principal });
 
 ## boolean-flag
 
-A parameter typed `boolean`, or defaulted to `true` or `false`.
+A parameter typed `boolean`, or defaulted to `true` or `false`, next to other parameters.
 
 **Why.** The call site reads `f(x, true)`: the reader has to open `f` to learn what `true` means, and `f` does two jobs.
 
@@ -213,7 +213,7 @@ queue.flushImmediately();
 queue.queueUpdate(update, { immediate: true });
 ```
 
-**Leave it** in a platform signature you implement or forward (`addEventListener(type, handler, true)`) and in component props, which are named at the call site.
+**Leave it** in a platform signature you implement or forward (`addEventListener(type, handler, true)`), in component props, which are named at the call site, and in a one-parameter function whose boolean is the value it sets (`setShowTypes(show: boolean)`), which the lens skips.
 
 **Lint.** Lens only.
 

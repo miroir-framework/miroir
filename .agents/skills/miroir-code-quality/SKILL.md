@@ -13,7 +13,7 @@ Rules already stated elsewhere stay there, and this skill points to them: [AGENT
 
 ### Review a change
 
-1. Run `npm run smells -- --diff` from the repository root. It lists the smells on lines added since the merge base with `origin/_integration`, commits, working tree and untracked files included; pass `--diff <base>` for another base.
+1. Run `npm run smells -- --diff` from the repository root. It lists the smells on lines added since the merge base with `origin/_integration`, commits, working tree and untracked files included; pass `--diff <base>` for another base. Lines the change moves from elsewhere are only counted: that code is not new.
 2. Take each finding in report order. Open its smell in the checklist below, then its entry in the reference file, and classify it: **fix** (apply the remedy), **propose** (the remedy is larger than the change; write it in the review), or **sanctioned** (the entry's "Leave it" case applies; say which).
 3. Walk the checklist rows marked *manual* against the diff: the runner cannot see them.
 
@@ -43,7 +43,7 @@ Most harmful first. *Lens*: a warn-level ESLint check reported by `npm run smell
 | 2 | `action-result` | a `throw` or `return … as any` where an action result is declared | lens | [miroir.md](miroir.md#action-result) |
 | 3 | `precedence-trap` | `??` mixed with `==`, `<` … without parentheses | lens | [typescript.md](typescript.md#precedence-trap) |
 | 4 | `positional-mixup` | two `Uuid` parameters in one positional list | lens | [typescript.md](typescript.md#positional-mixup) |
-| 5 | `module-state` | module-level `let`, `Map`, `Set`, filled objects; static singletons; `…ForTests` resets | lens | [typescript.md](typescript.md#module-state) |
+| 5 | `module-state` | module-level `let`, `Map`, `Set`, filled objects; mutable static fields; `…ForTests` resets | lens | [typescript.md](typescript.md#module-state) |
 | 6 | `hooks-order` | a hook called conditionally or in a callback | lint | [react.md](react.md#hooks-order) |
 | 7 | `effect-derived-state` | `setState` in an effect or in `useMemo` to compute a value | lens | [react.md](react.md#effect-derived-state) |
 | 8 | `state-from-props` | `useState(props.x)` | lens | [react.md](react.md#state-from-props) |
@@ -73,7 +73,7 @@ Most harmful first. *Lens*: a warn-level ESLint check reported by `npm run smell
 | 22 | `magic-value` | a uuid literal in code | lens | [miroir.md](miroir.md#magic-value) |
 | 23 | `ml-naming` | `Jzod` in the name of an ML construct | `npm run check:ml` | [miroir.md](miroir.md#ml-naming) |
 | 24 | `long-parameter-list` | more than 5 parameters | lens | [typescript.md](typescript.md#long-parameter-list) |
-| 25 | `boolean-flag` | a boolean parameter | lens | [typescript.md](typescript.md#boolean-flag) |
+| 25 | `boolean-flag` | a boolean parameter next to others | lens | [typescript.md](typescript.md#boolean-flag) |
 | 26 | `deep-nesting` | blocks nested more than 4 deep | lens | [typescript.md](typescript.md#deep-nesting) |
 | 27 | `dead-code` | commented-out code, unused variables, files nothing imports | runner, lens | [typescript.md](typescript.md#dead-code) |
 

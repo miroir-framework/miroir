@@ -68,7 +68,23 @@ def test_parse_added_lines_reads_unified_zero_context_hunks() -> None:
             "@@ -1,2 +0,0 @@",
         ]
     )
-    assert code_smells.parse_added_lines(diff) == {"packages/a/src/x.ts": {4, 5, 12}}
+    assert code_smells.parse_added_lines(diff) == ({"packages/a/src/x.ts": {4, 5, 12}}, {})
+
+
+def test_parse_added_lines_tells_moved_lines_from_new_ones() -> None:
+    moved, new, reset = code_smells.MOVED, "\x1b[32m", "\x1b[m"
+    diff = "\n".join(
+        [
+            "\x1b[1mdiff --git a/packages/a/src/y.ts b/packages/a/src/y.ts\x1b[m",
+            "\x1b[1m--- a/packages/a/src/y.ts\x1b[m",
+            "\x1b[1m+++ b/packages/a/src/y.ts\x1b[m",
+            "\x1b[36m@@ -0,0 +1,3 @@\x1b[m",
+            f"{moved}+{reset}{moved}const viewParams = results as unknown as ViewParams;{reset}",
+            f"{new}+{reset}{new}++counter;{reset}",  # reads "+++" inside a hunk: still a line, not a header
+            f"{new}+{reset}",
+        ]
+    )
+    assert code_smells.parse_added_lines(diff) == ({"packages/a/src/y.ts": {2, 3}}, {"packages/a/src/y.ts": {1}})
 
 
 def test_commented_out_code_finds_runs_of_code_lines_and_leaves_prose() -> None:
@@ -131,6 +147,7 @@ def test_render_orders_by_impact_and_groups_by_message() -> None:
     assert "… 1 more (raise --limit)" in report
     assert "| swallowed-error | 3 |" in report
     assert code_smells.render([], "test", limit=2) == "No smell found (test).\n"
+    assert "2 more on lines the change moves" in code_smells.render(findings, "test", limit=2, moved=2)
 
 
 def _write(root: Path, path: str, text: str) -> None:
@@ -173,15 +190,22 @@ def test_diff_scope_covers_commits_working_tree_and_untracked_files(tmp_path: Pa
     git("config", "user.email", "test@example.com")
     git("config", "user.name", "test")
     _write(tmp_path, "packages/a/src/x.ts", "line1\nline2\n")
+    hook = "export function useViewParams(results: unknown) {\n  return results as unknown as ViewParams;\n}\n"
+    _write(tmp_path, "packages/a/src/Panel.tsx", f"// panel\n{hook}")
     git("add", ".")
     git("commit", "-q", "-m", "base")
     git("checkout", "-q", "-b", "feature")
     _write(tmp_path, "packages/a/src/x.ts", "line1\nadded\nline2\n")
+    _write(tmp_path, "packages/a/src/Panel.tsx", "// panel\n")
+    _write(tmp_path, "packages/a/src/useViewParams.ts", f"import x from 'y';\n\n{hook}")  # moved, not new
+    git("add", ".")
     git("commit", "-q", "-am", "feature")
     _write(tmp_path, "packages/a/src/x.ts", "line1\nadded\nline2\nworking\n")
     _write(tmp_path, "packages/a/src/New.tsx", "a\nb\n")
     _write(tmp_path, "packages/a/src/notes.md", "not a source\n")
-    added = code_smells.diff_scope("base", tmp_path)
+    added, moved = code_smells.diff_scope("base", tmp_path)
     assert added["packages/a/src/x.ts"] == {2, 4}
     assert {1, 2} <= added["packages/a/src/New.tsx"]
     assert "packages/a/src/notes.md" not in added
+    assert added["packages/a/src/useViewParams.ts"] == {1, 2}
+    assert moved == {"packages/a/src/useViewParams.ts": {3, 4, 5}}

@@ -44,7 +44,7 @@ vi.mock("../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGrid.js", ()
 // (declarative steps, run by: npm run testMiroir -w miroir-standalone-app -- --suites ui.transformerEditor)
 ```
 
-**Leave it** for a dependency that jsdom cannot run (a canvas grid, a browser-only API), stubbed with a comment naming why, and for third-party modules.
+**Leave it** for a dependency that jsdom cannot run (a canvas grid, a browser-only API), stubbed with a comment naming why, and for third-party modules. A spy that keeps the real code is not a mock: a factory that spreads `importOriginal()` and wraps exports as `vi.fn(actual.f)` (the lens skips it when every property is such a spy).
 
 **Lint.** Lens only.
 
@@ -59,10 +59,10 @@ A transformer, query, composite action or runner written as TypeScript object li
 **Detect.**
 
 ```bash
-git grep -c -E "transformerType:|extractorOrCombinerType:" -- 'packages/*/src' ':!**/0_interfaces/**' ':!**/preprocessor-generated/**' | sort -t: -k2 -rn | head
+git grep -c -E "transformerType:|extractorOrCombinerType:" -- 'packages/*/src/**' ':!**/0_interfaces/**' ':!**/preprocessor-generated/**' | sort -t: -k2 -rn | head
 ```
 
-Then look for a model element with the same name in the deployment assets: `git grep -l '"name": "createApplication"' -- 'packages/*/assets'`.
+Then look for a model element with the same name in the deployment assets: `git grep -l '"name": "createApplication"' -- 'packages/*/assets/**'`. A pathspec with a `*` needs the trailing `/**`: `'packages/*/src'` matches no file and returns nothing, which reads as "no smell".
 
 **Leave it** in framework bootstrap (actions the DomainController builds to run itself) and in test fixtures.
 
@@ -103,7 +103,7 @@ import { modelEndpointV1 } from "miroir-app-miroir";
 endpoint: modelEndpointV1.uuid,
 ```
 
-Sanctioned form: `entityEntity.uuid`, imported from `miroir-app-miroir`. Before adding a constant, search for one: `git grep -n 'export const .* = "<uuid>"' -- 'packages/*/src'`.
+Sanctioned form: `entityEntity.uuid`, imported from `miroir-app-miroir`. Before adding a constant, search for one: `git grep -n 'export const .* = "<uuid>"' -- 'packages/*/src/**'`.
 
 **Leave it** where the literal is the definition (bootstrap ML schemas, fixtures) and in a test asserting on a specific element.
 

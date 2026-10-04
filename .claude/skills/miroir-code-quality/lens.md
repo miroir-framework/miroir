@@ -8,7 +8,7 @@ Read this to add a detector, to tune one that reports false positives, or to mak
 |---|---|
 | `eslint-rules/smell-lens.config.mjs` | The **lens**: `eslint.config.mjs` plus warn-level rules. Custom messages start with `[smell-id]`. Bulk suppressions (`eslint-suppressions.json`) apply, so blocking rules show only new violations |
 | `eslint-rules/smell-lens.test.mjs` | One test per smell family: each detector flags its pattern and spares the sanctioned form. Part of `npm run lint` |
-| `scripts/code_smells.py` (`npm run smells`) | The **runner**: ESLint with the lens, plus three text checks (commented-out code, logger names, twin files); `--diff` keeps added lines; prints the findings grouped by smell in checklist order |
+| `scripts/code_smells.py` (`npm run smells`) | The **runner**: ESLint with the lens, plus three text checks (commented-out code, logger names, twin files); `--diff` keeps added lines and counts apart the lines git marks as moved; prints the findings grouped by smell in checklist order |
 | `scripts/tests/test_code_smells.py` | The runner's tests, and a check that its smell order matches this skill's checklist |
 
 ## Add or tune a detector
@@ -24,6 +24,7 @@ Gotchas:
 - The React Compiler rules of `eslint-plugin-react-hooks` (`set-state-in-effect` …) only analyse functions that return JSX.
 - Selectors cannot see comments: a policy written in a comment does not silence a finding. The reviewer reads it.
 - `-c <config>` resolves the `files` globs from the current directory: run from the repository root.
+- In a `git grep` pathspec, a `*` needs a trailing `/**`: `'packages/*/src'` matches no file, and the empty result reads as "no smell". Check a detect command on a case you know before trusting its silence.
 
 ## Make a smell blocking
 
