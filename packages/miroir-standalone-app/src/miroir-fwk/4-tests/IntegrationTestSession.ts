@@ -28,11 +28,11 @@ import {
   penguin as publisher2,
   springer as publisher3,
 } from "miroir-example-library";
-import { setupMiroirDomainController } from "miroir-localcache-redux";
 import { miroirBundledStoreSectionStartup } from "miroir-store-bundled";
 import type { BundledDeploymentData } from "miroir-store-bundled";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { deployment_Admin } from "miroir-app-admin";
+import { loadLocalCacheImplementation } from "./localCacheImplementation";
 // Node-only store drivers (filesystem / postgres / mongodb) must NOT be static
 // imports here — evaluating them in the Vite webApp pulls the MongoDB Node
 // driver and crashes with "Class extends value undefined is not a constructor".
@@ -580,6 +580,8 @@ export class IntegrationTestSession implements RunnerTestSessionInterface {
       filesystemRoot,
     );
 
+    // #446: redux, or the implementation MIROIR_TEST_LOCAL_CACHE names
+    const { setupMiroirDomainController } = await loadLocalCacheImplementation();
     const domainController = setupMiroirDomainController(miroirContext, {
       persistenceStoreAccessMode: "local",
       localPersistenceStoreControllerManager: persistenceStoreControllerManager,
