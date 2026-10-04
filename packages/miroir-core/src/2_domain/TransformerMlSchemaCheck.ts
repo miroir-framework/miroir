@@ -48,6 +48,12 @@ export function liftInputOutputTypeToMlSchema(
   entityMlSchemas?: Record<string, MlElement>,
 ): MlElement {
   if (typeof type === "object") {
+    if (type.type === "tuple") {
+      return {
+        type: "tuple",
+        definition: type.payload.map((element) => liftPayloadToMlSchema(element, entityMlSchemas)),
+      } as MlElement;
+    }
     const payload = type.payload ?? "any";
     const inner = liftPayloadToMlSchema(payload, entityMlSchemas);
     return { type: type.type, definition: inner } as MlElement;

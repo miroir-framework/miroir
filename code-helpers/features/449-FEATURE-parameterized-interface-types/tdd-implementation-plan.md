@@ -16,7 +16,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisites: [#383](../383-FEATURE-transformer-choice-by-input-type/) ✅, [#453](../453-FEATURE-transformer-type-display/) ✅
 Working branch: `claude/449-payload-sub-choice` (from `_integration` 04ae35bb)
 
-**Resume note:** plan written, no slice started.
+**Resume note:** Slices 0-1 DONE.
 
 ---
 
@@ -35,8 +35,8 @@ Out: full ML schema types, nested type parameters, `object<P>`, saving the chose
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize the interface check suites | ⬜ | baseline runs of `fn.transformer.interfaceCheck`, `fn.transformer.interfaceWalk`, `ListTransformerPanel.unit` |
-| 1 | Declare and match `record` and `tuple` (tracer) | ⬜ | `fn.transformer.interfaceCheck` new suites "record forms", "tuple forms", "payload values" |
+| 0 | Characterize the interface check suites | ✅ | baseline runs of `fn.transformer.interfaceCheck`, `fn.transformer.interfaceWalk`, `ListTransformerPanel.unit` |
+| 1 | Declare and match `record` and `tuple` (tracer) | ✅ | `fn.transformer.interfaceCheck` new suites "record forms", "tuple forms", "payload values" |
 | 2 | Coarse inference, lift and walk for the new types | ⬜ | `fn.transformer.interfaceCheck` "inference" / "lift" suites, `fn.transformer.interfaceWalk` cases |
 | 3 | Chooser: type parameter for `array` and `record` | ⬜ | `ListTransformerPanel.unit` cases |
 | 4 | Chooser: tuple elements | ⬜ | `ListTransformerPanel.unit` cases |
@@ -99,7 +99,7 @@ No new model element. Tests go into existing suites:
 
 ## Slice 0 — Characterize the interface check suites
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -119,11 +119,16 @@ npm run testByFile -w miroir-standalone-app -- ListTransformerPanel.unit
 
 ### Realization
 
+On `_integration` 04ae35bb, after `npm install` (node_modules predated the #344 rename) and `./build-all.sh`:
+- `fn.transformer.interfaceCheck`, `fn.transformer.interfaceWalk`, `fn.transformer.resultSchema`: 182/182.
+- `ListTransformerPanel.unit`: 17/18. "shows transformer toggle in the header; panel hidden by default" fails before any change (`entity-instance-grid-stub` not found on first render). Pre-existing, left alone.
+- `tsc` on miroir-standalone-app reports 32 errors in MUI-related files unrelated to this issue (`ErrorLogsPageDEFUNCT.tsx`, `MiroirEventsPage.tsx`, `MiroirEventTimeline.tsx`, `AiLendProposalForm.tsx`, `AiEntityProposalForm.tsx`, `SettingsPage.tsx`, `MiroirThemeSelector.tsx`, `EventLogComponent.tsx`). Later slices check that no error appears in the files they touch.
+
 ---
 
 ## Slice 1 — Declare and match `record` and `tuple` (tracer)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -164,6 +169,13 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core
 ```
 
 ### Realization
+
+- Schema: payload enum + `undefined`, `object`; type enum + `record`; object arm `type` enum `["array", "record"]`; new tuple arm (`type` literal `tuple`, `payload` array of payload types); `discriminator: "type"` on the union. Generated types: `InputOutputType` gains `{ type: "tuple"; payload: InputOutputPayloadType[] }`.
+- `TransformerInterfaceCheck.ts`: `CoarseType` + `normalizeInputOutputType(type, isParameter)` + `coarseTypesCompatible` replace the two normalizers and `inputOutputPayloadsCompatible`.
+- Deviation: `liftInputOutputTypeToMlSchema` got its tuple branch here, because the new union arm does not typecheck without it. Its tests are in slice 2.
+- RED: 20 failing cases (record, tuple, type parameter values, stock schema check). GREEN: the three suites 206/206; miroir-core unit 2397 passed; lint clean; no new `tsc` error; scoped nonreg `smoke,core` 18/18.
+- R1 checked with a throwaway vitest probe: `mlsTypeCheck` on the Entity's `inputOutput` schema resolves bare literals, an entity uuid, `record<string>` / `array<object>` and `tuple<string, uuid>` to the right union arm (the discriminator separates the two object arms, which have the same keys).
+- The analysis and the grilling said 3 MiroirTests used the object form; there were 4 (both entity cases included). Docs corrected.
 
 ---
 

@@ -28,92 +28,102 @@ import {
 import { applicationTransformerDefinitions } from "./TransformersForRuntime";
 
 // ################################################################################################
-// Issue #249 — transformer interface (`inputOutput`) adequacy checks.
+// Issue #249 — transformer interface (`inputOutput`) adequacy checks; #449 — array, record and
+// tuple type parameters.
 //
 // Compatibility is NOT a pure partial order: `any` is compatible with everything in both
-// directions (lenient, confirmed in the feature analysis). The only strict subtyping rule is
-// entity-uuid ⊂ object(-with-any-payload): an entity instance is accepted wherever an object is
-// declared/expected, but a declared `object` output does NOT satisfy an entity-uuid expectation.
+// directions (lenient, confirmed in the feature analysis). Otherwise (#449 analysis §3.1):
+// - an entity instance is an `object` and a `record<any>`, but an `object` is not an entity;
+// - a `record<P>` is an `object`, an `object` is only a `record<any>`;
+// - a `tuple<P1..Pn>` is an `array<Q>` when every Pi is a Q, an array is never a tuple;
+// - type parameters follow the same rules, element-wise for tuples.
 // ################################################################################################
 
 const ENTITY_UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-type NormalizedInputOutputType =
-  /** the six non-structured literals (any, undefined, bigint, number, string, boolean) */
-  | { kind: "primitive"; value: string }
-  | { kind: "entityUuid"; uuid: string }
-  /** bare "object" / "array" literals normalize to this with payload "any" */
-  | { kind: "object" | "array"; payload: InputOutputPayloadType };
-
-function normalizeInputOutputType(type: InputOutputType): NormalizedInputOutputType {
-  if (typeof type === "object") {
-    return { kind: type.type, payload: type.payload ?? "any" };
-  }
-  if (type === "object" || type === "array") {
-    return { kind: type, payload: "any" };
-  }
-  if (ENTITY_UUID_REGEX.test(type)) {
-    return { kind: "entityUuid", uuid: type.toLowerCase() };
-  }
-  return { kind: "primitive", value: type };
-}
-
-type NormalizedPayloadType =
+/** Normalized `inputOutput` type; bare `array` / `record` get the type parameter `any`. */
+type CoarseType =
   | { kind: "any" }
+  /** undefined, bigint, number, string, boolean (an unknown literal only matches itself) */
   | { kind: "primitive"; value: string }
-  | { kind: "entityUuid"; uuid: string };
+  | { kind: "object" }
+  | { kind: "entity"; uuid: string }
+  | { kind: "array" | "record"; parameter: CoarseType }
+  | { kind: "tuple"; elements: CoarseType[] };
 
-function normalizePayloadType(payload: InputOutputPayloadType): NormalizedPayloadType {
-  if (payload === "any") {
-    return { kind: "any" };
+const ANY_TYPE: CoarseType = { kind: "any" };
+
+/** A type parameter that is itself an array, record or tuple is `any` (#449 D3, no nesting). */
+function normalizeInputOutputType(
+  type: InputOutputType | InputOutputPayloadType,
+  isParameter = false,
+): CoarseType {
+  if (typeof type === "object") {
+    if (isParameter) {
+      return ANY_TYPE;
+    }
+    if (type.type === "tuple") {
+      return { kind: "tuple", elements: type.payload.map((element) => normalizeInputOutputType(element, true)) };
+    }
+    return { kind: type.type, parameter: normalizeInputOutputType(type.payload ?? "any", true) };
   }
-  if (ENTITY_UUID_REGEX.test(payload)) {
-    return { kind: "entityUuid", uuid: payload.toLowerCase() };
+  switch (type) {
+    case "any":
+      return ANY_TYPE;
+    case "object":
+      return { kind: "object" };
+    case "array":
+    case "record":
+      return isParameter ? ANY_TYPE : { kind: type, parameter: ANY_TYPE };
+    default:
+      return ENTITY_UUID_REGEX.test(type)
+        ? { kind: "entity", uuid: type.toLowerCase() }
+        : { kind: "primitive", value: type };
   }
-  return { kind: "primitive", value: payload };
 }
 
-function inputOutputPayloadsCompatible(
-  actual: InputOutputPayloadType,
-  expected: InputOutputPayloadType,
-): boolean {
-  const a = normalizePayloadType(actual);
-  const e = normalizePayloadType(expected);
-  if (a.kind === "any" || e.kind === "any") {
+function coarseTypesCompatible(actual: CoarseType, expected: CoarseType): boolean {
+  if (actual.kind === "any" || expected.kind === "any") {
     return true;
   }
-  if (a.kind === "entityUuid" || e.kind === "entityUuid") {
-    return a.kind === "entityUuid" && e.kind === "entityUuid" && a.uuid === e.uuid;
+  switch (expected.kind) {
+    case "primitive":
+      return actual.kind === "primitive" && actual.value === expected.value;
+    case "object":
+      return actual.kind === "object" || actual.kind === "entity" || actual.kind === "record";
+    case "entity":
+      return actual.kind === "entity" && actual.uuid === expected.uuid;
+    case "record":
+      if (actual.kind === "record") {
+        return coarseTypesCompatible(actual.parameter, expected.parameter);
+      }
+      return (actual.kind === "object" || actual.kind === "entity") && expected.parameter.kind === "any";
+    case "array":
+      if (actual.kind === "array") {
+        return coarseTypesCompatible(actual.parameter, expected.parameter);
+      }
+      return (
+        actual.kind === "tuple" &&
+        actual.elements.every((element) => coarseTypesCompatible(element, expected.parameter))
+      );
+    case "tuple":
+      return (
+        actual.kind === "tuple" &&
+        actual.elements.length === expected.elements.length &&
+        actual.elements.every((element, index) => coarseTypesCompatible(element, expected.elements[index]))
+      );
   }
-  return a.value === e.value;
 }
 
 /**
  * Lenient compatibility relation between two `inputOutput` types: is `actual` acceptable where
- * `expected` is wanted? Asymmetric only for entity uuids (entity uuid satisfies `object`,
- * not the reverse).
+ * `expected` is wanted? See the rules above.
  */
 export function inputOutputTypesCompatible(
   actual: InputOutputType,
   expected: InputOutputType,
 ): boolean {
-  const a = normalizeInputOutputType(actual);
-  const e = normalizeInputOutputType(expected);
-  if ((a.kind === "primitive" && a.value === "any") || (e.kind === "primitive" && e.value === "any")) {
-    return true;
-  }
-  switch (a.kind) {
-    case "entityUuid":
-      return (
-        (e.kind === "entityUuid" && a.uuid === e.uuid) ||
-        (e.kind === "object" && e.payload === "any")
-      );
-    case "primitive":
-      return e.kind === "primitive" && e.value === a.value;
-    case "object":
-    case "array":
-      return e.kind === a.kind && inputOutputPayloadsCompatible(a.payload, e.payload);
-  }
+  return coarseTypesCompatible(normalizeInputOutputType(actual), normalizeInputOutputType(expected));
 }
 
 /**
