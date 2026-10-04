@@ -287,14 +287,13 @@ function applyEntityInstancesToZone(
     segment
   );
   const idAttribute = getIdAttributeForIndex(index);
-  if (idAttribute === false) {
-    log.error("applyEntityInstancesToZone", keylessEntityInstanceActionError("load", entityUuid).errorMessage);
-    return;
-  }
   (state as any)[zone][index] = {
-    ...(merge
-      ? addManyToEntityState((state as any)[zone][index], instances, idAttribute)
-      : setAllInEntityState(instances, idAttribute)),
+    ...(idAttribute === false
+      ? // #175: rows without primary key are all kept, under positional keys; a load always replaces them.
+        setAllInEntityState(instances, idAttribute)
+      : merge
+        ? addManyToEntityState((state as any)[zone][index], instances, idAttribute)
+        : setAllInEntityState(instances, idAttribute)),
     segment: segmentHeader,
   };
 }
