@@ -1,0 +1,9 @@
+{
+  "uuid": "9ff432a9-89a1-460b-a263-1672d084a9e0",
+  "parentName": "AdminApplication",
+  "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
+  "name": "Meta",
+  "defaultLabel": "The Meta Application",
+  "description": "Data about the development process of the Miroir platform: bundle size history (#473).",
+  "selfApplication": "9ff432a9-89a1-460b-a263-1672d084a9e0"
+}

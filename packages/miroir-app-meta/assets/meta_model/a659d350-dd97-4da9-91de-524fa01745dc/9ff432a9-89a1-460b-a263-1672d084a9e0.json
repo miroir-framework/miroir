@@ -1,0 +1,9 @@
+{
+  "uuid": "9ff432a9-89a1-460b-a263-1672d084a9e0",
+  "parentName": "SelfApplication",
+  "parentUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
+  "name": "Meta",
+  "defaultLabel": "The Meta selfApplication.",
+  "description": "Data about the development process of the Miroir platform: bundle size history (#473).",
+  "versioningMode": "unversioned"
+}

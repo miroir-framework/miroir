@@ -54,6 +54,7 @@ const FUNDAMENTAL_TYPES_PATH = join(
 const ASSET_TREES = [
   "packages/miroir-app-miroir/assets",
   "packages/miroir-app-admin/assets",
+  "packages/miroir-app-meta/assets",
   "packages/miroir-example-library/assets",
   "packages/miroir-example-designer/assets",
   "packages/miroir-example-github/assets",

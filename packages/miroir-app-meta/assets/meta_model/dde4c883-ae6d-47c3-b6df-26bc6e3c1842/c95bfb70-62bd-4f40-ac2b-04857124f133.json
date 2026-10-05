@@ -1,0 +1,18 @@
+{
+  "uuid": "c95bfb70-62bd-4f40-ac2b-04857124f133",
+  "parentName": "Menu",
+  "parentUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+  "name": "MetaMenu",
+  "defaultLabel": "Meta Menu",
+  "description": "Default menu for the Meta SelfApplication.",
+  "definition": {
+    "menuType": "complexMenu",
+    "definition": [
+      {
+        "title": "Meta",
+        "label": "meta",
+        "items": []
+      }
+    ]
+  }
+}
