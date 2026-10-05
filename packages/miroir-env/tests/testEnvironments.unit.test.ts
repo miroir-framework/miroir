@@ -15,6 +15,9 @@ import {
 } from "../src/index";
 import { repositoryRoot, temporaryRepository } from "./cliTestSupport";
 
+// openTestEnvironment reads process.env: a nonreg job runs these tests with MIROIR_TEST_WORKER set (#477).
+const noWorker = { MIROIR_TEST_WORKER: undefined };
+
 const application = (name: string, selfApplication: string, deployment: string) => ({
   package: `miroir-app-${name}`,
   selfApplication,
@@ -76,7 +79,7 @@ describe("test environments", () => {
     mkdirSync(path.dirname(installed), { recursive: true });
     writeFileSync(installed, "{}");
 
-    const environment = openTestEnvironment("test-filesystem", { cwd: root, reseed: true });
+    const environment = openTestEnvironment("test-filesystem", { cwd: root, env: noWorker, reseed: true });
 
     expect(existsSync(installed)).toBe(false);
     expect(environment.seed?.seeded).toContain("admin/data");
@@ -132,8 +135,8 @@ describe("test environment state names (#477)", () => {
   it("two openings of test-filesystem use the same stores in .miroir/test-filesystem", () => {
     const root = temporaryRepository({ "test-filesystem": testFilesystem });
 
-    const first = openTestEnvironment("test-filesystem", { cwd: root, reseed: true });
-    const second = openTestEnvironment("test-filesystem", { cwd: root, reseed: true });
+    const first = openTestEnvironment("test-filesystem", { cwd: root, env: noWorker, reseed: true });
+    const second = openTestEnvironment("test-filesystem", { cwd: root, env: noWorker, reseed: true });
 
     expect(sections(second.resolved)).toEqual(sections(first.resolved));
     for (const section of sections(first.resolved)) {
