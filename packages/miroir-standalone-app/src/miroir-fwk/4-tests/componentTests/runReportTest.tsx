@@ -5,9 +5,12 @@ import {
   MiroirActivityTracker,
   MiroirContext,
   MiroirLoggerFactory,
+  clearSecretsMasterKey,
   defaultMiroirModelEnvironment,
+  getSecretsMasterKey,
   runReportTestCompositeActionStep,
   runReportTestExpectActionResultStep,
+  setSecretsMasterKey,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type EntityInstance,
@@ -182,6 +185,9 @@ export const REPORT_TEST_FAKE_HTTP_NEEDS_EMULATED_SERVER =
 export const REPORT_TEST_FAKE_HTTP_NEEDS_SESSION_CONTROLLERS =
   "fake HTTP responses need a session that builds its own DomainControllers: this one reuses the app's";
 
+/** Wrapping key a fake-HTTP suite gets when its session has none (#472). */
+const REPORT_TEST_SECRETS_WRAPPING_KEY = "miroir-report-test-wrapping-key";
+
 function undeclaredRequestsMessage(fakeFetch: FakeOutboundFetch): string {
   return `no fake HTTP response declared for ${fakeFetch.undeclaredRequests.join(", ")}`;
 }
@@ -325,6 +331,12 @@ export function createReportTestRunner(host: ReportTestSandboxHost): ClosableRep
     const fakeFetch = suite.fakeHttpResponses
       ? executionEnvironment.fakeOutboundHttp?.answerWith(suite.fakeHttpResponses)
       : undefined;
+    // #472: a suite talking to a fake service may save the credentials it typed; without a
+    // wrapping key in the session, it gets a test key for the duration of the leaf
+    const ownsTestWrappingKey = !!suite.fakeHttpResponses && getSecretsMasterKey() === undefined;
+    if (ownsTestWrappingKey) {
+      setSecretsMasterKey(REPORT_TEST_SECRETS_WRAPPING_KEY);
+    }
     try {
       if (host.miroirReports) {
         // the session resets its Miroir model before each leaf, back to the bootstrap Reports
@@ -404,6 +416,9 @@ export function createReportTestRunner(host: ReportTestSandboxHost): ClosableRep
     } finally {
       unmountCurrentCase();
       fakeFetch?.release();
+      if (ownsTestWrappingKey) {
+        clearSecretsMasterKey();
+      }
     }
   };
 

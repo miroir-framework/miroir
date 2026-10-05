@@ -73,6 +73,7 @@ RUN npm run build -w miroir-ai
 
 # 4'. Applications the standalone app bundles besides Library
 RUN npm run build -w miroir-example-spotify
+RUN npm run build -w miroir-example-github
 RUN npm run build -w miroir-fixture-appForTest
 
 # 5. Standalone app (Vite production build), then the server release bundle

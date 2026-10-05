@@ -20,6 +20,7 @@ import {
   type AuthPrincipal,
 } from "../1_core/authentication/AuthenticationPolicy.js";
 import { handleAuthHttpRoute } from "../1_core/authentication/AuthenticationHttp.js";
+import { deploymentUuidFromHttpRequest } from "../1_core/authentication/deploymentUuidFromHttpRequest.js";
 import type { ProcessCapabilities } from "../1_core/processCapabilities.js";
 import { handleProcessCapabilitiesHttpRoute } from "./ProcessCapabilitiesHttp.js";
 import { packageName } from "../constants";
@@ -152,10 +153,9 @@ export class RestClientStub implements RestClientInterface {
       };
     }
 
-    const deploymentUuidForAccess =
-      args["deploymentUuid"] ??
-      (body ?? {})["deploymentUuid"] ??
-      ((body ?? {})["payload"] ?? {})["deploymentUuid"];
+    // Same resolution as the server's gate, including payload.application through the
+    // body's applicationDeploymentMap (server-routed actions such as setExternalServiceCredential).
+    const deploymentUuidForAccess = deploymentUuidFromHttpRequest({ params: args, body });
     const access = assertAccessForDeployment({
       enabled: authEnabled,
       principal,

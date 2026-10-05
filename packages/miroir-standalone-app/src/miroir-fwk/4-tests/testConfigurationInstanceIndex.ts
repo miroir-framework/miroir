@@ -1,6 +1,6 @@
 /**
  * Static host map of TestConfiguration instances for UI/CLI integ (#252).
- * Lives in standalone-app so miroir-core does not import library/appForTest packages.
+ * Lives in standalone-app so miroir-core does not import the application packages.
  */
 import type { TestConfigurationPlayfield } from "miroir-core";
 import {
@@ -8,6 +8,7 @@ import {
   testConfiguration_libraryDocumentSeed,
 } from "miroir-example-library";
 import { testConfiguration_libraryPublisherAndCountry } from "miroir-app-miroir";
+import { testConfiguration_githubModel } from "miroir-example-github";
 
 function playfieldFromInstance(instance: {
   uuid: string;
@@ -32,6 +33,8 @@ export const TEST_CONFIGURATION_INSTANCE_INDEX: Record<string, TestConfiguration
   [testConfiguration_libraryBookDetailsSeed.uuid]: playfieldFromInstance(
     testConfiguration_libraryBookDetailsSeed,
   ),
+  // #472: the GitHub model, for the GitHub report MiroirTests
+  [testConfiguration_githubModel.uuid]: playfieldFromInstance(testConfiguration_githubModel as any),
 };
 
 export function getTestConfigurationFromIndex(
