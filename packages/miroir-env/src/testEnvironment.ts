@@ -67,7 +67,7 @@ export function openTestEnvironment(
   const runEnv = { ...process.env, ...options.env };
   const resolved = resolveEnvironmentFromFiles({ cwd: options.cwd ?? process.cwd(), env: { ...runEnv, MIROIR_ENV: name } });
   if (options.reseed) {
-    rmSync(path.join(resolved.repositoryRoot, environmentAppsDirectory(name)), { recursive: true, force: true });
+    rmSync(path.join(resolved.repositoryRoot, environmentAppsDirectory(resolved.stateName)), { recursive: true, force: true });
   }
   const seed = options.reseed ? seedEnvironmentState(resolved, { reseed: true }) : undefined;
   const miroirConfig =

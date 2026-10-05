@@ -3,6 +3,7 @@ import path from "node:path";
 
 import {
   deriveEnvironmentDeployments,
+  isTestEnvironment,
   resolveEnvironment,
   type EnvironmentDefinition,
   type EnvironmentDeployment,
@@ -23,6 +24,12 @@ export const DEFAULT_ENVIRONMENT = "dev";
 export const LOCAL_ENVIRONMENT = "local";
 export const ENVIRONMENT_VARIABLE = "MIROIR_ENV";
 export const ROOT_VARIABLE = "MIROIR_ROOT";
+/**
+ * #477: a parallel nonreg job (`run-nonreg.py --jobs`) names its worker, and a test environment
+ * then keeps its state in `.miroir/<environment>@<worker>`, with stores named after that state.
+ */
+export const WORKER_VARIABLE = "MIROIR_TEST_WORKER";
+const WORKER_NAME = /^w[0-9]+$/;
 
 export class EnvironmentError extends Error {}
 
@@ -33,6 +40,11 @@ export type EnvironmentSelection = {
 };
 
 export type ResolvedEnvironment = EnvironmentSelection & {
+  /**
+   * What the environment's state and stores are named after: the environment name, or
+   * `<name>@<worker>` for a test environment run by a nonreg worker (MIROIR_TEST_WORKER, #477).
+   */
+  stateName: string;
   repositoryRoot: string;
   files: string[];
   environment: MiroirEnvironment;
@@ -160,10 +172,35 @@ export function validateEnvironmentDefinitions(definitions: Record<string, Envir
   return { valid, errors };
 }
 
+/**
+ * The name the state of environment `name` goes by: `<name>@<worker>` when MIROIR_TEST_WORKER names a
+ * worker and `name` is a test environment. Elsewhere the worker is ignored, and `warn` says so: a
+ * variable left in a shell never moves a developer's data.
+ */
+export function environmentStateName(
+  name: string,
+  env: Record<string, string | undefined>,
+  warn: (message: string) => void = console.warn,
+): string {
+  const worker = env[WORKER_VARIABLE];
+  if (!worker) {
+    return name;
+  }
+  if (!WORKER_NAME.test(worker)) {
+    throw new EnvironmentError(`${WORKER_VARIABLE}=${worker}: a worker is named w<number>, e.g. w2`);
+  }
+  if (!isTestEnvironment(name)) {
+    warn(`${WORKER_VARIABLE}=${worker} is ignored: environment ${name} is not a test environment (test-*)`);
+    return name;
+  }
+  return `${name}@${worker}`;
+}
+
 export function resolveEnvironmentFromFiles(options: {
   cwd: string;
   env: Record<string, string | undefined>;
   name?: string;
+  warn?: (message: string) => void;
 }): ResolvedEnvironment {
   const repositoryRoot = environmentRoot(options.cwd, options.env);
   const selection = selectEnvironment(repositoryRoot, options);
@@ -171,12 +208,14 @@ export function resolveEnvironmentFromFiles(options: {
   if (resolution.status === "error") {
     throw new EnvironmentError(resolution.errors.join("\n"));
   }
-  const derived = deriveEnvironmentDeployments(resolution.environment, selection.name);
+  const stateName = environmentStateName(selection.name, options.env, options.warn);
+  const derived = deriveEnvironmentDeployments(resolution.environment, stateName);
   if (derived.status === "error") {
     throw new EnvironmentError(derived.errors.map((error) => `environment "${selection.name}": ${error}`).join("\n"));
   }
   return {
     ...selection,
+    stateName,
     repositoryRoot,
     files: resolution.chain.map(environmentFile),
     environment: resolution.environment,

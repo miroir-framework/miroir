@@ -4,6 +4,7 @@ export {
   ENVIRONMENTS_DIRECTORY,
   EnvironmentError,
   environmentRoot,
+  environmentStateName,
   findRepositoryRoot,
   hasEnvironmentDefinitions,
   LOCAL_ENVIRONMENT,
@@ -12,6 +13,7 @@ export {
   resolveEnvironmentFromFiles,
   selectEnvironment,
   validateEnvironmentDefinitions,
+  WORKER_VARIABLE,
   type EnvironmentSelection,
   type ResolvedEnvironment,
 } from "./environmentFiles.js";
