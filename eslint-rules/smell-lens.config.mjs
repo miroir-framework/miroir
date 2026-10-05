@@ -18,6 +18,8 @@ const GRADUATED = [
   "miroir/global-environment",
   "miroir/pub-sub",
   "miroir/component-io",
+  "react-hooks/set-state-in-effect",
+  "max-depth",
 ];
 
 const UUID = "/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/";
@@ -225,10 +227,8 @@ export default [
     plugins: { lens },
     rules: {
       "lens/max-params": ["warn", 5],
-      "max-depth": ["warn", 4],
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unused-vars": "warn",
-      "react-hooks/set-state-in-effect": "warn",
       "react-hooks/exhaustive-deps": "warn",
       "no-restricted-syntax": ["warn", ...anywhereInSrc, ...outsideCompositionRoots],
     },

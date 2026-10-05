@@ -72,12 +72,15 @@ export default tseslint.config(
     },
   },
   {
-    // Smells that graduated from the smell lens (#340, analysis D7). Messages start with the smell id.
+    // Smells that graduated from the smell lens (#340, analysis D7). The messages of the miroir/<smell-id> rules carry
+    // the smell id in brackets; the runner of the smell lens (scripts/code_smells.py) maps the stock rules to theirs.
     files: SRC,
     ignores: TESTS,
     rules: {
       "miroir/action-result": ["error", ...actionResult],
       "miroir/type-escape": ["error", ...typeEscape],
+      "react-hooks/set-state-in-effect": "error", // effect-derived-state
+      "max-depth": ["error", 4], // deep-nesting
     },
   },
   {

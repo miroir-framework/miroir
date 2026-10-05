@@ -79,3 +79,22 @@ test("component-io: fetch in a component or hook", async () => {
   await spared(ENTRY, load, "miroir/component-io");
   await spared(VIEW, `export function useLoad(fetch: (u: string) => Promise<unknown>) { return fetch("/api/x"); }\n`, "miroir/component-io");
 });
+
+test("effect-derived-state: setState called synchronously in an effect", async () => {
+  await graduated(
+    VIEW,
+    `import { useEffect, useState } from "react";\nexport function C({ items }: { items: string[] }) { const [n, setN] = useState(0); useEffect(() => { setN(items.length); }, [items]); return <div>{n}</div>; }\n`,
+    "react-hooks/set-state-in-effect",
+  );
+  await spared(
+    VIEW,
+    `import { useEffect, useState } from "react";\nexport function C({ load }: { load: () => Promise<number> }) { const [n, setN] = useState(0); useEffect(() => { load().then(setN); }, [load]); return <div>{n}</div>; }\n`,
+    "react-hooks/set-state-in-effect",
+  );
+});
+
+test("deep-nesting: blocks nested deeper than 4", async () => {
+  const nested = (depth) => `${"if (a) { ".repeat(depth)}return 1;${" }".repeat(depth)}`;
+  await graduated(LIB, `export function f(a: boolean) { ${nested(5)} return 0; }\n`, "max-depth");
+  await spared(LIB, `export function f(a: boolean) { ${nested(4)} return 0; }\n`, "max-depth");
+});

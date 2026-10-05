@@ -9,7 +9,7 @@
 Analysis: [`./analysis.md`](./analysis.md) (decision D7) · Issue: https://github.com/miroir-framework/miroir/issues/340 · Defects found on the way: #481
 Working branch: `claude/340-0b1k4d` (PR #476)
 
-**Resume note:** Slices 0 to 4 DONE.
+**Resume note:** Slices 0 to 5 DONE.
 
 ---
 
@@ -30,7 +30,7 @@ This plan does **not** fix the counted violations (they stay in `eslint-suppress
 | 2 | Double cast (`type-escape`) is a lint error | ✅ | same |
 | 3 | `process.env` outside roots (`global-environment`) is a lint error | ✅ | same |
 | 4 | Subscriptions and `fetch` in views (`pub-sub`, `component-io`) are lint errors | ✅ | same |
-| 5 | `set-state-in-effect` and `max-depth` 4 are lint errors | ⬜ | same |
+| 5 | `set-state-in-effect` and `max-depth` 4 are lint errors | ✅ | same |
 | 6 | `preserve-caught-error` is a lint error, its 5 sites fixed | ⬜ | same, core typecheck |
 | 7 | The 2 precedence traps fixed; `no-mixed-operators` is a lint error | ⬜ | MiroirTest `query.virtualAttributes` > composite transformer value |
 | 8 | `miroir/logger`: one logger per file, named after it; 43 loggers renamed | ⬜ | `graduated-smells.test.mjs`, presets updated |
@@ -93,9 +93,11 @@ Lens run on `packages/` after merging `_integration` at `1243b612`:
 
 ## Slices 2 to 5: the other counted detectors
 
-**Status:** slices 2 to 4 ✅ DONE; slice 5 ⬜ pending
+**Status:** ✅ DONE
 
 One slice each: double cast (`miroir/type-escape`, 111), `process.env` outside roots (`miroir/global-environment`, 30), subscriptions and `fetch` in views (`miroir/pub-sub` 3, `miroir/component-io` 5), and the stock rules `react-hooks/set-state-in-effect` (14) and `max-depth` 4 (39). RED: a flags and a spares case per rule in `graduated-smells.test.mjs`. GREEN: the rule in `eslint.config.mjs`, its count in `eslint-suppressions.json`. Validation as slice 1.
+
+Cost found in slice 5: `react-hooks/set-state-in-effect` runs the React Compiler on every file, and `npm run lint` goes from about 11 s to 25 s. Limiting it to view files saves nothing (the time goes into the components themselves), so it covers all sources, as in the lens. The plugin's other compiler rules would share that compilation.
 
 ## Slice 6: `preserve-caught-error`
 
