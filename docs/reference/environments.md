@@ -148,6 +148,7 @@ Paths are relative to the root (`MIROIR_ROOT`, else the repository root), which 
 | `check [--strict] [--tracked-clean]` | Validates every definition, then compares the state of the selected environment with it: rows the next start creates or rewrites, deployments the definition does not install, pre-#321 rows in the package Admin data. `--tracked-clean` also fails when asset files under `packages/*/assets`, `packages/*/tests/assets` or `packages/*/tests/test_assets` differ from `HEAD`. |
 | `import [--dry-run]` | Records the deployments of the state that the definition does not install in `environments/local.json`. |
 | `prune [--dry-run]` | Deletes those deployments and their stores from the state. Stop the server first. |
+| `deploy <app> [--state <dir>] [--dry-run]` | Deploys example application `packages/miroir-example-<app>` (`github` or `miroir-example-github`) in the Admin data of the state, `.miroir/<environment>/` or `--state <dir>`: an AdminApplication row and a Deployment row opening the package assets live. Does nothing when the application is already deployed. The definition does not install it: record it with `import`. |
 
 ---
 

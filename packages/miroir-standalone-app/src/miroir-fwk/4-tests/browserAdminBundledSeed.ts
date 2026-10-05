@@ -80,6 +80,9 @@ export function buildBrowserAdminBundledDeploymentData(
     [ADMIN_DEPLOYMENT_UUID]: makeAdminBundledDeploymentData(
       adminDeployment as unknown as Record<string, unknown>,
       {
+        // #472: no instance seeds this entity, and a bundled data section only has the entities with
+        // instances: an empty table lets a Report test save a credential (secrets.set)
+        'a96856df-2b38-494a-8027-82617e2d64ad': [],
         '7959d814-400c-4e80-988f-a00fe582ab98': [
           {
             ...localDeploymentAdmin,
