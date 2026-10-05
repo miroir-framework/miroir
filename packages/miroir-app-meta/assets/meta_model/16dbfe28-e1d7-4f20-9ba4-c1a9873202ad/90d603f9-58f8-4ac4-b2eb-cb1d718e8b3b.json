@@ -1,0 +1,194 @@
+{
+  "uuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "selfApplication": "9ff432a9-89a1-460b-a263-1672d084a9e0",
+  "name": "BundleSizeMeasurement",
+  "conceptLevel": "Model",
+  "description": "One recorded bundle size of the standalone web app or of the Electron main process, written with the baseline of the bundle guard (#473).",
+  "viewAttributes": [
+    "measuredAt",
+    "application",
+    "eagerGzipBytes",
+    "baselineChange",
+    "reason"
+  ],
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "application": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 4,
+            "defaultLabel": "Application",
+            "description": "Built package: miroir-standalone-app (web page) or miroir-standalone-app-electron (Electron main process)."
+          }
+        }
+      },
+      "measuredAt": {
+        "type": "date",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Measured at",
+            "description": "When the size was recorded (backfill: date of the commit that changed the baseline)."
+          }
+        }
+      },
+      "eagerGzipBytes": {
+        "type": "number",
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Eager gzip bytes",
+            "description": "Gzip size of the chunks loaded with the page, or at Electron start (backfill: the baseline, the only value known)."
+          }
+        }
+      },
+      "baseline": {
+        "type": "number",
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "Baseline",
+            "description": "eagerGzipBaseline written in bundle-policy.json with this measurement."
+          }
+        }
+      },
+      "previousBaseline": {
+        "type": "number",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 8,
+            "defaultLabel": "Previous baseline",
+            "description": "Baseline of the previous measurement of the same application."
+          }
+        }
+      },
+      "baselineChange": {
+        "type": "number",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 9,
+            "defaultLabel": "Change",
+            "description": "baseline minus previousBaseline, in bytes."
+          }
+        }
+      },
+      "reason": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 10,
+            "defaultLabel": "Reason",
+            "description": "Why the size moved (record: --reason; backfill: commit subject)."
+          }
+        }
+      },
+      "gitCommit": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 11,
+            "defaultLabel": "Commit",
+            "description": "record: the HEAD the build was made from; backfill: the commit that changed the baseline."
+          }
+        }
+      },
+      "gitBranch": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 12,
+            "defaultLabel": "Branch",
+            "description": "Branch the build was made from (record only)."
+          }
+        }
+      },
+      "miroirVersion": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 13,
+            "defaultLabel": "Miroir version",
+            "description": "version of the root package.json (record only)."
+          }
+        }
+      },
+      "eagerChunks": {
+        "type": "number",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 14,
+            "defaultLabel": "Eager chunks",
+            "description": "Number of chunks loaded with the page (record only)."
+          }
+        }
+      },
+      "eagerRawBytes": {
+        "type": "number",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 15,
+            "defaultLabel": "Eager raw bytes",
+            "description": "Minified size of the chunks loaded with the page (record only)."
+          }
+        }
+      },
+      "totalChunks": {
+        "type": "number",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 16,
+            "defaultLabel": "Chunks",
+            "description": "Number of chunks of the build (record only)."
+          }
+        }
+      },
+      "totalRawBytes": {
+        "type": "number",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 17,
+            "defaultLabel": "Raw bytes",
+            "description": "Minified size of the whole build (record only)."
+          }
+        }
+      },
+      "totalGzipBytes": {
+        "type": "number",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 18,
+            "defaultLabel": "Gzip bytes",
+            "description": "Gzip size of the whole build (record only)."
+          }
+        }
+      }
+    }
+  }
+}

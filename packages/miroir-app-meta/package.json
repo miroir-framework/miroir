@@ -25,6 +25,7 @@
   "scripts": {
     "build": "tsup",
     "devBuild": "npm run build",
+    "bundle-size:record": "tsx ./scripts/recordBundleSize.ts",
     "test": "vitest run -t",
     "testByFile": "vitest run --maxWorkers=1 --reporter=verbose"
   },
