@@ -26,6 +26,7 @@
       "tier": "unit",
       "title": "#321 \u2014 record the asset files already changed (a developer's own edits) and the selected environment (environment.json)",
       "requires": "none",
+      "parallel": false,
       "argv": [
         "bash",
         "-c",
@@ -2414,6 +2415,7 @@
       "tier": "unit",
       "title": "#321 \u2014 no asset file changed by the run (runs last in every tier); miroir-env check --strict: every definition valid, the selected environment state in line with it",
       "requires": "none",
+      "parallel": false,
       "argv": [
         "bash",
         "-c",
