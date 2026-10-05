@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { readMeasurements } from "../src/bundleSizeHistory";
+import { measurementFromBaseline, readMeasurements, writeMeasurement } from "../src/bundleSizeHistory";
 import { main } from "../scripts/backfillBundleSize";
 
 // Bundle size history (#473): `npm run bundle-size:backfill` writes one BundleSizeMeasurement per
@@ -71,6 +71,26 @@ describe("bundle-size:backfill", () => {
     expect(await main(["--repo-root", repo, "--data-dir", dataDir])).toBe(0);
 
     expect(readMeasurements(dataDir)).toHaveLength(2);
+  });
+
+  it("skips a baseline bundle-size:record wrote before its policy commit", async () => {
+    const { repo, commits } = repositoryWithPolicyHistory();
+    const dataDir = mkdtempSync(join(tmpdir(), "meta-backfill-data-"));
+    expect(await main(["--repo-root", repo, "--data-dir", dataDir])).toBe(0);
+    // what bundle-size:record writes: the commit it runs on, before the policy change is committed
+    writeMeasurement(
+      measurementFromBaseline("miroir-standalone-app", 700, {
+        measuredAt: new Date().toISOString(),
+        gitCommit: commits[2],
+        reason: "recorded",
+      }),
+      dataDir,
+    );
+    commitPolicy(repo, { eagerGzipBaseline: 700, eager: ["a", "b"] }, "even smaller page");
+
+    expect(await main(["--repo-root", repo, "--data-dir", dataDir])).toBe(0);
+
+    expect(readMeasurements(dataDir).map((m) => m.baseline).sort()).toEqual([700, 800, 900]);
   });
 
   it("--dry-run writes nothing", async () => {

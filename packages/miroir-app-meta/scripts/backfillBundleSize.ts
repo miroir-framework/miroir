@@ -15,7 +15,9 @@ import {
 // `npm run bundle-size:backfill -w miroir-app-meta [-- --dry-run]` (#473): one BundleSizeMeasurement
 // per change of eagerGzipBaseline in the git history of the bundle policies, oldest first. The
 // baseline is the only size the history keeps, so it is also the measured size. A commit already
-// recorded for an application is skipped, so the backfill can run again.
+// recorded for an application is skipped, so the backfill can run again. So is a policy commit whose
+// baseline `bundle-size:record` already wrote: that record carries the commit it ran on, an ancestor
+// of the policy commit, and the same baseline.
 //
 //   --repo-root DIR   repository to read (default: this monorepo)
 //   --data-dir DIR    data section to write in (default: miroir-app-meta/assets/meta_data)
@@ -54,6 +56,28 @@ function baselineAt(repoRoot: string, commit: string, policy: string): number | 
   }
 }
 
+function isAncestor(repoRoot: string, ancestor: string, commit: string): boolean {
+  try {
+    execFileSync("git", ["merge-base", "--is-ancestor", ancestor, commit], { cwd: repoRoot, stdio: "ignore" });
+    return true;
+  } catch {
+    return false; // not an ancestor, or a commit this repository does not have
+  }
+}
+
+/** Whether `bundle-size:record` wrote this baseline before its policy commit: the newest earlier record has it. */
+function recordedBeforeCommit(repoRoot: string, measurement: BundleSizeMeasurement, recorded: BundleSizeMeasurement[]): boolean {
+  const commit = measurement.gitCommit;
+  if (commit === undefined) {
+    return false;
+  }
+  const newestEarlier = recorded
+    .filter((m) => m.application === measurement.application && m.gitCommit !== undefined && m.gitCommit !== commit)
+    .filter((m) => isAncestor(repoRoot, m.gitCommit as string, commit))
+    .reduce<BundleSizeMeasurement | undefined>((newest, m) => (newest === undefined || m.measuredAt > newest.measuredAt ? m : newest), undefined);
+  return newestEarlier?.baseline === measurement.baseline;
+}
+
 /** The measurements the git history of one policy holds, oldest first. */
 export function baselineHistory(repoRoot: string, application: string, policy: string): BundleSizeMeasurement[] {
   const measurements: BundleSizeMeasurement[] = [];
@@ -86,12 +110,13 @@ export async function main(argv: string[]): Promise<number> {
   });
   const repoRoot = resolve(values["repo-root"] ?? join(packageRoot, "../.."));
   const dataDir = resolve(values["data-dir"] ?? join(packageRoot, "assets/meta_data"));
-  const recorded = new Set(readMeasurements(dataDir).map((m) => `${m.application} ${m.gitCommit}`));
+  const existing = readMeasurements(dataDir);
+  const recorded = new Set(existing.map((m) => `${m.application} ${m.gitCommit}`));
 
   let written = 0;
   for (const [application, policy] of Object.entries(BUNDLE_POLICIES)) {
     for (const measurement of baselineHistory(repoRoot, application, policy)) {
-      if (recorded.has(`${application} ${measurement.gitCommit}`)) {
+      if (recorded.has(`${application} ${measurement.gitCommit}`) || recordedBeforeCommit(repoRoot, measurement, existing)) {
         continue;
       }
       const change = measurement.baselineChange === undefined ? "" : ` (${measurement.baselineChange > 0 ? "+" : ""}${measurement.baselineChange})`;

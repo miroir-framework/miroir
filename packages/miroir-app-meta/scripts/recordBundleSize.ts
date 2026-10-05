@@ -11,6 +11,7 @@ import {
   newestMeasurement,
   writeMeasurement,
   type BundleReport,
+  type BundleSizeMeasurement,
 } from "../src/bundleSizeHistory";
 
 // ################################################################################################
@@ -95,6 +96,36 @@ function candidatePolicy(
   }
 }
 
+/**
+ * Writes the instance, then the policy; when the policy write fails, removes the instance, which the
+ * guard's history rule would otherwise reject. Returns the instance file, or undefined when nothing is written.
+ */
+export function writeRecord(
+  instance: BundleSizeMeasurement,
+  dataDir: string,
+  policyUpdate: { file: string; content: string } | undefined,
+  writePolicy: (file: string, content: string) => void = writeFileSync,
+): string | undefined {
+  let file: string;
+  try {
+    file = writeMeasurement(instance, dataDir);
+  } catch (error) {
+    console.error(`bundle-size:record: ${(error as Error).message}`);
+    return undefined;
+  }
+  if (policyUpdate) {
+    try {
+      writePolicy(policyUpdate.file, policyUpdate.content);
+    } catch (error) {
+      rmSync(file, { force: true });
+      console.error(`bundle-size:record: ${(error as Error).message}, nothing written`);
+      return undefined;
+    }
+    console.log(`bundle-size:record: eagerGzipBaseline ${instance.baseline} written in ${policyUpdate.file}`);
+  }
+  return file;
+}
+
 export async function main(argv: string[]): Promise<number> {
   const { values, positionals } = parseArgs({
     args: argv,
@@ -143,16 +174,9 @@ export async function main(argv: string[]): Promise<number> {
     gitBranch: git("rev-parse", "--abbrev-ref", "HEAD"),
     miroirVersion: miroirVersion(),
   });
-  let file: string;
-  try {
-    file = writeMeasurement(instance, dataDir);
-  } catch (error) {
-    console.error(`bundle-size:record: ${(error as Error).message}`);
+  const file = writeRecord(instance, dataDir, policyUpdate);
+  if (file === undefined) {
     return 1;
-  }
-  if (policyUpdate) {
-    writeFileSync(policyUpdate.file, policyUpdate.content);
-    console.log(`bundle-size:record: eagerGzipBaseline ${instance.baseline} written in ${policyUpdate.file}`);
   }
   console.log(`bundle-size:record: ${report.app} ${instance.eagerGzipBytes} bytes gzipped at start, baseline ${instance.baseline}: ${file}`);
   return 0;

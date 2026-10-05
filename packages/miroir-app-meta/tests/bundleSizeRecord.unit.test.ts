@@ -195,6 +195,20 @@ describe("bundle-size:record with the bundle policy", () => {
     expect(instances(dataDir)).toHaveLength(1);
   });
 
+  it("removes the instance when the policy cannot be written", async () => {
+    const { writeRecord } = await import("../scripts/recordBundleSize");
+    const { measurementFromReport } = await import("../src/bundleSizeHistory");
+    const dataDir = tempDir("data");
+    const instance = measurementFromReport(readFixture(), { measuredAt: new Date().toISOString() });
+
+    const file = writeRecord(instance, dataDir, { file: "bundle-policy.json", content: "{}" }, () => {
+      throw new Error("EACCES: permission denied");
+    });
+
+    expect(file).toBeUndefined();
+    expect(readdirSync(join(dataDir, ENTITY_BUNDLE_SIZE_MEASUREMENT_UUID))).toEqual([]);
+  });
+
   it("finds the policy of the report's application", async () => {
     const { policyOf } = await import("../scripts/recordBundleSize");
 
