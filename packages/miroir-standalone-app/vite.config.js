@@ -147,7 +147,9 @@ export default defineConfig(({ command, mode }) => {
         ? []
         : [
             nodePolyfills({
-              include: [ "crypto" ],
+              // "stream": crypto-browserify's cipher-base extends require("stream").Transform; without it
+              // createHash throws "Cannot read properties of undefined (reading 'call')" (#472)
+              include: [ "crypto", "stream" ],
               // To exclude specific polyfills, add them to this list. Note: if include is provided, this has no effect
               exclude: [
                 "process"

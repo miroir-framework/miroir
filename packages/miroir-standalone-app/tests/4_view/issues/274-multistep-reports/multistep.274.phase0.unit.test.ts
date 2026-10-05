@@ -56,6 +56,7 @@ const ASSET_TREES = [
   "packages/miroir-app-admin/assets",
   "packages/miroir-example-library/assets",
   "packages/miroir-example-designer/assets",
+  "packages/miroir-example-github/assets",
   "packages/miroir-example-postgres/assets",
   "packages/miroir-example-spotify/assets",
 ];
@@ -141,7 +142,7 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
     expect(report.safeParse(multistepReport).success).toBe(true);
   });
 
-  it("seed inventory: 88 Reports including MultistepCountryCreate, MultistepLaunchPad, and ConnectExternalServiceWizard", () => {
+  it("seed inventory: 90 Reports including MultistepCountryCreate, MultistepLaunchPad, and ConnectExternalServiceWizard", () => {
     const reports = ASSET_TREES.flatMap((tree) =>
       collectReportInstances(join(REPO_ROOT, tree)),
     );
@@ -152,11 +153,11 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
     const omittedTypeReports = reports.filter((entry) => entry.type === undefined);
     const nullTypeReports = reports.filter((entry) => entry.type === null);
 
-    expect(reports).toHaveLength(88);
+    expect(reports).toHaveLength(90);
     expect(listReports).toHaveLength(12);
     expect(gridReports).toHaveLength(0);
-    expect(multistepReports).toHaveLength(2);
-    expect(omittedTypeReports).toHaveLength(72);
+    expect(multistepReports).toHaveLength(3);
+    expect(omittedTypeReports).toHaveLength(73);
     expect(nullTypeReports).toHaveLength(2);
     expect(nullTypeReports.map((entry) => ({ name: entry.name, uuid: entry.uuid }))).toEqual([
       { name: "TableDetails", uuid: TABLE_DETAILS_UUID },

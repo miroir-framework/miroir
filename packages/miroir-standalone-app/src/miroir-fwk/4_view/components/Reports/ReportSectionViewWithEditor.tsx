@@ -708,6 +708,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         )}
         {reportSectionDefinitionFromFormik?.type == "jsonReportSection" && (
           <pre
+            data-testid="json-report-section"
             style={{
               maxHeight: "400px",
               overflow: "auto",

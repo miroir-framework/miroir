@@ -1,0 +1,43 @@
+{
+  "uuid": "9bd8a57a-19e4-4911-b4ae-d1bbebbde338",
+  "selfApplication": "6c4edcb2-e165-407a-b728-fbf8a18b6bf7",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "GitHubRepositoriesReport",
+  "defaultLabel": "My GitHub repositories",
+  "description": "The first 100 repositories of the connected GitHub user, most recently updated first.",
+  "definition": {
+    "extractorTemplates": {
+      "repositories": {
+        "extractorOrCombinerType": "extractorTemplateForExternalService",
+        "endpointUuid": "0c642e2a-3922-4ce7-99a6-88f91f6a103f",
+        "actionType": "repos/list-for-authenticated-user",
+        "parameterBindings": {
+          "per_page": {
+            "transformerType": "returnValue",
+            "value": "100"
+          },
+          "sort": {
+            "transformerType": "returnValue",
+            "value": "updated"
+          }
+        }
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "apiCallReportSection",
+          "definition": {
+            "label": "My repositories",
+            "fetchedDataReference": "repositories",
+            "endpointUuid": "0c642e2a-3922-4ce7-99a6-88f91f6a103f",
+            "operationId": "repos/list-for-authenticated-user"
+          }
+        }
+      ]
+    }
+  }
+}

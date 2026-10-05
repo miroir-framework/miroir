@@ -69,6 +69,8 @@ export declare const miroirRight_AliceAdminApplication: any;
 export declare const miroirRight_AliceLibraryAppAdmin: any;
 export declare const miroirRight_AliceLibraryDeploymentRead: any;
 export declare const miroirRight_DaveLibraryDeployment: any;
+export declare const miroirRight_AliceGitHubAppAdmin: any;
+export declare const miroirRight_AliceGitHubDeploymentRead: any;
 export declare const miroirUserCredential_AliceDev: any;
 export declare const miroirUserCredential_CarolDev: any;
 export declare const miroirUserCredential_DaveDev: any;

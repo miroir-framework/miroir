@@ -308,6 +308,58 @@ async function querySecretRowsForPersist(
   );
 }
 
+async function writeSecretRow(
+  domainController: DomainControllerInterface,
+  args: PersistRotatedSecretRowArgs,
+  wrappingKey: string,
+  existing: Record<string, unknown> | undefined,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+): Promise<void> {
+  const ciphertext = encryptSecret("aes-256-gcm", wrappingKey, args.value);
+  const miroirUser = args.scope === "user" ? args.miroirUserUuid : undefined;
+  const instance = {
+    ...(existing ?? {}),
+    uuid: existing?.uuid
+      ? String(existing.uuid)
+      : miroirSecretInstanceUuid(args.name, args.scope, miroirUser),
+    parentName: "MiroirSecret",
+    parentUuid: ENTITY_MIROIR_SECRET_UUID,
+    name: args.name,
+    ciphertext,
+    algorithm: "aes-256-gcm",
+    ...(miroirUser ? { miroirUser } : {}),
+  } as unknown as EntityInstance;
+  if (!miroirUser) {
+    delete (instance as { miroirUser?: string }).miroirUser;
+  }
+  const persistResult = await domainController.handleAction(
+    {
+      actionType: existing ? "updateInstance" : "createInstance",
+      actionLabel: SECRETS_SET_ACTION_LABEL,
+      endpoint: INSTANCE_ENDPOINT,
+      payload: {
+        application: ADMIN_APPLICATION_UUID,
+        applicationSection: "data",
+        parentUuid: ENTITY_MIROIR_SECRET_UUID,
+        objects: [instance],
+      },
+    },
+    applicationDeploymentMap,
+    defaultMetaModelEnvironment,
+    undefined,
+    undefined,
+    miroirUser ? { miroirUserUuid: miroirUser, username: "" } : undefined,
+  );
+  if (persistResult instanceof Action2Error) {
+    throw new Error(persistResult.errorMessage ?? "Failed to persist secret");
+  }
+  if (miroirUser) {
+    registerHydratedUserSecret(miroirUser, args.name, args.value);
+    return;
+  }
+  registerHydratedProcessSecret(args.name, args.value);
+}
+
 /**
  * Re-encrypt the matching MiroirSecret row and persist via `secrets.set`.
  * Fail-closed when the wrapping key is unset. Does not import DomainController.
@@ -328,47 +380,30 @@ export async function persistRotatedSecretRow(
   if (!existing?.uuid) {
     throw new Error("No MiroirSecret row matches the rotated secret");
   }
-  const ciphertext = encryptSecret("aes-256-gcm", wrappingKey, args.value);
-  const miroirUser = args.scope === "user" ? args.miroirUserUuid : undefined;
-  const instance = {
-    ...existing,
-    uuid: String(existing.uuid),
-    parentName: "MiroirSecret",
-    parentUuid: ENTITY_MIROIR_SECRET_UUID,
-    name: args.name,
-    ciphertext,
-    algorithm: "aes-256-gcm",
-    ...(miroirUser ? { miroirUser } : {}),
-  } as unknown as EntityInstance;
-  if (!miroirUser) {
-    delete (instance as { miroirUser?: string }).miroirUser;
+  await writeSecretRow(domainController, args, wrappingKey, existing, applicationDeploymentMap);
+}
+
+/**
+ * #472: create or replace the MiroirSecret row for name + scope + owner via `secrets.set`,
+ * then register the value in the process. Fail-closed when the wrapping key is unset.
+ */
+export async function persistSecretRow(
+  domainController: DomainControllerInterface,
+  args: PersistRotatedSecretRowArgs,
+  applicationDeploymentMap: ApplicationDeploymentMap = defaultSelfApplicationDeploymentMap,
+): Promise<void> {
+  const wrappingKey = getSecretsMasterKey();
+  if (!wrappingKey) {
+    throw new Error("Wrapping key is required to persist a secret");
   }
-  const persistResult = await domainController.handleAction(
-    {
-      actionType: "updateInstance",
-      actionLabel: SECRETS_SET_ACTION_LABEL,
-      endpoint: INSTANCE_ENDPOINT,
-      payload: {
-        application: ADMIN_APPLICATION_UUID,
-        applicationSection: "data",
-        parentUuid: ENTITY_MIROIR_SECRET_UUID,
-        objects: [instance],
-      },
-    },
-    applicationDeploymentMap,
-    defaultMetaModelEnvironment,
-    undefined,
-    undefined,
-    miroirUser ? { miroirUserUuid: miroirUser, username: "" } : undefined,
-  );
-  if (persistResult instanceof Action2Error) {
-    throw new Error(persistResult.errorMessage ?? "Failed to persist rotated secret");
-  }
-  if (miroirUser) {
-    registerHydratedUserSecret(miroirUser, args.name, args.value);
-    return;
-  }
-  registerHydratedProcessSecret(args.name, args.value);
+  await ensureSecretsCrypto();
+  return withSecretRowWriteLock(async () => {
+    const rows = await querySecretRowsForPersist(domainController, applicationDeploymentMap);
+    const existing = rows.find((row) =>
+      rowMatches(row, args.name, args.scope, args.miroirUserUuid),
+    );
+    await writeSecretRow(domainController, args, wrappingKey, existing, applicationDeploymentMap);
+  });
 }
 
 /**
