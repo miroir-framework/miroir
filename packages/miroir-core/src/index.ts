@@ -1558,10 +1558,12 @@ export {
   loginWithPassword,
   persistChangedPasswordHash,
   resolveAuthenticationEnabled,
+  resolveMcpAuthenticationEnabled,
   setProcessTokenSecret,
   verifyBearerToken,
   verifyPassword,
   type AuthenticationEnabledInputs,
+  type McpAuthenticationEnabledInputs,
   type AuthenticationFailedBody,
   type AuthenticationRequiredBody,
   type AuthPrincipal,
@@ -1607,7 +1609,21 @@ export {
 } from "./1_core/authentication/TestbedAccessGrant.js";
 export {
   deploymentUuidFromHttpRequest,
+  deploymentUuidsFromHttpRequest,
 } from "./1_core/authentication/deploymentUuidFromHttpRequest.js";
+export {
+  authenticateRequest,
+  authorizeDeployment,
+  type AccessDirectoryLoader,
+  type AuthenticatedRequest,
+  type AuthenticationGate,
+  type LoadedAccessDirectory,
+} from "./1_core/authentication/AccessGate.js";
+export { accessDirectoryLoader, loadAccessDirectory, persistPasswordChange } from "./3_controllers/loadAccessDirectory.js";
+export {
+  createIdentityGateMiddleware,
+  type AuthenticatedHttpRequest,
+} from "./4_services/authenticationMiddleware.js";
 export {
   handleAuthHttpRoute,
   type AuthHttpResult,
@@ -1622,6 +1638,7 @@ export {
 export {
   RestClient,
   getRestClientAuthorizationToken,
+  maybeInvalidateAuthorization,
   setRestClientAuthorizationInvalidationHandler,
   setRestClientAuthorizationTokenGetter,
 } from "./4_services/RestClient.js";

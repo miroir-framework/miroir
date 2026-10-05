@@ -123,6 +123,8 @@ The application can be configured through:
 
 ## Security
 
+Authentication is on by default, as on the server: the app opens on the login page, and the main process refuses `miroir-ipc` messages without the session token (`AuthenticationRequired`) or for an application the user may not open (`AccessDenied`). Turn it off with `--disable-auth`, `MIROIR_AUTH_ENABLED=0` or `server.authentication.enabled: false` in the environment. Details and seed logins: `docs/reference/authentication.md`.
+
 This application follows Electron security best practices:
 
 - Context isolation enabled

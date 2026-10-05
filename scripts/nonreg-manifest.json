@@ -2397,6 +2397,18 @@
       ]
     },
     {
+      "id": "unit-263-identity-doors",
+      "scopes": ["core", "tooling"],
+      "tier": "unit",
+      "title": "#263 \u2014 identity on MCP, CLI and Electron: shared gate, agent MCP headers, server wiring, renderer IPC",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w miroir-core -- 263-identity-doors && npm run testByFile -w miroir-ai -- 263-identity-doors && npm run testByFile -w miroir-server -- 263-identity-doors && npm run testByFile -w miroir-standalone-app -- 4_view/issues/263-identity-doors"
+      ]
+    },
+    {
       "id": "unit-345-mcp",
       "scopes": ["runners", "tooling"],
       "tier": "default",

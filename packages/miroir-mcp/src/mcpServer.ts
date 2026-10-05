@@ -9,7 +9,10 @@ import * as logger from 'loglevelnext';
 
 import {
   ApplicationDeploymentMap,
+  createIdentityGateMiddleware,
   defaultMetaModelEnvironment,
+  type AuthenticatedHttpRequest,
+  type AuthenticationGate,
   DomainControllerInterface,
   LoggerFactoryInterface,
   LoggerInterface,
@@ -22,7 +25,7 @@ import {
 
 
 import { MCP_HTTP_ENDPOINT } from "./mcpConstants.js";
-import { type EndpointToolRegistry } from "./tools/EndpointToolRegistry.js";
+import { type EndpointToolRegistry, type McpCallContext } from "./tools/EndpointToolRegistry.js";
 
 export { MCP_HTTP_ENDPOINT };
 
@@ -98,6 +101,8 @@ export class MiroirMcpServer {
     private applicationDeploymentMap: ApplicationDeploymentMap,
     private domainController: DomainControllerInterface,
     private endpointToolRegistry: EndpointToolRegistry,
+    /** #263: identity on `/mcp`, application access per tool call. Absent: `/mcp` is open. */
+    private authenticationGate?: AuthenticationGate,
   ) {}
 
   // ##############################################################################################
@@ -105,7 +110,7 @@ export class MiroirMcpServer {
    * One MCP Protocol Server per HTTP request: the SDK's Protocol instance supports a
    * single transport at a time ("Already connected to a transport" otherwise).
    */
-  private createMcpServer(): Server {
+  private createMcpServer(context?: McpCallContext): Server {
     const mcpServer = new Server(
       {
         name: "miroir-mcp-server",
@@ -123,6 +128,7 @@ export class MiroirMcpServer {
       this.endpointToolRegistry,
       this.domainController,
       this.applicationDeploymentMap,
+      context,
     );
 
     return mcpServer;
@@ -150,7 +156,7 @@ export class MiroirMcpServer {
     });
     await logAvailableMcpTools(this.endpointToolRegistry, "initial");
 
-    this.mountHttpRoutes(this.app);
+    this.mountHttpRoutes(this.app, this.authenticationGate);
 
     this.app.get("/health", (_req, res) => {
       res.json({ status: "ok", name: "miroir-mcp-server", version: "1.0.0" });
@@ -161,11 +167,20 @@ export class MiroirMcpServer {
    * Mount Streamable HTTP `/mcp` on another Express app (same-origin API, D6-a)
    * without starting a second registry subscription.
    */
-  mountHttpRoutes(targetApp: Express): void {
-    targetApp.post(MCP_HTTP_ENDPOINT, async (req, res) => {
+  mountHttpRoutes(targetApp: Express, authenticationGate?: AuthenticationGate): void {
+    const handler = async (req: express.Request, res: express.Response) => {
       log.info(`Received POST request on ${MCP_HTTP_ENDPOINT}`);
 
-      const mcpServer = this.createMcpServer();
+      const authenticated = (req as AuthenticatedHttpRequest).miroirAuthentication;
+      const mcpServer = this.createMcpServer(
+        authenticationGate
+          ? {
+              enabled: authenticationGate.enabled,
+              principal: authenticated?.principal,
+              access: authenticated?.access,
+            }
+          : undefined,
+      );
       const transport = new StreamableHTTPServerTransport({
         sessionIdGenerator: undefined,
       });
@@ -195,7 +210,12 @@ export class MiroirMcpServer {
           });
         }
       }
-    });
+    };
+    if (authenticationGate) {
+      targetApp.post(MCP_HTTP_ENDPOINT, createIdentityGateMiddleware(authenticationGate) as any, handler);
+    } else {
+      targetApp.post(MCP_HTTP_ENDPOINT, handler);
+    }
 
     // Optional Streamable HTTP SSE probe. POST-only; clients should not hit this
     // on the wire (`resolveMcpHttpFetch` answers GET locally).
@@ -305,6 +325,7 @@ export class MiroirMcpServer {
     endpointToolRegistry: EndpointToolRegistry,
     domainController: DomainControllerInterface,
     applicationDeploymentMap: ApplicationDeploymentMap,
+    context?: McpCallContext,
   ): void {
     // List available tools: computed live from the registry on each request
     server.setRequestHandler(ListToolsRequestSchema, async () => {
@@ -322,7 +343,7 @@ export class MiroirMcpServer {
       const { name, arguments: args } = request.params;
 
       try {
-        return await endpointToolRegistry.callTool(name, args);
+        return await endpointToolRegistry.callTool(name, args, context);
       } catch (error) {
         log.error(`Error handling tool call ${name}:`, error);
         return {
@@ -351,9 +372,16 @@ export async function setupMcpServer(
   applicationDeploymentMap: ApplicationDeploymentMap,
   endpointToolRegistry: EndpointToolRegistry,
   domainController: DomainControllerInterface,
+  authenticationGate?: AuthenticationGate,
 ): Promise<MiroirMcpServer> {
 
-  const server = new MiroirMcpServer(app, applicationDeploymentMap, domainController, endpointToolRegistry);
+  const server = new MiroirMcpServer(
+    app,
+    applicationDeploymentMap,
+    domainController,
+    endpointToolRegistry,
+    authenticationGate,
+  );
 
   await server.setup();
 

@@ -34,6 +34,10 @@ export async function handleAuthHttpRoute(args: {
   authorizationHeader?: string;
   directory?: IdentityDirectory;
   env?: Record<string, string | undefined>;
+  /** The host's resolved hatch (argv, env, config). Defaults to the env alone. */
+  enabled?: boolean;
+  /** Token secret. Defaults to getProcessTokenSecret(env). */
+  secret?: string;
 }): Promise<AuthHttpResult | undefined> {
   const path = pathWithoutQuery(args.url);
   const endpointPath = args.endpoint ? pathWithoutQuery(args.endpoint) : path;
@@ -42,7 +46,9 @@ export async function handleAuthHttpRoute(args: {
   if (isAuthPath(path, "/auth/status") || isAuthPath(endpointPath, "/auth/status")) {
     return {
       status: 200,
-      data: buildAuthStatusBody(resolveAuthenticationEnabled({ env: args.env ?? process.env })),
+      data: buildAuthStatusBody(
+        args.enabled ?? resolveAuthenticationEnabled({ env: args.env ?? process.env }),
+      ),
     };
   }
 
@@ -56,7 +62,7 @@ export async function handleAuthHttpRoute(args: {
         password: String(body.password ?? ""),
       },
       args.directory,
-      getProcessTokenSecret(args.env ?? process.env),
+      args.secret ?? getProcessTokenSecret(args.env ?? process.env),
     );
     if (!result.ok) {
       return { status: result.status, data: result.body };
@@ -67,7 +73,7 @@ export async function handleAuthHttpRoute(args: {
   if (isAuthPath(path, "/auth/change-password") || isAuthPath(endpointPath, "/auth/change-password")) {
     const principal = await extractPrincipalFromAuthorizationHeader(
       args.authorizationHeader,
-      getProcessTokenSecret(args.env ?? process.env),
+      args.secret ?? getProcessTokenSecret(args.env ?? process.env),
     );
     if (!principal) {
       return { status: 401, data: { status: "error", errorType: "AuthenticationRequired" } };

@@ -715,6 +715,9 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         return new Action2Error(
           "FailedToHandleAction",
           "remote persistence store returned error status " + clientResult.status,
+          undefined,
+          // #263: keep the server's error body (e.g. AccessDenied) for the callers.
+          clientResult.data,
         );
       }
       // clientResult instanceof Action2Error === false
