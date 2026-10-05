@@ -166,7 +166,7 @@ Paths are relative to the root (`MIROIR_ROOT`, else the repository root), which 
 Where the checks run:
 
 - **PR checks** (`.github/workflows/pr-checks.yml`): `npm run miroir-env -- check --strict --tracked-clean`, also in the pre-push gate of `AGENTS.md`.
-- **Nonreg** (`scripts/run-nonreg.py`): every tier starts with `unit-321-environment-before`, which records the asset files already changed (a developer's own edits) and `miroir-env show --json` in the snapshot (`environment.json`). Every tier ends with `unit-321-tracked-assets`, which fails when the run changed an asset file, then runs `miroir-env check --strict`.
+- **Nonreg** (`scripts/run-nonreg.py`): every tier starts with `unit-321-environment-before`, which records the asset files already changed (a developer's own edits), `miroir-env show --json` (`environment.json`) and the warnings of `miroir-env check --snapshot` (`environment-check-before.json`, e.g. an application deployed by hand) in the snapshot. Every tier ends with `unit-321-tracked-assets`, which fails when the run changed an asset file, then runs `miroir-env check --strict --since` that file: only warnings the run brought fail.
 
 ---
 

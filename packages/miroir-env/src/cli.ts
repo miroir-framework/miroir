@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { realpathSync } from "node:fs";
+import { existsSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 
 import type { StoreSectionConfiguration } from "miroir-core";
@@ -39,10 +39,12 @@ const USAGE = `Usage: miroir-env <command> [options]
 
 Commands:
   show [--json]                     print the resolved environment and where its state stands
-  check [--strict] [--tracked-clean]
+  check [--strict] [--tracked-clean] [--snapshot <file>] [--since <file>]
                                     validate every definition, compare the state with the
                                     selected one; --strict (or CI set) turns warnings into
-                                    errors; --tracked-clean fails when asset files changed
+                                    errors; --tracked-clean fails when asset files changed;
+                                    --snapshot records the warnings in <file>, --since
+                                    reports the warnings recorded in <file> as info
   import [--dry-run]                record the deployments of the state that the definition
                                     does not install in environments/local.json
   prune [--dry-run]                 delete those deployments and their stores in the state
@@ -90,12 +92,30 @@ function isCi(env: Record<string, string | undefined>): boolean {
   return env.CI !== undefined && env.CI !== "" && env.CI !== "false" && env.CI !== "0";
 }
 
+/**
+ * Warnings recorded by `check --snapshot` (a developer's own state, e.g. an application deployed by
+ * hand), which `check --since` does not count: nonreg checks only what its run changed. A missing
+ * file records nothing.
+ */
+function snapshotWarnings(file: string | undefined): Set<string> {
+  return new Set(file && existsSync(file) ? (JSON.parse(readFileSync(file, "utf-8")).warnings as string[]) : []);
+}
+
 /** Exit code 1 when an error is found: invalid definition, warning under --strict, changed asset file. */
 function check(args: string[], io: CliIo): number {
   const strict = args.includes("--strict") || isCi(io.env);
+  const before = snapshotWarnings(option(args, "--since"));
   const lines: string[] = [];
+  const warnings: string[] = [];
   let errors = 0;
   const report = (level: "info" | "warning" | "error", message: string) => {
+    if (level === "warning") {
+      warnings.push(message);
+      if (before.has(message)) {
+        lines.push(`info: ${message} (already there at the snapshot)`);
+        return;
+      }
+    }
     const shown = level === "warning" && strict ? "error" : level;
     errors += shown === "error" ? 1 : 0;
     lines.push(`${shown}: ${message}`);
@@ -143,6 +163,11 @@ function check(args: string[], io: CliIo): number {
     }
   }
   lines.push(`check: ${errors === 0 ? "ok" : `${errors} error${errors > 1 ? "s" : ""}`}${strict ? " (strict)" : ""}`);
+  const snapshot = option(args, "--snapshot");
+  if (snapshot) {
+    writeFileSync(snapshot, JSON.stringify({ warnings }, null, 2) + "\n");
+    lines.push(`snapshot: ${warnings.length} warning${warnings.length === 1 ? "" : "s"} recorded in ${snapshot}`);
+  }
   io.stdout(lines.join("\n") + "\n");
   return errors === 0 ? 0 : 1;
 }

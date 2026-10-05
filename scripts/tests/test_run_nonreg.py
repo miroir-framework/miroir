@@ -458,10 +458,12 @@ def test_every_tier_starts_by_recording_the_environment_and_ends_with_the_tracke
     assert first["tier"] == last["tier"] == "unit"
     assert "tracked_assets_guard.py snapshot --output {snapshot_dir}/tracked-assets-before.json" in " ".join(first["argv"])
     assert "miroir-env -- show --json > {snapshot_dir}/environment.json" in " ".join(first["argv"])
+    # the developer's own state (e.g. an application deployed by hand) is not the run's doing
+    assert "miroir-env -- check --snapshot {snapshot_dir}/environment-check-before.json" in " ".join(first["argv"])
 
     assert last["id"] == "unit-321-tracked-assets"
     assert "tracked_assets_guard.py check --since {snapshot_dir}/tracked-assets-before.json" in " ".join(last["argv"])
-    assert "miroir-env -- check --strict" in " ".join(last["argv"])
+    assert "miroir-env -- check --strict --since {snapshot_dir}/environment-check-before.json" in " ".join(last["argv"])
 
 
 # ------------------------------------------------------------------------------------------------

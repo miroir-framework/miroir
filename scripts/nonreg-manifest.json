@@ -29,7 +29,7 @@
       "argv": [
         "bash",
         "-c",
-        "python scripts/tracked_assets_guard.py snapshot --output {snapshot_dir}/tracked-assets-before.json && npm run --silent miroir-env -- show --json > {snapshot_dir}/environment.json"
+        "python scripts/tracked_assets_guard.py snapshot --output {snapshot_dir}/tracked-assets-before.json && npm run --silent miroir-env -- show --json > {snapshot_dir}/environment.json && npm run --silent miroir-env -- check --snapshot {snapshot_dir}/environment-check-before.json"
       ]
     },
     {
@@ -2445,7 +2445,7 @@
       "argv": [
         "bash",
         "-c",
-        "python scripts/tracked_assets_guard.py check --since {snapshot_dir}/tracked-assets-before.json && npm run miroir-env -- check --strict"
+        "python scripts/tracked_assets_guard.py check --since {snapshot_dir}/tracked-assets-before.json && npm run miroir-env -- check --strict --since {snapshot_dir}/environment-check-before.json"
       ]
     }
   ]
