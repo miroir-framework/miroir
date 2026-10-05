@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { setAuthToken } from "../auth/authSession.js";
+import { requestLoginToken } from "../auth/authTransport.js";
 import { PageContainer } from "../components/Page/PageContainer.js";
 import {
   ThemedBox,
@@ -46,17 +47,12 @@ export function LoginPage(): React.JSX.Element {
               setError(undefined);
               setSubmitting(true);
               try {
-                const response = await fetch("/auth/login", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ username, password }),
-                });
-                const body = await response.json();
-                if (!response.ok || !body?.token) {
+                const token = await requestLoginToken(username, password);
+                if (!token) {
                   setError("Authentication failed");
                   return;
                 }
-                setAuthToken(body.token);
+                setAuthToken(token);
                 navigate(returnTo);
               } catch {
                 setError("Authentication failed");

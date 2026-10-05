@@ -9,6 +9,7 @@ import {
   createScratchCwd,
   loadSdkOnce,
   MIROIR_MCP_SERVER_NAME,
+  miroirMcpServerConfig,
   requireSecret,
   resolveMcpHttpUrl,
   type AgentSession,
@@ -47,6 +48,7 @@ export type CreateCursorAbstractAgentOptions = {
   importSdk?: ImportCursorSdk;
   mcpHttpUrl?: string;
   apiPort?: number;
+  mcpHeaders?: Record<string, string>;
   nodeVersion?: string;
   cwdParent?: string;
 };
@@ -120,10 +122,7 @@ export async function createCursorAbstractAgent(
     tools: ["mcp"],
     local: { cwd },
     mcpServers: {
-      [MIROIR_MCP_SERVER_NAME]: {
-        type: "http",
-        url: mcpHttpUrl,
-      },
+      [MIROIR_MCP_SERVER_NAME]: miroirMcpServerConfig(mcpHttpUrl, options.mcpHeaders),
     },
   });
 

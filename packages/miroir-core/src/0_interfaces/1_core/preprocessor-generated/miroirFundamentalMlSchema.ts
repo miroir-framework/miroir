@@ -17194,6 +17194,10 @@ export const miroirFundamentalMlSchema = {
                   "tokenSecret": {
                     "type": "string",
                     "optional": true
+                  },
+                  "mcp": {
+                    "type": "boolean",
+                    "optional": true
                   }
                 }
               }
@@ -17403,6 +17407,20 @@ export const miroirFundamentalMlSchema = {
                 "optional": true,
                 "definition": {
                   "type": "string"
+                }
+              },
+              "authentication": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "enabled": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "mcp": {
+                    "type": "boolean",
+                    "optional": true
+                  }
                 }
               }
             }

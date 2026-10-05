@@ -201,6 +201,30 @@ function extractCommandOptions(mlPayload: MlObject): CliCommandOption[] {
 }
 
 // ################################################################################################
+/**
+ * #263: the emulated server's 401 / 403 reaches the CLI wrapped in persistence errors; report its
+ * AuthenticationRequired / AccessDenied as the command's error type.
+ */
+function authenticationErrorType(error: unknown, depth = 0): string | undefined {
+  if (!error || typeof error !== "object" || depth > 8) {
+    return undefined;
+  }
+  const errorType = (error as { errorType?: unknown }).errorType;
+  if (errorType === "AccessDenied" || errorType === "AuthenticationRequired") {
+    return errorType;
+  }
+  const inner = (error as { innerError?: unknown }).innerError;
+  const innerErrors = Array.isArray(inner) ? inner : [inner];
+  for (const innerError of innerErrors) {
+    const found = authenticationErrorType(innerError, depth + 1);
+    if (found) {
+      return found;
+    }
+  }
+  return undefined;
+}
+
+// ################################################################################################
 // Core Action Handler
 // ################################################################################################
 
@@ -257,7 +281,7 @@ export async function handleCliAction(
         status: "error",
         command: commandName,
         error: {
-          type: "errorType" in result ? result.errorType : "unknown",
+          type: authenticationErrorType(result) ?? ("errorType" in result ? result.errorType : "unknown"),
           message: ("errorMessage" in result ? result.errorMessage : "Action failed") as any,
           stack: ("errorStack" in result ? result.errorStack : undefined) as any,
           context: "errorContext" in result ? result.errorContext : undefined,

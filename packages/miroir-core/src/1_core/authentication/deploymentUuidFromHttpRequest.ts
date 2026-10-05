@@ -65,3 +65,41 @@ function deploymentForApplication(body: Record<string, unknown> | undefined, app
   const mapped = (map as Record<string, unknown>)[application];
   return typeof mapped === "string" && mapped ? mapped : undefined;
 }
+
+/**
+ * Every deployment a request names (#263): route param, body, `payload.deploymentUuid`, the
+ * deployment `payload.application` maps to, and the one `payload.endpoint.application` maps to.
+ * An access gate authorizes all of them, so a caller cannot pass one allowed deployment while the
+ * action resolves its store from another field. Empty when the request names none.
+ */
+export function deploymentUuidsFromHttpRequest(request: { params?: unknown; body?: unknown }): string[] {
+  const params = request.params as Record<string, unknown> | undefined;
+  const body = request.body as Record<string, unknown> | undefined;
+  const found = new Set<string>();
+  const add = (value: unknown) => {
+    if (typeof value === "string" && value) {
+      found.add(value);
+    }
+  };
+  add(params?.deploymentUuid);
+  add(body?.deploymentUuid);
+  const action =
+    body?.action && typeof body.action === "object"
+      ? (body.action as Record<string, unknown>)
+      : body;
+  const payload = action?.payload;
+  if (payload && typeof payload === "object") {
+    const fields = payload as Record<string, unknown>;
+    add(fields.deploymentUuid);
+    if (typeof fields.application === "string" && fields.application) {
+      add(deploymentForApplication(body, fields.application) ?? fields.application);
+    }
+    const endpoint = fields.endpoint;
+    const endpointApplication =
+      endpoint && typeof endpoint === "object" ? (endpoint as Record<string, unknown>).application : undefined;
+    if (typeof endpointApplication === "string" && endpointApplication) {
+      add(deploymentForApplication(body, endpointApplication));
+    }
+  }
+  return [...found];
+}
