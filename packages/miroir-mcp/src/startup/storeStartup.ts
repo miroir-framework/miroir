@@ -61,6 +61,7 @@ async function initializeStore(storeType: string): Promise<void> {
     throw new Error(
       `${storeType} storage is required but ${storeStartup.storePackage} is not available. ` +
         `Is it installed? Error: ${error instanceof Error ? error.message : String(error)}`,
+      { cause: error },
     );
   }
 }

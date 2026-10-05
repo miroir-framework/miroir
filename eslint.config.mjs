@@ -61,8 +61,10 @@ export default tseslint.config(
       "no-fallthrough": "off", // 47, each case needs a decision: `break` or `// falls through`
       // Added to js.configs.recommended by eslint 10.
       "no-useless-assignment": "off", // 64
-      "preserve-caught-error": "off", // 5
       "no-unassigned-vars": "off", // 1
+
+      // An error rethrown without `{ cause }` loses the stack and the type of the error it replaces.
+      "preserve-caught-error": "error",
 
       // Hooks called conditionally or in callbacks break React's state ordering.
       "react-hooks/rules-of-hooks": "error",

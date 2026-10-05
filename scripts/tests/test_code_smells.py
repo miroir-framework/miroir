@@ -48,6 +48,8 @@ def test_smell_of_reads_the_bracketed_id_of_custom_messages_only() -> None:
     assert code_smells.smell_of("no-restricted-syntax", "[module-state] Module-level `let`") == "module-state"
     assert code_smells.smell_of("no-restricted-globals", "[component-io] fetch in a component") == "component-io"
     assert code_smells.smell_of("miroir/action-result", "[action-result] throw in a function") == "action-result"
+    assert code_smells.smell_of("miroir/component-io", "Unexpected use of 'fetch'. [component-io] fetch in a component") == "component-io"
+    assert code_smells.smell_of("preserve-caught-error", "There is no `cause` attached to the symptom error being thrown.") == "swallowed-error"
     assert code_smells.smell_of("miroir/layers", "layer 1 imports layer 3") == "upward-import"
     # A rule's own message can hold brackets that are not smell ids.
     assert code_smells.smell_of("react-hooks/exhaustive-deps", "missing dependency: [items]") == "unstable-deps"

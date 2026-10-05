@@ -98,3 +98,10 @@ test("deep-nesting: blocks nested deeper than 4", async () => {
   await graduated(LIB, `export function f(a: boolean) { ${nested(5)} return 0; }\n`, "max-depth");
   await spared(LIB, `export function f(a: boolean) { ${nested(4)} return 0; }\n`, "max-depth");
 });
+
+test("swallowed-error: an error rethrown without the error it replaces", async () => {
+  const rethrow = (options) => `export function f(g: () => void) { try { g(); } catch (error) { throw new Error("g failed"${options}); } }\n`;
+  assert.equal((await reports(lint, LIB, rethrow(""), "preserve-caught-error"))[0]?.severity, 2);
+  assert.equal((await reports(lint, "packages/miroir-core/tests/sample.unit.test.ts", rethrow(""), "preserve-caught-error"))[0]?.severity, 2);
+  await spared(LIB, rethrow(", { cause: error }"), "preserve-caught-error");
+});

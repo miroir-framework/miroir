@@ -72,6 +72,7 @@ SMELL_ORDER = [
 # Rules whose message cannot carry a smell id. Custom messages (no-restricted-*) start with "[smell-id]".
 RULE_SMELLS = {
     "no-mixed-operators": "precedence-trap",
+    "preserve-caught-error": "swallowed-error",
     "react-hooks/rules-of-hooks": "hooks-order",
     "react-hooks/set-state-in-effect": "effect-derived-state",
     "react-hooks/exhaustive-deps": "unstable-deps",

@@ -9,7 +9,7 @@
 Analysis: [`./analysis.md`](./analysis.md) (decision D7) · Issue: https://github.com/miroir-framework/miroir/issues/340 · Defects found on the way: #481
 Working branch: `claude/340-0b1k4d` (PR #476)
 
-**Resume note:** Slices 0 to 5 DONE.
+**Resume note:** Slices 0 to 6 DONE.
 
 ---
 
@@ -31,7 +31,7 @@ This plan does **not** fix the counted violations (they stay in `eslint-suppress
 | 3 | `process.env` outside roots (`global-environment`) is a lint error | ✅ | same |
 | 4 | Subscriptions and `fetch` in views (`pub-sub`, `component-io`) are lint errors | ✅ | same |
 | 5 | `set-state-in-effect` and `max-depth` 4 are lint errors | ✅ | same |
-| 6 | `preserve-caught-error` is a lint error, its 5 sites fixed | ⬜ | same, core typecheck |
+| 6 | `preserve-caught-error` is a lint error, its 5 sites fixed | ✅ | same, core typecheck |
 | 7 | The 2 precedence traps fixed; `no-mixed-operators` is a lint error | ⬜ | MiroirTest `query.virtualAttributes` > composite transformer value |
 | 8 | `miroir/logger`: one logger per file, named after it; 43 loggers renamed | ⬜ | `graduated-smells.test.mjs`, presets updated |
 | 9 | Skill, analysis and PR text; gate and nonreg | ⬜ | pre-push gate, `nonreg:unit` |
@@ -101,7 +101,7 @@ Cost found in slice 5: `react-hooks/set-state-in-effect` runs the React Compiler
 
 ## Slice 6: `preserve-caught-error`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 RED: an error rethrown without `{ cause }` fails lint. GREEN: the 5 sites pass `{ cause: error }` (lib `es2022` has `ErrorOptions`). Validation as slice 1, plus `tsc` for miroir-core, miroir-cli and miroir-mcp.
 

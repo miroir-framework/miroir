@@ -5451,6 +5451,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
       throw new Error(
         "handleTestCompositeActionAssertion compositeRunTestAssertion error" +
           JSON.stringify(error, null, 2),
+        { cause: error },
       );
     } finally {
       // Clear test assertion in MiroirActivityTracker for TestLogService
