@@ -128,3 +128,12 @@ test("logger: one logger per file, named after the file", async () => {
     "miroir/logger",
   );
 });
+
+test("hooks-order and upward-import: their counted violations show in the lens", async () => {
+  const hook = `import { useState } from "react";\nexport function C(p: { on: boolean }) { if (p.on) { useState(0); } return null; }\n`;
+  assert.deepEqual((await reports(lint, VIEW, hook, "react-hooks/rules-of-hooks")).map((m) => m.severity), [2]);
+  assert.deepEqual((await reports(lens, VIEW, hook, "react-hooks/rules-of-hooks")).map((m) => m.severity), [1]);
+  const upward = `import { x } from "../3_controllers/x";\nexport const y = x;\n`;
+  assert.deepEqual((await reports(lint, LIB, upward, "miroir/layers")).map((m) => m.severity), [2]);
+  assert.deepEqual((await reports(lens, LIB, upward, "miroir/layers")).map((m) => m.severity), [1]);
+});

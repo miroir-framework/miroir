@@ -9,9 +9,9 @@ import reactHooks from "eslint-plugin-react-hooks";
 import base from "../eslint.config.mjs";
 import { ROOTS, smell, SRC, TEST_SESSION_VIEWS, TESTS, THEME_VIEWS, VIEW } from "./smells.mjs";
 
-// Errors of eslint.config.mjs that the lens shows as warnings: the smells that graduated from the lens (#340 D7), whose
-// existing violations eslint-suppressions.json counts. Bulk suppressions count errors only: as warnings here, every
-// violation shows, counted or not. A severity alone keeps the options that eslint.config.mjs gives each
+// Errors of eslint.config.mjs that the lens shows as warnings: the smells that graduated from the lens (#340 D7), and the
+// rules whose existing violations eslint-suppressions.json counts. Bulk suppressions count errors only: as warnings
+// here, every violation shows, counted or not. A severity alone keeps the options that eslint.config.mjs gives each
 // file, so each list covers only the files where eslint.config.mjs enables its rules.
 const ERRORS_IN_SOURCES = [
   "miroir/action-result",
@@ -22,7 +22,7 @@ const ERRORS_IN_SOURCES = [
   "react-hooks/set-state-in-effect",
   "max-depth",
 ];
-const ERRORS_IN_SOURCES_AND_TESTS = ["no-mixed-operators", "miroir/logger"];
+const ERRORS_IN_SOURCES_AND_TESTS = ["no-mixed-operators", "miroir/logger", "react-hooks/rules-of-hooks", "miroir/layers"];
 const asWarnings = (rules) => Object.fromEntries(rules.map((rule) => [rule, "warn"]));
 
 const UUID = "/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/";
