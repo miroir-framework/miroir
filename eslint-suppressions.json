@@ -1,7 +1,15 @@
 {
   "packages/miroir-ai/src/runtime/claudeAgent.ts": {
+    "miroir/global-environment": {
+      "count": 1
+    },
     "miroir/type-escape": {
       "count": 1
+    }
+  },
+  "packages/miroir-ai/src/runtime/copilotRuntimeFactory.ts": {
+    "miroir/global-environment": {
+      "count": 3
     }
   },
   "packages/miroir-ai/src/tools/miroirCopilotKitActions.ts": {
@@ -64,6 +72,16 @@
       "count": 1
     }
   },
+  "packages/miroir-core/src/1_core/authentication/AuthenticationHttp.ts": {
+    "miroir/global-environment": {
+      "count": 3
+    }
+  },
+  "packages/miroir-core/src/1_core/authentication/AuthenticationPolicy.ts": {
+    "miroir/global-environment": {
+      "count": 1
+    }
+  },
   "packages/miroir-core/src/1_core/localCache/partialMutationGuard.ts": {
     "miroir/layers": {
       "count": 1
@@ -71,6 +89,11 @@
   },
   "packages/miroir-core/src/1_core/localCache/reportQueryLoadSegment.ts": {
     "miroir/layers": {
+      "count": 1
+    }
+  },
+  "packages/miroir-core/src/1_core/mls/MlsToMls_CarryOn.ts": {
+    "miroir/global-environment": {
       "count": 1
     }
   },
@@ -91,6 +114,11 @@
   },
   "packages/miroir-core/src/1_core/mls/resolveConditionalSchema.ts": {
     "miroir/layers": {
+      "count": 1
+    }
+  },
+  "packages/miroir-core/src/1_core/mls/schemaModePolicy.ts": {
+    "miroir/global-environment": {
       "count": 1
     }
   },
@@ -134,6 +162,11 @@
       "count": 1
     }
   },
+  "packages/miroir-core/src/2_domain/evolutionTracePolicy.ts": {
+    "miroir/global-environment": {
+      "count": 1
+    }
+  },
   "packages/miroir-core/src/3_controllers/ActionRunner.ts": {
     "miroir/type-escape": {
       "count": 1
@@ -165,6 +198,11 @@
       "count": 18
     }
   },
+  "packages/miroir-core/src/3_controllers/MiroirActivityTracker.ts": {
+    "miroir/global-environment": {
+      "count": 2
+    }
+  },
   "packages/miroir-core/src/3_controllers/MiroirEventService.ts": {
     "miroir/layers": {
       "count": 1
@@ -180,6 +218,11 @@
       "count": 2
     }
   },
+  "packages/miroir-core/src/4_services/MiroirLoggerFactory.ts": {
+    "miroir/global-environment": {
+      "count": 3
+    }
+  },
   "packages/miroir-core/src/4_services/PersistenceStoreController.ts": {
     "miroir/action-result": {
       "count": 4
@@ -192,6 +235,11 @@
   },
   "packages/miroir-core/src/4_services/PersistenceStoreControllerTools.ts": {
     "miroir/type-escape": {
+      "count": 1
+    }
+  },
+  "packages/miroir-core/src/4_services/RestClientStub.ts": {
+    "miroir/global-environment": {
       "count": 1
     }
   },
@@ -225,6 +273,16 @@
       "count": 1
     }
   },
+  "packages/miroir-core/src/tools.ts": {
+    "miroir/global-environment": {
+      "count": 1
+    }
+  },
+  "packages/miroir-env/src/testEnvironment.ts": {
+    "miroir/global-environment": {
+      "count": 1
+    }
+  },
   "packages/miroir-example-library/src/Library.ts": {
     "miroir/type-escape": {
       "count": 2
@@ -245,6 +303,11 @@
       "count": 2
     }
   },
+  "packages/miroir-localcache-redux/src/4_services/localCache/Model.ts": {
+    "miroir/global-environment": {
+      "count": 1
+    }
+  },
   "packages/miroir-localcache-redux/src/4_services/persistence/PersistenceReduxSaga.ts": {
     "miroir/action-result": {
       "count": 8
@@ -252,6 +315,11 @@
   },
   "packages/miroir-localcache-zustand/src/4_services/LocalCache.ts": {
     "miroir/type-escape": {
+      "count": 1
+    }
+  },
+  "packages/miroir-localcache-zustand/src/4_services/localCache/Model.ts": {
+    "miroir/global-environment": {
       "count": 1
     }
   },
@@ -290,7 +358,15 @@
       "count": 1
     }
   },
+  "packages/miroir-standalone-app-electron/src/ipcServerSetup.ts": {
+    "miroir/global-environment": {
+      "count": 2
+    }
+  },
   "packages/miroir-standalone-app/src/config/logConfigPresets.ts": {
+    "miroir/global-environment": {
+      "count": 2
+    },
     "miroir/type-escape": {
       "count": 8
     }
@@ -391,6 +467,11 @@
       "count": 21
     }
   },
+  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/IconComponents.tsx": {
+    "miroir/global-environment": {
+      "count": 1
+    }
+  },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/TransformerEditor/TransformerEditor.tsx": {
     "react-hooks/rules-of-hooks": {
       "count": 11
@@ -434,6 +515,11 @@
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/services/ConfigurationService.ts": {
     "miroir/action-result": {
       "count": 7
+    }
+  },
+  "packages/miroir-standalone-app/src/miroir-fwk/4_view/tools/performanceConfig.ts": {
+    "miroir/global-environment": {
+      "count": 4
     }
   },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/tools/renderPerformanceMeasure.tsx": {

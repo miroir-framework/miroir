@@ -44,3 +44,12 @@ test("type-escape: a double cast through unknown or any", async () => {
   await graduated(LIB, `export const f = (x: number) => x as any as string;\n`, "miroir/type-escape");
   await spared(LIB, `export const f = (x: unknown) => x as string;\n`, "miroir/type-escape");
 });
+
+test("global-environment: process.env read outside a composition root", async () => {
+  const read = `export const port = () => process.env.PORT;\n`;
+  await graduated(LIB, read, "miroir/global-environment");
+  await spared("packages/miroir-core/src/5_setup/sample.ts", read, "miroir/global-environment");
+  await spared("packages/miroir-server/src/server.ts", read, "miroir/global-environment");
+  await spared("packages/miroir-standalone-app/src/miroir-fwk/4-tests/sample.ts", read, "miroir/global-environment");
+  await spared("packages/miroir-core/tests/sample.unit.test.ts", read, "miroir/global-environment");
+});

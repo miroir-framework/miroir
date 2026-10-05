@@ -12,7 +12,7 @@ import { ROOTS, smell, SRC, TEST_SESSION_VIEWS, TESTS, THEME_VIEWS, VIEW } from 
 // The smells that graduated to eslint.config.mjs (#340 D7) are errors there, where eslint-suppressions.json hides the
 // counted violations. Bulk suppressions count errors only: as warnings here, every violation shows. A severity alone
 // keeps the options that eslint.config.mjs gives each file.
-const GRADUATED = ["miroir/action-result", "miroir/type-escape"];
+const GRADUATED = ["miroir/action-result", "miroir/type-escape", "miroir/global-environment"];
 
 const UUID = "/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/";
 // A hex color (`#333`, `1px solid #e0e0e0`), an rgb() color, white or black. A translucent rgba() tint reads on any background.
@@ -129,11 +129,6 @@ const fetchInView = {
 };
 
 const outsideCompositionRoots = [
-  smell(
-    "global-environment",
-    "MemberExpression[object.name='process'][property.name='env']",
-    "process.env read outside a composition root: the value cannot differ per instance or per test. Take it as a parameter that the root fills.",
-  ),
   smell(
     "wiring",
     "NewExpression[callee.name=/^(DomainController|PersistenceStoreControllerManager|PersistenceStoreController|MiroirContext|MiroirEventService|MiroirActivityTracker|LocalCache|RestClient)$/]",

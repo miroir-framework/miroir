@@ -54,3 +54,12 @@ export const typeEscape = [
     "Double cast: the compiler checks nothing here. Fix the type at its source, or validate the value.",
   ),
 ];
+
+// `miroir/global-environment`, in sources outside the composition roots.
+export const globalEnvironment = [
+  smell(
+    "global-environment",
+    "MemberExpression[object.name='process'][property.name='env']",
+    "process.env read outside a composition root: the value cannot differ per instance or per test. Take it as a parameter that the root fills.",
+  ),
+];
