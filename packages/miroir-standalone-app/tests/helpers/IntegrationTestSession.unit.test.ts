@@ -192,6 +192,34 @@ describe("IntegrationTestSession store configuration", () => {
     });
   });
 
+  // #477: a parallel nonreg worker puts its test application in its own state and databases.
+  it("resolveTestSessionForIntegOptionsFromEnv names the test application after the worker state", () => {
+    expect(
+      resolveTestSessionForIntegOptionsFromEnv({ MIROIR_ENV: "test-filesystem", MIROIR_TEST_WORKER: "w2" }).testApplicationStore,
+    ).toEqual({
+      emulatedServerType: "filesystem",
+      applicationRootDirectory: ".miroir/test-filesystem@w2/testApplication",
+    });
+    expect(
+      resolveTestSessionForIntegOptionsFromEnv({ MIROIR_ENV: "test-sql", MIROIR_TEST_WORKER: "w2" }).testApplicationStore,
+    ).toMatchObject({ emulatedServerType: "sql", schema: "test_sql_w2_testApplication" });
+    expect(
+      resolveTestSessionForIntegOptionsFromEnv({ MIROIR_ENV: "test-mongodb", MIROIR_TEST_WORKER: "w2" }).testApplicationStore,
+    ).toMatchObject({ emulatedServerType: "mongodb", database: "test_mongodb_w2_testApplication" });
+  });
+
+  it("buildTestApplicationStoreUnitConfiguration uses the schema it is given for every sql section", () => {
+    const config = buildTestApplicationStoreUnitConfiguration(INTEG_TEST_APPLICATION_NAME, {
+      emulatedServerType: "sql",
+      connectionString: "postgres://postgres@localhost:5432/postgres",
+      schema: "test_sql_w2_testApplication",
+    });
+
+    expect(config.admin).toMatchObject({ schema: "test_sql_w2_testApplication" });
+    expect(config.model).toMatchObject({ schema: "test_sql_w2_testApplication" });
+    expect(config.data).toMatchObject({ schema: "test_sql_w2_testApplication" });
+  });
+
   it("resolveTestSessionForIntegOptionsFromEnv ignores a MIROIR_ENV that is not a test environment", () => {
     expect(resolveTestSessionForIntegOptionsFromEnv({ MIROIR_ENV: "dev" }).adminStore).toEqual(TEST_SQL_ADMIN);
   });

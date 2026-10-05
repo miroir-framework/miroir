@@ -88,7 +88,7 @@ export function resolveTestSessionForIntegOptionsFromEnv(
   return {
     testApplicationStore: resolveTestApplicationStoreOptionsFromEnv(
       env,
-      testEnvironment.name,
+      testEnvironment.resolved.stateName,
       client.deploymentStorageConfig[deployment_Miroir.uuid],
     ),
     adminStore: resolveAdminStoreOptionsFromEnv(
@@ -108,12 +108,15 @@ function withPostgresHost(connectionString: string, host: string): string {
 
 function resolveTestApplicationStoreOptionsFromEnv(
   env: NodeJS.ProcessEnv,
-  environmentName: string,
+  /** The environment's state name: `<environment>@<worker>` in a parallel nonreg job (#477). */
+  environmentStateName: string,
   miroirStorage: StoreUnitConfiguration | undefined,
 ): TestApplicationStoreOptions {
   const environmentSection = miroirStorage?.model;
   const storeType = env.MIROIR_TEST_APP_STORE_TYPE ?? environmentSection?.emulatedServerType ?? "sql";
-  const environmentDirectory = `.miroir/${environmentName}/${INTEG_TEST_APPLICATION_NAME}`;
+  const environmentDirectory = `.miroir/${environmentStateName}/${INTEG_TEST_APPLICATION_NAME}`;
+  // #477: the database stores of the test application carry the state name, like the environment's own.
+  const environmentStoreName = `${environmentStateName.replace(/[^A-Za-z0-9_]/g, "_")}_${INTEG_TEST_APPLICATION_NAME}`;
   switch (storeType) {
     case "sql": {
       const host = env.MIROIR_TEST_POSTGRES_HOST;
@@ -123,6 +126,7 @@ function resolveTestApplicationStoreOptionsFromEnv(
           connectionString: host
             ? withPostgresHost(environmentSection.connectionString, host)
             : environmentSection.connectionString,
+          schema: environmentStoreName,
         };
       }
       return { emulatedServerType: "sql", postgresHostName: host ?? DEFAULT_POSTGRES_HOST };
@@ -143,7 +147,9 @@ function resolveTestApplicationStoreOptionsFromEnv(
         connectionString:
           env.MIROIR_TEST_MONGODB_CONNECTION_STRING ??
           (environmentSection?.emulatedServerType === "mongodb" ? environmentSection.connectionString : undefined),
-        database: env.MIROIR_TEST_APP_MONGODB_DATABASE ?? INTEG_TEST_APPLICATION_NAME,
+        database:
+          env.MIROIR_TEST_APP_MONGODB_DATABASE ??
+          (environmentSection?.emulatedServerType === "mongodb" ? environmentStoreName : INTEG_TEST_APPLICATION_NAME),
       };
     default:
       throw new Error(

@@ -74,20 +74,34 @@ export async function beforeEachTest(
 
 /**
  * #321: `.miroir/<environment>` when the template store is a section of a test environment
- * (`.miroir/<environment>/<application>/…`), so test applications live next to it.
+ * (`.miroir/<environment>/<application>/…`), so test applications live next to it. #477: the
+ * environment part is the state name, `<environment>@<worker>` in a parallel nonreg job. A SQL or
+ * MongoDB template has no location of its own: its filesystem Admin section tells.
  */
 function environmentStateDirectory(
   libraryDeploymentStorageConfiguration: StoreUnitConfiguration,
 ): string | undefined {
-  const template = libraryDeploymentStorageConfiguration.model;
+  const { model: template, admin } = libraryDeploymentStorageConfiguration;
   const location =
     template.emulatedServerType === "filesystem"
       ? template.directory
       : template.emulatedServerType === "indexedDb"
         ? template.indexedDbName
-        : undefined;
+        : admin?.emulatedServerType === "filesystem"
+          ? admin.directory
+          : undefined;
   const [root, environment] = location?.split("/") ?? [];
   return root === ENVIRONMENT_STATE_ROOT && environment ? `${root}/${environment}` : undefined;
+}
+
+/**
+ * #477: the prefix of the SQL schemas and MongoDB databases of test applications installed in a
+ * test environment, `test-sql@w2` → `test_sql_w2`, like the environment's own stores; none outside
+ * a test environment.
+ */
+function environmentStorePrefix(libraryDeploymentStorageConfiguration: StoreUnitConfiguration): string | undefined {
+  const directory = environmentStateDirectory(libraryDeploymentStorageConfiguration);
+  return directory?.slice(ENVIRONMENT_STATE_ROOT.length + 1).replace(/[^A-Za-z0-9_]/g, "_");
 }
 
 /**
@@ -139,17 +153,19 @@ export function ephemeralStoreIdentifier(
   testApplicationName: string,
   isolationKey: string,
   reservedSuffixLength: number = MODEL_VERSION_SUFFIX_LENGTH,
+  environmentPrefix?: string,
 ): string {
   const key = isolationKey.replace(/-/g, "");
   const isolationSuffix = `_${key}`;
-  const budget = POSTGRES_IDENTIFIER_MAX - reservedSuffixLength;
+  const environmentPart = environmentPrefix ? `${environmentPrefix}_` : "";
+  const budget = POSTGRES_IDENTIFIER_MAX - reservedSuffixLength - environmentPart.length;
   const maxPrefixLength = Math.max(1, budget - isolationSuffix.length);
   const base = testApplicationName.replace(/[^a-zA-Z0-9_]/g, "_");
-  let prefixed = /^[a-zA-Z_]/.test(base) ? base : `app_${base}`;
+  let prefixed = environmentPart || /^[a-zA-Z_]/.test(base) ? base : `app_${base}`;
   if (prefixed.length > maxPrefixLength) {
     prefixed = prefixed.slice(0, maxPrefixLength);
   }
-  return `${prefixed}${isolationSuffix}`;
+  return `${environmentPart}${prefixed}${isolationSuffix}`;
 }
 
 export function testApplicationStorageConfiguration(
@@ -160,6 +176,14 @@ export function testApplicationStorageConfiguration(
   const storeName = isolationKey
     ? ephemeralStoreIdentifier(testApplicationName, isolationKey)
     : testApplicationName;
+  // #477: SQL schemas and MongoDB databases have no directory to live next to their template's
+  // environment; they carry its name instead.
+  const environmentPrefix = environmentStorePrefix(libraryDeploymentStorageConfiguration);
+  const databaseName = !environmentPrefix
+    ? storeName
+    : isolationKey
+      ? ephemeralStoreIdentifier(testApplicationName, isolationKey, MODEL_VERSION_SUFFIX_LENGTH, environmentPrefix)
+      : `${environmentPrefix}_${testApplicationName}`;
   let testDeploymentStorageConfiguration: StoreUnitConfiguration;
   switch (libraryDeploymentStorageConfiguration.model.emulatedServerType) {
     case "indexedDb": {
@@ -240,9 +264,9 @@ export function testApplicationStorageConfiguration(
         "postgres://postgres:postgres@localhost:5432/postgres";
       testDeploymentStorageConfiguration = {
         admin: libraryDeploymentStorageConfiguration.admin,
-        model: { emulatedServerType: "sql", connectionString, schema: storeName },
-        data: { emulatedServerType: "sql", connectionString, schema: storeName },
-        modelVersion: { emulatedServerType: "sql", connectionString, schema: `${storeName}_modelVersion` },
+        model: { emulatedServerType: "sql", connectionString, schema: databaseName },
+        data: { emulatedServerType: "sql", connectionString, schema: databaseName },
+        modelVersion: { emulatedServerType: "sql", connectionString, schema: `${databaseName}_modelVersion` },
       };
       break;
     }
@@ -251,9 +275,9 @@ export function testApplicationStorageConfiguration(
         libraryDeploymentStorageConfiguration.model.connectionString ?? "mongodb://localhost:27017";
       testDeploymentStorageConfiguration = {
         admin: libraryDeploymentStorageConfiguration.admin,
-        model: { emulatedServerType: "mongodb", connectionString, database: storeName },
-        data: { emulatedServerType: "mongodb", connectionString, database: storeName },
-        modelVersion: { emulatedServerType: "mongodb", connectionString, database: `${storeName}_modelVersion` },
+        model: { emulatedServerType: "mongodb", connectionString, database: databaseName },
+        data: { emulatedServerType: "mongodb", connectionString, database: databaseName },
+        modelVersion: { emulatedServerType: "mongodb", connectionString, database: `${databaseName}_modelVersion` },
       };
       break;
     }
