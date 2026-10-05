@@ -101,7 +101,7 @@ STAGE_CACHES_STORES=(
   miroir-store-mongodb
 )
 STAGE_UI_SERVICES=(miroir-react miroir-mcp miroir-diagram-class)
-STAGE_APPS=(miroir-cli miroir-ai miroir-mcp)
+STAGE_APPS=(miroir-cli miroir-ai)
 STAGE_STANDALONE_DEPS=(miroir-example-library miroir-example-spotify miroir-fixture-appForTest)
 STAGE_STANDALONE=(miroir-standalone-app)
 STAGE_DEPLOY_TEST=(miroir-example-library miroir-example-spotify miroir-fixture-appForTest miroir-example-postgres)
@@ -250,6 +250,7 @@ write_state_header() {
 record_package_success() {
   local pkg="$1"
   SUCCESS_AT["$pkg"]="$(iso_now)"
+  BUILT_THIS_RUN["$pkg"]=1
   ERROR_PACKAGE=""
   ERROR_AT=""
   ERROR_MESSAGE=""
@@ -369,12 +370,37 @@ resolve_build_scope() {
   esac
 }
 
-# True if this package should be built in the current scope.
+# Packages built during this run: a package listed in several stages is built once.
+declare -A BUILT_THIS_RUN=()
+
+# True if the package's build output (dist/) exists. The state file alone is not
+# trusted: dist/ can disappear (git clean, fresh worktree, renamed package) while
+# tmp/build-all-state still records a success.
+package_built() {
+  local pkg="$1"
+  case "$pkg" in
+    jzod|jzod-ts)
+      [[ -d "$SCRIPT_DIR/../../$pkg/dist" ]]
+      ;;
+    *)
+      [[ -d "$SCRIPT_DIR/packages/$pkg/dist" ]]
+      ;;
+  esac
+}
+
+# True if this package should be built in the current scope. A package without
+# dist/ is always built (except in typecheck mode, which emits nothing).
 should_build_package() {
   local pkg="$1"
   local idx
   if ! idx=$(package_index "$pkg"); then
     return 1
+  fi
+  if [[ -n "${BUILT_THIS_RUN[$pkg]+x}" ]]; then
+    return 1
+  fi
+  if [[ "$CORE_BUILD_MODE" != "typecheck" ]] && ! package_built "$pkg"; then
+    return 0
   fi
   if (( idx < START_INDEX )); then
     return 1
@@ -383,6 +409,18 @@ should_build_package() {
     return 1
   fi
   return 0
+}
+
+# Explain why should_build_package skipped a package.
+print_skip_reason() {
+  local pkg="$1"
+  if [[ -n "${BUILT_THIS_RUN[$pkg]+x}" ]]; then
+    echo "  [SKIP] $pkg (already built in this run)"
+  elif [[ -n "${SUCCESS_AT[$pkg]+x}" ]]; then
+    echo "  [SKIP] $pkg (already built at ${SUCCESS_AT[$pkg]})"
+  else
+    echo "  [SKIP] $pkg (before incremental start)"
+  fi
 }
 
 package_available() {
@@ -408,11 +446,7 @@ build_one_package() {
     return 0
   fi
   if ! should_build_package "$pkg"; then
-    if [[ -n "${SUCCESS_AT[$pkg]+x}" ]]; then
-      echo "  [SKIP] $pkg (already built at ${SUCCESS_AT[$pkg]})"
-    else
-      echo "  [SKIP] $pkg (before incremental start)"
-    fi
+    print_skip_reason "$pkg"
     return 0
   fi
 
@@ -474,11 +508,7 @@ run_stage_packages() {
     if should_build_package "$pkg"; then
       selected+=("$pkg")
     else
-      if [[ -n "${SUCCESS_AT[$pkg]+x}" ]]; then
-        echo "  [SKIP] $pkg (already built at ${SUCCESS_AT[$pkg]})"
-      else
-        echo "  [SKIP] $pkg (before incremental start)"
-      fi
+      print_skip_reason "$pkg"
     fi
   done
 
@@ -553,6 +583,7 @@ run_stage_packages() {
     fi
     if [[ "$rc" == "0" ]]; then
       SUCCESS_AT["$pkg"]="$(iso_now)"
+      BUILT_THIS_RUN["$pkg"]=1
       echo "  [STATE] recorded success: $pkg at ${SUCCESS_AT[$pkg]}"
     else
       any_failed=1
@@ -647,10 +678,10 @@ record_time "6/9  miroir-react, miroir-mcp, miroir-diagram-class" "$t0"
 # ---------------------------------------------------------------------------
 # Step 7 – Application-level packages
 # ---------------------------------------------------------------------------
-step "7/9 · miroir-cli, miroir-ai, miroir-mcp"
+step "7/9 · miroir-cli, miroir-ai"
 t0=$(now_secs)
 run_stage_packages "apps" "${STAGE_APPS[@]}"
-record_time "7/9  miroir-cli, miroir-ai, miroir-mcp" "$t0"
+record_time "7/9  miroir-cli, miroir-ai" "$t0"
 
 # ---------------------------------------------------------------------------
 # Step 8 – Application-level packages
