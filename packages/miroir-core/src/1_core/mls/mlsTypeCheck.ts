@@ -45,7 +45,7 @@ import { TransformerFailure } from "../../0_interfaces/2_domain/DomainElement";
 // import { miroirFundamentalMlSchema } from "../tmp/src/0_interfaces/1_core/bootstrapMlSchemas/miroirFundamentalMlSchema";
 
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlsTypeCheck");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "mlsTypeCheck");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
 ).then((logger: LoggerInterface) => {log = logger});

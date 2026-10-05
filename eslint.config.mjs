@@ -1,12 +1,43 @@
 // Minimal lint rules for the miroir monorepo (#325). Every rule here is an error and the codebase passes it.
 // Rules that still have violations are switched off below with their count, so they can be enabled one at a time.
-// Existing rules-of-hooks and miroir/layers violations are counted per file in eslint-suppressions.json: a new
-// violation fails, and after a fix `npm run lint` asks for `npx eslint packages --prune-suppressions`.
+// Existing violations of rules-of-hooks, miroir/layers and the smells that graduated from the smell lens (#340) are
+// counted per file in eslint-suppressions.json: a new violation fails, and after a fix `npm run lint` asks for
+// `npx eslint packages --prune-suppressions`.
 // Run: npm run lint
 import js from "@eslint/js";
+import { builtinRules } from "eslint/use-at-your-own-risk";
 import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
 import miroirLayers from "./eslint-rules/miroir-layers.mjs";
+import miroirLogger from "./eslint-rules/miroir-logger.mjs";
+import {
+  actionResult,
+  componentIo,
+  globalEnvironment,
+  pubSub,
+  ROOTS,
+  SRC,
+  TEST_SESSION_VIEWS,
+  TESTS,
+  typeEscape,
+  VIEW,
+} from "./eslint-rules/smells.mjs";
+
+// A smell that graduated from the lens runs under its own name: the same ESLint rule registered as `miroir/<smell-id>`,
+// so eslint-suppressions.json counts each smell apart. The miroir-code-quality skill has an entry per smell id.
+const restrictedSyntax = builtinRules.get("no-restricted-syntax");
+const restrictedGlobals = builtinRules.get("no-restricted-globals");
+const miroir = {
+  rules: {
+    layers: miroirLayers,
+    logger: miroirLogger,
+    "action-result": restrictedSyntax,
+    "type-escape": restrictedSyntax,
+    "global-environment": restrictedSyntax,
+    "pub-sub": restrictedSyntax,
+    "component-io": restrictedGlobals,
+  },
+};
 
 export default tseslint.config(
   {
@@ -21,7 +52,7 @@ export default tseslint.config(
   {
     files: ["packages/*/{src,test,tests}/**/*.{ts,tsx}"],
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
-    plugins: { "react-hooks": reactHooks, miroir: { rules: { layers: miroirLayers } } },
+    plugins: { "react-hooks": reactHooks, miroir },
     linterOptions: { reportUnusedDisableDirectives: "off" },
     rules: {
       // Too many existing violations for a minimal set; candidates for later issues.
@@ -32,14 +63,57 @@ export default tseslint.config(
       "no-fallthrough": "off", // 47, each case needs a decision: `break` or `// falls through`
       // Added to js.configs.recommended by eslint 10.
       "no-useless-assignment": "off", // 64
-      "preserve-caught-error": "off", // 5
       "no-unassigned-vars": "off", // 1
+
+      // An error rethrown without `{ cause }` loses the stack and the type of the error it replaces.
+      "preserve-caught-error": "error",
+      // `a ?? b == c` parses as `a ?? (b == c)` (#340 found two such traps in TransformersForRuntime.ts).
+      "no-mixed-operators": ["error", { groups: [["??", "==", "!=", "===", "!==", "<", ">", "<=", ">="]] }],
 
       // Hooks called conditionally or in callbacks break React's state ordering.
       "react-hooks/rules-of-hooks": "error",
 
       // Implementation imports flow downwards only between numbered layers (AGENTS.md, "Architecture").
       "miroir/layers": "error",
+
+      // Log presets select a logger by its name: one logger per file, named after the file (#340).
+      "miroir/logger": "error",
+    },
+  },
+  {
+    // Smells that graduated from the smell lens (#340, analysis D7). The messages of the miroir/<smell-id> rules carry
+    // the smell id in brackets; the runner of the smell lens (scripts/code_smells.py) maps the stock rules to theirs.
+    files: SRC,
+    ignores: TESTS,
+    rules: {
+      "miroir/action-result": ["error", ...actionResult],
+      "miroir/type-escape": ["error", ...typeEscape],
+      "react-hooks/set-state-in-effect": "error", // effect-derived-state
+      "max-depth": ["error", 4], // deep-nesting
+    },
+  },
+  {
+    files: SRC,
+    ignores: [...TESTS, ...ROOTS],
+    rules: {
+      "miroir/global-environment": ["error", ...globalEnvironment],
+    },
+  },
+  {
+    files: VIEW,
+    ignores: [...TESTS, ...ROOTS],
+    rules: {
+      "miroir/pub-sub": ["error", ...pubSub],
+      "miroir/component-io": ["error", ...componentIo],
+    },
+  },
+  {
+    // The components and hooks of the standalone app's 4-tests folder are views, though the folder is a root.
+    files: TEST_SESSION_VIEWS,
+    ignores: TESTS,
+    rules: {
+      "miroir/pub-sub": ["error", ...pubSub],
+      "miroir/component-io": ["error", ...componentIo],
     },
   },
   {

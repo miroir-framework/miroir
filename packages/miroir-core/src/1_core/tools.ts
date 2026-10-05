@@ -66,7 +66,7 @@ export function base64ToBlob(base64: string, mimeType: string): Blob {
     const byteArray = new Uint8Array(byteNumbers);
     return new Blob([byteArray], { type: mimeType });
   } catch (error) {
-    throw new Error(`Failed to decode base64: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(`Failed to decode base64: ${error instanceof Error ? error.message : 'Unknown error'}`, { cause: error });
   }
 }
 

@@ -68,7 +68,7 @@ const TransformationResultValueEditor: React.FC<{
 TransformationResultValueEditor.displayName = "TransformationResultValueEditor";
 
 // ################################################################################################
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TransformerResultPanel");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TransformationResultPanel");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {

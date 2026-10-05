@@ -1,0 +1,139 @@
+// #340 D7: the smells that graduated from the lens fail `npm run lint`, and stay warnings in the lens, so a whole-file
+// review still lists the violations that eslint-suppressions.json counts (bulk suppressions count errors only).
+// Run from the repository root: node --test eslint-rules/graduated-smells.test.mjs
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import { ESLint } from "eslint";
+
+const lint = new ESLint({ overrideConfigFile: "eslint.config.mjs" });
+const lens = new ESLint({ overrideConfigFile: "eslint-rules/smell-lens.config.mjs" });
+
+const LIB = "packages/miroir-core/src/2_domain/sample.ts";
+const VIEW = "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Sample.tsx";
+// The hooks and components of the 4-tests folder are views, though the folder is a composition root.
+const SESSION_HOOK = "packages/miroir-standalone-app/src/miroir-fwk/4-tests/useSample.ts";
+const ENTRY = "packages/miroir-standalone-app/src/index.tsx";
+
+const reports = async (eslint, filePath, code, ruleId) => {
+  const [result] = await eslint.lintText(code, { filePath });
+  assert.deepEqual(result.messages.filter((m) => m.fatal), [], `${filePath} does not parse`);
+  return result.messages.filter((m) => m.ruleId === ruleId);
+};
+
+// An error in `npm run lint`, a warning in the lens. A rule of the miroir plugin is named after its smell, and its
+// messages carry the smell id in brackets, as the smell runner reads it, so the lint output names the skill entry.
+// (no-restricted-globals puts "Unexpected use of 'fetch'." before the custom message.)
+const graduated = async (filePath, code, ruleId) => {
+  const errors = await reports(lint, filePath, code, ruleId);
+  assert.ok(errors.length > 0 && errors.every((m) => m.severity === 2), `${ruleId} is not an error: ${JSON.stringify(errors)}`);
+  const warnings = await reports(lens, filePath, code, ruleId);
+  assert.ok(warnings.length > 0 && warnings.every((m) => m.severity === 1), `${ruleId} is not a lens warning: ${JSON.stringify(warnings)}`);
+  if (ruleId.startsWith("miroir/")) {
+    const smell = ruleId.slice("miroir/".length);
+    assert.ok(errors.every((m) => /\[([a-z][a-z-]+)\]/.exec(m.message)?.[1] === smell), `${ruleId} messages: ${JSON.stringify(errors)}`);
+  }
+};
+const spared = async (filePath, code, ruleId) => {
+  assert.deepEqual(await reports(lint, filePath, code, ruleId), []);
+};
+
+test("action-result: a throw, or an `as any` result, in a function that returns an action result", async () => {
+  const types = `declare class Action2Error { constructor(t: string); }\ntype Action2VoidReturnType = Action2Error | { status: "ok" };\n`;
+  await graduated(LIB, `${types}export async function open(): Promise<Action2VoidReturnType> { throw new Error("Method not implemented."); }\n`, "miroir/action-result");
+  await graduated(LIB, `${types}export function f(r: unknown): Action2VoidReturnType { return r as any; }\n`, "miroir/action-result");
+  await spared(LIB, `${types}export async function open(): Promise<Action2VoidReturnType> { return new Action2Error("NotImplemented"); }\n`, "miroir/action-result");
+});
+
+test("type-escape: a double cast through unknown or any", async () => {
+  await graduated(LIB, `export const f = (x: number) => x as unknown as string;\n`, "miroir/type-escape");
+  await graduated(LIB, `export const f = (x: number) => x as any as string;\n`, "miroir/type-escape");
+  await spared(LIB, `export const f = (x: unknown) => x as string;\n`, "miroir/type-escape");
+});
+
+test("global-environment: process.env read outside a composition root", async () => {
+  const read = `export const port = () => process.env.PORT;\n`;
+  await graduated(LIB, read, "miroir/global-environment");
+  await spared("packages/miroir-core/src/5_setup/sample.ts", read, "miroir/global-environment");
+  await spared("packages/miroir-server/src/server.ts", read, "miroir/global-environment");
+  await spared("packages/miroir-standalone-app/src/miroir-fwk/4-tests/sample.ts", read, "miroir/global-environment");
+  await spared("packages/miroir-core/tests/sample.unit.test.ts", read, "miroir/global-environment");
+});
+
+test("pub-sub: a subscription in a component or hook", async () => {
+  const subscribe = `declare const bus: { subscribe(f: () => void): () => void };\nexport const off = bus.subscribe(() => undefined);\n`;
+  await graduated(VIEW, subscribe, "miroir/pub-sub");
+  await graduated(SESSION_HOOK, subscribe, "miroir/pub-sub");
+  await spared(LIB, subscribe, "miroir/pub-sub");
+  await spared(
+    VIEW,
+    `import { useSyncExternalStore } from "react";\ndeclare const store: { subscribe(f: () => void): () => void; getSnapshot(): string };\nexport const useStatus = () => useSyncExternalStore(store.subscribe, store.getSnapshot);\n`,
+    "miroir/pub-sub",
+  );
+});
+
+test("component-io: fetch in a component or hook", async () => {
+  const load = `export async function useLoad() { return fetch("/api/x"); }\n`;
+  await graduated(VIEW, load, "miroir/component-io");
+  await graduated(SESSION_HOOK, load, "miroir/component-io");
+  await spared(LIB, load, "miroir/component-io");
+  await spared(ENTRY, load, "miroir/component-io");
+  await spared(VIEW, `export function useLoad(fetch: (u: string) => Promise<unknown>) { return fetch("/api/x"); }\n`, "miroir/component-io");
+});
+
+test("effect-derived-state: setState called synchronously in an effect", async () => {
+  await graduated(
+    VIEW,
+    `import { useEffect, useState } from "react";\nexport function C({ items }: { items: string[] }) { const [n, setN] = useState(0); useEffect(() => { setN(items.length); }, [items]); return <div>{n}</div>; }\n`,
+    "react-hooks/set-state-in-effect",
+  );
+  await spared(
+    VIEW,
+    `import { useEffect, useState } from "react";\nexport function C({ load }: { load: () => Promise<number> }) { const [n, setN] = useState(0); useEffect(() => { load().then(setN); }, [load]); return <div>{n}</div>; }\n`,
+    "react-hooks/set-state-in-effect",
+  );
+});
+
+test("deep-nesting: blocks nested deeper than 4", async () => {
+  const nested = (depth) => `${"if (a) { ".repeat(depth)}return 1;${" }".repeat(depth)}`;
+  await graduated(LIB, `export function f(a: boolean) { ${nested(5)} return 0; }\n`, "max-depth");
+  await spared(LIB, `export function f(a: boolean) { ${nested(4)} return 0; }\n`, "max-depth");
+});
+
+test("swallowed-error: an error rethrown without the error it replaces", async () => {
+  const rethrow = (options) => `export function f(g: () => void) { try { g(); } catch (error) { throw new Error("g failed"${options}); } }\n`;
+  assert.equal((await reports(lint, LIB, rethrow(""), "preserve-caught-error"))[0]?.severity, 2);
+  assert.equal((await reports(lint, "packages/miroir-core/tests/sample.unit.test.ts", rethrow(""), "preserve-caught-error"))[0]?.severity, 2);
+  await spared(LIB, rethrow(", { cause: error }"), "preserve-caught-error");
+});
+
+test("precedence-trap: ?? mixed with a comparison", async () => {
+  const trap = `export const f = (a?: string, b?: string) => a ?? "build" == b;\n`;
+  await graduated(LIB, trap, "no-mixed-operators");
+  await graduated("packages/miroir-core/tests/sample.unit.test.ts", trap, "no-mixed-operators");
+  await spared(LIB, `export const f = (a?: string, b?: string) => (a ?? "build") == b;\n`, "no-mixed-operators");
+});
+
+test("logger: one logger per file, named after the file", async () => {
+  const factory = `declare const MiroirLoggerFactory: { getLoggerName(p: string, l: string, n: string): string };\n`;
+  const logger = (name) => `export const loggerName = MiroirLoggerFactory.getLoggerName("miroir-core", "2", ${name});\n`;
+  await graduated(LIB, factory + logger(`"Other"`), "miroir/logger");
+  await graduated("packages/miroir-core/tests/sample.unit.test.ts", factory + logger(`"Other"`), "miroir/logger");
+  await spared(LIB, factory + logger(`"sample"`), "miroir/logger");
+  await spared(LIB, factory + logger(`"sample.ts"`), "miroir/logger");
+  // A name computed at run time is not checked.
+  await spared(LIB, factory + `declare const fileName: string;\n` + logger("fileName"), "miroir/logger");
+  await graduated(
+    LIB,
+    factory + logger(`"sample"`) + `export const second = MiroirLoggerFactory.getLoggerName("miroir-core", "2", "sample");\n`,
+    "miroir/logger",
+  );
+});
+
+test("hooks-order and upward-import: their counted violations show in the lens", async () => {
+  const hook = `import { useState } from "react";\nexport function C(p: { on: boolean }) { if (p.on) { useState(0); } return null; }\n`;
+  assert.deepEqual((await reports(lint, VIEW, hook, "react-hooks/rules-of-hooks")).map((m) => m.severity), [2]);
+  assert.deepEqual((await reports(lens, VIEW, hook, "react-hooks/rules-of-hooks")).map((m) => m.severity), [1]);
+  const upward = `import { x } from "../3_controllers/x";\nexport const y = x;\n`;
+  assert.deepEqual((await reports(lint, LIB, upward, "miroir/layers")).map((m) => m.severity), [2]);
+  assert.deepEqual((await reports(lens, LIB, upward, "miroir/layers")).map((m) => m.severity), [1]);
+});

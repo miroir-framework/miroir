@@ -46,7 +46,7 @@ import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 import { eventsUrl } from '../navigation.js';
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MiroirEventTimeLine");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MiroirEventTimeline");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => { log = logger });

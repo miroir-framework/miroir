@@ -19,7 +19,7 @@ import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
 import type { ExtractorTemplateInstancesByEntity } from "miroir-core";
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Scripts");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "scripts");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {log = logger});

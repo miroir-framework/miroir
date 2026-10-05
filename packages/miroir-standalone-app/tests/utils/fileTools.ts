@@ -11,7 +11,7 @@ import { DEFAULT_LOG_CONFIG_NAME } from "../../src/config/logConfigPresets.js";
 import { resolveRepoRoot } from "../helpers/integrationTestProfiles.js";
 import { openTestEnvironment, selectedTestEnvironment } from "../helpers/testEnvironment.js";
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "FileTools");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "fileTools");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 

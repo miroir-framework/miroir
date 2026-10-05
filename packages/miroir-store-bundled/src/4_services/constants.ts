@@ -1,1 +1,1 @@
-export const cleanLevel = "info";
+export const cleanLevel = "4";

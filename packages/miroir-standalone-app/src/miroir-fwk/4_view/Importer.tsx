@@ -26,7 +26,7 @@ import { applicationParis, packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
 
 import { entityMenu, entitySelfApplication } from "miroir-app-miroir";
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "importer");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Importer");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {log = logger});
