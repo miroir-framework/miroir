@@ -18,6 +18,12 @@ import bundleSizeMeasurementEntityJson from "../assets/meta_model/16dbfe28-e1d7-
 
 export const ENTITY_BUNDLE_SIZE_MEASUREMENT_UUID = bundleSizeMeasurementEntityJson.uuid;
 
+/** The bundle policy of each application whose bundle size is recorded, relative to the repository root. */
+export const BUNDLE_POLICIES: Record<string, string> = {
+  "miroir-standalone-app": "packages/miroir-standalone-app/bundle-policy.json",
+  "miroir-standalone-app-electron": "packages/miroir-standalone-app-electron/bundle-policy.json",
+};
+
 /** The part of `bundle-report.json` (miroir-standalone-app/vite/bundleReportCore.js) a measurement uses. */
 export type BundleReport = {
   app: string;

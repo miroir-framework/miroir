@@ -226,7 +226,14 @@ python scripts/check_bundle_policy.py packages/miroir-standalone-app-electron/di
 | `size` | a package listed in `eagerPackageMaxBytes` renders more bytes into the chunks loaded with the page than its cap (#337: `miroir-app-miroir`) |
 | `budget` | the gzip size of the chunks loaded with the page is more than `eagerGzipTolerance` (2%) above `eagerGzipBaseline`, or more than 2% below it: a gain is kept by lowering the baseline in the same PR (ratchet) |
 
-When a change is intended, move or add the package the message names, or rewrite the lists and the baseline from the new report with `--init` (it keeps `forbiddenEager` and the tolerance), and commit the policy with the change so the review shows it. The `bundle report + guards` job of `.github/workflows/pr-checks.yml` builds both apps and runs both guards on every pull request that touches `packages/`, `package-lock.json`, the guard or the workflow, and uploads the reports and source maps as the `bundle-reports` artifact (14 days).
+When a change is intended, move or add the package the message names, and commit the policy with the change so the review shows it. When the size moves outside the band, record the new baseline:
+
+```bash
+npm run bundle-size:record -w miroir-app-meta -- packages/miroir-standalone-app/dist/.vite/bundle-report.json --reason "why the page grew"
+npm run bundle-size:record -w miroir-app-meta -- packages/miroir-standalone-app-electron/dist/bundle-report.json --reason "..."
+```
+
+It runs the guard with the new baseline (the measured size, or `--baseline N` to leave headroom) and, when the build passes, writes `eagerGzipBaseline` in the policy and a measurement in the bundle size history (see below). With `--init` it also rewrites the package lists from the report, like the guard's own `--init` (which keeps `forbiddenEager`, the tolerance and the size caps). Commit the policy and the new file under `packages/miroir-app-meta/assets/meta_data/` together. The `bundle report + guards` job of `.github/workflows/pr-checks.yml` builds both apps and runs both guards on every pull request that touches `packages/`, `package-lock.json`, the guard or the workflow, and uploads the reports and source maps as the `bundle-reports` artifact (14 days).
 
 ---
 

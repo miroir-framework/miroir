@@ -4,6 +4,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
 
 import {
+  BUNDLE_POLICIES,
   measurementFromBaseline,
   readMeasurements,
   writeMeasurement,
@@ -22,12 +23,6 @@ import {
 // ################################################################################################
 
 const packageRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
-
-/** The bundle policy of each application whose bundle size is recorded. */
-export const BUNDLE_POLICIES: Record<string, string> = {
-  "miroir-standalone-app": "packages/miroir-standalone-app/bundle-policy.json",
-  "miroir-standalone-app-electron": "packages/miroir-standalone-app-electron/bundle-policy.json",
-};
 
 type PolicyCommit = { commit: string; committedAt: string; subject: string };
 
