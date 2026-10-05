@@ -29,6 +29,7 @@ import {
   type ApplicationDeploymentMap,
   type MiroirModelEnvironment,
   trackQueryHop,
+  isServerRoutedMiroirAction,
 } from "miroir-core";
 import { packageName } from '../../constants.js';
 import { handlePromiseActionForSaga } from '../../sagaTools.js';
@@ -792,7 +793,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         case "LocalPersistenceAction_update":
         case "LocalPersistenceAction_delete":
         default: {
-          if ((action.actionType as string) === "probeExternalService") {
+          if (isServerRoutedMiroirAction(action)) {
             return clientResult.data as Action2ReturnType;
           }
           // log.debug(

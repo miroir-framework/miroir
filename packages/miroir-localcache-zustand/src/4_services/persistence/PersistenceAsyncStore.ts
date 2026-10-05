@@ -22,6 +22,7 @@ import {
   type MiroirModelEnvironment,
   type PersistenceStoreControllerAction,
   type PersistenceStoreControllerManagerInterface,
+  isServerRoutedMiroirAction,
 } from "miroir-core";
 import type { LocalCache } from "../LocalCache.js";
 
@@ -458,7 +459,7 @@ export class PersistenceAsyncStore implements PersistenceStoreLocalOrRemoteInter
         case "LocalPersistenceAction_update":
         case "LocalPersistenceAction_delete":
         default: {
-          if ((action.actionType as string) === "probeExternalService") {
+          if (isServerRoutedMiroirAction(action)) {
             return clientResult.data as Action2ReturnType;
           }
           log.debug("handlePersistenceActionForRemoteStore received result", clientResult.status);

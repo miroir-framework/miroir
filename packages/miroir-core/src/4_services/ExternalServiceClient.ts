@@ -186,6 +186,17 @@ function substitutePath(
   return path;
 }
 
+/** `?name=value&...` for the bound query parameters, in mapping order; empty when none is bound. */
+function queryString(
+  parameterMappings: Array<{ name: string; in: string }>,
+  bindings: Record<string, string>,
+): string {
+  const query = parameterMappings
+    .filter((mapping) => mapping.in === "query" && bindings[mapping.name] !== undefined)
+    .map((mapping) => `${encodeURIComponent(mapping.name)}=${encodeURIComponent(bindings[mapping.name])}`);
+  return query.length > 0 ? `?${query.join("&")}` : "";
+}
+
 function mlTypeName(schema: unknown): string | undefined {
   if (!schema || typeof schema !== "object") {
     return undefined;
@@ -219,6 +230,9 @@ type LenientValidationResult =
 function lenientValidateMl(schema: unknown, value: unknown, path: string): LenientValidationResult {
   const typeName = mlTypeName(schema);
   if (!typeName) {
+    return { status: "ok", value, strippedKeys: [] };
+  }
+  if (value === null && (schema as { nullable?: boolean }).nullable === true) {
     return { status: "ok", value, strippedKeys: [] };
   }
 
@@ -719,7 +733,8 @@ async function fetchExternalServiceOperation(
     return pathOrError;
   }
 
-  const url = `${normalizeBaseUrl(externalService.baseUrl)}${pathOrError.startsWith("/") ? "" : "/"}${pathOrError}`;
+  const query = queryString(operation.parameterMappings, bindings);
+  const url = `${normalizeBaseUrl(externalService.baseUrl)}${pathOrError.startsWith("/") ? "" : "/"}${pathOrError}${query}`;
   const headers: Record<string, string> = {
     ...(externalService.extraHeaders ?? {}),
   };

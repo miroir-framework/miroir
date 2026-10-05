@@ -21,6 +21,7 @@ import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-se
 import { packageName } from "../constants";
 
 import { cleanLevel } from "./constants";
+import { isServerRoutedMiroirAction } from "../1_core/constants";
 import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 import { summarizeQueryHopResult, trackQueryHop } from "./trackQueryHop";
 import { generateRestServiceResponse } from "./RestTools";
@@ -370,8 +371,8 @@ export async function restActionHandler(
   const action: PersistenceAction | DomainAction = body?.action?body.action:body as any;
   const applicationDeploymentMap: ApplicationDeploymentMap = body?.applicationDeploymentMap?body.applicationDeploymentMap:{};
 
-  if ((action as { actionType?: string }).actionType === "probeExternalService") {
-    log.info("restActionHandler probeExternalService");
+  if (isServerRoutedMiroirAction(action)) {
+    log.info("restActionHandler server-routed action", (action as { actionType?: string }).actionType);
     const result = await domainController.handleAction(
       action as any,
       applicationDeploymentMap,

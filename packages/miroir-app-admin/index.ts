@@ -86,6 +86,8 @@ export { default as miroirUser_Dave } from "./assets/admin_data/d20d09e5-0685-4f
 export { default as miroirRight_AliceAdminApplication } from "./assets/admin_data/a6136fc7-949b-4d64-9f13-dd3afce1ab3c/86a73f7e-17f8-462d-8203-af1f323a7cdc.json" with { type: "json" };
 export { default as miroirRight_AliceLibraryAppAdmin } from "./assets/admin_data/a6136fc7-949b-4d64-9f13-dd3afce1ab3c/48b2048f-507f-40ee-a890-b6eca83596f5.json" with { type: "json" };
 export { default as miroirRight_AliceLibraryDeploymentRead } from "./assets/admin_data/a6136fc7-949b-4d64-9f13-dd3afce1ab3c/587f92f8-7140-434b-b9ff-f7f5d2e461b2.json" with { type: "json" };
+export { default as miroirRight_AliceGitHubAppAdmin } from "./assets/admin_data/a6136fc7-949b-4d64-9f13-dd3afce1ab3c/00feed31-7af7-4adf-9693-9236d23d1c72.json" with { type: "json" };
+export { default as miroirRight_AliceGitHubDeploymentRead } from "./assets/admin_data/a6136fc7-949b-4d64-9f13-dd3afce1ab3c/7f9b6212-536d-48b4-b49f-cd4a36c0fa95.json" with { type: "json" };
 export { default as miroirRight_DaveLibraryDeployment } from "./assets/admin_data/a6136fc7-949b-4d64-9f13-dd3afce1ab3c/0509f559-2a1f-4bf2-ae2d-732aa6cc3202.json" with { type: "json" };
 
 // Admin Data - MiroirUserCredential

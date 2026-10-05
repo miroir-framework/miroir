@@ -59,6 +59,8 @@ Admin entity `MiroirSecret` (uuid `a96856df-2b38-494a-8027-82617e2d64ad`) stores
 
 `--secret` / `MIROIR_SECRET_*` / `AI_OPENAI_KEY` / `AI_ANTHROPIC_KEY` / `AI_GOOGLE_KEY` / `AI_GITHUB_TOKEN` / `CURSOR_API_KEY` import **process-scoped** rows once, then are discarded. Steady-state launch is the wrapping key alone. How to turn the in-app assistant on with those keys: [Using AI in Miroir](../guides/using-ai.md). `registerSecrets` remains an in-process **test hatch** (used by Spotify integ and `LIVE_SPOTIFY_*`). The Admin lightbulb menu lists existing secrets (same list/detail reports as Users and Rights). Writes go through CLI `--secret` import or labeled `secrets.set` / `secrets.delete` actions.
 
+A Report can save a user's own token: the Miroir action `setExternalServiceCredential` (#472) checks a token against an external-service Endpoint with one GET operation, then saves it under the Endpoint's `credentialKey`, as a per-user row when a user is logged in, otherwise as the process row. It needs the wrapping key, runs on the server (a remote client forwards it), and probes with the typed token even when the user already has a saved one. The GitHub example's home Report uses it.
+
 The default Admin seed (and Docker first-run copy of it) has **no** `MiroirSecret` instance rows. `docker compose up` does not need a wrapping key until you import or persist a secret.
 
 ### Generate the wrapping key

@@ -772,7 +772,13 @@ export {
   viewParams,
   ViewParamsData,
 } from "./0_interfaces/4-views/ViewParams";
-export { ACTION_OK, BLOB_SIZE_WARNING_THRESHOLD, MAX_BLOB_FILE_SIZE } from "./1_core/constants.js";
+export {
+  ACTION_OK,
+  BLOB_SIZE_WARNING_THRESHOLD,
+  isServerRoutedMiroirAction,
+  MAX_BLOB_FILE_SIZE,
+  SERVER_ROUTED_MIROIR_ACTION_TYPES,
+} from "./1_core/constants.js";
 export {
   assertProcessCapability,
   getProcessCapabilities,
@@ -1461,6 +1467,7 @@ export { PersistenceStoreControllerManager } from "./4_services/PersistenceStore
 export {
   clearSecrets,
   registerHydratedProcessSecret,
+  registerHydratedUserSecret,
   registerSecrets,
   resolveSecret,
   restoreProcessSecretsFromSnapshot,
@@ -1481,6 +1488,7 @@ export {
   miroirSecretInstanceUuid,
   persistImportedProcessSecrets,
   persistRotatedSecretRow,
+  persistSecretRow,
   requireWrappingKeyForSecretImport,
   setSecretsMasterKey,
   type AiSecretProvider,
