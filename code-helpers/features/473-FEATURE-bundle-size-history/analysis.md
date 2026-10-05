@@ -10,7 +10,9 @@ Prerequisites: [#326 build hardening](../326-BUILD-build-hardening/analysis.md) 
 Key sources: [`check_bundle_policy.py`](../../../scripts/check_bundle_policy.py) · [`test_check_bundle_policy.py`](../../../scripts/tests/test_check_bundle_policy.py) · [`bundleReportPlugin.js`](../../../packages/miroir-standalone-app/vite/bundleReportPlugin.js) · [`bundleReportCore.js`](../../../packages/miroir-standalone-app/vite/bundleReportCore.js) · [`bundle-main.mjs`](../../../packages/miroir-standalone-app-electron/scripts/bundle-main.mjs) · [`code-splitting.md`](../../../docs/internals/code-splitting.md) · [`pr-checks.yml`](../../../.github/workflows/pr-checks.yml) · [`environments.md`](../../../docs/reference/environments.md)
 
 **Document role:** analysis and decision record.
-**Status:** D1–D7 are A's decisions (issue discussion, 2026-10-04: Admin first, then `miroir-app-meta` instead of Admin). D8–D13 are mechanism choices made while mapping the code; they follow from D1–D7 and are flagged for A in the delivery reply.
+**Status:** D1–D7 are A's decisions (issue discussion, 2026-10-04: Admin first, then `miroir-app-meta` instead of Admin). D8–D13 were proposed as mechanism choices and accepted by A on 2026-10-05, with one change: the recording scripts belong to `miroir-app-meta`, in TypeScript, run with `npm run` (D12, revised).
+
+**Document history:** first version 2026-10-05 had the scripts in Python under `scripts/` (repo rule for ad-hoc scripts) and `check_bundle_policy.py --record-baseline` as the entry point. Revised the same day after A's answer: the scripts run inside a package's Node workflow and import `miroir-core`, which is the repo rule's exception, so they are TypeScript in `miroir-app-meta`, and the entry point moves to `npm run bundle-size:record -w miroir-app-meta`. D8 option B is kept with that entry point.
 
 ---
 
@@ -54,10 +56,10 @@ Key sources: [`check_bundle_policy.py`](../../../scripts/check_bundle_policy.py)
 | Option | Pros | Cons |
 |---|---|---|
 | A. `--init` records; hand edits stay possible and unrecorded | smallest change | the common hand edit bypasses the history, so it drifts from the policy (breaks D3) |
-| **B. New `--record-baseline [--baseline N] [--reason TEXT]` writes `eagerGzipBaseline` (the measured size, or N) and the instance; `--init` records too; a new guard rule `history` fails when the policy baseline differs from the newest instance's `baseline` for that app** | every baseline change lands in the history; a hand edit fails CI with the command to run; headroom (N) still possible | one more rule to explain |
+| **B. One record command (`npm run bundle-size:record -w miroir-app-meta -- <report> [--baseline N] [--reason TEXT] [--init]`) writes `eagerGzipBaseline` (the measured size, or N) and the instance (`--init` also rewrites the lists, through the guard's `--init`); a new guard rule `history` fails when the policy baseline differs from the newest instance's `baseline` for that app** | every baseline change lands in the history; a hand edit fails CI with the command to run; headroom (N) still possible | one more rule to explain |
 | C. The guard records on every passing build | complete history | contradicts D4; CI cannot commit |
 
-**Chosen: B.** Serves G2, D3, D4. The `history` rule is what makes D3 hold; without it, option B degrades to A. On a failing build `--record-baseline` refuses unless the new baseline makes the build pass, which keeps D5 (see D12).
+**Chosen: B** (A, 2026-10-05). Serves G2, D3, D4. The `history` rule is what makes D3 hold; without it, option B degrades to A. A bare `check_bundle_policy.py --init` keeps working but then fails the `history` rule until the record command runs, so every baseline change ends in the history. The record command refuses unless the new baseline makes the build pass, which keeps D5 (see D12).
 
 **D9 — where `miroir-app-meta` is installed.**
 
@@ -96,12 +98,16 @@ Key sources: [`check_bundle_policy.py`](../../../scripts/check_bundle_policy.py)
 
 **Chosen: A.**
 
-**D12 — script shape.** Repo rule: ad-hoc scripts in Python. New `scripts/bundle_size_history.py`:
-- `measurement_from_report(report, ...)`, `measurement_from_baseline(app, baseline, commit, date, subject, previous)`: pure builders;
-- `newest(app, data_dir)`, `write(instance, data_dir)`: read and write `packages/miroir-app-meta/assets/meta_data/<entity uuid>/<uuid>.json`;
-- CLI `record <report> [--baseline N] [--reason TEXT]` and `backfill [--dry-run]`.
+**D12 — script shape (revised by A, 2026-10-05).** The scripts belong to `miroir-app-meta` and run with `npm run`, so they are TypeScript run by `tsx`, like `dogfood-sync` of `miroir-example-github`. That is the AGENTS.md exception to "ad-hoc scripts in Python": they run in a package's Node workflow and import TypeScript modules of the monorepo.
 
-`check_bundle_policy.py` imports it for `--record-baseline`, `--init` and the `history` rule. `--record-baseline` writes nothing when the build would still fail with the new baseline (allowlist, forbidden, defeated or size violations), which keeps D5. The backfill skips a baseline already present for the same commit and app, so re-running it is harmless.
+| Piece | Location | Role |
+|---|---|---|
+| `src/bundleSizeHistory.ts` | `miroir-app-meta` | pure builders `measurementFromReport`, `measurementFromBaseline`; `newestMeasurement(app, dataDir)`; `writeMeasurement` validates the instance against the Entity's `mlSchema` (Zod from `miroir-core`) before writing |
+| `scripts/recordBundleSize.ts` | `miroir-app-meta`, `npm run bundle-size:record -- <report> [--baseline N] [--reason TEXT] [--init]` | finds the policy from `report.app`; runs `python3 scripts/check_bundle_policy.py <report> <policy with the new baseline>` on a temporary copy and stops with its output if it fails (D5); then writes the policy (with `--init`: the guard's `--init` on the real policy, then `--baseline` if given) and the instance |
+| `scripts/backfillBundleSize.ts` | `miroir-app-meta`, `npm run bundle-size:backfill [-- --dry-run]` | git log of both policies → one instance per baseline change; skips an app and commit already recorded |
+| `history` rule | `scripts/check_bundle_policy.py` (Python, as the guard) | reads `packages/miroir-app-meta/assets/meta_data/<entity uuid>/*.json` directly (plain JSON, no Node needed), compares the newest `baseline` of `report.app` with the policy |
+
+The guard stays Python and its pytest suite stays free of Node, which matters because pr-checks runs `pytest scripts/tests` before `npm ci`. The record command depends on the guard, not the other way round. Rejected: keeping the recording in Python (A prefers the package to own its scripts); moving the whole guard to TypeScript (out of scope, the guard and its CI job work).
 
 **D13 — the Report.** One Report `BundleSizeHistory`, the application's home page:
 - two `objectListReportSection`s, one per application, from `extractorInstancesByEntity` with `filter {attributeName: "application", value: "^miroir-standalone-app$"}` (and `…-electron$`), `sortByAttribute: "measuredAt"`, `sortOrder: "desc"`;
@@ -113,12 +119,12 @@ The filter anchors are needed: string filters are case-insensitive regex matches
 
 ## 4. Current state
 
-### 4.1 Bundle report and guard (aligned, extended by D8)
+### 4.1 Bundle report and guard (aligned, extended by D8 and D12)
 
 - Web build: `miroirBundleReport` ([`bundleReportPlugin.js`](../../../packages/miroir-standalone-app/vite/bundleReportPlugin.js)) writes `dist/.vite/bundle-report.json` and `bundle-report.html` (treemap). Electron: [`bundle-main.mjs`](../../../packages/miroir-standalone-app-electron/scripts/bundle-main.mjs) writes `dist/bundle-report.json` with the same `buildBundleReport` (`app: "miroir-standalone-app-electron"`).
 - Top-level keys (fixture [`bundle-report.json`](../../../scripts/tests/fixtures/bundle_policy/bundle-report.json)): `app`, `totals {chunks, rawBytes, gzipBytes, eager {chunks, rawBytes, gzipBytes}}`, `packages`, `chunks`, `findings`.
 - [`check_bundle_policy.py`](../../../scripts/check_bundle_policy.py): `check()` runs the `allowlist`, `forbidden`, `defeated`, `size` and `budget` rules. `check_budget` (L166–) fails above `baseline × (1 + tolerance)` and below `baseline × (1 − tolerance)`, with "lower eagerGzipBaseline to N". `init()` (L191–203) rebuilds the policy from the report, keeping `$comment`, tolerance, `forbiddenEager`, `eagerPackageMaxBytes`. `main()` (L210–) writes the policy on `--init`, then checks. Nothing else writes the policy.
-- CI: job `bundle report + guards` of [`pr-checks.yml`](../../../.github/workflows/pr-checks.yml) builds both apps, runs the guard on each, uploads `bundle-reports` (14 days). It runs when the PR touches `packages/`, the lockfile, `.npmrc`, `tsconfig.json`, `scripts/patch-tsup-baseurl.cjs`, the guard or the workflow; `scripts/bundle_size_history.py` must join that list once the guard imports it.
+- CI: job `bundle report + guards` of [`pr-checks.yml`](../../../.github/workflows/pr-checks.yml) builds both apps, runs the guard on each, uploads `bundle-reports` (14 days). It runs when the PR touches `packages/`, the lockfile, `.npmrc`, `tsconfig.json`, `scripts/patch-tsup-baseurl.cjs`, the guard or the workflow; `packages/miroir-app-meta/` is already covered by `packages/`.
 - Tests: [`test_check_bundle_policy.py`](../../../scripts/tests/test_check_bundle_policy.py) (pytest, run by the pre-push gate and pr-checks) copies the fixture, changes one thing, runs the CLI.
 
 ### 4.2 Baseline history in git (input of the backfill)
@@ -165,6 +171,8 @@ Package-name handling for the `miroir-app-` prefix (searched across `*.ts`, `*.j
 | Entity / data / list Report / graph | Library `Country`, `CountryList` |
 | Report MiroirTest | `github_model/a311f363-…/2b1cb9f1-f230-48f0-bae0-7aee8f9dddee.json` (`report.githubConnect`) |
 | Guard CLI tests | `scripts/tests/test_check_bundle_policy.py`, fixture `scripts/tests/fixtures/bundle_policy/bundle-report.json` |
+| Package script run by `tsx` | `miroir-example-github` `dogfood-sync` (`scripts/sync-github-schema.ts`) |
+| Instance validation against an Entity schema | `buildModelValidationGroupsFromFilesystem` (`miroir-core/model-validation-fs`), as in the package `modelValidation` tests |
 | Extractor filter / order | `extractorInstancesByEntity.filter`, `objectListReportSection.sortByAttribute` / `sortOrder` |
 
 New identifiers:
@@ -185,8 +193,8 @@ Application key in environments: `meta`.
 ## 6. Risks
 
 - A contributor without the meta data checked out cannot run the guard: not a real case, the data is in the repository. The `history` rule must say which command fixes it.
-- Two PRs that both record a baseline for the same app conflict only in `bundle-policy.json` (same line), as today; their instances are separate files, so after the merge the newest instance may not match the merged baseline. The `history` rule then fails on `_integration` and the merge resolution re-runs `--record-baseline`.
+- Two PRs that both record a baseline for the same app conflict only in `bundle-policy.json` (same line), as today; their instances are separate files, so after the merge the newest instance may not match the merged baseline. The `history` rule then fails on `_integration` and the merge resolution re-runs the record command.
 - Committer dates of rebased commits are later than the original work. In the history of §4.2 they still increase along the git order for both policy files (checked on all 22 and 10 commits), so "newest" can be the largest `measuredAt`. D11 does not depend on dates at backfill: `previousBaseline` follows the git order there.
-- The `budget` messages say "raise eagerGzipBaseline" and "lower eagerGzipBaseline to N"; they must name `--record-baseline` instead, or contributors keep editing by hand and hit the `history` rule.
+- The `budget` messages say "raise eagerGzipBaseline" and "lower eagerGzipBaseline to N"; they must name `npm run bundle-size:record -w miroir-app-meta` instead, or contributors keep editing by hand and hit the `history` rule.
 
 Implementation plan: [`tdd-implementation-plan.md`](./tdd-implementation-plan.md).

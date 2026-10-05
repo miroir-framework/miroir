@@ -1,8 +1,10 @@
 # Issue #473 — TDD Implementation Plan
 
-> Integration first, no mocks. The recording side is a Python CLI (`scripts/bundle_size_history.py`, and
-> `scripts/check_bundle_policy.py` which uses it), tested through its command line with pytest on copies of
-> the real report fixture and on temporary git repositories. The applicative side is the `miroir-app-meta`
+> Integration first, no mocks. The recording side is two `miroir-app-meta` npm scripts in TypeScript
+> (`bundle-size:record`, `bundle-size:backfill`), tested with vitest through their command-line entry
+> points on copies of the real report fixture, temporary data folders and temporary git repositories, with
+> the real guard (`scripts/check_bundle_policy.py`) called as a process. The guard's new `history` rule is
+> tested with pytest like its other rules. The applicative side is the `miroir-app-meta`
 > package: its Entity, data and Report are proven by the package's `modelValidation` (every tracked instance
 > is valid against the Entity's `mlSchema`) and by a Report MiroirTest run on the real DomainController and
 > filesystem store (`emulatedServer-filesystem`).
@@ -27,9 +29,9 @@ Out: test run history (#474); per-package sizes; recording every build, CI build
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | `miroir-app-meta` skeleton, registered in dev and test environments | ⬜ pending | `modelValidation` of miroir-app-meta, `testEnvironmentConfig.unit` |
-| 1 | A bundle report becomes a valid `BundleSizeMeasurement` instance (tracer) | ⬜ pending | `test_bundle_size_history.py::test_record_*`, `modelValidation` |
-| 2 | The backfill writes the baseline history | ⬜ pending | `test_bundle_size_history.py::test_backfill_*`, 21 tracked instances |
-| 3 | Recording the baseline writes the policy and the instance | ⬜ pending | `test_check_bundle_policy.py::test_record_baseline_*` |
+| 1 | A bundle report becomes a valid `BundleSizeMeasurement` instance (tracer) | ⬜ pending | `bundleSizeRecord.unit.test.ts`, `modelValidation` |
+| 2 | The backfill writes the baseline history | ⬜ pending | `bundleSizeBackfill.unit.test.ts`, 21 tracked instances |
+| 3 | Recording the baseline writes the policy and the instance | ⬜ pending | `bundleSizeRecord.unit.test.ts` (policy cases) |
 | 4 | The guard refuses a baseline missing from the history | ⬜ pending | `test_check_bundle_policy.py::test_history_*` |
 | 5 | The Meta home Report shows the history | ⬜ pending | MiroirTest `report.bundleSizeHistory` |
 | 6 | Nonreg steps, docs, cleanup | ⬜ pending | `npm run nonreg:filesystem -- --runner shared` |
@@ -45,11 +47,11 @@ Out: test run history (#474); per-package sizes; recording every build, CI build
 | D5 | A build that fails the guard writes nothing | G2 |
 | D6 | Instances tracked in `packages/miroir-app-meta/assets/meta_data/90d603f9-…/` | G1, G3 |
 | D7 | One instance builder for record and backfill; a Report shows the measurements | G1, G3 |
-| D8 | `check_bundle_policy.py --record-baseline [--baseline N] [--reason TEXT]`; `--init` records too; new guard rule `history` | G2 |
+| D8 | One record command `npm run bundle-size:record -w miroir-app-meta -- <report> [--baseline N] [--reason TEXT] [--init]` writes the policy baseline and the instance; new guard rule `history` | G2 |
 | D9 | Installed in `dev` (`live`) and `test-filesystem` (`copy`) + store overrides of the other `test-*` | G1 |
 | D10 | Attributes per analysis §3 D10 (totals only; optional where the backfill cannot fill them) | G1, G3 |
 | D11 | `previousBaseline` and `baselineChange` stored at write time | G1 |
-| D12 | `scripts/bundle_size_history.py` (builders, `newest`, `write`, CLI `record` / `backfill`) | G2, G3 |
+| D12 | Revised by A 2026-10-05: TypeScript in `miroir-app-meta` run by `tsx` (`src/bundleSizeHistory.ts`, `scripts/recordBundleSize.ts`, `scripts/backfillBundleSize.ts`); the guard stays Python and owns the `history` rule | G2, G3 |
 | D13 | Report `BundleSizeHistory`: per app, anchored `application` filter, `measuredAt` desc, line graph | G1 |
 
 ## Allocated UUIDs / keys
@@ -61,7 +63,9 @@ Suite key: `report.bundleSizeHistory`. Environment application key: `meta`. Test
 
 | Purpose | Command |
 |---|---|
-| Recording scripts | `python -m pytest scripts/tests/test_bundle_size_history.py scripts/tests/test_check_bundle_policy.py -q` |
+| Recording scripts | `npm run testByFile -w miroir-app-meta -- tests/bundleSize` |
+| Guard | `python -m pytest scripts/tests/test_check_bundle_policy.py -q` |
+| Record / backfill by hand | `npm run bundle-size:record -w miroir-app-meta -- <report> [...]`, `npm run bundle-size:backfill -w miroir-app-meta -- --dry-run` |
 | Meta model + data validation | `npm run build -w miroir-app-meta && npm run testByFile -w miroir-app-meta -- tests/modelValidation.unit.test.ts` |
 | Environment registration | `RUN_TEST=testEnvironmentConfig npm run testByFile -w miroir-standalone-app -- testEnvironmentConfig` |
 | Report MiroirTest | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites report.bundleSizeHistory --mode integ` |
@@ -69,7 +73,7 @@ Suite key: `report.bundleSizeHistory`. Environment application key: `meta`. Test
 | Typecheck | `npx tsc --noEmit --skipLibCheck -p packages/<pkg>/tsconfig.json` |
 | Scoped nonreg | `npm run nonreg:filesystem -- --runner shared --scope smoke,<scopes>` |
 
-Vitest is used only for `modelValidation` and `testEnvironmentConfig` (existing framework machinery). The scripts are Python by repo rule, so their tests are pytest, not MiroirTest: they are not reachable through the ML.
+The recording scripts are tested with vitest in `miroir-app-meta`, not MiroirTest: they are build tooling that reads report files and git history, not reachable through the ML. The guard's rule is tested with pytest, next to its other rules.
 
 ---
 
@@ -106,28 +110,28 @@ _(pending)_
 
 **Status:** ⬜ pending
 
-**Goal:** `python scripts/bundle_size_history.py record <report> [--baseline N] [--reason TEXT]` writes one instance to `meta_data/90d603f9-…/`, and the Meta `modelValidation` accepts it. End to end: report JSON → Python builder → tracked file → Entity `mlSchema` validation.
+**Goal:** `npm run bundle-size:record -w miroir-app-meta -- <report> --no-policy` writes one instance to `meta_data/90d603f9-…/`, validated against the Entity before writing, and the Meta `modelValidation` accepts it. End to end: report JSON → TypeScript builder → Entity `mlSchema` check → tracked file. (`--no-policy` exists for this slice and the tests; Slice 3 adds the policy write, which becomes the default.)
 
-**RED:** new `scripts/tests/test_bundle_size_history.py`:
-- `test_record_writes_one_instance_from_the_report`: on a temporary data directory (`--data-dir`, default the package path), `record` on the fixture `scripts/tests/fixtures/bundle_policy/bundle-report.json` writes one file whose `application`, `eagerGzipBytes`, `totalGzipBytes`, `eagerChunks` come from the fixture `app` and `totals`, with `baseline == eagerGzipBytes`, a v4 `uuid`, `parentUuid` = Entity uuid and `measuredAt` an ISO date.
-- `test_record_links_the_previous_measurement`: a second `record` with another `eager.gzipBytes` has `previousBaseline` = the first `baseline` and `baselineChange` = their difference; an instance of the other application is ignored.
-- `test_record_baseline_override`: `--baseline N` stores `baseline = N` and the measured `eagerGzipBytes`.
-
-And the Meta `modelValidation` fails until the Entity exists, once one recorded instance is committed as test data (see GREEN).
+**RED:** new `packages/miroir-app-meta/tests/bundleSizeRecord.unit.test.ts`, running the script's `main(argv)` with `--data-dir` on a temporary folder:
+- "writes one instance from the report": on a copy of `scripts/tests/fixtures/bundle_policy/bundle-report.json`, one file whose `application`, `eagerGzipBytes`, `totalGzipBytes`, `eagerChunks` come from the fixture `app` and `totals`, `baseline == eagerGzipBytes`, a v4 `uuid`, `parentUuid` = Entity uuid, `measuredAt` an ISO date.
+- "links the previous measurement": a second record with another `eager.gzipBytes` has `previousBaseline` = the first `baseline` and `baselineChange` = their difference; an instance of the other application is ignored.
+- "`--baseline N` keeps the measured size": `baseline = N`, `eagerGzipBytes` measured.
+- "refuses an instance the Entity rejects": a report without `totals.eager` writes nothing and exits non-zero with the validation message.
 
 **GREEN:**
-- Entity `BundleSizeMeasurement` `90d603f9-…` in `meta_model/16dbfe28-…/` with the D10 attributes (`date` type for `measuredAt`, `number` for sizes), `viewAttributes` `measuredAt, application, eagerGzipBytes, baselineChange, reason`, `defaultInstanceDetailsReportUuid` `85077493-…` (Report added in Slice 5; validation must not require it before, otherwise add the details Report here).
-- `scripts/bundle_size_history.py` per D12: `measurement_from_report`, `newest(app, data_dir)` (largest `measuredAt` for that app), `write`, CLI `record`. Git commit and branch from `git rev-parse` when available, omitted otherwise; `miroirVersion` from the root `package.json`.
-- No instance is committed in this slice; tracked data arrives with the backfill in Slice 2. The `modelValidation` proof runs on one instance recorded into `meta_data` from the fixture, deleted once the run is green.
+- Entity `BundleSizeMeasurement` `90d603f9-…` in `meta_model/16dbfe28-…/` with the D10 attributes (`date` for `measuredAt`, `number` for sizes), `viewAttributes` `measuredAt, application, eagerGzipBytes, baselineChange, reason`. `defaultInstanceDetailsReportUuid` is set in Slice 5 with the details Report.
+- `src/bundleSizeHistory.ts`: `measurementFromReport`, `newestMeasurement(app, dataDir)` (largest `measuredAt` for that app), `writeMeasurement` (validation with the same Entity-schema check the package `modelValidation` uses; find the smallest `miroir-core` entry point that validates one instance against an Entity row, e.g. through `model-validation-fs`). Git commit and branch from `git rev-parse` when available; `miroirVersion` from the root `package.json`.
+- `scripts/recordBundleSize.ts` exporting `main(argv)`, and `"bundle-size:record": "tsx ./scripts/recordBundleSize.ts"` in `package.json`; `tsx` in devDependencies as in `miroir-example-github`.
+- No instance is committed in this slice; tracked data arrives with the backfill in Slice 2.
 
-**Refactor checkpoint:** `check_bundle_policy.read_json` and the new script's JSON reading share one helper only if both end up identical.
+**Refactor checkpoint:** the report fixture is read from `scripts/tests/fixtures/`, not copied into the package.
 
 **Validation:**
 ```bash
-python -m pytest scripts/tests/test_bundle_size_history.py -q
-python scripts/bundle_size_history.py record scripts/tests/fixtures/bundle_policy/bundle-report.json
-npm run build -w miroir-app-meta && npm run testByFile -w miroir-app-meta -- tests/modelValidation.unit.test.ts
-git clean -n packages/miroir-app-meta/assets/meta_data   # then remove the recorded file
+npm run build -w miroir-app-meta
+npm run testByFile -w miroir-app-meta -- tests/bundleSizeRecord.unit.test.ts
+npm run testByFile -w miroir-app-meta -- tests/modelValidation.unit.test.ts
+npx tsc --noEmit --skipLibCheck -p packages/miroir-app-meta/tsconfig.json
 npm run nonreg:filesystem -- --runner shared --scope smoke,core,tooling
 ```
 
@@ -139,21 +143,21 @@ _(pending)_
 
 **Status:** ⬜ pending
 
-**Goal:** `python scripts/bundle_size_history.py backfill` reads the git log of both `bundle-policy.json` files and writes one instance per baseline change (14 web, 7 Electron at a6ba1aad, analysis §4.2), committed with the slice.
+**Goal:** `npm run bundle-size:backfill -w miroir-app-meta` reads the git log of both `bundle-policy.json` files and writes one instance per baseline change (14 web, 7 Electron at a6ba1aad, analysis §4.2), committed with the slice.
 
-**RED:** in `test_bundle_size_history.py`, on a temporary git repository built by the test (three commits of a `packages/miroir-standalone-app/bundle-policy.json`, two of them changing the baseline, one changing only the lists):
-- `test_backfill_one_instance_per_baseline_change`: two instances, with the committing commit, committer date, commit subject as `reason`, `eagerGzipBytes == baseline`, the second with `previousBaseline` and `baselineChange`.
-- `test_backfill_is_idempotent`: a second run writes nothing.
-- `test_backfill_dry_run_writes_nothing`: `--dry-run` prints the rows and writes no file.
+**RED:** new `packages/miroir-app-meta/tests/bundleSizeBackfill.unit.test.ts`, on a temporary git repository built by the test (three commits of a `packages/miroir-standalone-app/bundle-policy.json`, two changing the baseline, one changing only the lists):
+- "one instance per baseline change": two instances with the commit, committer date, commit subject as `reason`, `eagerGzipBytes == baseline`; the second has `previousBaseline` and `baselineChange`.
+- "is idempotent": a second run writes nothing.
+- "`--dry-run` writes nothing": prints the rows only.
 
-**GREEN:** `measurement_from_baseline` and the `backfill` subcommand (`git log --follow --format=%H %cI %s` oldest first, `git show <commit>:<path>`; skip when the same app and commit already has an instance). Run it on the repository and commit the 21 instances in `meta_data/90d603f9-…/`.
+**GREEN:** `measurementFromBaseline` and `scripts/backfillBundleSize.ts` (`git log --follow --format=%H %cI %s`, oldest first, `git show <commit>:<path>`; skip when the app and commit already have an instance); `"bundle-size:backfill"` npm script. Run it on the repository and commit the 21 instances.
 
-**Refactor checkpoint:** `measurement_from_report` and `measurement_from_baseline` share the instance shell (uuid, parent, previous linkage).
+**Refactor checkpoint:** `measurementFromReport` and `measurementFromBaseline` share the instance shell (uuid, parent, previous linkage).
 
 **Validation:**
 ```bash
-python -m pytest scripts/tests/test_bundle_size_history.py -q
-python scripts/bundle_size_history.py backfill --dry-run
+npm run testByFile -w miroir-app-meta -- tests/bundleSizeBackfill.unit.test.ts
+npm run bundle-size:backfill -w miroir-app-meta -- --dry-run
 npm run build -w miroir-app-meta && npm run testByFile -w miroir-app-meta -- tests/modelValidation.unit.test.ts
 npm run miroir-env -- check --strict --tracked-clean
 npm run nonreg:filesystem -- --runner shared --scope smoke,core,tooling
@@ -167,21 +171,23 @@ _(pending)_
 
 **Status:** ⬜ pending
 
-**Goal:** a contributor whose build moved the size runs `python scripts/check_bundle_policy.py <report> <policy> --record-baseline [--baseline N] [--reason TEXT]`: the policy gets the new `eagerGzipBaseline`, `meta_data` gets the instance, and the check passes. `--init` records the same way. A build that would still fail writes nothing (D5).
+**Goal:** a contributor whose build moved the size runs `npm run bundle-size:record -w miroir-app-meta -- <report> [--baseline N] [--reason TEXT] [--init]`: the policy gets the new `eagerGzipBaseline`, `meta_data` gets the instance, and the guard passes. A build that would still fail writes nothing (D5).
 
-**RED:** in `scripts/tests/test_check_bundle_policy.py` (data directory passed with `--meta-data-dir` to a temporary copy):
-- `test_record_baseline_writes_policy_and_instance`: fixture shrunk by 10% fails `budget`; with `--record-baseline` the exit code is 0, the policy baseline is the measured size, one new instance has the same `baseline`.
-- `test_record_baseline_with_headroom`: `--baseline N` writes N in both.
-- `test_record_baseline_refuses_other_violations`: a fixture with a new unlisted package exits 1 with the `allowlist` message, and neither the policy nor `meta_data` changes.
-- `test_init_records`: `--init` writes one instance.
+**RED:** in `bundleSizeRecord.unit.test.ts` (policy and data in a temporary folder, `--policy` and `--data-dir` options; the guard run for real with `python3`):
+- "writes the policy and the instance": fixture shrunk by 10% (the guard fails `budget` before); after record, the policy baseline is the measured size, one new instance has the same `baseline`, and the guard exits 0.
+- "with headroom": `--baseline N` writes N in both.
+- "refuses other violations": a report with a new unlisted package → non-zero exit with the guard's `allowlist` message; policy and data unchanged.
+- "`--init` rewrites the lists": a report with that new package and `--init` → the package is in the policy lists, one instance written.
+- The Electron report path: the fixture with `app: "miroir-standalone-app-electron"` updates the Electron policy (default policy path from `report.app`).
 
-**GREEN:** `check_bundle_policy.main` gains `--record-baseline`, `--baseline`, `--reason`, `--meta-data-dir` (default `packages/miroir-app-meta/assets/meta_data`); it computes the violations against the policy with the new baseline first, and writes nothing when any remain. The `budget` messages name the command (`run … --record-baseline` instead of "raise / lower eagerGzipBaseline"). Module docstring and `code-splitting.md` "When a change is intended" paragraph updated.
+**GREEN:** `recordBundleSize.ts` drops `--no-policy` as default: locate the policy from `report.app` (overridable with `--policy`), copy it with the new baseline to a temporary file, run the guard on it, stop on failure; then write the policy (`--init`: run the guard's `--init` on the real policy first) and the instance. The guard's `budget` messages name `npm run bundle-size:record -w miroir-app-meta -- <report>`; guard docstring and `code-splitting.md` "When a change is intended" paragraph updated.
 
-**Refactor checkpoint:** keep `init()` pure; the writing stays in `main`.
+**Refactor checkpoint:** the guard's Python is unchanged apart from messages; the record command only shells out to it.
 
 **Validation:**
 ```bash
-python -m pytest scripts/tests/test_check_bundle_policy.py scripts/tests/test_bundle_size_history.py -q
+npm run testByFile -w miroir-app-meta -- tests/bundleSizeRecord.unit.test.ts
+python -m pytest scripts/tests/test_check_bundle_policy.py -q
 npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
 ```
 
@@ -193,22 +199,22 @@ _(pending)_
 
 **Status:** ⬜ pending
 
-**Goal:** a PR that edits `eagerGzipBaseline` by hand fails the bundle job with rule `history`, naming the command that records it. Together with Slice 3 this makes D3 hold.
+**Goal:** a PR that edits `eagerGzipBaseline` by hand, or runs a bare `--init`, fails the bundle job with rule `history`, naming the record command. Together with Slice 3 this makes D3 hold.
 
-**RED:** in `test_check_bundle_policy.py`:
-- `test_history_rule_fails_on_a_hand_edit`: policy baseline changed without an instance → exit 1, `[history] … run check_bundle_policy.py … --record-baseline`.
-- `test_history_rule_passes_when_recorded`: after `--record-baseline`, exit 0.
-- `test_history_rule_on_the_repository`: the real policies and the real `meta_data` pass (guards the backfill of Slice 2 against drift).
-- The existing `pr-checks.yml` path-filter test (`_gate` cases, #326 Slice 14) extended: a change to `scripts/bundle_size_history.py` or `packages/miroir-app-meta/assets/meta_data/` triggers the bundle job (the latter is already under `packages/`).
+**RED:** in `scripts/tests/test_check_bundle_policy.py` (meta data folder passed with `--meta-data-dir`, default `packages/miroir-app-meta/assets/meta_data`):
+- `test_history_rule_fails_on_a_hand_edit`: policy baseline changed with no matching instance → exit 1, `[history] … npm run bundle-size:record -w miroir-app-meta -- <report>`.
+- `test_history_rule_passes_when_recorded`: an instance with that baseline in the folder → exit 0.
+- `test_history_rule_on_the_repository`: the real policies and the real `meta_data` agree (guards the Slice 2 backfill against drift).
+- `_gate` cases: a change under `packages/miroir-app-meta/` triggers the bundle job (already true through `packages/`; the case documents it).
 
-**GREEN:** `check_history(policy, app, meta_data_dir)` in `check_bundle_policy.py`, added to `check()`'s caller in `main` (the report gives `app`). `pr-checks.yml` `inputs` regex gains `scripts/bundle_size_history\.py`.
+**GREEN:** `check_history(policy, app, meta_data_dir)` in `check_bundle_policy.py`, reading the instance JSON files, composed in `main` after `check()`.
 
-**Refactor checkpoint:** if `check()` keeps a pure signature, the history rule stays in `main`'s composition, not inside `check()`.
+**Refactor checkpoint:** keep `check()` pure; the file reading stays in `main`'s composition.
 
 **Validation:**
 ```bash
 python -m pytest scripts/tests -q
-python scripts/check_bundle_policy.py scripts/tests/fixtures/bundle_policy/bundle-report.json packages/miroir-standalone-app/bundle-policy.json || true   # shows the history rule wording
+npm run testByFile -w miroir-app-meta -- tests/bundleSize
 npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
 ```
 
@@ -250,10 +256,11 @@ _(pending)_
 **Goal:** the new tests run in nonreg; the docs say where the history lives and how a measurement is added.
 
 **GREEN:**
-- `scripts/nonreg-manifest.json`: `default-meta-modelValidation` (scopes `core`) and `integ-report.bundleSizeHistory` (scopes `ui`), modelled on the `github` steps. The pytest files already run in the pre-push gate and in pr-checks.
-- Docs: `docs/internals/code-splitting.md` (history section: where, `--record-baseline`, `history` rule, backfill); `docs/reference/environments.md` (dev installs `meta`); `docs/reference/testing.md` (new suite).
+- `scripts/nonreg-manifest.json`: `default-meta-modelValidation` (scopes `core`), `unit-473-bundle-size-scripts` (`npm run testByFile -w miroir-app-meta -- tests/bundleSize`, scopes `tooling`) and `integ-report.bundleSizeHistory` (scopes `ui`), modelled on the `github` steps. The guard's pytest file already runs in the pre-push gate and in pr-checks.
+- Docs: `docs/internals/code-splitting.md` (history section: where, the record and backfill npm scripts, `history` rule, backfill); `docs/reference/environments.md` (dev installs `meta`); `docs/reference/testing.md` (new suite).
 - Cleanup: the MiroirTest `description` drops the issue reference once green; no `issues/473-*` vitest directory is created by this plan, so nothing to delete.
-- Tracer narrative: a contributor shrinks the page, the guard fails with `budget`, they run `--record-baseline --reason "…"`, commit the policy and the new instance; the Meta home page shows the new row with its negative change. Automated equivalent: Slice 3 tests + `report.bundleSizeHistory`.
+- `packages/miroir-app-meta/README.md`: the two npm scripts.
+- Tracer narrative: a contributor shrinks the page, the guard fails with `budget` and names the record command; they run `npm run bundle-size:record -w miroir-app-meta -- <report> --reason "…"`, commit the policy and the new instance; the Meta home page shows the new row with its negative change. Automated equivalent: Slice 3 tests + `report.bundleSizeHistory`.
 
 **Validation:**
 ```bash
@@ -277,9 +284,9 @@ _(pending)_
 |---|---|
 | The `miroir-app-meta` package exists, builds, and is installed by the environments chosen in the analysis | Slice 0: `modelValidation`, `testEnvironmentConfig.unit`, `miroir-env check` |
 | An Entity of `miroir-app-meta` describes a bundle size measurement, with its MLS and at least the application, date, commit and eager gzip bytes | Slice 1: Entity `90d603f9-…`, `modelValidation` |
-| `check_bundle_policy.py --init` writes both `eagerGzipBaseline` and a new instance, for the web app and for Electron | Slice 3: `test_init_records`, `test_record_baseline_*` (both apps share the code path; the fixture `app` is switched in one test) |
-| A build that fails the guard writes no instance | Slice 3: `test_record_baseline_refuses_other_violations` |
-| A documented script turns a `bundle-report.json` into an instance | Slice 1: `test_record_*`; docs in Slice 6 |
-| The history from the git log of both `bundle-policy.json` files is backfilled as tracked instances | Slice 2: `test_backfill_*`, 21 committed instances, Slice 4 `test_history_rule_on_the_repository` |
+| `check_bundle_policy.py --init` writes both `eagerGzipBaseline` and a new instance, for the web app and for Electron (revised: the record command writes both, `--init` included; a bare guard `--init` fails `history` until recorded) | Slice 3: `bundleSizeRecord.unit` policy cases, Electron case; Slice 4: `test_history_rule_fails_on_a_hand_edit` |
+| A build that fails the guard writes no instance | Slice 3: "refuses other violations" |
+| A documented script turns a `bundle-report.json` into an instance | Slice 1: `bundleSizeRecord.unit`; docs in Slice 6 |
+| The history from the git log of both `bundle-policy.json` files is backfilled as tracked instances | Slice 2: `bundleSizeBackfill.unit`, 21 committed instances, Slice 4 `test_history_rule_on_the_repository` |
 | A `miroir-app-meta` Report shows the measurements per application in date order, with the size change from one measurement to the next | Slice 5: `report.bundleSizeHistory` |
 | `docs/internals/code-splitting.md` says where the history lives and how a measurement is added | Slice 6 |
