@@ -63,3 +63,17 @@ export const globalEnvironment = [
     "process.env read outside a composition root: the value cannot differ per instance or per test. Take it as a parameter that the root fills.",
   ),
 ];
+
+// `miroir/pub-sub`, in views. Calls only: passing `store.subscribe` to useSyncExternalStore is the sanctioned form.
+export const pubSub = [
+  smell(
+    "pub-sub",
+    "CallExpression[callee.property.name='subscribe']",
+    "Subscription in a component or hook: pass props, or expose the service's data through a hook built on useSyncExternalStore.",
+  ),
+];
+
+// `miroir/component-io`, in views: options of no-restricted-globals, which skips a local or a parameter named `fetch`.
+export const componentIo = [
+  { name: "fetch", message: "[component-io] fetch in a component or hook: call a DomainController action, or a service passed in." },
+];

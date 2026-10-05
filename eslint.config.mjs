@@ -9,17 +9,31 @@ import { builtinRules } from "eslint/use-at-your-own-risk";
 import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
 import miroirLayers from "./eslint-rules/miroir-layers.mjs";
-import { actionResult, globalEnvironment, ROOTS, SRC, TESTS, typeEscape } from "./eslint-rules/smells.mjs";
+import {
+  actionResult,
+  componentIo,
+  globalEnvironment,
+  pubSub,
+  ROOTS,
+  SRC,
+  TEST_SESSION_VIEWS,
+  TESTS,
+  typeEscape,
+  VIEW,
+} from "./eslint-rules/smells.mjs";
 
 // A smell that graduated from the lens runs under its own name: the same ESLint rule registered as `miroir/<smell-id>`,
 // so eslint-suppressions.json counts each smell apart. The miroir-code-quality skill has an entry per smell id.
 const restrictedSyntax = builtinRules.get("no-restricted-syntax");
+const restrictedGlobals = builtinRules.get("no-restricted-globals");
 const miroir = {
   rules: {
     layers: miroirLayers,
     "action-result": restrictedSyntax,
     "type-escape": restrictedSyntax,
     "global-environment": restrictedSyntax,
+    "pub-sub": restrictedSyntax,
+    "component-io": restrictedGlobals,
   },
 };
 
@@ -71,6 +85,23 @@ export default tseslint.config(
     ignores: [...TESTS, ...ROOTS],
     rules: {
       "miroir/global-environment": ["error", ...globalEnvironment],
+    },
+  },
+  {
+    files: VIEW,
+    ignores: [...TESTS, ...ROOTS],
+    rules: {
+      "miroir/pub-sub": ["error", ...pubSub],
+      "miroir/component-io": ["error", ...componentIo],
+    },
+  },
+  {
+    // The components and hooks of the standalone app's 4-tests folder are views, though the folder is a root.
+    files: TEST_SESSION_VIEWS,
+    ignores: TESTS,
+    rules: {
+      "miroir/pub-sub": ["error", ...pubSub],
+      "miroir/component-io": ["error", ...componentIo],
     },
   },
   {

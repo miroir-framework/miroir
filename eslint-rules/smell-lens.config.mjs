@@ -12,7 +12,13 @@ import { ROOTS, smell, SRC, TEST_SESSION_VIEWS, TESTS, THEME_VIEWS, VIEW } from 
 // The smells that graduated to eslint.config.mjs (#340 D7) are errors there, where eslint-suppressions.json hides the
 // counted violations. Bulk suppressions count errors only: as warnings here, every violation shows. A severity alone
 // keeps the options that eslint.config.mjs gives each file.
-const GRADUATED = ["miroir/action-result", "miroir/type-escape", "miroir/global-environment"];
+const GRADUATED = [
+  "miroir/action-result",
+  "miroir/type-escape",
+  "miroir/global-environment",
+  "miroir/pub-sub",
+  "miroir/component-io",
+];
 
 const UUID = "/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/";
 // A hex color (`#333`, `1px solid #e0e0e0`), an rgb() color, white or black. A translucent rgba() tint reads on any background.
@@ -123,25 +129,11 @@ const anywhereInSrc = [
   ),
 ];
 
-const fetchInView = {
-  name: "fetch",
-  message: "[component-io] fetch in a component or hook: call a DomainController action, or a service passed in.",
-};
-
 const outsideCompositionRoots = [
   smell(
     "wiring",
     "NewExpression[callee.name=/^(DomainController|PersistenceStoreControllerManager|PersistenceStoreController|MiroirContext|MiroirEventService|MiroirActivityTracker|LocalCache|RestClient)$/]",
     "Core service built outside a composition root: wiring belongs in 5_setup or in the runtime's setup file.",
-  ),
-];
-
-// Calls only: passing `store.subscribe` to useSyncExternalStore is the sanctioned form.
-const inViews = [
-  smell(
-    "pub-sub",
-    "CallExpression[callee.property.name='subscribe']",
-    "Subscription in a component or hook: pass props, or expose the service's data through a hook built on useSyncExternalStore.",
   ),
 ];
 
@@ -242,7 +234,7 @@ export default [
     },
   },
   {
-    // A rule configured twice is replaced, not merged: roots get the same list without the two root-only smells.
+    // A rule configured twice is replaced, not merged: roots get the same list without the root-only smell (wiring).
     files: ROOTS,
     ignores: TESTS,
     rules: { "no-restricted-syntax": ["warn", ...anywhereInSrc] },
@@ -251,22 +243,20 @@ export default [
     files: VIEW,
     ignores: [...TESTS, ...ROOTS],
     rules: {
-      "no-restricted-globals": ["warn", fetchInView],
-      "no-restricted-syntax": ["warn", ...anywhereInSrc, ...outsideCompositionRoots, ...inViews, ...outsideThemes],
+      "no-restricted-syntax": ["warn", ...anywhereInSrc, ...outsideCompositionRoots, ...outsideThemes],
     },
   },
   {
     files: THEME_VIEWS,
     ignores: [...TESTS, ...ROOTS],
-    rules: { "no-restricted-syntax": ["warn", ...anywhereInSrc, ...outsideCompositionRoots, ...inViews] },
+    rules: { "no-restricted-syntax": ["warn", ...anywhereInSrc, ...outsideCompositionRoots] },
   },
   {
     // Views inside the 4-tests root get the view checks; the folder stays a root for process.env and wiring.
     files: TEST_SESSION_VIEWS,
     ignores: TESTS,
     rules: {
-      "no-restricted-globals": ["warn", fetchInView],
-      "no-restricted-syntax": ["warn", ...anywhereInSrc, ...inViews, ...outsideThemes],
+      "no-restricted-syntax": ["warn", ...anywhereInSrc, ...outsideThemes],
     },
   },
   {
