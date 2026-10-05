@@ -18,13 +18,15 @@ import {
   environmentStateStatus,
   missingConnectionPasswords,
 } from "./environmentState.js";
+import { clearEnvironmentState } from "./clearCommand.js";
 import { deployExample } from "./deployExample.js";
 import { importExtras, inspectEnvironmentState, pruneExtras } from "./stateCommands.js";
 import { changedAssetFiles } from "./trackedAssets.js";
 
 // ################################################################################################
 // miroir-env: show which environment a run uses and what it contains, check its state against
-// its definition, record or remove what the definition does not install (#321), deploy an example
+// its definition, record or remove what the definition does not install (#321), clear the state of a
+// test environment (#477), deploy an example
 // application of the monorepo.
 // ################################################################################################
 
@@ -52,12 +54,15 @@ Commands:
                                     in the Admin data of the state (default: the selected
                                     environment's, e.g. .miroir/dev); does nothing when it is
                                     already deployed
+  clear                             remove the state of a test environment: its .miroir
+                                    directory, SQL schemas and MongoDB databases; with
+                                    MIROIR_TEST_WORKER set, only that nonreg worker's
 
 Every command takes --name <environment>. Environment selection, first match wins: --name,
 MIROIR_ENV, environments/local.json, dev.
 `;
 
-const COMMANDS = ["show", "check", "import", "prune", "deploy"];
+const COMMANDS = ["show", "check", "import", "prune", "deploy", "clear"];
 
 function describe(resolved: ResolvedEnvironment): string {
   const lines = [
@@ -160,6 +165,10 @@ export async function main(argv: string[], io: CliIo): Promise<number> {
     const resolved = resolveEnvironmentFromFiles({ cwd: io.cwd, env: io.env, name: option(args, "--name") });
     if (command === "show") {
       io.stdout(args.includes("--json") ? JSON.stringify(resolved, null, 2) + "\n" : describe(resolved));
+      return 0;
+    }
+    if (command === "clear") {
+      io.stdout((await clearEnvironmentState(resolved, io.env)).join("\n") + "\n");
       return 0;
     }
     const dryRun = args.includes("--dry-run");

@@ -113,7 +113,7 @@ function restoreEntityDirectories(source: string, target: string): void {
 
 /** The state directory of an environment, relative to the repository root. */
 export function environmentStateDirectory(resolved: ResolvedEnvironment): string {
-  return `${ENVIRONMENT_STATE_ROOT}/${resolved.name}`;
+  return `${ENVIRONMENT_STATE_ROOT}/${resolved.stateName}`;
 }
 
 export type EnvironmentLock = {
@@ -193,7 +193,7 @@ export function describeEnvironmentStateStatus(state: EnvironmentStateStatus): s
 
 /** The environment a configuration comes from, and where the applications installed at runtime go. */
 function configEnvironment(resolved: ResolvedEnvironment): MiroirConfigEnvironment {
-  return { name: resolved.name, appsDirectory: environmentAppsDirectory(resolved.name) };
+  return { name: resolved.name, appsDirectory: environmentAppsDirectory(resolved.stateName) };
 }
 
 /** The server configuration of an environment; the filesystem root is the repository root. */

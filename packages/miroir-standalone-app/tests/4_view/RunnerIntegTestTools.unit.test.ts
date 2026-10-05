@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { ephemeralStoreIdentifier } from "../../src/miroir-fwk/4-tests/runnerIntegTestSupport.js";
+import { canonicalStoreIdentifier, ephemeralStoreIdentifier } from "../../src/miroir-fwk/4-tests/runnerIntegTestSupport.js";
 import {
   resolveEphemeralIndexedDbBaseName,
   testApplicationStorageConfiguration,
@@ -259,5 +259,60 @@ describe("testApplicationStorageConfiguration", () => {
       connectionString,
       schema: "Library_modelVersion",
     });
+  });
+});
+
+// #477 Slice 2: a test application installed at runtime on SQL or MongoDB carries the name of the
+// test environment state its template lives in, so parallel nonreg workers do not share it.
+describe("test applications of a test environment on SQL and MongoDB (#477)", () => {
+  it("refuses a canonical store name that the _modelVersion suffix would push past 63 characters", () => {
+    expect(canonicalStoreIdentifier("testApplication", "test_sql_w2")).toBe("test_sql_w2_testApplication");
+    expect(() => canonicalStoreIdentifier("a".repeat(40), "test_mongodb_w12")).toThrow(/too long/);
+  });
+
+  const sqlTemplate = (state: string) => ({
+    admin: { emulatedServerType: "filesystem" as const, directory: `.miroir/${state}/admin` },
+    model: { emulatedServerType: "sql" as const, connectionString: "postgres://postgres@localhost:5432/postgres", schema: "x_library" },
+    data: { emulatedServerType: "sql" as const, connectionString: "postgres://postgres@localhost:5432/postgres", schema: "x_library" },
+  });
+  const mongoTemplate = (state: string) => ({
+    admin: { emulatedServerType: "filesystem" as const, directory: `.miroir/${state}/admin` },
+    model: { emulatedServerType: "mongodb" as const, connectionString: "mongodb://localhost:27017", database: "x_library" },
+    data: { emulatedServerType: "mongodb" as const, connectionString: "mongodb://localhost:27017", database: "x_library" },
+  });
+
+  it("prefixes the SQL schemas with the worker state of the template", () => {
+    const configuration = testApplicationStorageConfiguration(sqlTemplate("test-sql@w2"), "Library");
+
+    expect(configuration.model).toMatchObject({ schema: "test_sql_w2_Library" });
+    expect(configuration.data).toMatchObject({ schema: "test_sql_w2_Library" });
+    expect(configuration.modelVersion).toMatchObject({ schema: "test_sql_w2_Library_modelVersion" });
+  });
+
+  it("prefixes the SQL schemas with the environment of a run without a worker", () => {
+    const configuration = testApplicationStorageConfiguration(sqlTemplate("test-sql"), "Library");
+
+    expect(configuration.model).toMatchObject({ schema: "test_sql_Library" });
+  });
+
+  it("prefixes the MongoDB databases with the worker state of the template", () => {
+    const configuration = testApplicationStorageConfiguration(mongoTemplate("test-mongodb@w3"), "Library");
+
+    expect(configuration.model).toMatchObject({ database: "test_mongodb_w3_Library" });
+    expect(configuration.modelVersion).toMatchObject({ database: "test_mongodb_w3_Library_modelVersion" });
+  });
+
+  it("keeps the full isolation key and the _modelVersion suffix within 63 characters", () => {
+    const key = "0e776954-723b-4718-b320-49a83a1d2b08";
+    const configuration = testApplicationStorageConfiguration(
+      sqlTemplate("test-sql@w12"),
+      "runner_return_document_ephemeral_with_a_long_name",
+      key,
+    );
+    const schema = (configuration.modelVersion as { schema: string }).schema;
+
+    expect(schema.length).toBeLessThanOrEqual(63);
+    expect(schema.startsWith("test_sql_w12_")).toBe(true);
+    expect(schema.endsWith(`_${key.replace(/-/g, "")}_modelVersion`)).toBe(true);
   });
 });

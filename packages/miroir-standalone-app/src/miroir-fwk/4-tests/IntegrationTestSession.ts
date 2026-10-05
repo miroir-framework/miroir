@@ -251,9 +251,10 @@ export function buildTestApplicationStoreUnitConfiguration(
   switch (options.emulatedServerType) {
     case "sql": {
       const connectionString = resolvePostgresConnectionString(options);
+      const schema = options.schema ?? applicationName;
       return withTestApplicationSqlAdminSchema(
-        applicationName,
-        getBasicStoreUnitConfiguration(applicationName, {
+        schema,
+        getBasicStoreUnitConfiguration(schema, {
           emulatedServerType: "sql",
           connectionString,
         }),

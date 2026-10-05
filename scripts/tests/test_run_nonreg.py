@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import socket
 import subprocess
 import sys
@@ -69,8 +70,17 @@ def write_manifest(tmp_path: Path, steps: list[dict], scopes: dict[str, str] | N
     return path
 
 
-def run_nonreg(tmp_path: Path, manifest: Path, *extra: str) -> tuple[int, dict, Path]:
+def run_nonreg(
+    tmp_path: Path, manifest: Path, *extra: str, env: dict[str, str] | None = None
+) -> tuple[int, dict, Path]:
     results_root = tmp_path / "results"
+    # The contract tests below describe a serial run; #477 tests ask for --jobs themselves.
+    jobs = [] if "--jobs" in extra else ["--jobs", "1"]
+    if "--jobs" in extra and "--environments-dir" not in extra:
+        # A parallel run removes its workers' state for the test environments it knows: none here,
+        # so this run never touches the state of a nonreg run that started these tests.
+        (tmp_path / "no-environments").mkdir(exist_ok=True)
+        jobs += ["--environments-dir", str(tmp_path / "no-environments")]
     proc = subprocess.run(
         [
             sys.executable,
@@ -79,12 +89,14 @@ def run_nonreg(tmp_path: Path, manifest: Path, *extra: str) -> tuple[int, dict, 
             str(manifest),
             "--results-root",
             str(results_root),
+            *jobs,
             *extra,
         ],
         cwd=ROOT,
         capture_output=True,
         text=True,
         check=False,
+        env=env,
     )
     snapshots = [p for p in results_root.iterdir() if p.is_dir() and p.name != "latest"]
     assert len(snapshots) == 1, proc.stdout + proc.stderr
@@ -868,3 +880,317 @@ def test_unknown_local_cache_is_rejected(tmp_path: Path):
 
     assert proc.returncode == 2
     assert "invalid choice" in proc.stderr
+
+
+# #477 Slice 0: the serial contract that --jobs 1 keeps.
+def order_step(step_id: str, log: Path) -> dict:
+    code = (
+        "import os, sys, time; "
+        f"p = {str(log)!r}; "
+        f"open(p, 'a').write('start {step_id} ' + os.environ.get('MIROIR_TEST_WORKER', '-') + '\\n'); "
+        "time.sleep(0.3); "
+        f"open(p, 'a').write('end {step_id}\\n')"
+    )
+    return {"id": step_id, "tier": "unit", "title": step_id, "requires": "none", "argv": ["python", "-c", code]}
+
+
+def test_serial_run_runs_steps_one_after_the_other_without_a_worker(tmp_path: Path):
+    log = tmp_path / "order.log"
+    manifest = write_manifest(tmp_path, [order_step("a", log), order_step("b", log)])
+
+    # A worker left in the calling shell does not reach a serial run's steps.
+    code, summary, _ = run_nonreg(
+        tmp_path, manifest, "--tier", "unit", env={**os.environ, "MIROIR_TEST_WORKER": "w9"}
+    )
+
+    assert code == 0
+    assert log.read_text(encoding="utf-8").splitlines() == ["start a -", "end a", "start b -", "end b"]
+    assert "jobs" not in summary
+
+
+# #477 Slice 4: --jobs N runs steps and shared groups at the same time, one worker per job.
+def timed_step(step_id: str, log: Path, *, sleep: float = 1.0, exit_code: int = 0) -> dict:
+    code = (
+        "import os, sys, time, json; "
+        f"p = {str(log)!r}; "
+        "w = os.environ.get('MIROIR_TEST_WORKER', '-'); "
+        f"open(p, 'a').write(json.dumps(['start', {step_id!r}, w, time.time()]) + '\\n'); "
+        f"time.sleep({sleep}); "
+        f"open(p, 'a').write(json.dumps(['end', {step_id!r}, w, time.time()]) + '\\n'); "
+        f"sys.exit({exit_code})"
+    )
+    return {"id": step_id, "tier": "unit", "title": step_id, "requires": "none", "argv": ["python", "-c", code]}
+
+
+def read_events(log: Path) -> list[list]:
+    return [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
+
+
+def spans(log: Path) -> dict[str, tuple[float, float, str]]:
+    events = read_events(log)
+    starts = {e[1]: (e[3], e[2]) for e in events if e[0] == "start"}
+    ends = {e[1]: e[3] for e in events if e[0] == "end"}
+    return {sid: (starts[sid][0], ends[sid], starts[sid][1]) for sid in starts}
+
+
+def overlap(a: tuple[float, float, str], b: tuple[float, float, str]) -> bool:
+    return a[0] < b[1] and b[0] < a[1]
+
+
+FS_PROFILE = ("--profile", "emulatedServer-filesystem")
+
+
+def test_jobs_runs_steps_at_the_same_time_each_in_its_own_worker(tmp_path: Path):
+    log = tmp_path / "events.log"
+    manifest = write_manifest(tmp_path, [timed_step(s, log) for s in ("a", "b", "c")])
+
+    code, summary, _ = run_nonreg(tmp_path, manifest, "--tier", "unit", "--jobs", "2", *FS_PROFILE)
+
+    assert code == 0
+    s = spans(log)
+    assert overlap(s["a"], s["b"])
+    for x, y in (("a", "b"), ("a", "c"), ("b", "c")):
+        if overlap(s[x], s[y]):
+            assert s[x][2] != s[y][2]
+    assert {span[2] for span in s.values()} <= {"w1", "w2"}
+    assert summary["jobs"] == 2
+    assert {step["worker"] for step in summary["steps"]} <= {"w1", "w2"}
+
+
+def test_jobs_one_runs_steps_one_after_the_other(tmp_path: Path):
+    log = tmp_path / "events.log"
+    manifest = write_manifest(tmp_path, [timed_step(s, log, sleep=0.2) for s in ("a", "b")])
+
+    run_nonreg(tmp_path, manifest, "--tier", "unit", "--jobs", "1", *FS_PROFILE)
+
+    s = spans(log)
+    assert not overlap(s["a"], s["b"])
+
+
+def test_parallel_summary_keeps_manifest_order_and_compares_with_a_serial_run(tmp_path: Path):
+    log = tmp_path / "events.log"
+    # "slow" finishes last although it comes first in the manifest.
+    manifest = write_manifest(
+        tmp_path,
+        [timed_step("slow", log, sleep=1.0), timed_step("quick", log, sleep=0.1), timed_step("fails", log, sleep=0.1, exit_code=3)],
+    )
+    serial_dir = tmp_path / "serial"
+    serial_dir.mkdir()
+    _, serial, serial_snap = run_nonreg(serial_dir, manifest, "--tier", "unit", "--jobs", "1", *FS_PROFILE)
+
+    code, summary, _ = run_nonreg(
+        tmp_path, manifest, "--tier", "unit", "--jobs", "3", *FS_PROFILE,
+        "--compare", str(serial_snap / "summary.json"),
+    )
+
+    assert [st["id"] for st in summary["steps"]] == ["slow", "quick", "fails"]
+    assert [st["status"] for st in summary["steps"]] == [st["status"] for st in serial["steps"]]
+    assert code == 1  # the failing step, not a compare difference
+
+
+def test_fail_fast_with_jobs_lets_running_steps_finish_and_starts_no_new_one(tmp_path: Path):
+    log = tmp_path / "events.log"
+    manifest = write_manifest(
+        tmp_path,
+        [
+            timed_step("fails", log, sleep=0.1, exit_code=3),
+            timed_step("running", log, sleep=1.0),
+            timed_step("later", log, sleep=0.1),
+        ],
+    )
+
+    code, summary, _ = run_nonreg(tmp_path, manifest, "--tier", "unit", "--jobs", "2", "--fail-fast", *FS_PROFILE)
+
+    statuses = {st["id"]: st["status"] for st in summary["steps"]}
+    assert code == 1
+    assert statuses == {"fails": "failed", "running": "passed", "later": "not_run"}
+    assert "later" not in spans(log)
+
+
+def test_parallel_console_prints_each_step_as_one_block(tmp_path: Path):
+    log = tmp_path / "events.log"
+    manifest = write_manifest(tmp_path, [timed_step(s, log, sleep=0.5) for s in ("a", "b")])
+    results_root = tmp_path / "results"
+
+    proc = subprocess.run(
+        [sys.executable, str(SCRIPT), "--manifest", str(manifest), "--results-root", str(results_root),
+         "--tier", "unit", "--jobs", "2", *FS_PROFILE],
+        cwd=ROOT, capture_output=True, text=True, check=False,
+    )
+
+    lines = proc.stdout.splitlines()
+    for sid in ("a", "b"):
+        header = next(i for i, line in enumerate(lines) if line.startswith("=== ") and line.endswith(f"] {sid} ==="))
+        assert lines[header + 1].startswith("$ ")
+        assert "PASSED" in lines[header + 2]
+
+
+@pytest.mark.parametrize("value", ["0", "-1"])
+def test_jobs_must_be_positive(tmp_path: Path, value: str):
+    manifest = write_manifest(tmp_path, [{"id": "x", "tier": "unit", "title": "x", "argv": ["python", "-c", "pass"]}])
+    proc = subprocess.run(
+        [sys.executable, str(SCRIPT), "--manifest", str(manifest), "--results-root", str(tmp_path / "r"), "--jobs", value],
+        cwd=ROOT, capture_output=True, text=True, check=False,
+    )
+    assert proc.returncode == 2
+
+
+def worker_state_step(step_id: str, state: str) -> dict:
+    """Writes into .miroir/<state>@<worker>, as a test environment opened by the step would."""
+    code = (
+        "import os, pathlib; "
+        f"d = pathlib.Path('.miroir') / ({state!r} + '@' + os.environ['MIROIR_TEST_WORKER']); "
+        "d.mkdir(parents=True, exist_ok=True); (d / 'x.json').write_text('{}')"
+    )
+    return {"id": step_id, "tier": "unit", "title": step_id, "requires": "none", "argv": ["python", "-c", code]}
+
+
+def test_worker_state_is_removed_after_the_run_unless_kept(tmp_path: Path):
+    state = "test-pytest477"
+    manifest = write_manifest(tmp_path, [worker_state_step("a", state), worker_state_step("b", state)])
+    environments = tmp_path / "environments"
+    environments.mkdir()
+    (environments / f"{state}.json").write_text("{}", encoding="utf-8")
+    env_args = ("--environments-dir", str(environments))
+    workers = lambda: sorted(p.name for p in (ROOT / ".miroir").glob(f"{state}@*"))  # noqa: E731
+    try:
+        removed_dir = tmp_path / "removed"
+        removed_dir.mkdir()
+        code, _, _ = run_nonreg(removed_dir, manifest, "--tier", "unit", "--jobs", "2", *FS_PROFILE, *env_args)
+        assert code == 0
+        assert workers() == []
+
+        code, summary, _ = run_nonreg(
+            tmp_path, manifest, "--tier", "unit", "--jobs", "2", "--keep-worker-state", *FS_PROFILE, *env_args
+        )
+        assert code == 0
+        assert workers() and set(workers()) <= {f"{state}@w1", f"{state}@w2"}
+        assert summary["worker_state"] == "kept"
+    finally:
+        for leftover in (ROOT / ".miroir").glob(f"{state}@*"):
+            shutil.rmtree(leftover)
+
+
+def test_a_worker_state_with_a_database_is_cleared_and_a_failed_clear_is_reported(tmp_path: Path):
+    # The environment has a PostgreSQL connection, so its stores are cleared through miroir-env clear even
+    # on a filesystem run; miroir-env does not know this environment, so the clear fails (#477 review).
+    state = "test-pytest477db"
+    manifest = write_manifest(tmp_path, [worker_state_step("a", state)])
+    environments = tmp_path / "environments"
+    environments.mkdir()
+    (environments / f"{state}.json").write_text(
+        json.dumps({"connections": {"postgres": {"host": "localhost"}}}), encoding="utf-8"
+    )
+    try:
+        code, summary, _ = run_nonreg(
+            tmp_path, manifest, "--tier", "unit", "--jobs", "2", *FS_PROFILE, "--environments-dir", str(environments)
+        )
+        assert code == 0
+        assert summary["worker_state"] == "incomplete"
+    finally:
+        for leftover in (ROOT / ".miroir").glob(f"{state}@*"):
+            shutil.rmtree(leftover)
+
+
+@pytest.mark.skipif(os.name == "nt", reason="the test holds the lock with fcntl")
+def test_a_second_run_on_the_same_results_root_is_refused(tmp_path: Path):
+    import fcntl
+
+    manifest = write_manifest(tmp_path, [{"id": "x", "tier": "unit", "title": "x", "argv": ["python", "-c", "pass"]}])
+    results_root = tmp_path / "results"
+    results_root.mkdir()
+    with open(results_root / ".run.lock", "a+") as held:
+        fcntl.flock(held.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        proc = subprocess.run(
+            [sys.executable, str(SCRIPT), "--manifest", str(manifest), "--results-root", str(results_root), "--jobs", "1"],
+            cwd=ROOT, capture_output=True, text=True, check=False,
+        )
+    assert proc.returncode == 2
+    assert "another nonreg run" in proc.stderr
+
+
+def load_runner():
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("run_nonreg_module", SCRIPT)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules["run_nonreg_module"] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_fail_fast_starts_nothing_after_a_failure_while_a_worker_is_free(tmp_path: Path, monkeypatch):
+    # With 4 jobs and 2 units, a worker is free when the second unit comes: the failure of the first
+    # must still stop it (#477 review).
+    import time
+
+    runner = load_runner()
+    steps = [{"id": i, "title": i, "tier": "unit", "requires": "none", "argv": []} for i in ("fails", "later")]
+    started: list[str] = []
+
+    def fake_run_unit(unit, shared_groups, run, worker):
+        step = unit.steps[0]
+        started.append(step["id"])
+        status = "failed" if step["id"] == "fails" else "passed"
+        return {step["id"]: runner.StepResult(step["id"], step["id"], "unit", "none", status)}, []
+
+    def slow_plan(steps, shared_groups):
+        for unit in [runner.Unit([step]) for step in steps]:
+            yield unit
+            time.sleep(0.3)
+
+    monkeypatch.setattr(runner, "run_unit", fake_run_unit)
+    monkeypatch.setattr(runner, "plan_units", slow_plan)
+    run = runner.RunContext(profile="emulatedServer-filesystem", snap_dir=tmp_path, dry_run=False, timings=False)
+
+    results, _ = runner.run_parallel(steps, {}, run, fail_fast=True, jobs=4)
+
+    assert started == ["fails"]
+    assert [r.status for r in results] == ["failed", "not_run"]
+
+
+@requires_vitest
+def test_a_shared_group_runs_as_one_job_on_one_worker(tmp_path: Path, shared_manifest: Path):
+    _, summary, _ = run_nonreg(
+        tmp_path, shared_manifest, "--tier", "unit", "--runner", "shared", "--jobs", "2", *FS_PROFILE
+    )
+
+    steps = steps_by_id(summary)
+    assert [s["id"] for s in summary["steps"]] == ["alpha", "plain", "beta", "leaky", "broken"]
+    group_workers = {steps[sid]["worker"] for sid in ("alpha", "beta", "leaky", "broken")}
+    assert len(group_workers) == 1
+    assert steps["alpha"]["status"] == "passed"
+    assert steps["broken"]["mode"] == "shared→legacy"
+
+
+# #477 Slice 5: a step with "parallel": false runs with no other step running.
+def test_a_step_that_runs_alone_waits_for_the_others_and_holds_the_next(tmp_path: Path):
+    log = tmp_path / "events.log"
+    alone = {**timed_step("alone", log, sleep=0.3), "parallel": False}
+    manifest = write_manifest(
+        tmp_path,
+        [timed_step("before", log, sleep=0.6), alone, timed_step("after", log, sleep=0.3), timed_step("after2", log, sleep=0.3)],
+    )
+
+    code, _, _ = run_nonreg(tmp_path, manifest, "--tier", "unit", "--jobs", "3", *FS_PROFILE)
+
+    s = spans(log)
+    assert code == 0
+    assert s["alone"][0] >= s["before"][1]
+    assert s["after"][0] >= s["alone"][1]
+    assert s["after2"][0] >= s["alone"][1]
+    assert s["alone"][2] == "-"  # no worker: the run bracket is not a test environment step
+    assert overlap(s["after"], s["after2"])
+
+
+def test_the_run_bracket_runs_alone():
+    steps = {s["id"]: s for s in json.loads((ROOT / "scripts" / "nonreg-manifest.json").read_text(encoding="utf-8"))["steps"]}
+
+    assert steps["unit-321-environment-before"].get("parallel") is False
+    assert steps["unit-321-tracked-assets"].get("parallel") is False
+
+
+def test_parallel_is_only_ever_set_to_false():
+    steps = json.loads((ROOT / "scripts" / "nonreg-manifest.json").read_text(encoding="utf-8"))["steps"]
+
+    assert {s["parallel"] for s in steps if "parallel" in s} <= {False}

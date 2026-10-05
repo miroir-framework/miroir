@@ -40,7 +40,13 @@ export type IntegTestHostOptions = {
 };
 
 export type TestApplicationStoreOptions =
-  | { emulatedServerType: "sql"; postgresHostName?: string; connectionString?: string }
+  | {
+      emulatedServerType: "sql";
+      postgresHostName?: string;
+      connectionString?: string;
+      /** Schema of the test application (default: the application name); #477 names it after the test environment state. */
+      schema?: string;
+    }
   | {
       emulatedServerType: "filesystem";
       applicationRootDirectory: string;
