@@ -38,3 +38,9 @@ test("action-result: a throw, or an `as any` result, in a function that returns 
   await graduated(LIB, `${types}export function f(r: unknown): Action2VoidReturnType { return r as any; }\n`, "miroir/action-result");
   await spared(LIB, `${types}export async function open(): Promise<Action2VoidReturnType> { return new Action2Error("NotImplemented"); }\n`, "miroir/action-result");
 });
+
+test("type-escape: a double cast through unknown or any", async () => {
+  await graduated(LIB, `export const f = (x: number) => x as unknown as string;\n`, "miroir/type-escape");
+  await graduated(LIB, `export const f = (x: number) => x as any as string;\n`, "miroir/type-escape");
+  await spared(LIB, `export const f = (x: unknown) => x as string;\n`, "miroir/type-escape");
+});

@@ -45,3 +45,12 @@ export const actionResult = [
     "`return … as any` in a function that returns an action result: the declared result type checks nothing.",
   ),
 ];
+
+// `miroir/type-escape`, everywhere in sources: the double cast only. A single `as any` stays a lens warning.
+export const typeEscape = [
+  smell(
+    "type-escape",
+    "TSAsExpression > TSAsExpression.expression[typeAnnotation.type=/^TS(Unknown|Any)Keyword$/]",
+    "Double cast: the compiler checks nothing here. Fix the type at its source, or validate the value.",
+  ),
+];

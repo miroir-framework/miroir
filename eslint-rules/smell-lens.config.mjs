@@ -12,7 +12,7 @@ import { ROOTS, smell, SRC, TEST_SESSION_VIEWS, TESTS, THEME_VIEWS, VIEW } from 
 // The smells that graduated to eslint.config.mjs (#340 D7) are errors there, where eslint-suppressions.json hides the
 // counted violations. Bulk suppressions count errors only: as warnings here, every violation shows. A severity alone
 // keeps the options that eslint.config.mjs gives each file.
-const GRADUATED = ["miroir/action-result"];
+const GRADUATED = ["miroir/action-result", "miroir/type-escape"];
 
 const UUID = "/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/";
 // A hex color (`#333`, `1px solid #e0e0e0`), an rgb() color, white or black. A translucent rgba() tint reads on any background.
@@ -73,11 +73,6 @@ const anywhereInSrc = [
     // A one-parameter function's boolean is the value it sets (`setShowTypes(show: boolean)`), not a flag.
     ":function[params.length>1] > :matches(Identifier.params[typeAnnotation.typeAnnotation.type='TSBooleanKeyword'], AssignmentPattern.params[right.type='Literal'][right.raw=/^(true|false)$/])",
     "Boolean flag parameter: the call site reads `f(x, true)`. Split the function, or take a named option.",
-  ),
-  smell(
-    "type-escape",
-    "TSAsExpression > TSAsExpression.expression[typeAnnotation.type=/^TS(Unknown|Any)Keyword$/]",
-    "Double cast: the compiler checks nothing here. Fix the type at its source, or validate the value.",
   ),
   smell(
     "magic-value",

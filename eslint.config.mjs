@@ -9,7 +9,7 @@ import { builtinRules } from "eslint/use-at-your-own-risk";
 import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
 import miroirLayers from "./eslint-rules/miroir-layers.mjs";
-import { actionResult, SRC, TESTS } from "./eslint-rules/smells.mjs";
+import { actionResult, SRC, TESTS, typeEscape } from "./eslint-rules/smells.mjs";
 
 // A smell that graduated from the lens runs under its own name: the same ESLint rule registered as `miroir/<smell-id>`,
 // so eslint-suppressions.json counts each smell apart. The miroir-code-quality skill has an entry per smell id.
@@ -18,6 +18,7 @@ const miroir = {
   rules: {
     layers: miroirLayers,
     "action-result": restrictedSyntax,
+    "type-escape": restrictedSyntax,
   },
 };
 
@@ -61,6 +62,7 @@ export default tseslint.config(
     ignores: TESTS,
     rules: {
       "miroir/action-result": ["error", ...actionResult],
+      "miroir/type-escape": ["error", ...typeEscape],
     },
   },
   {
