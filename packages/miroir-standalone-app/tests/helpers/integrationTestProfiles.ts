@@ -140,7 +140,11 @@ export function resolveTransformerDefaultsForProfile(
   let derived: Partial<IntegrationTestTransformerDefaults> = {};
   try {
     const config = environmentClientConfig(
-      resolveEnvironmentFromFiles({ cwd: resolveRepoRoot(), env: { MIROIR_ENV: profile.environment } }),
+      resolveEnvironmentFromFiles({
+        cwd: resolveRepoRoot(),
+        // #477: a nonreg worker's stores are named after its worker state
+        env: { MIROIR_ENV: profile.environment, MIROIR_TEST_WORKER: process.env.MIROIR_TEST_WORKER },
+      }),
     );
     derived = deriveTestSessionDefaultsFromMiroirConfig(config);
   } catch {

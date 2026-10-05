@@ -15,6 +15,9 @@ import {
 } from "../src/index";
 import { repositoryRoot, temporaryRepository } from "./cliTestSupport";
 
+// openTestEnvironment reads process.env: a nonreg job runs these tests with MIROIR_TEST_WORKER set (#477).
+const noWorker = { MIROIR_TEST_WORKER: undefined };
+
 const application = (name: string, selfApplication: string, deployment: string) => ({
   package: `miroir-app-${name}`,
   selfApplication,
@@ -76,7 +79,7 @@ describe("test environments", () => {
     mkdirSync(path.dirname(installed), { recursive: true });
     writeFileSync(installed, "{}");
 
-    const environment = openTestEnvironment("test-filesystem", { cwd: root, reseed: true });
+    const environment = openTestEnvironment("test-filesystem", { cwd: root, env: noWorker, reseed: true });
 
     expect(existsSync(installed)).toBe(false);
     expect(environment.seed?.seeded).toContain("admin/data");
@@ -119,5 +122,113 @@ describe("test environments", () => {
     const resolved = resolveEnvironmentFromFiles({ cwd: root, env: { MIROIR_ENV: "test-filesystem" } });
 
     expect(() => environmentClientConfig(resolved)).toThrow('environment "test-filesystem" has no server.rootApiUrl');
+  });
+});
+
+// #477 Slice 0: every store of a test environment is named from the environment name alone, so two
+// runs of one test environment at the same time share their stores.
+describe("test environment state names (#477)", () => {
+  type Section = { directory?: string; schema?: string; database?: string; indexedDbName?: string };
+  const sections = (resolved: ReturnType<typeof resolveEnvironmentFromFiles>): Section[] =>
+    resolved.deployments.flatMap((d) => Object.values(d.configuration as Record<string, Section>));
+
+  it("two openings of test-filesystem use the same stores in .miroir/test-filesystem", () => {
+    const root = temporaryRepository({ "test-filesystem": testFilesystem });
+
+    const first = openTestEnvironment("test-filesystem", { cwd: root, env: noWorker, reseed: true });
+    const second = openTestEnvironment("test-filesystem", { cwd: root, env: noWorker, reseed: true });
+
+    expect(sections(second.resolved)).toEqual(sections(first.resolved));
+    for (const section of sections(first.resolved)) {
+      expect(section.directory?.startsWith(".miroir/test-filesystem/")).toBe(true);
+    }
+    expect(first.miroirConfig.environment?.appsDirectory).toBe(".miroir/test-filesystem/apps");
+  });
+
+  it("test-sql names its schemas test_sql_<application>", () => {
+    const resolved = resolveEnvironmentFromFiles({ cwd: repositoryRoot, env: { MIROIR_ENV: "test-sql" } });
+
+    const schemas = sections(resolved).flatMap((s) => (s.schema ? [s.schema] : []));
+    expect(schemas.length).toBeGreaterThan(0);
+    for (const schema of schemas) {
+      expect(schema).toMatch(/^test_sql_[A-Za-z]+(_modelVersion|_admin)?$/);
+    }
+  });
+});
+
+// #477 Slice 1: MIROIR_TEST_WORKER gives a test environment its own state, so parallel nonreg jobs
+// do not share stores. The definition name stays the same.
+describe("worker state of a test environment (#477)", () => {
+  type Section = { directory?: string; schema?: string; database?: string; indexedDbName?: string };
+  const sections = (resolved: ReturnType<typeof resolveEnvironmentFromFiles>): Section[] =>
+    resolved.deployments.flatMap((d) => Object.values(d.configuration as Record<string, Section>));
+
+  it("test-filesystem with worker w2 keeps its name and puts every store in .miroir/test-filesystem@w2", () => {
+    const resolved = resolveEnvironmentFromFiles({
+      cwd: repositoryRoot,
+      env: { MIROIR_ENV: "test-filesystem", MIROIR_TEST_WORKER: "w2" },
+    });
+
+    expect(resolved.name).toBe("test-filesystem");
+    expect(resolved.stateName).toBe("test-filesystem@w2");
+    for (const section of sections(resolved)) {
+      expect(section.directory?.startsWith(".miroir/test-filesystem@w2/")).toBe(true);
+    }
+    expect(environmentClientConfig(resolved).environment?.appsDirectory).toBe(".miroir/test-filesystem@w2/apps");
+  });
+
+  it("without a worker the state name is the environment name", () => {
+    const resolved = resolveEnvironmentFromFiles({ cwd: repositoryRoot, env: { MIROIR_ENV: "test-filesystem" } });
+
+    expect(resolved.stateName).toBe("test-filesystem");
+  });
+
+  it("test-sql, test-mongodb and test-indexedDb name their stores after the worker state", () => {
+    const resolve = (name: string) =>
+      resolveEnvironmentFromFiles({ cwd: repositoryRoot, env: { MIROIR_ENV: name, MIROIR_TEST_WORKER: "w2" } });
+
+    const schemas = sections(resolve("test-sql")).flatMap((s) => (s.schema ? [s.schema] : []));
+    const databases = sections(resolve("test-mongodb")).flatMap((s) => (s.database ? [s.database] : []));
+    const levels = sections(resolve("test-indexedDb")).flatMap((s) => (s.indexedDbName ? [s.indexedDbName] : []));
+
+    expect(schemas.length).toBeGreaterThan(0);
+    expect(schemas.every((schema) => schema.startsWith("test_sql_w2_"))).toBe(true);
+    expect(databases.length).toBeGreaterThan(0);
+    expect(databases.every((database) => database.startsWith("test_mongodb_w2_"))).toBe(true);
+    expect(levels.length).toBeGreaterThan(0);
+    expect(levels.every((name) => name.startsWith(".miroir/test-indexedDb@w2/"))).toBe(true);
+  });
+
+  it("a reseed with worker w2 leaves the state of the run without a worker in place", () => {
+    const root = temporaryRepository({ "test-filesystem": testFilesystem });
+    const unworkered = path.join(root, ".miroir/test-filesystem/apps/kept/x.json");
+    mkdirSync(path.dirname(unworkered), { recursive: true });
+    writeFileSync(unworkered, "{}");
+    const otherWorker = path.join(root, ".miroir/test-filesystem@w2/apps/wiped/x.json");
+    mkdirSync(path.dirname(otherWorker), { recursive: true });
+    writeFileSync(otherWorker, "{}");
+
+    openTestEnvironment("test-filesystem", { cwd: root, env: { MIROIR_TEST_WORKER: "w2" }, reseed: true });
+
+    expect(existsSync(unworkered)).toBe(true);
+    expect(existsSync(otherWorker)).toBe(false);
+  });
+
+  it("a worker on an environment that is not a test environment is ignored, with a warning", () => {
+    const warnings: string[] = [];
+    const resolved = resolveEnvironmentFromFiles({
+      cwd: repositoryRoot,
+      env: { MIROIR_ENV: "dev", MIROIR_TEST_WORKER: "w2" },
+      warn: (message) => warnings.push(message),
+    });
+
+    expect(resolved.stateName).toBe("dev");
+    expect(warnings).toEqual([expect.stringContaining("MIROIR_TEST_WORKER")]);
+  });
+
+  it("a worker name other than w<number> is refused", () => {
+    expect(() =>
+      resolveEnvironmentFromFiles({ cwd: repositoryRoot, env: { MIROIR_ENV: "test-filesystem", MIROIR_TEST_WORKER: "../x" } }),
+    ).toThrow(/MIROIR_TEST_WORKER/);
   });
 });

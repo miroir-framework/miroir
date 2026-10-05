@@ -55,6 +55,14 @@ Steps that run on the store of the run say `"requires": "storage"` in the manife
 
 The React components still read the cache through `miroir-react`, which imports `miroir-localcache-redux` at build time, so the option changes what the DomainController-level tests exercise, not the UI layer.
 
+#### Parallel jobs (#477)
+
+`--jobs N` (default 4) runs up to N steps at the same time. Each job is a worker `w1` to `wN`: the runner sets `MIROIR_TEST_WORKER=w<k>` for the steps it runs, and a test environment then keeps its state under `.miroir/test-<storage>@w<k>/`, with SQL schemas and MongoDB databases named `test_<storage>_w<k>_<application>` (see [Environments](environments.md#worker-state)). Two jobs never share a store. A shared group runs as one job. Steps marked `"parallel": false` in the manifest (the `unit-321-environment-before` and `unit-321-tracked-assets` bracket, which compare the whole tracked tree before and after the run) run alone, with no worker, after the jobs started before them end.
+
+Console lines of a step are printed as one block when the step ends, so the console order follows completion; `summary.json` and `summary.md` keep the manifest order and record `jobs`, each step's `worker`, and `worker_state`. With `--fail-fast` no new step starts after a failure, and the steps already running finish. After the run, the worker states are removed: the `.miroir/<environment>@w<k>` directories, and, for each test environment with a PostgreSQL or MongoDB connection that a worker opened, its schemas or databases through `miroir-env clear`, whatever the storage of the run. `worker_state` is `removed`, or `incomplete` when a clear failed; a database server that does not answer is listed in `worker_state_warnings`. `--keep-worker-state` keeps the states for inspection (`worker_state: "kept"`). `--jobs 1` runs one step at a time with no worker, as before #477.
+
+Two runs never share a results root: a run holds `test-results/nonreg/.run.lock` (or `<--results-root>/.run.lock`) and a second one stops with exit code 2. The system releases the lock when the run ends, also when it is killed.
+
 A few steps pin `emulatedServer-filesystem` in their argv and run on filesystem whatever the storage: `integ-runner.freezeApplicationVersion`, `externalServices-spotify`, `externalServices-github`, `appstack-270-persistent-secrets`.
 
 | Tier | Contents |

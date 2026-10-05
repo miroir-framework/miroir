@@ -204,7 +204,7 @@ function packageApplication(
     mode: "live",
     ...(configuration.modelVersion ? { sections: { modelVersion: {} } } : {}),
   };
-  const derived = deriveEnvironmentDeployments({ applications: { [key]: application } }, resolved.name);
+  const derived = deriveEnvironmentDeployments({ applications: { [key]: application } }, resolved.stateName);
   return derived.status === "ok" && stableJson(derived.deployments[0].configuration) === stableJson(configuration)
     ? { key, application }
     : undefined;
@@ -286,7 +286,7 @@ export function importExtras(
   const lines: string[] = [];
   const verb = options.dryRun ? "would record" : "recorded";
   const fromState = environmentStateDirectory(resolved);
-  const toState = environmentStateDirectory({ ...resolved, name: LOCAL_ENVIRONMENT });
+  const toState = environmentStateDirectory({ ...resolved, name: LOCAL_ENVIRONMENT, stateName: LOCAL_ENVIRONMENT });
   const copyState =
     !exists &&
     existsSync(path.join(resolved.repositoryRoot, fromState)) &&
