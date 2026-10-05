@@ -8,6 +8,7 @@ import {
   collectTransformerEnvironmentBindings,
   defaultTransformerInput,
   entityMLSchema,
+  formatInputOutputTypeLabel,
   formatMlSchemaTypeLabel,
   formatTransformerEnvironmentLabel,
   getApplicationSection,
@@ -38,10 +39,10 @@ import {
 } from "./listDisplayByTransformer.js";
 import { hasDisplayableTransformationResult } from "../TransformerEditor/TransformationResultPanel.js";
 import { ReportInstanceLink } from "../ReportInstanceLink.js";
+import { ExpectedOutputTypeChooser } from "./ExpectedOutputTypeChooser.js";
 import {
   TransformerNamedBindings,
   TransformerTitleSignature,
-  formatInputOutputTypeLabel,
 } from "./TransformerTypeAnnotation.js";
 import {
   ThemedContainer,
@@ -49,7 +50,6 @@ import {
   ThemedHeaderSection,
   ThemedLabel,
   ThemedLabeledEditor,
-  ThemedSelectWithPortal,
   ThemedSwitch,
   ThemedText,
   ThemedTitle,
@@ -87,18 +87,7 @@ export interface ListTransformerPanelProps {
   transformerParams?: Record<string, any>;
 }
 
-const INPUT_OUTPUT_BASE_TYPES = [
-  "any",
-  "undefined",
-  "bigint",
-  "number",
-  "string",
-  "boolean",
-  "object",
-  "array",
-] as const;
-
-/** Human-readable label for an input/output type (entity uuid → entity name when known). */
+/** #251: one line per mlSchema failure of a transformer node. */
 function formatMlSchemaNodeMismatch(
   node: TransformerMlSchemaNodeReport,
   schemaNameResolver?: (schema: MlElement) => string | undefined,
@@ -229,6 +218,20 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
     () => inferElementTransformerOutputType(elementTransformer, rowMlSchema, rowEntityUuid),
     [elementTransformer, rowMlSchema, rowEntityUuid],
   );
+  // #383: input type given to every transformer node, restricting its transformerType select.
+  // The root input (what the root select restricts by) is the row.
+  const interfaceWalk = useMemo(
+    () =>
+      checkTransformerInterfaceRecursively(elementTransformer, givenInputType, {
+        entityMlSchemas,
+        // The runtime keeps the whole list as `defaultInput` and binds each row as `row`.
+        context: rowMlSchema
+          ? { row: rowMlSchema, [defaultTransformerInput]: { type: "array", definition: rowMlSchema } as MlElement }
+          : {},
+      }),
+    [elementTransformer, givenInputType, entityMlSchemas, rowMlSchema],
+  );
+
   const interfaceCompatibility = useMemo(
     () => {
       if (!transformerType) {
@@ -243,27 +246,15 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
         declared
           ? { ...declared, output: inferredOutputType }
           : declared;
+      // A root with its own applyTo consumes the applyTo output, not the row (#383 D1, #449).
+      const consumedInput = interfaceWalk.nodes[0]?.consumedInput ?? givenInputType;
       return checkTransformerInterfaceCompatibilityWithInference(
-        { input: rowEntityUuid ?? "any", output: expectedOutputType },
+        { input: consumedInput, output: expectedOutputType },
         declaredForCheck,
         inferredOutputType,
       );
     },
-    [transformerType, rowEntityUuid, expectedOutputType, inferredOutputType],
-  );
-
-  // #383: input type given to every transformer node, restricting its transformerType select.
-  // As in the #249 check, the root input (what the select restricts by) is the row.
-  const interfaceWalk = useMemo(
-    () =>
-      checkTransformerInterfaceRecursively(elementTransformer, givenInputType, {
-        entityMlSchemas,
-        // The runtime keeps the whole list as `defaultInput` and binds each row as `row`.
-        context: rowMlSchema
-          ? { row: rowMlSchema, [defaultTransformerInput]: { type: "array", definition: rowMlSchema } as MlElement }
-          : {},
-      }),
-    [elementTransformer, givenInputType, entityMlSchemas, rowMlSchema],
+    [transformerType, interfaceWalk, givenInputType, expectedOutputType, inferredOutputType],
   );
   const givenInputMlSchema: MlElement = rowMlSchema ?? liftInputOutputTypeToMlSchema(givenInputType, entityMlSchemas);
   const expectedOutputMlSchema = liftInputOutputTypeToMlSchema(expectedOutputType, entityMlSchemas);
@@ -297,7 +288,7 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
           ? interfaceCompatibility.failures.map((failure) => {
               const actualLabel =
                 failure.source === "inferred" ? "inferred actual" : "transformer declares";
-              return `${failure.direction}: expected ${safeStringify(failure.given)}, ${actualLabel} ${safeStringify(failure.declared)}`;
+              return `${failure.direction}: expected ${formatInputOutputTypeLabel(failure.given, entities)}, ${actualLabel} ${formatInputOutputTypeLabel(failure.declared, entities)}`;
             })
           : []),
         ...nestedInterfaceFailureNodes.map((node) => formatInterfaceNodeMismatch(node, entities)),
@@ -476,32 +467,13 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
         <ThemedLabeledEditor
           labelElement={<ThemedLabel>Expected output type:</ThemedLabel>}
           editor={
-            <ThemedSelectWithPortal
-              id="list-transformer-expected-output-type"
-              data-testid="list-transformer-expected-output-type"
-              value={typeof expectedOutputType === "string" ? expectedOutputType : "any"}
-              onChange={(event) =>
-                setChosenOutputType(
-                  event.target.value === defaultExpectedOutputType
-                    ? undefined
-                    : (event.target.value as InputOutputType),
-                )
+            <ExpectedOutputTypeChooser
+              value={expectedOutputType}
+              onChange={(type) =>
+                setChosenOutputType(type === defaultExpectedOutputType ? undefined : type)
               }
-              minWidth="160px"
-            >
-              {INPUT_OUTPUT_BASE_TYPES.map((baseType) => (
-                <option key={baseType} value={baseType}>
-                  {baseType}
-                </option>
-              ))}
-              {[...(entities ?? [])]
-                .sort((a, b) => a.name.localeCompare(b.name))
-                .map((entity) => (
-                  <option key={entity.uuid} value={entity.uuid}>
-                    {entity.name}
-                  </option>
-                ))}
-            </ThemedSelectWithPortal>
+              entities={entities}
+            />
           }
         />
         <ThemedLabeledEditor

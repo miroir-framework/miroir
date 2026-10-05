@@ -5758,10 +5758,12 @@ export const miroirFundamentalMlSchema = {
             "type": "enum",
             "definition": [
               "any",
+              "undefined",
               "bigint",
               "number",
               "string",
-              "boolean"
+              "boolean",
+              "object"
             ]
           },
           {
@@ -5771,6 +5773,7 @@ export const miroirFundamentalMlSchema = {
       },
       "inputOutputType": {
         "type": "union",
+        "discriminator": "type",
         "definition": [
           {
             "type": "enum",
@@ -5782,7 +5785,8 @@ export const miroirFundamentalMlSchema = {
               "string",
               "boolean",
               "object",
-              "array"
+              "array",
+              "record"
             ]
           },
           {
@@ -5794,8 +5798,8 @@ export const miroirFundamentalMlSchema = {
               "type": {
                 "type": "enum",
                 "definition": [
-                  "object",
-                  "array"
+                  "array",
+                  "record"
                 ]
               },
               "payload": {
@@ -5803,6 +5807,24 @@ export const miroirFundamentalMlSchema = {
                 "optional": true,
                 "definition": {
                   "relativePath": "inputOutputPayloadType"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "type": {
+                "type": "literal",
+                "definition": "tuple"
+              },
+              "payload": {
+                "type": "array",
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "relativePath": "inputOutputPayloadType"
+                  }
                 }
               }
             }
@@ -5914,10 +5936,12 @@ export const miroirFundamentalMlSchema = {
                         "type": "enum",
                         "definition": [
                           "any",
+                          "undefined",
                           "bigint",
                           "number",
                           "string",
-                          "boolean"
+                          "boolean",
+                          "object"
                         ]
                       },
                       {
@@ -5927,6 +5951,7 @@ export const miroirFundamentalMlSchema = {
                   },
                   "inputOutputType": {
                     "type": "union",
+                    "discriminator": "type",
                     "definition": [
                       {
                         "type": "enum",
@@ -5938,7 +5963,8 @@ export const miroirFundamentalMlSchema = {
                           "string",
                           "boolean",
                           "object",
-                          "array"
+                          "array",
+                          "record"
                         ]
                       },
                       {
@@ -5950,8 +5976,8 @@ export const miroirFundamentalMlSchema = {
                           "type": {
                             "type": "enum",
                             "definition": [
-                              "object",
-                              "array"
+                              "array",
+                              "record"
                             ]
                           },
                           "payload": {
@@ -5959,6 +5985,24 @@ export const miroirFundamentalMlSchema = {
                             "optional": true,
                             "definition": {
                               "relativePath": "inputOutputPayloadType"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "type": {
+                            "type": "literal",
+                            "definition": "tuple"
+                          },
+                          "payload": {
+                            "type": "array",
+                            "definition": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "inputOutputPayloadType"
+                              }
                             }
                           }
                         }

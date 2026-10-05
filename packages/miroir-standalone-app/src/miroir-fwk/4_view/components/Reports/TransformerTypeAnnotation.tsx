@@ -1,6 +1,5 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import type { InputOutputType } from "miroir-core";
 import React from "react";
 
 import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
@@ -54,32 +53,6 @@ export function parseMlSchemaAnnotationLabel(label: string): {
 export function shortTypeName(label: string): string {
   const brace = label.indexOf("{");
   return (brace >= 0 ? label.slice(0, brace) : label).trim();
-}
-
-const ENTITY_UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-/**
- * Human-readable label of an `inputOutput` type: an entity uuid gives the entity name when known,
- * arrays and objects their payload, `array<Book>`. With `shortenUnknownUuids` (#453 D18), an
- * unknown entity uuid gives its first 8 characters.
- */
-export function formatInputOutputTypeLabel(
-  type: InputOutputType,
-  entities?: { uuid: string; name?: string }[],
-  options?: { shortenUnknownUuids?: boolean },
-): string {
-  if (typeof type === "object") {
-    const payloadLabel =
-      type.payload === undefined || type.payload === "any"
-        ? "any"
-        : formatInputOutputTypeLabel(type.payload as InputOutputType, entities, options);
-    return `${type.type}<${payloadLabel}>`;
-  }
-  const entityName = entities?.find((entity) => entity.uuid === type)?.name;
-  if (entityName) {
-    return entityName;
-  }
-  return options?.shortenUnknownUuids && ENTITY_UUID_REGEX.test(type) ? type.slice(0, 8) : type;
 }
 
 function uniqueBindingNames(names: string[] | undefined): string[] {

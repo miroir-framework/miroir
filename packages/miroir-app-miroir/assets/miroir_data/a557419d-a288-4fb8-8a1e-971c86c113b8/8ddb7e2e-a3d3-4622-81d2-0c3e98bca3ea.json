@@ -9,8 +9,11 @@
   "classification": "basic",
   "transformerInterface": {
     "inputOutput": {
-      "input": "array",
-      "output": "object"
+      "input": {
+        "type": "array",
+        "payload": "object"
+      },
+      "output": "record"
     },
     "transformerParameterSchema": {
       "transformerType": {
