@@ -25,6 +25,7 @@ describe("test configuration from a test environment", () => {
     expect(Object.keys(client.deploymentStorageConfig).sort()).toEqual([
       "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       "18db21bf-f8d3-4f6a-8296-84b69f6dc48b",
+      "40b74910-4c63-4bd9-8e7d-2bc051342908",
       "752c2412-a2cc-4632-94f3-937168969998",
       "eef01001-0002-4000-8000-000000000002",
       "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",

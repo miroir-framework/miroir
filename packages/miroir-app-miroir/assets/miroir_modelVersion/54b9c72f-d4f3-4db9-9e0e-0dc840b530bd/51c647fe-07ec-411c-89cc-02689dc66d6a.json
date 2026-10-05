@@ -402,6 +402,10 @@
                   {
                     "type": "literal",
                     "definition": "githubTestbedInitParams"
+                  },
+                  {
+                    "type": "literal",
+                    "definition": "metaTestbedInitParams"
                   }
                 ]
               },

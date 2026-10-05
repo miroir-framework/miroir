@@ -1,0 +1,13 @@
+{
+  "uuid": "e9276f45-2bbb-4a6a-bd5c-e005c2f77bec",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app",
+  "measuredAt": "2026-10-01T21:03:05.000Z",
+  "eagerGzipBytes": 757610,
+  "baseline": 757610,
+  "previousBaseline": 784301,
+  "baselineChange": -26691,
+  "reason": "build(#370): replace bare lodash with a merge shim (slice 4)",
+  "gitCommit": "9224889a7bd84bcd112a43125768eb58af7e5dfc"
+}

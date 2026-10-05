@@ -1,0 +1,13 @@
+{
+  "uuid": "0b154bf7-6ede-483b-82cf-efd67da7f543",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app",
+  "measuredAt": "2026-09-30T22:07:31.000Z",
+  "eagerGzipBytes": 1402592,
+  "baseline": 1402592,
+  "previousBaseline": 1577325,
+  "baselineChange": -174733,
+  "reason": "build(337): the crypto polyfill leaves the page (slice 3)",
+  "gitCommit": "a63289a91074fe94598116678b8ff67fe9f9cd8a"
+}

@@ -1,0 +1,11 @@
+{
+  "uuid": "937a9520-844b-4092-9126-1f4e80b0db34",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app-electron",
+  "measuredAt": "2026-09-28T09:01:40.000Z",
+  "eagerGzipBytes": 4749138,
+  "baseline": 4749138,
+  "reason": "build(electron): bundle the main process with esbuild, report and guard it (#326 Slice 13)",
+  "gitCommit": "d3167ab119232f16a6b76d73cad1d7090ebb71fd"
+}

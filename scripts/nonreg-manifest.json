@@ -338,6 +338,22 @@
       ]
     },
     {
+      "id": "default-meta-modelValidation",
+      "scopes": ["core"],
+      "tier": "default",
+      "title": "Deployment modelValidation — meta (#473)",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-app-meta",
+        "--",
+        "tests/modelValidation.unit.test.ts"
+      ]
+    },
+    {
       "id": "default-library-modelValidation",
       "scopes": ["core"],
       "tier": "default",
@@ -1422,6 +1438,44 @@
       }
     },
     {
+      "id": "integ-report.bundleSizeHistory",
+      "scopes": ["ui"],
+      "tier": "default",
+      "title": "MiroirTest integ — report.bundleSizeHistory (Meta bundle size Reports on fixed measurements) (#473)",
+      "requires": "storage",
+      "argv": [
+        "npm",
+        "run",
+        "testMiroir",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "--suites",
+        "report.bundleSizeHistory",
+        "--mode",
+        "integ"
+      ],
+      "shared": {
+        "group": "standalone-app-report-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": ["report.bundleSizeHistory"]
+      }
+    },
+    {
       "id": "integ-report.connectExternalServiceWizard",
       "scopes": ["external"],
       "tier": "default",
@@ -2295,6 +2349,23 @@
           "coverageCore.unit"
         ]
       }
+    },
+    {
+      "id": "unit-473-bundle-size-scripts",
+      "scopes": ["tooling"],
+      "tier": "unit",
+      "title": "#473 — bundle size history: bundle-size:record and bundle-size:backfill (they run the bundle guard with python3)",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-app-meta",
+        "--",
+        "bundleSizeRecord.unit",
+        "bundleSizeBackfill.unit"
+      ]
     },
     {
       "id": "unit-312-miroir-test-tags",

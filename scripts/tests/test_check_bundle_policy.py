@@ -37,7 +37,8 @@ def run(tmp_path: Path, report: dict, policy: dict | None, *extra: str) -> tuple
     report_path.write_text(json.dumps(report), encoding="utf-8")
     if policy is not None:
         policy_path.write_text(json.dumps(policy), encoding="utf-8")
-    code = checker.main([str(report_path), str(policy_path), *extra])
+    # The history rule (#473) reads the committed bundle size history; its own tests are at the end.
+    code = checker.main([str(report_path), str(policy_path), "--no-history", *extra])
     written = json.loads(policy_path.read_text(encoding="utf-8")) if policy_path.exists() else {}
     return code, written
 
@@ -140,7 +141,8 @@ def test_the_eager_gzip_size_stays_within_two_percent_of_the_baseline(
 def test_below_the_band_the_message_gives_the_new_baseline(report: dict, policy: dict) -> None:
     report["totals"]["eager"]["gzipBytes"] = 1000
     [message] = violations(report, policy)
-    assert "lower eagerGzipBaseline to 1000" in message
+    assert "record the new baseline of 1000" in message
+    assert "npm run bundle-size:record -w miroir-app-meta" in message
 
 
 def test_a_missing_report_asks_for_a_build(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
@@ -254,6 +256,7 @@ def git_identity(monkeypatch: pytest.MonkeyPatch) -> None:
     ("changed", "expected"),
     [
         ("packages/miroir-core/src/index.ts", "run=true"),
+        ("packages/miroir-app-meta/assets/meta_data/90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b/x.json", "run=true"),  # #473 history
         ("package-lock.json", "run=true"),
         ("package.json", "run=true"),
         (".npmrc", "run=true"),
@@ -299,3 +302,68 @@ def test_the_bundle_job_guards_both_apps_and_uploads_their_reports() -> None:
     assert "*.map" in paths
     assert upload["with"]["include-hidden-files"] is True  # dist/.vite is a hidden directory
     assert upload["if"] == "${{ !cancelled() }}"  # the reports matter most when a guard fails
+
+
+# #473: the `history` rule. The policy baseline is the baseline of the newest BundleSizeMeasurement
+# of the report's application in miroir-app-meta, so a hand edit of eagerGzipBaseline fails.
+
+MEASUREMENT_ENTITY = "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b"
+
+
+def write_measurement(meta_data: Path, application: str, baseline: int, measured_at: str) -> None:
+    folder = meta_data / MEASUREMENT_ENTITY
+    folder.mkdir(parents=True, exist_ok=True)
+    instance = {
+        "uuid": f"{len(list(folder.iterdir())):08d}-0000-4000-8000-000000000000",
+        "parentName": "BundleSizeMeasurement",
+        "parentUuid": MEASUREMENT_ENTITY,
+        "application": application,
+        "measuredAt": measured_at,
+        "eagerGzipBytes": baseline,
+        "baseline": baseline,
+    }
+    (folder / f"{instance['uuid']}.json").write_text(json.dumps(instance), encoding="utf-8")
+
+
+def run_with_history(tmp_path: Path, report: dict, policy: dict, meta_data: Path) -> tuple[int, str]:
+    report_path = tmp_path / "bundle-report.json"
+    policy_path = tmp_path / "bundle-policy.json"
+    report_path.write_text(json.dumps(report), encoding="utf-8")
+    policy_path.write_text(json.dumps(policy), encoding="utf-8")
+    result = subprocess.run(
+        ["python3", str(REPO_ROOT / "scripts" / "check_bundle_policy.py"), str(report_path), str(policy_path), "--meta-data-dir", str(meta_data)],
+        capture_output=True,
+        text=True,
+    )
+    return result.returncode, result.stdout + result.stderr
+
+
+def test_history_rule_fails_on_a_hand_edit(tmp_path: Path, report: dict, policy: dict) -> None:
+    meta_data = tmp_path / "meta_data"
+    write_measurement(meta_data, report["app"], policy["eagerGzipBaseline"] - 5000, "2026-10-01T00:00:00.000Z")
+    write_measurement(meta_data, "miroir-standalone-app-electron", policy["eagerGzipBaseline"], "2026-10-02T00:00:00.000Z")
+
+    code, output = run_with_history(tmp_path, report, policy, meta_data)
+
+    assert code == 1
+    assert "[history]" in output
+    assert str(policy["eagerGzipBaseline"]) in output
+    assert "npm run bundle-size:record -w miroir-app-meta" in output
+
+
+def test_history_rule_passes_when_recorded(tmp_path: Path, report: dict, policy: dict) -> None:
+    meta_data = tmp_path / "meta_data"
+    write_measurement(meta_data, report["app"], policy["eagerGzipBaseline"] - 5000, "2026-10-01T00:00:00.000Z")
+    write_measurement(meta_data, report["app"], policy["eagerGzipBaseline"], "2026-10-03T00:00:00.000Z")
+
+    code, output = run_with_history(tmp_path, report, policy, meta_data)
+
+    assert code == 0, output
+
+
+def test_history_rule_on_the_repository() -> None:
+    """The committed policies and the committed bundle size history agree."""
+    meta_data = REPO_ROOT / "packages" / "miroir-app-meta" / "assets" / "meta_data"
+    for app in ("miroir-standalone-app", "miroir-standalone-app-electron"):
+        policy = json.loads((REPO_ROOT / "packages" / app / "bundle-policy.json").read_text(encoding="utf-8"))
+        assert checker.check_history(app, policy, meta_data) == []

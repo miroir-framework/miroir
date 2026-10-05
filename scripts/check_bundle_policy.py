@@ -17,7 +17,12 @@ packages/miroir-standalone-app/vite/bundleReportPlugin.js) with the app's commit
              page (#337).
   budget     the gzip size of the chunks loaded with the page stays within `eagerGzipTolerance` (2%) of
              `eagerGzipBaseline`. Above, the PR grew the initial load; below, the PR shrank it and lowers the
-             baseline, so the gain is kept.
+             baseline, so the gain is kept. A new baseline is recorded with
+             `npm run bundle-size:record -w miroir-app-meta -- <report>`, which writes it here and in the
+             bundle size history of miroir-app-meta (#473).
+  history    `eagerGzipBaseline` is the baseline of the newest BundleSizeMeasurement of the report's application
+             in miroir-app-meta (#473), so a baseline edited by hand, or written by a bare --init, fails until
+             it is recorded. `--no-history` skips the rule (bundle-size:record uses it to try a new baseline).
 
 Run: python scripts/check_bundle_policy.py <report> <policy>
      python scripts/check_bundle_policy.py <report> <policy> --init   write the lists and the baseline from the
@@ -38,6 +43,11 @@ from pathlib import Path
 LISTED_KINDS = ("npm", "workspace")
 DEFAULT_TOLERANCE = 0.02
 DEFAULT_FORBIDDEN_EAGER = ["@testing-library/*"]
+REPO_ROOT = Path(__file__).resolve().parent.parent
+DEFAULT_META_DATA_DIR = REPO_ROOT / "packages" / "miroir-app-meta" / "assets" / "meta_data"
+BUNDLE_SIZE_MEASUREMENT_ENTITY = "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b"
+# Records a baseline in bundle-policy.json and in the bundle size history of miroir-app-meta (#473).
+RECORD_COMMAND = "npm run bundle-size:record -w miroir-app-meta -- <bundle-report.json>"
 DEFAULT_COMMENT = (
     "Bundle guard (#326), checked by scripts/check_bundle_policy.py against the build's bundle-report.json. "
     "See docs/internals/code-splitting.md."
@@ -173,8 +183,8 @@ def check_budget(report: dict, policy: dict) -> list[Violation]:
             Violation(
                 "budget",
                 f"the chunks loaded with the page are {size} bytes gzipped, {change:+.1%} over the baseline of "
-                f"{baseline} (limit +{tolerance:.0%}): find what grew in the report, or raise eagerGzipBaseline "
-                "with the reason in the PR",
+                f"{baseline} (limit +{tolerance:.0%}): find what grew in the report, or record the new baseline "
+                f"with its reason: {RECORD_COMMAND} --reason \"...\"",
             )
         ]
     if size < baseline * (1 - tolerance):
@@ -182,7 +192,7 @@ def check_budget(report: dict, policy: dict) -> list[Violation]:
             Violation(
                 "budget",
                 f"the chunks loaded with the page are {size} bytes gzipped, {change:+.1%} under the baseline of "
-                f"{baseline}: lower eagerGzipBaseline to {size} to keep the gain",
+                f"{baseline}: record the new baseline of {size} to keep the gain: {RECORD_COMMAND}",
             )
         ]
     return []
@@ -203,6 +213,29 @@ def init(report: dict, existing: dict) -> dict:
     }
 
 
+def newest_measurement(app: str, meta_data_dir: Path) -> dict | None:
+    """The BundleSizeMeasurement of the application with the largest measuredAt, if any."""
+    folder = meta_data_dir / BUNDLE_SIZE_MEASUREMENT_ENTITY
+    measurements = [read_json(path) for path in sorted(folder.glob("*.json"))] if folder.is_dir() else []
+    measurements = [measurement for measurement in measurements if measurement.get("application") == app]
+    return max(measurements, key=lambda measurement: measurement["measuredAt"], default=None)
+
+
+def check_history(app: str, policy: dict, meta_data_dir: Path) -> list[Violation]:
+    baseline = policy["eagerGzipBaseline"]
+    newest = newest_measurement(app, meta_data_dir)
+    if newest is not None and newest.get("baseline") == baseline:
+        return []
+    recorded = f"the newest recorded is {newest['baseline']}" if newest else "none is recorded"
+    return [
+        Violation(
+            "history",
+            f"eagerGzipBaseline {baseline} of {app} is not in the bundle size history ({recorded}): record the "
+            f"baseline instead of editing the policy: {RECORD_COMMAND} [--baseline {baseline}] --reason \"...\"",
+        )
+    ]
+
+
 def read_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -212,6 +245,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("report", type=Path, help="bundle-report.json written by the build")
     parser.add_argument("policy", type=Path, help="the app's bundle-policy.json")
     parser.add_argument("--init", action="store_true", help="write the policy's lists and baseline from the report")
+    parser.add_argument(
+        "--meta-data-dir",
+        type=Path,
+        default=DEFAULT_META_DATA_DIR,
+        help="data section of miroir-app-meta holding the bundle size history (#473)",
+    )
+    parser.add_argument("--no-history", action="store_true", help="skip the history rule")
     args = parser.parse_args(argv)
 
     if not args.report.exists():
@@ -232,6 +272,8 @@ def main(argv: list[str] | None = None) -> int:
 
     policy = read_json(args.policy)
     violations = check(report, policy)
+    if not args.no_history:
+        violations += check_history(report["app"], policy, args.meta_data_dir)
     for violation in violations:
         print(violation)
     eager = report["totals"]["eager"]

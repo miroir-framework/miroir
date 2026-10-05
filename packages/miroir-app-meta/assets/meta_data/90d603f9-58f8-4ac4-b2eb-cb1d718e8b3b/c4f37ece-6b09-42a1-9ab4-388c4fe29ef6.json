@@ -1,0 +1,11 @@
+{
+  "uuid": "c4f37ece-6b09-42a1-9ab4-388c4fe29ef6",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app",
+  "measuredAt": "2026-09-28T09:01:39.000Z",
+  "eagerGzipBytes": 2709170,
+  "baseline": 2709170,
+  "reason": "build(326): bundle allowlist and eager size budget (slice 12)",
+  "gitCommit": "e336856894fcd672b2be2f094c65126b8f9e9bf4"
+}

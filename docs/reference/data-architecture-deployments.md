@@ -28,6 +28,7 @@ Each application's model and data live in a package whose name says its role (#3
 | Role | Prefix | Packages |
 |---|---|---|
 | Framework: applications every Miroir server needs | `miroir-app-` | `miroir-app-miroir` (meta-model, built before `miroir-core`), `miroir-app-admin` |
+| Framework: the Miroir development process | `miroir-app-` | `miroir-app-meta` (bundle size history, #473), installed in the `dev` environment (live) and the test environments only |
 | Example: demo applications | `miroir-example-` | `miroir-example-library`, `miroir-example-spotify`, `miroir-example-github`, `miroir-example-designer`, `miroir-example-postgres` |
 | Test fixture: exists only for tests | `miroir-fixture-` | `miroir-fixture-appForTest` |
 

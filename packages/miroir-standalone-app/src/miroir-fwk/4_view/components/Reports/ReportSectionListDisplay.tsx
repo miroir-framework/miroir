@@ -775,6 +775,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           LIST_TRANSFORMER_PAGE_SIZE,
           objectListReportSection?.definition?.sortByAttribute,
           currentReportTargetEntity ?? {},
+          objectListReportSection?.definition?.sortOrder,
         ),
       );
       return true;
@@ -783,6 +784,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     currentReportTargetEntity,
     instancesToDisplay,
     objectListReportSection?.definition?.sortByAttribute,
+    objectListReportSection?.definition?.sortOrder,
   ]);
 
   const handleDisplayedPageRowsChange = useCallback(
@@ -812,12 +814,14 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       LIST_TRANSFORMER_PAGE_SIZE,
       objectListReportSection?.definition?.sortByAttribute,
       currentReportTargetEntity ?? {},
+      objectListReportSection?.definition?.sortOrder,
     );
   }, [
     currentReportTargetEntity,
     displayedPageInstances,
     instancesToDisplay,
     objectListReportSection?.definition?.sortByAttribute,
+    objectListReportSection?.definition?.sortOrder,
     transformerPanelEnabled,
   ]);
 
@@ -972,6 +976,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   rowOpenReport={rowOpenReport}
                   onRowOpenReport={rowOpenReport ? handleRowOpenReport : undefined}
                   sortByAttribute={objectListReportSection.definition?.sortByAttribute}
+                  sortOrder={objectListReportSection.definition?.sortOrder}
                   paramsAsdomainElements={props.paramsAsdomainElements as any} // TODO: which is right? DomainElementObject or record<string, any>?
                   //
                   addObjectdialogFormIsOpen={addObjectdialogFormIsOpen}

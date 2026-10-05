@@ -53,6 +53,7 @@
     "miroir-react": "*",
     "miroir-store-bundled": "*",
     "miroir-store-indexedDb": "*",
+    "miroir-app-meta": "*",
     "miroir-example-github": "*",
     "miroir-example-library": "*",
     "miroir-example-spotify": "*",

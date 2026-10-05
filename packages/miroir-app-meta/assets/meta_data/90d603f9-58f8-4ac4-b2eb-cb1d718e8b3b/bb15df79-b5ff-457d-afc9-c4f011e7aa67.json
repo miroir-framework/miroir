@@ -1,0 +1,13 @@
+{
+  "uuid": "bb15df79-b5ff-457d-afc9-c4f011e7aa67",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app",
+  "measuredAt": "2026-09-30T21:49:31.000Z",
+  "eagerGzipBytes": 1577325,
+  "baseline": 1577325,
+  "previousBaseline": 2721507,
+  "baselineChange": -1144182,
+  "reason": "build(337): CopilotKit and ag-grid leave the page (slice 1)",
+  "gitCommit": "0a48a4daadea4f1ccfc43d480da54b87ea42c688"
+}

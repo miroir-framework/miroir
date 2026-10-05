@@ -1,0 +1,13 @@
+{
+  "uuid": "5d89d824-6d13-41d3-af0e-7f82eaf89d51",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app-electron",
+  "measuredAt": "2026-10-01T22:19:41.000Z",
+  "eagerGzipBytes": 1005067,
+  "baseline": 1005067,
+  "previousBaseline": 3251249,
+  "baselineChange": -2246182,
+  "reason": "build(#370): Electron main process loads stores and features on demand (slice 8)",
+  "gitCommit": "69c9b9d6d9f484618f7523bf6a92b9fa6692d8c7"
+}
