@@ -1,0 +1,13 @@
+{
+  "uuid": "c87a8952-27b3-4ff8-81cc-e1fcf0a56834",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app",
+  "measuredAt": "2026-09-30T23:04:53.000Z",
+  "eagerGzipBytes": 867330,
+  "baseline": 867330,
+  "previousBaseline": 902938,
+  "baselineChange": -35608,
+  "reason": "#337 slice 6: Node store drivers leave the web build",
+  "gitCommit": "a61e171be9177f1ba48aef5ee58c929863f9de1f"
+}

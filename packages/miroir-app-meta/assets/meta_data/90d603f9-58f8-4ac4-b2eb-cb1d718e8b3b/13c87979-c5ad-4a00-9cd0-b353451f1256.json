@@ -1,0 +1,13 @@
+{
+  "uuid": "13c87979-c5ad-4a00-9cd0-b353451f1256",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app",
+  "measuredAt": "2026-10-01T20:09:01.000Z",
+  "eagerGzipBytes": 850787,
+  "baseline": 850787,
+  "previousBaseline": 867330,
+  "baselineChange": -16543,
+  "reason": "build(#370): load the YAML parser on demand in the browser (slice 1)",
+  "gitCommit": "e8983c4e6bf0a51a17cd86e62e52799521a4b765"
+}

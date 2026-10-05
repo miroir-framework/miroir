@@ -1,0 +1,13 @@
+{
+  "uuid": "4c464d54-1d0b-42dc-a77b-8fe3b4124ebc",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app-electron",
+  "measuredAt": "2026-09-28T09:24:51.000Z",
+  "eagerGzipBytes": 4769537,
+  "baseline": 4769537,
+  "previousBaseline": 4749138,
+  "baselineChange": 20399,
+  "reason": "build(326): bundle baselines follow _integration after the rebase",
+  "gitCommit": "51276ddfd0fbde20cd293329523812990103cf07"
+}
