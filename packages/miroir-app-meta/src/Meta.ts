@@ -74,7 +74,7 @@ export const defaultMetaAppModel: MetaModel = {
  * Fixed BundleSizeMeasurement instances for the report MiroirTests (#473): two web page records and
  * one Electron record, so the tests do not depend on the real history, which grows with every record.
  */
-export const bundleSizeMeasurementSeed: EntityInstance[] = [
+export const bundleSizeMeasurementSeed = [
   {
     uuid: "ad25f423-a99b-4ede-9fd3-1a705fc0b193",
     parentName: "BundleSizeMeasurement",
@@ -107,7 +107,7 @@ export const bundleSizeMeasurementSeed: EntityInstance[] = [
     baseline: 942479,
     reason: "seed: Electron record",
   },
-] as EntityInstance[];
+] as unknown as EntityInstance[];
 
 /** TestConfiguration of the Meta report MiroirTests: the Meta model and the fixed measurements above. */
 export const testConfiguration_metaBundleSizeSeed = {
