@@ -9,7 +9,7 @@
 Analysis: [`./analysis.md`](./analysis.md) (decision D7) · Issue: https://github.com/miroir-framework/miroir/issues/340 · Defects found on the way: #481
 Working branch: `claude/340-0b1k4d` (PR #476)
 
-**Resume note:** Slices 0 to 8 DONE.
+**Resume note:** All slices DONE.
 
 ---
 
@@ -34,7 +34,7 @@ This plan does **not** fix the counted violations (they stay in `eslint-suppress
 | 6 | `preserve-caught-error` is a lint error, its 5 sites fixed | ✅ | same, core typecheck |
 | 7 | The 2 precedence traps fixed; `no-mixed-operators` is a lint error | ✅ | MiroirTest `query.virtualAttributes` > composite transformer value |
 | 8 | `miroir/logger`: one logger per file, named after it; 45 loggers renamed | ✅ | `graduated-smells.test.mjs`, presets updated |
-| 9 | Skill, analysis and PR text; gate and nonreg | ⬜ | pre-push gate, `nonreg:unit` |
+| 9 | Skill, analysis and PR text; gate and nonreg | ✅ | pre-push gate, `nonreg:unit` |
 
 ---
 
@@ -46,7 +46,7 @@ This plan does **not** fix the counted violations (they stay in `eslint-suppress
 | Rule per smell | A graduated `no-restricted-syntax` or `no-restricted-globals` detector runs under its own id, `miroir/<smell-id>`: the same ESLint rule registered under the smell's name. The suppressions file then counts each smell apart, and the lint output names the skill entry | G4 |
 | One definition | The graduated selectors and the file sets (`SRC`, `TESTS`, `ROOTS`, views) move from the lens to `eslint-rules/smells.mjs`, imported by both configs | G4 |
 | Lens shows everything | The lens reports graduated rules as warnings. Bulk suppressions count errors only, so `npm run smells -- <paths>` still lists the counted violations, and `--diff` still compares with the base | G1, G2 |
-| Fix when small | `preserve-caught-error` (5 sites), the 2 precedence traps and the 43 logger names are fixed rather than counted | G3 |
+| Fix when small | `preserve-caught-error` (5 sites), the 2 precedence traps and the 45 logger names are fixed rather than counted | G3 |
 
 ---
 
@@ -124,6 +124,8 @@ RED: an error rethrown without `{ cause }` fails lint. GREEN: the 5 sites pass `
 
 ## Slice 9: skill, analysis, PR text, gate
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 The "Lint" lines of the graduated smells in the skill, `lens.md` ("Make a smell blocking" now describes the rule per smell), section 5 and D7 of the analysis, section 6 pointing at #481, the header of `eslint.config.mjs`, the PR description. Validation: the pre-push gate of AGENTS.md and `npm run nonreg:unit -- --runner shared`.
+
+Results: the pre-push gate passes, with typechecks of the 11 packages whose code changed (miroir-standalone-app reports the same 32 errors as `_integration`, all from the MUI 9 typings), and `npm run test -w miroir-core -- ''` passes 2451 tests. `npm run nonreg:unit -- --runner shared` passes 56 of 56 steps; `nonreg:filesystem -- --runner shared --scope smoke,core` passed 20 of 20 after slice 7.
