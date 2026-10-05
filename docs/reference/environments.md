@@ -136,6 +136,10 @@ Paths are relative to the root (`MIROIR_ROOT`, else the repository root), which 
 - At start, the server writes the Deployment and AdminApplication rows the definition implies, then opens every deployment.
 - While the server runs with `environments/local.json` selected, `local.json` follows the Deployment rows it writes and deletes, so an application installed from the UI is recorded there. With a tracked environment selected, the server logs a hint to run `miroir-env import` instead.
 
+### Worker state
+
+`MIROIR_TEST_WORKER=w<N>` gives a run of a test environment a state of its own, so parallel nonreg jobs (#477) never touch the same stores: `.miroir/<environment>@w<N>/`, SQL schemas and MongoDB databases `<environment>_w<N>_<application>` (`test_sql_w2_library`), IndexedDB names under `.miroir/<environment>@w<N>/`. Test applications installed at run time take the same prefix. The definition and its name do not change: only where the state lives. A worker name other than `w<number>` is an error; outside `test-*` environments the variable is ignored with a warning.
+
 ---
 
 ## The `miroir-env` command
@@ -149,6 +153,7 @@ Paths are relative to the root (`MIROIR_ROOT`, else the repository root), which 
 | `import [--dry-run]` | Records the deployments of the state that the definition does not install in `environments/local.json`. |
 | `prune [--dry-run]` | Deletes those deployments and their stores from the state. Stop the server first. |
 | `deploy <app> [--state <dir>] [--dry-run]` | Deploys example application `packages/miroir-example-<app>` (`github` or `miroir-example-github`) in the Admin data of the state, `.miroir/<environment>/` or `--state <dir>`: an AdminApplication row and a Deployment row opening the package assets live. Does nothing when the application is already deployed. The definition does not install it: record it with `import`. |
+| `clear` | Removes the state of a test environment: its `.miroir/<environment>/` directory, its SQL schemas and its MongoDB databases, test applications installed at run time included. With `MIROIR_TEST_WORKER` set, removes only that worker's state; without it, keeps the workers' states. Refuses an environment that is not `test-*`. |
 
 ---
 
