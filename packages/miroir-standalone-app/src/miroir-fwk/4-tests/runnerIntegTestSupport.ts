@@ -72,24 +72,32 @@ export async function beforeEachTest(
   }
 }
 
+/** The filesystem or IndexedDB location of a store section, if it has one. */
+function storeLocation(store: StoreUnitConfiguration[keyof StoreUnitConfiguration] | undefined): string | undefined {
+  return store?.emulatedServerType === "filesystem"
+    ? store.directory
+    : store?.emulatedServerType === "indexedDb"
+      ? store.indexedDbName
+      : undefined;
+}
+
 /**
  * #321: `.miroir/<environment>` when the template store is a section of a test environment
  * (`.miroir/<environment>/<application>/…`), so test applications live next to it. #477: the
  * environment part is the state name, `<environment>@<worker>` in a parallel nonreg job. A SQL or
- * MongoDB template has no location of its own: its filesystem Admin section tells.
+ * MongoDB template has no location of its own: its Admin section tells when it is a filesystem
+ * copy, else the Admin application's deployment, a filesystem copy in the state (test-sql, where
+ * every section of the template is on SQL).
  */
 function environmentStateDirectory(
   libraryDeploymentStorageConfiguration: StoreUnitConfiguration,
+  adminDeploymentStorageConfiguration?: StoreUnitConfiguration,
 ): string | undefined {
-  const { model: template, admin } = libraryDeploymentStorageConfiguration;
   const location =
-    template.emulatedServerType === "filesystem"
-      ? template.directory
-      : template.emulatedServerType === "indexedDb"
-        ? template.indexedDbName
-        : admin?.emulatedServerType === "filesystem"
-          ? admin.directory
-          : undefined;
+    storeLocation(libraryDeploymentStorageConfiguration.model) ??
+    storeLocation(libraryDeploymentStorageConfiguration.admin) ??
+    storeLocation(adminDeploymentStorageConfiguration?.admin) ??
+    storeLocation(adminDeploymentStorageConfiguration?.model);
   const [root, environment] = location?.split("/") ?? [];
   return root === ENVIRONMENT_STATE_ROOT && environment ? `${root}/${environment}` : undefined;
 }
@@ -99,8 +107,11 @@ function environmentStateDirectory(
  * test environment, `test-sql@w2` → `test_sql_w2`, like the environment's own stores; none outside
  * a test environment.
  */
-function environmentStorePrefix(libraryDeploymentStorageConfiguration: StoreUnitConfiguration): string | undefined {
-  const directory = environmentStateDirectory(libraryDeploymentStorageConfiguration);
+function environmentStorePrefix(
+  libraryDeploymentStorageConfiguration: StoreUnitConfiguration,
+  adminDeploymentStorageConfiguration?: StoreUnitConfiguration,
+): string | undefined {
+  const directory = environmentStateDirectory(libraryDeploymentStorageConfiguration, adminDeploymentStorageConfiguration);
   return directory?.slice(ENVIRONMENT_STATE_ROOT.length + 1).replace(/[^A-Za-z0-9_]/g, "_");
 }
 
@@ -183,17 +194,23 @@ export function canonicalStoreIdentifier(testApplicationName: string, environmen
   return identifier;
 }
 
+/**
+ * The stores of a test application, cloned from its template's. `adminDeploymentStorageConfiguration`
+ * (the Admin application's deployment) locates the test environment when no section of the template
+ * does: without it, a template entirely on SQL or MongoDB gives schemas shared by parallel workers.
+ */
 export function testApplicationStorageConfiguration(
   libraryDeploymentStorageConfiguration: StoreUnitConfiguration,
   testApplicationName: string,
   isolationKey?: string,
+  adminDeploymentStorageConfiguration?: StoreUnitConfiguration,
 ): StoreUnitConfiguration {
   const storeName = isolationKey
     ? ephemeralStoreIdentifier(testApplicationName, isolationKey)
     : testApplicationName;
   // #477: SQL schemas and MongoDB databases have no directory to live next to their template's
   // environment; they carry its name instead.
-  const environmentPrefix = environmentStorePrefix(libraryDeploymentStorageConfiguration);
+  const environmentPrefix = environmentStorePrefix(libraryDeploymentStorageConfiguration, adminDeploymentStorageConfiguration);
   const databaseName = !environmentPrefix
     ? storeName
     : isolationKey

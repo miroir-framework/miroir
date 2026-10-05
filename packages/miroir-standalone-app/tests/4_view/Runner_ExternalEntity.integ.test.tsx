@@ -106,6 +106,8 @@ const {
 const testDeploymentStorageConfiguration: StoreUnitConfiguration = testApplicationStorageConfiguration(
   libraryDeploymentStorageConfiguration,
   testApplicationName,
+  undefined,
+  adminDeploymentStorageConfiguration,
 );
 
 const internalMiroirConfig: MiroirConfigClient = extendMiroirConfigWithExtraDeploymentConfiguration(

@@ -125,6 +125,7 @@ export function getTestSessionConfig(
   const {
     applicationDeploymentMap,
     miroirDeploymentStorageConfiguration,
+    adminDeploymentStorageConfiguration,
     adminDeployment,
     libraryDeploymentStorageConfiguration,
   } = getTestConfig(
@@ -143,6 +144,7 @@ export function getTestSessionConfig(
       libraryDeploymentStorageConfiguration,
       runTarget.applicationName,
       isolationKey,
+      adminDeploymentStorageConfiguration,
     );
 
   const internalMiroirConfig = extendMiroirConfigWithExtraDeploymentConfiguration(

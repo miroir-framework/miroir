@@ -295,6 +295,47 @@ describe("test applications of a test environment on SQL and MongoDB (#477)", ()
     expect(configuration.model).toMatchObject({ schema: "test_sql_Library" });
   });
 
+  // environments/test-sql.json: every section of Library is on SQL, Admin is a filesystem copy in the state
+  const sqlLibraryOfEnvironment = (prefix: string) => {
+    const store = (schema: string) => ({
+      emulatedServerType: "sql" as const,
+      connectionString: "postgres://postgres@localhost:5432/postgres",
+      schema,
+    });
+    return { admin: store(`${prefix}_library_admin`), model: store(`${prefix}_library`), data: store(`${prefix}_library`) };
+  };
+  const adminApplicationOf = (state: string) => ({
+    admin: { emulatedServerType: "filesystem" as const, directory: `.miroir/${state}/admin` },
+    model: { emulatedServerType: "filesystem" as const, directory: `.miroir/${state}/admin/model` },
+    data: { emulatedServerType: "filesystem" as const, directory: `.miroir/${state}/admin/data` },
+  });
+
+  it("finds the worker state through the Admin application when every template section is on SQL", () => {
+    const configuration = testApplicationStorageConfiguration(
+      sqlLibraryOfEnvironment("test_sql_w3"),
+      "Library",
+      undefined,
+      adminApplicationOf("test-sql@w3"),
+    );
+
+    expect(configuration.model).toMatchObject({ schema: "test_sql_w3_Library" });
+    expect(configuration.modelVersion).toMatchObject({ schema: "test_sql_w3_Library_modelVersion" });
+  });
+
+  it("gives two workers on test-sql different schemas for the same test application", () => {
+    const schemaOf = (worker: string) =>
+      (
+        testApplicationStorageConfiguration(
+          sqlLibraryOfEnvironment(`test_sql_${worker}`),
+          "Library",
+          undefined,
+          adminApplicationOf(`test-sql@${worker}`),
+        ).model as { schema: string }
+      ).schema;
+
+    expect(schemaOf("w3")).not.toBe(schemaOf("w4"));
+  });
+
   it("prefixes the MongoDB databases with the worker state of the template", () => {
     const configuration = testApplicationStorageConfiguration(mongoTemplate("test-mongodb@w3"), "Library");
 
