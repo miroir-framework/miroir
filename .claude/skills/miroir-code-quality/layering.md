@@ -40,7 +40,7 @@ export function resolveSchema(deployment: Deployment, options: { schemaMode: Mir
 
 **Leave it** in composition roots (the lens skips them) and in build tooling.
 
-**Lint.** Lens only.
+**Lint.** Error (`miroir/global-environment`), outside the composition roots and tests; existing violations are counted in `eslint-suppressions.json`.
 
 ## wiring
 

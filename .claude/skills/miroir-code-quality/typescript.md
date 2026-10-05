@@ -43,7 +43,7 @@ Sanctioned form: `SqlDbAdminStore.createStore` returns `new Action2Error("Failed
 
 **Leave it** when a failure must not fail the caller and a comment says so, as in `DomainController.notifyInstanceActionListeners` ("A failing listener is logged: it never fails the action it listens to"). For an expected error (a collection that does not exist yet), test for that error and rethrow the others.
 
-**Lint.** Lens only: a selector cannot read the policy comment. ESLint's `preserve-caught-error` (off in `eslint.config.mjs`) requires the `cause` when a catch throws.
+**Lint.** Lens only for a catch that only logs: a selector cannot read the policy comment. A catch that throws a new error without `{ cause }` is an error (`preserve-caught-error`).
 
 ## precedence-trap
 
@@ -60,7 +60,7 @@ if ((transformer as any)["interpolation"] ?? "build" == "build") {
 if ((transformer.interpolation ?? "build") == "build") {
 ```
 
-**Lint.** Lens (`no-mixed-operators` with the `??` and comparison group). Candidate error: every finding so far was a bug.
+**Lint.** Error (`no-mixed-operators` with the `??` and comparison group). Both findings were bugs, fixed by #476.
 
 ## positional-mixup
 
@@ -176,7 +176,7 @@ const interpolation = "interpolation" in transformer ? transformer.interpolation
 
 **Leave it** at an import boundary where a comment says why the cast is needed, as `Model.ts` does for the default meta-model (without it, declaration emit loses the type).
 
-**Lint.** `no-explicit-any` is off in `eslint.config.mjs` (thousands of violations); the lens reports it and double casts.
+**Lint.** A double cast is an error (`miroir/type-escape`); existing ones are counted in `eslint-suppressions.json`. `no-explicit-any` is off in `eslint.config.mjs` (thousands of violations); the lens reports it.
 
 ## long-parameter-list
 
@@ -238,7 +238,7 @@ for (const deployment of deployments) {
 }
 ```
 
-**Lint.** Lens (`max-depth` 4).
+**Lint.** Error (`max-depth` 4); existing violations are counted in `eslint-suppressions.json`.
 
 ## dead-code
 

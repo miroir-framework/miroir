@@ -4,9 +4,9 @@
 
 Related issue: https://github.com/miroir-framework/miroir/issues/340 (requested in the #330 project thread)
 Related analyses: [`311` architecture review](../311-REFACTOR-architecture-review/analysis.md) (several of its "Found on the way" bugs are smell examples here), [`325` minimal linter rules](../325-BUILD-minimal-linter-rules/analysis.md) (errors only, bulk suppressions), [`339` external service environment](../339-REFACTOR-external-service-environment/analysis.md) (the module-state remedy, applied)
-Key sources: [`eslint-rules/smell-lens.config.mjs`](../../../eslint-rules/smell-lens.config.mjs), [`scripts/code_smells.py`](../../../scripts/code_smells.py), [`eslint.config.mjs`](../../../eslint.config.mjs), [`eslint-suppressions.json`](../../../eslint-suppressions.json)
+Key sources: [`eslint-rules/smell-lens.config.mjs`](../../../eslint-rules/smell-lens.config.mjs), [`eslint-rules/smells.mjs`](../../../eslint-rules/smells.mjs), [`scripts/code_smells.py`](../../../scripts/code_smells.py), [`eslint.config.mjs`](../../../eslint.config.mjs), [`eslint-suppressions.json`](../../../eslint-suppressions.json)
 
-**Status:** decisions taken by the agent with recommended defaults on 2026-10-04. A's answers on PR #476 (2026-10-05): keep the two smells of D9, file [section 6](#6-found-on-the-way) as one checklist issue (#481), and graduate the candidates of [section 5](#5-remedies-and-lint-verdicts) in this PR (D7). The skill's two tools (the lens and the runner) were written test first, one green commit each; the trial on PR #457 changed them and added two smells (D9). The graduation follows [`tdd-implementation-plan.md`](tdd-implementation-plan.md).
+**Status:** decisions taken by the agent with recommended defaults on 2026-10-04. A's answers on PR #476 (2026-10-05): keep the two smells of D9, file [section 6](#6-found-on-the-way) as one checklist issue (#481), and graduate the candidates of [section 5](#5-remedies-and-lint-verdicts) in this PR (D7). The skill's two tools (the lens and the runner) were written test first, one green commit each; the trial on PR #457 changed them and added two smells (D9). The graduation followed [`tdd-implementation-plan.md`](tdd-implementation-plan.md): ten rules are now errors in `npm run lint`, with 289 existing violations counted and 52 fixed ([section 5](#5-remedies-and-lint-verdicts)).
 
 ---
 
@@ -19,7 +19,7 @@ Key sources: [`eslint-rules/smell-lens.config.mjs`](../../../eslint-rules/smell-
 
 ## 2. Non-goals
 
-- Fixing the smells. [Section 6](#6-found-on-the-way) lists the fixes worth an issue each. This PR only corrects the two documentation lines the skill cites (D8).
+- Fixing the smells, beyond what graduating a detector takes (D7, D8). [Section 6](#6-found-on-the-way) lists the other fixes; #481 tracks them.
 - Module depth and seams (skills `codebase-design`, `improve-codebase-architecture`; #311 did that review), and the quality of the history (skill `miroir-assess-evolution-quality`).
 - A blocking lens: `npm run lint` stays errors only (#325 D2).
 - Type-aware rules (#325 D5) and formatting.
@@ -35,7 +35,7 @@ Key sources: [`eslint-rules/smell-lens.config.mjs`](../../../eslint-rules/smell-
 | D5. Order | **Wrong behaviour, then cost of change, then readability** | G1, G3 |
 | D6. Where things live | **Examples, counts and lint verdicts here; patterns, remedies with before and after, and sanctioned forms in the skill** | G2 |
 | D7. Graduation | **A lens detector becomes an error in `eslint.config.mjs`** when nearly all its findings are true and its existing violations are fixed or counted in `eslint-suppressions.json` | G4 |
-| D8. Fixes in this PR | **None, except AGENTS.md's action-type line and code-style.md's logger snippet**, which the skill cites | G3 |
+| D8. Fixes in this PR | **The two documentation lines the skill cites** (AGENTS.md's action-type line, code-style.md's logger snippet), **and what graduating a detector takes**: 5 lost error causes, 2 precedence traps, 45 logger names | G3, G4 |
 | D9. Smells found by the trial | **Add `theme-bypass` and `prop-drilling`; leave React's render-purity rules out** | G1, G3 |
 
 ### D1. Invocation
@@ -70,7 +70,7 @@ Wrong behaviour first: these smells pass the tests and fail in use (a swallowed 
 
 A lens detector graduates when (a) almost every finding is a true positive and (b) its existing violations are fixed in the same PR or counted per file in `eslint-suppressions.json` (#325 D4), so counts only go down. [Section 5](#5-remedies-and-lint-verdicts) marks the candidates.
 
-A chose to graduate the candidates in this PR rather than in a follow-up. Each graduated detector runs under its own rule id, `miroir/<smell-id>`, so the suppressions file counts each smell apart and the lint message names the skill entry to read.
+A chose to graduate the candidates in this PR rather than in a follow-up. Each graduated detector runs under its own rule id, `miroir/<smell-id>`, so the suppressions file counts each smell apart and the lint message names the skill entry to read. The lens keeps showing every graduated rule as a warning: bulk suppressions count errors only, so a whole-file review still lists the counted violations.
 
 ### D9. Smells found by the trial
 
@@ -147,56 +147,57 @@ The lens includes `eslint.config.mjs` and its suppressions, so `hooks-order` and
 
 ## 5. Remedies and lint verdicts
 
-The before and after of each remedy, and the forms to leave alone, are in the skill's reference files ([`typescript.md`](../../../.agents/skills/miroir-code-quality/typescript.md), [`react.md`](../../../.agents/skills/miroir-code-quality/react.md), [`layering.md`](../../../.agents/skills/miroir-code-quality/layering.md), [`miroir.md`](../../../.agents/skills/miroir-code-quality/miroir.md)). "Lens" means the warn-level check in `smell-lens.config.mjs`; "graduate" means a candidate error per D7, with the count that would go to `eslint-suppressions.json` or be fixed.
+The before and after of each remedy, and the forms to leave alone, are in the skill's reference files ([`typescript.md`](../../../.agents/skills/miroir-code-quality/typescript.md), [`react.md`](../../../.agents/skills/miroir-code-quality/react.md), [`layering.md`](../../../.agents/skills/miroir-code-quality/layering.md), [`miroir.md`](../../../.agents/skills/miroir-code-quality/miroir.md)). "Lens" means the warn-level check in `smell-lens.config.mjs`; "**Error**" means the detector graduated in this PR (D7), with the count that went to `eslint-suppressions.json`, or the violations fixed.
 
 | Smell | Remedy | Lint verdict |
 |---|---|---|
-| `swallowed-error` | Return an `Action2Error`, rethrow with `{ cause }`, or write the policy in a comment where a failure must not fail the caller | Lens only: a selector cannot read the policy comment. Graduate `preserve-caught-error` (ESLint core, off, 5 violations) |
-| `action-result` | Return `new Action2Error("NotImplemented")` from stubs and an `Action2Error` on failure; no `as any` on a returned result | Graduate: `no-restricted-syntax` with the lens selector, 87 counted |
-| `precedence-trap` | Parenthesise: `(interpolation ?? "build") == step` | **Graduate now**: `no-mixed-operators` with the `??` and comparison group; fix the 2 sites (bugs) in the same PR |
+| `swallowed-error` | Return an `Action2Error`, rethrow with `{ cause }`, or write the policy in a comment where a failure must not fail the caller | Lens only: a selector cannot read the policy comment. **Error**: `preserve-caught-error`, its 5 violations fixed |
+| `action-result` | Return `new Action2Error("NotImplemented")` from stubs and an `Action2Error` on failure; no `as any` on a returned result | **Error**: `miroir/action-result`, 87 counted |
+| `precedence-trap` | Parenthesise: `(interpolation ?? "build") == step` | **Error**: `no-mixed-operators` with the `??` and comparison group. Both sites were bugs, fixed; MiroirTest `query.virtualAttributes` > composite transformer value |
 | `positional-mixup` | One options object; for the transformer handler, `{ application, deploymentUuid }` by name | Lens only: many two-uuid helpers are fine. A branded `Uuid` per kind would let the compiler enforce it |
 | `module-state` | Pass the state in, or keep it in an instance built by the composition root; tests build their own instance (#339) | Lens only (135) |
 | `hooks-order` | Hooks at the top level of a component or hook | Error already |
-| `effect-derived-state` | Compute during render; reset state with `key` or in the event handler that causes the change | Graduate `react-hooks/set-state-in-effect`, 14 counted |
+| `effect-derived-state` | Compute during render; reset state with `key` or in the event handler that causes the change | **Error**: `react-hooks/set-state-in-effect`, 14 counted. It runs the React Compiler on every file: `npm run lint` went from about 11 s to 25 s |
 | `state-from-props` | Controlled component, or `key` on the component so it remounts with the new prop | Lens only |
 | `timing` | Drive the work from the event that makes it valid (blur, submit, an action's result); `requestAnimationFrame` to coalesce drag updates | Lens only |
 | `theme-bypass` | Read the color from `useMiroirTheme()` (`currentTheme.colors.success`, `.error`, `.text` …), or use a `Themed…` component | Lens only: a chart palette is legitimate. Graduating would count 230 |
 | `upward-import` | Move the implementation down a layer, or depend on an interface in `0_interfaces` | Error already |
-| `global-environment` | Read the environment once in the composition root (`environments/*.json`, #321) and pass the value in | Graduate: `no-restricted-properties` on `process.env` outside roots, 29 counted |
+| `global-environment` | Read the environment once in the composition root (`environments/*.json`, #321) and pass the value in | **Error**: `miroir/global-environment`, outside roots and tests, 30 counted |
 | `wiring` | Build in `5_setup` or the runtime's startup file; inject | Lens only (1 true finding) |
-| `component-io` | A DomainController action, or a client passed in through props or context | Graduate: `no-restricted-globals` `fetch` in views, 4 counted |
-| `pub-sub` | `useSyncExternalStore(service.subscribe, service.getSnapshot)` inside a hook | Graduate, 3 counted |
+| `component-io` | A DomainController action, or a client passed in through props or context | **Error**: `miroir/component-io` (the global `fetch` in views), 5 counted |
+| `pub-sub` | `useSyncExternalStore(service.subscribe, service.getSnapshot)` inside a hook | **Error**: `miroir/pub-sub`, 3 counted |
 | `service-read-in-render` | The same hook; `useMemo` only for pure computation over props and state | Lens only (1) |
 | `unstable-deps` | Depend on stable values (ids, memoised objects), never on serialisations; list every dependency | `react-hooks/exhaustive-deps` as an error would count 197 (#325 left it off) |
 | `prop-drilling` | Provide the value once in a context and read it with a hook; pass props that travel together as one object | Runner only (cross-file) |
 | `mocked-own-module` | A MiroirTest, or a real in-memory adapter; stub only what jsdom cannot run, and say why in a comment | Lens only: a stub can be legitimate |
 | `logic-in-code` | Move it into a model element (Runner, Endpoint, TransformerDefinition, Query) in the deployment assets, and call it by the uuid exported by the package | None: judgment |
 | `duplicated-logic` | One module, in the lowest package both copies depend on | Runner only (cross-file) |
-| `logger` | One logger per file, named after the file | **Graduate**: a `miroir/logger-name` rule (the third argument of `getLoggerName` equals the file name); the 48 renames are mechanical |
-| `type-escape` | Fix the type at its source; at a boundary, validate with the Zod schema generated from the ML schema; `unknown` and narrowing | `no-explicit-any` stays off (2,720). Graduate the double cast, 111 counted |
+| `logger` | One logger per file, named after the file | **Error**: `miroir/logger` (the third argument of `getLoggerName` is the file name), in sources and tests; the 45 loggers renamed, and the log presets with them |
+| `type-escape` | Fix the type at its source; at a boundary, validate with the Zod schema generated from the ML schema; `unknown` and narrowing | `no-explicit-any` stays off (2,720). **Error** for the double cast: `miroir/type-escape`, 111 counted |
 | `magic-value` | Import the model element from its deployment package and use `.uuid` (`entityEntity.uuid`), or name the constant once | Lens only: bootstrap schemas hold legitimate literals |
 | `ml-naming` | `Ml`, `MlSchema`, `Mls` names | Enforced (`check:ml`) |
 | `long-parameter-list` | Options object; split by responsibility | `max-params` 5 as an error would count 199 |
 | `boolean-flag` | Two functions, or a named option (`{ forceImmediate: true }`) | Lens only |
-| `deep-nesting` | Early returns; extract the loop body | Graduate `max-depth` 4, 39 counted in 9 files |
+| `deep-nesting` | Early returns; extract the loop body | **Error**: `max-depth` 4, 39 counted in 9 files |
 | `dead-code` | Delete it; delete dead files | `no-unused-vars` stays off (876). Commented-out code: runner only |
 
 ---
 
 ## 6. Found on the way
 
-New since #311. Each is a small fix, or an issue of its own.
+New since #311. A chose one checklist issue for them: #481.
 
 | Finding | Evidence | Fix |
 |---|---|---|
-| A log preset entry matches no logger | `scope-persistence.json` enables `4_miroir-store-filesystem_FileSystemStore`; `FileSystemStore.ts:15` names its logger `SqlDbStore` | Rename the logger; the `miroir/logger-name` rule would keep it fixed |
+| A log preset entry matches no logger | `scope-persistence.json` enables `4_miroir-store-filesystem_FileSystemStore`; `FileSystemStore.ts:15` names its logger `SqlDbStore` | **Fixed in this PR**: the logger renamed, and `miroir/logger` keeps every logger named after its file. Resolving every `getLoggerName` call found 5 more entries that selected no logger (the bundled store's clean level `"info"`, `PersistenceAsyncStore`'s own `"5_view"`), fixed too |
 | One uuid, two elements | `7947ae40-eb34-4149-887b-15a9021e714e` is Endpoint ModelEndpoint and Report CommitList (`miroir-app-miroir/index.ts:213, 229`) | Give CommitList its own uuid (a model migration), and use `modelEndpointV1.uuid` in code |
 | AGENTS.md names a type nobody uses | AGENTS.md: "Actions return `ActionReturnType` (`ActionSuccess` \| `ActionError`)"; the code uses `Action2ReturnType` and `Action2VoidReturnType` (543 uses; `ActionReturnType` is only re-exported from `index.ts`) | **Fixed in this PR** (D8) |
 | The style guide teaches a pattern the code left | `code-style.md` shows `let log = console as any as LoggerInterface` with `registerLoggerToStart(getLoggerName(…))`; 1 file still does that, 250 use `getPreStartLogger` | **Fixed in this PR** (D8) |
 | Stub stores throw | `ErrorModelStore.ts`, `ErrorDataStore.ts`, `ErrorAdminStore.ts`: "Method not implemented." | Return `new Action2Error("NotImplemented")` |
 | A 1,562-line runner nothing renders | `Runner_CreateApplication.tsx`: imported by `RunnersList.tsx` and used there only in a comment; a test imports `buildCreateApplicationStorageSchema` through its re-export | Point the test at `buildCreateApplicationStorageSchema.ts`, delete the file |
 | setState inside `useMemo` | `MarkdownEditorModal.tsx:94-98` | `key` the modal on open |
-| #311 bugs still open | precedence traps (`TransformersForRuntime.ts:3947, 4243`), transformer handler slot shift (`Transformer.ts:35-37`, `TransformersForRuntime.ts:4052-4063`) | One small PR each |
+| #311 bugs still open | precedence traps (`TransformersForRuntime.ts:3947, 4243`), transformer handler slot shift (`Transformer.ts:35-37`, `TransformersForRuntime.ts:4052-4063`) | Precedence traps **fixed in this PR**; the slot shift is in #481 |
+| A virtual attribute can hold a transformer instead of its value | `VirtualAttributes.ts:130` evaluates at step `runtime` and resolves build transformers to constant transformers, so a composite transformer declared without `interpolation: "runtime"` yields `{ transformerType: "returnValue", value }` (checked after the precedence fix; a library transformer, like the Book citation, is not affected) | Resolve to `"value"` there, or require `interpolation: "runtime"` in the virtual attribute schema |
 | Twins after the package split | Section 4.3, `duplicated-logic` | Keep one copy per pair |
 | A lazy singleton keeps its first arguments | `ViewParamsUpdateQueue.getInstance(config, domainController)` (`ViewParamsUpdateQueue.ts:60-73`) ignores both after the first call; `useAdminViewParams` (#453) calls it on every save. Latent while the page has one DomainController and one ViewParams instance | One queue per DomainController, built where the controller is provided |
 | The context map arrives one render late | `RootComponent.tsx:310-315` copies `applicationDeploymentMap` into the Miroir context in an effect, so the context lags the prop that 22 files pass on (inferred as a reason for the drilling, not traced) | Give the provider the map in the same render, then read it with `useApplicationDeploymentMap()` |

@@ -29,7 +29,7 @@ let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerNa
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 ```
 
-then `log.debug(...)`, `log.info(...)`, etc. Log levels are selected with `VITE_MIROIR_LOG_CONFIG_FILENAME`, set to a preset name (`catch-all`, `scope-query`, `scope-persistence`, …, in `packages/miroir-standalone-app/config/logging/`) or a path to a config JSON; see [Logger config options](../reference/testing.md#logger-config-options). A preset selects loggers by their full name, `<cleanLevel>_<package>_<name>`, so a logger name copied from another file silently misses its preset entry. Bare `console.*` is reserved for the cases allow-listed by `scripts/check_bare_console.py`.
+then `log.debug(...)`, `log.info(...)`, etc. Log levels are selected with `VITE_MIROIR_LOG_CONFIG_FILENAME`, set to a preset name (`catch-all`, `scope-query`, `scope-persistence`, …, in `packages/miroir-standalone-app/config/logging/`) or a path to a config JSON; see [Logger config options](../reference/testing.md#logger-config-options). A preset selects loggers by their full name, `<cleanLevel>_<package>_<name>`, so a logger name copied from another file silently misses its preset entry; `npm run lint` rejects one (`miroir/logger`). Bare `console.*` is reserved for the cases allow-listed by `scripts/check_bare_console.py`.
 
 ## Naming Conventions
 

@@ -50,7 +50,7 @@ useEffect(() => { setCurrentInstanceIndex(0); }, [selectedEntityUuid]);
 
 **Leave it** when the effect synchronises with something outside React (DOM measurement, focus, a third-party widget) and sets state from what it read.
 
-**Lint.** Lens (`react-hooks/set-state-in-effect`, plus a check for `setState` in `useMemo`). The React Compiler rules only analyse functions that return JSX.
+**Lint.** Error (`react-hooks/set-state-in-effect`; existing violations are counted in `eslint-suppressions.json`); the lens adds a check for `setState` in `useMemo`. The React Compiler rules only analyse functions that return JSX.
 
 ## state-from-props
 
@@ -90,7 +90,7 @@ const authClient = useAuthClient(); // provided by the root
 const result = await authClient.login(username, password);
 ```
 
-**Lint.** Lens (`no-restricted-globals` on `fetch` in views).
+**Lint.** Error (`miroir/component-io`: the global `fetch` in views); existing violations are counted in `eslint-suppressions.json`.
 
 ## pub-sub
 
@@ -126,7 +126,7 @@ Both are arrows because React calls them without `this`. Sanctioned forms: `useA
 
 **Leave it** outside React: services, sagas and the server subscribe as they need.
 
-**Lint.** Lens; it flags calls only, so passing `store.subscribe` to `useSyncExternalStore` is not reported.
+**Lint.** Error (`miroir/pub-sub`, in views); existing violations are counted in `eslint-suppressions.json`. It flags calls only, so passing `store.subscribe` to `useSyncExternalStore` is not reported.
 
 ## service-read-in-render
 

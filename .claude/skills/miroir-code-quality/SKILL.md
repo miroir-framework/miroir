@@ -33,19 +33,19 @@ Read the checklist once, top to bottom, before writing; copy the sanctioned form
 
 ## Checklist
 
-Most harmful first. *Lens*: a warn-level ESLint check reported by `npm run smells`. *Lint*: an error in `npm run lint`. *Runner*: a text check of `npm run smells`. *Manual*: no detector.
+Most harmful first. *Lens*: a warn-level ESLint check reported by `npm run smells`. *Lint*: an error in `npm run lint`; the violations that predate the rule are counted in `eslint-suppressions.json`, and the lens still lists them. *Runner*: a text check of `npm run smells`. *Manual*: no detector.
 
 **Wrong behaviour:** the code passes its tests and fails in use.
 
 | # | Smell | Look for | Detect | Detail |
 |---|---|---|---|---|
-| 1 | `swallowed-error` | a `catch` that only logs; an empty `.catch` | lens | [typescript.md](typescript.md#swallowed-error) |
-| 2 | `action-result` | a `throw` or `return … as any` where an action result is declared | lens | [miroir.md](miroir.md#action-result) |
-| 3 | `precedence-trap` | `??` mixed with `==`, `<` … without parentheses | lens | [typescript.md](typescript.md#precedence-trap) |
+| 1 | `swallowed-error` | a `catch` that only logs; an empty `.catch`; a new error thrown without `{ cause }` | lens, lint | [typescript.md](typescript.md#swallowed-error) |
+| 2 | `action-result` | a `throw` or `return … as any` where an action result is declared | lint | [miroir.md](miroir.md#action-result) |
+| 3 | `precedence-trap` | `??` mixed with `==`, `<` … without parentheses | lint | [typescript.md](typescript.md#precedence-trap) |
 | 4 | `positional-mixup` | two `Uuid` parameters in one positional list | lens | [typescript.md](typescript.md#positional-mixup) |
 | 5 | `module-state` | module-level `let`, `Map`, `Set`, filled objects; mutable static fields; `…ForTests` resets | lens | [typescript.md](typescript.md#module-state) |
 | 6 | `hooks-order` | a hook called conditionally or in a callback | lint | [react.md](react.md#hooks-order) |
-| 7 | `effect-derived-state` | `setState` in an effect or in `useMemo` to compute a value | lens | [react.md](react.md#effect-derived-state) |
+| 7 | `effect-derived-state` | `setState` in an effect or in `useMemo` to compute a value | lint, lens | [react.md](react.md#effect-derived-state) |
 | 8 | `state-from-props` | `useState(props.x)` | lens | [react.md](react.md#state-from-props) |
 | 9 | `timing` | debounce, `setTimeout(…, 0)`, a timer in an effect | lens | [typescript.md](typescript.md#timing) |
 | 10 | `theme-bypass` | a color literal (`"#333"`, `rgba(…)`) in a component | lens | [miroir.md](miroir.md#theme-bypass) |
@@ -55,28 +55,28 @@ Most harmful first. *Lens*: a warn-level ESLint check reported by `npm run smell
 | # | Smell | Look for | Detect | Detail |
 |---|---|---|---|---|
 | 11 | `upward-import` | an implementation import from a higher layer | lint | [layering.md](layering.md#upward-import) |
-| 12 | `global-environment` | `process.env` read outside a composition root | lens | [layering.md](layering.md#global-environment) |
+| 12 | `global-environment` | `process.env` read outside a composition root | lint | [layering.md](layering.md#global-environment) |
 | 13 | `wiring` | a core service built outside a composition root | lens | [layering.md](layering.md#wiring) |
-| 14 | `component-io` | `fetch` in a component or hook | lens | [react.md](react.md#component-io) |
-| 15 | `pub-sub` | `.subscribe(…)` called in a component or hook | lens | [react.md](react.md#pub-sub) |
+| 14 | `component-io` | `fetch` in a component or hook | lint | [react.md](react.md#component-io) |
+| 15 | `pub-sub` | `.subscribe(…)` called in a component or hook | lint | [react.md](react.md#pub-sub) |
 | 16 | `service-read-in-render` | `useMemo` around a service call | lens | [react.md](react.md#service-read-in-render) |
 | 17 | `unstable-deps` | a serialisation or a missing entry in a dependency list | lens | [react.md](react.md#unstable-deps) |
 | 18 | `prop-drilling` | a prop passed on as is (`x={x}`) through many components | runner | [react.md](react.md#prop-drilling) |
 | 19 | `mocked-own-module` | `vi.mock` of Miroir code | lens | [miroir.md](miroir.md#mocked-own-module) |
 | 20 | `logic-in-code` | transformers, queries or composite actions written in TypeScript | manual | [miroir.md](miroir.md#logic-in-code) |
 | 21 | `duplicated-logic` | a near-identical file in another package | runner | [typescript.md](typescript.md#duplicated-logic) |
-| 22 | `logger` | a logger not named after its file; two loggers in a file | runner, lens | [miroir.md](miroir.md#logger) |
+| 22 | `logger` | a logger not named after its file; two loggers in a file | lint | [miroir.md](miroir.md#logger) |
 
 **Readability:** the code is harder to read than it needs to be.
 
 | # | Smell | Look for | Detect | Detail |
 |---|---|---|---|---|
-| 23 | `type-escape` | `any`, `as unknown as`, `as any as` | lens | [typescript.md](typescript.md#type-escape) |
+| 23 | `type-escape` | `any`, `as unknown as`, `as any as` | lens, lint | [typescript.md](typescript.md#type-escape) |
 | 24 | `magic-value` | a uuid literal in code | lens | [miroir.md](miroir.md#magic-value) |
 | 25 | `ml-naming` | `Jzod` in the name of an ML construct | `npm run check:ml` | [miroir.md](miroir.md#ml-naming) |
 | 26 | `long-parameter-list` | more than 5 parameters | lens | [typescript.md](typescript.md#long-parameter-list) |
 | 27 | `boolean-flag` | a boolean parameter next to others | lens | [typescript.md](typescript.md#boolean-flag) |
-| 28 | `deep-nesting` | blocks nested more than 4 deep | lens | [typescript.md](typescript.md#deep-nesting) |
+| 28 | `deep-nesting` | blocks nested more than 4 deep | lint | [typescript.md](typescript.md#deep-nesting) |
 | 29 | `dead-code` | commented-out code, unused variables, files nothing imports | runner, lens | [typescript.md](typescript.md#dead-code) |
 
 ## Tools

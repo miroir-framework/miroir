@@ -24,7 +24,7 @@ async open(): Promise<Action2VoidReturnType> {
 
 **Leave it** for a throw that signals a programming error the caller cannot handle (a broken invariant), with a comment saying so.
 
-**Lint.** Lens. When reviewing a new action handler, also check its signature: an action returns `Action2ReturnType` or `Action2VoidReturnType`, never `void` or `any`.
+**Lint.** Error (`miroir/action-result`); existing violations are counted in `eslint-suppressions.json`. When reviewing a new action handler, also check its signature: an action returns `Action2ReturnType` or `Action2VoidReturnType`, never `void` or `any`.
 
 ## theme-bypass
 
@@ -110,7 +110,7 @@ const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLe
 
 After a rename, search the presets for both names: `git grep -n -e _SqlDbStore -e _FileSystemStore -- packages/miroir-standalone-app/config/logging`.
 
-**Lint.** Runner (name) and lens (two loggers). Candidate error: a `miroir/logger-name` rule.
+**Lint.** Error (`miroir/logger`, `eslint-rules/miroir-logger.mjs`), in sources and tests: a name written as a string must be the file name, with or without its extension. A name computed at run time is not checked.
 
 ## magic-value
 
