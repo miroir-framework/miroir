@@ -102,7 +102,7 @@ jobs:
         run: |
           npm run build -w miroir-app-miroir -w miroir-app-admin
           npm run build -w miroir-core
-          npm run build -w miroir-env -w miroir-localcache-redux -w miroir-store-bundled -w miroir-store-filesystem -w miroir-store-indexedDb -w miroir-store-postgres -w miroir-store-mongodb -w miroir-example-library -w miroir-example-spotify -w miroir-example-github -w miroir-fixture-appForTest
+          npm run build -w miroir-env -w miroir-localcache-redux -w miroir-store-bundled -w miroir-store-filesystem -w miroir-store-indexedDb -w miroir-store-postgres -w miroir-store-mongodb -w miroir-example-library -w miroir-example-spotify -w miroir-example-github -w miroir-app-meta -w miroir-fixture-appForTest
           npm run build -w miroir-react -w miroir-mcp -w miroir-ai
           npm run build -w miroir-diagram-class
       - name: Build the standalone app (prints its bundle report)

@@ -9,6 +9,7 @@ import {
 } from "miroir-example-library";
 import { testConfiguration_libraryPublisherAndCountry } from "miroir-app-miroir";
 import { testConfiguration_githubModel } from "miroir-example-github";
+import { testConfiguration_metaBundleSizeSeed } from "miroir-app-meta";
 
 function playfieldFromInstance(instance: {
   uuid: string;
@@ -35,6 +36,8 @@ export const TEST_CONFIGURATION_INSTANCE_INDEX: Record<string, TestConfiguration
   ),
   // #472: the GitHub model, for the GitHub report MiroirTests
   [testConfiguration_githubModel.uuid]: playfieldFromInstance(testConfiguration_githubModel as any),
+  // #473: the Meta model and fixed bundle size measurements, for the bundle size history MiroirTest
+  [testConfiguration_metaBundleSizeSeed.uuid]: playfieldFromInstance(testConfiguration_metaBundleSizeSeed as any),
 };
 
 export function getTestConfigurationFromIndex(

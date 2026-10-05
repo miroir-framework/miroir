@@ -7,6 +7,7 @@
   "name": "BundleSizeMeasurement",
   "conceptLevel": "Model",
   "description": "One recorded bundle size of the standalone web app or of the Electron main process, written with the baseline of the bundle guard (#473).",
+  "defaultInstanceDetailsReportUuid": "85077493-0fea-4969-96c8-b994272de284",
   "viewAttributes": [
     "measuredAt",
     "application",
