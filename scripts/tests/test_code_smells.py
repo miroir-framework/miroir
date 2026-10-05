@@ -29,7 +29,9 @@ def test_the_runner_orders_smells_as_the_skill_checklist() -> None:
 
 
 def test_every_lens_smell_has_a_checklist_row_and_a_reference_entry() -> None:
-    lens = (ROOT / "eslint-rules" / "smell-lens.config.mjs").read_text(encoding="utf-8")
+    lens = "".join(
+        (ROOT / "eslint-rules" / name).read_text(encoding="utf-8") for name in ("smell-lens.config.mjs", "smells.mjs")
+    )
     lens_ids = set(re.findall(r'smell\(\s*"([a-z-]+)"', lens)) | set(re.findall(r'"\[([a-z-]+)\]', lens))
     assert lens_ids and lens_ids <= set(_checklist_ids())
     headings = {
@@ -45,6 +47,8 @@ def test_every_lens_smell_has_a_checklist_row_and_a_reference_entry() -> None:
 def test_smell_of_reads_the_bracketed_id_of_custom_messages_only() -> None:
     assert code_smells.smell_of("no-restricted-syntax", "[module-state] Module-level `let`") == "module-state"
     assert code_smells.smell_of("no-restricted-globals", "[component-io] fetch in a component") == "component-io"
+    assert code_smells.smell_of("miroir/action-result", "[action-result] throw in a function") == "action-result"
+    assert code_smells.smell_of("miroir/layers", "layer 1 imports layer 3") == "upward-import"
     # A rule's own message can hold brackets that are not smell ids.
     assert code_smells.smell_of("react-hooks/exhaustive-deps", "missing dependency: [items]") == "unstable-deps"
     assert code_smells.smell_of("no-mixed-operators", "Unexpected mix of '??' and '=='") == "precedence-trap"

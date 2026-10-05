@@ -55,13 +55,56 @@
     }
   },
   "packages/miroir-core/src/3_controllers/DomainController.ts": {
+    "miroir/action-result": {
+      "count": 14
+    },
     "miroir/layers": {
       "count": 5
+    }
+  },
+  "packages/miroir-core/src/3_controllers/ErrorHandling/ErrorAdminStore.ts": {
+    "miroir/action-result": {
+      "count": 4
+    }
+  },
+  "packages/miroir-core/src/3_controllers/ErrorHandling/ErrorDataStore.ts": {
+    "miroir/action-result": {
+      "count": 13
+    }
+  },
+  "packages/miroir-core/src/3_controllers/ErrorHandling/ErrorModelStore.ts": {
+    "miroir/action-result": {
+      "count": 18
     }
   },
   "packages/miroir-core/src/3_controllers/MiroirEventService.ts": {
     "miroir/layers": {
       "count": 1
+    }
+  },
+  "packages/miroir-core/src/4_services/PersistenceStoreController.ts": {
+    "miroir/action-result": {
+      "count": 4
+    }
+  },
+  "packages/miroir-core/src/4_services/PersistenceStoreControllerManager.ts": {
+    "miroir/action-result": {
+      "count": 3
+    }
+  },
+  "packages/miroir-localcache-redux/src/4_services/localCache/LocalCacheSlice.ts": {
+    "miroir/action-result": {
+      "count": 2
+    }
+  },
+  "packages/miroir-localcache-redux/src/4_services/persistence/PersistenceReduxSaga.ts": {
+    "miroir/action-result": {
+      "count": 8
+    }
+  },
+  "packages/miroir-localcache-zustand/src/4_services/persistence/PersistenceAsyncStore.ts": {
+    "miroir/action-result": {
+      "count": 6
     }
   },
   "packages/miroir-localcache-zustand/src/react/hooks.ts": {
@@ -72,6 +115,16 @@
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/ReduxHooks.ts": {
     "react-hooks/rules-of-hooks": {
       "count": 1
+    }
+  },
+  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Buttons/RunAllMiroirTestsButton.tsx": {
+    "miroir/action-result": {
+      "count": 1
+    }
+  },
+  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Buttons/RunMiroirTestSuiteButton.tsx": {
+    "miroir/action-result": {
+      "count": 4
     }
   },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/EndpointActionCaller.tsx": {
@@ -87,6 +140,11 @@
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportHooks.ts": {
     "react-hooks/rules-of-hooks": {
       "count": 2
+    }
+  },
+  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionListDisplay.tsx": {
+    "miroir/action-result": {
+      "count": 1
     }
   },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditor.tsx": {
@@ -129,6 +187,11 @@
       "count": 1
     }
   },
+  "packages/miroir-standalone-app/src/miroir-fwk/4_view/services/ConfigurationService.ts": {
+    "miroir/action-result": {
+      "count": 7
+    }
+  },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/tools/renderPerformanceMeasure.tsx": {
     "react-hooks/rules-of-hooks": {
       "count": 2
@@ -142,6 +205,11 @@
   "packages/miroir-store-postgres/src/1_core/SqlQueryBuilder.ts": {
     "miroir/layers": {
       "count": 1
+    }
+  },
+  "packages/miroir-store-postgres/src/4_services/SqlDbAdminStore.ts": {
+    "miroir/action-result": {
+      "count": 2
     }
   }
 }

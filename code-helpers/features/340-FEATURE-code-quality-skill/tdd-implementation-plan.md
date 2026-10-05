@@ -9,7 +9,7 @@
 Analysis: [`./analysis.md`](./analysis.md) (decision D7) · Issue: https://github.com/miroir-framework/miroir/issues/340 · Defects found on the way: #481
 Working branch: `claude/340-0b1k4d` (PR #476)
 
-**Resume note:** Slice 0 DONE.
+**Resume note:** Slices 0 and 1 DONE.
 
 ---
 
@@ -26,7 +26,7 @@ This plan does **not** fix the counted violations (they stay in `eslint-suppress
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize: counts per candidate on the merged branch | ✅ | the table below |
-| 1 | `action-result` is a lint error (tracer) | ⬜ | `eslint-rules/graduated-smells.test.mjs`, `npm run lint` |
+| 1 | `action-result` is a lint error (tracer) | ✅ | `eslint-rules/graduated-smells.test.mjs`, `npm run lint` |
 | 2 | Double cast (`type-escape`) is a lint error | ⬜ | same |
 | 3 | `process.env` outside roots (`global-environment`) is a lint error | ⬜ | same |
 | 4 | Subscriptions and `fetch` in views (`pub-sub`, `component-io`) are lint errors | ⬜ | same |
@@ -84,7 +84,7 @@ Lens run on `packages/` after merging `_integration` at `1243b612`:
 
 ## Slice 1: `action-result` is a lint error (tracer)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 - **RED:** `eslint-rules/graduated-smells.test.mjs`: with `eslint.config.mjs`, a function returning `Promise<Action2VoidReturnType>` that throws gets a `miroir/action-result` error; one returning `new Action2Error("NotImplemented")` gets none. With the lens, the same throw is a warning.
 - **GREEN:** `eslint-rules/smells.mjs` (file sets, `smell()`, the `action-result` selectors); `miroir/action-result` registered in `eslint.config.mjs`; the lens drops its own copy and lists the graduated rules as warnings; `smell_of` in the runner reads the bracketed id of `miroir/*` messages; suppressions for the 87.

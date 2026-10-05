@@ -118,8 +118,12 @@ class Finding:
 
 
 def smell_of(rule_id: str | None, message: str) -> str:
-    """Smell id of an ESLint message: the bracketed id of a custom message, else the rule's smell."""
-    if rule_id and rule_id.startswith("no-restricted-"):
+    """Smell id of an ESLint message: the bracketed id of a custom message, else the rule's smell.
+
+    Custom messages are those of the no-restricted-* rules, and of the smells that graduated to `npm run lint` as
+    `miroir/<smell-id>` rules.
+    """
+    if rule_id and rule_id.startswith(("no-restricted-", "miroir/")):
         match = SMELL_ID.search(message)
         if match:
             return match.group(1)
@@ -287,7 +291,8 @@ def eslint_findings(paths: list[str], root: Path) -> list[Finding]:
     for start in range(0, len(paths), 200):  # stays under the Windows command-line limit
         chunk = paths[start : start + 200]
         result = subprocess.run(
-            ["node", str(eslint), "-c", str(ROOT / LENS), "--format", "json", "--no-warn-ignored", *chunk],
+            # The lens shows graduated rules as warnings, which leaves their counts in eslint-suppressions.json unused.
+            ["node", str(eslint), "-c", str(ROOT / LENS), "--format", "json", "--no-warn-ignored", "--pass-on-unpruned-suppressions", *chunk],
             cwd=root,
             capture_output=True,
             text=True,

@@ -1,12 +1,25 @@
 // Minimal lint rules for the miroir monorepo (#325). Every rule here is an error and the codebase passes it.
 // Rules that still have violations are switched off below with their count, so they can be enabled one at a time.
-// Existing rules-of-hooks and miroir/layers violations are counted per file in eslint-suppressions.json: a new
-// violation fails, and after a fix `npm run lint` asks for `npx eslint packages --prune-suppressions`.
+// Existing violations of rules-of-hooks, miroir/layers and the smells that graduated from the smell lens (#340) are
+// counted per file in eslint-suppressions.json: a new violation fails, and after a fix `npm run lint` asks for
+// `npx eslint packages --prune-suppressions`.
 // Run: npm run lint
 import js from "@eslint/js";
+import { builtinRules } from "eslint/use-at-your-own-risk";
 import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
 import miroirLayers from "./eslint-rules/miroir-layers.mjs";
+import { actionResult, SRC, TESTS } from "./eslint-rules/smells.mjs";
+
+// A smell that graduated from the lens runs under its own name: the same ESLint rule registered as `miroir/<smell-id>`,
+// so eslint-suppressions.json counts each smell apart. The miroir-code-quality skill has an entry per smell id.
+const restrictedSyntax = builtinRules.get("no-restricted-syntax");
+const miroir = {
+  rules: {
+    layers: miroirLayers,
+    "action-result": restrictedSyntax,
+  },
+};
 
 export default tseslint.config(
   {
@@ -21,7 +34,7 @@ export default tseslint.config(
   {
     files: ["packages/*/{src,test,tests}/**/*.{ts,tsx}"],
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
-    plugins: { "react-hooks": reactHooks, miroir: { rules: { layers: miroirLayers } } },
+    plugins: { "react-hooks": reactHooks, miroir },
     linterOptions: { reportUnusedDisableDirectives: "off" },
     rules: {
       // Too many existing violations for a minimal set; candidates for later issues.
@@ -40,6 +53,14 @@ export default tseslint.config(
 
       // Implementation imports flow downwards only between numbered layers (AGENTS.md, "Architecture").
       "miroir/layers": "error",
+    },
+  },
+  {
+    // Smells that graduated from the smell lens (#340, analysis D7). Messages start with the smell id.
+    files: SRC,
+    ignores: TESTS,
+    rules: {
+      "miroir/action-result": ["error", ...actionResult],
     },
   },
   {

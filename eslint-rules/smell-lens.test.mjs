@@ -10,9 +10,10 @@ const smellsIn = async (filePath, code) => {
   const [result] = await eslint.lintText(code, { filePath });
   const fatal = result.messages.filter((m) => m.fatal);
   assert.deepEqual(fatal, [], `${filePath} does not parse`);
-  // Custom messages carry the smell id in brackets; other rules are named by their rule id.
+  // Custom messages, and those of the graduated miroir/<smell-id> rules, carry the smell id in brackets; other rules
+  // are named by their rule id.
   return result.messages.map((m) =>
-    m.ruleId?.startsWith("no-restricted-") ? (/\[([a-z][a-z-]+)\]/.exec(m.message)?.[1] ?? m.ruleId) : m.ruleId,
+    /^(no-restricted-|miroir\/)/.test(m.ruleId ?? "") ? (/\[([a-z][a-z-]+)\]/.exec(m.message)?.[1] ?? m.ruleId) : m.ruleId,
   );
 };
 

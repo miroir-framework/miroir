@@ -7,37 +7,19 @@
 import { builtinRules } from "eslint/use-at-your-own-risk";
 import reactHooks from "eslint-plugin-react-hooks";
 import base from "../eslint.config.mjs";
+import { ROOTS, smell, SRC, TEST_SESSION_VIEWS, TESTS, THEME_VIEWS, VIEW } from "./smells.mjs";
 
-const SRC = ["packages/*/src/**/*.{ts,tsx}"];
-const TESTS = ["packages/*/{test,tests}/**/*.{ts,tsx}", "packages/*/src/**/*.{test,spec}.{ts,tsx}"];
-// Composition roots build the object graph and read the process environment; elsewhere both are smells.
-// The standalone app's 4-tests folder builds test sessions, so it counts as a root.
-const ROOTS = [
-  "packages/*/src/5_setup/**",
-  "packages/*/src/**/{setup,setupTools,sagaTools,startup,storeStartup,environmentBoot,main,cli,platform,server,index}.{ts,tsx}",
-  "packages/*/src/miroir-fwk/4-tests/**",
-];
-// React components and hooks.
-const VIEW = ["packages/*/src/**/*.tsx", "packages/*/src/**/4_view/**/*.ts", "packages/*/src/**/use[A-Z]*.ts"];
-// The components and hooks of the 4-tests folder are views like any other.
-const TEST_SESSION_VIEWS = ["packages/*/src/miroir-fwk/4-tests/**/*.tsx", "packages/*/src/miroir-fwk/4-tests/**/use[A-Z]*.ts"];
-// The views that define the themes and the Themed components: where colors are written down.
-const THEME_VIEWS = [
-  "packages/*/src/**/Themes/**/*.tsx",
-  "packages/*/src/**/4_view/**/Themes/**/*.ts",
-  "packages/*/src/**/Themes/**/use[A-Z]*.ts",
-];
+// The smells that graduated to eslint.config.mjs (#340 D7) are errors there, where eslint-suppressions.json hides the
+// counted violations. Bulk suppressions count errors only: as warnings here, every violation shows. A severity alone
+// keeps the options that eslint.config.mjs gives each file.
+const GRADUATED = ["miroir/action-result"];
 
 const UUID = "/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/";
 // A hex color (`#333`, `1px solid #e0e0e0`), an rgb() color, white or black. A translucent rgba() tint reads on any background.
 const COLOR = "/(^|[\\s(,:])#([0-9a-fA-F]{3}){1,2}([0-9a-fA-F]{2})?\\b|\\brgb\\(|^(white|black)$/";
 const SERVICE = "/(Service|Controller|Tracker|Registry|Store|Cache)$/i";
-// A function declared to return Action2ReturnType or Action2VoidReturnType, directly or in a Promise.
-const RETURNS_ACTION =
-  ":function:matches([returnType.typeAnnotation.typeName.name=/^Action2(Void)?ReturnType$/], [returnType.typeAnnotation.typeArguments.params.0.typeName.name=/^Action2(Void)?ReturnType$/])";
 // A parameter named `...Uuid` or typed `Uuid`.
 const UUID_PARAM = "Identifier.params:matches([name=/Uuid$/], [typeAnnotation.typeAnnotation.typeName.name='Uuid'])";
-const smell = (id, selector, text) => ({ selector, message: `[${id}] ${text}` });
 
 const anywhereInSrc = [
   smell(
@@ -49,16 +31,6 @@ const anywhereInSrc = [
     "swallowed-error",
     "CallExpression[callee.property.name='catch'] > :function.arguments[body.type='BlockStatement'][body.body.length=0]",
     "Empty .catch handler: the rejection disappears.",
-  ),
-  smell(
-    "action-result",
-    `${RETURNS_ACTION} ThrowStatement`,
-    "throw in a function that returns an action result: callers check `status`, not exceptions. Return an Action2Error (`NotImplemented` for a stub).",
-  ),
-  smell(
-    "action-result",
-    `${RETURNS_ACTION} ReturnStatement > TSAsExpression[typeAnnotation.type='TSAnyKeyword']`,
-    "`return … as any` in a function that returns an action result: the declared result type checks nothing.",
   ),
   smell(
     "module-state",
@@ -253,6 +225,11 @@ const withSpanningHooks = (config) =>
 
 export default [
   ...base.map(withSpanningHooks),
+  {
+    files: SRC,
+    ignores: TESTS,
+    rules: Object.fromEntries(GRADUATED.map((rule) => [rule, "warn"])),
+  },
   {
     files: [...SRC, ...TESTS],
     rules: {
