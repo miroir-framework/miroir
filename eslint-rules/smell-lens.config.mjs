@@ -215,11 +215,9 @@ export default [
     rules: Object.fromEntries(GRADUATED.map((rule) => [rule, "warn"])),
   },
   {
+    // Graduated too, in sources and tests: eslint.config.mjs holds its operator groups.
     files: [...SRC, ...TESTS],
-    rules: {
-      // `a ?? b == c` parses as `a ?? (b == c)`.
-      "no-mixed-operators": ["warn", { groups: [["??", "==", "!=", "===", "!==", "<", ">", "<=", ">="]] }],
-    },
+    rules: { "no-mixed-operators": "warn" },
   },
   {
     files: SRC,

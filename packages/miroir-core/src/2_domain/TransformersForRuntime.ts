@@ -3944,7 +3944,7 @@ export function transformer_extended_apply(
       } else {
         // TODO: improve test, refuse interpretation of build transformer in runtime step
         const newResolveBuildTransformersTo: ResolveBuildTransformersTo =
-          ((transformer as any)["interpolation"] ?? "build" == step) &&
+          ((transformer as any)["interpolation"] ?? "build") == step &&
           resolveBuildTransformersTo == "constantTransformer"
             ? "value" // HACK!
             : resolveBuildTransformersTo;
@@ -4240,7 +4240,7 @@ export function transformer_extended_apply(
               //   );
 
               if (
-                ((transformer as any)["interpolation"] ?? "build" == "build") &&
+                ((transformer as any)["interpolation"] ?? "build") == "build" &&
                 resolveBuildTransformersTo == "constantTransformer"
               ) {
                 result = {

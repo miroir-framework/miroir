@@ -9,7 +9,7 @@
 Analysis: [`./analysis.md`](./analysis.md) (decision D7) · Issue: https://github.com/miroir-framework/miroir/issues/340 · Defects found on the way: #481
 Working branch: `claude/340-0b1k4d` (PR #476)
 
-**Resume note:** Slices 0 to 6 DONE.
+**Resume note:** Slices 0 to 7 DONE (slice 7: scoped nonreg pending).
 
 ---
 
@@ -32,7 +32,7 @@ This plan does **not** fix the counted violations (they stay in `eslint-suppress
 | 4 | Subscriptions and `fetch` in views (`pub-sub`, `component-io`) are lint errors | ✅ | same |
 | 5 | `set-state-in-effect` and `max-depth` 4 are lint errors | ✅ | same |
 | 6 | `preserve-caught-error` is a lint error, its 5 sites fixed | ✅ | same, core typecheck |
-| 7 | The 2 precedence traps fixed; `no-mixed-operators` is a lint error | ⬜ | MiroirTest `query.virtualAttributes` > composite transformer value |
+| 7 | The 2 precedence traps fixed; `no-mixed-operators` is a lint error | ✅ | MiroirTest `query.virtualAttributes` > composite transformer value |
 | 8 | `miroir/logger`: one logger per file, named after it; 43 loggers renamed | ⬜ | `graduated-smells.test.mjs`, presets updated |
 | 9 | Skill, analysis and PR text; gate and nonreg | ⬜ | pre-push gate, `nonreg:unit` |
 
@@ -107,7 +107,7 @@ RED: an error rethrown without `{ cause }` fails lint. GREEN: the 5 sites pass `
 
 ## Slice 7: the precedence traps
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 - **RED:** MiroirTest `query.virtualAttributes`, suite `evaluate`, new `functionCallTest` "composite transformer value": a virtual attribute computed by `entityDefinition_extractAttributes` (a composite transformer) with `interpolation: "runtime"` holds the attribute entries. Before the fix it holds `{ transformerType: "returnValue", value: … }`: `TransformersForRuntime.ts:4243` reads `(interpolation ?? ("build" == "build"))`, so every composite transformer's result is wrapped when build transformers resolve to constants.
 - **GREEN:** parenthesise both sites as their correct sibling at line 3951 does: `((transformer as any)["interpolation"] ?? "build") == step` and `… == "build"`. `no-mixed-operators` becomes an error with no count.

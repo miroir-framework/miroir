@@ -65,6 +65,8 @@ export default tseslint.config(
 
       // An error rethrown without `{ cause }` loses the stack and the type of the error it replaces.
       "preserve-caught-error": "error",
+      // `a ?? b == c` parses as `a ?? (b == c)` (#340 found two such traps in TransformersForRuntime.ts).
+      "no-mixed-operators": ["error", { groups: [["??", "==", "!=", "===", "!==", "<", ">", "<=", ">="]] }],
 
       // Hooks called conditionally or in callbacks break React's state ordering.
       "react-hooks/rules-of-hooks": "error",

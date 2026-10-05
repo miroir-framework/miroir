@@ -440,6 +440,148 @@
           },
           {
             "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "composite transformer value",
+            "functionRef": {
+              "module": "miroir-core/2_domain/VirtualAttributes",
+              "export": "evaluateVirtualAttributesOnInstance"
+            },
+            "arguments": [
+              {
+                "uuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                "parentName": "Entity",
+                "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+                "name": "Entity",
+                "conceptLevel": "MetaModel",
+                "description": "Entity, with a virtual attribute that a composite transformer computes.",
+                "mlSchema": {
+                  "type": "object",
+                  "definition": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "viewAttributes": {
+                      "type": "array",
+                      "optional": true,
+                      "definition": {
+                        "type": "string"
+                      }
+                    },
+                    "mlSchema": {
+                      "type": "any"
+                    },
+                    "viewAttributeSchemas": {
+                      "type": "array",
+                      "optional": true,
+                      "definition": {
+                        "type": "tuple",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "any"
+                          }
+                        ]
+                      },
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "View attribute schemas",
+                          "virtualAttribute": {
+                            "interpolation": "runtime",
+                            "transformerType": "entityDefinition_extractAttributes",
+                            "entityDefinition": {
+                              "mlSchema": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "mlSchema"
+                                ]
+                              }
+                            },
+                            "attributeNames": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "viewAttributes"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "uuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "parentName": "Entity",
+                "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "name": "Book",
+                "conceptLevel": "Model",
+                "viewAttributes": [
+                  "name",
+                  "year"
+                ],
+                "mlSchema": {
+                  "type": "object",
+                  "definition": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "year": {
+                      "type": "number",
+                      "optional": true
+                    },
+                    "publisher": {
+                      "type": "uuid"
+                    }
+                  }
+                }
+              },
+              [
+                "viewAttributeSchemas"
+              ]
+            ],
+            "environmentRef": "defaultMiroirModelEnvironment",
+            "environmentArgumentIndex": 3,
+            "assertions": [
+              {
+                "label": "the value of the transformer, not a returnValue transformer that holds it",
+                "resultAccessPath": [
+                  "viewAttributeSchemas"
+                ],
+                "expectedValue": [
+                  [
+                    "name",
+                    {
+                      "type": "string"
+                    }
+                  ],
+                  [
+                    "year",
+                    {
+                      "type": "number",
+                      "optional": true
+                    }
+                  ]
+                ]
+              },
+              {
+                "label": "viewAttributes",
+                "resultAccessPath": [
+                  "viewAttributes"
+                ],
+                "expectedValue": [
+                  "name",
+                  "year"
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
             "miroirTestLabel": "strip drops citation",
             "functionRef": {
               "module": "miroir-core/2_domain/VirtualAttributes",

@@ -105,3 +105,10 @@ test("swallowed-error: an error rethrown without the error it replaces", async (
   assert.equal((await reports(lint, "packages/miroir-core/tests/sample.unit.test.ts", rethrow(""), "preserve-caught-error"))[0]?.severity, 2);
   await spared(LIB, rethrow(", { cause: error }"), "preserve-caught-error");
 });
+
+test("precedence-trap: ?? mixed with a comparison", async () => {
+  const trap = `export const f = (a?: string, b?: string) => a ?? "build" == b;\n`;
+  await graduated(LIB, trap, "no-mixed-operators");
+  await graduated("packages/miroir-core/tests/sample.unit.test.ts", trap, "no-mixed-operators");
+  await spared(LIB, `export const f = (a?: string, b?: string) => (a ?? "build") == b;\n`, "no-mixed-operators");
+});
