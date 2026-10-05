@@ -168,6 +168,21 @@ export function ephemeralStoreIdentifier(
   return `${environmentPart}${prefixed}${isolationSuffix}`;
 }
 
+/**
+ * The schema or database of a test application without isolation key, under its template's
+ * environment (#477). Truncating it could make two applications share a store: a name that does
+ * not fit in 63 characters with the `_modelVersion` suffix is an error.
+ */
+export function canonicalStoreIdentifier(testApplicationName: string, environmentPrefix: string): string {
+  const identifier = `${environmentPrefix}_${testApplicationName}`;
+  if (identifier.length + MODEL_VERSION_SUFFIX_LENGTH > POSTGRES_IDENTIFIER_MAX) {
+    throw new Error(
+      `test application store "${identifier}" is too long: with "_modelVersion" it exceeds ${POSTGRES_IDENTIFIER_MAX} characters`,
+    );
+  }
+  return identifier;
+}
+
 export function testApplicationStorageConfiguration(
   libraryDeploymentStorageConfiguration: StoreUnitConfiguration,
   testApplicationName: string,
@@ -183,7 +198,7 @@ export function testApplicationStorageConfiguration(
     ? storeName
     : isolationKey
       ? ephemeralStoreIdentifier(testApplicationName, isolationKey, MODEL_VERSION_SUFFIX_LENGTH, environmentPrefix)
-      : `${environmentPrefix}_${testApplicationName}`;
+      : canonicalStoreIdentifier(testApplicationName, environmentPrefix);
   let testDeploymentStorageConfiguration: StoreUnitConfiguration;
   switch (libraryDeploymentStorageConfiguration.model.emulatedServerType) {
     case "indexedDb": {

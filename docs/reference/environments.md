@@ -153,7 +153,7 @@ Paths are relative to the root (`MIROIR_ROOT`, else the repository root), which 
 | `import [--dry-run]` | Records the deployments of the state that the definition does not install in `environments/local.json`. |
 | `prune [--dry-run]` | Deletes those deployments and their stores from the state. Stop the server first. |
 | `deploy <app> [--state <dir>] [--dry-run]` | Deploys example application `packages/miroir-example-<app>` (`github` or `miroir-example-github`) in the Admin data of the state, `.miroir/<environment>/` or `--state <dir>`: an AdminApplication row and a Deployment row opening the package assets live. Does nothing when the application is already deployed. The definition does not install it: record it with `import`. |
-| `clear` | Removes the state of a test environment: its `.miroir/<environment>/` directory, its SQL schemas and its MongoDB databases, test applications installed at run time included. With `MIROIR_TEST_WORKER` set, removes only that worker's state; without it, keeps the workers' states. Refuses an environment that is not `test-*`. |
+| `clear` | Removes the state of a test environment: its `.miroir/<environment>/` directory, its SQL schemas and its MongoDB databases, test applications installed at run time included. With `MIROIR_TEST_WORKER` set, removes only that worker's state; without it, keeps the workers' states. A schema or database whose name also starts with the name of another, longer environment (`test_sql_w2_*` when `test-sql-w2` exists) is kept. Honors `MIROIR_TEST_POSTGRES_HOST` and `MIROIR_TEST_MONGODB_CONNECTION_STRING`; a server that does not answer gives a `warning:` line. Refuses an environment that is not `test-*`. |
 
 ---
 

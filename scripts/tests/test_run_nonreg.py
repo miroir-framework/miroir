@@ -1071,6 +1071,84 @@ def test_worker_state_is_removed_after_the_run_unless_kept(tmp_path: Path):
             shutil.rmtree(leftover)
 
 
+def test_a_worker_state_with_a_database_is_cleared_and_a_failed_clear_is_reported(tmp_path: Path):
+    # The environment has a PostgreSQL connection, so its stores are cleared through miroir-env clear even
+    # on a filesystem run; miroir-env does not know this environment, so the clear fails (#477 review).
+    state = "test-pytest477db"
+    manifest = write_manifest(tmp_path, [worker_state_step("a", state)])
+    environments = tmp_path / "environments"
+    environments.mkdir()
+    (environments / f"{state}.json").write_text(
+        json.dumps({"connections": {"postgres": {"host": "localhost"}}}), encoding="utf-8"
+    )
+    try:
+        code, summary, _ = run_nonreg(
+            tmp_path, manifest, "--tier", "unit", "--jobs", "2", *FS_PROFILE, "--environments-dir", str(environments)
+        )
+        assert code == 0
+        assert summary["worker_state"] == "incomplete"
+    finally:
+        for leftover in (ROOT / ".miroir").glob(f"{state}@*"):
+            shutil.rmtree(leftover)
+
+
+@pytest.mark.skipif(os.name == "nt", reason="the test holds the lock with fcntl")
+def test_a_second_run_on_the_same_results_root_is_refused(tmp_path: Path):
+    import fcntl
+
+    manifest = write_manifest(tmp_path, [{"id": "x", "tier": "unit", "title": "x", "argv": ["python", "-c", "pass"]}])
+    results_root = tmp_path / "results"
+    results_root.mkdir()
+    with open(results_root / ".run.lock", "a+") as held:
+        fcntl.flock(held.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        proc = subprocess.run(
+            [sys.executable, str(SCRIPT), "--manifest", str(manifest), "--results-root", str(results_root), "--jobs", "1"],
+            cwd=ROOT, capture_output=True, text=True, check=False,
+        )
+    assert proc.returncode == 2
+    assert "another nonreg run" in proc.stderr
+
+
+def load_runner():
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("run_nonreg_module", SCRIPT)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules["run_nonreg_module"] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_fail_fast_starts_nothing_after_a_failure_while_a_worker_is_free(tmp_path: Path, monkeypatch):
+    # With 4 jobs and 2 units, a worker is free when the second unit comes: the failure of the first
+    # must still stop it (#477 review).
+    import time
+
+    runner = load_runner()
+    steps = [{"id": i, "title": i, "tier": "unit", "requires": "none", "argv": []} for i in ("fails", "later")]
+    started: list[str] = []
+
+    def fake_run_unit(unit, shared_groups, run, worker):
+        step = unit.steps[0]
+        started.append(step["id"])
+        status = "failed" if step["id"] == "fails" else "passed"
+        return {step["id"]: runner.StepResult(step["id"], step["id"], "unit", "none", status)}, []
+
+    def slow_plan(steps, shared_groups):
+        for unit in [runner.Unit([step]) for step in steps]:
+            yield unit
+            time.sleep(0.3)
+
+    monkeypatch.setattr(runner, "run_unit", fake_run_unit)
+    monkeypatch.setattr(runner, "plan_units", slow_plan)
+    run = runner.RunContext(profile="emulatedServer-filesystem", snap_dir=tmp_path, dry_run=False, timings=False)
+
+    results, _ = runner.run_parallel(steps, {}, run, fail_fast=True, jobs=4)
+
+    assert started == ["fails"]
+    assert [r.status for r in results] == ["failed", "not_run"]
+
+
 @requires_vitest
 def test_a_shared_group_runs_as_one_job_on_one_worker(tmp_path: Path, shared_manifest: Path):
     _, summary, _ = run_nonreg(

@@ -6,6 +6,7 @@ import net from "node:net";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
+import { belongsToState } from "../src/clearCommand";
 import { repositoryRoot, run, temporaryRepository } from "./cliTestSupport";
 
 const application = (name: string, selfApplication: string, deployment: string) => ({
@@ -64,6 +65,16 @@ describe("miroir-env clear (#477)", () => {
     expect(result.stderr).toMatch(/test environment/);
   });
 
+  it("keeps the stores of another environment whose name extends the cleared one", () => {
+    const others = ["test-filesystem", "test-sql-w2", "test-sql-extra"];
+
+    expect(belongsToState("test_sql_w2_library", "test-sql@w2", others)).toBe(false);
+    expect(belongsToState("test_sql_extra_library", "test-sql", others)).toBe(false);
+    expect(belongsToState("test_sql_w3_library", "test-sql@w3", others)).toBe(true);
+    expect(belongsToState("test_sql_library", "test-sql", others)).toBe(true);
+    expect(belongsToState("test_sql_w3_library", "test-sql", others)).toBe(false);
+  });
+
   it("says when there is nothing to clear", async () => {
     const root = temporaryRepository({ "test-filesystem": testFilesystem });
 
@@ -94,14 +105,28 @@ describe.skipIf(!postgresUp || !process.env.MIROIR_POSTGRES_PASSWORD)("miroir-en
       database: "postgres",
     });
     await client.connect();
-    const schemas = ["test_sql_w7_library", "test_sql_w7_testApplication", "test_sql_w8_library", "test_sql_library_keep477"];
+    // Names no other run uses: the test drops only the schemas it created.
+    const tag = String(Math.floor(Math.random() * 1e9));
+    const [worker, otherWorker] = [`w${tag}1`, `w${tag}2`];
+    const schemas = [
+      `test_sql_${worker}_library`,
+      `test_sql_${worker}_testApplication`,
+      `test_sql_${otherWorker}_library`,
+      `test_sql_library_keep${tag}`,
+    ];
+    const existing = (
+      await client.query("SELECT schema_name FROM information_schema.schemata WHERE schema_name LIKE 'test_sql_%'")
+    ).rows.map((row: { schema_name: string }) => row.schema_name);
+    expect(schemas.filter((schema) => existing.includes(schema))).toEqual([]);
+    const created: string[] = [];
     try {
       for (const schema of schemas) {
-        await client.query(`CREATE SCHEMA IF NOT EXISTS "${schema}"`);
+        await client.query(`CREATE SCHEMA "${schema}"`);
+        created.push(schema);
       }
 
       const result = await run(["clear", "--name", "test-sql"], repositoryRoot, {
-        MIROIR_TEST_WORKER: "w7",
+        MIROIR_TEST_WORKER: worker,
         MIROIR_POSTGRES_PASSWORD: process.env.MIROIR_POSTGRES_PASSWORD!,
         ...(process.env.MIROIR_TEST_POSTGRES_HOST ? { MIROIR_TEST_POSTGRES_HOST: postgresHost } : {}),
       });
@@ -110,12 +135,12 @@ describe.skipIf(!postgresUp || !process.env.MIROIR_POSTGRES_PASSWORD)("miroir-en
         await client.query("SELECT schema_name FROM information_schema.schemata WHERE schema_name LIKE 'test_sql_%'")
       ).rows.map((row: { schema_name: string }) => row.schema_name);
       expect(result.exitCode, result.stderr).toBe(0);
-      expect(left).not.toContain("test_sql_w7_library");
-      expect(left).not.toContain("test_sql_w7_testApplication");
-      expect(left).toContain("test_sql_w8_library");
-      expect(left).toContain("test_sql_library_keep477");
+      expect(left).not.toContain(schemas[0]);
+      expect(left).not.toContain(schemas[1]);
+      expect(left).toContain(schemas[2]);
+      expect(left).toContain(schemas[3]);
     } finally {
-      for (const schema of schemas) {
+      for (const schema of created) {
         await client.query(`DROP SCHEMA IF EXISTS "${schema}" CASCADE`);
       }
       await client.end();

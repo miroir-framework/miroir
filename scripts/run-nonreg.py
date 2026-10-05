@@ -1203,6 +1203,8 @@ def run_parallel(
                     collect(wait(running, return_when=FIRST_COMPLETED).done)
             while len(running) >= jobs:
                 collect(wait(running, return_when=FIRST_COMPLETED).done)
+            # A unit that failed while a worker was free must stop the run before the next starts.
+            collect({future for future in running if future.done()})
             if aborted:
                 break
             if unit.alone:
@@ -1224,10 +1226,13 @@ def run_parallel(
     return [by_id.get(step["id"]) or not_run_result(step, run) for step in steps], sorted(used, key=lambda w: int(w[1:]))
 
 
-def remove_worker_state(workers: list[str], storage: str | None) -> list[str]:
-    """Removes each worker's test environment state: `.miroir/<environment>@<worker>`, and its SQL schemas or
-    MongoDB databases through `miroir-env clear` (#477). Returns what was done, one line each."""
+def remove_worker_state(workers: list[str]) -> tuple[list[str], bool]:
+    """Removes each worker's test environment state (#477): `.miroir/<environment>@<worker>`, and, for an
+    environment with a PostgreSQL or MongoDB connection, its schemas or databases through `miroir-env clear`,
+    whatever the storage of the run (a step may open another test environment than the run's). Returns what
+    was done, one line each, and whether everything was removed."""
     lines: list[str] = []
+    complete = True
     state_root = ROOT / STATE_ROOT_DIRNAME
     # Only the state of the test environments defined in ENVIRONMENTS_DIR: a run started by a test
     # (scripts/tests) never touches the workers of the run that started it.
@@ -1235,15 +1240,55 @@ def remove_worker_state(workers: list[str], storage: str | None) -> list[str]:
     for worker in workers:
         for environment in environments:
             directory = state_root / f"{environment}@{worker}"
-            if directory.is_dir():
+            if not directory.is_dir():
+                continue
+            connections = load_environment_connections(environment, ENVIRONMENTS_DIR)
+            if not ("postgres" in connections or "mongodb" in connections):
                 shutil.rmtree(directory, ignore_errors=True)
                 lines.append(f"removed {repo_relative(directory)}")
-        if storage in ("sql", "mongodb"):
-            argv = resolve_argv(["npm", "run", "--silent", "miroir-env", "--", "clear", "--name", f"test-{storage}"])
+                continue
+            argv = resolve_argv(["npm", "run", "--silent", "miroir-env", "--", "clear", "--name", environment])
             proc = spawn(argv, {**os.environ, WORKER_ENV: worker})
             output = ((proc.stdout or "") + (proc.stderr or "")).strip()
-            lines.append(f"miroir-env clear test-{storage} ({worker}): exit {proc.returncode}" + (f"\n{output}" if output else ""))
-    return lines
+            if proc.returncode != 0:
+                complete = False
+                lines.append(f"miroir-env clear {environment} ({worker}) failed, exit {proc.returncode}")
+            lines.extend(output.splitlines())
+    return lines, complete
+
+
+class RunLockBusy(Exception):
+    pass
+
+
+class RunLock:
+    """One run at a time per results root (#477): two runs would use the same workers w1..wN, and the
+    end of one would remove the stores the other is using. The operating system releases the lock when
+    the process ends, even when it is killed."""
+
+    def __init__(self, path: Path) -> None:
+        self.path = path
+        self.file: Any = None
+
+    def __enter__(self) -> "RunLock":
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.file = open(self.path, "a+")
+        try:
+            if os.name == "nt":
+                import msvcrt
+
+                msvcrt.locking(self.file.fileno(), msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl
+
+                fcntl.flock(self.file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError as exc:
+            self.file.close()
+            raise RunLockBusy(f"another nonreg run holds {repo_relative(self.path)}") from exc
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        self.file.close()
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -1331,6 +1376,15 @@ def main(argv: list[str] | None = None) -> int:
             print(f"error: {error}", file=sys.stderr)
             return 2
 
+    # Held until the process ends; a dry run touches no store.
+    run_lock = None
+    if not args.dry_run:
+        try:
+            run_lock = RunLock(RESULTS_ROOT / ".run.lock").__enter__()
+        except RunLockBusy as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
+
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     snap_dir = RESULTS_ROOT / stamp
     snap_dir.mkdir(parents=True, exist_ok=True)
@@ -1347,13 +1401,17 @@ def main(argv: list[str] | None = None) -> int:
         results, workers_used = run_parallel(steps, shared_groups, run, fail_fast=fail_fast, jobs=args.jobs)
 
     worker_state: str | None = None
+    worker_state_warnings: list[str] = []
     if workers_used and not args.dry_run:
         if args.keep_worker_state:
             worker_state = "kept"
             print(f"\nworker state kept: {STATE_ROOT_DIRNAME}/*@{{{','.join(workers_used)}}}", flush=True)
         else:
-            worker_state = "removed"
-            for line in remove_worker_state(workers_used, storage):
+            cleanup_lines, complete = remove_worker_state(workers_used)
+            worker_state = "removed" if complete else "incomplete"
+            # A database server that did not answer: its schemas or databases may be left (miroir-env clear).
+            worker_state_warnings = [line for line in cleanup_lines if line.startswith("warning:")]
+            for line in cleanup_lines:
                 print(line, flush=True)
 
     finished_at = datetime.now(timezone.utc).isoformat()
@@ -1395,6 +1453,8 @@ def main(argv: list[str] | None = None) -> int:
         summary["jobs"] = args.jobs
     if worker_state is not None:
         summary["worker_state"] = worker_state
+    if worker_state_warnings:
+        summary["worker_state_warnings"] = worker_state_warnings
     if scope_names is not None:
         summary["scopes"] = scope_names
 

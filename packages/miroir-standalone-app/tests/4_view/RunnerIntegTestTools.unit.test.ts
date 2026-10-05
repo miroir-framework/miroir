@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { ephemeralStoreIdentifier } from "../../src/miroir-fwk/4-tests/runnerIntegTestSupport.js";
+import { canonicalStoreIdentifier, ephemeralStoreIdentifier } from "../../src/miroir-fwk/4-tests/runnerIntegTestSupport.js";
 import {
   resolveEphemeralIndexedDbBaseName,
   testApplicationStorageConfiguration,
@@ -265,6 +265,11 @@ describe("testApplicationStorageConfiguration", () => {
 // #477 Slice 2: a test application installed at runtime on SQL or MongoDB carries the name of the
 // test environment state its template lives in, so parallel nonreg workers do not share it.
 describe("test applications of a test environment on SQL and MongoDB (#477)", () => {
+  it("refuses a canonical store name that the _modelVersion suffix would push past 63 characters", () => {
+    expect(canonicalStoreIdentifier("testApplication", "test_sql_w2")).toBe("test_sql_w2_testApplication");
+    expect(() => canonicalStoreIdentifier("a".repeat(40), "test_mongodb_w12")).toThrow(/too long/);
+  });
+
   const sqlTemplate = (state: string) => ({
     admin: { emulatedServerType: "filesystem" as const, directory: `.miroir/${state}/admin` },
     model: { emulatedServerType: "sql" as const, connectionString: "postgres://postgres@localhost:5432/postgres", schema: "x_library" },
