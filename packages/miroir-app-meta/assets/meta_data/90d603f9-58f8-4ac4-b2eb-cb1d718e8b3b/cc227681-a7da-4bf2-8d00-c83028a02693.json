@@ -1,0 +1,13 @@
+{
+  "uuid": "cc227681-a7da-4bf2-8d00-c83028a02693",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app",
+  "measuredAt": "2026-10-01T20:47:44.000Z",
+  "eagerGzipBytes": 784301,
+  "baseline": 784301,
+  "previousBaseline": 816811,
+  "baselineChange": -32510,
+  "reason": "build(#370): load json-diff on demand (slice 3)",
+  "gitCommit": "53df001229a8069641983cfb55ff97eae078a26d"
+}

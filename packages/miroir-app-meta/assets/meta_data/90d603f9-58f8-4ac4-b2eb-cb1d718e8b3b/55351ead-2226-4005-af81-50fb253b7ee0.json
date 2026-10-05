@@ -1,0 +1,13 @@
+{
+  "uuid": "55351ead-2226-4005-af81-50fb253b7ee0",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app-electron",
+  "measuredAt": "2026-10-03T17:21:25.000Z",
+  "eagerGzipBytes": 942479,
+  "baseline": 942479,
+  "previousBaseline": 1095651,
+  "baselineChange": -153172,
+  "reason": "fix: express 5 SPA wildcard, react-error-boundary 6 error type, bundle policies",
+  "gitCommit": "0ed2b798fbf87a78ecbb4f11d5e83e2f080a3913"
+}

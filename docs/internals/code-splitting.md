@@ -225,8 +225,22 @@ python scripts/check_bundle_policy.py packages/miroir-standalone-app-electron/di
 | `defeated` | a module is imported dynamically and also statically, so its chunk loads with its static importer, and it is not listed in `defeatedDynamicImports` (#337) |
 | `size` | a package listed in `eagerPackageMaxBytes` renders more bytes into the chunks loaded with the page than its cap (#337: `miroir-app-miroir`) |
 | `budget` | the gzip size of the chunks loaded with the page is more than `eagerGzipTolerance` (2%) above `eagerGzipBaseline`, or more than 2% below it: a gain is kept by lowering the baseline in the same PR (ratchet) |
+| `history` | `eagerGzipBaseline` is not the baseline of the newest measurement of the application in the bundle size history: the baseline was edited by hand instead of recorded (#473) |
 
-When a change is intended, move or add the package the message names, or rewrite the lists and the baseline from the new report with `--init` (it keeps `forbiddenEager` and the tolerance), and commit the policy with the change so the review shows it. The `bundle report + guards` job of `.github/workflows/pr-checks.yml` builds both apps and runs both guards on every pull request that touches `packages/`, `package-lock.json`, the guard or the workflow, and uploads the reports and source maps as the `bundle-reports` artifact (14 days).
+When a change is intended, move or add the package the message names, and commit the policy with the change so the review shows it. When the size moves outside the band, record the new baseline:
+
+```bash
+npm run bundle-size:record -w miroir-app-meta -- packages/miroir-standalone-app/dist/.vite/bundle-report.json --reason "why the page grew"
+npm run bundle-size:record -w miroir-app-meta -- packages/miroir-standalone-app-electron/dist/bundle-report.json --reason "..."
+```
+
+It runs the guard with the new baseline (the measured size, or `--baseline N` to leave headroom) and, when the build passes, writes `eagerGzipBaseline` in the policy and a measurement in the bundle size history (see below). With `--init` it also rewrites the package lists from the report, like the guard's own `--init` (which keeps `forbiddenEager`, the tolerance and the size caps). Commit the policy and the new file under `packages/miroir-app-meta/assets/meta_data/` together. The `bundle report + guards` job of `.github/workflows/pr-checks.yml` builds both apps and runs both guards on every pull request that touches `packages/`, `package-lock.json`, the guard or the workflow, and uploads the reports and source maps as the `bundle-reports` artifact (14 days).
+
+### Bundle size history (#473)
+
+Every recorded baseline is a `BundleSizeMeasurement` instance of the `miroir-app-meta` application, one JSON file in `packages/miroir-app-meta/assets/meta_data/90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b/`, tracked in git: the application, the time, the measured eager gzip size, the baseline and its change from the previous one, the reason, the commit and branch, and the other totals of the report. The Meta app opens on the `BundleSizeHistory` Report, a line graph and a list per application (the `dev` environment installs Meta).
+
+The measurements before #473 come from the git history of the two policies (`npm run bundle-size:backfill -w miroir-app-meta`, `--dry-run` to print them): the baseline is the only size that history keeps, so it is also the measured size of these records. The backfill skips the commits already recorded, so it can run again. A failed build is never recorded: `bundle-size:record` writes nothing when the guard rejects the build.
 
 ---
 

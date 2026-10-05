@@ -1,0 +1,106 @@
+{
+  "uuid": "e8c6faa5-a117-4afd-b7ae-4a40c6111f95",
+  "selfApplication": "9ff432a9-89a1-460b-a263-1672d084a9e0",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "BundleSizeHistory",
+  "defaultLabel": "Bundle size history",
+  "description": "Recorded bundle sizes of the standalone web app and of the Electron main process, newest first, with the change from the previous record (#473).",
+  "definition": {
+    "reportParameters": {},
+    "extractorTemplates": {
+      "webMeasurements": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "parentName": "BundleSizeMeasurement",
+        "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+        "filter": {
+          "attributeName": "application",
+          "value": "^miroir-standalone-app$"
+        },
+        "orderBy": {
+          "attributeName": "measuredAt",
+          "direction": "ASC"
+        }
+      },
+      "electronMeasurements": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "parentName": "BundleSizeMeasurement",
+        "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+        "filter": {
+          "attributeName": "application",
+          "value": "^miroir-standalone-app-electron$"
+        },
+        "orderBy": {
+          "attributeName": "measuredAt",
+          "direction": "ASC"
+        }
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "graphReportSection",
+          "definition": {
+            "label": "Web page: eager gzip bytes",
+            "fetchedDataReference": "webMeasurements",
+            "graphType": "line",
+            "dataMapping": {
+              "labelField": "measuredAt",
+              "valueField": "eagerGzipBytes"
+            },
+            "config": {
+              "width": 800,
+              "height": 300,
+              "showTooltips": true,
+              "showLegend": false,
+              "labelPresentation": "slanted"
+            }
+          }
+        },
+        {
+          "type": "objectListReportSection",
+          "definition": {
+            "label": "Web page (miroir-standalone-app)",
+            "parentName": "BundleSizeMeasurement",
+            "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+            "fetchedDataReference": "webMeasurements",
+            "sortByAttribute": "measuredAt",
+            "sortOrder": "desc"
+          }
+        },
+        {
+          "type": "graphReportSection",
+          "definition": {
+            "label": "Electron start: eager gzip bytes",
+            "fetchedDataReference": "electronMeasurements",
+            "graphType": "line",
+            "dataMapping": {
+              "labelField": "measuredAt",
+              "valueField": "eagerGzipBytes"
+            },
+            "config": {
+              "width": 800,
+              "height": 300,
+              "showTooltips": true,
+              "showLegend": false,
+              "labelPresentation": "slanted"
+            }
+          }
+        },
+        {
+          "type": "objectListReportSection",
+          "definition": {
+            "label": "Electron main process (miroir-standalone-app-electron)",
+            "parentName": "BundleSizeMeasurement",
+            "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+            "fetchedDataReference": "electronMeasurements",
+            "sortByAttribute": "measuredAt",
+            "sortOrder": "desc"
+          }
+        }
+      ]
+    }
+  }
+}

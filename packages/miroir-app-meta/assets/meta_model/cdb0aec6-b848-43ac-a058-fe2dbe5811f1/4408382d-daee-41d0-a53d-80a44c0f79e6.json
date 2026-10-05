@@ -1,0 +1,9 @@
+{
+  "uuid": "4408382d-daee-41d0-a53d-80a44c0f79e6",
+  "parentName": "ApplicationModelBranch",
+  "parentUuid": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+  "selfApplication": "9ff432a9-89a1-460b-a263-1672d084a9e0",
+  "headVersion": "a43fee5b-3430-4540-85c6-70131104727b",
+  "name": "master",
+  "description": "The master branch of the Meta SelfApplication"
+}

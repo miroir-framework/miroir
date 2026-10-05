@@ -1,0 +1,13 @@
+{
+  "uuid": "c1652fff-70ad-4403-a728-69bd6c6f6b88",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app",
+  "measuredAt": "2026-09-30T22:39:47.000Z",
+  "eagerGzipBytes": 902938,
+  "baseline": 902938,
+  "previousBaseline": 1070644,
+  "baselineChange": -167706,
+  "reason": "#337 slice 5: CodeMirror loads with the first code field",
+  "gitCommit": "1091ee59b0fe91265d11105ba2f8613c0ed9972c"
+}

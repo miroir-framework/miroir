@@ -328,13 +328,14 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
             entry[1] != null && typeof entry[1] === "object" && !Array.isArray(entry[1])
         )
         .sort(([, a]: [string, EntityInstance], [, b]: [string, EntityInstance]) => // initial sort, to be enhanced! (issue #22)
-          props.sortByAttribute
+          (props.sortOrder === "desc" ? -1 : 1) *
+          (props.sortByAttribute
             ? (a as any)[props.sortByAttribute] > (b as any)[props.sortByAttribute]
               ? 1
               : (a as any)[props.sortByAttribute] < (b as any)[props.sortByAttribute]
               ? -1
               : 0
-            : 0
+            : 0)
         )
         .map(([instanceKey, i]: [string, EntityInstance]) => ({
           deploymentUuid: contextDeploymentUuid,
@@ -363,7 +364,7 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
           ),
         })),
     }),
-    [props.instancesToDisplay,props.sortByAttribute]
+    [props.instancesToDisplay,props.sortByAttribute,props.sortOrder]
   );
   // log.info("EntityInstanceGrid tableComponentRows", tableComponentRows);
 

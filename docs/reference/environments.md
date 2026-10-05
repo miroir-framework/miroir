@@ -18,7 +18,7 @@
 
 | Environment | Used by | Stores |
 |---|---|---|
-| `dev` | default for the server and the web client | models edited **live** in the package assets; Admin data **copied** in `.miroir/dev/` |
+| `dev` | default for the server and the web client | models edited **live** in the package assets; Admin data **copied** in `.miroir/dev/`; the only one, with `test-filesystem`, that installs Meta (`miroir-app-meta`, live, since its data is the tracked bundle size history) |
 | `local` | `environments/local.json`, gitignored: a developer's own environment | whatever it declares, usually `{ "extends": "dev" }` plus extra applications |
 | `cloud-agent` | coding-agent cloud sessions (`local.json` = `{ "extends": "cloud-agent" }`) | `dev` with the AI features off |
 | `test-filesystem` | profile `emulatedServer-filesystem`, `realServer-filesystem` | every section copied in `.miroir/test-filesystem/` |

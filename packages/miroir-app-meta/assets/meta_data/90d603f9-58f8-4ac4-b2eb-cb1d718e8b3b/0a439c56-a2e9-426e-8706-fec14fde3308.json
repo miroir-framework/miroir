@@ -1,0 +1,13 @@
+{
+  "uuid": "0a439c56-a2e9-426e-8706-fec14fde3308",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app",
+  "measuredAt": "2026-10-04T22:34:45.000Z",
+  "eagerGzipBytes": 785650,
+  "baseline": 785650,
+  "previousBaseline": 770102,
+  "baselineChange": 15548,
+  "reason": "Bundle policy: raise the page baseline to 785650 (#472)",
+  "gitCommit": "42aa8d8159fbe266846121bd16e255ce9b816bbd"
+}

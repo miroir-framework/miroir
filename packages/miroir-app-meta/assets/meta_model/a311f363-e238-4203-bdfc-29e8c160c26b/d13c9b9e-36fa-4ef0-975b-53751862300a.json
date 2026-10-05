@@ -1,0 +1,129 @@
+{
+  "uuid": "d13c9b9e-36fa-4ef0-975b-53751862300a",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "selfApplication": "9ff432a9-89a1-460b-a263-1672d084a9e0",
+  "branch": "4408382d-daee-41d0-a53d-80a44c0f79e6",
+  "name": "report.bundleSizeHistory",
+  "description": "The Meta app's bundle size Reports on fixed measurements (two web page records, one Electron record): the history shows a line graph and a list per application; the details Report shows one measurement.",
+  "tags": [
+    "integ",
+    "ui",
+    "report"
+  ],
+  "issue": "473",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "report.bundleSizeHistory",
+    "runTarget": {
+      "applicationUuid": "9ff432a9-89a1-460b-a263-1672d084a9e0",
+      "applicationName": "Meta",
+      "deploymentUuid": "40b74910-4c63-4bd9-8e7d-2bc051342908"
+    },
+    "testConfiguration": "8b8dfbd9-66e9-4afb-87e3-90aa07ccd11b",
+    "testbedInitApplicationParameters": "metaTestbedInitParams",
+    "miroirTests": [
+      {
+        "miroirTestType": "reportTestSuite",
+        "miroirTestLabel": "BundleSizeHistory",
+        "report": {
+          "application": "9ff432a9-89a1-460b-a263-1672d084a9e0",
+          "applicationSection": "data",
+          "reportUuid": "e8c6faa5-a117-4afd-b7ae-4a40c6111f95"
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reportTest",
+            "miroirTestLabel": "shows a graph and a list per application",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the web page graph",
+                "target": {
+                  "byTestId": "graph-line-webMeasurements"
+                },
+                "timeout": 15000
+              },
+              {
+                "step": "expectElement",
+                "label": "the Electron graph",
+                "target": {
+                  "byTestId": "graph-line-electronMeasurements"
+                },
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "the web page list",
+                "target": {
+                  "byText": "Web page (miroir-standalone-app)"
+                },
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "the Electron list",
+                "target": {
+                  "byText": "Electron main process (miroir-standalone-app-electron)"
+                },
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "a web page record, in the web page list only",
+                "target": {
+                  "byText": "seed: lazy routes"
+                },
+                "timeout": 5000,
+                "count": 1
+              },
+              {
+                "step": "expectElement",
+                "label": "the Electron record, in the Electron list only",
+                "target": {
+                  "byText": "seed: Electron record"
+                },
+                "timeout": 5000,
+                "count": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "reportTestSuite",
+        "miroirTestLabel": "BundleSizeMeasurementDetails",
+        "report": {
+          "application": "9ff432a9-89a1-460b-a263-1672d084a9e0",
+          "applicationSection": "data",
+          "reportUuid": "85077493-0fea-4969-96c8-b994272de284",
+          "instanceUuid": "b00d5241-b4bd-4396-b7ce-ea38a941f858"
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reportTest",
+            "miroirTestLabel": "shows the measurement",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the reason",
+                "target": {
+                  "byDisplayValue": "seed: lazy routes"
+                },
+                "timeout": 15000
+              },
+              {
+                "step": "expectElement",
+                "label": "the change from the previous baseline",
+                "target": {
+                  "byDisplayValue": "-1962170"
+                },
+                "timeout": 5000
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

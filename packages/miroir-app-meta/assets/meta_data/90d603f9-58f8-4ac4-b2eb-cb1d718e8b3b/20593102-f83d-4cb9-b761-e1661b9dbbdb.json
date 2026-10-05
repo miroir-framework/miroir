@@ -1,0 +1,13 @@
+{
+  "uuid": "20593102-f83d-4cb9-b761-e1661b9dbbdb",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app",
+  "measuredAt": "2026-10-01T20:17:20.000Z",
+  "eagerGzipBytes": 816811,
+  "baseline": 816811,
+  "previousBaseline": 850787,
+  "baselineChange": -33976,
+  "reason": "build(#370): load the IndexedDB store on demand (slice 2)",
+  "gitCommit": "55ca2e2947fedd5ee7cc05cf78f834e2b91087fc"
+}

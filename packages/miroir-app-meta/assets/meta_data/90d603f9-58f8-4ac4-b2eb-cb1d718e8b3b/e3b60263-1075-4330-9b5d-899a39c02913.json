@@ -1,0 +1,13 @@
+{
+  "uuid": "e3b60263-1075-4330-9b5d-899a39c02913",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app",
+  "measuredAt": "2026-10-01T21:31:42.000Z",
+  "eagerGzipBytes": 746687,
+  "baseline": 746687,
+  "previousBaseline": 757610,
+  "baselineChange": -10923,
+  "reason": "build(#370): name applications from the cache, not the Library package (slice 5)",
+  "gitCommit": "d8162f88c1d0f0d7f5fdf7e8a53640030637fa57"
+}

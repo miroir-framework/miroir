@@ -1,0 +1,13 @@
+{
+  "uuid": "8b80aa92-e89b-4d77-a550-a591f5026ebc",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app",
+  "measuredAt": "2026-09-30T22:25:25.000Z",
+  "eagerGzipBytes": 1070644,
+  "baseline": 1070644,
+  "previousBaseline": 1402592,
+  "baselineChange": -331948,
+  "reason": "build(337): the MiroirTest definitions leave the page (slice 4)",
+  "gitCommit": "2350094fb041e82a4a2e7dcefa29d7b3511c987e"
+}

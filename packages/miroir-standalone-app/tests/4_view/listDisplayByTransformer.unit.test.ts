@@ -252,6 +252,21 @@ describe("listDisplayByTransformer — helper API", () => {
     expect(Object.keys(firstPage)).not.toEqual(Object.keys(secondPage));
   });
 
+  it("sliceInstancesToPage follows sortOrder desc, like the grid's initial row order (#473)", () => {
+    const books = Object.fromEntries(
+      [3, 1, 2].map((number) => {
+        const uuid = `00000000-0000-4000-8000-${String(number).padStart(12, "0")}`;
+        return [uuid, { ...book1, uuid, name: `Book ${number}` }];
+      }),
+    );
+
+    const ascending = sliceInstancesToPage(books, 0, LIST_TRANSFORMER_PAGE_SIZE, "name");
+    const descending = sliceInstancesToPage(books, 0, LIST_TRANSFORMER_PAGE_SIZE, "name", {}, "desc");
+
+    expect(Object.values(ascending).map((book) => book.name)).toEqual(["Book 1", "Book 2", "Book 3"]);
+    expect(Object.values(descending).map((book) => book.name)).toEqual(["Book 3", "Book 2", "Book 1"]);
+  });
+
   it("sliceInstancesToPage keys rows by composite idAttribute, not uuid", () => {
     const compositePkEntity = { idAttribute: ["catalog_name", "schema_name"] as const };
     const schemata = {
