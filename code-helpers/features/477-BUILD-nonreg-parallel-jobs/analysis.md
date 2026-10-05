@@ -6,14 +6,14 @@ Related issue: https://github.com/miroir-framework/miroir/issues/477
 Prerequisites: #318 nonreg profiling ✅ ([analysis](../318-FEATURE-nonreg-profiling/analysis.md), `--runner shared`, `--timings`), #321 environment configuration ✅ ([analysis](../321-BUILD-environment-configuration/analysis.md), test environments in `.miroir/<environment>/`), #351 nonreg scopes ✅ ([analysis](../351-BUILD-nonreg-scopes/analysis.md)), #390 `--storage` ✅
 Key sources: [`scripts/run-nonreg.py`](../../../scripts/run-nonreg.py), [`scripts/nonreg-manifest.json`](../../../scripts/nonreg-manifest.json), [`Environment.ts`](../../../packages/miroir-core/src/1_core/environment/Environment.ts), [`environmentFiles.ts`](../../../packages/miroir-env/src/environmentFiles.ts), [`environmentState.ts`](../../../packages/miroir-env/src/environmentState.ts), [`miroir-env/src/testEnvironment.ts`](../../../packages/miroir-env/src/testEnvironment.ts), [`runnerIntegTestSupport.ts`](../../../packages/miroir-standalone-app/src/miroir-fwk/4-tests/runnerIntegTestSupport.ts)
 
-**Status:** decisions D1 and D2 confirmed by A (2026-10-04); D3 to D8 are defaults picked in this analysis, open to correction.
+**Status:** decisions confirmed by A: D1 and D2 on 2026-10-04, D3 to D8 on 2026-10-05 (D6 narrowed to the run bracket after checking what the measurement steps assert).
 
 ---
 
 ## 1. Goals
 
 - **G1. Faster full check.** In order to get the full non-regression verdict sooner, as a developer (human or agent) finishing a slice or a PR, I can run `npm run nonreg:filesystem -- --runner shared` and have independent steps run 4 at a time by default.
-- **G2. Same verdict as a serial run.** In order to trust a parallel run, as a developer, I get the same pass/fail per step as with `--jobs 1`: no step fails because another step changed its data, and no timing or memory measurement fails because of CPU contention.
+- **G2. Same verdict as a serial run.** In order to trust a parallel run, as a developer, I get the same pass/fail per step as with `--jobs 1`: no step fails because another step changed its data or because the machine is busier.
 - **G3. Readable result.** In order to read and compare runs as today, as a developer, I get `summary.json` and `summary.md` in manifest order, one console block per finished step, and `--compare` working across serial and parallel runs.
 - **G4. No leftovers.** In order to keep `.miroir/` and the databases tidy, as a developer, I find no per-job stores after a run, unless I asked to keep them for debugging.
 
@@ -30,12 +30,12 @@ Key sources: [`scripts/run-nonreg.py`](../../../scripts/run-nonreg.py), [`script
 |---|---|---|---|---|
 | D1 | Default job count | **4** | G1 | Accepted (A) |
 | D2 | Per-job stores after the run | **removed by default; `--keep-worker-state` keeps them** | G4 | Accepted (A) |
-| D3 | How a job gets its own stores | **`MIROIR_TEST_WORKER=<w>` read by environment resolution; the state name becomes `<environment>@<w>`** | G2 | Default |
-| D4 | Where the worker name applies | **test environments only (`test-*`); ignored with a warning elsewhere** | G2 | Default |
-| D5 | Runtime-installed test applications on SQL and MongoDB | **prefix their schema or database with the template's environment identifier** | G2 | Default |
-| D6 | Steps that must run alone | **manifest field `"parallel": false`** | G2 | Default |
-| D7 | `--jobs` and the legacy runner | **both runners** | G1 | Default |
-| D8 | Cleaning SQL schemas and MongoDB databases | **a `miroir-env clear` command, called by the runner per job** | G4 | Default |
+| D3 | How a job gets its own stores | **`MIROIR_TEST_WORKER=<w>` read by environment resolution; the state name becomes `<environment>@<w>`** | G2 | Accepted (A) |
+| D4 | Where the worker name applies | **test environments only (`test-*`); ignored with a warning elsewhere** | G2 | Accepted (A) |
+| D5 | Runtime-installed test applications on SQL and MongoDB | **prefix their schema or database with the template's environment identifier** | G2 | Accepted (A) |
+| D6 | Steps that must run alone | **manifest field `"parallel": false`, on the run bracket only** | G2 | Accepted (A) |
+| D7 | `--jobs` and the legacy runner | **both runners** | G1 | Accepted (A) |
+| D8 | Cleaning SQL schemas and MongoDB databases | **a `miroir-env clear` command, called by the runner per job** | G4 | Accepted (A) |
 
 ### D3. How a job gets its own stores
 
@@ -66,12 +66,16 @@ Every store of a test environment is named from the environment name (§ 4.1). C
 
 ### D6. Steps that must run alone
 
-**Serves:** G2. A manifest field `"parallel": false` marks a step that runs with no other step. The runner waits for running jobs to finish, runs the step, then resumes. Candidates:
+**Serves:** G2. A manifest field `"parallel": false` marks a step that runs with no other step. The runner waits for running jobs to finish, runs the step, then resumes. Only the run bracket needs it: `unit-321-environment-before` and `unit-321-tracked-assets` snapshot and check the whole tree, and must come first and last. A pytest guard keeps them at `"parallel": false`.
 
-- the run bracket `unit-321-environment-before` and `unit-321-tracked-assets` (they snapshot and check the whole tree, and must be first and last);
-- steps that measure memory or time: `unit-localCacheMemoryMeasure`, `unit-localCacheMemoryAttributed`, `unit-localCache-memoryMeasure-static-redux`, `unit-localCache-memoryMeasure-static-zustand`, `unit-303-test-pattern-and-render-performance`.
+**Steps that measure memory or time do not need it** (checked 2026-10-05, after A's question):
 
-The list is confirmed in slice 0 of the plan by running the candidates under CPU load. A pytest guard keeps the bracket steps at `"parallel": false`.
+| Step | What it measures | Assertions | Sensitive to CPU load? |
+|---|---|---|---|
+| `unit-localCacheMemoryMeasure`, `unit-localCacheMemoryAttributed`, `unit-localCache-memoryMeasure-static-redux`, `-zustand` | byte sizes estimated by walking objects (`estimateObjectBytes`, `miroir-core/src/2_domain/localCacheMemoryMeasure.ts:55`), not the heap | exact sizes and ratios between sizes (e.g. `transactionHistoryBytes < presentAlone / 10`) | no: the walk gives the same number whatever the load |
+| `unit-303-test-pattern-and-render-performance` | render durations of the tests it runs (`measureRendering.303.phase4`) | consistency only: `minMs <= medianMs <= maxMs`, `totalMs >= maxMs`, count > 0; no duration threshold | no; the one wait (`renderPerformanceRunControls.303.phase6`) has a 250 s timeout |
+
+No step in the manifest compares a duration with a fixed limit. What CPU load can still break is a short timeout in any test (a `waitFor` default of 1 s, a vitest `testTimeout`). That risk is not specific to these steps, so the plan checks it on the whole run: three `--jobs 4` runs must give the serial verdicts (plan slice 6.1). A step that fails only under load then gets `"parallel": false` or a longer timeout, decided case by case.
 
 ### D7. `--jobs` and the legacy runner
 

@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisites: [`../318-FEATURE-nonreg-profiling/`](../318-FEATURE-nonreg-profiling/) ✅, [`../351-BUILD-nonreg-scopes/`](../351-BUILD-nonreg-scopes/) ✅
 Working branch: `claude/477-nonreg-parallel`
 
-**Resume note:** plan written 2026-10-04, no slice started.
+**Resume note:** plan written 2026-10-04; defaults confirmed by A 2026-10-05; no slice started.
 
 ---
 
@@ -38,7 +38,7 @@ This plan does not parallelize vitest workers inside a step, nor make job names 
 | 2 | Runtime test applications on SQL and MongoDB follow the worker | ⬜ | `RunnerIntegTestTools.unit.test.ts` |
 | 3 | `miroir-env clear` removes a worker's stores | ⬜ | `miroirEnvClear.integ.test.ts` |
 | 4 | `run-nonreg.py --jobs N` | ⬜ | `test_run_nonreg.py` |
-| 5 | Steps that run alone | ⬜ | `test_run_nonreg.py` guard + load check |
+| 5 | The run bracket runs alone | ⬜ | `test_run_nonreg.py` guard |
 | 6 | Measure, docs, AC | ⬜ | full nonreg, jobs 1 vs 4 |
 
 ---
@@ -52,7 +52,7 @@ This plan does not parallelize vitest workers inside a step, nor make job names 
 | D3 Isolation | `MIROIR_TEST_WORKER=<w>`; state name `<environment>@<w>`; `name` stays the definition name | G2 |
 | D4 Scope of the variable | test environments only; ignored with a warning elsewhere | G2 |
 | D5 Runtime test apps on SQL/MongoDB | store name prefixed with the template's environment identifier | G2 |
-| D6 Steps that run alone | manifest field `"parallel": false` | G2 |
+| D6 Steps that run alone | manifest field `"parallel": false`, on the run bracket only | G2 |
 | D7 Runners | `--jobs` for legacy and shared | G1 |
 | D8 SQL/MongoDB cleanup | `miroir-env clear`, honoring `MIROIR_TEST_WORKER` | G4 |
 
@@ -112,10 +112,6 @@ These pass today; slice 1 adds the worker case next to them.
 Behavior asserted:
 - With two stub steps that each append `start <id>` and `end <id>` to a file, the file reads `start a, end a, start b, end b`.
 - No step sees `MIROIR_TEST_WORKER` (the stub prints its environment).
-
-### 0.3 Load check of the "run alone" candidates
-
-Not a test: run each candidate step (analysis D6) once alone and once while `stress-ng --cpu 4` (or a Python busy loop per core) runs, three times each, and record pass/fail and duration in this plan's Realization. A candidate that never fails under load does not need `"parallel": false`.
 
 ### Validation
 
@@ -316,13 +312,13 @@ ls .miroir | grep @ || echo "no worker state left"
 
 ---
 
-## Slice 5: steps that run alone
+## Slice 5: the run bracket runs alone
 
 **Status:** ⬜ pending
 
 ### Goal
 
-The run bracket and the steps that failed under load in slice 0.3 run with no other step running (D6).
+The run bracket (`unit-321-environment-before`, `unit-321-tracked-assets`) runs with no other step running (D6). The steps that measure memory or time do not need it: they assert estimated byte sizes and the consistency of measured durations, never a duration limit (analysis D6).
 
 **Layers cut:** `scripts/nonreg-manifest.json`, `scripts/run-nonreg.py`, `scripts/tests/test_run_nonreg.py`.
 
@@ -338,19 +334,19 @@ Behavior asserted:
 ### 5.2 GREEN
 
 - The pool drains before a `"parallel": false` unit, runs it alone, then resumes.
-- Set the field on the bracket steps and on the steps slice 0.3 found sensitive. A shared group containing such a step runs alone as a whole.
+- Set the field on the two bracket steps. A shared group containing such a step would run alone as a whole (none does today).
 
 ### 5.3 Refactor checkpoint
 
-- If the bracket steps are the only users besides measurement steps, check whether the `always` scope and `"parallel": false` should be documented together in `docs/reference/testing.md`.
+- The bracket steps are the only users, as are the `always` scope's: document the two together in `docs/reference/testing.md`.
 
 ### Validation
 
-**Nonreg scopes:** `smoke,tooling,localcache`: the memory steps belong to `localcache`.
+**Nonreg scopes:** `smoke,tooling`.
 
 ```bash
 python -m pytest scripts/tests/test_run_nonreg.py -q
-npm run nonreg:filesystem -- --runner shared --scope smoke,tooling,localcache
+npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
 ```
 
 ### Realization
@@ -365,7 +361,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling,localcache
 
 - Full `npm run nonreg:filesystem -- --runner shared --jobs 1` and `--jobs 4` on the cloud container, with `--timings`; record wall time and peak memory (sum of RSS of the vitest processes, sampled every second by a small Python script, kept out of the repo).
 - If 4 jobs exceed memory, record it here and ask A whether to lower the default (D1 is A's decision).
-- Run `--jobs 4` three times in a row; every step must keep its serial verdict (G2).
+- Run `--jobs 4` three times in a row; every step must keep its serial verdict (G2). A step that fails only under load (a short `waitFor` or test timeout) gets a longer timeout or `"parallel": false`, recorded here with the reason.
 
 ### 6.2 Docs
 
@@ -387,7 +383,7 @@ Automated equivalent: `test_run_nonreg.py` slice 4 and 5 cases, `testEnvironment
 | Criterion (issue § Proposed slices and § Decisions) | Proven by | Status |
 |---|---|---|
 | Per-worker state name for test environments | slice 1 tests | ⬜ |
-| `"parallel": false` on bracket and measurement steps, with a pytest check | slice 5 tests | ⬜ |
+| `"parallel": false` on the bracket steps, with a pytest check (measurement steps checked, not needed) | slice 5 tests | ⬜ |
 | `--jobs N`, default 4, summary in manifest order, `--fail-fast` stops the pool | slice 4 tests | ⬜ |
 | Worker state removed by default, kept with `--keep-worker-state` | slice 3 and 4 tests | ⬜ |
 | Measured time and memory with 2 and 4 jobs | slice 6.1 Realization | ⬜ |
