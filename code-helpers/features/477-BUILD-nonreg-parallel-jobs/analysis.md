@@ -6,7 +6,7 @@ Related issue: https://github.com/miroir-framework/miroir/issues/477
 Prerequisites: #318 nonreg profiling ✅ ([analysis](../318-FEATURE-nonreg-profiling/analysis.md), `--runner shared`, `--timings`), #321 environment configuration ✅ ([analysis](../321-BUILD-environment-configuration/analysis.md), test environments in `.miroir/<environment>/`), #351 nonreg scopes ✅ ([analysis](../351-BUILD-nonreg-scopes/analysis.md)), #390 `--storage` ✅
 Key sources: [`scripts/run-nonreg.py`](../../../scripts/run-nonreg.py), [`scripts/nonreg-manifest.json`](../../../scripts/nonreg-manifest.json), [`Environment.ts`](../../../packages/miroir-core/src/1_core/environment/Environment.ts), [`environmentFiles.ts`](../../../packages/miroir-env/src/environmentFiles.ts), [`environmentState.ts`](../../../packages/miroir-env/src/environmentState.ts), [`miroir-env/src/testEnvironment.ts`](../../../packages/miroir-env/src/testEnvironment.ts), [`runnerIntegTestSupport.ts`](../../../packages/miroir-standalone-app/src/miroir-fwk/4-tests/runnerIntegTestSupport.ts)
 
-**Status:** decisions confirmed by A: D1 and D2 on 2026-10-04, D3 to D8 on 2026-10-05 (D6 narrowed to the run bracket after checking what the measurement steps assert).
+**Status:** implemented 2026-10-05 (PR #478, measures in the TDD plan § Slice 6); decisions confirmed by A: D1 and D2 on 2026-10-04, D3 to D8 on 2026-10-05 (D6 narrowed to the run bracket after checking what the measurement steps assert).
 
 ---
 

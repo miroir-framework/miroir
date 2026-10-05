@@ -33,13 +33,13 @@ This plan does not parallelize vitest workers inside a step, nor make job names 
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize the shared state and the serial runner | ⬜ | `testEnvironments.unit.test.ts`, `test_run_nonreg.py` |
-| 1 | A worker gets its own test environment state (tracer) | ⬜ | `testEnvironments.unit.test.ts` |
-| 2 | Runtime test applications on SQL and MongoDB follow the worker | ⬜ | `RunnerIntegTestTools.unit.test.ts` |
-| 3 | `miroir-env clear` removes a worker's stores | ⬜ | `miroirEnvClear.integ.test.ts` |
-| 4 | `run-nonreg.py --jobs N` | ⬜ | `test_run_nonreg.py` |
-| 5 | The run bracket runs alone | ⬜ | `test_run_nonreg.py` guard |
-| 6 | Measure, docs, AC | ⬜ | full nonreg, jobs 1 vs 4 |
+| 0 | Characterize the shared state and the serial runner | ✅ | `testEnvironments.unit.test.ts`, `test_run_nonreg.py` |
+| 1 | A worker gets its own test environment state (tracer) | ✅ | `testEnvironments.unit.test.ts` |
+| 2 | Runtime test applications on SQL and MongoDB follow the worker | ✅ | `RunnerIntegTestTools.unit.test.ts` |
+| 3 | `miroir-env clear` removes a worker's stores | ✅ | `miroirEnvClear.integ.test.ts` |
+| 4 | `run-nonreg.py --jobs N` | ✅ | `test_run_nonreg.py` |
+| 5 | The run bracket runs alone | ✅ | `test_run_nonreg.py` guard |
+| 6 | Measure, docs, AC | ✅ | full nonreg, jobs 1 vs 4 |
 
 ---
 
@@ -89,7 +89,7 @@ This plan does not parallelize vitest workers inside a step, nor make job names 
 
 ## Slice 0: characterize the shared state and the serial runner
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -122,11 +122,13 @@ python -m pytest scripts/tests/test_run_nonreg.py -q
 
 ### Realization
 
+Done 2026-10-05. `testEnvironments.unit.test.ts` § "test environment state names (#477)" pins one state per environment name (`.miroir/<env>/`, schemas and databases `<env>_<app>`, with the `_modelVersion` and `_admin` suffixes). `test_run_nonreg.py` pins the serial contract: manifest order, no `MIROIR_TEST_WORKER` reaching a step even when the shell sets one (the runner pops it).
+
 ---
 
 ## Slice 1: a worker gets its own test environment state (tracer)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -172,11 +174,13 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling,core
 
 ### Realization
 
+Done 2026-10-05. `environmentStateName(name, env)` in `miroir-env/src/environmentFiles.ts` returns `<env>@w<N>` for a `test-*` environment and `MIROIR_TEST_WORKER=w<N>`, throws on any other worker name, and warns and ignores the worker outside test environments. `ResolvedEnvironment` carries `stateName`; `deriveEnvironmentDeployments`, `environmentStateDirectory`, `configEnvironment` (apps directory) and the reseed wipe use it, so SQL schemas become `test_sql_w2_<app>` through the existing `storeIdentifier`. `stateCommands` resets `stateName` with the name when it switches to `local`. 6 tests in § "worker state of a test environment (#477)". Filesystem check: `MIROIR_TEST_WORKER=w2 testMiroir --suites tr.core --mode integ` wrote only `.miroir/test-filesystem@w2`.
+
 ---
 
 ## Slice 2: runtime test applications on SQL and MongoDB follow the worker
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -217,11 +221,13 @@ MIROIR_TEST_WORKER=w2 npm run testMiroir -w miroir-standalone-app -- --profile e
 
 ### Realization
 
+Done 2026-10-05. `runnerIntegTestSupport.ts`: `environmentStorePrefix()` reads the template's state (the Admin filesystem directory also for sql and mongo templates) and `ephemeralStoreIdentifier` prefixes the SQL schema or Mongo database of a runtime test application, kept within 63 characters. `IntegrationTestSession` (tests/helpers) builds the `testApplication` directory, schema (`TestApplicationStoreOptions.schema`, new in miroir-core) and Mongo database from `testEnvironment.resolved.stateName`; `integrationTestProfiles.ts` passes `MIROIR_TEST_WORKER` on. Tests: 13 in `RunnerIntegTestTools.unit.test.ts`, 2 in `IntegrationTestSession.unit.test.ts` (its lifecycle test "initSession wires domainController…" fails on the base branch too).
+
 ---
 
 ## Slice 3: `miroir-env clear` removes a worker's stores
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -261,11 +267,13 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
 
 ### Realization
 
+Done 2026-10-05. `miroir-env/src/clearCommand.ts`, command `clear` in `cli.ts`: refuses a non-`test-*` environment (exit 2), removes `.miroir/<stateName>/`, then drops the PostgreSQL schemas and MongoDB databases whose name starts with `storeIdentifier(stateName)_`; without a worker it skips names whose next segment is `w<N>_`. `pg` (8.23.0) and `mongodb` (6.21.0) become miroir-env dependencies, imported only when the environment uses those stores; `src/pg.d.ts` declares the few `pg` calls (no `@types/pg` in the repo). `miroirEnvClear.integ.test.ts`: 4 filesystem tests, and the PostgreSQL test passed against the container's PostgreSQL 16 (w7 schemas dropped, w8 and unworkered kept).
+
 ---
 
 ## Slice 4: `run-nonreg.py --jobs N`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -310,11 +318,13 @@ ls .miroir | grep @ || echo "no worker state left"
 
 ### Realization
 
+Done 2026-10-05. `run-nonreg.py`: `--jobs N` (default 4) and `--keep-worker-state`. `plan_units` turns the selected steps into units (a shared group is one unit); `run_parallel` runs them on a `ThreadPoolExecutor`, each unit taking a free worker `w1..wN` passed as `MIROIR_TEST_WORKER`. Console lines go through `emit()` into a per-thread buffer printed as one block when the step ends. Results are stored in manifest order; with `--fail-fast` no new unit starts after a failure and the others report `not_run`. `--jobs 1` keeps the serial loop (`run_serial`). After a parallel run, `remove_worker_state` deletes `.miroir/<env>@w<k>` for each `test-*` definition and, on sql or mongodb, calls `miroir-env clear` per worker; the summary records `jobs`, each step's `worker` and `worker_state`. 12 new tests in `test_run_nonreg.py` (overlap with 2 jobs, none with 1, order, `--compare` against a serial run, fail-fast, console blocks, bad `--jobs`, state removed and kept, shared group on one worker).
+
 ---
 
 ## Slice 5: the run bracket runs alone
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -351,11 +361,13 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
 
 ### Realization
 
+Done 2026-10-05. `"parallel": false` on `unit-321-environment-before` and `unit-321-tracked-assets`. Such a step is an `alone` unit: the pool drains, the step runs with no worker, then the pool resumes. Guards in `test_run_nonreg.py`: the bracket steps carry the flag, and `parallel` is never `true` (absent means parallel).
+
 ---
 
 ## Slice 6: measure, docs, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### 6.1 Measure
 
@@ -382,8 +394,31 @@ Automated equivalent: `test_run_nonreg.py` slice 4 and 5 cases, `testEnvironment
 
 | Criterion (issue § Proposed slices and § Decisions) | Proven by | Status |
 |---|---|---|
-| Per-worker state name for test environments | slice 1 tests | ⬜ |
-| `"parallel": false` on the bracket steps, with a pytest check (measurement steps checked, not needed) | slice 5 tests | ⬜ |
-| `--jobs N`, default 4, summary in manifest order, `--fail-fast` stops the pool | slice 4 tests | ⬜ |
-| Worker state removed by default, kept with `--keep-worker-state` | slice 3 and 4 tests | ⬜ |
-| Measured time and memory with 2 and 4 jobs | slice 6.1 Realization | ⬜ |
+| Per-worker state name for test environments | slice 1 tests | ✅ |
+| `"parallel": false` on the bracket steps, with a pytest check (measurement steps checked, not needed) | slice 5 tests | ✅ |
+| `--jobs N`, default 4, summary in manifest order, `--fail-fast` stops the pool | slice 4 tests | ✅ |
+| Worker state removed by default, kept with `--keep-worker-state` | slice 3 and 4 tests | ✅ |
+| Measured time and memory with 2 and 4 jobs | slice 6.1 Realization | ✅ |
+
+### Realization
+
+Done 2026-10-05, cloud container (4 CPUs, 15 GB), `npm run nonreg:filesystem -- --runner shared`, commit 904047f3 plus the two test fixes below. Memory is the peak of the summed RSS of every process, sampled every 2 s (about 0.5 GB before the run); `--timings` was left out so the timing runner does not weigh on the comparison.
+
+| Jobs | Wall time | Peak RSS | Verdicts |
+|---|---|---|---|
+| 1 | 1372 s (22.9 min) | 4.9 GB | 100/100 |
+| 2 | 702 s (11.7 min) | 7.3 GB | 100/100 |
+| 4 (run 1) | 570 s (9.5 min) | 10.9 GB | 99/100 |
+| 4 (run 2) | 552 s (9.2 min) | 11.1 GB | 98/100 |
+| 4 (run 3) | 565 s (9.4 min) | 11.1 GB | 99/100 |
+
+4 jobs fit in 15 GB, so the default stays 4 (D1). 2 jobs halve the time; 4 jobs gain 19 % more, likely because the container has 4 CPUs and vitest launches spend most of their time transforming modules (inferred, not profiled).
+
+What failed under 4 jobs:
+- `unit-321-miroir-env`, 3 runs out of 3: two tests of `testEnvironments.unit.test.ts` open `test-filesystem` with `process.env`, so the job's `MIROIR_TEST_WORKER` moved their state. They now pass `MIROIR_TEST_WORKER: undefined`; the step passes on worker w1.
+- `apiCallReport-281`, 1 run out of 3: every test passed, and vitest exited 1 on an unhandled `EnvironmentTeardownError` ("Closing rpc while onUserConsoleLog was pending") in `apiCallReport.281.phase2.integ.test.tsx`: the rendered report still calls the fake server after `afterAll` closed it (ECONNRESET), and logs after the worker closed. A teardown race made likelier by load, not a shared store; left as is, reported to A.
+
+Leak check: after the three 4-job runs, the unworkered `.miroir/test-filesystem/` (left by the 1-job run) had new files from `endpointToolRegistry.integ.test.ts` (miroir-mcp), which built its runtime application's stores from the environment name. It now uses `resolved.stateName`; `unit-345-mcp` on worker w1 writes only `.miroir/test-filesystem@w1/`. After the 2-job run `.miroir/` was empty.
+
+Outside nonreg, `realServerTestEnvironment.unit.test.ts` still pins unworkered paths and fails when the shell sets `MIROIR_TEST_WORKER`; it is in no nonreg step.
+
