@@ -9,7 +9,7 @@
 Analysis: [`./analysis.md`](./analysis.md) (decision D7) · Issue: https://github.com/miroir-framework/miroir/issues/340 · Defects found on the way: #481
 Working branch: `claude/340-0b1k4d` (PR #476)
 
-**Resume note:** Slices 0 to 7 DONE (slice 7: scoped nonreg pending).
+**Resume note:** Slices 0 to 8 DONE.
 
 ---
 
@@ -33,7 +33,7 @@ This plan does **not** fix the counted violations (they stay in `eslint-suppress
 | 5 | `set-state-in-effect` and `max-depth` 4 are lint errors | ✅ | same |
 | 6 | `preserve-caught-error` is a lint error, its 5 sites fixed | ✅ | same, core typecheck |
 | 7 | The 2 precedence traps fixed; `no-mixed-operators` is a lint error | ✅ | MiroirTest `query.virtualAttributes` > composite transformer value |
-| 8 | `miroir/logger`: one logger per file, named after it; 43 loggers renamed | ⬜ | `graduated-smells.test.mjs`, presets updated |
+| 8 | `miroir/logger`: one logger per file, named after it; 45 loggers renamed | ✅ | `graduated-smells.test.mjs`, presets updated |
 | 9 | Skill, analysis and PR text; gate and nonreg | ⬜ | pre-push gate, `nonreg:unit` |
 
 ---
@@ -80,7 +80,7 @@ Lens run on `packages/` after merging `_integration` at `1243b612`:
 | `deep-nesting` | `max-depth` 4 | 39 | 9 |
 | `swallowed-error` | `preserve-caught-error` | 5 | 5 |
 | `precedence-trap` | `no-mixed-operators` (`??` and comparisons) | 4 (2 sites, reported on both operators) | 1 |
-| `logger` | name is not the file name / second logger | 43 / 0 | 43 |
+| `logger` | name is not the file name / second logger | 43 / 0 in sources, 2 / 0 in tests | 45 |
 
 ## Slice 1: `action-result` is a lint error (tracer)
 
@@ -115,11 +115,12 @@ RED: an error rethrown without `{ cause }` fails lint. GREEN: the 5 sites pass `
 
 ## Slice 8: `miroir/logger`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 - **RED:** `graduated-smells.test.mjs`: a logger named after another file, or a second logger, is a `miroir/logger` error; a logger named after its file (stem or full name) is not.
-- **GREEN:** `eslint-rules/miroir-logger.mjs`; the 43 loggers renamed after their file; the log presets that named the old loggers (`scope-persistence`, `scope-query`, `scope-query-local`, `scope-transformers`, `scope-ui`, `catch-all-detailed`) follow the rename; the runner's text check for logger names goes, since the lens now reports it.
+- **GREEN:** `eslint-rules/miroir-logger.mjs`, in sources and tests; the 45 loggers renamed after their file (43 in sources, 2 in tests); the log presets that named the old loggers (`scope-persistence`, `scope-query`, `scope-query-local`, `scope-transformers`, `scope-ui`, `catch-all-detailed`) follow the rename; the runner's text check for logger names goes, since the lens now reports it.
 - **Validation:** as slice 1, plus `RUN_TEST=logConfigPresets npm run testByFile -w miroir-standalone-app -- logConfigPresets`.
+- **Found on the way:** a one-off check that resolves every `getLoggerName` call to its full name found 5 more preset entries that selected no logger: `miroir-store-bundled` used the clean level `"info"` (now `"4"`, as every other store), and `PersistenceAsyncStore.ts` declared its own `"5_view"` (now the package's constants). No preset entry is left without a logger.
 
 ## Slice 9: skill, analysis, PR text, gate
 

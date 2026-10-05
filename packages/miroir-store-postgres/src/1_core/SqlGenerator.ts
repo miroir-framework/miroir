@@ -86,7 +86,7 @@ import { getAttributeTypesFromMlSchema, mlToPostgresTypeMap } from "./mlSchema";
 import { SqlQuerySelectExpressionSchema } from "../generated";
 
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "sqlGenerator");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlGenerator");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {
   log = logger;

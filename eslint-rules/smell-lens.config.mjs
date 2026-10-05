@@ -9,10 +9,11 @@ import reactHooks from "eslint-plugin-react-hooks";
 import base from "../eslint.config.mjs";
 import { ROOTS, smell, SRC, TEST_SESSION_VIEWS, TESTS, THEME_VIEWS, VIEW } from "./smells.mjs";
 
-// The smells that graduated to eslint.config.mjs (#340 D7) are errors there, where eslint-suppressions.json hides the
-// counted violations. Bulk suppressions count errors only: as warnings here, every violation shows. A severity alone
-// keeps the options that eslint.config.mjs gives each file.
-const GRADUATED = [
+// Errors of eslint.config.mjs that the lens shows as warnings: the smells that graduated from the lens (#340 D7), whose
+// existing violations eslint-suppressions.json counts. Bulk suppressions count errors only: as warnings here, every
+// violation shows, counted or not. A severity alone keeps the options that eslint.config.mjs gives each
+// file, so each list covers only the files where eslint.config.mjs enables its rules.
+const ERRORS_IN_SOURCES = [
   "miroir/action-result",
   "miroir/type-escape",
   "miroir/global-environment",
@@ -21,6 +22,8 @@ const GRADUATED = [
   "react-hooks/set-state-in-effect",
   "max-depth",
 ];
+const ERRORS_IN_SOURCES_AND_TESTS = ["no-mixed-operators", "miroir/logger"];
+const asWarnings = (rules) => Object.fromEntries(rules.map((rule) => [rule, "warn"]));
 
 const UUID = "/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/";
 // A hex color (`#333`, `1px solid #e0e0e0`), an rgb() color, white or black. A translucent rgba() tint reads on any background.
@@ -124,11 +127,6 @@ const anywhereInSrc = [
     `CallExpression[callee.name=/^(React\\.)?useMemo$/] > ArrowFunctionExpression.arguments:first-child > CallExpression.body:matches([callee.object.name=${SERVICE}], [callee.object.property.name=${SERVICE}])`,
     "useMemo around a service read: nothing re-renders when the service's data changes. Expose the data through a hook that subscribes (useSyncExternalStore).",
   ),
-  smell(
-    "logger",
-    "Program > VariableDeclaration:has(CallExpression[callee.property.name='getLoggerName']) ~ VariableDeclaration:has(CallExpression[callee.property.name='getLoggerName'])",
-    "Second logger in this file: one logger per file, named after the file (docs/contributing/code-style.md).",
-  ),
 ];
 
 const outsideCompositionRoots = [
@@ -209,16 +207,8 @@ const withSpanningHooks = (config) =>
 
 export default [
   ...base.map(withSpanningHooks),
-  {
-    files: SRC,
-    ignores: TESTS,
-    rules: Object.fromEntries(GRADUATED.map((rule) => [rule, "warn"])),
-  },
-  {
-    // Graduated too, in sources and tests: eslint.config.mjs holds its operator groups.
-    files: [...SRC, ...TESTS],
-    rules: { "no-mixed-operators": "warn" },
-  },
+  { files: SRC, ignores: TESTS, rules: asWarnings(ERRORS_IN_SOURCES) },
+  { files: [...SRC, ...TESTS], rules: asWarnings(ERRORS_IN_SOURCES_AND_TESTS) },
   {
     files: SRC,
     ignores: TESTS,

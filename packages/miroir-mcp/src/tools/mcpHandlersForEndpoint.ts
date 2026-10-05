@@ -37,7 +37,7 @@ import {
 
 
 const packageName = "miroir-mcp";
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, "info", "toolHandlers");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, "info", "mcpHandlersForEndpoint");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {
   log = logger;

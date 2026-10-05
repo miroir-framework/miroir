@@ -25,7 +25,7 @@ import { MixedSqlDbInstanceStoreSection, SqlDbInstanceStoreSectionMixin } from "
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbEntityStoreSectionMixin");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "sqlDbEntityStoreSectionMixin");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 

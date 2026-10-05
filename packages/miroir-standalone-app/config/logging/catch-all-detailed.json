@@ -9,6 +9,6 @@
     "4_miroir-localcache-redux_LocalCache": { "level": "WARN" },
     "4_miroir-localcache-redux_LocalCacheSlice": { "level": "WARN" },
     "2_miroir-core_QuerySelectors": { "level": "WARN" },
-    "2_miroir-core_DomainStateQuerySelector": { "level": "WARN" }
+    "2_miroir-core_DomainStateQuerySelectors": { "level": "WARN" }
   }
 }

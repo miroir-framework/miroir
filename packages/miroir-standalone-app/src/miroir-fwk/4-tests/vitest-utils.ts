@@ -2,7 +2,7 @@ import { expect } from "vitest";
 import { Action2ReturnType, DomainElementType, Action2Error, LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 import { packageName, cleanLevel } from "../../constants";
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "vitests-utils");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "vitest-utils");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 

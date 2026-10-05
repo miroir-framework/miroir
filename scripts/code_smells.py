@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """Report code smells on what a branch adds, or on paths (#340).
 
-The smell lens (eslint-rules/smell-lens.config.mjs) finds the syntax smells. This script adds four text
-checks (commented-out code, a logger named after another file, a near-identical twin file, a prop passed on
-through many files). With --diff it keeps the findings on code the branch changes: a finding spans the construct
+The smell lens (eslint-rules/smell-lens.config.mjs) finds the syntax smells. This script adds three text
+checks (commented-out code, a near-identical twin file, a prop passed on through many files). With --diff it keeps the findings on code the branch changes: a finding spans the construct
 it reports (a parameter list, a hook call, a catch block), so a line added or cut inside it counts, unless the
 base version of the file already had it. Findings on lines moved from elsewhere, and findings the branch only
 edits around, are counted apart. It prints the findings grouped by smell id, in the impact order of the
@@ -89,7 +88,6 @@ ANSI = re.compile(r"\x1b\[[0-9;]*m")
 # diff_scope has git paint the lines that a diff moves (removed in one place, added in another) in blue.
 MOVED_COLORS = ["-c", "color.diff.new=green", "-c", "color.diff.newMoved=blue"]
 MOVED = "\x1b[34m"
-LOGGER_NAME = re.compile(r"getLoggerName\(\s*[^,()]+,\s*[^,()]+,\s*\"([^\"]+)\"")
 # A comment line that reads as code: it ends with code punctuation, holds an arrow, starts with a keyword, or is JSX.
 CODE_COMMENT = re.compile(
     r"^(?:.*[;{}()\[\],]\s*|.*=>.*|(?:const|let|var|return|if|else|for|while|await|import|export|async|function|throw|try|catch|case|switch|break|log\.|console\.|this\.)\b.*|</?[A-Za-z][\w.]*.*)$"
@@ -195,19 +193,6 @@ def commented_out_code(text: str) -> list[tuple[int, int]]:
     return runs
 
 
-def logger_name_mismatches(path: str, text: str) -> list[tuple[int, str]]:
-    """(line, name) of each logger whose name is not the file name.
-
-    Log presets select loggers by exact name, so a copied name makes a preset entry match the wrong file, or none.
-    """
-    allowed = {Path(path).stem, Path(path).name}
-    return [
-        (text.count("\n", 0, match.start()) + 1, match.group(1))
-        for match in LOGGER_NAME.finditer(text)
-        if match.group(1) not in allowed
-    ]
-
-
 @lru_cache(maxsize=None)
 def _sources_by_name(root: Path) -> dict[str, tuple[str, ...]]:
     """Source files under packages/*/src, by file name."""
@@ -264,10 +249,6 @@ def text_findings(path: str, root: Path) -> list[Finding]:
     findings = [
         Finding("dead-code", path, line, f"{length} lines of commented-out code: delete them, git keeps the history.", length)
         for line, length in commented_out_code(text)
-    ]
-    findings += [
-        Finding("logger", path, line, f'Logger named "{name}" in {Path(path).name}: name it after the file.')
-        for line, name in logger_name_mismatches(path, text)
     ]
     if path.endswith(".tsx") and "/src/" in path and ".test." not in path:
         findings += [

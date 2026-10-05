@@ -19,7 +19,7 @@ import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 import { FileSystemExtractorRunner } from "./FileSystemExtractorRunner.js";
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "FilesystemExtractorRunner");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "FileSystemExtractorTemplateRunner");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 

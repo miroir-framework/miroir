@@ -18,7 +18,7 @@ import {
 import { startReportTestEntry } from "./helpers/reportTestEntry.js";
 import { runMiroirRunnerSuitesSharedFromCLI } from "./helpers/runMiroirRunnerSuitesSharedFromCLI.js";
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName("tests", "5-tests", "miroir-report-tests.integ");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName("tests", "5-tests", "miroir-report-tests.integ.test");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {
   log = logger;

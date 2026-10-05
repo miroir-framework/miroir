@@ -24,10 +24,9 @@ import {
   type PersistenceStoreControllerManagerInterface,
   isServerRoutedMiroirAction,
 } from "miroir-core";
+import { packageName } from "../../constants.js";
 import type { LocalCache } from "../LocalCache.js";
-
-const packageName = "miroir-localcache-zustand";
-const cleanLevel = "5_view";
+import { cleanLevel } from "../constants.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PersistenceAsyncStore");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

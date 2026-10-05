@@ -9,6 +9,7 @@ import { builtinRules } from "eslint/use-at-your-own-risk";
 import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
 import miroirLayers from "./eslint-rules/miroir-layers.mjs";
+import miroirLogger from "./eslint-rules/miroir-logger.mjs";
 import {
   actionResult,
   componentIo,
@@ -29,6 +30,7 @@ const restrictedGlobals = builtinRules.get("no-restricted-globals");
 const miroir = {
   rules: {
     layers: miroirLayers,
+    logger: miroirLogger,
     "action-result": restrictedSyntax,
     "type-escape": restrictedSyntax,
     "global-environment": restrictedSyntax,
@@ -73,6 +75,9 @@ export default tseslint.config(
 
       // Implementation imports flow downwards only between numbered layers (AGENTS.md, "Architecture").
       "miroir/layers": "error",
+
+      // Log presets select a logger by its name: one logger per file, named after the file (#340).
+      "miroir/logger": "error",
     },
   },
   {

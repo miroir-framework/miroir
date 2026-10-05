@@ -112,3 +112,19 @@ test("precedence-trap: ?? mixed with a comparison", async () => {
   await graduated("packages/miroir-core/tests/sample.unit.test.ts", trap, "no-mixed-operators");
   await spared(LIB, `export const f = (a?: string, b?: string) => (a ?? "build") == b;\n`, "no-mixed-operators");
 });
+
+test("logger: one logger per file, named after the file", async () => {
+  const factory = `declare const MiroirLoggerFactory: { getLoggerName(p: string, l: string, n: string): string };\n`;
+  const logger = (name) => `export const loggerName = MiroirLoggerFactory.getLoggerName("miroir-core", "2", ${name});\n`;
+  await graduated(LIB, factory + logger(`"Other"`), "miroir/logger");
+  await graduated("packages/miroir-core/tests/sample.unit.test.ts", factory + logger(`"Other"`), "miroir/logger");
+  await spared(LIB, factory + logger(`"sample"`), "miroir/logger");
+  await spared(LIB, factory + logger(`"sample.ts"`), "miroir/logger");
+  // A name computed at run time is not checked.
+  await spared(LIB, factory + `declare const fileName: string;\n` + logger("fileName"), "miroir/logger");
+  await graduated(
+    LIB,
+    factory + logger(`"sample"`) + `export const second = MiroirLoggerFactory.getLoggerName("miroir-core", "2", "sample");\n`,
+    "miroir/logger",
+  );
+});

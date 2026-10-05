@@ -30,7 +30,7 @@ def test_the_runner_orders_smells_as_the_skill_checklist() -> None:
 
 def test_every_lens_smell_has_a_checklist_row_and_a_reference_entry() -> None:
     lens = "".join(
-        (ROOT / "eslint-rules" / name).read_text(encoding="utf-8") for name in ("smell-lens.config.mjs", "smells.mjs")
+        (ROOT / "eslint-rules" / name).read_text(encoding="utf-8") for name in ("smell-lens.config.mjs", "smells.mjs", "miroir-logger.mjs")
     )
     lens_ids = set(re.findall(r'smell\(\s*"([a-z-]+)"', lens)) | set(re.findall(r'"\[([a-z-]+)\]', lens))
     assert lens_ids and lens_ids <= set(_checklist_ids())
@@ -116,17 +116,6 @@ def test_commented_out_code_finds_runs_of_code_lines_and_leaves_prose() -> None:
         ]
     )
     assert code_smells.commented_out_code(text) == [(4, 5)]
-
-
-def test_logger_name_mismatches_report_copied_logger_names() -> None:
-    text = (
-        "import { MiroirLoggerFactory } from 'miroir-core';\n"
-        'const loggerName: string = getLoggerName(packageName, cleanLevel, "Other");\n'
-        'const second = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Sample");\n'
-    )
-    assert code_smells.logger_name_mismatches("packages/a/src/Sample.ts", text) == [(2, "Other")]
-    named_with_extension = 'const n = getLoggerName(packageName, cleanLevel, "index.tsx");\n'
-    assert code_smells.logger_name_mismatches("packages/a/src/index.tsx", named_with_extension) == []
 
 
 def test_keep_added_keeps_findings_that_cover_an_added_line() -> None:

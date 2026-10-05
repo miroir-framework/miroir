@@ -16,7 +16,7 @@ import { cleanLevel } from "../constants.js";
 import {
   test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
 } from "miroir-app-miroir";
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PersistenceReduxSaga");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Check");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {log = logger});
