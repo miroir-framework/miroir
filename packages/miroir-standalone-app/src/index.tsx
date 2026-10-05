@@ -59,6 +59,7 @@ import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 
 import { loglevelnext } from "./loglevelnextImporter.js";
 import { getAuthToken, setAuthenticationEnabled, setAuthToken } from "./miroir-fwk/4_view/auth/authSession.js";
+import { fetchAuthenticationEnabled } from "./miroir-fwk/4_view/auth/authTransport.js";
 import { RootComponent } from "./miroir-fwk/4_view/components/Page/RootComponent.js";
 import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage.js";
 import { PageDispatcher } from "./miroir-fwk/4_view/PageDispatcher.js";
@@ -370,15 +371,8 @@ async function startWebApp(root: Root) {
   initializePerformanceConfig();
   setRestClientAuthorizationTokenGetter(() => getAuthToken());
   setRestClientAuthorizationInvalidationHandler(() => setAuthToken(undefined));
-  try {
-    const statusResponse = await fetch("/auth/status");
-    const statusBody = await statusResponse.json();
-    if (typeof statusBody?.enabled === "boolean") {
-      setAuthenticationEnabled(statusBody.enabled);
-    }
-  } catch {
-    setAuthenticationEnabled(false);
-  }
+  // #263: from the server, or from the Electron main process over IPC.
+  setAuthenticationEnabled(await fetchAuthenticationEnabled());
 
   // Start our mock API server
   // const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.rootApiUrl);

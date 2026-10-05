@@ -47,6 +47,10 @@ chmod +x start-dev.sh
    npm run electron-dev
    ```
 
+### Signing in
+
+Authentication is on by default: the window opens on the login page. In development, sign in with a seed user such as `alice` / `alice-dev` (list in `docs/reference/authentication.md`). To start without login, pass `--disable-auth` or set `MIROIR_AUTH_ENABLED=0`.
+
 ### 4. Production Build
 
 1. **Build the web app:**

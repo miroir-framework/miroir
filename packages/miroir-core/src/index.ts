@@ -772,7 +772,13 @@ export {
   viewParams,
   ViewParamsData,
 } from "./0_interfaces/4-views/ViewParams";
-export { ACTION_OK, BLOB_SIZE_WARNING_THRESHOLD, MAX_BLOB_FILE_SIZE } from "./1_core/constants.js";
+export {
+  ACTION_OK,
+  BLOB_SIZE_WARNING_THRESHOLD,
+  isServerRoutedMiroirAction,
+  MAX_BLOB_FILE_SIZE,
+  SERVER_ROUTED_MIROIR_ACTION_TYPES,
+} from "./1_core/constants.js";
 export {
   assertProcessCapability,
   getProcessCapabilities,
@@ -1327,6 +1333,7 @@ export {
   checkTransformerInterfaceCompatibilityWithInference,
   checkTransformerInterfaceRecursively,
   findInvalidStockTransformerInputOutputs,
+  formatInputOutputTypeLabel,
   getTransformerDefinitionInputOutput,
   inputOutputTypeOfValue,
   inputOutputTypesCompatible,
@@ -1461,6 +1468,7 @@ export { PersistenceStoreControllerManager } from "./4_services/PersistenceStore
 export {
   clearSecrets,
   registerHydratedProcessSecret,
+  registerHydratedUserSecret,
   registerSecrets,
   resolveSecret,
   restoreProcessSecretsFromSnapshot,
@@ -1481,6 +1489,7 @@ export {
   miroirSecretInstanceUuid,
   persistImportedProcessSecrets,
   persistRotatedSecretRow,
+  persistSecretRow,
   requireWrappingKeyForSecretImport,
   setSecretsMasterKey,
   type AiSecretProvider,
@@ -1549,10 +1558,12 @@ export {
   loginWithPassword,
   persistChangedPasswordHash,
   resolveAuthenticationEnabled,
+  resolveMcpAuthenticationEnabled,
   setProcessTokenSecret,
   verifyBearerToken,
   verifyPassword,
   type AuthenticationEnabledInputs,
+  type McpAuthenticationEnabledInputs,
   type AuthenticationFailedBody,
   type AuthenticationRequiredBody,
   type AuthPrincipal,
@@ -1598,7 +1609,21 @@ export {
 } from "./1_core/authentication/TestbedAccessGrant.js";
 export {
   deploymentUuidFromHttpRequest,
+  deploymentUuidsFromHttpRequest,
 } from "./1_core/authentication/deploymentUuidFromHttpRequest.js";
+export {
+  authenticateRequest,
+  authorizeDeployment,
+  type AccessDirectoryLoader,
+  type AuthenticatedRequest,
+  type AuthenticationGate,
+  type LoadedAccessDirectory,
+} from "./1_core/authentication/AccessGate.js";
+export { accessDirectoryLoader, loadAccessDirectory, persistPasswordChange } from "./3_controllers/loadAccessDirectory.js";
+export {
+  createIdentityGateMiddleware,
+  type AuthenticatedHttpRequest,
+} from "./4_services/authenticationMiddleware.js";
 export {
   handleAuthHttpRoute,
   type AuthHttpResult,
@@ -1613,6 +1638,7 @@ export {
 export {
   RestClient,
   getRestClientAuthorizationToken,
+  maybeInvalidateAuthorization,
   setRestClientAuthorizationInvalidationHandler,
   setRestClientAuthorizationTokenGetter,
 } from "./4_services/RestClient.js";

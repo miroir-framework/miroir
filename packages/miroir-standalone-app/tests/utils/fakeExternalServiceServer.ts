@@ -4,6 +4,8 @@ import { URL } from "node:url";
 export type RecordedExternalServiceRequest = {
   method: string;
   path: string;
+  /** Query string with its leading "?", empty when absent. */
+  search: string;
   headers: Record<string, string | string[] | undefined>;
   body?: string;
 };
@@ -44,10 +46,9 @@ export type FakeExternalServiceServer = {
   close: () => Promise<void>;
 };
 
-function requestPath(req: IncomingMessage): string {
+function requestUrl(req: IncomingMessage): URL {
   const host = req.headers.host ?? "127.0.0.1";
-  const url = new URL(req.url ?? "/", `http://${host}`);
-  return url.pathname;
+  return new URL(req.url ?? "/", `http://${host}`);
 }
 
 function headerRecord(req: IncomingMessage): Record<string, string | string[] | undefined> {
@@ -113,7 +114,8 @@ export async function startFakeExternalServiceServer(
 
   const server: Server = createServer((req: IncomingMessage, res: ServerResponse) => {
     const method = (req.method ?? "GET").toUpperCase();
-    const path = requestPath(req);
+    const url = requestUrl(req);
+    const path = url.pathname;
     writeCorsHeaders(res);
     // happy-dom fetch issues a CORS preflight; do not count it as an API request.
     if (method === "OPTIONS") {
@@ -128,6 +130,7 @@ export async function startFakeExternalServiceServer(
       const recorded: RecordedExternalServiceRequest = {
         method,
         path,
+        search: url.search,
         headers: headerRecord(req),
         body,
       };

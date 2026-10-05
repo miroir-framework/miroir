@@ -89,7 +89,8 @@ if (runThis) {
 
   describe("cursorSdk.275.phase0 — server CopilotKit mount and auth gate", () => {
     // #409: the mount moved to mountCopilotKitRoute.ts, which imports miroir-ai on demand.
-    it("server.ts mounts CopilotKit through mountCopilotKitRoute, gated with assertRequestAllowed", () => {
+    // #263: the gate is the shared identity middleware (assertRequestAllowed inside authenticateRequest).
+    it("server.ts mounts CopilotKit through mountCopilotKitRoute, gated with the identity middleware", () => {
       const src = readRepoFile("packages/miroir-server/src/server.ts");
       const mount = readRepoFile("packages/miroir-server/src/mountCopilotKitRoute.ts");
       expect(mount).toMatch(/=\s*\(\)\s*=>\s*import\([^)]*"miroir-ai"\)/);
@@ -98,7 +99,7 @@ if (runThis) {
       expect(mount).toContain('app.use("/api/copilotkit", options.requestGate)');
       const mountCall = src.indexOf("await mountCopilotKitRoute(app");
       expect(mountCall).toBeGreaterThanOrEqual(0);
-      expect(src.indexOf("assertRequestAllowed", mountCall)).toBeGreaterThan(mountCall);
+      expect(src.indexOf("createIdentityGateMiddleware(authenticationGate)", mountCall)).toBeGreaterThan(mountCall);
       expect(src).toContain("requestGate:");
     });
   });
@@ -132,15 +133,15 @@ if (runThis) {
     });
   });
 
-  describe("cursorSdk.275.phase0 — MCP mountHttpRoutes is ungated", () => {
-    it("mcpServer.ts mountHttpRoutes has no Authorization or assertRequestAllowed", () => {
+  // #263: /mcp takes the host's authentication gate (identity on the route, access per tool call).
+  describe("cursorSdk.275.phase0 — MCP mountHttpRoutes takes an authentication gate", () => {
+    it("mcpServer.ts mountHttpRoutes mounts the identity middleware when given a gate", () => {
       const src = readRepoFile("packages/miroir-mcp/src/mcpServer.ts");
-      const mountStart = src.indexOf("mountHttpRoutes(targetApp: Express)");
+      const mountStart = src.indexOf("mountHttpRoutes(targetApp: Express, authenticationGate?: AuthenticationGate)");
       expect(mountStart).toBeGreaterThanOrEqual(0);
       const mountEnd = src.indexOf("Start the MCP server with HTTP transport", mountStart);
       const mountBlock = src.slice(mountStart, mountEnd > mountStart ? mountEnd : undefined);
-      expect(mountBlock).not.toContain("Authorization");
-      expect(mountBlock).not.toContain("assertRequestAllowed");
+      expect(mountBlock).toContain("createIdentityGateMiddleware(authenticationGate)");
     });
   });
 }

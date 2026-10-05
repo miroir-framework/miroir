@@ -22,7 +22,13 @@ if (runThis) {
       const mount = readFileSync(join(REPO_ROOT, "packages/miroir-server/src/mountCopilotKitRoute.ts"), "utf8");
       const mountIdx = server.indexOf("await mountCopilotKitRoute(app");
       expect(mountIdx).toBeGreaterThanOrEqual(0);
-      expect(server.slice(mountIdx)).toMatch(/requestGate:[\s\S]*assertRequestAllowed\(\{/);
+      // #263: the gate is the shared identity middleware, built on assertRequestAllowed.
+      expect(server.slice(mountIdx)).toMatch(/requestGate:\s*createIdentityGateMiddleware\(authenticationGate\)/);
+      const accessGate = readFileSync(
+        join(REPO_ROOT, "packages/miroir-core/src/1_core/authentication/AccessGate.ts"),
+        "utf8",
+      );
+      expect(accessGate).toContain("assertRequestAllowed({");
       const gateIdx = mount.indexOf('app.use("/api/copilotkit", options.requestGate)');
       const routerIdx = mount.indexOf("createCopilotKitRouter(options.domainController");
       expect(gateIdx).toBeGreaterThanOrEqual(0);

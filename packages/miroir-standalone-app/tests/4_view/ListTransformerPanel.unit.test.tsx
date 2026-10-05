@@ -95,6 +95,15 @@ vi.mock("../../src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditor.j
         </button>
         <button
           type="button"
+          data-testid="set-transformer-from-test"
+          onClick={() =>
+            formik.setFieldValue(formikValuePathAsString, (globalThis as any).__listTransformerToSet)
+          }
+        >
+          Set transformer from test
+        </button>
+        <button
+          type="button"
           data-testid="set-failing-transformer"
           onClick={() =>
             formik.setFieldValue(formikValuePathAsString, {
@@ -390,12 +399,13 @@ function renderBookListSection(pageParams: Record<string, unknown> = {}) {
 describe("ListTransformerPanel — list section integration", () => {
   const getTransformerToggle = () => screen.getByRole("button", { name: /functions/i });
 
-  it("shows transformer toggle in the header; panel hidden by default", () => {
+  it("shows transformer toggle in the header; panel hidden by default", async () => {
     renderBookListSection();
 
     expect(getTransformerToggle()).toBeInTheDocument();
     expect(screen.queryByTestId("list-transformer-panel")).not.toBeInTheDocument();
-    expect(screen.getByTestId("entity-instance-grid-stub")).toBeInTheDocument();
+    // The grid's report display is lazy: the first render of the file shows its Suspense spinner.
+    expect(await screen.findByTestId("entity-instance-grid-stub")).toBeInTheDocument();
   });
 
   it("mounts the panel below the grid and shows identity-transformed rows", () => {
@@ -554,6 +564,197 @@ describe("ListTransformerPanel — list section integration", () => {
       target: { value: "number" },
     });
     expectOrangeBorder(screen.getByTestId("list-transformer-editor"), false);
+  });
+
+  // #449: array / record type parameter.
+  const setTransformer = (transformer: unknown) => {
+    (globalThis as any).__listTransformerToSet = transformer;
+    fireEvent.click(screen.getByTestId("set-transformer-from-test"));
+  };
+  // The returnValue parameter schema offers scalar mlSchemas only; a collection mlSchema is an
+  // in-memory fixture for a typed output (as in tr.core), used where no stock transformer infers
+  // that type (record of string, tuples).
+  const returnValueWithMlSchema = (value: unknown, mlSchema: unknown) => ({
+    interpolation: "runtime",
+    transformerType: "returnValue",
+    mlSchema,
+    value,
+  });
+  // Maps over the attribute values of the row: the root consumes its applyTo output, not the row.
+  const mapListOverRowValues = (elementTransformer: unknown) => ({
+    interpolation: "runtime",
+    transformerType: "mapList",
+    applyTo: {
+      interpolation: "runtime",
+      transformerType: "getObjectValues",
+      applyTo: { interpolation: "runtime", transformerType: "getFromContext", referenceName: "row" },
+    },
+    elementTransformer,
+  });
+  const chooseExpectedOutput = (value: string) =>
+    fireEvent.change(screen.getByTestId("list-transformer-expected-output-type"), {
+      target: { value },
+    });
+  const chooseTypeParameter = (value: string) =>
+    fireEvent.change(screen.getByTestId("list-transformer-expected-output-payload"), {
+      target: { value },
+    });
+
+  it("offers record and tuple, with no type parameter select for an entity or a base type (#449)", () => {
+    renderBookListSection();
+    fireEvent.click(getTransformerToggle());
+
+    const chooser = screen.getByTestId("list-transformer-expected-output-type") as HTMLSelectElement;
+    expect(Array.from(chooser.options).map((o) => o.value)).toEqual(
+      expect.arrayContaining(["array", "record", "tuple"]),
+    );
+    expect(screen.queryByTestId("list-transformer-expected-output-payload")).not.toBeInTheDocument();
+    chooseExpectedOutput("string");
+    expect(screen.queryByTestId("list-transformer-expected-output-payload")).not.toBeInTheDocument();
+  });
+
+  it("choosing array shows its type parameter select at any (#449)", () => {
+    renderBookListSection();
+    fireEvent.click(getTransformerToggle());
+    chooseExpectedOutput("array");
+
+    expect(
+      (screen.getByTestId("list-transformer-expected-output-type") as HTMLSelectElement).value,
+    ).toBe("array");
+    const parameter = screen.getByTestId(
+      "list-transformer-expected-output-payload",
+    ) as HTMLSelectElement;
+    expect(parameter.value).toBe("any");
+    const parameterOptions = Array.from(parameter.options).map((o) => o.value);
+    expect(parameterOptions).toEqual(
+      expect.arrayContaining(["any", "undefined", "string", "object", entityBook.uuid]),
+    );
+    expect(parameterOptions).not.toContain("array");
+    expect(parameterOptions).not.toContain("record");
+  });
+
+  it("expected array of string: an array of string fits, an array of number is bordered (#449)", () => {
+    renderBookListSection();
+    fireEvent.click(getTransformerToggle());
+    chooseExpectedOutput("array");
+    chooseTypeParameter("string");
+    expect(
+      (screen.getByTestId("list-transformer-expected-output-type") as HTMLSelectElement).value,
+    ).toBe("array");
+
+    setTransformer(
+      mapListOverRowValues({
+        interpolation: "runtime",
+        transformerType: "mustacheStringTemplate",
+        definition: "item {{defaultInput}}",
+      }),
+    );
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), false);
+
+    setTransformer(
+      mapListOverRowValues({
+        interpolation: "runtime",
+        transformerType: "returnValue",
+        mlSchema: { type: "number" },
+        value: 1,
+      }),
+    );
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), true);
+    expect(screen.getByTestId("list-transformer-editor").getAttribute("title") ?? "").toContain(
+      "output: expected array<string>, inferred actual array<number>",
+    );
+  });
+
+  it("expected record of string: the identity (Book) is bordered, a record of string fits (#449)", () => {
+    renderBookListSection();
+    fireEvent.click(getTransformerToggle());
+    chooseExpectedOutput("record");
+    chooseTypeParameter("string");
+
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), true);
+
+    setTransformer(
+      returnValueWithMlSchema({ a: "x" }, { type: "record", definition: { type: "string" } }),
+    );
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), false);
+  });
+
+  it("switching back to the row entity drops the type parameter and restores the default (#449)", () => {
+    renderBookListSection();
+    fireEvent.click(getTransformerToggle());
+    chooseExpectedOutput("array");
+    chooseTypeParameter("string");
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), true);
+
+    chooseExpectedOutput(entityBook.uuid);
+    expect(screen.queryByTestId("list-transformer-expected-output-payload")).not.toBeInTheDocument();
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), false);
+  });
+
+  // #449: tuple elements.
+  const tupleElementSelect = (index: number) =>
+    screen.getByTestId(`list-transformer-expected-output-tuple-${index}`) as HTMLSelectElement;
+  const tupleElementValues = () =>
+    screen
+      .queryAllByTestId(/^list-transformer-expected-output-tuple-\d+$/)
+      .map((select) => (select as HTMLSelectElement).value);
+
+  it("choosing tuple shows two element selects at any; remove stops at one element (#449)", () => {
+    renderBookListSection();
+    fireEvent.click(getTransformerToggle());
+    chooseExpectedOutput("tuple");
+
+    expect(
+      (screen.getByTestId("list-transformer-expected-output-type") as HTMLSelectElement).value,
+    ).toBe("tuple");
+    expect(tupleElementValues()).toEqual(["any", "any"]);
+    expect(screen.queryByTestId("list-transformer-expected-output-payload")).not.toBeInTheDocument();
+    expect(screen.getByTestId("list-transformer-expected-output-tuple-add")).toBeEnabled();
+    expect(screen.getByTestId("list-transformer-expected-output-tuple-remove")).toBeEnabled();
+
+    fireEvent.click(screen.getByTestId("list-transformer-expected-output-tuple-remove"));
+    expect(tupleElementValues()).toEqual(["any"]);
+    expect(screen.getByTestId("list-transformer-expected-output-tuple-remove")).toBeDisabled();
+  });
+
+  it("expected tuple of string and number: such a tuple fits, a tuple of two strings is bordered (#449)", () => {
+    renderBookListSection();
+    fireEvent.click(getTransformerToggle());
+    chooseExpectedOutput("tuple");
+    fireEvent.change(tupleElementSelect(0), { target: { value: "string" } });
+    fireEvent.change(tupleElementSelect(1), { target: { value: "number" } });
+    expect(tupleElementValues()).toEqual(["string", "number"]);
+
+    setTransformer(
+      returnValueWithMlSchema(["a", 1], {
+        type: "tuple",
+        definition: [{ type: "string" }, { type: "number" }],
+      }),
+    );
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), false);
+
+    setTransformer(
+      returnValueWithMlSchema(["a", "b"], {
+        type: "tuple",
+        definition: [{ type: "string" }, { type: "string" }],
+      }),
+    );
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), true);
+  });
+
+  it("add appends an element at any, remove drops the last one (#449)", () => {
+    renderBookListSection();
+    fireEvent.click(getTransformerToggle());
+    chooseExpectedOutput("tuple");
+    fireEvent.change(tupleElementSelect(0), { target: { value: "string" } });
+    fireEvent.change(tupleElementSelect(1), { target: { value: entityBook.uuid } });
+
+    fireEvent.click(screen.getByTestId("list-transformer-expected-output-tuple-add"));
+    expect(tupleElementValues()).toEqual(["string", entityBook.uuid, "any"]);
+
+    fireEvent.click(screen.getByTestId("list-transformer-expected-output-tuple-remove"));
+    fireEvent.click(screen.getByTestId("list-transformer-expected-output-tuple-remove"));
+    expect(tupleElementValues()).toEqual(["string"]);
   });
 
   it("keeps the #249 inputOutput path while the mlSchema switch is off", () => {

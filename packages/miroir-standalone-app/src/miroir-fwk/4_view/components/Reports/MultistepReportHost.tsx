@@ -37,6 +37,7 @@ import {
   ThemedSpan,
   ThemedStyledButton,
 } from "../Themes/index.js";
+import { openReportHref } from "./OpenReportLaunch.js";
 import { useYamlParserStatus } from "./useYamlParserStatus.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(
@@ -917,6 +918,37 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
     navigate(-1);
   }, [navigate, props.onDismissed]);
 
+  // #472 D15: after a successful Finish, open `finishOpenReport` when the report names one
+  // (a modal host still closes through onDismissed).
+  const finishOpenReport = props.report.definition?.finishOpenReport;
+  const leaveAfterFinish = useCallback(() => {
+    if (!finishOpenReport || props.onDismissed) {
+      leaveProcess();
+      return;
+    }
+    setDismissed(true);
+    navigate(
+      openReportHref(
+        { ...finishOpenReport, openAs: "route" },
+        {
+          application: props.application,
+          applicationSection: props.pageParams.applicationSection ?? "data",
+          deploymentUuid:
+            props.pageParams.deploymentUuid ?? props.applicationDeploymentMap[props.application],
+        },
+      ),
+    );
+  }, [
+    finishOpenReport,
+    leaveProcess,
+    navigate,
+    props.application,
+    props.applicationDeploymentMap,
+    props.onDismissed,
+    props.pageParams.applicationSection,
+    props.pageParams.deploymentUuid,
+  ]);
+
   const handleFinish = useCallback(async () => {
     if (finishInFlightRef.current) {
       return;
@@ -987,7 +1019,7 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
         return;
       }
       left = true;
-      leaveProcess();
+      leaveAfterFinish();
     } finally {
       finishInFlightRef.current = false;
       if (!left) {
@@ -997,7 +1029,7 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
   }, [
     context.miroirContext.miroirActivityTracker,
     domainController,
-    leaveProcess,
+    leaveAfterFinish,
     listRoot,
     modelEnvironment,
     props.application,

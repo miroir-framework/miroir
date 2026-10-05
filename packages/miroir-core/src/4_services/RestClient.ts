@@ -30,7 +30,11 @@ export function setRestClientAuthorizationInvalidationHandler(
   authorizationInvalidationHandler = handler;
 }
 
-function maybeInvalidateAuthorization(status: number, data: unknown): void {
+/**
+ * Clears the session through the invalidation handler when a call answered 401
+ * AuthenticationRequired. Exported for the Electron IPC clients (#263).
+ */
+export function maybeInvalidateAuthorization(status: number, data: unknown): void {
   if (
     status === 401 &&
     data &&

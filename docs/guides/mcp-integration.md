@@ -18,7 +18,9 @@ Shipped `miroir-server` defaults (`packages/miroir-server/config/miroirConfig.se
 
 ## Miroir MCP Server
 
-(Content to be added)
+### Authentication
+
+When authentication is on (the server default), an MCP client must send `Authorization: Bearer <token>`, with a token from `POST /auth/login`. Without it the server answers 401; tools on an application the user may not open return an `AccessDenied` tool error. `--disable-mcp-auth` or `MIROIR_MCP_AUTH_ENABLED=0` keeps MCP open while the rest stays gated. See [MCP in the authentication reference](../reference/authentication.md#mcp).
 
 ## Connecting AI Agents
 

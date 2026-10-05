@@ -79,6 +79,7 @@ export async function setupMiroirPlatform(
   );
 
   let persistenceStoreControllerManagerForServer: PersistenceStoreControllerManager | undefined = undefined;
+  let domainControllerForServer: Awaited<ReturnType<typeof setupMiroirDomainController>> | undefined = undefined;
   if (miroirConfig.client.emulateServer) {
     persistenceStoreControllerManagerForServer = new PersistenceStoreControllerManager(
       ConfigurationService.configurationService.adminStoreFactoryRegister,
@@ -86,7 +87,7 @@ export async function setupMiroirPlatform(
       miroirConfig.client.filesystemDeploymentRootDirectory,
     );
 
-    const domainControllerForServer = await setupMiroirDomainController(
+    domainControllerForServer = await setupMiroirDomainController(
       miroirContext, 
       {
         persistenceStoreAccessMode: "local",
@@ -102,6 +103,10 @@ export async function setupMiroirPlatform(
     persistenceStoreControllerManagerForClient: persistenceStoreControllerManagerForClient,
     persistenceStoreControllerManagerForServer: persistenceStoreControllerManagerForServer,
     domainController: domainControllerForClient,
+    /** The emulated server behind the stub: not gated, it reads the Admin directory (#263). */
+    domainControllerForServer,
+    /** The emulated server's entry point, where the authentication gate goes (#263). */
+    restClientStub: miroirConfig.client.emulateServer ? (client as RestClientStub) : undefined,
     localCache: domainControllerForClient.getLocalCache(),
     miroirContext,
   };

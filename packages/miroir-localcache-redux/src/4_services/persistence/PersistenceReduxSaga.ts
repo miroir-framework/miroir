@@ -29,6 +29,7 @@ import {
   type ApplicationDeploymentMap,
   type MiroirModelEnvironment,
   trackQueryHop,
+  isServerRoutedMiroirAction,
 } from "miroir-core";
 import { packageName } from '../../constants.js';
 import { handlePromiseActionForSaga } from '../../sagaTools.js';
@@ -714,6 +715,9 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         return new Action2Error(
           "FailedToHandleAction",
           "remote persistence store returned error status " + clientResult.status,
+          undefined,
+          // #263: keep the server's error body (e.g. AccessDenied) for the callers.
+          clientResult.data,
         );
       }
       // clientResult instanceof Action2Error === false
@@ -789,7 +793,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         case "LocalPersistenceAction_update":
         case "LocalPersistenceAction_delete":
         default: {
-          if ((action.actionType as string) === "probeExternalService") {
+          if (isServerRoutedMiroirAction(action)) {
             return clientResult.data as Action2ReturnType;
           }
           // log.debug(

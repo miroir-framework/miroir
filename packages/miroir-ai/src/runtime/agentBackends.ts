@@ -15,6 +15,8 @@ export type ActiveAgentBackend = Exclude<AgentBackend, "none">;
 export type CreateAgentForBackendOptions = {
   mcpHttpUrl?: string;
   apiPort?: number;
+  /** The CopilotKit caller's `Authorization`, forwarded to MCP (#263). */
+  mcpHeaders?: Record<string, string>;
   nodeVersion?: string;
   /** `features.agentModel`; Cursor always runs its `auto` model. */
   agentModel?: string;
@@ -30,6 +32,7 @@ export function createAgentForBackend(
     return createClaudeAbstractAgent({
       mcpHttpUrl: options.mcpHttpUrl,
       apiPort: options.apiPort,
+      mcpHeaders: options.mcpHeaders,
       model: options.agentModel,
       importSdk: options.importClaudeSdk,
     });
@@ -37,6 +40,7 @@ export function createAgentForBackend(
   return createCursorAbstractAgent({
     mcpHttpUrl: options.mcpHttpUrl,
     apiPort: options.apiPort,
+    mcpHeaders: options.mcpHeaders,
     nodeVersion: options.nodeVersion,
     importSdk: options.importCursorSdk,
   });

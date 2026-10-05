@@ -17,6 +17,7 @@ import {
 import type {
   ActionImplementationContext,
   ConnectExternalServiceAction,
+  SetExternalServiceCredentialAction,
   DomainControllerActionHost,
 } from "../0_interfaces/3_controllers/DomainControllerActionHost";
 import { miroirActionImplementations } from "./ActionImplementations";
@@ -206,11 +207,13 @@ import {
   getSecretsMasterKey,
   importProcessSecrets,
   persistImportedProcessSecrets,
+  persistSecretRow,
 } from "../4_services/SecretsService.js";
 import {
   registerHydratedProcessSecret,
   resolveSecret,
   restoreProcessSecretsFromSnapshot,
+  unregisterProcessSecret,
   type ProcessSecretSnapshot,
 } from "../4_services/SecretStore.js";
 
@@ -3702,7 +3705,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
       typeof targetApplication === "string"
         ? applicationDeploymentMap[targetApplication]
         : undefined;
-    const remoteResult = await this.persistenceStoreLocalOrRemote.handlePersistenceActionForRemoteStore(
+    return this.forwardServerRoutedAction(
       {
         actionType: "probeExternalService",
         endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
@@ -3719,7 +3722,21 @@ export class DomainController implements DomainControllerInterface, DomainContro
       } as any,
       applicationDeploymentMap,
     );
-    // The HTTP hop JSON-parses the result, so a failed probe is a plain object.
+  }
+
+  /**
+   * Sends a server-routed Miroir action (`SERVER_ROUTED_MIROIR_ACTION_TYPES`) to the server
+   * and returns its own result.
+   */
+  private async forwardServerRoutedAction(
+    action: unknown,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2ReturnType> {
+    const remoteResult = await this.persistenceStoreLocalOrRemote.handlePersistenceActionForRemoteStore(
+      action as any,
+      applicationDeploymentMap,
+    );
+    // The HTTP hop JSON-parses the result, so a failed action is a plain object.
     if (
       remoteResult &&
       typeof remoteResult === "object" &&
@@ -3801,6 +3818,98 @@ export class DomainController implements DomainControllerInterface, DomainContro
         restoreProcessSecretsFromSnapshot(secretSnapshots);
       }
     }
+  }
+
+  // ##############################################################################################
+  /**
+   * #472: checks a token against an external service with one GET operation, then saves it
+   * as the Endpoint's credential: a MiroirSecret row for the principal's user, or for the
+   * process when nobody is logged in. A remote client forwards it to the server.
+   */
+  async handleSetExternalServiceCredential(
+    domainAction: SetExternalServiceCredentialAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    principal?: AuthPrincipal,
+  ): Promise<Action2ReturnType> {
+    const payload = domainAction.payload;
+    if (
+      !payload?.application ||
+      !payload.endpointUuid ||
+      !payload.credential ||
+      !payload.probeOperationId
+    ) {
+      return new Action2Error(
+        "InvalidAction",
+        "setExternalServiceCredential requires an application, an endpointUuid, a credential and a probeOperationId",
+      );
+    }
+    if (this.persistenceStoreAccessMode !== "local") {
+      return this.forwardServerRoutedAction(domainAction, applicationDeploymentMap);
+    }
+    if (!payload.probeOnly && !getSecretsMasterKey()) {
+      return new Action2Error(
+        "InvalidAction",
+        "setExternalServiceCredential: a wrapping key is required to save the credential",
+      );
+    }
+    const endpoint = await this.loadEndpointInstanceFromLocalPersistenceStore(
+      payload.application,
+      applicationDeploymentMap,
+      payload.endpointUuid,
+    );
+    if (endpoint instanceof Action2Error) {
+      return endpoint;
+    }
+    const externalService = getExternalService(endpoint);
+    if (!externalService?.credentialKey || externalService.securityScheme?.type !== "http") {
+      return new Action2Error(
+        "InvalidAction",
+        "setExternalServiceCredential needs an external-service Endpoint with an http securityScheme and a credentialKey",
+      );
+    }
+    // A one-shot credential name: the probe uses the typed token, never a saved one.
+    const probeCredentialKey = `__probe_${uuidv4()}`;
+    const probeEndpoint = {
+      ...endpoint,
+      definition: {
+        ...(endpoint.definition as object),
+        externalService: { ...externalService, credentialKey: probeCredentialKey },
+      },
+    } as EndpointDefinition;
+    registerHydratedProcessSecret(probeCredentialKey, payload.credential);
+    let probeResult: Action2ReturnType;
+    try {
+      probeResult = await this.externalServiceClient.executeOperation(
+        probeEndpoint,
+        payload.probeOperationId,
+        payload.probeParameters ?? {},
+      );
+    } finally {
+      unregisterProcessSecret(probeCredentialKey);
+    }
+    if (probeResult instanceof Action2Error || payload.probeOnly) {
+      return probeResult;
+    }
+    try {
+      await persistSecretRow(
+        this,
+        {
+          name: externalService.credentialKey,
+          value: payload.credential,
+          scope: principal?.miroirUserUuid ? "user" : "process",
+          miroirUserUuid: principal?.miroirUserUuid,
+        },
+        applicationDeploymentMap,
+      );
+    } catch (error) {
+      return new Action2Error(
+        "FailedToHandleAction",
+        error instanceof Error
+          ? error.message
+          : "setExternalServiceCredential: failed to save the credential",
+      );
+    }
+    return probeResult;
   }
 
   // ##############################################################################################

@@ -45,7 +45,10 @@ export type CreateCopilotKitRouterOptions = {
   capabilities?: ProcessCapabilities;
   getCapabilities?: () => ProcessCapabilities;
   /** Builds the agent of the configured backend; defaults to the real SDK-backed agents. */
-  createAgentForBackend?: (backend: ActiveAgentBackend) => AbstractAgent | Promise<AbstractAgent>;
+  createAgentForBackend?: (
+    backend: ActiveAgentBackend,
+    run: AgentRunRequest,
+  ) => AbstractAgent | Promise<AbstractAgent>;
   mcpHttpUrl?: string;
   apiPort?: number;
   nodeVersion?: string;
@@ -59,6 +62,12 @@ export type CreateCopilotKitRouterOptions = {
   }) => unknown;
   buildCopilotRuntime?: typeof buildCopilotRuntime;
   copilotRuntimeNodeHttpEndpoint?: typeof copilotRuntimeNodeHttpEndpoint;
+};
+
+/** What an agent run takes from its CopilotKit request. */
+export type AgentRunRequest = {
+  /** The caller's `Authorization`, forwarded to the Miroir MCP server (#263). */
+  mcpHeaders?: Record<string, string>;
 };
 
 /** `"cursor"` is the pre-#409 request value, accepted as an alias of `"agent"` for one release. */
@@ -140,6 +149,13 @@ function resolveConfig(req: Request): AiRuntimeConfig | null {
     };
   }
   return getDefaultRuntimeConfig();
+}
+
+function agentRunRequest(req: Request): AgentRunRequest {
+  const authorization = req.headers?.authorization;
+  return typeof authorization === "string" && authorization
+    ? { mcpHeaders: { Authorization: authorization } }
+    : {};
 }
 
 export function createCopilotKitRouter(
@@ -353,10 +369,11 @@ export function createCopilotKitRouter(
 
       const createAgentForBackend =
         options?.createAgentForBackend ??
-        ((picked: ActiveAgentBackend) =>
+        ((picked: ActiveAgentBackend, run: AgentRunRequest) =>
           createDefaultAgentForBackend(picked, {
             mcpHttpUrl: options?.mcpHttpUrl,
             apiPort: options?.apiPort,
+            mcpHeaders: run.mcpHeaders,
             nodeVersion: options?.nodeVersion,
             agentModel: options?.agentModel,
             importCursorSdk: options?.importSdk,
@@ -366,7 +383,7 @@ export function createCopilotKitRouter(
       let runtime: ReturnType<typeof createRuntime>;
       try {
         runtime = createRuntime({
-          agents: agentRuntimeAgents(await createAgentForBackend(backend), backend),
+          agents: agentRuntimeAgents(await createAgentForBackend(backend, agentRunRequest(req)), backend),
           actions: filterAgentRuntimeActions(actions),
         });
       } catch (err) {

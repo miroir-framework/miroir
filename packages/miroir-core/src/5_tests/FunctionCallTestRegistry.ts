@@ -43,6 +43,7 @@ import {
   checkTransformerInterfaceCompatibilityWithInference,
   checkTransformerInterfaceRecursively,
   findInvalidStockTransformerInputOutputs,
+  formatInputOutputTypeLabel,
   getTransformerDefinitionInputOutput,
   inputOutputTypeOfValue,
   inputOutputTypesCompatible,
@@ -230,6 +231,7 @@ const FUNCTION_CALL_REGISTRY: Record<
       findInvalidStockTransformerInputOutputs as WhitelistedFunction,
     transformerTypesAcceptingInput: transformerTypesAcceptingInput as WhitelistedFunction,
     inputOutputTypeOfValue: inputOutputTypeOfValue as WhitelistedFunction,
+    formatInputOutputTypeLabel: formatInputOutputTypeLabel as WhitelistedFunction,
     checkTransformerInterfaceRecursively:
       checkTransformerInterfaceRecursively as WhitelistedFunction,
     transformerNodeTypeStatus: transformerNodeTypeStatus as WhitelistedFunction,

@@ -22,6 +22,7 @@ import {
   type MiroirModelEnvironment,
   type PersistenceStoreControllerAction,
   type PersistenceStoreControllerManagerInterface,
+  isServerRoutedMiroirAction,
 } from "miroir-core";
 import type { LocalCache } from "../LocalCache.js";
 
@@ -394,6 +395,9 @@ export class PersistenceAsyncStore implements PersistenceStoreLocalOrRemoteInter
         return new Action2Error(
           "FailedToHandleAction",
           "remote persistence store returned error status " + clientResult.status,
+          undefined,
+          // #263: keep the server's error body (e.g. AccessDenied) for the callers.
+          clientResult.data,
         );
       }
 
@@ -455,7 +459,7 @@ export class PersistenceAsyncStore implements PersistenceStoreLocalOrRemoteInter
         case "LocalPersistenceAction_update":
         case "LocalPersistenceAction_delete":
         default: {
-          if ((action.actionType as string) === "probeExternalService") {
+          if (isServerRoutedMiroirAction(action)) {
             return clientResult.data as Action2ReturnType;
           }
           log.debug("handlePersistenceActionForRemoteStore received result", clientResult.status);

@@ -18,12 +18,14 @@ import {
   environmentStateStatus,
   missingConnectionPasswords,
 } from "./environmentState.js";
+import { deployExample } from "./deployExample.js";
 import { importExtras, inspectEnvironmentState, pruneExtras } from "./stateCommands.js";
 import { changedAssetFiles } from "./trackedAssets.js";
 
 // ################################################################################################
 // miroir-env: show which environment a run uses and what it contains, check its state against
-// its definition, record or remove what the definition does not install (#321).
+// its definition, record or remove what the definition does not install (#321), deploy an example
+// application of the monorepo.
 // ################################################################################################
 
 export type CliIo = {
@@ -45,12 +47,17 @@ Commands:
                                     does not install in environments/local.json
   prune [--dry-run]                 delete those deployments and their stores in the state
                                     (stop the server first)
+  deploy <app> [--state <dir>] [--dry-run]
+                                    deploy example application packages/miroir-example-<app>
+                                    in the Admin data of the state (default: the selected
+                                    environment's, e.g. .miroir/dev); does nothing when it is
+                                    already deployed
 
 Every command takes --name <environment>. Environment selection, first match wins: --name,
 MIROIR_ENV, environments/local.json, dev.
 `;
 
-const COMMANDS = ["show", "check", "import", "prune"];
+const COMMANDS = ["show", "check", "import", "prune", "deploy"];
 
 function describe(resolved: ResolvedEnvironment): string {
   const lines = [
@@ -155,8 +162,17 @@ export async function main(argv: string[], io: CliIo): Promise<number> {
       io.stdout(args.includes("--json") ? JSON.stringify(resolved, null, 2) + "\n" : describe(resolved));
       return 0;
     }
-    const definitions = readEnvironmentDefinitions(resolved.repositoryRoot);
     const dryRun = args.includes("--dry-run");
+    if (command === "deploy") {
+      const app = args.find((arg, index) => !arg.startsWith("--") && !["--name", "--state"].includes(args[index - 1]));
+      if (!app) {
+        io.stderr(USAGE);
+        return 2;
+      }
+      io.stdout(deployExample(resolved, app, { dryRun, state: option(args, "--state") }).join("\n") + "\n");
+      return 0;
+    }
+    const definitions = readEnvironmentDefinitions(resolved.repositoryRoot);
     const lines =
       command === "import"
         ? importExtras(resolved, definitions, { dryRun, env: io.env })

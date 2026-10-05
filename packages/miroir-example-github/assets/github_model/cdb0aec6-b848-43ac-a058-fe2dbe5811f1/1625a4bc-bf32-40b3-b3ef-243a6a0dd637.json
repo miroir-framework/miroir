@@ -1,0 +1,9 @@
+{
+  "uuid": "1625a4bc-bf32-40b3-b3ef-243a6a0dd637",
+  "parentName": "ApplicationModelBranch",
+  "parentUuid": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+  "selfApplication": "6c4edcb2-e165-407a-b728-fbf8a18b6bf7",
+  "headVersion": "038d25c5-e43e-4d1b-8df2-41a809de7fe1",
+  "name": "master",
+  "description": "The master branch of the GitHub SelfApplication"
+}

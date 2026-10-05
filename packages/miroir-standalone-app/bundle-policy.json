@@ -1,6 +1,6 @@
 {
-  "$comment": "Bundle guard (#326), checked by scripts/check_bundle_policy.py against the build's bundle-report.json. See docs/internals/code-splitting.md. defeatedDynamicImports (#337): ReportDisplay.tsx is also imported statically by HomePage, SettingsPage and ReportSectionViewWithEditor, which render a report at once. zod 4 (#375) adds about 23 kB gzipped to the page because zod 4 is larger than zod 3.",
-  "eagerGzipBaseline": 770102,
+  "$comment": "Bundle guard (#326), checked by scripts/check_bundle_policy.py against the build's bundle-report.json. See docs/internals/code-splitting.md. defeatedDynamicImports (#337): ReportDisplay.tsx is also imported statically by HomePage, SettingsPage and ReportSectionViewWithEditor, which render a report at once. zod 4 (#375) adds about 23 kB gzipped to the page because zod 4 is larger than zod 3. Baseline raised to 785650 by #472: _integration had grown to about 783 kB since the last reset, and the GitHub example app adds about 2.4 kB (setExternalServiceCredential, multistep finishOpenReport, ExternalServiceClient query parameters).",
+  "eagerGzipBaseline": 785650,
   "eagerGzipTolerance": 0.02,
   "forbiddenEager": [
     "@testing-library/*",
@@ -407,6 +407,7 @@
     "minimalistic-assert",
     "minimalistic-crypto-utils",
     "miroir-diagram-class",
+    "miroir-example-github",
     "miroir-example-library",
     "miroir-fixture-appForTest",
     "miroir-mcp",
@@ -415,8 +416,6 @@
     "node:buffer via bn.js",
     "node:fs via miroir-store-indexedDb",
     "node:os via colors",
-    "node:stream via cipher-base",
-    "node:stream via hash-base",
     "node:util via readable-stream",
     "node:vm via asn1.js",
     "object-is",
@@ -474,6 +473,7 @@
     "sha.js",
     "shiki",
     "space-separated-tokens",
+    "stream-browserify",
     "streamdown",
     "string_decoder",
     "stringify-entities",

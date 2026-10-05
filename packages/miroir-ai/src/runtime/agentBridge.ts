@@ -36,6 +36,8 @@ export type AgentSession = {
 export type McpUrlOptions = {
   mcpHttpUrl?: string;
   apiPort?: number;
+  /** Sent with every MCP request of the agent, e.g. the caller's `Authorization` (#263). */
+  mcpHeaders?: Record<string, string>;
 };
 
 const sdkModuleByImporter = new WeakMap<() => Promise<unknown>, Promise<unknown>>();
@@ -69,6 +71,17 @@ export function createScratchCwd(dirname: string, parentDirectory: string = tmpd
   const cwd = join(parentDirectory, dirname);
   mkdirSync(cwd, { recursive: true });
   return cwd;
+}
+
+/**
+ * The Miroir MCP server entry of an agent's MCP configuration. `headers` carry the CopilotKit
+ * caller's `Authorization`, so the agent's tool calls run as that user (#263).
+ */
+export function miroirMcpServerConfig(
+  url: string,
+  headers?: Record<string, string>,
+): { type: "http"; url: string; headers?: Record<string, string> } {
+  return headers && Object.keys(headers).length > 0 ? { type: "http", url, headers } : { type: "http", url };
 }
 
 export function loopbackMcpHttpUrl(apiPort: number): string {

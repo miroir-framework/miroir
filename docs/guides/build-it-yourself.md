@@ -263,6 +263,8 @@ node packages/miroir-server/release/index.js \
 
 Later launches need only `MIROIR_SECRETS_MASTER_KEY` (or `--secrets-master-key`).
 
+The GitHub example app needs no `--secret`: create a personal access token on GitHub (Settings, Developer settings, Personal access tokens; a fine-grained token with read access to your repositories is enough), then paste it on the app's home page. The server checks it with GitHub and saves it encrypted under the wrapping key.
+
 ---
 
 ## 8. (Optional) Build the Electron desktop application

@@ -43,6 +43,14 @@
       "store": "filesystem",
       "mode": "copy",
       "sections": { "modelVersion": {} }
+    },
+    "github": {
+      "package": "miroir-example-github",
+      "selfApplication": "6c4edcb2-e165-407a-b728-fbf8a18b6bf7",
+      "deployment": "752c2412-a2cc-4632-94f3-937168969998",
+      "store": "filesystem",
+      "mode": "copy",
+      "sections": { "modelVersion": {} }
     }
   }
 }

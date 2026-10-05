@@ -1,0 +1,23 @@
+{
+  "uuid": "752c2412-a2cc-4632-94f3-937168969998",
+  "parentName": "Deployment",
+  "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
+  "name": "GitHubApplicationFilesystemDeployment",
+  "defaultLabel": "GitHubApplicationFilesystemDeployment",
+  "selfApplication": "6c4edcb2-e165-407a-b728-fbf8a18b6bf7",
+  "description": "The default Filesystem Deployment for SelfApplication GitHub",
+  "configuration": {
+    "admin": {
+      "emulatedServerType": "filesystem",
+      "directory": "miroir-app-admin/assets"
+    },
+    "model": {
+      "emulatedServerType": "filesystem",
+      "directory": "miroir-example-github/assets/github_model"
+    },
+    "data": {
+      "emulatedServerType": "filesystem",
+      "directory": "miroir-example-github/assets/github_data"
+    }
+  }
+}

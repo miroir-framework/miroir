@@ -156,6 +156,36 @@ describe("transformerTypesDisplay: badge labels (D18)", () => {
     expect(badgeAt(badges, ["transformer"])?.title).toContain(bookUuid);
   });
 
+  it("a tuple reads as a type in its label and its tooltip, not as JSON (#449)", () => {
+    const tupleWalk = checkTransformerInterfaceRecursively(
+      {
+        transformerType: "returnValue",
+        interpolation: "runtime",
+        mlSchema: { type: "tuple", definition: [{ type: "string" }, { type: "number" }] },
+        value: ["a", 1],
+      },
+      "any",
+    );
+    const badge = badgeAt(transformerTypeBadges(tupleWalk, []), ["transformer"]);
+    expect(badge).toMatchObject({ outputLabel: "tuple<string, number>" });
+    expect(badge?.title).toContain("output tuple<string, number>");
+    expect(badge?.title).not.toContain("{");
+  });
+
+  it("a value mismatch in the tooltip names both types (#449)", () => {
+    const recordWalk = checkTransformerInterfaceRecursively(
+      {
+        transformerType: "returnValue",
+        interpolation: "runtime",
+        mlSchema: { type: "record", definition: { type: "string" } },
+        value: { a: 1 },
+      },
+      "any",
+    );
+    const badge = badgeAt(transformerTypeBadges(recordWalk, []), ["transformer"]);
+    expect(badge?.title).toContain("value: given record<number>, declared record<string>");
+  });
+
   it("an unknown entity uuid shows its first 8 characters", () => {
     const badges = transformerTypeBadges(walk, []);
     expect(badgeAt(badges, ["transformer"])).toMatchObject({ givenLabel: "array<e8ba151b>" });

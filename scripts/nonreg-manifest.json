@@ -321,6 +321,22 @@
       ]
     },
     {
+      "id": "default-github-modelValidation",
+      "scopes": ["core"],
+      "tier": "default",
+      "title": "Deployment modelValidation \u2014 github (#472)",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-example-github",
+        "--",
+        "tests/modelValidation.unit.test.ts"
+      ]
+    },
+    {
       "id": "default-library-modelValidation",
       "scopes": ["core"],
       "tier": "default",
@@ -1367,6 +1383,44 @@
       }
     },
     {
+      "id": "integ-report.githubConnect",
+      "scopes": ["external", "ui"],
+      "tier": "default",
+      "title": "MiroirTest integ \u2014 report.githubConnect (GitHub home Report: token check, save, repositories; fake HTTP) (#472)",
+      "requires": "storage",
+      "argv": [
+        "npm",
+        "run",
+        "testMiroir",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "--suites",
+        "report.githubConnect",
+        "--mode",
+        "integ"
+      ],
+      "shared": {
+        "group": "standalone-app-report-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": ["report.githubConnect"]
+      }
+    },
+    {
       "id": "integ-report.connectExternalServiceWizard",
       "scopes": ["external"],
       "tier": "default",
@@ -1823,6 +1877,18 @@
       ]
     },
     {
+      "id": "externalServices-github",
+      "scopes": ["external"],
+      "tier": "default",
+      "title": "#472 \u2014 GitHub example app (endpoint sync, repositories Report, setExternalServiceCredential)",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w miroir-example-github -- tests/githubEndpointSync.unit.test.ts && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem githubApp && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem setExternalServiceCredential"
+      ]
+    },
+    {
       "id": "apiCallReport-281",
       "scopes": ["external"],
       "tier": "default",
@@ -2135,6 +2201,22 @@
       ]
     },
     {
+      "id": "unit-449-parameterized-interface-types",
+      "scopes": ["ui"],
+      "tier": "unit",
+      "title": "#449 list transformer panel: expected output array / record with a type parameter, tuple elements, adequacy border and mismatch title",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "ListTransformerPanel.unit"
+      ]
+    },
+    {
       "id": "unit-438-feedback-glow",
       "scopes": ["ui"],
       "tier": "unit",
@@ -2312,6 +2394,18 @@
         "testByFile",
         "-w",
         "miroir-standalone-app-electron"
+      ]
+    },
+    {
+      "id": "unit-263-identity-doors",
+      "scopes": ["core", "tooling"],
+      "tier": "unit",
+      "title": "#263 \u2014 identity on MCP, CLI and Electron: shared gate, agent MCP headers, server wiring, renderer IPC",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w miroir-core -- 263-identity-doors && npm run testByFile -w miroir-ai -- 263-identity-doors && npm run testByFile -w miroir-server -- 263-identity-doors && npm run testByFile -w miroir-standalone-app -- 4_view/issues/263-identity-doors"
       ]
     },
     {

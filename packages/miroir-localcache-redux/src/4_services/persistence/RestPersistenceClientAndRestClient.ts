@@ -9,7 +9,8 @@ import {
   RestClientInterface,
   RestPersistenceAction,
   RestPersistenceClientAndRestClientInterface,
-  type ApplicationDeploymentMap
+  isServerRoutedMiroirAction,
+  type ApplicationDeploymentMap,
 } from "miroir-core";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";
@@ -282,10 +283,10 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
     //   "applicationDeploymentMap",
     //   applicationDeploymentMap
     // );
-    if ((persistenceAction as { actionType?: string }).actionType === "probeExternalService") {
+    if (isServerRoutedMiroirAction(persistenceAction)) {
       return this.restClient.post(
         "/action/:actionType",
-        this.rootApiUrl + "/action/probeExternalService",
+        this.rootApiUrl + "/action/" + persistenceAction.actionType,
         { action: persistenceAction, applicationDeploymentMap },
       );
     }
