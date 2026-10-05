@@ -6,7 +6,7 @@ Related issue: https://github.com/miroir-framework/miroir/issues/340 (requested 
 Related analyses: [`311` architecture review](../311-REFACTOR-architecture-review/analysis.md) (several of its "Found on the way" bugs are smell examples here), [`325` minimal linter rules](../325-BUILD-minimal-linter-rules/analysis.md) (errors only, bulk suppressions), [`339` external service environment](../339-REFACTOR-external-service-environment/analysis.md) (the module-state remedy, applied)
 Key sources: [`eslint-rules/smell-lens.config.mjs`](../../../eslint-rules/smell-lens.config.mjs), [`scripts/code_smells.py`](../../../scripts/code_smells.py), [`eslint.config.mjs`](../../../eslint.config.mjs), [`eslint-suppressions.json`](../../../eslint-suppressions.json)
 
-**Status:** decisions taken by the agent with recommended defaults on 2026-10-04; A to confirm or overturn on the PR. No TDD plan: the deliverable is a skill. The two tools it runs (the lens and the runner) were written test first, one green commit each. The trial on PR #457 changed them and added two smells (D9).
+**Status:** decisions taken by the agent with recommended defaults on 2026-10-04. A's answers on PR #476 (2026-10-05): keep the two smells of D9, file [section 6](#6-found-on-the-way) as one checklist issue (#481), and graduate the candidates of [section 5](#5-remedies-and-lint-verdicts) in this PR (D7). The skill's two tools (the lens and the runner) were written test first, one green commit each; the trial on PR #457 changed them and added two smells (D9). The graduation follows [`tdd-implementation-plan.md`](tdd-implementation-plan.md).
 
 ---
 
@@ -69,6 +69,8 @@ Wrong behaviour first: these smells pass the tests and fail in use (a swallowed 
 ### D7. Graduation
 
 A lens detector graduates when (a) almost every finding is a true positive and (b) its existing violations are fixed in the same PR or counted per file in `eslint-suppressions.json` (#325 D4), so counts only go down. [Section 5](#5-remedies-and-lint-verdicts) marks the candidates.
+
+A chose to graduate the candidates in this PR rather than in a follow-up. Each graduated detector runs under its own rule id, `miroir/<smell-id>`, so the suppressions file counts each smell apart and the lint message names the skill entry to read.
 
 ### D9. Smells found by the trial
 
