@@ -154,6 +154,36 @@ function descendantActivities(
   return result;
 }
 
+/**
+ * JSON.stringify replacer that writes "[circular]" for a reference to an ancestor (an object met
+ * twice outside its own subtree is written twice), and text for bigints, functions and errors.
+ */
+function jsonSafeReplacer(): (this: unknown, key: string, value: unknown) => unknown {
+  const ancestors: unknown[] = [];
+  return function (this: unknown, _key: string, value: unknown) {
+    if (typeof value === "bigint") {
+      return value.toString();
+    }
+    if (typeof value === "function") {
+      return `[function ${value.name || "anonymous"}]`;
+    }
+    if (value instanceof Error) {
+      return value.stack ?? `${value.name}: ${value.message}`;
+    }
+    if (value === null || typeof value !== "object") {
+      return value;
+    }
+    while (ancestors.length > 0 && ancestors[ancestors.length - 1] !== this) {
+      ancestors.pop();
+    }
+    if (ancestors.includes(value)) {
+      return "[circular]";
+    }
+    ancestors.push(value);
+    return value;
+  };
+}
+
 export function formatLogArg(arg: unknown): string {
   let text: string;
   if (typeof arg === "string") {
@@ -161,27 +191,8 @@ export function formatLogArg(arg: unknown): string {
   } else if (arg instanceof Error) {
     text = arg.stack ?? `${arg.name}: ${arg.message}`;
   } else {
-    const seen = new WeakSet<object>();
     try {
-      text =
-        JSON.stringify(arg, (_key, value) => {
-          if (typeof value === "bigint") {
-            return value.toString();
-          }
-          if (typeof value === "function") {
-            return `[function ${value.name || "anonymous"}]`;
-          }
-          if (value instanceof Error) {
-            return value.stack ?? `${value.name}: ${value.message}`;
-          }
-          if (value !== null && typeof value === "object") {
-            if (seen.has(value)) {
-              return "[circular]";
-            }
-            seen.add(value);
-          }
-          return value;
-        }) ?? String(arg);
+      text = JSON.stringify(arg, jsonSafeReplacer()) ?? String(arg);
     } catch {
       text = String(arg);
     }
@@ -189,6 +200,11 @@ export function formatLogArg(arg: unknown): string {
   return text.length > MAX_LOG_ARG_LENGTH
     ? `${text.slice(0, MAX_LOG_ARG_LENGTH)}… [${text.length - MAX_LOG_ARG_LENGTH} more characters]`
     : text;
+}
+
+/** The export as indented JSON; assertion values may hold circular references. */
+export function stringifyFailedTestLogsExport(exported: FailedTestLogsExport): string {
+  return JSON.stringify(exported, jsonSafeReplacer(), 2);
 }
 
 function toRunExportActivity(activity: MiroirActivity): RunExportActivity {

@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { MiroirActivityTracker } from "../../src/3_controllers/MiroirActivityTracker";
 import { MiroirEventService } from "../../src/3_controllers/MiroirEventService";
 import {
@@ -6,6 +6,7 @@ import {
   formatLogArg,
   hasFailedTestResults,
   snapshotTestRunLogs,
+  stringifyFailedTestLogsExport,
   suggestedFailedTestLogsFilename,
   type FailedTestLogsExportTestResult,
 } from "../../src/4_services/failedTestLogsExport";
@@ -131,5 +132,53 @@ describe("#490 failed test logs export", () => {
     expect(suggestedFailedTestLogsFilename("ui.transformerEditor", "2026-10-06T12:00:00.000Z")).toBe(
       "miroir-failed-tests-ui.transformerEditor-2026-10-06T12-00-00-000Z.json",
     );
+  });
+});
+
+describe("#490 failed test logs export: circular assertion values and long runs", () => {
+  it("serializes an export whose assertion values hold circular references", () => {
+    const actual: Record<string, unknown> = { id: 1 };
+    actual.self = actual;
+    const shared = { kept: true };
+    const exported = buildFailedTestLogsExport({
+      suiteKey: "ui.editor",
+      testResults: [
+        {
+          testPath: ["ui.editor", "fails"],
+          testResult: "error",
+          fullAssertionsResults: { "value is 1": { assertionResult: "error", actual, a: shared, b: shared } },
+        },
+      ],
+      exportedAt: "2026-10-06T12:00:00.000Z",
+    });
+    const parsed = JSON.parse(stringifyFailedTestLogsExport(exported));
+    expect(parsed.failedTests[0].assertions["value is 1"]).toEqual({
+      assertionResult: "error",
+      actual: { id: 1, self: "[circular]" },
+      a: { kept: true },
+      b: { kept: true },
+    });
+  });
+
+  it("keeps the events of a retained run out of the age-based cleanup until released", () => {
+    vi.useFakeTimers();
+    const tracker = new MiroirActivityTracker();
+    const eventService = new MiroirEventService(tracker);
+    try {
+      const runStart = Date.now();
+      const release = eventService.retainEventsFrom(runStart);
+      tracker.endActivity(tracker.startActivity_Action("runBoxedQueryAction", "DC.handleBoxedQuery"));
+      expect(eventService.getAllEvents()).toHaveLength(1);
+
+      vi.advanceTimersByTime(12 * 60 * 1000);
+      expect(eventService.getAllEvents()).toHaveLength(1);
+
+      release();
+      vi.advanceTimersByTime(2 * 60 * 1000);
+      expect(eventService.getAllEvents()).toHaveLength(0);
+    } finally {
+      eventService.destroy();
+      vi.useRealTimers();
+    }
   });
 });

@@ -1466,6 +1466,7 @@ export {
   hasFailedTestResults,
   isFailedTestResult,
   snapshotTestRunLogs,
+  stringifyFailedTestLogsExport,
   suggestedFailedTestLogsFilename,
   type FailedTestLogEntry,
   type FailedTestLogLine,

@@ -2,6 +2,7 @@ import React from "react";
 import {
   buildFailedTestLogsExport,
   hasFailedTestResults,
+  stringifyFailedTestLogsExport,
   suggestedFailedTestLogsFilename,
   type FailedTestLogsExportTestResult,
   type TestRunLogSnapshot,
@@ -14,8 +15,8 @@ export interface ExportFailedTestLogsButtonProps {
   runMode?: string;
 }
 
-function downloadJson(payload: unknown, filename: string): void {
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+function downloadJson(json: string, filename: string): void {
+  const blob = new Blob([json], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
@@ -44,7 +45,10 @@ export const ExportFailedTestLogsButton: React.FC<ExportFailedTestLogsButtonProp
       testResults: testResultsData,
       runLogs,
     });
-    downloadJson(exported, suggestedFailedTestLogsFilename(testLabel, exported.exportedAt));
+    downloadJson(
+      stringifyFailedTestLogsExport(exported),
+      suggestedFailedTestLogsFilename(testLabel, exported.exportedAt),
+    );
   };
 
   return (
