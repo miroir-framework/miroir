@@ -45,6 +45,7 @@ import {
 import { log } from "console";
 import { bootElectronServer, DESKTOP_ENVIRONMENT, prepareDesktopRoot } from "./environmentBoot.js";
 import { electronAuthenticationGates, handleMiroirIpc, type MiroirIpcPayload } from "./miroirIpcHandler.js";
+import { withSelfTest, type ElectronSelfTestOptions } from "./selfTestMain.js";
 
 export const MIROIR_IPC_CHANNEL = "miroir-ipc";
 
@@ -73,7 +74,7 @@ function electronEnvironmentLocation(): { cwd: string; env: Record<string, strin
  * Must be called from the main process before loadURL() so the handler is ready when the
  * renderer first sends a message.
  */
-export async function setupIpcServer(): Promise<void> {
+export async function setupIpcServer(selfTest?: ElectronSelfTestOptions): Promise<void> {
   // Store factories are registered in the main-process ConfigurationService instance.
   // (The renderer process has a different ConfigurationService instance and can only register
   //  IndexedDb — which is why IPC is needed for filesystem / postgres / mongodb.)
@@ -197,7 +198,8 @@ export async function setupIpcServer(): Promise<void> {
       restClientStub,
       domainController,
       gate,
-      clientConfig,
+      // #487: `--self-test` turns the renderer's self-test on
+      clientConfig: withSelfTest(clientConfig, selfTest),
       environmentRoot: environment.repositoryRoot,
     }),
   );

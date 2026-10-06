@@ -1,5 +1,7 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
+import { SELF_TEST_RESULT_CHANNEL } from './selfTestMain.js';
+
 // Expose protected methods that allow the renderer process to use
 // the ipcRenderer without exposing the entire object
 contextBridge.exposeInMainWorld('electronAPI', {
@@ -16,6 +18,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Returns the root of the environment the main process runs (#345), for diagnostics.
   // Dev: the repository root. Packaged: <userData>/miroir.
   getAssetsBasePath: () => ipcRenderer.invoke('get-assets-base-path'),
+
+  // #487: the final self-test result, for the main process run with --self-test.
+  reportSelfTestResult: (result: unknown) => ipcRenderer.send(SELF_TEST_RESULT_CHANNEL, result),
 
   // // Returns the platform-appropriate default filesystem folder (os.homedir()).
   // // Used by Runner_CreateApplication / Runner_InstallApplication to pre-populate
@@ -53,6 +58,8 @@ declare global {
       callMiroirIpc: (payload: unknown) => Promise<unknown>;
       /** Returns the assets base path for store directory resolution. */
       getAssetsBasePath: () => Promise<string>;
+      /** #487: sends the final self-test result to the main process. */
+      reportSelfTestResult: (result: unknown) => void;
       /** Returns the platform home directory as default for filesystem/indexedDb deployment paths. */
       getDefaultFilesystemFolder: () => Promise<string>;
       openFile: () => Promise<string | null>;

@@ -17,7 +17,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Companion: #486 (health checks; shares Electron `--self-test`, analysis D9)
 Working branch: `claude/487-client-self-test-x9c2x8` (from `_integration` at 9838983)
 
-**Resume note:** plan written 2026-10-06; decisions D1 to D10 and their defaults accepted by A 2026-10-06; Slices 0 to 4 DONE; next Slice 5 (Electron).
+**Resume note:** plan written 2026-10-06; decisions D1 to D10 and their defaults accepted by A 2026-10-06; Slices 0 to 5 DONE (5 awaits its run in Electron, in the Slice 7 workflow); next Slice 6 (integ batch).
 
 ---
 
@@ -42,7 +42,7 @@ This plan does **not** cover the CLI, server, MCP and Electron main-process prob
 | 2 | The verdict fails when it should | ✅ DONE | `selfTestVerdict.487.phase2.integ.test.ts` |
 | 3 | Page load runs the self-test and publishes the verdict | ✅ DONE | `selfTestPage.487.phase3.integ.test.tsx` |
 | 4 | Web driver and local run | ✅ DONE | `selfTestDriver.487.phase4.unit.test.ts` + a real `--serve` run |
-| 5 | Electron `--self-test` (renderer half) | ⬜ pending | `electronSelfTest.487.phase5.unit.test.ts` + run on A's machine |
+| 5 | Electron `--self-test` (renderer half) | ✅ DONE | `electronSelfTest.487.phase5.unit.test.ts` + run on A's machine |
 | 6 | `integ` MiroirTests in self-test mode | ⬜ pending | `runSelfTestInteg.487.phase6.integ.test.ts` |
 | 7 | GitHub Actions workflow | ⬜ pending | green `self-test.yml` run on the branch |
 | 8 | Nonreg steps, docs, cleanup, AC | ⬜ pending | `nonreg:filesystem` + AC checklist |
@@ -303,7 +303,7 @@ MIROIR_ENV=self-test npm run selfTest -w miroir-standalone-app -- --serve   # ex
 
 ## Slice 5 — Electron `--self-test` (renderer half)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE (2026-10-06; the Electron run itself is in the Slice 7 workflow)
 
 **Goal:** `electron packages/miroir-standalone-app-electron --self-test` (and the packaged binary) boots its environment, loads the built client hidden, waits for the renderer's verdict, prints it and exits 0, 1 or 2.
 
@@ -333,7 +333,12 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
 ```
 
 ### Realization
-_(to fill)_
+- `src/selfTestMain.ts`: `parseSelfTestArgs`, `withSelfTest`, `selfTestExit`, `rendererLoadUrl` (the refactor checkpoint's name; it replaces the `isDev` branch of `loadApp`), `SELF_TEST_RESULT_CHANNEL`. The preload imports the channel constant (esbuild bundles it; the module has only a type import from miroir-core).
+- `main.ts`: with `--self-test`, the window is never shown, DevTools never open, background throttling is off (a hidden window would otherwise slow its timers), and the single-instance lock is not taken, so a self-test runs beside an open app. The end comes from the first of: the renderer's result, the timeout, `render-process-gone`, `did-fail-load` on the main frame, or an error booting the environment (`main-error`, an extra end kind). The report goes to stdout as `{ renderer }`; #486 adds `main`.
+- A bad `--self-test-timeout` exits 2 before the app starts (`process.stderr.write`: the bare console guard forbids `console.error` in `src/`).
+- `ipcServerSetup.setupIpcServer(selfTest?)` hands `withSelfTest(clientConfig, selfTest)` to `get-client-config`.
+- Not run in Electron here: the container has no Electron binary (`node_modules/electron/install.js` fails), so the first real run is the workflow's `electron` job.
+- Results: `electronSelfTest.487.phase5.unit` 4/4, all Electron tests 14/14; Electron typecheck clean; `npm run build -w miroir-standalone-app-electron` builds with no bundle policy violation; `nonreg:filesystem --runner shared --scope smoke,tooling` 24/25, the one failure the bare console guard on `main.ts`, fixed and rechecked (`check_bare_console.py` OK).
 
 ---
 
