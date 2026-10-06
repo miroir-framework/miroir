@@ -14,7 +14,7 @@
 Analysis: [`./analysis.md`](./analysis.md) (parent issue #497) · Issue: https://github.com/miroir-framework/miroir/issues/498
 Working branch: `claude/497-visual-block-editor`
 
-**Resume note:** plan written 2026-10-06; Slices 0 to 2 done 2026-10-06.
+**Resume note:** plan written 2026-10-06; Slices 0 to 3 done 2026-10-06.
 
 ---
 
@@ -35,7 +35,7 @@ This plan does **not** edit blocks (#500), add @dnd-kit (#500), undo (#499), off
 | 0 | Characterize the transformer corpus and the editors | ✅ | `transformerBlockModelAssets.unit.test.ts` (inventory), existing editor suites |
 | 1 | Tracer: the TransformerEditor's transformer as blocks | ✅ | `ui.blockEditor` switch case, first `fn.blockModel` cases |
 | 2 | Every transformer in the assets maps to blocks | ✅ | asset sweep with zero JSON blocks, `fn.blockModel` rule cases |
-| 3 | The full read-only block view | ⬜ | `ui.blockEditor` cases on the two composite TransformerDefinitions |
+| 3 | The full read-only block view | ✅ | `ui.blockEditor` cases on the two composite TransformerDefinitions |
 | 4 | Block categories and their Theme colors | ⬜ | `fn.blockModel` category cases, Miroir modelValidation, `ui.blockEditor` |
 | 5 | Build marking and its ViewParams setting | ⬜ | `ui.blockEditor` marking cases, Admin modelValidation |
 | 6 | JSON view and a view mode that survives folding | ⬜ | `ui.blockEditor` switch cases |
@@ -238,7 +238,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core
 
 ## Slice 3 — The full read-only block view
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -274,6 +274,12 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui
 ```
 
 ### Realization
+
+- `ui.blockEditor` 7 of 7 (5 new `TransformerBlocks` leaves), component counts 11 instances and 120 leaves, standalone-app typecheck adds no error.
+- `TransformerBlocks` (`componentTests/transformerBlocksForTest.tsx`) takes the `name` of a TransformerDefinition and draws its `transformerImplementation.definition` with that prefix, so block ids are the ids of the instance form's cards. Definitions come from `applicationTransformerDefinitions` plus `entityDefinition_extractAttributes`, which the runtime map leaves out (it is a metaModel transformer). The block view is a lazy import there too.
+- Deviation: each block keeps its own collapsed state (`useState`), not a reducer at the root, so a fold renders only that block without a subscription. "Collapse all" and "Expand all" (from the mockup) remount the tree under a new key with every block starting in that state. Literal objects and lists of more than three entries with no transformer start collapsed, as in the mockup.
+- Collapsed blocks say what they hide: "2 slots hidden", "4 entries hidden", "5 items hidden". Zoom uses CSS `zoom` from 50 % to 150 % in steps of 10 %.
+- Every node carries `data-block-kind` (`transformer`, `object`, `list`, `literal`, `quoted`, `mlSchema`, `json`) and every header parameter `data-value`, for the tests and later the editing slices.
 
 ---
 

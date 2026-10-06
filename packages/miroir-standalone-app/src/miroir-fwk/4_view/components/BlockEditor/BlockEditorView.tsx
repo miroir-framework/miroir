@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import { transformerBlockTree, type BlockNode, type BlockPath, type TransformerBlock } from "miroir-core";
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
 
@@ -10,6 +10,9 @@ import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
 // miroir-core block model; each block is memoized on its node, which the model rebuilds only when
 // the value changes. Blocks carry the id of the form card at the same path, so the outline
 // navigation finds them in both views.
+//
+// A block keeps its own collapsed state, so folding one renders only that block. "Collapse all"
+// and "Expand all" remount the tree with every block starting in that state.
 // ################################################################################################
 
 export interface BlockEditorViewProps {
@@ -18,11 +21,19 @@ export interface BlockEditorViewProps {
   rootLessListKey: string;
 }
 
+type InitialCollapse = "default" | "collapsed" | "expanded";
+
+const ZOOM_STEP = 0.1;
+const ZOOM_MIN = 0.5;
+const ZOOM_MAX = 1.5;
+/** Literal objects and lists longer than this start collapsed (mockup, analysis #497). */
+const LONG_LITERAL = 3;
+
 function blockId(rootLessListKey: string, path: BlockPath): string {
   return [rootLessListKey, ...path.map(String)].filter((segment) => segment !== "").join(".");
 }
 
-interface BlockStyle {
+interface BlockColors {
   text: string;
   textSecondary: string;
   border: string;
@@ -33,37 +44,100 @@ interface BlockStyle {
   literal: string;
 }
 
-function useBlockStyle(): BlockStyle {
-  const { currentTheme } = useMiroirTheme();
-  return useMemo(
-    () => {
-      const colors = currentTheme.colors;
-      const text = colors.text ?? "#1f2328";
-      const surface = colors.surface ?? "#ffffff";
-      return {
-        text,
-        textSecondary: colors.textSecondary ?? text,
-        border: colors.border ?? "#d0d7de",
-        mouth: colors.surfaceVariant ?? surface,
-        field: colors.background ?? "#ffffff",
-        block: colors.primary ?? "#4c97ff",
-        onBlock: "#ffffff",
-        literal: surface,
-      };
-    },
-    [currentTheme],
-  );
+interface BlockSettings extends BlockColors {
+  rootLessListKey: string;
+  initialCollapse: InitialCollapse;
 }
 
-const Field = React.memo(function Field(props: { value: unknown; style: BlockStyle }) {
+function useBlockColors(): BlockColors {
+  const { currentTheme } = useMiroirTheme();
+  return useMemo(() => {
+    const colors = currentTheme.colors;
+    const text = colors.text ?? "#1f2328";
+    const surface = colors.surface ?? "#ffffff";
+    return {
+      text,
+      textSecondary: colors.textSecondary ?? text,
+      border: colors.border ?? "#d0d7de",
+      mouth: colors.surfaceVariant ?? surface,
+      field: colors.background ?? "#ffffff",
+      block: colors.primary ?? "#4c97ff",
+      onBlock: "#ffffff",
+      literal: surface,
+    };
+  }, [currentTheme]);
+}
+
+function containsTransformerBlock(node: BlockNode): boolean {
+  switch (node.kind) {
+    case "transformer":
+    case "json":
+      return true;
+    case "object":
+      return node.entries.some((entry) => containsTransformerBlock(entry.node));
+    case "list":
+      return node.items.some(containsTransformerBlock);
+    default:
+      return false;
+  }
+}
+
+function startsCollapsed(node: BlockNode, initialCollapse: InitialCollapse): boolean {
+  if (initialCollapse !== "default") {
+    return initialCollapse === "collapsed";
+  }
+  const size = node.kind === "object" ? node.entries.length : node.kind === "list" ? node.items.length : 0;
+  return size > LONG_LITERAL && !containsTransformerBlock(node);
+}
+
+function hiddenSummary(node: BlockNode, count: number): string {
+  const [one, many] =
+    node.kind === "object" ? ["entry", "entries"] : node.kind === "list" ? ["item", "items"] : ["slot", "slots"];
+  return `${count} ${count === 1 ? one : many} hidden`;
+}
+
+/** The fold state of a block, the toggle of its header and the summary shown when folded. */
+function useCollapse(node: BlockNode, settings: BlockSettings, rowCount: number) {
+  const [collapsed, setCollapsed] = useState(() => rowCount > 0 && startsCollapsed(node, settings.initialCollapse));
+  const toggle = useCallback(() => setCollapsed((current) => !current), []);
+  const id = blockId(settings.rootLessListKey, node.path);
+  const toggleButton =
+    rowCount > 0 ? (
+      <button
+        type="button"
+        data-testid={`block-collapse:${id}`}
+        aria-expanded={!collapsed}
+        aria-label={collapsed ? "Expand block" : "Collapse block"}
+        onClick={toggle}
+        css={css({
+          font: "inherit",
+          fontSize: "11px",
+          lineHeight: 1,
+          padding: "1px 3px",
+          border: "none",
+          background: "transparent",
+          color: "inherit",
+          cursor: "pointer",
+        })}
+      >
+        {collapsed ? "▸" : "▾"}
+      </button>
+    ) : null;
+  const summary = collapsed ? (
+    <span css={css({ opacity: 0.85, fontSize: "11px", fontStyle: "italic" })}>{hiddenSummary(node, rowCount)}</span>
+  ) : null;
+  return { collapsed, toggleButton, summary };
+}
+
+const Field = React.memo(function Field(props: { value: unknown; settings: BlockSettings }) {
   return (
     <span
       css={css({
         fontFamily: "monospace",
         fontSize: "12px",
-        background: props.style.field,
-        color: props.style.text,
-        border: `1px solid ${props.style.border}`,
+        background: props.settings.field,
+        color: props.settings.text,
+        border: `1px solid ${props.settings.border}`,
         borderRadius: "6px",
         padding: "0 6px",
         maxWidth: "40ch",
@@ -79,14 +153,16 @@ const Field = React.memo(function Field(props: { value: unknown; style: BlockSty
 
 const TransformerBlockView = React.memo(function TransformerBlockView(props: {
   node: TransformerBlock;
-  rootLessListKey: string;
-  style: BlockStyle;
+  settings: BlockSettings;
 }) {
-  const { node, style } = props;
+  const { node, settings } = props;
+  const id = blockId(settings.rootLessListKey, node.path);
+  const { collapsed, toggleButton, summary } = useCollapse(node, settings, node.rows.length);
   return (
     <div
-      id={blockId(props.rootLessListKey, node.path)}
-      data-testid={`block:${blockId(props.rootLessListKey, node.path)}`}
+      id={id}
+      data-testid={`block:${id}`}
+      data-block-kind="transformer"
       data-transformer-type={node.transformerType}
       data-category={node.category}
       role="group"
@@ -95,30 +171,37 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
         display: "inline-flex",
         flexDirection: "column",
         maxWidth: "100%",
-        background: style.block,
-        color: style.onBlock,
+        background: settings.block,
+        color: settings.onBlock,
         border: "1.5px solid rgba(0,0,0,.22)",
         borderRadius: "8px",
-        paddingBottom: node.rows.length > 0 ? "6px" : 0,
+        paddingBottom: node.rows.length > 0 && !collapsed ? "6px" : 0,
         verticalAlign: "top",
       })}
     >
       <div css={css({ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "4px 7px", padding: "4px 10px" })}>
+        {toggleButton}
         <span css={css({ fontWeight: 700, whiteSpace: "nowrap" })}>{node.transformerType}</span>
         {node.label !== undefined && <span css={css({ opacity: 0.85, fontSize: "12px" })}>{node.label}</span>}
         {node.parameters.map((parameter) => (
-          <span key={parameter.name} css={css({ display: "inline-flex", gap: "4px", alignItems: "center" })}>
+          <span
+            key={parameter.name}
+            data-testid={`block-parameter:${blockId(settings.rootLessListKey, [...node.path, parameter.name])}`}
+            data-value={JSON.stringify(parameter.value)}
+            css={css({ display: "inline-flex", gap: "4px", alignItems: "center" })}
+          >
             <span css={css({ opacity: 0.85, fontSize: "12px" })}>{parameter.name}</span>
-            <Field value={parameter.value} style={style} />
+            <Field value={parameter.value} settings={settings} />
           </span>
         ))}
+        {summary}
       </div>
-      {node.rows.length > 0 && (
+      {node.rows.length > 0 && !collapsed && (
         <div
           css={css({
             marginLeft: "16px",
-            background: style.mouth,
-            color: style.text,
+            background: settings.mouth,
+            color: settings.text,
             borderRadius: "6px 0 0 6px",
             padding: "6px 8px",
             display: "flex",
@@ -130,13 +213,13 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
           {node.rows.map((row) => (
             <div
               key={row.name}
-              data-testid={`block-row:${blockId(props.rootLessListKey, row.path)}`}
+              data-testid={`block-row:${blockId(settings.rootLessListKey, row.path)}`}
               data-row-kind={row.kind}
               css={css({ display: "flex", gap: "8px", alignItems: "flex-start", minWidth: 0 })}
             >
               <span
                 css={css({
-                  color: row.kind === "undeclared" ? "#c62828" : style.textSecondary,
+                  color: row.kind === "undeclared" ? "#c62828" : settings.textSecondary,
                   fontSize: "12px",
                   paddingTop: "5px",
                   whiteSpace: "nowrap",
@@ -147,11 +230,17 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
               </span>
               <span css={css({ minWidth: 0 })}>
                 {row.node ? (
-                  <BlockNodeView node={row.node} rootLessListKey={props.rootLessListKey} style={style} />
+                  <BlockNodeView node={row.node} settings={settings} />
                 ) : (
                   <span
-                    data-testid={`block-empty:${blockId(props.rootLessListKey, row.path)}`}
-                    css={css({ display: "inline-block", width: "48px", height: "20px", border: `1px dashed ${style.border}`, borderRadius: "6px" })}
+                    data-testid={`block-empty:${blockId(settings.rootLessListKey, row.path)}`}
+                    css={css({
+                      display: "inline-block",
+                      width: "48px",
+                      height: "20px",
+                      border: `1px dashed ${settings.border}`,
+                      borderRadius: "6px",
+                    })}
                   />
                 )}
               </span>
@@ -165,71 +254,81 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
 
 const StructureBlockView = React.memo(function StructureBlockView(props: {
   node: Extract<BlockNode, { kind: "object" | "list" }>;
-  rootLessListKey: string;
-  style: BlockStyle;
+  settings: BlockSettings;
 }) {
-  const { node, style } = props;
+  const { node, settings } = props;
+  const id = blockId(settings.rootLessListKey, node.path);
   const entries =
     node.kind === "object"
       ? node.entries.map((entry) => ({ key: entry.key, node: entry.node }))
       : node.items.map((item, index) => ({ key: String(index), node: item }));
+  const { collapsed, toggleButton, summary } = useCollapse(node, settings, entries.length);
   return (
     <div
-      id={blockId(props.rootLessListKey, node.path)}
-      data-testid={`block:${blockId(props.rootLessListKey, node.path)}`}
+      id={id}
+      data-testid={`block:${id}`}
+      data-block-kind={node.kind}
       role="group"
       aria-label={node.kind}
       css={css({
         display: "inline-flex",
         flexDirection: "column",
-        background: style.literal,
-        color: style.text,
-        border: `1.5px solid ${style.border}`,
+        background: settings.literal,
+        color: settings.text,
+        border: `1.5px solid ${settings.border}`,
         borderRadius: "8px",
         padding: "2px 8px 6px",
         gap: "4px",
       })}
     >
-      <span css={css({ fontSize: "12px", color: style.textSecondary })}>
-        {node.kind === "object" ? "object" : "list"}
+      <span css={css({ display: "flex", alignItems: "center", gap: "4px", fontSize: "12px", color: settings.textSecondary })}>
+        {toggleButton}
+        {node.kind}
+        {summary}
       </span>
-      {entries.map((entry) => (
-        <div key={entry.key} css={css({ display: "flex", gap: "8px", alignItems: "flex-start" })}>
-          <span css={css({ fontSize: "12px", color: style.textSecondary, paddingTop: "3px" })}>{entry.key}</span>
-          <BlockNodeView node={entry.node} rootLessListKey={props.rootLessListKey} style={style} />
-        </div>
-      ))}
+      {!collapsed &&
+        entries.map((entry) => (
+          <div key={entry.key} css={css({ display: "flex", gap: "8px", alignItems: "flex-start" })}>
+            <span css={css({ fontSize: "12px", color: settings.textSecondary, paddingTop: "3px" })}>{entry.key}</span>
+            <BlockNodeView node={entry.node} settings={settings} />
+          </div>
+        ))}
     </div>
   );
 });
 
 const BlockNodeView = React.memo(function BlockNodeView(props: {
   node: BlockNode;
-  rootLessListKey: string;
-  style: BlockStyle;
+  settings: BlockSettings;
 }): JSX.Element {
-  const { node, style } = props;
+  const { node, settings } = props;
+  const id = blockId(settings.rootLessListKey, node.path);
   switch (node.kind) {
     case "transformer":
-      return <TransformerBlockView node={node} rootLessListKey={props.rootLessListKey} style={style} />;
+      return <TransformerBlockView node={node} settings={settings} />;
     case "object":
     case "list":
-      return <StructureBlockView node={node} rootLessListKey={props.rootLessListKey} style={style} />;
+      return <StructureBlockView node={node} settings={settings} />;
     case "literal":
       return (
-        <span data-testid={`block:${blockId(props.rootLessListKey, node.path)}`}>
-          <Field value={node.value} style={style} />
+        <span
+          data-testid={`block:${id}`}
+          data-block-kind={node.quoted ? "quoted" : "literal"}
+          title={node.quoted ? "Returned as is, not evaluated" : undefined}
+        >
+          <Field value={node.value} settings={settings} />
         </span>
       );
     case "mlSchema":
       return (
         <span
-          data-testid={`block:${blockId(props.rootLessListKey, node.path)}`}
+          data-testid={`block:${id}`}
+          data-block-kind="mlSchema"
           title={JSON.stringify(node.value, null, 2)}
           css={css({
             fontSize: "12px",
-            background: style.literal,
-            border: `1px solid ${style.border}`,
+            background: settings.literal,
+            border: `1px solid ${settings.border}`,
             borderRadius: "999px",
             padding: "1px 8px",
           })}
@@ -240,8 +339,9 @@ const BlockNodeView = React.memo(function BlockNodeView(props: {
     case "json":
       return (
         <pre
-          data-testid={`block:${blockId(props.rootLessListKey, node.path)}`}
-          css={css({ margin: 0, fontSize: "12px", border: `1px solid ${style.border}`, borderRadius: "6px", padding: "4px" })}
+          data-testid={`block:${id}`}
+          data-block-kind="json"
+          css={css({ margin: 0, fontSize: "12px", border: `1px solid ${settings.border}`, borderRadius: "6px", padding: "4px" })}
         >
           {JSON.stringify(node.value, null, 2)}
         </pre>
@@ -249,15 +349,96 @@ const BlockNodeView = React.memo(function BlockNodeView(props: {
   }
 });
 
+function ToolButton(props: {
+  testId: string;
+  label: string;
+  colors: BlockColors;
+  onClick: () => void;
+  disabled?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      data-testid={props.testId}
+      aria-label={props.label}
+      title={props.label}
+      disabled={props.disabled}
+      onClick={props.onClick}
+      css={css({
+        font: "inherit",
+        fontSize: "12px",
+        padding: "1px 8px",
+        cursor: "pointer",
+        border: `1px solid ${props.colors.border}`,
+        borderRadius: "4px",
+        color: props.colors.text,
+        backgroundColor: props.colors.literal,
+      })}
+    >
+      {props.children}
+    </button>
+  );
+}
+
 export const BlockEditorView = React.memo(function BlockEditorView(props: BlockEditorViewProps) {
   const tree = useMemo(() => transformerBlockTree(props.value), [props.value]);
-  const style = useBlockStyle();
+  const colors = useBlockColors();
+  const [fold, setFold] = useState<{ initialCollapse: InitialCollapse; generation: number }>({
+    initialCollapse: "default",
+    generation: 0,
+  });
+  const [zoom, setZoom] = useState(1);
+  const settings: BlockSettings = useMemo(
+    () => ({ ...colors, rootLessListKey: props.rootLessListKey, initialCollapse: fold.initialCollapse }),
+    [colors, props.rootLessListKey, fold.initialCollapse],
+  );
+  const foldAll = useCallback(
+    (initialCollapse: InitialCollapse) =>
+      setFold((current) => ({ initialCollapse, generation: current.generation + 1 })),
+    [],
+  );
+  const changeZoom = useCallback(
+    (delta: number) =>
+      setZoom((current) => Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, Math.round((current + delta) * 10) / 10))),
+    [],
+  );
   return (
-    <div
-      data-testid={`block-editor:${props.rootLessListKey}`}
-      css={css({ overflowX: "auto", padding: "8px 4px", color: style.text })}
-    >
-      <BlockNodeView node={tree.root} rootLessListKey={props.rootLessListKey} style={style} />
+    <div data-testid={`block-editor:${props.rootLessListKey}`} css={css({ color: colors.text })}>
+      <div css={css({ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "4px", margin: "2px 0 4px" })}>
+        <ToolButton testId="block-expand-all" label="Expand all blocks" colors={colors} onClick={() => foldAll("expanded")}>
+          Expand all
+        </ToolButton>
+        <ToolButton testId="block-collapse-all" label="Collapse all blocks" colors={colors} onClick={() => foldAll("collapsed")}>
+          Collapse all
+        </ToolButton>
+        <ToolButton
+          testId="block-zoom-out"
+          label="Zoom out"
+          colors={colors}
+          disabled={zoom <= ZOOM_MIN}
+          onClick={() => changeZoom(-ZOOM_STEP)}
+        >
+          −
+        </ToolButton>
+        <span data-testid="block-zoom-level" css={css({ fontSize: "12px", minWidth: "4.5ch", textAlign: "center" })}>
+          {`${Math.round(zoom * 100)} %`}
+        </span>
+        <ToolButton
+          testId="block-zoom-in"
+          label="Zoom in"
+          colors={colors}
+          disabled={zoom >= ZOOM_MAX}
+          onClick={() => changeZoom(ZOOM_STEP)}
+        >
+          +
+        </ToolButton>
+      </div>
+      <div css={css({ overflowX: "auto", padding: "8px 4px" })}>
+        <div css={css({ zoom })}>
+          <BlockNodeView key={fold.generation} node={tree.root} settings={settings} />
+        </div>
+      </div>
     </div>
   );
 });

@@ -5,7 +5,7 @@
   "name": "ui.blockEditor",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Block view of the TransformerEditor's transformer: the Blocks / Form / JSON switch starts on Form, Blocks draws the transformer as blocks, and Form brings the form editor back.",
+  "description": "Block view of transformers: the TransformerEditor's Blocks / Form / JSON switch starts on Form, Blocks draws the transformer as blocks and Form brings the form back; the blocks of a stored TransformerDefinition show slots, parameters, object and list blocks and ML schema chips, collapse one by one or all at once, and zoom.",
   "tags": [
     "ui",
     "editor",
@@ -130,6 +130,293 @@
                   "byTestId": "block-editor:transformer"
                 },
                 "present": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "TransformerBlocks",
+        "component": "TransformerBlocks",
+        "componentProps": {
+          "transformerDefinition": "entityDefinition_extractAttributes"
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerBlocks: entityDefinition_extractAttributes is a filterList block with its predicate and applyTo rows",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "root block is filterList",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition"
+                },
+                "attribute": "data-transformer-type",
+                "value": "filterList",
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "referenceToOuterObject in the header",
+                "target": {
+                  "byTestId": "block-parameter:transformerImplementation.definition.referenceToOuterObject"
+                },
+                "attribute": "data-value",
+                "value": "\"attribute\""
+              },
+              {
+                "step": "expectElement",
+                "label": "predicate row",
+                "target": {
+                  "byTestId": "block-row:transformerImplementation.definition.predicate"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "applyTo row",
+                "target": {
+                  "byTestId": "block-row:transformerImplementation.definition.applyTo"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "predicate is a boolExpr block",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition.predicate"
+                },
+                "attribute": "data-transformer-type",
+                "value": "boolExpr"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "a block has the id of the form card at its path",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition.applyTo.applyTo"
+                },
+                "attribute": "id",
+                "value": "transformerImplementation.definition.applyTo.applyTo"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerBlocks: collapsing a block hides its rows and says how many",
+            "steps": [
+              {
+                "step": "click",
+                "label": "collapse the root",
+                "target": {
+                  "byTestId": "block-collapse:transformerImplementation.definition"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root is collapsed",
+                "target": {
+                  "byTestId": "block-collapse:transformerImplementation.definition"
+                },
+                "attribute": "aria-expanded",
+                "value": "false",
+                "timeout": 3000
+              },
+              {
+                "step": "expectElement",
+                "label": "predicate row hidden",
+                "target": {
+                  "byTestId": "block-row:transformerImplementation.definition.predicate"
+                },
+                "present": false
+              },
+              {
+                "step": "expectElement",
+                "label": "summary",
+                "target": {
+                  "byText": "2 slots hidden"
+                }
+              },
+              {
+                "step": "click",
+                "label": "expand the root",
+                "target": {
+                  "byTestId": "block-collapse:transformerImplementation.definition"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "predicate row back",
+                "target": {
+                  "byTestId": "block-row:transformerImplementation.definition.predicate"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "summary gone",
+                "target": {
+                  "byText": "2 slots hidden"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerBlocks: collapse all and expand all",
+            "steps": [
+              {
+                "step": "click",
+                "label": "collapse all",
+                "target": {
+                  "byTestId": "block-collapse-all"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root is collapsed",
+                "target": {
+                  "byTestId": "block-collapse:transformerImplementation.definition"
+                },
+                "attribute": "aria-expanded",
+                "value": "false",
+                "timeout": 3000
+              },
+              {
+                "step": "expectElement",
+                "label": "predicate row hidden",
+                "target": {
+                  "byTestId": "block-row:transformerImplementation.definition.predicate"
+                },
+                "present": false
+              },
+              {
+                "step": "click",
+                "label": "expand all",
+                "target": {
+                  "byTestId": "block-expand-all"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "a nested block is expanded",
+                "target": {
+                  "byTestId": "block-collapse:transformerImplementation.definition.predicate.left"
+                },
+                "attribute": "aria-expanded",
+                "value": "true"
+              },
+              {
+                "step": "expectElement",
+                "label": "nested predicate row shown",
+                "target": {
+                  "byTestId": "block-row:transformerImplementation.definition.predicate.left.predicate"
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerBlocks: zooming out and in changes the zoom level",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "zoom starts at 100 %",
+                "target": {
+                  "byText": "100 %"
+                },
+                "timeout": 3000
+              },
+              {
+                "step": "click",
+                "label": "zoom out",
+                "target": {
+                  "byTestId": "block-zoom-out"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "zoom at 90 %",
+                "target": {
+                  "byText": "90 %"
+                }
+              },
+              {
+                "step": "click",
+                "label": "zoom in",
+                "target": {
+                  "byTestId": "block-zoom-in"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "zoom back at 100 %",
+                "target": {
+                  "byText": "100 %"
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerBlocks: spreadSheetToMlSchema shows object and list blocks and an ML schema chip",
+            "componentProps": {
+              "transformerDefinition": "spreadSheetToMlSchema"
+            },
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "root block is dataflowObject",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition"
+                },
+                "attribute": "data-transformer-type",
+                "value": "dataflowObject",
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the steps of the dataflow are an object block",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition.definition"
+                },
+                "attribute": "data-block-kind",
+                "value": "object"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the createObject definition is an object block",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition.definition.schema.definition"
+                },
+                "attribute": "data-block-kind",
+                "value": "object"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the createObjectFromPairs definition is a list block",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition.definition.splitAttributeDefinitions.elementTransformer.definition"
+                },
+                "attribute": "data-block-kind",
+                "value": "list"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the returnValue mlSchema is a chip",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition.definition.completeAttributeDefinitions.definition.mlSchema"
+                },
+                "attribute": "data-block-kind",
+                "value": "mlSchema"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the returnValue value is quoted",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition.definition.completeAttributeDefinitions.definition.value"
+                },
+                "attribute": "data-block-kind",
+                "value": "quoted"
               }
             ]
           }
