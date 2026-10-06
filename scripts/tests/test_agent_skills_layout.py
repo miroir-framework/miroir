@@ -18,6 +18,7 @@ MIROIR_OWNED = {
     "miroir-edit-composite-transformers",
     "miroir-edit-queries",
     "miroir-assess-evolution-quality",
+    "miroir-code-quality",
 }
 
 

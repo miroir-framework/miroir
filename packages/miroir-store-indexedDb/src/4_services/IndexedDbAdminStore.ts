@@ -11,7 +11,7 @@ import { IndexedDb } from "./IndexedDb.js";
 import { IndexedDbStore } from "./IndexedDbStore.js";
 import { cleanLevel } from "./constants.js";
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbAdminStore");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "IndexedDbAdminStore");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 

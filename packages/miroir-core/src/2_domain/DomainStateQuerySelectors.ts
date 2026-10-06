@@ -53,7 +53,7 @@ import { transformer_extended_apply } from "./TransformersForRuntime";
 import { requiredVirtualAttributeNames } from "./VirtualAttributes";
 // import { transformer_InnerReference_resolve } from "./TransformersForRuntime";
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DomainStateQuerySelector");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DomainStateQuerySelectors");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 

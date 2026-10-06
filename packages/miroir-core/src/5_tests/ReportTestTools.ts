@@ -421,7 +421,7 @@ export function resolveReportTestStepReferences(
       try {
         stored = storedValueOf(value, storedValues);
       } catch (error) {
-        throw new Error(`${field}: ${error instanceof Error ? error.message : String(error)}`);
+        throw new Error(`${field}: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
       }
       const path = value.referencePath?.join(".") ?? value.referenceName;
       const wrongValue = (found: string, expected: string) =>

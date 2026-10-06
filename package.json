@@ -52,9 +52,10 @@
     "nonreg:mongodb": "python scripts/run-nonreg.py --tier default --run-all --storage mongodb",
     "nonreg:zustand": "python scripts/run-nonreg.py --tier default --run-all --storage filesystem --local-cache zustand",
     "nonreg:fail-fast": "python scripts/run-nonreg.py --tier default --fail-fast",
-    "lint": "node --test eslint-rules/miroir-layers.test.mjs eslint-rules/ml-adapter-imports.test.mjs && eslint packages",
+    "lint": "node --test eslint-rules/miroir-layers.test.mjs eslint-rules/ml-adapter-imports.test.mjs eslint-rules/smell-lens.test.mjs eslint-rules/graduated-smells.test.mjs && eslint packages",
     "check:console": "python scripts/check_bare_console.py",
     "check:ml": "python scripts/check_ml_nomenclature.py",
+    "smells": "python scripts/code_smells.py",
     "release:tag": "python scripts/release_tag.py",
     "release:tree": "python ci/release/release_version.py",
     "miroir-env": "node packages/miroir-env/dist/cli.js"

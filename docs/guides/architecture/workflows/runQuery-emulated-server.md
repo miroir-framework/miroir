@@ -79,7 +79,7 @@ People (and this series) say “PersistenceStoreRunner”. The code uses several
 | Server DomainController | same class, other instance | `3_miroir-core_DomainController` | 3 |
 | Server PersistenceStoreRunner | `PersistenceStoreController` | `4_miroir-core_PersistenceStoreController` | 4 |
 | Storage query runner | `SqlDbQueryRunner` / `ExtractorRunnerInMemory` | `4_miroir-store-postgres_…`, `2_miroir-core_ExtractorRunnerInMemory` | 4 / 2 |
-| In-cache query selectors | `QuerySelectors`, `DomainStateQuerySelector` | `2_miroir-core_QuerySelectors`, `2_miroir-core_DomainStateQuerySelector` | 2 |
+| In-cache query selectors | `QuerySelectors`, `DomainStateQuerySelectors` | `2_miroir-core_QuerySelectors`, `2_miroir-core_DomainStateQuerySelectors` | 2 |
 
 Logger names are `{cleanLevel}_{package}_{Class}` (see `MiroirLoggerFactory.getLoggerName`). Clean levels follow the folder: `2_domain`, `3_controllers`, `4_services`.
 

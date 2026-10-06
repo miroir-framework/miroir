@@ -12,7 +12,7 @@ import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { transformer_extended_apply_wrapper } from "./TransformersForRuntime";
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "resolveCompositeActionTemplate");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ResolveCompositeActionTemplate");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 

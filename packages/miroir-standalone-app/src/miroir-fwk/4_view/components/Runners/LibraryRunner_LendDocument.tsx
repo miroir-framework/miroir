@@ -10,7 +10,7 @@ import { cleanLevel } from "../../constants.js";
 import { StoredRunnerView } from "./RunnerView.js";
 import { selfApplicationLibrary } from "miroir-example-library";
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Runner_CreateEntity");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "LibraryRunner_LendDocument");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
   "UI"

@@ -33,7 +33,7 @@ import {
 } from '../../routes/ai/miroirAiBackend.js';
 import { agentBackendLabel } from '../../routes/ai/agentBackendPick.js';
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ResponsiveAppBar");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "AppBar");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {log = logger});

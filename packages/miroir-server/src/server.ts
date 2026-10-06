@@ -146,7 +146,7 @@ const loglevelnext: LoggerFactoryInterface = loglevelnextLib as any as LoggerFac
 //   specificLoggerOptions,
 // );
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Server");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "server");
 let myLogger: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => { myLogger = logger; });
 
