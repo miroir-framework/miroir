@@ -2240,6 +2240,22 @@
       ]
     },
     {
+      "id": "unit-490-export-failed-test-logs",
+      "scopes": ["ui"],
+      "tier": "unit",
+      "title": "#490 Export failed test logs button of the MiroirTest run panel: hidden without failures, JSON with the failed tests and their logs",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "exportFailedTestLogsButton.490"
+      ]
+    },
+    {
       "id": "unit-453-transformer-types-display",
       "scopes": ["ui"],
       "tier": "unit",

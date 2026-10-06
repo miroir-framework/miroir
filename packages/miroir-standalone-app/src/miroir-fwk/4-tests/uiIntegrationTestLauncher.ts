@@ -4,6 +4,7 @@ import {
   getTestbedUuidsForTestSuite,
   runMiroirTests,
   runMiroirTestSuiteInProcess,
+  snapshotTestRunLogs,
   type InProcessExpectFn,
   type IntegrationTestSessionKind,
   type LoggerOptions,
@@ -274,6 +275,11 @@ async function runRunnerOrActionIntegrationSuite(
     success,
     inspector: buildInspectorSnapshot(request, sessionKind, runTarget),
     testSuiteResults,
+    runLogs: snapshotTestRunLogs({
+      activities: trackerBundle.miroirActivityTracker.getAllActivities(),
+      events: trackerBundle.miroirEventService.getAllEvents(),
+      since: 0,
+    }),
   };
 }
 
@@ -358,6 +364,11 @@ async function runTransformerIntegrationSuite(
     success,
     inspector: buildInspectorSnapshot(request, "transformer", runTarget),
     testSuiteResults,
+    runLogs: snapshotTestRunLogs({
+      activities: trackerBundle.miroirActivityTracker.getAllActivities(),
+      events: trackerBundle.miroirEventService.getAllEvents(),
+      since: 0,
+    }),
   };
 }
 

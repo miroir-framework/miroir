@@ -8,9 +8,11 @@ import {
   defaultMetaModelEnvironment,
   isUiIntegrationLaunchableSuite,
   runMiroirTests,
+  snapshotTestRunLogs,
   type Action2VoidReturnType,
   type LoggerInterface,
   type MiroirTestDefinition,
+  type TestRunLogSnapshot,
   type TestSuiteListFilter,
 } from "miroir-core";
 
@@ -49,7 +51,12 @@ interface RunMiroirTestSuiteButtonProps {
   miroirTestSuite: MiroirTestDefinition | undefined;
   testSuiteKey: string;
   useSnackBar: boolean;
-  onTestComplete?: (testSuiteKey: string, structuredResults: MiroirTestResultData[]) => void;
+  /** `runLogs` (#490): the activities and events of the run, for "Export failed test logs". */
+  onTestComplete?: (
+    testSuiteKey: string,
+    structuredResults: MiroirTestResultData[],
+    runLogs?: TestRunLogSnapshot,
+  ) => void;
   testFilter?: { testList?: TestSuiteListFilter; match?: RegExp } | undefined;
   label?: string;
   /** D6 — explicit unit vs integration path; required when suite is mixed. */
@@ -141,6 +148,7 @@ export const RunMiroirTestSuiteButton: React.FC<RunMiroirTestSuiteButtonProps> =
       await beforeRun(iterationsOverride !== undefined ? { iterationsOverride } : undefined);
     }
 
+    const runStartedAt = Date.now();
     try {
       miroirContextService.miroirContext.miroirActivityTracker.resetResults();
 
@@ -173,7 +181,12 @@ export const RunMiroirTestSuiteButton: React.FC<RunMiroirTestSuiteButtonProps> =
     );
 
     if (onTestComplete) {
-      onTestComplete(testSuiteKey, structuredResults);
+      const runLogs = snapshotTestRunLogs({
+        activities: miroirContextService.miroirContext.miroirActivityTracker.getAllActivities(),
+        events: miroirContextService.miroirContext.miroirEventService.getAllEvents(),
+        since: runStartedAt,
+      });
+      onTestComplete(testSuiteKey, structuredResults, runLogs);
     }
     return ACTION_OK;
   };
@@ -218,7 +231,7 @@ export const RunMiroirTestSuiteButton: React.FC<RunMiroirTestSuiteButtonProps> =
       : [];
 
     if (onTestComplete) {
-      onTestComplete(testSuiteKey, structuredResults);
+      onTestComplete(testSuiteKey, structuredResults, result.runLogs);
     }
 
     if (!result.success) {
