@@ -27,7 +27,11 @@ describe("miroir-env show", () => {
         (d) => [d.deployment, d],
       ),
     );
-    expect(Object.keys(shownByUuid).sort()).toEqual(Object.keys(today).sort());
+    // deployments dev opens since #321
+    const ADDED_SINCE_321 = ["40b74910-4c63-4bd9-8e7d-2bc051342908"]; // Meta (#473)
+    expect(Object.keys(shownByUuid).filter((uuid) => !ADDED_SINCE_321.includes(uuid)).sort()).toEqual(
+      Object.keys(today).sort(),
+    );
     // Slice 3: Admin data leaves the package assets for the environment state
     const ADMIN_DEPLOYMENT = "18db21bf-f8d3-4f6a-8296-84b69f6dc48b";
     today[ADMIN_DEPLOYMENT].configuration.data = { emulatedServerType: "filesystem", directory: ".miroir/dev/admin/data" };

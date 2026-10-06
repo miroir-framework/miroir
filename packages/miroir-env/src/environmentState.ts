@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import {
@@ -61,13 +61,6 @@ export function seedEnvironmentState(resolved: ResolvedEnvironment, options: { r
       }
       const name = `${deployment.applicationKey}/${section}`;
       const target = path.join(resolved.repositoryRoot, configuration.directory);
-      if (existsSync(target)) {
-        if (!options.reseed) {
-          report.kept.push(name);
-          continue;
-        }
-        rmSync(target, { recursive: true, force: true });
-      }
       const source = path.join(
         resolved.repositoryRoot,
         applicationAssetsDirectory(
@@ -77,6 +70,14 @@ export function seedEnvironmentState(resolved: ResolvedEnvironment, options: { r
         resolved.environment.packagesDirectory,
       ),
       );
+      if (existsSync(target)) {
+        if (!options.reseed) {
+          restoreEntityDirectories(source, target);
+          report.kept.push(name);
+          continue;
+        }
+        rmSync(target, { recursive: true, force: true });
+      }
       if (existsSync(source)) {
         // the entity directories of generated rows are kept (a filesystem data section knows its
         // entities by their directories), their rows are not
@@ -95,9 +96,24 @@ export function seedEnvironmentState(resolved: ResolvedEnvironment, options: { r
   return report;
 }
 
+/**
+ * Recreates, empty, the entity directories of the seed that a kept data section lost: a filesystem
+ * data section knows its entities by their directories, and refuses rows of an entity it lacks.
+ */
+function restoreEntityDirectories(source: string, target: string): void {
+  if (!existsSync(source)) {
+    return;
+  }
+  for (const entry of readdirSync(source, { withFileTypes: true })) {
+    if (entry.isDirectory() && !existsSync(path.join(target, entry.name))) {
+      mkdirSync(path.join(target, entry.name), { recursive: true });
+    }
+  }
+}
+
 /** The state directory of an environment, relative to the repository root. */
 export function environmentStateDirectory(resolved: ResolvedEnvironment): string {
-  return `${ENVIRONMENT_STATE_ROOT}/${resolved.name}`;
+  return `${ENVIRONMENT_STATE_ROOT}/${resolved.stateName}`;
 }
 
 export type EnvironmentLock = {
@@ -177,7 +193,7 @@ export function describeEnvironmentStateStatus(state: EnvironmentStateStatus): s
 
 /** The environment a configuration comes from, and where the applications installed at runtime go. */
 function configEnvironment(resolved: ResolvedEnvironment): MiroirConfigEnvironment {
-  return { name: resolved.name, appsDirectory: environmentAppsDirectory(resolved.name) };
+  return { name: resolved.name, appsDirectory: environmentAppsDirectory(resolved.stateName) };
 }
 
 /** The server configuration of an environment; the filesystem root is the repository root. */
@@ -193,6 +209,7 @@ export function environmentServerConfig(resolved: ResolvedEnvironment): MiroirCo
       ...(server.mcpUrl ? { mcpUrl: server.mcpUrl } : {}),
       filesystemDeploymentRootDirectory: resolved.repositoryRoot,
       ...(server.corsAllowedOrigins ? { corsAllowedOrigins: server.corsAllowedOrigins } : {}),
+      ...(server.authentication ? { authentication: server.authentication } : {}),
     },
     environment: configEnvironment(resolved),
     ...(resolved.environment.features ? { features: resolved.environment.features } : {}),

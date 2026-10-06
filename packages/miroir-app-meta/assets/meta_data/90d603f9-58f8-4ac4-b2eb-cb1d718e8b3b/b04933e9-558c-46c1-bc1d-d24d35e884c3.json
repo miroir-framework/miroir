@@ -1,0 +1,13 @@
+{
+  "uuid": "b04933e9-558c-46c1-bc1d-d24d35e884c3",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app",
+  "measuredAt": "2026-10-03T03:19:32.000Z",
+  "eagerGzipBytes": 770102,
+  "baseline": 770102,
+  "previousBaseline": 746687,
+  "baselineChange": 23415,
+  "reason": "build(#375): bundle baselines for zod 4, drop openai 4 deps from the Electron allowlist",
+  "gitCommit": "9c61ae3366bbc527fb2fdbbccb334f3b393ea38c"
+}

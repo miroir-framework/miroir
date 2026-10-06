@@ -107,10 +107,12 @@
                     "type": "enum",
                     "definition": [
                       "any",
+                      "undefined",
                       "bigint",
                       "number",
                       "string",
-                      "boolean"
+                      "boolean",
+                      "object"
                     ]
                   },
                   {
@@ -120,6 +122,7 @@
               },
               "inputOutputType": {
                 "type": "union",
+                "discriminator": "type",
                 "definition": [
                   {
                     "type": "enum",
@@ -131,7 +134,8 @@
                       "string",
                       "boolean",
                       "object",
-                      "array"
+                      "array",
+                      "record"
                     ]
                   },
                   {
@@ -143,8 +147,8 @@
                       "type": {
                         "type": "enum",
                         "definition": [
-                          "object",
-                          "array"
+                          "array",
+                          "record"
                         ]
                       },
                       "payload": {
@@ -152,6 +156,24 @@
                         "optional": true,
                         "definition": {
                           "relativePath": "inputOutputPayloadType"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "type": {
+                        "type": "literal",
+                        "definition": "tuple"
+                      },
+                      "payload": {
+                        "type": "array",
+                        "definition": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "inputOutputPayloadType"
+                          }
                         }
                       }
                     }

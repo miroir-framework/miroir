@@ -4,6 +4,7 @@ import {
   miroirCoreStartup,
   MiroirEventService,
   MiroirLoggerFactory,
+  type RestClientStub,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type LoggerFactoryInterface,
@@ -37,6 +38,9 @@ export type CliPlatform = {
   environment: ResolvedEnvironment;
   domainController: DomainControllerInterface;
   applicationDeploymentMap: ApplicationDeploymentMap;
+  /** The emulated server and its entry point, for the authentication gate (#263). */
+  serverDomainController?: DomainControllerInterface;
+  restClientStub?: RestClientStub;
 };
 
 export async function initializePlatform(
@@ -68,10 +72,20 @@ export async function initializePlatform(
     loggerOptions,
   );
 
-  const { domainController } = await setupMiroirPlatform(miroirConfig, miroirActivityTracker, miroirEventService);
+  const { domainController, domainControllerForServer, restClientStub } = await setupMiroirPlatform(
+    miroirConfig,
+    miroirActivityTracker,
+    miroirEventService,
+  );
   const reconciliation = await bootEnvironment(domainController, environment, env);
   for (const warning of reconciliation.warnings) {
     log(`[miroir-cli] warning: ${warning}`);
   }
-  return { environment, domainController, applicationDeploymentMap: reconciliation.applicationDeploymentMap };
+  return {
+    environment,
+    domainController,
+    applicationDeploymentMap: reconciliation.applicationDeploymentMap,
+    serverDomainController: domainControllerForServer,
+    restClientStub,
+  };
 }

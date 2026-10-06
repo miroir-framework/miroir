@@ -23,7 +23,9 @@ import shutil
 import socket
 import subprocess
 import sys
+import threading
 import time
+from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -48,6 +50,13 @@ LOCAL_CACHES = ("redux", "zustand")
 DEFAULT_LOCAL_CACHE = "redux"
 LOCAL_CACHE_ENV = "MIROIR_TEST_LOCAL_CACHE"
 
+# #477: `--jobs N` runs steps at the same time. Each job is a worker `w1`..`wN`; the runner passes it to
+# its steps in MIROIR_TEST_WORKER, and a test environment then keeps its state in
+# `.miroir/<environment>@<worker>` (miroir-env `environmentStateName`), so jobs do not share stores.
+WORKER_ENV = "MIROIR_TEST_WORKER"
+DEFAULT_JOBS = 4
+STATE_ROOT_DIRNAME = ".miroir"
+
 TierName = Literal["unit", "default", "full"]
 TIER_ORDER: dict[str, int] = {"unit": 0, "default": 1, "full": 2}
 StepStatus = Literal["passed", "failed", "skipped", "not_run"]
@@ -67,6 +76,18 @@ RED = "\033[91m"
 YELLOW = "\033[93m"
 GRAY = "\033[90m"
 RESET = "\033[0m"
+
+# A step running in a pool thread buffers its console lines; the main thread prints them as one block
+# when the step ends, so parallel steps never interleave their lines.
+_console = threading.local()
+
+
+def emit(line: str) -> None:
+    buffer = getattr(_console, "buffer", None)
+    if buffer is None:
+        print(line, flush=True)
+    else:
+        buffer.append(line)
 
 
 @dataclass
@@ -294,6 +315,16 @@ def spawn(argv: list[str], env: dict[str, str] | None) -> subprocess.CompletedPr
     )
 
 
+def step_env(snap_dir: Path, step_id: str, timings: bool, worker: str | None) -> dict[str, str] | None:
+    """Env for one step: the timing profile (#318) and the job's worker (#477), else the runner's own."""
+    if not timings and worker is None:
+        return None
+    env = timing_env(snap_dir, step_id) if timings else dict(os.environ)
+    if worker is not None:
+        env[WORKER_ENV] = worker
+    return env
+
+
 def run_step(
     step: dict[str, Any],
     *,
@@ -301,6 +332,7 @@ def run_step(
     snap_dir: Path,
     dry_run: bool,
     timings: bool = False,
+    worker: str | None = None,
 ) -> StepResult:
     step_id = step["id"]
     argv = resolve_argv(expand_argv(list(step["argv"]), profile, snap_dir))
@@ -327,9 +359,9 @@ def run_step(
         log_path.write_text(f"DRY-RUN: {' '.join(argv)}\n", encoding="utf-8")
         return result
 
-    print(f"\n=== [{tier}] {step_id} ===", flush=True)
-    print(f"$ {' '.join(argv)}", flush=True)
-    env = timing_env(snap_dir, step_id) if timings else None
+    emit(f"\n=== [{tier}] {step_id} ===")
+    emit(f"$ {' '.join(argv)}")
+    env = step_env(snap_dir, step_id, timings, worker)
     started = time.perf_counter()
     try:
         proc = spawn(argv, env)
@@ -339,7 +371,7 @@ def run_step(
         result.duration_s = round(time.perf_counter() - started, 3)
         result.error_tail = str(exc)
         log_path.write_text(f"OSError: {exc}\nargv: {argv}\n", encoding="utf-8")
-        print(f"{RED}FAILED{RESET} (spawn): {exc}", flush=True)
+        emit(f"{RED}FAILED{RESET} (spawn): {exc}")
         return result
 
     duration = time.perf_counter() - started
@@ -350,11 +382,11 @@ def run_step(
     result.vitest = parse_vitest_counts(combined)
     if proc.returncode == 0:
         result.status = "passed"
-        print(f"{GREEN}PASSED{RESET} ({result.duration_s}s)", flush=True)
+        emit(f"{GREEN}PASSED{RESET} ({result.duration_s}s)")
     else:
         result.status = "failed"
         result.error_tail = tail_text(combined)
-        print(f"{RED}FAILED{RESET} exit={proc.returncode} ({result.duration_s}s)", flush=True)
+        emit(f"{RED}FAILED{RESET} exit={proc.returncode} ({result.duration_s}s)")
     return result
 
 
@@ -556,6 +588,7 @@ def run_shared_group(
     snap_dir: Path,
     dry_run: bool,
     timings: bool,
+    worker: str | None = None,
 ) -> dict[str, StepResult]:
     shared_dir = snap_dir / SHARED_DIRNAME
     shared_dir.mkdir(parents=True, exist_ok=True)
@@ -593,9 +626,9 @@ def run_shared_group(
             results[member["id"]] = result
         return results
 
-    print(f"\n=== [shared] {group}: {', '.join(m['id'] for m in members)} ===", flush=True)
-    print(f"$ {' '.join(argv)}", flush=True)
-    env = timing_env(snap_dir, f"{SHARED_DIRNAME}-{group}") if timings else None
+    emit(f"\n=== [shared] {group}: {', '.join(m['id'] for m in members)} ===")
+    emit(f"$ {' '.join(argv)}")
+    env = step_env(snap_dir, f"{SHARED_DIRNAME}-{group}", timings, worker)
     started = time.perf_counter()
     try:
         proc = spawn(argv, env)
@@ -644,11 +677,13 @@ def run_shared_group(
         )
         if passed:
             result.status = "passed"
-            print(f"{GREEN}PASSED{RESET} [shared] {member['id']} ({result.duration_s}s)", flush=True)
+            emit(f"{GREEN}PASSED{RESET} [shared] {member['id']} ({result.duration_s}s)")
             results[member["id"]] = result
             continue
-        print(f"{RED}FAILED{RESET} [shared] {member['id']}; re-running legacy", flush=True)
-        fallback = run_step(member, profile=profile, snap_dir=snap_dir, dry_run=False, timings=timings)
+        emit(f"{RED}FAILED{RESET} [shared] {member['id']}; re-running legacy")
+        fallback = run_step(
+            member, profile=profile, snap_dir=snap_dir, dry_run=False, timings=timings, worker=worker
+        )
         fallback.extra = {
             "mode": "shared→legacy",
             "shared_group": group,
@@ -661,7 +696,7 @@ def run_shared_group(
             # Passes alone, fails in the group: files interfere through shared module state.
             fallback.extra["shared_state_leak_suspected"] = True
         results[member["id"]] = fallback
-    print(f"shared group {group} done in {group_duration}s", flush=True)
+    emit(f"shared group {group} done in {group_duration}s")
     return results
 
 
@@ -979,6 +1014,21 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     p.add_argument(
+        "--jobs",
+        type=int,
+        default=DEFAULT_JOBS,
+        help=(
+            f"Steps (or shared groups) run at the same time (#477, default {DEFAULT_JOBS}); each job has "
+            f"its own test environment state, passed to its steps in {WORKER_ENV}. 1 runs them one "
+            "after the other, without a worker"
+        ),
+    )
+    p.add_argument(
+        "--keep-worker-state",
+        action="store_true",
+        help="Keep each job's test environment state (.miroir/<environment>@<worker>, databases) after the run",
+    )
+    p.add_argument(
         "--manifest",
         default=None,
         help="Manifest to run (default: scripts/nonreg-manifest.json)",
@@ -996,6 +1046,251 @@ def build_parser() -> argparse.ArgumentParser:
     return p
 
 
+@dataclass
+class RunContext:
+    profile: str
+    snap_dir: Path
+    dry_run: bool
+    timings: bool
+
+
+def not_run_result(step: dict[str, Any], run: RunContext) -> StepResult:
+    return StepResult(
+        id=step["id"],
+        title=step["title"],
+        tier=step["tier"],
+        requires=step.get("requires", "none"),
+        status="not_run",
+        skip_reason="aborted after earlier failure (--fail-fast)",
+        argv=expand_argv(list(step["argv"]), run.profile, run.snap_dir),
+    )
+
+
+def run_serial(
+    steps: list[dict[str, Any]],
+    shared_groups: dict[str, list[dict[str, Any]]],
+    run: RunContext,
+    *,
+    fail_fast: bool,
+) -> list[StepResult]:
+    """One step (or shared group) after the other, without a worker: the behaviour before #477."""
+    results: list[StepResult] = []
+    aborted = False
+    shared_results: dict[str, StepResult] = {}
+
+    for step in steps:
+        # A shared group runs all its members at the first one, so a member listed after a
+        # fail-fast abort may already have run: report its real result, not "not_run".
+        if aborted and step["id"] not in shared_results:
+            results.append(not_run_result(step, run))
+            continue
+
+        group = step.get("shared", {}).get("group") if shared_groups else None
+        if group is not None:
+            if step["id"] not in shared_results:
+                shared_results.update(
+                    run_shared_group(
+                        group,
+                        shared_groups[group],
+                        profile=run.profile,
+                        snap_dir=run.snap_dir,
+                        dry_run=run.dry_run,
+                        timings=run.timings,
+                    )
+                )
+            result = shared_results[step["id"]]
+        else:
+            result = run_step(
+                step, profile=run.profile, snap_dir=run.snap_dir, dry_run=run.dry_run, timings=run.timings
+            )
+        results.append(result)
+        if result.status == "failed" and fail_fast:
+            aborted = True
+
+    return results
+
+
+@dataclass
+class Unit:
+    """What one job runs: a step, or a whole shared group (#318)."""
+
+    steps: list[dict[str, Any]]
+    group: str | None = None
+
+    @property
+    def alone(self) -> bool:
+        """A step with `"parallel": false` runs with no other step running (#477)."""
+        return any(step.get("parallel") is False for step in self.steps)
+
+
+def plan_units(steps: list[dict[str, Any]], shared_groups: dict[str, list[dict[str, Any]]]) -> list[Unit]:
+    """Units in manifest order; a shared group takes the place of its first member."""
+    units: list[Unit] = []
+    seen_groups: set[str] = set()
+    for step in steps:
+        group = step.get("shared", {}).get("group") if shared_groups else None
+        if group is None:
+            units.append(Unit([step]))
+        elif group not in seen_groups:
+            seen_groups.add(group)
+            units.append(Unit(shared_groups[group], group))
+    return units
+
+
+def run_unit(unit: Unit, shared_groups: dict[str, list[dict[str, Any]]], run: RunContext, worker: str | None) -> tuple[dict[str, StepResult], list[str]]:
+    """Runs a unit in a pool thread; returns its results and the console lines it buffered."""
+    _console.buffer = []
+    try:
+        if unit.group is not None:
+            results = run_shared_group(
+                unit.group,
+                shared_groups[unit.group],
+                profile=run.profile,
+                snap_dir=run.snap_dir,
+                dry_run=run.dry_run,
+                timings=run.timings,
+                worker=worker,
+            )
+        else:
+            step = unit.steps[0]
+            results = {
+                step["id"]: run_step(
+                    step, profile=run.profile, snap_dir=run.snap_dir, dry_run=run.dry_run,
+                    timings=run.timings, worker=worker,
+                )
+            }
+        for result in results.values():
+            if worker is not None:
+                result.extra["worker"] = worker
+        return results, _console.buffer
+    finally:
+        _console.buffer = None
+
+
+def run_parallel(
+    steps: list[dict[str, Any]],
+    shared_groups: dict[str, list[dict[str, Any]]],
+    run: RunContext,
+    *,
+    fail_fast: bool,
+    jobs: int,
+) -> tuple[list[StepResult], list[str]]:
+    """Up to `jobs` units at a time, each on a free worker; results in manifest order (#477)."""
+    free_workers = [f"w{n}" for n in range(1, jobs + 1)]
+    used: list[str] = []
+    by_id: dict[str, StepResult] = {}
+    running: dict[Future, str | None] = {}
+    aborted = False
+
+    def collect(done: set[Future]) -> None:
+        nonlocal aborted
+        for future in done:
+            worker = running.pop(future)
+            if worker is not None:
+                free_workers.append(worker)
+                free_workers.sort(key=lambda w: int(w[1:]))
+            results, lines = future.result()
+            for line in lines:
+                print(line, flush=True)
+            by_id.update(results)
+            if fail_fast and any(r.status == "failed" for r in results.values()):
+                aborted = True
+
+    with ThreadPoolExecutor(max_workers=jobs) as pool:
+        for unit in plan_units(steps, shared_groups):
+            if unit.alone:
+                while running:
+                    collect(wait(running, return_when=FIRST_COMPLETED).done)
+            while len(running) >= jobs:
+                collect(wait(running, return_when=FIRST_COMPLETED).done)
+            # A unit that failed while a worker was free must stop the run before the next starts.
+            collect({future for future in running if future.done()})
+            if aborted:
+                break
+            if unit.alone:
+                # Not a test environment step (the run bracket): no worker, nothing else running.
+                results, lines = run_unit(unit, shared_groups, run, None)
+                for line in lines:
+                    print(line, flush=True)
+                by_id.update(results)
+                if fail_fast and any(r.status == "failed" for r in results.values()):
+                    aborted = True
+                continue
+            worker = free_workers.pop(0)
+            if worker not in used:
+                used.append(worker)
+            running[pool.submit(run_unit, unit, shared_groups, run, worker)] = worker
+        while running:
+            collect(wait(running, return_when=FIRST_COMPLETED).done)
+
+    return [by_id.get(step["id"]) or not_run_result(step, run) for step in steps], sorted(used, key=lambda w: int(w[1:]))
+
+
+def remove_worker_state(workers: list[str]) -> tuple[list[str], bool]:
+    """Removes each worker's test environment state (#477): `.miroir/<environment>@<worker>`, and, for an
+    environment with a PostgreSQL or MongoDB connection, its schemas or databases through `miroir-env clear`,
+    whatever the storage of the run (a step may open another test environment than the run's). Returns what
+    was done, one line each, and whether everything was removed."""
+    lines: list[str] = []
+    complete = True
+    state_root = ROOT / STATE_ROOT_DIRNAME
+    # Only the state of the test environments defined in ENVIRONMENTS_DIR: a run started by a test
+    # (scripts/tests) never touches the workers of the run that started it.
+    environments = sorted(p.stem for p in ENVIRONMENTS_DIR.glob("test-*.json"))
+    for worker in workers:
+        for environment in environments:
+            directory = state_root / f"{environment}@{worker}"
+            if not directory.is_dir():
+                continue
+            connections = load_environment_connections(environment, ENVIRONMENTS_DIR)
+            if not ("postgres" in connections or "mongodb" in connections):
+                shutil.rmtree(directory, ignore_errors=True)
+                lines.append(f"removed {repo_relative(directory)}")
+                continue
+            argv = resolve_argv(["npm", "run", "--silent", "miroir-env", "--", "clear", "--name", environment])
+            proc = spawn(argv, {**os.environ, WORKER_ENV: worker})
+            output = ((proc.stdout or "") + (proc.stderr or "")).strip()
+            if proc.returncode != 0:
+                complete = False
+                lines.append(f"miroir-env clear {environment} ({worker}) failed, exit {proc.returncode}")
+            lines.extend(output.splitlines())
+    return lines, complete
+
+
+class RunLockBusy(Exception):
+    pass
+
+
+class RunLock:
+    """One run at a time per results root (#477): two runs would use the same workers w1..wN, and the
+    end of one would remove the stores the other is using. The operating system releases the lock when
+    the process ends, even when it is killed."""
+
+    def __init__(self, path: Path) -> None:
+        self.path = path
+        self.file: Any = None
+
+    def __enter__(self) -> "RunLock":
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.file = open(self.path, "a+")
+        try:
+            if os.name == "nt":
+                import msvcrt
+
+                msvcrt.locking(self.file.fileno(), msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl
+
+                fcntl.flock(self.file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError as exc:
+            self.file.close()
+            raise RunLockBusy(f"another nonreg run holds {repo_relative(self.path)}") from exc
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        self.file.close()
+
+
 def main(argv: list[str] | None = None) -> int:
     global MANIFEST_PATH, RESULTS_ROOT, ENVIRONMENTS_DIR
     args = build_parser().parse_args(argv)
@@ -1005,6 +1300,12 @@ def main(argv: list[str] | None = None) -> int:
         RESULTS_ROOT = Path(args.results_root).resolve()
     if args.environments_dir:
         ENVIRONMENTS_DIR = Path(args.environments_dir).resolve()
+    if args.jobs < 1:
+        print(f"error: --jobs must be 1 or more, got {args.jobs}", file=sys.stderr)
+        return 2
+    # #477: a worker left in the calling shell would move a serial run's stores; the runner gives
+    # each parallel job its own.
+    os.environ.pop(WORKER_ENV, None)
     manifest = load_manifest()
     if args.storage:
         profile = profile_for_storage(args.storage)
@@ -1075,6 +1376,15 @@ def main(argv: list[str] | None = None) -> int:
             print(f"error: {error}", file=sys.stderr)
             return 2
 
+    # Held until the process ends; a dry run touches no store.
+    run_lock = None
+    if not args.dry_run:
+        try:
+            run_lock = RunLock(RESULTS_ROOT / ".run.lock").__enter__()
+        except RunLockBusy as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
+
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     snap_dir = RESULTS_ROOT / stamp
     snap_dir.mkdir(parents=True, exist_ok=True)
@@ -1082,49 +1392,27 @@ def main(argv: list[str] | None = None) -> int:
 
     started_at = datetime.now(timezone.utc).isoformat()
     wall_start = time.perf_counter()
-    results: list[StepResult] = []
-    aborted = False
     shared_groups = plan_shared_groups(steps) if args.runner == "shared" else {}
-    shared_results: dict[str, StepResult] = {}
+    run = RunContext(profile=profile, snap_dir=snap_dir, dry_run=args.dry_run, timings=args.timings)
+    if args.jobs == 1:
+        results = run_serial(steps, shared_groups, run, fail_fast=fail_fast)
+        workers_used: list[str] = []
+    else:
+        results, workers_used = run_parallel(steps, shared_groups, run, fail_fast=fail_fast, jobs=args.jobs)
 
-    for step in steps:
-        # A shared group runs all its members at the first one, so a member listed after a
-        # fail-fast abort may already have run: report its real result, not "not_run".
-        if aborted and step["id"] not in shared_results:
-            results.append(
-                StepResult(
-                    id=step["id"],
-                    title=step["title"],
-                    tier=step["tier"],
-                    requires=step.get("requires", "none"),
-                    status="not_run",
-                    skip_reason="aborted after earlier failure (--fail-fast)",
-                    argv=expand_argv(list(step["argv"]), profile, snap_dir),
-                )
-            )
-            continue
-
-        group = step.get("shared", {}).get("group") if args.runner == "shared" else None
-        if group is not None:
-            if step["id"] not in shared_results:
-                shared_results.update(
-                    run_shared_group(
-                        group,
-                        shared_groups[group],
-                        profile=profile,
-                        snap_dir=snap_dir,
-                        dry_run=args.dry_run,
-                        timings=args.timings,
-                    )
-                )
-            result = shared_results[step["id"]]
+    worker_state: str | None = None
+    worker_state_warnings: list[str] = []
+    if workers_used and not args.dry_run:
+        if args.keep_worker_state:
+            worker_state = "kept"
+            print(f"\nworker state kept: {STATE_ROOT_DIRNAME}/*@{{{','.join(workers_used)}}}", flush=True)
         else:
-            result = run_step(
-                step, profile=profile, snap_dir=snap_dir, dry_run=args.dry_run, timings=args.timings
-            )
-        results.append(result)
-        if result.status == "failed" and fail_fast:
-            aborted = True
+            cleanup_lines, complete = remove_worker_state(workers_used)
+            worker_state = "removed" if complete else "incomplete"
+            # A database server that did not answer: its schemas or databases may be left (miroir-env clear).
+            worker_state_warnings = [line for line in cleanup_lines if line.startswith("warning:")]
+            for line in cleanup_lines:
+                print(line, flush=True)
 
     finished_at = datetime.now(timezone.utc).isoformat()
     duration_s = round(time.perf_counter() - wall_start, 3)
@@ -1161,6 +1449,12 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.runner != "legacy":
         summary["runner"] = args.runner
+    if args.jobs != 1:
+        summary["jobs"] = args.jobs
+    if worker_state is not None:
+        summary["worker_state"] = worker_state
+    if worker_state_warnings:
+        summary["worker_state_warnings"] = worker_state_warnings
     if scope_names is not None:
         summary["scopes"] = scope_names
 

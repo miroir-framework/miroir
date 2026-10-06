@@ -42,6 +42,7 @@ import { isVitestTestMode } from "../../tools/progressiveRenderConfig.js";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent.js";
 import { JsonDisplayHelper } from "miroir-react";
 import { useReportPageContext } from "../Reports/ReportPageContext.js";
+import { findPathAnnotation, TransformerTypeBadgeLine } from "../Reports/TransformerTypeAnnotation.js";
 import {
   ThemedCard,
   ThemedCardContent,
@@ -695,19 +696,36 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
     });
   }, [props.compatibilityWarnings, props.rootLessListKeyArray]);
 
+  // #453: a primitive literal (an `applyTo: "a"`) has no title row, so its type badge goes under
+  // its label (#470). Objects and arrays show theirs under their title row.
+  const primitiveTypeBadge = useMemo(
+    () =>
+      currentValueObjectAtKey !== null && typeof currentValueObjectAtKey === "object"
+        ? undefined
+        : findPathAnnotation(props.transformerTypeBadges, props.rootLessListKeyArray),
+    [currentValueObjectAtKey, props.transformerTypeBadges, props.rootLessListKeyArray],
+  );
+
   // Enhanced label element with error tooltip for simple types
   const enhancedLabelElement = useMemo(() => {
-    if (!props.labelElement || !hasPathError || !props.displayError) {
-      return props.labelElement ?? <></>;
-    }
-    
     // For simple types, wrap the label with a span that has a title attribute
+    const labelElement =
+      props.labelElement && hasPathError && props.displayError ? (
+        <span title={props.displayError.errorMessage}>{props.labelElement}</span>
+      ) : (
+        props.labelElement
+      );
+    if (!primitiveTypeBadge) {
+      return labelElement ?? <></>;
+    }
+    // #470: label and badge stack in the label slot, so the badge never sits beside the input
     return (
-      <span title={props.displayError.errorMessage}>
-        {props.labelElement}
+      <span style={{ display: "inline-flex", flexDirection: "column", alignItems: "flex-start", minWidth: 0 }}>
+        {labelElement}
+        <TransformerTypeBadgeLine badge={primitiveTypeBadge} />
       </span>
     );
-  }, [props.labelElement, hasPathError, props.displayError]);
+  }, [props.labelElement, primitiveTypeBadge, hasPathError, props.displayError]);
 
   // Get appropriate background and border colors for nested containers
   // This creates a Prettier-like visual effect where nested structures have alternating shades
@@ -1034,6 +1052,7 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
               compatibilityWarnings={props.compatibilityWarnings}
               showMlSchemaTypes={props.showMlSchemaTypes}
               mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
+              transformerTypeBadges={props.transformerTypeBadges}
               environmentAnnotations={props.environmentAnnotations}
               transformerTypeRestrictions={props.transformerTypeRestrictions}
               onChangeVector={props.onChangeVector}
@@ -1095,6 +1114,7 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
               compatibilityWarnings={props.compatibilityWarnings}
               showMlSchemaTypes={props.showMlSchemaTypes}
               mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
+              transformerTypeBadges={props.transformerTypeBadges}
               environmentAnnotations={props.environmentAnnotations}
               transformerTypeRestrictions={props.transformerTypeRestrictions}
               onChangeVector={props.onChangeVector}
@@ -1133,6 +1153,7 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
               compatibilityWarnings={props.compatibilityWarnings}
               showMlSchemaTypes={props.showMlSchemaTypes}
               mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
+              transformerTypeBadges={props.transformerTypeBadges}
               environmentAnnotations={props.environmentAnnotations}
               transformerTypeRestrictions={props.transformerTypeRestrictions}
               onChangeVector={props.onChangeVector}
@@ -1531,6 +1552,7 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
               compatibilityWarnings={props.compatibilityWarnings}
               showMlSchemaTypes={props.showMlSchemaTypes}
               mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
+              transformerTypeBadges={props.transformerTypeBadges}
               environmentAnnotations={props.environmentAnnotations}
               transformerTypeRestrictions={props.transformerTypeRestrictions}
                 onChangeVector={props.onChangeVector}
@@ -1570,6 +1592,7 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
               compatibilityWarnings={props.compatibilityWarnings}
               showMlSchemaTypes={props.showMlSchemaTypes}
               mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
+              transformerTypeBadges={props.transformerTypeBadges}
               environmentAnnotations={props.environmentAnnotations}
               transformerTypeRestrictions={props.transformerTypeRestrictions}
                 onChangeVector={props.onChangeVector}
@@ -1610,6 +1633,7 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
               compatibilityWarnings={props.compatibilityWarnings}
               showMlSchemaTypes={props.showMlSchemaTypes}
               mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
+              transformerTypeBadges={props.transformerTypeBadges}
               environmentAnnotations={props.environmentAnnotations}
               transformerTypeRestrictions={props.transformerTypeRestrictions}
               onChangeVector={props.onChangeVector}

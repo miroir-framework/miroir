@@ -1,30 +1,13 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
-import {
-  defaultSelfApplicationDeploymentMap,
-  defaultViewParamsFromAdminStorageFetchQueryParams,
-  MiroirLoggerFactory,
-  type Domain2QueryReturnType,
-  type DomainElementSuccess,
-  type EntityInstancesUuidIndex,
-  type LoggerInterface,
-  type ReduxDeploymentsState,
-  type SyncQueryRunner,
-  type ViewParamsData,
-} from "miroir-core";
-import { deployment_Admin } from "miroir-app-admin";
-import {
-  FeedbackGlowBoundary,
-  getMemoizedReduxDeploymentsStateSelectorMap,
-  useDomainControllerService,
-} from "miroir-react";
+import { MiroirLoggerFactory, type LoggerInterface } from "miroir-core";
+import { FeedbackGlowBoundary } from "miroir-react";
 
 import { packageName } from "../../../../constants.js";
 import type { ComponentTestRegistration } from "../../../4-tests/componentTests/index.js";
 import type { UiIntegrationReportTestSession } from "../../../4-tests/uiIntegrationTestLauncherTypes.js";
 import { cleanLevel } from "../../constants.js";
-import { useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
-import { ViewParamsUpdateQueue } from "../ViewParamsUpdateQueue.js";
+import { useAdminViewParams } from "../useAdminViewParams.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ComponentTestSandbox");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -56,6 +39,11 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger:
 // `componentTestStepDelayMs`, saved when the slider is released; the runner reads the current
 // value when each step starts, so moving the slider acts on the running case. The slider mounts
 // with the panel, so that a closed sandbox needs no Redux store or DomainController.
+//
+// The TransformerEditor's "Show transformer types" switch (#453) is the ViewParams attribute
+// `showTransformerTypes`. The cases render over their own store, without ViewParams: the sandbox
+// passes the app's value to the runner, which gives it to each case, and saves the switch's
+// changes in the app's ViewParams, so that it keeps its value from one case to the next.
 //
 // The header's play / pause button (#443) holds the run before its next step: the runner awaits
 // `waitWhilePaused()` before each step, after the step delay. The end of a run resumes it, so the
@@ -134,26 +122,10 @@ export function createComponentTestPauseGate(): ComponentTestPauseGate {
  * the admin store is loaded, the delay is 0 and the save does nothing.
  */
 function useComponentTestStepDelay(): { stepDelayMs: number; saveStepDelayMs: (value: number) => void } {
-  const domainController = useDomainControllerService();
-  const selectorMap = useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);
-  const queryParams = useMemo(() => defaultViewParamsFromAdminStorageFetchQueryParams(selectorMap), [selectorMap]);
-  const queryResults: Record<string, EntityInstancesUuidIndex> = useReduxDeploymentsStateQuerySelectorForCleanedResult(
-    selectorMap.runQuery as SyncQueryRunner<ReduxDeploymentsState, Domain2QueryReturnType<DomainElementSuccess>>,
-    queryParams,
-    defaultSelfApplicationDeploymentMap, // ViewParams are in the admin deployment
-  );
-  const viewParamsData = queryResults?.["viewParams"] as unknown as ViewParamsData | undefined;
+  const { viewParamsData, saveViewParams } = useAdminViewParams();
   const saveStepDelayMs = useCallback(
-    (value: number) => {
-      if (!viewParamsData?.uuid) {
-        return;
-      }
-      ViewParamsUpdateQueue.getInstance(
-        { delayMs: 5000, deploymentUuid: deployment_Admin.uuid, viewParamsInstanceUuid: viewParamsData.uuid },
-        domainController,
-      ).queueUpdate({ currentValue: viewParamsData, updates: { componentTestStepDelayMs: value } }, true);
-    },
-    [viewParamsData, domainController],
+    (value: number) => saveViewParams({ componentTestStepDelayMs: value }),
+    [saveViewParams],
   );
   // the attribute is editable elsewhere (ViewParams report): kept in the slider's range
   const saved = Number(viewParamsData?.componentTestStepDelayMs ?? 0);
@@ -203,6 +175,32 @@ const ComponentTestStepDelaySlider: React.FC<{ stepDelayMsRef: React.MutableRefO
 };
 
 // ################################################################################################
+/**
+ * #453: the TransformerEditor switch value of the cases, kept in `valueRef` for the runner, from
+ * the app's ViewParams; `saveRef` saves a change there. A change saved by a case is the value of
+ * the next case at once, the ViewParams update arriving later.
+ */
+export interface ComponentTestTransformerTypesRefs {
+  valueRef: React.MutableRefObject<boolean>;
+  saveRef: React.MutableRefObject<(showTransformerTypes: boolean) => void>;
+}
+
+const ComponentTestTransformerTypesSetting: React.FC<ComponentTestTransformerTypesRefs> = ({
+  valueRef,
+  saveRef,
+}) => {
+  const { viewParamsData, saveViewParams } = useAdminViewParams();
+  const saved = viewParamsData?.showTransformerTypes === true;
+  const lastSavedRef = useRef<boolean | undefined>(undefined);
+  if (lastSavedRef.current !== saved) {
+    lastSavedRef.current = saved;
+    valueRef.current = saved;
+  }
+  saveRef.current = (showTransformerTypes: boolean) => saveViewParams({ showTransformerTypes });
+  return null;
+};
+
+// ################################################################################################
 export const ComponentTestSandbox: React.FC<{
   open: boolean;
   /** A run is active: the close button is disabled. */
@@ -213,6 +211,8 @@ export const ComponentTestSandbox: React.FC<{
   testName?: string;
   /** #435: receives the step delay of the slider, for the runner. */
   stepDelayMsRef?: React.MutableRefObject<number>;
+  /** #453: receive the TransformerEditor switch value of the cases and its save. */
+  transformerTypesRefs?: ComponentTestTransformerTypesRefs;
   /** #438: the header checkbox "Glow on interactions"; the glow is on when omitted. */
   glowOn?: boolean;
   onGlowOnChange?: (glowOn: boolean) => void;
@@ -226,6 +226,7 @@ export const ComponentTestSandbox: React.FC<{
   sandboxRef,
   testName,
   stepDelayMsRef,
+  transformerTypesRefs,
   glowOn = true,
   onGlowOnChange,
   paused = false,
@@ -249,6 +250,7 @@ export const ComponentTestSandbox: React.FC<{
         <span style={{ fontWeight: "bold", color: "#4527a0", flexGrow: 1 }}>Component test sandbox</span>
         {/* mounted with the panel only: it reads ViewParams, which needs the app's providers */}
         {open && stepDelayMsRef && <ComponentTestStepDelaySlider stepDelayMsRef={stepDelayMsRef} />}
+        {open && transformerTypesRefs && <ComponentTestTransformerTypesSetting {...transformerTypesRefs} />}
         {onPausedChange && (
           <button
             type="button"
@@ -327,11 +329,23 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
 
   // #435: set by the slider, read by the runner when each step starts
   const stepDelayMsRef = useRef(0);
+  // #453: set from the app's ViewParams, read by the runner when each case is rendered
+  const transformerTypesValueRef = useRef(false);
+  const transformerTypesSaveRef = useRef<(showTransformerTypes: boolean) => void>(() => {});
+  const transformerTypesRefs = useMemo(
+    () => ({ valueRef: transformerTypesValueRef, saveRef: transformerTypesSaveRef }),
+    [],
+  );
   const runControls = useMemo(
     () => ({
       onCaseStart: setTestName,
       stepDelayMs: () => stepDelayMsRef.current,
       waitWhilePaused: () => pauseGateRef.current.waitWhilePaused(),
+      showTransformerTypes: () => transformerTypesValueRef.current,
+      saveShowTransformerTypes: (showTransformerTypes: boolean) => {
+        transformerTypesValueRef.current = showTransformerTypes;
+        transformerTypesSaveRef.current(showTransformerTypes);
+      },
     }),
     [],
   );
@@ -416,8 +430,10 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
 
   // On unmount, close after the current commit: unmounting the case's React root synchronously
   // while React commits this tree makes React warn about a race.
+  // A run paused at that time is resumed, so that it ends instead of waiting for a gone button.
   useEffect(
     () => () => {
+      pauseGateRef.current.resume();
       const registration = registrationRef.current;
       registrationRef.current = undefined;
       if (registration) {
@@ -442,6 +458,7 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
         sandboxRef={sandboxRef}
         testName={testName}
         stepDelayMsRef={stepDelayMsRef}
+        transformerTypesRefs={transformerTypesRefs}
         glowOn={glowOn}
         onGlowOnChange={setGlowOn}
         paused={paused}

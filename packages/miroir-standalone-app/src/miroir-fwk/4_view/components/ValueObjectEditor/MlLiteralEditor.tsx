@@ -5,6 +5,7 @@ import React, { FC, useCallback, useMemo, useState } from "react";
 import {
   defaultViewParamsFromAdminStorageFetchQueryParams,
   getDefaultValueForMlSchemaWithResolutionNonHook,
+  holdsOneDefault,
   keepAttributesOnTypeChange,
   MlElement,
   MlEnum,
@@ -81,6 +82,7 @@ export const discriminatorBranchDefaultValue = (
   reduxDeploymentsState: ReduxDeploymentsState | undefined,
   formik: any,
   log: LoggerInterface,
+  forceOptional: boolean = false,
 ): Record<string, any> | undefined => {
   let newMlSchema: MlElement | undefined = undefined;
   let localChosenDiscriminator: string | undefined = undefined;
@@ -225,7 +227,7 @@ export const discriminatorBranchDefaultValue = (
         undefined,
         [], // currentValuePath
         // undefined,
-        false, // forceOptional
+        forceOptional,
         currentApplication,
         applicationDeploymentMap,
         currentDeploymentUuid,
@@ -585,7 +587,7 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
       : currentReportSectionFormikValues
     : undefined;
   const defaultTransformerNodeForType = useCallback(
-    (transformerType: string) =>
+    (transformerType: string, forceOptional: boolean = false) =>
       parentKeyMap
         ? discriminatorBranchDefaultValue(
             transformerType,
@@ -602,6 +604,7 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
             deploymentEntityState,
             formik,
             log,
+            forceOptional,
           )
         : undefined,
     [
@@ -662,6 +665,62 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
     formik,
     reportSectionPathAsString,
   ]);
+  // #447: the values the editor fills in a node of `transformerType` at this position: the type's
+  // default, without and with its optional attributes, and the default of the slot holding the node
+  // (the `initializeTo` of the transformer union) when it has that type.
+  const editorDefaultsOfTransformerNode = useCallback(
+    (transformerType: unknown): Record<string, unknown>[] => {
+      if (typeof transformerType !== "string") {
+        return [];
+      }
+      const defaults: Record<string, unknown>[] = [];
+      try {
+        for (const forceOptional of [false, true]) {
+          const typeDefault = defaultTransformerNodeForType(transformerType, forceOptional);
+          if (typeDefault) {
+            defaults.push(typeDefault);
+          }
+        }
+        const slotDefault = parentKeyMap?.rawSchema
+          ? getDefaultValueForMlSchemaWithResolutionNonHook(
+              "build",
+              parentKeyMap.rawSchema,
+              formik.values[reportSectionPathAsString],
+              rootLessListKey,
+              undefined,
+              [],
+              true, // forceOptional: an optional slot, once added, holds this default too
+              currentApplication,
+              applicationDeploymentMap,
+              currentDeploymentUuid,
+              currentMiroirModelEnvironment,
+              defaultValueParams,
+              {},
+              deploymentEntityState,
+            )
+          : undefined;
+        if (slotDefault?.transformerType === transformerType) {
+          defaults.push(slotDefault);
+        }
+      } catch (error) {
+        log.warn("editorDefaultsOfTransformerNode: no default value for", transformerType, error);
+      }
+      return defaults;
+    },
+    [
+      defaultTransformerNodeForType,
+      parentKeyMap,
+      formik,
+      reportSectionPathAsString,
+      rootLessListKey,
+      currentApplication,
+      applicationDeploymentMap,
+      currentDeploymentUuid,
+      currentMiroirModelEnvironment,
+      defaultValueParams,
+      deploymentEntityState,
+    ],
+  );
   // #415 D4, D5: a transformerType change keeps the attributes the new type accepts. When it drops
   // attributes, a dialog names them first.
   const [pendingTypeChange, setPendingTypeChange] = useState<
@@ -686,7 +745,8 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
         { ...newDefault, transformerType: newType },
         currentMiroirModelEnvironment,
       );
-      if (change.dropped.length === 0) {
+      // #447: dropping only values of one default the editor filled in for the old type asks nothing
+      if (holdsOneDefault(oldNode, editorDefaultsOfTransformerNode(oldNode.transformerType), change.dropped)) {
         replaceTransformerNode(change.node);
         return;
       }
@@ -695,6 +755,7 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
     [
       transformerNodeValue,
       defaultTransformerNodeForType,
+      editorDefaultsOfTransformerNode,
       handleFilterableSelectChange,
       currentMiroirModelEnvironment,
       replaceTransformerNode,

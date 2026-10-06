@@ -1,0 +1,112 @@
+{
+  "uuid": "295d0905-3480-49cd-9b92-6318a96dce01",
+  "selfApplication": "6c4edcb2-e165-407a-b728-fbf8a18b6bf7",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "GitHubConnectReport",
+  "defaultLabel": "Connect to GitHub",
+  "type": "multistep",
+  "description": "Enter a GitHub personal access token: Next checks it with GitHub, Finish saves it and opens your repositories.",
+  "definition": {
+    "compositeActionSequence": {
+      "actionType": "compositeActionSequence",
+      "actionLabel": "saveGitHubToken",
+      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+      "payload": {
+        "actionSequence": [
+          {
+            "actionType": "setExternalServiceCredential",
+            "actionLabel": "saveGitHubToken",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "payload": {
+              "application": "6c4edcb2-e165-407a-b728-fbf8a18b6bf7",
+              "endpointUuid": "0c642e2a-3922-4ce7-99a6-88f91f6a103f",
+              "probeOperationId": "users/get-authenticated",
+              "credential": {
+                "transformerType": "getFromParameters",
+                "interpolation": "runtime",
+                "referencePath": [
+                  "token",
+                  "token"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "finishOpenReport": {
+      "reportUuid": "9bd8a57a-19e4-4911-b4ae-d1bbebbde338"
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "stepId": "credential",
+          "section": {
+            "type": "inputReportSection",
+            "definition": {
+              "label": "GitHub token",
+              "inputPrefix": "token",
+              "inputMLSchema": {
+                "type": "object",
+                "definition": {
+                  "token": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Personal access token",
+                        "display": {
+                          "mask": true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "onNext": {
+            "actionType": "compositeActionSequence",
+            "actionLabel": "checkGitHubToken",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "payload": {
+              "actionSequence": [
+                {
+                  "actionType": "setExternalServiceCredential",
+                  "actionLabel": "checkGitHubToken",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  "payload": {
+                    "application": "6c4edcb2-e165-407a-b728-fbf8a18b6bf7",
+                    "endpointUuid": "0c642e2a-3922-4ce7-99a6-88f91f6a103f",
+                    "probeOperationId": "users/get-authenticated",
+                    "credential": {
+                      "transformerType": "getFromParameters",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "token",
+                        "token"
+                      ]
+                    },
+                    "probeOnly": true
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "stepId": "connected",
+          "section": {
+            "type": "jsonReportSection",
+            "definition": {
+              "label": "Connected GitHub account",
+              "fetchedDataReference": "credential"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

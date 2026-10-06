@@ -1,4 +1,4 @@
-# Authentication (#71) and access (#262, #264)
+# Authentication (#71) and access (#262, #263, #264)
 
 Platform users prove identity with a username and password stored in the **Admin** application (`MiroirUser` + `MiroirUserCredential`). Successful login returns a Bearer token. After identity, `MiroirRight` is evaluated as a **union**:
 
@@ -36,6 +36,7 @@ Wrapping key (optional until the first persisted or imported secret exists): `--
 | POST | `/auth/change-password` | Requires Bearer. Body `{ "currentPassword", "newPassword" }` → `{ changed: true }`. Updates only the principal’s `MiroirUserCredential`. |
 | CRUD / action / query | existing REST | Requires `Authorization: Bearer <token>`, then application **or** deployment access |
 | `/api/copilotkit` | same Express app | Same Bearer gate |
+| `/mcp` | main app and MCP listener | Same Bearer gate, under the [MCP switch](#mcp) |
 
 Seed logins (dev only):
 
@@ -58,6 +59,8 @@ Admin entity `MiroirSecret` (uuid `a96856df-2b38-494a-8027-82617e2d64ad`) stores
 
 `--secret` / `MIROIR_SECRET_*` / `AI_OPENAI_KEY` / `AI_ANTHROPIC_KEY` / `AI_GOOGLE_KEY` / `AI_GITHUB_TOKEN` / `CURSOR_API_KEY` import **process-scoped** rows once, then are discarded. Steady-state launch is the wrapping key alone. How to turn the in-app assistant on with those keys: [Using AI in Miroir](../guides/using-ai.md). `registerSecrets` remains an in-process **test hatch** (used by Spotify integ and `LIVE_SPOTIFY_*`). The Admin lightbulb menu lists existing secrets (same list/detail reports as Users and Rights). Writes go through CLI `--secret` import or labeled `secrets.set` / `secrets.delete` actions.
 
+A Report can save a user's own token: the Miroir action `setExternalServiceCredential` (#472) checks a token against an external-service Endpoint with one GET operation, then saves it under the Endpoint's `credentialKey`, as a per-user row when a user is logged in, otherwise as the process row. It needs the wrapping key, runs on the server (a remote client forwards it), and probes with the typed token even when the user already has a saved one. The GitHub example's home Report uses it.
+
 The default Admin seed (and Docker first-run copy of it) has **no** `MiroirSecret` instance rows. `docker compose up` does not need a wrapping key until you import or persist a secret.
 
 ### Generate the wrapping key
@@ -78,9 +81,41 @@ export MIROIR_SECRETS_MASTER_KEY='<that-value>'
 
 Do **not** reuse `MIROIR_AUTH_TOKEN_SECRET` (that one can be ephemeral). Tests use the dummy `test-secrets-master`; do not use that in a real deployment. Launch examples: [Build it yourself §7](../guides/build-it-yourself.md#7-start-the-server).
 
-## Not gated yet
+## MCP, CLI and Electron (#263)
 
-MCP (`mcpUrl`, default port 4080), `miroir-cli`, and Electron IPC stay open. Follow-up: [#263](https://github.com/miroir-framework/miroir/issues/263).
+With authentication on, these three doors ask for the same identity and apply the same access rule as REST: a Bearer token from `/auth/login`, then an application or deployment grant (Admin and Miroir always allowed). With the hatch off they stay open, as before.
+
+### MCP
+
+Both MCP routes are gated: the dedicated listener (`server.mcpUrl`, default port 4080) and `/mcp` on the main app.
+
+- A POST without a valid `Authorization: Bearer <token>` gets HTTP **401** `AuthenticationRequired`.
+- A tool call on an application the user may not open returns a tool error of type `AccessDenied`. Other tools in the same session still work.
+- The in-app agent (Claude or Cursor backend) sends the CopilotKit caller's `Authorization` to `/mcp`, so its tool calls run as the logged-in user.
+
+MCP has its own switch, so non-regression or a trusted local client can keep MCP open while the rest is gated:
+
+| Source | Name | Notes |
+|---|---|---|
+| CLI | `--disable-mcp-auth` / `--enable-mcp-auth` | Last flag wins |
+| Env | `MIROIR_MCP_AUTH_ENABLED` | Same values as `MIROIR_AUTH_ENABLED` |
+| Config | `server.authentication.mcp` | Server JSON, or `server.authentication` of the environment |
+| Default | follows the global hatch | |
+
+The global hatch wins: with authentication off, MCP is open whatever this switch says. Test launchers set `MIROIR_MCP_AUTH_ENABLED=0` when unset.
+
+### miroir-cli
+
+The CLI uses the same hatch (`--disable-auth` / `--enable-auth`, `MIROIR_AUTH_ENABLED`, `server.authentication.enabled` of the environment). With it on, every command except `list` and `help` needs one of:
+
+- `--user <name>`, with the password in `MIROIR_PASSWORD` or typed at the prompt (no echo). Without a terminal and without `MIROIR_PASSWORD`, the CLI stops.
+- `--token <bearer>` or `MIROIR_AUTH_TOKEN`: a token issued by a server with the same `MIROIR_AUTH_TOKEN_SECRET`. A token from another secret is refused.
+
+A failed login prints `{ "status": "error", "error": { "type": "AuthenticationFailed" } }` and exits 1; an inactive user and a wrong password look the same. A command on an application the user may not open fails with `AccessDenied`.
+
+### Electron
+
+The desktop app follows the same hatch, default on; turn it off with `--disable-auth`, `MIROIR_AUTH_ENABLED=0` or `server.authentication.enabled: false` in the environment. With it on, the renderer shows the login page and logs in over IPC. Every `rest-call`, `server-action` and `server-query` message carries the session Bearer; the main process answers `AuthenticationRequired` without one and `AccessDenied` for an application the user may not open. The loopback `/api/copilotkit` and `/mcp` routes are gated like the server's, `/mcp` under the MCP switch.
 
 ## Legacy
 

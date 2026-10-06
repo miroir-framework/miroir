@@ -43,13 +43,17 @@ import {
   checkTransformerInterfaceCompatibilityWithInference,
   checkTransformerInterfaceRecursively,
   findInvalidStockTransformerInputOutputs,
+  formatInputOutputTypeLabel,
   getTransformerDefinitionInputOutput,
   inputOutputTypeOfValue,
   inputOutputTypesCompatible,
+  transformerNodeTypeStatus,
   transformerTypesAcceptingInput,
 } from "../2_domain/TransformerInterfaceCheck";
 import {
+  editedAttributes,
   elementParameterReadsOfDefaultInput,
+  holdsOneDefault,
   keepAttributesOnTypeChange,
   parameterReadsOfDefaultInput,
   pipeCandidates,
@@ -227,8 +231,10 @@ const FUNCTION_CALL_REGISTRY: Record<
       findInvalidStockTransformerInputOutputs as WhitelistedFunction,
     transformerTypesAcceptingInput: transformerTypesAcceptingInput as WhitelistedFunction,
     inputOutputTypeOfValue: inputOutputTypeOfValue as WhitelistedFunction,
+    formatInputOutputTypeLabel: formatInputOutputTypeLabel as WhitelistedFunction,
     checkTransformerInterfaceRecursively:
       checkTransformerInterfaceRecursively as WhitelistedFunction,
+    transformerNodeTypeStatus: transformerNodeTypeStatus as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerTreeEdit": {
     transformerSlots: transformerSlots as WhitelistedFunction,
@@ -240,6 +246,8 @@ const FUNCTION_CALL_REGISTRY: Record<
     unwrapTransformerNode: unwrapTransformerNode as WhitelistedFunction,
     removeTransformerNode: removeTransformerNode as WhitelistedFunction,
     keepAttributesOnTypeChange: keepAttributesOnTypeChange as WhitelistedFunction,
+    editedAttributes: editedAttributes as WhitelistedFunction,
+    holdsOneDefault: holdsOneDefault as WhitelistedFunction,
     parameterReadsOfDefaultInput: parameterReadsOfDefaultInput as WhitelistedFunction,
     elementParameterReadsOfDefaultInput: elementParameterReadsOfDefaultInput as WhitelistedFunction,
   },

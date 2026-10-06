@@ -184,7 +184,12 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
         data-node-path={nodePathKey}
         aria-label={`Transformer node actions ${nodePathKey}`}
         title="Transformer node actions"
-        onClick={(event) => setMenuAnchor(event.currentTarget)}
+        onClick={(event) => {
+          // #447: the button takes focus even where a click does not focus it (Safari, jsdom), so
+          // that closing the menu or a dialog returns focus here, not to a select that reopens on focus
+          event.currentTarget.focus();
+          setMenuAnchor(event.currentTarget);
+        }}
         style={{
           border: `1px solid ${currentTheme.colors.border}`,
           borderRadius: currentTheme.borderRadius.sm,

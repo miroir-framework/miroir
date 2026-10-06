@@ -9,6 +9,7 @@ import {
   createScratchCwd,
   loadSdkOnce,
   MIROIR_MCP_SERVER_NAME,
+  miroirMcpServerConfig,
   requireSecret,
   resolveMcpHttpUrl,
   type AgentSession,
@@ -50,6 +51,7 @@ export type CreateClaudeAbstractAgentOptions = {
   importSdk?: ImportClaudeSdk;
   mcpHttpUrl?: string;
   apiPort?: number;
+  mcpHeaders?: Record<string, string>;
   /** `features.agentModel`; defaults to `DEFAULT_CLAUDE_AGENT_MODEL`. */
   model?: string;
   cwdParent?: string;
@@ -121,7 +123,7 @@ export async function createClaudeAbstractAgent(
       settingSources: [],
       strictMcpConfig: true,
       mcpServers: {
-        [MIROIR_MCP_SERVER_NAME]: { type: "http", url: mcpHttpUrl },
+        [MIROIR_MCP_SERVER_NAME]: miroirMcpServerConfig(mcpHttpUrl, options.mcpHeaders),
       },
     }),
     "claude",

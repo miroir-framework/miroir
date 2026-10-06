@@ -84,7 +84,7 @@ npm run build -w miroir-localcache-redux -w miroir-store-filesystem -w miroir-st
 - Early returns over deep nesting.
 - Debouncing is usually a sign of bad design; find the design fix first.
 - File naming: interfaces in PascalCase with descriptive prefixes (`Action*`, `CarryOn_*`); implementation files in camelCase; tests `*.unit.test.ts` / `*.integ.test.ts`.
-- Actions return `ActionReturnType` (`ActionSuccess` | `ActionError`).
+- Actions return `Action2ReturnType` (`Action2Success` | `Action2Error`).
 - One logger per file, named after the file; setup pattern and log presets: `docs/contributing/code-style.md`.
 - Name meta-language constructs `Ml` / `MlSchema` / `Mls`, never `Jzod` (`docs/reference/ml-nomenclature.md`).
 

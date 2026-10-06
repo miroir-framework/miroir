@@ -69,6 +69,7 @@ jobs:
           npm run build -w miroir-app-miroir & pids+=($!)
           npm run build -w miroir-app-admin & pids+=($!)
           npm run build -w miroir-example-library & pids+=($!)
+          npm run build -w miroir-app-meta & pids+=($!)
           for pid in "${pids[@]}"; do wait "$pid"; done
       - name: Verify deployment package dist dirs
         run: |
@@ -78,6 +79,8 @@ jobs:
           ls packages/miroir-app-admin/dist/
           echo "--- miroir-example-library ---"
           ls packages/miroir-example-library/dist/
+          echo "--- miroir-app-meta ---"
+          ls packages/miroir-app-meta/dist/
       - name: Upload dist – deployment packages
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -86,6 +89,7 @@ jobs:
             packages/miroir-app-miroir/dist
             packages/miroir-app-admin/dist
             packages/miroir-example-library/dist
+            packages/miroir-app-meta/dist
           if-no-files-found: error
 
   # ──────────────────────────────────────────────────────────────────────────────

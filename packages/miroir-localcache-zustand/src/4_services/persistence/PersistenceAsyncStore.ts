@@ -14,17 +14,19 @@ import {
   PersistenceAction,
   PersistenceStoreLocalOrRemoteInterface,
   StoreOrBundleAction,
+  storeActionOrBundleActionStoreRunner,
   type ApplicationDeploymentMap,
   type BoxedExtractorOrCombinerReturningObjectOrObjectList,
   type BoxedQueryWithExtractorCombinerTransformer,
   type EntityInstance,
   type MiroirModelEnvironment,
   type PersistenceStoreControllerAction,
+  type PersistenceStoreControllerManagerInterface,
+  isServerRoutedMiroirAction,
 } from "miroir-core";
+import { packageName } from "../../constants.js";
 import type { LocalCache } from "../LocalCache.js";
-
-const packageName = "miroir-localcache-zustand";
-const cleanLevel = "5_view";
+import { cleanLevel } from "../constants.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PersistenceAsyncStore");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -33,7 +35,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 // ###############################################################################
 export interface PersistenceStoreAccessParams {
   persistenceStoreAccessMode: "local" | "remote";
-  localPersistenceStoreControllerManager?: any; // PersistenceStoreControllerManagerInterface
+  localPersistenceStoreControllerManager?: PersistenceStoreControllerManagerInterface;
   remotePersistenceStoreRestClient?: any; // RestPersistenceClientAndRestClientInterface
 }
 
@@ -94,8 +96,13 @@ export class PersistenceAsyncStore implements PersistenceStoreLocalOrRemoteInter
     }
 
     try {
-      const result = await this.params.localPersistenceStoreControllerManager.handleAction(action);
-      return result;
+      // as PersistenceReduxSaga does (#451)
+      return await storeActionOrBundleActionStoreRunner(
+        action.actionType,
+        action,
+        applicationDeploymentMap,
+        this.params.localPersistenceStoreControllerManager,
+      );
     } catch (error: any) {
       log.error("handleStoreOrBundleActionForLocalStore error:", error);
       return new Action2Error("FailedToHandleAction", error.message, error.stack);
@@ -117,9 +124,15 @@ export class PersistenceAsyncStore implements PersistenceStoreLocalOrRemoteInter
     }
 
     try {
-      // Convert persistence action to local cache action and handle
-      const localCacheAction: LocalCacheAction = action as any; // TODO: proper conversion
-      return this.localCache.handleLocalCacheAction(localCacheAction, applicationDeploymentMap);
+      // as PersistenceReduxSaga does (#451): the local cache only answers queries
+      if (action.actionType !== "runBoxedQueryAction") {
+        return new Action2Error(
+          "FailedToHandleLocalCacheAction",
+          "PersistenceAsyncStore handlePersistenceActionForLocalCache could not handle action " +
+            action.actionType,
+        );
+      }
+      return this.localCache.runBoxedExtractorOrQueryAction(action, applicationDeploymentMap);
     } catch (error: any) {
       log.error("handlePersistenceActionForLocalCache error:", error);
       return new Action2Error("FailedToHandleLocalCacheAction", error.message, error.stack);
@@ -381,6 +394,9 @@ export class PersistenceAsyncStore implements PersistenceStoreLocalOrRemoteInter
         return new Action2Error(
           "FailedToHandleAction",
           "remote persistence store returned error status " + clientResult.status,
+          undefined,
+          // #263: keep the server's error body (e.g. AccessDenied) for the callers.
+          clientResult.data,
         );
       }
 
@@ -442,7 +458,7 @@ export class PersistenceAsyncStore implements PersistenceStoreLocalOrRemoteInter
         case "LocalPersistenceAction_update":
         case "LocalPersistenceAction_delete":
         default: {
-          if ((action.actionType as string) === "probeExternalService") {
+          if (isServerRoutedMiroirAction(action)) {
             return clientResult.data as Action2ReturnType;
           }
           log.debug("handlePersistenceActionForRemoteStore received result", clientResult.status);

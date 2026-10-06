@@ -12,6 +12,7 @@ import {
   Uuid,
   type ApplicationDeploymentMap,
   type InputOutputType,
+  type TransformerNodeTypeStatus,
 } from "miroir-core";
 import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
 
@@ -34,6 +35,40 @@ export interface TransformerTypeRestriction {
   inputLabel: string;
   givenInput: InputOutputType;
   output: InputOutputType;
+}
+
+/**
+ * #470: one chip of a type badge. `label` is the display type (entity names), `title` the full type,
+ * `mismatch` marks the parts a failure of the node involves.
+ */
+export interface TransformerTypeBadgePart {
+  kind: "in" | "applyTo" | "declared" | "out" | "value";
+  label: string;
+  title: string;
+  mismatch: boolean;
+}
+
+/**
+ * #453 — type badge of the transformer node (or literal `applyTo` value) at `path`, shown on its
+ * own line under the node's title row (#470). Labels are display strings (entity names); `title`
+ * holds the full types. A literal has only `outputLabel`, the type of its value.
+ */
+export interface TransformerTypeBadge {
+  path: (string | number)[];
+  givenLabel?: string;
+  /** Set when the node reads its own `applyTo`, whose output differs from `givenLabel`. */
+  consumedLabel?: string;
+  /** The definition's `inputOutput`, absent when it has none. */
+  declaredLabel?: { input: string; output: string };
+  outputLabel: string;
+  status: TransformerNodeTypeStatus;
+  title: string;
+  /**
+   * #470: the chips shown, in order. `declared` is left out when the declared types are the
+   * actual ones (`declaredMatchesActual`).
+   */
+  parts: TransformerTypeBadgePart[];
+  declaredMatchesActual?: boolean;
 }
 
 export interface MlEditorPropsRoot {
@@ -74,6 +109,8 @@ export interface MlEditorPropsRoot {
   compatibilityWarnings?: { path: (string | number)[]; title: string }[];
   showMlSchemaTypes?: boolean;
   mlSchemaTypeAnnotations?: { path: (string | number)[]; label: string }[];
+  /** #453 — per-path type badges of transformer nodes and literal `applyTo` values. */
+  transformerTypeBadges?: TransformerTypeBadge[];
   /** Per-path getFromContext / getFromParameters names. */
   environmentAnnotations?: { path: (string | number)[]; label: string }[];
   /** #383 — per-path input types restricting the `transformerType` select. */

@@ -5,7 +5,7 @@ import { packageName } from "../../constants";
 import { cleanLevel } from "./../constants";
 import type { Uuid } from '../../0_interfaces/1_core/EntityVersion';
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportPage");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ModelUpdate");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
   "UI"

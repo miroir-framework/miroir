@@ -1,0 +1,34 @@
+{
+  "uuid": "85077493-0fea-4969-96c8-b994272de284",
+  "selfApplication": "9ff432a9-89a1-460b-a263-1672d084a9e0",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "BundleSizeMeasurementDetails",
+  "defaultLabel": "Bundle size measurement",
+  "definition": {
+    "extractorTemplates": {
+      "measurement": {
+        "extractorOrCombinerType": "extractorByPrimaryKey",
+        "parentName": "BundleSizeMeasurement",
+        "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+        "instanceUuid": {
+          "transformerType": "getFromParameters",
+          "referenceName": "instanceUuid"
+        }
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "objectInstanceReportSection",
+          "definition": {
+            "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+            "fetchedDataReference": "measurement"
+          }
+        }
+      ]
+    }
+  }
+}

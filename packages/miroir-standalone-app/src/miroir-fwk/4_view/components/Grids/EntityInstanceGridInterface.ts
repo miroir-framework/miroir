@@ -35,6 +35,7 @@ const tableComponentCoreBasePropsSchema = z.object({
   currentModel: metaModel,
   defaultFormValuesObject: z.any().optional(),
   sortByAttribute: z.string().optional(),
+  sortOrder: z.enum(["asc", "desc"]).optional(),
   paramsAsdomainElements: domainElementObject,
   foreignKeyObjects: z.record(z.string(),entityInstancesUuidIndex),
   addObjectdialogFormIsOpen: z.boolean(), //.optional(),

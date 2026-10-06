@@ -1,6 +1,10 @@
 import {
+  authorizeDeployment,
+  deploymentUuidsFromHttpRequest,
   type ApplicationDeploymentMap,
   type AdminApplication,
+  type AuthPrincipal,
+  type LoadedAccessDirectory,
   type Deployment,
   type DomainControllerInterface,
   type EndpointDefinition,
@@ -40,6 +44,21 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 export type McpToolResult = {
   content: Array<{ type: string; text: string; parsed: Record<string, any> }>;
 };
+
+/**
+ * #263: who calls a tool. Without it (or with `enabled: false`) tool calls are not access-checked,
+ * as before the gate. With it, a call runs only on applications the principal may access.
+ */
+export type McpCallContext = {
+  enabled: boolean;
+  principal: AuthPrincipal | undefined;
+  access: LoadedAccessDirectory | undefined;
+};
+
+function toolErrorResult(toolName: string, type: string, message: string): McpToolResult {
+  const subObject = { status: "error", action: toolName, error: { type, message } };
+  return { content: [{ type: "text", parsed: subObject, text: JSON.stringify(subObject, null, 2) }] };
+}
 
 /**
  * Computes the MCP tool surface live from the endpoints currently defined in the deployed
@@ -221,24 +240,31 @@ export class EndpointToolRegistry {
   }
 
   // ##############################################################################################
-  async callTool(name: string, args: unknown): Promise<McpToolResult> {
+  async callTool(name: string, args: unknown, context?: McpCallContext): Promise<McpToolResult> {
     if (Object.keys(this.handlers).length === 0) {
       await this.listTools();
     }
     const entry = this.handlers[name];
     if (!entry) {
-      const subObject = {
-        status: "error",
-        error: {
-          type: "unknown_tool",
-          message: `Unknown tool: ${name}`,
-        },
-      };
-      return {
-        content: [{ type: "text", parsed: subObject, text: JSON.stringify(subObject, null, 2) }],
-      };
+      return toolErrorResult(name, "unknown_tool", `Unknown tool: ${name}`);
     }
     const currentMap = this.resolveCurrentApplicationDeploymentMap();
+    if (context?.enabled) {
+      // The tool's own application, and any other deployment its payload names (#263).
+      const deployments = [
+        currentMap[entry.applicationUuid],
+        ...deploymentUuidsFromHttpRequest({
+          body: { action: { payload: args }, applicationDeploymentMap: currentMap },
+        }),
+      ];
+      const access = authorizeDeployment(true, context, deployments as string[]);
+      if (!access.allowed) {
+        log.warn(
+          `callTool ${name}: access denied for ${context.principal?.username ?? "anonymous"} on deployments ${deployments.join(",")}`,
+        );
+        return toolErrorResult(name, access.body.errorType, "Access denied");
+      }
+    }
     const modelEnvironment = this.domainController
       .getLocalCache()
       .currentModelEnvironment(entry.applicationUuid, currentMap);
@@ -254,6 +280,7 @@ export class EndpointToolRegistry {
       this.domainController,
       currentMap,
       modelEnvironment,
+      context?.principal,
     );
   }
 

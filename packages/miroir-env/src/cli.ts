@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { realpathSync } from "node:fs";
+import { existsSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 
 import type { StoreSectionConfiguration } from "miroir-core";
@@ -18,12 +18,16 @@ import {
   environmentStateStatus,
   missingConnectionPasswords,
 } from "./environmentState.js";
+import { clearEnvironmentState } from "./clearCommand.js";
+import { deployExample } from "./deployExample.js";
 import { importExtras, inspectEnvironmentState, pruneExtras } from "./stateCommands.js";
 import { changedAssetFiles } from "./trackedAssets.js";
 
 // ################################################################################################
 // miroir-env: show which environment a run uses and what it contains, check its state against
-// its definition, record or remove what the definition does not install (#321).
+// its definition, record or remove what the definition does not install (#321), clear the state of a
+// test environment (#477), deploy an example
+// application of the monorepo.
 // ################################################################################################
 
 export type CliIo = {
@@ -37,20 +41,30 @@ const USAGE = `Usage: miroir-env <command> [options]
 
 Commands:
   show [--json]                     print the resolved environment and where its state stands
-  check [--strict] [--tracked-clean]
+  check [--strict] [--tracked-clean] [--snapshot <file>] [--since <file>]
                                     validate every definition, compare the state with the
                                     selected one; --strict (or CI set) turns warnings into
-                                    errors; --tracked-clean fails when asset files changed
+                                    errors; --tracked-clean fails when asset files changed;
+                                    --snapshot records the warnings in <file>, --since
+                                    reports the warnings recorded in <file> as info
   import [--dry-run]                record the deployments of the state that the definition
                                     does not install in environments/local.json
   prune [--dry-run]                 delete those deployments and their stores in the state
                                     (stop the server first)
+  deploy <app> [--state <dir>] [--dry-run]
+                                    deploy example application packages/miroir-example-<app>
+                                    in the Admin data of the state (default: the selected
+                                    environment's, e.g. .miroir/dev); does nothing when it is
+                                    already deployed
+  clear                             remove the state of a test environment: its .miroir
+                                    directory, SQL schemas and MongoDB databases; with
+                                    MIROIR_TEST_WORKER set, only that nonreg worker's
 
 Every command takes --name <environment>. Environment selection, first match wins: --name,
 MIROIR_ENV, environments/local.json, dev.
 `;
 
-const COMMANDS = ["show", "check", "import", "prune"];
+const COMMANDS = ["show", "check", "import", "prune", "deploy", "clear"];
 
 function describe(resolved: ResolvedEnvironment): string {
   const lines = [
@@ -83,12 +97,30 @@ function isCi(env: Record<string, string | undefined>): boolean {
   return env.CI !== undefined && env.CI !== "" && env.CI !== "false" && env.CI !== "0";
 }
 
+/**
+ * Warnings recorded by `check --snapshot` (a developer's own state, e.g. an application deployed by
+ * hand), which `check --since` does not count: nonreg checks only what its run changed. A missing
+ * file records nothing.
+ */
+function snapshotWarnings(file: string | undefined): Set<string> {
+  return new Set(file && existsSync(file) ? (JSON.parse(readFileSync(file, "utf-8")).warnings as string[]) : []);
+}
+
 /** Exit code 1 when an error is found: invalid definition, warning under --strict, changed asset file. */
 function check(args: string[], io: CliIo): number {
   const strict = args.includes("--strict") || isCi(io.env);
+  const before = snapshotWarnings(option(args, "--since"));
   const lines: string[] = [];
+  const warnings: string[] = [];
   let errors = 0;
   const report = (level: "info" | "warning" | "error", message: string) => {
+    if (level === "warning") {
+      warnings.push(message);
+      if (before.has(message)) {
+        lines.push(`info: ${message} (already there at the snapshot)`);
+        return;
+      }
+    }
     const shown = level === "warning" && strict ? "error" : level;
     errors += shown === "error" ? 1 : 0;
     lines.push(`${shown}: ${message}`);
@@ -136,6 +168,11 @@ function check(args: string[], io: CliIo): number {
     }
   }
   lines.push(`check: ${errors === 0 ? "ok" : `${errors} error${errors > 1 ? "s" : ""}`}${strict ? " (strict)" : ""}`);
+  const snapshot = option(args, "--snapshot");
+  if (snapshot) {
+    writeFileSync(snapshot, JSON.stringify({ warnings }, null, 2) + "\n");
+    lines.push(`snapshot: ${warnings.length} warning${warnings.length === 1 ? "" : "s"} recorded in ${snapshot}`);
+  }
   io.stdout(lines.join("\n") + "\n");
   return errors === 0 ? 0 : 1;
 }
@@ -155,8 +192,21 @@ export async function main(argv: string[], io: CliIo): Promise<number> {
       io.stdout(args.includes("--json") ? JSON.stringify(resolved, null, 2) + "\n" : describe(resolved));
       return 0;
     }
-    const definitions = readEnvironmentDefinitions(resolved.repositoryRoot);
+    if (command === "clear") {
+      io.stdout((await clearEnvironmentState(resolved, io.env)).join("\n") + "\n");
+      return 0;
+    }
     const dryRun = args.includes("--dry-run");
+    if (command === "deploy") {
+      const app = args.find((arg, index) => !arg.startsWith("--") && !["--name", "--state"].includes(args[index - 1]));
+      if (!app) {
+        io.stderr(USAGE);
+        return 2;
+      }
+      io.stdout(deployExample(resolved, app, { dryRun, state: option(args, "--state") }).join("\n") + "\n");
+      return 0;
+    }
+    const definitions = readEnvironmentDefinitions(resolved.repositoryRoot);
     const lines =
       command === "import"
         ? importExtras(resolved, definitions, { dryRun, env: io.env })

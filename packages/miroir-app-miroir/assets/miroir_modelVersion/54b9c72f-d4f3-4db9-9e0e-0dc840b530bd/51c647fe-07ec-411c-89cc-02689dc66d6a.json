@@ -398,6 +398,14 @@
                   {
                     "type": "literal",
                     "definition": "appForTestTestbedInitParams"
+                  },
+                  {
+                    "type": "literal",
+                    "definition": "githubTestbedInitParams"
+                  },
+                  {
+                    "type": "literal",
+                    "definition": "metaTestbedInitParams"
                   }
                 ]
               },

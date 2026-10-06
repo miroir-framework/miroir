@@ -29,7 +29,7 @@ The mode is set on the application's **SelfApplication** row (`versioningMode`, 
 
 Legacy deployments with `versioningEnabled: true` and no `versioningMode` behave as **`versioned-internal`**.
 
-Current shipped deployments: Miroir (and the `appForTest` test application) are `versioned-internal`. Library, Admin, Postgres and Spotify are `unversioned` and ship no history rows.
+Current shipped deployments: Miroir (and the `appForTest` test application) are `versioned-internal`. Library, Admin, Postgres, Spotify and GitHub are `unversioned` and ship no history rows.
 
 UI: the Versioning AppBar item is shown only when the browsed application is `versioned-internal` (see [Process capabilities](process-capabilities.md)).
 

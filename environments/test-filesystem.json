@@ -43,6 +43,21 @@
       "store": "filesystem",
       "mode": "copy",
       "sections": { "modelVersion": {} }
+    },
+    "github": {
+      "package": "miroir-example-github",
+      "selfApplication": "6c4edcb2-e165-407a-b728-fbf8a18b6bf7",
+      "deployment": "752c2412-a2cc-4632-94f3-937168969998",
+      "store": "filesystem",
+      "mode": "copy",
+      "sections": { "modelVersion": {} }
+    },
+    "meta": {
+      "package": "miroir-app-meta",
+      "selfApplication": "9ff432a9-89a1-460b-a263-1672d084a9e0",
+      "deployment": "40b74910-4c63-4bd9-8e7d-2bc051342908",
+      "store": "filesystem",
+      "mode": "copy"
     }
   }
 }

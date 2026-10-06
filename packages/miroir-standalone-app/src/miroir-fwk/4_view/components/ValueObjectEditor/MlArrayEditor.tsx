@@ -39,6 +39,7 @@ import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
 import {
   findPathAnnotation,
   TransformerTitleRowAnnotations,
+  TransformerTypeBadgeRow,
 } from "../Reports/TransformerTypeAnnotation.js";
 import { RenderInsightHeader } from "../RenderInsightHeader.js";
 import { useReportPageContext } from "../Reports/ReportPageContext";
@@ -56,12 +57,12 @@ import {
   MlElementEditor,
 } from "./MlElementEditor";
 import { getFoldedDisplayValue } from "./MlElementEditorHooks";
-import { TransformerTypeRestriction, MlArrayEditorProps } from "./MlElementEditorInterface";
+import { TransformerTypeBadge, TransformerTypeRestriction, MlArrayEditorProps } from "./MlElementEditorInterface";
 import { emptyContainerMarker } from "./renderedValueMarkers";
 import { selfApplicationMiroir } from "miroir-app-miroir";
 // import { MlUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlElementEditor");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlArrayEditor");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {
@@ -175,6 +176,7 @@ interface ProgressiveArrayItemProps {
   compatibilityWarnings?: { path: (string | number)[]; title: string }[];
   showMlSchemaTypes?: boolean;
   mlSchemaTypeAnnotations?: { path: (string | number)[]; label: string }[];
+  transformerTypeBadges?: TransformerTypeBadge[];
   environmentAnnotations?: { path: (string | number)[]; label: string }[];
   transformerTypeRestrictions?: TransformerTypeRestriction[];
   onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>;
@@ -212,6 +214,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   compatibilityWarnings,
   showMlSchemaTypes,
   mlSchemaTypeAnnotations,
+  transformerTypeBadges,
   environmentAnnotations,
   transformerTypeRestrictions,
   onChangeVector,
@@ -338,6 +341,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                 compatibilityWarnings={compatibilityWarnings}
                 showMlSchemaTypes={showMlSchemaTypes}
                 mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
+                transformerTypeBadges={transformerTypeBadges}
                 environmentAnnotations={environmentAnnotations}
                 transformerTypeRestrictions={transformerTypeRestrictions}
               />
@@ -381,6 +385,7 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
     compatibilityWarnings,
     showMlSchemaTypes,
     mlSchemaTypeAnnotations,
+    transformerTypeBadges,
     environmentAnnotations,
     transformerTypeRestrictions,
     onChangeVector,
@@ -761,6 +766,7 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
                 compatibilityWarnings={compatibilityWarnings}
                 showMlSchemaTypes={showMlSchemaTypes}
                 mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
+                transformerTypeBadges={transformerTypeBadges}
                 environmentAnnotations={environmentAnnotations}
                 transformerTypeRestrictions={transformerTypeRestrictions}
                   onChangeVector={onChangeVector}
@@ -790,6 +796,7 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
       compatibilityWarnings,
       showMlSchemaTypes,
       mlSchemaTypeAnnotations,
+      transformerTypeBadges,
       environmentAnnotations,
       transformerTypeRestrictions,
     ]
@@ -924,6 +931,7 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
             {!readOnly && (displayAsStructuredElementSwitch ?? <></>)}
           </span>
         </ThemedFlexRow>
+        <TransformerTypeBadgeRow path={rootLessListKeyArray} transformerTypeBadges={transformerTypeBadges} />
         <div
           id={listKey + ".inner"}
           style={{

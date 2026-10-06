@@ -1,0 +1,13 @@
+{
+  "uuid": "4635dedc-0b71-48eb-b0af-f8a682dba80b",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app-electron",
+  "measuredAt": "2026-09-30T23:07:21.000Z",
+  "eagerGzipBytes": 3184200,
+  "baseline": 3184200,
+  "previousBaseline": 4769537,
+  "baselineChange": -1585337,
+  "reason": "#337 slice 7: Electron main process without React, minified",
+  "gitCommit": "c89bb53cebde747a1aa28c05e5cc5b83d57f402d"
+}

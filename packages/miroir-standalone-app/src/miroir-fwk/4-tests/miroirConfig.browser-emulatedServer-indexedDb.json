@@ -90,6 +90,38 @@
           "emulatedServerType": "indexedDb",
           "indexedDbName": "ui-integ-spotify_modelVersion"
         }
+      },
+      "752c2412-a2cc-4632-94f3-937168969998": {
+        "admin": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName": "ui-integ-admin"
+        },
+        "model": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName": "ui-integ-github"
+        },
+        "data": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName": "ui-integ-github"
+        },
+        "modelVersion": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName": "ui-integ-github_modelVersion"
+        }
+      },
+      "40b74910-4c63-4bd9-8e7d-2bc051342908": {
+        "admin": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName": "ui-integ-admin"
+        },
+        "model": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName": "ui-integ-meta"
+        },
+        "data": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName": "ui-integ-meta"
+        }
       }
     },
     "deploymentMode": "monoUser",

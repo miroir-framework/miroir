@@ -26,10 +26,11 @@
       "tier": "unit",
       "title": "#321 \u2014 record the asset files already changed (a developer's own edits) and the selected environment (environment.json)",
       "requires": "none",
+      "parallel": false,
       "argv": [
         "bash",
         "-c",
-        "python scripts/tracked_assets_guard.py snapshot --output {snapshot_dir}/tracked-assets-before.json && npm run --silent miroir-env -- show --json > {snapshot_dir}/environment.json"
+        "python scripts/tracked_assets_guard.py snapshot --output {snapshot_dir}/tracked-assets-before.json && npm run --silent miroir-env -- show --json > {snapshot_dir}/environment.json && npm run --silent miroir-env -- check --snapshot {snapshot_dir}/environment-check-before.json"
       ]
     },
     {
@@ -316,6 +317,38 @@
         "testByFile",
         "-w",
         "miroir-app-admin",
+        "--",
+        "tests/modelValidation.unit.test.ts"
+      ]
+    },
+    {
+      "id": "default-github-modelValidation",
+      "scopes": ["core"],
+      "tier": "default",
+      "title": "Deployment modelValidation \u2014 github (#472)",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-example-github",
+        "--",
+        "tests/modelValidation.unit.test.ts"
+      ]
+    },
+    {
+      "id": "default-meta-modelValidation",
+      "scopes": ["core"],
+      "tier": "default",
+      "title": "Deployment modelValidation — meta (#473)",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-app-meta",
         "--",
         "tests/modelValidation.unit.test.ts"
       ]
@@ -1367,6 +1400,82 @@
       }
     },
     {
+      "id": "integ-report.githubConnect",
+      "scopes": ["external", "ui"],
+      "tier": "default",
+      "title": "MiroirTest integ \u2014 report.githubConnect (GitHub home Report: token check, save, repositories; fake HTTP) (#472)",
+      "requires": "storage",
+      "argv": [
+        "npm",
+        "run",
+        "testMiroir",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "--suites",
+        "report.githubConnect",
+        "--mode",
+        "integ"
+      ],
+      "shared": {
+        "group": "standalone-app-report-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": ["report.githubConnect"]
+      }
+    },
+    {
+      "id": "integ-report.bundleSizeHistory",
+      "scopes": ["ui"],
+      "tier": "default",
+      "title": "MiroirTest integ — report.bundleSizeHistory (Meta bundle size Reports on fixed measurements) (#473)",
+      "requires": "storage",
+      "argv": [
+        "npm",
+        "run",
+        "testMiroir",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "--suites",
+        "report.bundleSizeHistory",
+        "--mode",
+        "integ"
+      ],
+      "shared": {
+        "group": "standalone-app-report-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": ["report.bundleSizeHistory"]
+      }
+    },
+    {
       "id": "integ-report.connectExternalServiceWizard",
       "scopes": ["external"],
       "tier": "default",
@@ -1823,6 +1932,18 @@
       ]
     },
     {
+      "id": "externalServices-github",
+      "scopes": ["external"],
+      "tier": "default",
+      "title": "#472 \u2014 GitHub example app (endpoint sync, repositories Report, setExternalServiceCredential)",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w miroir-example-github -- tests/githubEndpointSync.unit.test.ts && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem githubApp && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem setExternalServiceCredential"
+      ]
+    },
+    {
       "id": "apiCallReport-281",
       "scopes": ["external"],
       "tier": "default",
@@ -2119,6 +2240,38 @@
       ]
     },
     {
+      "id": "unit-453-transformer-types-display",
+      "scopes": ["ui"],
+      "tier": "unit",
+      "title": "#453 TransformerEditor \"Show transformer types\" switch: value from the sandbox host and the app's ViewParams, kept across cases",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "transformerTypesDisplay"
+      ]
+    },
+    {
+      "id": "unit-449-parameterized-interface-types",
+      "scopes": ["ui"],
+      "tier": "unit",
+      "title": "#449 list transformer panel: expected output array / record with a type parameter, tuple elements, adequacy border and mismatch title",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "ListTransformerPanel.unit"
+      ]
+    },
+    {
       "id": "unit-438-feedback-glow",
       "scopes": ["ui"],
       "tier": "unit",
@@ -2196,6 +2349,23 @@
           "coverageCore.unit"
         ]
       }
+    },
+    {
+      "id": "unit-473-bundle-size-scripts",
+      "scopes": ["tooling"],
+      "tier": "unit",
+      "title": "#473 — bundle size history: bundle-size:record and bundle-size:backfill (they run the bundle guard with python3)",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-app-meta",
+        "--",
+        "bundleSizeRecord.unit",
+        "bundleSizeBackfill.unit"
+      ]
     },
     {
       "id": "unit-312-miroir-test-tags",
@@ -2299,6 +2469,18 @@
       ]
     },
     {
+      "id": "unit-263-identity-doors",
+      "scopes": ["core", "tooling"],
+      "tier": "unit",
+      "title": "#263 \u2014 identity on MCP, CLI and Electron: shared gate, agent MCP headers, server wiring, renderer IPC",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w miroir-core -- 263-identity-doors && npm run testByFile -w miroir-ai -- 263-identity-doors && npm run testByFile -w miroir-server -- 263-identity-doors && npm run testByFile -w miroir-standalone-app -- 4_view/issues/263-identity-doors"
+      ]
+    },
+    {
       "id": "unit-345-mcp",
       "scopes": ["runners", "tooling"],
       "tier": "default",
@@ -2332,10 +2514,11 @@
       "tier": "unit",
       "title": "#321 \u2014 no asset file changed by the run (runs last in every tier); miroir-env check --strict: every definition valid, the selected environment state in line with it",
       "requires": "none",
+      "parallel": false,
       "argv": [
         "bash",
         "-c",
-        "python scripts/tracked_assets_guard.py check --since {snapshot_dir}/tracked-assets-before.json && npm run miroir-env -- check --strict"
+        "python scripts/tracked_assets_guard.py check --since {snapshot_dir}/tracked-assets-before.json && npm run miroir-env -- check --strict --since {snapshot_dir}/environment-check-before.json"
       ]
     }
   ]

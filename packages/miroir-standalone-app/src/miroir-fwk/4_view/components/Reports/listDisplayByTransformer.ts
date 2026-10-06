@@ -25,6 +25,7 @@ function compareInstancesByAttribute(
   a: EntityInstance,
   b: EntityInstance,
   sortByAttribute?: string,
+  sortOrder?: "asc" | "desc",
 ): number {
   if (!sortByAttribute) {
     return 0;
@@ -35,12 +36,12 @@ function compareInstancesByAttribute(
     return 0;
   }
   if (aValue == null) {
-    return -1;
+    return sortOrder === "desc" ? 1 : -1;
   }
   if (bValue == null) {
-    return 1;
+    return sortOrder === "desc" ? -1 : 1;
   }
-  return aValue > bValue ? 1 : -1;
+  return (aValue > bValue ? 1 : -1) * (sortOrder === "desc" ? -1 : 1);
 }
 
 /** Sort and slice a uuid-indexed list to one page (matches EntityInstanceGrid row order). */
@@ -50,13 +51,14 @@ export function sliceInstancesToPage(
   pageSize: number,
   sortByAttribute?: string,
   entityPrimaryKeySource: EntityPrimaryKeySource = {},
+  sortOrder?: "asc" | "desc",
 ): EntityInstancesUuidIndex {
   const sorted = Object.entries(instancesToDisplay ?? {})
     .filter(
       (entry): entry is [string, EntityInstance] =>
         entry[1] != null && typeof entry[1] === "object" && !Array.isArray(entry[1]),
     )
-    .sort(([, a], [, b]) => compareInstancesByAttribute(a, b, sortByAttribute));
+    .sort(([, a], [, b]) => compareInstancesByAttribute(a, b, sortByAttribute, sortOrder));
 
   const pageRows = paginateRows(sorted, pageIndex, pageSize).pageRows;
   // keyless rows have no primary key to recompute: they keep the key they were indexed under

@@ -43,6 +43,7 @@ export function prepareTestByFileLaunch(
     ...env,
     VITE_TEST_MODE: "true",
     MIROIR_AUTH_ENABLED: env.MIROIR_AUTH_ENABLED ?? "0",
+    MIROIR_MCP_AUTH_ENABLED: env.MIROIR_MCP_AUTH_ENABLED ?? "0",
   };
 
   // #318: tests that load a profile by name (UI launch tests) follow the launch profile.

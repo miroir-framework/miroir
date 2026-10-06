@@ -1961,6 +1961,10 @@ export function getMiroirFundamentalMlSchema(
                       type: "string",
                       optional: true,
                     },
+                    mcp: {
+                      type: "boolean",
+                      optional: true,
+                    },
                   },
                 },
               },
@@ -2109,6 +2113,14 @@ export function getMiroirFundamentalMlSchema(
                 rootApiUrl: { type: "string", optional: true },
                 mcpUrl: { type: "string", optional: true },
                 corsAllowedOrigins: { type: "array", optional: true, definition: { type: "string" } },
+                authentication: {
+                  type: "object",
+                  optional: true,
+                  definition: {
+                    enabled: { type: "boolean", optional: true },
+                    mcp: { type: "boolean", optional: true },
+                  },
+                },
               },
             },
             client: {

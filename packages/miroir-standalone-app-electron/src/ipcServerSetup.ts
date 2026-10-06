@@ -29,6 +29,7 @@ import express from "express";
 import * as path from "path";
 import {
   ConfigurationService,
+  createIdentityGateMiddleware,
   defaultSelfApplicationDeploymentMap,
   ELECTRON_LOOPBACK_ROOT_API_URL,
   electronRuntimeBaseUrl,
@@ -43,6 +44,7 @@ import {
 } from "miroir-core";
 import { log } from "console";
 import { bootElectronServer, DESKTOP_ENVIRONMENT, prepareDesktopRoot } from "./environmentBoot.js";
+import { electronAuthenticationGates, handleMiroirIpc, type MiroirIpcPayload } from "./miroirIpcHandler.js";
 
 export const MIROIR_IPC_CHANNEL = "miroir-ipc";
 
@@ -66,23 +68,6 @@ function electronEnvironmentLocation(): { cwd: string; env: Record<string, strin
   return { cwd: root, env: { ...process.env, MIROIR_ROOT: root, MIROIR_ENV: DESKTOP_ENVIRONMENT } };
 }
 
-// ################################################################################################
-/**
- * Serialise the result of a RestClientStub.call() before sending over IPC.
- * Structured clone cannot handle Headers instances (different across Node/Chromium), so
- * we replace them with a plain object of their entries.
- */
-function serializeRestResult(result: any): any {
-  if (result && typeof result === "object" && !("errorType" in result)) {
-    const headers =
-      result.headers instanceof Headers
-        ? Object.fromEntries(Object.entries((result.headers as Headers)))
-        : result.headers ?? {};
-    return { ...result, headers };
-  }
-  return result;
-}
-
 /**
  * Initialises the server-side Miroir stack and registers the IPC handler.
  * Must be called from the main process before loadURL() so the handler is ready when the
@@ -93,13 +78,30 @@ export async function setupIpcServer(): Promise<void> {
   // (The renderer process has a different ConfigurationService instance and can only register
   //  IndexedDb — which is why IPC is needed for filesystem / postgres / mongodb.)
   miroirCoreStartup();
-  const { domainController, persistenceStoreControllerManager, serverConfig: electronServerConfig, clientConfig, environment } =
-    await bootElectronServer(electronEnvironmentLocation(), (line) => log(`[miroir-env] ${line}`));
+  const location = electronEnvironmentLocation();
+  const {
+    domainController,
+    persistenceStoreControllerManager,
+    serverConfig: electronServerConfig,
+    clientConfig,
+    environment,
+    applicationDeploymentMap,
+  } = await bootElectronServer(location, (line) => log(`[miroir-env] ${line}`));
+  // #263: same hatch as miroir-server; the renderer logs in over `rest-call` when it is on.
+  const { gate, mcpGate } = electronAuthenticationGates({
+    argv: process.argv,
+    env: location.env,
+    serverConfig: electronServerConfig,
+    domainController,
+    applicationDeploymentMap,
+  });
+  log(`Authentication enabled: ${gate.enabled}, on MCP: ${mcpGate.enabled}`);
 
   // RestClientStub routes REST-shaped calls through restServerDefaultHandlers using the real stores.
   const restClientStub = new RestClientStub(ELECTRON_LOOPBACK_ROOT_API_URL);
   restClientStub.setServerDomainController(domainController);
   restClientStub.setPersistenceStoreControllerManager(persistenceStoreControllerManager);
+  restClientStub.setAuthenticationGate(gate);
   const capabilities = getProcessCapabilities({
     config: electronServerConfig,
     environment: getClientEnvironment(),
@@ -149,6 +151,7 @@ export async function setupIpcServer(): Promise<void> {
       const { createCopilotKitRouter } = await import("miroir-ai");
       const listenUrl = new URL(ELECTRON_LOOPBACK_ROOT_API_URL);
       const mcpHttpUrl = `http://127.0.0.1:${Number(listenUrl.port) || 3080}/mcp`;
+      loopbackApp.use("/api/copilotkit", createIdentityGateMiddleware(gate) as any);
       loopbackApp.use(
         "/api/copilotkit",
         createCopilotKitRouter(domainController, defaultSelfApplicationDeploymentMap, {
@@ -170,8 +173,9 @@ export async function setupIpcServer(): Promise<void> {
         defaultSelfApplicationDeploymentMap,
         endpointToolRegistry,
         domainController,
+        mcpGate,
       );
-      mcpServer.mountHttpRoutes(loopbackApp);
+      mcpServer.mountHttpRoutes(loopbackApp, mcpGate);
     }
 
     const runtimeBase = electronRuntimeBaseUrl(electronServerConfig.server);
@@ -188,46 +192,13 @@ export async function setupIpcServer(): Promise<void> {
   // The root of the environment (repository root, or <userData>/miroir once packaged), for diagnostics.
   ipcMain.handle("get-assets-base-path", () => environment.repositoryRoot);
 
-  ipcMain.handle(MIROIR_IPC_CHANNEL, async (_event, payload: any) => {
-    switch (payload.type) {
-      case "rest-call": {
-        const { rawUrl, method, endpoint, args } = payload;
-        const result = await restClientStub.call(rawUrl, method, endpoint, args);
-        return serializeRestResult(result);
-      }
-      
-      // The root of the environment: store paths are relative to it
-      case "get-default-filesystem-folder": {
-        return environment.repositoryRoot;
-      }
-
-      case "get-client-config": {
-        return clientConfig;
-      }
-
-      case "server-action": {
-        const result = await domainController.handleAction(
-          payload.action,
-          payload.applicationDeploymentMap,
-          payload.currentModel
-        );
-        // Plain objects and Action2Error data fields survive structured clone as-is.
-        return result;
-      }
-
-      case "server-query": {
-        const result = await domainController.handleBoxedExtractorOrQueryAction(
-          payload.action,
-          payload.applicationDeploymentMap,
-          payload.currentModel
-        );
-        return result;
-      }
-
-      default:
-        throw new Error(
-          `setupIpcServer: unknown IPC message type: ${(payload as any).type}`
-        );
-    }
-  });
+  ipcMain.handle(MIROIR_IPC_CHANNEL, (_event, payload: MiroirIpcPayload) =>
+    handleMiroirIpc(payload, {
+      restClientStub,
+      domainController,
+      gate,
+      clientConfig,
+      environmentRoot: environment.repositoryRoot,
+    }),
+  );
 }

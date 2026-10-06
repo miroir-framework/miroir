@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   checkTransformerInterfaceRecursively,
   Domain2ElementFailed,
+  formatInputOutputTypeLabel,
   inputOutputTypeOfValue,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -13,9 +14,11 @@ import {
   getInnermostTransformerError,
   noValue,
   safeStringify,
+  transformerNodeTypeStatus,
   transformer_extended_apply_wrapper,
   type InputOutputType,
   type MlElement,
+  type TransformerInterfaceTreeCompatibility,
   type MlObject,
   type MlUnion,
   type MiroirModelEnvironment,
@@ -40,6 +43,7 @@ import {
 import { useCurrentModel } from "../../ReduxHooks.js";
 import { useReportPageContext } from '../Reports/ReportPageContext';
 import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
+import type { TransformerTypeBadge, TransformerTypeBadgePart } from '../ValueObjectEditor/MlElementEditorInterface';
 import {
   ThemedContainer,
   ThemedFoldableContainer,
@@ -62,6 +66,7 @@ import {
   type TransformerEditorProps,
 } from "./TransformerEditorInterface";
 import { TransformerEventsPanel } from './TransformerEventsPanel';
+import { useShowTransformerTypes } from './TransformerTypesDisplay';
 
 import { entityDefinitionTransformerDefinition } from 'miroir-app-miroir';
 // ################################################################################################
@@ -79,8 +84,9 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 // ################################################################################################
 /**
  * #383: root input type of the edited transformer, from the input it actually runs on (D7).
- * "here": the kind of the value. "instance": the `defaultInput` the instance selector bound, an
- * entity instance (its entity uuid) or an array of them (array of that entity).
+ * "here": the type of the value. "instance": the type of the `defaultInput` the instance selector
+ * bound, an entity instance (its entity uuid) or an array of them (array of that entity). Both
+ * modes type the value the same way (#453 D15).
  */
 function transformerEditorRootInputType(
   inputSelector: { mode?: string; input?: unknown } | undefined,
@@ -92,25 +98,128 @@ function transformerEditorRootInputType(
   if (inputSelector?.mode !== "instance") {
     return "any";
   }
-  const value = instanceInput?.[defaultTransformerInput];
-  const entityUuidOf = (instance: unknown): string | undefined => {
-    const parentUuid = (instance as { parentUuid?: unknown } | undefined)?.parentUuid;
-    return typeof parentUuid === "string" ? parentUuid : undefined;
-  };
-  if (Array.isArray(value)) {
-    return { type: "array", payload: entityUuidOf(value[0]) ?? "any" };
-  }
-  return entityUuidOf(value) ?? inputOutputTypeOfValue(value);
+  return inputOutputTypeOfValue(instanceInput?.[defaultTransformerInput]);
 }
 
-function formatInputOutputType(type: InputOutputType): string {
-  return typeof type === "string" ? type : safeStringify(type);
+type EditorEntity = { uuid: Uuid; name?: string; mlSchema?: unknown };
+
+/** #470: a declared side matches the actual type when it is that type, or constrains nothing. */
+function declaredSideMatches(declared: InputOutputType, actual: InputOutputType): boolean {
+  return declared === "any" || declared === "undefined" || safeStringify(declared) === safeStringify(actual);
+}
+
+/** #470: a declaration whose sides are all `any` / `undefined` says nothing worth a "✓ declared". */
+function declaresConstraint(declared: { input: InputOutputType; output: InputOutputType }): boolean {
+  return [declared.input, declared.output].some((side) => side !== "any" && side !== "undefined");
+}
+
+/** #470: the badge parts a failure of the node involves, so that only they are marked. */
+function mismatchedBadgeParts(
+  node: TransformerInterfaceTreeCompatibility["nodes"][number],
+  consumedKind: "in" | "applyTo",
+): Set<TransformerTypeBadgePart["kind"]> {
+  const kinds = new Set<TransformerTypeBadgePart["kind"]>();
+  for (const failure of node.failures) {
+    if (failure.direction === "input") {
+      kinds.add(consumedKind).add("declared");
+    } else if (failure.direction === "output") {
+      kinds.add("out").add("declared");
+    } else {
+      kinds.add("value").add("out");
+    }
+  }
+  return kinds;
+}
+
+/**
+ * #453: one type badge per node of the walk and per literal `applyTo`, at its editor path. Labels
+ * name known entities and shorten unknown entity uuids (D18); the title keeps the full types.
+ * #470: each badge lists its chips; the declared types are left out when they are the actual ones.
+ */
+export function transformerTypeBadges(
+  interfaceWalk: TransformerInterfaceTreeCompatibility,
+  entities: EditorEntity[] | undefined,
+): TransformerTypeBadge[] {
+  const label = (type: InputOutputType) => formatInputOutputTypeLabel(type, entities, { shortenUnknownUuids: true });
+  const nodeBadges = interfaceWalk.nodes.map((node): TransformerTypeBadge => {
+    const consumedDiffers = safeStringify(node.consumedInput) !== safeStringify(node.givenInput);
+    const failures = node.failures.map(
+      (failure) =>
+        `${failure.direction}: given ${formatInputOutputTypeLabel(failure.given)}, declared ${formatInputOutputTypeLabel(failure.declared)}`,
+    );
+    const declaredMatchesActual =
+      node.declared === undefined ||
+      (declaredSideMatches(node.declared.input, node.consumedInput) &&
+        declaredSideMatches(node.declared.output, node.output));
+    const mismatched = mismatchedBadgeParts(node, consumedDiffers ? "applyTo" : "in");
+    const part = (
+      kind: TransformerTypeBadgePart["kind"],
+      partLabel: string,
+      title: string,
+    ): TransformerTypeBadgePart => ({ kind, label: partLabel, title, mismatch: mismatched.has(kind) });
+    const declaredLabel = node.declared
+      ? { input: label(node.declared.input), output: label(node.declared.output) }
+      : undefined;
+    return {
+      path: ["transformer", ...node.path],
+      givenLabel: label(node.givenInput),
+      consumedLabel: consumedDiffers ? label(node.consumedInput) : undefined,
+      declaredLabel,
+      outputLabel: label(node.output),
+      status: transformerNodeTypeStatus(node),
+      title: [
+        `${node.transformerType}`,
+        `given ${formatInputOutputTypeLabel(node.givenInput)}`,
+        ...(consumedDiffers ? [`applyTo ${formatInputOutputTypeLabel(node.consumedInput)}`] : []),
+        ...(node.declared
+          ? [`declared ${formatInputOutputTypeLabel(node.declared.input)} → ${formatInputOutputTypeLabel(node.declared.output)}`]
+          : []),
+        `output ${formatInputOutputTypeLabel(node.output)}`,
+        ...failures,
+      ].join("\n"),
+      parts: [
+        part("in", label(node.givenInput), formatInputOutputTypeLabel(node.givenInput)),
+        ...(consumedDiffers
+          ? [part("applyTo", label(node.consumedInput), formatInputOutputTypeLabel(node.consumedInput))]
+          : []),
+        ...(node.declared && declaredLabel && !declaredMatchesActual
+          ? [
+              part(
+                "declared",
+                `${declaredLabel.input} → ${declaredLabel.output}`,
+                `${formatInputOutputTypeLabel(node.declared.input)} → ${formatInputOutputTypeLabel(node.declared.output)}`,
+              ),
+            ]
+          : []),
+        // a `returnValue` whose value does not fit its mlSchema: `out` is the mlSchema type, so the
+        // value's own type gets a chip, the side to fix
+        ...node.failures
+          .filter((failure) => failure.direction === "value")
+          .map((failure) => part("value", label(failure.given), formatInputOutputTypeLabel(failure.given))),
+        part("out", label(node.output), formatInputOutputTypeLabel(node.output)),
+      ],
+      declaredMatchesActual: node.declared && declaresConstraint(node.declared) ? declaredMatchesActual : undefined,
+    };
+  });
+  const literalBadges = interfaceWalk.literals.map(
+    (literal): TransformerTypeBadge => ({
+      path: ["transformer", ...literal.path],
+      outputLabel: label(literal.type),
+      status: "unknown",
+      title: `value ${formatInputOutputTypeLabel(literal.type)}`,
+      parts: [
+        { kind: "value", label: label(literal.type), title: formatInputOutputTypeLabel(literal.type), mismatch: false },
+      ],
+    }),
+  );
+  return [...nodeBadges, ...literalBadges];
 }
 
 /**
  * The transformer definition editor with its "Restrict transformers to the input type" switch.
  * Every transformerType select is restricted to the input of its position while the switch is
- * on; nested mismatches are always marked (#383 D4, D6).
+ * on; nested mismatches are always marked (#383 D4, D6). The "Show transformer types" switch
+ * (#453) puts a type badge on the title row of every node and literal `applyTo`.
  */
 const TransformerDefinitionEditor: React.FC<{
   formValueMLSchema: MlElement;
@@ -119,7 +228,7 @@ const TransformerDefinitionEditor: React.FC<{
   deploymentUuid: Uuid;
   editedTransformer: unknown;
   rootInputType: InputOutputType;
-  entities?: { uuid: Uuid; mlSchema?: unknown }[];
+  entities?: EditorEntity[];
   restrictTransformersToInputType: boolean;
   onRestrictTransformersToInputTypeChange: (checked: boolean) => void;
 }> = ({
@@ -155,7 +264,7 @@ const TransformerDefinitionEditor: React.FC<{
         ? interfaceWalk.nodes.map((node) => ({
             path: ["transformer", ...node.path],
             input: node.consumedInput,
-            inputLabel: formatInputOutputType(node.consumedInput),
+            inputLabel: formatInputOutputTypeLabel(node.consumedInput),
             givenInput: node.givenInput,
             output: node.output,
           }))
@@ -171,11 +280,16 @@ const TransformerDefinitionEditor: React.FC<{
           title: node.failures
             .map(
               (failure) =>
-                `${node.path.join(".") || "root"} (${node.transformerType}) ${failure.direction}: given ${formatInputOutputType(failure.given)}, declared ${formatInputOutputType(failure.declared)}`,
+                `${node.path.join(".") || "root"} (${node.transformerType}) ${failure.direction}: given ${formatInputOutputTypeLabel(failure.given)}, declared ${formatInputOutputTypeLabel(failure.declared)}`,
             )
             .join("; "),
         })),
     [interfaceWalk],
+  );
+  const [showTransformerTypes, setShowTransformerTypes] = useShowTransformerTypes();
+  const typeBadges = useMemo(
+    () => (showTransformerTypes ? transformerTypeBadges(interfaceWalk, entities) : undefined),
+    [showTransformerTypes, interfaceWalk, entities],
   );
 
   return (
@@ -195,6 +309,21 @@ const TransformerDefinitionEditor: React.FC<{
           />
         }
       />
+      <ThemedLabeledEditor
+        labelElement={<ThemedLabel>Show transformer types</ThemedLabel>}
+        editor={
+          <ThemedSwitch
+            id="transformer-editor-show-types-switch"
+            name="transformer-editor-show-types-switch"
+            inputProps={{
+              "data-testid": "transformer-editor-show-types-switch",
+            } as React.InputHTMLAttributes<HTMLInputElement>}
+            checked={showTransformerTypes}
+            onChange={(event) => setShowTransformerTypes(event.target.checked)}
+            size="small"
+          />
+        }
+      />
       <TypedValueObjectEditor
         labelElement={<>Transformer Definition</>}
         formValueMLSchema={formValueMLSchema}
@@ -209,6 +338,7 @@ const TransformerDefinitionEditor: React.FC<{
         maxRenderDepth={Infinity}
         compatibilityWarnings={compatibilityWarnings}
         transformerTypeRestrictions={transformerTypeRestrictions}
+        transformerTypeBadges={typeBadges}
       />
     </>
   );

@@ -22,6 +22,8 @@
 
 import {
   Action2Error,
+  getRestClientAuthorizationToken,
+  maybeInvalidateAuthorization,
   type ApplicationDeploymentMap,
   type MiroirConfigClient,
   type RestClientCallReturnType,
@@ -60,6 +62,28 @@ function reconstructIpcResult(result: any): any {
   return result;
 }
 
+/**
+ * #263: every IPC message that reads or changes data carries the session's Bearer header; the main
+ * process checks it when authentication is on.
+ */
+function authorization(): string | undefined {
+  const token = getRestClientAuthorizationToken();
+  return token ? `Bearer ${token}` : undefined;
+}
+
+/** Sends a data message to the main process and clears the session on AuthenticationRequired. */
+async function callMiroirIpc(message: Record<string, unknown>): Promise<any> {
+  const result = await (window as any).electronAPI.callMiroirIpc({ ...message, authorization: authorization() });
+  if (result && typeof result === "object") {
+    if (typeof result.status === "number") {
+      maybeInvalidateAuthorization(result.status, result.data);
+    } else if (result.errorType === "AuthenticationRequired") {
+      maybeInvalidateAuthorization(401, result);
+    }
+  }
+  return result;
+}
+
 // ################################################################################################
 // ElectronRestClient
 // ################################################################################################
@@ -91,7 +115,7 @@ export class ElectronRestClient implements RestClientInterface {
     endpoint: string,
     customConfig: any = {}
   ): Promise<RestClientCallReturnType> {
-    return (window as any).electronAPI.callMiroirIpc({
+    return callMiroirIpc({
       type: "rest-call",
       rawUrl,
       method: "get",
@@ -106,7 +130,7 @@ export class ElectronRestClient implements RestClientInterface {
     body: any,
     customConfig: any = {}
   ): Promise<RestClientCallReturnType> {
-    return (window as any).electronAPI.callMiroirIpc({
+    return callMiroirIpc({
       type: "rest-call",
       rawUrl,
       method: "post",
@@ -121,7 +145,7 @@ export class ElectronRestClient implements RestClientInterface {
     body: any,
     customConfig: any = {}
   ): Promise<RestClientCallReturnType> {
-    return (window as any).electronAPI.callMiroirIpc({
+    return callMiroirIpc({
       type: "rest-call",
       rawUrl,
       method: "put",
@@ -136,7 +160,7 @@ export class ElectronRestClient implements RestClientInterface {
     body: any,
     customConfig: any = {}
   ): Promise<RestClientCallReturnType> {
-    return (window as any).electronAPI.callMiroirIpc({
+    return callMiroirIpc({
       type: "rest-call",
       rawUrl,
       method: "delete",
@@ -164,7 +188,7 @@ export class ElectronServerDomainControllerProxy {
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel?: any
   ): Promise<any> {
-    const result = await (window as any).electronAPI.callMiroirIpc({
+    const result = await callMiroirIpc({
       type: "server-action",
       action,
       applicationDeploymentMap,
@@ -178,7 +202,7 @@ export class ElectronServerDomainControllerProxy {
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel?: any
   ): Promise<any> {
-    const result = await (window as any).electronAPI.callMiroirIpc({
+    const result = await callMiroirIpc({
       type: "server-query",
       action,
       applicationDeploymentMap,

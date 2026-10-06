@@ -1239,7 +1239,11 @@ export function resolveTransformerResultSchema(
       if (propagateFailure(elementSchema)) {
         return elementSchema;
       }
-      return { type: "record", definition: elementSchema };
+      // indexListBy keys each element; listReducerToSpreadObject merges the elements' attributes
+      // into one object whose values are attribute values, not elements (#449 §3.3).
+      return transformerType === "indexListBy"
+        ? { type: "record", definition: elementSchema }
+        : { type: "object", nonStrict: true, definition: {} };
     }
     case "object_fromEntries": {
       const entriesFailure = resolveApplyToArrayElementSchema(

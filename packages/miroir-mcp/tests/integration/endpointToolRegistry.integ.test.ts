@@ -116,6 +116,7 @@ const libraryEntitiesAndInstances: ApplicationEntitiesAndInstances = [
 ];
 
 let environmentName: string;
+let environmentStateName: string;
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
 let applicationDeploymentMap: ApplicationDeploymentMap;
@@ -127,6 +128,7 @@ describe("EndpointToolRegistry integration", () => {
   beforeAll(async () => {
     const platform = await startMcpTestPlatform(expect, loggerOptions);
     environmentName = platform.environment.name;
+    environmentStateName = platform.environment.resolved.stateName;
     domainController = platform.domainController;
     localCache = domainController.getLocalCache();
     applicationDeploymentMap = platform.applicationDeploymentMap;
@@ -463,9 +465,10 @@ describe("EndpointToolRegistry integration", () => {
     const pingVersionUuid = "aa0d5f7e-2222-4a67-9c0d-0000000000v9".replace("v", "c");
     const pingEndpointUuid = "aa0d5f7e-2222-4a67-9c0d-0000000000e9";
 
-    // stores of an application installed at runtime go to the environment's apps directory (#345)
+    // stores of an application installed at runtime go to the environment's apps directory (#345),
+    // in the nonreg worker's state when there is one (#477)
     const pingStoreConfig = (): StoreUnitConfiguration => {
-      const apps = environmentAppsDirectory(environmentName);
+      const apps = environmentAppsDirectory(environmentStateName);
       return {
         admin: { emulatedServerType: "filesystem", directory: `${apps}/pingapp_admin` },
         model: { emulatedServerType: "filesystem", directory: `${apps}/pingapp_model` },

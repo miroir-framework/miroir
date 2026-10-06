@@ -9,6 +9,7 @@ import { MiroirMcpServer, setupMcpServer, refreshLocalCachesForDeployedApplicati
 
 export { MiroirMcpServer, setupMcpServer, refreshLocalCachesForDeployedApplications, MCP_HTTP_ENDPOINT };
 export { EndpointToolRegistry, toolNameFor } from "./tools/EndpointToolRegistry.js";
+export type { McpCallContext } from "./tools/EndpointToolRegistry.js";
 export { callMcpToolViaHttp, listMcpToolsViaHttp, sendMcpRequestViaHttp } from "./mcpHttpClient.js";
 export type { McpHttpFetch } from "./mcpHttpClient.js";
 export { startEphemeralMcpHttpServer } from "./ephemeralMcpHttp.js";

@@ -72,6 +72,27 @@ the tables that follow.
 - **`getFromContext` / `getFromParameters`** — read a value by `referenceName` or `referencePath`
   instead of consuming the pipe.
 
+### The `inputOutput` types
+
+`inputOutput.input` and `inputOutput.output` use coarse types (issues #249, #449), not ML schemas:
+
+- a base type: `any`, `undefined`, `bigint`, `number`, `string`, `boolean`, `object`, `array`, `record`;
+- an entity uuid, for an instance of that entity;
+- `{ "type": "array", "payload": P }` and `{ "type": "record", "payload": P }`, written `array<P>` and `record<P>`;
+- `{ "type": "tuple", "payload": [P1, ..., Pn] }`, written `tuple<P1, ..., Pn>`.
+
+A type parameter `P` is `any`, `undefined`, a base scalar type, `object` or an entity uuid. Types do not nest: where an array, record or tuple would be a parameter, the type is `any` instead (an array of arrays is `array<any>`). A bare `array` or `record` is `array<any>` or `record<any>`.
+
+Compatibility (`inputOutputTypesCompatible`, given type first):
+
+- `any` is compatible with everything, both ways.
+- An entity instance is an `object` and a `record<any>`; an `object` is not an entity.
+- A `record<P>` is an `object`; an `object` is only a `record<any>`.
+- A `tuple<P1, ..., Pn>` is an `array<Q>` when every `Pi` is a `Q`; an array is never a tuple; two tuples need the same length.
+- Type parameters follow the same rules: `array<Book>` is an `array<object>`, not the reverse.
+
+Inferred types (`inferTransformerOutputTypeFromSchema`) map ML `array`, `record` and `tuple` schemas to these forms, with `any` for a nested type. The list transformer panel chooses its expected output among the same forms: a select for the type, then an "of" select for `array` and `record`, or one select per element for `tuple`.
+
 ### Choosing a transformer by input type
 
 In the TransformerEditor and the list transformer panel, the `transformerType` select at every
@@ -80,8 +101,9 @@ position receives (issue #383). A hint next to the select gives the number of hi
 and the input type. The currently selected type always stays in the list.
 
 - **Root input**: the list row entity in the list transformer panel; in the TransformerEditor, the
-  kind of the "here" value (`array`, `object` or a primitive), the selected entity for one
-  instance, an array of it when all instances are shown.
+  type of the "here" value or of the selected instances: a primitive kind, an entity for an object
+  with a `parentUuid`, `object` otherwise, and for an array the common type of its elements
+  (`array<number>`, `array<Book>`, `array<object>` for plain objects, `array<any>` when they differ).
 - **Nested positions** follow the runtime: a transformer with an `applyTo` consumes the `applyTo`
   output; `mapList.elementTransformer`, `filterList.predicate` and `find.predicate` receive a list
   element; `mergeIntoObject.definition` and `createObjectFromPairs` pairs receive the `applyTo`
@@ -98,6 +120,27 @@ The core functions are `checkTransformerInterfaceRecursively` and `transformerTy
 (`miroir-core/src/2_domain/TransformerInterfaceCheck.ts`), tested by the MiroirTest
 `fn.transformer.interfaceWalk`.
 
+### Showing the types of a transformer tree
+
+The TransformerEditor switch "Show transformer types" (off by default) puts a badge on the title
+row of every transformer node, and of every literal `applyTo` value (issue #453). A node's badge
+reads `in <given> · applyTo <its applyTo output, when different> · declared <input> → <output> ·
+out <output>`; entity types show their names. The badge is green when the input the node reads
+fits its declared input, red on a mismatch, grey when there is nothing to compare (no declared
+input, or `any` on a side).
+
+- Outputs come from the result schema inference (`resolveTransformerResultSchema`), reduced to
+  `inputOutput` types. A `returnValue` without `mlSchema` has the type of its `value`; a
+  `returnValue` whose `value` does not fit its `mlSchema` is a mismatch.
+- The switch is the ViewParams attribute `showTransformerTypes`. In the Component Test Sandbox,
+  each case starts with the app's value and saves its changes there, so the switch keeps its value
+  from one case to the next and the badges follow a run step by step.
+- Only the parent's `applyTo` constrains a child today (expected types for other places: #454);
+  the types are static (actual values per node: #455).
+
+The badge status is `transformerNodeTypeStatus` in the same file, tested by
+`fn.transformer.interfaceWalk`; the editor behaviour is tested by `ui.transformerEditor`.
+
 ### Editing a transformer tree step by step
 
 Every `transformerType` select has a `⋯` menu next to it, for the node it belongs to (issue #415). Its actions change the tree around the node and keep the node's subtree:
@@ -109,7 +152,7 @@ Every `transformerType` select has a `⋯` menu next to it, for the node it belo
 
 With the restriction switch on, Wrap in offers the transformers that accept the input of the node's position, and Pipe into those that accept the node's output.
 
-Changing a node's `transformerType` keeps the attributes the new type declares and accepts, such as `predicate` and `applyTo` from `filterList` to `find`. When the change drops attributes, a dialog names them first.
+Changing a node's `transformerType` keeps the attributes the new type declares and accepts, such as `predicate` and `applyTo` from `filterList` to `find`. When the change drops an attribute the user edited, a dialog names the dropped attributes first. It stays quiet when the dropped attributes all hold the values of one node the editor fills in itself: the default of the old type, with or without its optional attributes, or the default of the slot holding the node (issue #447).
 
 Wrapping a node in `mapList` does not rewrite its references. `getFromContext` on `defaultInput` then reads each element, but `getFromParameters` on `defaultInput` still reads the whole input, since only the context is rebound. A hint next to a `mapList`, `filterList` or `find` names such reads in its element transformer or predicate.
 
@@ -189,7 +232,7 @@ Example — the default identity transformer of a list panel:
 | `dataflowObject` | Build an object in *steps*: `definition` keys are evaluated in order and later steps can read earlier results from the context. | `object` | `object` | `1→1` |
 | `mergeIntoObject` | Start from `applyTo` (usually the row) and merge / override attributes declared in `definition`. The idiomatic “return the row, enriched with computed fields”. | `any` | `object` | `1→1` |
 | `createObjectFromPairs` | Build an object from an array of `{attributeKey, attributeValue}` pairs with templating (useful when attribute *names* are dynamic). | `any` | `object` | `1→1` |
-| `object_fromEntries` | Build an object from an array of `[key, value]` pairs — `Object.fromEntries()`. Inverse of `getObjectEntries`. | `array` | `any` (result schema: `record`) | `list→object` |
+| `object_fromEntries` | Build an object from an array of `[key, value]` pairs — `Object.fromEntries()`. Inverse of `getObjectEntries`. | `array` | `record` | `list→object` |
 
 Example — enrich a Book row with a computed label:
 
@@ -255,8 +298,8 @@ Example — extract the title of every Book:
 | `concatLists` | Concatenate the `lists` (each must resolve to an array) into one list, in order. | `array` | `array` | `lists→list` |
 | `aggregate` | Aggregate `applyTo` with `function` (`count`, `sum`, `avg`, `min`, `max`, `json_agg`, `json_agg_strict`), optional `distinct`, `groupBy` attributes and `having` clause. Without `groupBy` returns one row `{aggregate: value}` (or `{function: value}`); with `groupBy` returns one row per group: group attributes + aggregate value. | `array` | `array` (of aggregate rows) | `list→list (much fewer)` |
 | `listLength` | Number of items in `applyTo`. | `array` | `number` | `list→scalar` |
-| `listReducerToSpreadObject` | Merge a list of objects into one spread object (later items override earlier keys). | `array` | `object` | `list→object` |
-| `indexListBy` | Index a list into a dictionary keyed by `indexAttribute` — `{ item[indexAttribute]: item }`. | `array` | `object` (record of items) | `list→object` |
+| `listReducerToSpreadObject` | Merge a list of objects into one spread object (later items override earlier keys). | `array<object>` | `object` | `list→object` |
+| `indexListBy` | Index a list into a dictionary keyed by `indexAttribute` — `{ item[indexAttribute]: item }`. | `array<object>` | `record` (result schema: record of items) | `list→object` |
 
 ---
 
@@ -266,8 +309,8 @@ Example — extract the title of every Book:
 |-------------|--------------|----------------|-----------------|-------------|
 | `getObjectValues` | All values of an object, as an array. | `object` | `array` | `object→list` |
 | `getObjectEntries` | `[key, value]` pairs of an object, as an array. | `any` | `array` | `object→list` |
-| `object_fromEntries` | Inverse of `getObjectEntries`: array of pairs → object. | `array` | `any` (result schema: `record`) | `list→object` |
-| `indexListBy` | List → dictionary (see section 7). | `array` | `object` | `list→object` |
+| `object_fromEntries` | Inverse of `getObjectEntries`: array of pairs → object. | `array` | `record` | `list→object` |
+| `indexListBy` | List → dictionary (see section 7). | `array<object>` | `record` | `list→object` |
 | `pivot` | Relational pivot: rows → matrix. One output row per distinct `rowKeyAttribute` value, one attribute per `columnKeyAttribute` value. Cells = plucked `valueAttribute`, or existence `true` when absent. Missing (row, column) pairs get `fillValue` (default `false` in existence mode; default `null` ⇒ **absent key** — null cells are sparse). `columns` (transformer resolving to `string[]`, e.g. `returnValue` wrapping a literal, or `getFromContext`) pins the column set and restricts input rows to it; omitted ⇒ data-derived. `onDuplicates` (`first`/`last`/`count`/`sum`/`min`/`max`, default `first`) resolves duplicate (row, column) pairs; aggregates are rejected in existence mode. SQL: conditional aggregation (`jsonb_object_agg` over a filled grid CTE), deterministic first-appearance row order. Issue #265. | `array` | `array` (of matrix rows) | `list→list (reshaped)` |
 | `unpivot` | Relational melt: rows → long format `{...idColumns, [nameInto]: column, [valueInto]: value}` (defaults `"column"` / `"value"`). Absent keys are skipped; explicit `null` values are kept. `columns` (transformer resolving to `string[]`) restricts the melted keys; omitted ⇒ each row melts its own keys minus `idColumns`. `nameInto`/`valueInto` colliding with `idColumns` is an error. SQL: `LATERAL jsonb_each`. Issue #265. | `array` | `array` (long rows) | `list→list (longer)` |
 

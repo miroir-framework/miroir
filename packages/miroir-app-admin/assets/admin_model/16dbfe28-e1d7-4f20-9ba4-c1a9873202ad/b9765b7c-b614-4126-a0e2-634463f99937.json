@@ -156,6 +156,20 @@
             }
           }
         }
+      },
+      "showTransformerTypes": {
+        "type": "boolean",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 15,
+            "defaultLabel": "Show transformer types",
+            "description": "The TransformerEditor shows the input, declared and output types of every transformer node, set by its \"Show transformer types\" switch. Absent or false: hidden.",
+            "display": {
+              "editable": true
+            }
+          }
+        }
       }
     }
   }

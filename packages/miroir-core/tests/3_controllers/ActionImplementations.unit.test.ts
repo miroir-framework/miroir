@@ -115,6 +115,7 @@ const expectedActionTypesByEndpoint: Record<string, string[]> = {
     "connectExternalService",
     "prepareOpenApiDocument",
     "probeExternalService",
+    "setExternalServiceCredential",
   ],
   StoreManagementEndpoint: [
     "storeManagementAction_createStore",

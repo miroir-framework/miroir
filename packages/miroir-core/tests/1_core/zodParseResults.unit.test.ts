@@ -102,6 +102,7 @@ const EXPECTED_FAILING_ASSETS: Record<string, string[]> = {
     "miroir-app-miroir/miroir_data/b1a8b33b-ba28-4bf0-a173-5bdaaeac3d90.json",
     "miroir-app-miroir/miroir_data/e8c15587-af5d-4c08-b5b7-22f959447690.json",
     "miroir-app-miroir/miroir_data/ff7ceeef-361b-4e81-b168-23f8d3ec56e5.json",
+    "miroir-example-github/github_model/ae2b3612-b960-43f1-9e7a-17ef61ef725b.json",
     "miroir-example-library/library_model/14d6a920-9d86-4038-8d15-3f96e3337e59.json",
     "miroir-example-library/library_model/6176dcdf-39a6-4805-8dc5-3c2366a31a11.json",
     "miroir-example-library/library_model/6eaaec37-e3bc-40e4-af1b-4088412c0e34.json",

@@ -665,7 +665,7 @@
               },
               {
                 "miroirTestType": "functionCallTest",
-                "miroirTestLabel": "a literal applyTo gives the kind of its value",
+                "miroirTestLabel": "a literal applyTo gives the type of its value",
                 "functionRef": {
                   "module": "miroir-core/2_domain/TransformerInterfaceCheck",
                   "export": "checkTransformerInterfaceRecursively"
@@ -707,7 +707,41 @@
                       0,
                       "consumedInput"
                     ],
-                    "expectedValue": "array"
+                    "expectedValue": {
+                      "type": "array",
+                      "payload": "number"
+                    }
+                  },
+                  {
+                    "label": "one literal",
+                    "resultAccessPath": [
+                      "literals",
+                      "length"
+                    ],
+                    "expectedValue": 1
+                  },
+                  {
+                    "label": "literal path",
+                    "resultAccessPath": [
+                      "literals",
+                      0,
+                      "path"
+                    ],
+                    "expectedValue": [
+                      "applyTo"
+                    ]
+                  },
+                  {
+                    "label": "literal type",
+                    "resultAccessPath": [
+                      "literals",
+                      0,
+                      "type"
+                    ],
+                    "expectedValue": {
+                      "type": "array",
+                      "payload": "number"
+                    }
                   }
                 ]
               },
@@ -1302,6 +1336,135 @@
                       "givenInput"
                     ],
                     "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "mapList over a tuple binds the common element type",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "mapList",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "returnValue",
+                      "interpolation": "build",
+                      "value": [
+                        "a",
+                        "b"
+                      ],
+                      "mlSchema": {
+                        "type": "tuple",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      }
+                    },
+                    "elementTransformer": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "defaultInput"
+                    }
+                  },
+                  "any"
+                ],
+                "assertions": [
+                  {
+                    "label": "node 0 consumed input",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "consumedInput"
+                    ],
+                    "expectedValue": {
+                      "type": "tuple",
+                      "payload": [
+                        "string",
+                        "string"
+                      ]
+                    }
+                  },
+                  {
+                    "label": "node 2 path",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "path"
+                    ],
+                    "expectedValue": [
+                      "elementTransformer"
+                    ]
+                  },
+                  {
+                    "label": "node 2 given input",
+                    "resultAccessPath": [
+                      "nodes",
+                      2,
+                      "givenInput"
+                    ],
+                    "expectedValue": "string"
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "filterList over a tuple outputs an array of its element type",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "returnValue",
+                      "interpolation": "build",
+                      "value": [
+                        "a",
+                        "b"
+                      ],
+                      "mlSchema": {
+                        "type": "tuple",
+                        "definition": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ]
+                      }
+                    },
+                    "predicate": {
+                      "transformerType": "returnValue",
+                      "interpolation": "build",
+                      "value": true
+                    }
+                  },
+                  "any"
+                ],
+                "assertions": [
+                  {
+                    "label": "node 0 output",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "output"
+                    ],
+                    "expectedValue": {
+                      "type": "array",
+                      "payload": "string"
+                    }
                   }
                 ]
               }
@@ -1942,6 +2105,615 @@
                 ]
               }
             ]
+          },
+          {
+            "miroirTestType": "miroirTestSuite",
+            "miroirTestLabel": "returnValue",
+            "miroirTests": [
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "a returnValue without mlSchema has the type of its value",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "returnValue",
+                    "interpolation": "build",
+                    "value": "a"
+                  },
+                  "any"
+                ],
+                "assertions": [
+                  {
+                    "label": "output",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "output"
+                    ],
+                    "expectedValue": "string"
+                  },
+                  {
+                    "label": "no failure",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "failures"
+                    ],
+                    "expectedValue": []
+                  },
+                  {
+                    "label": "status",
+                    "resultAccessPath": [
+                      "status"
+                    ],
+                    "expectedValue": "ok"
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "a returnValue array value gives an array of its element type",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "returnValue",
+                    "interpolation": "build",
+                    "value": [
+                      1,
+                      2
+                    ]
+                  },
+                  "any"
+                ],
+                "assertions": [
+                  {
+                    "label": "output",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "output"
+                    ],
+                    "expectedValue": {
+                      "type": "array",
+                      "payload": "number"
+                    }
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "a returnValue output feeds the node it is the applyTo of",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "aggregate",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "returnValue",
+                      "interpolation": "build",
+                      "value": [
+                        1,
+                        2
+                      ]
+                    }
+                  },
+                  "any"
+                ],
+                "assertions": [
+                  {
+                    "label": "root consumed input",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "consumedInput"
+                    ],
+                    "expectedValue": {
+                      "type": "array",
+                      "payload": "number"
+                    }
+                  },
+                  {
+                    "label": "status",
+                    "resultAccessPath": [
+                      "status"
+                    ],
+                    "expectedValue": "ok"
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "a returnValue value contradicting its mlSchema fails",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "returnValue",
+                    "interpolation": "build",
+                    "mlSchema": {
+                      "type": "string"
+                    },
+                    "value": 3
+                  },
+                  "any"
+                ],
+                "assertions": [
+                  {
+                    "label": "status",
+                    "resultAccessPath": [
+                      "status"
+                    ],
+                    "expectedValue": "incompatible"
+                  },
+                  {
+                    "label": "failure",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "failures"
+                    ],
+                    "expectedValue": [
+                      {
+                        "direction": "value",
+                        "given": "number",
+                        "declared": "string"
+                      }
+                    ]
+                  },
+                  {
+                    "label": "output from the mlSchema",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "output"
+                    ],
+                    "expectedValue": "string"
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "a returnValue value fitting its mlSchema does not fail",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "returnValue",
+                    "interpolation": "build",
+                    "mlSchema": {
+                      "type": "string"
+                    },
+                    "value": "x"
+                  },
+                  "any"
+                ],
+                "assertions": [
+                  {
+                    "label": "status",
+                    "resultAccessPath": [
+                      "status"
+                    ],
+                    "expectedValue": "ok"
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "a nested returnValue contradiction fails at its own path",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "ifThenElse",
+                    "interpolation": "runtime",
+                    "if": {
+                      "transformerType": "returnValue",
+                      "interpolation": "build",
+                      "mlSchema": {
+                        "type": "boolean"
+                      },
+                      "value": "yes"
+                    }
+                  },
+                  "any"
+                ],
+                "assertions": [
+                  {
+                    "label": "root has no failure",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "failures"
+                    ],
+                    "expectedValue": []
+                  },
+                  {
+                    "label": "nested path",
+                    "resultAccessPath": [
+                      "nodes",
+                      1,
+                      "path"
+                    ],
+                    "expectedValue": [
+                      "if"
+                    ]
+                  },
+                  {
+                    "label": "nested failure",
+                    "resultAccessPath": [
+                      "nodes",
+                      1,
+                      "failures"
+                    ],
+                    "expectedValue": [
+                      {
+                        "direction": "value",
+                        "given": "string",
+                        "declared": "boolean"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "an array value fitting its tuple mlSchema does not fail",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "returnValue",
+                    "interpolation": "build",
+                    "value": [
+                      "a",
+                      1
+                    ],
+                    "mlSchema": {
+                      "type": "tuple",
+                      "definition": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "number"
+                        }
+                      ]
+                    }
+                  },
+                  "any"
+                ],
+                "assertions": [
+                  {
+                    "label": "failures",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "failures"
+                    ],
+                    "expectedValue": []
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "an object value fitting its record mlSchema does not fail",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "returnValue",
+                    "interpolation": "build",
+                    "value": {
+                      "a": "x",
+                      "b": "y"
+                    },
+                    "mlSchema": {
+                      "type": "record",
+                      "definition": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "any"
+                ],
+                "assertions": [
+                  {
+                    "label": "failures",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "failures"
+                    ],
+                    "expectedValue": []
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "an object value contradicting its record mlSchema fails",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "returnValue",
+                    "interpolation": "build",
+                    "value": {
+                      "a": 1
+                    },
+                    "mlSchema": {
+                      "type": "record",
+                      "definition": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "any"
+                ],
+                "assertions": [
+                  {
+                    "label": "failure direction",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "failures",
+                      0,
+                      "direction"
+                    ],
+                    "expectedValue": "value"
+                  },
+                  {
+                    "label": "failure given",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "failures",
+                      0,
+                      "given"
+                    ],
+                    "expectedValue": {
+                      "type": "record",
+                      "payload": "number"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "miroirTestSuite",
+            "miroirTestLabel": "record builders",
+            "miroirTests": [
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "indexListBy over Book rows outputs a record of Book",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "indexListBy",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "rows"
+                    },
+                    "indexAttribute": "uuid"
+                  },
+                  "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  {
+                    "entityMlSchemas": {
+                      "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": {
+                        "type": "object",
+                        "definition": {
+                          "uuid": {
+                            "type": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "context": {
+                      "rows": {
+                        "type": "array",
+                        "definition": {
+                          "type": "object",
+                          "definition": {
+                            "uuid": {
+                              "type": "uuid"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "assertions": [
+                  {
+                    "label": "consumed input",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "consumedInput"
+                    ],
+                    "expectedValue": {
+                      "type": "array",
+                      "payload": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                    }
+                  },
+                  {
+                    "label": "failures",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "failures"
+                    ],
+                    "expectedValue": []
+                  },
+                  {
+                    "label": "output",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "output"
+                    ],
+                    "expectedValue": {
+                      "type": "record",
+                      "payload": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                    }
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "listReducerToSpreadObject over Book rows outputs an object",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "listReducerToSpreadObject",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "rows"
+                    }
+                  },
+                  "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  {
+                    "entityMlSchemas": {
+                      "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": {
+                        "type": "object",
+                        "definition": {
+                          "uuid": {
+                            "type": "uuid"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "context": {
+                      "rows": {
+                        "type": "array",
+                        "definition": {
+                          "type": "object",
+                          "definition": {
+                            "uuid": {
+                              "type": "uuid"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "assertions": [
+                  {
+                    "label": "failures",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "failures"
+                    ],
+                    "expectedValue": []
+                  },
+                  {
+                    "label": "output",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "output"
+                    ],
+                    "expectedValue": "object"
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "functionCallTest",
+                "miroirTestLabel": "listReducerToSpreadObject over a list of strings fails its input",
+                "functionRef": {
+                  "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+                  "export": "checkTransformerInterfaceRecursively"
+                },
+                "arguments": [
+                  {
+                    "transformerType": "listReducerToSpreadObject",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": {
+                        "type": "array",
+                        "definition": {
+                          "type": "string"
+                        }
+                      },
+                      "value": [
+                        "a"
+                      ]
+                    }
+                  },
+                  "any"
+                ],
+                "assertions": [
+                  {
+                    "label": "input failure",
+                    "resultAccessPath": [
+                      "nodes",
+                      0,
+                      "failures"
+                    ],
+                    "expectedValue": [
+                      {
+                        "direction": "input",
+                        "given": {
+                          "type": "array",
+                          "payload": "string"
+                        },
+                        "declared": {
+                          "type": "array",
+                          "payload": "object"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
@@ -2178,7 +2950,7 @@
         "miroirTests": [
           {
             "miroirTestType": "functionCallTest",
-            "miroirTestLabel": "array",
+            "miroirTestLabel": "array of numbers",
             "functionRef": {
               "module": "miroir-core/2_domain/TransformerInterfaceCheck",
               "export": "inputOutputTypeOfValue"
@@ -2188,7 +2960,83 @@
                 1
               ]
             ],
+            "expectedValue": {
+              "type": "array",
+              "payload": "number"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "array of mixed kinds",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "inputOutputTypeOfValue"
+            },
+            "arguments": [
+              [
+                1,
+                "a"
+              ]
+            ],
+            "expectedValue": {
+              "type": "array",
+              "payload": "any"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "empty array",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "inputOutputTypeOfValue"
+            },
+            "arguments": [
+              []
+            ],
             "expectedValue": "array"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "array of entity instances",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "inputOutputTypeOfValue"
+            },
+            "arguments": [
+              [
+                {
+                  "uuid": "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7",
+                  "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                },
+                {
+                  "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
+                  "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                }
+              ]
+            ],
+            "expectedValue": {
+              "type": "array",
+              "payload": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "array of objects",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "inputOutputTypeOfValue"
+            },
+            "arguments": [
+              [
+                {
+                  "a": 1
+                }
+              ]
+            ],
+            "expectedValue": {
+              "type": "array",
+              "payload": "object"
+            }
           },
           {
             "miroirTestType": "functionCallTest",
@@ -2200,6 +3048,35 @@
             "arguments": [
               {
                 "a": 1
+              }
+            ],
+            "expectedValue": "object"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "entity instance",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "inputOutputTypeOfValue"
+            },
+            "arguments": [
+              {
+                "uuid": "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+              }
+            ],
+            "expectedValue": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "object whose parentUuid is not a uuid",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "inputOutputTypeOfValue"
+            },
+            "arguments": [
+              {
+                "parentUuid": "Book"
               }
             ],
             "expectedValue": "object"
@@ -2413,6 +3290,557 @@
               }
             ],
             "expectedValue": "object"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a record schema gives a record of its value type",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceInference",
+              "export": "inferTransformerOutputTypeFromSchema"
+            },
+            "arguments": [
+              {
+                "type": "record",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ],
+            "expectedValue": {
+              "type": "record",
+              "payload": "string"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a record of a known entity schema gives a record of that entity",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceInference",
+              "export": "inferTransformerOutputTypeFromSchema"
+            },
+            "arguments": [
+              {
+                "type": "record",
+                "definition": {
+                  "type": "object",
+                  "definition": {
+                    "uuid": {
+                      "type": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              {
+                "entityMlSchemas": {
+                  "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": {
+                    "type": "object",
+                    "definition": {
+                      "uuid": {
+                        "type": "uuid"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": {
+              "type": "record",
+              "payload": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a record of arrays gives a record of any (no nesting)",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceInference",
+              "export": "inferTransformerOutputTypeFromSchema"
+            },
+            "arguments": [
+              {
+                "type": "record",
+                "definition": {
+                  "type": "array",
+                  "definition": {
+                    "type": "string"
+                  }
+                }
+              }
+            ],
+            "expectedValue": {
+              "type": "record",
+              "payload": "any"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a tuple schema gives a tuple of its element types",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceInference",
+              "export": "inferTransformerOutputTypeFromSchema"
+            },
+            "arguments": [
+              {
+                "type": "tuple",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              }
+            ],
+            "expectedValue": {
+              "type": "tuple",
+              "payload": [
+                "string",
+                "number"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a nested tuple element gives any (no nesting)",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceInference",
+              "export": "inferTransformerOutputTypeFromSchema"
+            },
+            "arguments": [
+              {
+                "type": "tuple",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              }
+            ],
+            "expectedValue": {
+              "type": "tuple",
+              "payload": [
+                "string",
+                "any"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an array of plain objects gives an array of object",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceInference",
+              "export": "inferTransformerOutputTypeFromSchema"
+            },
+            "arguments": [
+              {
+                "type": "array",
+                "definition": {
+                  "type": "object",
+                  "definition": {
+                    "x": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": {
+              "type": "array",
+              "payload": "object"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an array of undefined gives an array of undefined",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceInference",
+              "export": "inferTransformerOutputTypeFromSchema"
+            },
+            "arguments": [
+              {
+                "type": "array",
+                "definition": {
+                  "type": "undefined"
+                }
+              }
+            ],
+            "expectedValue": {
+              "type": "array",
+              "payload": "undefined"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an array with a list definition gives an array of any",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceInference",
+              "export": "inferTransformerOutputTypeFromSchema"
+            },
+            "arguments": [
+              {
+                "type": "array",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              }
+            ],
+            "expectedValue": {
+              "type": "array",
+              "payload": "any"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a union gives any",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceInference",
+              "export": "inferTransformerOutputTypeFromSchema"
+            },
+            "arguments": [
+              {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              }
+            ],
+            "expectedValue": "any"
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "liftInputOutputTypeToMlSchema",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a record of string lifts to an ML record",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerMlSchemaCheck",
+              "export": "liftInputOutputTypeToMlSchema"
+            },
+            "arguments": [
+              {
+                "type": "record",
+                "payload": "string"
+              }
+            ],
+            "expectedValue": {
+              "type": "record",
+              "definition": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a bare record lifts to an ML record of any",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerMlSchemaCheck",
+              "export": "liftInputOutputTypeToMlSchema"
+            },
+            "arguments": [
+              "record"
+            ],
+            "expectedValue": {
+              "type": "record",
+              "definition": {
+                "type": "any"
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a tuple lifts to an ML tuple",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerMlSchemaCheck",
+              "export": "liftInputOutputTypeToMlSchema"
+            },
+            "arguments": [
+              {
+                "type": "tuple",
+                "payload": [
+                  "string",
+                  "number"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "type": "tuple",
+              "definition": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a tuple element entity lifts to its schema",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerMlSchemaCheck",
+              "export": "liftInputOutputTypeToMlSchema"
+            },
+            "arguments": [
+              {
+                "type": "tuple",
+                "payload": [
+                  "string",
+                  "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                ]
+              },
+              {
+                "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": {
+                  "type": "object",
+                  "definition": {
+                    "uuid": {
+                      "type": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": {
+              "type": "tuple",
+              "definition": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "object",
+                  "definition": {
+                    "uuid": {
+                      "type": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an array of object lifts to an array of any object",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerMlSchemaCheck",
+              "export": "liftInputOutputTypeToMlSchema"
+            },
+            "arguments": [
+              {
+                "type": "array",
+                "payload": "object"
+              }
+            ],
+            "expectedValue": {
+              "type": "array",
+              "definition": {
+                "type": "object",
+                "nonStrict": true,
+                "definition": {}
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an array of undefined lifts to an array of undefined",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerMlSchemaCheck",
+              "export": "liftInputOutputTypeToMlSchema"
+            },
+            "arguments": [
+              {
+                "type": "array",
+                "payload": "undefined"
+              }
+            ],
+            "expectedValue": {
+              "type": "array",
+              "definition": {
+                "type": "undefined"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "transformerNodeTypeStatus",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "known compatible input matches",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "transformerNodeTypeStatus"
+            },
+            "arguments": [
+              {
+                "path": [],
+                "transformerType": "x",
+                "givenInput": {
+                  "type": "array",
+                  "payload": "number"
+                },
+                "consumedInput": {
+                  "type": "array",
+                  "payload": "number"
+                },
+                "output": "any",
+                "failures": [],
+                "declared": {
+                  "input": "array",
+                  "output": "number"
+                }
+              }
+            ],
+            "expectedValue": "match"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a failure is a mismatch",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "transformerNodeTypeStatus"
+            },
+            "arguments": [
+              {
+                "path": [],
+                "transformerType": "x",
+                "givenInput": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "consumedInput": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "output": "any",
+                "failures": [
+                  {
+                    "direction": "input",
+                    "given": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "declared": "array"
+                  }
+                ],
+                "declared": {
+                  "input": "array",
+                  "output": "number"
+                }
+              }
+            ],
+            "expectedValue": "mismatch"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "no declared inputOutput is unknown",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "transformerNodeTypeStatus"
+            },
+            "arguments": [
+              {
+                "path": [],
+                "transformerType": "x",
+                "givenInput": "string",
+                "consumedInput": "string",
+                "output": "any",
+                "failures": []
+              }
+            ],
+            "expectedValue": "unknown"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a transformer not consuming its input is unknown",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "transformerNodeTypeStatus"
+            },
+            "arguments": [
+              {
+                "path": [],
+                "transformerType": "x",
+                "givenInput": "string",
+                "consumedInput": "string",
+                "output": "any",
+                "failures": [],
+                "declared": {
+                  "input": "undefined",
+                  "output": "any"
+                }
+              }
+            ],
+            "expectedValue": "unknown"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a declared any input is unknown",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "transformerNodeTypeStatus"
+            },
+            "arguments": [
+              {
+                "path": [],
+                "transformerType": "x",
+                "givenInput": "string",
+                "consumedInput": "string",
+                "output": "any",
+                "failures": [],
+                "declared": {
+                  "input": "any",
+                  "output": "any"
+                }
+              }
+            ],
+            "expectedValue": "unknown"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an any consumed input is unknown",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "transformerNodeTypeStatus"
+            },
+            "arguments": [
+              {
+                "path": [],
+                "transformerType": "x",
+                "givenInput": "any",
+                "consumedInput": "any",
+                "output": "any",
+                "failures": [],
+                "declared": {
+                  "input": "array",
+                  "output": "number"
+                }
+              }
+            ],
+            "expectedValue": "unknown"
           }
         ]
       }

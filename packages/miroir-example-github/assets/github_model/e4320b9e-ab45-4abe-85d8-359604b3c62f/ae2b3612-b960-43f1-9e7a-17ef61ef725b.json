@@ -1,0 +1,27 @@
+{
+  "uuid": "ae2b3612-b960-43f1-9e7a-17ef61ef725b",
+  "parentName": "Query",
+  "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+  "name": "githubListMyRepositories",
+  "defaultLabel": "List the connected GitHub user's repositories",
+  "description": "extractorTemplateForExternalService repos/list-for-authenticated-user, first 100 repositories, most recently updated first.",
+  "definition": {
+    "extractorTemplates": {
+      "repositories": {
+        "extractorOrCombinerType": "extractorTemplateForExternalService",
+        "endpointUuid": "0c642e2a-3922-4ce7-99a6-88f91f6a103f",
+        "actionType": "repos/list-for-authenticated-user",
+        "parameterBindings": {
+          "per_page": {
+            "transformerType": "returnValue",
+            "value": "100"
+          },
+          "sort": {
+            "transformerType": "returnValue",
+            "value": "updated"
+          }
+        }
+      }
+    }
+  }
+}

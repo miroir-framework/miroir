@@ -1,0 +1,13 @@
+{
+  "uuid": "92bb41c1-68b6-43ed-be16-d0cf224211cf",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app-electron",
+  "measuredAt": "2026-10-01T19:50:05.000Z",
+  "eagerGzipBytes": 3251249,
+  "baseline": 3251249,
+  "previousBaseline": 3184200,
+  "baselineChange": 67049,
+  "reason": "miroir-ai declares @ag-ui/core and @ag-ui/client; bundle policies follow the group",
+  "gitCommit": "930584ab6cdf896475b706c52a1cef4c1cdec5cc"
+}

@@ -33,3 +33,9 @@ miroir-cli --env test-filesystem createInstance --file ./payload.json
 # List available commands
 miroir-cli list
 ```
+
+Authentication - With authentication on (the default, see `docs/reference/authentication.md`), every command except `list` and `help` runs as a platform user: `--user <name>` with the password in `MIROIR_PASSWORD` or typed at the prompt, or `--token <bearer>` / `MIROIR_AUTH_TOKEN` (a token from a server sharing `MIROIR_AUTH_TOKEN_SECRET`). Commands on an application the user may not open fail with `AccessDenied`. `--disable-auth` or `MIROIR_AUTH_ENABLED=0` turns it off.
+
+```sh
+MIROIR_PASSWORD=alice-dev miroir-cli --env test-filesystem --user alice getInstances --payload '{...}'
+```

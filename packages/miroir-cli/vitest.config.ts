@@ -8,5 +8,7 @@ export default defineConfig({
     setupFiles: [],
     testTimeout: 30000,
     hookTimeout: 30000,
+    // Test files share the test environment's stores (.miroir/<environment>/), reseeded per file.
+    fileParallelism: false,
   },
 });

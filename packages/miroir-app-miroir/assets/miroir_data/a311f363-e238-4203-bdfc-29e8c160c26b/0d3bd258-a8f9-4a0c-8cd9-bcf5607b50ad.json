@@ -858,7 +858,7 @@
           },
           {
             "miroirTestType": "functionCallTest",
-            "miroirTestLabel": "listReducerToSpreadObject maps array element to record",
+            "miroirTestLabel": "listReducerToSpreadObject gives an open object: its attributes are those of the merged elements",
             "functionRef": {
               "module": "miroir-core/2_domain/Transformer_ResultSchema",
               "export": "resolveTransformerResultSchema"
@@ -881,8 +881,9 @@
               }
             ],
             "expectedValue": {
-              "type": "record",
-              "definition": { "type": "string" }
+              "type": "object",
+              "nonStrict": true,
+              "definition": {}
             }
           },
           {

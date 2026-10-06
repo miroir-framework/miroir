@@ -21,7 +21,9 @@
     "testByFile": "cross-env NODE_ENV=test vitest run"
   },
   "dependencies": {
-    "miroir-core": "*"
+    "miroir-core": "*",
+    "mongodb": "6.21.0",
+    "pg": "8.23.0"
   },
   "devDependencies": {
     "miroir-localcache-redux": "*",

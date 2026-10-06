@@ -11,13 +11,15 @@ import { defaultTransformerInput } from "../0_interfaces/1_core/Transformer";
 import type {
   TransformerInterfaceCompatibility,
   TransformerInterfaceGivenTypes,
+  TransformerInterfaceLiteralReport,
   TransformerInterfaceMismatch,
   TransformerInterfaceNodeReport,
   TransformerInterfaceTreeCompatibility,
+  TransformerNodeTypeStatus,
   TransformerTypesAcceptingInput,
 } from "../0_interfaces/2_domain/TransformerInterfaceCheckInterface";
 import { isFailedTransformerInterfaceFromDefinition } from "../0_interfaces/2_domain/TransformerResultSchemaInterface";
-import { inferTransformerOutputTypeFromSchema } from "./TransformerInterfaceInference";
+import { inferTransformerOutputTypeFromSchema, inputOutputTypeParameter } from "./TransformerInterfaceInference";
 import { liftInputOutputTypeToMlSchema } from "./TransformerMlSchemaCheck";
 import {
   resolveTransformerResultSchema,
@@ -26,92 +28,126 @@ import {
 import { applicationTransformerDefinitions } from "./TransformersForRuntime";
 
 // ################################################################################################
-// Issue #249 — transformer interface (`inputOutput`) adequacy checks.
+// Issue #249 — transformer interface (`inputOutput`) adequacy checks; #449 — array, record and
+// tuple type parameters.
 //
 // Compatibility is NOT a pure partial order: `any` is compatible with everything in both
-// directions (lenient, confirmed in the feature analysis). The only strict subtyping rule is
-// entity-uuid ⊂ object(-with-any-payload): an entity instance is accepted wherever an object is
-// declared/expected, but a declared `object` output does NOT satisfy an entity-uuid expectation.
+// directions (lenient, confirmed in the feature analysis). Otherwise (#449 analysis §3.1):
+// - an entity instance is an `object` and a `record<any>`, but an `object` is not an entity;
+// - a `record<P>` is an `object`, an `object` is only a `record<any>`;
+// - a `tuple<P1..Pn>` is an `array<Q>` when every Pi is a Q, an array is never a tuple;
+// - type parameters follow the same rules, element-wise for tuples.
 // ################################################################################################
 
 const ENTITY_UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-type NormalizedInputOutputType =
-  /** the six non-structured literals (any, undefined, bigint, number, string, boolean) */
-  | { kind: "primitive"; value: string }
-  | { kind: "entityUuid"; uuid: string }
-  /** bare "object" / "array" literals normalize to this with payload "any" */
-  | { kind: "object" | "array"; payload: InputOutputPayloadType };
-
-function normalizeInputOutputType(type: InputOutputType): NormalizedInputOutputType {
-  if (typeof type === "object") {
-    return { kind: type.type, payload: type.payload ?? "any" };
-  }
-  if (type === "object" || type === "array") {
-    return { kind: type, payload: "any" };
-  }
-  if (ENTITY_UUID_REGEX.test(type)) {
-    return { kind: "entityUuid", uuid: type.toLowerCase() };
-  }
-  return { kind: "primitive", value: type };
-}
-
-type NormalizedPayloadType =
+/** Normalized `inputOutput` type; bare `array` / `record` get the type parameter `any`. */
+type CoarseType =
   | { kind: "any" }
+  /** undefined, bigint, number, string, boolean (an unknown literal only matches itself) */
   | { kind: "primitive"; value: string }
-  | { kind: "entityUuid"; uuid: string };
+  | { kind: "object" }
+  | { kind: "entity"; uuid: string }
+  | { kind: "array" | "record"; parameter: CoarseType }
+  | { kind: "tuple"; elements: CoarseType[] };
 
-function normalizePayloadType(payload: InputOutputPayloadType): NormalizedPayloadType {
-  if (payload === "any") {
-    return { kind: "any" };
+const ANY_TYPE: CoarseType = { kind: "any" };
+
+/** A type parameter that is itself an array, record or tuple is `any` (#449 D3, no nesting). */
+function normalizeInputOutputType(
+  type: InputOutputType | InputOutputPayloadType,
+  isParameter = false,
+): CoarseType {
+  if (typeof type === "object") {
+    if (isParameter) {
+      return ANY_TYPE;
+    }
+    if (type.type === "tuple") {
+      return { kind: "tuple", elements: type.payload.map((element) => normalizeInputOutputType(element, true)) };
+    }
+    return { kind: type.type, parameter: normalizeInputOutputType(type.payload ?? "any", true) };
   }
-  if (ENTITY_UUID_REGEX.test(payload)) {
-    return { kind: "entityUuid", uuid: payload.toLowerCase() };
+  switch (type) {
+    case "any":
+      return ANY_TYPE;
+    case "object":
+      return { kind: "object" };
+    case "array":
+    case "record":
+      return isParameter ? ANY_TYPE : { kind: type, parameter: ANY_TYPE };
+    default:
+      return ENTITY_UUID_REGEX.test(type)
+        ? { kind: "entity", uuid: type.toLowerCase() }
+        : { kind: "primitive", value: type };
   }
-  return { kind: "primitive", value: payload };
 }
 
-function inputOutputPayloadsCompatible(
-  actual: InputOutputPayloadType,
-  expected: InputOutputPayloadType,
-): boolean {
-  const a = normalizePayloadType(actual);
-  const e = normalizePayloadType(expected);
-  if (a.kind === "any" || e.kind === "any") {
+function coarseTypesCompatible(actual: CoarseType, expected: CoarseType): boolean {
+  if (actual.kind === "any" || expected.kind === "any") {
     return true;
   }
-  if (a.kind === "entityUuid" || e.kind === "entityUuid") {
-    return a.kind === "entityUuid" && e.kind === "entityUuid" && a.uuid === e.uuid;
+  switch (expected.kind) {
+    case "primitive":
+      return actual.kind === "primitive" && actual.value === expected.value;
+    case "object":
+      return actual.kind === "object" || actual.kind === "entity" || actual.kind === "record";
+    case "entity":
+      return actual.kind === "entity" && actual.uuid === expected.uuid;
+    case "record":
+      if (actual.kind === "record") {
+        return coarseTypesCompatible(actual.parameter, expected.parameter);
+      }
+      return (actual.kind === "object" || actual.kind === "entity") && expected.parameter.kind === "any";
+    case "array":
+      if (actual.kind === "array") {
+        return coarseTypesCompatible(actual.parameter, expected.parameter);
+      }
+      return (
+        actual.kind === "tuple" &&
+        actual.elements.every((element) => coarseTypesCompatible(element, expected.parameter))
+      );
+    case "tuple":
+      return (
+        actual.kind === "tuple" &&
+        actual.elements.length === expected.elements.length &&
+        actual.elements.every((element, index) => coarseTypesCompatible(element, expected.elements[index]))
+      );
   }
-  return a.value === e.value;
 }
 
 /**
  * Lenient compatibility relation between two `inputOutput` types: is `actual` acceptable where
- * `expected` is wanted? Asymmetric only for entity uuids (entity uuid satisfies `object`,
- * not the reverse).
+ * `expected` is wanted? See the rules above.
  */
 export function inputOutputTypesCompatible(
   actual: InputOutputType,
   expected: InputOutputType,
 ): boolean {
-  const a = normalizeInputOutputType(actual);
-  const e = normalizeInputOutputType(expected);
-  if ((a.kind === "primitive" && a.value === "any") || (e.kind === "primitive" && e.value === "any")) {
-    return true;
+  return coarseTypesCompatible(normalizeInputOutputType(actual), normalizeInputOutputType(expected));
+}
+
+/**
+ * Human-readable label of an `inputOutput` type (#453, #449 G4): a known entity uuid gives the
+ * entity name, type parameters follow their type, `array<Book>`, `record<string>`,
+ * `tuple<string, Book>`. With `shortenUnknownUuids` (#453 D18), an unknown entity uuid gives its
+ * first 8 characters.
+ */
+export function formatInputOutputTypeLabel(
+  type: InputOutputType,
+  entities?: { uuid: string; name?: string }[],
+  options?: { shortenUnknownUuids?: boolean },
+): string {
+  const label = (element: InputOutputType) => formatInputOutputTypeLabel(element, entities, options);
+  if (typeof type === "object") {
+    return type.type === "tuple"
+      ? `tuple<${type.payload.map(label).join(", ")}>`
+      : `${type.type}<${label(type.payload ?? "any")}>`;
   }
-  switch (a.kind) {
-    case "entityUuid":
-      return (
-        (e.kind === "entityUuid" && a.uuid === e.uuid) ||
-        (e.kind === "object" && e.payload === "any")
-      );
-    case "primitive":
-      return e.kind === "primitive" && e.value === a.value;
-    case "object":
-    case "array":
-      return e.kind === a.kind && inputOutputPayloadsCompatible(a.payload, e.payload);
+  const entityName = entities?.find((entity) => entity.uuid === type)?.name;
+  if (entityName) {
+    return entityName;
   }
+  return options?.shortenUnknownUuids && ENTITY_UUID_REGEX.test(type) ? type.slice(0, 8) : type;
 }
 
 /**
@@ -264,20 +300,35 @@ function isPlainRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+/** The type parameter common to `types`, `any` when they differ or there are none (#449 D3). */
+function commonTypeParameter(types: InputOutputType[]): InputOutputPayloadType {
+  const parameters = types.map(inputOutputTypeParameter);
+  return parameters.length > 0 && parameters.every((parameter) => parameter === parameters[0])
+    ? parameters[0]
+    : "any";
+}
+
 /**
- * Coarse `inputOutput` type of a value: `array`, `object` or its primitive kind; `null` and
- * `undefined` give `any` (#383, root input of the TransformerEditor "here" mode).
+ * Coarse `inputOutput` type of a value: its primitive kind; an object with a uuid `parentUuid` is
+ * an instance of that entity, any other object is `object`; an array has the common type of its
+ * elements as type parameter (`any` when they differ), an empty array is `array`; `null` and
+ * `undefined` give `any` (#383, root input of the TransformerEditor; #453 D15; #449 §3.2).
  */
 export function inputOutputTypeOfValue(value: unknown): InputOutputType {
   if (value === null || value === undefined) {
     return "any";
   }
   if (Array.isArray(value)) {
-    return "array";
+    if (value.length === 0) {
+      return "array";
+    }
+    return { type: "array", payload: commonTypeParameter(value.map(inputOutputTypeOfValue)) };
   }
   switch (typeof value) {
-    case "object":
-      return "object";
+    case "object": {
+      const parentUuid = (value as { parentUuid?: unknown }).parentUuid;
+      return typeof parentUuid === "string" && ENTITY_UUID_REGEX.test(parentUuid) ? parentUuid : "object";
+    }
     case "string":
     case "number":
     case "boolean":
@@ -304,12 +355,22 @@ function arrayElementValue(array: WalkValue, environment: WalkEnvironment): Walk
   return walkValueOfType(type, environment);
 }
 
-/** Element type of an array type; anything else gives `any`. */
+/**
+ * Element type of an array type, or the common element type of a tuple (#449 §3.2); anything else
+ * gives `any`.
+ */
 function arrayElementInputOutputType(type: InputOutputType): InputOutputType {
-  if (typeof type === "object" && type.type === "array") {
-    return type.payload ?? "any";
+  if (typeof type !== "object") {
+    return "any";
   }
-  return "any";
+  switch (type.type) {
+    case "array":
+      return type.payload ?? "any";
+    case "tuple":
+      return commonTypeParameter(type.payload);
+    default:
+      return "any";
+  }
 }
 
 export interface TransformerInterfaceWalkOptions {
@@ -327,6 +388,7 @@ interface WalkEnvironment {
   transformerDefinitions: Record<string, TransformerDefinition>;
   entityMlSchemas: Record<string, MlElement>;
   nodes: TransformerInterfaceNodeReport[];
+  literals: TransformerInterfaceLiteralReport[];
 }
 
 /** A value bound in the walk: its coarse type and, for #88 inference, its ML schema. */
@@ -339,13 +401,19 @@ function walkValueOfType(type: InputOutputType, environment: WalkEnvironment): W
   return { type, schema: liftInputOutputTypeToMlSchema(type, environment.entityMlSchemas) };
 }
 
-/** Output of a node: #88 inference converted to a coarse type, else the declared output (D8). */
+/**
+ * Output of a node: #88 inference converted to a coarse type, else the declared output (D8). A
+ * `returnValue` without `mlSchema` has the type of its `value` (#453 D12), which #88 leaves `any`.
+ */
 function nodeOutput(
   transformer: TypedTransformerNode,
   declared: InputOutputObject | undefined,
   context: TransformerResultSchemaContext,
   environment: WalkEnvironment,
 ): WalkValue {
+  if (transformer.transformerType === "returnValue" && transformer.mlSchema === undefined) {
+    return walkValueOfType(inputOutputTypeOfValue(transformer.value), environment);
+  }
   const resolved = resolveTransformerResultSchema(
     transformer as unknown as CoreTransformerForBuildPlusRuntime,
     context,
@@ -399,6 +467,7 @@ function walkNode(
     consumed = walkNode(transformer.applyTo, [...path, "applyTo"], given, context, environment).output;
   } else if (transformer.applyTo !== undefined) {
     consumed = walkValueOfType(inputOutputTypeOfValue(transformer.applyTo), environment);
+    environment.literals.push({ path: [...path, "applyTo"], type: consumed.type });
   }
   report.consumedInput = consumed.type;
   if (
@@ -407,6 +476,10 @@ function walkNode(
     !inputOutputTypesCompatible(consumed.type, declared.input)
   ) {
     report.failures.push({ direction: "input", given: consumed.type, declared: declared.input });
+  }
+  const valueFailure = returnValueFailure(transformer, environment);
+  if (valueFailure) {
+    report.failures.push(valueFailure);
   }
 
   const element = walkChildren(transformer, path, given, consumed, context, environment);
@@ -419,10 +492,35 @@ function walkNode(
   return { report, output: listOutput ?? output };
 }
 
-function payloadOf(type: InputOutputType): InputOutputPayloadType {
-  return typeof type === "object" || type === "object" || type === "array" || type === "undefined"
-    ? "any"
-    : type;
+/**
+ * Coarse type of a value in the shape of the type it is declared with: an array declared as a tuple
+ * types element-wise, a plain object declared as a record types as the record of its values (#449).
+ */
+function inputOutputTypeOfValueAs(value: unknown, declared: InputOutputType): InputOutputType {
+  if (typeof declared === "object" && declared.type === "tuple" && Array.isArray(value)) {
+    return { type: "tuple", payload: value.map((element) => inputOutputTypeParameter(inputOutputTypeOfValue(element))) };
+  }
+  const isRecordDeclared = declared === "record" || (typeof declared === "object" && declared.type === "record");
+  if (isRecordDeclared && isPlainRecord(value) && inputOutputTypeOfValue(value) === "object") {
+    const values = Object.values(value).map(inputOutputTypeOfValue);
+    return values.length === 0 ? "record" : { type: "record", payload: commonTypeParameter(values) };
+  }
+  return inputOutputTypeOfValue(value);
+}
+
+/** #453 D13: a `returnValue` whose `value` does not fit its `mlSchema`, compared as coarse types. */
+function returnValueFailure(
+  transformer: TypedTransformerNode,
+  environment: WalkEnvironment,
+): TransformerInterfaceMismatch | undefined {
+  if (transformer.transformerType !== "returnValue" || transformer.mlSchema === undefined) {
+    return undefined;
+  }
+  const declared = inferTransformerOutputTypeFromSchema(transformer.mlSchema as MlElement, {
+    entityMlSchemas: environment.entityMlSchemas,
+  });
+  const given = inputOutputTypeOfValueAs(transformer.value, declared);
+  return inputOutputTypesCompatible(given, declared) ? undefined : { direction: "value", given, declared };
 }
 
 function listCombinatorOutput(
@@ -433,11 +531,17 @@ function listCombinatorOutput(
   switch (transformerType) {
     case "mapList":
       return {
-        type: { type: "array", payload: payloadOf(element.output.type) },
+        type: { type: "array", payload: inputOutputTypeParameter(element.output.type) },
         schema: { type: "array", definition: element.output.schema } as MlElement,
       };
     case "filterList":
-      return consumed;
+      // Filtering a tuple keeps some of its elements: an array of its element type (#449 §3.2).
+      return typeof consumed.type === "object" && consumed.type.type === "tuple"
+        ? {
+            type: { type: "array", payload: inputOutputTypeParameter(element.bound.type) },
+            schema: { type: "array", definition: element.bound.schema } as MlElement,
+          }
+        : consumed;
     case "find":
       return element.bound;
     default:
@@ -553,6 +657,7 @@ export function checkTransformerInterfaceRecursively(
     transformerDefinitions: options.transformerDefinitions ?? applicationTransformerDefinitions,
     entityMlSchemas: options.entityMlSchemas ?? {},
     nodes: [],
+    literals: [],
   };
   if (isTypedTransformerNode(transformer)) {
     const root = walkValueOfType(rootInput, environment);
@@ -569,5 +674,22 @@ export function checkTransformerInterfaceRecursively(
           ? "incompatible"
           : "ok",
     nodes,
+    literals: environment.literals,
   };
+}
+
+/** #453 D17: badge status of a node of the walk. */
+export function transformerNodeTypeStatus(node: TransformerInterfaceNodeReport): TransformerNodeTypeStatus {
+  if (node.failures.length > 0) {
+    return "mismatch";
+  }
+  if (
+    node.declared === undefined ||
+    node.declared.input === "any" ||
+    node.declared.input === "undefined" ||
+    node.consumedInput === "any"
+  ) {
+    return "unknown";
+  }
+  return "match";
 }

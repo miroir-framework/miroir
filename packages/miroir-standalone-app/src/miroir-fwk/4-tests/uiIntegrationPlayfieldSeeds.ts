@@ -34,6 +34,17 @@ import {
   user1
 } from "miroir-example-library";
 
+import {
+  githubInitApplicationVersion,
+  selfApplicationGitHub,
+  selfApplicationModelBranchGitHubMasterBranch,
+} from "miroir-example-github";
+import {
+  metaInitApplicationVersion,
+  selfApplicationMeta,
+  selfApplicationModelBranchMetaMasterBranch,
+} from "miroir-app-meta";
+
 import { defaultMiroirMetaModel } from "miroir-app-miroir";
 
 /**
@@ -114,6 +125,24 @@ export const libraryTestbedInitParams: InitApplicationParameters = {
   selfApplication: selfApplicationLibrary as SelfApplication,
   applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
   applicationVersion: selfApplicationVersionLibraryInitialVersion,
+};
+
+/** GitHub example app (#472): report MiroirTests walk its Reports against fake GitHub answers. */
+export const githubTestbedInitParams: InitApplicationParameters = {
+  dataStoreType: "app",
+  metaModel: defaultMiroirMetaModel,
+  selfApplication: selfApplicationGitHub,
+  applicationModelBranch: selfApplicationModelBranchGitHubMasterBranch as any,
+  applicationVersion: githubInitApplicationVersion,
+};
+
+/** Meta app (#473): report MiroirTests walk the bundle size history Reports on fixed measurements. */
+export const metaTestbedInitParams: InitApplicationParameters = {
+  dataStoreType: "app",
+  metaModel: defaultMiroirMetaModel,
+  selfApplication: selfApplicationMeta,
+  applicationModelBranch: selfApplicationModelBranchMetaMasterBranch as any,
+  applicationVersion: metaInitApplicationVersion,
 };
 
 /** Library seed for lendDocument / returnDocument runner suites (users + catalog data). */

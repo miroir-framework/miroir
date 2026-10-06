@@ -14,6 +14,7 @@ import {
   resolveMlSchemaReferenceInContext,
   getEndpointActions,
   redactCredentialSecretsFromValue,
+  type AuthPrincipal,
   type EndpointDefinition,
   type MetaModel,
   type MiroirModelEnvironment,
@@ -36,7 +37,7 @@ import {
 
 
 const packageName = "miroir-mcp";
-const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, "info", "toolHandlers");
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, "info", "mcpHandlersForEndpoint");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {
   log = logger;
@@ -204,6 +205,7 @@ export async function handleMcpAction(
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap,
   modelEnvironmentOverride?: MiroirModelEnvironment,
+  principal?: AuthPrincipal,
 ): Promise<{ content: Array<{ type: string; text: string; parsed: Record<string, any> }> }> {
   try {
     log.info(`${toolName} - received params:`, JSON.stringify(redactCredentialSecretsFromValue(params), null, 2));
@@ -268,6 +270,9 @@ export async function handleMcpAction(
       action,
       applicationDeploymentMap,
       defaultLibraryModelEnvironment as any as MiroirModelEnvironment, // defaultMiroirModelEnvironment,
+      undefined,
+      undefined,
+      principal,
     );
 
     log.info(`${toolName} - result:`, JSON.stringify(redactCredentialSecretsFromValue(result), null, 2));

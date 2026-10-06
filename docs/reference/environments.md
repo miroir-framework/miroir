@@ -18,7 +18,7 @@
 
 | Environment | Used by | Stores |
 |---|---|---|
-| `dev` | default for the server and the web client | models edited **live** in the package assets; Admin data **copied** in `.miroir/dev/` |
+| `dev` | default for the server and the web client | models edited **live** in the package assets; Admin data **copied** in `.miroir/dev/`; the only one, with `test-filesystem`, that installs Meta (`miroir-app-meta`, live, since its data is the tracked bundle size history) |
 | `local` | `environments/local.json`, gitignored: a developer's own environment | whatever it declares, usually `{ "extends": "dev" }` plus extra applications |
 | `cloud-agent` | coding-agent cloud sessions (`local.json` = `{ "extends": "cloud-agent" }`) | `dev` with the AI features off |
 | `test-filesystem` | profile `emulatedServer-filesystem`, `realServer-filesystem` | every section copied in `.miroir/test-filesystem/` |
@@ -136,6 +136,10 @@ Paths are relative to the root (`MIROIR_ROOT`, else the repository root), which 
 - At start, the server writes the Deployment and AdminApplication rows the definition implies, then opens every deployment.
 - While the server runs with `environments/local.json` selected, `local.json` follows the Deployment rows it writes and deletes, so an application installed from the UI is recorded there. With a tracked environment selected, the server logs a hint to run `miroir-env import` instead.
 
+### Worker state
+
+`MIROIR_TEST_WORKER=w<N>` gives a run of a test environment a state of its own, so parallel nonreg jobs (#477) never touch the same stores: `.miroir/<environment>@w<N>/`, SQL schemas and MongoDB databases `<environment>_w<N>_<application>` (`test_sql_w2_library`), IndexedDB names under `.miroir/<environment>@w<N>/`. Test applications installed at run time take the same prefix. The definition and its name do not change: only where the state lives. A worker name other than `w<number>` is an error; outside `test-*` environments the variable is ignored with a warning.
+
 ---
 
 ## The `miroir-env` command
@@ -148,6 +152,8 @@ Paths are relative to the root (`MIROIR_ROOT`, else the repository root), which 
 | `check [--strict] [--tracked-clean]` | Validates every definition, then compares the state of the selected environment with it: rows the next start creates or rewrites, deployments the definition does not install, pre-#321 rows in the package Admin data. `--tracked-clean` also fails when asset files under `packages/*/assets`, `packages/*/tests/assets` or `packages/*/tests/test_assets` differ from `HEAD`. |
 | `import [--dry-run]` | Records the deployments of the state that the definition does not install in `environments/local.json`. |
 | `prune [--dry-run]` | Deletes those deployments and their stores from the state. Stop the server first. |
+| `deploy <app> [--state <dir>] [--dry-run]` | Deploys example application `packages/miroir-example-<app>` (`github` or `miroir-example-github`) in the Admin data of the state, `.miroir/<environment>/` or `--state <dir>`: an AdminApplication row and a Deployment row opening the package assets live. Does nothing when the application is already deployed. The definition does not install it: record it with `import`. |
+| `clear` | Removes the state of a test environment: its `.miroir/<environment>/` directory, its SQL schemas and its MongoDB databases, test applications installed at run time included. With `MIROIR_TEST_WORKER` set, removes only that worker's state; without it, keeps the workers' states. A schema or database whose name also starts with the name of another, longer environment (`test_sql_w2_*` when `test-sql-w2` exists) is kept. Honors `MIROIR_TEST_POSTGRES_HOST` and `MIROIR_TEST_MONGODB_CONNECTION_STRING`; a server that does not answer gives a `warning:` line. Refuses an environment that is not `test-*`. |
 
 ---
 
@@ -165,7 +171,7 @@ Paths are relative to the root (`MIROIR_ROOT`, else the repository root), which 
 Where the checks run:
 
 - **PR checks** (`.github/workflows/pr-checks.yml`): `npm run miroir-env -- check --strict --tracked-clean`, also in the pre-push gate of `AGENTS.md`.
-- **Nonreg** (`scripts/run-nonreg.py`): every tier starts with `unit-321-environment-before`, which records the asset files already changed (a developer's own edits) and `miroir-env show --json` in the snapshot (`environment.json`). Every tier ends with `unit-321-tracked-assets`, which fails when the run changed an asset file, then runs `miroir-env check --strict`.
+- **Nonreg** (`scripts/run-nonreg.py`): every tier starts with `unit-321-environment-before`, which records the asset files already changed (a developer's own edits), `miroir-env show --json` (`environment.json`) and the warnings of `miroir-env check --snapshot` (`environment-check-before.json`, e.g. an application deployed by hand) in the snapshot. Every tier ends with `unit-321-tracked-assets`, which fails when the run changed an asset file, then runs `miroir-env check --strict --since` that file: only warnings the run brought fail.
 
 ---
 
