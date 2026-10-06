@@ -122,8 +122,8 @@ The core functions are `checkTransformerInterfaceRecursively` and `transformerTy
 
 ### Showing the types of a transformer tree
 
-The TransformerEditor switch "Show transformer types" (off by default) puts a badge on the title
-row of every transformer node, and of every literal `applyTo` value (issue #453). A node's badge
+The TransformerEditor switch "Show transformer types" (off by default) puts a badge under the title
+of every transformer node, and of every literal `applyTo` value (issues #453, #470). A node's badge
 reads `in <given> · applyTo <its applyTo output, when different> · declared <input> → <output> ·
 out <output>`; entity types show their names. The badge is green when the input the node reads
 fits its declared input, red on a mismatch, grey when there is nothing to compare (no declared
@@ -159,6 +159,19 @@ Changing a node's `transformerType` keeps the attributes the new type declares a
 Wrapping a node in `mapList` does not rewrite its references. `getFromContext` on `defaultInput` then reads each element, but `getFromParameters` on `defaultInput` still reads the whole input, since only the context is rebound. A hint next to a `mapList`, `filterList` or `find` names such reads in its element transformer or predicate.
 
 The tree operations are pure functions in `miroir-core/src/2_domain/TransformerTreeEdit.ts`, tested by the MiroirTest `fn.transformer.treeEdit`; the editor behaviour is tested by `ui.transformerEditor`.
+
+### Showing a transformer as blocks
+
+In the TransformerEditor, the transformer has three views: Blocks, Form and JSON (issue #498). Form is the default. The view chosen for a field is kept while the editor is open, even when an enclosing object is folded. The block view is read-only for now; editing with blocks comes with #500.
+
+- Each transformer is a block. Its header shows the transformer type, its label and its primitive parameters, such as `referenceToOuterObject`. Each place that holds a transformer (`applyTo`, `predicate`, `elementTransformer`, …) is a row inside the block.
+- A literal object or list is an object or list block with one row per entry, and the transformers inside it are blocks too. An ML schema parameter is a chip labelled "ML schema". The `value` of a `returnValue` is shown quoted, since it is returned as is, never evaluated.
+- A key that the TransformerDefinition does not declare is a red row marked ⚠. A `transformerType` with no TransformerDefinition is shown as JSON.
+- A block's color comes from the `classification` of its TransformerDefinition: list, object, control, value, variable, operator, MLS, metaModel, admin or spreadsheet. The colors are the `components.blockEditor` attribute of the Theme: `categoryColors`, and `fallbackColor` for a category without a color. The dark Theme has its own colors.
+- A transformer evaluated at build time is marked and a runtime one is not. A transformer with no `interpolation` is evaluated at build time, so it is marked too. The ViewParams attribute `blockEditorBuildMarking` chooses the mark: `dashedOutline` (the default) or `marker`, a small "build" tag. The TransformerEditor evaluates every node at runtime, so the mark does not change the result it shows.
+- Each block folds with the arrow of its header, which then says how many rows are hidden. Literal objects and lists with more than 3 entries and no transformer inside start folded. The toolbar has Expand all, Collapse all and a zoom from 50 % to 150 %.
+
+The block tree is computed by the pure functions `transformerBlockTree` and `transformerBlockOutline` (`miroir-core/src/2_domain/TransformerBlockModel.ts`), tested by the MiroirTest `fn.blockModel`. The platform test `transformerBlockModelAssets.unit.test.ts` checks that every transformer in the package assets maps to blocks and that every category has a Theme color. The view is tested by `ui.blockEditor`. Decisions and the plan of the following steps: [`code-helpers/features/497-FEATURE-visual-block-editor/`](../../code-helpers/features/497-FEATURE-visual-block-editor/analysis.md).
 
 ---
 
@@ -354,6 +367,9 @@ Miroir application itself (MLS = Miroir Meta-Language Schema), not in ordinary r
   row is declared `any` but actually yields the row entity.
 - **`interpolation: "build" | "runtime"`** — transformers may be evaluated at build time (on the
   model) or at runtime (on the data); the distinction is per instance, not per transformer type.
+  A transformer with no `interpolation` is evaluated at build time. At the build step, a runtime
+  transformer is returned unchanged with everything below it, so a build transformer under a
+  runtime one is evaluated at runtime.
 - **`referenceToOuterObject`** — inside list combinators (`mapList` / `filterList` / `find`),
   the element transformer's *piped* input is the list element; the outer value stays reachable
   via `getFromContext` under `referenceToOuterObject` (the list panel uses `"row"`).

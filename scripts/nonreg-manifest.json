@@ -230,6 +230,36 @@
       }
     },
     {
+      "id": "unit-498-block-model",
+      "scopes": ["core"],
+      "tier": "unit",
+      "title": "#498 — every transformer in the package assets maps to blocks, and every block category has a Theme color (PLATFORM sweep; fn.blockModel runs in unit-miroir-core, ui.blockEditor in appstack-miroir-component-tests)",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-core",
+        "--",
+        "transformerBlockModelAssets"
+      ],
+      "shared": {
+        "group": "core-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-core",
+          "--"
+        ],
+        "files": [
+          "transformerBlockModelAssets"
+        ]
+      }
+    },
+    {
       "id": "unit-resolveSuitePlayfieldSeed",
       "scopes": ["tooling"],
       "tier": "unit",
