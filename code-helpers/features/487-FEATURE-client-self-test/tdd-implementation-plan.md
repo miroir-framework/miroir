@@ -17,7 +17,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Companion: #486 (health checks; shares Electron `--self-test`, analysis D9)
 Working branch: `claude/487-client-self-test-x9c2x8` (from `_integration` at 9838983)
 
-**Resume note:** plan written 2026-10-06; decisions D1 to D10 and their defaults accepted by A 2026-10-06; Slices 0 to 2 DONE; next Slice 3 (page load).
+**Resume note:** plan written 2026-10-06; decisions D1 to D10 and their defaults accepted by A 2026-10-06; Slices 0 to 3 DONE; next Slice 4 (web driver).
 
 ---
 
@@ -40,7 +40,7 @@ This plan does **not** cover the CLI, server, MCP and Electron main-process prob
 | 0 | Characterize the unit baseline and the Run all contracts | ✅ DONE | `testMiroir --tags unit` baseline; existing Run all tests green |
 | 1 | Tracer: `self-test` environment → `runSelfTest` → `passed` | ✅ DONE | `runSelfTest.487.phase1.integ.test.ts` |
 | 2 | The verdict fails when it should | ✅ DONE | `selfTestVerdict.487.phase2.integ.test.ts` |
-| 3 | Page load runs the self-test and publishes the verdict | ⬜ pending | `selfTestPage.487.phase3.integ.test.tsx` |
+| 3 | Page load runs the self-test and publishes the verdict | ✅ DONE | `selfTestPage.487.phase3.integ.test.tsx` |
 | 4 | Web driver and local run | ⬜ pending | `selfTestDriver.487.phase4.unit.test.ts` + a real `--serve` run |
 | 5 | Electron `--self-test` (renderer half) | ⬜ pending | `electronSelfTest.487.phase5.unit.test.ts` + run on A's machine |
 | 6 | `integ` MiroirTests in self-test mode | ⬜ pending | `runSelfTestInteg.487.phase6.integ.test.ts` |
@@ -229,7 +229,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ## Slice 3 — Page load runs the self-test and publishes the verdict
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE (2026-10-06)
 
 **Goal:** with `client.selfTest.enabled`, loading the page shows the self-test page (no app bar, menu or router), its progress, then the results with the existing display; the verdict appears on `<html>` and `window`.
 
@@ -257,7 +257,12 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui
 ```
 
 ### Realization
-_(to fill)_
+- `startSelfTest({root, withProviders, domainController, miroirConfig, tracker, authenticationEnabled})` removes the bootstrap spinner, publishes and renders `running`, re-renders after each suite (`onSuiteDone`), then publishes and renders the final result. `index.tsx` builds the provider tree once (`withProviders`) and uses it for both the self-test page and the router, so there is one render path per mode and no duplicated providers.
+- Bundle policy: importing `startSelfTest` statically pulled the result grids (and `diff`, through `SideBySideDiff`) into the page-load chunks. `shouldStartSelfTest` moved to `selfTestResult.ts` (no UI imports) and `index.tsx` imports `startSelfTest.js` dynamically. `check_bundle_policy.py`: 0 violations, page 788697 bytes gzipped (baseline 786868).
+- `SelfTestPage` sits in a `ReportPageContextProvider` (the grids read it) and renders `MiroirTestResultsDisplay` with `linkResultsToEditor` false, since there is no router to open the editor. The verdict line is `data-testid="miroir-self-test-verdict"`, the error panel `data-testid="miroir-self-test-error"`.
+- `MiroirTestResultsDisplay` takes `resultsBySuiteKey` and an optional `suiteKeys` order instead of `instances`; `MiroirTestListDisplay` renders it with its sorted instances' keys.
+- Case 3 checks the absence of `.MuiAppBar-root` and `.MuiDrawer-root`; the router never mounts since `startSelfTest` renders only the page.
+- Results: `selfTestPage.487.phase3.integ` 6/6; miroir-standalone-app typecheck unchanged (32 MUI 9 errors of `_integration`, none in these files); `npm run lint` clean; `nonreg:filesystem --runner shared --scope smoke,ui` 35/35 PASS.
 
 ---
 

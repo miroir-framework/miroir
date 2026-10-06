@@ -31,7 +31,7 @@ miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
 ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
 
 export const miroirActivityTracker = new MiroirActivityTracker();
-const miroirEventService = new MiroirEventService(miroirActivityTracker);
+export const miroirEventService = new MiroirEventService(miroirActivityTracker);
 MiroirLoggerFactory.startRegisteredLoggers(miroirActivityTracker, miroirEventService, loglevelnext, {
   defaultLevel: "WARN",
   specificLoggerOptions: {},

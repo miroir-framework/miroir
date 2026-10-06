@@ -27,6 +27,11 @@ export type MiroirSelfTestResult = {
   error?: string;
 };
 
+/** Whether page load runs the self-test instead of the application. */
+export function shouldStartSelfTest(miroirConfig: MiroirConfigClient | undefined): boolean {
+  return miroirConfig?.selfTest?.enabled === true;
+}
+
 /** The tags a self-test runs: those of `client.selfTest`, `unit` when it names none. */
 export function selfTestTags(miroirConfig: MiroirConfigClient): string[] {
   const tags = miroirConfig.selfTest?.tags;
