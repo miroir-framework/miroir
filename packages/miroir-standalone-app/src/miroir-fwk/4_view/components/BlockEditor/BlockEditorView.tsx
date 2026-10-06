@@ -142,8 +142,10 @@ function useCollapse(node: BlockNode, settings: BlockSettings, rowCount: number)
 }
 
 const Field = React.memo(function Field(props: { value: unknown; settings: BlockSettings }) {
+  const text = JSON.stringify(props.value);
   return (
     <span
+      title={text}
       css={css({
         fontFamily: "monospace",
         fontSize: "12px",
@@ -158,7 +160,7 @@ const Field = React.memo(function Field(props: { value: unknown; settings: Block
         whiteSpace: "nowrap",
       })}
     >
-      {JSON.stringify(props.value)}
+      {text}
     </span>
   );
 });

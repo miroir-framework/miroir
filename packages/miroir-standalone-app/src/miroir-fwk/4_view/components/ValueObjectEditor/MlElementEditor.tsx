@@ -463,6 +463,7 @@ function MlElementEditorForm(props: MlElementEditorProps): JSX.Element {
   const componentKey = `MlElementEditor-${props.rootLessListKey || 'ROOT'}`;
 
   const currentKeyMap = props.typeCheckKeyMap?.[props.rootLessListKey];
+  const blockViewModes = useContext(BlockViewModeContext);
   const {
     // general use
     context,
@@ -622,6 +623,10 @@ function MlElementEditorForm(props: MlElementEditorProps): JSX.Element {
         setCodeMirrorValue(JSON.stringify(currentValueObjectAtKey, null, 2));
       }
       setDisplayAsStructuredElement(event.target.checked);
+      // #498: on a field with the Blocks / Form / JSON switch, the switch follows this toggle
+      if (blockViewModes && isBlockViewRoot(currentKeyMap)) {
+        blockViewModes.setMode(formikRootLessListKey, event.target.checked ? "form" : "json");
+      }
     },
     [
       currentValueObjectAtKey,
@@ -630,6 +635,9 @@ function MlElementEditorForm(props: MlElementEditorProps): JSX.Element {
       props.rootLessListKey,
       setCodeMirrorValue,
       setDisplayAsStructuredElement,
+      blockViewModes,
+      currentKeyMap,
+      formikRootLessListKey,
     ]
   );
   
@@ -650,6 +658,7 @@ function MlElementEditorForm(props: MlElementEditorProps): JSX.Element {
             checked={displayAsStructuredElement}
             id={`displayAsStructuredElementSwitch-${props.rootLessListKey}`}
             name={`displayAsStructuredElementSwitch-${props.rootLessListKey}`}
+            data-testid={`display-as-structured-element:${props.rootLessListKey}`}
             onChange={handleDisplayAsStructuredElementSwitchChange}
             disabled={!codeMirrorIsValidJson}
           />

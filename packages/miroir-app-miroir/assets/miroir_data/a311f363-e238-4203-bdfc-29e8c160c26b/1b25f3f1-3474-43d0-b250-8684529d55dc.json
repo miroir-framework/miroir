@@ -223,6 +223,72 @@
                 "present": false
               }
             ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: turning the field's structured view off selects JSON in the view switch",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "Form is selected",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:form"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "turn the field's structured view off",
+                "target": {
+                  "byTestId": "display-as-structured-element:transformer"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the view switch says JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the JSON holds the value",
+                "target": {
+                  "byText": {
+                    "regex": "\"value\": \"seize value...\""
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no form field for the value",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "present": false
+              },
+              {
+                "step": "click",
+                "label": "choose Form",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:form"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the form is back",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "timeout": 2000
+              }
+            ]
           }
         ]
       },
@@ -384,6 +450,15 @@
                   "byTestId": "block-parameter:transformerImplementation.definition.referenceToOuterObject"
                 },
                 "attribute": "data-value",
+                "value": "\"attribute\""
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "a header value has its full text as a tooltip",
+                "target": {
+                  "byText": "\"attribute\""
+                },
+                "attribute": "title",
                 "value": "\"attribute\""
               },
               {
