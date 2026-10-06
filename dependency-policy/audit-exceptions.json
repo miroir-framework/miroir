@@ -1,6 +1,7 @@
 {
   "exceptions": [
     {"package": "braces", "advisory": "GHSA-vfj7-8cjw-p6xm", "reason": "no fixed version; reached only through devDependencies: micromatch (jest, ts-jest) and chokidar (nodemon)", "expires": "2026-11-02"},
-    {"package": "http-cache-semantics", "advisory": "GHSA-ch52-4w7c-c8xp", "reason": "no fixed version; reached only through make-fetch-happen (lerna) and cacheable-request (electron-builder), on build and release tooling", "expires": "2026-11-02"}
+    {"package": "http-cache-semantics", "advisory": "GHSA-ch52-4w7c-c8xp", "reason": "no fixed version; reached only through make-fetch-happen (lerna) and cacheable-request (electron-builder), on build and release tooling", "expires": "2026-11-02"},
+    {"package": "@graphql-tools/utils", "advisory": "GHSA-7mx3-vvmw-hjmv", "reason": "fixed only in 12.x; reached only through @copilotkit/runtime (graphql-yoga 5, @graphql-yoga/plugin-defer-stream), which accept 10.x and 11.x", "expires": "2026-11-05"}
   ]
 }
