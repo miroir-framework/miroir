@@ -17149,6 +17149,14 @@ export const miroirFundamentalMlSchema = {
               "relativePath": "miroirConfigEnvironment"
             }
           },
+          "selfTest": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirSelfTestConfig"
+            }
+          },
           "features": {
             "type": "object",
             "optional": true,
@@ -17182,14 +17190,6 @@ export const miroirFundamentalMlSchema = {
                 "type": "boolean",
                 "optional": true
               }
-            }
-          },
-          "selfTest": {
-            "type": "schemaReference",
-            "optional": true,
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "miroirSelfTestConfig"
             }
           }
         }

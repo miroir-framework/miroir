@@ -17,7 +17,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Companion: #486 (health checks; shares Electron `--self-test`, analysis D9)
 Working branch: `claude/487-client-self-test-x9c2x8` (from `_integration` at 9838983)
 
-**Resume note:** plan written 2026-10-06; decisions D1 to D10 and their defaults accepted by A 2026-10-06; Slice 0 DONE; next Slice 1 (tracer).
+**Resume note:** plan written 2026-10-06; decisions D1 to D10 and their defaults accepted by A 2026-10-06; Slices 0 and 1 DONE; next Slice 2 (failing verdicts).
 
 ---
 
@@ -38,7 +38,7 @@ This plan does **not** cover the CLI, server, MCP and Electron main-process prob
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize the unit baseline and the Run all contracts | ✅ DONE | `testMiroir --tags unit` baseline; existing Run all tests green |
-| 1 | Tracer: `self-test` environment → `runSelfTest` → `passed` | ⬜ pending | `runSelfTest.487.phase1.integ.test.ts` |
+| 1 | Tracer: `self-test` environment → `runSelfTest` → `passed` | ✅ DONE | `runSelfTest.487.phase1.integ.test.ts` |
 | 2 | The verdict fails when it should | ⬜ pending | `selfTestVerdict.487.phase2.integ.test.ts` |
 | 3 | Page load runs the self-test and publishes the verdict | ⬜ pending | `selfTestPage.487.phase3.integ.test.tsx` |
 | 4 | Web driver and local run | ⬜ pending | `selfTestDriver.487.phase4.unit.test.ts` + a real `--serve` run |
@@ -144,7 +144,7 @@ Run on `_integration` 9838983 plus the docs commit, cloud container, 2026-10-06.
 
 ## Slice 1 — Tracer: the `self-test` environment runs the miroir app's unit MiroirTests and passes
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE (2026-10-06)
 
 **Goal:** a maintainer selects `self-test` and a single call boots the platform on it, loads miroir and Admin only, reads the miroir app's MiroirTests from the local cache, runs the `unit` ones and returns `passed`. Cuts schema → miroir-env → client config → platform boot → deployment load → batch run → verdict.
 
@@ -178,7 +178,18 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui,tooling
 ```
 
 ### Realization
-_(to fill)_
+
+- Schema: a named definition `miroirSelfTestConfig` (`{ enabled: boolean, tags?: string[] }`), referenced by `miroirEnvironment.client.selfTest` and `miroirConfigClient.selfTest`; `MiroirSelfTestConfig` and `miroirSelfTestConfig` exported from miroir-core.
+- miroir-env: `selfTestConfig(resolved)` adds `selfTest` to both `environmentRealServerClientConfig` and `environmentClientConfig`.
+- `environments/self-test.json` as in analysis D7; `miroir-env check --strict --tracked-clean` lists it as valid. Admin keeps `dev`'s layout (model live, data a copy), so the description says "the miroir app and the Admin data are copies".
+- `runSelfTest` (`4-tests/selfTest/runSelfTest.ts`) reads the MiroirTests with `domainController.currentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap).tests`, the framework-neutral API, instead of the Redux selector the plan named.
+- Deviation in the test setup: the run boots on `test-filesystem` (tests never run on a non-`test-*` environment) with the `client.selfTest` of `self-test`, and `bootEnvironment` (miroir-env) plays the server's boot on the emulated server's DomainController. Admin there lists Library and the other test applications, so the "miroir and Admin only" assertion also proves the application filter.
+- **Bug found by the tracer:** `tr.menuBuild` failed with "Cannot add property 5, object is not extensible". `handleTransformer_menu_AddItem` (`miroir-core/src/1_core/Menu.ts`) shallow-copied the menu and then `splice`d its items, so it modified the menu it was given; the CLI passes because its MiroirTests are fresh objects read from files, the local cache's are frozen. Fixed by building a new menu (sections and items copied); the CLI run and the self-test both pass.
+- `MiroirActivityTrackerInterface` (not the class) types the tracker of the batch and of `runSelfTest`, as the button's context gives it.
+- `selfTest` sits before `features` in `miroirConfigClient`: `cursorSdk.275.phase0.unit` reads the feature keys from the schema source as everything after `features:`.
+- Scoped nonreg `npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui,tooling`: 64/64 pass. `npm run test -w miroir-core -- ''`: 2451 passed, 1 skipped.
+- Results: `runSelfTest.487.phase1.integ` 4/4 (43 suites, 0 failed); `RunAllMiroirTestsButton.unit` 4/4, `MiroirTestListDisplay.unit` 7/7, `runAllComponentTests.286.phase6.integ` 3/3, `renderPerformanceRunControls.303.phase6.unit` 3/3. Typecheck: miroir-core and miroir-env clean; miroir-standalone-app has the 32 MUI 9 errors already on `_integration`, none in the files of this slice. `npm run lint` errors on `_integration` 9838983 (miroir-app-meta double casts) are fixed by #489, merged in from `_integration`.
+
 
 ---
 

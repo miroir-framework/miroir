@@ -3801,6 +3801,7 @@ export type MiroirConfigClient = {
     miroirConfigType: "client";
     client: MiroirConfigForClientStub | MiroirConfigForRestClient;
     environment?: MiroirConfigEnvironment | undefined;
+    selfTest?: MiroirSelfTestConfig | undefined;
     features?: {
         ai?: boolean | undefined;
         mcp?: boolean | undefined;
@@ -3809,7 +3810,6 @@ export type MiroirConfigClient = {
         agentModel?: string | undefined;
         designerTools?: boolean | undefined;
     } | undefined;
-    selfTest?: MiroirSelfTestConfig | undefined;
 };
 export type MiroirConfigServer = {
     miroirConfigType: "server";
@@ -10853,7 +10853,7 @@ export const miroirConfigEnvironment: z.ZodType<MiroirConfigEnvironment> = z.obj
 export const miroirSelfTestConfig: z.ZodType<MiroirSelfTestConfig> = z.object({enabled:z.boolean(), tags:z.array(z.string()).optional()}).strict();
 export const miroirConfigForClientStub: z.ZodType<MiroirConfigForClientStub> = z.object({emulateServer:z.literal(true), filesystemDeploymentRootDirectory:z.string(), rootApiUrl:z.string(), deploymentStorageConfig:z.lazy(() =>deploymentStorageConfig)}).strict();
 export const miroirConfigForRestClient: z.ZodType<MiroirConfigForRestClient> = z.object({emulateServer:z.literal(false), serverConfig:z.lazy(() =>serverConfigForClientConfig)}).strict();
-export const miroirConfigClient: z.ZodType<MiroirConfigClient> = z.object({miroirConfigType:z.literal("client"), client:z.union([z.lazy(() =>miroirConfigForClientStub), z.lazy(() =>miroirConfigForRestClient)]), environment:z.lazy(() =>miroirConfigEnvironment).optional(), features:z.object({ai:z.boolean().optional(), mcp:z.boolean().optional(), cursor:z.boolean().optional(), agentBackend:z.enum(["cursor","claude","none"]).optional(), agentModel:z.string().optional(), designerTools:z.boolean().optional()}).strict().optional(), selfTest:z.lazy(() =>miroirSelfTestConfig).optional()}).strict();
+export const miroirConfigClient: z.ZodType<MiroirConfigClient> = z.object({miroirConfigType:z.literal("client"), client:z.union([z.lazy(() =>miroirConfigForClientStub), z.lazy(() =>miroirConfigForRestClient)]), environment:z.lazy(() =>miroirConfigEnvironment).optional(), selfTest:z.lazy(() =>miroirSelfTestConfig).optional(), features:z.object({ai:z.boolean().optional(), mcp:z.boolean().optional(), cursor:z.boolean().optional(), agentBackend:z.enum(["cursor","claude","none"]).optional(), agentModel:z.string().optional(), designerTools:z.boolean().optional()}).strict().optional()}).strict();
 export const miroirConfigServer: z.ZodType<MiroirConfigServer> = z.object({miroirConfigType:z.literal("server"), server:z.object({rootApiUrl:z.string(), mcpUrl:z.string().optional(), filesystemDeploymentRootDirectory:z.string(), authentication:z.object({enabled:z.boolean().optional(), tokenSecret:z.string().optional(), mcp:z.boolean().optional()}).strict().optional()}).strict(), environment:z.lazy(() =>miroirConfigEnvironment).optional(), features:z.object({ai:z.boolean().optional(), mcp:z.boolean().optional(), cursor:z.boolean().optional(), agentBackend:z.enum(["cursor","claude","none"]).optional(), agentModel:z.string().optional(), designerTools:z.boolean().optional()}).strict().optional()}).strict();
 export const miroirConfig: z.ZodType<MiroirConfig> = z.union([z.literal("miroirConfigClient"), z.literal("miroirConfigServer")]);
 export const miroirEnvironmentStoreType: z.ZodType<MiroirEnvironmentStoreType> = z.enum(["filesystem","indexedDb","sql","mongodb"]);
