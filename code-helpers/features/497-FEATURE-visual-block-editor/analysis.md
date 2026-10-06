@@ -21,7 +21,7 @@ Key sources: [`TransformerTreeEdit.ts`](../../../packages/miroir-core/src/2_doma
 - **G3 — Edit with blocks.** In order to build a transformer without typing JSON as a Miroir developer, I can insert, drag, wrap, pipe, unwrap, remove and replace blocks, edit literals inline, and run a subtree to see its result. Every drag has a menu equivalent. (#500)
 - **G4 — Use names in scope.** In order to avoid typing reference paths by hand as a Miroir developer, I can pick the names visible at a slot (context names, parameters, templates, earlier action results) from variable blocks. (#501)
 - **G5 — Reuse my transformers.** In order to reuse a composite transformer as a Miroir developer, I can see a composite TransformerDefinition as a define block, save a transformer as a new TransformerDefinition, and find it in the palette. (#502)
-- **G6 — Blocks everywhere.** In order to read transformers where they are stored as a Miroir developer, I can switch any transformer or action-sequence field of the generic value editor to the block view. (#503)
+- **G6 — Blocks everywhere.** In order to read transformers where they are stored as a Miroir developer, I can switch any transformer field of the generic value editor to the block view (#503). Action-sequence fields get the switch with #504.
 - **G7 — Read action sequences as blocks.** In order to understand what a Runner or a composite action does as a Miroir developer, I can see its sequence as stacked command blocks with transformer blocks in their payload slots. (#504)
 - **G8 — Edit sequences, create Runners.** In order to build an action flow without JSON as a Miroir developer, I can edit a sequence with blocks and save it as a new Runner with a "when run" hat block. (#505)
 - **G9 — Create composite actions.** In order to add an action to an application as a Miroir developer, I can save a sequence as a composite Endpoint action with a define hat block, on an existing or new Endpoint. (#506)
@@ -95,6 +95,9 @@ Options and reasons are in the round files. Rows marked *amended* were changed l
 | D9 TransformerDefinitions from the store | **A dynamic definition registry, built at the start of #502** | G5 |
 | D10 `compositeRunTestAssertion` | **A DomainEndpoint action with its assertion in `payload`**, first slice of #504 | G7 |
 | D11 Theme attribute | **`components.blockEditor`, colors per category in a record, with a fallback** | G1 |
+| D12 Action block definitions | **Looked up by `actionType` in a registry of the static Endpoints merged with the current application's**, built in #504 next to the D9 registry | G7–G9 |
+
+The issue texts follow these decisions: #497 (decision 4), #498 (marking, corpus check, and a bundle check by the guard's `defeated` rule, since `forbiddenEager` matches package names only) and #504 (marking, corpus check, D10 as its first slice) for D1, D8 and D10; #502 for D9; #504 to #506 for D12.
 
 ### D1 — How are build and runtime blocks told apart?
 
@@ -110,21 +113,28 @@ The mockup showed that with runtime marked nearly every block carries the mark: 
 
 The style is a new optional ViewParams attribute, `blockEditorBuildMarking`, an enum `dashedOutline | marker`, absent meaning `dashedOutline`. It follows the #453 precedent (`showTransformerTypes`): the Admin ViewParams Entity `b9765b7c-b614-4126-a0e2-634463f99937` (next tag id 18), the `viewParams` MlElement and the `ViewParamsData` interface in [`ViewParams.ts`](../../../packages/miroir-core/src/0_interfaces/4-views/ViewParams.ts). The block root reads it once through `useAdminViewParams`; component tests, which render over a store without ViewParams, get it from a small context, as `TransformerTypesDisplayContext` does for #453.
 
-**Decision:** D1-b. Inside a define block body (#502) every node is evaluated at step runtime whatever its attribute (`TransformersForRuntime.ts:4104-4177`), so #502 shows no marks there. In #498 the mark always reflects the stored attribute.
+**Decision:** D1-b. In #498 the mark always reflects the stored attribute. From #502 and #504 the mark shows the step at which the node is actually evaluated: a node is unmarked when it, an ancestor, an enclosing `templates` record or a define body is evaluated at runtime. Three cases make the stored attribute wrong:
+- inside a define block body every node is evaluated at step runtime whatever its attribute (`TransformersForRuntime.ts:4104-4177`);
+- every `templates` entry of a sequence is resolved at step runtime (`ResolveCompositeActionTemplate.ts:67-80`, `DomainController.ts:5153-5160`);
+- a build or absent node below a runtime node is returned unevaluated at step build (`result = transformer`, `TransformersForRuntime.ts:4263-4287`), so it runs at runtime.
+
+In the corpus (§4.2) these cases unmark 228 of the 740 nodes the stored attribute marks: 146 under `templates`, 78 under a runtime ancestor, 4 in define bodies.
 
 ### D2 — What `interpolation` does a new block get?
 
 **Status:** Accepted, **default** (A's "make runtime the default", read by Claude). **Serves:** G3, G11.
 
-An absent `interpolation` is evaluated as build (`TransformersForRuntime.ts:2242`, `:2382`, `:3909-3911`, `:3947`, `:3952`), and generated default values leave optional attributes out, so a new transformer has no attribute today. With D1 such a block would appear marked as build.
+An absent `interpolation` is evaluated as build (`TransformersForRuntime.ts:2242`, `:2382`, `:3947`, `:3952`), and generated default values leave optional attributes out, so a new transformer has no attribute today. With D1 such a block would appear marked as build.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
 | **D2-a. Write `"runtime"` on new blocks** ★ | Palette drops and type changes in the block view set `interpolation: "runtime"` explicitly | What the user sees is what runs; no semantics change | The form view still creates nodes without the attribute |
-| D2-b. Absent means runtime | Change the runtime default and the ML `initializeTo` | One rule everywhere | Changes the meaning of 758 existing absent nodes (§4.2), many in Runner templates that rely on build |
+| D2-b. Absent means runtime | Change the runtime default and the ML `initializeTo` | One rule everywhere | Changes the meaning of about 535 absent nodes that the runtime evaluates: the 519 of the corpus (§4.2), 235 of them in Runner files, many in templates that rely on build, plus 16 build templates in a Test assertion's expected values |
 | D2-c. Leave it absent | Nothing written | No change | Every new block shows the build mark, which contradicts "runtime is the default" |
 
 **Decision:** D2-a, in #500. D2-b is a model change that only A can order; it would need its own issue and a migration of the absent nodes.
+
+D2 applies to every node the block view creates: palette drops, type changes, the enclosing node of wrap and pipe (`wrapTransformerNode` takes it from the caller, `TransformerTreeEdit.ts:207-223`), and the default left in an emptied slot. The shared default-node builder (§6.1, #500) does not set the attribute, so the form view and the six `ui.transformerEditor` cases that add `interpolation` by hand stay unchanged. Consequence for #500: its criterion "the value written by the block view equals the one the form view writes for the same edit" holds except for `interpolation` on new nodes, and the #500 issue text says so.
 
 ### D3 — How fine are block categories?
 
@@ -161,8 +171,8 @@ Two definition `name`s differ from their `transformerType`: `plus` is `"+"` and 
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
-| **D4-a. One block per TransformerDefinition, keyed by `transformerType`** ★ | Look up the definition of each node by `transformerType`; the palette lists definitions | Covers the 46 types used in the assets, including the 12 outside the union | A palette block may produce a value the form's schema rejects |
-| D4-b. One block per union branch | Read the palette from `coreTransformerForBuildPlusRuntime` | What the form accepts | Misses 12 types used in assets (mlsTypeCheck alone has 42 nodes) and offers `dataflowSequence`, which cannot run |
+| **D4-a. One block per TransformerDefinition, keyed by `transformerType`** ★ | Look up the definition of each node by `transformerType`; the palette lists definitions | Covers the 46 types used in the assets, including the 10 of them outside the union (the two other definitions outside it, getActiveDeployment and spreadSheetToMlSchema, are not used in the assets) | A palette block may produce a value the form's schema rejects |
+| D4-b. One block per union branch | Read the palette from `coreTransformerForBuildPlusRuntime` | What the form accepts | Misses 10 types used in assets (mlsTypeCheck alone has 42 nodes), plus the unused getActiveDeployment and spreadSheetToMlSchema and offers `dataflowSequence`, which cannot run |
 
 **Decision:** D4-a. A block whose type is not accepted by the slot's schema is shown and flagged, as round 1 Q7 decided for type mismatches. #498 uses the static `applicationTransformerDefinitions`; #502 replaces it with the registry of D9.
 
@@ -170,12 +180,12 @@ Two definition `name`s differ from their `transformerType`: `plus` is `"+"` and 
 
 **Status:** Accepted. **Serves:** G1.
 
-`transformerSlots` (`TransformerTreeEdit.ts:69-130`) finds a slot wherever a parameter schema references `transformer` or `coreTransformerForBuildPlusRuntime`, plus a root-level `applyTo`. Over the 48 definitions it gives 45 slots (26 enclosing, 19 `applyTo`). The asset corpus shows transformers it does not reach (§4.1): 149 under parameters whose schema is not a transformer reference (114 in `accessDynamicPath.objectAccessPath`), 93 inside plain objects or arrays held by a slot ("literals with holes", for example `createObject.definition`), and slots typed `any` that the runtime evaluates as transformers (`concatLists.lists`, `aggregate.having`).
+`transformerSlots` (`TransformerTreeEdit.ts:69-130`) finds a slot wherever a parameter schema references `transformer` or `coreTransformerForBuildPlusRuntime`, plus a root-level `applyTo`. Over the 48 definitions it gives 45 slots (26 enclosing, 19 `applyTo`). The asset corpus shows transformers it does not reach (§4.1): 136 under declared parameters whose schema is not a transformer reference (114 in `accessDynamicPath.objectAccessPath`, 16 in `concatLists.lists`, 2 in `aggregate.having`, 2 in `duplicateApplicationModel.application`, 2 in `entityDefinition_extractAttributes`), 5 under the undeclared key `boolExpr.args`, and 93 inside plain objects or arrays held by a slot ("literals with holes", for example `createObject.definition`). `concatLists.lists` and `aggregate.having` are typed `array<any>` and `any`, yet the runtime evaluates them as transformers.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
 | **D5-a. Schema rules plus shape detection** ★ | Declared slots come from `transformerSlots`; any other object with a string `transformerType` is also drawn as a block, inside object and list blocks where needed | Every transformer in the corpus gets a block; no model change | Two sources of truth for slots until the metadata is fixed |
-| D5-b. Schema rules only | `transformerSlots` alone | One rule | 242 corpus nodes would only appear as JSON |
+| D5-b. Schema rules only | `transformerSlots` alone | One rule | 298 corpus nodes would only appear as JSON (234 whose own position is not a slot, plus 64 in a slot of a transformer already shown as JSON) |
 | D5-c. Fix the metadata first | Type `concatLists.lists`, `aggregate.having`, `applyTo` and the access-path items as transformer references | One rule, better types everywhere | A core schema change before any block is drawn |
 
 **Decision:** D5-a. Shape detection stops at quoted values: below `returnValue.value` everything is a literal, since the runtime returns it unevaluated. A key the definition does not declare is drawn as a flagged row, which makes malformed values visible (for example the `boolExpr` nodes with an `args` array in Runner createEntity, §4.1). D5-c is proposed as a separate issue (§6).
@@ -184,7 +194,7 @@ Two definition `name`s differ from their `transformerType`: `plus` is `"+"` and 
 
 **Status:** Accepted. **Serves:** G1, G6. **Amends:** round 2 Q7 ("the switch then appears … without extra wiring").
 
-The generic editor never decides from a field's schema that it holds a transformer; the #415 actions are triggered by a `transformerType` literal on the value side (`MlLiteralEditor.tsx:582`, `:639-641`). The type-check key map does carry a usable signal (§4.4): a field declared as a transformer or sequence reference has `rawSchema` equal to that schema reference, and only nested nodes carry a `ref:` segment in their `typePath`.
+The generic editor never decides from a field's schema that it holds a transformer; the #415 actions are triggered by a `transformerType` literal on the value side (`MlLiteralEditor.tsx:582`, `:639-641`). The type-check key map does carry a usable signal (§4.4): a field declared as a transformer or sequence reference has `rawSchema` equal to that schema reference, and only nested nodes carry a transformer or sequence `ref:` segment (such as `ref:coreTransformerForBuildPlusRuntime` or `ref:compositeActionSequenceTemplate`) in their `typePath`. Outer slots can carry other `ref:` segments, such as `ref:rootReport` from the Report Entity schema's context.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
@@ -194,7 +204,7 @@ The generic editor never decides from a field's schema that it holds a transform
 
 The predicate: the field's key-map `rawSchema` is a schema reference to `coreTransformerForBuildPlusRuntime`, `coreTransformerForBuildPlusRuntimeWithoutArray`, `compositeActionSequence`, `compositeActionSequenceTemplate` or `compositeActionTemplate`, and its `typePath` holds no transformer `ref:` segment (the field is the outermost transformer). The view mode is kept in a small context keyed by the full Formik path, provided by the editor root, so it survives folds, unmounts and reorders; local node state does not (`MlObjectEditor.tsx:1259` unmounts folded children). The default mode is Form, which keeps the 26 `ui.transformerEditor` cases, addressed by Formik paths, unchanged.
 
-**Decision:** D6-a. #498 provides the context only in the TransformerEditor, so the switch appears on its `transformer` field; #503 provides it at every `TypedValueObjectEditor` root and adds the two shapes the predicate misses: union-wrapped slots (7 in the Report Entity) and the `any`-typed Endpoint implementations, which resolve to `compositeActionTemplate` only when `reduxDeploymentsState` is passed (§4.4).
+**Decision:** D6-a. #498 provides the context only in the TransformerEditor, so the switch appears on its `transformer` field. #503 provides it at every `TypedValueObjectEditor` root and adds the union-wrapped slots the predicate misses (7 in the Report Entity). Sequences have no blocks before #504, so until then the switch is offered on the two transformer schema names only (the #498 predicate lists all five, but no sequence field is under a provider). #504 extends it to the three sequence names and to the `any`-typed Endpoint implementations, which resolve to `compositeActionTemplate` only when `reduxDeploymentsState` is passed (§4.4).
 
 ### D7 — How does the block editor hold its state and render?
 
@@ -213,7 +223,7 @@ The UI review found that every form field subscribes to Formik, Redux and the ma
 
 **Status:** Accepted. **Serves:** G1. **Amends:** round 3 Q8 and the #498 acceptance criterion ("a `fn.blockModel` MiroirTest suite with one case per asset file").
 
-A `functionCallTest` case gets its arguments inline or from a named fixture loader in miroir-core (`FunctionCallTestFixtures.ts:29-44`); it has no file system, and fn suites also run inside the app from the Miroir Tests menu. One case per asset file would copy about 2.9 MB of JSON into test data or add 113 fixture loaders, and miroir-core does not depend on the example packages.
+A `functionCallTest` case gets its arguments inline or from a named fixture loader in miroir-core (`FunctionCallTestFixtures.ts:29-44`); it has no file system, and fn suites also run inside the app from the Miroir Tests menu. One case per asset file would copy about 2.3 MB of JSON into test data or add 113 fixture loaders, and miroir-core has no runtime dependency on an example package (its only link is a devDependency on miroir-example-library, which its vitest tests import).
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
@@ -222,7 +232,7 @@ A `functionCallTest` case gets its arguments inline or from a named fixture load
 
 The corpus is every object with a string `transformerType` in `packages/*/assets/**/*.json`, except functionCallTest `arguments`, `expected*` values and quoted `returnValue.value` content: 2513 nodes, 889 roots in 113 files, 46 types (§4.2). For each root the sweep checks that the mapping does not throw and that every transformer node is either a block or inside a JSON block, and it prints the count of JSON blocks and of categories without a Theme color.
 
-**Decision:** D8-a. The vitest file is justified as a platform test because it reads the file system.
+**Decision:** D8-a. The vitest file is justified as a platform test because it reads the file system. #504's criterion has the same form ("every composite action sequence in the package assets maps to a block tree"), so #504 extends the same sweep to the 67 sequences in 26 files (§4.5) and keeps its `fn.blockModel` cases hand-written, one per action mapping rule.
 
 ### D9 — How do TransformerDefinitions saved in an application become blocks that run?
 
@@ -232,11 +242,11 @@ Evaluation, tree edits and interface checks all use the static `applicationTrans
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
-| **D9-a. Registry first, inside #502** ★ | #502 starts with a definition registry merging the static map with the current application's TransformerDefinitions, used by the runtime, the tree edits, the interface check and the palette | Keeps the agreed sub-issue list; the registry is tested by the feature that needs it | #502 grows |
+| **D9-a. Registry first, inside #502** ★ | #502 starts with a definition registry merging the static map with the current application's TransformerDefinitions, used wherever the static map is read today (below) and by the palette | Keeps the agreed sub-issue list; the registry is tested by the feature that needs it | #502 grows |
 | D9-b. A new sub-issue before #502 | Same work, separate issue | Smaller PRs | Changes the order A approved |
 | D9-c. Palette only | Saved composites appear as blocks but do not run | Small | A block that fails when run |
 
-**Decision:** D9-a. The #502 issue text gets this prerequisite.
+**Decision:** D9-a. The #502 issue text gets this prerequisite. The registry replaces the static map in every reader: the in-memory runtime, the tree edits, the interface check (`TransformerInterfaceCheck.ts`), `TransformerMlSchemaCheck.ts`, the result-schema inference of #88 (`Transformer_ResultSchema.ts`, which "Save as TransformerDefinition" uses to infer the interface) and the Postgres `SqlGenerator.ts:5964-5974`, which returns `QueryNotExecutable` for an unknown type; there it either translates the composite or refuses it with an explicit error. It exists wherever the runtime runs, client and miroir-server. The form validates against the hand-kept union `coreTransformerForBuildPlusRuntime` (§4.1), so it either accepts registry types or shows them as a flagged mismatch, documented as expected.
 
 ### D10 — Can `compositeRunTestAssertion` become an Endpoint action like the others?
 
@@ -246,11 +256,17 @@ Every action type used in a sequence is defined by an Endpoint action, except `c
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
-| **D10-a. DomainEndpoint action, assertion in `payload`** ★ | Add `compositeRunTestAssertion` to DomainEndpoint `1e2ef8e6` with `endpoint` and `payload: testAssertion`; derive its schema like `compositeRunBoxedQueryAction`; migrate the 179 instances and the code that builds them | Every action block comes from an Endpoint; the exception disappears | A migration of 26 asset files and the TS sites; test-only action listed among domain actions |
+| **D10-a. DomainEndpoint action, assertion in `payload`** ★ | Add `compositeRunTestAssertion` to DomainEndpoint `1e2ef8e6` with `endpoint` and `payload: testAssertion`; derive its schema like `compositeRunBoxedQueryAction`; migrate the 179 instances and the code that builds them | Every action block comes from an Endpoint; the exception disappears | A migration of the 21 asset files that hold the 179 instances and the TS sites; test-only action listed among domain actions |
 | D10-b. Endpoint action keeping a top-level `testAssertion` | Same, without the move into `payload` | Smaller migration | Endpoint action parameters are strict (`actionType, actionName, actionLabel, endpoint, configuration, deploymentUuid, nameGivenToResult, payload`), so the action schema itself would have to change |
 | D10-c. Keep the hand-written schema | Block slots read from the `compositeAction` union | No change | The one exception stays |
 
-**Decision:** D10-a, as the first slice of #504, before action blocks are computed. The sequence loops keep calling `handleTestCompositeActionAssertion`, which needs the sequence's local context and cannot run as a library implementation (`DomainController.ts:5283-5462`; `ActionImplementationContext` has no local context). `handleCompositeActionTemplate` still refuses the action (`ResolveCompositeActionTemplate.ts:116-118`); whether it should accept it is a question for #504.
+**Decision:** D10-a, as the first slice of #504, before action blocks are computed. The sequence loops keep calling `handleTestCompositeActionAssertion`, which needs the sequence's local context and cannot run as a library implementation (`DomainController.ts:5283-5462`; `ActionImplementationContext` has no local context). `handleCompositeActionTemplate` still refuses the action as a step of its sequence (`DomainController.ts:5868-5889`; `resolveCompositeActionTemplate`, which it calls, also throws when the template root is the action, `ResolveCompositeActionTemplate.ts:116-118`); whether it should accept it is a question for #504.
+
+Consequences:
+- The `domainAction` union spreads every DomainEndpoint action (`getMiroirFundamentalMlSchema.ts:3354-3360`), so the explicit `compositeRunTestAssertion` branch of `compositeAction` (`:3273-3279`) would duplicate its discriminator and is removed.
+- The MiroirTest and Test Entities and their EntityVersions (`a311f363`, `c37625c7`, `51c647fe`, `d2842a84`) reference the schema by name; the references keep resolving after the move into `payload`.
+- #505 and #506 leave the assert block out of the palette for Runner and Endpoint sequences, because `handleCompositeActionTemplate` refuses it, unless #504 lifts that refusal.
+- D10 changes a core schema: rebuild miroir-app-miroir, `devBuild` miroir-core, run `nonreg:filesystem`.
 
 ### D11 — How does the Theme carry block colors?
 
@@ -259,6 +275,21 @@ Every action type used in a sequence is defined by an Endpoint action, except `c
 The Theme Entity (`bdcf956a-771d-40a1-a878-06e0bf6efd3e`) holds `definition.components`; the generated `MiroirThemeFull` type comes from its EntityVersion copy `31b88b03-f301-44f9-a6bf-934ed0576ee0`, and `makeObjectsMandatory` turns every nested optional object into a mandatory one while records stay optional (`getMiroirFundamentalMlSchema.ts:152-165`). #438 added `components.feedbackGlow` the same way (commit `5ec9428`).
 
 **Decision:** an optional `components.blockEditor` object with `categoryColors` (a record from category to color, keys being `classification` values and, from #504, Endpoint names) and `fallbackColor`, changed in the Entity and its EntityVersion, defaults in both `ThemeColorDefaults.ts` copies, and explicit colors in the dark Theme instance (`b327b9c0`), because missing values are filled from the light default theme. Block components read the colors through `useMiroirTheme`, not the MUI palette, which stays light under the dark Miroir theme (§4.6).
+
+Consequence for #507: its "color that overrides the category color", stored with a TransformerDefinition or an Endpoint action, would bypass the Theme and could not differ between light and dark. #507 stores a category override (a key resolved through `categoryColors`) or a color per Theme, not a raw color.
+
+### D12 — Where do action block definitions come from?
+
+**Status:** Accepted, **default**. **Serves:** G7, G8, G9.
+
+D4 and D9 settle where transformer blocks come from; actions need the same answer. Action types are global across Endpoints (`schemaForDeployment.ts:97-146`), the Miroir Endpoints are static data in miroir-app-miroir, and the current application's Endpoints are in its model (`endpoints` of the MetaModel). A composite action created by #506 lives in an application Endpoint, so a palette built from the static Endpoints alone would not show it.
+
+| Option | Mechanism | Pros | Cons |
+|---|---|---|---|
+| **D12-a. Registry of static and application Endpoints** ★ | Look up each step by `actionType` in the static Endpoints merged with the current application's, built like the D9 registry | New actions appear at once; one lookup for blocks, palette and checks | A second registry beside D9's |
+| D12-b. Static Endpoints only | The miroir-app-miroir Endpoints | Simple | 3 steps in the assets already call the Library's `lendDocument` and `returnDocument` (Endpoint `212f2784`), and #506's actions never reach the palette |
+
+**Decision:** D12-a, built in #504 next to the TransformerDefinition registry that #502 builds (D9). Every other action type used in the assets is defined by a miroir-app-miroir Endpoint, `compositeRunTestAssertion` included after D10.
 
 ---
 
@@ -272,14 +303,14 @@ Counts in this section were computed by scripts over the repository at commit `0
 - Two definitions share uuid `8ddb7e2e-a3d3-4622-81d2-0c3e98bca3ea`: `indexListBy` (file `8ddb7e2e-….json`) and `listReducerToSpreadObject` (file `0894ed4f-….json`).
 - `TransformerTreeEdit.ts` exports 13 pure functions (wrap, pipe, unwrap, remove, type change, candidates, slots, children). It has no insert, move or reorder. Its private `placeAt` returns a one-item array or a one-entry record at a collection slot (`:163-175`), so it cannot insert into an existing list. Default nodes for a new type come from `discriminatorBranchDefaultValue` in `MlLiteralEditor.tsx:70-244`, which needs the Formik key map.
 - The ML union `coreTransformerForBuildPlusRuntime` is built from a hand-kept list (`Transformers.ts:145-201`), not from the definitions; the TS and Zod unions are a hand-written template (`generate-ts-types.ts:182-295`). They disagree: the ML union has `syncExternalServiceSchema`, the TS/Zod union does not; the TS/Zod union accepts a plain record of transformers, the ML union does not. `dataflowSequence` is in the ML union with no definition, no handler and no use. 12 definitions are outside the union.
-- Metadata hides slots: `concatLists.lists` is `array<any>` and `aggregate.having` is `any`, yet both are evaluated as transformers (`TransformersForRuntime.ts:4599-4631`); `applyTo` is `any` on 19 definitions and becomes a transformer reference only in the generator; `accessDynamicPath.objectAccessPath` items reference names that only `coreBuildPlusRuntimeReferenceMap` (`Transformers.ts:203-210`) resolves.
+- Metadata hides slots: `concatLists.lists` is `array<any>` and `aggregate.having` is `any`, yet both are evaluated as transformers (`TransformersForRuntime.ts:4599-4631` for `concatLists.lists`, `:2612-2625` and `:2647-2660` for `aggregate.having`); `applyTo` is `any` on 19 definitions and becomes a transformer reference only in the generator; `accessDynamicPath.objectAccessPath` items reference names that only `coreBuildPlusRuntimeReferenceMap` (`Transformers.ts:203-210`) resolves.
 - Which slot binds the list element is a code table, `LIST_ELEMENT_SLOTS` (`TransformerInterfaceCheck.ts:435-439`), plus the `referenceToOuterObject` parameter on 5 definitions.
 - Runner createEntity (`82f81a25-…json:482-483`, `:552-553`) has two `boolExpr` nodes with operator `&&` and an `args` array instead of `left` and `right`. The handler reads only `left` and `right`, so both conditions evaluate on undefined. A latent bug, not in #497's scope (§6).
 
 ### 4.2 Interpolation (aligned in the runtime, invisible in the editor)
 
-- The runtime treats an absent `interpolation` as build. At step runtime every node is evaluated; at step build a runtime node is returned unchanged (`TransformersForRuntime.ts:3946-3953`, `:4259-4283`).
-- Corpus (D8 definition): 2513 nodes, 889 roots, 113 files, 46 types, each with a definition. Interpolation: runtime 1773, absent 519, build 221. Over all nodes outside quotes and test data: runtime 2000, absent 758, build 245. Parent-to-child changes are common (runtime→absent 70, absent→runtime 73).
+- The runtime treats an absent `interpolation` as build. At step runtime every node is evaluated; at step build a runtime node is returned unchanged (`TransformersForRuntime.ts:3946-3953`, `:4254-4287`; the plain-object pass at 4265 is overwritten by `result = transformer` at 4287).
+- Corpus (D8 definition): 2513 nodes, 889 roots, 113 files, 46 types, each with a definition. Interpolation: runtime 1773, absent 519, build 221. Including functionCallTest arguments and expected values (every node outside quotes, less 44 record-shaped result objects and 11 nodes of unknown test types): runtime 2000, absent 758, build 245; 239 of these absent nodes are test data that no function evaluates. Parent-to-child changes are common (in the corpus runtime→absent 59, absent→runtime 72; with test data 70 and 73).
 - Trees are small: median root size 2 nodes, largest 40 (deployApplication and createApplication Runner templates), deepest nesting 7 (Runner createEntity).
 - The TransformerEditor evaluates at step runtime (`TransformerEditor.tsx:755-774`), so its result panel cannot show a build/runtime difference. A composite definition's body is always evaluated at step runtime (`TransformersForRuntime.ts:4165-4177`).
 - Six `ui.transformerEditor` cases add `interpolation` by hand and select `runtime`.
@@ -289,17 +320,17 @@ Counts in this section were computed by scripts over the repository at commit `0
 - The edited transformer is the Formik field `transformerEditor_transformer_selector.transformer`. The form is one `TypedValueObjectEditor` rooted at the selector union `{mode, application, transformerUuid, transformer}` (`TransformerEditor.tsx:327-342`). `zoomInPath` is defunct (`TypedValueObjectEditor.tsx:196-226`), so the editor cannot be rooted at the `transformer` attribute.
 - Initial values are mount-only (`TransformerEditor.tsx:479`); each edit is copied to `toolsPageState.transformerEditor` after a 2 s debounce (`:653-711`), which re-renders every consumer of the main context.
 - No save: "defined" mode loads a composite definition's body (`:617-648`), nothing writes it back. No undo anywhere in the editor family. The innermost error path is computed and only logged (`:776-786`).
-- Type badges (#453) are computed per render from `checkTransformerInterfaceRecursively` and `transformerTypeBadges`, with paths prefixed by `transformer`; the "Show transformer types" switch reads `useShowTransformerTypes` (ViewParams, or `TransformerTypesDisplayContext` in tests).
+- Type badges (#453) are recomputed whenever the transformer changes, memoized on its serialization (`TransformerEditor.tsx:254-259`, `:290-293`), from `checkTransformerInterfaceRecursively` and `transformerTypeBadges`, with paths prefixed by `transformer`; the "Show transformer types" switch reads `useShowTransformerTypes` (ViewParams, or `TransformerTypesDisplayContext` in tests).
 - `ui.transformerEditor` (`ce3f9603-…`) has 26 cases addressed by Formik paths (130 `expectElement`, 92 `click`, 54 `selectOption`, 24 `change`).
 
 ### 4.4 Generic value editor (misaligned for blocks)
 
 - `MlElementEditor` renders every field: the `TypedValueObjectEditor` root (`:603`, `:679`), each object attribute (`MlObjectEditor.tsx:393`), array item (`MlArrayEditor.tsx:318`) and value inside `any` (`MlAnyEditor.tsx:333`).
-- Transformer slots in core Entity schemas reference `coreTransformerForBuildPlusRuntime` 29 times (14 attributes, 8 record values, 7 union branches, all 7 in Report). Sequence slots use `compositeActionSequence` (22, MiroirTest and Test), `compositeActionSequenceTemplate` (5: Runner, Report root and `onNext`) and `compositeActionTemplate` (8 attributes and 2 array items).
+- Transformer slots in core Entity schemas reference `coreTransformerForBuildPlusRuntime` 29 times (14 attributes, 8 record values, 7 union branches, all 7 in Report). Sequence slots use `compositeActionSequence` (22, MiroirTest and Test), `compositeActionSequenceTemplate` (5: Runner, Report root and `onNext`, and the Test branches `testBuildCompositeAction` and `testBuildPlusRuntimeCompositeAction`) and `compositeActionTemplate` (8 attributes and 2 array items).
 - In the key map from `mlsTypeCheck` (`mlsTypeCheck.ts:973-1038`), a field declared as a reference has `rawSchema` equal to that reference; nested transformer nodes have it too, but their `typePath` holds a `ref:coreTransformerForBuildPlusRuntime` segment. A union-wrapped slot loses the signal (`rawSchema` is the union). Endpoint composite implementations are `any` and become `compositeActionTemplate` only through `ifThenElseMMLS` when `reduxDeploymentsState` is passed (`mlsTypeCheck.ts:930-945`); `TypedValueObjectEditor` passes it (`:331-345`).
 - The per-node Form/JSON switch is local state (`MlElementEditorHooks.ts:286`), offered only on editable object, array and `any` nodes (`MlElementEditor.tsx:611-641`). A transformer slot holding a primitive gets none.
 - Fold state is one `FoldedStateTree` in `ReportPageContext`, keyed by root-less paths; a folded object unmounts its children (`MlObjectEditor.tsx:1259`).
-- Costs the block view must not repeat (UI review U1, U3, U9–U12, still true at this commit): `MlEditorPropsRoot` has 32 props (`MlElementEditorInterface.ts:74`), six of them transformer annotations added one feature at a time; no editor is `React.memo`; each node calls about eight store hooks (`MlElementEditorHooks.ts:229-240`); the whole section is type-checked on every Formik change (`TypedValueObjectEditor.tsx:321-358`), measured at 12 to 17 ms for a 34-step sequence (615 key-map entries) in Node; string fields write to Formik on every keystroke (`MlElementStringEditor.tsx:108-109`).
+- Costs the block view must not repeat (UI review U1, U3, U9–U12, still true at this commit): `MlEditorPropsRoot` has 32 props (`MlElementEditorInterface.ts:74`), six of them transformer annotations added one feature at a time; no editor is `React.memo`; each node calls about eight store hooks (`MlElementEditorHooks.ts:229-240`); the whole section is type-checked on every Formik change (`TypedValueObjectEditor.tsx:321-358`), measured at 12 to 17 ms for a 34-step sequence (615 key-map entries) in Node; string fields write to Formik on every keystroke (`MlElementStringEditor.tsx:193`, multiline `:168`, both spreading `formik.getFieldProps`).
 
 ### 4.5 Composite actions (misaligned around `compositeRunTestAssertion`)
 
@@ -309,6 +340,8 @@ Counts in this section were computed by scripts over the repository at commit `0
 - Runner (`e54d7dc1-…`) is a union on `runnerType`: `customRunner` (form schema plus `compositeActionSequence`), `actionRunner` (an Endpoint and an action name; the executed sequence is synthetic, `Runner.ts:62-73`), `mcpToolRunner`. Form values sit under the runner name (`getFromParameters [runnerName, field]`). `RunnerView.handleSubmit` hard-codes the deployApplication runner (`RunnerView.tsx:588-597`).
 - Endpoint implementations with `compositeActionTemplate`: ModelEndpoint `entity_DuplicateAttribute` and Library Lending `lendDocument`, `returnDocument` (`212f2784-…`).
 - Templates are resolved at step runtime, then the sequence at step build (`ResolveCompositeActionTemplate.ts:55-131`; `DomainController.ts:5120-5280`), which is why build and runtime nodes sit side by side in Runner templates.
+- The same sequence is resolved three ways: the Runner and Endpoint path `handleCompositeActionTemplate` (`DomainController.ts:5723` onwards), and the test paths `handleBuildPlusRuntimeCompositeAction` and `handleCompositeActionInternal` (`:4713-5280`), which 47 of the 67 MiroirTest sequences use. The D1 marks of #504 follow the Runner path.
+- Scope inside a sequence: each template sees the action parameters and the templates resolved before it; each action, at step runtime, sees the action parameters, the templates and the earlier results. Every action that returns a domain element is bound under its `actionLabel` (`DomainController.ts:4876-4879`, `:5930-5936`); only `compositeRunBoxedQuery(Template)Action` also binds `nameGivenToResult` (`:5612`, `:5716`). A nested `compositeActionSequence` receives `actionContext`, not the outer results (`:4762-4775`). Queries inside a payload read their own query parameters.
 
 ### 4.6 Theme and ViewParams
 
@@ -317,10 +350,11 @@ Counts in this section were computed by scripts over the repository at commit `0
 
 ### 4.7 Tests, bundle and dependencies
 
-- fn suites call registered functions synchronously and compare with `toEqual`; a module is whitelisted in `FUNCTION_CALL_REGISTRY` (`FunctionCallTestRegistry.ts:111`), preferably as a `LazyRegistryModule` to stay off the page bundle. Names follow `^<kind>(\.[a-z][A-Za-z0-9]*)+$`, descriptions are one sentence with no issue number, the issue goes in `issue`.
-- Component suites look up `component` in `componentRegistry.ts` (two entries: `MlElementEditor`, `TransformerEditor`). A new instance moves the counts in `miroir-component-tests.unit.test.tsx` (`EXPECTED_INSTANCE_COUNT` 10, `EXPECTED_LEAF_COUNT` 113, on demand 15) and the consistency test. Instances listed in miroir-app-miroir `src/Model.ts` ship in the page bundle, whose cap for that package (3.3 MB) has about 27 KB left.
+- fn suites call registered functions synchronously and compare with `toEqual`; a module is whitelisted in `FUNCTION_CALL_REGISTRY` (`FunctionCallTestRegistry.ts:111`). A `LazyRegistryModule` keeps a module of another package off the page bundle, but saves nothing for a miroir-core module, since miroir-core is one eager chunk: block-model functions are registered statically (the #498 plan records this). Names follow `^<kind>(\.[a-z][A-Za-z0-9]*)+$`, descriptions are one sentence with no issue number, the issue goes in `issue`.
+- Component suites look up `component` in `componentRegistry.ts` (two entries: `MlElementEditor`, `TransformerEditor`). A new instance moves the counts in `miroir-component-tests.unit.test.tsx` (`EXPECTED_INSTANCE_COUNT` 10, `EXPECTED_LEAF_COUNT` 113, on demand 15) and the consistency test. Instances listed in miroir-app-miroir `src/Model.ts` ship in the page bundle, whose cap for that package (`eagerPackageMaxBytes` 3,300,000, `bundle-policy.json:525`) has about 27 KB left. `componentTestInstances.292.phase1.unit.test.ts` (`:65-70`, `:211-214`) requires every later component instance, `ui.blockEditor` included, to be listed there. `ui.blockEditor` is about 8.7 KB after #498; `ui.transformerEditor` is 56.7 KB for 26 cases, so the menu-driven cases of #500 to #506 will exceed the cap. Before #500 adds its cases, one of two is chosen: per-sub-issue instances excluded from that check, or a raised cap with a recorded reason.
+- `ui.blockEditor` cases run over a store without Endpoints, Runners, TransformerDefinitions or Themes (it loads Entity, EntityVersion, MlSchema, Menu, ApplicationVersion and Report, plus the Library's Entities, menu, Reports and data, `componentTestTools.tsx:633-735`), and the DomainController is a recording stub unless `wireLocalCacheCompositeAction` is set, which the MiroirTest runner never does (`runReactComponentTest.tsx:214-219`). The save and run criteria of #502, #505 and #506 therefore need a runner option that wires `wireLocalCacheCompositeAction` and loads extra instances, or `report.*` integration cases.
 - The runner waits until no text matches `/Loading .+\.\.\./` after each step (`componentTestEnvironment.ts:190-214`), so a lazy block editor needs a "Loading block editor..." fallback. happy-dom returns zero-size rectangles, so @dnd-kit collisions cannot be exercised in component tests.
-- @dnd-kit/core 6.3.1 (with utilities 3.2.2, accessibility 3.1.1) has no advisory, accepts React 18, and is about 15.6 kB gzip, close to the 2 % page tolerance (15.7 kB of 786868 bytes). It must load on demand: `MlElementEditor` is reachable from the page entry (`index.tsx` → … → `TypedValueObjectEditor`), and miroir-core is one eager chunk, so the block model's bytes count against the page. The dependency goes in the standalone app's `dependencies` with an exact version, the lockfile with integrity hashes, and `@dnd-kit/*` in `forbiddenEager` and `lazy` of `bundle-policy.json`.
+- @dnd-kit/core 6.3.1 (with utilities 3.2.2, accessibility 3.1.1) has no advisory, accepts React 18, and is about 15.6 kB gzip, close to the 2 % page tolerance (15.7 kB of 786868 bytes). It must load on demand: `MlElementEditor` is reachable from the page entry (`index.tsx` → … → `TypedValueObjectEditor`), and miroir-core is one eager chunk, so the block model's bytes count against the page. The dependency goes in the standalone app's `dependencies` with an exact version, the lockfile with integrity hashes, `@dnd-kit/*` in `forbiddenEager`, and the exact names `@dnd-kit/core`, `@dnd-kit/utilities` and `@dnd-kit/accessibility` in `lazy` of `bundle-policy.json`.
 - The `miroir/layers` lint rule is inert in the standalone app; CI typechecks only miroir-core.
 
 ## 5. Key reuse
@@ -348,15 +382,15 @@ Counts in this section were computed by scripts over the repository at commit `0
 | Sub-issue | Depends on | Needs first | Main risk |
 |---|---|---|---|
 | #498 read-only transformer view | none | D3 categories, D11 Theme, D1 ViewParams, @dnd-kit not yet (read-only) | the generic JSON fallback hides shapes D5 should draw; the sweep counts them |
-| #499 undo/redo | #498 | one place where every view writes (Formik `setFieldValue` on the editor root) | the form writes on every keystroke, so undo would step per character unless grouped |
-| #500 editing | #499 | insert, move and reorder in `TransformerTreeEdit`; a pure default node per type (today only through Formik); stable block ids; @dnd-kit | drag cannot be tested in happy-dom; menus carry the tests |
-| #501 variables | #500 | `collectTransformerEnvironmentBindings` extended to action sequences, define parameters and `referenceToOuterObject` | scope rules live in code tables (§4.1) |
-| #502 define blocks | #501 | D9 registry | a saved composite must run, check and appear in the palette |
-| #503 everywhere | #498 | D6 context at every editor root; union-wrapped and `any` slots | per-field costs of the form (§4.4) |
-| #504 read-only sequences | #498 | D10 migration | four sequence schema names (§4.5) |
-| #505 sequence editing, Runners | #504, #500 | Runner form values as variables | `RunnerView` hard-codes deployApplication |
+| #499 undo/redo | #498 | a history that watches the value at the transformer path (snapshot on change, restored with `setFieldValue` while recording is off), because writes also go through `getFieldProps` handlers (`MlElementStringEditor.tsx:168`, `:193`, `MlElementEditor.tsx:1211`) and effects (`TransformerEditor.tsx:617-648`, `EntityInstanceSelectorPanel.tsx:453-487`); loading a defined transformer resets it; Ctrl+Z handled at the editor container with CodeMirror's own history off (`basicSetup` is on by default); an open JSON box re-reads its text after an undo (today it is set once at mount, `MlElementEditorReactCodeMirror.tsx:88-101`). **Default:** undo replaces the remove, unwrap and type-change confirmations; the wrap and pipe dialogs stay, since they choose the type and slot | the form writes on every keystroke, so undo would step per character unless grouped; "Clear" never reaches Formik (`TransformerEditor.tsx:415-422`), so undo cannot cover it until it does |
+| #500 editing | #499 | insert, move and reorder in `TransformerTreeEdit`; a pure default node per type (today only through Formik); stable block ids; @dnd-kit; subtree evaluation with the context rebuilt along the path from one shared binding table (the scope rules are coded three times today, §4.1), deciding what a node under `mapList`, `filterList` or `find` shows (first element, chosen index or one value per element) | drag cannot be tested in happy-dom; menus carry the tests. Type flags for slots other than `applyTo` depend on #454 (open), so #500 flags only input mismatches and schema-union rejections (D4) |
+| #501 variables | #500 | `collectTransformerEnvironmentBindings` extended to action sequences, define parameters, `referenceToOuterObject` and `aggregate.having`; earlier results offered by `actionLabel` (all actions) and `nameGivenToResult` (boxed query actions); a nested sequence starts a fresh result scope; a query inside a payload switches to its parameter scope; a per-slot report that includes empty and default-filled slots (new API) | scope rules live in code tables (§4.1); the createApplication Runner (`bcc872dc`) reads `getFromParameters ['deployApplication', …]` 27 times while RunnerView keys values by the Runner's own name (`RunnerView.tsx:215`, `:224`, `:473`), so a scope check flags all 27: fix or file before #505 |
+| #502 define blocks | #501 | D9 registry; a component-test runner option that wires `wireLocalCacheCompositeAction` and loads extra instances (§4.7) | a saved composite must run in memory and in Postgres, pass the result-schema inference and the interface check, and appear in the palette (D9) |
+| #503 everywhere | #500 (its criterion edits and saves), #499 (history at every `TypedValueObjectEditor` root) | D6 context at every editor root; union-wrapped slots | per-field costs of the form (§4.4); no input or environment outside the TransformerEditor, so the subtree result is hidden, roots are typed `any` and scope is empty |
+| #504 read-only sequences | #498 | D10 migration; D12 Endpoint registry; sweep extended to sequences (D8); D1 marks by effective step | four sequence schema names and three resolution paths (§4.5) |
+| #505 sequence editing, Runners | #504, #500 | Runner form values as variables | `RunnerView` hard-codes deployApplication; the assert block stays out of the palette (D10) |
 | #506 composite Endpoint actions | #505 | Endpoint picker or creation | `actionType` is global across Endpoints (`schemaForDeployment.ts:97-146`) |
-| #507 presentation hints | #498 | where hints are stored | 58 of 126 parameters have a description |
+| #507 presentation hints | #498 | where hints are stored | 59 of 126 parameters have a description (58 in a `description` attribute, `returnValue.mlSchema` in `tag.value.description`); a raw color hint would bypass the Theme (D11) |
 
 ### 6.2 Issues to file outside #497
 
