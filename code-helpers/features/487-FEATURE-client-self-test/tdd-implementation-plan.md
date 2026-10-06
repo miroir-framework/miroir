@@ -17,7 +17,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Companion: #486 (health checks; shares Electron `--self-test`, analysis D9)
 Working branch: `claude/487-client-self-test-x9c2x8` (from `_integration` at 9838983)
 
-**Resume note:** plan written 2026-10-06; decisions D1 to D10 and their defaults accepted by A 2026-10-06; Slices 0 to 7 DONE; next Slice 8 (nonreg steps, docs, cleanup).
+**Resume note:** plan written 2026-10-06; decisions D1 to D10 and their defaults accepted by A 2026-10-06; All slices DONE 2026-10-06; PR into `_integration`. Open: the 3 failing browser integ suites of Slice 6.
 
 ---
 
@@ -45,7 +45,7 @@ This plan does **not** cover the CLI, server, MCP and Electron main-process prob
 | 5 | Electron `--self-test` (renderer half) | ✅ DONE | `electronSelfTest.487.phase5.unit.test.ts` + run on A's machine |
 | 6 | `integ` MiroirTests in self-test mode | ✅ DONE | `runSelfTestInteg.487.phase6.integ.test.ts` |
 | 7 | GitHub Actions workflow | ✅ DONE | green `self-test.yml` run on the branch |
-| 8 | Nonreg steps, docs, cleanup, AC | ⬜ pending | `nonreg:filesystem` + AC checklist |
+| 8 | Nonreg steps, docs, cleanup, AC | ✅ DONE | `nonreg:filesystem` + AC checklist |
 
 ---
 
@@ -409,7 +409,7 @@ python scripts/check_dependency_policy.py      # pinned actions rule
 
 ## Slice 8 — Nonreg steps, docs, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE (2026-10-06)
 
 **Goal:** the self-test stays covered by the non-regression suite and documented.
 
@@ -443,4 +443,12 @@ npm run nonreg:filesystem -- --runner shared
 | GitHub Actions job (Electron under `xvfb-run`) if feasible, and a documented local run | Slice 7, Slice 8 docs |
 
 ### Realization
-_(to fill)_
+
+- Tests moved (`git mv`) to `packages/miroir-standalone-app/tests/4_view/selfTest/` (`runSelfTest.integ`, `selfTestVerdict.integ`, `selfTestPage.integ`, `runSelfTestInteg.integ`, `selfTestPlatform.ts`), `tests/0_build/selfTestDriver.unit`, and `packages/miroir-standalone-app-electron/tests/unit/selfTestMain.unit`; the issue folders are gone.
+- Nonreg steps: `unit-487-self-test` (scope `ui`, the `4_view/selfTest/` folder: they boot `test-filesystem` themselves, so tier `unit` and no profile), `unit-487-self-test-driver` and `unit-487-self-test-electron` (scope `tooling`). The plan's `default-487-self-test-integ` step is not needed: the integ batch runs in a browser only.
+- Docs: `docs/reference/testing.md` section "Self-test mode", `docs/reference/environments.md` (`self-test`, `self-test-integ`, `client.selfTest`), the Electron README (`--self-test`).
+- The workflow's temporary branch trigger is removed: it runs on `workflow_dispatch` and pushes to `_integration`.
+- Results: `nonreg:filesystem --runner shared` 107/108 in 11.6 min; the one failure, `unit-286-react-component-miroir-tests` (`ui.mlElementEditor.any`: a select still open at step 4 under parallel load), passes alone (3/3) and touches no code of this issue. miroir-core unit tests 2451 passed; lint, script tests (261), dependency policy, skills sync, `miroir-env check --strict --tracked-clean` clean.
+
+**AC status:** all rows met: schema and environments (Slices 1, 6); page load runs and shows only the self-test (Slices 1, 3); verdict on the DOM, `window` and Electron IPC (Slices 3, 5, 7: the CI Electron job reads it over IPC); Electron `--self-test` exit codes (Slices 5, 7); `integ` on `emulatedServer-indexedDb` (Slice 6, runs, with 3 failing suites to fix separately); GitHub job with Electron under `xvfb-run` and a documented local run (Slices 7, 8).
+

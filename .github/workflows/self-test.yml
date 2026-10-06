@@ -6,8 +6,7 @@ name: Self-test
 on:
   workflow_dispatch:
   push:
-    # TEMPORARY (#487 Slice 7): the issue branch, until the workflow is on the default branch for dispatch.
-    branches: [_integration, claude/487-client-self-test-x9c2x8]
+    branches: [_integration]
 
 concurrency:
   group: self-test-${{ github.ref }}

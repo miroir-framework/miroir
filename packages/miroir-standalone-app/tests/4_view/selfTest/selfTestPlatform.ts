@@ -19,11 +19,11 @@ import {
 import { bootEnvironment, resolveEnvironmentFromFiles, type ResolvedEnvironment } from "miroir-env";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 
-import { loglevelnext } from "../../../../src/loglevelnextImporter.js";
-import { setupMiroirTest } from "../../../../src/miroir-fwk/4-tests/setupMiroirTest.js";
-import { miroirAppStartup } from "../../../../src/startup.js";
-import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
-import { openTestEnvironment } from "../../../helpers/testEnvironment.js";
+import { loglevelnext } from "../../../src/loglevelnextImporter.js";
+import { setupMiroirTest } from "../../../src/miroir-fwk/4-tests/setupMiroirTest.js";
+import { miroirAppStartup } from "../../../src/startup.js";
+import { resolveRepoRoot } from "../../helpers/integrationTestProfiles.js";
+import { openTestEnvironment } from "../../helpers/testEnvironment.js";
 
 miroirAppStartup();
 miroirCoreStartup();

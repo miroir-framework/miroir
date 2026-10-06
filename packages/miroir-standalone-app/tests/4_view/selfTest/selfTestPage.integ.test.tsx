@@ -1,11 +1,11 @@
 /**
- * #487 Slice 3: in self-test mode the page runs the self-test on load, shows the run then its
+ * #487: in self-test mode the page runs the self-test on load, shows the run then its
  * results on `SelfTestPage`, and publishes the result on `<html data-miroir-self-test>` and
  * `window.__MIROIR_SELF_TEST_RESULT__`. Rendered with `createRoot` into jsdom, on the real
  * platform of `selfTestPlatform.ts`, as `index.tsx` does.
  *
  * Run:
- *   RUN_TEST=selfTestPage.487.phase3.integ npm run testByFile -w miroir-standalone-app -- selfTestPage.487.phase3.integ
+ *   npm run testByFile -w miroir-standalone-app -- selfTestPage.integ
  */
 import React from "react";
 import { act } from "@testing-library/react";
@@ -19,11 +19,11 @@ import {
   publishSelfTestResult,
   SELF_TEST_RESULT_GLOBAL,
   startSelfTest,
-} from "../../../../src/miroir-fwk/4-tests/selfTest/startSelfTest.js";
+} from "../../../src/miroir-fwk/4-tests/selfTest/startSelfTest.js";
 import {
   shouldStartSelfTest,
   type MiroirSelfTestResult,
-} from "../../../../src/miroir-fwk/4-tests/selfTest/selfTestResult.js";
+} from "../../../src/miroir-fwk/4-tests/selfTest/selfTestResult.js";
 import { bootSelfTestPlatform, miroirActivityTracker, miroirEventService } from "./selfTestPlatform.js";
 
 describe("self-test page (#487)", () => {

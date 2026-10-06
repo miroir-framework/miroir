@@ -1,6 +1,6 @@
-// #487 Slice 5: the `--self-test` mode of the Electron main process. vitest, not MiroirTest:
+// #487: the `--self-test` mode of the Electron main process. vitest, not MiroirTest:
 // main-process wiring, in src/selfTestMain.ts with no `electron` import. The run in Electron itself
-// is on a machine with Electron installed (the plan's validation) and in the self-test workflow.
+// is the Electron job of .github/workflows/self-test.yml.
 import type { MiroirConfigClient } from "miroir-core";
 import { describe, expect, it } from "vitest";
 
@@ -10,7 +10,7 @@ import {
   rendererLoadUrl,
   selfTestExit,
   withSelfTest,
-} from "../../../../src/selfTestMain";
+} from "../../src/selfTestMain";
 
 const clientConfig = {
   client: { emulateServer: false, serverConfig: { rootApiUrl: "http://127.0.0.1:3080" } },

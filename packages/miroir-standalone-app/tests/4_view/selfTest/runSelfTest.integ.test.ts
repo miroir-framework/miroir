@@ -1,12 +1,12 @@
 /**
- * #487 Slice 1 (tracer): the `self-test` environment carries `client.selfTest` into the client
+ * #487: the `self-test` environment carries `client.selfTest` into the client
  * configuration, and `runSelfTest` loads Admin and the miroir deployment only, reads the miroir app's
  * MiroirTests from the local cache, runs the `unit` ones and returns `passed`.
  *
  * The platform: `selfTestPlatform.ts`.
  *
  * Run:
- *   RUN_TEST=runSelfTest.487.phase1.integ npm run testByFile -w miroir-standalone-app -- runSelfTest.487.phase1.integ
+ *   npm run testByFile -w miroir-standalone-app -- runSelfTest.integ
  */
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
@@ -16,8 +16,8 @@ import type { DomainControllerInterface } from "miroir-core";
 import { environmentClientConfig, environmentRealServerClientConfig } from "miroir-env";
 import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 
-import { runSelfTest } from "../../../../src/miroir-fwk/4-tests/selfTest/runSelfTest.js";
-import type { MiroirSelfTestResult } from "../../../../src/miroir-fwk/4-tests/selfTest/selfTestResult.js";
+import { runSelfTest } from "../../../src/miroir-fwk/4-tests/selfTest/runSelfTest.js";
+import type { MiroirSelfTestResult } from "../../../src/miroir-fwk/4-tests/selfTest/selfTestResult.js";
 import {
   bootSelfTestPlatform,
   miroirActivityTracker,

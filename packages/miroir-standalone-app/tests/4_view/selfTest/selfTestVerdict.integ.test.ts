@@ -1,10 +1,10 @@
 /**
- * #487 Slice 2: the self-test verdict is `failed`, with an error or the failing tests, whenever
+ * #487: the self-test verdict is `failed`, with an error or the failing tests, whenever
  * the run cannot vouch for the client: no MiroirTest matched the tags, the boot failed, a test
  * failed, or authentication is on. `runSelfTest` never throws.
  *
  * Run:
- *   RUN_TEST=selfTestVerdict.487.phase2.integ npm run testByFile -w miroir-standalone-app -- selfTestVerdict.487.phase2.integ
+ *   npm run testByFile -w miroir-standalone-app -- selfTestVerdict.integ
  */
 import { describe, expect, it } from "vitest";
 
@@ -12,12 +12,12 @@ import type { MiroirConfigClient, MiroirTestDefinition } from "miroir-core";
 import { miroirTest_tr_menuBuild } from "miroir-app-miroir";
 import { deployment_Admin } from "miroir-app-admin";
 
-import { runUnitMiroirTestBatch } from "../../../../src/miroir-fwk/4-tests/miroirTestBatch.js";
+import { runUnitMiroirTestBatch } from "../../../src/miroir-fwk/4-tests/miroirTestBatch.js";
 import {
   runSelfTest,
   SELF_TEST_NEEDS_AUTHENTICATION_OFF,
-} from "../../../../src/miroir-fwk/4-tests/selfTest/runSelfTest.js";
-import { computeSelfTestResult } from "../../../../src/miroir-fwk/4-tests/selfTest/selfTestResult.js";
+} from "../../../src/miroir-fwk/4-tests/selfTest/runSelfTest.js";
+import { computeSelfTestResult } from "../../../src/miroir-fwk/4-tests/selfTest/selfTestResult.js";
 import { bootSelfTestPlatform, miroirActivityTracker } from "./selfTestPlatform.js";
 
 describe("self-test verdict (#487)", () => {

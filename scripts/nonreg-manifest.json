@@ -2240,6 +2240,54 @@
       ]
     },
     {
+      "id": "unit-487-self-test",
+      "scopes": ["ui"],
+      "tier": "unit",
+      "title": "#487 self-test mode: the self-test environment, runSelfTest and its verdict, the self-test page, the integ batch's skipped report suites",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "4_view/selfTest/"
+      ]
+    },
+    {
+      "id": "unit-487-self-test-driver",
+      "scopes": ["tooling"],
+      "tier": "unit",
+      "title": "#487 web self-test driver (npm run selfTest): exit codes, arguments, summary",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "selfTestDriver.unit"
+      ]
+    },
+    {
+      "id": "unit-487-self-test-electron",
+      "scopes": ["tooling"],
+      "tier": "unit",
+      "title": "#487 Electron --self-test: flags, client configuration, exit codes, load URL",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app-electron",
+        "--",
+        "selfTestMain.unit"
+      ]
+    },
+    {
       "id": "unit-453-transformer-types-display",
       "scopes": ["ui"],
       "tier": "unit",

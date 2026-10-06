@@ -1,11 +1,11 @@
 /**
- * #487 Slice 6: `integ` in the self-test tags adds the integration batch (D8). The batch itself runs
+ * #487: `integ` in the self-test tags adds the integration batch (D8). The batch itself runs
  * in a browser (emulatedServer-indexedDb writes to the browser's IndexedDB): its proof is
  * `npm run selfTest -- --serve` on the `self-test-integ` environment, in the plan's validation. Here:
  * the environment, and the suites the batch leaves out without loading the launcher.
  *
  * Run:
- *   RUN_TEST=runSelfTestInteg.487.phase6.integ npm run testByFile -w miroir-standalone-app -- runSelfTestInteg.487.phase6.integ
+ *   npm run testByFile -w miroir-standalone-app -- runSelfTestInteg.integ
  */
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -17,9 +17,9 @@ import { environmentRealServerClientConfig, resolveEnvironmentFromFiles } from "
 import {
   REPORT_TESTS_NEED_THE_SANDBOX,
   runIntegrationMiroirTestBatch,
-} from "../../../../src/miroir-fwk/4-tests/miroirTestBatch.js";
-import { computeSelfTestResult } from "../../../../src/miroir-fwk/4-tests/selfTest/selfTestResult.js";
-import { integrationSuiteKey } from "../../../../src/miroir-fwk/4-tests/selfTest/runSelfTest.js";
+} from "../../../src/miroir-fwk/4-tests/miroirTestBatch.js";
+import { computeSelfTestResult } from "../../../src/miroir-fwk/4-tests/selfTest/selfTestResult.js";
+import { integrationSuiteKey } from "../../../src/miroir-fwk/4-tests/selfTest/runSelfTest.js";
 import { repositoryRoot } from "./selfTestPlatform.js";
 
 /** The miroir app's MiroirTest of the external service wizard Report: tags integ, ui, report. */

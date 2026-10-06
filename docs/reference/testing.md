@@ -777,6 +777,49 @@ Tests of the mechanism, in `packages/miroir-standalone-app/tests/4_view/`: `repo
 
 ---
 
+## Self-test mode
+
+An environment whose `client.selfTest.enabled` is true (`self-test`, `self-test-integ`) makes the production client check itself (#487). At page load the client loads Admin and the miroir deployment only, runs the miroir app's MiroirTests carrying `client.selfTest.tags` (`unit` by default), and shows their results on a page of its own (no menu, no router). Authentication must be off; with it on, the verdict is `failed`.
+
+- `unit` runs the unit batch of Run All Miroir Tests, with component tests (`reactComponentTest` leaves) recorded as skipped.
+- `integ` adds the integration batch of Run All Integration Tests on `emulatedServer-indexedDb`, run target `ephemeral`, which writes only to the browser's IndexedDB. Suites of `reportTest` leaves need the component test sandbox and are listed as not run.
+
+The verdict is published three ways, as `MiroirSelfTestResult` (`verdict` `running`, `passed` or `failed`, `counts`, `failures`, `skippedSuites`, `error`):
+
+- `<html data-miroir-self-test="passed">`;
+- `window.__MIROIR_SELF_TEST_RESULT__`;
+- in Electron, to the main process over IPC (`miroir-self-test-result`).
+
+`passed` needs at least one test run and none failed.
+
+### Local runs
+
+Web client, after the packages are built (`./build-all.sh`):
+
+```bash
+MIROIR_ENV=self-test npm run build -w miroir-standalone-app
+npm run build:release -w miroir-server
+MIROIR_ENV=self-test npm run selfTest -w miroir-standalone-app -- --serve
+```
+
+`--serve` starts the server release on the build (authentication off, 127.0.0.1 only) and stops it at the end; without it, `--url` names a server already running. The driver prints the result as JSON then a summary, and exits 0 (`passed`), 1 (`failed`) or 2 (no verdict: nothing served, no browser, or the timeout, `--timeout` seconds, 600 by default). `--out <file>` also writes the JSON, `--browser` names a Chromium, `--headed` shows it. Set `MIROIR_ENV=self-test-integ` for both commands to add the integration batch.
+
+Electron, after the same client build and `npm run build -w miroir-standalone-app-electron`:
+
+```bash
+MIROIR_ENV=self-test npx electron packages/miroir-standalone-app-electron --self-test
+```
+
+`--self-test[=unit,integ]` turns the self-test on whatever the environment says (tags `unit` by default); `--self-test-timeout=<s>` (900 by default). The window stays hidden; the process prints `{ "renderer": <result> }` and exits 0, 1 or 2 (timeout, renderer crash or load failure).
+
+### CI
+
+`.github/workflows/self-test.yml` runs both on demand and on every push to `_integration`: a web job (`npm run selfTest -- --serve` in the runner's Chrome) and an Electron job (`xvfb-run`). Each uploads its report.
+
+Tests: `packages/miroir-standalone-app/tests/4_view/selfTest/` (run, verdict, page, integration batch), `tests/0_build/selfTestDriver.unit` (driver), `packages/miroir-standalone-app-electron/tests/unit/selfTestMain.unit` (Electron flags and exit codes).
+
+---
+
 ## Running app-stack integration tests (`testByFile`)
 
 These are the original standalone-app integration tests: one Vitest file per concern, with test cases defined inline in TypeScript (composite-action trees or direct `it()` blocks). They configure the full Miroir client/server stack via JSON files and are launched with `npm run testByFile`.
