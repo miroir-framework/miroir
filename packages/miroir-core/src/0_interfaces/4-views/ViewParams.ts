@@ -34,11 +34,15 @@ export const viewParams: MlElement = {
     componentTestShowTransformerTypes: { type: "boolean", optional: true },
     /** A component test run shows its sandbox panel; otherwise the cases render off-screen. Absent: false. */
     componentTestShowSandbox: { type: "boolean", optional: true },
+    /** How the block editor marks build transformers, runtime ones being unmarked (#498). Absent: dashedOutline. */
+    blockEditorBuildMarking: { type: "enum", definition: ["dashedOutline", "marker"], optional: true },
     toolsPage: { type: "object", definition: {} }, // Add toolsPage to the schema
   },
 };
 
 export type GridType = "ag-grid" | "glide-data-grid";
+/** #498: how the block editor marks build transformers. */
+export type BlockEditorBuildMarking = "dashedOutline" | "marker";
 export type AppTheme = "default" | "dark" | "compact" | "material";
 
 // TransformerBuilderPage state interface for persistence
@@ -78,6 +82,8 @@ export interface ViewParamsData {
   componentTestShowTransformerTypes?: boolean;
   /** A component test run shows its sandbox panel. Absent or false: the cases render off-screen. */
   componentTestShowSandbox?: boolean;
+  /** #498: how the block editor marks build transformers, runtime ones being unmarked. Absent: dashedOutline. */
+  blockEditorBuildMarking?: BlockEditorBuildMarking;
   toolsPage?: ToolsPageState;
   generalEditMode?: boolean;
 }

@@ -1,12 +1,14 @@
-import { applicationTransformerDefinitions, type TransformerDefinition } from "miroir-core";
+import { applicationTransformerDefinitions, type BlockEditorBuildMarking, type TransformerDefinition } from "miroir-core";
 import { transformer_metaModel_entityDefinition_extractAttributes_json } from "miroir-app-miroir";
 import React, { lazy, Suspense } from "react";
+
+import { BlockEditorDisplayContext } from "../../4_view/components/BlockEditor/BlockEditorDisplay.js";
 
 // ################################################################################################
 // The block view of a stored TransformerDefinition's body, for the declarative component tests
 // (#498). The definition is the real one, looked up by name; its blocks have the ids of the
 // instance form's cards (`transformerImplementation.definition…`). The block view loads on demand,
-// as in the value editor.
+// as in the value editor. `buildMarking` stands for the ViewParams setting of the same name.
 // ################################################################################################
 
 const BlockEditorView = lazy(async () => ({
@@ -23,6 +25,8 @@ const transformerDefinitionsByName: Record<string, TransformerDefinition> = Obje
 export interface TransformerBlocksForTestProps {
   /** The `name` of a TransformerDefinition of the Miroir application. */
   transformerDefinition: string;
+  /** How build transformers are marked; absent: as the ViewParams say (dashed outline by default). */
+  buildMarking?: BlockEditorBuildMarking;
 }
 
 export function TransformerBlocksForTest(props: TransformerBlocksForTestProps) {
@@ -31,9 +35,14 @@ export function TransformerBlocksForTest(props: TransformerBlocksForTestProps) {
     return <span>No TransformerDefinition named {props.transformerDefinition}</span>;
   }
   const implementation = definition.transformerImplementation as { definition?: unknown };
-  return (
+  const view = (
     <Suspense fallback={<span>Loading block editor...</span>}>
       <BlockEditorView value={implementation.definition} rootLessListKey="transformerImplementation.definition" />
     </Suspense>
+  );
+  return props.buildMarking ? (
+    <BlockEditorDisplayContext.Provider value={{ buildMarking: props.buildMarking }}>{view}</BlockEditorDisplayContext.Provider>
+  ) : (
+    view
   );
 }

@@ -14,7 +14,7 @@
 Analysis: [`./analysis.md`](./analysis.md) (parent issue #497) · Issue: https://github.com/miroir-framework/miroir/issues/498
 Working branch: `claude/497-visual-block-editor`
 
-**Resume note:** plan written 2026-10-06; Slices 0 to 4 done 2026-10-06.
+**Resume note:** plan written 2026-10-06; Slices 0 to 5 done 2026-10-06.
 
 ---
 
@@ -37,7 +37,7 @@ This plan does **not** edit blocks (#500), add @dnd-kit (#500), undo (#499), off
 | 2 | Every transformer in the assets maps to blocks | ✅ | asset sweep with zero JSON blocks, `fn.blockModel` rule cases |
 | 3 | The full read-only block view | ✅ | `ui.blockEditor` cases on the two composite TransformerDefinitions |
 | 4 | Block categories and their Theme colors | ✅ | `fn.blockModel` category cases, Miroir modelValidation, `ui.blockEditor` |
-| 5 | Build marking and its ViewParams setting | ⬜ | `ui.blockEditor` marking cases, Admin modelValidation |
+| 5 | Build marking and its ViewParams setting | ✅ | `ui.blockEditor` marking cases, Admin modelValidation |
 | 6 | JSON view and a view mode that survives folding | ⬜ | `ui.blockEditor` switch cases |
 | 7 | Nonreg, docs, bundle, AC | ⬜ | nonreg steps, bundle guard, AC checklist |
 
@@ -338,7 +338,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui
 
 ## Slice 5 — Build marking and its ViewParams setting
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -375,6 +375,11 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui
 ```
 
 ### Realization
+
+- `ui.blockEditor` 11 of 11 (2 new leaves), Admin modelValidation 53 of 53, component counts 11 instances and 122 leaves, core typecheck clean, app typecheck adds no error.
+- ViewParams `blockEditorBuildMarking` (`dashedOutline` | `marker`, tag id 18, editable) in the Admin Entity, the `viewParams` MlElement and `ViewParamsData`; type `BlockEditorBuildMarking` exported from miroir-core.
+- `BlockEditorDisplay.ts`: `BlockEditorDisplayContext` and `useBlockEditorBuildMarking()` (context, else ViewParams, else `dashedOutline`). It only reads the setting, which is changed in the ViewParams report like the other settings; there is no switch in the editor. `TransformerBlocks` takes a `buildMarking` prop that sets the context.
+- A transformer block carries `data-interpolation` (absent read as `build`) and `data-build-marking` (`dashedOutline`, `marker` or `none`); the outline and the marker use the theme's text color, as the mockup's `--rt` token does.
 
 ---
 

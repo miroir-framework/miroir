@@ -1,15 +1,25 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import { transformerBlockTree, type BlockNode, type BlockPath, type TransformerBlock } from "miroir-core";
+import {
+  transformerBlockTree,
+  type BlockEditorBuildMarking,
+  type BlockNode,
+  type BlockPath,
+  type TransformerBlock,
+} from "miroir-core";
 import React, { useCallback, useMemo, useState } from "react";
 
 import { blockCategoryColor, useMiroirTheme, type BlockEditorColors } from "../../contexts/MiroirThemeContext.js";
+import { useBlockEditorBuildMarking } from "./BlockEditorDisplay.js";
 
 // ################################################################################################
 // #498: the read-only block view of a transformer value (analysis #497). The tree comes from the
 // miroir-core block model; each block is memoized on its node, which the model rebuilds only when
 // the value changes. Blocks carry the id of the form card at the same path, so the outline
 // navigation finds them in both views.
+//
+// Build transformers, including those with no `interpolation`, are marked as the ViewParams say
+// (dashed outline or "build" marker); runtime transformers are not (analysis D1).
 //
 // A block keeps its own collapsed state, so folding one renders only that block. "Collapse all"
 // and "Expand all" remount the tree with every block starting in that state.
@@ -48,6 +58,7 @@ interface BlockColors {
 interface BlockSettings extends BlockColors {
   rootLessListKey: string;
   initialCollapse: InitialCollapse;
+  buildMarking: BlockEditorBuildMarking;
 }
 
 function useBlockColors(): BlockColors {
@@ -160,6 +171,9 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
   const id = blockId(settings.rootLessListKey, node.path);
   const { collapsed, toggleButton, summary } = useCollapse(node, settings, node.rows.length);
   const color = blockCategoryColor(settings.blockEditor, node.category);
+  // an absent interpolation is evaluated as build (TransformersForRuntime)
+  const interpolation = node.interpolation ?? "build";
+  const marking = interpolation === "build" ? settings.buildMarking : "none";
   return (
     <div
       id={id}
@@ -168,6 +182,8 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
       data-transformer-type={node.transformerType}
       data-category={node.category}
       data-block-color={color}
+      data-interpolation={interpolation}
+      data-build-marking={marking}
       role="group"
       aria-label={node.transformerType}
       css={css({
@@ -180,11 +196,30 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
         borderRadius: "8px",
         paddingBottom: node.rows.length > 0 && !collapsed ? "6px" : 0,
         verticalAlign: "top",
+        ...(marking === "dashedOutline" ? { outline: `2px dashed ${settings.text}`, outlineOffset: "1px" } : {}),
       })}
     >
       <div css={css({ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "4px 7px", padding: "4px 10px" })}>
         {toggleButton}
         <span css={css({ fontWeight: 700, whiteSpace: "nowrap" })}>{node.transformerType}</span>
+        {marking === "marker" && (
+          <span
+            data-testid={`block-build-marker:${id}`}
+            title="Evaluated at build time"
+            css={css({
+              fontFamily: "monospace",
+              fontSize: "10px",
+              fontWeight: 500,
+              background: settings.text,
+              color: settings.field,
+              borderRadius: "4px",
+              padding: "0 4px",
+              lineHeight: 1.5,
+            })}
+          >
+            build
+          </span>
+        )}
         {node.label !== undefined && <span css={css({ opacity: 0.85, fontSize: "12px" })}>{node.label}</span>}
         {node.parameters.map((parameter) => (
           <span
@@ -387,14 +422,15 @@ function ToolButton(props: {
 export const BlockEditorView = React.memo(function BlockEditorView(props: BlockEditorViewProps) {
   const tree = useMemo(() => transformerBlockTree(props.value), [props.value]);
   const colors = useBlockColors();
+  const buildMarking = useBlockEditorBuildMarking();
   const [fold, setFold] = useState<{ initialCollapse: InitialCollapse; generation: number }>({
     initialCollapse: "default",
     generation: 0,
   });
   const [zoom, setZoom] = useState(1);
   const settings: BlockSettings = useMemo(
-    () => ({ ...colors, rootLessListKey: props.rootLessListKey, initialCollapse: fold.initialCollapse }),
-    [colors, props.rootLessListKey, fold.initialCollapse],
+    () => ({ ...colors, rootLessListKey: props.rootLessListKey, initialCollapse: fold.initialCollapse, buildMarking }),
+    [colors, props.rootLessListKey, fold.initialCollapse, buildMarking],
   );
   const foldAll = useCallback(
     (initialCollapse: InitialCollapse) =>

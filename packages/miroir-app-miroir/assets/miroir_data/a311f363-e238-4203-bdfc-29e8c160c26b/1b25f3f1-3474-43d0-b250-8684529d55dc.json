@@ -464,6 +464,92 @@
                 "value": "quoted"
               }
             ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerBlocks: build blocks have a dashed outline by default, runtime blocks no mark",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "filterList without interpolation is build",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition"
+                },
+                "attribute": "data-interpolation",
+                "value": "build",
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the build block has a dashed outline",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition"
+                },
+                "attribute": "data-build-marking",
+                "value": "dashedOutline"
+              },
+              {
+                "step": "expectElement",
+                "label": "no build marker",
+                "target": {
+                  "byTestId": "block-build-marker:transformerImplementation.definition"
+                },
+                "present": false
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the predicate is runtime",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition.predicate"
+                },
+                "attribute": "data-interpolation",
+                "value": "runtime"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the runtime block has no mark",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition.predicate"
+                },
+                "attribute": "data-build-marking",
+                "value": "none"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerBlocks: with the marker setting, build blocks show a build marker instead",
+            "componentProps": {
+              "transformerDefinition": "entityDefinition_extractAttributes",
+              "buildMarking": "marker"
+            },
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "the build block is marked with a marker",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition"
+                },
+                "attribute": "data-build-marking",
+                "value": "marker",
+                "timeout": 3000
+              },
+              {
+                "step": "expectElement",
+                "label": "build marker",
+                "target": {
+                  "byTestId": "block-build-marker:transformerImplementation.definition"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "no marker on the runtime predicate",
+                "target": {
+                  "byTestId": "block-build-marker:transformerImplementation.definition.predicate"
+                },
+                "present": false
+              }
+            ]
           }
         ]
       }

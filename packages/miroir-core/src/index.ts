@@ -766,6 +766,7 @@ export {
 export { PersistenceStoreControllerManagerInterface } from "./0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 export {
   AppTheme,
+  BlockEditorBuildMarking,
   GridType,
   ToolsPageState,
   ViewParams,
