@@ -14,7 +14,7 @@
 Analysis: [`./analysis.md`](./analysis.md) (parent issue #497) · Issue: https://github.com/miroir-framework/miroir/issues/498
 Working branch: `claude/497-visual-block-editor`
 
-**Resume note:** plan written 2026-10-06; Slices 0 to 6 done 2026-10-06, Slice 7 validating.
+**Resume note:** plan written 2026-10-06; all slices done 2026-10-06.
 
 ---
 
@@ -428,7 +428,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui
 
 ## Slice 7 — Nonreg, docs, bundle, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### 7.1 Nonreg
 
@@ -479,3 +479,5 @@ npm run nonreg:filesystem -- --runner shared
 - **Bundle:** `BlockEditorView` is a lazy chunk (2.9 kB gzipped); the switch and the mode context are on the page. Page gzip 792832 bytes against the baseline 786868, inside the 2 % tolerance; no new defeated dynamic import. The `size` rule failed: miroir-app-miroir loaded 3315663 bytes with the page, over its cap of 3300000. `ui.blockEditor` (14.4 kB compact) has to be in `defaultMiroirMetaModel.tests` (292 phase1), and the meta-model was already near the cap. **Deviation:** the cap is raised to 3400000, with the reason in the policy's `$comment`; moving component test instances off the page stays the alternative for #500 to #506 (analysis §4.7).
 - **Docs:** "Showing a transformer as blocks" in `docs/reference/transformers.md`, which also now says that an absent `interpolation` means build and that badges sit under the title since #470; the registry entries, instance and leaf counts in `docs/reference/testing.md`.
 - **Environment:** the cloud container's `node_modules` had no links for `miroir-example-github` and `miroir-app-meta`, so the first app build failed; two symlinks fixed it (no `npm ci`).
+- **Validation (2026-10-06):** skills sync ok, pytest 261 passed, lint ok, `miroir-env check --strict --tracked-clean` ok, miroir-core typecheck 0 errors, miroir-core unit tests 2713 passed. `check_dependency_policy` fails on a live advisory for `@modelcontextprotocol/sdk` 1.30.1 (GHSA-6qxp-vccf-f47h, fixed in 1.31.0), which this branch does not touch. `nonreg:filesystem --runner shared`: 102 passed, 4 failed. The 4 (`unit-MiroirTestDisplay`, `unit-MiroirTestListDisplay`, `appstack-MiroirTestDisplayIntegrationLaunch`, `appstack-MiroirTestListIntegrationLaunch`) fail the same way on `_integration` at d7b00f8 without this branch: since 156d840, `MiroirTestDisplay` reads the run settings from the ViewParams, and these tests render it without the Miroir context and Redux providers. Filed as #510.
+
