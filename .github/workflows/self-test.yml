@@ -1,0 +1,95 @@
+name: Self-test
+
+# #487: the production client runs the miroir app's MiroirTests at page load (environment `self-test`,
+# client.selfTest) in a browser served by the server release, and in Electron with --self-test.
+# Each job fails when the verdict is `failed` (exit 1) or when no verdict came (exit 2).
+on:
+  workflow_dispatch:
+  push:
+    branches: [_integration]
+
+concurrency:
+  group: self-test-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MIROIR_ENV: self-test
+
+jobs:
+  web:
+    name: web client self-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --no-audit
+      # As the bundle job of pr-checks.yml: each line needs the ones above it.
+      - name: Build the packages the app and the server import
+        run: |
+          npm run build -w miroir-app-miroir -w miroir-app-admin
+          npm run build -w miroir-core
+          npm run build -w miroir-env -w miroir-localcache-redux -w miroir-store-bundled -w miroir-store-filesystem -w miroir-store-indexedDb -w miroir-store-postgres -w miroir-store-mongodb -w miroir-example-library -w miroir-example-spotify -w miroir-example-github -w miroir-app-meta -w miroir-fixture-appForTest
+          npm run build -w miroir-react -w miroir-mcp -w miroir-ai
+          npm run build -w miroir-diagram-class
+      - name: Build the client on the self-test environment
+        run: npm run build -w miroir-standalone-app
+      - name: Build the server release
+        run: npm run build:release -w miroir-server
+      # The browser: the runner's Chrome (scripts/serveBuiltClient.mjs falls back to it).
+      - name: Run the self-test
+        run: npm run selfTest -w miroir-standalone-app -- --serve --out "$RUNNER_TEMP/self-test/web.json"
+      - name: Upload the report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: self-test-web
+          path: ${{ runner.temp }}/self-test/web.json
+          if-no-files-found: warn
+          retention-days: 14
+
+  electron:
+    name: Electron self-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --no-audit
+      - name: Build the packages the app and the main process import
+        run: |
+          npm run build -w miroir-app-miroir -w miroir-app-admin
+          npm run build -w miroir-core
+          npm run build -w miroir-env -w miroir-localcache-redux -w miroir-store-bundled -w miroir-store-filesystem -w miroir-store-indexedDb -w miroir-store-postgres -w miroir-store-mongodb -w miroir-example-library -w miroir-example-spotify -w miroir-example-github -w miroir-app-meta -w miroir-fixture-appForTest
+          npm run build -w miroir-react -w miroir-mcp -w miroir-ai
+          npm run build -w miroir-diagram-class
+      - name: Build the client on the self-test environment
+        run: npm run build -w miroir-standalone-app
+      - name: Build the Electron main process
+        run: npm run build -w miroir-standalone-app-electron
+      # --no-sandbox: Ubuntu 24.04 runners forbid the unprivileged user namespaces of Chromium's sandbox.
+      - name: Run the self-test
+        run: |
+          mkdir -p "$RUNNER_TEMP/self-test"
+          set -o pipefail
+          xvfb-run -a npx electron packages/miroir-standalone-app-electron --self-test --no-sandbox | tee "$RUNNER_TEMP/self-test/electron.log"
+      - name: Upload the report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: self-test-electron
+          path: ${{ runner.temp }}/self-test/electron.log
+          if-no-files-found: warn
+          retention-days: 14

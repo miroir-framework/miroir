@@ -27,6 +27,8 @@
 | `test-mongodb` | profile `emulatedServer-mongodb`, `realServer-mongodb` | MongoDB databases `test_mongodb_<application>`; Admin copied in `.miroir/test-mongodb/` |
 | `docker` | the Docker images (`MIROIR_ROOT=/data`) | Miroir, Admin, Library **live** in the volume, which is already a copy of the image's seed ([docker.md](docker.md)) |
 | `desktop` | the packaged Electron application (`MIROIR_ROOT=<user data>/miroir`) | Miroir and Admin **live** in the user data folder, seeded on first start |
+| `self-test` | self-test mode ([Self-test mode](testing.md#self-test-mode)): the client runs the miroir app's `unit` MiroirTests at page load | Miroir and Admin **copied** in `.miroir/self-test/`; authentication and AI off |
+| `self-test-integ` | `self-test` plus the `integ` MiroirTests, in the browser's IndexedDB | as `self-test` |
 
 Test environments (`test-*`) hold copies only: a `live` section in a test environment is refused.
 
@@ -102,6 +104,7 @@ Tests select their environment through their profile (`--profile emulatedServer-
 | `extends` | Name of the environment this one is merged over. Objects merge key by key; `null` removes an inherited entry (for example `"applications": { "designer": null }`). |
 | `server` | What the server of this environment listens on. `rootApiUrl` is also the URL the web client calls. |
 | `client.mode` | `realServer` (a client calls a running server) or `emulatedServer` (tests: the client runs the server in-process). |
+| `client.selfTest` | `{ "enabled": true, "tags": ["unit"] }`: page load runs the miroir app's MiroirTests carrying these tags (`unit` when none) and publishes a verdict, instead of showing the application ([Self-test mode](testing.md#self-test-mode)). `integ` adds the integration batch. |
 | `features` | Process capabilities of the server ([Process capabilities](process-capabilities.md)). Never sent to the web client. |
 | `connections.postgres` | Host, port, user and database of Postgres stores. `passwordEnv` names the variable that holds the password; a definition never contains a password. |
 | `connections.mongodb` | URL of MongoDB stores. |

@@ -19,15 +19,11 @@ import {
   RunAllMiroirTestsButton,
   type MiroirTestSuiteResultsMap,
 } from '../Buttons/RunAllMiroirTestsButton.js';
-import type { TestResultData } from '../Buttons/testResultReport.js';
-import { ThemedProgressiveAccordion } from '../Themes/BasicComponents.js';
 import { ComponentTestSandboxProvider, useComponentTestSandbox } from './ComponentTestSandbox.js';
-import { TestResultsGrid } from './TestResultsGrid.js';
-import { UnitTestExecutionSummary } from './UnitTestExecutionSummary.js';
+import { MiroirTestResultsDisplay } from './MiroirTestResultsDisplay.js';
 import { UiIntegrationTestRunControls } from './UiIntegrationTestRunControls.js';
 import { UiIntegrationTestRunInspectorSummary } from './UiIntegrationTestRunInspectorSummary.js';
 import { getMiroirTestSuiteKey, sortMiroirTestInstances } from './miroirTestSuiteKey.js';
-import type { TestResultDataAndSelect } from './testSelectionUtils.js';
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, 'MiroirTestListDisplay');
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -71,44 +67,6 @@ function tagChipStyle(selected: boolean): React.CSSProperties {
     backgroundColor: selected ? '#7e57c2' : 'white',
     color: selected ? 'white' : '#4527a0',
   };
-}
-
-function summarizeSuiteResults(results: TestResultData[]): {
-  passed: number;
-  failed: number;
-  skipped: number;
-  total: number;
-  statusLabel: string;
-  statusColor: string;
-} {
-  let passed = 0;
-  let failed = 0;
-  let skipped = 0;
-
-  for (const result of results) {
-    if (result.testResult === 'skipped' || result.status === 'skipped') {
-      skipped++;
-    } else if (
-      result.testResult === 'error' ||
-      result.status === 'error' ||
-      (result.failedAssertions && result.failedAssertions.length > 0)
-    ) {
-      failed++;
-    } else {
-      passed++;
-    }
-  }
-
-  const total = results.length;
-  const statusLabel =
-    failed > 0 ? 'FAILED' : skipped === total && total > 0 ? 'SKIPPED' : 'PASSED';
-  const statusColor = failed > 0 ? '#f44336' : skipped === total && total > 0 ? '#999' : '#4caf50';
-
-  return { passed, failed, skipped, total, statusLabel, statusColor };
-}
-
-function toSelectableResults(results: TestResultData[]): TestResultDataAndSelect[] {
-  return results.map((result) => ({ ...result, selected: false }));
 }
 
 // #286: the provider gives Run all its own component test sandbox (analysis §5.6).
@@ -167,10 +125,7 @@ const MiroirTestListDisplayContent = (props: MiroirTestListDisplayProps) => {
   const showUnitBatch = listCapabilities.hasUnitLeaves;
   const showIntegrationBatch = listCapabilities.launchableIntegrationSuiteKeys.length > 0;
 
-  const allResults = useMemo(
-    () => Object.values(resultsBySuiteKey).flat(),
-    [resultsBySuiteKey],
-  );
+  const suiteKeys = useMemo(() => sortedInstances.map(getMiroirTestSuiteKey), [sortedInstances]);
 
   const handleTestComplete = (resultsMap: MiroirTestSuiteResultsMap) => {
     setResultsBySuiteKey(resultsMap);
@@ -274,58 +229,11 @@ const MiroirTestListDisplayContent = (props: MiroirTestListDisplayProps) => {
 
       {showIntegrationBatch && <UiIntegrationTestRunInspectorSummary />}
 
-      {allResults.length > 0 && (
-        <div style={{ marginTop: '20px', width: '100%' }}>
-          <UnitTestExecutionSummary
-            testResultsData={allResults}
-            testLabel="All Miroir Tests"
-          />
-
-          <div style={{ marginTop: '12px' }}>
-            {sortedInstances.map((instance) => {
-              const suiteKey = getMiroirTestSuiteKey(instance);
-              const suiteResults = resultsBySuiteKey[suiteKey];
-              if (!suiteResults?.length) {
-                return null;
-              }
-
-              const summary = summarizeSuiteResults(suiteResults);
-
-              return (
-                <ThemedProgressiveAccordion
-                  key={suiteKey}
-                  initiallyExpanded={false}
-                  summary={
-                    <span style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
-                      <strong style={{ color: '#4527a0' }}>{suiteKey}</strong>
-                      <span style={{ color: summary.statusColor, fontWeight: 'bold' }}>
-                        {summary.statusLabel}
-                      </span>
-                      <span style={{ fontSize: '12px', color: '#555' }}>
-                        ✓ {summary.passed}/{summary.total}
-                        {summary.failed > 0 && (
-                          <span style={{ color: '#f44336' }}> · ✗ {summary.failed}</span>
-                        )}
-                        {summary.skipped > 0 && (
-                          <span style={{ color: '#999' }}> · ⏭ {summary.skipped}</span>
-                        )}
-                      </span>
-                    </span>
-                  }
-                >
-                  <TestResultsGrid
-                    testResultsData={toSelectableResults(suiteResults)}
-                    testLabel={suiteKey}
-                    gridType={props.gridType}
-                    enableSelection={false}
-                    linkResultsToEditor={true}
-                  />
-                </ThemedProgressiveAccordion>
-              );
-            })}
-          </div>
-        </div>
-      )}
+      <MiroirTestResultsDisplay
+        resultsBySuiteKey={resultsBySuiteKey}
+        suiteKeys={suiteKeys}
+        gridType={props.gridType}
+      />
     </div>
   );
 };

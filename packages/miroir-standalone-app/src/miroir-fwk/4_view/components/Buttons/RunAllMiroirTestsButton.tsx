@@ -2,35 +2,17 @@ import React, { useState } from 'react';
 
 import {
   ACTION_OK,
-  buildUiIntegrationSuiteRegistriesFromMiroirTests,
   MiroirLoggerFactory,
-  TestFramework,
-  defaultMetaModelEnvironment,
-  runMiroirTests,
   type Action2VoidReturnType,
   type LoggerInterface,
   type MiroirTestDefinition,
-  type Runner,
 } from 'miroir-core';
 
 import { useMiroirContextService, useSnackbar } from 'miroir-react';
 import { readAppMiroirReports } from '../../../4-tests/appMiroirReports.js';
 import { useSelectedApplicationRunnerUuidIndex } from '../../../4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js';
 import { packageName } from '../../../../constants.js';
-import {
-  DEFAULT_UI_INTEGRATION_PROFILE_NAME,
-  DEFAULT_UI_INTEGRATION_RUN_TARGET_MODE,
-} from '../../../4-tests/integrationTestProfileAssets.js';
-import {
-  getIntegTestRunCoordinator,
-  type IntegTestRunCoordinator,
-} from '../../../4-tests/integTestRunCoordinator.js';
-import {
-  classifyMiroirTestListExecutionCapabilities,
-  miroirTestDefinitionHasReactComponentTest,
-  resolveUiIntegrationRunnerSuiteKey,
-} from '../../../4-tests/miroirTestSuiteUiExecution.js';
-import type { UiIntegrationTestLauncherEnvironment } from '../../../4-tests/uiIntegrationTestLauncher.js';
+import { miroirTestDefinitionHasReactComponentTest } from '../../../4-tests/miroirTestSuiteUiExecution.js';
 import type {
   UiIntegrationTestRunRequest,
   UiIntegrationTestRunTargetMode,
@@ -39,11 +21,10 @@ import { useIntegTestRunCoordinator } from '../../../4-tests/useIntegTestRunCoor
 import { ActionButtonWithSnackbar } from '../../components/Page/ActionButtonWithSnackbar.js';
 import { cleanLevel } from '../../constants.js';
 import {
-  getMiroirTestSuiteKey,
-  sortMiroirTestInstances,
-} from '../Reports/miroirTestSuiteKey.js';
-import { setLastUiIntegrationTestRunResult } from '../../../4-tests/uiIntegrationTestRunState.js';
-import { generateTestReport, type TestResultData } from './testResultReport.js';
+  runIntegrationMiroirTestBatch,
+  runUnitMiroirTestBatch,
+  type MiroirTestSuiteResultsMap,
+} from '../../../4-tests/miroirTestBatch.js';
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, 'RunAllMiroirTestsButton');
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -53,7 +34,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
   log = logger;
 });
 
-export type MiroirTestSuiteResultsMap = Record<string, TestResultData[]>;
+export type { MiroirTestSuiteResultsMap };
 
 export type RunAllMiroirTestsRunMode = 'unit' | 'integration';
 
@@ -92,117 +73,6 @@ const includeComponentTestsLabelStyle: React.CSSProperties = {
 };
 
 // ################################################################################################
-/** Nested launcher calls must not re-acquire the shared mutex while the list batch holds it. */
-function createBatchNestedCoordinator(): IntegTestRunCoordinator {
-  const nested = {
-    get isRunning() {
-      return true;
-    },
-    subscribe: () => () => {},
-    acquire: () => {},
-    release: () => {},
-    runExclusive: async <T,>(fn: () => Promise<T>) => fn(),
-  };
-  return nested as unknown as IntegTestRunCoordinator;
-}
-
-// ################################################################################################
-function selectLaunchableIntegrationInstances(
-  miroirTests: MiroirTestDefinition[],
-): MiroirTestDefinition[] {
-  const { runner, transformer } = buildUiIntegrationSuiteRegistriesFromMiroirTests(miroirTests);
-  const listCaps = classifyMiroirTestListExecutionCapabilities(
-    miroirTests,
-    runner,
-    transformer,
-  );
-  const launchableKeySet = new Set(listCaps.launchableIntegrationSuiteKeys);
-
-  if (listCaps.integrationSuiteKeys.length > listCaps.launchableIntegrationSuiteKeys.length) {
-    const skipped = listCaps.integrationSuiteKeys.filter((key) => !launchableKeySet.has(key));
-    log.info(
-      `Skipping ${skipped.length} non-launchable integration suite(s): ${skipped.join(', ')}`,
-    );
-  }
-
-  return sortMiroirTestInstances(miroirTests).filter((instance) => {
-    const registryKey = resolveUiIntegrationRunnerSuiteKey(instance, runner, transformer);
-    return registryKey !== undefined && launchableKeySet.has(registryKey);
-  });
-}
-
-// ################################################################################################
-async function runLaunchableIntegrationBatch(params: {
-  miroirTests: MiroirTestDefinition[];
-  integrationProfileName?: string;
-  integrationRunTargetMode?: UiIntegrationTestRunTargetMode;
-  runnerUuidIndex?: Record<string, Runner>;
-  prepareReportTests?: UiIntegrationTestRunRequest['prepareReportTests'];
-  miroirReports?: UiIntegrationTestRunRequest['miroirReports'];
-}): Promise<{ resultsBySuiteKey: MiroirTestSuiteResultsMap; failures: string[] }> {
-  const sortedLaunchable = selectLaunchableIntegrationInstances(params.miroirTests);
-  if (sortedLaunchable.length === 0) {
-    throw new Error('No UI-launchable integration suites in this MiroirTest list');
-  }
-
-  const [
-    { runUiIntegrationTestSuite },
-    { loadBrowserUiIntegrationTestLauncherEnvironment },
-  ] = await Promise.all([
-    import('../../../4-tests/uiIntegrationTestLauncher.js'),
-    import('../../../4-tests/loadBrowserUiIntegrationTestLauncherEnvironment.js'),
-  ]);
-
-  const baseEnv = await loadBrowserUiIntegrationTestLauncherEnvironment();
-  const resultsBySuiteKey: MiroirTestSuiteResultsMap = {};
-  const failures: string[] = [];
-  const nestedCoordinator = createBatchNestedCoordinator();
-  const { runner, transformer } = buildUiIntegrationSuiteRegistriesFromMiroirTests(
-    params.miroirTests,
-  );
-
-  await getIntegTestRunCoordinator().runExclusive(async () => {
-    const batchEnv: UiIntegrationTestLauncherEnvironment = {
-      ...baseEnv,
-      getCoordinator: () => nestedCoordinator,
-    };
-
-    for (const instance of sortedLaunchable) {
-      const registryKey = resolveUiIntegrationRunnerSuiteKey(instance, runner, transformer);
-      if (!registryKey) {
-        continue;
-      }
-      const identityKey = getMiroirTestSuiteKey(instance);
-
-      const result = await runUiIntegrationTestSuite(
-        {
-          suiteKey: registryKey,
-          suiteDefinition: instance.definition,
-          profileName: params.integrationProfileName ?? DEFAULT_UI_INTEGRATION_PROFILE_NAME,
-          runTargetMode: params.integrationRunTargetMode ?? DEFAULT_UI_INTEGRATION_RUN_TARGET_MODE,
-          hostMode: 'isolated',
-          runnerUuidIndex: params.runnerUuidIndex,
-          prepareReportTests: params.prepareReportTests,
-          miroirReports: params.miroirReports,
-        },
-        batchEnv,
-      );
-
-      setLastUiIntegrationTestRunResult(result);
-      resultsBySuiteKey[identityKey] = result.testSuiteResults
-        ? generateTestReport(identityKey, result.testSuiteResults, () => {})
-        : [];
-
-      if (!result.success) {
-        failures.push(registryKey);
-      }
-    }
-  });
-
-  return { resultsBySuiteKey, failures };
-}
-
-// ################################################################################################
 export const RunAllMiroirTestsButton: React.FC<RunAllMiroirTestsButtonProps> = ({
   miroirTests,
   useSnackBar,
@@ -224,46 +94,23 @@ export const RunAllMiroirTestsButton: React.FC<RunAllMiroirTestsButtonProps> = (
   const runnerUuidIndex = useSelectedApplicationRunnerUuidIndex();
 
   const onUnitAction = async (): Promise<Action2VoidReturnType> => {
-    const tracker = miroirContextService.miroirContext.miroirActivityTracker;
-    const sortedInstances = sortMiroirTestInstances(miroirTests);
-    const resultsBySuiteKey: MiroirTestSuiteResultsMap = {};
-
     const componentTestsPrepared =
       includeComponentTests &&
       beforeRun !== undefined &&
-      sortedInstances.some((instance) =>
+      miroirTests.some((instance) =>
         miroirTestDefinitionHasReactComponentTest(instance.definition, { ignoreRunOnDemandSuites: true }),
       );
     if (componentTestsPrepared) {
       await beforeRun();
     }
 
+    let resultsBySuiteKey: MiroirTestSuiteResultsMap;
     try {
-      for (const instance of sortedInstances) {
-        const suiteKey = getMiroirTestSuiteKey(instance);
-        tracker.resetResults();
-
-        await runMiroirTests._runMiroirTestSuite(
-          TestFramework as any,
-          [],
-          instance.definition,
-          undefined,
-          defaultMetaModelEnvironment,
-          tracker,
-          undefined,
-          true,
-          runMiroirTests,
-          // #303: the leaves of `runOnDemand` suites (the render-performance suite) are recorded
-          // as skipped; launching such a suite on its own runs it.
-          includeComponentTests
-            ? { executionMode: 'unit', skipRunOnDemandSuites: true }
-            : { executionMode: 'unit', excludeMiroirTestTypes: ['reactComponentTest'] },
-        );
-
-        const suiteResults = tracker.getTestAssertionsResults([]);
-        resultsBySuiteKey[suiteKey] = generateTestReport(suiteKey, suiteResults, () => {});
-        log.info(`MiroirTest results for ${suiteKey}:`, resultsBySuiteKey[suiteKey]);
-      }
+      resultsBySuiteKey = await runUnitMiroirTestBatch({
+        miroirTests,
+        tracker: miroirContextService.miroirContext.miroirActivityTracker,
+        includeComponentTests,
+      });
     } finally {
       if (componentTestsPrepared) {
         afterRun?.();
@@ -277,7 +124,7 @@ export const RunAllMiroirTestsButton: React.FC<RunAllMiroirTestsButtonProps> = (
   };
 
   const onIntegrationAction = async (): Promise<Action2VoidReturnType> => {
-    const { resultsBySuiteKey, failures } = await runLaunchableIntegrationBatch({
+    const { resultsBySuiteKey, failures } = await runIntegrationMiroirTestBatch({
       miroirTests,
       integrationProfileName,
       integrationRunTargetMode,

@@ -1,0 +1,6 @@
+{
+  "name": "self-test-integ",
+  "extends": "self-test",
+  "description": "Self-test mode with the integration MiroirTests (#487 D8): as self-test, plus the miroir app's integ MiroirTests on the emulatedServer-indexedDb profile (run target ephemeral), which write only to the browser's IndexedDB. Suites of reportTest leaves are not run.",
+  "client": { "selfTest": { "enabled": true, "tags": ["unit", "integ"] } }
+}

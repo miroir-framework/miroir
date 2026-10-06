@@ -44,6 +44,11 @@ export interface ConfigurationServiceOptions {
   miroirConfig: MiroirConfigClient;
   onSuccess?: (message: string) => void;
   onError?: (error: Error) => void;
+  /**
+   * #487: the self applications whose deployments are opened and loaded, besides Admin. All the
+   * deployments Admin lists when absent.
+   */
+  applications?: string[];
 }
 
 /**
@@ -61,7 +66,7 @@ export interface ConfigurationServiceOptions {
 export function fetchMiroirAndAppConfigurations(
   options: ConfigurationServiceOptions
 ): Promise<Action2VoidReturnType> {
-  const { domainController, miroirConfig, onSuccess, onError } = options;
+  const { domainController, miroirConfig, onSuccess, onError, applications } = options;
 
   // Validate miroir configuration first
   if (!miroirConfig) {
@@ -201,7 +206,8 @@ export function fetchMiroirAndAppConfigurations(
       const openStoreActions: Promise<any>[] = [];
       deploymentsToLoad  = foundDeployments.filter((deployment: Deployment) => {
         return (
-          deployment.selfApplication !== adminSelfApplication.uuid
+          deployment.selfApplication !== adminSelfApplication.uuid &&
+          (!applications || applications.includes(deployment.selfApplication))
         ); // no need to load admin app deployment, it was already loaded in the firs step
         // return deployment.adminApplication !== adminSelfApplication.uuid; // no need to load admin app deployment, it was already loaded in the firs step
       });

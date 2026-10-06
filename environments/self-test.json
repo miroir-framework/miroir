@@ -1,0 +1,14 @@
+{
+  "name": "self-test",
+  "extends": "dev",
+  "description": "Self-test mode (#487): on page load the client runs the miroir app's MiroirTests and publishes a verdict instead of showing the application. Only miroir and Admin are installed; the miroir app and the Admin data are copies in .miroir/self-test/; authentication and the AI features are off.",
+  "server": { "authentication": { "enabled": false } },
+  "client": { "selfTest": { "enabled": true, "tags": ["unit"] } },
+  "features": { "ai": false },
+  "applications": {
+    "miroir": { "mode": "copy" },
+    "library": null,
+    "designer": null,
+    "meta": null
+  }
+}

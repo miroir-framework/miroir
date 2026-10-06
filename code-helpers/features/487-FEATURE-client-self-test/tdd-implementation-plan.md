@@ -1,0 +1,454 @@
+# Issue #487 — TDD Implementation Plan
+
+> Vertical TDD slices (RED → GREEN each), integration-first per `docs/contributing/testing.md`:
+> tests boot the real platform (`setupMiroirPlatform`, DomainController, local cache, emulated server
+> on the `self-test` environment's filesystem copies) and run the miroir app's real MiroirTests,
+> through the self-test's public surface: the `client.selfTest` environment setting, `runSelfTest`,
+> the page's published verdict, and Electron's `--self-test` exit code.
+> No mocks. The tracer bullet proves that the `self-test` environment, resolved like any other,
+> boots, loads miroir and Admin only, runs the miroir app's `unit` MiroirTests read from the local
+> cache, and returns a `passed` verdict.
+>
+> **Execution model:** human-in-the-loop. No slice contains a commit step: commits happen only when
+> the user asks. Each slice ends with its Validation commands; on success its Realization summary is
+> appended and its Status flips to ✅ DONE.
+
+Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/487
+Companion: #486 (health checks; shares Electron `--self-test`, analysis D9)
+Working branch: `claude/487-client-self-test-x9c2x8` (from `_integration` at 9838983)
+
+**Resume note:** plan written 2026-10-06; decisions D1 to D10 and their defaults accepted by A 2026-10-06; All slices DONE 2026-10-06; PR into `_integration`. Open: the 3 failing browser integ suites of Slice 6.
+
+---
+
+## Scope
+
+- G1: on the `self-test` environment, page load boots the platform, runs the miroir app's `unit` MiroirTests and shows the results, without a click.
+- G2: the verdict is readable on `<html data-miroir-self-test>` and `window.__MIROIR_SELF_TEST_RESULT__`.
+- G3: `electron … --self-test` exits 0 or 1 from the renderer's verdict (2 on timeout or crash), report on stdout.
+- G4: `tags` with `integ` adds the integration batch on `emulatedServer-indexedDb`, run target `ephemeral`.
+- G5: a GitHub Actions workflow (Electron under `xvfb-run`, web in headless Chromium) and a documented local run.
+
+This plan does **not** cover the CLI, server, MCP and Electron main-process probes (#486), authentication in self-test mode, a URL parameter, user applications' MiroirTests, `ui` and `reportTest` suites in self-test mode, or test-run history (#474, #483).
+
+---
+
+## Progress summary
+
+| Slice | Title | Status | Primary proof |
+|---|---|---|---|
+| 0 | Characterize the unit baseline and the Run all contracts | ✅ DONE | `testMiroir --tags unit` baseline; existing Run all tests green |
+| 1 | Tracer: `self-test` environment → `runSelfTest` → `passed` | ✅ DONE | `runSelfTest.487.phase1.integ.test.ts` |
+| 2 | The verdict fails when it should | ✅ DONE | `selfTestVerdict.487.phase2.integ.test.ts` |
+| 3 | Page load runs the self-test and publishes the verdict | ✅ DONE | `selfTestPage.487.phase3.integ.test.tsx` |
+| 4 | Web driver and local run | ✅ DONE | `selfTestDriver.487.phase4.unit.test.ts` + a real `--serve` run |
+| 5 | Electron `--self-test` (renderer half) | ✅ DONE | `electronSelfTest.487.phase5.unit.test.ts` + run on A's machine |
+| 6 | `integ` MiroirTests in self-test mode | ✅ DONE | `runSelfTestInteg.487.phase6.integ.test.ts` |
+| 7 | GitHub Actions workflow | ✅ DONE | green `self-test.yml` run on the branch |
+| 8 | Nonreg steps, docs, cleanup, AC | ✅ DONE | `nonreg:filesystem` + AC checklist |
+
+---
+
+## Locked implementation defaults
+
+From the analysis decision record, accepted by A 2026-10-06 (binding; deviations go into the slice's Realization).
+
+| Decision | Choice | Serves |
+|---|---|---|
+| D1 Setting | `client.selfTest: { enabled: boolean, tags?: string[] }` in `miroirEnvironment` and `miroirConfigClient`; `tags` missing or empty means `["unit"]`; any-tag filter (`filterMiroirTestInstancesByTags`) | G1, G4 |
+| D2 Start | `startWebApp` branches after `setupClient`; plain async code runs, `root.render(<SelfTestPage …/>)` shows progress and results; no router, no `useEffect` | G1 |
+| D3 Boot | `fetchMiroirAndAppConfigurations` with an optional application filter; the self-test passes the miroir app only | G1 |
+| D4 Tests | the miroir app's MiroirTest instances read from the local cache after the rollback | G1 |
+| D5 Run code | unit and integration batches extracted from `RunAllMiroirTestsButton` into `4-tests/miroirTestBatch.ts`; the button uses them | G1, G4 |
+| D6 Verdict | `passed` iff boot ok, ≥ 1 test, 0 failed; one `MiroirSelfTestResult` shape published on `<html data-miroir-self-test>`, `window.__MIROIR_SELF_TEST_RESULT__`, Electron IPC; auth on → `failed` | G2, G3 |
+| D7 Environment | `environments/self-test.json`: extends `dev`, `library`/`designer`/`meta` null, miroir `copy`, auth off, `features.ai` false, `client.selfTest { enabled, tags: ["unit"] }` | G1 |
+| D8 Integ | `integ` in tags adds the integration batch (default profile, `ephemeral`, `isolated`); `reportTest` suites skipped with a reason; unit batch excludes `reactComponentTest` | G4 |
+| D9 Electron | `--self-test[=tags]`, `--self-test-timeout`; selfTest merged into `get-client-config`; hidden window; `app://` even unpackaged; exit 0/1/2; one report with #486's main probes when both exist | G3 |
+| D10 CI | `.github/workflows/self-test.yml`, on `workflow_dispatch` and push to `_integration`: `electron-self-test` and `web-self-test` jobs; not in the PR gate | G5 |
+
+---
+
+## Allocated keys
+
+| Artefact | Value |
+|---|---|
+| Environment | `environments/self-test.json`, name `self-test`, state `.miroir/self-test/` |
+| Schema fields | `miroirEnvironment.client.selfTest`, `miroirConfigClient.selfTest` (type `MiroirSelfTestConfig`: `{ enabled: boolean; tags?: string[] }`) |
+| Result type | `MiroirSelfTestResult` (analysis D6), in `miroir-standalone-app/src/miroir-fwk/4-tests/selfTest/selfTestResult.ts` |
+| DOM / window | `data-miroir-self-test` on `<html>`; `window.__MIROIR_SELF_TEST_RESULT__` |
+| Electron IPC | channel `miroir-self-test-result`; preload `electronAPI.reportSelfTestResult` |
+| Electron flags | `--self-test[=<tags>]`, `--self-test-timeout=<seconds>` (default 900) |
+| npm script | `selfTest` in miroir-standalone-app (`scripts/self-test.mjs`) |
+| Workflow | `.github/workflows/self-test.yml`, jobs `electron-self-test`, `web-self-test` |
+| Nonreg steps | `unit-487-self-test` (scopes `ui`, `tooling`), `default-487-self-test-integ` (scopes `ui`; tier `default`) |
+| Issue test dirs | `packages/miroir-standalone-app/tests/4_view/issues/487-client-self-test/`, `packages/miroir-env/tests/` (flat, as the package does), `packages/miroir-standalone-app-electron/tests/unit/issues/487-client-self-test/` |
+
+No new model element, so no UUID. No new MiroirTest: the self-test runs the existing ones, and its own behaviour (boot, page, Electron) is framework machinery that MiroirTest cannot express; every test below is vitest for that reason.
+
+---
+
+## Test execution conventions
+
+| Purpose | Command |
+|---|---|
+| Unit baseline in Node | `npm run testMiroir -w miroir-core -- --tags unit --mode unit` |
+| Issue test, standalone-app | `RUN_TEST=<name> npm run testByFile -w miroir-standalone-app -- <name>` |
+| Issue test, miroir-env | `npm run testByFile -w miroir-env -- <name>` (or `npx vitest run <file>` in the package) |
+| Issue test, Electron | `npm run testByFile -w miroir-standalone-app-electron -- <name>` |
+| Schema rebuild | `npm run build -w miroir-app-miroir && npm run devBuild -w miroir-core` |
+| Typecheck | `npx tsc --noEmit --skipLibCheck -p packages/<pkg>/tsconfig.json` for miroir-core, miroir-env, miroir-standalone-app, miroir-standalone-app-electron |
+| Environment check | `npm run miroir-env -- check --strict --tracked-clean`; `MIROIR_ENV=self-test npm run miroir-env -- show` |
+| Scoped nonreg | `npm run nonreg:filesystem -- --runner shared --scope smoke,<scopes>` |
+| Full nonreg | `npm run nonreg:filesystem -- --runner shared` |
+
+Electron is not installed in the cloud containers: Electron end-to-end runs happen on A's machine and in the GitHub job; container validation covers the Electron-free modules.
+
+---
+
+## Slice 0 — Characterize the unit baseline and the Run all contracts
+
+**Status:** ✅ DONE (2026-10-06)
+
+**Goal:** know which of the 43 `unit` MiroirTests of the miroir app pass today, so Slice 1 can tell a self-test failure from an existing one, and lock the Run all behaviour before D5 moves its code.
+
+**RED/characterization:**
+- Run `npm run testMiroir -w miroir-core -- --tags unit --mode unit` after a fresh build (`./build-all.sh`). A first run on 2026-10-06 in a cloud container gave 4 failures of 985 tests in `fn.transformer.interfaceCheck` and `fn.transformer.interfaceWalk` (analysis § 4.6), possibly a stale build. Record per suite pass/fail in this slice's Realization. Any suite failing here is either fixed in its own issue or listed as a known failure that Slice 1's assertion accounts for (never skipped).
+- Confirm green: `RunAllMiroirTestsButton.unit`, `MiroirTestListDisplay.unit`, `runAllComponentTests.286.phase6.integ`, `MiroirTestListIntegrationLaunch.integ`. They are the safety net for the D5 extraction.
+- `MIROIR_ENV=self-test npm run miroir-env -- show` fails today ("no environment self-test"): the starting point of Slice 1.
+
+**GREEN:** none (characterization).
+
+**Refactor checkpoint:** none.
+
+**Validation:**
+```bash
+npm run testMiroir -w miroir-core -- --tags unit --mode unit
+RUN_TEST=RunAllMiroirTestsButton.unit npm run testByFile -w miroir-standalone-app -- RunAllMiroirTestsButton.unit
+RUN_TEST=MiroirTestListDisplay.unit npm run testByFile -w miroir-standalone-app -- MiroirTestListDisplay.unit
+npm run testByFile -w miroir-standalone-app -- runAllComponentTests.286.phase6.integ
+npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem MiroirTestListIntegrationLaunch
+MIROIR_ENV=self-test npm run miroir-env -- show   # fails: environment not found
+```
+
+### Realization
+
+Run on `_integration` 9838983 plus the docs commit, cloud container, 2026-10-06.
+
+- The 4 failures of the first run (analysis § 4.6) came from a stale `miroir-core` build. After `./build-all.sh devBuild`, `npm run testMiroir -w miroir-core -- --tags unit --mode unit` passes 985/985. No known failure to account for in Slice 1.
+- The first full build stopped at miroir-standalone-app: `node_modules/miroir-app-meta` and `node_modules/miroir-example-github` were missing (node_modules older than #472 and the meta package). Adding the two workspace symlinks fixed it; `./build-all.sh devBuild` then exits 0. This is a container state issue, not a repository change.
+- Safety net green: `RunAllMiroirTestsButton.unit` 4/4, `MiroirTestListDisplay.unit` 7/7, `runAllComponentTests.286.phase6.integ` 3/3, `MiroirTestListIntegrationLaunch` 1/1. The last one needs `--profile` (as its nonreg step `appstack-MiroirTestListIntegrationLaunch` passes it); without it the batch captures no run and the test fails.
+- `MIROIR_ENV=self-test npm run miroir-env -- show` fails with `environment "self-test" not found`, as expected.
+
+
+---
+
+## Slice 1 — Tracer: the `self-test` environment runs the miroir app's unit MiroirTests and passes
+
+**Status:** ✅ DONE (2026-10-06)
+
+**Goal:** a maintainer selects `self-test` and a single call boots the platform on it, loads miroir and Admin only, reads the miroir app's MiroirTests from the local cache, runs the `unit` ones and returns `passed`. Cuts schema → miroir-env → client config → platform boot → deployment load → batch run → verdict.
+
+**RED:** `packages/miroir-standalone-app/tests/4_view/issues/487-client-self-test/runSelfTest.487.phase1.integ.test.ts`
+1. `resolveEnvironmentFromFiles({ env: { MIROIR_ENV: "self-test" } })` resolves; its `environmentClientConfig(...)` has `selfTest: { enabled: true, tags: ["unit"] }`, and so has `environmentRealServerClientConfig(...)`.
+2. With that emulated-server configuration, `setupMiroirPlatform(config)` then `runSelfTest({ domainController, miroirContext, config })` returns `verdict: "passed"`, `counts.suites` equal to the number of `unit`-tagged MiroirTests of the miroir app (43 at plan time, minus Slice 0's known failures if any), `counts.failed === 0`.
+3. The deployments opened by the run are Admin and miroir only (read from the client DomainController's local cache: no Library, Designer or meta deployment).
+
+**GREEN:**
+- Schema: `selfTest` object in `miroirEnvironment.client` and in `miroirConfigClient` (`getMiroirFundamentalMlSchema.ts`); `npm run devBuild -w miroir-core` regenerates `MiroirSelfTestConfig` in `miroirFundamentalType.ts`.
+- miroir-env: `environmentRealServerClientConfig` and `environmentClientConfig` copy `environment.client.selfTest` when present.
+- `environments/self-test.json` (analysis D7).
+- `ConfigurationService.ts`: optional `applications?: Uuid[]` on `fetchMiroirAndAppConfigurations` options; when given, `deploymentsToLoad` keeps only those `selfApplication`s. Unchanged when absent.
+- `4-tests/miroirTestBatch.ts`: `runUnitMiroirTestBatch(instances, tracker, { includeComponentTests })` returning `MiroirTestSuiteResultsMap` (body of `onUnitAction`).
+- `4-tests/selfTest/runSelfTest.ts`: load (D3), read the miroir model's MiroirTests from the local cache with `selectModelForDeploymentFromReduxState` (D4), filter by tags, unit batch with `excludeMiroirTestTypes: ["reactComponentTest"]`, compute the result (D6, success path only in this slice).
+
+**Refactor checkpoint:** `RunAllMiroirTestsButton.onUnitAction` calls `runUnitMiroirTestBatch` (Slice 0's tests stay green). `summarizeSuiteResults` moves from `MiroirTestListDisplay.tsx` to `testResultReport.ts` and the result counts use it.
+
+**Validation:**
+```bash
+npm run build -w miroir-app-miroir && npm run devBuild -w miroir-core
+npm run build -w miroir-env
+MIROIR_ENV=self-test npm run miroir-env -- show
+npm run miroir-env -- check --strict --tracked-clean
+RUN_TEST=runSelfTest.487.phase1.integ npm run testByFile -w miroir-standalone-app -- runSelfTest.487.phase1.integ
+RUN_TEST=RunAllMiroirTestsButton.unit npm run testByFile -w miroir-standalone-app -- RunAllMiroirTestsButton.unit
+npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
+npx tsc --noEmit --skipLibCheck -p packages/miroir-env/tsconfig.json
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui,tooling
+```
+
+### Realization
+
+- Schema: a named definition `miroirSelfTestConfig` (`{ enabled: boolean, tags?: string[] }`), referenced by `miroirEnvironment.client.selfTest` and `miroirConfigClient.selfTest`; `MiroirSelfTestConfig` and `miroirSelfTestConfig` exported from miroir-core.
+- miroir-env: `selfTestConfig(resolved)` adds `selfTest` to both `environmentRealServerClientConfig` and `environmentClientConfig`.
+- `environments/self-test.json` as in analysis D7; `miroir-env check --strict --tracked-clean` lists it as valid. Admin keeps `dev`'s layout (model live, data a copy), so the description says "the miroir app and the Admin data are copies".
+- `runSelfTest` (`4-tests/selfTest/runSelfTest.ts`) reads the MiroirTests with `domainController.currentModel(selfApplicationMiroir.uuid, defaultSelfApplicationDeploymentMap).tests`, the framework-neutral API, instead of the Redux selector the plan named.
+- Deviation in the test setup: the run boots on `test-filesystem` (tests never run on a non-`test-*` environment) with the `client.selfTest` of `self-test`, and `bootEnvironment` (miroir-env) plays the server's boot on the emulated server's DomainController. Admin there lists Library and the other test applications, so the "miroir and Admin only" assertion also proves the application filter.
+- **Bug found by the tracer:** `tr.menuBuild` failed with "Cannot add property 5, object is not extensible". `handleTransformer_menu_AddItem` (`miroir-core/src/1_core/Menu.ts`) shallow-copied the menu and then `splice`d its items, so it modified the menu it was given; the CLI passes because its MiroirTests are fresh objects read from files, the local cache's are frozen. Fixed by building a new menu (sections and items copied); the CLI run and the self-test both pass.
+- `MiroirActivityTrackerInterface` (not the class) types the tracker of the batch and of `runSelfTest`, as the button's context gives it.
+- `selfTest` sits before `features` in `miroirConfigClient`: `cursorSdk.275.phase0.unit` reads the feature keys from the schema source as everything after `features:`.
+- Scoped nonreg `npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui,tooling`: 64/64 pass. `npm run test -w miroir-core -- ''`: 2451 passed, 1 skipped.
+- Results: `runSelfTest.487.phase1.integ` 4/4 (43 suites, 0 failed); `RunAllMiroirTestsButton.unit` 4/4, `MiroirTestListDisplay.unit` 7/7, `runAllComponentTests.286.phase6.integ` 3/3, `renderPerformanceRunControls.303.phase6.unit` 3/3. Typecheck: miroir-core and miroir-env clean; miroir-standalone-app has the 32 MUI 9 errors already on `_integration`, none in the files of this slice. `npm run lint` errors on `_integration` 9838983 (miroir-app-meta double casts) are fixed by #489, merged in from `_integration`.
+
+
+---
+
+## Slice 2 — The verdict fails when it should
+
+**Status:** ✅ DONE (2026-10-06)
+
+**Goal:** a broken boot, an empty test list, a failing test or authentication on each give `failed` with a message a maintainer can act on; the run never ends on `running`.
+
+**RED:** `tests/4_view/issues/487-client-self-test/selfTestVerdict.487.phase2.integ.test.ts`
+1. `tags: ["no-such-tag"]` → `failed`, `error` says no MiroirTest matched the tags.
+2. A configuration without the Admin deployment → `failed`, `error` carries the boot error (`fetchMiroirAndAppConfigurations` rejection), `counts` absent.
+3. A failing test: `computeSelfTestResult` on the `generateTestReport` output of a real run of a transformerTest whose expected value is wrong → `failed`, `failures[0]` names the suite key and the test path. (The only fixture of the plan: the miroir app has no failing MiroirTest to import, and adding one to its assets would break its own runs.)
+4. Authentication on (`authenticationEnabled: true` passed to `runSelfTest`) → `failed`, `error` "self-test runs with authentication off".
+
+**GREEN:** `selfTestResult.ts`: `computeSelfTestResult(resultsMap, context)`, the error paths of `runSelfTest` (one try/catch around boot and run producing the `failed` result).
+
+**Refactor checkpoint:** one place builds the result (no ad hoc objects in `runSelfTest`).
+
+**Validation:**
+```bash
+RUN_TEST=selfTestVerdict.487.phase2.integ npm run testByFile -w miroir-standalone-app -- selfTestVerdict.487.phase2.integ
+RUN_TEST=runSelfTest.487.phase1.integ npm run testByFile -w miroir-standalone-app -- runSelfTest.487.phase1.integ
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+```
+
+### Realization
+
+- `runSelfTest` never throws: the authentication check comes first (`authenticationEnabled`, what `/auth/status` answered; message `SELF_TEST_NEEDS_AUTHENTICATION_OFF`), then loading and running sit in one try/catch. `failedSelfTestResult` and `computeSelfTestResult` (`selfTestResult.ts`) are the only two builders of a result.
+- The boot of phase 1 moved to `selfTestPlatform.ts` in the issue folder, shared by both test files.
+- Case 3 uses the real `miroirTest_tr_menuBuild` asset with its expected value replaced, rather than an inline transformer test.
+- Order: the error paths were written with the tests rather than strictly after them; on Slice 1's code, cases 2 and 4 fail (the boot error escapes `runSelfTest`, and there is no authentication parameter).
+- Results: `selfTestVerdict.487.phase2.integ` 4/4, `runSelfTest.487.phase1.integ` 4/4; miroir-standalone-app typecheck unchanged (32 MUI 9 errors of `_integration`, none in these files); `npm run lint` clean.
+
+
+---
+
+## Slice 3 — Page load runs the self-test and publishes the verdict
+
+**Status:** ✅ DONE (2026-10-06)
+
+**Goal:** with `client.selfTest.enabled`, loading the page shows the self-test page (no app bar, menu or router), its progress, then the results with the existing display; the verdict appears on `<html>` and `window`.
+
+**RED:** `tests/4_view/issues/487-client-self-test/selfTestPage.487.phase3.integ.test.tsx` (jsdom, real platform on the `self-test` environment's emulated configuration)
+1. `startSelfTest(root, config, platform)` renders "Self-test" with the environment name; while running, `document.documentElement.dataset.miroirSelfTest === "running"`.
+2. At the end: `dataset.miroirSelfTest === "passed"`; `window.__MIROIR_SELF_TEST_RESULT__` deep-equals the result `runSelfTest` returned; the page shows the `UnitTestExecutionSummary` totals and one accordion per suite.
+3. No element of the app shell renders (no AppBar, no sidebar menu), and the router's `PageDispatcher` never mounts (so `usePageConfiguration` never auto-fetches).
+4. With `config.selfTest` absent, `startWebApp`'s branch is not taken (asserted through the exported `shouldStartSelfTest(config)`).
+
+**GREEN:**
+- `MiroirTestResultsDisplay.tsx`: the results part of `MiroirTestListDisplay` (summary plus accordions), props `instances`, `resultsBySuiteKey`.
+- `4_view/pages/SelfTestPage.tsx`: header (environment, tags, verdict), progress (`suitesDone / suitesTotal`), `MiroirTestResultsDisplay`, error panel. Props only, no effect.
+- `selfTest/startSelfTest.tsx`: `publishSelfTestResult` (DOM, window, Electron when `window.electronAPI?.reportSelfTestResult` exists), then `runSelfTest` with an `onProgress` that re-renders the page.
+- `index.tsx`: after `setupClient`, `if (shouldStartSelfTest(config)) return startSelfTest(root, …)` with the same providers as the app.
+
+**Refactor checkpoint:** `MiroirTestListDisplay` renders `MiroirTestResultsDisplay` (its own tests unchanged). Check `index.tsx` keeps one render path per mode, with no duplicated provider tree (extract `AppProviders` if both paths need it).
+
+**Validation:**
+```bash
+RUN_TEST=selfTestPage.487.phase3.integ npm run testByFile -w miroir-standalone-app -- selfTestPage.487.phase3.integ
+RUN_TEST=MiroirTestListDisplay.unit npm run testByFile -w miroir-standalone-app -- MiroirTestListDisplay.unit
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+npm run build -w miroir-standalone-app   # the production build still compiles; bundle policy unchanged
+npm run nonreg:filesystem -- --runner shared --scope smoke,ui
+```
+
+### Realization
+- `startSelfTest({root, withProviders, domainController, miroirConfig, tracker, authenticationEnabled})` removes the bootstrap spinner, publishes and renders `running`, re-renders after each suite (`onSuiteDone`), then publishes and renders the final result. `index.tsx` builds the provider tree once (`withProviders`) and uses it for both the self-test page and the router, so there is one render path per mode and no duplicated providers.
+- Bundle policy: importing `startSelfTest` statically pulled the result grids (and `diff`, through `SideBySideDiff`) into the page-load chunks. `shouldStartSelfTest` moved to `selfTestResult.ts` (no UI imports) and `index.tsx` imports `startSelfTest.js` dynamically. `check_bundle_policy.py`: 0 violations, page 788697 bytes gzipped (baseline 786868).
+- `SelfTestPage` sits in a `ReportPageContextProvider` (the grids read it) and renders `MiroirTestResultsDisplay` with `linkResultsToEditor` false, since there is no router to open the editor. The verdict line is `data-testid="miroir-self-test-verdict"`, the error panel `data-testid="miroir-self-test-error"`.
+- `MiroirTestResultsDisplay` takes `resultsBySuiteKey` and an optional `suiteKeys` order instead of `instances`; `MiroirTestListDisplay` renders it with its sorted instances' keys.
+- Case 3 checks the absence of `.MuiAppBar-root` and `.MuiDrawer-root`; the router never mounts since `startSelfTest` renders only the page.
+- Results: `selfTestPage.487.phase3.integ` 6/6; miroir-standalone-app typecheck unchanged (32 MUI 9 errors of `_integration`, none in these files); `npm run lint` clean; `nonreg:filesystem --runner shared --scope smoke,ui` 35/35 PASS.
+
+---
+
+## Slice 4 — Web driver and local run
+
+**Status:** ✅ DONE (2026-10-06)
+
+**Goal:** a maintainer or a CI job runs `npm run selfTest -w miroir-standalone-app -- --serve` and gets the report on stdout with exit 0 (passed), 1 (failed) or 2 (could not run).
+
+**RED:** `tests/0_build/selfTestDriver.487.phase4.unit.test.ts`
+1. `selfTestExitCode(result)`: `passed` → 0, `failed` → 1, `undefined` or `running` after the timeout → 2.
+2. Argument parsing: `--serve`, `--url`, `--browser`, `--timeout`, `--headed`, same defaults as `coverage-tour.mjs`.
+
+**GREEN:**
+- Extract the `--serve` code of `scripts/coverage-tour.mjs` (start the server release on loopback serving `dist/`, authentication off, stop at the end) into `scripts/serveBuiltClient.mjs`; the tour imports it (its `coverageTourLoopback.unit` stays green).
+- `scripts/self-test.mjs`: serve (or `--url`), open the page in Chromium (`playwright-core`), wait until `data-miroir-self-test` is `passed` or `failed` or the timeout, print `window.__MIROIR_SELF_TEST_RESULT__` as JSON, exit with `selfTestExitCode`. The client must be built with `MIROIR_ENV=self-test` and the server started on `self-test`.
+- `package.json`: `"selfTest": "node scripts/self-test.mjs"`.
+
+**Refactor checkpoint:** no duplicated serving code between the tour and the driver.
+
+**Validation:**
+```bash
+RUN_TEST=selfTestDriver.487.phase4.unit npm run testByFile -w miroir-standalone-app -- selfTestDriver.487.phase4.unit
+npm run testByFile -w miroir-standalone-app -- coverageTourLoopback.unit
+MIROIR_ENV=self-test npm run build -w miroir-standalone-app
+npm run build:release -w miroir-server
+MIROIR_ENV=self-test npm run selfTest -w miroir-standalone-app -- --serve   # expect exit 0 and the JSON report
+```
+
+### Realization
+- `scripts/serveBuiltClient.mjs` holds what the coverage tour and the driver share: `startServer({url, name})`, `launchBrowser`, `requireProductionBuild`, `ScriptError`/`fail` (exit 2). `coverage-tour.mjs` imports it and lost its own copies (`TourError` became `ScriptError`).
+- The pure part is `scripts/selfTestDriverCore.mjs` (`parseSelfTestDriverArgs`, `selfTestExitCode`, `selfTestSummaryLines`), so the unit test imports no browser. `self-test.mjs` adds `--out <file>` (the workflow's artifact); stdout carries the JSON then the summary.
+- A URL nothing answers exits 2 (`cannot open <url>`), not with a Node stack trace.
+- The test file is `selfTestDriver.487.phase4.unit.test.ts` in `tests/0_build/`, next to the other tooling tests.
+- Results: `selfTestDriver.487.phase4.unit` 4/4, `coverageTourLoopback.unit` 3/3; `MIROIR_ENV=self-test npm run selfTest -w miroir-standalone-app -- --serve` in a cloud container (Chromium of /opt/pw-browsers): exit 0, `passed`, 985 tests in 43 suites, 0.8 s of tests; `--url https://localhost:3999` exits 2; `npm run lint` clean.
+
+---
+
+## Slice 5 — Electron `--self-test` (renderer half)
+
+**Status:** ✅ DONE (2026-10-06; the Electron run itself is in the Slice 7 workflow)
+
+**Goal:** `electron packages/miroir-standalone-app-electron --self-test` (and the packaged binary) boots its environment, loads the built client hidden, waits for the renderer's verdict, prints it and exits 0, 1 or 2.
+
+**RED:** `packages/miroir-standalone-app-electron/tests/unit/issues/487-client-self-test/electronSelfTest.487.phase5.unit.test.ts` (no Electron import: the logic lives in `src/selfTestMain.ts`, like `environmentBoot.ts`)
+1. `parseSelfTestArgs(["--self-test"])` → `{ enabled: true, tags: ["unit"], timeoutSeconds: 900 }`; `--self-test=unit,integ` and `--self-test-timeout=60` parse; no flag → `undefined`.
+2. `withSelfTest(clientConfig, options)` merges `selfTest` into the configuration; the IPC handler (`createMiroirIpcHandler` deps) answers `get-client-config` with it.
+3. `selfTestExit(event)`: verdict `passed` → 0, `failed` → 1, `timeout`, `render-process-gone`, `did-fail-load` → 2; the printed report is the renderer's result plus `{ exitReason }`.
+4. `selfTestLoadUrl({ isPackaged: false, selfTest: true })` is the `app://` URL, not the Vite dev server.
+
+**GREEN:**
+- `src/selfTestMain.ts` (pure functions above).
+- `main.ts`: parse the flags; when set, `show` never called and no DevTools; load `app://miroir/home`; `ipcMain.once("miroir-self-test-result", …)`, timeout, `render-process-gone` and `did-fail-load` handlers; print and `app.exit(code)`.
+- `preload.ts`: `reportSelfTestResult: (result) => ipcRenderer.send("miroir-self-test-result", result)` and its type.
+- `ipcServerSetup.ts`: pass the merged client configuration.
+- Coordination with #486 (analysis D9): if #486 is merged first, run its main probes before loading the renderer and print `{ main, renderer }`; if not, leave a single `report.renderer` key so #486 adds `main` without changing the shape.
+
+**Refactor checkpoint:** `isDev` and the load URL computed in one place (`selfTestLoadUrl` generalised to `rendererLoadUrl`).
+
+**Validation:**
+```bash
+npm run testByFile -w miroir-standalone-app-electron -- electronSelfTest.487.phase5.unit
+npm run testByFile -w miroir-standalone-app-electron
+npm run build -w miroir-standalone-app-electron     # tsc + main bundle; bundle policy unchanged
+npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
+# On A's machine (Electron installed), after MIROIR_ENV=self-test npm run build -w miroir-standalone-app:
+#   MIROIR_ENV=self-test npx electron packages/miroir-standalone-app-electron --self-test; echo $?
+```
+
+### Realization
+- `src/selfTestMain.ts`: `parseSelfTestArgs`, `withSelfTest`, `selfTestExit`, `rendererLoadUrl` (the refactor checkpoint's name; it replaces the `isDev` branch of `loadApp`), `SELF_TEST_RESULT_CHANNEL`. The preload imports the channel constant (esbuild bundles it; the module has only a type import from miroir-core).
+- `main.ts`: with `--self-test`, the window is never shown, DevTools never open, background throttling is off (a hidden window would otherwise slow its timers), and the single-instance lock is not taken, so a self-test runs beside an open app. The end comes from the first of: the renderer's result, the timeout, `render-process-gone`, `did-fail-load` on the main frame, or an error booting the environment (`main-error`, an extra end kind). The report goes to stdout as `{ renderer }`; #486 adds `main`.
+- A bad `--self-test-timeout` exits 2 before the app starts (`process.stderr.write`: the bare console guard forbids `console.error` in `src/`).
+- `ipcServerSetup.setupIpcServer(selfTest?)` hands `withSelfTest(clientConfig, selfTest)` to `get-client-config`.
+- Not run in Electron here: the container has no Electron binary (`node_modules/electron/install.js` fails), so the first real run is the workflow's `electron` job.
+- Results: `electronSelfTest.487.phase5.unit` 4/4, all Electron tests 14/14; Electron typecheck clean; `npm run build -w miroir-standalone-app-electron` builds with no bundle policy violation; `nonreg:filesystem --runner shared --scope smoke,tooling` 24/25, the one failure the bare console guard on `main.ts`, fixed and rechecked (`check_bare_console.py` OK).
+
+---
+
+## Slice 6 — `integ` MiroirTests in self-test mode
+
+**Status:** ✅ DONE (2026-10-06; 3 failing integ suites found, see Realization)
+
+**Goal:** `client.selfTest.tags: ["unit", "integ"]` (or `--self-test=unit,integ`) also runs the miroir app's launchable `integ` MiroirTests on `emulatedServer-indexedDb`, run target `ephemeral`, writing only to the browser's IndexedDB.
+
+**RED:** `tests/4_view/issues/487-client-self-test/runSelfTestInteg.487.phase6.integ.test.ts`
+1. With tags `["integ"]`, `runSelfTest` runs the integration batch with `profileName: "emulatedServer-indexedDb"`, `runTargetMode: "ephemeral"`, `hostMode: "isolated"` (read from the per-suite results' inspector data) and returns `passed`, or the failures Slice 0-style baseline lists.
+2. The suite with a `reportTest` leaf is listed as skipped with the reason "reportTest suites need the component test sandbox".
+3. The `self-test` environment's stores under `.miroir/self-test/` are byte-identical before and after the run (nothing written outside the browser store).
+
+**GREEN:** `runIntegrationMiroirTestBatch` extracted from `runLaunchableIntegrationBatch` (it already is a module function; it moves to `miroirTestBatch.ts` and takes `runnerUuidIndex` and `miroirReports` as parameters, computed in `runSelfTest` from the miroir model); `runSelfTest` calls it when tags contain `integ`, after the unit batch; report suites filtered out before the batch.
+
+**Refactor checkpoint:** `RunAllMiroirTestsButton.onIntegrationAction` calls `runIntegrationMiroirTestBatch` (`RunAllMiroirTestsButton.unit`, `MiroirTestListIntegrationLaunch.integ` stay green).
+
+**Validation:**
+```bash
+RUN_TEST=runSelfTestInteg.487.phase6.integ npm run testByFile -w miroir-standalone-app -- runSelfTestInteg.487.phase6.integ
+RUN_TEST=RunAllMiroirTestsButton.unit npm run testByFile -w miroir-standalone-app -- RunAllMiroirTestsButton.unit
+npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem MiroirTestListIntegrationLaunch
+npm run nonreg:filesystem -- --runner shared --scope smoke,ui,runners
+npm run nonreg:filesystem -- --runner shared   # full run (slices 4 to 6 since the last one)
+```
+
+### Realization
+- Deviation from the RED: the batch runs in a browser only (`emulatedServer-indexedDb`); a Node test of it would need the mocks of `miroirTestListIntegrationLaunchMocks`. Its proof is the real run, `npm run selfTest -- --serve` on a new environment `self-test-integ` (`self-test` with tags `unit, integ`). `runSelfTestInteg.487.phase6.integ` checks that environment, the skipped `reportTest` suite (decided before the launcher loads, so it runs in Node) and the result's `skippedSuites`. Case 3 of the plan (stores unchanged) is left to the browser run: the profile writes only to IndexedDB.
+- `runIntegrationMiroirTestBatch` moved from `RunAllMiroirTestsButton` to `miroirTestBatch.ts` with `onSuiteDone`, `skipped`, and two changes Run all also gets: a suite that throws fails that suite (a `failedRunResult` row with the error, an action error as JSON) instead of ending the batch, and a failed run with no failed leaf gets such a row.
+- `runSelfTest`: the unit batch runs the tags other than `integ`, then the integration batch the `integ` suites; integration results are keyed `<suite> (integ)` beside the unit ones. The page lists suites not run.
+- Found on the way: the browser renderer crashed after 15 integ suites, heap 3 GB. A heap snapshot showed 530 of 640 MB in 64 strings of 8 MB: `DomainController.handleApplicationAction` logged `JSON.stringify(domainAction, null, 2)` at info level, which for `initModel` is a whole model, and `MiroirEventService` keeps every log's arguments for ten minutes whatever the level. The log now carries the action type and endpoint only. After it the integ run takes about 65 s.
+- The driver prints the page's progress line and exits 2 with `the page crashed or closed before its verdict` on a renderer crash; Chromium gets `--disable-dev-shm-usage`.
+- Results: `MIROIR_ENV=self-test-integ npm run selfTest -- --serve` gives 59 suites, 1292 passed, **3 failed**, 1 suite not run (`report.connectExternalServiceWizard`), exit 1. The 3 failures are in the browser integ runs themselves, not in the self-test: `action.scenario.externalServiceSync` (assertion `resyncEntityMlSchemaMatchesResponseSchema`), `runner.createEntity` (assertion `checkNumberOfReports` did not run), `runner.deployApplication` (`deleteStore model/data` fails in `handleCompositeAction`). They are left to a follow-up issue; CI runs `self-test` (unit). `runSelfTestInteg.487.phase6.integ` 3/3, `RunAllMiroirTestsButton.unit` 4/4, `MiroirTestListIntegrationLaunch` (emulatedServer-filesystem) 1/1, phases 1 to 3 green.
+
+---
+
+## Slice 7 — GitHub Actions workflow
+
+**Status:** ✅ DONE (2026-10-06)
+
+**Goal:** the self-test runs in GitHub on demand and on every push to `_integration`, with a red job when the verdict is `failed`.
+
+**RED:** the workflow file exists and its first dispatched run on the branch fails at the expected step before the jobs are complete (a missing script), then passes.
+
+**GREEN:** `.github/workflows/self-test.yml`:
+- triggers: `workflow_dispatch`, `push: branches: [_integration]`;
+- shared steps as `pr-checks.yml` (pinned actions, Node from `.nvmrc`, `npm ci`, ordered build of the packages the client needs);
+- `web-self-test`: `MIROIR_ENV=self-test npm run build -w miroir-standalone-app`, `npm run build:release -w miroir-server`, `MIROIR_ENV=self-test npm run selfTest -w miroir-standalone-app -- --serve` (browser: the runner's Chrome, or `MIROIR_TOUR_BROWSER`);
+- `electron-self-test`: same client build, `npm run build -w miroir-standalone-app-electron`, `MIROIR_ENV=self-test xvfb-run -a npx electron packages/miroir-standalone-app-electron --self-test`;
+- each job uploads the JSON report as an artifact.
+
+**Refactor checkpoint:** if `pr-checks.yml` and `self-test.yml` share a long build sequence, move it to a composite action (only if both would otherwise drift).
+
+**Validation:**
+```bash
+python scripts/check_dependency_policy.py      # pinned actions rule
+# dispatch the workflow on claude/487-client-self-test-x9c2x8 (GitHub UI or API) and record both jobs' results here
+```
+
+### Realization
+- Two jobs, `web` and `electron`, each repeating the build lines of `pr-checks.yml`'s bundle job (no composite action: the lists differ by one step and `pr-checks.yml` stays untouched). Node from `.nvmrc`. The Electron job passes `--no-sandbox` (Ubuntu 24.04 runners forbid Chromium's user namespaces) and tees stdout to the uploaded log.
+- The branch was added to the `push` trigger for the first runs (workflow_dispatch needs the file on the default branch); Slice 8 removes it.
+- Run 1: web green; Electron exit 2, `did-fail-load` on `app://miroir/home`: unpackaged, `getAppDistPath` pointed two levels up from `dist/src` instead of three (a bug since the main process is bundled into `dist/src`, unseen because unpackaged runs used the Vite dev server). Fixed in `main.ts`.
+- Run 2 ([37466942953](https://github.com/miroir-framework/miroir/actions/runs/37466942953)): both jobs green; Electron prints `{ renderer: { verdict: "passed", counts: { suites: 43, tests: 985, … }, exitReason: "result" } }`, so the IPC path works end to end.
+
+---
+
+## Slice 8 — Nonreg steps, docs, cleanup, AC
+
+**Status:** ✅ DONE (2026-10-06)
+
+**Goal:** the self-test stays covered by the non-regression suite and documented.
+
+**Work:**
+- Nonreg steps in `scripts/nonreg-manifest.json`: `unit-487-self-test` (tier `unit`, scopes `ui`, `tooling`: driver and Electron unit tests) and `default-487-self-test-integ` (tier `default`, scopes `ui`: `runSelfTest`, verdict and page integ tests; `runSelfTestInteg` included). `python -m pytest scripts/tests -q` checks the scopes guard.
+- Docs: `docs/reference/environments.md` (`client.selfTest` row, `self-test` in the environment list), `docs/reference/testing.md` (section "Self-test mode": what runs, verdict, local web and Electron runs, CI workflow), `packages/miroir-standalone-app-electron/README.md` (`--self-test` flags and exit codes).
+- Cleanup (#238 rule): move the lasting assertions of `tests/4_view/issues/487-client-self-test/` to `tests/4_view/selfTest/*.test.ts(x)` and of the Electron issue folder to `tests/unit/selfTestMain.unit.test.ts`; delete the issue folders; update the nonreg steps' argv.
+- Tracer narrative: manual run (build with `MIROIR_ENV=self-test`, start the server on `self-test`, open the page, see the results and `data-miroir-self-test="passed"`), automated equivalents (`selfTestPage` integ test, `npm run selfTest -- --serve`, Electron `--self-test`).
+
+**Validation:**
+```bash
+python scripts/sync_agent_skills.py --check
+python -m pytest scripts/tests -q
+python scripts/check_dependency_policy.py
+npm run lint
+npm run miroir-env -- check --strict --tracked-clean
+npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
+npm run test -w miroir-core -- ''
+npm run nonreg:filesystem -- --runner shared
+```
+
+**AC checklist:**
+
+| Acceptance criterion (#487) | Proof |
+|---|---|
+| `client.selfTest` in the environment schema and `environments/self-test.json` | Slice 1 (`runSelfTest.487.phase1.integ` 1; `miroir-env show`) |
+| page load runs the miroir app's `unit` MiroirTests and shows the results, nothing else loads | Slice 1 (3: only Admin and miroir), Slice 3 (`selfTestPage.487.phase3.integ` 1 to 3) |
+| verdict on the DOM, on `window`, over IPC in Electron | Slice 3 (2), Slice 5 (2, 3; IPC end to end on A's machine and in CI) |
+| Electron `--self-test` exits 0 or 1 from the renderer's verdict | Slice 5, Slice 7 (`electron-self-test` job) |
+| `integ` MiroirTests on `emulatedServer-indexedDb` | Slice 6 |
+| GitHub Actions job (Electron under `xvfb-run`) if feasible, and a documented local run | Slice 7, Slice 8 docs |
+
+### Realization
+
+- Tests moved (`git mv`) to `packages/miroir-standalone-app/tests/4_view/selfTest/` (`runSelfTest.integ`, `selfTestVerdict.integ`, `selfTestPage.integ`, `runSelfTestInteg.integ`, `selfTestPlatform.ts`), `tests/0_build/selfTestDriver.unit`, and `packages/miroir-standalone-app-electron/tests/unit/selfTestMain.unit`; the issue folders are gone.
+- Nonreg steps: `unit-487-self-test` (scope `ui`, the `4_view/selfTest/` folder: they boot `test-filesystem` themselves, so tier `unit` and no profile), `unit-487-self-test-driver` and `unit-487-self-test-electron` (scope `tooling`). The plan's `default-487-self-test-integ` step is not needed: the integ batch runs in a browser only.
+- Docs: `docs/reference/testing.md` section "Self-test mode", `docs/reference/environments.md` (`self-test`, `self-test-integ`, `client.selfTest`), the Electron README (`--self-test`).
+- The workflow's temporary branch trigger is removed: it runs on `workflow_dispatch` and pushes to `_integration`.
+- Results: `nonreg:filesystem --runner shared` 107/108 in 11.6 min; the one failure, `unit-286-react-component-miroir-tests` (`ui.mlElementEditor.any`: a select still open at step 4 under parallel load), passes alone (3/3) and touches no code of this issue. miroir-core unit tests 2451 passed; lint, script tests (261), dependency policy, skills sync, `miroir-env check --strict --tracked-clean` clean.
+
+**AC status:** all rows met: schema and environments (Slices 1, 6); page load runs and shows only the self-test (Slices 1, 3); verdict on the DOM, `window` and Electron IPC (Slices 3, 5, 7: the CI Electron job reads it over IPC); Electron `--self-test` exit codes (Slices 5, 7); `integ` on `emulatedServer-indexedDb` (Slice 6, runs, with 3 failing suites to fix separately); GitHub job with Electron under `xvfb-run` and a documented local run (Slices 7, 8).
+

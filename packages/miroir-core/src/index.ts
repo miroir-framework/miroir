@@ -356,6 +356,8 @@ export {
   miroirEnvironmentApplication,
   MiroirEnvironmentSectionMode,
   MiroirEnvironmentStoreType,
+  MiroirSelfTestConfig,
+  miroirSelfTestConfig,
   // MiroirCustomQueryParams,
   // miroirCustomQueryParams,
   MiroirFundamentalType,

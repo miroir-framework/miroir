@@ -17062,6 +17062,21 @@ export const miroirFundamentalMlSchema = {
           }
         }
       },
+      "miroirSelfTestConfig": {
+        "type": "object",
+        "definition": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "tags": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "miroirConfigForClientStub": {
         "type": "object",
         "definition": {
@@ -17132,6 +17147,14 @@ export const miroirFundamentalMlSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "miroirConfigEnvironment"
+            }
+          },
+          "selfTest": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirSelfTestConfig"
             }
           },
           "features": {
@@ -17444,6 +17467,14 @@ export const miroirFundamentalMlSchema = {
                   "realServer",
                   "emulatedServer"
                 ]
+              },
+              "selfTest": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "miroirSelfTestConfig"
+                }
               }
             }
           },
