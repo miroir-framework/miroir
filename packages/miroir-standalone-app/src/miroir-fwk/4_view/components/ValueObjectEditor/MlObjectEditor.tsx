@@ -72,6 +72,7 @@ import { emptyContainerMarker, isPlainObjectValue } from "./renderedValueMarkers
 import {
   findPathAnnotation,
   TransformerTitleRowAnnotations,
+  TransformerTypeBadgeRow,
 } from "../Reports/TransformerTypeAnnotation.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlObjectEditor");
@@ -1416,7 +1417,6 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
                 skipRoot
                 showMlSchemaTypes={showMlSchemaTypes}
                 mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
-                transformerTypeBadges={transformerTypeBadges}
                 environmentAnnotations={environmentAnnotations}
                 inadequate={!!titleRowWarning}
                 inadequateTitle={titleRowWarning?.title}
@@ -1515,6 +1515,9 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
             {/* {mlSchemaTooltip ?? <></>} */}
           </ThemedDeleteButtonContainer>
         </ThemedFlexRow>
+      )}
+      {!currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display?.objectWithoutHeader && (
+        <TransformerTypeBadgeRow path={rootLessListKeyArray} transformerTypeBadges={transformerTypeBadges} />
       )}
       {/* {!currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display?.objectAttributesNoIndent ? (
           <ThemedIndentedContainer

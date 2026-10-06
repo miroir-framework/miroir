@@ -9,6 +9,8 @@
  *   a case is the host value at once and an `updateInstance` of the ViewParams instance.
  * - Editor switch: a toggle shows at once; a later ViewParams change made elsewhere replaces it.
  * - Primitive literals: an `applyTo: "a"` has no title row, its badge follows its label.
+ * - Badge parts (#470): one chip per part, the declared types only when they differ from the actual
+ *   ones, only the parts of a mismatch marked; the badge sits under the title row, not in it.
  * - Badge labels (D18): an entity type shows the entity name, an unknown entity uuid its first
  *   8 characters.
  *
@@ -194,6 +196,70 @@ describe("transformerTypesDisplay: badge labels (D18)", () => {
 });
 
 // ################################################################################################
+describe("transformerTypesDisplay: badge parts (#470)", () => {
+  const badgeAt = (badges: TransformerTypeBadge[], path: string[]) =>
+    badges.find((badge) => badge.path.join(".") === path.join("."));
+  const kinds = (badge: TransformerTypeBadge | undefined) => badge?.parts.map((part) => part.kind);
+
+  it("a node shows in, applyTo, declared and out chips, and only the parts of a mismatch are marked", () => {
+    const walk = checkTransformerInterfaceRecursively(
+      {
+        transformerType: "mapList",
+        interpolation: "runtime",
+        applyTo: { transformerType: "returnValue", interpolation: "runtime", value: "a" },
+        elementTransformer: { transformerType: "returnValue", interpolation: "runtime", value: 1 },
+      },
+      "any",
+    );
+    const badge = badgeAt(transformerTypeBadges(walk, []), ["transformer"]);
+    expect(kinds(badge)).toEqual(["in", "applyTo", "declared", "out"]);
+    expect(badge?.parts.filter((part) => part.mismatch).map((part) => part.kind)).toEqual(["applyTo", "declared"]);
+    expect(badge?.parts.find((part) => part.kind === "declared")).toMatchObject({ label: "array → array" });
+    expect(badge?.declaredMatchesActual).toBe(false);
+  });
+
+  it("a declared type equal to the actual one is not repeated", () => {
+    const walk = checkTransformerInterfaceRecursively(
+      { transformerType: "mustacheStringTemplate", interpolation: "runtime", definition: "{{a}}" },
+      "string",
+    );
+    const badge = badgeAt(transformerTypeBadges(walk, []), ["transformer"]);
+    expect(kinds(badge)).toEqual(["in", "out"]);
+    expect(badge?.declaredMatchesActual).toBe(true);
+  });
+
+  it("a declared any or undefined side constrains nothing, so it does not count as a difference", () => {
+    const walk = checkTransformerInterfaceRecursively(
+      { transformerType: "returnValue", interpolation: "runtime", value: "a" },
+      "any",
+    );
+    const badge = badgeAt(transformerTypeBadges(walk, []), ["transformer"]);
+    expect(kinds(badge)).toEqual(["in", "out"]);
+    expect(badge?.declaredMatchesActual).toBeUndefined(); // no "✓ declared" for a declaration of nothing
+  });
+
+  it("a chip's title holds the full type, entity uuid included", () => {
+    const bookUuid = "e8ba151b-d68e-4cc3-9a83-3459d309ccf5";
+    const walk = checkTransformerInterfaceRecursively(
+      { transformerType: "getFromContext", interpolation: "runtime", referenceName: "defaultInput" },
+      { type: "array", payload: bookUuid },
+    );
+    const badge = badgeAt(transformerTypeBadges(walk, [{ uuid: bookUuid, name: "Book" }]), ["transformer"]);
+    expect(badge?.parts.find((part) => part.kind === "in")).toMatchObject({ label: "array<Book>" });
+    expect(badge?.parts.find((part) => part.kind === "in")?.title).toContain(bookUuid);
+  });
+
+  it("a literal has one value chip", () => {
+    const walk = checkTransformerInterfaceRecursively(
+      { transformerType: "aggregate", interpolation: "runtime", applyTo: ["a", "b"] },
+      "any",
+    );
+    const badge = badgeAt(transformerTypeBadges(walk, []), ["transformer", "applyTo"]);
+    expect(badge?.parts).toEqual([{ kind: "value", label: "array<string>", title: "array<string>", mismatch: false }]);
+  });
+});
+
+// ################################################################################################
 describe("transformerTypesDisplay: badges of primitive literals", () => {
   let sandboxElement: HTMLElement;
   let runner: ReturnType<typeof createReactComponentTestRunner> | undefined;
@@ -212,7 +278,7 @@ describe("transformerTypesDisplay: badges of primitive literals", () => {
   });
 
   it(
-    "a primitive literal applyTo shows its badge after its label, an object node once on its title row",
+    "a primitive literal applyTo shows its badge after its label, an object node once under its title row",
     async () => {
       runner = createReactComponentTestRunner({ sandboxElement });
       const badge = (path: string[], outputLabel: string): TransformerTypeBadge => ({
@@ -220,6 +286,7 @@ describe("transformerTypesDisplay: badges of primitive literals", () => {
         outputLabel,
         status: "unknown",
         title: `value ${outputLabel}`,
+        parts: [{ kind: "value", label: outputLabel, title: outputLabel, mismatch: false }],
       });
       const suite: ReactComponentTestSuiteContext = {
         suitePath: ["transformerTypesDisplay", "MlElementEditor"],
@@ -255,10 +322,22 @@ describe("transformerTypesDisplay: badges of primitive literals", () => {
             target: { byTestId: "transformer-type-badge-testField" },
             count: 1,
           },
+          {
+            step: "expectElement",
+            label: "the object's badge has its value chip",
+            target: { byTestId: "transformer-type-part-testField-value" },
+            attribute: { name: "data-transformer-type-part-status", value: "neutral" },
+          },
         ]),
         suite,
       });
       expect(result).toEqual({ status: "ok" });
+      // #470: the badge is under the title row, not in it, so it cannot move the fold buttons.
+      const titleRow = sandboxElement.querySelector('[id="testFieldhead"]')?.parentElement;
+      const objectBadge = sandboxElement.querySelector('[data-testid="transformer-type-badge-testField"]');
+      expect(titleRow).toBeTruthy();
+      expect(objectBadge).toBeTruthy();
+      expect(titleRow?.contains(objectBadge)).toBe(false);
     },
     RUN_TEST_TIMEOUT,
   );

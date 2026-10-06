@@ -42,7 +42,7 @@ import { isVitestTestMode } from "../../tools/progressiveRenderConfig.js";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent.js";
 import { JsonDisplayHelper } from "miroir-react";
 import { useReportPageContext } from "../Reports/ReportPageContext.js";
-import { findPathAnnotation, TransformerTypeBadgeChip } from "../Reports/TransformerTypeAnnotation.js";
+import { findPathAnnotation, TransformerTypeBadgeLine } from "../Reports/TransformerTypeAnnotation.js";
 import {
   ThemedCard,
   ThemedCardContent,
@@ -696,8 +696,8 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
     });
   }, [props.compatibilityWarnings, props.rootLessListKeyArray]);
 
-  // #453: a primitive literal (an `applyTo: "a"`) has no title row, so its type badge goes after
-  // its label. Objects and arrays show theirs on their title row.
+  // #453: a primitive literal (an `applyTo: "a"`) has no title row, so its type badge goes under
+  // its label (#470). Objects and arrays show theirs under their title row.
   const primitiveTypeBadge = useMemo(
     () =>
       currentValueObjectAtKey !== null && typeof currentValueObjectAtKey === "object"
@@ -711,7 +711,7 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
     const labelElement = primitiveTypeBadge ? (
       <>
         {props.labelElement}
-        <TransformerTypeBadgeChip badge={primitiveTypeBadge} />
+        <TransformerTypeBadgeLine badge={primitiveTypeBadge} />
       </>
     ) : (
       props.labelElement

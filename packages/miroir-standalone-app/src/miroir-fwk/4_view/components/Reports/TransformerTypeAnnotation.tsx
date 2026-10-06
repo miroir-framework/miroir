@@ -3,7 +3,7 @@ import { css } from "@emotion/react";
 import React from "react";
 
 import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
-import type { TransformerTypeBadge } from "../ValueObjectEditor/MlElementEditorInterface.js";
+import type { TransformerTypeBadge, TransformerTypeBadgePart } from "../ValueObjectEditor/MlElementEditorInterface.js";
 
 export type TransformerAnnotationPath = (string | number)[];
 
@@ -183,37 +183,80 @@ export const TransformerNamedBindings: React.FC<{
   );
 };
 
-/** #453: text of a type badge, the given input first and the output last. */
-export function transformerTypeBadgeText(badge: TransformerTypeBadge): string {
-  if (badge.givenLabel === undefined) {
-    return `value ${badge.outputLabel}`;
-  }
-  return [
-    `in ${badge.givenLabel}`,
-    ...(badge.consumedLabel !== undefined ? [`applyTo ${badge.consumedLabel}`] : []),
-    ...(badge.declaredLabel ? [`declared ${badge.declaredLabel.input} → ${badge.declaredLabel.output}`] : []),
-    `out ${badge.outputLabel}`,
-  ].join(" · ");
-}
+const typeStatusColors = {
+  match: "#2e7d32",
+  mismatch: "#c62828",
+} as const;
 
 /**
- * #453: the type badge of a transformer node or literal value. Green when the input the node reads
- * fits its declared input, red on a mismatch, grey when there is nothing to compare.
+ * #470: one part of a type badge, its label then its type. The chip never wraps; a type longer
+ * than the line is cut with an ellipsis, and the chip's tooltip has the full type.
  */
-export const TransformerTypeBadgeChip: React.FC<{ badge: TransformerTypeBadge }> = ({ badge }) => {
+const TransformerTypePartChip: React.FC<{ part: TransformerTypeBadgePart; pathKey: string }> = ({ part, pathKey }) => {
   const { currentTheme } = useMiroirTheme();
-  const colors = {
-    match: { color: "#2e7d32", background: "rgba(46, 125, 50, 0.10)", border: "#66bb6a" },
-    mismatch: { color: "#c62828", background: "rgba(198, 40, 40, 0.10)", border: "#ef5350" },
-    unknown: {
-      color: currentTheme.colors.textSecondary || currentTheme.colors.text,
-      background: "rgba(128, 128, 128, 0.10)",
-      border: "rgba(128, 128, 128, 0.45)",
-    },
-  }[badge.status];
+  const secondary = currentTheme.colors.textSecondary || currentTheme.colors.text;
   return (
     <span
-      data-testid={`transformer-type-badge-${annotationPathKey(badge.path)}`}
+      data-testid={`transformer-type-part-${pathKey}-${part.kind}`}
+      data-transformer-type-part={part.kind}
+      data-transformer-type-part-status={part.mismatch ? "mismatch" : "neutral"}
+      title={`${part.kind} ${part.title}`}
+      css={css({
+        display: "inline-flex",
+        alignItems: "baseline",
+        gap: "4px",
+        minWidth: 0,
+        maxWidth: "100%",
+        whiteSpace: "nowrap",
+        boxSizing: "border-box",
+        padding: "0 6px",
+        lineHeight: "18px",
+        borderRadius: currentTheme.borderRadius.sm,
+        border: `1px solid ${part.mismatch ? "#ef5350" : "rgba(128, 128, 128, 0.35)"}`,
+        backgroundColor: part.mismatch ? "rgba(198, 40, 40, 0.10)" : "rgba(128, 128, 128, 0.08)",
+        color: part.mismatch ? typeStatusColors.mismatch : currentTheme.colors.text,
+      })}
+    >
+      <span
+        css={css({
+          flexShrink: 0,
+          fontFamily: currentTheme.typography.fontFamily,
+          fontSize: "10px",
+          color: part.mismatch ? typeStatusColors.mismatch : secondary,
+        })}
+      >
+        {part.kind}
+      </span>
+      <span
+        css={css({
+          fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+          fontWeight: 500,
+          fontSize: "12px",
+          minWidth: 0,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+        })}
+      >
+        {part.label}
+      </span>
+    </span>
+  );
+};
+
+/**
+ * #453: the type badge of a transformer node or literal value. #470: on its own line under the
+ * node's title row, one chip per part; lines break between chips, never inside one. A dot gives
+ * the node's status (green when the input it reads fits its declared input, red on a mismatch,
+ * grey when there is nothing to compare); only the parts of a mismatch are red.
+ */
+export const TransformerTypeBadgeLine: React.FC<{ badge: TransformerTypeBadge }> = ({ badge }) => {
+  const { currentTheme } = useMiroirTheme();
+  const pathKey = annotationPathKey(badge.path);
+  const secondary = currentTheme.colors.textSecondary || currentTheme.colors.text;
+  const isNode = badge.givenLabel !== undefined;
+  return (
+    <div
+      data-testid={`transformer-type-badge-${pathKey}`}
       data-transformer-type-status={badge.status}
       data-transformer-type-given={badge.givenLabel}
       data-transformer-type-consumed={badge.consumedLabel}
@@ -223,20 +266,47 @@ export const TransformerTypeBadgeChip: React.FC<{ badge: TransformerTypeBadge }>
       data-transformer-type-output={badge.outputLabel}
       title={badge.title}
       css={css({
-        ...typeNameStyles,
-        fontWeight: 500,
-        fontSize: "11px",
-        color: colors.color,
-        backgroundColor: colors.background,
-        border: `1px solid ${colors.border}`,
-        borderRadius: currentTheme.borderRadius.sm,
-        padding: "0 6px",
-        lineHeight: "18px",
-        whiteSpace: "nowrap",
+        display: "flex",
+        flexWrap: "wrap",
+        alignItems: "center",
+        gap: "4px",
+        minWidth: 0,
+        maxWidth: "100%",
+        margin: "2px 0 4px",
       })}
     >
-      {transformerTypeBadgeText(badge)}
-    </span>
+      {isNode ? (
+        <span
+          aria-label={`types ${badge.status}`}
+          data-testid={`transformer-type-status-${pathKey}`}
+          css={css({
+            flexShrink: 0,
+            width: "8px",
+            height: "8px",
+            borderRadius: "50%",
+            backgroundColor:
+              badge.status === "unknown" ? "rgba(128, 128, 128, 0.55)" : typeStatusColors[badge.status],
+          })}
+        />
+      ) : null}
+      {badge.parts.map((part) => (
+        <TransformerTypePartChip key={part.kind} part={part} pathKey={pathKey} />
+      ))}
+      {badge.declaredMatchesActual && badge.declaredLabel ? (
+        <span
+          data-testid={`transformer-type-declared-match-${pathKey}`}
+          title={`declared ${badge.declaredLabel.input} → ${badge.declaredLabel.output}`}
+          css={css({
+            fontFamily: currentTheme.typography.fontFamily,
+            fontSize: "10px",
+            whiteSpace: "nowrap",
+            color: secondary,
+          })}
+        >
+          ✓ declared
+        </span>
+      ) : null}
+    </div>
   );
 };
 
@@ -247,8 +317,6 @@ export const TransformerTitleRowAnnotations: React.FC<{
   showMlSchemaTypes?: boolean;
   mlSchemaTypeAnnotations?: { path: TransformerAnnotationPath; label: string }[];
   environmentAnnotations?: TransformerEnvironmentAnnotation[];
-  /** #453: type badges of the TransformerEditor, shown when the path has one. */
-  transformerTypeBadges?: TransformerTypeBadge[];
   inadequate?: boolean;
   inadequateTitle?: string;
 }> = ({
@@ -257,7 +325,6 @@ export const TransformerTitleRowAnnotations: React.FC<{
   showMlSchemaTypes,
   mlSchemaTypeAnnotations,
   environmentAnnotations,
-  transformerTypeBadges,
   inadequate = false,
   inadequateTitle,
 }) => {
@@ -270,8 +337,7 @@ export const TransformerTitleRowAnnotations: React.FC<{
     ? findPathAnnotation(mlSchemaTypeAnnotations, path)
     : undefined;
   const environmentAnnotation = findPathAnnotation(environmentAnnotations, path);
-  const typeBadge = findPathAnnotation(transformerTypeBadges, path);
-  if (!typeAnnotation && !environmentAnnotation && !typeBadge) {
+  if (!typeAnnotation && !environmentAnnotation) {
     return null;
   }
 
@@ -290,7 +356,6 @@ export const TransformerTitleRowAnnotations: React.FC<{
           data-testid={`list-transformer-mlschema-node-${pathKey}`}
         />
       ) : null}
-      {typeBadge ? <TransformerTypeBadgeChip badge={typeBadge} /> : null}
       {environmentAnnotation ? (
         <TransformerNamedBindings
           kind="context"
@@ -301,4 +366,19 @@ export const TransformerTitleRowAnnotations: React.FC<{
       ) : null}
     </>
   );
+};
+
+/**
+ * #470: the type badge line of one editor path, shown under the node's title row so that the row
+ * keeps its label and buttons in place. Root is skipped when the panel already shows it.
+ */
+export const TransformerTypeBadgeRow: React.FC<{
+  path: TransformerAnnotationPath;
+  transformerTypeBadges?: TransformerTypeBadge[];
+}> = ({ path, transformerTypeBadges }) => {
+  if (path.length === 0) {
+    return null;
+  }
+  const typeBadge = findPathAnnotation(transformerTypeBadges, path);
+  return typeBadge ? <TransformerTypeBadgeLine badge={typeBadge} /> : null;
 };

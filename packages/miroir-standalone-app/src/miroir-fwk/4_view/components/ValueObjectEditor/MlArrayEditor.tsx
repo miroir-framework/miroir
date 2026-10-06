@@ -39,6 +39,7 @@ import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
 import {
   findPathAnnotation,
   TransformerTitleRowAnnotations,
+  TransformerTypeBadgeRow,
 } from "../Reports/TransformerTypeAnnotation.js";
 import { RenderInsightHeader } from "../RenderInsightHeader.js";
 import { useReportPageContext } from "../Reports/ReportPageContext";
@@ -852,7 +853,6 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
                 skipRoot
                 showMlSchemaTypes={showMlSchemaTypes}
                 mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
-                transformerTypeBadges={transformerTypeBadges}
                 environmentAnnotations={environmentAnnotations}
                 inadequate={!!titleRowWarning}
                 inadequateTitle={titleRowWarning?.title}
@@ -931,6 +931,7 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
             {!readOnly && (displayAsStructuredElementSwitch ?? <></>)}
           </span>
         </ThemedFlexRow>
+        <TransformerTypeBadgeRow path={rootLessListKeyArray} transformerTypeBadges={transformerTypeBadges} />
         <div
           id={listKey + ".inner"}
           style={{
