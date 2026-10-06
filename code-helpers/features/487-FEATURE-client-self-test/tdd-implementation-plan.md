@@ -17,7 +17,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Companion: #486 (health checks; shares Electron `--self-test`, analysis D9)
 Working branch: `claude/487-client-self-test-x9c2x8` (from `_integration` at 9838983)
 
-**Resume note:** plan written 2026-10-06; decisions D1 to D10 and their defaults accepted by A 2026-10-06; Slices 0 and 1 DONE; next Slice 2 (failing verdicts).
+**Resume note:** plan written 2026-10-06; decisions D1 to D10 and their defaults accepted by A 2026-10-06; Slices 0 to 2 DONE; next Slice 3 (page load).
 
 ---
 
@@ -39,7 +39,7 @@ This plan does **not** cover the CLI, server, MCP and Electron main-process prob
 |---|---|---|---|
 | 0 | Characterize the unit baseline and the Run all contracts | ✅ DONE | `testMiroir --tags unit` baseline; existing Run all tests green |
 | 1 | Tracer: `self-test` environment → `runSelfTest` → `passed` | ✅ DONE | `runSelfTest.487.phase1.integ.test.ts` |
-| 2 | The verdict fails when it should | ⬜ pending | `selfTestVerdict.487.phase2.integ.test.ts` |
+| 2 | The verdict fails when it should | ✅ DONE | `selfTestVerdict.487.phase2.integ.test.ts` |
 | 3 | Page load runs the self-test and publishes the verdict | ⬜ pending | `selfTestPage.487.phase3.integ.test.tsx` |
 | 4 | Web driver and local run | ⬜ pending | `selfTestDriver.487.phase4.unit.test.ts` + a real `--serve` run |
 | 5 | Electron `--self-test` (renderer half) | ⬜ pending | `electronSelfTest.487.phase5.unit.test.ts` + run on A's machine |
@@ -195,7 +195,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui,tooling
 
 ## Slice 2 — The verdict fails when it should
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE (2026-10-06)
 
 **Goal:** a broken boot, an empty test list, a failing test or authentication on each give `failed` with a message a maintainer can act on; the run never ends on `running`.
 
@@ -217,7 +217,13 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 ```
 
 ### Realization
-_(to fill)_
+
+- `runSelfTest` never throws: the authentication check comes first (`authenticationEnabled`, what `/auth/status` answered; message `SELF_TEST_NEEDS_AUTHENTICATION_OFF`), then loading and running sit in one try/catch. `failedSelfTestResult` and `computeSelfTestResult` (`selfTestResult.ts`) are the only two builders of a result.
+- The boot of phase 1 moved to `selfTestPlatform.ts` in the issue folder, shared by both test files.
+- Case 3 uses the real `miroirTest_tr_menuBuild` asset with its expected value replaced, rather than an inline transformer test.
+- Order: the error paths were written with the tests rather than strictly after them; on Slice 1's code, cases 2 and 4 fail (the boot error escapes `runSelfTest`, and there is no authentication parameter).
+- Results: `selfTestVerdict.487.phase2.integ` 4/4, `runSelfTest.487.phase1.integ` 4/4; miroir-standalone-app typecheck unchanged (32 MUI 9 errors of `_integration`, none in these files); `npm run lint` clean.
+
 
 ---
 

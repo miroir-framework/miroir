@@ -62,3 +62,18 @@ export function computeSelfTestResult(
     ...(allResults.length === 0 ? { error: `no MiroirTest ran for tags ${run.tags.join(", ")}` } : {}),
   };
 }
+
+/** The result of a run that could not start or finish: a boot, configuration or runner error. */
+export function failedSelfTestResult(
+  error: string,
+  run: { environment: string | undefined; tags: string[]; startedAt: Date; endedAt: Date },
+): MiroirSelfTestResult {
+  return {
+    verdict: "failed",
+    environment: run.environment,
+    tags: run.tags,
+    startedAt: run.startedAt.toISOString(),
+    durationMs: run.endedAt.getTime() - run.startedAt.getTime(),
+    error,
+  };
+}
